@@ -19,7 +19,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Installing the EJAM R package">
 <meta name="description" content="1. Installing the EJAM R package">
 <meta property="og:description" content="1. Installing the EJAM R package">
-<meta property="og:image" content="https://usepa.github.io/EJAM-open/logo.svg">
+<meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.3</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Installing the EJAM R package</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USEPA/EJAM-open/blob/HEAD/vignettes/1_installing.Rmd" class="external-link"><code>vignettes/1_installing.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/vignettes/1_installing.Rmd" class="external-link"><code>vignettes/1_installing.Rmd</code></a></small>
       <div class="d-none name"><code>1_installing.Rmd</code></div>
     </div>
 
@@ -112,7 +112,7 @@ To just install it, try this:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout <span class="op">=</span> <span class="fl">300</span><span class="op">)</span> <span class="co"># Just in case the download takes longer than 60 seconds</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span></code></pre></div>
-<p><code>remotes::install_github(repo = 'USEPA/EJAM-open', dependencies = TRUE)</code></p>
+<p><code>remotes::install_github(repo = 'ejanalysis/EJAM', dependencies = TRUE)</code></p>
 <p>If that does not work, check the github repository for the latest
 release and use the URL to install the package with
 <code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code></p>
@@ -124,7 +124,7 @@ release and use the URL to install the package with
 <p>To use EJAM in the RStudio console, start by loading / attaching the
 package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/EJAM-open">EJAM</a></span><span class="op">)</span> <span class="co"># or  library(EJAM)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://ejanalysis.github.io/EJAM">EJAM</a></span><span class="op">)</span> <span class="co"># or  library(EJAM)</span></span></code></pre></div>
 <p><strong>That should be all you need to do.</strong></p>
 <hr>
 </div>
@@ -141,7 +141,7 @@ project, build from source, etc.</p>
 <p>Options for getting the full source package:</p>
 <ol style="list-style-type: lower-alpha">
 <li><p>One way to get the full source package is to use a browser to go
-to the EJAM repository page (or a fork of the repository) at <a href="https://github.com/USEPA/EJAM-open" class="external-link uri" target="_blank" rel="noreferrer noopener" title="github.com/USEPA/EJAM-open">USEPA/EJAM-open</a> and then click
+to the EJAM repository page (or a fork of the repository) at <a href="https://github.com/ejanalysis/EJAM" class="external-link uri" target="_blank" rel="noreferrer noopener" title="github.com/ejanalysis/EJAM">ejanalysis/EJAM</a> and then click
 the green “Code” button, and download and unzip the zip file that
 contains the package.</p></li>
 <li><p>Another way to get the source package is that in RStudio you can
@@ -184,7 +184,7 @@ dependencies=T in <code><a href="https://remotes.r-lib.org/reference/install_git
 <p>To work in the RStudio console, EJAM needs some datasets not stored
 as part of the package. However, they already should be downloaded and
 loaded into memory automatically as soon as you use
-<code><a href="https://usepa.github.io/EJAM-open">require(EJAM)</a></code>.</p>
+<code><a href="https://ejanalysis.github.io/EJAM">require(EJAM)</a></code>.</p>
 <p>On first use, it should automatically download some data files. Each
 time it is attached, it will check for updates and also will build a
 spatial index of Census block points.</p>
@@ -229,7 +229,7 @@ on the fly if it is missing. You can also (re)build it manually:</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.3</p>
+  <p>EJAM Version 2.32.4</p>
 </div>
 
     </footer>

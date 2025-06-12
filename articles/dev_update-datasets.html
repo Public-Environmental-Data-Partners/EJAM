@@ -19,7 +19,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating EJAM Datasets">
 <meta name="description" content="Managing large {arrow} datasets used by EJAM app and package">
 <meta property="og:description" content="Managing large {arrow} datasets used by EJAM app and package">
-<meta property="og:image" content="https://usepa.github.io/EJAM-open/logo.svg">
+<meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.3</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating EJAM Datasets</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USEPA/EJAM-open/blob/HEAD/vignettes/dev_update-datasets.Rmd" class="external-link"><code>vignettes/dev_update-datasets.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/vignettes/dev_update-datasets.Rmd" class="external-link"><code>vignettes/dev_update-datasets.Rmd</code></a></small>
       <div class="d-none name"><code>dev_update-datasets.Rmd</code></div>
     </div>
 
@@ -261,7 +261,7 @@ distinct from the <em>package code</em> repository) must be recorded/
 updated in the EJAM package DESCRIPTION file, so that the package will
 know where to look for the data files if the datasets were moved to a
 new repository, for example. The current (either installed or loaded
-source version) of that repository is <a href="https://usepa.github.io/EJAM-open" class="uri">https://usepa.github.io/EJAM-open</a> (which can be checked
+source version) of that repository is <a href="https://ejanalysis.github.io/EJAM" class="uri">https://ejanalysis.github.io/EJAM</a> (which can be checked
 via
 <code>desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")</code>)</p>
 </div>
@@ -376,7 +376,7 @@ latest arrow files are downloaded when user loads EJAM.</li>
 </ol>
 <!-- --><ul>
 <li>
-<code>devtools::install_github("USEPA/EJAM-open")</code> (or as
+<code>devtools::install_github("ejanalysis/EJAM")</code> (or as
 adjusted depending on the actual repository owner and name)</li>
 </ul>
 <!-- --><ol start="2" style="list-style-type: decimal">
@@ -384,7 +384,7 @@ adjusted depending on the actual repository owner and name)</li>
 </ol>
 <!-- --><ul>
 <li>
-<code><a href="https://usepa.github.io/EJAM-open">library(EJAM)</a></code>. This will trigger the new
+<code><a href="https://ejanalysis.github.io/EJAM">library(EJAM)</a></code>. This will trigger the new
 <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code> function.</li>
 </ul>
 <!-- --><ol start="3" style="list-style-type: decimal">
@@ -403,7 +403,7 @@ because the data are now stored in the <code>data</code> directory.</li>
 repository, as explained above.</p></li>
 <li><p>Those files were then being copied into a clone of the ejamdata
 repo before being pushed to the actual ejamdata repo on github (at
-USEPA/ejamdata)</p></li>
+ejanalysis/ejamdata)</p></li>
 <li><p>This triggers ejamdata’s <code>push_to_ejam.yaml</code> workflow
 that increments the latest release tag reflecting the new version and
 creates a new release</p></li>
@@ -442,7 +442,7 @@ tibble/dataframe.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.3</p>
+  <p>EJAM Version 2.32.4</p>
 </div>
 
     </footer>

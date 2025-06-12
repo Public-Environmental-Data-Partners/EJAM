@@ -19,7 +19,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating the Package as a New Release">
 <meta name="description" content="Steps for incrementing package version and GitHub releases">
 <meta property="og:description" content="Steps for incrementing package version and GitHub releases">
-<meta property="og:image" content="https://usepa.github.io/EJAM-open/logo.svg">
+<meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.3</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating the Package as a New Release</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USEPA/EJAM-open/blob/HEAD/vignettes/dev_update-package.Rmd" class="external-link"><code>vignettes/dev_update-package.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/vignettes/dev_update-package.Rmd" class="external-link"><code>vignettes/dev_update-package.Rmd</code></a></small>
       <div class="d-none name"><code>dev_update-package.Rmd</code></div>
     </div>
 
@@ -140,16 +140,16 @@ x.y.z (same numbering as was put in DESCRIPTION)</p></li>
 </h2>
 <p>If the EJAM repo being used is internal or private, not public, then
 to make the EJAM package installable, the updates need to be pushed to a
-public repo such as the EJAM-open repo. These are the steps:</p>
+public repo such as the EJAM repo. These are the steps:</p>
 <ol style="list-style-type: decimal">
-<li>If not already done, add USEPA/EJAM-open (or the appropriate public
+<li>If not already done, add ejanalysis/EJAM (or the appropriate public
 repo) as a remote for the internal repo main branch:</li>
 </ol>
-<p><code>git remote add EJAM-open git@github.com:USEPA/EJAM-open.git</code></p>
+<p><code>git remote add EJAM git@github.com:ejanalysis/EJAM.git</code></p>
 <ol start="2" style="list-style-type: decimal">
 <li>Push to the main branch of that repo:</li>
 </ol>
-<p><code>git push EJAM-open main:main</code></p>
+<p><code>git push EJAM main:main</code></p>
 <ol start="3" style="list-style-type: decimal">
 <li>
 <p>If you want to squash commits</p>
@@ -162,15 +162,15 @@ internal EJAM:</li>
 <p><code>git checkout -b squash-temp</code>
 <code>git reset --soft #SHA OF PREVIOUS MAIN COMMIT</code>
 <code>git commit -m "Your squashed commit message"</code>
-<code>git push --force EJAM-open squash-temp:main</code></p>
-<pre><code>b.  If you just want EJAM-open to end with a single squash commit, starting in main in internal EJAM:</code></pre>
+<code>git push --force EJAM squash-temp:main</code></p>
+<pre><code>b.  If you just want EJAM to end with a single squash commit, starting in main in internal EJAM:</code></pre>
 <p><code>git checkout –orphan squash-temp</code> <code>git add .</code>
 <code>git commit -m "Publishing EJAM"</code>
-<code>git push --force EJAM-open squash-temp:main</code>
+<code>git push --force EJAM squash-temp:main</code>
 <code>git -M main</code></p>
 <ol start="4" style="list-style-type: decimal">
-<li>Update EJAM-open release using a similar process as updating an
-internal EJAM release.</li>
+<li>Update EJAM release using a similar process as updating an internal
+EJAM release.</li>
 </ol>
 </div>
 <div class="section level2">
@@ -179,7 +179,7 @@ internal EJAM release.</li>
 <p>To ensure that, after changes are made, EJAM can still be installed
 by users with various operating systems and versions of R, a workflow
 file, <code>.github/workflows/installation_test.yaml</code>, is
-triggered by any pushes to EJAM-open’s main branch. This file tests
+triggered by any pushes to EJAM’s main branch. This file tests
 installation with the following matrix of options:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>OS</strong>: Latest Ubuntu, Windows, macOS</p></li>
@@ -210,7 +210,7 @@ reasons:</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.3</p>
+  <p>EJAM Version 2.32.4</p>
 </div>
 
     </footer>
