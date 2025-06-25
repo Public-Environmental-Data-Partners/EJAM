@@ -20,26 +20,26 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
-    <li><a class="dropdown-item" href="../articles/0_whatis.html">What is EJAM?</a></li>
-    <li><a class="dropdown-item" href="../articles/0_webapp.html">Accessing the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
+    <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
-    <li><a class="dropdown-item" href="../articles/1_installing.html">Installing the EJAM R package</a></li>
-    <li><a class="dropdown-item" href="../articles/2_quickstart.html">Quick Start Guide</a></li>
-    <li><a class="dropdown-item" href="../articles/3_analyzing.html">Using EJAM for Analysis in R</a></li>
+    <li><a class="dropdown-item" href="../articles/installing.html">Installing the EJAM R package</a></li>
+    <li><a class="dropdown-item" href="../articles/basics.html">Basics - Quick Start Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/analyzing.html">Using EJAM for Analysis in R</a></li>
     <li><a class="dropdown-item" href="../articles/testdata.html">Examples of Input/Output Files &amp; Data</a></li>
     <li><a class="dropdown-item" href="../articles/distances.html">Comparing Distances (Choosing a Radius)</a></li>
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
-    <li><a class="dropdown-item" href="../articles/dev_deploy-app.html">Deploying the Web App</a></li>
-    <li><a class="dropdown-item" href="../articles/dev_run-shinytests.html">Testing EJAM App with shinytest2</a></li>
-    <li><a class="dropdown-item" href="../articles/dev_run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev_update-datasets.html">Updating EJAM Datasets</a></li>
-    <li><a class="dropdown-item" href="../articles/dev_update_documentation.html">Updating Documentation</a></li>
-    <li><a class="dropdown-item" href="../articles/dev_update-package.html">Updating the Package as a New Release</a></li>
-    <li><a class="dropdown-item" href="../articles/dev_future_plans.html">Future Plans and Ideas for EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -58,16 +58,17 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.5" id="ejam-v2325-july-2025">EJAM v2.32.5 (July 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2325-july-2025"></a></h2>
-<ul><li>Summary Indexes (aka EJ Indexes) were found to have some incorrect numbers, so this release has replaced <code><a href="../reference/bgej.html">?bgej</a></code> dataset with correct numbers, drawn from the internet archive version at <a href="https://web.archive.org/web/20250203215307/https://gaftp.epa.gov/ejscreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip" class="external-link uri">https://web.archive.org/web/20250203215307/https://gaftp.epa.gov/ejscreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip</a> that was a copy of the datasets EPA had posted August 2024 at <a href="https://gaftp.epa.gov/EJScreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip" class="external-link uri">https://gaftp.epa.gov/EJScreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip</a>
-</li>
+<ul><li>Summary Indexes (aka EJ Indexes) were found to have some incorrect numbers, so this release has replaced <code><a href="../reference/bgej.html">?bgej</a></code> dataset with correct numbers, drawn from the internet archive version at <a href="https://web.archive.org/web/20250203215307/https://gaftp.epa.gov/ejscreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip" class="external-link uri">https://web.archive.org/web/20250203215307/https://gaftp.epa.gov/ejscreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip</a> that was a copy of the datasets EPA had posted August 2024 at <a href="https://gaftp.epa.gov/EJScreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip" class="external-link uri">https://gaftp.epa.gov/EJScreen/2024/2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv.zip</a> But there might still be some problem with the ozone and drinking EJ Indexes – unlike the other EJ Indexes, they appear to be hard to replicate via formula, and the same may be true for the State EJ Indexes (for all Envt indicators). This is an issue noted on the github repo and is being looked into.</li>
 <li>testoutput_xyz .xlsx and .html files and dataset R objects updated to reflect the new <code><a href="../reference/bgej.html">?bgej</a></code> dataset</li>
+<li>color-coded maps of counties are improved in <code><a href="../reference/mapfastej_counties.html">mapfastej_counties()</a></code>
+</li>
 <li>
-<a href="../articles/1_installing.html">installation instructions in vignette/article</a> were edited</li>
-<li>interactive barplots of indicators can show median not just mean via <code><a href="../reference/ejam2barplot_indicators.html">ejam2barplot_indicators()</a></code>
+<a href="../articles/installing.html">installation instructions in vignette/article</a> were edited</li>
+<li>interactive barplots of indicators will be able to show median not just mean via <code><a href="../reference/ejam2barplot_indicators.html">ejam2barplot_indicators()</a></code>
 </li>
 <li>disabled Start Analysis until Done is clicked, when using FIPS dropdown menu of counties/cities/etc.</li>
 <li>
-<code><a href="../reference/test_ejam.html">test_ejam()</a></code> is what used to be called <code>test_interactively()</code> – it was renamed and moved to the R folder as an unexported internal function loaded as part of the package</li>
+<code><a href="../reference/test_ejam.html">test_ejam()</a></code> is what used to be called <code>test_interactively()</code> – it was improved and renamed and moved to the R folder as an unexported internal function loaded as part of the package</li>
 <li>
 <code>test_coverage_check()</code> utility was improved, just as a way to for package maintainers/contributors to look at which functions might need unit tests written</li>
 <li>
@@ -110,7 +111,7 @@
 <ul><li>enabled testing of web app functionality from the test_interactively() utility (which has more recently been renamed test_ejam() and put in R folder as an unexported internal function loaded as part of the package) or via test_local(), etc., not just from a github action. (See /tests/setup.R which now has a copy of what is also in app-functionality.R)</li>
 <li>drafted revisions to ui and server to try to allow for more <code><a href="../reference/run_app.html">run_app()</a></code> params or advanced tab or global_defaults_xyz to alter default method of upload vs dropdown, e.g., output ss_choose_method_ui, default_ss_choose_method, default_upload_dropdown. This included revising server and ui to use just EJAM:::global_or_param(“xyz”) not golem::get_golem_options(“xyz”), so that non-shiny global defaults can work (e.g., logo path as <code>global_defaults_package$.community_report_logo_path</code>) even outside shiny when global_defaults_package has happened via onattach but global_defaults_shiny etc. has not happened.</li>
 <li>changed .onAttach() to do source(global_defaults_package) with local = FALSE not TRUE, but this might need to be revisited – note both local = F and local = T are used in .onAttach() versus get_global_defaults_or_user_options()</li>
-<li>in server, <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> now figures out value of radius_or_buffer_description, ejam2excel() gets new parameters table_xls_from_ejam() uses improved buffer_desc_from_sitetype() and now uses <code><a href="../reference/ejam2report.html">ejam2report()</a></code> to add a report in one tab.</li>
+<li>in server, <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> now figures out value of radius_or_buffer_description, <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> gets new parameters table_xls_from_ejam() uses improved buffer_desc_from_sitetype() and now uses <code><a href="../reference/ejam2report.html">ejam2report()</a></code> to add a report in one tab.</li>
 <li>reorganized server code by moving v1_demog_table() and v1_envt_table to long report section of server file</li>
 <li>cleaned up server code (eg, remove obsolete input$disconnect, remove obsolete community_download() and report_community_download(), and remove repetitive <code>ejam2repor()</code>, remove old EJScreen Batch Tool tab, used session = session as param in server calls to updateXYZINPUT, etc.)</li>
 <li>allow shiny.testmode to be TRUE even if not set in options</li>
@@ -144,7 +145,7 @@
 <div class="section level3">
 <h3 id="rstudio-user-related-or-internal-improvements-2-32-3">RStudio user-related or internal improvements<a class="anchor" aria-label="anchor" href="#rstudio-user-related-or-internal-improvements-2-32-3"></a></h3>
 <ul><li>Clarified/explained 2025 status of API and urls in CONTRIBUTING and README, etc.</li>
-<li>Extensive additions of and improvements in articles/vignettes, including documentation of how to maintain repo, package, and datasets. Articles/vignettes avoid hardcoded repo urls, and use relative links within pkgdown site… unexported helper function <code>EJAM:::repo_from_desc()</code> added, avoids hardcoded repo url; download_latest_arrow_data avoids hardcoded repo url; links to testdata files on webapp UI avoid hardcoded repo url; simpler <a href="../articles/0_whatis.html">What is EJAM</a> doc.</li>
+<li>Extensive additions of and improvements in articles/vignettes, including documentation of how to maintain repo, package, and datasets. Articles/vignettes avoid hardcoded repo urls, and use relative links within pkgdown site… unexported helper function <code>EJAM:::repo_from_desc()</code> added, avoids hardcoded repo url; download_latest_arrow_data avoids hardcoded repo url; links to testdata files on webapp UI avoid hardcoded repo url; simpler <a href="../articles/whatis.html">What is EJAM</a> doc.</li>
 <li>
 <code><a href="../reference/ejamit.html">ejamit()</a></code> in interactive mode (RStudio) now lets you select any type of file to upload if no sites specified by parameters</li>
 <li>Many options or starting values or settings for the shiny app (and in general) can now be set as parameters passed to the <code><a href="../reference/run_app.html">run_app()</a></code> function, which overrides the defaults. extensive changes to global defaults vs user parameters allowed: replaced global.R; files renamed, put in 1 folder, etc. System for using user parameters passed to <code><a href="../reference/run_app.html">run_app()</a></code>, global defaults otherwise, many can be changed in advanced tab; some may be bookmarkable. The default values are now set for the shiny app and in general in files called <code>global_defaults_package.R</code>, <code>global_defaults_shiny_public.R</code>, and <code>global_defaults_shiny.R</code> (rather than in the old files global.R or manage-public-private.R).</li>
@@ -231,7 +232,7 @@
 <h2 class="pkg-version" data-toc-text="2.32.0" id="ejam-v2320">EJAM v2.32.0<a class="anchor" aria-label="anchor" href="#ejam-v2320"></a></h2>
 <ul><li>The EJAM R package is available as an open source resource you can
 <ul><li>clone from the <a href="https://github.com/USEPA/EJAM-open" class="external-link">EJAM-open github repository</a> or</li>
-<li>install using the <a href="../articles/1_installing.html">installation instructions</a>
+<li>install using the <a href="../articles/installing.html">installation instructions</a>
 </li>
 </ul></li>
 </ul></div>
