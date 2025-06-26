@@ -78,7 +78,7 @@ run tests of local source pkg EJAM, by group of functions, quietly, interactivel
 <span>  y_runall <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_runsome <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  run_these <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  skip_these <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ejscreenapi"</span><span class="op">)</span>,</span>
+<span>  skip_these <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ejscreenapi"</span>, <span class="st">"app"</span><span class="op">)</span>,</span>
 <span>  y_stopif <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  y_seeresults <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_save <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -181,11 +181,14 @@ see source code for list</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
-<span><span class="va">biglist1</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">biglist2</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">F</span>,</span>
+<span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span>ask<span class="op">=</span><span class="cn">F</span>, mydir <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/file-dialogs.html" class="external-link">selectDirectory</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>      y_runsome <span class="op">=</span> <span class="cn">T</span>, run_these <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'test'</span>, <span class="st">'maps'</span><span class="op">)</span>,</span>
 <span>      mydir <span class="op">=</span> <span class="st">"~/../Downloads/unit testing"</span><span class="op">)</span> <span class="co"># for example</span></span>
-<span>      <span class="op">}</span> <span class="co"># }</span></span>
+<span></span>
+<span>  <span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
