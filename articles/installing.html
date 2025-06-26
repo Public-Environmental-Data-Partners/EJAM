@@ -106,10 +106,26 @@ the data in R, or to reuse data or code in other applications.</p>
 <h3 id="try-this-first-if-you-just-want-to-use-the-package-not-clone-edit-source-code">Try this first (if you just want to use the package, not clone &amp;
 edit source code)<a class="anchor" aria-label="anchor" href="#try-this-first-if-you-just-want-to-use-the-package-not-clone-edit-source-code"></a>
 </h3>
+<p>It may be easiest to clone the repo and build/install from source
+(see below).</p>
+<p>Otherwise, trying to install using remotes or devtools packages may
+require setting up a PAT for authentication to work:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#  To check on PATs:</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">gh_token_help</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># or</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/git_sitrep.html" class="external-link">git_sitrep</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># git situation report</span></span>
+<span></span>
+<span><span class="co">#  To make a PAT:</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">create_github_token</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="co">#  To register a PAT, see</span></span>
+<span><span class="fu">credentials</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/credentials/reference/set_github_pat.html" class="external-link">set_github_pat</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># see # https://usethis.r-lib.org/articles/git-credentials.html#git-credential-helpers-and-the-credential-store</span></span>
+<span><span class="co"># Windows more or less takes care of this for you now, in conjunction with github.</span></span></code></pre></div>
 <p>If you just install the package without cloning the repository, you
 can use the EJAM package, but cannot edit the source code, for example.
 To just install it, try this:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout <span class="op">=</span> <span class="fl">300</span><span class="op">)</span> <span class="co"># Just in case the download takes longer than 60 seconds</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span></code></pre></div>
 <p><code>remotes::install_github(repo = 'ejanalysis/EJAM', dependencies = TRUE)</code></p>
@@ -123,7 +139,7 @@ release and use the URL to install the package with
 </h2>
 <p>To use EJAM in the RStudio console, start by loading / attaching the
 package:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://ejanalysis.github.io/EJAM">EJAM</a></span><span class="op">)</span> <span class="co"># or  library(EJAM)</span></span></code></pre></div>
 <p><strong>That should be all you need to do.</strong></p>
 <hr>
@@ -214,7 +230,7 @@ seconds. EJAM does this automatically when attached via
 creating an object called <a href="../reference/localtree.html">localtree</a> based on the <a href="../reference/quaddata.html">quaddata</a> object obtained as
 mentioned above. Some functions check for it and try to build the index
 on the fly if it is missing. You can also (re)build it manually:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/indexblocks.html">indexblocks</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
