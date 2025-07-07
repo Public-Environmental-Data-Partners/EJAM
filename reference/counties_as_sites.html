@@ -95,38 +95,38 @@ See more below under "Value"</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
 <span> <span class="co"># compare counties within a state:</span></span>
 <span> <span class="va">fipsRI</span> <span class="op">=</span> <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"RI"</span><span class="op">)</span></span>
 <span> <span class="va">x</span> <span class="op">=</span> <span class="fu">counties_as_sites</span><span class="op">(</span><span class="va">fipsRI</span><span class="op">)</span></span>
 <span> <span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="doaggregate.html">doaggregate</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="co"># similar to ejamit()</span></span>
 <span> <span class="fu"><a href="ejam2barplot_sites.html">ejam2barplot_sites</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"pop"</span>, names.arg <span class="op">=</span> <span class="va">fipsRI</span><span class="op">)</span></span>
-<span> </span>
+<span></span>
 <span> <span class="co"># compare two specific counties:</span></span>
 <span> <span class="fu">counties_as_sites</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'01001'</span>,<span class="st">'72153'</span><span class="op">)</span><span class="op">)</span></span>
-<span> </span>
+<span></span>
 <span> <span class="co"># Largest US Counties by ACS Population Totals:</span></span>
 <span> <span class="va">topcounties</span> <span class="op">=</span> <span class="va">blockgroupstats</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span>ST <span class="op">=</span> <span class="va">ST</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, countypop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>FIPS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">countypop</span><span class="op">)</span>,<span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="fu">.</span><span class="op">(</span></span>
 <span>    CountyPopulation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="va">countypop</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>, <span class="va">FIPS</span>, <span class="va">ST</span><span class="op">)</span><span class="op">]</span></span>
-<span> </span>
+<span></span>
 <span> <span class="va">myfips</span> <span class="op">=</span> <span class="va">topcounties</span><span class="op">$</span><span class="va">FIPS</span></span>
-<span> </span>
+<span></span>
 <span> <span class="co"># simplest map of top counties</span></span>
 <span> <span class="fu"><a href="map_shapes_leaflet.html">map_shapes_leaflet</a></span><span class="op">(</span>shapes <span class="op">=</span> <span class="fu"><a href="shapes_counties_from_countyfips.html">shapes_counties_from_countyfips</a></span><span class="op">(</span><span class="va">myfips</span><span class="op">)</span><span class="op">)</span></span>
-<span> </span>
+<span></span>
 <span> <span class="co"># simplest way to get and map results county by county</span></span>
 <span> <span class="va">out_c1</span> <span class="op">=</span> <span class="fu"><a href="ejamit.html">ejamit</a></span><span class="op">(</span>fips <span class="op">=</span> <span class="va">myfips</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="mapfastej_counties.html">mapfastej_counties</a></span><span class="op">(</span><span class="va">out_c1</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">)</span></span>
-<span>   </span>
+<span></span>
 <span> <span class="co"># another way to get and map results county by county</span></span>
 <span> <span class="va">s2b</span> <span class="op">=</span> <span class="fu">counties_as_sites</span><span class="op">(</span><span class="va">myfips</span><span class="op">)</span></span>
-<span> <span class="va">out_c2</span> <span class="op">=</span> <span class="fu"><a href="doaggregate.html">doaggregate</a></span><span class="op">(</span><span class="va">s2b</span><span class="op">)</span> </span>
+<span> <span class="va">out_c2</span> <span class="op">=</span> <span class="fu"><a href="doaggregate.html">doaggregate</a></span><span class="op">(</span><span class="va">s2b</span><span class="op">)</span></span>
 <span> <span class="co"># but without URLs/links to reports</span></span>
 <span> <span class="va">bysite</span> <span class="op">=</span> <span class="va">out_c2</span><span class="op">$</span><span class="va">results_bysite</span></span>
 <span> <span class="va">bysite</span><span class="op">$</span><span class="va">ejam_uniq_id</span> <span class="op">&lt;-</span> <span class="va">myfips</span></span>
 <span> <span class="fu"><a href="mapfastej_counties.html">mapfastej_counties</a></span><span class="op">(</span><span class="va">bysite</span><span class="op">)</span></span>
-<span>  </span></code></pre></div>
+<span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

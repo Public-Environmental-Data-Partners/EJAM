@@ -70,7 +70,7 @@ run tests of local source pkg EJAM, by group of functions, quietly, interactivel
 <span>  ask <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  noquestions <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  useloadall <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  y_basic <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  y_skipbasic <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_latlon <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_shp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_fips <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -104,20 +104,20 @@ run tests of local source pkg EJAM, by group of functions, quietly, interactivel
 But useloadall=T is essential actually, for unexported functions to be found when they are tested!</p></dd>
 
 
-<dt id="arg-y-basic">y_basic<a class="anchor" aria-label="anchor" href="#arg-y-basic"></a></dt>
-<dd><p>logical, whether to only run some basic <code><a href="ejamit.html">ejamit()</a></code> functions, not do unit tests</p></dd>
+<dt id="arg-y-skipbasic">y_skipbasic<a class="anchor" aria-label="anchor" href="#arg-y-skipbasic"></a></dt>
+<dd><p>logical, if FALSE, runs some basic <code><a href="ejamit.html">ejamit()</a></code> functions, but NOT any unit tests.</p></dd>
 
 
 <dt id="arg-y-latlon">y_latlon<a class="anchor" aria-label="anchor" href="#arg-y-latlon"></a></dt>
-<dd><p>logical, if y_basic=T, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using points</p></dd>
+<dd><p>logical, if y_skipbasic=F, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using points</p></dd>
 
 
 <dt id="arg-y-shp">y_shp<a class="anchor" aria-label="anchor" href="#arg-y-shp"></a></dt>
-<dd><p>logical, if y_basic=T, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using shapefile</p></dd>
+<dd><p>logical, if y_skipbasic=F, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using shapefile</p></dd>
 
 
 <dt id="arg-y-fips">y_fips<a class="anchor" aria-label="anchor" href="#arg-y-fips"></a></dt>
-<dd><p>logical, if y_basic=T, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using FIPS</p></dd>
+<dd><p>logical, if y_skipbasic=F, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using FIPS</p></dd>
 
 
 <dt id="arg-y-coverage-check">y_coverage_check<a class="anchor" aria-label="anchor" href="#arg-y-coverage-check"></a></dt>

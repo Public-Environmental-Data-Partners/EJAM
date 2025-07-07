@@ -63,7 +63,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getblocksnearby_from_fips3</span><span class="op">(</span><span class="va">fips</span>, inshiny <span class="op">=</span> <span class="cn">FALSE</span>, need_blockwt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getblocksnearby_from_fips3</span><span class="op">(</span><span class="va">fips</span>, in_shiny <span class="op">=</span> <span class="cn">FALSE</span>, need_blockwt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -78,7 +78,7 @@ or analyzing and comparing blockgroups in a county,
 or comparing whole counties to each other, within a State.</p></dd>
 
 
-<dt id="arg-inshiny">inshiny<a class="anchor" aria-label="anchor" href="#arg-inshiny"></a></dt>
+<dt id="arg-in-shiny">in_shiny<a class="anchor" aria-label="anchor" href="#arg-in-shiny"></a></dt>
 <dd><p>used by shiny app server code to handle errors via validate() instead of stop()</p></dd>
 
 
@@ -99,10 +99,10 @@ or comparing whole counties to each other, within a State.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="getblocksnearby_from_fips.html">getblocksnearby_from_fips</a></span><span class="op">(</span><span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">counties_ej</span> <span class="op">&lt;-</span> <span class="fu"><a href="doaggregate.html">doaggregate</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span>  <span class="co">#cannot use mapfast(counties_ej$results_bysite) since no lat lon. </span></span>
+<span>  <span class="co">#cannot use mapfast(counties_ej$results_bysite) since no lat lon.</span></span>
 <span>  <span class="co"># mapfastej_counties() should work...</span></span>
 <span>  <span class="va">y</span> <span class="op">=</span>  <span class="fu"><a href="ejamit.html">ejamit</a></span><span class="op">(</span>fips<span class="op">=</span><span class="fu"><a href="fips_counties_from_statename.html">fips_counties_from_statename</a></span><span class="op">(</span><span class="st">"Delaware"</span><span class="op">)</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="co"># x=getblocksnearby_from_fips("482011000011") # one blockgroup only</span></span>
 <span>  <span class="co"># y=doaggregate(x)</span></span></code></pre></div>
     </div>

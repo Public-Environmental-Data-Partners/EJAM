@@ -104,7 +104,8 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <span>  testing <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  showdrinkingwater <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  showpctowned <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  download_fips_bounds_to_calc_areas <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  download_city_fips_bounds <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  download_noncity_fips_bounds <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -278,8 +279,12 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 <dd><p>T/f whether to include percent owner-occupied units indicator values or display as NA. Defaults to TRUE.</p></dd>
 
 
-<dt id="arg-download-fips-bounds-to-calc-areas">download_fips_bounds_to_calc_areas<a class="anchor" aria-label="anchor" href="#arg-download-fips-bounds-to-calc-areas"></a></dt>
-<dd><p>if set to TRUE, it is slower because it downloads bounds of each unit to calculate area in square miles</p></dd>
+<dt id="arg-download-city-fips-bounds">download_city_fips_bounds<a class="anchor" aria-label="anchor" href="#arg-download-city-fips-bounds"></a></dt>
+<dd><p>passed to <code><a href="area_sqmi.html">area_sqmi()</a></code></p></dd>
+
+
+<dt id="arg-download-noncity-fips-bounds">download_noncity_fips_bounds<a class="anchor" aria-label="anchor" href="#arg-download-noncity-fips-bounds"></a></dt>
+<dd><p>passed to <code><a href="area_sqmi.html">area_sqmi()</a></code></p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
