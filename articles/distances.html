@@ -241,13 +241,9 @@ Example of ejam2barplot_sites()
 <p>See just the table</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit_compare_distances.html">ejamit_compare_distances</a></span><span class="op">(</span><span class="va">pts</span>, radii <span class="op">=</span> <span class="va">radii</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Analyzing 3 points, radius of 1 miles around each.</span></span>
+<pre><code><span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
 <span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; Analyzing 3 points, radius of 2 miles around each.</span></span>
 <span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; Analyzing 3 points, radius of 3 miles around each.</span></span>
-<span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; Analyzing 3 points, radius of 10 miles around each.</span></span>
 <span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                                         1   2   3  10</span></span>
@@ -303,8 +299,7 @@ vary as <em>a continuous function of distance</em><a class="anchor" aria-label="
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_by_pctd.html">plot_distance_by_pctd</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">pts</span>, radius <span class="op">=</span> <span class="fl">10</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
 <span>  score_colname <span class="op">=</span> <span class="st">"pctnhba"</span>,</span>
-<span>  sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Analyzing 1 points, radius of 10 miles around each.</span></span></code></pre></div>
+<span>  sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="distances_files/figure-html/plot_distance_by_pctd-1.png" alt="Example of using plot_distance_by_pctd() showing distance on x axis, indicator value within x miles on y axis, for %Black nonhispanic alone as function of distance at site 1, with striking decrease in percent from almost 80% around 0 miles away down to about 20% at 3 or 6 miles away, and showing 20% is the approx US 80th percentile (and state values overall shown as horizontal lines lower than that in this case)" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
@@ -319,8 +314,7 @@ away from this specific point</p>
 <code class="sourceCode R"><span><span class="va">pts</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">45.75464</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">94.36791</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_by_pctd.html">plot_distance_by_pctd</a></span><span class="op">(</span><span class="va">pts</span>,</span>
-<span>                      sitenumber <span class="op">=</span> <span class="fl">1</span>, score_colname <span class="op">=</span> <span class="st">"pcthisp"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Analyzing 1 points, radius of 30 miles around each.</span></span></code></pre></div>
+<span>                      sitenumber <span class="op">=</span> <span class="fl">1</span>, score_colname <span class="op">=</span> <span class="st">"pcthisp"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="distances_files/figure-html/plot_distance_by_pctd2-1.png" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
@@ -742,9 +736,11 @@ blocks in that location are only about 0.28 square miles each, the
 circle might contain or partly contain about 100 blocks.</p>
 <p>The dataset used by EJAM called blockwts has a column called
 block_radius_miles that is what the radius would be if the block were
-circular, and it was created based on area = pi * block_radius_miles^2
-or block_radius_miles = sqrt(area / pi) where area is in square
-miles.</p>
+circular, and it is based on area = pi * block_radius_miles^2 or
+block_radius_miles = sqrt(area / pi) where area is in square miles.
+However through EJAM v2.32.5, that field blockwts$block_radius_miles was
+always zero and not used at all. See notes in
+EJAM/data-raw/datacreate_blockwts.R if this is needed.</p>
 </div>
 <div class="section level4">
 <h4 id="details-on-the-blocks-found-near-one-site">Details on the blocks found near one site<a class="anchor" aria-label="anchor" href="#details-on-the-blocks-found-near-one-site"></a>
@@ -902,7 +898,6 @@ nearby)</li>
 <code class="sourceCode R"><span><span class="va">radius</span> <span class="op">&lt;-</span> <span class="fl">3</span></span>
 <span><span class="va">sitepoints</span> <span class="op">&lt;-</span> <span class="va">testpoints_100</span></span>
 <span><span class="va">sites2blocks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">sitepoints</span>, <span class="va">radius</span>, quadtree <span class="op">=</span> <span class="va">localtree</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Analyzing 100 points, radius of 3 miles around each.</span></span>
 <span><span class="co"># testoutput_getblocksnearby_10pts_1miles is also available as an example</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sites2blocks</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "ejam_uniq_id"        "blockid"             "distance"           </span></span>
@@ -994,7 +989,6 @@ nearby<a class="anchor" aria-label="anchor" href="#map-all-sites-with-popup-at-e
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span>, </span>
 <span>              radius <span class="op">=</span> <span class="va">radius</span>, include_ejindexes <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Finding blocks nearby.</span></span>
-<span><span class="co">#&gt; Analyzing 100 points, radius of 3 miles around each.</span></span>
 <span><span class="co">#&gt; Aggregating at each site and overall.</span></span>
 <span><span class="co">#&gt; doaggregate is predicted to take 24 seconds</span></span>
 <span><span class="co">#&gt; Warning in batch.summarize(sitestats = out$results_bysite, popstats =</span></span>

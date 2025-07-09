@@ -136,17 +136,36 @@ them and analyze or map them in EJAM as shown below.</strong></p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="another-source-of-zip-code-polygons-esri-service">Another source of zip code polygons (esri service)<a class="anchor" aria-label="anchor" href="#another-source-of-zip-code-polygons-esri-service"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Download spatial bounds for all zipcodes in Delaware</span></span>
+<span><span class="va">ST1</span> <span class="op">&lt;-</span> <span class="st">"DE"</span></span>
+<span><span class="va">url1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/3/query?"</span>,</span>
+<span>  <span class="st">"where=STATE%3D%27"</span>, <span class="va">ST1</span>, <span class="st">"%27"</span>,</span>
+<span>  <span class="st">"&amp;geometryType=esriGeometryEnvelope&amp;inSR=&amp;spatialRel=esriSpatialRelIntersects&amp;resultType=none&amp;distance=0.0&amp;units=esriSRUnit_Meter&amp;relationParam=&amp;returnGeodetic=false"</span>,</span>
+<span>  <span class="st">"&amp;outFields=*"</span>,</span>
+<span>  <span class="st">"&amp;returnGeometry=true"</span>,</span>
+<span>  <span class="st">"&amp;f=json"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://httr2.r-lib.org" class="external-link">httr2</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/mapview" class="external-link">mapview</a></span><span class="op">)</span></span>
+<span><span class="va">response1</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="va">url1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">text1</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_string</a></span><span class="op">(</span><span class="va">response1</span><span class="op">)</span></span>
+<span><span class="va">shp1</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">text1</span><span class="op">)</span></span>
+<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="va">shp1</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="analyzing-zip-codes-in-ejam">analyzing zip codes in EJAM<a class="anchor" aria-label="anchor" href="#analyzing-zip-codes-in-ejam"></a>
 </h3>
 <p>The EJScreen API does not handle zip codes, but you can analyze them
 in EJAM like this:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">z</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summary-report-on-zipcodes">summary report on zipcodes<a class="anchor" aria-label="anchor" href="#summary-report-on-zipcodes"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">out</span>, </span>
 <span>            analysis_title <span class="op">=</span> <span class="st">"Zip codes"</span>,</span>
 <span>            submitted_upload_method <span class="op">=</span> <span class="st">'SHP'</span>, </span>
@@ -155,7 +174,7 @@ in EJAM like this:</p>
 <div class="section level3">
 <h3 id="compare-sites">compare sites<a class="anchor" aria-label="anchor" href="#compare-sites"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># put zip code in the x axis labels!</span></span>
 <span><span class="fu"><a href="../reference/ejam2barplot_sites.html">ejam2barplot_sites</a></span><span class="op">(</span><span class="va">out</span>, names.arg <span class="op">=</span> <span class="va">z</span><span class="op">$</span><span class="va">GEOID20</span>, sortby <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co"># zcta2$GEOID20</span></span>
 <span></span>
@@ -165,7 +184,7 @@ in EJAM like this:</p>
 <div class="section level3">
 <h3 id="map-of-detailed-results">map of detailed results<a class="anchor" aria-label="anchor" href="#map-of-detailed-results"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">out_plus_shape</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span>, <span class="va">z</span><span class="op">)</span></span>
