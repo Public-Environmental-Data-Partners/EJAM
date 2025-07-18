@@ -90,14 +90,14 @@
 <span> <span class="co"># cannot quickly id ST if a site spans 2+ states</span></span>
 <span> <span class="co"># not this is an unexported function:</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="state_from_s2b_bysite.html">state_from_s2b_bysite</a></span><span class="op">(</span><span class="va">testoutput_getblocksnearby_100pts_1miles</span><span class="op">)</span><span class="op">)</span></span>
-<span> </span>
+<span></span>
 <span> <span class="co"># using the closest block can id the wrong state:</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu">state_from_nearest_block_bysite</span><span class="op">(</span><span class="va">testoutput_getblocksnearby_100pts_1miles</span><span class="op">)</span><span class="op">)</span></span>
-<span> </span>
+<span></span>
 <span> <span class="co"># getting the true state is slow if some sites span 2+ states:</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span></span>
 <span>   <span class="fu">state_per_site_for_doaggregate</span><span class="op">(</span></span>
-<span>     <span class="va">testoutput_getblocksnearby_100pts_1miles</span>, </span>
+<span>     <span class="va">testoutput_getblocksnearby_100pts_1miles</span>,</span>
 <span>     <span class="va">testpoints_100</span></span>
 <span>   <span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># }</span></span>

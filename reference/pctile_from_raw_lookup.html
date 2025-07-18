@@ -122,8 +122,11 @@ For example, it could be "NY" for New York State, "USA" for national percentiles
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This could be recoded to be more efficient - could use data.table.</p>
-<p>The data.frame lookup table must have a field called "PCTILE" that has quantiles/percentiles
+    <p>This function can handle 2 kinds of inputs right now:</p><ul><li><p>a vector of scores and vector of corresponding indicator names, in only 1 zone (e.g. 1 State)</p></li>
+<li><p>a vector of scores and vector of corresponding zones (States), for only 1 indicator (e.g., pctlowinc)</p></li>
+</ul><p>This could be recoded to be more efficient - could use data.table.</p>
+<p>s
+The data.frame lookup table must have a field called "PCTILE" that has quantiles/percentiles
 and other column(s) with values that fall at those percentiles.
 <a href="usastats.html">usastats</a> and <a href="statestats.html">statestats</a> are such lookup tables.
 This function uses a lookup table and
@@ -163,7 +166,7 @@ the minimum value, in which case it reports 0 as percentile, not that large perc
 <span>          <span class="fl">3</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>value <span class="op">=</span> <span class="va">eg</span>, </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>value <span class="op">=</span> <span class="va">eg</span>,</span>
 <span>           pctile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">testoutput_ejamit_10pts_1miles</span><span class="op">$</span><span class="va">results_overall</span><span class="op">[</span> , <span class="va">..names_d_pctile</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>value <span class="op">=</span> <span class="va">eg</span>, pctile <span class="op">=</span> <span class="fu">lookup_pctile</span><span class="op">(</span><span class="va">eg</span>, <span class="va">names_d</span><span class="op">)</span><span class="op">)</span></span>

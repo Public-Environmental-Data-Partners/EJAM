@@ -219,7 +219,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_unzip.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frsprogramcodes.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_functions.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/functions_in_pkg.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/functions_that_use.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_ej_header.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_ej_supp_header.html</loc></url>
@@ -422,6 +422,13 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/out_bydistance2results_bysite_bydistance.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/pctile_from_raw_lookup.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/pctiles_lookup_create.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_data.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_dependencies.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_dupeRfiles.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_dupenames.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_functions_all_equal.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_functions_and_data.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_functions_that_use.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_sitegroups.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_sites.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_boxplot_pctiles.html</loc></url>

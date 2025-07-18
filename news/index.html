@@ -70,39 +70,71 @@
 </ul></div>
 <div class="section level3">
 <h3 id="rstudio-users-only-2-32-5">RStudio users only<a class="anchor" aria-label="anchor" href="#rstudio-users-only-2-32-5"></a></h3>
-<ul><li><p><a href="../articles/installing.html">Installation instructions in vignette/article</a> were edited.</p></li>
-<li><p>Articles (aka vignettes) were renamed (titles and file names).</p></li>
-<li><p>README mentions <a href="https://www.ejanalysis.com" class="external-link uri">https://www.ejanalysis.com</a> now.</p></li>
+<div class="section level4">
+<h4 id="documentation-updates-2-32-5">Documentation updates<a class="anchor" aria-label="anchor" href="#documentation-updates-2-32-5"></a></h4>
+<ul><li>
+<a href="../articles/installing.html">Installation instructions in vignette/article</a> were redone.</li>
+<li>Articles (aka vignettes) were renamed (titles and file names).</li>
+<li>README mentions <a href="https://www.ejanalysis.com" class="external-link uri">https://www.ejanalysis.com</a> now. <code>blockgroupstats</code> documentation was improved.</li>
 <li>
-<p><code><a href="../reference/ejamit.html">ejamit()</a></code> and <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> (and related helper functions) have more consistent outputs:</p>
-<ul><li>Sorting: The outputs now consistently preserve sort order of the input (points, fips, or polygons). This had not been the case for shapes_from_fips() functions, and ejamit()<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi><mi>o</mi><mi>r</mi><mi>d</mi><mi>o</mi><mi>a</mi><mi>g</mi><mi>g</mi><mi>r</mi><mi>e</mi><mi>g</mi><mi>a</mi><mi>t</mi><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">results_bysite or doaggregate()</annotation></semantics></math>results_bysite were preserving sort order only for the latlon case but not necessarily the fips or shapes cases.</li>
-<li>Invalid sites: The outputs of <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> (and related helper functions) will no longer omit output rows for invalid fips and when boundaries could not be obtained for valid fips – The number of rows in a shapefile output will be the same as then length of the input fips vector.</li>
-<li>Mix of fips types: See parameter allow_multiple_fips_types in <code>shapes_from_fips</code>. <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> now accepts a mix of city and noncity fips (state, county, tract, blockgroup), so you can get a shapefile where some polygons are cities and others are counties, etc. Previously that was not possible and caused an error.</li>
+<code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> documentation now has notes on the key ACS tables most relevant to EJSCREEN.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="functions-added-or-improved-2-32-5">Functions added or improved<a class="anchor" aria-label="anchor" href="#functions-added-or-improved-2-32-5"></a></h4>
+<ul><li>Mix of fips types allowed:
+<ul><li>
+<code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> now accepts a mix of city and noncity fips (state, county, tract, blockgroup), so you can get a shapefile where some polygons are cities and others are counties, etc. Previously that was not possible and caused an error. See parameter allow_multiple_fips_types in <code>shapes_from_fips</code>.</li>
+<li>
+<code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code> now accepts a mix of city and noncity fips (state, county, tract, blockgroup), so you can get a shapefile where some polygons are cities and others are counties, etc. Previously that was not possible and caused an error.</li>
 </ul></li>
 <li>
-<p><code><a href="../reference/getblocksnearby.html">getblocksnearby()</a></code> and related functions (<code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code>, <code><a href="../reference/get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>, etc.) also have more consistent outputs:</p>
+<code><a href="../reference/fips2name.html">fips2name()</a></code> now also provides text name for a tract</li>
+<li>
+<code><a href="../reference/mapfast.html">mapfast()</a></code> for a single point now zooms out enough to see the whole radius (e.g., <code>mapfast(testpoints_10[1,], radius = 10)</code>)</li>
+<li>
+<code><a href="../reference/mapfastej_counties.html">mapfastej_counties()</a></code> has improved color-coded maps of counties.</li>
+<li>
+<code><a href="../reference/convert_units.html">convert_units()</a></code> now can recognize more abbreviations like “mi^2” via updated <code><a href="../reference/fixnames_aliases.html">fixnames_aliases()</a></code>, and got some bug fixes.</li>
+<li>
+<code><a href="../reference/fips_bg_from_latlon.html">fips_bg_from_latlon()</a></code> drafted as unexported function that identifies which blockgroup each point is inside</li>
+</ul></div>
+<div class="section level4">
+<h4 id="functions-fixed-or-modified-2-32-5">Functions fixed or modified<a class="anchor" aria-label="anchor" href="#functions-fixed-or-modified-2-32-5"></a></h4>
+<ul><li>
+<code><a href="../reference/ejamit.html">ejamit()</a></code> and <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> (and related helper functions) have more consistent, useful outputs:
+<ul><li>Sorting: The outputs now consistently preserve sort order of the input (points, fips, or polygons). This had not been the case for shapes_from_fips() functions, and ejamit()<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi><mi>o</mi><mi>r</mi><mi>d</mi><mi>o</mi><mi>a</mi><mi>g</mi><mi>g</mi><mi>r</mi><mi>e</mi><mi>g</mi><mi>a</mi><mi>t</mi><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">results_bysite or doaggregate()</annotation></semantics></math>results_bysite were preserving sort order only for the latlon case but not necessarily the fips or shapes cases.</li>
+<li>Invalid sites: The outputs of <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> (and related helper functions) will no longer omit output rows for invalid fips and when boundaries could not be obtained for valid fips – The number of rows in a shapefile output will be the same as then length of the input fips vector.</li>
+<li>Columns from <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> and related helpers: The output columns are ordered in a more useful way and are more consitent across functions. The output also consistently tries to add population, area in square miles, name of census unit, state abbreviation, etc., via new helpers like <code>shapefile_addcols()</code>
+</li>
+</ul></li>
+<li>
+<code><a href="../reference/getblocksnearby.html">getblocksnearby()</a></code> and related functions (<code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code>, <code><a href="../reference/get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>, etc.) also have more consistent outputs:
 <ul><li>Unique ID in FIPS case: The ejam_uniq_id column in the outputs of these functions will be 1 through the number of sites in the inputs (with multiple rows per site as needed to include all the blocks). Previously, FIPS codes had been used there sometimes (and still are in the outputs of functions where the output has a table with one row per site).</li>
 <li>Sorting: The output sites are now sorted like the input sites (points, fips, or polygons), while there are still usually many rows (blocks) per site. It had been sorted primarily by blockid, previously.</li>
 <li>Invalid sites: The output now includes a row of NA values for each site input that has NA lat or lon, NA fips, or empty polygon. Those sites previously had been left out of the sites2blocks table outputs. May do this also when no blocks in/near a valid site.</li>
-<li>Mix of fips types: <code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code> now accepts a mix of city and noncity fips (state, county, tract, blockgroup), so you can get a shapefile where some polygons are cities and others are counties, etc. Previously that was not possible and caused an error.</li>
 </ul></li>
-<li><p><code><a href="../reference/mapfast.html">mapfast()</a></code> for a single point now zooms out enough to see the whole radius (e.g., <code>mapfast(testpoints_10[1,], radius = 10)</code>)</p></li>
-<li><p><code><a href="../reference/mapfastej_counties.html">mapfastej_counties()</a></code> has improved color-coded maps of counties.</p></li>
-<li><p><code><a href="../reference/fips_bg_from_latlon.html">fips_bg_from_latlon()</a></code> drafted as unexported function that identifies which blockgroup each point is inside</p></li>
-<li><p>testoutput_xyz .xlsx and .html files and dataset R objects have been updated to reflect the new <code><a href="../reference/bgej.html">?bgej</a></code> dataset.</p></li>
-<li><p><code><a href="../reference/convert_units.html">convert_units()</a></code> now can recognize more abbreviations like “mi^2” via updated <code><a href="../reference/fixnames_aliases.html">fixnames_aliases()</a></code>, and got some bug fixes.</p></li>
-<li><p><code>blockgroupstats</code> documentation was improved.</p></li>
-<li><p><code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> documentation now has notes on the key ACS tables most relevant to EJSCREEN.</p></li>
-<li><p><code><a href="../reference/test_ejam.html">test_ejam()</a></code> is what used to be called <code>test_interactively()</code> – it was improved and renamed and moved to the R folder as an unexported internal function loaded as part of the package. Also, a new parameter y_skipbasic is used instead of y_basic.</p></li>
-<li><p><code>test_coverage_check()</code> utility was improved, just as a way to for package maintainers/contributors to look at which functions might need unit tests written.</p></li>
-<li><p><code>linesofcode2()</code> utility was improved, just as a way for package maintainers/contributors to look at which files have most of the lines of code, are mostly comments, etc.</p></li>
-<li><p><code><a href="../reference/table_xls_format_api.html">table_xls_format_api()</a></code> is what used to be called table_xls_formatting_api() (but is not used unless the ejscreenapi module or server is working).</p></li>
-<li><p>tests/test_coverage_check() was improved.</p></li>
-<li><p>fixed inconsistent use of parameter <code>in_shiny</code> versus inshiny, to always call it in_shiny</p></li>
-<li><p><code><a href="../reference/plotblocksnearby.html">plotblocksnearby()</a></code> rewritten to fix/improve map popups, etc., and a parameter was dropped</p></li>
-<li><p><code><a href="../reference/doaggregate.html">doaggregate()</a></code> and <code><a href="../reference/ejamit.html">ejamit()</a></code> now report 0 for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">results_bysite</annotation></semantics></math>blockcount_near_site and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">results_bysite</annotation></semantics></math>bgcount_near_site if there are none, and total counts are correct.</p></li>
-<li><p><code><a href="../reference/getblocksnearby.html">getblocksnearby()</a></code> based on <code><a href="../reference/getblocksnearbyviaQuadTree.html">getblocksnearbyviaQuadTree()</a></code> will no longer include, in its output, the lat lon columns from the input table of sitepoints. That was unintentional and potentially confusing and wasted space.</p></li>
+<li>testoutput_xyz .xlsx and .html files and dataset R objects have been updated to reflect the new <code><a href="../reference/bgej.html">?bgej</a></code> dataset.</li>
+<li>
+<code><a href="../reference/doaggregate.html">doaggregate()</a></code> and <code><a href="../reference/ejamit.html">ejamit()</a></code> now report 0 for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">results_bysite</annotation></semantics></math>blockcount_near_site and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">results_bysite</annotation></semantics></math>bgcount_near_site if there are none, and total counts are correct.</li>
+<li>
+<code><a href="../reference/getblocksnearby.html">getblocksnearby()</a></code> based on <code><a href="../reference/getblocksnearbyviaQuadTree.html">getblocksnearbyviaQuadTree()</a></code> will no longer include, in its output, the lat lon columns from the input table of sitepoints. That was unintentional and potentially confusing and wasted space.</li>
+<li>
+<code><a href="../reference/plotblocksnearby.html">plotblocksnearby()</a></code> rewritten to fix/improve map popups, etc., and a parameter was dropped</li>
 </ul></div>
+<div class="section level4">
+<h4 id="package-development-technical-2-32-5">Package development/ technical<a class="anchor" aria-label="anchor" href="#package-development-technical-2-32-5"></a></h4>
+<ul><li>
+<code><a href="../reference/test_ejam.html">test_ejam()</a></code> is what used to be called <code>test_interactively()</code> – it was improved and renamed and moved to the R folder as an unexported internal function loaded as part of the package. Also, a new parameter y_skipbasic is used instead of y_basic.</li>
+<li>
+<code>test_coverage_check()</code> utility was improved, just as a way to for package maintainers/contributors to look at which functions might need unit tests written.</li>
+<li>Utility functions related to package development were renamed, e.g., in utils_PACKAGE_dev.R</li>
+<li>
+<code>linesofcode2()</code> utility was improved, just as a way for package maintainers/contributors to look at which files have most of the lines of code, are mostly comments, etc.</li>
+<li>
+<code><a href="../reference/table_xls_format_api.html">table_xls_format_api()</a></code> is what used to be called table_xls_formatting_api() (but is not used unless the ejscreenapi module or server is working).</li>
+<li>fixed inconsistent use of parameter <code>in_shiny</code> versus inshiny, to always call it in_shiny</li>
+</ul></div>
+</div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.4" id="ejam-v2324-june-2025">EJAM v2.32.4 (June 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2324-june-2025"></a></h2>
