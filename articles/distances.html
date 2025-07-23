@@ -782,6 +782,8 @@ sites and nearby blocks.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;    DISTANCES FROM BLOCKS (AND RESIDENTS) TO SITES (AND FOR CLOSEST SITE) </span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  NOTE: This only analyzes the sites that had at least 1 block, since those with zero blocks are not in the output of getblocksnearby() or related functions get_blockpoints_in_shape() or getblocksnearby_from_fips()</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; 3.099399 miles is max. distance to block internal point (distance_unadjusted)   </span></span>
 <span><span class="co">#&gt; 3.099399 miles is max. distance to average resident in block (distance reported)   </span></span>
 <span><span class="co">#&gt; 0.02554516 miles is shortest distance to block internal point (distance_unadjusted)   </span></span>
@@ -934,6 +936,11 @@ handful or even zero.</p>
 <span><span class="co">#&gt; 4:                  2</span></span>
 <span><span class="co">#&gt; 5:                  3</span></span>
 <span><span class="co">#&gt; 6:                  0</span></span></code></pre></div>
+<p>These sites have no blocks within 1 mile, but do have blocks within
+1.5 miles:</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span> <span class="fu"><a href="../reference/getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">testpoints_1000</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">42</span>,<span class="fl">186</span>,<span class="fl">350</span>,<span class="fl">401</span>,<span class="fl">984</span><span class="op">)</span>, <span class="op">]</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">[</span><span class="op">]</span>   <span class="co"># these have no blocks within 1 mile</span></span>
+<span> <span class="fu"><a href="../reference/getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">testpoints_1000</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">42</span>,<span class="fl">186</span>,<span class="fl">350</span>,<span class="fl">401</span>,<span class="fl">984</span><span class="op">)</span>, <span class="op">]</span>, radius <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span><span class="op">[</span><span class="op">]</span> <span class="co"># but all have blocks within 1.5 miles</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="cdf-of-how-many-blocks-are-nearby-a-site">CDF of how many blocks are nearby a site<a class="anchor" aria-label="anchor" href="#cdf-of-how-many-blocks-are-nearby-a-site"></a>
@@ -947,7 +954,7 @@ How many blocks are near each of these 100 facilities?
 <div class="section level4">
 <h4 id="histogram-and-table-showing-how-many-blocks-are-nearby-a-site">Histogram and table showing how many blocks are nearby a site<a class="anchor" aria-label="anchor" href="#histogram-and-table-showing-how-many-blocks-are-nearby-a-site"></a>
 </h4>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sites2blocks</span><span class="op">[</span>,<span class="va">.N</span>, by <span class="op">=</span> <span class="st">"ejam_uniq_id"</span><span class="op">]</span><span class="op">[</span>, <span class="va">N</span><span class="op">]</span>, <span class="fl">20</span>, </span>
 <span>     xlab <span class="op">=</span> <span class="st">"How many blocks are nearby?"</span>, </span>
@@ -960,14 +967,14 @@ Example of Histogram and table showing how many blocks are within 3
 miles of a site
 </p>
 </div>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span><span class="va">s2b_stats</span>,  rownames <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co"># more summaries showing there may be only 1 block or hundreds within 1 mile</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="summary-stats-on-how-many-blocks-are-within-each-radius">Summary stats on how many blocks are within each radius<a class="anchor" aria-label="anchor" href="#summary-stats-on-how-many-blocks-are-within-each-radius"></a>
 </h4>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just within 1 mile</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sites2blocks</span><span class="op">[</span><span class="va">distance</span> <span class="op">&lt;=</span> <span class="fl">1</span>, <span class="va">.N</span>, by <span class="op">=</span> <span class="st">"ejam_uniq_id"</span><span class="op">]</span><span class="op">[</span>, <span class="va">N</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
@@ -981,7 +988,7 @@ miles of a site
 <h4 id="map-all-sites-with-popup-at-each-saying-how-many-blocks-were-found-nearby">Map all sites with popup at each saying how many blocks were found
 nearby<a class="anchor" aria-label="anchor" href="#map-all-sites-with-popup-at-each-saying-how-many-blocks-were-found-nearby"></a>
 </h4>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## done previously:</span></span>
 <span><span class="co"># radius &lt;- 3</span></span>
 <span><span class="co"># sitepoints &lt;- testpoints_100</span></span>
@@ -1023,7 +1030,7 @@ Example of mapfast() for seeing how many blocks are at each site
 <div class="section level5">
 <h5 id="some-places-have-very-few-if-any-blocks-within-1-mile">Some places have very few – if any – blocks within 1 mile<a class="anchor" aria-label="anchor" href="#some-places-have-very-few-if-any-blocks-within-1-mile"></a>
 </h5>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">s2b_stats</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">s2b_stats</span><span class="op">$</span><span class="va">blocks_within_1mile</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, </span>
 <span>               <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ejam_uniq_id'</span>, <span class="st">'blocks_within_1mile'</span><span class="op">)</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span> </span>
 <span><span class="co">#&gt;    ejam_uniq_id blocks_within_1mile</span></span>
@@ -1036,7 +1043,7 @@ Example of mapfast() for seeing how many blocks are at each site
 <h5 id="some-places-have-hundreds-nearby-a-1-mile-radius-is-huge-within-a-dense-urban-area">Some places have hundreds nearby: a 1 mile radius is huge within a
 dense urban area<a class="anchor" aria-label="anchor" href="#some-places-have-hundreds-nearby-a-1-mile-radius-is-huge-within-a-dense-urban-area"></a>
 </h5>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">s2b_stats</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">s2b_stats</span><span class="op">$</span><span class="va">blocks_within_1mile</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, </span>
 <span>               <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ejam_uniq_id'</span>, <span class="st">'blocks_within_1mile'</span><span class="op">)</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    ejam_uniq_id blocks_within_1mile</span></span>
@@ -1044,7 +1051,7 @@ dense urban area<a class="anchor" aria-label="anchor" href="#some-places-have-hu
 <span><span class="co">#&gt; 1:           89                 749</span></span>
 <span><span class="co">#&gt; 2:            2                 651</span></span>
 <span><span class="co">#&gt; 3:            1                 470</span></span></code></pre></div>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">densest</span> <span class="op">&lt;-</span> <span class="va">s2b_stats</span><span class="op">$</span><span class="va">ejam_uniq_id</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span></span>
 <span>  <span class="va">s2b_stats</span><span class="op">$</span><span class="va">blocks_within_1mile</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="va">leastdense</span> <span class="op">&lt;-</span> <span class="va">s2b_stats</span><span class="op">$</span><span class="va">ejam_uniq_id</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span></span>
@@ -1054,18 +1061,18 @@ dense urban area<a class="anchor" aria-label="anchor" href="#some-places-have-hu
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
 <span><span class="co">#&gt; min distance before adjustment:  0.03130003 </span></span>
 <span><span class="co">#&gt; max distance before adjustment:  5.053461</span></span></code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotblocksnearby.html">plotblocksnearby</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span><span class="op">[</span><span class="va">densest</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
 <span><span class="co">#&gt; Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...</span></span>
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
 <span><span class="co">#&gt; min distance before adjustment:  1.059524 </span></span>
 <span><span class="co">#&gt; max distance before adjustment:  4.755771</span></span></code></pre>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotblocksnearby.html">plotblocksnearby</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span><span class="op">[</span> <span class="va">leastdense</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p>Within a 1 mile radius, the blocks found tend to be about 2/3 of a
 mile from the site at the center.</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">s2b_stats</span><span class="op">$</span><span class="va">avgDistance</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
 <span><span class="co">#&gt;   0.830   1.815   1.930   1.873   2.005   2.230</span></span></code></pre></div>

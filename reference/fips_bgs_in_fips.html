@@ -100,27 +100,40 @@ or are contained within any provided tract/county/state FIPS.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
-<span>  <span class="co"># all blockgroups in one state</span></span>
-<span>  <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span></span>
+<span>  <span class="co"># all blockgroups in one state (as a single vector)</span></span>
+<span>  <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span> <span class="co"># there are 3 counties</span></span>
 <span>  <span class="fu">fips_bgs_in_fips</span><span class="op">(</span> <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span> <span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">blockgroupstats</span><span class="op">[</span>,<span class="va">.N</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu">fips_bgs_in_fips</span><span class="op">(</span><span class="st">"72"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu">fips_bgs_in_fips</span><span class="op">(</span><span class="st">"72"</span><span class="op">)</span><span class="op">)</span> <span class="co"># finds all that blockgroupstats has</span></span>
 <span></span>
 <span>  <span class="co"># all blockgroups in this one county</span></span>
 <span>  <span class="fu">fips_bgs_in_fips</span><span class="op">(</span><span class="fl">30001</span><span class="op">)</span></span>
-<span>  <span class="fu">fips_bgs_in_fips</span><span class="op">(</span><span class="st">"30001"</span><span class="op">)</span></span>
-<span>  <span class="fu">fips_bgs_in_fips</span><span class="op">(</span><span class="fu"><a href="fips_counties_from_statename.html">fips_counties_from_statename</a></span><span class="op">(</span><span class="st">"Rhode Island"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="co"># all blockgroups that contain any of these 6 blocks (i.e., just one bg)</span></span>
-<span>  <span class="co">## dataload_dynamic("blockid2fips") # very large file to avoid using unless essential</span></span>
-<span>  <span class="co">## x = blockid2fips$blockfips[1:6] </span></span>
+<span>  <span class="co"># all blockgroups for (that contain any of) these 6 blocks (i.e., just one bg)</span></span>
 <span>  <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"010010201001000"</span>, <span class="st">"010010201001001"</span>, <span class="st">"010010201001002"</span>,</span>
 <span>   <span class="st">"010010201001003"</span>, <span class="st">"010010201001004"</span>, <span class="st">"010010201001005"</span><span class="op">)</span></span>
 <span>  <span class="fu">fips_bgs_in_fips</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="co"># 2 counties</span></span>
-<span>  <span class="fu">fips_bgs_in_fips</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">36009</span>,<span class="fl">36011</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">testfipslist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  blockgroup <span class="op">=</span> <span class="va">testinput_fips_blockgroups</span>,</span>
+<span>  tract <span class="op">=</span> <span class="va">testinput_fips_tracts</span>,</span>
+<span>  city <span class="op">=</span> <span class="va">testinput_fips_cities</span>, <span class="co"># for cities, must use getblocksnearby_from_fips()</span></span>
+<span>  county <span class="op">=</span> <span class="va">testinput_fips_counties</span>,</span>
+<span>  state <span class="op">=</span> <span class="va">testinput_fips_states</span>,</span>
+<span>  mix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">testinput_fips_blockgroups</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>          <span class="va">testinput_fips_tracts</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,</span>
+<span>          <span class="va">testinput_fips_cities</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>          <span class="st">"53023"</span>,</span>
+<span>          <span class="fl">56</span><span class="op">)</span> <span class="co"># name2fips('WY')</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">testfipslist</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">testfipslist</span>, <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>; <span class="va">z</span><span class="op">}</span><span class="op">)</span> <span class="co"># drop distracting metadata</span></span>
+<span></span>
+<span><span class="va">x</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">testfipslist</span>, <span class="kw">function</span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">fips_bgs_in_fips</span> <span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">x1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">testfipslist</span>, <span class="kw">function</span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">fips_bgs_in_fips1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">x1</span><span class="op">)</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="st">'tract'</span><span class="op">]</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="st">'county'</span><span class="op">]</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

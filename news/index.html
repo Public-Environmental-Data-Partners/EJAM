@@ -109,11 +109,13 @@
 </ul></li>
 <li>
 <code><a href="../reference/getblocksnearby.html">getblocksnearby()</a></code> and related functions (<code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code>, <code><a href="../reference/get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>, etc.) also have more consistent outputs:
-<ul><li>Unique ID in FIPS case: The ejam_uniq_id column in the outputs of these functions will be 1 through the number of sites in the inputs (with multiple rows per site as needed to include all the blocks). Previously, FIPS codes had been used there sometimes (and still are in the outputs of functions where the output has a table with one row per site).</li>
+<ul><li>Unique ID in FIPS case: The ejam_uniq_id column in the outputs of these functions will be based on 1 through the number of sites in the inputs (with multiple rows per site as needed to include all the blocks). Previously, FIPS codes had been used as the ejam_uniq_id sometimes (and still are in the outputs of functions like ejamit() where the output has a table with one row per site).</li>
 <li>Sorting: The output sites are now sorted like the input sites (points, fips, or polygons), while there are still usually many rows (blocks) per site. It had been sorted primarily by blockid, previously.</li>
-<li>Invalid sites: The output now includes a row of NA values for each site input that has NA lat or lon, NA fips, or empty polygon. Those sites previously had been left out of the sites2blocks table outputs. May do this also when no blocks in/near a valid site.</li>
+<li>
+<strong>Invalid sites:</strong> The outputs of all the getblock… functions will be consistent – They all provide a sites2blocks table output that does not include any sites that have zero blocks. The ejam_uniq_id will still correspond to the input vector, so if an invalid and valid site were input in that order, 2 would be the only ejam_uniq_id in the s2b table. The FIPS-based functions, though, like getblocksnearby_from_fips(), when returning a spatial data.frame, will include all the sites in the output, even if they have no blocks, so that the number of rows in the output shapefile will match the number of sites in the input fips vector.</li>
 </ul></li>
 <li>testoutput_xyz .xlsx and .html files and dataset R objects have been updated to reflect the new <code><a href="../reference/bgej.html">?bgej</a></code> dataset.</li>
+<li>Some testinput objects like testinput_fips_counties are now vectors per is.vector(), and no longer have metadata stored as attributes like date_saved_in_package, etc. Adding that info via metadata_add() was making is.vector() FALSE and interfered with some functions that expect the input to be a vector, like shapes_from_fips(). Also, testinput_xtrac was removed.</li>
 <li>
 <code><a href="../reference/doaggregate.html">doaggregate()</a></code> and <code><a href="../reference/ejamit.html">ejamit()</a></code> now report 0 for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">results_bysite</annotation></semantics></math>blockcount_near_site and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><msub><mi>s</mi><mi>b</mi></msub><mi>y</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">results_bysite</annotation></semantics></math>bgcount_near_site if there are none, and total counts are correct.</li>
 <li>
@@ -126,7 +128,7 @@
 <ul><li>
 <code><a href="../reference/test_ejam.html">test_ejam()</a></code> is what used to be called <code>test_interactively()</code> – it was improved and renamed and moved to the R folder as an unexported internal function loaded as part of the package. Also, a new parameter y_skipbasic is used instead of y_basic.</li>
 <li>
-<code>test_coverage_check()</code> utility was improved, just as a way to for package maintainers/contributors to look at which functions might need unit tests written.</li>
+<code>test_coverage_check()</code> utility was improved (but somewhat work in progress), just as a way to for package maintainers/contributors to look at which functions might need unit tests written.</li>
 <li>Utility functions related to package development were renamed, e.g., in utils_PACKAGE_dev.R</li>
 <li>
 <code>linesofcode2()</code> utility was improved, just as a way for package maintainers/contributors to look at which files have most of the lines of code, are mostly comments, etc.</li>

@@ -130,7 +130,11 @@ blocks nearby using getblocksnearby(), before using those found to do the inters
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>same as <code>get_blockpoints_in_shape()</code></p>
 <p>Block points table for those blocks whose internal point is inside the buffer
-which is just a circular buffer of specified radius if polys are just points.</p>
+which is just a circular buffer of specified radius if polys are just points.
+This is like the output of  <code><a href="getblocksnearby.html">getblocksnearby()</a></code>, or <code><a href="getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code> if return_shp=F.</p>
+<p>The ejam_uniq_id represents which of the input sites is being referred to, and the table
+will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8
+were valid and had blocks identified, then the data.table here will only include ejam_uniq_id values of 5 and 8.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -145,7 +149,7 @@ since otherwise it takes forever for sf:: to check all US blocks.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code>get_blockpoints_in_shape()</code> <code><a href="shapefile_from_sitepoints.html">shapefile_from_sitepoints()</a></code> <code><a href="shape_buffered_from_shapefile_points.html">shape_buffered_from_shapefile_points()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="getblocksnearby.html">getblocksnearby()</a></code>  <code><a href="getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code>  <code><a href="shapefile_from_sitepoints.html">shapefile_from_sitepoints()</a></code> <code><a href="shape_buffered_from_shapefile_points.html">shape_buffered_from_shapefile_points()</a></code></p></div>
     </div>
 
     <div class="section level2">

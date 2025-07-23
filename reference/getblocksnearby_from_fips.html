@@ -94,7 +94,7 @@ or comparing whole counties to each other, within a State.</p></dd>
 
 <dt id="arg-return-shp">return_shp<a class="anchor" aria-label="anchor" href="#arg-return-shp"></a></dt>
 <dd><p>set to TRUE to get a named list, pts and polys, that are sites2blocks table and spatial data.frame,
-or FALSE to get the pts data.table much like output of <code><a href="getblocksnearby.html">getblocksnearby()</a></code> for latlon points.</p></dd>
+or FALSE to get the pts data.table much like output of <code><a href="getblocksnearby.html">getblocksnearby()</a></code> or  <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code></p></dd>
 
 
 <dt id="arg-allow-multiple-fips-types">allow_multiple_fips_types<a class="anchor" aria-label="anchor" href="#arg-allow-multiple-fips-types"></a></dt>
@@ -103,15 +103,15 @@ or FALSE to get the pts data.table much like output of <code><a href="getblocksn
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>data.table with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.</p>
-<p><code><a href="getblocksnearby.html">getblocksnearby()</a></code> output is similar but
-<code>getblocksnearby(testpoints_10, radius = 1)</code>
-also returns extra columns from input, like lat,lon.</p>
-<p><code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code> output is similar but
-<code>get_blockpoints_in_shape(testinput_shapes_2)</code>
-returns a list of pts table and polys table, where the pts data.table has
-colnames ejam_uniq_id, blockid, distance, blockwt, bgid, lat, lon.</p>
-    </div>
+
+<ul><li><p>if return_shp=F, returns just a sites2blocks data.table with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
+This is like the <code><a href="getblocksnearby.html">getblocksnearby()</a></code> and <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code> outputs.</p></li>
+<li><p>if return_shp=T, returns a named list where pts is the data.table of sites2blocks,
+and polys is the spatial data.frame with one row per input fips (including invalid ones).</p>
+<p>The ejam_uniq_id represents which of the input sites is being referred to, and the table
+will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8
+were valid and had blocks identified, then the data.table here will only include ejam_uniq_id values of 5 and 8.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="getblocksnearby.html">getblocksnearby()</a></code> <code><a href="fips_bgs_in_fips.html">fips_bgs_in_fips()</a></code> <code><a href="fips_lead_zero.html">fips_lead_zero()</a></code> <code>getblocksnearby_from_fips()</code> <code><a href="fips_from_table.html">fips_from_table()</a></code></p></div>

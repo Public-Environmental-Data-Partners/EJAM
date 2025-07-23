@@ -98,12 +98,12 @@ The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="datapack.html">datapack()</a></code> <code><a href="dataload_dynamic.html">dataload_dynamic()</a></code> <code><a href="dataload_from_local.html">dataload_from_local()</a></code> <code><a href="indexblocks.html">indexblocks()</a></code> <code><a href="https://rdrr.io/r/base/ns-hooks.html" class="external-link">.onAttach()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="pkg_data.html">pkg_data()</a></code> <code><a href="dataload_dynamic.html">dataload_dynamic()</a></code> <code><a href="dataload_from_local.html">dataload_from_local()</a></code> <code><a href="indexblocks.html">indexblocks()</a></code> <code><a href="https://rdrr.io/r/base/ns-hooks.html" class="external-link">.onAttach()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="datapack.html">datapack</a></span><span class="op">(</span><span class="st">"EJAM"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="st">"EJAM"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span><span class="op">$</span><span class="va">size</span> <span class="op">&gt;=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="co"># at least 100 KB</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"names_"</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span>, value <span class="op">=</span> <span class="cn">T</span>, ignore.case <span class="op">=</span> <span class="cn">T</span>, invert <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="co"># most were like names_d, etc.</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span></span>
