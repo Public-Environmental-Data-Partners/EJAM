@@ -71,7 +71,8 @@
 <span>    <span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"</span>,</span>
 <span>  myservice_place <span class="op">=</span> <span class="st">"tiger"</span>,</span>
 <span>  myservice_county <span class="op">=</span> <span class="st">"cartographic"</span>,</span>
-<span>  allow_multiple_fips_types <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  allow_multiple_fips_types <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  year <span class="op">=</span> <span class="fl">2024</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,6 +106,10 @@ Note State bounds are built into this package as data so do not need to be downl
 
 <dt id="arg-allow-multiple-fips-types">allow_multiple_fips_types<a class="anchor" aria-label="anchor" href="#arg-allow-multiple-fips-types"></a></dt>
 <dd><p>if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips</p></dd>
+
+
+<dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
+<dd><p>passed to <code><a href="https://rdrr.io/pkg/tigris/man/places.html" class="external-link">tigris::places()</a></code> for bounds or city/town type of fips</p></dd>
 
 </dl></div>
     <div class="section level2">

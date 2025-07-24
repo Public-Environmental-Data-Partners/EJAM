@@ -74,7 +74,7 @@ See list of samples of input files to try in EJAM, and output examples from EJAM
 
 
 <dl><dt id="arg-pattern">pattern<a class="anchor" aria-label="anchor" href="#arg-pattern"></a></dt>
-<dd><p>optional query expression, used as regexp passed to <code><a href="https://fs.r-lib.org/reference/dir_ls.html" class="external-link">fs::dir_ls()</a></code></p></dd>
+<dd><p>optional query regular expression, used as filter using when getting filenames</p></dd>
 
 
 <dt id="arg-installed">installed<a class="anchor" aria-label="anchor" href="#arg-installed"></a></dt>
@@ -98,7 +98,7 @@ without seeing all the info in console and without browsing to the folder</p></d
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span><span class="st">'shapes'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">testdata</span><span class="op">(</span><span class="st">'shape'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">x</span><span class="op">[</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/is_file.html" class="external-link">is_file</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu">testdata</span><span class="op">(</span><span class="st">'fips'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="fu">testdata</span><span class="op">(</span><span class="st">'registryid'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>

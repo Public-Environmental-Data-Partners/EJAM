@@ -83,7 +83,8 @@
 <li>
 <a href="https://github.com/ejanalysis/EJAM/#readme" class="external-link">README</a> mentions <a href="https://www.ejanalysis.com" class="external-link uri">https://www.ejanalysis.com</a> now. <code><a href="../reference/blockgroupstats.html">?blockgroupstats</a></code> documentation was improved.</li>
 <li>
-<code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> documentation now has notes on the key ACS tables most relevant to EJSCREEN.</li>
+<code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> documentation now has notes on the key ACS demographic data tables most relevant to EJSCREEN.</li>
+<li>Edited files <code>DESCRIPTION</code>, <code>CITATION.cff</code> (new), <code>CITATION</code>, <code>LICENSE</code> (new), <code>LICENSE.md</code>, etc.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="functions-added-or-improved-2-32-5">Functions added or improved<a class="anchor" aria-label="anchor" href="#functions-added-or-improved-2-32-5"></a></h4>
@@ -125,7 +126,9 @@
 <li>
 <strong>Invalid sites:</strong> The outputs of all the getblock… functions will be consistent – They all provide a sites2blocks data.table output (like <code><a href="../reference/testoutput_getblocksnearby_10pts_1miles.html">?testoutput_getblocksnearby_10pts_1miles</a></code>) that does not include any sites that have zero blocks. The <code>ejam_uniq_id</code> will still correspond to the input vector, so if an invalid and valid site were input in that order, 2 would be the only <code>ejam_uniq_id</code> in the sites2blocks table. The FIPS-based functions, though, like <code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code>, when returning a spatial data.frame, will include all the sites in the output, even if they have no blocks, so that the number of rows in the output shapefile will match the number of sites in the input fips vector.</li>
 </ul></li>
-<li>testoutput_xyz .xlsx and .html files and dataset R objects like <code><a href="../reference/testoutput_ejamit_100pts_1miles.html">?testoutput_ejamit_100pts_1miles</a></code> have been updated to reflect the new <code><a href="../reference/bgej.html">?bgej</a></code> dataset.</li>
+<li>
+<code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> (and related) have new <code>year</code> parameter, passed to [tigris::places()], defaulting to the 2024 boundaries polygons of cities/towns.</li>
+<li>testoutput_xyz .xlsx and .html files and dataset R objects like <code><a href="../reference/testoutput_ejamit_100pts_1miles.html">?testoutput_ejamit_100pts_1miles</a></code> have been updated to reflect the new <code><a href="../reference/bgej.html">?bgej</a></code> dataset, typo fixes, and other edits.</li>
 <li>Some testinput objects like testinput_fips_counties are now vectors per is.vector(), and no longer have metadata stored as attributes like date_saved_in_package, etc. Adding that info via <code><a href="../reference/metadata_add.html">metadata_add()</a></code> was making is.vector() FALSE and interfered with some functions that expect the input to be a vector, like <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code>. Also, <code>testinput_xtrac</code> was removed.</li>
 <li>
 <code><a href="../reference/doaggregate.html">doaggregate()</a></code> and <code><a href="../reference/ejamit.html">ejamit()</a></code> now report 0 for <code>results_bysite$blockcount_near_site</code> and <code>results_bysite$bgcount_near_site</code> if there are none, and total counts are correct.</li>
@@ -148,6 +151,10 @@
 <code><a href="../reference/table_xls_format_api.html">table_xls_format_api()</a></code> is what used to be called table_xls_formatting_api() (but is not used unless the ejscreenapi module or server is working).</li>
 <li>fixed inconsistent use of parameter <code>in_shiny</code> versus <code>inshiny</code>, to always call it <code>in_shiny</code>
 </li>
+<li>removed functions and text related to pins board (obsolete)</li>
+<li>renamed map_headernames spreadsheet file to reflect a new version (<code>EJAM/data-raw/map_headernames_2.32.5.xlsx</code>), made edits/fixes (spelling of CEJST, e.g.), and updated the data object <code><a href="../reference/map_headernames.html">?map_headernames</a></code>.</li>
+<li>rebuilt favicons per updates in {pkgdown}</li>
+<li>Edited DESCRIPTION file to specify minimum versions for most packages in Imports, and a newer version of R. Almost all of these just refer to the latest version on CRAN as of this release, even though several were not strictly necessary for the functions to work correctly.</li>
 </ul></div>
 </div>
 </div>
@@ -164,7 +171,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="rstudio-users-only-2-32-4">RStudio users only<a class="anchor" aria-label="anchor" href="#rstudio-users-only-2-32-4"></a></h3>
-<ul><li>New summary table and plot are available via <code><a href="../reference/ejam2areafeatures.html">ejam2areafeatures()</a></code> and <code><a href="../reference/ejam2barplot_areafeatures.html">ejam2barplot_areafeatures()</a></code>. Changes in <code><a href="../reference/ejamit.html">ejamit()</a></code> provide information about what fraction of residents have certain features or types of areas where they live, such as schools, hospitals, Tribal areas, nonattainment areas, CJEST areas, etc. This is done via many changes to <code><a href="../reference/batch.summarize.html">batch.summarize()</a></code>.</li>
+<ul><li>New summary table and plot are available via <code><a href="../reference/ejam2areafeatures.html">ejam2areafeatures()</a></code> and <code><a href="../reference/ejam2barplot_areafeatures.html">ejam2barplot_areafeatures()</a></code>. Changes in <code><a href="../reference/ejamit.html">ejamit()</a></code> provide information about what fraction of residents have certain features or types of areas where they live, such as schools, hospitals, Tribal areas, nonattainment areas, CEJST areas, etc. This is done via many changes to <code><a href="../reference/batch.summarize.html">batch.summarize()</a></code>.</li>
 <li>added better examples of params one can pass via <code><a href="../reference/run_app.html">run_app()</a></code>
 </li>
 <li>documented <code><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options()</a></code> and <code><a href="../reference/global_or_param.html">global_or_param()</a></code>
@@ -233,10 +240,10 @@
 <code><a href="../reference/testdata.html">testdata()</a></code> function improved, showing you examples of files that be used as inputs to <code><a href="../reference/ejamit.html">ejamit()</a></code>. <code><a href="../reference/testdata.html">testdata()</a></code> files and data objects cleaned up/renamed consistently and new ones added for fips types, naics, sic, mact, etc.</li>
 <li>refactored names of plot functions made more consistent to use “plot” singular and “ratios” plural, as in <code><a href="../reference/ejam2boxplot_ratios.html">ejam2boxplot_ratios()</a></code>, <code>boxplot_ratios()</code>, etc.</li>
 <li>documentation fixed in some functions (e.g., <code><a href="../reference/ejam2map.html">ejam2map()</a></code>)</li>
-<li>large datasets managed via <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code> and other new arrow-related functions and no longer on pins board or aws at all. arrow datasets faster format used most places, other changes to handling downloads etc.</li>
+<li>large datasets managed via <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code>, <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code> and other new arrow-related functions and no longer on pins board or aws at all. arrow datasets faster format used most places, other changes to handling downloads etc.</li>
 <li>
 <code>shape_from_fips()</code> checks if census API key available and tidycensus pkg now imported, uses alt method (arcgis services) to get boundaries if necessary.</li>
-<li>Continued towards refactoring/consolidating code in server vs in functions, related to creating summary report as HTML vs for download from shiny app vs from <code><a href="../reference/ejam2report.html">ejam2report()</a></code>, in functions such as <code><a href="../reference/report_residents_within_xyz.html">report_residents_within_xyz()</a></code>, renamed generate_demog_header to generate_env_demog_header, etc.</li>
+<li>Continued towards refactoring/consolidating code in server vs in functions, related to creating summary report as HTML vs for download from shiny app vs from <code><a href="../reference/ejam2report.html">ejam2report()</a></code>, in helper functions such as <code><a href="../reference/build_community_report.html">build_community_report()</a></code>, <code><a href="../reference/report_residents_within_xyz.html">report_residents_within_xyz()</a></code>, renamed generate_demog_header to generate_env_demog_header, etc.</li>
 <li>server uses <code><a href="../reference/ejamit.html">ejamit()</a></code> for SHP and latlon, and cleanup</li>
 <li>server uses <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> now (which then relies on <code><a href="../reference/table_xls_format.html">table_xls_format()</a></code>)</li>
 <li>server uses <code><a href="../reference/ejam2report.html">ejam2report()</a></code> now, not obsolete report_community_download() etc.</li>
