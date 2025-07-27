@@ -27,10 +27,10 @@ utility that reconciles/consolidates user-defined params passed via run_app() an
 This function, called by \code{run_app()},
 collects the shiny-app-related default settings that are defined in these places:
 \enumerate{
-\item parameters passed to \code{run_app()} by a user
-\item settings defined in file \code{global_defaults_shiny_public.R}
-\item settings defined in file \code{global_defaults_shiny.R}
-\item settings defined in file \code{global_defaults_package.R}
+\item "user options" as parameters passed to \code{run_app()} by a user
+\item "global defaults" set in file \code{global_defaults_shiny_public.R}   -- and in that file, depends on value of isPublic if passed as a param to run_app()
+\item "global defaults" set in file \code{global_defaults_shiny.R}    -- sourced here
+\item "global defaults" set in file \code{global_defaults_package.R}  -- sourced here but also initially by .onAttach()
 }
 
 and consolidates them all as a list, to be available to server/ui.
