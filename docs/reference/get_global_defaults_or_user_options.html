@@ -91,10 +91,10 @@ or via <code><a href="global_or_param.html">global_or_param()</a></code> (which 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function, called by <code><a href="run_app.html">run_app()</a></code>,
-collects the shiny-app-related default settings that are defined in these places:</p><ol><li><p>parameters passed to <code><a href="run_app.html">run_app()</a></code> by a user</p></li>
-<li><p>settings defined in file <code>global_defaults_shiny_public.R</code></p></li>
-<li><p>settings defined in file <code>global_defaults_shiny.R</code></p></li>
-<li><p>settings defined in file <code>global_defaults_package.R</code></p></li>
+collects the shiny-app-related default settings that are defined in these places:</p><ol><li><p>"user options" as parameters passed to <code><a href="run_app.html">run_app()</a></code> by a user</p></li>
+<li><p>"global defaults" set in file <code>global_defaults_shiny_public.R</code>   – and in that file, depends on value of isPublic if passed as a param to run_app()</p></li>
+<li><p>"global defaults" set in file <code>global_defaults_shiny.R</code>    – sourced here</p></li>
+<li><p>"global defaults" set in file <code>global_defaults_package.R</code>  – sourced here but also initially by .onAttach()</p></li>
 </ol><p>and consolidates them all as a list, to be available to server/ui.</p>
     </div>
 
