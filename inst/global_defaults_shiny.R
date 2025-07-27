@@ -15,7 +15,7 @@ EJAM::indexblocks()
 
 ################################################################### #
 
-# CHECK PACKAGE VERSION ####
+# CHECK (installed) PACKAGE VERSION ####
 
 ver <- EJAM:::description_file$get("Version") # object created in EJAM namespace by metadata_mapping.R when loaded/attached
 ejam_app_version <- substr(ver, start = 1, stop = gregexpr('\\.',ver)[[1]][2] - 1) ## trim version number to Major.Minor
@@ -457,7 +457,9 @@ default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses areal
   default_show_full_header_footer = FALSE,
 
   # Advanced settings
-  default_hide_advanced_settings = TRUE, # isTRUE(isPublic)
+  default_hide_advanced_settings = TRUE,           # this controls if the adv tab is visible initially
+  # default_can_showhide_advanced_settings = TRUE, # this controls if user has ability to show the adv tab (via the show/hide adv tab buttons)
+  #   defined in global_defaults_shiny_public.R
 
   # Written Report
   default_hide_written_report = TRUE,
@@ -466,7 +468,6 @@ default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses areal
   default_hide_plot_barplot_tab = FALSE
 
 )
-
 ######################################################################################################## #
 
 # R and Shiny Options
@@ -618,8 +619,17 @@ help_texts <- list(
     h2( a(href = paste0(docs_url, "/", "articles/whatis.html"),
           "What is EJAM?",
           target = "_blank", rel = "noreferrer noopener") ),
-    p("The Environmental and Residential Population Analysis Multisite tool (EJAM) is a tool developed by the United States Environmental Protection Agency (US EPA) that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting reports for hundreds or thousands of places, all at the same time."),
+    p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting reports for hundreds or thousands of places, all at the same time."),
     p("This provides interactive results and a formatted, ready-to-share report with tables, graphics, and a map. The report can provide information about communities near any of the industrial facilities on a list, for example."),
+    p("This version of the Environmental and Residential Population Analysis Multisite tool (EJAM) is not associated with the United States Environmental Protection Agency (US EPA), but has its roots in
+      open source code that was originally develop at EPA."),
+    h4("For more information about ",
+      a(href = "https://www.ejanalysis.org/status", "the evolving status of EJSCREEN & EJAM in 2025",
+        target = "_blank", rel = "noreferrer noopener"),
+      ", see ",
+      a(href = "https://www.ejanalysis.org", "ejanalysis.org",
+          target = "_blank", rel = "noreferrer noopener")
+    ),
     br(),
     br()
   ),
@@ -1015,7 +1025,7 @@ html_fmts <- list(
   <!--           <a href="https://ejscreen.epa.gov/mapper/" alt="Go to EJScreen mapper"    title="Go to EJScreen mapper" target="_blank">Mapper</a> |   -->
               <a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen" alt="Go to glossary page" title="Go to EJScreen glossary page" target="_blank">Glossary</a> |
             <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> |
-  <!--           <a href="mailto:ENVIROMAIL_GROUP@epa.gov?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a>   -->
+            <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a>
           </span>&nbsp;&nbsp;
         </td>
  ',

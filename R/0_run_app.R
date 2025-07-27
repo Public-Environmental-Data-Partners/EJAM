@@ -9,9 +9,10 @@
 #'   For example:
 #'   ```
 #'   run_app(
-#'     default_default_miles=3.1,
-#'     default_max_miles=31,
-#'     default_max_mb_upload=100
+#'     default_standard_analysis_title = "CUSTOM REPORT",
+#'     default_default_miles = 3.1,
+#'     default_max_miles = 31,
+#'     default_max_mb_upload = 100
 #'   )
 #'
 #'   ```
@@ -22,41 +23,49 @@
 #'
 #' Technical Notes:
 #'
-#' Examples of other parameters that you could pass to run_app()
-#' but these are not fully tested:
+#' Parameters for [EJAM::run_app()] to pass to [shiny::runApp()] are given via options=list() must be among the following:
+#'   "port", "launch.browser", "host", "quiet", "display.mode", "test.mode", "width", or "height"
+#'
+#' Parameters for how the EJAM app works are given via `...` and are passed to [golem::with_golem_options()].
+#'
+#' Examples of these parameters that you could pass to run_app()
+#' but these are not all fully tested:
 #'  ```
-#' run_app(shiny.testmode = TRUE, testing = TRUE,
-#'         default_default_miles = 3.1,
-#'         default_max_miles = 31,
-#'         default_max_mb_upload = 100,
-#'         default_default_miles_shapefile = 0.1,
+#' run_app(
+#'   default_standard_analysis_title = "CUSTOM REPORT",
 #'
-#'         default_hide_plot_histo_tab = FALSE,
-#'         default_hide_advanced_settings = FALSE,
-#'         default_testing = TRUE,
-#'         default_shiny.testmode = TRUE,
+#'   default_default_miles = 3.1, # default distance in miles
+#'   default_max_miles = 31,
+#'   default_max_mb_upload = 100,
+#'   default_default_miles_shapefile = 0.1,
 #'
-#'         default_standard_analysis_title = "CUSTOM REPORT",
+#'   default.an_threshgroup1 = "Envt-US-or-ST",
+#'   default.an_thresh_comp1 = 95,
+#'   default.an_threshnames1 = EJAM::names_e_state_pctile,
 #'
-#'         default.an_threshgroup1 = "Envt-US-or-ST",
-#'         default.an_thresh_comp1 = 95,
-#'         default.an_threshnames1 = EJAM::names_e_state_pctile,
+#'   ## to have shapefiles, MACT, Cities as initial (default) selections:
+#'   # default_upload_dropdown = "dropdown", #may not be implemented yet
+#'   default_choices_for_type_of_site_upload =c('Shapefile upload'='SHP'),
+#'   default_choices_for_type_of_site_category=c('by MACT subpart'='MACT'),
+#'   fipspicker_fips_type2pick_default = "Cities or Places",
 #'
-#'         # to have shapefiles, MACT, Cities as initial (default) selections:
-#'         ## default_upload_dropdown = "dropdown", #may not be implemented yet
-#'         default_choices_for_type_of_site_upload =c('Shapefile upload'='SHP'),
-#'         default_choices_for_type_of_site_category=c('by MACT subpart'='MACT'),
-#'         fipspicker_fips_type2pick_default = "Cities or Places",
+#'   ## shorter reorganized list of extra indicators:
+#'   default_extratable_list_of_sections = list(
+#'     Health = c("pctdisability", "lowlifex",
+#'       "rateheartdisease", "rateasthma", "ratecancer", "lifexyears"),
+#'     Poverty_Income = c("pctpoor",  "percapincome"),
+#'     `Feature Counts` = c("count.NPL", "count.TSDF",
+#'       "num_waterdis", "num_airpoll", "num_brownfield", "num_tri",
+#'       "num_school", "num_hospital", "num_church")
+#'   ),
 #'
-#'         # shorter reorganized list of extra indicators:
-#'         default_extratable_list_of_sections = list(
-#'           Health = c("pctdisability", "lowlifex",
-#'             "rateheartdisease", "rateasthma", "ratecancer", "lifexyears"),
-#'           Poverty_Income = c("pctpoor",  "percapincome"),
-#'           `Feature Counts` = c("count.NPL", "count.TSDF",
-#'             "num_waterdis", "num_airpoll", "num_brownfield", "num_tri",
-#'             "num_school", "num_hospital", "num_church")
-#'         )
+#'   isPublic = FALSE,
+#'   default_hide_advanced_settings = FALSE,
+#'   default_can_showhide_advanced_settings = TRUE,
+#'   default_hide_plot_histo_tab = FALSE,
+#'
+#'   shiny.testmode=TRUE, # or  default_shiny.testmode=TRUE, # or options=list(test.mode=TRUE),
+#'   testing = TRUE       # or  default_testing=TRUE
 #' )
 #'
 #' # untested:    sitepoints = testpoints_10 # or 'latlondata.xlsx'
@@ -97,15 +106,15 @@
 #'
 #' @export
 #'
-run_app      <- function(
+run_app <- function(
     onStart = NULL,
-    options = list(),
+    options = list(),  # options specifically for shinyApp(options=xyz). Named options that should be passed to the runApp call (these can be any of the following: "port", "launch.browser", "host", "quiet", "display.mode" and "test.mode"). You can also specify width and height parameters which provide a hint to the embedding environment about the ideal height/width for the app.
     enableBookmarking = 'url',
     uiPattern = "/",
     ...
 ) {
 
-  global_defaults_or_user_options <- EJAM:::get_global_defaults_or_user_options(
+  global_defaults_or_user_options <- get_global_defaults_or_user_options(
     user_specified_options = list(...),
     bookmarking_allowed = enableBookmarking
   )

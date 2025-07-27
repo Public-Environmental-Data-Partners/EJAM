@@ -30,7 +30,7 @@
   # startup msg shown at library(EJAM) or when reinstalling from source ####
   packageStartupMessage("Now running .onAttach(), as part of attaching the EJAM package.")
 
-  # get location of logo etc. so that ejam2report() using generate_html_header() can find logo  even without launching shiny app?
+  # get location of logo etc. so that ejam2report() using generate_html_header() can find logo  even without launching shiny app
   source(system.file("global_defaults_package.R", package = "EJAM"), local = FALSE)
 
   # packageStartupMessage(

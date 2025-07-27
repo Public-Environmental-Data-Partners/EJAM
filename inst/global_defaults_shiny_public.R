@@ -1,4 +1,4 @@
-
+######################################################################################################## #
 # The "global_defaults_*.R" files define most default settings.
 #
 # This file was intended to define
@@ -16,36 +16,46 @@
 # a few are variables used also by the package, like the report titles
 # so we need to default the isPublic parameter
 # but if the user specified in run_app, then take what they specified
-
-# if user didn't specify isPublic, default to TRUE
-isPublic <- ifelse(
-  "isPublic" %in% global_defaults_or_user_options, # see EJAM:::get_global_defaults_or_user_options()
-  global_defaults_or_user_options$isPublic,
-  FALSE
-)
-
-use_fipspicker <- TRUE # Set here to use below in more than 1 place.
+######################################################################################################## #
+########## #
+# isPublic ####
+# if user did specify isPublic like by calling run_app(isPublic = TRUE), use that setting
+if (exists("isPublic")) {
+  #isPublic <- isPublic
+} else {
+  # if user didn't specify isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
+  isPublic <- FALSE
+}
+########## #
+# use_fipspicker ####
+use_fipspicker <- TRUE  # defined here to use in list below in more than 1 place
+######################################################################################################## #
+# ~ ####
+# Create a list called global_defaults_shiny_public ####
 
 global_defaults_shiny_public <- list(
 
-  # GENERAL OPTIONS & Testing ####
-  ## ------------------------ Tabs shown ####
+  ## GENERAL OPTIONS & Testing ####
+  ### ------------------------ Tabs shown ####
 
   # About tab
-  default_hide_about_tab = isTRUE(isPublic),  # gives access to turning on the Advanced/Experimental tab, which is NOT ideal for public-facing version
+  default_hide_about_tab = FALSE, # now can always show About tab but turn off just that tab's buttons giving users access to advanced tab
+
+  # Advanced tab accessible at all?
+  default_can_showhide_advanced_settings = !isTRUE(isPublic), # this controls if user has ability to show the adv tab (via the show/hide adv tab buttons)
+  # access to turning on Advanced/Experimental tab, which is NOT ideal for public-facing version
 
   # Histograms tab
   default_hide_plot_histo_tab = isTRUE(isPublic),  # hidden because complicated and public may not want it anyway
-
+  # EJScreen API tab
   default_hide_ejscreenapi_tab = isTRUE(isPublic),  # not used by UI unless ejscreenapi module/tab is re-enabled
 
-  ######################################################################################################## #
+  ############################################################################## #
 
-  # ~ ####
-
-  # SITE SELECTION: CAPS ON UPLOADS, PTS, RADIUS, etc.   ####
+  ## SITE SELECTION: CAPS ON UPLOADS, PTS, RADIUS, etc.   ####
 
   # 'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',  # but NOT all fips of one category (unlike for NAICS etc.)
+  ### ------------------------ default_choices_for_type_of_site_category  #####
 
   default_choices_for_type_of_site_category = if (isTRUE(isPublic)) {
     c(
@@ -62,7 +72,7 @@ global_defaults_shiny_public <- list(
     )
   },
 
-  ## ------------------------ default_choices_for_type_of_site_upload  #####
+  ### ------------------------ default_choices_for_type_of_site_upload  #####
 
   default_choices_for_type_of_site_upload = if (isTRUE(isPublic)) {
     c(
@@ -79,8 +89,7 @@ global_defaults_shiny_public <- list(
       'Census place FIPS Codes file upload'            = 'FIPS'         # <---
     )
   },
-  ######################################################################################################## #
-  # ~ ####
+  ############################################################################## #
 
   # RESULTS VIEWS ####
 
@@ -89,5 +98,8 @@ global_defaults_shiny_public <- list(
   default_show_ratios_in_report = !isTRUE(isPublic), # used by app_ui to affect input$show_ratios_in_report which server uses in ejam2report(), etc.
   default_extratable_show_ratios_in_report = !isTRUE(isPublic) # same
 )
+######################################################################################################## #
+
+print("isPublic is"); print(isPublic)
 rm(use_fipspicker)
 rm(isPublic) # ok?

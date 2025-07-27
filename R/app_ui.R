@@ -65,8 +65,13 @@ app_ui  <- function(request) {
                           EJAM:::global_or_param("intro_text"),
                           actionButton(inputId = 'back_to_site_sel2', label = div(icon('play', style = 'transform: rotate(180deg);'), HTML('&nbsp;'), 'Return to Site Selection'), class = 'usa-button'),
                           br(), br(),
-                          actionButton('ui_show_advanced_settings','Show Advanced Settings Tab', class = 'usa-button'),
-                          actionButton('ui_hide_advanced_settings','Hide Advanced Settings Tab', class = 'usa-button'),
+                          conditionalPanel(
+                            # So that About tab can be shown without necessarily allowing users to show/hide the advanced tab,
+                            # this can hide the show/hide buttons
+                            condition = "input.can_showhide_advanced_settings == 'TRUE'",
+                            actionButton('ui_show_advanced_settings','Show Advanced Settings Tab', class = 'usa-button'),
+                            actionButton('ui_hide_advanced_settings','Hide Advanced Settings Tab', class = 'usa-button')
+                          ),
                           br(),br(),
                    ),
                    column(4,
@@ -1305,7 +1310,12 @@ app_ui  <- function(request) {
                                      selected = "a"),
 
                  # ),
-
+                 ##################################################### #
+                 ## can_showhide_advanced_settings ####
+                 h2("Advanced tab"),
+                 radioButtons("can_showhide_advanced_settings", "Provide buttons to let user Show/Hide advanced tab?", choices = c(Yes = TRUE, No = FALSE),
+                              inline = TRUE,
+                              selected = EJAM:::global_or_param("default_can_showhide_advanced_settings")),
                  ##################################################### #
                  ## Testing modes ####
                  h2("Testing/ debugging modes!!!"),
