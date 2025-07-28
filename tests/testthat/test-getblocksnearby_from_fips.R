@@ -277,7 +277,7 @@ testcases_each_fipstype <- function() {
       states  = c(f5, 99)
     )
     ,
-    `some fips are NA` = list(      #
+    `some fips NA` = list(      #
       bgs     = c(NA, f1, NA),  # ii = 1
       tracts  = c(NA, f2, NA),  # ii = 2
       cities  = c(NA, f3, NA),  # ii = 3  # ??  f3 is "2743000" "2743306"
@@ -285,14 +285,14 @@ testcases_each_fipstype <- function() {
       states  = c(NA, f5, NA)   # ii = 5
     )
     ,
-    `some fips are 99, some NA` = list(
+    `some fips NA, some 99` = list(
       bgs     = c(NA, f1, 99),
       tracts  = c(NA, f2, 99),
       cities  = c(NA, f3, 99),
       counties= c(NA, f4, 99),
       states  = c(NA, f5, 99)
     ),
-    `same fips duplicated in inputs` = list(
+    `same fips duplicated` = list(
       bgs     = c(f1[1], f1, f1[1]),
       tracts  = c(f2[1], f2, f2[1]),
       cities  = c(f3[1], f3, f3[1]),
@@ -317,14 +317,12 @@ testcases_each_fipstype <- function() {
 
           try({
             test_that(paste0(names(testinput_fips_sets)[i],
-                             paste0(" (fipstype: ", names(testinput_fips_sets[[i]][ii]), ")"),
-                             " (allow_multiple_fips_types=", substr(allow_multiple_fips_types,1,1), ", return_shp=", substr(return_shp,1,1), ")"), {
+                             paste0(" (", names(testinput_fips_sets[[i]][ii]), ")"),
+                             " (return_shp=", substr(return_shp,1,1), ", allow_multi=", substr(allow_multiple_fips_types,1,1), ")"), {
 
-                               cat(paste0("return_shp=", return_shp, ", allow_multiple_fips_types=", allow_multiple_fips_types, "  --"))
+                               cat(paste0("return_shp=", return_shp, ", allow_multi=", allow_multiple_fips_types, "  --"))
                                cat("  test set name:", names(testinput_fips_sets)[i],
-                                   paste0("(fipstype: ", names(testinput_fips_sets[[i]][ii]), ")"),
-                                   # "\n   fips: ", paste0(testinput_fips_sets[[i]][ii], collapse = ", "),
-                                   "\n")
+                                   paste0("(", names(testinput_fips_sets[[i]][ii]), ")"), "\n")
 
                                originalfips <- as.character(as.vector(unlist(testinput_fips_sets[[i]][ii])))
                                originalfips_nona = originalfips[!is.na(originalfips)]
