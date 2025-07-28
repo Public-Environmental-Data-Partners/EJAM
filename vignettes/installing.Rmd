@@ -55,7 +55,7 @@ To use EJAM in RStudio, you would ideally clone the repo as a new RStudio Projec
 
 You could try to skip cloning the repository and just install the package from GitHub, but you will not be able to edit the source code or contribute to the package development. You should be able to use the package in RStudio without cloning, but a number of functions (especially those related to package development) assume a local source code copy is available.
 
-Trying to use [remotes::install_github()] requires having set up a for authentication to work (see below on PATs).
+Trying to use [remotes::install_github()] requires having set up a PAT for authentication to work (see below on PATs).
 
 a. If you *don't have a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens){.uri target="_blank" rel="noreferrer noopener"} (PAT) and don't want to set one up*, you could [check the github repository for the latest release](`r paste0("https://github.com/", EJAM:::repo_from_desc(), "/releases/latest")`) and use `remotes::install_url()` something like this:
 
