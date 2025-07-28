@@ -3,7 +3,7 @@
 \name{run_app}
 \alias{run_app}
 \alias{app_run_EJAM}
-\title{Launch EJAM as Shiny web app in RStudio.}
+\title{Launch EJAM as Shiny web app (e.g. to run it locally in RStudio)}
 \usage{
 run_app(
   onStart = NULL,
@@ -46,33 +46,16 @@ expression in order for the match to be considered successful.}
 Note that many defaults are defined in files like global_defaults_*.R.
 They can be changed there, but also
 can be passed here to override those defaults for the duration of the app.
-
-For example:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{run_app(
-  default_standard_analysis_title = "CUSTOM REPORT",
-  default_default_miles = 3.1,
-  default_max_miles = 31,
-  default_max_mb_upload = 100
-)
-
-}\if{html}{\out{</div>}}}
+See details for examples.}
 }
 \value{
 An object that represents the app. Printing the object or
 passing it to \code{\link[=runApp]{runApp()}} will run the app.
 }
 \description{
-Launch app. \code{\link[=app_run_EJAM]{app_run_EJAM()}} & \code{\link[=run_app]{run_app()}} are the same.
+Launch the web app
 }
 \details{
-\code{run_app( isPublic = TRUE )} will launch a simpler version of the web app
-(e.g., for more general public use rather than the full set of complicated
-features that are used less often).
-
-Parameters for \code{\link[=run_app]{run_app()}} to pass to \code{\link[shiny:runApp]{shiny::runApp()}} are given via options=list() must be among the following:
-"port", "launch.browser", "host", "quiet", "display.mode", "test.mode", "width", or "height"
-
 Parameters for how the EJAM app works are given via \code{...} and are passed to \code{\link[golem:with_golem_options]{golem::with_golem_options()}}.
 Examples of these parameters that you could pass to run_app() are shown below,
 but these are not all fully tested:
@@ -155,11 +138,17 @@ run_app(
  default.an_thresh_comp2 = 80    #  same
 )
 
- ## To make a hosted app default to the full set of features
- ## edit app.R to override/change its default,
- ##  and to disable and hide Advanced tab (even though isPublic=FALSE)
- ##  and perhaps hide histograms since they are complicated,
- ##  note these settings:
+## Public hosted app vs full-featured app:
+
+run_app( isPublic = TRUE )
+# will launch a simpler version of the web app
+# (e.g., for more general public use rather than the full set of complicated
+# features that are used less often).
+# To make a hosted app default to the full set of features
+# edit app.R to override/change its default,
+#  and to disable and hide Advanced tab (even though isPublic=FALSE)
+#  and perhaps hide histograms since they are complicated,
+#  note these settings:
 
 run_app(
  isPublic = FALSE,
@@ -191,15 +180,15 @@ run_app(
  sitepoints = testpoints_10 # or 'latlondata.xlsx'
 }\if{html}{\out{</div>}}
 
-The \code{enableBookmarking} param lets a user, via the \code{\link[=bookmarkButton]{bookmarkButton()}} in ui,
+The \code{enableBookmarking} param lets a user, via the \code{\link[shiny:bookmarkButton]{shiny::bookmarkButton()}} in ui,
 save any uploaded files plus state of all  input$  settings.
 if enableBookmarking="url" that is all saved on the server.
-See \code{\link[=shinyApp]{shinyApp()}} \code{\link[=onBookmark]{onBookmark()}} \code{\link[=onBookmarked]{onBookmarked()}} \code{\link[=onRestore]{onRestore()}} \code{\link[=onRestored]{onRestored()}}
-See https://mastering-shiny.org/action-bookmark.html
-or https://rdrr.io/cran/shiny/man/bookmarkButton.html
+See \code{\link[shiny:shinyApp]{shiny::shinyApp()}} \code{\link[shiny:onBookmark]{shiny::onBookmark()}} \code{\link[shiny:onBookmark]{shiny::onBookmarked()}} \code{\link[shiny:onBookmark]{shiny::onRestore()}} \code{\link[shiny:onBookmark]{shiny::onRestored()}}
+See (https://mastering-shiny.org/action-bookmark.html)
+or (https://rdrr.io/cran/shiny/man/bookmarkButton.html)
 
 Typically R Shiny apps are not distributed as R packages and
-launching a shiny app will just source() all .R files found in /R/ folder,
+launching a shiny app will just \code{\link[=source]{source()}} all .R files found in /R/ folder,
 and then run what is found in \code{app.R} (assuming it is a one-file Shiny app).
 
 This R Shiny app, however, is shared as an R package,
@@ -210,8 +199,6 @@ useful features that the golem package enables.
 There is a file \code{app.R} in the package root,
 used when the shiny app
 is started locally via RStudio's Run button or on posit connect server.
-The \code{app.R} script does \code{library(EJAM)} if the pkg is not already loaded,
-and then does \code{\link[=run_app]{run_app()}} which
 
 There is a file called \verb{_disable_autoload.R} in the /R/ folder
 used when the shiny app is started,
@@ -219,6 +206,6 @@ to tell the server to NOT source all the .R files,
 since they are already being loaded from the package by \code{\link[=run_app]{run_app()}}
 }
 \seealso{
-\code{\link[=app_run_EJAM]{app_run_EJAM()}}
+\code{\link[=app_run_EJAM]{app_run_EJAM()}} and \code{\link[=run_app]{run_app()}} are synonymous
 }
 \keyword{internal}

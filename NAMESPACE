@@ -264,8 +264,6 @@ export(xls_varname2vartype)
 export(xls_vartype2color)
 import(data.table)
 import(dplyr, except = c(first, last, between))
-
-
 import(shiny, except = c(dataTableOutput, renderDataTable))
 import(shinycssloaders)
 importFrom(data.table,":=")
