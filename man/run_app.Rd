@@ -70,35 +70,107 @@ Launch app. \code{\link[=app_run_EJAM]{app_run_EJAM()}} & \code{\link[=run_app]{
 (e.g., for more general public use rather than the full set of complicated
 features that are used less often).
 
-Technical Notes:
-
 Parameters for \code{\link[=run_app]{run_app()}} to pass to \code{\link[shiny:runApp]{shiny::runApp()}} are given via options=list() must be among the following:
 "port", "launch.browser", "host", "quiet", "display.mode", "test.mode", "width", or "height"
 
 Parameters for how the EJAM app works are given via \code{...} and are passed to \code{\link[golem:with_golem_options]{golem::with_golem_options()}}.
-
-Examples of these parameters that you could pass to run_app()
+Examples of these parameters that you could pass to run_app() are shown below,
 but these are not all fully tested:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{run_app(
- default_standard_analysis_title = "CUSTOM REPORT",
+\if{html}{\out{<div class="sourceCode">}}\preformatted{## To use preferred settings for your set of analyses:
 
- default_default_miles = 3.1, # default distance in miles
- default_max_miles = 31,
- default_max_mb_upload = 100,
- default_default_miles_shapefile = 0.1,
+run_app(
+ default_standard_analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
 
- default.an_threshgroup1 = "Envt-US-or-ST",
- default.an_thresh_comp1 = 95,
- default.an_threshnames1 = EJAM::names_e_state_pctile,
+ default_default_miles = 3.1, # PREFERRED RADIUS
+ default_max_miles = 31,      # to raise the radius cap
+ default_max_mb_upload = 100, # to raise the file upload size cap
+ default_default_miles_shapefile = 0.1 # preferred distance from polygons
+)
 
- ## to have shapefiles, MACT, Cities as initial (default) selections:
- # default_upload_dropdown = "dropdown", #may not be implemented yet
- default_choices_for_type_of_site_upload =c('Shapefile upload'='SHP'),
- default_choices_for_type_of_site_category=c('by MACT subpart'='MACT'),
- fipspicker_fips_type2pick_default = "Cities or Places",
+ ## NAICS as the default:
 
- ## shorter reorganized list of extra indicators:
+ ##   If you want all the options available, note that
+ ##   default_choices_for_type_of_site_category
+ ##   defines the range of options, but also
+ ##   the initial/default selection will be whatever is first on the list!
+
+run_app(
+ default_upload_dropdown = "dropdown",
+ default_choices_for_type_of_site_category = c(
+   'by Industry (NAICS) Code' = 'NAICS',
+   'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
+   'by Industry (SIC) Code'   = 'SIC',
+   'by EPA Program'           = 'EPA_PROGRAM',
+   'by MACT subpart'          = 'MACT'
+ )
+)
+
+ ## Cities as the default:
+
+run_app(
+ default_upload_dropdown = "dropdown",
+ default_choices_for_type_of_site_category = c(
+   'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
+   'by Industry (NAICS) Code' = 'NAICS',
+   'by Industry (SIC) Code'   = 'SIC',
+   'by EPA Program'           = 'EPA_PROGRAM',
+   'by MACT subpart'          = 'MACT'
+ ),
+ fipspicker_fips_type2pick_default = "Cities or Places"
+)
+
+ ## Polygons as the default:
+
+run_app(
+ default_upload_dropdown = "upload",
+ default_choices_for_type_of_site_upload = c(
+   'Shapefile of polygons file upload'              = 'SHP',
+   'Latitude/Longitude file upload'                 = 'latlon',
+   'EPA Facility ID (FRS Identifiers) file upload'  = 'FRS',
+   'EPA Program IDs file upload'                    = 'EPA_PROGRAM',
+   'Census place FIPS Codes file upload'            = 'FIPS'
+ )
+)
+
+## Count how many of some indicator are >= some cutoff
+
+run_app(
+ #  Envt indicators, count US or ST 80th+, and count US or ST 95th+
+ default.an_threshgroup1 = "Envt-US-or-ST-pctile", # among US and ST pctiles
+ default.an_threshgroup2 = "Envt-US-or-ST-pctile", # same
+ default.an_threshnames1 = c(EJAM::names_e_pctile, EJAM::names_e_state_pctile),
+ default.an_threshnames2 = c(EJAM::names_e_pctile, EJAM::names_e_state_pctile),
+ default.an_thresh_comp1 = 80,   #  how many are >=80th
+ default.an_thresh_comp2 = 95   #  how many are >=95th
+)
+
+run_app(
+ #  Envt indicators, count US 80th+, and count ST 80th+
+ default.an_threshgroup1 = "Envt-US-pctile",
+ default.an_threshgroup2 = "Envt-ST-pctile",
+ default.an_threshnames1 = EJAM::names_e_pctile,
+ default.an_threshnames2 = EJAM::names_e_state_pctile,
+ default.an_thresh_comp1 = 80,   #  how many are >=80th
+ default.an_thresh_comp2 = 80    #  same
+)
+
+ ## To make a hosted app default to the full set of features
+ ## edit app.R to override/change its default,
+ ##  and to disable and hide Advanced tab (even though isPublic=FALSE)
+ ##  and perhaps hide histograms since they are complicated,
+ ##  note these settings:
+
+run_app(
+ isPublic = FALSE,
+ default_hide_advanced_settings = TRUE, # hides Advanced tab when app launches
+ default_can_showhide_advanced_settings = FALSE, # removes user's ability to show Advanced tab
+ default_hide_plot_histo_tab = TRUE
+ )
+
+## Other options:
+
+ ## to show a shorter, reorganized list of extra indicators on report:
  default_extratable_list_of_sections = list(
    Health = c("pctdisability", "lowlifex",
      "rateheartdisease", "rateasthma", "ratecancer", "lifexyears"),
@@ -106,18 +178,17 @@ but these are not all fully tested:
    `Feature Counts` = c("count.NPL", "count.TSDF",
      "num_waterdis", "num_airpoll", "num_brownfield", "num_tri",
      "num_school", "num_hospital", "num_church")
- ),
+ )
 
- isPublic = FALSE,
- default_hide_advanced_settings = FALSE,
- default_can_showhide_advanced_settings = TRUE,
- default_hide_plot_histo_tab = FALSE,
+ shiny.testmode=TRUE
+ # aka  default_shiny.testmode=TRUE
+ # aka  options=list(test.mode=TRUE)
 
- shiny.testmode=TRUE, # or  default_shiny.testmode=TRUE, # or options=list(test.mode=TRUE),
- testing = TRUE       # or  default_testing=TRUE
-)
+ testing = TRUE
+ # aka  default_testing=TRUE
 
-# untested:    sitepoints = testpoints_10 # or 'latlondata.xlsx'
+ # untested possible future option:
+ sitepoints = testpoints_10 # or 'latlondata.xlsx'
 }\if{html}{\out{</div>}}
 
 The \code{enableBookmarking} param lets a user, via the \code{\link[=bookmarkButton]{bookmarkButton()}} in ui,
