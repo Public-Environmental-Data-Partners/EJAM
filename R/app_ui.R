@@ -108,8 +108,9 @@ app_ui  <- function(request) {
                                                'Upload specific locations'),
                                choiceValues = c('dropdown',
                                                 'upload'),
-                               selected = 'upload'),   # hard-coded default selection.
-                  # uiOutput(outputId = 'ss_choose_method_ui'), # flexible default selection, handled in server code.
+                               selected = EJAM:::global_or_param("default_upload_dropdown")),
+                               # selected = 'upload'),   # if hard-coded default selection.
+                  # uiOutput(outputId = 'ss_choose_method_ui'), # flexible default selection, if handled in server code.
 
                   ## > what DROPDOWN CATEGORY TYPE? (NAICS, SIC, MACT, Program, FIPS_PLACE) ####
 

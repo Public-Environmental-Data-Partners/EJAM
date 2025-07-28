@@ -49,6 +49,11 @@ get_global_defaults_or_user_options <- function(user_specified_options = NULL, b
     }
     return(global_defaults_or_user_options)
   }
+  ############ #
+
+  ## global_defaults_package  should already be in global env from .onAttach(), but if one does rmost() or rm(list=ls()) and then tries run_app(), it is missing and app cannot find logo for summary report.
+  ## could re-load it here just in case that comes up:
+  source(system.file("global_defaults_package.R", package = "EJAM"), local = FALSE)
 
   ############ #
   # 2. settings defined in file global_defaults_shiny_public.R ####
