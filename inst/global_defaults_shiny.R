@@ -56,6 +56,7 @@ aboutpage_logo <- "www/ejamhex4.png" # (small wordless hex)
 # GENERAL OPTIONS & Testing ####
 
 use_shapefile_from_any <- TRUE # used below in list in more than one place so set it here. handles more file formats if TRUE.
+######################################################################################################## #
 
 global_defaults_shiny <- list(
 
@@ -456,10 +457,9 @@ default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses areal
   ## for public branch, want to hide so it can be legible when embedded as an iframe
   default_show_full_header_footer = FALSE,
 
-  # Advanced settings
-  default_hide_advanced_settings = TRUE,           # this controls if the adv tab is visible initially
+  # Advanced settings #   defined in global_defaults_shiny_public.R
+  # default_hide_advanced_settings = TRUE,           # this controls if the adv tab is visible initially
   # default_can_showhide_advanced_settings = TRUE, # this controls if user has ability to show the adv tab (via the show/hide adv tab buttons)
-  #   defined in global_defaults_shiny_public.R
 
   # Written Report
   default_hide_written_report = TRUE,

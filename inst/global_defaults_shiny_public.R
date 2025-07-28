@@ -19,7 +19,7 @@
 ######################################################################################################## #
 ########## #
 # isPublic ####
-# if user did specify isPublic like by calling run_app(isPublic = TRUE), use that setting
+# if user (or app.R) did specify isPublic like by calling run_app(isPublic = TRUE), use that setting
 if (exists("isPublic")) {
   #isPublic <- isPublic
 } else {
@@ -41,9 +41,14 @@ global_defaults_shiny_public <- list(
   # About tab
   default_hide_about_tab = FALSE, # now can always show About tab but turn off just that tab's buttons giving users access to advanced tab
 
-  # Advanced tab accessible at all?
-  default_can_showhide_advanced_settings = !isTRUE(isPublic), # this controls if user has ability to show the adv tab (via the show/hide adv tab buttons)
-  # access to turning on Advanced/Experimental tab, which is NOT ideal for public-facing version
+  # Advanced tab (NOT ideal for public-facing version)
+  #   is the tab hidden initially?
+  default_hide_advanced_settings = ifelse(isPublic,
+                                          TRUE,  # if hosted public app, and app.R  sets isPublic=T, this hides the Adv. tab
+                                          TRUE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via run_app(default_hide_advanced_settings=F))
+  ),
+  #   is user able to unhide the tab? (via buttons)
+  default_can_showhide_advanced_settings = !isTRUE(isPublic),
 
   # Histograms tab
   default_hide_plot_histo_tab = isTRUE(isPublic),  # hidden because complicated and public may not want it anyway
@@ -52,10 +57,25 @@ global_defaults_shiny_public <- list(
 
   ############################################################################## #
 
-  ## SITE SELECTION: CAPS ON UPLOADS, PTS, RADIUS, etc.   ####
+  ## SITE SELECTION  ####
 
   # 'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',  # but NOT all fips of one category (unlike for NAICS etc.)
+
   ### ------------------------ default_choices_for_type_of_site_category  #####
+
+  ## default_choices_for_type_of_site_category defines the range of options but also
+  ## the initial/default selection will be whatever is first on the list.
+  ## If you want all the options available but want the app to default to NAICS, in run_app() use these params:
+  # run_app(
+  #   default_upload_dropdown = "dropdown",
+  #   default_choices_for_type_of_site_category = c(
+  #     'by Industry (NAICS) Code' = 'NAICS',
+  #     'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
+  #     'by Industry (SIC) Code'   = 'SIC',
+  #     'by EPA Program'           = 'EPA_PROGRAM',
+  #     'by MACT subpart'          = 'MACT'
+  #   )
+  # )
 
   default_choices_for_type_of_site_category = if (isTRUE(isPublic)) {
     c(
@@ -73,6 +93,21 @@ global_defaults_shiny_public <- list(
   },
 
   ### ------------------------ default_choices_for_type_of_site_upload  #####
+
+  ## default_choices_for_type_of_site_upload defines the range of options but also
+  ## the initial/default selection will be whatever is first on the list. - see ?run_app()
+  ## If you want all the options available but want the app to default to polygons, in run_app() use these params:
+  #
+  # run_app(
+  #   default_upload_dropdown = "upload",
+  #   default_choices_for_type_of_site_upload = c(
+  #     'Shapefile of polygons file upload'              = 'SHP',
+  #     'Latitude/Longitude file upload'                 = 'latlon',
+  #     'EPA Facility ID (FRS Identifiers) file upload'  = 'FRS',
+  #     'EPA Program IDs file upload'                    = 'EPA_PROGRAM',
+  #     'Census place FIPS Codes file upload'            = 'FIPS'
+  #   )
+  # )
 
   default_choices_for_type_of_site_upload = if (isTRUE(isPublic)) {
     c(
