@@ -621,8 +621,7 @@ help_texts <- list(
           target = "_blank", rel = "noreferrer noopener") ),
     p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting reports for hundreds or thousands of places, all at the same time."),
     p("This provides interactive results and a formatted, ready-to-share report with tables, graphics, and a map. The report can provide information about communities near any of the industrial facilities on a list, for example."),
-    p("This version of the Environmental and Residential Population Analysis Multisite tool (EJAM) is not associated with the United States Environmental Protection Agency (US EPA), but has its roots in
-      open source code that was originally develop at EPA."),
+    p("This version of the Environmental and Residential Population Analysis Multisite tool (EJAM) is not associated with the United States Environmental Protection Agency (US EPA), but has its roots in open source code that was originally developed at EPA."),
     h4("For more information about ",
       a(href = "https://www.ejanalysis.org/status", "the evolving status of EJSCREEN & EJAM in 2025",
         target = "_blank", rel = "noreferrer noopener"),
