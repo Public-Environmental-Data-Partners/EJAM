@@ -248,14 +248,14 @@ but these are not all fully tested:</p>
 <span id="cb1-116"><a href="#cb1-116" tabindex="-1"></a></span>
 <span id="cb1-117"><a href="#cb1-117" tabindex="-1"></a> <span class="co"># untested possible future option:</span></span>
 <span id="cb1-118"><a href="#cb1-118" tabindex="-1"></a> sitepoints <span class="ot">=</span> testpoints_10 <span class="co"># or 'latlondata.xlsx'</span></span></code></pre><p></p></div>
-<p>The <code>enableBookmarking</code> param lets a user, via the <code>bookmarkButton()</code> in ui,
+<p>The <code>enableBookmarking</code> param lets a user, via the <code><a href="https://rdrr.io/pkg/shiny/man/bookmarkButton.html" class="external-link">shiny::bookmarkButton()</a></code> in ui,
 save any uploaded files plus state of all  input$  settings.
 if enableBookmarking="url" that is all saved on the server.
-See <code>shinyApp()</code> <code>onBookmark()</code> <code>onBookmarked()</code> <code>onRestore()</code> <code>onRestored()</code>
-See https://mastering-shiny.org/action-bookmark.html
-or https://rdrr.io/cran/shiny/man/bookmarkButton.html</p>
+See <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp()</a></code> <code><a href="https://rdrr.io/pkg/shiny/man/onBookmark.html" class="external-link">shiny::onBookmark()</a></code> <code><a href="https://rdrr.io/pkg/shiny/man/onBookmark.html" class="external-link">shiny::onBookmarked()</a></code> <code><a href="https://rdrr.io/pkg/shiny/man/onBookmark.html" class="external-link">shiny::onRestore()</a></code> <code><a href="https://rdrr.io/pkg/shiny/man/onBookmark.html" class="external-link">shiny::onRestored()</a></code>
+See (https://mastering-shiny.org/action-bookmark.html)
+or (https://rdrr.io/cran/shiny/man/bookmarkButton.html)</p>
 <p>Typically R Shiny apps are not distributed as R packages and
-launching a shiny app will just source() all .R files found in /R/ folder,
+launching a shiny app will just <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code> all .R files found in /R/ folder,
 and then run what is found in <code>app.R</code> (assuming it is a one-file Shiny app).</p>
 <p>This R Shiny app, however, is shared as an R package,
 via the <a href="https://thinkr-open.github.io/golem/" class="external-link">golem package</a> approach,
@@ -263,9 +263,7 @@ which provides the useful features of a package and
 useful features that the golem package enables.</p>
 <p>There is a file <code>app.R</code> in the package root,
 used when the shiny app
-is started locally via RStudio's Run button or on posit connect server.
-The <code>app.R</code> script does <code><a href="https://ejanalysis.github.io/EJAM">library(EJAM)</a></code> if the pkg is not already loaded,
-and then does <code>run_app()</code> which</p>
+is started locally via RStudio's Run button or on posit connect server.</p>
 <p>There is a file called <code>_disable_autoload.R</code> in the /R/ folder
 used when the shiny app is started,
 to tell the server to NOT source all the .R files,
