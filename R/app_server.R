@@ -244,13 +244,12 @@ app_server <- function(input, output, session) {
       naics_choices <- setNames(naics_counts_filtered()$NAICS, naics_counts_filtered()$label_no_subs)
     }
 
-    vals <- input$ss_select_naics
+    vals <- ifelse(is.null(input$ss_select_naics), input$default_naics, input$ss_select_naics)
     # update ss_select_NAICS input options ###
     updateSelectizeInput(session = session, inputId = 'ss_select_naics',
                          ## use named list version, grouped by first two code numbers
                          choices = naics_choices, # need to keep formatting
                          selected = vals,
-                         #choices = NAICS, # named list of codes, data loaded with EJAM package
                          server = TRUE)
   })
 
@@ -349,19 +348,39 @@ app_server <- function(input, output, session) {
 
   data_up_shp <- reactive({
 
-    req(input$ss_upload_shp)
-    infiles <- input$ss_upload_shp$datapath # get path and temp (not original) filename of the uploaded file
-    print(infiles)
+    if (is.null(input$ss_upload_shp)) {
+      xshp <- global_or_param("shapefile")
+      if (is.null(xshp) || length(xshp) == 0) {
+        if (input$testing) {cat("should stop here\n")}
+        req(FALSE, cancelOutput = TRUE)
+        if (input$testing) {cat("should not be here\n")}
+      } else {
+        #   ###################################### #
+        # if the file or object (spatial data.frame) was provided as shapefile param in run_app()
+        if (input$testing) {cat("trying to read shapefile parameter\n")}
+        shp <- try( shapefile_from_any(xshp, cleanit = FALSE), silent = TRUE)
+        if (inherits(shp, "try-error")) {
+          req(FALSE, cancelOutput = TRUE)
+        }
+        ## if user provided run_app(shapefile=xyz) but did not set these also, they will not see their upload ready to run:
+        ## default_upload_dropdown = "upload"  --  input$default_ss_choose_method
+        ## default_selected_type_of_site_upload = "latlon"  or  default_selected_type_of_site_upload = "SHP" --  input$ss_choose_method_upload
+        #shiny::updateRadioButtons(inputId = "default_ss_choose_method", selected = "upload")
+        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
+        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "SHP")
+      }
+    } else {
+      #   ###################################### #
+      # if the file was uploaded via web app button
+      req(input$ss_upload_shp)
+      if (input$testing) {cat("file was uploaded via web app button\n")}
+      infiles <- input$ss_upload_shp$datapath # get path and temp (not original) filename of the uploaded file
+      print(infiles)
+      infile_ext <- tools::file_ext(infiles)
+      required_extensions <- c('shp', 'shx', 'dbf', 'prj', 'json')
+      valid_zip <- 'zip'
+      has_required_files <- all(required_extensions %in% infile_ext) || any(infile_ext == valid_zip)
 
-    infile_ext <- tools::file_ext(infiles)
-
-    required_extensions <- c('shp', 'shx', 'dbf', 'prj', 'json')
-    valid_zip <- 'zip'
-    has_required_files <- all(required_extensions %in% infile_ext) || any(infile_ext == valid_zip)
-
-    if (EJAM:::global_or_param("use_shapefile_from_any")) {
-      ###################################### #
-      # newer way ... uses shapefile_from_any() which uses shapefix()
       allowed_extensions <- EJAM:::global_or_param("default_shp_oktypes_1") # c("zip", "gdb", "geojson", "json", "kml", "shp") # see shapefile_from_any()
       if (all(infile_ext %in% allowed_extensions)) {
         error_message(NULL)
@@ -370,123 +389,26 @@ app_server <- function(input, output, session) {
         error_message(paste("Not an allowed file type. Must be one of these:", paste(allowed_extensions, collapse = ", ")))
         disable_buttons[['SHP']] <- TRUE
       }
-
       shp <- shapefile_from_any(infiles, cleanit = FALSE, inputname = input$ss_upload_shp$name)
+    }
+    #   ###################################### #
+    # do the rest whether it was uploaded or came via run_app()
 
-      # if shp contains point features, present message in app
-      ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow
-      if (any(sf::st_geometry_type(shp) == "POINT")) {
-        shp <- NULL
-        disable_buttons[['SHP']] <- TRUE
-        shiny::validate("Shape file must be of polygon geometry.")
-      }
-
-      if (!is.null(attr(shp, "validate_errmsg")))            {shiny::validate(validate_errmsg)}
-      if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
-      if (!is.null(attr(shp, "num_valid_pts_uploaded_SHP"))) {num_valid_pts_uploaded[['SHP']] <- attr(shp, "num_valid_pts_uploaded_SHP")}
-      if (!is.null(attr(shp, "invalid_alert_SHP")))          {invalid_alert[['SHP']]          <- attr(shp, "invalid_alert_SHP")}
-      #if (!is.null(attr(shp, "an_map_text_shp")))            {an_map_text_shp[['SHP']]            <- attr(shp, "an_map_text_shp")}
-
-      shp
-
-    } else {
-      ###################################### #
-      # older way
-
-      required_extensions <- c('shp', 'shx', 'dbf', 'prj')
-      valid_zip <- 'zip'
-      has_required_files <- all(required_extensions %in% infile_ext) || any(infile_ext == valid_zip)
-
-      if (!has_required_files) {
-        missing_files <- required_extensions[!required_extensions %in% infile_ext]
-        error_message(paste("Missing required file types:", paste(missing_files, collapse = ", ")))
-        disable_buttons[['SHP']] <- TRUE
-      } else {
-        error_message(NULL)
-        disable_buttons[['SHP']] <- FALSE
-      }
-
-      # detect type of file(s) specified, and read it
-      infile_ext <- tools::file_ext(infiles)
-      if (!all(c('shp','shx','dbf','prj') %in% infile_ext) && !('zip' %in% infile_ext) && !('json' %in% infile_ext)) {
-        # cant read file type specified ____________________________________
-        disable_buttons[['SHP']] <- TRUE
-        shiny::validate('Not all required file extensions found.')
-      }
-      if (length(infile_ext) == 1 & any(grepl("json", infile_ext))) {
-        # read json file ____________________________________
-        shp <- shapefile_from_json(infiles)
-
-      } else {
-        if (length(infile_ext) == 1 & any(grepl("zip", infile_ext))) {
-          # read zip file____________________________________
-          shp <- shapefile_from_zip(infiles)
-
-        } else {
-          # read .shp etc.____________________________________
-          dir <- unique(dirname(infiles)) # get folder (a temp one created by shiny for the uploaded file)
-          outfiles <- file.path(dir, input$ss_upload_shp$name) # create new path\name from temp dir plus original filename of file selected by user to upload
-          name <- strsplit(input$ss_upload_shp$name[1], "\\.")[[1]][1] # ??? get filename minus extension, of 1 file selected by user to upload
-          purrr::walk2(infiles, outfiles, ~file.rename(.x, .y)) # rename files from ugly tempfilename to original filename of file selected by user to upload
-          shp <- sf::read_sf(file.path(dir, paste0(name, ".shp"))) # read-in shapefile
-        }
-      }
-
-      # if shp is null, present message in app
-      if (is.null(shp)) {
-        disable_buttons[['SHP']] <- TRUE                                # a reactiveValues object
-        shiny::validate("Uploaded file should contain the following file extensions: shp,shx,dbf,prj or json or zip")
-      }
-
-      # if shp contains point features, present message in app
-      if (any(sf::st_geometry_type(shp) == "POINT")) {
-        disable_buttons[['SHP']] <- TRUE                                # a reactiveValues object
-        shiny::validate("Shape file must be of polygon geometry.")
-      }
-
-      # Drop Z and/or M dimensions from feature geometries, resetting classes appropriately
-      shp <- sf::st_zm(shp)
-
-      # standardize colname to "geometry" since standard name not always seen. Can be "Shape" for example: shp <- shapefile_from_any(system.file('testdata/shapes/portland.gdb.zip', package = "EJAM"))
-      if (any(grepl("sfc", lapply(shp, class)))) {
-        colnames(shp)[grepl("sfc", lapply(shp, class))] <- "geometry"
-        sf::st_geometry(shp) <- "geometry"
-      }
-
-      # check if shp is valid, and
-      # add "valid" and "invalid_msg" columns re invalid rows/polygons
-
-      if (nrow(shp) > 0) {
-        ## terra provides faster valid check than sf
-        shp_valid_check <- terra::is.valid(terra::vect(shp), messages = T)
-        shp_is_valid <- shp_valid_check$valid
-        numna <- sum(!shp_is_valid)
-        num_valid_pts_uploaded[['SHP']] <- length(shp_is_valid) - sum(!shp_is_valid)    # a reactiveValues object
-        invalid_alert[['SHP']] <- numna                                                 # a reactiveValues object
-        #shp_valid <- shp[sf::st_is_valid(shp),] # old way to check which shapes valid
-        shp_valid <- dplyr::mutate(shp, siteid = dplyr::row_number())
-        shp_proj <- sf::st_transform(shp_valid,crs = 4269)
-      } else {
-
-        errmsg    = 'No shapes found in file uploaded.'
-        placetype = 'SHP'
-
-        invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-        an_map_text_pts[[placetype]] <- NULL  # hide count of uploaded sites
-        disable_buttons[[placetype]] <- TRUE
-        shiny::validate(errmsg)
-
-      }
-      disable_buttons[['SHP']] <- FALSE                                                 # a reactiveValues object
-      shp_proj$valid <- shp_is_valid
-      shp_proj <- cbind(ejam_uniq_id = 1:nrow(shp_proj), shp_proj)   #  UNIQUE ID HERE
-      shp_proj$invalid_msg <- NA
-      shp_proj$invalid_msg[shp_proj$valid == F] <- shp_valid_check$reason[shp_proj$valid == F]
-      shp_proj$invalid_msg[is.na(shp_proj$geometry)] <- 'bad geometry'
-      class(shp_proj) <- c(class(shp_proj), 'data.table')
-      shp_proj
-    } # end of old way of reading shp, replaced by shapefile_from_any() that uses shapefix()
-    ###################################### #
+    # if shp contains point features, present message in app
+    ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow
+    if (any(sf::st_geometry_type(shp) == "POINT")) {
+      shp <- NULL
+      disable_buttons[['SHP']] <- TRUE
+      shiny::validate("Shape file must be of polygon geometry.")
+    }
+    if (!is.null(attr(shp, "validate_errmsg")))            {shiny::validate(validate_errmsg)}
+    if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
+    if (!is.null(attr(shp, "num_valid_pts_uploaded_SHP"))) {num_valid_pts_uploaded[['SHP']] <- attr(shp, "num_valid_pts_uploaded_SHP")}
+    if (!is.null(attr(shp, "invalid_alert_SHP")))          {invalid_alert[['SHP']]          <- attr(shp, "invalid_alert_SHP")}
+    if ("sf" %in% class(shp)) {
+      disable_buttons[['SHP']] <- FALSE # Start button enabled
+    }
+    shp
 
   }) # END OF SHAPEFILE UPLOAD
 
@@ -571,14 +493,25 @@ app_server <- function(input, output, session) {
 
   #############################################################################  #
   ## reactive: latlon (from table passed to run_app() as param) ####
-  ## NOT YET IMPLEMENTED
 
   data_up_tablepassed_latlon <- reactive({
-    req(input$max_pts_upload)
+
+    sitepoints <- NULL # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
+    sitepoints <- global_or_param("sitepoints")
+    req(sitepoints)
+
     ################################# #
     prepare_table_from_run_app <- function(sitepoints, input_max_pts_upload, input_testing) {
 
-      if (all(sitepoints == 0)) {return(NULL)}
+      # handle R object or filepath
+      sitepoints <- try(sitepoints_from_anything(sitepoints))
+      if (inherits(sitepoints, "try-error")) {
+        if (input_testing) {cat("Error reading sitepoints from run_app() parameter \n")}
+        return(NULL)
+      }
+      if (all(sitepoints %in% 0) || is.null(sitepoints) || NROW(sitepoints) %in% 0 || !is.data.frame(sitepoints)) {
+        return(NULL)
+        }
       if (NROW(sitepoints) > input_max_pts_upload) {
         if (input_testing) {cat("ROW COUNT TOO HIGH IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")}
         return(NULL)
@@ -586,6 +519,7 @@ app_server <- function(input, output, session) {
       if (input_testing) {cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")}
       ## if column names are found in lat/long alias comparison, process
       if (any(tolower(colnames(sitepoints)) %in% lat_alias) & any(tolower(colnames(sitepoints)) %in% lon_alias)) {
+        sitepoints <- data.table::setDT(data.table::copy(sitepoints))
         sitepoints[, ejam_uniq_id := .I]
         data.table::setcolorder(sitepoints, 'ejam_uniq_id')
         sitepoints <- sitepoints %>%
@@ -595,48 +529,19 @@ app_server <- function(input, output, session) {
         if (input$testing) {cat("ROW COUNT after latlon_df_clean(): ", NROW(sitepoints), "\n")}
         return(sitepoints)
       } else {
-        return("No coordinate columns found.")
+        if (input_testing) {cat("No coordinate columns found.\n")}
+        return(NULL)
       }
     }
     ################################# #
 
-    sitepoints <- 0 # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
-
-    sitepoints <- global_or_param("sitepoints")
-    if (all(sitepoints == 0)) {
-      # warn zero places
-      cat('no input sitepoints\n')
-      return(NULL) # ?
-    } else {
-      cat('got input sitepoints\n')
-    }
-
     sitepoints <- prepare_table_from_run_app(sitepoints, input_max_pts_upload = input$max_pts_upload, input_testing = input$testing)
-
-    if (all(is.null(sitepoints))) {
-
-      errmsg    = paste0('Max allowed points is ', as.character(input$max_pts_upload))
-      placetype = 'latlon'
-
-      invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-      an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
-      disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
-
-    }
-    if (all(sitepoints == "No coordinate columns found.")) {
-
-      errmsg    = 'No coordinate columns found.'
-      placetype = 'latlon'
-
-      invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-      an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
-      disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
-
-    }
-    # ok
+    req(sitepoints, cancelOutput = TRUE) # stop if failed for any reason
+    # ok, so allow Start button
+    d
     disable_buttons[['latlon']] <- FALSE
+
+    sitepoints
   })
 
   #############################################################################  #
@@ -644,50 +549,38 @@ app_server <- function(input, output, session) {
 
   data_up_latlon <- reactive({
 
-    ## wait for file to be uploaded
-    req(input$ss_upload_latlon)
-
-    ## if acceptable file type, read in; if not, send warning text
-    input_file_path <- input$ss_upload_latlon$datapath
-    # ideally would quickly check file size here before actually trying to read the entire file in case it is > cap.
-
-    ## this part could be replaced each time it happens, by the function sitepoints_from_any
-
-    sitepoints <- as.data.table(read_csv_or_xl(fname = input_file_path))
-
-    # DO NOT USE THE UPLOAD IF IT HAS MORE THAN MAX POINTS ALLOWED FOR UPLOAD
-    #
-    if (NROW(sitepoints) > input$max_pts_upload) {
-
-      cat("ROW COUNT TOO HIGH IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
-
-      errmsg    = paste0('Max allowed upload of points is ', as.character(input$max_pts_upload))
-      placetype = 'latlon'
-
-      invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-      an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
-      disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
-
+    if (is.null(input$ss_upload_latlon)) {
+      # if nothing uploaded, check if latlon passed as parameter to run_app() in the form of "sitepoints" object
+      xsitepoints <- data_up_tablepassed_latlon()
+      if (!is.null(xsitepoints)) {
+        ## if user provided run_app(sitepoints=xyz) but did not set these also, they will not see their upload ready to run:
+        ## default_upload_dropdown = "upload"  --  input$default_ss_choose_method
+        ## default_selected_type_of_site_upload = "latlon"  --  input$ss_choose_method_upload
+        # shiny::updateRadioButtons(session = session, inputId = "default_ss_choose_method", selected = "upload")
+        shiny::updateRadioButtons(inputId = "ss_choose_method", selected = "upload")
+        shiny::updateSelectInput(inputId = "ss_choose_method_upload", selected = "latlon")
+        xsitepoints
+      }
     } else {
 
-      cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
-      ## if column names are found in lat/long alias comparison, process
-      if (any(tolower(colnames(sitepoints)) %in% lat_alias) & any(tolower(colnames(sitepoints)) %in% lon_alias)) {
-        sitepoints[, ejam_uniq_id := .I]
-        data.table::setcolorder(sitepoints, 'ejam_uniq_id')
-        sitepoints <- sitepoints %>%
-          latlon_df_clean(invalid_msg_table = TRUE) #%>%   # This does latlon_infer() and latlon_as.numeric() and latlon_is.valid()
-        sitepoints$invalid_msg <- NA
-        sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-        cat("ROW COUNT after latlon_df_clean(): ", NROW(sitepoints), "\n")
-        disable_buttons[['latlon']] <- FALSE
-        #print(sum(sitepoints$valid))
-        invalid_alert[['latlon']] <- sum(!sitepoints$valid)
-        sitepoints
-      } else {
+      ## now the file has been uploaded since !is.null
+      # req(input$ss_upload_latlon)
 
-        errmsg    = 'No coordinate columns found.'
+      ## if acceptable file type, read in; if not, send warning text
+      input_file_path <- input$ss_upload_latlon$datapath
+      # ideally would quickly check file size here before actually trying to read the entire file in case it is > cap.
+
+      ## this part could be replaced each time it happens, by the function sitepoints_from_any
+
+      sitepoints <- as.data.table(read_csv_or_xl(fname = input_file_path))
+
+      # DO NOT USE THE UPLOAD IF IT HAS MORE THAN MAX POINTS ALLOWED FOR UPLOAD
+      #
+      if (NROW(sitepoints) > input$max_pts_upload) {
+
+        cat("ROW COUNT TOO HIGH IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
+
+        errmsg    = paste0('Max allowed upload of points is ', as.character(input$max_pts_upload))
         placetype = 'latlon'
 
         invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
@@ -695,6 +588,32 @@ app_server <- function(input, output, session) {
         disable_buttons[[placetype]] <- TRUE
         shiny::validate(errmsg)
 
+      } else {
+
+        cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
+        ## if column names are found in lat/long alias comparison, process
+        if (any(tolower(colnames(sitepoints)) %in% lat_alias) & any(tolower(colnames(sitepoints)) %in% lon_alias)) {
+          sitepoints[, ejam_uniq_id := .I]
+          data.table::setcolorder(sitepoints, 'ejam_uniq_id')
+          sitepoints <- sitepoints %>%
+            latlon_df_clean(invalid_msg_table = TRUE) #%>%   # This does latlon_infer() and latlon_as.numeric() and latlon_is.valid()
+          sitepoints$invalid_msg <- NA
+          sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
+          cat("ROW COUNT after latlon_df_clean(): ", NROW(sitepoints), "\n")
+          disable_buttons[['latlon']] <- FALSE
+          #print(sum(sitepoints$valid))
+          invalid_alert[['latlon']] <- sum(!sitepoints$valid)
+          sitepoints
+        } else {
+
+          errmsg    = 'No coordinate columns found.'
+          placetype = 'latlon'
+
+          invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
+          an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
+          disable_buttons[[placetype]] <- TRUE
+          shiny::validate(errmsg)
+        }
       }
     }
   })

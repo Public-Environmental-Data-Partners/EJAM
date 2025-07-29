@@ -120,18 +120,20 @@ app_ui  <- function(request) {
                                 label = tags$span(
                                   'How would you like to select categories?'
                                 ),
-                                choices = EJAM:::global_or_param("default_choices_for_type_of_site_category")
+                                choices = EJAM:::global_or_param("default_choices_for_type_of_site_category"),
+                                selected = EJAM:::global_or_param("default_selected_type_of_site_category")
                     )
                   ),
 
-                  ## > what UPLOAD TYPE? Locations type to upload? (IDs, latlon, FIPS, Shapes) ####
+                  ## > what UPLOAD TYPE? Locations type to upload? (SHP, FIPS, FRS, EPA_PROGRAM, latlon) ####
                   conditionalPanel(
                     condition = 'input.ss_choose_method == "upload"',
                     selectInput(inputId = 'ss_choose_method_upload',
                                 label = tags$span(
                                   'What type of data are you uploading?'
                                 ),
-                                choices = EJAM:::global_or_param("default_choices_for_type_of_site_upload")
+                                choices = EJAM:::global_or_param("default_choices_for_type_of_site_upload"),
+                                selected = EJAM:::global_or_param("default_selected_type_of_site_upload")
                     )
                   ),
               ),
@@ -276,7 +278,7 @@ app_ui  <- function(request) {
                                            ## named vector in global_defaults_*.R - values are acronyms,
                                            ## names include # of rows corresponding to that program
                                            choices = epa_programs,
-                                           selected = EJAM:::global_or_param("default_epa_program_selected"), # not sure this is a good idea but trying it out
+                                           selected = EJAM:::global_or_param("default_epa_program_selected"),
                                            ## add X to remove selected options from list
                                            options = list('plugins' = list('remove_button'))),
                             br(),
@@ -299,8 +301,9 @@ app_ui  <- function(request) {
                               label = h6("Select industry of interest"),
                               # choose from named numeric vector on server-side
                               ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
-                              choices = NULL,
-                              selected = NULL,
+                              # choices = NULL,  # gets updated when buttons used
+                              choices = NULL, # setNames(naics_counts[nchar(naics_counts$NAICS) == 3, ]$NAICS, naics_counts[nchar(naics_counts$NAICS) == 3, ]$label_w_subs), # start with limited options ? ***
+                              selected = EJAM:::global_or_param("default_naics"),
                               width = 400,
                               multiple = TRUE,
                               ## add X to remove selected options from list
@@ -318,12 +321,12 @@ app_ui  <- function(request) {
                                              inline = TRUE,
                                              choiceNames = c("Basic list", "Detailed list"),
                                              choiceValues = c('basic', 'detailed'),
-                                             selected = 'basic'),
+                                             selected = EJAM:::global_or_param('default_naics_digits_shown')), # "basic"
                                 radioButtons('add_naics_subcategories', "Add all subcategories of NAICS?",
                                              inline = TRUE,
                                              choiceNames = c("Yes","No"),
                                              choiceValues = c(TRUE,FALSE),
-                                             selected = TRUE)
+                                             selected = EJAM:::global_or_param("default_add_naics_subcategories"))
                             ),
 
                             br(),
@@ -1036,6 +1039,18 @@ app_ui  <- function(request) {
                               selected = EJAM:::global_or_param("default_upload_dropdown"),
                               inline = TRUE),
 
+                 ## NAICS identifiers to start with
+                 h2("NAICS industry code to start with"),
+                 selectizeInput(
+                   inputId = "default_naics",
+                   label = h6("Selected industry of interest"),
+                   choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
+                   selected = EJAM:::global_or_param("default_naics"),
+                   width = 400,
+                   multiple = TRUE,
+                   ## add X to remove selected options from list
+                   options = list('plugins' = list('remove_button'))
+                 ),
                  ######################################################## #
                  ##  Uploading files/points/shapes ####
                  h2("Limits on uploads/points/shapes"),

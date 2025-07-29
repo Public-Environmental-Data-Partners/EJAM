@@ -63,8 +63,7 @@ global_defaults_shiny_public <- list(
 
   ### ------------------------ default_choices_for_type_of_site_category  #####
 
-  ## default_choices_for_type_of_site_category defines the range of options but also
-  ## the initial/default selection will be whatever is first on the list.
+  ## default_choices_for_type_of_site_category defines the range of options
   ## If you want all the options available but want the app to default to NAICS, in run_app() use these params:
   # run_app(
   #   default_upload_dropdown = "dropdown",
@@ -91,6 +90,13 @@ global_defaults_shiny_public <- list(
       'by MACT subpart'          = 'MACT'
     )
   },
+  default_selected_type_of_site_category = if (isTRUE(isPublic)) {
+    # NULL means the initially selected is the 1st on the list above, such as "FIPS_PLACE"
+     NULL  # but could be "NAICS" or another of the choices above
+  } else {
+     NULL  # but could be "NAICS" or another of the choices above
+  },
+
 
   ### ------------------------ default_choices_for_type_of_site_upload  #####
 
@@ -124,6 +130,8 @@ global_defaults_shiny_public <- list(
       'Census place FIPS Codes file upload'            = 'FIPS'         # <---
     )
   },
+  default_selected_type_of_site_upload = NULL, # NULL means initially selected is 1st on list of choices above
+
   ############################################################################## #
 
   # RESULTS VIEWS ####

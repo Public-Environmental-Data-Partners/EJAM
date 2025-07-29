@@ -13,6 +13,20 @@
 #' but these are not all fully tested:
 #'
 #'  ```
+#'  ## Provide input sites to app (skip the web app upload clicks)
+#'
+#'  run_app(sitepoints = testpoints_10[1:2,], default_default_miles = 3.1,
+#'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "latlon")
+#'
+#'  run_app(sitepoints = system.file("testdata/latlon/testpoints_10.xlsx", package="EJAM"),
+#'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "latlon")
+#'
+#'  run_app(shapefile = testshapes_2,
+#'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "SHP")
+#'
+#'  run_app(shapefile = system.file("testdata/shapes/testinput_shapes_2.zip", package="EJAM"),
+#'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "SHP")
+#'
 #'  ## To use preferred settings for your set of analyses:
 #'
 #' run_app(
@@ -26,48 +40,48 @@
 #'
 #'   ## NAICS as the default:
 #'
-#'   ##   If you want all the options available, note that
-#'   ##   default_choices_for_type_of_site_category
-#'   ##   defines the range of options, but also
-#'   ##   the initial/default selection will be whatever is first on the list!
+#'   ## default_selected_type_of_site_upload
+#'   ##   defines the initially selected default
+#'   ##   If you want to control the options available,
+#'   ## default_choices_for_type_of_site_category
+#'   ##   defines the range of options
 #'
 #' run_app(
 #'   default_upload_dropdown = "dropdown",
-#'   default_choices_for_type_of_site_category = c(
-#'     'by Industry (NAICS) Code' = 'NAICS',
-#'     'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
-#'     'by Industry (SIC) Code'   = 'SIC',
-#'     'by EPA Program'           = 'EPA_PROGRAM',
-#'     'by MACT subpart'          = 'MACT'
-#'   )
+#'   default_selected_type_of_site_category = 'NAICS',
+#'   default_naics = "562211",  #  initial value of ss_select_naics
+#'   default_naics_digits_shown = "detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
+#'   default_add_naics_subcategories = TRUE
 #' )
 #'
 #'   ## Cities as the default:
 #'
 #' run_app(
 #'   default_upload_dropdown = "dropdown",
-#'   default_choices_for_type_of_site_category = c(
-#'     'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
-#'     'by Industry (NAICS) Code' = 'NAICS',
-#'     'by Industry (SIC) Code'   = 'SIC',
-#'     'by EPA Program'           = 'EPA_PROGRAM',
-#'     'by MACT subpart'          = 'MACT'
-#'   ),
+#'   default_selected_type_of_site_category = "FIPS_PLACE",
 #'   fipspicker_fips_type2pick_default = "Cities or Places"
 #' )
+#'   #default_choices_for_type_of_site_category = c(
+#'   #  'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
+#'   #  'by Industry (NAICS) Code' = 'NAICS',
+#'   #  'by Industry (SIC) Code'   = 'SIC',
+#'   #  'by EPA Program'           = 'EPA_PROGRAM',
+#'   #  'by MACT subpart'          = 'MACT'
+#'   #)
 #'
 #'   ## Polygons as the default:
 #'
 #' run_app(
 #'   default_upload_dropdown = "upload",
-#'   default_choices_for_type_of_site_upload = c(
-#'     'Shapefile of polygons file upload'              = 'SHP',
-#'     'Latitude/Longitude file upload'                 = 'latlon',
-#'     'EPA Facility ID (FRS Identifiers) file upload'  = 'FRS',
-#'     'EPA Program IDs file upload'                    = 'EPA_PROGRAM',
-#'     'Census place FIPS Codes file upload'            = 'FIPS'
-#'   )
+#'   default_selected_type_of_site_upload = "SHP"
 #' )
+#'   #default_choices_for_type_of_site_upload = c(
+#'   #  'Shapefile of polygons file upload'              = 'SHP',
+#'   #  'Latitude/Longitude file upload'                 = 'latlon',
+#'   #  'EPA Facility ID (FRS Identifiers) file upload'  = 'FRS',
+#'   #  'EPA Program IDs file upload'                    = 'EPA_PROGRAM',
+#'   #  'Census place FIPS Codes file upload'            = 'FIPS'
+#'   #)
 #'
 #'  ## Count how many of some indicator are >= some cutoff
 #'
@@ -125,9 +139,7 @@
 #'   shiny.testmode=TRUE
 #'   # aka  default_shiny.testmode=TRUE
 #'   # aka  options=list(test.mode=TRUE)
-#'
-#'   testing = TRUE
-#'   # aka  default_testing=TRUE
+#'   default_testing=TRUE
 #'
 #'   # untested possible future option:
 #'   sitepoints = testpoints_10 # or 'latlondata.xlsx'

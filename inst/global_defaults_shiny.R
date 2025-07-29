@@ -140,9 +140,14 @@ global_defaults_shiny <- list(
   # upload or dropdown method of site selection
   default_upload_dropdown = "upload",
 
+  # NAICS
+  default_naics = "313", # 313 is about 900 textile mills and subcategories of that #  initial value of ss_select_naics
+  default_naics_digits_shown = "basic", # if default_naics is >3 digits, this has to be "detailed" not "basic"
+  default_add_naics_subcategories = TRUE,
+
   # EPA Programs (to limit NAICS/ facilities query)
   # used by inputId 'ss_limit_fac1' and 'ss_limit_fac2'
-  default_epa_program_selected = "CAMDBS", # has only about 739 sites
+  default_epa_program_selected = "CAMDBS", # has only about 739 sites # ss_select_program
   # cbind(epa_programs)
   # sort(unique(frs_by_programid$program)) # similar  # EJAM :: frs_by_programid
 
