@@ -33,12 +33,16 @@
 #'
 #' @keywords internal
 #'
-pkg_functions_and_data <- function(pkg,
+pkg_functions_and_data <- function(pkg = "EJAM",
                                    alphasort_table = FALSE,
                                    internal_included = TRUE,
                                    exportedfuncs_included = TRUE,
                                    data_included = TRUE,
                                    vectoronly = FALSE) {
+
+  if (!paste0("package:", pkg) %in% search()) {
+    stop(paste0("package:", pkg), " is not found in search() -- this function needs the package attached via library() or require() or possibly via devtools::load_all()")
+  }
 
   ## (helpers) ### #
   if (!internal_included) {
@@ -337,7 +341,7 @@ pkg_functions_and_sourcefiles <- function(pkg = "EJAM",
   if (basename(getwd()) != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
   x <- pkg_functions_with_keywords_internal_tag(loadagain = loadagain, quiet = quiet) # DOES load_all() again if loadagain==TRUE
   fnames <- x$func
-  fnames <- fnames[match(funcnames, fnames)] # match to ensure same order as info$object, but check how extra or missing ones are handled
+  fnames <- x$file[match(funcnames, fnames)] # match to ensure same order as info$object, but check how extra or missing ones are handled
   if (vectoronly) {
     return(fnames)
   } else {

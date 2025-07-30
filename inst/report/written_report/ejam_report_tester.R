@@ -15,29 +15,31 @@ options(scipen = 999)
 
 colcounter = EJAM:::colcounter
 x <- ejamit(testpoints_100, radius = 1)
-results1 <- x$results_bysite  
-results2 <- x$results_overall 
+results1 <- x$results_bysite
+results2 <- x$results_overall
 total_pop <- sum(x$results_bysite$pop)
 
 demog_table <- table_gt_from_ejamit(x, "demog")
 envt_table <- table_gt_from_ejamit(x, "envt")
 
 demog_barplot <- ejam2barplot(x)
-envt_barplot <- ejam2barplot(x,  varnames = c(names_e_ratio_to_avg, names_e_ratio_to_state_avg),
-                             main = "Environmental Indicators at Selected Sites Compared to Averages")
-
+envt_barplot <- ejam2barplot(x,
+                             varnames = names_e_ratio_to_state_avg,
+                             # varnames = c(names_e_ratio_to_avg,
+                                          # names_e_ratio_to_state_avg), # cant do US and State avgs at same time
+                             main = "Environmental Indicators at Selected Sites Compared to State Averages")
 
 demog_barplot <-
-demog_barplot +
-# ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, 10)) +
-ggplot2::theme(plot.title = ggplot2::element_text(hjust=0.2, size=10),
-      plot.subtitle = ggplot2::element_text(hjust=0.5, size=10),
-      axis.title.y = ggplot2::element_text(size=10),
-      axis.text = ggplot2::element_text(size=8)
-      )
+  demog_barplot +
+  # ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, 10)) +
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust=0.2, size=10),
+                 plot.subtitle = ggplot2::element_text(hjust=0.5, size=10),
+                 axis.title.y = ggplot2::element_text(size=10),
+                 axis.text = ggplot2::element_text(size=8)
+  )
 
 envt_barplot <-
-envt_barplot +
+  envt_barplot +
   # ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, 10)) +
   ggplot2::theme(plot.title = ggplot2::element_text(hjust=0.2, size=10),
                  plot.subtitle = ggplot2::element_text(hjust=0.5, size=10),
@@ -93,7 +95,7 @@ params_list <- list(
 
 rmarkdown::render("inst/report/written_report/EJAM_long_report_2-10-25.Rmd",
                   params = params_list,
-                  output_format = "bookdown::word_document2", 
+                  output_format = "bookdown::word_document2",
                   output_file = 'custom_report.docx')
 
 # note: keep Rmd file in "Source" mode to keep figure/table numbering
