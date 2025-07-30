@@ -2149,7 +2149,7 @@ app_server <- function(input, output, session) {
   #############################################################################  #
   ## *BARPLOT for short and long reports (avg person D ratios vs US avg) ####
 
-  # compare / merge with  EJAM/R/plot_barplot_ratios.R ***
+  # compare / merge with  ejam2barplot() / plot_barplot_ratios() / plot_barplot_ratios_ez() group of functions ***
   # https://exts.ggplot2.tidyverse.org/gallery/
   ###################  #
 

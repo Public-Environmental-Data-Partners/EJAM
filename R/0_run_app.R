@@ -31,7 +31,6 @@
 #'
 #' run_app(
 #'   default_standard_analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
-#'
 #'   default_default_miles = 3.1, # PREFERRED RADIUS
 #'   default_max_miles = 31,      # to raise the radius cap
 #'   default_max_mb_upload = 100, # to raise the file upload size cap
@@ -47,11 +46,13 @@
 #'   ##   defines the range of options
 #'
 #' run_app(
-#'   default_upload_dropdown = "dropdown",
-#'   default_selected_type_of_site_category = 'NAICS',
-#'   default_naics = "562211",  #  initial value of ss_select_naics
-#'   default_naics_digits_shown = "detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
-#'   default_add_naics_subcategories = TRUE
+#'   default_standard_analysis_title="Custom NAICS Analysis",
+#'   default_upload_dropdown="dropdown",
+#'   default_selected_type_of_site_category="NAICS",
+#'   default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
+#'   default_naics="562211",
+#'   default_default_miles=3.1,
+#'   default_ui_show_advanced_settings=1
 #' )
 #'
 #'   ## Cities as the default:
@@ -203,3 +204,4 @@ run_app <- function(
     golem_opts = global_defaults_or_user_options
   )
 }
+###################################### #

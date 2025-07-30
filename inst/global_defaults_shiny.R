@@ -192,7 +192,7 @@ global_defaults_shiny <- list(
 
   ### params whose defaults could be included here and in advanced tab:
 
-  # > cbind(formals(ejamit))
+  # > cbind(formals(ejamit)) or EJAM:::args2()
   #
   # sitepoints               NULL         na
   # radius                   3         for getblocksnearby(), shiny default is set in global
@@ -205,8 +205,8 @@ global_defaults_shiny <- list(
   # countcols                NULL      for doaggregate() ** shiny default NOT specified here
   # popmeancols              NULL      for doaggregate() ** shiny default NOT specified here
   # calculatedcols           NULL      for doaggregate() ** shiny default NOT specified here
-  # calctype_maxbg         NULL      for doaggregate() ** shiny default NOT specified here
-  # calctype_minbg         NULL      for doaggregate() ** shiny default NOT specified here
+  # calctype_maxbg           NULL      for doaggregate() ** shiny default NOT specified here
+  # calctype_minbg           NULL      for doaggregate() ** shiny default NOT specified here
   # subgroups_type           "nh"      for doaggregate(), shiny default is set in global
   # include_ejindexes        TRUE      for doaggregate(), shiny default is set in global
   # calculate_ratios         TRUE      for doaggregate(), shiny default is set in global
@@ -214,9 +214,9 @@ global_defaults_shiny <- list(
   # need_proximityscore      FALSE     for doaggregate(), shiny default is set in global
   # infer_sitepoints         FALSE     for doaggregate() ** shiny default NOT specified here
   # need_blockwt             TRUE      for getblocksnearby_from_fips(), shiny default not specified here, but by function defaults
-  # thresholds               expression  for batch.summarize()
-  # threshnames              expression  for batch.summarize()
-  # threshgroups             expression  for batch.summarize()
+  # thresholds               expression  for batch.summarize() , shiny default is set in global but name may differ
+  # threshnames              expression  for batch.summarize(), shiny default is set in global but name may differ
+  # threshgroups             expression  for batch.summarize(), shiny default is set in global but name may differ
   # updateProgress           NULL      ** shiny default NOT specified here
   # updateProgress_getblocks NULL      ** shiny default NOT specified here
   # in_shiny                 FALSE     for ejamit(), build_community_report(), and related functions
@@ -233,7 +233,7 @@ global_defaults_shiny <- list(
 
   ## ------------------------ getblocksnearby() params ####
 
-  # > cbind(formals(getblocksnearby))
+  # > cbind(formals(getblocksnearby)) or EJAM:::args2()
   #
   # sitepoints              ?       na
   # radius                  3       shiny default is set in global
@@ -248,7 +248,7 @@ global_defaults_shiny <- list(
   # ...                     ?
 
   # > cbind( formals(getblocksnearbyviaQuadTree)[setdiff(names(formals(getblocksnearbyviaQuadTree)), names(formals(getblocksnearby))) ])
-  #
+  # or EJAM:::args2()
   # report_progress_every_n    500    ** shiny default NOT specified here
   # retain_unadjusted_distance TRUE   ** shiny default NOT specified here
   # updateProgress             NULL   ** shiny default NOT specified here
@@ -262,7 +262,7 @@ global_defaults_shiny <- list(
 default_download_city_fips_bounds = TRUE, # if FALSE, area in sq miles would be NA for any city/CDP types of FIPS
 default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses arealand column from blockgroupstats
 
-  # > cbind(formals(doaggregate))
+  # > cbind(formals(doaggregate)) or EJAM:::args2()
   #
   # sites2blocks           ?       na
   # sites2states_or_latlon NA      na
