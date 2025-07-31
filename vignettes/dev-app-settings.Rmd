@@ -1,0 +1,694 @@
+---
+title: "Defaults and Custom Settings for the Web App"
+description: "Defaults and Custom Settings for the Web App"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Defaults and Custom Settings for the Web App}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r developernote, eval=FALSE, echo= FALSE, include = FALSE}
+#  *>>>>>>>>>> Developer note: vignettes need to be tested/edited/rebuilt regularly <<<<<<<<<<<*
+#    - **See ?pkgdown::build_site** and script in EJAM/data-raw/- EJAM uses the pkgdown R package to build help and articles/ vignettes as web pages
+```
+
+```{r SETUP_default_eval_or_not, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_chunk$set(eval = FALSE)
+# https://r-pkgs.org/vignettes.html
+```
+
+```{r libraryEJAM, eval = TRUE, echo= FALSE, include= FALSE}
+# rm(list = ls()); golem::detach_all_attached(); devtools::load_all()
+
+if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if pkg not yet attached
+
+# dataload_dynamic('all') # varnames = all  currently means all defined by .arrow_ds_names
+# 
+# indexblocks()
+```
+
+
+
+<!-- Proposed renaming scheme:  -->
+<!-- "radius_default" is better than "default_radius" -->
+<!-- Names in 3 places, 3 variables:  global_or_param("x_default"),  input$x_default,  input$x -->
+<!--    allows same varname for global/ runapp param and the bookmarked input$ -->
+<!--   but note its a bit harder to use global find to distinguish global_defaults_  x_default=3.1  and global_or_param("x_default")   versus inputId = "x_default" and input$x_default ? just be careful searching -->
+<!-- so.. -->
+<!-- 1. radius_default = 3.1  in global_defaults_ and run_app() parameter. -->
+<!--    (had been called  "default_default_miles") note default_default_miles_shapefile also existed -->
+<!-- 2. input$radius_default  in advanced tab, with initial value from selected = global_or_param("radius_default"). bookmarked as &radius_default=3.1 -->
+<!--    (had been called input$default_miles) -->
+<!-- 3. input$radius as the current value being used in the app, with init value from selected = input$radius_default.  bookmarked as &radius=3.1 ? -->
+<!--    (had been named input$bt_ rad_ buff) -->
+
+
+# NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION PARAMETERS
+
+This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.
+
+Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `run_app()` as parameters, to override those global default settings for the duration of the app. Using `run_app()` parameters allows experienced analysts to customize how the web app works without having to edit any files. For example, one can change default settings for the radius, the type of sites to analyze, name of the analysis, etc., or to override caps such as limits on file upload size or number of points:
+
+```{r run-app1, eval=FALSE}
+run_app(
+  radius_default=3.1,
+  default_max_miles=31,
+  default_max_mb_upload=100
+)
+```
+
+These custom parameters are "advanced" features for knowledgeable users, and not all the possible changes to these have been tested,
+so anyone using them should be careful to understand the details of how this work and confirm it is doing what is expected. 
+
+Sometimes there are two or three separate names that affect the same
+setting. You only need to know about the first one unless
+you are editing URL-encoded bookmarks or editing source code!
+But for completeness, here is how a setting can be named differently in three places:
+
+1) The global default constant that is the initial value of x,
+and is normally defined in a `global_defaults_*.R` file installed with the EJAM package, but
+also can be provided as a parameter to `run_app()`.
+
+2) for the subset of settings that can be adjusted in the Advanced tab (not all can),
+there is a second variable: the input$ one can adjust in that tab.
+
+3) the name of the input$ finally used in the main part of the web app.
+
+The first of these three cannot be saved as a bookmark, but the second or third
+can be bookmarked since it is a shiny app input$ variable.
+
+
+## HOW SETTINGS GET PASSED TO THE WEB APP
+
+Steps in EJAM shiny app launch, and the use of params/ defaults/ advanced tab/ bookmarked inputs/etc.:
+
+### app.R and isPublic=T
+
+If the app is on a server or one uses the RStudio button "Run", app.R is used.
+app.R is normally how the app is launched if it is a hosted shiny app on a server.
+app.R mostly just does library(EJAM) and run_app(isPublic = TRUE).
+isPublic is special because it is checked by the global_defaults_shiny_public.R file
+and some settings depend on isPublic being T or F.
+
+### run_app() parameters
+
+If the app is launched directly via run_app() by a user in RStudio console, it skips app.R
+and a user can provide arguments as parameters in run_app(...). See ?run_app
+
+### global_defaults_ files
+
+Many defaults/ settings used by the web app are defined in the global_defaults_ files
+(global_defaults_package.R, global_defaults_shiny.R, global_defaults_shiny_public.R)
+Note the parameter isPublic is special because it is checked by the global_defaults_shiny_public.R file
+and some settings depend on isPublic being T or F.
+
+### run_app() params or global_defaults_
+
+run_app() calls get_global_defaults_or_user_options() which
+gets the global defaults and then overrides them with
+any user-specified options given as arguments in run_app().
+run_app() then launches the app, storing those options as app$appOptions$golem_options
+
+### global env?
+
+Then app_ui() and app_server() can check for defaults/params using EJAM:::global_or_param("radius_default") e.g.
+which uses golem::get_golem_options() to check for a named option. Usually these are used as initial/default values
+for input$ variables in the app.
+However, note if an expected setting is not found (ie not set by user in run_app() and not set in any global_defaults_ file)
+global_or_param() also looks in global env, as a last resort!! That might be a problem if ui or server looks for a
+setting that we failed to provide in global_defaults files and that variable name happens to be in the global env !
+
+### Advanced Tab
+
+Then, SOME BUT NOT ALL global_defaults_ settings are in the Advanced Tab (in app_ui)
+so that they can be modified there by someone using the app's advanced tab,
+so what ui or server ends up using could be an input$ that is adjustable in the advanced tab
+and therefore can be bookmarked (since inputs can be bookmarked unless specifically excluded from that)
+
+For example: 
+
+- in global_defaults_ or param in run_app(): default_upload_dropdown, which is the initial selected value of
+- input in advanced tab: input$default_ss_choose_method, which is the initial selected value of
+- input in server:               input$ss_choose_method
+
+### web app reactives and interactive inputs
+
+The shiny app uses some settings as initial values for
+parameters that can get changed by the user via sliders, radio buttons, text boxes, dropdowns, etc.
+and some selections/inputs can get changed by reactive observers, etc.
+
+### Bookmarked URL (saved input$ state)
+
+If the app is launched by a bookmark (e.g.URL-encoded bookmark),
+any inputs encoded in the URL will override the above and the app will change to
+a state where the inputs are as specified by the bookmark.
+
+--------------
+--------------
+
+## EXAMPLES OF USING CUSTOM SETTINGS 
+
+
+### Launch local app (the R user's computer) with custom settings
+
+```{r run-app, eval=FALSE}
+
+# Type out the custom settings each time you use run_app()
+
+run_app(
+  default_standard_analysis_title="Custom NAICS Analysis",
+  default_upload_dropdown="dropdown",
+  default_selected_type_of_site_category="NAICS",
+  default_naics_digits_shown="detailed",
+  default_naics="562211",
+  radius_default=3.1,
+  default_ui_show_advanced_settings=1
+)
+```
+
+Functions to help launch with custom parameters
+
+```{r run-app-with-params, eval=FALSE}
+
+# Define helper functions -   *************** UNFINISHED DRAFT  -   *************** 
+
+# draft function generator that gives you a custom version of run_app()
+make_run_custom = function(params = NULL) {
+  if (is.list(params)) {params <- unlist(params)}
+  txt <- paste0(
+    "run_app(", paste0(paste0(names(params), " = '", params, "'"), collapse=", "), ")"
+  )
+  myapp = function() {
+    EJAM:::source_this_codetext(txt)  ### ***(((((((((((((( ACTUALLY THIS HAS TO BE EVALUATED BEFOREHAND - FIX THIS  ))))))))))))))
+  }
+  return(myapp)
+}
+
+# function to launch run_app() with parameters saved as vector or list
+run_with_paramlist = function(params = NULL) {
+  fn = make_run_custom(params)
+  fn()
+}
+```
+
+Launch using parameters that are saved in a named vector or list
+
+```{r run-with-paramlist, eval=FALSE}
+myparams <- c(
+  default_standard_analysis_title="Custom NAICS Analysis",
+  default_upload_dropdown="dropdown",
+  default_selected_type_of_site_category="NAICS",
+  default_naics_digits_shown="detailed",
+  default_naics="562211",
+  radius_default=3.1,
+  default_ui_show_advanced_settings=1
+)
+
+run_with_paramlist(myparams)
+```
+
+Save a custom reusable function you can use to launch with preset parameters
+
+```{r custom-app, eval=FALSE}
+
+myparams <- c(
+  default_standard_analysis_title="Custom NAICS Analysis",
+  default_upload_dropdown="dropdown",
+  default_selected_type_of_site_category="NAICS",
+  default_naics_digits_shown="detailed",
+  default_naics="562211",
+  radius_default=3.1,
+  default_ui_show_advanced_settings=1
+)
+
+# create your reusable customized app launcher
+myapp = make_run_custom(myparams)
+# save(myapp, file = "myapp.rda")
+
+# use that later to launch app
+# load("myapp.rda")
+myapp()
+```
+
+
+### Launch hosted app (online, URL) with custom settings
+
+If the web app is running locally or hosted on a server,
+launching it via URL-encoded bookmark can provide it any of the input$ variables as a starting state.
+
+This approach cannot provide settings that are not input$ reactives, like some
+of the defaults in global_defaults_ that are not turned into inputs in the app,
+such as "aboutpage_logo" set in global_defaults_shiny.R and used in app_ui.R
+as the src parameter for img().
+
+Also note that url-encoded bookmarked inputs can launch the app
+and pass various input$ settings to the app, which would override
+the default values of those input$ settings provided by the global_defaults_*.R
+and/or run_app() parameters handled by the function
+get_global_defaults_or_user_options().
+
+**Example that will launch app with a custom title and radius**
+
+Note this tries to specify the NAICS method, but at least initially the draft code handling this could not specify the NAICS code itself or start analysis via URL bookmark:
+
+Here is an example using the URL of one copy of the hosted app:
+
+*** THIS EXAMPLE WILL WORK with VERSION 2.32.6 NOT VERSION 2.32.5:
+
+Locally hosted app example
+
+```{r, eval=FALSE}
+
+# In 1 R session, launch locally with advanced tab disabled
+myport <- 5432
+run_app(isPublic=TRUE, options = list(port=myport))
+
+# Then you can open a second R session and in that new R session
+# paste/use the code below to relaunch the app
+# with a parameter that enables the advanced tab:
+
+params <- c('ui_show_advanced_settings=1')
+urlbase <- paste0("http://127.0.0.1:", myport, "/?_inputs_&")
+urlx <- URLencode(paste0(urlbase, paste0(params, collapse = "&")))
+browseURL(urlx)
+
+```
+
+
+Using a custom URL to go to a web app with custom settings
+
+```{r browseURL, eval=FALSE}
+urlbase <- "https://ejam2.policyinnovation.info/?_inputs_&"
+
+myparams <- c(
+  standard_analysis_title="Custom NAICS Analysis",
+  default_ss_choose_method="dropdown", 
+  ss_choose_method_drop="NAICS", 
+  naics_digits_shown="detailed", 
+  # ss_select_naics=313,  
+  radius_default=3.1,
+  ui_show_advanced_settings=1
+)
+
+params <- c('standard_analysis_title="Custom NAICS Analysis"',
+            'ss_choose_method="dropdown"',   # like run_app( default_upload_dropdown="dropdown" )
+            'ss_choose_method_drop="NAICS"', # see ?run_app()
+            'naics_digits_shown="detailed"', # like run_app( default_naics_digits_shown = "detailed")
+            # 'ss_select_naics=313',           # like run_app(default_naics=313)
+            'radius_default=3.1',             # like run_app(radius_default = 3.1)
+            'ui_show_advanced_settings=1')
+
+urlx <- URLencode(paste0(urlbase, paste0(params, collapse = "&")))
+browseURL(urlx)
+
+# URL tried, with fips picked
+# http://127.0.0.1:4200/?_inputs_&standard_analysis_title=%22Custom%20COUNTIES%20Analysis%22&pickermoduleid-all_regions_button=%22TRUE%22&pickermoduleid-all_states_button=%22TRUE%22&ui_show_advanced_settings=1&ss_choose_method=%22dropdown%22&fipspicker_done_button=2&ss_choose_method_drop=%22FIPS_PLACE%22&pickermoduleid-fips_type2pick=%22Counties%22&pickermoduleid-counties_picked=%2202110%22
+
+```
+
+
+--------------
+--------------
+
+## COMPILED LISTS OF ALL SETTINGS (FUNCTION PARAMETERS, GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)
+
+### > global_defaults_xyz - compiled full list
+
+```{r global-d, eval=TRUE}
+gdefs = EJAM:::get_global_defaults_or_user_options()
+gdefnames = sort(unique(names(gdefs)))
+cbind(global_defaults = gdefnames)
+```
+
+### > function params - compiled full list
+```{r, eval=TRUE}
+params = formals(ejamit) 
+# params = c(formals(getblocksnearby), formals(getblocksnearbyviaQuadTree), formals(get_blockpoints_in_shape), formals(getblocksnearby_from_fips), formals(ejamit), formals(doaggregate))
+paramnames = sort(unique(names(params)))
+cbind(params = paramnames)
+```
+
+### > shiny inputs - compiled full list
+
+Compilation of input$  variables used in the shiny app
+
+```{r inputs, eval=FALSE}
+# getwd() must be the source pkg root folder
+getwd()
+lines_with_inputnames = trimws(grep("input\\$", gsub("^(.*)(input\\$.*\\))(.*)", "\\2", readLines("./R/app_server.R") ), value=T))
+x = gsub("^(.*)(input\\$.*)", "\\2", lines_with_inputnames)
+x = gsub("]|)|,|}", " ", x)
+x = gsub("(input\\$)([^ ]*)(.*)", "\\1\\2", x)
+# cbind(x, lines_with_inputnames)
+inputnames = sort(unique(x)); rm(x,lines_with_inputnames)
+inputnames = grep("\\.$|\\$$", inputnames, value = TRUE, invert = TRUE)
+# cbind(inputnames)
+# cbind(part_of_a_named_list = inputnames[grepl("\\$.*\\$", inputnames)])
+inputnames =  inputnames[!grepl("\\$.*\\$", inputnames)] # they all also showed up without the extra $xyz part
+
+# What names are used in the shiny app input$ reactives?
+
+cbind(shiny_inputs = inputnames)
+inputnames = gsub("^input\\$", "", inputnames)
+dput(inputnames)
+```
+
+```{r inputnames, eval=TRUE}
+
+inputnames = c("add_naics_subcategories", "all_tabs", "allow_median_in_barplot_indicators", 
+               "an_map_clusters", "an_thresh_comp2", "an_threshgroup1", "an_threshgroup2", 
+               "an_threshnames2", "analysis_title", "avoidorphans", "back_to_site_sel", 
+               "back_to_site_sel2", "bt_get_results", "calculate_ratios", "checkbox1", 
+               "coauthor_emails", "coauthor_names", "conclusion1", "conclusion2", 
+               "conclusion3", "Custom_title_for_bar_plot_of_indicators", "default_ss_choose_method", 
+               "demog_high_at_what_share_of_sites", "demog_how_elevated", "envt_high_at_what_share_of_sites", 
+               "envt_how_elevated", "epa_program_help", "extra_demog", "extratable_hide_missing_rows_for", 
+               "extratable_show_ratios_in_report", "extratable_title", "extratable_title_top_row", 
+               "facilities_studied", "facilities_studied_enter", "fips_help", 
+               "fipspicker_done_button", "format1pager", "frs_help", "fundingsource", 
+               "go", "in_areas_where_enter", "in_the_x_zone", "in_the_x_zone_enter", 
+               "include_ejindexes", "latlon_help", "latlontypedin_submit_button", 
+               "max_mb_upload", "max_miles", "max_pts_map", "max_pts_run", "max_pts_select", 
+               "max_pts_upload", "max_shapes_map", "maxradius", "naics_digits_shown", 
+               "need_proximityscore", "ok2plot", "plotkind_1pager", "radius_default", 
+               "radius_default_shapefile", "radius_now", "radius_units", "results_tabs", 
+               "return_to_results", "rg_author_email", "rg_author_name", "rg_enter_miles", 
+               "rg_enter_sites", "rg_zonetype", "risks_are_x", "shiny.testmode", 
+               "show_data_preview", "show_ratios_in_report", "shp_help", "source_of_latlons", 
+               "ss_choose_method", "ss_choose_method_drop", "ss_choose_method_upload", 
+               "ss_select_mact", "ss_select_naics", "ss_select_program", "ss_select_sic", 
+               "ss_upload_fips", "ss_upload_frs", "ss_upload_latlon", "ss_upload_program", 
+               "ss_upload_shp", "standard_analysis_title", "subgroups_type", 
+               "summ_bar_data", "summ_bar_ind", "summ_bar_stat", "summ_hist_bins", 
+               "summ_hist_data", "summ_hist_distn", "summ_hist_ind", "testing", 
+               "ui_hide_advanced_settings", "ui_show_advanced_settings", "y"
+)
+```
+
+### > ALL OVERLAPS/ DIFFS (compiled func params, global defaults, shiny inputs)
+
+```{r overlaps, echo=TRUE}
+
+gdefnames_noprefix = gsub("default_", "", gdefnames)
+
+cat("How many are named the same way in shiny inputs, global_defaults_, and function parameters?\n\n")
+
+length(
+  intersect(inputnames, gdefnames_noprefix) # about 28
+  )
+length(
+  intersect(paramnames, gdefnames_noprefix)
+  )
+length(
+  intersect(paramnames, inputnames)
+  )
+# in all 3 lists
+print(
+  intersect(paramnames, intersect(inputnames, gdefnames_noprefix))
+)
+
+cat("Unique names in shiny inputs, as named \n")
+length(
+  setdiff(inputnames, c(paramnames, gdefnames_noprefix))
+)
+
+cat("Unique names in global_defaults_ (not function parameters or inputs, as named) \n")
+length(
+  setdiff(gdefnames_noprefix, c(paramnames, inputnames))
+)
+
+cat("Unique names in function parameters \n")
+length(
+  setdiff(paramnames, c(gdefnames_noprefix, inputnames))
+)
+
+```
+
+--------------
+--------------
+
+## ANNOTATED LISTS OF SOME SETTINGS
+
+
+### > function params - grouped by function ####
+
+Function parameters whose defaults are or could be included in advanced tab, and allowed by run_app().
+
+```{r func-params-by-func, eval=TRUE}
+
+EJAM:::args2(getblocksnearby)
+
+EJAM:::args2(getblocksnearbyviaQuadTree)
+
+EJAM:::args2(get_blockpoints_in_shape)
+
+EJAM:::args2(getblocksnearby_from_fips)
+
+# sitepoints can be a param in run_app()
+# shapefile  can be a param in run_app()
+# fips
+
+# radius_donut_lower_edge
+# quiet = FALSE
+
+```
+
+### > function params - annotated list of most
+
+```{r funcparams-annotated, eval=TRUE}
+# > cbind(formals(ejamit))
+EJAM:::args2(ejamit)
+
+# sitepoints               NULL            -- Now can be passed to run_app()
+# radius                   3         for getblocksnearby(), shiny default is set in global - called radius_default in global_defaults_
+# radius_donut_lower_edge  0         na
+# maxradius                31.07     for getblocksnearby(), shiny default is set in global
+# avoidorphans             FALSE     for getblocksnearby(), shiny default is set in global
+# quadtree                 NULL      na
+# fips                     NULL                    ----   fips  could be enabled as param in run_app()
+# shapefile                NULL                    ----   shapefile now can be  passed to run_app()
+# countcols                NULL      for doaggregate() ** shiny default NOT specified here
+# popmeancols              NULL      for doaggregate() ** shiny default NOT specified here
+# calculatedcols           NULL      for doaggregate() ** shiny default NOT specified here
+# calctype_maxbg         NULL      for doaggregate() ** shiny default NOT specified here
+# calctype_minbg         NULL      for doaggregate() ** shiny default NOT specified here
+# subgroups_type           "nh"      for doaggregate(), shiny default is set in global
+# include_ejindexes        TRUE      for doaggregate(), shiny default is set in global
+# calculate_ratios         TRUE      for doaggregate(), shiny default is set in global
+# extra_demog              TRUE      for doaggregate(), shiny default is set in global
+# need_proximityscore      FALSE     for doaggregate(), shiny default is set in global
+# infer_sitepoints         FALSE     for doaggregate() ** shiny default NOT specified here
+# need_blockwt             TRUE      for getblocksnearby_from_fips(), shiny default not specified here, but by function defaults
+# thresholds               expression  for batch.summarize()  - now set in global_ but named differently
+# threshnames              expression  for batch.summarize()  - now set in global_ but named differently
+# threshgroups             expression  for batch.summarize()  - now set in global_ but named differently
+# updateProgress           NULL      ** shiny default NOT specified here
+# updateProgress_getblocks NULL      ** shiny default NOT specified here
+# in_shiny                 FALSE     for ejamit(), build_community_report(), and related functions
+# quiet                    TRUE      for getblocksnearby() and batch.summarize(), na
+
+# silentinteractive        FALSE    for doaggregate() etc. na
+# called_by_ejamit         TRUE     for doaggregate(), na
+# testing                  FALSE    for doaggregate(), shiny default is set in global
+# showdrinkingwater        TRUE     for doaggregate(), na
+# showpctowned             TRUE     for doaggregate(), na
+#   download_fips_bounds_to_calc_areas FALSE
+# ...                      ?         for getblocksnearby(), like use_unadjusted_distance ** shiny default NOT specified here
+```
+
+
+### > shiny inputs - categorized (partial) ####
+
+EJAM shiny app inputs that can be URL-encoded in a bookmark to reopen the app with those settings
+Note the URL cuts off  at about 4096 characters
+
+#### inputs: tabs and nav and help buttons
+
+```{r, eval=FALSE}
+all_tabs="See Results"   # or # all_tabs="Advanced Settings"
+results_tabs="Community Report"
+details_subtabs="Site-by-Site Table"
+can_showhide_advanced_settings="TRUE"
+ui_show_advanced_settings=1
+ui_hide_advanced_settings=0
+show_data_preview=0
+back_to_site_sel2=0
+return_to_results=0
+latlon_help=0
+shp_help=0
+fips_help=0
+frs_help=0
+epa_program_help=0
+```
+
+#### inputs: start analysis button
+
+```{r, eval=FALSE}
+bt_get_results=0
+```
+
+#### inputs: site selection (buttons/dropdowns)
+
+```{r, eval=FALSE}
+default_ss_choose_method="upload" # or "dropdown"
+ss_choose_method="upload"         # or "dropdown"
+ss_choose_method_upload="latlon"   # see global_defaults_*.R for options
+ss_choose_method_drop="FIPS_PLACE" # see global_defaults_*.R for options
+ss_upload_shp=null
+ss_upload_fips=null
+ss_upload_frs=null
+ss_upload_program=null
+ss_select_program="CAMDBS"
+ss_select_naics=null
+ss_select_sic=null
+ss_select_mact="AA"
+naics_digits_shown="basic"
+add_naics_subcategories="TRUE"
+shinyjs-resettable-ss_upload_latlon={}
+shinyjs-resettable-ss_upload_shp={}
+shinyjs-resettable-ss_upload_frs={}
+shinyjs-resettable-ss_upload_program={}
+shinyjs-resettable-ss_upload_fips={}
+pickermoduleid-fips_type2pick="Counties"
+pickermoduleid-states_picked=null
+pickermoduleid-counties_picked=null
+pickermoduleid-cities_picked=null
+pickermoduleid-regions_picked=["1","2","3","4","5","6","7","8","9","10"]
+pickermoduleid-all_regions_button=true
+pickermoduleid-all_states_button=true
+pickermoduleid-all_counties_button=false
+pickermoduleid-all_cities_button=false
+pickermoduleid-reset_button=0
+fipspicker_done_button=0
+```
+
+#### inputs: radius and caps
+
+```{r, eval=FALSE}
+radius_now=3.1  # input from slider but not the way to bookmark /url-encode the radius
+radius_default=3.1  # works as parameter to run_app() or as bookmarked input$ 
+radius_default_shapefile=0
+max_miles=10
+maxradius=31.06856
+max_pts_upload=5000
+max_pts_select=5000
+max_pts_map=5000
+max_pts_showtable=1000
+max_pts_run=10000
+max_shapes_map=159
+max_mb_upload=50
+```
+
+#### inputs: more ejamit() parameters, summary report and excel output settings, etc.
+
+```{r, eval=FALSE}
+standard_analysis_title="CUSTOM Analysis" # title of analysis as shown on first page of app and on reports
+analysis_title="testname"
+Custom_title_for_bar_plot_of_indicators=""
+include_ejindexes="TRUE"
+calculate_ratios=true
+include_averages=true
+show_ratios_in_report="TRUE"
+extratable_show_ratios_in_report="TRUE"
+more3="a"
+avoidorphans="FALSE"
+need_proximityscore="FALSE"
+plotkind_1pager="bar"
+format1pager="html"
+ok2plot=true
+allow_median_in_barplot_indicators="FALSE"
+summ_hist_distn="People" # histograms
+summ_hist_data="pctile"
+summ_hist_bins=10
+extra_demog="TRUE"
+include_extraindicators=true
+extratable_title=""
+extratable_title_top_row="ADDITIONAL INFORMATION"
+extratable_list_of_sections="pctpoor"
+# extratable_hide_missing_rows_for=["pcthisp","pctnhba","pctnhaa","pctnhaiana","pctnhnhpia","pctnhotheralone","pctnhmulti","pctnhwa","pctlan_ie","pctlan_api","pctlan_other","pctlan_english","pctlan_spanish","pctlan_french",
+# "pctlan_rus_pol_slav","p_chinese","p_korean","pctlan_other_ie","pctlan_vietnamese","pctlan_other_asian","pctlan_arabic","pctlan_nonenglish",
+# "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",
+# "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",
+# "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",
+# "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]
+
+# thresholds - counting how many of a certain indicator type are at/above some threshold
+# see help docs on run_app() for examples of using these (but they are named a bit differently as parameters there)
+an_thresh_comp1=80
+an_thresh_comp2=80
+an_threshgroup1="EJ-US-or-ST"
+an_threshgroup2="Supp-US-or-ST"
+an_threshnames1=["pctile.EJ.DISPARITY.dpm.eo","pctile.EJ.DISPARITY.drinking.eo","pctile.EJ.DISPARITY.no2.eo","pctile.EJ.DISPARITY.o3.eo","pctile.EJ.DISPARITY.pctpre1960.eo","pctile.EJ.DISPARITY.pm.eo","pctile.EJ.DISPARITY.proximity.npdes.eo",
+                 "pctile.EJ.DISPARITY.proximity.npl.eo","pctile.EJ.DISPARITY.proximity.rmp.eo","pctile.EJ.DISPARITY.proximity.tsdf.eo","pctile.EJ.DISPARITY.rsei.eo","pctile.EJ.DISPARITY.traffic.score.eo","pctile.EJ.DISPARITY.ust.eo",
+                 "state.pctile.EJ.DISPARITY.dpm.eo","state.pctile.EJ.DISPARITY.drinking.eo","state.pctile.EJ.DISPARITY.no2.eo","state.pctile.EJ.DISPARITY.o3.eo","state.pctile.EJ.DISPARITY.pctpre1960.eo","state.pctile.EJ.DISPARITY.pm.eo","state.pctile.EJ.DISPARITY.proximity.npdes.eo",
+                 "state.pctile.EJ.DISPARITY.proximity.npl.eo","state.pctile.EJ.DISPARITY.proximity.rmp.eo","state.pctile.EJ.DISPARITY.proximity.tsdf.eo","state.pctile.EJ.DISPARITY.rsei.eo","state.pctile.EJ.DISPARITY.traffic.score.eo","state.pctile.EJ.DISPARITY.ust.eo"]
+an_threshnames2=["pctile.EJ.DISPARITY.dpm.supp","pctile.EJ.DISPARITY.drinking.supp","pctile.EJ.DISPARITY.no2.supp","pctile.EJ.DISPARITY.o3.supp","pctile.EJ.DISPARITY.pctpre1960.supp","pctile.EJ.DISPARITY.pm.supp","pctile.EJ.DISPARITY.proximity.npdes.supp",
+                 "pctile.EJ.DISPARITY.proximity.npl.supp","pctile.EJ.DISPARITY.proximity.rmp.supp","pctile.EJ.DISPARITY.proximity.tsdf.supp","pctile.EJ.DISPARITY.rsei.supp","pctile.EJ.DISPARITY.traffic.score.supp","pctile.EJ.DISPARITY.ust.supp","state.pctile.EJ.DISPARITY.dpm.supp",
+                 "state.pctile.EJ.DISPARITY.drinking.supp","state.pctile.EJ.DISPARITY.no2.supp","state.pctile.EJ.DISPARITY.o3.supp","state.pctile.EJ.DISPARITY.pctpre1960.supp","state.pctile.EJ.DISPARITY.pm.supp","state.pctile.EJ.DISPARITY.proximity.npdes.supp",
+                 "state.pctile.EJ.DISPARITY.proximity.npl.supp","state.pctile.EJ.DISPARITY.proximity.rmp.supp","state.pctile.EJ.DISPARITY.proximity.tsdf.supp","state.pctile.EJ.DISPARITY.rsei.supp","state.pctile.EJ.DISPARITY.traffic.score.supp","state.pctile.EJ.DISPARITY.ust.supp"]
+
+```
+
+#### inputs: maps
+
+```{r, eval=FALSE}
+an_leaf_map_zoom=5
+an_leaf_map_bounds={"north":45.61403741135093,"east":-68.02734375000001,"south":28.18824364185031,"west":-123.2666015625}
+an_leaf_map_center={"lng":-95.64786455000001,"lat":37.40467238129763}
+an_leaf_map_groups="circles"
+circleweight_in=4
+```
+
+#### inputs: test mode
+
+```{r, eval=FALSE}
+testing="FALSE"
+shiny.testmode="FALSE"
+print_uploaded_points_to_log=true
+```
+
+#### inputs: mostly unimplemented/ reserved for a long report etc.
+
+```{r, eval=FALSE}
+subgroups_type="nh"
+rg_add_coauthors=false
+rg_author_name="FirstName LastName"
+rg_author_email="author@email.org"
+coauthor_names=""
+coauthor_emails=""
+fundingsource=""
+acs_version=""
+ejscreen_version=""
+demog_how_elevated=""
+envt_how_elevated=""
+prefix_filenames=""
+rg_zonetype="zone_is_named_x"
+within_x_miles_of="near the"
+in_areas_where="in areas with"
+risks_are_x="risk is at or above 1 per million (lifetime individual cancer risk due to inhalation of air toxics from this source category)"
+in_the_x_zone="area"
+facilities_studied="rule"
+demog_high_at_what_share_of_sites="some of these sites, just as it varies nationwide"
+envt_high_at_what_share_of_sites="some of these sites, just as it varies nationwide"
+conclusion1=""
+conclusion2=""
+conclusion3=""
+rg_enter_sites="facilities in the _____ source category"
+in_areas_where_enter=""
+in_the_x_zone_enter="in "
+facilities_studied_enter=""
+source_of_latlons=""
+```
+
+--------------
+--------------

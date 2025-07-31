@@ -42,3 +42,7 @@ After updating the main branch in the public EJAM code repository (see [Updating
 ## Potential Improvements
 
 One way to improve this process would be to modify the `isPublic` toggle to be an environment variable. This would allow us to set the value once in each application server, and not have to change it each time we push updates. Moreover, it would make testing the public and internal versions of the app easier to handle in the GitHub actions (see shinytests vignette).
+
+## Customizing the Defaults and Settings
+
+See the article [Defaults and Custom Settings for the Web App](dev-app-settings.html) for more details.

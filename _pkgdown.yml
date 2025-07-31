@@ -49,6 +49,7 @@ articles:
   desc: For package/app developers
   navbar: For package/app developers
   contents:
+  - dev-app-settings
   - dev-deploy-app
   - dev-run-shinytests
   - dev-run-unit-tests
