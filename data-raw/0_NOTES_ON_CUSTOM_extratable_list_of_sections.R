@@ -1,5 +1,5 @@
 
-## THIS IS SOME NOTES ON WHAT WOULD ESSENTIALLY BE A VERY VERY BASIC REPORT-BUILDER THAT 
+## THIS IS SOME NOTES ON WHAT WOULD ESSENTIALLY BE A VERY VERY BASIC REPORT-BUILDER THAT
 ## LETS A USER SPECIFY WHICH SETS OF INDICATORS TO SHOW IN THE REPORT
 ## AND WHAT TO NAME THAT SUBSECTION
 
@@ -11,7 +11,7 @@
 
 # AND maybe still need a way to let the user specify the members of each group or pick some not all etc.
 
-# and then server can evaluate the input as R code for a named list 
+# and then server can evaluate the input as R code for a named list
 # as is needed for the extratable_list_of_sections param of build_community_report()
 # but it would be a reactive value not an input if done like this
 #################################################################### #
@@ -24,149 +24,149 @@ if (FALSE) {
 
 shinyApp(
   ui = fluidPage(
-    
-    textInput('t1', 'Header for Group 1', value = 'Age'),
-    selectizeInput("v1", "Indicators Group 1", 
+
+    textInput(inputId = 't1', 'Header for Group 1', value = 'Age'),
+    selectizeInput(inputId = "v1", "Indicators Group 1",
                    choices = list(
                      `Age-related` = c("pctunder5", "pctunder18", "pctover64"),
                      `Other indicators` = "names_d_extra",
                      `Sub Groups` = c("names_d_subgroups")
                    ),
-                   selected = "", 
+                   selected = "",
                    multiple = TRUE
     ),
     hr(),
-    textInput('t2', 'Header for Group 2', value = 'Ages'),
-    selectizeInput("v2", "Indicators Group 2", 
+    textInput(inputId = 't2', 'Header for Group 2', value = 'Ages'),
+    selectizeInput(inputId = "v2", "Indicators Group 2",
                    choices = list(
                      `Age-related` = c("pctunder5", "pctunder18", "pctover64"),
                      `Other indicators` = "names_d_extra",
                      `Sub Groups` = c("names_d_subgroups")
                    ),
-                   selected = "", 
+                   selected = "",
                    multiple = TRUE
     ),
     hr(),
-    textInput('t3', 'Header for Group 3', value = 'Sub Groups'),
-    selectizeInput("v3", "Indicators Group 3", 
+    textInput(inputId = 't3', 'Header for Group 3', value = 'Sub Groups'),
+    selectizeInput(inputId = "v3", "Indicators Group 3",
                    choices = list(
                      `Age-related` = c("pctunder5", "pctunder18", "pctover64"),
                      `Other indicators` = "names_d_extra",
                      `Sub Groups` = c("names_d_subgroups")
                    ),
-                   selected = "", 
+                   selected = "",
                    multiple = TRUE
     ),
-    
+
     hr(),
-    
+
     verbatimTextOutput("result")
   ),
   server = function(input, output) {
-    
+
     output$result <- renderPrint({
-      
+
       t1 = input$t1
       v1 = input$v1
       if (length(v1) == 0) {t1 = NULL; v1 = NULL}
-      
+
       t2 = input$t2
       v2 = input$v2
       if (length(v2) == 0) {t2 = NULL; v2 = NULL}
-      
+
       t3 = input$t3
       v3 = input$v3
       if (length(v3) == 0) {t3 = NULL; v3 = NULL}
       mylist = list(v1, v2, v3)
       names(mylist) <- c(t1, t2, t3)
-      
+
       cat("value of list is \n")
       print(mylist)
-      
-      
+
+
       # cat(paste0("mylist <- list(\n  ",
       #            paste0(c(t1,t2,t3), " = ",
-      #                   
-      #                   paste0("c('", 
+      #
+      #                   paste0("c('",
       #                          paste0(
       #                            c(
       #                              paste0(paste0(v1, collapse = "', '"), "')",
       #                                     paste0(paste0(v2, collapse = "', '"), "')",
       #                                            paste0(v3, collapse = "', '"), "')"
-      #                                            
+      #
       #                                            "\n) \n "
       #                                     ), collapse = ",\n  "),
       #                            )
       #                          )
       #                   )
       #            )
-      #            
+      #
       #            # print(dput(mylist))
-      #            
+      #
     })
-    
-    
+
+
   }
 )
   }
 #################################################################### #
 
 if (TRUE) {
-  
+
 #   EXAMPLE - better UI?
-  
+
 #   # see global_defaults_*.R :
 
-  
-  ################################################################# # 
-  
+
+  ################################################################# #
+
   shinyApp(
     ui = fluidPage(
-      
-      selectizeInput("extratable_list_of_sections_code",
+
+      selectizeInput(inputId = "extratable_list_of_sections_code",
                      "Choose Groups of Indicators:",
                      choices = EJAM:::global_or_param("default_extratable_list_of_sections_ui"),
                      multiple = TRUE
       ),
-      
-      
+
+
       h5("explanation of what the list should look like now:"),
       verbatimTextOutput("result"),
       br(),
       h5("PRINT OF THE VALUE OF THE LIST CREATED:"),
       verbatimTextOutput("printvalue")
     ),
-    
-    
+
+
     server = function(input, output) {
-      
+
       output$printvalue <- renderPrint({
-        
+
         req(input$extratable_list_of_sections_code)
-        
-        result_as_code <- paste("list(\n", 
+
+        result_as_code <- paste("list(\n",
                                 paste0(input$extratable_list_of_sections_code, collapse = ",\n "), "\n)")
-        
+
         result_as_value <- EJAM:::source_this_codetext(result_as_code)
-        
+
         for (i in 1:length(result_as_value)) {  attributes(result_as_value[[i]]) <- NULL}
-        
+
         print(result_as_value)
-        
+
       })
-      
+
       output$result <- renderPrint({
         req(input$extratable_list_of_sections_code)
         cat(
-          paste("We can turn it into a named list: \n\n selectionslist = list(\n", 
+          paste("We can turn it into a named list: \n\n selectionslist = list(\n",
                 paste0(input$extratable_list_of_sections_code, collapse = ",\n "), "\n)" ))
       })
-      
-      
+
+
     }
   )
 }
-################################################################# # 
+################################################################# #
 
 
 
@@ -180,46 +180,46 @@ x <- x[order(x$list, x$name) , ]
 # x
 
 sort(unique(x$list))
-# [1] "names_climate"                              "names_climate_avg"                         
-# [3] "names_climate_pctile"                       "names_climate_state_avg"                   
-# [5] "names_climate_state_pctile"                 "names_countabove"                          
-# [7] "names_criticalservice"                      "names_criticalservice_avg"                 
-# [9] "names_criticalservice_pctile"               "names_criticalservice_state_avg"           
-# [11] "names_criticalservice_state_pctile"         "names_d_language"                          
-# [13] "names_d_other_count"                        "names_d_subgroups_alone_avg"               
-# [15] "names_d_subgroups_alone_count"              "names_d_subgroups_alone_pctile"            
+# [1] "names_climate"                              "names_climate_avg"
+# [3] "names_climate_pctile"                       "names_climate_state_avg"
+# [5] "names_climate_state_pctile"                 "names_countabove"
+# [7] "names_criticalservice"                      "names_criticalservice_avg"
+# [9] "names_criticalservice_pctile"               "names_criticalservice_state_avg"
+# [11] "names_criticalservice_state_pctile"         "names_d_language"
+# [13] "names_d_other_count"                        "names_d_subgroups_alone_avg"
+# [15] "names_d_subgroups_alone_count"              "names_d_subgroups_alone_pctile"
 # [17] "names_d_subgroups_alone_ratio_to_avg"       "names_d_subgroups_alone_ratio_to_state_avg"
-# [19] "names_d_subgroups_alone_state_avg"          "names_d_subgroups_alone_state_pctile"      
-# [21] "names_featuresinarea"                       "names_flag"                                
-# [23] "names_geo"                                  "names_health"                              
-# [25] "names_health_avg"                           "names_health_pctile"                       
-# [27] "names_health_state_avg"                     "names_health_state_pctile"                 
-# [29] "names_misc"                                 "names_sitesinarea"      
+# [19] "names_d_subgroups_alone_state_avg"          "names_d_subgroups_alone_state_pctile"
+# [21] "names_featuresinarea"                       "names_flag"
+# [23] "names_geo"                                  "names_health"
+# [25] "names_health_avg"                           "names_health_pctile"
+# [27] "names_health_state_avg"                     "names_health_state_pctile"
+# [29] "names_misc"                                 "names_sitesinarea"
 
 x <- x[!grepl("_avg|_pctile", x$list), ]
 x
 sort(unique(x$list))
-# [1] "names_climate"                 "names_countabove"              "names_criticalservice"        
+# [1] "names_climate"                 "names_countabove"              "names_criticalservice"
 # [4] "names_d_language"              "names_d_other_count"           "names_d_subgroups_alone_count"
-# [7] "names_featuresinarea"          "names_flag"                    "names_geo"                    
-# [10] "names_health"                  "names_misc"                    "names_sitesinarea"     
+# [7] "names_featuresinarea"          "names_flag"                    "names_geo"
+# [10] "names_health"                  "names_misc"                    "names_sitesinarea"
 
 dput(as.vector(na.omit( unique(x$list))))
 
 c(
   "names_featuresinarea",
-  "names_sitesinarea", 
+  "names_sitesinarea",
   "names_flag",
-  
-  "names_health", 
-  "names_climate", 
-  "names_criticalservice", 
-  
+
+  "names_health",
+  "names_climate",
+  "names_criticalservice",
+
   "names_d_language", # pctlan_rus_pol_slav etc.
-  "names_d_other_count", #  "pop"   "nonmins"   "age25up"   "hhlds""unemployedbase" "pre1960"   "builtunits" "povknownratio" 
+  "names_d_other_count", #  "pop"   "nonmins"   "age25up"   "hhlds""unemployedbase" "pre1960"   "builtunits" "povknownratio"
   "names_countabove", #  "count.ej.80up" "count.ej.80up.supp" "count.ej.80up2.eo" "count.ej.80up2.supp" "state.count.ej.80up"      "state.count.ej.80up.supp"
-  
-  "names_d_subgroups_alone_count", 
+
+  "names_d_subgroups_alone_count",
   "names_geo",  # placename, areatytpe, statlevel, area, etc.
   "names_misc" # "lifexyears_synonym"  "state.pctile.lowlifex_synonym"
 )
@@ -227,15 +227,15 @@ c(
 ########################################### #
 
 extra_varlist_names <- c(
-  
+
   'names_sitesinarea',
   'names_featuresinarea',
   'names_flag',
-  
+
   'names_health',
   'names_climate',
   'names_criticalservice',
-  
+
   'names_d_language',
   'names_d_other_count',
   'names_countabove'

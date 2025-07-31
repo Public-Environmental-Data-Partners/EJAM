@@ -21,7 +21,7 @@ MODULE_UI_latlontypedin <- function(id) {
   ns <- NS(id)
   tagList(
     rhandsontable::rHandsontableOutput(outputId = ns("TYPED_IN_DATA")), # if you want to display the table output ?
-    # actionButton('latlontypedin_submit_button', label='Type in latitudes,longitudes. Click when done.', class = 'usa-button usa-button--outline'),
+    # actionButton(inputId = 'latlontypedin_submit_button', label='Type in latitudes,longitudes. Click when done.', class = 'usa-button usa-button--outline'),
     shiny::br()
   )
 }
@@ -79,7 +79,7 @@ if (try_this_module_here) {
    ### pkgs <- c('shiny', 'dplyr', 'rhandsontable', 'data.table', 'leaflet', 'magrittr')
   # for (pkg in pkgs) {require(pkg, character.only = TRUE)}
    ### must attach all of those for this to work when testing the app separate from EJAM package
-  # 
+  #
 
 
   # SIMPLIFIED OVERALL APP ####
@@ -134,7 +134,7 @@ if (try_this_module_here) {
       names(mypoints) <- gsub('lon','longitude', names(mypoints)); names(mypoints) <- gsub('lat','latitude', names(mypoints))
       if (length(mypoints) != 0) {
         isolate({ # do not redraw entire map and zoom out and reset location viewed unless...?
-          mymap <- leaflet::leaflet(mypoints) %>% 
+          mymap <- leaflet::leaflet(mypoints) %>%
             leaflet::addTiles()  %>%
             leaflet::addCircles(lat = ~latitude, lng = ~longitude,
                        radius = 10000 ,  # radius_miles() * meters_per_mile,
@@ -144,8 +144,8 @@ if (try_this_module_here) {
           mymap
         })
       } else {  # length(mypoints) == 0
-        mymap <- leaflet::leaflet() %>% 
-          leaflet::addTiles() %>% 
+        mymap <- leaflet::leaflet() %>%
+          leaflet::addTiles() %>%
           leaflet::setView(-110, 46, zoom = 3)
         mymap
       }
@@ -219,7 +219,7 @@ shiny::testServer(app = MODULE_SERVER_latlontypedin, #  args = list(reactdat = r
                     #   column(
                     #     6,
                     #     ## on button click, show modal with DT table of lat lon values
-                    #     actionButton('show_latlontypedin_module_button', label = "Enter lat lon values on screen", class = 'usa-button usa-button--outline'),
+                    #     actionButton(inputId = 'show_latlontypedin_module_button', label = "Enter lat lon values on screen", class = 'usa-button usa-button--outline'),
                     #     shinyBS::bsModal(
                     #       trigger = 'show_latlontypedin_module_button',
                     #       id = 'view_latlontypedin',
@@ -231,7 +231,7 @@ shiny::testServer(app = MODULE_SERVER_latlontypedin, #  args = list(reactdat = r
                     #
                     #       MODULE_UI_latlontypedin(id = "pts_entry_table1"),  # this shows the data entry table here
                     #
-                    #       # actionButton('latlontypedin_submit_button', label = 'Done entering points', class = 'usa-button usa-button--outline'),
+                    #       # actionButton(inputId = 'latlontypedin_submit_button', label = 'Done entering points', class = 'usa-button usa-button--outline'),
                     #       ## use download buttons for speed and handling larger data
                     #       # downloadButton('download_preview_data_csv', label = 'CSV',   class = 'usa-button'),
                     #       # downloadButton('download_preview_data_xl',  label = 'Excel', class = 'usa-button'),
@@ -246,7 +246,7 @@ shiny::testServer(app = MODULE_SERVER_latlontypedin, #  args = list(reactdat = r
                     #   #     tags$li('Optional Columns: siteid')
                     #   #   )
                     #   # ),
-                    #   # actionButton('latlon_help', label='More Info', class = 'usa-button usa-button--outline'),
+                    #   # actionButton(inputId = 'latlon_help', label='More Info', class = 'usa-button usa-button--outline'),
                     #   # HTML(latlon_help_msg)
                     #   br()
                     # ),     # end   latlontypedin   conditionalPanel

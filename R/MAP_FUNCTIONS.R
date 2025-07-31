@@ -37,7 +37,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   ## to use it in shiny app:
   # shp <- data_uploaded()  # reactive in shiny app already has ejam_uniq_id but outside shiny shp might lack that
   # out <- data_processed() # results of ejamit-like analysis, with ejam_uniq_id assigned before invalid rows were dropped
-  # radius_buffer <- sanitized_bt_rad_buff()
+  # radius_buffer <- sanitized_radius_now()
   # mymap <- map_ejam_plus_shp(out = out, shp = shp, radius_buffer = radius_buffer)
   ### see also ejam2map()
   ### add popups parameter maybe

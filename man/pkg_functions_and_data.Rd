@@ -5,7 +5,7 @@
 \title{utility to see which objects in a loaded/attached package are functions or datasets, exported or not (internal)}
 \usage{
 pkg_functions_and_data(
-  pkg,
+  pkg = "EJAM",
   alphasort_table = FALSE,
   internal_included = TRUE,
   exportedfuncs_included = TRUE,

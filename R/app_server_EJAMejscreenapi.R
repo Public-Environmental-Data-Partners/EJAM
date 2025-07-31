@@ -320,9 +320,9 @@ app_server_EJAMejscreenapi <- function(input, output, session) {
   if (!exists("minradius")) {minradius <- 0.5}
   if (!exists("stepradius")) {stepradius <-  0.05 }
   output$radius_slider <- renderUI({sliderInput(inputId =  ("radius_via_slider"),
-                                                label = paste0("Radius of ",     input$default_miles, " miles ",
-                                                               paste0("(", round(input$default_miles      * meters_per_mile / 1000, 3), ' km)')),
-                                                value =                          input$default_miles,
+                                                label = paste0("Radius of ",     input$radius_default, " miles ",
+                                                               paste0("(", round(input$radius_default      * meters_per_mile / 1000, 3), ' km)')),
+                                                value =                          input$radius_default,
                                                 min = minradius, max = input$max_miles, step = stepradius
   ) })
   # minradius and stepradius are defined in   global_defaults_ejscreenapi.R file
@@ -334,20 +334,20 @@ app_server_EJAMejscreenapi <- function(input, output, session) {
   ) })
   radius_via_text_validated <- reactive({
     x = input$radius_via_text
-    if (is.null(x))                                  {x = input$default_miles}
-    if (is.na(x) | length(x) > 1 | length(x) == 0)   {x = input$default_miles}
+    if (is.null(x))                                  {x = input$radius_default}
+    if (is.na(x) | length(x) > 1 | length(x) == 0)   {x = input$radius_default}
     x = as.numeric(x)
-    if (is.null(x) | is.na(x) | length(x) > 1 | length(x) == 0) {x = input$default_miles}
+    if (is.null(x) | is.na(x) | length(x) > 1 | length(x) == 0) {x = input$radius_default}
     x = max(minradius, min(input$max_miles, x, na.rm = T), na.rm = T)
-    if (is.null(x) | is.na(x))                      {x = input$default_miles}
+    if (is.null(x) | is.na(x))                      {x = input$radius_default}
     as.character(x)
   })
 
   output$radius_textbox <- renderUI({textInput(
-    "radius_via_text",
-    label = paste0("Radius of ",     input$default_miles, " miles ",
-                   paste0("(", round(input$default_miles            * meters_per_mile / 1000, 3), ' km)')),
-    value =             as.character(input$default_miles)
+    inputId = "radius_via_text",
+    label = paste0("Radius of ",     input$radius_default, " miles ",
+                   paste0("(", round(input$radius_default            * meters_per_mile / 1000, 3), ' km)')),
+    value =             as.character(input$radius_default)
   ) })
   shiny::observe({ shiny::updateTextInput(
     session = session,
@@ -355,7 +355,7 @@ app_server_EJAMejscreenapi <- function(input, output, session) {
     label = paste0(
       "Radius of ", radius_via_text_validated(), " miles ",
       ifelse(minradius           == as.numeric(radius_via_text_validated()), "(min.) ", ""),
-      ifelse(input$default_miles == as.numeric(radius_via_text_validated()), "(default) ", ""),
+      ifelse(input$radius_default == as.numeric(radius_via_text_validated()), "(default) ", ""),
       ifelse(input$max_miles     == as.numeric(radius_via_text_validated()), "(max.) ", ""),
       paste0("(",             round(as.numeric(radius_via_text_validated()) * meters_per_mile / 1000, 3), ' km)'))
   ) })
@@ -723,7 +723,7 @@ app_server_EJAMejscreenapi <- function(input, output, session) {
   ### Table tips - show only if results ready ####
   # output$tabletips_button_ui <- renderUI({
   #   req(results_table())
-  #   shiny::actionButton('tabletips_button', 'Tip on using this table')  ## tips on using table
+  #   shiny::actionButton(inputId = 'tabletips_button', 'Tip on using this table')  ## tips on using table
   # })
   ####################   #####################   #####################   #################### #
   ### Table tips - text box (about interactive data table) ####

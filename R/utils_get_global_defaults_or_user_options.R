@@ -73,6 +73,7 @@ get_global_defaults_or_user_options <- function(user_specified_options = NULL, b
 
   source(system.file("global_defaults_shiny.R", package = "EJAM"), local = TRUE)  # uses latest source version of that file if devtools::load_all() has been done.
   global_defaults_or_user_options <- update_global_defaults_or_user_options(global_defaults_shiny)
+  global_defaults_or_user_options <- update_global_defaults_or_user_options(aboutpage_texts)
   global_defaults_or_user_options <- update_global_defaults_or_user_options(help_texts)
   global_defaults_or_user_options <- update_global_defaults_or_user_options(html_fmts)
   global_defaults_or_user_options <- update_global_defaults_or_user_options(sanitize_functions)

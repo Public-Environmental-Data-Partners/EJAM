@@ -99,7 +99,7 @@ table_xls_from_ejam <- function(ejamitout,
                                 in.testing = FALSE,
                                 in.analysis_title =  "EJAM analysis",
                                 react.v1_summary_plot = NULL,
-                                radius_or_buffer_in_miles = NULL,  #  input$bt_rad_buff
+                                radius_or_buffer_in_miles = NULL,  #  input$radius_now
                                 buffer_desc = "Selected Locations",
                                 radius_or_buffer_description = NULL, # 'Miles radius of circular buffer (or distance used if buffering around polygons)',
                                 # radius_or_buffer_description =   "Distance from each site (radius of each circular buffer around a point)",

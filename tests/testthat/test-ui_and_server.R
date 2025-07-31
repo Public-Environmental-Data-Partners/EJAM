@@ -150,19 +150,19 @@ test_that(
 ################################################# #
 
 test_that(
-  "app_server starts and input$bt_rad_buff can be set",
+  "app_server starts and input$radius_now can be set",
   {
     testServer(app = app_server, expr = {
 
       # note app_server() is an unexported function
 
       ## Set and test an input  - but server code cannot run unless most inputs are defined (since inputs are often used in if () stmts) which happens in app_ui() in many cases.
-      session$setInputs(bt_rad_buff = 1, max_miles = 10, default_miles = 3.14,
+      session$setInputs(radius_now = 1, max_miles = 10, radius_default = 3.14,
                         shiny.testmode = FALSE, testing = FALSE,
                         ss_choose_method = "upload", ss_choose_method_upload = "latlon")
 
-      stopifnot(input$bt_rad_buff == 1)
-      expect_equal(input$bt_rad_buff, 1)
+      stopifnot(input$radius_now == 1)
+      expect_equal(input$radius_now, 1)
 
       expect_equal(input$ss_choose_method, "upload")
 

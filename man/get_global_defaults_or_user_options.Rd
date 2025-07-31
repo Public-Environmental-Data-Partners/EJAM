@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_get_global_defaults_or_user_options.R
 \name{get_global_defaults_or_user_options}
 \alias{get_global_defaults_or_user_options}
-\title{utility that reconciles/consolidates user-defined params passed via run_app() and default settings from global_defaults_ files}
+\title{utility that reconciles/ consolidates user-defined params passed via run_app() and settings from global_defaults_ files}
 \usage{
 get_global_defaults_or_user_options(
   user_specified_options = NULL,
@@ -10,7 +10,7 @@ get_global_defaults_or_user_options(
 )
 }
 \arguments{
-\item{user_specified_options}{passed as arguments to \code{run_app()}}
+\item{user_specified_options}{named list of any optonal arguments that were in the call to \code{run_app()}}
 
 \item{bookmarking_allowed}{same as \code{?shinyApp} enableBookmarking param}
 }
@@ -21,7 +21,7 @@ and that later can be retrieved by server or ui via \code{golem::get_golem_optio
 or via \code{global_or_param()} (which both do almost the same thing).
 }
 \description{
-utility that reconciles/consolidates user-defined params passed via run_app() and default settings from global_defaults_ files
+utility that reconciles/ consolidates user-defined params passed via run_app() and settings from global_defaults_ files
 }
 \details{
 This function, called by \code{run_app()},

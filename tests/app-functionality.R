@@ -202,7 +202,7 @@ main_shinytest <- function(test_category) {
       
       app$set_inputs(all_tabs = "Site Selection")
       app$wait_for_idle(timeout = 200000)
-      app$set_inputs(bt_rad_buff = 1.5, wait_=FALSE)
+      app$set_inputs(radius_now = 1.5, wait_=FALSE)
       
       shinytestLogMessage("set analysis title to Summary of Analysis2")
       app$set_inputs(analysis_title = "Summary of Analysis2")

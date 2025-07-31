@@ -84,9 +84,9 @@ maxmax_pts_run      <- 15 * 1000 # absolute max you can analyze here, even with 
 
 ## ------------------------ Options for Radius  #####
 
-# input$default_miles
-default_default_miles <- 1
-max_default_miles <- 50 * 1000 / meters_per_mile # 50 km
+# input$radius_default
+radius_default <- 1
+max_radius_default <- 50 * 1000 / meters_per_mile # 50 km
 # input$max_miles
 default_max_miles     <- 10
 maxmax_miles     <- 50 * 1000 / meters_per_mile # 50 km

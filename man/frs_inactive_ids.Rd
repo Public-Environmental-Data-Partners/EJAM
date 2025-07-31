@@ -15,6 +15,8 @@ based on closecodes.}
 \value{
 vector of FRS IDs that are the clearly inactive sites -- or all other sites --
 depending on value of active
+
+@keywords internal
 }
 \description{
 Download national file and find which IDs are the INACTIVE sites in the FRS

@@ -1,6 +1,59 @@
+# EJAM v2.32.6 (August 2025)
+
+## Web App
+
+- [ejanalysis.com](https://www.ejanalysis.com) provides links to and info about EJSCREEN and EJAM:
+  - [ejanalysis.com/ejamapp](https://www.ejanalysis.com/ejamapp) will launch a live version of the EJAM web app
+  - [ejanalysis.com/ejscreenapp](https://www.ejanalysis.com/ejscreenapp) will launch a live version of the EJSCREEN web app
+- Improved the `About page` (added links to ejanalysis.com, etc.).
+- Reorganized the Advanced settings tab, which now has more options and settings that can be changed. But note that the advanced tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.
+
+## Web App Customization
+
+Made a number of changes to allow web app default settings changed and other inputs to be specified. This allows the following:
+
+- Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are.
+
+- Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See `run_app()` for examples. 
+
+- Anyone hosting a version of the EJAM web app can customize it more easily, e.g., to use a different logo, different default radius, different options for how to select sites, etc.
+
+## R/RStudio Users (Analysts and Developers)
+
+- [ejanalysis.com](https://www.ejanalysis.com) or [ejanalysis.com/ejam](https://www.ejanalysis.com/ejam) is an easy alias to remember, and has links to documentation/code/etc.
+  - [A new emailing list can be joined here](https://www.ejanalysis.com/about)
+  - [ejanalysis.com/docs](https://www.ejanalysis.com/docs) or [ejanalysis.com/ejamdocs](https://www.ejanalysis.com/ejamdocs) directs you to the documentation for the EJAM package, including articles and vignettes.
+  - [ejanalysis.com/repo](https://www.ejanalysis.com/repo) or [ejanalysis.com/ejamrepo](https://www.ejanalysis.com/ejamrepo) directs you to the GitHub page for the EJAM package.
+  - [ejanalysis.com/ejamapp](https://www.ejanalysis.com/ejamapp) launches a live version of the EJAM web app.
+  - [ejanalysis.com/ejscreenapp](https://www.ejanalysis.com/ejamapp) launches a live version of the EJSCREEN web app.
+- [GitHub issues can be submitted here](https://github.com/ejanalysis/EJAM/issues)
+
+- Improved the [article on how to install the package](../articles/installing.html).
+- Fixed a bug where `isPublic` parameter in `run_app()` was being ignored.
+- Improved web app ui/server code, allowing many options and defaults to be provided as parameters to `run_app()`.
+- Added many examples to `run_app()` documention showing how to change defaults and options. You can now
+    - Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)
+    - Provide preselected industry NAICS codes, or a set of specific Counties
+    - Provide a table of lat/lon coordinates to preload at launch
+    - Provide a shapefile to preload upon launch
+    - etc.
+- Drafted new article with technical details: [Defaults and Custom Settings for the Web App](../articles/dev-app-settings.html)
+- Changed how Advanced tab visibility is controlled ("default_can_showhide_advanced_settings" provides initial value of `input$can_showhide_advanced_settings` now)
+- Fixed a bug where threshold-related parameters passed to `run_app()` were being ignored in the latlon case.
+- Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in run_app(). For example, radius is now settable by `run_app(radius_default=3.1)`
+  - the old global_defaults_ variable "default_default_miles" is now called "radius_default"
+  - the old `input$default_miles` is now called `input$radius_default`
+  - the old `input$bt_rad_buff` is now called `input$radius_now`
+  Other similar changes:
+  - the old global_defaults_ variable "max_default_miles" is now called "max_radius_default"
+  - the old global_defaults_ variable "intro_text" is now called "aboutpage_text"
+  - the old global_defaults_ variable "default_default_miles_shapefile" is now called "radius_default_shapefile"
+  - the old reactive sanitized_bt_rad_buff() is now called sanitized_radius_now()
+
+
 # EJAM v2.32.5 (July 2025)
 
-## Web  app
+## Web app
 
 - **Cities, Counties, States:** Census units like States, Counties, and Cities/Towns/CDPs can be selected from a menu or searched by typing part of the name. Clicking "Done" will check online for the boundaries of those places, at which point the "Start Analysis" button will be enabled. Then clicking the "Start Analysis" button analyzes the sites for which bounds were found.
 - **Area in square miles**: The app now gets or calculates the area of each site more consistently and efficiently. (The function `ejamit()` has new params related to how `area_sqmi()` now can get square mileage info from `?blockgroupstats` table without needing to download boundaries. There are new parameters called `download_fips_bounds_ok`, `download_noncity_fips_bounds`, and `includewater`. The new params are also driven by two new defaults in `global_defaults_shiny.R` The old parameter default_download_fips_bounds_to_calc_areas is no longer a param in `ejamit()`).

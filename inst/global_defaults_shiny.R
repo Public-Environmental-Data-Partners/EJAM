@@ -34,7 +34,7 @@ app_title <- "Environmental and Residential Population Analysis Multisite tool"
 app_header_logo <- "www/favicon.png" # (small wordless hex)
 app_header_logo_html <- paste0(' <img id="titleLogo" src=', app_header_logo, ' alt="logo" title="logo"
               style="margin: 0px; padding-bottom: 4px; padding-top: 4px; padding-left: 4px; padding-right: 4px; width: 40px; height: 40px">'
-                               )
+)
 ## old/alt one:
 # app_header_logo_html <- '<img id="titleLogo" src="www/epa_logo_horizBlue.png" alt="EPA" title="EPA"
 #             style="margin: 0px; padding-bottom: 4px; padding-top: 4px;   padding-left: 4px; padding-right: 4px">'
@@ -67,6 +67,10 @@ global_defaults_shiny <- list(
   aboutpage_logo = aboutpage_logo,
   ## .community_report_logo_path is not needed here since since it is defined elsewhere, in global_defaults_package.R
   ## app_header_logo_html is not needed here since it is simply used below in the html directly, not queried by app_ui.R
+
+  ## tab shown at launch ####
+  # if they are visible, can be "About" or "Advanced Settings" instead of 'Site Selection'
+  tabshown_default = 'Site Selection',
 
   default_testing        = FALSE,
   default_shiny.testmode = FALSE,  # If TRUE, then various features for testing Shiny applications are enabled.
@@ -122,18 +126,22 @@ global_defaults_shiny <- list(
   ## ------------------------ Radius options  #####
 
   #   radius miles for slider input where user specifies radius. Note 5 km is 3.1 miles, 10 km is 6.2 miles ; and 10 miles is 16 kilometers (10 * meters_per_mile/1000). 50 km is too much/ too slow.
+
+  # input$minradius   # bottom end of slider right now
   minradius  = 0.50, # miles -- significant uncertainty as radius shrinks, at least if blockgroups are small such as if # of blockgroups in circle << 30.
   minradius_shapefile = 0,
-  default_default_miles_shapefile = 0,
+
   stepradius = 0.05, # miles.  0.25 allows quarter miles. 0.10 allows tenths. 0.05 is awkwardly small but allows both quarter mile and tenth of mile.
 
-  # input$default_miles
-  default_default_miles = 1, # and can override this with run_app(radius=3.1), and also see effects of bookmarked advanced settings
-  max_default_miles = 50 * 1000 / EJAM::meters_per_mile, # 50 km. EJAM::meters_per_mile is lazyloaded data constant.
+  # input$radius_default   # initial value of slider
+  radius_default = 1,      # and can override this with run_app(radius_default=3.1), and also see effects of bookmarked advanced settings
+  radius_default_shapefile = 0,
 
-  # input$max_miles
-  default_max_miles  = 10, #
-  maxmax_miles = 50 * 1000 / EJAM::meters_per_mile, # 50 km.
+  # input$max_miles        # current cap, top end of slider right now
+  # These 3 names are tricky - They are the "normal cap" (10 miles)  vs  "absolute cap on slider range" (31 miles) vs  "abs cap on initial value" (31 miles)
+  default_max_miles  = 10, # default cap/top end of slider initially #  ** normal cap on slider for current radius (normal top of slider)
+  maxmax_miles = 50 * 1000 / EJAM::meters_per_mile, # 50 km.       # ** absolute cap on slider for current radius (max you can make top of slider, in adv tab)
+  max_radius_default = 50 * 1000 / EJAM::meters_per_mile, # 50 km. # ** absolute cap on default/initial radius (max starting radius, even using advanced tab)
 
   ## ------------------------ Site Selection options  #####
 
@@ -259,8 +267,8 @@ global_defaults_shiny <- list(
 
   ## ------------------------ doaggregate() params ####
 
-default_download_city_fips_bounds = TRUE, # if FALSE, area in sq miles would be NA for any city/CDP types of FIPS
-default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses arealand column from blockgroupstats
+  default_download_city_fips_bounds = TRUE, # if FALSE, area in sq miles would be NA for any city/CDP types of FIPS
+  default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses arealand column from blockgroupstats
 
   # > cbind(formals(doaggregate)) or EJAM:::args2()
   #
@@ -270,8 +278,8 @@ default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses areal
   # countcols              NULL  ** shiny default NOT specified here
   # wtdmeancols            NULL  ** shiny default NOT specified here
   # calculatedcols         NULL  ** shiny default NOT specified here
-   # calctype_maxbg         NULL
-   # calctype_minbg         NULL
+  # calctype_maxbg         NULL
+  # calctype_minbg         NULL
   # subgroups_type         "nh"     shiny default is set in global
   # include_ejindexes      FALSE    shiny default is set in global
   # calculate_ratios       TRUE     shiny default is set in global
@@ -606,50 +614,51 @@ rm(list_unattributed)
 ################################################################# #
 
 
-
 # ~ ####
-# ------------------------ ____ HELP TEXT ------------------------  ####
+# ------------------------ ____ ABOUTPAGE & HELP TEXT ------------------------  ####
 # ~ ####
 
-## info text for "About EJAM" tab ####
+######################################## ######################################### #
+## HTML for "About EJAM" tab ####
 
-docs_url            <- EJAM:::repo_from_desc("github.io", get_full_url = TRUE)
+docs_url            <- EJAM:::repo_from_desc("github.io",  get_full_url = TRUE)
 testdata_repo_url   <- EJAM:::repo_from_desc("github.com", get_full_url = TRUE)
 testdata_owner_repo <- EJAM:::repo_from_desc("github.com", get_full_url = FALSE)
 testdata_repo <-  gsub(".*/", "", testdata_owner_repo)
 
-help_texts <- list(
-  intro_text = tagList(
+aboutpage_texts <- list(
+
+  aboutpage_text = tagList(
+
     # tags$p("For more information about EJAM:"),
-    h2( a(href = paste0(docs_url, "/", "articles/whatis.html"),
-          "What is EJAM?",
+    h2( a(href = paste0(docs_url, "/", "articles/whatis.html"), "What is EJAM?",
           target = "_blank", rel = "noreferrer noopener") ),
+
     p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting reports for hundreds or thousands of places, all at the same time."),
     p("This provides interactive results and a formatted, ready-to-share report with tables, graphics, and a map. The report can provide information about communities near any of the industrial facilities on a list, for example."),
+
     p("This version of the Environmental and Residential Population Analysis Multisite tool (EJAM) is not associated with the United States Environmental Protection Agency (US EPA), but has its roots in open source code that was originally developed at EPA."),
+
     h4("For more information about ",
-      a(href = "https://www.ejanalysis.org/status", "the evolving status of EJSCREEN & EJAM in 2025",
-        target = "_blank", rel = "noreferrer noopener"),
-      ", see ",
-      a(href = "https://www.ejanalysis.org", "ejanalysis.org",
-          target = "_blank", rel = "noreferrer noopener")
+       a(href = "https://www.ejanalysis.org/status", "the evolving status of EJSCREEN & EJAM in 2025",
+         target = "_blank", rel = "noreferrer noopener"),
+       ", see ",
+       a(href = "https://www.ejanalysis.org", "ejanalysis.org",
+         target = "_blank", rel = "noreferrer noopener")
     ),
     br(),
     br()
-  ),
+  )
+)
 
-  ## 5/5/2025 UPDATE: NO LONGER USED
-  ## help text for ECHO facility search: echo_message ####
-  ## used by inputId 'ss_search_echo'
-  # echo_message = shiny::HTML(paste0('To use the ECHO website to search for and specify a list of regulated facilities,
-  #                                     <br>1) Go to ', '<a href="https://echo.epa.gov/facilities/facility-search", target=\"_blank\" rel=\"noreferrer noopener\">', echo_url,  '</a>', ' and <br>
-  #                                     2) Navigate website and select categories to include in data, then <br>
-  #                                     3) Under Search Criteria Selected-Facility Characteristics-Results View select <b>Data Table</b> and click <b>Search</b>, then <br>
-  #                                     3) click Customize Columns, use checkboxes to include Latitude and Longitude, then <br>
-  #                                     4) click Download Data, then <br>
-  #                                     5) Return to this app to upload that ECHO site list.<br>')),
+######################################## ######################################### #
+## HTML for Help buttons for uploading ####
 
-  ## help text for upload: latlon_help_msg ####
+help_texts <- list(
+
+  # --------------------------------------------------------- #
+  ### help text for upload: latlon_help_msg
+
   latlon_help_msg = paste0('
 <div class="row">
   <div class="col-sm-12">
@@ -663,9 +672,9 @@ help_texts <- list(
 
                            tags$a(href = paste0("https://github.com/",
                                                 testdata_owner_repo,
-                                  "/blob/master/inst/testdata/latlon/testpoints_10.xlsx?raw=true"), target = "_blank",
+                                                "/blob/master/inst/testdata/latlon/testpoints_10.xlsx?raw=true"), target = "_blank",
                                   "Example of lat lon file"),
-'
+                           '
 <p>Allowed filetypes: .csv, .xls, or .xlsx</p>
 <p>Required column names in first row as header: lat, lon (or aliases)</p>
 
@@ -692,7 +701,8 @@ help_texts <- list(
   </div>
   </div>'
   ),
-  ## help text for upload: shp_help_msg ####
+  # --------------------------------------------------------- #
+  ### help text for upload: shp_help_msg
 
   shp_help_msg = paste0('
 <div class="row">
@@ -707,8 +717,8 @@ help_texts <- list(
 
                         tags$a(href = paste0("https://github.com/",
                                              testdata_owner_repo,
-                        "/blob/master/inst/testdata/shapes/portland.gdb.zip?raw=true"), target = "_blank", "Example of Shapefile"),
-'
+                                             "/blob/master/inst/testdata/shapes/portland.gdb.zip?raw=true"), target = "_blank", "Example of Shapefile"),
+                        '
   <p>The file can be in one of the following formats:</p>
   <p>', paste0(global_defaults_shiny$default_shp_oktypes_1, collapse = ", "), '</p>',
                         '
@@ -717,7 +727,8 @@ help_texts <- list(
   </div>
   </div>'
   ),
-  ## help text for upload: frs_help_msg ####
+  # --------------------------------------------------------- #
+  ### help text for upload: frs_help_msg
 
   frs_help_msg = paste0('  <div class="row">
     <div class="col-sm-12">
@@ -752,8 +763,8 @@ help_texts <- list(
       </div>
     </div>
   </div>'),
-
-  ## help text for upload: epa_program_help_msg ####
+  # --------------------------------------------------------- #
+  ### help text for upload: epa_program_help_msg
 
   epa_program_help_msg = paste0('
 <div class="row">
@@ -768,7 +779,7 @@ help_texts <- list(
 
                                 tags$a(href = paste0("https://github.com/",
                                                      testdata_owner_repo,
-                                       "/blob/master/inst/testdata/programid/program_test_data_10.xlsx?raw=true"), target =  "_blank" ,
+                                                     "/blob/master/inst/testdata/programid/program_test_data_10.xlsx?raw=true"), target =  "_blank" ,
                                        "Example of EPA program ID file"),
 
                                 '  <p>Allowed filetypes: .csv, .xls, or .xlsx</p>
@@ -795,7 +806,9 @@ AIR,	IL000031012ACJ<br>
   </div>
   </div>'
   ),
-  ## help text for upload: fips_help_msg ####
+  # --------------------------------------------------------- #
+  ### help text for upload: fips_help_msg
+
   fips_help_msg = paste0('
 <div class="row">
   <div class="col-sm-12">
@@ -811,7 +824,7 @@ AIR,	IL000031012ACJ<br>
 
                          tags$a(href = paste0("https://github.com/",
                                               testdata_owner_repo,
-                                "/blob/master/inst/testdata/fips/counties_in_Delaware.xlsx?raw=true"), target = "_blank",
+                                              "/blob/master/inst/testdata/fips/counties_in_Delaware.xlsx?raw=true"), target = "_blank",
                                 "Example of FIPS codes file"),
 
                          '
@@ -837,7 +850,8 @@ AIR,	IL000031012ACJ<br>
   </div>
   </div>'
   )
-)
+
+) # end of help_texts list
 
 #################################################################################################################### #
 # ~ ####
@@ -857,7 +871,7 @@ html_fmts <- list(
     tags$html(class = "no-js", lang = "en"),
 
     # head ####
-    ## Google tag manager? ####
+    ## Google tag manager unused? ####
     tags$head(
       HTML(
         "<!-- Google Tag Manager
@@ -871,17 +885,18 @@ html_fmts <- list(
       End Google Tag Manager -->"
       ),
 
-      ## meta tags (some EPA-specific)  ####
+      ## meta tags ####
 
       tags$meta(charset="utf-8"),
 
-      tags$meta(property="og:site_name", content="US EPA"),
+      tags$link(rel="stylesheet", type = "text/css", href = "https://cdnjs.cloudflare.com/ajax/libs/uswds/3.0.0-beta.3/css/uswds.min.css", integrity="sha512-ZKvR1/R8Sgyx96aq5htbFKX84hN+zNXN73sG1dEHQTASpNA8Pc53vTbPsEKTXTZn9J4G7R5Il012VNsDEReqCA==", crossorigin="anonymous", referrerpolicy="no-referrer"),
+
+      ### old EPA-specific tags  ####
 
       #tags$link(rel = "stylesheet", type = "text/css", href = "css/uswds.css"),
-      tags$link(rel="stylesheet", type = "text/css", href = "https://cdnjs.cloudflare.com/ajax/libs/uswds/3.0.0-beta.3/css/uswds.min.css", integrity="sha512-ZKvR1/R8Sgyx96aq5htbFKX84hN+zNXN73sG1dEHQTASpNA8Pc53vTbPsEKTXTZn9J4G7R5Il012VNsDEReqCA==", crossorigin="anonymous", referrerpolicy="no-referrer"),
+      tags$meta(property="og:site_name", content="US EPA"),
       tags$link(rel="canonical", href="https://www.epa.gov/themes/epa_theme/pattern-lab/.markup-only.html"),
       tags$link(rel="shortlink", href="https://www.epa.gov/themes/epa_theme/pattern-lab/.markup-only.html"),
-
       tags$meta(property="og:url", content="https://www.epa.gov/themes/epa_theme/pattern-lab/.markup-only.html"),
       tags$meta(property="og:url", content="https://www.epa.gov/themes/epa_theme/pattern-lab/.markup-only.html"),
       tags$meta(property="og:image", content="https://www.epa.gov/sites/all/themes/epa/img/epa-standard-og.jpg"),
@@ -898,15 +913,15 @@ html_fmts <- list(
       tags$meta(name="viewport", content="width=device-width, initial-scale=1.0"),
       tags$meta(`http-equiv`="x-ua-compatible", content="ie=edge"),
 
-      ## >> App NAME/TITLE could be defined here ####
+      ## >> app_title ####
 
-      # AND in golem_add_external_resources() IN app_ui.R,
-      # AND BELOW IN SHORT VERSION OF HEADER
-      # tags$title('EJAM | US EPA'),
+      # and see golem_add_external_resources() in app_ui.R
+      # and below in THIN HEADER ROW
+      ## but not done this way:   tags$title('EJAM | US EPA'),
 
       tags$meta(name = "application-name", content = app_title),
 
-      ## Favicons (some EPA-specific) - but can be specified in (and this would conflict with) golem_add_external_resources() within app_ui.R ####
+      ## Favicons can be specified in (and this would conflict with) golem_add_external_resources() within app_ui.R ####
 
       # try to let app_ui.R define the main favicon instead of using the EPA one....
       # tags$link(rel="icon",                      href="https://www.epa.gov/themes/epa_theme/images/favicon-32.png", sizes="32x32"),
@@ -968,8 +983,6 @@ html_fmts <- list(
 
     # body ####
 
-    ## >> APP TITLE in Header/ Body tag ####
-
     ### cloudflare script ####
     tags$body(
       class = "path-themes not-front has-wide-template", id = "top",
@@ -977,7 +990,7 @@ html_fmts <- list(
     ),
 
     ######################################################################## #
-    ## THIN HEADER ROW/ TITLE ####
+    ## THIN HEADER ROW ####
 
     if (!global_defaults_shiny$default_show_full_header_footer) {
 
@@ -996,6 +1009,8 @@ html_fmts <- list(
           padding-bottom: 0px; padding-top: 0px; padding-left: 0px; padding-right: 0px">
 
 ',
+                  ### >> app_header_logo_html ####
+
                   app_header_logo_html
                   ,'
         </td>
@@ -1006,11 +1021,15 @@ html_fmts <- list(
 
                 <span style="font-size: 15pt; font-weight:700; font-family:Arial";>',   # larger font for app title
 
+                  ### >> app_title  ####
+
                   app_title,
 
                   '</span>',
 
                   '<span style="font-size: 10pt; font-weight:700; font-family:Arial";>',  # smaller font for version info
+
+                  ### >> .app_version_headertext   ####
 
                   .app_version_headertext,
 
@@ -1018,7 +1037,7 @@ html_fmts <- list(
                   '
         </td>',
 
-                  ### > links ####
+                  ### >> links (glossary, help, contact) ####
                   # could adjust which of the links here get shown in the header, depending on  isTRUE(golem_opts$isPublic)
                   '
         <td valign="bottom" align="right";  style="line-height:34px; padding: 0px;

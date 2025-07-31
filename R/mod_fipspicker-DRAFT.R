@@ -34,7 +34,7 @@
 #
 # xyz = shinyApp(
 #   ui = basicPage(
-#     actionButton("show_fipspicker", "show fipspicker UI in a window")
+#     actionButton(inputId = "show_fipspicker", "show fipspicker UI in a window")
 #   ),
 #   server = function(input, output) {
 #     fipspicker_modal <- function() {
@@ -42,8 +42,8 @@
 # c(
 #   fipspicker_module_ui("TESTID"),
 #         footer = tagList(
-#           modalButton("Cancel"),
-#           actionButton("ok", "OK")
+          # modalButton("Cancel"),
+#           actionButton(inputId = "ok", "OK")
 #         )
 #         )
 # )

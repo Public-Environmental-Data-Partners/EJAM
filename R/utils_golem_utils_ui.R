@@ -141,7 +141,7 @@ tagRemoveAttributes <- function(tag, ...) {
 #' ## Hide
 #' a <- shiny::tags$p(src = "plop", "pouet")
 #' undisplay(a)
-#' b <- shiny::actionButton("go_filter", "go")
+#' b <- shiny::actionButton(inputId = "go_filter", "go")
 #' undisplay(b)
 undisplay <- function(tag) {
   # if not already hidden
@@ -324,7 +324,7 @@ make_action_button <- function(tag, inputId = NULL) {
     stop("tag does not have any id. Please use inputId to be able to
            access it on the server side.")
   }
-  
+
   # handle id
   if (!is.null(inputId)) {
     if (!is.null(tag$attribs$id)) {
@@ -339,7 +339,7 @@ make_action_button <- function(tag, inputId = NULL) {
       tag$attribs$id <- inputId
     }
   }
-  
+
   # handle class
   if (is.null(tag$attribs$class)) {
     tag$attribs$class <- "action-button"
@@ -351,9 +351,9 @@ make_action_button <- function(tag, inputId = NULL) {
 }
 
 
-# UNCOMMENT function below to USE it  
+# UNCOMMENT function below to USE it
 #
-# attachment   
+# attachment
 #             ::   att_amend_desc()
 #
 # To use this part of the UI
@@ -369,22 +369,22 @@ make_action_button <- function(tag, inputId = NULL) {
 # #' @importFrom rmarkdown render
 # #' @importFrom markdown markdownToHTML
 # includeRMarkdown <- function(path){
-# 
+#
 #   md <- tempfile(fileext = '.md')
-# 
+#
 #   on.exit(unlink(md), add = TRUE)
-# 
+#
 #   rmarkdown::render(
 #     path,
 #     output_format = 'md_document',
 #     output_dir = tempdir(),
 #     output_file = md, quiet = TRUE
 #     )
-# 
+#
 #   html <- markdown::markdownToHTML(md, fragment.only = TRUE)
-# 
+#
 #   Encoding(html) <- "UTF-8"
-# 
+#
 #   return(HTML(html))
 # }
 

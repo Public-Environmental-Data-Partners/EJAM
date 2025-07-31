@@ -72,11 +72,11 @@ if (testing_this_module) {
           # verbatimTextOutput("testinfo1"),
           # verbatimTextOutput("testinfo_radius"),
           # shiny::textOutput("testinfo2"),
-          # EJAM:::mod_ejscreenapi_ui("TESTID", simpleradius_default_for_ui = 2),
+          # EJAM:::mod_ejscreenapi_ui("TESTID", simpleradiusdefault_for_ui = 2),
 
           EJAM:::mod_ejscreenapi_ui("TESTID",
 
-                             simpleradius_default_for_ui = 2
+                             simpleradiusdefault_for_ui = 2
           ),
           br()
         ),
@@ -88,7 +88,7 @@ if (testing_this_module) {
           ##  module server function returns a table to overall server/app, which itself can then use/display that table.
           # DT::DTOutput("results"),
           ## Demo of how you might send radius from outer app to module as starting value of module radius slider:
-          # sliderInput("outerappradius", label = "Radius we could preset", min = 1, max = 10, step = 1, value = 1.2),
+          # sliderInput(inputId = "outerappradius", label = "Radius we could preset", min = 1, max = 10, step = 1, value = 1.2),
           br()
         )))
   }
@@ -104,7 +104,7 @@ if (testing_this_module) {
     )
 # check this belongs here: ***
     source(system.file("global_defaults_ejscreenapi.R", package = "EJAM"))
-    
+
     # output$testinfo1 <- renderPrint( ("info can go here "))
     # output$testinfo_radius <- renderPrint(paste0("Radius is ", x()$radius.miles, " miles"))
     # output$testinfo2 <- renderText(cat("x names:  ", paste0(names(x()), collapse = ", "), "\n"))

@@ -12,18 +12,18 @@
 #' @return one of the choiceValues (if not canceled/ error), once Done is clicked.
 #'
 #' @details uses [shiny::runGadget()]
-#' 
-#'   *** WARNING: AS DRAFTED, CANNOT use within nontrivial scripts or functions 
+#'
+#'   *** WARNING: AS DRAFTED, CANNOT use within nontrivial scripts or functions
 #'   because the [stopApp()] seems to interrupt other processes and cause problems -
-#'   and seems related to a quirk seen if a script or function calls radiobox() twice - 
+#'   and seems related to a quirk seen if a script or function calls radiobox() twice -
 #'   it will work the first time but show a blank popup window the 2d time...
 #'   e.g., if you  try to do this:
 #'   radius1 <- radiobox()
 #'   radius2 <- radiobox()
 #'   May all be related to this issue: https://github.com/rstudio/rstudio/issues/13394
-#'   
+#'
 #'   Note this function could be defined as an RStudio addin and assigned a keyboard shortcut, if that is useful.
-#'   
+#'
 #' @examples
 #' # chosen <- radiobox()
 #' # cat("you chose", chosen, '\n')
@@ -40,36 +40,36 @@
 #'   label = "Radius"
 #'  )
 #'  cat("The radius will be", radius, "miles. \n")
-#' 
+#'
 #' }
-#' 
+#'
 #' @keywords internal
 #'
 radiobox <- function(choiceNames  = c("Points", "Shapes", "FIPS"), # what is shown
                      choiceValues = c("latlon", "shp", "fips"),    # what is returned
                      label = "Choose one:",  #
-                     title = "", # 
+                     title = "", #
                      height = 250, width = 100) {
-  
+
   if (!missing(choiceNames) & missing(choiceValues)) {
     # this way, the user can specify only the 1st parameter, like  x = radiobox(1:3)
     choiceValues <- choiceNames
   }
   ######################################## #
-  
+
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar(title),
     miniUI::miniContentPanel(
-      shiny::radioButtons('radiobuttons', 
-                          label = label, 
-                          choiceNames  = choiceNames, 
-                          choiceValues = choiceValues) 
+      shiny::radioButtons(inputId = 'radiobuttons',
+                          label = label,
+                          choiceNames  = choiceNames,
+                          choiceValues = choiceValues)
     )
   )
   ######################################## #
-  
+
   server <- function(input, output, session) {
-    
+
     shiny::observe({
       value_chosen <- input$radiobuttons
       # return(value_chosen) # this would not stop the app
@@ -82,7 +82,7 @@ radiobox <- function(choiceNames  = c("Points", "Shapes", "FIPS"), # what is sho
     }) %>% bindEvent(input$cancel)
   }
   ########################################## #
-  
+
   dviewer <- shiny::dialogViewer(dialogName = title, height = height, width = width)
   shiny::runGadget(app = ui, server = server,
                              stopOnCancel = FALSE, # To handle input$cancel via our own observe() with bindEvent()

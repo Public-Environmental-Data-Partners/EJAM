@@ -3,30 +3,30 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @noRd
-#' 
+#'
 app_ui_EJAMejscreenapi <- function(request) {
-  
+
   ## Use Alt-O in RStudio to fold code, to see sections.
-  ## Use Ctrl-Shift-O in RStudio to view the document Outline panel 
-  
+  ## Use Ctrl-Shift-O in RStudio to view the document Outline panel
+
   tagList(
     # Leave this function for adding external resources, see end of this source file.
     golem_add_external_resources(),
-    
+
     # Template for EPA RShiny apps ----
     # require(shiny)
-    
+
     fluidPage(
-      ## Head of webpage _______________________________________________________________ 
-      
+      ## Head of webpage _______________________________________________________________
+
       #################################################################################################################### #
-      
-      # WHERE TO FIND THIS template # 
+
+      # WHERE TO FIND THIS template #
       # https://github.com/USEPA/webcms/blob/main/utilities/r/OneEPA_template.R
-      
-      # START OF ONEEPA SHINY APP WEB UI TEMPLATE to insert within your fluid page  
-      #################################################################################################################### #      
-      
+
+      # START OF ONEEPA SHINY APP WEB UI TEMPLATE to insert within your fluid page
+      #################################################################################################################### #
+
       tags$html(class = "no-js", lang = "en"),
       tags$head(
         HTML(
@@ -60,13 +60,13 @@ app_ui_EJAMejscreenapi <- function(request) {
 		tags$meta(name="HandheldFriendly", content="true"),
 		tags$meta(name="viewport", content="width=device-width, initial-scale=1.0"),
 		tags$meta(`http-equiv`="x-ua-compatible", content="ie=edge"),
-		
-		
+
+
 		## TITLE of webpage _______________________________________________________________-----------------------
-		
+
 		tags$title(apptitle),
-		
-		
+
+
 		## ICONS for Bookmark Bar etc. (favicon.ico)  ####
 		tags$link(rel="icon", type="image/x-icon", href="https://www.epa.gov/themes/epa_theme/images/favicon.ico"),
 		tags$meta(name="msapplication-TileColor", content="#FFFFFF"),
@@ -81,9 +81,9 @@ app_ui_EJAMejscreenapi <- function(request) {
 		tags$link(rel="apple-touch-icon-precomposed", sizes="72x72", href="https://www.epa.gov/themes/epa_theme/images/favicon-72.png"),
 		tags$link(rel="apple-touch-icon-precomposed", href="https://www.epa.gov/themes/epa_theme/images/favicon-180.png"),
 		tags$link(rel="icon", href="https://www.epa.gov/themes/epa_theme/images/favicon-32.png", sizes="32x32"),
-		
+
 		## (more template) ####
-		
+
 		tags$link(rel="preload", href="https://www.epa.gov/themes/epa_theme/fonts/source-sans-pro/sourcesanspro-regular-webfont.woff2", as="font", crossorigin="anonymous"),
 		tags$link(rel="preload", href="https://www.epa.gov/themes/epa_theme/fonts/source-sans-pro/sourcesanspro-bold-webfont.woff2", as="font", crossorigin="anonymous"),
 		tags$link(rel="preload", href="https://www.epa.gov/themes/epa_theme/fonts/merriweather/Latin-Merriweather-Bold.woff2", as="font", crossorigin="anonymous"),
@@ -99,7 +99,7 @@ app_ui_EJAMejscreenapi <- function(request) {
 		tags$link(rel="stylesheet", media="all", href="https://www.epa.gov/core/themes/stable/css/system/components/tree-child.module.css?r6lsex"),
 		tags$link(rel="stylesheet", media="all", href="https://www.epa.gov/themes/epa_theme/css/styles.css?r6lsex"),
 		tags$link(rel="stylesheet", media="all", href="https://www.epa.gov/themes/epa_theme/css-lib/colorbox.min.css?r6lsex"),
-		
+
 		tags$script(src = 'https://cdnjs.cloudflare.com/ajax/libs/uswds/3.0.0-beta.3/js/uswds-init.min.js'),
 		#fix container-fluid that boostrap RShiny uses
 		tags$style(HTML(
@@ -117,7 +117,7 @@ app_ui_EJAMejscreenapi <- function(request) {
       ),
 		tags$body(class="path-themes not-front has-wide-template", id="top",
 		          tags$script(src = 'https://cdnjs.cloudflare.com/ajax/libs/uswds/3.0.0-beta.3/js/uswds.min.js')),
-		
+
 		# EPA site Header ####
 		HTML(
 		  '<div class="skiplinks" role="navigation" aria-labelledby="skip-to-main">
@@ -241,8 +241,8 @@ app_ui_EJAMejscreenapi <- function(request) {
     </header>
     <main id="main" class="main" role="main" tabindex="-1">'
 		),
-	
-	# Individual Page Header 
+
+	# Individual Page Header
 	HTML(
 	  '<div class="l-page  has-footer">
       <div class="l-constrain">
@@ -256,48 +256,48 @@ app_ui_EJAMejscreenapi <- function(request) {
         </div>
         <article class="article">'
 	),
-	
+
 	# Insert your UI code here
-	
+
 	#################################################################################################################### #
 	#  B  #
-	# __________________________ ####  
-	# RShiny App UI start * -------------------------------- ---------------------------------------------------------------------------------------- 
-	
-	
-	
-	
-	
-	
-	
-	titlePanel(apptitle),  #  
+	# __________________________ ####
+	# RShiny App UI start * -------------------------------- ----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+	titlePanel(apptitle),  #
 	# [ Button to help in Debugging ]  ####
-	# (REMOVE BEFORE DEPLOYING)] 
-	# and to unhide the button in the app, while debugging, go 
+	# (REMOVE BEFORE DEPLOYING)]
+	# and to unhide the button in the app, while debugging, go
 	# to your web browser, open the JS console, and type:
 	#   $('#browser').show();
 	shiny::uiOutput('debugbutton_ui'),
-	
+
 	tabsetPanel(
 	  id = 'ejscreenapi_tabset', selected = 'EJScreenAPI' ,
-	  # ____________________________ ####  
-	  
+	  # ____________________________ ####
+
 	  #--------------------- MAIN TAB --------------------- ##########
 	  tabPanel(
 	    "EJScreenAPI",
-	    
+
 	    fluidRow(
 	      # _____ INPUTS _____ (LH column) ####
 	      column(
-	        4, 
+	        4,
 	        HTML(paste('<a href=\"', 'README.html', '\", target=\"_blank\">', 'About',  '</a>', sep = '')),
 	        tags$br(),tags$br(),
-	        
-	        ##################################################### # 
-	        ##################################################### # 
-	        
+
+	        ##################################################### #
+	        ##################################################### #
+
 	        ## pick a radius ####
-	        
+
 	        conditionalPanel(
 	          condition = "input.slider_vs_text_radius == 'use_slider'",
 	          shiny::uiOutput('radius_slider')
@@ -306,17 +306,17 @@ app_ui_EJAMejscreenapi <- function(request) {
 	          condition = "input.slider_vs_text_radius == 'type_in'",
 	          shiny::uiOutput('radius_textbox')
 	        ),
-	        shiny::radioButtons("slider_vs_text_radius",  label = NULL, choices = list(`Type in radius` = "type_in", `Use slider` = "use_slider"), inline = T), #  
-	        
-	        ##################################################### # 
-	        ##################################################### # 
-	        
+	        shiny::radioButtons(inputId = "slider_vs_text_radius",  label = NULL, choices = list(`Type in radius` = "type_in", `Use slider` = "use_slider"), inline = T), #
+
+	        ##################################################### #
+	        ##################################################### #
+
 	        ## search via ECHO ####
-	        
-	        shiny::actionButton('echobutton', label = 'Find sites via ECHO'), 
-	        
+
+	        shiny::actionButton(inputId = 'echobutton', label = 'Find sites via ECHO'),
+
 	        ## upload points ####
-	        
+
 	        shiny::fileInput(inputId = 'pointsfile',
 	                         placeholder = 'testpoints_5.xlsx', multiple = FALSE,
 	                         label = 'Upload file (.csv, .xls, or .xlsx) with lat & lon as column headers in row 1',
@@ -326,126 +326,126 @@ app_ui_EJAMejscreenapi <- function(request) {
 	        shiny::textOutput('count'),    # how many were uploaded
 	        shiny::textOutput('max_pts_upload_txt'), # how many allowed for upload - otherwise rejects upload. set in global
 	        shiny::textOutput('max_pts_map_txt'), # how many get mapped (the first n points) - omits any after that cap from map
-	        shiny::textOutput('max_pts_showtable_txt'), # # 
+	        shiny::textOutput('max_pts_showtable_txt'), # #
 	        shiny::textOutput('max_pts_run_txt'),     # how many allowed for analysis, max (but not really enforced even though it says there is a cap)
-	        
+
 	        ## button to request buffer results ####
-	        
-	        shiny::actionButton('runbutton', label = 'Start'),
-	        # radioButtons('whichip',label = 'URL/IP', choices = ips, selected = whichip, inline = TRUE),  # placeholder in case want to enable this for testing
+
+	        shiny::actionButton(inputId = 'runbutton', label = 'Start'),
+	        # radioButtons(inputId = 'whichip',label = 'URL/IP', choices = ips, selected = whichip, inline = TRUE),  # placeholder in case want to enable this for testing
 	        h5('Click Start, then wait until table appears below'),  # h5 is via shiny via htmltools
 	        ## show estimated minutes needed ####
 	        shiny::textOutput('speed')
-	        # bookmarkButton(label = "Save your work to come back later")        # placeholder in case want to work on this later # https://mastering-shiny.org/action-bookmark.html 
-	      ), 
+	        # bookmarkButton(label = "Save your work to come back later")        # placeholder in case want to work on this later # https://mastering-shiny.org/action-bookmark.html
+	      ),
 	      # _____ MAP _____ (RH column) ####
 	      column(
-	        8, 
+	        8,
 	        leaflet::leafletOutput('mapout', height = '800px', width = '100%'),
 	        h6('Red on map indicates overlapping buffers, where residents would be double-counted if aggregating across sites'),
-	        shiny::radioButtons('cluster_highlighting_on', label = 'Highlight overlaps?', choiceNames = c('Y', "N"), choiceValues = c(TRUE, FALSE), inline = TRUE)
+	        shiny::radioButtons(inputId = 'cluster_highlighting_on', label = 'Highlight overlaps?', choiceNames = c('Y', "N"), choiceValues = c(TRUE, FALSE), inline = TRUE)
 	      )
 	    ),
-	    
+
 	    # can put tabs here, not at top
 	    # _____ RESULTS TABLE _____ (below) ####
 	    fluidRow(
 	      column(
 	        12,
-	        
+
 	        ## button to download table ####
 	        shiny::uiOutput('downloadButton_ui'),
-	        # shiny::selectInput("highlight_color_in",label = 'color for points matching selected table rows', choices = c('red', 'blue', 'green', 'orange', 'purple', 'darkred', 'darkgreen'),multiple = FALSE),
-	        
+	        # shiny::selectInput(inputId = "highlight_color_in",label = 'color for points matching selected table rows', choices = c('red', 'blue', 'green', 'orange', 'purple', 'darkred', 'darkgreen'),multiple = FALSE),
+
 	        shiny::uiOutput('tabletips_button_ui'),
-	        ##                                           shiny::actionButton('tabletips_button', 'Tip on using this table'), ## tips on using table #### 
+	        ##                                           shiny::actionButton(inputId = 'tabletips_button', 'Tip on using this table'), ## tips on using table ####
 	        # HTML(paste('<a href=\"', 'example_webpage.html', '\", target=\"_blank\">', 'Example of how a Webpage Link could go Here',  '</a>', sep = '')), # placeholder in case want this later
-	        
+
 	        # #    show uploaded input table after an upload of points OR results once calculated    if that is most recent change
-	        #                                DT::DTOutput('rendered_results_table')  
+	        #                                DT::DTOutput('rendered_results_table')
 	        shiny::uiOutput('table_ui'),
-	        
-	        ## pick style for names for columns # 
+
+	        ## pick style for names for columns #
 	        shiny::uiOutput('renameButton_ui')
-	        
+
 	      )
 	    ) # end fluid row results table
 	  ),  # end main tab of api app
 	  # *********************************************************************************************************
-	  # ____________________________ ####  
-	  
+	  # ____________________________ ####
+
 	  #---------------------GRAPHICS/PLOT tab--------------------- ##########
 	  tabPanel(
 	    "Graphics",
 	    tags$br(),
-	    # graphic/plot # 
+	    # graphic/plot #
 	    shiny::plotOutput('plot1out'),
 	    tags$br()
 	  )  ,
-	  
+
 	  #--------------------- ADVANCED settings tab--------------------- ##########
-	  
+
 	  tabPanel(
 	    " ",
 	    h3("Advanced settings & experimental features not all implemented or tested"),
-	    
-	    
-	    numericInput('max_pts_upload', label = "Cap on number of points one can UPLOAD, additional ones in uploaded table get dropped entirely", 
+
+
+	    numericInput(inputId = 'max_pts_upload', label = "Cap on number of points one can UPLOAD, additional ones in uploaded table get dropped entirely",
 	                 min = 1000,  step = 500,
-	                 value = default_max_pts_upload, 
-	                 max =        maxmax_pts_upload), 
-	    numericInput('max_pts_run', label = "Cap on number of points one can request RESULTS for in one batch", 
+	                 value = default_max_pts_upload,
+	                 max =        maxmax_pts_upload),
+	    numericInput(inputId = 'max_pts_run', label = "Cap on number of points one can request RESULTS for in one batch",
 	                 min = 1000,  step = 100,
-	                 value = default_max_pts_run,  
+	                 value = default_max_pts_run,
 	                 max =        maxmax_pts_run),
-	    numericInput('max_pts_map', label = "Cap on number of points one can MAP", 
+	    numericInput(inputId = 'max_pts_map', label = "Cap on number of points one can MAP",
 	                 min = 500,  step = 100,
-	                 value = default_max_pts_map,  
-	                 max =        maxmax_pts_map), 
-	    numericInput('max_pts_showtable', label = "Cap on number of points to be rendered for display in DT interactive TABLE (uploads or results)",
+	                 value = default_max_pts_map,
+	                 max =        maxmax_pts_map),
+	    numericInput(inputId = 'max_pts_showtable', label = "Cap on number of points to be rendered for display in DT interactive TABLE (uploads or results)",
 	                 min = 100, step = 100,
-	                 value = default_max_pts_showtable, 
+	                 value = default_max_pts_showtable,
 	                 max =        maxmax_pts_showtable),
-	    
-	    numericInput('default_miles', label = "Default miles radius", 
-	                 min = 0.25, 
-	                 value = default_default_miles, 
-	                 max   =     max_default_miles),
-	    numericInput('max_miles', label = "Maximum radius in miles",
+
+	    numericInput(inputId = 'radius_default', label = "Default miles radius",
+	                 min = 0.25,
+	                 value = radius_default,
+	                 max   =     max_radius_default),
+	    numericInput(inputId = 'max_miles', label = "Maximum radius in miles",
 	                 value = default_max_miles,
 	                 max        = maxmax_miles),
-	    
-	    checkboxInput('include_ratios',
+
+	    checkboxInput(inputId = 'include_ratios',
 	                  label = "Results should include ratios to US and State averages",
 	                  value = default_calculate_ratios),
-	    checkboxInput('include_averages',
-	                  label = "Results should include US and State Averages - not implemented yet", 
+	    checkboxInput(inputId = 'include_averages',
+	                  label = "Results should include US and State Averages - not implemented yet",
 	                  value = TRUE),
-	    checkboxInput('include_extraindicators',
+	    checkboxInput(inputId = 'include_extraindicators',
 	                  label = 'Results should include extra indicators from Community Report - not implemented yet',
 	                  value = TRUE),
-	    
-	    checkboxInput('print_uploaded_points_to_log', label = "Print each new uploaded lat lon table full contents to server log", value = T),
-	   
-	     textInput('prefix_filenames', label = "Prefix to use in default file names when downloading [NOT implemented yet]", value = ""),
-	    
+
+	    checkboxInput(inputId = 'print_uploaded_points_to_log', label = "Print each new uploaded lat lon table full contents to server log", value = T),
+
+	     textInput(inputId = 'prefix_filenames', label = "Prefix to use in default file names when downloading [NOT implemented yet]", value = ""),
+
 	    numericInput(inputId = "circleweight_in", label = "weight of circles in maps", value = default_circleweight)
-	    
-	    # ## pick names for columns # 
+
+	    # ## pick names for columns #
 	    # shiny::uiOutput('renameButton_ui')
 	  )
-	  
- # end ejscreenapi_tabset tabsetpanel	  
+
+ # end ejscreenapi_tabset tabsetpanel
 	),
 	# RShiny App UI end   * -------------------------------- ----------------------------------------------------------------------------------------
-	# ____________________________ ####  
+	# ____________________________ ####
 	## _ //// #
-	
+
 	#################################################################################################################### #
 	## __End SHINY APP UI code v
-	
+
 	# (remainer of template) ####
-	
+
 	# IMPORTANT! For a navbar page, you will need to place the header and footer inside the navbar section (as shown below)  -
 	# you will then want to comment out lines 201-213 and lines 254-263
 	#   navbarPage(
@@ -476,7 +476,7 @@ app_ui_EJAMejscreenapi <- function(request) {
 	#     tabPanel("Sample Tab 1"),
 	#     tabPanel("Sample Tab 2"),
 	#   ),
-	
+
 	# Individual Page Footer
 	HTML(
 	  '</article>
@@ -488,7 +488,7 @@ app_ui_EJAMejscreenapi <- function(request) {
     </div>
   </div>'
 	),
-	
+
 	# Site Footer
 	HTML(
 	  '</main>
@@ -588,7 +588,7 @@ app_ui_EJAMejscreenapi <- function(request) {
                   <svg class="icon icon--social" aria-hidden="true" viewBox="0 0 448 512" id="facebook-square" xmlns="http://www.w3.org/2000/svg">
                     <!-- use xlink:href="https://www.epa.gov/themes/epa_theme/images/sprite.artifact.svg#facebook-square"></use-->
                     <path fill="currentcolor" d="M400 32H48A48 48 0 000 80v352a48 48 0 0048 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0048-48V80a48 48 0 00-48-48z"></path>
-                  </svg> 
+                  </svg>
                   <span class="usa-tag external-link__tag" title="Exit EPA Website">
                     <span aria-hidden="true">Exit</span>
                     <span class="u-visually-hidden"> Exit EPA Website</span>
@@ -663,8 +663,8 @@ app_ui_EJAMejscreenapi <- function(request) {
       </svg>
     </a>'
 	)
-	
-	# D__ END 
+
+	# D__ END
 	#  __ END OF fluidPage  ### #
     ) # end of fluid page
   )
@@ -672,7 +672,7 @@ app_ui_EJAMejscreenapi <- function(request) {
 } ################################################# #
 
 ## Use Alt-O in RStudio to fold code, then expand app_ui line to see sections.
-## Use Ctrl-Shift-O in RStudio to view the document Outline panel 
+## Use Ctrl-Shift-O in RStudio to view the document Outline panel
 
 #' Add external resources to the shiny app
 #' This function (from the golem package) is used internally.
@@ -690,7 +690,7 @@ app_ui_EJAMejscreenapi <- function(request) {
 #     )
 #     # Add here other external resources
 #     # for example, you can add shinyalert::useShinyalert()
-#     
-#     
+#
+#
 #   )
 # }

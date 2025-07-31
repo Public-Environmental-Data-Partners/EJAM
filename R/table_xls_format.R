@@ -554,7 +554,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
   # output of ejamit()$results_bysite have a  EJScreen Report  column that has values like this:
 
   # output from app_server code, ready to get sent to table_xls_format(), is like this:
-  #   url_ejscreen_report(    lat = d_upload$lat, lon =  d_upload$lon, radius = input$bt_rad_buff, as_html = TRUE)
+  #   url_ejscreen_report(    lat = d_upload$lat, lon =  d_upload$lon, radius = input$radius_now, as_html = TRUE)
 
   # ### code from ejscreenapi that was to make these columns work, somewhat generic naming possible
 

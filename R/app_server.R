@@ -43,9 +43,9 @@ app_server <- function(input, output, session) {
     EJAM:::global_or_param("sanitize_text")(input$an_threshgroup2)
   })
 
-  sanitized_bt_rad_buff <- reactive({
-    req(input$bt_rad_buff)
-    EJAM:::global_or_param("sanitize_numeric")(input$bt_rad_buff)
+  sanitized_radius_now <- reactive({
+    req(input$radius_now)
+    EJAM:::global_or_param("sanitize_numeric")(input$radius_now)
   })
   ################################################################### #
   # testing/dev mode settings ####
@@ -141,7 +141,7 @@ app_server <- function(input, output, session) {
 
   ## hide vs show ADVANCED tab at start  ---------------------- #   ***
 
-  # could use      global_or_param()   here instead
+
   if (isTRUE(EJAM:::global_or_param("default_hide_advanced_settings"))) {
     hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
   } else {
@@ -179,7 +179,7 @@ app_server <- function(input, output, session) {
   max_mb_upload_react <- reactive({
     x <- as.numeric((input$max_mb_upload))
     if (is.null(x) || is.na(x) || length(x) == 0) {
-      x <- default_max_mb_upload
+      x <- EJAM:::global_or_param("default_max_mb_upload") #?
       shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     } else {
       if (x > EJAM:::global_or_param("maxmax_mb_upload")) {x <- EJAM:::global_or_param("maxmax_mb_upload")}
@@ -1360,11 +1360,11 @@ app_server <- function(input, output, session) {
   #       distance_near_eachother(
   #     lon = data_uploaded()$lon,
   #     lat = data_uploaded()$lat,
-  #     distance = 2 * sanitized_bt_rad_buff()
+  #     distance = 2 * sanitized_radius_now()
   #     ## if switching units between miles and km - not currently used
   #     # distance = ifelse(input$radius_units == 'miles',
-  #     #                   2 * sanitized_bt_rad_buff(),
-  #     #                   2 * sanitized_bt_rad_buff() * 0.62137119
+  #     #                   2 * sanitized_radius_now(),
+  #     #                   2 * sanitized_radius_now() * 0.62137119
   #     #)
   #   )
   # })
@@ -1440,23 +1440,23 @@ app_server <- function(input, output, session) {
 
   output$radius_slider_ui <- renderUI({
 
-    valid_default_miles <- is.numeric(input$default_miles) && input$default_miles >= 0.5
+    valid_radius_default <- is.numeric(input$radius_default) && input$radius_default >= 0.5
     valid_max_miles <- is.numeric(input$max_miles) && input$max_miles > 0
 
-    if (valid_default_miles && valid_max_miles) {
+    if (valid_radius_default && valid_max_miles) {
       shiny::sliderInput(
-        inputId = 'bt_rad_buff',
+        inputId = 'radius_now',
         label = "",
         min = current_slider_min[[current_upload_method()]],
         max = input$max_miles,
-        value = input$default_miles,
+        value = input$radius_default,
         step = EJAM:::global_or_param("stepradius"),
         post = ' miles'
       )
     } else {
-      error_message <- if (!valid_default_miles && !valid_max_miles) {
+      error_message <- if (!valid_radius_default && !valid_max_miles) {
         "The radius input is disabled because both the default and max miles values are invalid. Please set valid distances in the Advanced Settings tab."
-      } else if (!valid_default_miles) {
+      } else if (!valid_radius_default) {
         "The radius input is disabled because the default miles value is invalid. Please set a valid distance in the Advanced Settings tab."
       } else {
         "The radius input is disabled because the max miles value is invalid. Please set a valid maximum distance in the Advanced Settings tab."
@@ -1468,14 +1468,14 @@ app_server <- function(input, output, session) {
   ## disable radius slider when FIPS is selected
   observe({
     if (current_upload_method() %in% c('FIPS', 'FIPS_PLACE')) {
-      shinyjs::disable(id = 'bt_rad_buff')
+      shinyjs::disable(id = 'radius_now')
     } else {
-      shinyjs::enable(id = 'bt_rad_buff')
+      shinyjs::enable(id = 'radius_now')
     }
   })
 
   ## create different initial (and minimum?) radius values for each site selection type
-  ### input$default_miles is set in advanced tab by global_defaults_*.R and then based on user input if any
+  ### input$radius_default is set in advanced tab by global_defaults_*.R and then based on user input if any
   ### or via e.g., radius=3.1 or radius_shapefile=1 param that can be provided to run_app()
 
   current_slider_min <- list(
@@ -1512,7 +1512,7 @@ app_server <- function(input, output, session) {
 
   observe({
     # Sanitize the input: Convert to numeric or set a default value
-    sanitized_miles <- as.numeric(input$default_miles)
+    sanitized_miles <- as.numeric(input$radius_default)
     # Handle cases where the input cannot be converted to a numeric value
     if (is.na(sanitized_miles)) {
       sanitized_miles <- 0
@@ -1530,30 +1530,30 @@ app_server <- function(input, output, session) {
     for (this in these) {
       current_slider_val[[this]] <- sanitized_miles
     }
-  }) %>% bindEvent(input$default_miles)
+  }) %>% bindEvent(input$radius_default)
 
   # set/update based on advanced tab set by global_defaults_*.R and then might be changed by a user
 
   observe({
     these <- c("FIPS", "FIPS_PLACE", "SHP") # but disabled for FIPS
-    for (this in these) {current_slider_val[[this]] <- input$default_miles_shapefile}
-  }) %>% bindEvent(input$default_miles_shapefile)
+    for (this in these) {current_slider_val[[this]] <- input$radius_default_shapefile}
+  }) %>% bindEvent(input$radius_default_shapefile)
 
   ## update/restore previous radius (and reset the min value) when site selection type changes/changes back
   observe({
-    updateSliderInput(session = session, inputId = 'bt_rad_buff',
+    updateSliderInput(session = session, inputId = 'radius_now',
                       value = current_slider_val[[current_upload_method()]])
   }) %>% bindEvent(current_upload_method())
 
   ## update stored radius when slider changes
   # except this would initially save the one current radius (default) as the current value for all methods including shapefiles which we dont want to do
   observe({
-    current_slider_val[[current_upload_method()]] <- sanitized_bt_rad_buff()
-  }) %>% bindEvent(sanitized_bt_rad_buff())
+    current_slider_val[[current_upload_method()]] <- sanitized_radius_now()
+  }) %>% bindEvent(sanitized_radius_now())
 
   ## Create separate radius label to allow line break
   output$radius_label <- renderUI({
-    val <- sanitized_bt_rad_buff()
+    val <- sanitized_radius_now()
     lab <- paste0('<b>Distance from Site: <br/>', val, ' miles ','(',round(val / 0.62137119, 2), ' km)</b>')
     HTML(lab)
   })
@@ -1565,7 +1565,7 @@ app_server <- function(input, output, session) {
 
     # ***
     ## or...
-    # mapfast(data_uploaded(), radius = sanitized_bt_rad_buff(), column_names = "ej")
+    # mapfast(data_uploaded(), radius = sanitized_radius_now(), column_names = "ej")
     #
     #
     #
@@ -1798,7 +1798,7 @@ app_server <- function(input, output, session) {
 
       if (submitted_upload_method() == "SHP") {
 
-        rad_buff <- sanitized_bt_rad_buff()
+        rad_buff <- sanitized_radius_now()
 
         if (!is.na(rad_buff) && rad_buff > 0) {
           # if (!silentinteractive) {
@@ -1824,7 +1824,7 @@ app_server <- function(input, output, session) {
         }
 
         out <- ejamit(shapefile = shp,
-                      radius = sanitized_bt_rad_buff(),
+                      radius = sanitized_radius_now(),
                       maxradius = input$maxradius,
                       avoidorphans = input$avoidorphans,
                       quadtree = localtree,
@@ -1877,7 +1877,7 @@ app_server <- function(input, output, session) {
         }
 
         out <-  ejamit(sitepoints = data_uploaded(),#d_upload,
-                       radius = sanitized_bt_rad_buff(),
+                       radius = sanitized_radius_now(),
                        #quadtree = localtree,
                        # countcols      = NULL,
                        # wtdmeancols    = NULL,
@@ -1997,7 +1997,7 @@ app_server <- function(input, output, session) {
   # Unless user changes it here, use a standard title that has been determined by global_defaults_*.R but then optionally modified by advanced settings tab
 
   output$analysis_title_ui <- renderUI({
-    shiny::textInput('analysis_title',
+    shiny::textInput(inputId = 'analysis_title',
                      label = 'Name of Your Analysis',
                      value = sanitized_standard_analysis_title())
   })
@@ -2024,7 +2024,7 @@ app_server <- function(input, output, session) {
       map_ejam_plus_shp(
         out = data_processed(),
         shp = data_uploaded(),  # here, shp already has ejam_uniq_id assigned (after which invalid rows were dropped I think)
-        radius_buffer = sanitized_bt_rad_buff()
+        radius_buffer = sanitized_radius_now()
       )
 
     } else { #  not shapefile
@@ -2098,7 +2098,7 @@ app_server <- function(input, output, session) {
     req(isTruthy(orig_leaf_map()))
     # clear shapes from map so buffers don't show twice
     leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>% leaflet::clearShapes()
-    rad_buff <- sanitized_bt_rad_buff()
+    rad_buff <- sanitized_radius_now()
 
     # SHP map ------------------------------ #
 
@@ -2138,7 +2138,7 @@ app_server <- function(input, output, session) {
                                   dplyr::select(-any_of(c('valid', 'invalid_msg'))))
       suppressMessages(
         leaflet::leafletProxy(mapId = 'an_leaf_map', session, data = d_upload) %>%
-          map_facilities_proxy(rad = sanitized_bt_rad_buff(),
+          map_facilities_proxy(rad = sanitized_radius_now(),
                                highlight = TRUE, #input$an_map_clusters,
                                popup_vec = popup_vec,
                                use_marker_clusters = nrow(d_upload) > EJAM:::global_or_param("marker_cluster_cutoff"),
@@ -2237,7 +2237,7 @@ app_server <- function(input, output, session) {
     } else if (input$plotkind_1pager == "box") {
 
       ## *BOXPLOTS for short report (all sites D ratios vs US avg) ####
-      ejam2boxplot_ratios(ejamitout = data_processed(), radius = sanitized_bt_rad_buff(),
+      ejam2boxplot_ratios(ejamitout = data_processed(), radius = sanitized_radius_now(),
                           main = input$Custom_title_for_bar_plot_of_indicators)
     } # box
     ################## #
@@ -2587,7 +2587,7 @@ app_server <- function(input, output, session) {
         ok2plot = input$ok2plot,
         react.v1_summary_plot = v1_summary_plot(),
         launchexcel = FALSE,
-        radius_or_buffer_in_miles = sanitized_bt_rad_buff(),
+        radius_or_buffer_in_miles = sanitized_radius_now(),
         radius_or_buffer_description = NULL, # radius_or_buffer_description, # the function will figure it out
         buffer_desc = NULL, # "Selected Locations", # the function will figure it out
         in.analysis_title = sanitized_analysis_title(),
@@ -2741,7 +2741,7 @@ app_server <- function(input, output, session) {
       }
 
     }
-    selectInput('summ_hist_ind', label = 'Choose indicator',
+    selectInput(inputId = 'summ_hist_ind', label = 'Choose indicator',
                 choices = setNames(
                   object = root_nms,
                   nm = friendly_nms
@@ -2769,7 +2769,7 @@ app_server <- function(input, output, session) {
 
     shiny::textInput(inputId = "rg_enter_miles",
                      label = "Analysis Location:",
-                     value = paste0("within ", sanitized_bt_rad_buff(),
+                     value = paste0("within ", sanitized_radius_now(),
                                     ' miles of')#,
                      #input$radius_units, " of")
     )
@@ -2850,7 +2850,7 @@ app_server <- function(input, output, session) {
           analysis_title =   sanitized_analysis_title(),
           zonetype =  input$rg_zonetype,
           where = input$rg_enter_miles,
-          distance = paste0(sanitized_bt_rad_buff(),' miles'), #input$radius_units),
+          distance = paste0(sanitized_radius_now(),' miles'), #input$radius_units),
           sectorname_short = input$rg_enter_sites,
           ## allow for either or
           in_the_x_zone = ifelse(nchar(input$in_the_x_zone_enter) > 0,
@@ -2860,7 +2860,7 @@ app_server <- function(input, output, session) {
                                       input$facilities_studied_enter,
                                       input$facilities_studied),
           ## see newer helper  report_residents_within_xyz()  and code used by ejam2report() ejam2excel() etc.
-          within_x_miles_of = paste0("within ", paste0(sanitized_bt_rad_buff(),' miles'), " of"), # see https://cli.r-lib.org/articles/pluralization.html
+          within_x_miles_of = paste0("within ", paste0(sanitized_radius_now(),' miles'), " of"), # see https://cli.r-lib.org/articles/pluralization.html
           in_areas_where = paste0(input$in_areas_where, ' ', input$in_areas_where_enter),
           risks_are_x = input$risks_are_x,
           source_of_latlons = input$source_of_latlons,
@@ -2932,17 +2932,17 @@ app_server <- function(input, output, session) {
   # Not sure if I can pass a reactive or need to pass reactive value so it can get updated by the module without needing to return a list of values from the module?
   # default_radius_react_passed <- reactiveVal() # initialize/create the variable that will store the latest radius set by outer app
   # observe(
-  #   default_radius_react_passed(sanitized_bt_rad_buff()) # update the value of this reactiveVal anytime outer app slider is adjusted
+  #   default_radius_react_passed(sanitized_radius_now()) # update the value of this reactiveVal anytime outer app slider is adjusted
   # )
 
   # output$mod_ejscreenapi_ui_TO_SHOW_IN_APP_UI <- renderUI({
   #   mod_ejscreenapi_ui("x2",
-  #                      simpleradius_default_for_ui = 1 # ,
+  #                      simpleradiusdefault_for_ui = 1 # ,
   #                      # default_radius_react = default_radius_react_passed
   #                      ) # reactive object gets passed without parentheses. pass a reactive radius HERE to server not ui.
   # })
 
-  # default_radius_react_passed <- reactiveVal(sanitized_bt_rad_buff()) # pass to UI of module not server code of module
+  # default_radius_react_passed <- reactiveVal(sanitized_radius_now()) # pass to UI of module not server code of module
   # default_points_react_passed <- reactiveVal() # initialize it empty
   # observe(
   #   default_points_react_passed(  data_uploaded()  ) # update default_points_react_passed when data_uploaded() changes

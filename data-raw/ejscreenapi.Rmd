@@ -123,8 +123,8 @@ TEST_UI <- function(request) {
       tabPanel(
         title = "api app",
         shiny::h2('EJScreen API batch tool packaged with EJAM'), 
-        # EJAM:::mod_ejscreenapi_ui("TESTID", simpleradius_default_for_ui = 2),
-        mod_ejscreenapi_ui("TESTID", simpleradius_default_for_ui = 2),
+        # EJAM:::mod_ejscreenapi_ui("TESTID", simpleradiusdefault_for_ui = 2),
+        mod_ejscreenapi_ui("TESTID", simpleradiusdefault_for_ui = 2),
         br()
       )))
 }
