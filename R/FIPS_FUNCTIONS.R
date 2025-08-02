@@ -1744,11 +1744,18 @@ f2p = function(fips, onetype) {
 ################################################## #
 
 
-#' FIPS - Get EPA Region number from state FIPS code
+#' FIPS - Get EPA Region number (1-10) from state FIPS code
 #'
 #' @param stfips vector of one or more state fips codes (numbers or as strings)
 #'
 #' @return vector of numbers representing US EPA Regions
+#' @examples
+#' fips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
+#'   testinput_fips_cities[1], testinput_fips_counties[1],
+#'   testinput_fips_states[2])
+#' data.frame(fips, sitename = fips2name(fips),
+#'   stfips = fips2state_fips(fips),
+#'   state = fips2statename(fips))
 #'
 #' @export
 #'
@@ -1772,11 +1779,29 @@ fips_st2eparegion <- function(stfips) {
 #' @return vector of abbreviations like "NY", "LA", "DE", etc.
 #'
 #' @examples
-#'   cbind(
-#'     stfips    = fips_lead_zero(1:80),
-#'     ST     = fips2state_abbrev(1:80),
-#'     statename = fips2statename(1:80)
-#'   )
+#' n = 1:80
+#' stfips= fips_lead_zero(n)[!is.na(fips2state_abbrev(n))]
+#' data.frame(
+#'   stfips = stfips,
+#'   ST = fips2state_abbrev(stfips),
+#'   statename = fips2statename(stfips),
+#'   region = fips_st2eparegion(stfips)
+#' )
+#'
+#' cfips = fips_counties_from_state_abbrev("RI")
+#' fips2countyname(cfips, includestate = "Statename")
+#' fips2countyname(cfips)
+#' fips2name(cfips)
+#' fips2name(10001)
+#' fips2name(fips_counties_from_statename(c("Delaware", "Rhode Island")))
+#'
+#' mixfips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
+#'   testinput_fips_cities[1], testinput_fips_counties[1],
+#'   testinput_fips_states[2])
+#' data.frame(mixfips,
+#'   sitename = fips2name(mixfips),
+#'   stfips = fips2state_fips(mixfips),
+#'   state = fips2statename(mixfips))
 #'
 #' @export
 #'
@@ -1801,8 +1826,7 @@ fips2state_abbrev <- function(fips) {
 #' @param fips vector of FIPS
 #' @return vector of State FIPS 2 characters each
 #'
-#' @examples
-#'   fips2state_fips(fips_counties_from_statename(c("Delaware", "Rhode Island")))
+#' @inherit fips2state_abbrev examples
 #'
 #' @export
 #'
@@ -1823,9 +1847,7 @@ fips2state_fips <- function(fips) {
 #' @param fips vector of FIPS
 #'
 #' @return vector of state names
-#'
-#' @examples
-#'   cbind(fips_lead_zero(1:80), fips2state_abbrev(1:80), fips2statename(1:80))
+#' @inherit fips2state_abbrev examples
 #'
 #' @export
 #'
@@ -1852,9 +1874,12 @@ fips2statename <- function(fips) {
 #' @details NOTE THAT ISLAND AREAS WORK DIFFERENTLY SINCE THEIR FIPS ARE NOT QUITE LIKE COUNTY FIPS
 #'   - FIRST 5 LETTERS OF FIPS ARE NOT THE UNIQUE "COUNTY" CODE IN Northern Mariana Islands
 #' @examples
-#'   # names of all counties in ME and NY
-#'   fips2countyname(fips_counties_from_state_abbrev(c("ME", "NY")), includestate = "ST")
-#'    fips_counties_from_state_abbrev(c("AK", "LA"))
+#' cfips = fips_counties_from_state_abbrev("RI")
+#' fips2countyname(cfips, includestate = "Statename")
+#' fips2countyname(cfips)
+#' fips2name(cfips)
+#' fips2name(10001)
+#' fips2name(fips_counties_from_statename(c("Delaware", "Rhode Island")))
 #'
 #' @export
 #'
@@ -1959,8 +1984,28 @@ fips2tractname <- function(fips, ftype = 'tract', prefix = "") {
 #'   where county names optionally have comma and 2-character abbreviation or full state name.
 #' @seealso [fips_counties_from_countyname()]
 #' @examples
-#'   fips2name(fips_counties_from_state_abbrev(c("AK", "LA"))  )
-#'   fips2name(c(22, 02013))  # can have mix where some are a whole state and others are a county.
+#' fips2name(fips_counties_from_statename("Delaware"))
+#' cfips = fips_counties_from_state_abbrev(c("RI", "DE"))
+#' fips2name(cfips)
+#' fips2name("10001")
+#'
+#' mixfips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
+#'             testinput_fips_cities[1], testinput_fips_counties[1],
+#'             testinput_fips_states[2])
+#' data.frame(mixfips,
+#'            sitename = fips2name(mixfips),
+#'            stfips = fips2state_fips(mixfips),
+#'            ST = fips2state_abbrev(mixfips),
+#'            state = fips2statename(mixfips) )
+#'
+#' name2fips("Alaska")
+#' name2fips("NY")
+#' name2fips("Kings County, NY")
+#' name2fips("Minneapolis, MN")
+#'
+#' name2fips("Anchorage, AK") # not found
+#' name2fips("Anchorage, AK", usegrep = T) # finds the city
+#' name2fips("Anchorage municipality, AK") # finds the county of same name, not city
 #'
 #' @export
 #'
