@@ -564,7 +564,7 @@ app_server <- function(input, output, session) {
     sitepoints <- prepare_table_from_run_app(sitepoints, input_max_pts_upload = input$max_pts_upload, input_testing = input$testing)
     req(sitepoints, cancelOutput = TRUE) # stop if failed for any reason
     # ok, so allow Start button
-    d
+
     disable_buttons[['latlon']] <- FALSE
 
     sitepoints
