@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -81,7 +82,29 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="fips_lead_zero.html">fips_lead_zero</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">80</span><span class="op">)</span>, <span class="fu"><a href="fips2state_abbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">80</span><span class="op">)</span>, <span class="fu">fips2statename</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">80</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">80</span></span>
+<span><span class="va">stfips</span><span class="op">=</span> <span class="fu"><a href="fips_lead_zero.html">fips_lead_zero</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="fips2state_abbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  stfips <span class="op">=</span> <span class="va">stfips</span>,</span>
+<span>  ST <span class="op">=</span> <span class="fu"><a href="fips2state_abbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="va">stfips</span><span class="op">)</span>,</span>
+<span>  statename <span class="op">=</span> <span class="fu">fips2statename</span><span class="op">(</span><span class="va">stfips</span><span class="op">)</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="fips_st2eparegion.html">fips_st2eparegion</a></span><span class="op">(</span><span class="va">stfips</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cfips</span> <span class="op">=</span> <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"RI"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="fips2countyname.html">fips2countyname</a></span><span class="op">(</span><span class="va">cfips</span>, includestate <span class="op">=</span> <span class="st">"Statename"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="fips2countyname.html">fips2countyname</a></span><span class="op">(</span><span class="va">cfips</span><span class="op">)</span></span>
+<span><span class="fu"><a href="fips2name.html">fips2name</a></span><span class="op">(</span><span class="va">cfips</span><span class="op">)</span></span>
+<span><span class="fu"><a href="fips2name.html">fips2name</a></span><span class="op">(</span><span class="fl">10001</span><span class="op">)</span></span>
+<span><span class="fu"><a href="fips2name.html">fips2name</a></span><span class="op">(</span><span class="fu"><a href="fips_counties_from_statename.html">fips_counties_from_statename</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Delaware"</span>, <span class="st">"Rhode Island"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mixfips</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">testinput_fips_blockgroups</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">testinput_fips_tracts</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  <span class="va">testinput_fips_cities</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">testinput_fips_counties</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  <span class="va">testinput_fips_states</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">mixfips</span>,</span>
+<span>  sitename <span class="op">=</span> <span class="fu"><a href="fips2name.html">fips2name</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>  stfips <span class="op">=</span> <span class="fu"><a href="fips2state_fips.html">fips2state_fips</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>  state <span class="op">=</span> <span class="fu">fips2statename</span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

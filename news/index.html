@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -56,6 +57,69 @@
       <small>Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.32.6" id="ejam-v2326-august-2025">EJAM v2.32.6 (August 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2326-august-2025"></a></h2>
+<div class="section level3">
+<h3 id="web-app-2-32-6">Web App<a class="anchor" aria-label="anchor" href="#web-app-2-32-6"></a></h3>
+<ul><li>
+<a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> provides links to and info about EJSCREEN and EJAM:
+<ul><li>
+<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejamapp</a> will launch a live version of the EJAM web app</li>
+<li>
+<a href="https://www.ejanalysis.org/ejscreenapp" class="external-link">ejanalysis.org/ejscreenapp</a> will launch a live version of the EJSCREEN web app</li>
+</ul></li>
+<li>Improved the <code>About page</code> (added links to ejanalysis.org, etc.).</li>
+<li>Reorganized the Advanced settings tab, which now has more options and settings that can be changed. But note that the advanced tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="web-app-customization-2-32-6">Web App Customization<a class="anchor" aria-label="anchor" href="#web-app-customization-2-32-6"></a></h3>
+<p>Made a number of changes to allow web app default settings changed and other inputs to be specified. This allows the following:</p>
+<ul><li><p>Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are.</p></li>
+<li><p>Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See <code><a href="../reference/run_app.html">run_app()</a></code> for examples.</p></li>
+<li><p>Anyone hosting a version of the EJAM web app can customize it more easily, e.g., to use a different logo, different default radius, different options for how to select sites, etc.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="rrstudio-users-analysts-and-developers-2-32-6">R/RStudio Users (Analysts and Developers)<a class="anchor" aria-label="anchor" href="#rrstudio-users-analysts-and-developers-2-32-6"></a></h3>
+<ul><li>
+<p><a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> or <a href="https://www.ejanalysis.org/ejam" class="external-link">ejanalysis.org/ejam</a> is an easy alias to remember, and has links to documentation/code/etc.</p>
+<ul><li><a href="https://www.ejanalysis.org/about" class="external-link">A new emailing list can be joined here</a></li>
+<li>
+<a href="https://www.ejanalysis.org/docs" class="external-link">ejanalysis.org/docs</a> or <a href="https://www.ejanalysis.org/ejamdocs" class="external-link">ejanalysis.org/ejamdocs</a> directs you to the documentation for the EJAM package, including articles and vignettes.</li>
+<li>
+<a href="https://www.ejanalysis.org/repo" class="external-link">ejanalysis.org/repo</a> or <a href="https://www.ejanalysis.org/ejamrepo" class="external-link">ejanalysis.org/ejamrepo</a> directs you to the GitHub page for the EJAM package.</li>
+<li>
+<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejamapp</a> launches a live version of the EJAM web app.</li>
+<li>
+<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejscreenapp</a> launches a live version of the EJSCREEN web app.</li>
+</ul></li>
+<li><p><a href="https://github.com/ejanalysis/EJAM/issues" class="external-link">GitHub issues can be submitted here</a></p></li>
+<li><p>Improved the <a href="../articles/installing.html">article on how to install the package</a>.</p></li>
+<li><p>Fixed a bug where <code>isPublic</code> parameter in <code><a href="../reference/run_app.html">run_app()</a></code> was being ignored.</p></li>
+<li><p>Improved web app ui/server code, allowing many options and defaults to be provided as parameters to <code><a href="../reference/run_app.html">run_app()</a></code>.</p></li>
+<li>
+<p>Added many examples to <code><a href="../reference/run_app.html">run_app()</a></code> documention showing how to change defaults and options. You can now</p>
+<ul><li>Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
+<li>Provide preselected industry NAICS codes, or a set of specific Counties</li>
+<li>Provide a table of lat/lon coordinates to preload at launch</li>
+<li>Provide a shapefile to preload upon launch</li>
+<li>etc.</li>
+</ul></li>
+<li><p>Drafted new article with technical details: <a href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></p></li>
+<li><p>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</p></li>
+<li><p>Fixed a bug where threshold-related parameters passed to <code><a href="../reference/run_app.html">run_app()</a></code> were being ignored in the latlon case.</p></li>
+<li>
+<p>Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in run_app(). For example, radius is now settable by <code>run_app(radius_default=3.1)</code></p>
+<ul><li>the old global_defaults_ variable “default_default_miles” is now called “radius_default”</li>
+<li>the old <code>input$default_miles</code> is now called <code>input$radius_default</code>
+</li>
+<li>the old <code>input$bt_rad_buff</code> is now called <code>input$radius_now</code> Other similar changes:</li>
+<li>the old global_defaults_ variable “max_default_miles” is now called “max_radius_default”</li>
+<li>the old global_defaults_ variable “intro_text” is now called “aboutpage_text”</li>
+<li>the old global_defaults_ variable “default_default_miles_shapefile” is now called “radius_default_shapefile”</li>
+<li>the old reactive sanitized_bt_rad_buff() is now called sanitized_radius_now()</li>
+</ul></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.5" id="ejam-v2325-july-2025">EJAM v2.32.5 (July 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2325-july-2025"></a></h2>
 <div class="section level3">

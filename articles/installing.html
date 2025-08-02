@@ -102,43 +102,119 @@ in other applications.</p>
 (some functions assume you have RStudio), and <a href="https://github.com/git-guides/install-git" class="external-link uri" target="_blank" rel="noreferrer noopener">git</a>. You might also want
 <a href="https://github.com/apps/desktop" class="external-link uri" target="_blank" rel="noreferrer noopener">GitHub Desktop</a> for convenience.</p>
 <div class="section level2">
-<h2 id="how-to-install-ejam">How to Install EJAM<a class="anchor" aria-label="anchor" href="#how-to-install-ejam"></a>
+<h2 id="how-to-getinstall-ejam">How to Get/Install EJAM<a class="anchor" aria-label="anchor" href="#how-to-getinstall-ejam"></a>
 </h2>
 <p>The EJAM package gets installed from a GitHub repository, not CRAN
 (so <code>install.packages('EJAM')</code> will <em>not</em> work).</p>
-<p>You first clone (essentially make a local copy of) and then install
-the package. Although you could try to skip the cloning, it works best
-to clone first, and that allows you to explore and edit source code or
+<p>To use EJAM in RStudio, you would ideally clone the repo as a new
+RStudio Project, and then install the package from source. Cloning or
+forking makes a local copy of the source code repository. Although you
+could skip cloning (i.e., just install from a .zip source package file),
+cloning is easy and allows you to explore and edit source code or
 contribute to the package.</p>
-<div class="section level3">
-<h3 id="clone-ejam">1. Clone EJAM<a class="anchor" aria-label="anchor" href="#clone-ejam"></a>
-</h3>
-<p>You can clone the repository in various ways, depending on what you
-prefer. Here are three different options:</p>
+</div>
+<div class="section level2">
+<h2 id="install-without-cloning">Install <em>without</em> cloning<a class="anchor" aria-label="anchor" href="#install-without-cloning"></a>
+</h2>
+<p>You could try to skip cloning the repository and just install the
+package from GitHub, but you will not be able to edit the source code or
+contribute to the package development. You should be able to use the
+package in RStudio without cloning, but a number of functions
+(especially those related to package development) assume a local source
+code copy is available.</p>
+<p>Trying to use [remotes::install_github()] requires having set up a
+PAT for authentication to work (see below on PATs).</p>
 <ol style="list-style-type: lower-alpha">
-<li><p>in <strong>RStudio</strong>: Click <strong>New Project</strong>,
-<strong>Version Control</strong>, <strong>Git</strong>, and enter
-<code>https://github.com/ejanalysis/EJAM</code> as the repository URL.
-For help: <a href="https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository" class="external-link uri" target="_blank" rel="noreferrer noopener">How to create a
-new RStudio project by cloning a remote Git repo</a>.</p></li>
+<li>If you <em>don’t have a <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens" class="external-link uri" target="_blank" rel="noreferrer noopener">personal access
+token</a> (PAT) and don’t want to set one up</em>, you could <a href="https://github.com/ejanalysis/EJAM/releases/latest" class="external-link">check the
+github repository for the latest release</a> and use
+<code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> something like this:</li>
+</ol>
+<p>options(timeout = 300); if (!require(remotes))
+{install.packages(‘remotes’)}</p>
+<p>remotes::install_url(‘<a href="https://github.com/ejanalysis/EJAM/archive/refs/tags/v2.32.5.zip" class="external-link uri">https://github.com/ejanalysis/EJAM/archive/refs/tags/v2.32.5.zip</a>’,
+dependencies=T, upgrade=‘always’, build=F)</p>
+<p><em>or download the .zip and try something like this in the folder
+with the saved .zip file:</em></p>
+<p>options(timeout = 300); if (!require(remotes))
+{install.packages(‘remotes’)}</p>
+<p>remotes::install_local(‘EJAM-2.32.5.zip’, dependencies=T,
+upgrade=‘always’, build=F)</p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>If you <em>do have a PAT set up</em>, you can install from github
+with something like this:</li>
+</ol>
+<p>options(timeout = 300); if (!require(remotes))
+{install.packages(‘remotes’)}</p>
+<p>remotes::install_github(repo=‘ejanalysis/EJAM’, dependencies=T,
+upgrade=‘always’, build=F)</p>
+</div>
+<div class="section level2">
+<h2 id="install-with-cloning">Install <em>with</em> cloning<a class="anchor" aria-label="anchor" href="#install-with-cloning"></a>
+</h2>
+<div class="section level3">
+<h3 id="clone-ejam-create-a-project-in-rstudio">1. Clone EJAM &amp; create a Project in RStudio<a class="anchor" aria-label="anchor" href="#clone-ejam-create-a-project-in-rstudio"></a>
+</h3>
+<p>Here are three options – Option “a” is probably the simplest:</p>
+<ol style="list-style-type: lower-alpha">
+<li><p>in <strong>RStudio</strong>: Click <strong>File</strong>,
+<strong>New Project</strong>, <strong>Version Control</strong>,
+<strong>Git</strong>, and for the repository URL, enter
+<code>https://github.com/ejanalysis/EJAM</code>. For help: <a href="https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository" class="external-link uri" target="_blank" rel="noreferrer noopener">How to create a
+new RStudio project by cloning a remote Git repo</a>. Then you also
+could add it to GitHub Desktop if that is a tool you use.</p></li>
 <li><p>in <strong>GitHub Desktop</strong>: Click <strong>File</strong>,
 <strong>Clone</strong>, <strong>URL</strong>, and enter
 <code>https://github.com/ejanalysis/EJAM</code> as the repository URL.
 For help: <a href="https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop" class="external-link uri" target="_blank" rel="noreferrer noopener">How to clone a
-repo using GitHub Desktop</a>.</p></li>
+repo using GitHub Desktop</a>. Then in <strong>RStudio</strong>: Click
+<strong>File</strong>, <strong>New Project</strong>, <strong>Existing
+Directory</strong>, and specify the folder you just cloned
+into.</p></li>
 <li><p>at <strong>GitHub.com</strong>: Go to <a href="https://github.com/ejanalysis/EJAM" class="external-link uri" target="_blank" rel="noreferrer noopener" title="github.com/ejanalysis/EJAM">the EJAM
 repository page</a>, click the green <strong>Code</strong> button,
 <strong>Download Zip</strong>, then unzip the zip file that contains the
 package. For help: <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository" class="external-link uri" target="_blank" rel="noreferrer noopener">How to clone a
-repo from GitHub.com</a></p></li>
+repo from GitHub.com</a>. Then in <strong>RStudio</strong>: Click
+<strong>File</strong>, <strong>New Project</strong>, <strong>Existing
+Directory</strong>, and specify the folder you just cloned
+into.</p></li>
 </ol>
+<div class="section level4">
+<h4 id="configure-build-tools-in-rstudio-optional">Configure Build Tools in RStudio (optional)<a class="anchor" aria-label="anchor" href="#configure-build-tools-in-rstudio-optional"></a>
+</h4>
+<p>You can click Build, Configure Build Tools, and change settings. For
+example, try these settings:</p>
+<ul>
+<li>Project build tools: Package</li>
+<li>Package directory: (Project Root)</li>
+<li>Always use –preclean : checked</li>
+<li>Use devtools : checked</li>
+<li>Generate documentation with Roxygen: checked
+<ul>
+<li>Configure Roxygen options all checked except for Vignettes and
+optionally Build/Install</li>
+</ul>
+</li>
+<li>Install package R CMD check: –no-multiarch –with-keep.source</li>
+<li>Build source: blank</li>
+<li>Build binary: blank</li>
+</ul>
+<p>For help: <a href="https://docs.posit.co/ide/user/ide/guide/pkg-devel/writing-packages.html#configuring-build-tools" class="external-link uri" target="_blank" rel="noreferrer noopener">How to configure
+build tools in RStudio</a>.</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="install-after-cloning">2. Install (after Cloning)<a class="anchor" aria-label="anchor" href="#install-after-cloning"></a>
 </h3>
-<p>In RStudio, click <strong>Build</strong>, <strong>Install
-Package</strong>. For help: <a href="https://docs.posit.co/ide/user/ide/guide/pkg-devel/writing-packages.html#working-with-an-existing-package" class="external-link uri" target="_blank" rel="noreferrer noopener">How to install
-from source in RStudio</a> An alternative is to use <a href="https://devtools.r-lib.org" class="external-link uri" target="_blank" rel="noreferrer noopener">devtools::install()</a>.</p>
+<p>You can install like this, which ensures all packages that EJAM uses
+(depends on, imports, or suggests) get installed or updated:</p>
+<p>options(timeout = 300); if (!require(remotes))
+{install.packages(‘remotes’)}</p>
+<p>if (!(basename(getwd()) %in% ‘EJAM’ &amp;&amp;
+file.exists(‘DESCRIPTION’))) { stop(‘Working directory must be root of
+the EJAM source package’) }</p>
+<p>devtools::install(dependencies=T, upgrade=‘always’, build=F)</p>
 <hr>
 </div>
 </div>
@@ -156,7 +232,7 @@ from source in RStudio</a> An alternative is to use <a href="https://devtools.r-
 the package works, the following describes the package dependencies and
 code used by the package to get the data and build an index.</p>
 <div class="section level3">
-<h3 id="details-on-personal-access-tokens-pats">Details on Personal Access Tokens (PATs)<a class="anchor" aria-label="anchor" href="#details-on-personal-access-tokens-pats"></a>
+<h3 id="setting-up-personal-access-tokens-pats">Setting up Personal Access Tokens (PATs)<a class="anchor" aria-label="anchor" href="#setting-up-personal-access-tokens-pats"></a>
 </h3>
 <p>You may need to set up a <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens" class="external-link uri" target="_blank" rel="noreferrer noopener">personal access
 token</a> (PAT) for authentication to work when using a repository on
@@ -171,29 +247,6 @@ most of this now, in conjunction with GitHub.</p>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">create_github_token</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#  To register a PAT:</span></span>
 <span><span class="fu">credentials</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/credentials/reference/set_github_pat.html" class="external-link">set_github_pat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="installing-without-cloning">Installing without cloning<a class="anchor" aria-label="anchor" href="#installing-without-cloning"></a>
-</h3>
-<p>You could try to skip cloning the repository and just install the
-package from GitHub, but you will not be able to edit the source code or
-contribute to the package development. You should be able to use the
-package in RStudio without installing from local source, but some
-functions (at least those related to package development) assume a local
-source code copy is available.</p>
-<p>Trying to install using the <a href="https://remotes.r-lib.org" class="external-link uri" target="_blank" rel="noreferrer noopener">remotes</a> or <a href="https://devtools.r-lib.org" class="external-link uri" target="_blank" rel="noreferrer noopener">devtools</a> package may require setting up a
-<a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens" class="external-link uri" target="_blank" rel="noreferrer noopener">personal access
-token</a> (PAT) for authentication to work.</p>
-<p>To try installing from github, try this:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout <span class="op">=</span> <span class="fl">300</span><span class="op">)</span> <span class="co"># Just in case the download takes longer than 60 seconds</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"ejanalysis/EJAM"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>If that does not work, <a href="https://github.com/ejanalysis/EJAM/releases/latest" class="external-link">check the
-github repository for the latest release</a> and use the URL to install
-the package with <code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code>, something like
-this:</p>
-<p><code>remotes::install_url('https://github.com/ejanalysis/EJAM/archive/refs/tags/v2.32.4.zip')</code></p>
 </div>
 <div class="section level3">
 <h3 id="details-on-cran-packages-needed-dependencies">Details on CRAN packages needed (dependencies)<a class="anchor" aria-label="anchor" href="#details-on-cran-packages-needed-dependencies"></a>
@@ -247,7 +300,7 @@ seconds. EJAM does this automatically when attached via
 <code><a href="https://ejanalysis.github.io/EJAM">require(EJAM)</a></code>, by creating an object called <a href="../reference/localtree.html">localtree</a> based on the <a href="../reference/quaddata.html">quaddata</a> object obtained as
 mentioned above. Some functions check for it and try to build the index
 on the fly if it is missing. You can also (re)build it manually:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/indexblocks.html">indexblocks</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
