@@ -28,8 +28,28 @@ where county names optionally have comma and 2-character abbreviation or full st
 FIPS - Get county or state names from county or state FIPS codes
 }
 \examples{
-  fips2name(fips_counties_from_state_abbrev(c("AK", "LA"))  )
-  fips2name(c(22, 02013))  # can have mix where some are a whole state and others are a county.
+fips2name(fips_counties_from_statename("Delaware"))
+cfips = fips_counties_from_state_abbrev(c("RI", "DE"))
+fips2name(cfips)
+fips2name("10001")
+
+mixfips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
+            testinput_fips_cities[1], testinput_fips_counties[1],
+            testinput_fips_states[2])
+data.frame(mixfips,
+           sitename = fips2name(mixfips),
+           stfips = fips2state_fips(mixfips),
+           ST = fips2state_abbrev(mixfips),
+           state = fips2statename(mixfips) )
+
+name2fips("Alaska")
+name2fips("NY")
+name2fips("Kings County, NY")
+name2fips("Minneapolis, MN")
+
+name2fips("Anchorage, AK") # not found
+name2fips("Anchorage, AK", usegrep = T) # finds the city
+name2fips("Anchorage municipality, AK") # finds the county of same name, not city
 
 }
 \seealso{

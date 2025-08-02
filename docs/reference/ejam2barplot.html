@@ -37,6 +37,7 @@ helper - Barplot of ratios of residential population percentages (or other score
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -57,7 +58,7 @@ helper - Barplot of ratios of residential population percentages (or other score
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Barplot of ratios of residential population (or other) scores to averages - simpler syntax</h1>
-      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/R/plot_barplot_ratios.R" class="external-link"><code>R/plot_barplot_ratios.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/R/ejam2barplot.R" class="external-link"><code>R/ejam2barplot.R</code></a>, <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/R/plot_barplot_ratios.R" class="external-link"><code>R/plot_barplot_ratios.R</code></a></small>
       <div class="d-none name"><code>ejam2barplot.Rd</code></div>
     </div>
 
@@ -105,20 +106,22 @@ helper - Barplot of ratios of residential population percentages (or other score
 
 
 <dt id="arg-varnames">varnames<a class="anchor" aria-label="anchor" href="#arg-varnames"></a></dt>
-<dd><p>vector of indicator names that are ratios to avg, like
-c(names_d_ratio_to_avg , names_d_subgroups_ratio_to_avg)
-but could be c(names_d_ratio_to_state_avg , names_d_subgroups_ratio_to_state_avg)</p></dd>
+<dd><p>vector of indicator names that are colnames in out$results_overall or out$results_bysite,
+like names_d_ratio_to_state_avg or names_d_subgroups_ratio_to_state_avg,
+but not a mix of US and State ratios.</p></dd>
 
 
 <dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
 <dd><p>default is all sites from ejamitout$results_overall, and
 if an integer, it is the row number to show from ejamitout$results_bysite.
 Important: note this is the row number which is
-NOT necessarily the same as the ejamitout$results_bysite$ejam_uniq_id</p></dd>
+NOT necessarily the same as the ejamitout$results_bysite$ejam_uniq_id
+notably if FIPS codes were being analyzed.</p></dd>
 
 
 <dt id="arg-main">main<a class="anchor" aria-label="anchor" href="#arg-main"></a></dt>
-<dd><p>optional, title for plot, like "Stats at the Analyzed Locations Compared to US Overall"</p></dd>
+<dd><p>optional, title for plot, like "Analyzed Locations Compared to US Overall",
+or if using state ratios, include the word "State" to have it try to infer what the legend should be</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -130,12 +133,12 @@ NOT necessarily the same as the ejamitout$results_bysite$ejam_uniq_id</p></dd>
 
 
 <dt id="arg-single-location">single_location<a class="anchor" aria-label="anchor" href="#arg-single-location"></a></dt>
-<dd><p>set to TRUE if using row_index to view one site,
+<dd><p>set to TRUE and provide row_index to view one site,
 set to FALSE to view overall results from out$results_overall</p></dd>
 
 
 <dt id="arg-row-index">row_index<a class="anchor" aria-label="anchor" href="#arg-row-index"></a></dt>
-<dd><p>the number of the row to use from out$results_bysite</p></dd>
+<dd><p>the number of the row to use from out$results_bysite, if single_location = TRUE.</p></dd>
 
 
 <dt id="arg-ratio-to-us-d-overall">ratio.to.us.d.overall<a class="anchor" aria-label="anchor" href="#arg-ratio-to-us-d-overall"></a></dt>
@@ -174,7 +177,9 @@ since this lets you specify
 whether to use overall results from ejamit()$results_overall
 or just one site from ejamit()$results_bysite</p>
 <p>If the parameter called main has the word "State" in it, then the legend
-will refer to "State Average" instead of "US Average"</p>
+will refer to "State Average" instead of "US Average" – You cannot plot both types at the same time,
+so the ratio.to.us.d.overall parameter should be either
+just ratios to average in US or just ratios to average in State.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

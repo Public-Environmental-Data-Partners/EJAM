@@ -19,6 +19,28 @@ FIPS - Get state FIPS codes from any type of FIPS codes
 Tells you which State contains each County (or tract or blockgroup or block)
 }
 \examples{
-  fips2state_fips(fips_counties_from_statename(c("Delaware", "Rhode Island")))
+n = 1:80
+stfips= fips_lead_zero(n)[!is.na(fips2state_abbrev(n))]
+data.frame(
+  stfips = stfips,
+  ST = fips2state_abbrev(stfips),
+  statename = fips2statename(stfips),
+  region = fips_st2eparegion(stfips)
+)
+
+cfips = fips_counties_from_state_abbrev("RI")
+fips2countyname(cfips, includestate = "Statename")
+fips2countyname(cfips)
+fips2name(cfips)
+fips2name(10001)
+fips2name(fips_counties_from_statename(c("Delaware", "Rhode Island")))
+
+mixfips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
+  testinput_fips_cities[1], testinput_fips_counties[1],
+  testinput_fips_states[2])
+data.frame(mixfips,
+  sitename = fips2name(mixfips),
+  stfips = fips2state_fips(mixfips),
+  state = fips2statename(mixfips))
 
 }

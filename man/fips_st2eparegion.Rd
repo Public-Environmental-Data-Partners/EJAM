@@ -2,7 +2,7 @@
 % Please edit documentation in R/FIPS_FUNCTIONS.R
 \name{fips_st2eparegion}
 \alias{fips_st2eparegion}
-\title{FIPS - Get EPA Region number from state FIPS code}
+\title{FIPS - Get EPA Region number (1-10) from state FIPS code}
 \usage{
 fips_st2eparegion(stfips)
 }
@@ -13,5 +13,14 @@ fips_st2eparegion(stfips)
 vector of numbers representing US EPA Regions
 }
 \description{
-FIPS - Get EPA Region number from state FIPS code
+FIPS - Get EPA Region number (1-10) from state FIPS code
+}
+\examples{
+fips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
+  testinput_fips_cities[1], testinput_fips_counties[1],
+  testinput_fips_states[2])
+data.frame(fips, sitename = fips2name(fips),
+  stfips = fips2state_fips(fips),
+  state = fips2statename(fips))
+
 }

@@ -147,7 +147,7 @@ run_app(
   default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
   default_naics="562211",
   radius_default=3.1,
-  default_ui_show_advanced_settings=1
+  default_show_advanced_settings=TRUE
 )
 
   ## Cities as the default:
@@ -215,8 +215,8 @@ run_app(
 
  run_app(
   isPublic = FALSE,
-  default_hide_advanced_settings = TRUE, # hides Advanced tab when app launches
-  default_can_showhide_advanced_settings = FALSE, # removes user's ability to show Advanced tab
+  default_show_advanced_settings = FALSE, # hides Advanced tab when app launches
+  default_can_show_advanced_settings = FALSE, # removes user's ability to show Advanced tab
   default_hide_plot_histo_tab = TRUE
   )
 

@@ -24,8 +24,11 @@ NOTE THAT ISLAND AREAS WORK DIFFERENTLY SINCE THEIR FIPS ARE NOT QUITE LIKE COUN
 }
 }
 \examples{
-  # names of all counties in ME and NY
-  fips2countyname(fips_counties_from_state_abbrev(c("ME", "NY")), includestate = "ST")
-   fips_counties_from_state_abbrev(c("AK", "LA"))
+cfips = fips_counties_from_state_abbrev("RI")
+fips2countyname(cfips, includestate = "Statename")
+fips2countyname(cfips)
+fips2name(cfips)
+fips2name(10001)
+fips2name(fips_counties_from_statename(c("Delaware", "Rhode Island")))
 
 }
