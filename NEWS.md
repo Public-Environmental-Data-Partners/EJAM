@@ -2,10 +2,10 @@
 
 ## Web App
 
-- [ejanalysis.com](https://www.ejanalysis.com) provides links to and info about EJSCREEN and EJAM:
-  - [ejanalysis.com/ejamapp](https://www.ejanalysis.com/ejamapp) will launch a live version of the EJAM web app
-  - [ejanalysis.com/ejscreenapp](https://www.ejanalysis.com/ejscreenapp) will launch a live version of the EJSCREEN web app
-- Improved the `About page` (added links to ejanalysis.com, etc.).
+- [ejanalysis.org](https://www.ejanalysis.org) provides links to and info about EJSCREEN and EJAM:
+  - [ejanalysis.org/ejamapp](https://www.ejanalysis.org/ejamapp) will launch a live version of the EJAM web app
+  - [ejanalysis.org/ejscreenapp](https://www.ejanalysis.org/ejscreenapp) will launch a live version of the EJSCREEN web app
+- Improved the `About page` (added links to ejanalysis.org, etc.).
 - Reorganized the Advanced settings tab, which now has more options and settings that can be changed. But note that the advanced tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.
 
 ## Web App Customization
@@ -20,12 +20,12 @@ Made a number of changes to allow web app default settings changed and other inp
 
 ## R/RStudio Users (Analysts and Developers)
 
-- [ejanalysis.com](https://www.ejanalysis.com) or [ejanalysis.com/ejam](https://www.ejanalysis.com/ejam) is an easy alias to remember, and has links to documentation/code/etc.
-  - [A new emailing list can be joined here](https://www.ejanalysis.com/about)
-  - [ejanalysis.com/docs](https://www.ejanalysis.com/docs) or [ejanalysis.com/ejamdocs](https://www.ejanalysis.com/ejamdocs) directs you to the documentation for the EJAM package, including articles and vignettes.
-  - [ejanalysis.com/repo](https://www.ejanalysis.com/repo) or [ejanalysis.com/ejamrepo](https://www.ejanalysis.com/ejamrepo) directs you to the GitHub page for the EJAM package.
-  - [ejanalysis.com/ejamapp](https://www.ejanalysis.com/ejamapp) launches a live version of the EJAM web app.
-  - [ejanalysis.com/ejscreenapp](https://www.ejanalysis.com/ejamapp) launches a live version of the EJSCREEN web app.
+- [ejanalysis.org](https://www.ejanalysis.org) or [ejanalysis.org/ejam](https://www.ejanalysis.org/ejam) is an easy alias to remember, and has links to documentation/code/etc.
+  - [A new emailing list can be joined here](https://www.ejanalysis.org/about)
+  - [ejanalysis.org/docs](https://www.ejanalysis.org/docs) or [ejanalysis.org/ejamdocs](https://www.ejanalysis.org/ejamdocs) directs you to the documentation for the EJAM package, including articles and vignettes.
+  - [ejanalysis.org/repo](https://www.ejanalysis.org/repo) or [ejanalysis.org/ejamrepo](https://www.ejanalysis.org/ejamrepo) directs you to the GitHub page for the EJAM package.
+  - [ejanalysis.org/ejamapp](https://www.ejanalysis.org/ejamapp) launches a live version of the EJAM web app.
+  - [ejanalysis.org/ejscreenapp](https://www.ejanalysis.org/ejamapp) launches a live version of the EJSCREEN web app.
 - [GitHub issues can be submitted here](https://github.com/ejanalysis/EJAM/issues)
 
 - Improved the [article on how to install the package](../articles/installing.html).
