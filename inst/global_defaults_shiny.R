@@ -471,8 +471,8 @@ global_defaults_shiny <- list(
   default_show_full_header_footer = FALSE,
 
   # Advanced settings #   defined in global_defaults_shiny_public.R
-  # default_hide_advanced_settings = TRUE,           # this controls if the adv tab is visible initially
-  # default_can_showhide_advanced_settings = TRUE, # this controls if user has ability to show the adv tab (via the show/hide adv tab buttons)
+  # default_show_advanced_settings = FALSE,           # this controls if the adv tab is visible initially
+  # default_can_show_advanced_settings = TRUE, # this controls if user has ability to show the adv tab (via the show/hide adv tab buttons)
 
   # Written Report
   default_hide_written_report = TRUE,

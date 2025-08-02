@@ -19,6 +19,8 @@
 #'
 app_server <- function(input, output, session) {
 
+  # hide it and then let reactives figure out whether to show it?
+  hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
   #############################################################################  #
   # Key reactives  data_uploaded(), data_processed(), data_summarized() ####
   ##  data_uploaded   reactive holds selected latlon points or shapefiles. It is defined later.
@@ -135,41 +137,65 @@ app_server <- function(input, output, session) {
   })
   ##    --------------------------  TABS to show/hide    -------------------------- -
 
-  ## start app without showing Results since no analysis done yet
+  ## start app without showing Results since no analysis done yet?
   hideTab(inputId = 'all_tabs', target = 'See Results')
   ## note the app will show and select the results tab once results are finished processing
 
-  ## hide vs show ADVANCED tab at start  ---------------------- #   ***
+  ## hide vs show ADVANCED tab at start  ---------------------- #
 
+  ## hide vs show ADVANCE tab on button click (button in 'About EJAM' tab)
+  ## and toggle to show hide or show button not both
 
-  if (isTRUE(EJAM:::global_or_param("default_hide_advanced_settings"))) {
+  observeEvent(input$ui_show_advanced_settings, {
+    showTab(inputId = 'all_tabs', target = 'Advanced Settings')
+    shinyjs::show(id = "ui_hide_advanced_settings")
+    shinyjs::hide(id = "ui_show_advanced_settings")
+  }, ignoreInit = TRUE)
+
+  observeEvent(input$ui_hide_advanced_settings, {
     hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
-  } else {
-    showTab(inputId =  "all_tabs", target = 'Advanced Settings')
-  }
+    shinyjs::hide(id = "ui_hide_advanced_settings")
+    shinyjs::show(id = "ui_show_advanced_settings")
+  })
+  # initial state (or if input$show_advanced_settings is changed in the adv. tab)
+  observe({
+    req(input$show_advanced_settings)
+    if (input$show_advanced_settings == FALSE) {
+      hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
+      isolate({
+        if (input$can_show_advanced_settings) {
+          shinyjs::show(id = "ui_show_advanced_settings")
+          shinyjs::hide(id = "ui_hide_advanced_settings")
+        }
+      })
+    } else {
+      cat("will show tab \n")
+      showTab(inputId =  "all_tabs", target = 'Advanced Settings')
+      isolate({
+        if (input$can_show_advanced_settings) {
+          shinyjs::show(id = "ui_hide_advanced_settings")
+          shinyjs::hide(id = "ui_show_advanced_settings")
+        }
+      })
+    }
+  }, priority = 10)
 
-  ## hide vs show ADVANCE tab on button click (button in 'About EJAM' tab) ***
 
-  observeEvent(input$ui_show_advanced_settings,
-               {showTab(inputId = 'all_tabs', target = 'Advanced Settings')})
-  observeEvent(input$ui_hide_advanced_settings,
-               {hideTab(inputId = 'all_tabs', target = 'Advanced Settings')})
-
-  ## hide vs show ABOUT tab  ---------------------- #   ***
+  ## hide vs show ABOUT tab  ---------------------- #
   if (EJAM:::global_or_param("default_hide_about_tab")) {
     hideTab(inputId = 'all_tabs', target = 'About')
   }
-  ## hide vs show WRITTEN REPORT tab ---------------------- #   ***
+  ## hide vs show WRITTEN REPORT tab ---------------------- #
   if (EJAM:::global_or_param("default_hide_written_report")) {
     hideTab(inputId = 'results_tabs', target = 'Written Report')
   }
 
-  ## hide vs show BARPLOTS tab  ---------------------- #   ***
+  ## hide vs show BARPLOTS tab  ---------------------- #
   if (EJAM:::global_or_param("default_hide_plot_barplot_tab")) {
     hideTab(inputId = 'details_subtabs', target = 'Plot Average Scores')
   }
 
-  ## hide vs show HISTOGRAMS tab  ---------------------- #   ***
+  ## hide vs show HISTOGRAMS tab  ---------------------- #
   if (EJAM:::global_or_param("default_hide_plot_histo_tab")) {
     hideTab(inputId = 'details_subtabs', target = 'Plot Full Range of Scores')
   }
@@ -511,7 +537,7 @@ app_server <- function(input, output, session) {
       }
       if (all(sitepoints %in% 0) || is.null(sitepoints) || NROW(sitepoints) %in% 0 || !is.data.frame(sitepoints)) {
         return(NULL)
-        }
+      }
       if (NROW(sitepoints) > input_max_pts_upload) {
         if (input_testing) {cat("ROW COUNT TOO HIGH IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")}
         return(NULL)

@@ -67,8 +67,8 @@ app_ui  <- function(request) {
                           br(), br(),
                           conditionalPanel(
                             # So that About tab can be shown without necessarily allowing users to show/hide the advanced tab,
-                            # this can hide the show/hide buttons
-                            condition = "input.can_showhide_advanced_settings == 'TRUE'",
+                            ## button to show/hide Advanced tab  ####
+                            condition = "input.can_show_advanced_settings == 'TRUE'",
                             actionButton(inputId = 'ui_show_advanced_settings','Show Advanced Settings Tab', class = 'usa-button'),
                             actionButton(inputId = 'ui_hide_advanced_settings','Hide Advanced Settings Tab', class = 'usa-button')
                           ),
@@ -1370,12 +1370,14 @@ app_ui  <- function(request) {
                  ## MISC OPTIONS ####
                  h2("Other Settings"),
                  ##################################################### #
-                 ### can_showhide_advanced_settings ####
+                 ### show and can_show_advanced_settings ####
                  h3("Advanced tab"),
-                 radioButtons(inputId = "can_showhide_advanced_settings", "Provide buttons to let user Show/Hide advanced tab?", choices = c(Yes = TRUE, No = FALSE),
+                 radioButtons(inputId = "show_advanced_settings", "Start with Advanced tab shown?", choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected = EJAM:::global_or_param("default_can_showhide_advanced_settings")),
-                 # whether it is visible at launch is controlled by default_hide_advanced_settings in global_defaults_shiny_public.R
+                              selected =  EJAM:::global_or_param("default_show_advanced_settings")), # see global_defaults_shiny_public.R
+                 radioButtons(inputId = "can_show_advanced_settings", "Provide buttons to let user Show/Hide advanced tab?", choices = c(Yes = TRUE, No = FALSE),
+                              inline = TRUE,
+                              selected = EJAM:::global_or_param("default_can_show_advanced_settings")),
 
                  ##################################################### #
                  ### testing modes ####
@@ -1485,7 +1487,7 @@ app_ui  <- function(request) {
         ######################################################## #
         ## . ####
 
-      ), # end tabset panel from line 37 or so ^^^^^^^^^  ## ##
+      ), # end tabset panel from top of file ^^^^^^^^^  ## ##
       EJAM:::global_or_param("html_footer_fmt")  ## adds HTML footer - defined in global_defaults_*.R
 
     ) ## end fluidPage

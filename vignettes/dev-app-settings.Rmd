@@ -518,7 +518,7 @@ Note the URL cuts off  at about 4096 characters
 all_tabs="See Results"   # or # all_tabs="Advanced Settings"
 results_tabs="Community Report"
 details_subtabs="Site-by-Site Table"
-can_showhide_advanced_settings="TRUE"
+can_show_advanced_settings="TRUE"
 ui_show_advanced_settings=1
 ui_hide_advanced_settings=0
 show_data_preview=0

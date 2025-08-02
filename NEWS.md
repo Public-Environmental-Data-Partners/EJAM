@@ -38,7 +38,7 @@ Made a number of changes to allow web app default settings changed and other inp
     - Provide a shapefile to preload upon launch
     - etc.
 - Drafted new article with technical details: [Defaults and Custom Settings for the Web App](../articles/dev-app-settings.html)
-- Changed how Advanced tab visibility is controlled ("default_can_showhide_advanced_settings" provides initial value of `input$can_showhide_advanced_settings` now)
+- Changed how Advanced tab visibility is controlled ("default_can_show_advanced_settings" and "default_show_advanced_settings" set initial values of shiny inputs of the same names)
 - Fixed a bug where threshold-related parameters passed to `run_app()` were being ignored in the latlon case.
 - Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in run_app(). For example, radius is now settable by `run_app(radius_default=3.1)`
   - the old global_defaults_ variable "default_default_miles" is now called "radius_default"

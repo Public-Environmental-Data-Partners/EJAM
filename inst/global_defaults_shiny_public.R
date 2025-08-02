@@ -43,12 +43,12 @@ global_defaults_shiny_public <- list(
 
   # Advanced tab (NOT ideal for public-facing version)
   #   is the tab hidden initially?
-  default_hide_advanced_settings = ifelse(isPublic,
-                                          TRUE,  # if hosted public app, and app.R  sets isPublic=T, this hides the Adv. tab
-                                          TRUE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via run_app(default_hide_advanced_settings=F))
+  default_show_advanced_settings = ifelse(isPublic,
+                                          FALSE,  # if hosted public app, and app.R  sets isPublic=T, this hides the Adv. tab
+                                          FALSE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via run_app(default_show_advanced_settings=T))
   ),
   #   is user able to unhide the tab? (via buttons)
-  default_can_showhide_advanced_settings = !isTRUE(isPublic),
+  default_can_show_advanced_settings = !isTRUE(isPublic),
 
   # Histograms tab
   default_hide_plot_histo_tab = isTRUE(isPublic),  # hidden because complicated and public may not want it anyway

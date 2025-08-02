@@ -34,7 +34,7 @@ warning( " work in progress - this global.... file must be sourced only inside a
 # bookmarking_allowed <- TRUE  # https://mastering-shiny.org/action-bookmark.html
 # if (bookmarking_allowed) {enableBookmarking(store = "url")}
 #
-# default_hide_advanced_settings <- FALSE
+# default_show_advanced_settings <- FALSE
 # default_testing        <- TRUE
 # default_shiny.testmode <- TRUE  # If TRUE, then various features for testing Shiny applications are enabled.
 # default_print_uploaded_points_to_log <- TRUE

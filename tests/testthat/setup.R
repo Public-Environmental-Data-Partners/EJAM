@@ -44,7 +44,7 @@ suppressMessages({suppressWarnings({
 })})
 
 ## needs these? from global?
-# default_hide_advanced_settings
+# default_show_advanced_settings
 # html_header_fmt
 
 ############################### #
