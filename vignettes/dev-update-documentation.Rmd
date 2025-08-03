@@ -123,7 +123,7 @@ Each is explained below:
 ### User Guide: help for people using the web app
 
 -   If you change the UI then new screenshots are needed for a new version of
-    the User Guide that was stored as a .pdf document.
+    the User Guide that was stored as a .pdf document built from a Word doc.
 
 ### Spell-checking package-wide
 

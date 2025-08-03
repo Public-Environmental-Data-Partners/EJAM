@@ -1,6 +1,6 @@
 Package: EJAM
 Title: Environment and Population Analysis Multisite tool
-Version: 2.32.5
+Version: 2.32.6
 Description: Actively maintained version of EJAM, previously also called the
     EJSCREEN Multisite Tool for Environmental Justice (EJ) analysis.
     Originally based on a fork from the last version EPA released before it was archived.

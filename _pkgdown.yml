@@ -16,8 +16,8 @@ footer:
     left: [draftmsg]
     right: [package, versionmsg]
   components:
-    draftmsg: 2025
-    versionmsg: Version 2.32.5
+    draftmsg: August 2025
+    versionmsg: Version 2.32.6
 development:
   mode: release
   destination:
@@ -62,7 +62,7 @@ reference:
   desc: "Starting the Analysis"
   contents:
   - EJAM
-  - run_app
+  - ejamapp
   - ejamit
   - ejamit_compare_distances
   - ejamit_compare_types_of_places

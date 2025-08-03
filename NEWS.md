@@ -6,11 +6,11 @@
   - [ejanalysis.org/ejamapp](https://www.ejanalysis.org/ejamapp) will launch a live version of the EJAM web app
   - [ejanalysis.org/ejscreenapp](https://www.ejanalysis.org/ejscreenapp) will launch a live version of the EJSCREEN web app
 - Improved the `About page` (added links to ejanalysis.org, etc.).
-- Reorganized the Advanced settings tab, which now has more options and settings that can be changed. But note that the advanced tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.
+- Reorganized the Advanced settings tab, which now has more options and settings that can be changed. That tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.
 
 ## Web App Customization
 
-Made a number of changes to allow web app default settings changed and other inputs to be specified. This allows the following:
+Made a number of changes to allow web app default settings to be changed and other inputs to be specified. This allows the following:
 
 - Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are.
 

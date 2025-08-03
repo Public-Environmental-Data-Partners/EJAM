@@ -38,29 +38,14 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 ```
 
 
-
-<!-- Proposed renaming scheme:  -->
-<!-- "radius_default" is better than "default_radius" -->
-<!-- Names in 3 places, 3 variables:  global_or_param("x_default"),  input$x_default,  input$x -->
-<!--    allows same varname for global/ runapp param and the bookmarked input$ -->
-<!--   but note its a bit harder to use global find to distinguish global_defaults_  x_default=3.1  and global_or_param("x_default")   versus inputId = "x_default" and input$x_default ? just be careful searching -->
-<!-- so.. -->
-<!-- 1. radius_default = 3.1  in global_defaults_ and run_app() parameter. -->
-<!--    (had been called  "default_default_miles") note default_default_miles_shapefile also existed -->
-<!-- 2. input$radius_default  in advanced tab, with initial value from selected = global_or_param("radius_default"). bookmarked as &radius_default=3.1 -->
-<!--    (had been called input$default_miles) -->
-<!-- 3. input$radius as the current value being used in the app, with init value from selected = input$radius_default.  bookmarked as &radius=3.1 ? -->
-<!--    (had been named input$bt_ rad_ buff) -->
-
-
 # NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION PARAMETERS
 
 This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.
 
-Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `run_app()` as parameters, to override those global default settings for the duration of the app. Using `run_app()` parameters allows experienced analysts to customize how the web app works without having to edit any files. For example, one can change default settings for the radius, the type of sites to analyze, name of the analysis, etc., or to override caps such as limits on file upload size or number of points:
+Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` aka `run_app()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. For example, one can change default settings for the radius, the type of sites to analyze, name of the analysis, etc., or to override caps such as limits on file upload size or number of points:
 
 ```{r run-app1, eval=FALSE}
-run_app(
+ejamapp(
   radius_default=3.1,
   default_max_miles=31,
   default_max_mb_upload=100
@@ -77,7 +62,7 @@ But for completeness, here is how a setting can be named differently in three pl
 
 1) The global default constant that is the initial value of x,
 and is normally defined in a `global_defaults_*.R` file installed with the EJAM package, but
-also can be provided as a parameter to `run_app()`.
+also can be provided as a parameter to `ejamapp()`.
 
 2) for the subset of settings that can be adjusted in the Advanced tab (not all can),
 there is a second variable: the input$ one can adjust in that tab.
@@ -100,10 +85,10 @@ app.R mostly just does library(EJAM) and run_app(isPublic = TRUE).
 isPublic is special because it is checked by the global_defaults_shiny_public.R file
 and some settings depend on isPublic being T or F.
 
-### run_app() parameters
+### ejamapp() parameters
 
-If the app is launched directly via run_app() by a user in RStudio console, it skips app.R
-and a user can provide arguments as parameters in run_app(...). See ?run_app
+If the app is launched directly via ejamapp() by a user in RStudio console, it skips app.R
+and a user can provide arguments as parameters in ejamapp(...). See `?ejamapp`
 
 ### global_defaults_ files
 
@@ -112,19 +97,19 @@ Many defaults/ settings used by the web app are defined in the global_defaults_ 
 Note the parameter isPublic is special because it is checked by the global_defaults_shiny_public.R file
 and some settings depend on isPublic being T or F.
 
-### run_app() params or global_defaults_
+### ejamapp() params or global_defaults_
 
-run_app() calls get_global_defaults_or_user_options() which
+`ejamapp()` calls get_global_defaults_or_user_options() which
 gets the global defaults and then overrides them with
-any user-specified options given as arguments in run_app().
-run_app() then launches the app, storing those options as app$appOptions$golem_options
+any user-specified options given as arguments in ejamapp().
+ejamapp() then launches the app, storing those options as app$appOptions$golem_options
 
 ### global env?
 
 Then app_ui() and app_server() can check for defaults/params using EJAM:::global_or_param("radius_default") e.g.
 which uses golem::get_golem_options() to check for a named option. Usually these are used as initial/default values
 for input$ variables in the app.
-However, note if an expected setting is not found (ie not set by user in run_app() and not set in any global_defaults_ file)
+However, note if an expected setting is not found (ie not set by user in ejamapp() and not set in any global_defaults_ file)
 global_or_param() also looks in global env, as a last resort!! That might be a problem if ui or server looks for a
 setting that we failed to provide in global_defaults files and that variable name happens to be in the global env !
 
@@ -137,7 +122,7 @@ and therefore can be bookmarked (since inputs can be bookmarked unless specifica
 
 For example: 
 
-- in global_defaults_ or param in run_app(): default_upload_dropdown, which is the initial selected value of
+- in global_defaults_ or param in `ejamapp()`  default_upload_dropdown, which is the initial selected value of
 - input in advanced tab: input$default_ss_choose_method, which is the initial selected value of
 - input in server:               input$ss_choose_method
 
@@ -165,7 +150,7 @@ a state where the inputs are as specified by the bookmark.
 
 # Type out the custom settings each time you use run_app()
 
-run_app(
+ejamapp(
   default_standard_analysis_title="Custom NAICS Analysis",
   default_upload_dropdown="dropdown",
   default_selected_type_of_site_category="NAICS",
@@ -176,13 +161,20 @@ run_app(
 )
 ```
 
+
+
+
+
+<!--   not finished 
+
+
 Functions to help launch with custom parameters
 
 ```{r run-app-with-params, eval=FALSE}
 
 # Define helper functions -   *************** UNFINISHED DRAFT  -   *************** 
 
-# draft function generator that gives you a custom version of run_app()
+# draft function generator that gives you a custom version of ejamapp()
 make_run_custom = function(params = NULL) {
   if (is.list(params)) {params <- unlist(params)}
   txt <- paste0(
@@ -240,6 +232,10 @@ myapp = make_run_custom(myparams)
 myapp()
 ```
 
+-->
+
+
+
 
 ### Launch hosted app (online, URL) with custom settings
 
@@ -254,7 +250,7 @@ as the src parameter for img().
 Also note that url-encoded bookmarked inputs can launch the app
 and pass various input$ settings to the app, which would override
 the default values of those input$ settings provided by the global_defaults_*.R
-and/or run_app() parameters handled by the function
+and/or `ejamapp()` parameters handled by the utility function
 get_global_defaults_or_user_options().
 
 **Example that will launch app with a custom title and radius**
@@ -263,7 +259,7 @@ Note this tries to specify the NAICS method, but at least initially the draft co
 
 Here is an example using the URL of one copy of the hosted app:
 
-*** THIS EXAMPLE WILL WORK with VERSION 2.32.6 NOT VERSION 2.32.5:
+*** THIS EXAMPLE WILL WORK only with VERSION 2.32.6 or later:
 
 Locally hosted app example
 
@@ -271,7 +267,7 @@ Locally hosted app example
 
 # In 1 R session, launch locally with advanced tab disabled
 myport <- 5432
-run_app(isPublic=TRUE, options = list(port=myport))
+ejamapp(isPublic=TRUE, options = list(port=myport))
 
 # Then you can open a second R session and in that new R session
 # paste/use the code below to relaunch the app
@@ -301,9 +297,9 @@ myparams <- c(
 )
 
 params <- c('standard_analysis_title="Custom NAICS Analysis"',
-            'ss_choose_method="dropdown"',   # like run_app( default_upload_dropdown="dropdown" )
+            'ss_choose_method="dropdown"',   # like ejamapp( default_upload_dropdown="dropdown" )
             'ss_choose_method_drop="NAICS"', # see ?run_app()
-            'naics_digits_shown="detailed"', # like run_app( default_naics_digits_shown = "detailed")
+            'naics_digits_shown="detailed"', # like ejamapp( default_naics_digits_shown = "detailed")
             # 'ss_select_naics=313',           # like run_app(default_naics=313)
             'radius_default=3.1',             # like run_app(radius_default = 3.1)
             'ui_show_advanced_settings=1')

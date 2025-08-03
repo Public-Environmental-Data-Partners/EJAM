@@ -10,7 +10,7 @@
 #'
 #'  For example:
 #'  ```
-#'  run_app(
+#'  ejamapp(
 #'    radius_default=3.1,
 #'    default_max_miles=31,
 #'    default_max_mb_upload=100
@@ -47,11 +47,12 @@
 #' They can be changed there, but also can be passed here
 #' to override those settings for the duration of the app.
 #' Some of them can also be adjusted in the web app's Advanced tab, and
-#' some can be bookmarked (saved in a URL) for later use.
+#' some (the ones that are inputs in the ui / server) 
+#' can be bookmarked (saved in a URL) for later use.
 #'
 #' For more details, see the article on "Defaults and Custom Settings for the Web App"
 #'
-#' **Examples of custom parameters that you could pass to run_app() are shown below.**
+#' **Examples of custom parameters that you could pass to ejamapp() are shown below.**
 #'
 #' More about how the app launches:
 #'
@@ -76,25 +77,34 @@
 #'
 #' @examples
 #' \dontrun{
-#'  # Note some of these may get renamed in the future to harmonize and simplify the names.
+#'  # Note some of these settings/ parameters may get renamed to harmonize and simplify names.
 #'
-#'  ## Provide input sites to app (skip the web app upload clicks)
+#'  ## Provide input sites to app (skip the web app upload clicks),
+#'  ## using parameters called `sitepoints` and `shapefile` as in `ejamit()`
 #'
-#'  run_app(sitepoints = testpoints_10[1:2,], radius_default = 3.1,
+#'  #  data.frame with latitude, longitude
+#'  ejamapp(sitepoints = testpoints_10[1:2,], radius_default = 3.1,
 #'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "latlon")
 #'
-#'  run_app(sitepoints = system.file("testdata/latlon/testpoints_10.xlsx", package="EJAM"),
+#'  #  file with latitude, longitude
+#'  ejamapp(sitepoints = system.file("testdata/latlon/testpoints_10.xlsx", package="EJAM"),
 #'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "latlon")
-#'
-#'  run_app(shapefile = testshapes_2,
+#'  
+#'  #  spatial data.frame with polygons
+#'  ejamapp(shapefile = testshapes_2,
 #'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "SHP")
 #'
-#'  run_app(shapefile = system.file("testdata/shapes/testinput_shapes_2.zip", package="EJAM"),
+#'  # file with polygons
+#'  ejamapp(shapefile = system.file("testdata/shapes/testinput_shapes_2.zip", package="EJAM"),
 #'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "SHP")
+#'
+#'  # a vector or file with fips codes will be allowed also
+#'  ejamapp(fips = testinput_fips_counties,
+#'          default_upload_dropdown = "dropdown", default_selected_type_of_site_upload = "FIPS") # vs FIPS_PLACE ?***
 #'
 #'  ## Use preferred settings, for your set of analyses:
 #'
-#' run_app(
+#' ejamapp(
 #'   default_standard_analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
 #'   radius_default = 3.1, # PREFERRED RADIUS
 #'   default_max_miles = 31,      # to raise the radius cap
@@ -110,7 +120,7 @@
 #'   ## default_choices_for_type_of_site_category
 #'   ##   defines the range of options
 #'
-#' run_app(
+#' ejamapp(
 #'   default_standard_analysis_title="Custom NAICS Analysis",
 #'   default_upload_dropdown="dropdown",
 #'   default_selected_type_of_site_category="NAICS",
@@ -120,9 +130,9 @@
 #'   default_show_advanced_settings=TRUE
 #' )
 #'
-#'   ## Cities as the default:
+#'   ## Cities dropdown list as default shown at launch:
 #'
-#' run_app(
+#' ejamapp(
 #'   default_upload_dropdown = "dropdown",
 #'   default_selected_type_of_site_category = "FIPS_PLACE",
 #'   fipspicker_fips_type2pick_default = "Cities or Places"
@@ -135,9 +145,9 @@
 #'   #  'by MACT subpart'          = 'MACT'
 #'   #)
 #'
-#'   ## Polygons as the default:
+#'   ## Polygons upload as the default shown at launch:
 #'
-#' run_app(
+#' ejamapp(
 #'   default_upload_dropdown = "upload",
 #'   default_selected_type_of_site_upload = "SHP"
 #' )
@@ -151,7 +161,7 @@
 #'
 #'  ## Count how many of some indicator are >= some cutoff
 #'
-#' run_app(
+#' ejamapp(
 #'   #  Envt indicators, count US or ST 80th+, and count US or ST 95th+
 #'   default.an_threshgroup1 = "Envt-US-or-ST-pctile", # among US and ST pctiles
 #'   default.an_threshgroup2 = "Envt-US-or-ST-pctile", # same
@@ -161,7 +171,7 @@
 #'   default.an_thresh_comp2 = 95   #  how many are >=95th
 #' )
 #'
-#' run_app(
+#' ejamapp(
 #'   #  Envt indicators, count US 80th+, and count ST 80th+
 #'   default.an_threshgroup1 = "Envt-US-pctile",
 #'   default.an_threshgroup2 = "Envt-ST-pctile",
@@ -173,7 +183,7 @@
 #'
 #'  ## Public hosted app vs full-featured app:
 #'
-#'  run_app( isPublic = TRUE )
+#'  ejamapp( isPublic = TRUE )
 #'  # will launch a simpler version of the web app
 #'  # (e.g., for more general public use rather than the full set of complicated
 #'  # features that are used less often).
@@ -183,7 +193,7 @@
 #'  #  and perhaps hide histograms since they are complicated,
 #'  #  note these settings:
 #'
-#'  run_app(
+#'  ejamapp(
 #'   isPublic = FALSE,
 #'   default_show_advanced_settings = FALSE, # hides Advanced tab when app launches
 #'   default_can_show_advanced_settings = FALSE, # removes user's ability to show Advanced tab
@@ -209,11 +219,44 @@
 #' }
 #' @return An object that represents the app. Printing the object or
 #'   passing it to [runApp()] will run the app, as would just typing
-#'   `run_app()` in the console.
-#' @seealso [app_run_EJAM()] and [run_app()] are synonymous
-#' @aliases app_run_EJAM
+#'   [run_app()] or [ejamapp()] in the console.
+#'
+#' @seealso [ejamapp()], [run_app()], and [app_run_EJAM()] are synonymous
+#' @aliases app_run_EJAM run_app
 #'
 #' @export
+#'
+###################################### ###################################### #
+
+ejamapp <- function(
+    ...,
+    enableBookmarking = 'url',
+    options = list(),  # options specifically for shinyApp(options=xyz). see ?shinyApp
+    onStart = NULL,
+    uiPattern = "/"
+) {
+
+  global_defaults_or_user_options <- get_global_defaults_or_user_options(
+    user_specified_options = list(...),
+    bookmarking_allowed = enableBookmarking
+  )
+
+  golem::with_golem_options(
+    app = shiny::shinyApp(
+      ui = app_ui,
+      server = app_server,
+      enableBookmarking = enableBookmarking,
+      onStart = onStart,
+      options = options,
+      uiPattern = uiPattern
+    ),
+    golem_opts = global_defaults_or_user_options
+  )
+}
+###################################### ###################################### #
+
+#' @export
+#' @keywords internal
 #'
 run_app <- function(
     ...,
@@ -240,4 +283,34 @@ run_app <- function(
     golem_opts = global_defaults_or_user_options
   )
 }
-###################################### #
+###################################### ###################################### #
+
+#' @export
+#' @keywords internal
+#'
+app_run_EJAM <- function(
+    ...,
+    enableBookmarking = 'url',
+    options = list(),  # options specifically for shinyApp(options=xyz). see ?shinyApp
+    onStart = NULL,
+    uiPattern = "/"
+) {
+
+  global_defaults_or_user_options <- get_global_defaults_or_user_options(
+    user_specified_options = list(...),
+    bookmarking_allowed = enableBookmarking
+  )
+
+  golem::with_golem_options(
+    app = shiny::shinyApp(
+      ui = app_ui,
+      server = app_server,
+      enableBookmarking = enableBookmarking,
+      onStart = onStart,
+      options = options,
+      uiPattern = uiPattern
+    ),
+    golem_opts = global_defaults_or_user_options
+  )
+}
+###################################### ###################################### #
