@@ -83,8 +83,8 @@ if (inherits(desc, 'try-error')) {
   if (inherits(desc, 'try-error')) {stop('cannot find DESCRIPTION file for EJAM package')}
 }
 version <- ifelse('error' %in% class(desc), '', desc$get("Version"))
-## trim version number shown in report to Major.Minor
-version <- substr(version, start = 1, stop = gregexpr('\\.',version)[[1]][2] - 1)
+## nolonger will trim version number shown in report to Major.Minor
+# version <- substr(version, start = 1, stop = gregexpr('\\.',version)[[1]][2] - 1)
 
 current_date <- ifelse(
   isTRUE(getOption("shiny.testmode")),
