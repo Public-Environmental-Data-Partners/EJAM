@@ -81,7 +81,7 @@ Steps in EJAM shiny app launch, and the use of params/ defaults/ advanced tab/ b
 
 If the app is on a server or one uses the RStudio button "Run", app.R is used.
 app.R is normally how the app is launched if it is a hosted shiny app on a server.
-app.R mostly just does library(EJAM) and run_app(isPublic = TRUE).
+app.R mostly just does library(EJAM) and ejamapp(isPublic = TRUE).
 isPublic is special because it is checked by the global_defaults_shiny_public.R file
 and some settings depend on isPublic being T or F.
 
@@ -148,7 +148,7 @@ a state where the inputs are as specified by the bookmark.
 
 ```{r run-app, eval=FALSE}
 
-# Type out the custom settings each time you use run_app()
+# Type out the custom settings each time you use ejamapp()
 
 ejamapp(
   default_standard_analysis_title="Custom NAICS Analysis",
@@ -178,7 +178,7 @@ Functions to help launch with custom parameters
 make_run_custom = function(params = NULL) {
   if (is.list(params)) {params <- unlist(params)}
   txt <- paste0(
-    "run_app(", paste0(paste0(names(params), " = '", params, "'"), collapse=", "), ")"
+    "ejamapp(", paste0(paste0(names(params), " = '", params, "'"), collapse=", "), ")"
   )
   myapp = function() {
     EJAM:::source_this_codetext(txt)  ### ***(((((((((((((( ACTUALLY THIS HAS TO BE EVALUATED BEFOREHAND - FIX THIS  ))))))))))))))
@@ -186,7 +186,7 @@ make_run_custom = function(params = NULL) {
   return(myapp)
 }
 
-# function to launch run_app() with parameters saved as vector or list
+# function to launch ejamapp() with parameters saved as vector or list
 run_with_paramlist = function(params = NULL) {
   fn = make_run_custom(params)
   fn()
@@ -298,10 +298,10 @@ myparams <- c(
 
 params <- c('standard_analysis_title="Custom NAICS Analysis"',
             'ss_choose_method="dropdown"',   # like ejamapp( default_upload_dropdown="dropdown" )
-            'ss_choose_method_drop="NAICS"', # see ?run_app()
+            'ss_choose_method_drop="NAICS"', # see ?ejamapp()
             'naics_digits_shown="detailed"', # like ejamapp( default_naics_digits_shown = "detailed")
-            # 'ss_select_naics=313',           # like run_app(default_naics=313)
-            'radius_default=3.1',             # like run_app(radius_default = 3.1)
+            # 'ss_select_naics=313',           # like ejamapp(default_naics=313)
+            'radius_default=3.1',             # like ejamapp(radius_default = 3.1)
             'ui_show_advanced_settings=1')
 
 urlx <- URLencode(paste0(urlbase, paste0(params, collapse = "&")))
@@ -438,7 +438,7 @@ length(
 
 ### > function params - grouped by function ####
 
-Function parameters whose defaults are or could be included in advanced tab, and allowed by run_app().
+Function parameters whose defaults are or could be included in advanced tab, and allowed by `ejamapp()`.
 
 ```{r func-params-by-func, eval=TRUE}
 
@@ -450,8 +450,8 @@ EJAM:::args2(get_blockpoints_in_shape)
 
 EJAM:::args2(getblocksnearby_from_fips)
 
-# sitepoints can be a param in run_app()
-# shapefile  can be a param in run_app()
+# sitepoints can be a param in ejamapp()
+# shapefile  can be a param in ejamapp()
 # fips
 
 # radius_donut_lower_edge
@@ -465,14 +465,14 @@ EJAM:::args2(getblocksnearby_from_fips)
 # > cbind(formals(ejamit))
 EJAM:::args2(ejamit)
 
-# sitepoints               NULL            -- Now can be passed to run_app()
+# sitepoints               NULL            -- Now can be passed to ejamapp()
 # radius                   3         for getblocksnearby(), shiny default is set in global - called radius_default in global_defaults_
 # radius_donut_lower_edge  0         na
 # maxradius                31.07     for getblocksnearby(), shiny default is set in global
 # avoidorphans             FALSE     for getblocksnearby(), shiny default is set in global
 # quadtree                 NULL      na
-# fips                     NULL                    ----   fips  could be enabled as param in run_app()
-# shapefile                NULL                    ----   shapefile now can be  passed to run_app()
+# fips                     NULL                    ----   fips  could be enabled as param
+# shapefile                NULL                    ----   shapefile now can be  passed to ejamapp()
 # countcols                NULL      for doaggregate() ** shiny default NOT specified here
 # popmeancols              NULL      for doaggregate() ** shiny default NOT specified here
 # calculatedcols           NULL      for doaggregate() ** shiny default NOT specified here
@@ -572,7 +572,7 @@ fipspicker_done_button=0
 
 ```{r, eval=FALSE}
 radius_now=3.1  # input from slider but not the way to bookmark /url-encode the radius
-radius_default=3.1  # works as parameter to run_app() or as bookmarked input$ 
+radius_default=3.1  # works as parameter to ejamapp() or as bookmarked input$ 
 radius_default_shapefile=0
 max_miles=10
 maxradius=31.06856
@@ -619,7 +619,7 @@ extratable_list_of_sections="pctpoor"
 # "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]
 
 # thresholds - counting how many of a certain indicator type are at/above some threshold
-# see help docs on run_app() for examples of using these (but they are named a bit differently as parameters there)
+# see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)
 an_thresh_comp1=80
 an_thresh_comp2=80
 an_threshgroup1="EJ-US-or-ST"

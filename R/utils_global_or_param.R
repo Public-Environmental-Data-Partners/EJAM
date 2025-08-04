@@ -1,22 +1,23 @@
 
 #' utility for server/ui to check value of a global default setting or user-defined setting
-#' This and get_golem_options() are very similar tools, useful in server and ui
+#' 
 #' @details
-#' See help for `get_global_defaults_or_user_options()`
+#' This and [get_golem_options()] are very similar tools, useful in server and ui.
+#' See help for [get_global_defaults_or_user_options()]
 #'
-#' `global_or_param()` is used a lot in server and also ui (while sometimes
-#' `golem::get_golem_options()` had been used instead but now is not, for the same purpose).
+#' [global_or_param()] is used a lot in server and also ui (while sometimes
+#' [golem::get_golem_options()] had been used instead but now is not, for the same purpose).
 #' It is used generally in ui to set default values for params that
 #' are set in the global_defaults_ files and often can be
 #' modified in the advanced tab. To provide alternative values as
-#' params passed to `run_app()` you would have to understand the options
+#' params passed to [ejamapp()] you would have to understand the options
 #' by seeing what they are defaulted to in the files and how they are used
-#' as parameters in ui or server. See ?run_app()
+#' as parameters in ui or server. See [ejamapp()]
 #'
-#' This is much like `golem::get_golem_options()`
-#' but  `global_or_param()` is more flexible/robust since it will,
+#' This is much like [golem::get_golem_options()]
+#' but [global_or_param()] is more flexible/robust since it will,
 #'  if vname is not already defined as found
-#' by `golem::get_golem_options()`
+#' by [golem::get_golem_options()]
 #' then as a backup, check if the param called vname is
 #' defined in the search path such as in the
 #' calling or global envt already somehow,

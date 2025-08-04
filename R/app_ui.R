@@ -1017,7 +1017,7 @@ app_ui  <- function(request) {
 
                  # * Each time a user session is started, the application-level option set is duplicated, for that session.
                  # * If the options are set from inside the server function, then they will be scoped to the session.
-                 # see  global_defaults_*.R and ?run_app()
+                 # see  global_defaults_*.R and ?ejamapp()
 
                  ######################################################## ######################################################### #
                  ## BOOKMARKS button ####
@@ -1076,7 +1076,7 @@ app_ui  <- function(request) {
                               choices = c(Dropdown = "dropdown", Upload = "upload"),
                               selected = EJAM:::global_or_param("default_upload_dropdown"),
                               inline = TRUE),
-                 # global_default or run_app() parameter: default_upload_dropdown, which is initial selected value of
+                 # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
                  # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
                  # input in server:              input$ss_choose_method
                  ######################################################## #
@@ -1140,8 +1140,8 @@ app_ui  <- function(request) {
                  ## EJAM:::args2(get_blockpoints_in_shape)
                  ## EJAM:::args2(getblocksnearby_from_fips)
 
-                 # sitepoints can be a param in run_app()
-                 # shapefile  can be a param in run_app()
+                 # sitepoints can be a param in ejamapp()
+                 # shapefile  can be a param in ejamapp()
                  # fips
 
                  # radius_donut_lower_edge

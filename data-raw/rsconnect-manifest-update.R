@@ -26,7 +26,7 @@ devtools::install_github(
   ###  uncomment one of these:
    repo = EJAM:::repo_from_desc(), ref = 'main',
   # repo = 'USEPA/EJAM-open',       ref = 'main',  # install full pkg/internal app from the public repo - requires a PAT; but install.packages() is easier
-  #####       but note that the isPublic=TRUE option should be checked before deploying (may be a default value in run_app() within file app.R, or be set as param passed)
+  #####       but note that the isPublic=TRUE option should be checked before deploying (may be a default value in ejamapp() within file app.R, or be set as param passed)
 
   build_vignettes = FALSE,
   build_manual = FALSE,

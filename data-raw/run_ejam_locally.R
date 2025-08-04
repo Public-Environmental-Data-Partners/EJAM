@@ -39,6 +39,6 @@ source('R/app_config.R')
 source('R/app_ui.R')
 source('R/app_server.R')
 
-## launch local version of Shiny app (not sure how this would be more useful than just using run_app()  ?? )
+## launch local version of Shiny app (not sure how this would be more useful than just using ejamapp()  ?? )
 
 shinyApp(app_ui, app_server)

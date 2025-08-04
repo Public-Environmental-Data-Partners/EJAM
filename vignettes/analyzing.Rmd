@@ -44,7 +44,7 @@ in more detail than the web app can provide.
 
 # Running a Basic Analysis
 
--   **`run_app()`** launches the web app locally (to run in RStudio on a single
+-   **`ejamapp()`** launches the web app locally (to run in RStudio on a single
     computer rather than on a server)
 
 -   **`ejamit()`** provides most results in just one function (if you already

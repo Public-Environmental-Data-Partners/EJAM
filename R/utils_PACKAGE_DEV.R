@@ -688,7 +688,7 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
 
   # 1) Normally it checks the first two cases of dupe named functions from 2 packages,
   # and answers with FALSE or TRUE (1 value).
-  # But it returns FALSE 3 times only in the case of run_app (but not latlon_is.valid)
+  # But it returns FALSE 3 times for some?
   # pkg_dupenames(ejampackages) # or just pkg_dupenames()
 
   # 2) ### error when checking a package that is loaded but not attached.

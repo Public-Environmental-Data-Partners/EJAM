@@ -2,12 +2,6 @@
 #' DRAFT - Launch EJAM ejscreenapi web app in RStudio
 #' @description Launch EJAM ejscreenapi web app in RStudio
 #' @md
-#' @details 
-#' 
-#' app_run_EJAM()                 is like run_app() for the EJAM shiny app run from the EJAM package
-#' 
-#' app_run_EJAMejscreenapi()      is like run_app() for the EJScreen API shiny app run from the EJAM package
-#' 
 #' @param ... arguments to pass to golem_opts
 #'   See `?golem::get_golem_options` for more details
 #' @inheritParams shiny::shinyApp

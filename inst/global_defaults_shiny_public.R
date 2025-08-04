@@ -9,17 +9,17 @@
 # "Private" here used to refer to a version hosted only internally for staff analysts, e.g.,
 # but also referred to any version of the app run (or package used) locally by analysts.
 #
-# if (run_app(isPublic = TRUE))  it is "Public"
+# if (ejamapp(isPublic = TRUE))  it is "Public"
 #
-# This is sourced by run_app() and by .onAttach
+# This is sourced by ejamapp() and by .onAttach
 # This next line is necessary because while most toggled items are UI/specific to the application,
 # a few are variables used also by the package, like the report titles
 # so we need to default the isPublic parameter
-# but if the user specified in run_app, then take what they specified
+# but if the user specified in ejamapp(), then take what they specified
 ######################################################################################################## #
 ########## #
 # isPublic ####
-# if user (or app.R) did specify isPublic like by calling run_app(isPublic = TRUE), use that setting
+# if user (or app.R) did specify isPublic like by calling ejamapp(isPublic = TRUE), use that setting
 if (exists("isPublic")) {
   #isPublic <- isPublic
 } else {
@@ -45,7 +45,7 @@ global_defaults_shiny_public <- list(
   #   is the tab hidden initially?
   default_show_advanced_settings = ifelse(isPublic,
                                           FALSE,  # if hosted public app, and app.R  sets isPublic=T, this hides the Adv. tab
-                                          FALSE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via run_app(default_show_advanced_settings=T))
+                                          FALSE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via ejamapp(default_show_advanced_settings=T))
   ),
   #   is user able to unhide the tab? (via buttons)
   default_can_show_advanced_settings = !isTRUE(isPublic),
@@ -64,8 +64,8 @@ global_defaults_shiny_public <- list(
   ### ------------------------ default_choices_for_type_of_site_category  #####
 
   ## default_choices_for_type_of_site_category defines the range of options
-  ## If you want all the options available but want the app to default to NAICS, in run_app() use these params:
-  # run_app(
+  ## If you want all the options available but want the app to default to NAICS, in ejamapp() use these params:
+  # ejamapp(
   #   default_upload_dropdown = "dropdown",
   #   default_choices_for_type_of_site_category = c(
   #     'by Industry (NAICS) Code' = 'NAICS',
@@ -101,10 +101,10 @@ global_defaults_shiny_public <- list(
   ### ------------------------ default_choices_for_type_of_site_upload  #####
 
   ## default_choices_for_type_of_site_upload defines the range of options but also
-  ## the initial/default selection will be whatever is first on the list. - see ?run_app()
-  ## If you want all the options available but want the app to default to polygons, in run_app() use these params:
+  ## the initial/default selection will be whatever is first on the list. - see ?ejamapp()
+  ## If you want all the options available but want the app to default to polygons, in ejamapp() use these params:
   #
-  # run_app(
+  # ejamapp(
   #   default_upload_dropdown = "upload",
   #   default_choices_for_type_of_site_upload = c(
   #     'Shapefile of polygons file upload'              = 'SHP',
