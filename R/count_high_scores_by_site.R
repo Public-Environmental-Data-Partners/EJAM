@@ -1,5 +1,6 @@
-#' Count columns with Value (at or) above (or below) threshold
-#' 
+#' Count columns (indicators) with Value (at or) above (or below) threshold
+#' Counts high scores, by site
+#' @aliases count_high_scores_by_site
 #' @param x Data.frame or matrix of numbers to be compared to threshold value.
 #' @param threshold numeric threshold value to compare to
 #' @param or.tied if TRUE, include ties (value in x equals threshold)

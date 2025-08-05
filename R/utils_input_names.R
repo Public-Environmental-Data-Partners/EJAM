@@ -1,7 +1,10 @@
 
 #' Utility checking values of input$ that appear in this code
 #' 
-#' See appsilon pkg shiny.info now
+#' See appsilon pkg shiny.info now.
+#'
+#' See dev-app-settings.Rmd also
+#'
 #' @param file  path to source file to search in 
 #'
 #' @return character vector of ids of inputs like x,y,z if it found input$x input$y input$z

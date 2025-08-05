@@ -216,7 +216,6 @@ reference:
   - fips2statename
   - fips2state_abbrev
   - fips2state_fips
-  - state_from_sitetable
   - state_from_fips_bybg
   - state_from_latlon
 - subtitle: "Regions"
@@ -286,14 +285,15 @@ reference:
   - distance_trends
 - subtitle: "Calculating Summary Stats, etc."
   contents:
-  - batch.summarize
   - count_sites_with_n_high_scores
-  - colcounter_summary_all
+  - count_high_scores_by_site
+  - colcounter_summary_all 
   - popshare_at_top_n
   - popshare_at_top_x_pct
   - popshare_p_lives_at_what_n
   - popshare_p_lives_at_what_pct
   - distance_trends
+  - batch.summarize
 - title: "Viewing Results"
 - subtitle: "Maps of Points"
   contents:
@@ -435,6 +435,7 @@ reference:
   - ejscreenit
 - title: internal
   contents:
+  - state_from_sitetable
   - fips_bg_from_latlon
   - testshapes_2
   - testoutput_getblocksnearby_10pts_1miles

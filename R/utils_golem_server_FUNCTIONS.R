@@ -7,12 +7,16 @@
 #' not_null(NULL)
 `%not_in%` <- Negate(`%in%`)
 
+
 `%nin%` = Negate(`%in%`) # is easier to type
 #  c(5, 3) %nin% 1:4
 
+
 not_null <- Negate(is.null)
 
+
 not_na <- Negate(is.na)
+
 
 #' Removes the null from a vector
 #'
@@ -23,6 +27,7 @@ not_na <- Negate(is.na)
 drop_nulls <- function(x) {
   x[!sapply(x, is.null)]
 }
+
 
 #' If x is `NULL`, return y, otherwise return x
 #'
@@ -40,6 +45,7 @@ drop_nulls <- function(x) {
   }
 }
 
+
 #' If x is `NA`, return y, otherwise return x
 #'
 #' @param x,y Two elements to test, one potentially `NA`
@@ -55,6 +61,7 @@ drop_nulls <- function(x) {
     x
   }
 }
+
 
 #' Typing reactiveValues is too long
 #'

@@ -31,6 +31,7 @@
 #'  pts = system.file("testdata/latlon/testpoints_10.xlsx", package = "EJAM")
 #'  sitepoints_from_any(pts)
 #'  }
+#'
 #' @export
 #'
 sitepoints_from_any <- function(anything, lon_if_used, invalid_msg_table = FALSE, set_invalid_to_na = TRUE, interactiveprompt = TRUE) {

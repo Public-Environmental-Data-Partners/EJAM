@@ -33,6 +33,8 @@ list_to_li <- function(list, class = NULL) {
     tagList(res)
   }
 }
+
+
 #' Turn an R list into corresponding HTML paragraph tags
 #'
 #' @param list an R list
@@ -111,6 +113,7 @@ named_to_li <- function(list, class = NULL) {
   }
 }
 
+
 #' Remove a tag attribute
 #'
 #' @param tag the tag
@@ -129,6 +132,7 @@ tagRemoveAttributes <- function(tag, ...) {
   }
   tag
 }
+
 
 #' Hide or display a tag
 #'
@@ -159,6 +163,7 @@ undisplay <- function(tag) {
   tag
 }
 
+
 display <- function(tag) {
   if (
     !is.null(tag$attribs$style) &&
@@ -172,6 +177,7 @@ display <- function(tag) {
   }
   tag
 }
+
 
 #' Hide an elements by calling jquery hide on it
 #'
@@ -224,6 +230,7 @@ rep_br <- function(times = 1) {
   HTML(rep("<br/>", times = times))
 }
 
+
 #' Create an url
 #'
 #' @param url the URL
@@ -237,6 +244,7 @@ rep_br <- function(times = 1) {
 enurl <- function(url, text) {
   tags$a(href = url, text)
 }
+
 
 #' Columns wrappers
 #'
@@ -387,4 +395,3 @@ make_action_button <- function(tag, inputId = NULL) {
 #
 #   return(HTML(html))
 # }
-

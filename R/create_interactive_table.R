@@ -1,5 +1,5 @@
 
-#' create_interactive_table - function that creates interactive html version of site by site table in app
+#' unused now? create_interactive_table - function that creates interactive html version of site by site table in app
 #' @description Builds site by site table after an analysis in EJAM app. Pulls in uploaded and analyzed data to create table
 #'
 #' @param data_processed processed data from app_server

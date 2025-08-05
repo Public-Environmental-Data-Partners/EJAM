@@ -50,6 +50,8 @@ Made a number of changes to allow web app default settings to be changed and oth
   - the old global_defaults_ variable "intro_text" is now called "aboutpage_text"
   - the old global_defaults_ variable "default_default_miles_shapefile" is now called "radius_default_shapefile"
   - the old reactive sanitized_bt_rad_buff() is now called sanitized_radius_now()
+- Renamed various *.R files and relocated some source code among those, to make some filenames more consistent.
+- Made some functions internal that until now had been exported, to simplify things for most R users.
 
 
 # EJAM v2.32.5 (July 2025)
