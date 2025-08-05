@@ -32,8 +32,8 @@ knitr::opts_chunk$set(eval = FALSE)
 
 ### Checking test coverage (where more unit tests need to be written)
 
-Some functions in the package have incomplete unit test coverage as of version
-2.32.4 / mid 2025, so ideally more unit tests would be added in those cases.
+Some functions in the package had incomplete unit test coverage at least as of 
+mid 2025, so ideally more unit tests would be added in those cases.
 
 You can see a grouped, organized list of unit test files *within the source
 code* of a function **`test_ejam()`**, which is not exported but is loaded by the package.

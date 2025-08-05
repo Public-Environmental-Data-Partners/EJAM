@@ -1,13 +1,13 @@
-utils::citHeader("The July 2025 version of EJAM is an updated package that was created starting from a fork detached from the original USEPA/EJAM-open v2.32.4. If you use or refer to this software, please cite it as follows:")
+utils::citHeader("This version of EJAM is not associated with the US EPA. It is an independent project that initially was based on the USEPA/EJAM-open v2.32.4 tool. If you use or refer to this software, please cite it as follows:")
 
 utils::bibentry(
   bibtype = "Manual",
   author = personList(
               as.person("Mark A. Corrales")
               ),
-  title = "Environmental and Residential Population Analysis Multisite tool (EJAM) (non-EPA version v2.32.5, July 2025)",
+  title = "Environmental Justice Analysis Multisite tool (EJAM) v2.32.6 (non-EPA version of EJAM)",
   address = "Washington, DC",
   year = 2025,
   url = "https://ejanalysis.github.io/EJAM/index.html",
-  textVersion = "Corrales MA (2025). Environmental and Residential Population Analysis Multisite tool (EJAM) (non-EPA version v2.32.5, July 2025). Washington, DC. https://ejanalysis.github.io/EJAM/index.html"
+  textVersion = "Corrales MA (2025). Environmental Justice Analysis Multisite tool (EJAM) v2.32.6 (non-EPA version of EJAM). Washington, DC. https://ejanalysis.com/EJAM"
 )

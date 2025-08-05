@@ -70,7 +70,7 @@ Each is explained below:
     `CONTRIBUTING.md` used to make [CONTRIBUTING](../CONTRIBUTING.html),
     [LICENSE](../LICENSE.html) based on `inst/LICENSE.md`,
     [CITATION](../authors.html#citation) based on `inst/CITATION`, 
-    and others.
+    CITATION.cff, and others.
 
 -   Some of these are used by and shown by the github.com repository, notably
     the `README.md` that is generated from the `README.Rmd` file and appears on
