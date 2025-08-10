@@ -164,6 +164,9 @@ global_defaults_shiny <- list(
   ## ------------------------ fipspicker module ####
 
   # *** but perhaps these should be set only inside the module, just to avoid clutter, unneeded settings if module usused, and possible namespace conflicts. as had been noted for the ejscreenapi module settings
+  default_cities_picked = "",
+  default_counties_picked = "",
+  default_states_picked = "",
   fipspicker_fips_type2pick_default = "Counties",  #"Cities or Places",
   fipspicker_fips_type2pick_choices_default = c(
     # `EPA Regions` = "EPA Regions", # if we wanted to allow user to pick an entire EPA Region or two to compare. More useful for filtering mode, like if picking all states within Region 2.

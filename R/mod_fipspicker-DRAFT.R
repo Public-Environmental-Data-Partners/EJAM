@@ -175,14 +175,14 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
 
     checkboxInput(inputId = ns("all_states_button"), "All States?", value = EJAM:::global_or_param("fipspicker_all_states_button_defaultchecked")),
     selectizeInput(inputId = ns("states_picked"), label = "Select State",
-                   selected = "",
+                   selected = EJAM:::global_or_param("default_states_picked"),
                    choices = NULL, # unique(cities_table$ST),
                    options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE),
                    multiple = T),
 
     checkboxInput(inputId = ns("all_counties_button"), "All Counties?", value = EJAM:::global_or_param("fipspicker_all_counties_button_defaultchecked")),
     selectizeInput(inputId = ns("counties_picked"), label = "Select Counties",
-                   selected = "",
+                   selected = EJAM:::global_or_param("default_counties_picked"),
                    # options = list(maxOptions = 254, closeAfterSelect = TRUE), # no limit by default. TX has the most of any 1 state, 254 Counties. But all in US >3k.
                    options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_counties_picked")), # to avoid displaying so many counties if you click "all in state" just to be able to query all places in state by name typed
                    choices = NULL, # unique(cities_table$countyname_ST),
@@ -190,7 +190,7 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
 
     checkboxInput(inputId = ns("all_cities_button"), "All Cities/Townships/Census Designated Places? [not enabled]", value = FALSE),
     selectizeInput(inputId = ns("cities_picked"), label = "Select Cities/Places",
-                   selected = "",
+                   selected = EJAM:::global_or_param("default_cities_picked"),
                    choices = NULL,       ## (40,000 PLACES !)# loads faster if NULL and then update it via server  . to cities_table$placename,
                    options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE),
                    multiple = T)
@@ -439,7 +439,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultchecked")) {
           counties_reset = as.vector(counties_choices) # all available
         } else {
-          counties_reset = ""
+          counties_reset = EJAM:::global_or_param("default_counties_picked")# ""
         }
         updateSelectizeInput(session = session, inputId = ("counties_picked"), server = TRUE,
                              choices = counties_choices, # probably all
