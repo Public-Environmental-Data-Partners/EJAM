@@ -20,7 +20,8 @@ Please see [ejanalysis.org/status](https://www.ejanalysis.org/status) for
 information on the latest versions of EJAM and EJSCREEN, 
 and links to documentation and the code repository.
 
-This version of the EJAM package was forked from the last EPA version in mid-2025.
+This version of EJAM is not associated with the US EPA.
+It is an independent project that initially was based on the USEPA/EJAM-open v2.32.4 tool. 
 The EPA version of the open source EJAM package repository was archived in mid-2025 
 with no plans for it to be further developed by EPA.
 Further development and any open source contributions will take place in 
@@ -39,7 +40,7 @@ Disclaimers and general information from EPA on open source were available as of
 
 ### Disclaimer for GitHub Repository Content
 
-This non-EPA version of EJAM was forked from the original EPA v2.32.4 version. For that EPA version, the following disclaimer applied, and the limitation on the seal and logo are still relevant to this non-EPA version:
+This non-EPA version of EJAM was initially based on or forked from the EPA v2.32.4 version. For that EPA version, the following disclaimer applied, and the limitation on the seal and logo are still relevant to this non-EPA version:
 
 - The United States Environmental Protection Agency (EPA) GitHub project code was provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity, confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA.
 

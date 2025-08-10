@@ -19,7 +19,6 @@
 #'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
 #'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
 #'
-#' @export
 #'
 state_from_sitetable <- function(sites, ignorelatlon = FALSE) {
 

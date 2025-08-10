@@ -16,7 +16,6 @@
 #' @return A workbook via openxlsx::writeData() ready to be saved via openxlsx::saveWorkbook()
 #'
 #' @keywords internal
-#' @export
 #'
 table_xls_format_api <- function(df, hyperlink_cols=NULL,
                            heatmap_colnames=NULL,

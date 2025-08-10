@@ -56,7 +56,7 @@ app_server <- function(input, output, session) {
     if (input$testing) {cat("testing == TRUE \n ")} else {cat("testing == FALSE \n----------------------\n")}
   })
   observe({
-    if (length(EJAM:::global_or_param("default_shiny.testmode")) > 0  ) { # allow params in run_app() to override default
+    if (length(EJAM:::global_or_param("default_shiny.testmode")) > 0  ) { # allow params in ejamapp() to override default
       if (!isTRUE(EJAM:::global_or_param("default_shiny.testmode"))) {
         updateRadioButtons(session = session, inputId = "shiny.testmode", selected = FALSE)
         # if (!isTRUE(getOption("shiny.testmode"))) {
@@ -382,13 +382,13 @@ app_server <- function(input, output, session) {
         if (input$testing) {cat("should not be here\n")}
       } else {
         #   ###################################### #
-        # if the file or object (spatial data.frame) was provided as shapefile param in run_app()
+        # if the file or object (spatial data.frame) was provided as shapefile param in ejamapp()
         if (input$testing) {cat("trying to read shapefile parameter\n")}
         shp <- try( shapefile_from_any(xshp, cleanit = FALSE), silent = TRUE)
         if (inherits(shp, "try-error")) {
           req(FALSE, cancelOutput = TRUE)
         }
-        ## if user provided run_app(shapefile=xyz) but did not set these also, they will not see their upload ready to run:
+        ## if user provided ejamapp(shapefile=xyz) but did not set these also, they will not see their upload ready to run:
         ## default_upload_dropdown = "upload"  --  input$default_ss_choose_method
         ## default_selected_type_of_site_upload = "latlon"  or  default_selected_type_of_site_upload = "SHP" --  input$ss_choose_method_upload
         #shiny::updateRadioButtons(inputId = "default_ss_choose_method", selected = "upload")
@@ -418,7 +418,7 @@ app_server <- function(input, output, session) {
       shp <- shapefile_from_any(infiles, cleanit = FALSE, inputname = input$ss_upload_shp$name)
     }
     #   ###################################### #
-    # do the rest whether it was uploaded or came via run_app()
+    # do the rest whether it was uploaded or came via ejamapp()
 
     # if shp contains point features, present message in app
     ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow
@@ -518,7 +518,7 @@ app_server <- function(input, output, session) {
   #############################################################################  #   #############################################################################  #
 
   #############################################################################  #
-  ## reactive: latlon (from table passed to run_app() as param) ####
+  ## reactive: latlon (from table passed to ejamapp() as param) ####
 
   data_up_tablepassed_latlon <- reactive({
 
@@ -527,12 +527,12 @@ app_server <- function(input, output, session) {
     req(sitepoints)
 
     ################################# #
-    prepare_table_from_run_app <- function(sitepoints, input_max_pts_upload, input_testing) {
+    prepare_table_from_ejamapp <- function(sitepoints, input_max_pts_upload, input_testing) {
 
       # handle R object or filepath
       sitepoints <- try(sitepoints_from_anything(sitepoints))
       if (inherits(sitepoints, "try-error")) {
-        if (input_testing) {cat("Error reading sitepoints from run_app() parameter \n")}
+        if (input_testing) {cat("Error reading sitepoints from ejamapp() parameter \n")}
         return(NULL)
       }
       if (all(sitepoints %in% 0) || is.null(sitepoints) || NROW(sitepoints) %in% 0 || !is.data.frame(sitepoints)) {
@@ -561,7 +561,7 @@ app_server <- function(input, output, session) {
     }
     ################################# #
 
-    sitepoints <- prepare_table_from_run_app(sitepoints, input_max_pts_upload = input$max_pts_upload, input_testing = input$testing)
+    sitepoints <- prepare_table_from_ejamapp(sitepoints, input_max_pts_upload = input$max_pts_upload, input_testing = input$testing)
     req(sitepoints, cancelOutput = TRUE) # stop if failed for any reason
     # ok, so allow Start button
 
@@ -576,10 +576,10 @@ app_server <- function(input, output, session) {
   data_up_latlon <- reactive({
 
     if (is.null(input$ss_upload_latlon)) {
-      # if nothing uploaded, check if latlon passed as parameter to run_app() in the form of "sitepoints" object
+      # if nothing uploaded, check if latlon passed as parameter to ejamapp() in the form of "sitepoints" object
       xsitepoints <- data_up_tablepassed_latlon()
       if (!is.null(xsitepoints)) {
-        ## if user provided run_app(sitepoints=xyz) but did not set these also, they will not see their upload ready to run:
+        ## if user provided ejamapp(sitepoints=xyz) but did not set these also, they will not see their upload ready to run:
         ## default_upload_dropdown = "upload"  --  input$default_ss_choose_method
         ## default_selected_type_of_site_upload = "latlon"  --  input$ss_choose_method_upload
         # shiny::updateRadioButtons(session = session, inputId = "default_ss_choose_method", selected = "upload")
@@ -1502,8 +1502,8 @@ app_server <- function(input, output, session) {
 
   ## create different initial (and minimum?) radius values for each site selection type
   ### input$radius_default is set in advanced tab by global_defaults_*.R and then based on user input if any
-  ### or via e.g., radius=3.1 or radius_shapefile=1 param that can be provided to run_app()
-
+  ### or via e.g., radius=3.1 or radius_shapefile=1 param that can be provided to ejamapp()
+  #minr = EJAM:::global_or_param("minradius")
   current_slider_min <- list(
     # constants defined in global_defaults_*.R
     'latlon' =  EJAM:::global_or_param("minradius"),

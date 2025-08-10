@@ -2,9 +2,11 @@
 #' Answers questions like how many sites have certain indicators >2x the state avg?
 #' 
 #' @description This function provides tables of summary stats but also text
-#' that explains those findings in plain English. It relies on [colcounter_summary_all()]
+#' that explains those findings in plain English.
 #' @aliases count_sites
-#' @details Helps provide stat summaries such as: 
+#' @details This function relies on [colcounter_summary_all()]
+#'
+#'  It helps provide stat summaries such as: 
 #' 
 #'  (x%) of these (sites) have 
 #'  

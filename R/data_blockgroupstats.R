@@ -18,7 +18,7 @@
 #'   It is a data.table of US Census blockgroups (not blocks).
 #'   With PR, and Island Areas
 #'
-#'   Column names include `bgfips`, `bgid` (for join to [blockwt] by/on `bgid`),
+#'   Column names include `bgfips`, `bgid` (for join to [?blockwts] by/on `bgid`),
 #'    `pop`, `pctlowinc`, etc.
 #'
 #'   To see definitions of the columns (indicators) and some basic info on each:

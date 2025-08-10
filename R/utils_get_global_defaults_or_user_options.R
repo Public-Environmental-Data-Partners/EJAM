@@ -1,22 +1,22 @@
 
-#' utility that reconciles/ consolidates user-defined params passed via run_app() and settings from global_defaults_ files
+#' utility that reconciles/ consolidates user-defined params passed via ejamapp() and settings from global_defaults_ files
 #'
-#' @param user_specified_options named list of any optonal arguments that were in the call to `run_app()`
-#' @param bookmarking_allowed same as `?shinyApp` enableBookmarking param
+#' @param user_specified_options named list of any optonal arguments that were in the call to [ejamapp()]
+#' @param bookmarking_allowed same as [shiny::shinyApp] enableBookmarking param
 #'
-#' @returns a list of global defaults or user options that run_app()
-#'   uses as the golem_opts parameter in `golem::with_golem_options()`
-#'   and that later can be retrieved by server or ui via `golem::get_golem_options()`
-#'   or via `global_or_param()` (which both do almost the same thing).
+#' @returns a list of global defaults or user options that [ejamapp()]
+#'   uses as the golem_opts parameter in [golem::with_golem_options()]
+#'   and that later can be retrieved by server or ui via [golem::get_golem_options()]
+#'   or via [global_or_param()] (which both do almost the same thing).
 #' @details
-#' This function, called by `run_app()`,
+#' This function, called by [ejamapp()],
 #' collects the shiny-app-related default settings that are defined in these places:
 #'
-#' 1. "user options" as parameters passed to `run_app()` by a user
+#' 1. "user options" as parameters passed to [ejamapp()] by a user
 #'
-#' 2. "global defaults" set in file `global_defaults_shiny_public.R`   -- and in that file, depends on value of isPublic if passed as a param to run_app()
+#' 2. "global defaults" set in file `global_defaults_shiny_public.R`   -- and in that file, depends on value of isPublic if passed as a param to [ejamapp()]
 #' 3. "global defaults" set in file `global_defaults_shiny.R`    -- sourced here
-#' 4. "global defaults" set in file `global_defaults_package.R`  -- sourced here but also initially by .onAttach()
+#' 4. "global defaults" set in file `global_defaults_package.R`  -- sourced here but also initially by [.onAttach()]
 #'
 #' and consolidates them all as a list, to be available to server/ui.
 #'
@@ -25,7 +25,7 @@
 get_global_defaults_or_user_options <- function(user_specified_options = NULL, bookmarking_allowed = 'url') {
 
   ############ #
-  # 1. parameters passed to run_app() by a user ####
+  # 1. parameters passed to ejamapp() by a user ####
   #
   # Save whatever options user specifies
   # Options unspecified may have default values in global_defaults_shiny_public.R
@@ -51,7 +51,7 @@ get_global_defaults_or_user_options <- function(user_specified_options = NULL, b
   }
   ############ #
 
-  ## global_defaults_package  should already be in global env from .onAttach(), but if one does rmost() or rm(list=ls()) and then tries run_app(), it is missing and app cannot find logo for summary report.
+  ## global_defaults_package  should already be in global env from .onAttach(), but if one does rmost() or rm(list=ls()) and then tries ejamapp(), it is missing and app cannot find logo for summary report.
   ## could re-load it here just in case that comes up:
   source(system.file("global_defaults_package.R", package = "EJAM"), local = FALSE)
 
@@ -89,7 +89,7 @@ get_global_defaults_or_user_options <- function(user_specified_options = NULL, b
   # 5. Also note that url-encoded bookmarked inputs can launch the app
   # and pass various input$ settings to the app, which would override
   # the default values of those input$ settings provided by the global_defaults_*.R
-  # and/or run_app() parameters handled by the function
+  # and/or ejamapp() parameters handled by the function
   # get_global_defaults_or_user_options().
 
   # not needed but ok:

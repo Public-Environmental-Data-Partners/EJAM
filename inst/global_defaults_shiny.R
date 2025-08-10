@@ -134,7 +134,7 @@ global_defaults_shiny <- list(
   stepradius = 0.05, # miles.  0.25 allows quarter miles. 0.10 allows tenths. 0.05 is awkwardly small but allows both quarter mile and tenth of mile.
 
   # input$radius_default   # initial value of slider
-  radius_default = 1,      # and can override this with run_app(radius_default=3.1), and also see effects of bookmarked advanced settings
+  radius_default = 1,      # and can override this with ejamapp(radius_default=3.1), and also see effects of bookmarked advanced settings
   radius_default_shapefile = 0,
 
   # input$max_miles        # current cap, top end of slider right now

@@ -56,24 +56,7 @@
   #        Otherwise these are only lazyloaded at the moment they are needed, making a user wait.
   #        blockgroupstats (>60 MB on disk, >200 MB in RAM) and usastats, statestats are essential.
   #        frs-related tables are huge and not always required - needed to look up regulated sites by ID.
-  #
-  #     These are the times at which you may want them to happen:
-  #
-  #     - when the EJAM package is loaded and/or attached
-  #       i.e., every time the source package is rebuilt it is loaded; but it is attached less often,
-  #       as when a coder uses require( ) in RStudio or script
-  #
-  #     - when the shiny app launches and runs the global_defaults_*.R scripts
-  #        i.e., only once a new user opens the app and their session starts,
-  #        and when a coder uses run_app(), either after library( ), or by using EJAM function run_app()
-  #
-  #     - once the app or coder actually needs a given dataset that is available for lazyLoad, which
-  #       works only for data in EJAM/data/ like frs.rda, frs_by_programid.rda, frs_by_sic.rda, etc.
-  #       See utils::data( package = 'EJAM' )
-  #
-  #     - only if manually obtained by coder via functions noted above.
-  #     \n\n"
-  # )
+
 
   # download BLOCK (not blockgroup) data, etc ####
 
@@ -130,7 +113,7 @@
   packageStartupMessage('For help using the EJAM package in RStudio:
                           ?EJAM
                         To launch shiny app locally:
-                          run_app()
+                          ejamapp()
                         ')
 
 }

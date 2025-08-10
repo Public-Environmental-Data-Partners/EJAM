@@ -33,6 +33,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ##    rundate: !r  lubridate::ymd_hms("2015-01-01 12:30:00")
 ```
 
+
 ```{r build_community_report}
 
 #library(EJAM) # note this overrides developer having just done load_all() !
@@ -59,17 +60,17 @@ build_community_report(in_shiny = params$in_shiny,
 )
 ```
 
+
 ```{r map, fig.align='center'}
 
 params$map
-
 ```
+
 
 ```{r summary_plot, out.width='90%', fig.align='center'}
 
 params$summary_plot
 ```
-
 
 
 ```{r footer_with_version_and_date}
@@ -82,9 +83,10 @@ if (inherits(desc, 'try-error')) {
   desc <- tryCatch(desc::desc(file = app_sys('DESCRIPTION')), error = function(e) {e})
   if (inherits(desc, 'try-error')) {stop('cannot find DESCRIPTION file for EJAM package')}
 }
+
 version <- ifelse('error' %in% class(desc), '', desc$get("Version"))
-## trim version number shown in report to Major.Minor
-version <- substr(version, start = 1, stop = gregexpr('\\.',version)[[1]][2] - 1)
+## nolonger will trim version number shown in report to Major.Minor
+# version <- substr(version, start = 1, stop = gregexpr('\\.',version)[[1]][2] - 1)
 
 current_date <- ifelse(
   isTRUE(getOption("shiny.testmode")),
@@ -97,4 +99,3 @@ HTML('
   </div>
   ')
 ```
-

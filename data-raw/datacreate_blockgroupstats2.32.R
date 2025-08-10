@@ -544,8 +544,8 @@ if (exists("bgej")) {
   all.equal(bgej, bgej_new, check.attributes = FALSE)
   # difference would be just the metadata
 }
-# This confirms that the early June 2025 version of bgej, in EJAM v2.32.4, had errors in ozone mostly but also other indicators,
-# so bgej in pkg should be replaced by redone bgej_new
+# This confirmed that the early June 2025 version of bgej, in EJAM v2.32.4, had errors in ozone mostly but also other indicators,
+# so bgej in pkg had to be replaced by a redone bgej_new
 
 ############################################################### #
 
