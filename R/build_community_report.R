@@ -166,7 +166,7 @@ build_community_report <- function(output_df,
 
     # 2. Envt & Demog table ####
 
-    generate_env_demog_header(), # title = 'Environmental and Residential Population Indicators'
+    generate_env_demog_header(),
 
     fill_tbl_full(output_df = output_df_rounded,
                   show_ratios_in_report = show_ratios_in_report

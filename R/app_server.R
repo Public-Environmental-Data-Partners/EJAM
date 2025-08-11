@@ -2651,9 +2651,9 @@ app_server <- function(input, output, session) {
       radioButtons(inputId = 'summ_bar_ind',
                    label = h5('Indicator type'),
                    choiceNames = c('Residential Populations', 'Environmental',
-                                   'Summary Index','Suppl. Summary Index'), # displayed versions of names
+                                   'EJ Index', 'Suppl. EJ Index'), # displayed versions of names
                    choiceValues = c('Demographic', 'Environmental',
-                                    'EJ Index','Supplementary Index'), # internal versions of name types as found in map_headernames
+                                    'EJ Index', 'Supplementary Index'), # internal versions of name types as found in map_headernames
                    selected = "Environmental")
     } else {
       radioButtons(inputId = 'summ_bar_ind',

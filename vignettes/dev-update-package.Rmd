@@ -13,11 +13,33 @@ editor_options:
     wrap: 80
 ---
 
-This document outlines the general development process for updating EJAM (for a new release of the package) or relocating it to a different repository, including the surrounding GitHub infrastructure. Also see the separate vignettes on [updating datasets](dev-update-datasets.html) and [updating documentation](dev-update-documentation.html).
 
-## If relevant, carefully change owners and names of repositories
+```{r, eval=TRUE, echo=FALSE, include=FALSE}
 
-- The name of the *package* is assumed to be the same as the name of the github *repository*, and there are many places where the package name is mentioned in vignettes/ articles, etc. Changing just the repo name is feasible as described here, but you would have to be careful about this distinction. You would have to globally find in files all hardcoded references to the old names, urls, etc. since there still are places where it does not check in DESCRIPTION for the repo name or assumes repo and package names are identical.
+code_reponame_with_owner <- EJAM:::repo_from_desc()           # "OWNER/REPONAME"
+code_reponame <- gsub(".*/", "", code_reponame_with_owner)    #       "REPONAME"
+code_reponame_url <- EJAM:::repo_from_desc(get_full_url = T)   
+# "https://github.com/OWNER/REPONAME"
+
+docs_reponame_with_owner <- EJAM:::repo_from_desc('github.io')# "OWNER/REPONAME"
+docs_reponame <- gsub(".*/", "", docs_reponame_with_owner)    #       "REPONAME"
+docs_reponame_url <- EJAM:::repo_from_desc('github.io', get_full_url = T) 
+# "https://OWNER.github.io/REPONAME"
+
+data_reponame_with_owner <- desc::desc(file = system.file(
+  "DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")     # "OWNER/REPONAME"
+data_reponame <- gsub(".*/", "", data_reponame_with_owner)    #       "REPONAME"
+data_reponame_url <- paste0("https://github.com/", data_reponame_with_owner) 
+# "https://github.com/OWNER/REPONAME"
+```
+
+This document outlines the general development process for updating EJAM (for a new release of the package) or relocating it to a different repository (repo name and/or github user name), or changing the full name of the tool. Also see the separate vignettes on [updating datasets](dev-update-datasets.html) and [updating documentation](dev-update-documentation.html).
+
+## If relevant, carefully change owners and names of repositories etc.
+
+- The full name/title of the web tool is used in several places and all of those should be reading the full name from where it is defined. The app title is stored in the DESCRIPTION file, and is available for vignettes, functions, etc. directly via `as.vector(desc::desc_get("Title"))`. After the package is attached, the name as potentially modified via global_defaults_package.R or parameters to `ejamapp()` is available as `EJAM:::global_or_param(".app_title")`
+
+- The name of the *package* (e.g., "`r code_reponame`") is assumed to be the same as the name of the github *repository*, and there are many places where the package name is mentioned in vignettes/ articles, etc. Changing just the repo name is feasible, as described here, but you would have to be careful about this distinction. You would have to globally find in files all hardcoded references to the old names, urls, etc. since there still are places where it does not check in DESCRIPTION for the repo name or assumes repo and package names are identical.
 
 If the package were renamed -- or especially if a new name were used for the repository or the owner of the repository changed -- several files would need to be updated for everything to work correctly. This is also true of the data repository.
 
@@ -40,7 +62,7 @@ If the package were renamed -- or especially if a new name were used for the rep
 
 ## Test the Installation Process
 
-To ensure that, after changes are made, EJAM can still be installed by users with various operating systems and versions of R, a workflow file, `.github/workflows/installation_test.yaml`, is triggered by any pushes to the `r repo` main branch. This file tests installation with the following matrix of options:
+To ensure that, after changes are made, the package can still be installed by users with various operating systems and versions of R, a workflow file, `.github/workflows/installation_test.yaml`, is triggered by any pushes to the `r code_reponame_with_owner` main branch. This file tests installation with the following matrix of options:
 
 1.  **OS**: Latest Ubuntu, Windows, macOS
 
@@ -48,7 +70,7 @@ To ensure that, after changes are made, EJAM can still be installed by users wit
 
 3.  **Install Method**: `remotes::install_url()` and `remotes::install_github()`
 
-But also note users may need to set up a PAT if they want to install from github - see article on installing.
+But also note users may need to set up a personal access token (PAT) if they want to install from github - [see article on installing for info on setting up a PAT](installing.html).
 
 ### Update the Test Installation Script
 

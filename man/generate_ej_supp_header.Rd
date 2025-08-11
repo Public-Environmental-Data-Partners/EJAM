@@ -2,15 +2,15 @@
 % Please edit documentation in R/community_report_helper_funs.R
 \name{generate_ej_supp_header}
 \alias{generate_ej_supp_header}
-\title{Build header for supplemental summary indexes in community report}
+\title{Build header for supplemental summary / EJ indexes in community report}
 \usage{
-generate_ej_supp_header(title = "SUPPLEMENTAL INDEXES")
+generate_ej_supp_header(title = "SUPPLEMENTAL EJ INDEXES")
 }
 \arguments{
 \item{title}{title}
 }
 \description{
-Build header for supplemental summary indexes in community report
+Build header for supplemental summary / EJ indexes in community report
 }
 \seealso{
 used by \code{\link[=build_community_report]{build_community_report()}}

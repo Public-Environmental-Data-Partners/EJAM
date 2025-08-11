@@ -33,6 +33,7 @@ Identify US State that each site is in (given ST, lat/lon, or FIPS)
   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
 
+
 }
 \seealso{
 \code{\link[=state_from_blockid_table]{state_from_blockid_table()}} \code{\link[=state_per_site_for_doaggregate]{state_per_site_for_doaggregate()}}

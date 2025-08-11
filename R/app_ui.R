@@ -603,7 +603,7 @@ app_ui  <- function(request) {
                                             tabPanel(id = "plot_average",
                                                      title = 'Plot Average Scores',
                                                      h4('About this Chart'),
-                                                     helpText('These charts show how each residential population group and environmental stressor, in the analyzed locations, compares to its US average. A Summary Index combines an environmental indicator with the Demog. Index (The Summary Index is what EJScreen called an EJ Index).'),
+                                                     helpText('These charts show how each residential population group and environmental stressor, in the analyzed locations, compares to its US average. A Summary/ EJ Index combines an environmental indicator with the Demog. Index (The Summary Index is what EJScreen called an EJ Index).'),
 
                                                      wellPanel(
                                                        style = 'width: 100%;',
@@ -1176,7 +1176,7 @@ app_ui  <- function(request) {
                                      selected = EJAM:::global_or_param("default_need_proximityscore")),
 
                  shiny::radioButtons(inputId = "include_ejindexes",
-                                     label = "Need Summary Indexes",
+                                     label = "Need EJ Indexes",
                                      choices = list(Yes = TRUE, No = FALSE ),
                                      selected = EJAM:::global_or_param("default_include_ejindexes")),
 

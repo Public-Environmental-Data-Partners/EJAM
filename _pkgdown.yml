@@ -13,17 +13,17 @@ news:
   cran_dates: false
 footer:
   structure:
-    left: [draftmsg]
+    left: [datefooter]
     right: [package, versionmsg]
   components:
-    draftmsg: August 2025
+    datefooter: August 2025
     versionmsg: Version 2.32.6
 development:
   mode: release
   destination:
   version_label: warning
 home:
-  title: EJAM Environmental and Residential Population Analysis Multisite
+  title: EJAM Environmental Justice Analysis Multisite tool
   description: Webapp and tools summarizing residential population and environmental data for hundreds of places quickly and accurately
   sidebar:
     structure: [dev, citation, license, community]
@@ -287,7 +287,7 @@ reference:
   contents:
   - count_sites_with_n_high_scores
   - count_high_scores_by_site
-  - colcounter_summary_all 
+  - colcounter_summary_all
   - popshare_at_top_n
   - popshare_at_top_x_pct
   - popshare_p_lives_at_what_n

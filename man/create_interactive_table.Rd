@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_interactive_table.R
 \name{create_interactive_table}
 \alias{create_interactive_table}
-\title{create_interactive_table - function that creates interactive html version of site by site table in app}
+\title{unused now? create_interactive_table - function that creates interactive html version of site by site table in app}
 \usage{
 create_interactive_table(data_processed, testing)
 }

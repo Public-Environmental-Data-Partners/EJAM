@@ -4,7 +4,7 @@
 \alias{generate_ej_header}
 \title{Build header for Summary index table in community report}
 \usage{
-generate_ej_header(title = "Summary Indexes")
+generate_ej_header(title = "EJ Indexes")
 }
 \arguments{
 \item{title}{title}

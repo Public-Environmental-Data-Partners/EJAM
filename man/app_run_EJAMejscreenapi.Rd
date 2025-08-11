@@ -39,9 +39,4 @@ See \code{?golem::get_golem_options} for more details}
 \description{
 Launch EJAM ejscreenapi web app in RStudio
 }
-\details{
-app_run_EJAM()                 is like run_app() for the EJAM shiny app run from the EJAM package
-
-app_run_EJAMejscreenapi()      is like run_app() for the EJScreen API shiny app run from the EJAM package
-}
 \keyword{internal}

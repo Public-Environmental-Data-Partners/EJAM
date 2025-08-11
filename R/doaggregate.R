@@ -413,7 +413,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     dataload_dynamic('bgej') # load it on demand when needed
     # if failed to find it, give up
     if (!exists("bgej")) {
-      warning("include_ejindexes was set to TRUE but the (very large) bgej file was not found, so Summary Indexes will not be returned")
+      warning("include_ejindexes was set to TRUE but the (very large) bgej file was not found, so EJ Indexes will not be returned")
       include_ejindexes <- FALSE
     } else {
       message('loaded bgej data because include_ejindexes = TRUE')

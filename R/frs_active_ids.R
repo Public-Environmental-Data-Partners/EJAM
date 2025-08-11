@@ -12,14 +12,16 @@
 #'   assuming parameter active=TRUE, which is the default
 #' @seealso [frs_inactive_ids()]  [frs_update_datasets()]
 #'
-#' @examples \donttest{
-#'   cat( 'This takes a while for the download.\n')
-#'   # frs <- frs_get()
-#'   # closedid <-  frs_active_ids(active=FALSE) # <- frs_inactive_ids()
-#'   # frs <- frs_drop_inactive(frs, closedid = closedid)
-#'   # usethis::use_data(frs, overwrite = TRUE)
+#' @examples
+#'   cat( 'The examples take a while for the download.\n')
+#'  \dontrun{
+#'   frs <- frs_get()
+#'   closedid <-  frs_active_ids(active=FALSE) # <- frs_inactive_ids()
+#'   frs <- frs_drop_inactive(frs, closedid = closedid)
+#'   usethis::use_data(frs, overwrite = TRUE)
 #'   }
-#'   @keywords internal
+#'
+#' @keywords internal
 #'
 frs_active_ids <- function(active=TRUE, closecodes = c(
   "CLOSED", 'PERMANENTLY CLOSED', 'PERMANENTLY SHUTDOWN', 'INACTIVE','TERMINATED','N',

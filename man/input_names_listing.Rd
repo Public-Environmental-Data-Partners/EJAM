@@ -13,6 +13,9 @@ input_names_listing(file = "./R/app_server.R")
 character vector of ids of inputs like x,y,z if it found input$x input$y input$z
 }
 \description{
-See appsilon pkg shiny.info now
+See appsilon pkg shiny.info now.
+}
+\details{
+See dev-app-settings.Rmd also
 }
 \keyword{internal}

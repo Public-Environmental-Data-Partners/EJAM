@@ -38,7 +38,7 @@ thresholds as X times the average.
 If using percentiles as thresholds, set text_suffix = "."
 or text_suffix = "th percentile in the state." for example}
 
-\item{text_indicatortype}{can be "Summary Indexes" etc.}
+\item{text_indicatortype}{can be "Summary Indexes" "EJ Indexes" etc.}
 
 \item{quiet}{whether to print findings to console}
 }
@@ -48,10 +48,12 @@ stats is a 3-dimensional array of numbers. See dimnames(output$stats).
 }
 \description{
 This function provides tables of summary stats but also text
-that explains those findings in plain English. It relies on \code{\link[=colcounter_summary_all]{colcounter_summary_all()}}
+that explains those findings in plain English.
 }
 \details{
-Helps provide stat summaries such as:
+This function relies on \code{\link[=colcounter_summary_all]{colcounter_summary_all()}}
+
+It helps provide stat summaries such as:
 
 (x\%) of these (sites) have
 
@@ -61,7 +63,7 @@ at least (R) times the (State/National average)
 }
 \examples{
 # out <- ejamit(testpoints_100, radius = 1)
-out <- testoutput_ejamit_1000pts_1miles 
+out <- testoutput_ejamit_1000pts_1miles
 x <- out$results_bysite
 x <- setDF(copy(x))
 ratio_data <- x[, names_d_ratio_to_state_avg]
@@ -88,17 +90,17 @@ pctile_data <- pctile_data[, ..names_ej_state_pctile]
 pctile_benchmarks <- 90
 y <- count_sites_with_n_high_scores(pctile_data, pctile_benchmarks,
   indicator_type = "percentile",
-  text_indicatortype = "Summary Indexes", xwide = "statewide" 
+  text_indicatortype = "Summary Indexes", xwide = "statewide"
   )
 
 # At how many sites is at least one of these indicators at least 90th pctile nationwide?
 sum(rowMaxs2(data.frame(pctile_data)) >= 90, na.rm = T)
-## or 
-count_sites_with_n_high_scores(pctile_data, 90, 
-  xwide = "nationwide", quiet = T)$stats[count = "1", cut = "90", stat = "cum"] 
+## or
+count_sites_with_n_high_scores(pctile_data, 90,
+  xwide = "nationwide", quiet = T)$stats[count = "1", cut = "90", stat = "cum"]
 
 # see most striking stat only
-mx <- count_sites_with_n_high_scores(pctile_data, 
+mx <- count_sites_with_n_high_scores(pctile_data,
   thresholds = 1:100, quiet = TRUE,
   text_indicatortype = "Summary Indexes",
   text_suffix = "th percentile in the state.")

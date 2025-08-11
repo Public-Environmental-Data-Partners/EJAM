@@ -2,8 +2,7 @@
 % Please edit documentation in R/utils_global_or_param.R
 \name{global_or_param}
 \alias{global_or_param}
-\title{utility for server/ui to check value of a global default setting or user-defined setting
-This and get_golem_options() are very similar tools, useful in server and ui}
+\title{utility for server/ui to check value of a global default setting or user-defined setting}
 \usage{
 global_or_param(vname)
 }
@@ -16,25 +15,31 @@ value of the param, or NULL if not found
 }
 \description{
 utility for server/ui to check value of a global default setting or user-defined setting
-This and get_golem_options() are very similar tools, useful in server and ui
 }
 \details{
-See help for \code{get_global_defaults_or_user_options()}
+This and \code{\link[=get_golem_options]{get_golem_options()}} are very similar tools, useful in server and ui.
+See help for \code{\link[=get_global_defaults_or_user_options]{get_global_defaults_or_user_options()}}
 
-\code{global_or_param()} is used a lot in server and also ui (while sometimes
-\code{golem::get_golem_options()} had been used instead but now is not, for the same purpose).
+\code{\link[=global_or_param]{global_or_param()}} is used a lot in server and also ui (while sometimes
+\code{\link[golem:get_golem_options]{golem::get_golem_options()}} had been used instead but now is not, for the same purpose).
 It is used generally in ui to set default values for params that
 are set in the global_defaults_ files and often can be
 modified in the advanced tab. To provide alternative values as
-params passed to \code{run_app()} you would have to understand the options
+params passed to \code{\link[=ejamapp]{ejamapp()}} you would have to understand the options
 by seeing what they are defaulted to in the files and how they are used
-as parameters in ui or server. See ?run_app()
+as parameters in ui or server. See \code{\link[=ejamapp]{ejamapp()}}
 
-This is much like \code{golem::get_golem_options()}
-but  \code{global_or_param()} is more flexible/robust since it will,
+This is much like \code{\link[golem:get_golem_options]{golem::get_golem_options()}}
+but \code{\link[=global_or_param]{global_or_param()}} is more flexible/robust since it will,
 if vname is not already defined as found
-by \code{golem::get_golem_options()}
-then as a backup, check if the param called vname is
+by \code{\link[golem:get_golem_options]{golem::get_golem_options()}}
+
+then as second best, see if it was defined in global_defaults_package
+and just not yet stored as golem options because the shiny app has not yet launched.
+That lets any function or vignette find the values defined in global_defaults_package.R
+even if a shiny app has not yet launched.
+
+Then as a last resort, check if the param called vname is
 defined in the search path such as in the
 calling or global envt already somehow,
 and return that value if it exists.

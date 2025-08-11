@@ -10,6 +10,13 @@
 
 global_defaults_package <- list(
 
+  ### .app_title ####
+  # app title for shiny and for documentation files
+  # now defined in global_defaults_package.R
+  # "Environmental and Residential Population Analysis Multisite tool",
+  # "Environmental Justice Analysis Multisite tool",
+  .app_title = as.vector(desc::desc_get("Title")),
+
   ### logo ####
   # top level header
 

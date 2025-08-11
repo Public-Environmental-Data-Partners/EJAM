@@ -2,35 +2,48 @@
 
 ## Web App
 
-- [ejanalysis.org](https://www.ejanalysis.org) provides links to and info about EJSCREEN and EJAM:
+- Language related to "Environmental Justice"
+
+  - Changed name of tool back to "Environmental Justice Analysis Multisite" tool (from "Environmental and Residential Population Analysis Multisite" tool, the name used in early 2025 through July 2025)
+  - Restored some text: "EJ Indexes" now once again refers to what were called "Summary Indexes" in early 2025 through July 2025. "Supplementary EJ Indexes" is similarly used once again. 
+  - Other language related to "environmental justice" was edited in early 2025 at EPA in response to an Executive Order, but has not been changed back to its original language even in this non-EPA version of the package. For anyone interested, notes on those changes were archived in a file saved as "EJAM/data-raw/0_generic_terms_notes.R".
+
+- Shortcuts via ejanalysis.org/
+
+  - [ejanalysis.org](https://www.ejanalysis.org) or [ejanalysis.org/ejam](https://www.ejanalysis.org/ejam) is an easy alias to remember, and has links to EJAM and EJSCREEN.
   - [ejanalysis.org/ejamapp](https://www.ejanalysis.org/ejamapp) will launch a live version of the EJAM web app
   - [ejanalysis.org/ejscreenapp](https://www.ejanalysis.org/ejscreenapp) will launch a live version of the EJSCREEN web app
-- Improved the `About page` (added links to ejanalysis.org, etc.).
-- Reorganized the Advanced settings tab, which now has more options and settings that can be changed. That tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.
+  - [A new emailing list can be joined here](https://www.ejanalysis.org/about)
 
-## Web App Customization
+- Web App Documentation
 
-Made a number of changes to allow web app default settings to be changed and other inputs to be specified. This allows the following:
+  - Improved the `About page` (added links to ejanalysis.org, etc.).
+  - Collected copies of old user guides to inform a new one that could be developed
 
-- Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are.
+- Web App Customization
 
-- Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See `ejamapp()` for examples. 
+  - Made a number of changes to allow web app default settings to be changed and other inputs to be specified. This allows the following:
 
-- Anyone hosting a version of the EJAM web app can customize it more easily, e.g., to use a different logo, different default radius, different options for how to select sites, etc.
+    - Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are.
+    - Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See `ejamapp()` for examples.
+    - Anyone hosting a version of the EJAM web app can customize it more easily, e.g., to use a different logo, different default radius, different options for how to select sites, etc.
+
+  - Reorganized the Advanced settings tab, which now has more options and settings that can be changed. That tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.
+
 
 ## R/RStudio Users (Analysts and Developers)
 
-- [ejanalysis.org](https://www.ejanalysis.org) or [ejanalysis.org/ejam](https://www.ejanalysis.org/ejam) is an easy alias to remember, and has links to documentation/code/etc.
+- The app is now once again called the "Environmental Justice Analysis Multisite tool" and that title is stored in the DESCRIPTION file, and is available for vignettes, functions, etc. directly via `as.vector(desc::desc_get("Title"))`. After the package is attached, the name as potentially modified via global_defaults_package.R or parameters to `ejamapp()` is available as `EJAM:::global_or_param(".app_title")`
+
+- [ejanalysis.org](https://www.ejanalysis.org) or [ejanalysis.org/ejam](https://www.ejanalysis.org/ejam) is an easy alias to remember, and has links to documentation/code/etc. (The .org and .com versions of the URL are synonymous, and these shortcuts/redirects are mostly case-insensitive)
   - [A new emailing list can be joined here](https://www.ejanalysis.org/about)
   - [ejanalysis.org/docs](https://www.ejanalysis.org/docs) or [ejanalysis.org/ejamdocs](https://www.ejanalysis.org/ejamdocs) directs you to the documentation for the EJAM package, including articles and vignettes.
   - [ejanalysis.org/repo](https://www.ejanalysis.org/repo) or [ejanalysis.org/ejamrepo](https://www.ejanalysis.org/ejamrepo) directs you to the GitHub page for the EJAM package.
-  - [ejanalysis.org/ejamapp](https://www.ejanalysis.org/ejamapp) launches a live version of the EJAM web app.
-  - [ejanalysis.org/ejscreenapp](https://www.ejanalysis.org/ejamapp) launches a live version of the EJSCREEN web app.
-- [GitHub issues can be submitted here](https://github.com/ejanalysis/EJAM/issues)
 
+- [GitHub issues can be submitted here](https://github.com/ejanalysis/EJAM/issues)
+- Simplified the `README`
 - Improved the [article on how to install the package](../articles/installing.html).
 - `ejamapp()` is the new name (alias) for `run_app()`
-- Fixed a bug where `isPublic` parameter in `ejamapp()` was being ignored.
 - Improved web app ui/server code, allowing many options and defaults to be provided as parameters to `ejamapp()`.
 - Added many examples to `ejamapp()` documention showing how to change defaults and options. You can now
     - Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)
@@ -38,9 +51,10 @@ Made a number of changes to allow web app default settings to be changed and oth
     - Provide a table of lat/lon coordinates to preload at launch
     - Provide a shapefile to preload upon launch
     - etc.
+- Fixed a bug where `isPublic` parameter in `ejamapp()` was being ignored.
+- Fixed a bug where threshold-related parameters passed to `ejamapp()` were being ignored in the latlon case.
 - Drafted new article with technical details: [Defaults and Custom Settings for the Web App](../articles/dev-app-settings.html)
 - Changed how Advanced tab visibility is controlled ("default_can_show_advanced_settings" and "default_show_advanced_settings" set initial values of shiny inputs of the same names)
-- Fixed a bug where threshold-related parameters passed to `ejamapp()` were being ignored in the latlon case.
 - Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in ejamapp(). For example, radius is now settable by `ejamapp(radius_default=3.1)`
   - the old global_defaults_ variable "default_default_miles" is now called "radius_default"
   - the old `input$default_miles` is now called `input$radius_default`

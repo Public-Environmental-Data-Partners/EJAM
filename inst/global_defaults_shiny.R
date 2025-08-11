@@ -25,8 +25,7 @@ rm(ver, ejam_app_version)
 ################################################################## #
 
 ## ------------------------ Title of App ####
-
-app_title <- "Environmental and Residential Population Analysis Multisite tool"
+# now defined in global_defaults_package.R
 
 ## ------------------------ logo ####
 
@@ -61,7 +60,7 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
 global_defaults_shiny <- list(
 
   ## .app_title ####
-  .app_title = app_title,
+  # defined in global_defaults_package.R
 
   ## logos ####
   aboutpage_logo = aboutpage_logo,
@@ -640,7 +639,7 @@ aboutpage_texts <- list(
     p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting reports for hundreds or thousands of places, all at the same time."),
     p("This provides interactive results and a formatted, ready-to-share report with tables, graphics, and a map. The report can provide information about communities near any of the industrial facilities on a list, for example."),
 
-    p("This version of the Environmental and Residential Population Analysis Multisite tool (EJAM) is not associated with the United States Environmental Protection Agency (US EPA), but has its roots in open source code that was originally developed at EPA."),
+    p(paste0("This version of the ", EJAM:::global_or_param('.app_title'), " (EJAM) is not associated with the United States Environmental Protection Agency (US EPA), but has its roots in open source code that was originally developed at EPA.")),
 
     h4("For more information about ",
        a(href = "https://www.ejanalysis.org/status", "the evolving status of EJSCREEN & EJAM in 2025",
@@ -922,7 +921,7 @@ html_fmts <- list(
       # and below in THIN HEADER ROW
       ## but not done this way:   tags$title('EJAM | US EPA'),
 
-      tags$meta(name = "application-name", content = app_title),
+      tags$meta(name = "application-name", content = EJAM:::global_or_param('.app_title')),
 
       ## Favicons can be specified in (and this would conflict with) golem_add_external_resources() within app_ui.R ####
 
@@ -1026,7 +1025,7 @@ html_fmts <- list(
 
                   ### >> app_title  ####
 
-                  app_title,
+                  EJAM:::global_or_param('.app_title'),
 
                   '</span>',
 

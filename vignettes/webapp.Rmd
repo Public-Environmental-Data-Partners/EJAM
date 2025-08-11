@@ -31,7 +31,7 @@ knitr::opts_chunk$set(eval = FALSE)
 
 EJAM's toolkit can be used to host a web application. The web app provides public access to batches of reports, with rapid multisite analysis, by leveraging the EJAM toolkit. 
 
-See https://www.ejanalysis.com/ejam on where to find a public, non-EPA version of the EJAM web app.
+See ejanalysis.org/ejam on where to find a public, non-EPA version of the EJAM web app.
 
 The version designed for use by the general public was specifically configured for non-expert users, so it does not include some less-frequently-used, complex features. More features are available in the web app version that was invoked using "isPublic=FALSE." Those needing even more tools -- the full set of complex analytic features -- can find them in the open source R package described below.
 

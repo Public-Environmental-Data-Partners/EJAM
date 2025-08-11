@@ -61,4 +61,5 @@ Like latlon_from_anything() but this also adds a ejam_uniq_id column
  pts = system.file("testdata/latlon/testpoints_10.xlsx", package = "EJAM")
  sitepoints_from_any(pts)
  }
+
 }

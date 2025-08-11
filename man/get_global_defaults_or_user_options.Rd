@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_get_global_defaults_or_user_options.R
 \name{get_global_defaults_or_user_options}
 \alias{get_global_defaults_or_user_options}
-\title{utility that reconciles/ consolidates user-defined params passed via run_app() and settings from global_defaults_ files}
+\title{utility that reconciles/ consolidates user-defined params passed via ejamapp() and settings from global_defaults_ files}
 \usage{
 get_global_defaults_or_user_options(
   user_specified_options = NULL,
@@ -10,27 +10,27 @@ get_global_defaults_or_user_options(
 )
 }
 \arguments{
-\item{user_specified_options}{named list of any optonal arguments that were in the call to \code{run_app()}}
+\item{user_specified_options}{named list of any optonal arguments that were in the call to \code{\link[=ejamapp]{ejamapp()}}}
 
-\item{bookmarking_allowed}{same as \code{?shinyApp} enableBookmarking param}
+\item{bookmarking_allowed}{same as \link[shiny:shinyApp]{shiny::shinyApp} enableBookmarking param}
 }
 \value{
-a list of global defaults or user options that run_app()
-uses as the golem_opts parameter in \code{golem::with_golem_options()}
-and that later can be retrieved by server or ui via \code{golem::get_golem_options()}
-or via \code{global_or_param()} (which both do almost the same thing).
+a list of global defaults or user options that \code{\link[=ejamapp]{ejamapp()}}
+uses as the golem_opts parameter in \code{\link[golem:with_golem_options]{golem::with_golem_options()}}
+and that later can be retrieved by server or ui via \code{\link[golem:get_golem_options]{golem::get_golem_options()}}
+or via \code{\link[=global_or_param]{global_or_param()}} (which both do almost the same thing).
 }
 \description{
-utility that reconciles/ consolidates user-defined params passed via run_app() and settings from global_defaults_ files
+utility that reconciles/ consolidates user-defined params passed via ejamapp() and settings from global_defaults_ files
 }
 \details{
-This function, called by \code{run_app()},
+This function, called by \code{\link[=ejamapp]{ejamapp()}},
 collects the shiny-app-related default settings that are defined in these places:
 \enumerate{
-\item "user options" as parameters passed to \code{run_app()} by a user
-\item "global defaults" set in file \code{global_defaults_shiny_public.R}   -- and in that file, depends on value of isPublic if passed as a param to run_app()
+\item "user options" as parameters passed to \code{\link[=ejamapp]{ejamapp()}} by a user
+\item "global defaults" set in file \code{global_defaults_shiny_public.R}   -- and in that file, depends on value of isPublic if passed as a param to \code{\link[=ejamapp]{ejamapp()}}
 \item "global defaults" set in file \code{global_defaults_shiny.R}    -- sourced here
-\item "global defaults" set in file \code{global_defaults_package.R}  -- sourced here but also initially by .onAttach()
+\item "global defaults" set in file \code{global_defaults_package.R}  -- sourced here but also initially by \code{\link[=.onAttach]{.onAttach()}}
 }
 
 and consolidates them all as a list, to be available to server/ui.

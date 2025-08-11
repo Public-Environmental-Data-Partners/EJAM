@@ -86,7 +86,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
 
     ejcols <- c(names_ej, names_ej_state, names_ej_supp, names_ej_supp_state)
     if (!all(ejcols %in% names(mydf))) {
-      warning('Not all summary index columns found. Using NA values for all summary indexes in map popups.')
+      warning('Not all EJ index columns found. Using NA values for all EJ indexes in map popups.')
       ejna <- data.frame(matrix(ncol = length(ejcols), nrow = NROW(mydf)))
       names(ejna) <- ejcols
       mydf <- cbind(mydf, ejna)

@@ -124,12 +124,23 @@ in_the_places_analyzed <- {
 
 # Executive Summary
 
-EPA has conducted an analysis to characterize baseline environmental
+PLACEHOLDER/SAMPLE TEXT: 
+
+An analysis was conducted to characterize baseline environmental
 conditions faced by communities living near `r params$sectorname_short`.
+
   or 
-The United States Environmental Protection Agency (US EPA) analyzed
-baseline residential population and environmental conditions in communities living
-`r params$where`. The analysis used EPA's EJAM tool and EJScreen version
+The United States Environmental Protection Agency (US EPA) 
+  or 
+We 
+
+analyzed baseline residential population and environmental conditions in communities living
+`r params$where`. 
+or
+  in communities living
+`r params$within_x_miles_of` selected sites.
+
+The analysis used the [EJAM tool](https://ejanalysis.org/ejamdocs) and EJScreen version
 `r params$ejscreen_version` with demographic data based on the Census
 Bureau's `r params$acs_version` American Community Survey (ACS).
 
@@ -227,7 +238,7 @@ if (params$testmode) {
 
 ## Estimating locations and residential population counts
 
-The Environmental and Residential Population Analysis Multisite tool (EJAM) was used to develop this analysis. This tool is a user-friendly web app that can summarize residential population and environmental conditions for any list of places in the nation.
+The `r EJAM:::global_or_param(".app_title")` (EJAM) was used to develop this analysis. This tool is a user-friendly web app that can summarize residential population and environmental conditions for any list of places in the nation.
 
 ### Spatial resolution of data
 
@@ -781,7 +792,7 @@ Residents / conditions ...
 -   EDGAR Electronic Data Gathering, Analysis, and Retrieval database
     (SEC)
 -   EGU electricity generating unit in a power plant
--   EJAM The Environmental and Residential Population Analysis Multisite tool
+-   EJAM `r EJAM:::global_or_param(".app_title")`
 -   ELG effluent limitation guideline
 -   EO Executive Order
 -   EP313 EPCRA Section 313 (established TRI)

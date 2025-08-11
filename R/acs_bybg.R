@@ -138,7 +138,7 @@ acs_bybg <- function(
     cache_table = FALSE,
     year = NULL,
     output = "wide",
-    state = stateinfo$ST, # has DC,PR, but not "AS" "GU" "MP" "UM" "VI" # state.abb from datasets pkg would lack DC and PR # stateinfo2 would add "US"
+    state = stateinfo$ST, # has DC, PR, but not "AS" "GU" "MP" "UM" "VI" # state.abb from datasets pkg would lack DC and PR # stateinfo2 would add "US"
     county = NULL,
     zcta = NULL,
     geometry = FALSE,

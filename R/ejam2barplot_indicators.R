@@ -33,7 +33,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
                       'Demographic'   = c(names_d, names_d_subgroups),
                       'Environmental' = names_e,
                       'EJ Index'            = names_ej, # aka Summary Index
-                      'Supplementary Index' = names_ej_supp # aka Suppl. Summary Index
+                      'Supplementary EJ Index' = names_ej_supp # aka Suppl. Summary Index
   )
 
   ## set indicator group friendly names - use shortlabel

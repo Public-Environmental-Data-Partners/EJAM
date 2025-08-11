@@ -27,13 +27,13 @@ knitr::opts_chunk$set(eval = FALSE)
 # https://r-pkgs.org/vignettes.html
 ```
 
-# The Environmental and Residential Population Analysis Multisite tool
+# The `r as.vector(desc::desc_get("Title"))`
 
 ## EJAM is a web app but also a toolkit
 
-The Environmental and Residential Population Analysis Multisite tool is both a web app and a software toolkit:
+The `r as.vector(desc::desc_get("Title"))` (EJAM) is both a web app and a software toolkit:
 
-- [EJAM can be used as a web app](webapp.html), providing a simple user interface that lets anyone quickly see the results of a basic analysis. EJAM is what powered the EJScreen Multisite Tool web application.
+- [EJAM can be used as a web app](webapp.html), providing a simple user interface that lets anyone quickly see the results of a basic analysis. EJAM is what powered the EJScreen Multisite Tool web application in late 2024/early 2025.
 
 - EJAM is also an open-source software package (and local web app) for developers and analysts. It is an R Package written in the [R programming language](https://www.r-project.org/), with source code on GitHub. It provides functions to help analysts work with block group data, points, and polygons, to very quickly aggregate and compare large numbers of locations.
 

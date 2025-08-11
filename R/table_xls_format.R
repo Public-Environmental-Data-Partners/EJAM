@@ -1008,6 +1008,10 @@ vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
       'ratio_Summary Index',                "mistyrose3",  #  '#FFD700', # "gold"
       "usratio_Summary Index",                "mistyrose3",  #   '#FFD700', # "gold"
       "stateratio_Summary Index",             "mistyrose2",  #  '#FFA500', # "orange"
+# aka
+'ratio_EJ Index',                "mistyrose3",  #  '#FFD700', # "gold"
+"usratio_EJ Index",                "mistyrose3",  #   '#FFD700', # "gold"
+"stateratio_EJ Index",             "mistyrose2",  #  '#FFA500', # "orange"
 
 
       'percentile_other',              'gray95', #
@@ -1025,7 +1029,10 @@ vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
       ' percentile_Summary Index',              'mistyrose3', #  "lightblue"
       "uspctile_Summary Index",                'mistyrose3', #  "lightblue"
       "statepctile_Summary Index",            "mistyrose2"   , #
-
+# aka
+' percentile_EJ Index',              'mistyrose3', #  "lightblue"
+"uspctile_EJ Index",                'mistyrose3', #  "lightblue"
+"statepctile_EJ Index",            "mistyrose2"   , #
 
       'raw data for indicator_other' , "gray95", # "gray90", # '#FFD700', # "orange"
       "raw_other",                    "gray95", # "gray90", # # '#FFD700', # "orange"
@@ -1046,6 +1053,11 @@ vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
       "raw_Summary Index",                    "mistyrose4", # "gray90", # # '#FFD700', # "orange"
       "usraw_Summary Index",                   "mistyrose4", # "gray90", #  '#FFD700', # "orange"
       "stateraw_Summary Index",                "mistyrose3", # '#FFA500', # "orange"
+# aka
+'raw data for indicator_EJ Index' , "mistyrose4", # "gray90", # '#FFD700', # "orange"
+"raw_EJ Index",                    "mistyrose4", # "gray90", # # '#FFD700', # "orange"
+"usraw_EJ Index",                   "mistyrose4", # "gray90", #  '#FFD700', # "orange"
+"stateraw_EJ Index",                "mistyrose3", # '#FFA500', # "orange"
 
 
       'average_other',                 "grey70" , # '#90EE90', # "lightgreen"
@@ -1063,6 +1075,10 @@ vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
       'average_Summary Index',                 "mistyrose4" , # '#90EE90', # "lightgreen"
       "usavg_Summary Index",                  "mistyrose4" ,  #  '#90EE90', # "lightgreen"
       "stateavg_Summary Index",              "mistyrose3" ,
+# aka
+'average_EJ Index',                 "mistyrose4" , # '#90EE90', # "lightgreen"
+"usavg_EJ Index",                  "mistyrose4" ,  #  '#90EE90', # "lightgreen"
+"stateavg_EJ Index",              "mistyrose3" ,
 
 
       'count demog_other',               "white",
@@ -1075,7 +1091,10 @@ vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
       'misc_Demographic',                "white",   # '#BEBEBE'  # "gray"
 
       'count demog_Summary Index',             'lightcyan4', #
-      'misc_Summary Index',                "lightcyan4"
+      'misc_Summary Index',                "lightcyan4",
+# aka
+'count demog_EJ Index',             'lightcyan4', #
+'misc_EJ Index',                "lightcyan4"
 
     ),
     ncol = 2, byrow = TRUE
@@ -1180,7 +1199,7 @@ varname2varcategory_ejam <- function(varname, varnameinfo) {
   cur_matches <- varnameinfo[match(varname, varnameinfo[ , 'rname'], nomatch = NA) , 'varcategory']
   cur_matches[cur_matches == 'n'] <- NA
   cur_matches[cur_matches ==  ""] <- NA
-  cur_matches <- gsub("EJ Index", "Summary Index", cur_matches)
+  cur_matches <- gsub("EJ Index", "Summary Index", cur_matches) # *** now should work with either terminology
   return(cur_matches)
 }
 ################################################################################# #

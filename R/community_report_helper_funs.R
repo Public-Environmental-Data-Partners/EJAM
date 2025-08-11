@@ -248,13 +248,13 @@ fill_tbl_full_ej <- function(output_df,
                      '<tbody>
   <tr class=\"color-alt-table-subheader\">
 
-  <th colspan=\"7\">Summary Indexes</th>
+  <th colspan=\"7\">EJ Indexes</th>
   </tr>'
   )
 
   tbl_head2 <- '<tr class=\"color-alt-table-subheader\">
 
-<th colspan=\"7\">Supplemental Summary Indexes</th>
+<th colspan=\"7\">Supplemental EJ Indexes</th>
   </tr>'
 
   full_html <- tbl_head
@@ -677,7 +677,7 @@ generate_html_header <- function(analysis_title,
     '<p>This report summarizes environmental and residential population information for user-defined areas,',
     '<br>and combines that data into indexes.</p>',
     '</div>',
-    '<div id="header-primary-background-img-container">',  logo_html,   # for example an EPA logo
+    '<div id="header-primary-background-img-container">',  logo_html,
     '</div>',
     '</div>',
     '<div class="header">
@@ -716,7 +716,7 @@ generate_env_demog_header <- function(title = 'Environmental and Residential Pop
 #'
 #' @keywords internal
 #'
-generate_ej_header <- function(title = 'Summary Indexes') {
+generate_ej_header <- function(title = 'EJ Indexes') {
   paste0('<br>
  <div id=\"page-2-header\" class=\"header\" style=\"background-color: #005ea2;  color: white; text-align: center; padding: 20px 32px 10px 32px;\">
             <h2 tabindex=\"8\" style=\"font-size: 18px; margin-bottom: 5px\">',
@@ -724,9 +724,9 @@ generate_ej_header <- function(title = 'Summary Indexes') {
          title, '</h2>
 
             <p style=\"font-family: Oswald, Arial, sans-serif; font-size: 15px; padding-left: 20px;\">',
-         'The summary and supplemental indexes are a combination of environmental and residential population information.
+         'The summary and supplemental EJ indexes are a combination of environmental and residential population information.
          <br>
-         For each of the environmental indicators, there is a Summary Index and a Supplemental Summary Index.
+         For each of the environmental indicators, there is an EJ Index and a Supplemental EJ Index.
          <br>
          The indexes for a selected area are compared to those for all other locations in the state or nation.</p>',
          '
@@ -734,29 +734,29 @@ generate_ej_header <- function(title = 'Summary Indexes') {
          ### This extra header section was redundant here - it was probably more appropriate if put before the "Supplemental" section but now the two sets of indexes have no big header between them.
          #  , '<div style=\"background-color: #71bf44; color: white; text-align: center; padding: 0 32px 7px 32px;\">
          #     <h3  tabindex=\"10\" style=\"padding-top: 10px; margin-bottom: -10px; font-family: Arial, sans-serif; font-size: 23px;\">',
-         #  'SUMMARY INDEXES', '</h3>
+         #  'EJ INDEXES', '</h3>
          #     <p style=\"font-family: Oswald, Arial, sans-serif; font-weight: 300; font-size: 16px; margin: 15px 15% -2px 15%\">',
-         #  'The summary indexes help users screen for potential concerns. To do this, the summary index combines data on low income and POC populations with a single environmental indicator.</p>',
+         #  'The EJ indexes help users screen for potential concerns. To do this, the EJ index combines data on low income and POC populations with a single environmental indicator.</p>',
          #  '
          # </div>'
   )
 }
 ################################################################### #
 
-#' Build header for supplemental summary indexes in community report
+#' Build header for supplemental summary / EJ indexes in community report
 #' @seealso used by [build_community_report()]
 #' @param title title
 #'
 #' @keywords internal
 #'
-generate_ej_supp_header <- function(title = 'SUPPLEMENTAL INDEXES') {
+generate_ej_supp_header <- function(title = 'SUPPLEMENTAL EJ INDEXES') {
   paste0('<div style=\"background-color: #71bf44; color: white; text-align: center; padding: 0 32px 7px 32px;\">
     <h3 tabindex=\"11\" style=\"padding-top: 10px; margin-bottom: -10px; font-family: Arial, sans-serif; font-size: 23px;\">',
 
          title, '</h3>
 
       <p style=\"font-family: Oswald, Arial, sans-serif; font-weight: 300; font-size: 16px; margin-bottom: -2px; padding-left: 20px;\">',
-         'The supplemental indexes offer a different perspective on community-level conditions. Each one combines the Residential Populations Indicator with a single environmental indicator.  </p>
+         'The supplemental EJ indexes offer a different perspective on community-level conditions. Each one combines the Residential Populations Indicator with a single environmental indicator.  </p>
   </div>')
 }
 ################################################################### #

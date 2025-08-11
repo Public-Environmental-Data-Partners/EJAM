@@ -24,9 +24,6 @@
 #'   like column_names = "ej" for better map popups on block points
 #'
 #' @return invisibly returns sites2blocks like getblocksnearby() does
-#'
-#' @export
-#'
 #' @examples
 #'   #  see all Census Blocks within 1 mile of 1 site, if already had run getblocksnearby()
 #'   getblocks_output <- copy(testoutput_getblocksnearby_10pts_1miles)
@@ -42,7 +39,7 @@
 #'    # see two sites if already had run getblocksnearby()
 #'    z2 <-  plotblocksnearby(sitepoints = testpoints_10[c(4,10),],
 #'      sites2blocks = eg2, radius = 1)
-#'   \donttest{
+#'   \dontrun{
 #'   # See one randomly selected regulated facility from FRS
 #'   and all Census Blocks and Blockgroups within 2 miles:
 #'     plotblocksnearby(testpoints_n(1), 2, overlay_blockgroups=T)
@@ -56,6 +53,9 @@
 #'         c("ejam_uniq_id", "lat", "lon"), with=FALSE],
 #'    radius = 1)
 #'   }
+#'
+#' @export
+#'
 plotblocksnearby <- function(sitepoints, radius=3, sites2blocks,
                              usemapfast=TRUE, returnmap=FALSE, overlay_blockgroups=FALSE,
                              maxradius = 31.07, avoidorphans = FALSE, ...) {

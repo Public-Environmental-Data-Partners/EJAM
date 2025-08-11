@@ -62,15 +62,17 @@ update_pkgdown = function(
     ##   since doinstall=T via this script omits document()
     doinstall          = FALSE,  ## but skips document() and vignettes
     doloadall_not_library = TRUE, ## (happens after install, if that is being done here)
+    doclean_man  = FALSE,   ## file.remove(list.files('./man', full.names = TRUE))
+    doclean_docs  = FALSE,  ## pkgdown::clean_site('.', force=T) # deletes html etc in docs or relevant folder
     dobuild_site      = TRUE     ## use build_site() or stop?
 
 ) {
 
-  # MAYBE NEED TO DELETE ALL IN THE man/ FOLDER TO REMOVE OBSOLETE .Rd files like no longer documented or renamed functions ?
-  cat("You might need to do something like  \n  file.remove(list.files('./man', full.names = TRUE)) \nto delete all of /man/*.* to be sure there is nothing obsolete like renamed or deleted or no-longer-documented functions. \n")
-
-  # MAYBE NEED TO DELETE ALL IN THE docs/ FOLDER TO REMOVE OBSOLETE .html files like no longer used vignettes ?
-  cat("You might need to do \n  pkgdown::clean_site('.') \nor\n  file.remove(list.files('./docs', full.names = TRUE))  \nto delete all of /docs/*.*  to be sure there is nothing obsolete like renamed or deleted or no-longer-documented functions. \n")
+  # # MAYBE NEED TO DELETE ALL IN THE man/ FOLDER TO REMOVE OBSOLETE .Rd files like no longer documented or renamed functions ?
+  # cat("You might need to do something like  \n  file.remove(list.files('./man', full.names = TRUE)) \nto delete all of /man/*.* to be sure there is nothing obsolete like renamed or deleted or no-longer-documented functions. \n")
+  #
+  # # MAYBE NEED TO DELETE ALL IN THE docs/ FOLDER TO REMOVE OBSOLETE .html files like no longer used vignettes ?
+  # cat("You might need to do \n  pkgdown::clean_site('.') \n and/or \n  file.remove(list.files('./docs', full.names = TRUE))  \nto delete all of /docs/*.*  to be sure there is nothing obsolete like renamed or deleted or no-longer-documented functions. \n")
 
 
   ############################################################# # ############################################################# #
@@ -117,6 +119,16 @@ update_pkgdown = function(
   ) {doloadall_not_library  <- utils::askYesNo("do load_all() instead of library(EJAM) ?")}
   if (is.na(doloadall_not_library)) {stop('stopped')}
 
+  if (doask && interactive()  && rstudioapi::isAvailable()
+      && missing("doclean_man")
+  ) {doclean_man <- utils::askYesNo("Do you want to delete all .Rd files to remove obsolete ones, and let roxygen recreate all?")}
+  if (is.na(doclean_man)) {stop('stopped')}
+
+  if (doask && interactive()  && rstudioapi::isAvailable()
+      && missing("doclean_docs")
+  ) {doclean_docs <- utils::askYesNo("Do you want to delete all docs folder (pkgdown-related) files to remove obsolete ones, and let pkgdown recreate all?")}
+  if (is.na(doclean_docs)) {stop('stopped')}
+
   #################### #
 
   # UNIT TESTS ####
@@ -143,6 +155,23 @@ update_pkgdown = function(
   ##   automatically builds and checks a source package, using all known best practices.
   # devtools::check_man()
   # devtools::check_built() checks an already-built package.
+
+  #################### #
+  # insert correct app name and version and date into _pkgdown.yml
+  # since it cannot contain R code inline that dynamically finds that info to use in footer of html files etc.
+cat("updating version/date/title in _pkgdown.yml, for footers of help pages, etc.\n")
+  x = readLines("_pkgdown.yml")
+
+  home_title_text = paste0('EJAM ', as.vector(desc::desc_get('Title')))
+  x = gsub("^  title: .*$", paste0("  title: ", home_title_text), x)
+
+  datefooter = as.vector(desc::desc_get('VersionDate'))
+  x =  gsub("^    datefooter: .*$", paste0("    datefooter: ", datefooter), x)
+
+  versionmsg = paste0('Version ', as.vector(desc::desc_get('Version')))
+  x =  gsub("^    versionmsg: .*$", paste0("    versionmsg: ", versionmsg), x)
+
+  writeLines(text = x, "_pkgdown.yml")
 
   #################### #
 
@@ -174,7 +203,14 @@ update_pkgdown = function(
     }
   }
   #################### # #################### # #################### # #################### #
+  # REDO ALL DOCUMENTATION FROM SCRATCH?
 
+  if (dodocument || doinstall) {
+  if (doclean_man ) {
+    cat('deleting all .Rd (help) files in ./man folder \n')
+    file.remove(list.files('./man', full.names = TRUE))
+  }
+}
   # README & DOCUMENT ####
 
   if (dodocument) {
@@ -279,6 +315,14 @@ update_pkgdown = function(
   # ** BUILD SITE (HTML FILES) ####
 
   if (dobuild_site) {
+
+    if (doclean_docs) {
+      cat("Doing pkgdown::clean_site()  \n")
+      # pkgdown::clean_site('.')
+      pkgdown::clean_site(force = TRUE)
+     # similar to doing this:  file.remove(list.files('./docs', full.names = TRUE))
+    }
+
     cat("Doing build_site()  \n")
     print(Sys.time())
 
@@ -346,7 +390,7 @@ update_pkgdown(doask = TRUE)
 
 or change from any of these defaults:
 
-update_pkgdown(
+update_pkgdown = function(
     doask              = FALSE,
     dotests            = FALSE,
     testinteractively  = FALSE, ## maybe we want to do this interactively even if ask=F ?
@@ -355,9 +399,10 @@ update_pkgdown(
     ##   since doinstall=T via this script omits document()
     doinstall          = FALSE,  ## but skips document() and vignettes
     doloadall_not_library = TRUE, ## (happens after install, if that is being done here)
-    dobuild_site      = TRUE     ## use build_site() to create new pkgdown site html files in /docs/ (or stop?)
+    doclean_man  = F,   ## file.remove(list.files('./man', full.names = TRUE))
+    doclean_docs  = F,  ## pkgdown::clean_site('.', force=T) # deletes html etc in docs or relevant folder
+    dobuild_site      = TRUE     ## use build_site() or stop?
 )
-
 ")
 # cat("\n  Current defaults: \n\n")
 # x = (EJAM:::args2(update_pkgdown)); rm(x)

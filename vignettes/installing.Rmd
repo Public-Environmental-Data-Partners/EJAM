@@ -163,8 +163,10 @@ You may need to set up a [personal access token](https://docs.github.com/en/auth
 ##  To check for existing PATs:
 usethis::gh_token_help() # or
 usethis::git_sitrep() # git situation report
+
 #  To make a new PAT:
 usethis::create_github_token()
+
 #  To register a PAT:
 credentials::set_github_pat()
 ```
