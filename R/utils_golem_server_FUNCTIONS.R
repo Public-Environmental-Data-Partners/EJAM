@@ -7,10 +7,8 @@
 #' not_null(NULL)
 `%not_in%` <- Negate(`%in%`)
 
-
 `%nin%` = Negate(`%in%`) # is easier to type
 #  c(5, 3) %nin% 1:4
-
 
 not_null <- Negate(is.null)
 
