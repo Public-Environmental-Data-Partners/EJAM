@@ -1,24 +1,25 @@
-pandoc: '3.2'
-pkgdown: 2.1.1
+pandoc: '3.4'
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
-  webapp: webapp.html
-  0_whatis: 0_whatis.html
-  installing: installing.html
+  analyzing: analyzing.html
   basics: basics.html
-  3_analyzing: 3_analyzing.html
+  dev-app-settings: dev-app-settings.html
   dev-deploy-app: dev-deploy-app.html
   dev-future-plans: dev-future-plans.html
   dev-run-shinytests: dev-run-shinytests.html
   dev-run-unit-tests: dev-run-unit-tests.html
-  dev-update-documentation: dev-update-documentation.html
   dev-update-datasets: dev-update-datasets.html
+  dev-update-documentation: dev-update-documentation.html
   dev-update-package: dev-update-package.html
   distances: distances.html
+  installing: installing.html
   naics: naics.html
   testdata: testdata.html
+  webapp: webapp.html
+  whatis: whatis.html
   zipcodes: zipcodes.html
-last_built: 2025-06-10T17:22Z
+last_built: 2025-08-14T02:51Z
 urls:
-  reference: https://usepa.github.io/EJAM-open/reference
-  article: https://usepa.github.io/EJAM-open/articles
+  reference: https://ejanalysis.github.io/EJAM/reference
+  article: https://ejanalysis.github.io/EJAM/articles

@@ -5,6 +5,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/LICENSE.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/analyzing.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/basics.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/articles/dev-app-settings.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/dev-deploy-app.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.html</loc></url>
@@ -31,7 +32,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/acsendyear.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table_goodnames.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/all_equal_functions.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_run_EJAMejscreenapi.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_server.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_ui.html</loc></url>
@@ -44,7 +44,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgej.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgid2fips.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/bgid_from_blockid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgpts.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/blockgroupstats.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/blockid2fips.html</loc></url>
@@ -85,9 +84,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/dataload_from_local.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/dataload_from_package.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/datapack.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/default_points_shown_at_startup.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/dependencies_of_ejam.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/dir2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/distance_by_group1.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/distance_by_group_by_site.html</loc></url>
@@ -99,8 +96,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/doaggregate.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/doaggregate_newscores.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/download_latest_arrow_data.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/dupeRfiles.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/dupenames.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/echo_colids_from_num_name_group.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejam2barplot.html</loc></url>
@@ -120,6 +115,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejam2shapefile.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejam2table_tall.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejam2tableviewer.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/ejamapp.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejamit.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances2plot.html</loc></url>
@@ -220,8 +216,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_unzip.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frsprogramcodes.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/functions_in_pkg.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/functions_that_use.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_ej_header.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_ej_supp_header.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_env_demog_header.html</loc></url>
@@ -296,7 +290,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/mapfast_gg.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/mapfastej.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/mapfastej_counties.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/metadata4pins.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/metadata_add.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/metadata_check.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/meters_per_mile.html</loc></url>
@@ -471,7 +464,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/report_xmilesof.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/rmost.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/rowMaxs2.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/run_app.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/setdiff2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/setdiff_yx.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shape2zip.html</loc></url>

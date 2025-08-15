@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -71,13 +72,13 @@
           <code><a href="EJAM.html">EJAM</a></code> <code><a href="EJAM.html">EJAM-package</a></code>
 
         </dt>
-        <dd>EJAM - Environment and Residential Population Analysis Multisite tool</dd>
+        <dd>EJAM - Environmental Justice Analysis Multisite tool</dd>
       </dl><dl><dt>
 
-          <code><a href="run_app.html">run_app()</a></code> <code><a href="run_app.html">app_run_EJAM()</a></code>
+          <code><a href="ejamapp.html">ejamapp()</a></code>
 
         </dt>
-        <dd>Launch EJAM as Shiny web app in RStudio.</dd>
+        <dd>Launch EJAM as Shiny web app (e.g. to run it locally in RStudio)</dd>
       </dl><dl><dt>
 
           <code><a href="ejamit.html">ejamit()</a></code>
@@ -932,12 +933,6 @@
         <dd>FIPS - Get state FIPS codes from any type of FIPS codes</dd>
       </dl><dl><dt>
 
-          <code><a href="state_from_sitetable.html">state_from_sitetable()</a></code>
-
-        </dt>
-        <dd>state_from_sitetable - Identify US State that each site is in (given ST, FIPS, or lat/lon) try ST, then FIPS, then latlon of site (not blocks), then polygon Identify US State that each site is in (given ST, lat/lon, or FIPS)</dd>
-      </dl><dl><dt>
-
           <code><a href="state_from_fips_bybg.html">state_from_fips_bybg()</a></code>
 
         </dt>
@@ -964,7 +959,7 @@
           <code><a href="fips_st2eparegion.html">fips_st2eparegion()</a></code>
 
         </dt>
-        <dd>FIPS - Get EPA Region number from state FIPS code</dd>
+        <dd>FIPS - Get EPA Region number (1-10) from state FIPS code</dd>
       </dl></div><div class="section level2">
       <h2 id="finding-blocks-distances-and-residents">Finding Blocks, Distances, and Residents<a class="anchor" aria-label="anchor" href="#finding-blocks-distances-and-residents"></a></h2>
 
@@ -1286,16 +1281,16 @@
 
       <dl><dt>
 
-          <code><a href="batch.summarize.html">batch.summarize()</a></code>
-
-        </dt>
-        <dd>Calculate more summary stats across all sites and all people</dd>
-      </dl><dl><dt>
-
           <code><a href="count_sites_with_n_high_scores.html">count_sites_with_n_high_scores()</a></code>
 
         </dt>
         <dd>Answers questions like how many sites have certain indicators &gt;2x the state avg?</dd>
+      </dl><dl><dt>
+
+          <code><a href="colcounter.html">colcounter()</a></code>
+
+        </dt>
+        <dd>Count columns (indicators) with Value (at or) above (or below) threshold Counts high scores, by site</dd>
       </dl><dl><dt>
 
           <code><a href="colcounter_summary_all.html">colcounter_summary_all()</a></code>
@@ -1332,6 +1327,12 @@
 
         </dt>
         <dd>Which indicators fall most as proximity does? (i.e., are higher if closer to site) Which variables have strongest trend with distance based on slope of linear fit</dd>
+      </dl><dl><dt>
+
+          <code><a href="batch.summarize.html">batch.summarize()</a></code>
+
+        </dt>
+        <dd>Calculate more summary stats across all sites and all people</dd>
       </dl></div><div class="section level2">
       <h2 id="viewing-results">Viewing Results<a class="anchor" aria-label="anchor" href="#viewing-results"></a></h2>
 
@@ -2117,11 +2118,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>August 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -56,6 +57,85 @@
       <small>Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.32.6" id="ejam-v2326-august-2025">EJAM v2.32.6 (August 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2326-august-2025"></a></h2>
+<div class="section level3">
+<h3 id="web-app-2-32-6">Web App<a class="anchor" aria-label="anchor" href="#web-app-2-32-6"></a></h3>
+<ul><li>
+<p>Language related to “Environmental Justice”</p>
+<ul><li>Changed name of tool back to “Environmental Justice Analysis Multisite” tool (from “Environmental and Residential Population Analysis Multisite” tool, the name used in early 2025 through July 2025)</li>
+<li>Restored some text: “EJ Indexes” now once again refers to what were called “Summary Indexes” in early 2025 through July 2025. “Supplementary EJ Indexes” is similarly used once again.</li>
+<li>Other language related to “environmental justice” was edited in early 2025 at EPA in response to an Executive Order, but has not been changed back to its original language even in this non-EPA version of the package. For anyone interested, notes on those changes were archived in a file saved as “EJAM/data-raw/0_generic_terms_notes.R”.</li>
+</ul></li>
+<li>
+<p>Shortcuts via ejanalysis.org/</p>
+<ul><li>
+<a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> or <a href="https://www.ejanalysis.org/ejam" class="external-link">ejanalysis.org/ejam</a> is an easy alias to remember, and has links to EJAM and EJSCREEN.</li>
+<li>
+<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejamapp</a> will launch a live version of the EJAM web app</li>
+<li>
+<a href="https://www.ejanalysis.org/ejscreenapp" class="external-link">ejanalysis.org/ejscreenapp</a> will launch a live version of the EJSCREEN web app</li>
+<li><a href="https://www.ejanalysis.org/about" class="external-link">A new emailing list can be joined here</a></li>
+</ul></li>
+<li>
+<p>Web App Documentation</p>
+<ul><li>Improved the <code>About page</code> (added links to ejanalysis.org, etc.).</li>
+<li>Collected copies of old user guides to inform a new one that could be developed</li>
+</ul></li>
+<li>
+<p>Web App Customization</p>
+<ul><li>
+<p>Made a number of changes to allow web app default settings to be changed and other inputs to be specified. This allows the following:</p>
+<ul><li>Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are.</li>
+<li>Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See <code><a href="../reference/ejamapp.html">ejamapp()</a></code> for examples.</li>
+<li>Anyone hosting a version of the EJAM web app can customize it more easily, e.g., to use a different logo, different default radius, different options for how to select sites, etc.</li>
+</ul></li>
+<li><p>Reorganized the Advanced settings tab, which now has more options and settings that can be changed. That tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.</p></li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="rrstudio-users-analysts-and-developers-2-32-6">R/RStudio Users (Analysts and Developers)<a class="anchor" aria-label="anchor" href="#rrstudio-users-analysts-and-developers-2-32-6"></a></h3>
+<ul><li><p>The app is now once again called the “Environmental Justice Analysis Multisite tool” and that title is stored in the DESCRIPTION file, and is available for vignettes, functions, etc. directly via <code>as.vector(desc::desc_get("Title"))</code>. After the package is attached, the name as potentially modified via global_defaults_package.R or parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> is available as <code>EJAM:::global_or_param(".app_title")</code></p></li>
+<li>
+<p><a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> or <a href="https://www.ejanalysis.org/ejam" class="external-link">ejanalysis.org/ejam</a> is an easy alias to remember, and has links to documentation/code/etc. (The .org and .com versions of the URL are synonymous, and these shortcuts/redirects are mostly case-insensitive)</p>
+<ul><li><a href="https://www.ejanalysis.org/about" class="external-link">A new emailing list can be joined here</a></li>
+<li>
+<a href="https://www.ejanalysis.org/docs" class="external-link">ejanalysis.org/docs</a> or <a href="https://www.ejanalysis.org/ejamdocs" class="external-link">ejanalysis.org/ejamdocs</a> directs you to the documentation for the EJAM package, including articles and vignettes.</li>
+<li>
+<a href="https://www.ejanalysis.org/repo" class="external-link">ejanalysis.org/repo</a> or <a href="https://www.ejanalysis.org/ejamrepo" class="external-link">ejanalysis.org/ejamrepo</a> directs you to the GitHub page for the EJAM package.</li>
+</ul></li>
+<li><p><a href="https://github.com/ejanalysis/EJAM/issues" class="external-link">GitHub issues can be submitted here</a></p></li>
+<li><p>Simplified the <code>README</code></p></li>
+<li><p>Improved the <a href="../articles/installing.html">article on how to install the package</a>.</p></li>
+<li><p><code><a href="../reference/ejamapp.html">ejamapp()</a></code> is the new name (alias) for <code><a href="../reference/ejamapp.html">run_app()</a></code></p></li>
+<li><p>Improved web app ui/server code, allowing many options and defaults to be provided as parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</p></li>
+<li>
+<p>Added many examples to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> documention showing how to change defaults and options. You can now</p>
+<ul><li>Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
+<li>Provide preselected industry NAICS codes, or a set of specific Counties</li>
+<li>Provide a table of lat/lon coordinates to preload at launch</li>
+<li>Provide a shapefile to preload upon launch</li>
+<li>etc.</li>
+</ul></li>
+<li><p>Fixed a bug where <code>isPublic</code> parameter in <code><a href="../reference/ejamapp.html">ejamapp()</a></code> was being ignored.</p></li>
+<li><p>Fixed a bug where threshold-related parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> were being ignored in the latlon case.</p></li>
+<li><p>Drafted new article with technical details: <a href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></p></li>
+<li><p>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</p></li>
+<li>
+<p>Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in ejamapp(). For example, radius is now settable by <code>ejamapp(radius_default=3.1)</code></p>
+<ul><li>the old global_defaults_ variable “default_default_miles” is now called “radius_default”</li>
+<li>the old <code>input$default_miles</code> is now called <code>input$radius_default</code>
+</li>
+<li>the old <code>input$bt_rad_buff</code> is now called <code>input$radius_now</code> Other similar changes:</li>
+<li>the old global_defaults_ variable “max_default_miles” is now called “max_radius_default”</li>
+<li>the old global_defaults_ variable “intro_text” is now called “aboutpage_text”</li>
+<li>the old global_defaults_ variable “default_default_miles_shapefile” is now called “radius_default_shapefile”</li>
+<li>the old reactive sanitized_bt_rad_buff() is now called sanitized_radius_now()</li>
+</ul></li>
+<li><p>Renamed various *.R files and relocated some source code among those, to make some filenames more consistent.</p></li>
+<li><p>Made some functions internal that until now had been exported, to simplify things for most R users.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.5" id="ejam-v2325-july-2025">EJAM v2.32.5 (July 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2325-july-2025"></a></h2>
 <div class="section level3">
@@ -166,13 +246,13 @@
 <ul><li>Fixed logo in “About” tab, app header, and report header, in app_ui, generate_html_header(), global_defaults_xyz, etc., and updated testoutput files related to <code><a href="../reference/ejam2report.html">ejam2report()</a></code> and <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code>
 </li>
 <li>corrected spelling in app and documentation</li>
-<li>added better examples of params one can pass via <code><a href="../reference/run_app.html">run_app()</a></code>
+<li>added better examples of params one can pass via <code><a href="../reference/ejamapp.html">run_app()</a></code>
 </li>
 </ul></div>
 <div class="section level3">
 <h3 id="rstudio-users-only-2-32-4">RStudio users only<a class="anchor" aria-label="anchor" href="#rstudio-users-only-2-32-4"></a></h3>
 <ul><li>New summary table and plot are available via <code><a href="../reference/ejam2areafeatures.html">ejam2areafeatures()</a></code> and <code><a href="../reference/ejam2barplot_areafeatures.html">ejam2barplot_areafeatures()</a></code>. Changes in <code><a href="../reference/ejamit.html">ejamit()</a></code> provide information about what fraction of residents have certain features or types of areas where they live, such as schools, hospitals, Tribal areas, nonattainment areas, CEJST areas, etc. This is done via many changes to <code><a href="../reference/batch.summarize.html">batch.summarize()</a></code>.</li>
-<li>added better examples of params one can pass via <code><a href="../reference/run_app.html">run_app()</a></code>
+<li>added better examples of params one can pass via <code><a href="../reference/ejamapp.html">run_app()</a></code>
 </li>
 <li>documented <code><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options()</a></code> and <code><a href="../reference/global_or_param.html">global_or_param()</a></code>
 </li>
@@ -193,7 +273,7 @@
 <div class="section level3">
 <h3 id="technical--internal-changes-2-32-4">Technical / internal changes:<a class="anchor" aria-label="anchor" href="#technical--internal-changes-2-32-4"></a></h3>
 <ul><li>enabled testing of web app functionality from the test_interactively() utility (which has more recently been renamed <code><a href="../reference/test_ejam.html">test_ejam()</a></code> and put in R folder as an unexported internal function loaded as part of the package) or via test_local(), etc., not just from a github action. (See /tests/setup.R which now has a copy of what is also in app-functionality.R)</li>
-<li>drafted revisions to ui and server to try to allow for more <code><a href="../reference/run_app.html">run_app()</a></code> params or advanced tab or global_defaults_xyz to alter default method of upload vs dropdown, e.g., output ss_choose_method_ui, default_ss_choose_method, default_upload_dropdown. This included revising server and ui to use just <code>EJAM:::global_or_param()</code> not <code><a href="https://thinkr-open.github.io/golem/reference/get_golem_options.html" class="external-link">golem::get_golem_options()</a></code>, so that non-shiny global defaults can work (e.g., logo path as <code>global_defaults_package$.community_report_logo_path</code>) even outside shiny when global_defaults_package has happened via onattach but global_defaults_shiny etc. has not happened.</li>
+<li>drafted revisions to ui and server to try to allow for more <code><a href="../reference/ejamapp.html">run_app()</a></code> params or advanced tab or global_defaults_xyz to alter default method of upload vs dropdown, e.g., output ss_choose_method_ui, default_ss_choose_method, default_upload_dropdown. This included revising server and ui to use just <code>EJAM:::global_or_param()</code> not <code><a href="https://thinkr-open.github.io/golem/reference/get_golem_options.html" class="external-link">golem::get_golem_options()</a></code>, so that non-shiny global defaults can work (e.g., logo path as <code>global_defaults_package$.community_report_logo_path</code>) even outside shiny when global_defaults_package has happened via onattach but global_defaults_shiny etc. has not happened.</li>
 <li>changed <code>.onAttach()</code> to do source(global_defaults_package) with local = FALSE not TRUE, but this might need to be revisited – note both local = F and local = T are used in <code>.onAttach()</code> versus <code><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options()</a></code>
 </li>
 <li>in server, <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> now figures out value of radius_or_buffer_description, <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> gets new parameters table_xls_from_ejam() uses improved buffer_desc_from_sitetype() and now uses <code><a href="../reference/ejam2report.html">ejam2report()</a></code> to add a report in one tab.</li>
@@ -233,7 +313,7 @@
 <li>Extensive additions of and improvements in articles/vignettes, including documentation of how to maintain repo, package, and datasets. Articles/vignettes avoid hardcoded repo urls, and use relative links within pkgdown site… unexported helper function <code>EJAM:::repo_from_desc()</code> added, avoids hardcoded repo url; download_latest_arrow_data avoids hardcoded repo url; links to testdata files on webapp UI avoid hardcoded repo url; simpler <a href="../articles/whatis.html">What is EJAM</a> doc.</li>
 <li>
 <code><a href="../reference/ejamit.html">ejamit()</a></code> in interactive mode (RStudio) now lets you select any type of file to upload if no sites specified by parameters</li>
-<li>Many options or starting values or settings for the shiny app (and in general) can now be set as parameters passed to the <code><a href="../reference/run_app.html">run_app()</a></code> function, which overrides the defaults. extensive changes to global defaults vs user parameters allowed: replaced global.R; files renamed, put in 1 folder, etc. System for using user parameters passed to <code><a href="../reference/run_app.html">run_app()</a></code>, global defaults otherwise, many can be changed in advanced tab; some may be bookmarkable. The default values are now set for the shiny app and in general in files called <code>global_defaults_package.R</code>, <code>global_defaults_shiny_public.R</code>, and <code>global_defaults_shiny.R</code> (rather than in the old files global.R or manage-public-private.R).</li>
+<li>Many options or starting values or settings for the shiny app (and in general) can now be set as parameters passed to the <code><a href="../reference/ejamapp.html">run_app()</a></code> function, which overrides the defaults. extensive changes to global defaults vs user parameters allowed: replaced global.R; files renamed, put in 1 folder, etc. System for using user parameters passed to <code><a href="../reference/ejamapp.html">run_app()</a></code>, global defaults otherwise, many can be changed in advanced tab; some may be bookmarkable. The default values are now set for the shiny app and in general in files called <code>global_defaults_package.R</code>, <code>global_defaults_shiny_public.R</code>, and <code>global_defaults_shiny.R</code> (rather than in the old files global.R or manage-public-private.R).</li>
 <li>
 <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> examples added, on how to obtain and analyze new/custom indicators from the American Community Survey (ACS) data</li>
 <li>
@@ -326,11 +406,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>August 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>
