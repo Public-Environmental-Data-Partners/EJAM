@@ -156,10 +156,14 @@ them and analyze or map them in EJAM as shown below.</strong></p>
 <span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="va">shp1</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="see-ejscreen-map-at-a-zip-code">see EJSCREEN map at a zip code<a class="anchor" aria-label="anchor" href="#see-ejscreen-map-at-a-zip-code"></a>
+</h3>
+<p>browseURL(url_ejscreenmap(wherestr = ‘20019’))</p>
+</div>
+<div class="section level3">
 <h3 id="analyzing-zip-codes-in-ejam">analyzing zip codes in EJAM<a class="anchor" aria-label="anchor" href="#analyzing-zip-codes-in-ejam"></a>
 </h3>
-<p>The EJScreen API does not handle zip codes, but you can analyze them
-in EJAM like this:</p>
+<p>You can analyze zip codes in EJAM like this:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">z</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 </div>

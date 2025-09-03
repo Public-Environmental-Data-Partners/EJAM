@@ -70,6 +70,7 @@
 <span>  longnames <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  formatted <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bybg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sitetype <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot_distance_by_group <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  summary_plot <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plotlatest <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -93,7 +94,7 @@
 <span>  heatmap2_colnames <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  heatmap2_cuts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.009</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
 <span>  heatmap2_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"yellow"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span><span class="op">)</span>,</span>
-<span>  hyperlink_colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EJScreen Report"</span>, <span class="st">"EJScreen Map"</span>, <span class="st">"ACS Report"</span>, <span class="st">"ECHO Report"</span><span class="op">)</span>,</span>
+<span>  reports <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>,</span>
 <span>  graycolnames <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  narrowcolnames <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  graycolor <span class="op">=</span> <span class="st">"gray"</span>,</span>
@@ -130,6 +131,10 @@ but if entire output of ejamit() is passed as if it were overall, function figur
 
 <dt id="arg-bybg">bybg<a class="anchor" aria-label="anchor" href="#arg-bybg"></a></dt>
 <dd><p>Optional large table of details of each block group that is only needed to analyze distances by group.</p></dd>
+
+
+<dt id="arg-sitetype">sitetype<a class="anchor" aria-label="anchor" href="#arg-sitetype"></a></dt>
+<dd><p>normally would be like ejamit()$sitetype</p></dd>
 
 
 <dt id="arg-plot-distance-by-group">plot_distance_by_group<a class="anchor" aria-label="anchor" href="#arg-plot-distance-by-group"></a></dt>
@@ -223,8 +228,9 @@ second color is for those &gt;=2d cutpoint but &lt;3d, etc.</p></dd>
 <dd><p>like heatmap_colors but for ratios</p></dd>
 
 
-<dt id="arg-hyperlink-colnames">hyperlink_colnames<a class="anchor" aria-label="anchor" href="#arg-hyperlink-colnames"></a></dt>
-<dd><p>names of which to treat as URLs that should be hyperlinks</p></dd>
+<dt id="arg-reports">reports<a class="anchor" aria-label="anchor" href="#arg-reports"></a></dt>
+<dd><p>info about which columns to treat as URLs that should be hyperlinks -
+see ?url_columns_bysite</p></dd>
 
 
 <dt id="arg-graycolnames">graycolnames<a class="anchor" aria-label="anchor" href="#arg-graycolnames"></a></dt>

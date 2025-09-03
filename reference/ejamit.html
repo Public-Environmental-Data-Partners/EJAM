@@ -95,6 +95,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <span>  threshnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_ej_pctile</span>, <span class="va">names_ej_state_pctile</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_ej_supp_pctile</span>,</span>
 <span>    <span class="va">names_ej_supp_state_pctile</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  threshgroups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"EJ-US-or-ST"</span>, <span class="st">"Supp-US-or-ST"</span><span class="op">)</span>,</span>
+<span>  reports <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>,</span>
 <span>  updateProgress <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  updateProgress_getblocks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  progress_all <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -228,8 +229,14 @@ at each site. (see default)</p></dd>
 <dd><p>list of text names of the groups (see default)</p></dd>
 
 
+<dt id="arg-reports">reports<a class="anchor" aria-label="anchor" href="#arg-reports"></a></dt>
+<dd><p>optional list of lists specifying which report types to include –
+see the file "global_defaults_package.R" or source code for this function for how this is defined.</p></dd>
+
+
 <dt id="arg-updateprogress">updateProgress<a class="anchor" aria-label="anchor" href="#arg-updateprogress"></a></dt>
-<dd><p>progress bar function passed to <code><a href="doaggregate.html">doaggregate()</a></code> in shiny app</p></dd>
+<dd><p>CURRENTLY UNUSED - was a progress bar function passed to <code><a href="doaggregate.html">doaggregate()</a></code> in shiny app,
+but not actually used in ejamit().</p></dd>
 
 
 <dt id="arg-updateprogress-getblocks">updateProgress_getblocks<a class="anchor" aria-label="anchor" href="#arg-updateprogress-getblocks"></a></dt>
@@ -256,7 +263,7 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 
 
 <dt id="arg-called-by-ejamit">called_by_ejamit<a class="anchor" aria-label="anchor" href="#arg-called-by-ejamit"></a></dt>
-<dd><p>Set to TRUE by <code>ejamit()</code> to suppress some outputs even if ejamit(silentinteractive=F)</p></dd>
+<dd><p>passed to doaggregate(). Set to TRUE by <code>ejamit()</code> to suppress some outputs even if ejamit(silentinteractive=F)</p></dd>
 
 
 <dt id="arg-testing">testing<a class="anchor" aria-label="anchor" href="#arg-testing"></a></dt>

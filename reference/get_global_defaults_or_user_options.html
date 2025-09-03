@@ -92,11 +92,14 @@ or via <code><a href="global_or_param.html">global_or_param()</a></code> (which 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function, called by <code><a href="ejamapp.html">ejamapp()</a></code>,
-collects the shiny-app-related default settings that are defined in these places:</p><ol><li><p>"user options" as parameters passed to <code><a href="ejamapp.html">ejamapp()</a></code> by a user</p></li>
-<li><p>"global defaults" set in file <code>global_defaults_shiny_public.R</code>   – and in that file, depends on value of isPublic if passed as a param to <code><a href="ejamapp.html">ejamapp()</a></code></p></li>
-<li><p>"global defaults" set in file <code>global_defaults_shiny.R</code>    – sourced here</p></li>
-<li><p>"global defaults" set in file <code>global_defaults_package.R</code>  – sourced here but also initially by <code><a href="https://rdrr.io/r/base/ns-hooks.html" class="external-link">.onAttach()</a></code></p></li>
+collects the shiny-app-related default settings that are defined in these places:</p><ol><li><p>any options a user has passed as parameters to <code><a href="ejamapp.html">ejamapp()</a></code>. If provided, these override defaults specified in global_defaults_*.R files.</p></li>
+<li><p>"global_defaults_package" set in file <code>global_defaults_package.R</code>  – sourced here but also initially by <code><a href="https://rdrr.io/r/base/ns-hooks.html" class="external-link">.onAttach()</a></code></p></li>
+<li><p>global defaults set in file <code>global_defaults_shiny.R</code> – sourced here</p></li>
+<li><p>global defaults set in file <code>global_defaults_shiny_public.R</code> – and in that file, depends on value of isPublic if passed as a param to <code><a href="ejamapp.html">ejamapp()</a></code></p></li>
 </ol><p>and consolidates them all as a list, to be available to server/ui.</p>
+<p>For more details, see the
+<a href="https://ejanalysis.github.io/EJAM/articles/">article about defaults and custom settings</a>.</p>
+<p>See other ideas for how to include global.R types of code/settings discussed <a href="https://github.com/ThinkR-open/golem/issues/6" class="external-link">here</a></p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

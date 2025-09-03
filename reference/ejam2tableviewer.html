@@ -68,7 +68,8 @@
 <span>  <span class="va">out</span>,</span>
 <span>  fname <span class="op">=</span> <span class="st">"automatic"</span>,</span>
 <span>  maxrows <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -93,6 +94,10 @@ or it uses tempdir() if not specified. Set it to NULL to prevent saving a file.<
 <dt id="arg-launch-browser">launch_browser<a class="anchor" aria-label="anchor" href="#arg-launch-browser"></a></dt>
 <dd><p>set TRUE to have it launch browser and show report.
 Ignored if not interactive() or if fname is set to NULL.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>passed to <code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable()</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">

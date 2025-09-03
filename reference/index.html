@@ -736,6 +736,12 @@
 
         </dt>
         <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJScreen, etc.</dd>
+      </dl><dl><dt>
+
+          <code><a href="shape2geojson.html">shape2geojson()</a></code>
+
+        </dt>
+        <dd>convert spatial data.frame to a vector of geojson text strings</dd>
       </dl></div><div class="section level2">
       <h2 id="specify-counties-etc-">Specify Counties etc.<a class="anchor" aria-label="anchor" href="#specify-counties-etc-"></a></h2>
 
@@ -765,6 +771,12 @@
 
         </dt>
         <dd>FIPS - Get county or state names from county or state FIPS codes</dd>
+      </dl><dl><dt>
+
+          <code><a href="fips2countyfips.html">fips2countyfips()</a></code>
+
+        </dt>
+        <dd>Get PARENT COUNTY FIPS of each fips (the County that contains the fips)</dd>
       </dl><dl><dt>
 
           <code><a href="fipstype.html">fipstype()</a></code>
@@ -854,6 +866,12 @@
 
         </dt>
         <dd>FIPS - Get county names from county FIPS codes</dd>
+      </dl><dl><dt>
+
+          <code><a href="fips2countyfips.html">fips2countyfips()</a></code>
+
+        </dt>
+        <dd>Get PARENT COUNTY FIPS of each fips (the County that contains the fips)</dd>
       </dl><dl><dt>
 
           <code><a href="shapes_counties_from_countyfips.html">shapes_counties_from_countyfips()</a></code>
@@ -1814,6 +1832,12 @@
 
       <dl><dt>
 
+          <code><a href="testinput_fips_mix.html">testinput_fips_mix</a></code>
+
+        </dt>
+        <dd>testinput_fips_mix dataset</dd>
+      </dl><dl><dt>
+
           <code><a href="testinput_fips_states.html">testinput_fips_states</a></code>
 
         </dt>
@@ -2014,28 +2038,16 @@
 
       <dl><dt>
 
-          <code><a href="url_countyhealthrankings.html">url_countyhealthrankings()</a></code>
+          <code><a href="url_ejamapi.html">url_ejamapi()</a></code>
 
         </dt>
-        <dd>URL functions - Get URLs of useful report(s) on Counties from countyhealthrankings.org</dd>
-      </dl><dl><dt>
-
-          <code><a href="url_echo_facility_webpage.html">url_echo_facility_webpage()</a></code>
-
-        </dt>
-        <dd>Get URLs of ECHO reports</dd>
+        <dd>Get URL(s) of HTML summary reports for use with EJAM-API</dd>
       </dl><dl><dt>
 
           <code><a href="url_ejscreenmap.html">url_ejscreenmap()</a></code>
 
         </dt>
-        <dd>Get URL(s) for EJScreen map centered at given point(s)</dd>
-      </dl><dl><dt>
-
-          <code><a href="url_ejscreen_report.html">url_ejscreen_report()</a></code>
-
-        </dt>
-        <dd>Get URLs of EJScreen reports</dd>
+        <dd>Get URL(s) for (new) EJSCREEN app with map centered at given point(s)</dd>
       </dl><dl><dt>
 
           <code><a href="url_enviromapper.html">url_enviromapper()</a></code>
@@ -2044,10 +2056,28 @@
         <dd>Get URLs of EnviroMapper reports</dd>
       </dl><dl><dt>
 
-          <code><a href="url_frs_report.html">url_frs_report()</a></code>
+          <code><a href="url_echo_facility.html">url_echo_facility()</a></code>
+
+        </dt>
+        <dd>Get URLs of ECHO reports</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_frs_facility.html">url_frs_facility()</a></code>
 
         </dt>
         <dd>Get URLs of FRS reports</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_countyhealth.html">url_countyhealth()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on Counties containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_statehealth.html">url_statehealth()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on States containing the given fips, from countyhealthrankings.org</dd>
       </dl><dl><dt>
 
           <code><a href="url_naics.com.html">url_naics.com()</a></code>

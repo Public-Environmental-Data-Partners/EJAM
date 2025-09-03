@@ -471,8 +471,8 @@ ECHO and EJScreen</p>
 <span>  <span class="va">mysites</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/frs_from_naics.html">frs_from_naics</a></span><span class="op">(</span><span class="va">industryword</span>, children <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
 <span>  </span>
 <span>  <span class="va">regids</span> <span class="op">&lt;-</span> <span class="va">mysites</span><span class="op">$</span><span class="va">REGISTRY_ID</span></span>
-<span>  <span class="va">link1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/url_echo_facility_webpage.html">url_echo_facility_webpage</a></span><span class="op">(</span><span class="va">regids</span>, as_html <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span>  <span class="va">link2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/url_ejscreen_report.html">url_ejscreen_report</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="va">mysites</span><span class="op">$</span><span class="va">lat</span>, lon <span class="op">=</span> <span class="va">mysites</span><span class="op">$</span><span class="va">lon</span>, radius <span class="op">=</span> <span class="fl">3</span>, as_html <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>  <span class="va">link1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/url_echo_facility.html">url_echo_facility</a></span><span class="op">(</span><span class="va">regids</span>, as_html <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>  <span class="va">link2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">mysites</span>, radius <span class="op">=</span> <span class="fl">3</span>, as_html <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span>  <span class="va">link3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="va">mysites</span><span class="op">$</span><span class="va">lat</span>, lon <span class="op">=</span> <span class="va">mysites</span><span class="op">$</span><span class="va">lon</span>,  as_html <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span>  <span class="co"># # same:</span></span>
 <span>  <span class="co"># my_industry &lt;- naics_from_any("chemical manuf",children = F)[,.(code,name)]</span></span>
@@ -683,9 +683,9 @@ working with Census FIPS codes</a>.</p>
 <span><span class="va">cfips</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fips_counties_from_statename.html">fips_counties_from_statename</a></span><span class="op">(</span><span class="va">mystate</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## You could launch a web browser tab for each of the counties,</span></span>
-<span><span class="co">##  to see each of the County reports from EJScreen, like this:</span></span>
+<span><span class="co">##  to see County reports like this:</span></span>
 <span><span class="co">#</span></span>
-<span><span class="co"># sapply(url_ejscreen_report(areaid = cfips), browseURL)</span></span>
+<span><span class="co"># sapply(url_countyhealth(fips = cfips), browseURL)</span></span>
 <span></span>
 <span><span class="co">## Analyze EJ stats for each county in the State</span></span>
 <span></span>

@@ -213,19 +213,18 @@ rather than the code requesting results via the API.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> </span>
-<span> <span class="co"># \donttest{</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># \donttest{</span></span>
 <span> <span class="co"># Specify size of buffer circle and pick random points as example data</span></span>
 <span> <span class="va">myradius</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span> <span class="va">pts2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">111.9040233</span>, <span class="op">-</span><span class="fl">73.7917865</span><span class="op">)</span>, lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">33.5604162</span>, <span class="fl">41.0613821</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="va">pts5</span> <span class="op">&lt;-</span> <span class="va">testpoints_5</span></span>
-<span> </span>
+<span></span>
 <span> <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ejscreenapi</span><span class="op">(</span>lon <span class="op">=</span> <span class="va">pts2</span><span class="op">$</span><span class="va">lon</span>, lat <span class="op">=</span> <span class="va">pts2</span><span class="op">$</span><span class="va">lat</span>, radius <span class="op">=</span> <span class="va">myradius</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="va">outnice</span> <span class="op">&lt;-</span> <span class="fu">ejscreenapi</span><span class="op">(</span>lon <span class="op">=</span> <span class="va">pts2</span><span class="op">$</span><span class="va">lon</span>, lat <span class="op">=</span> <span class="va">pts2</span><span class="op">$</span><span class="va">lat</span>, radius <span class="op">=</span> <span class="va">myradius</span>, nicenames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">outnice</span><span class="op">)</span>, <span class="fl">24</span><span class="op">)</span></span>
 <span> <span class="co"># }</span></span>
-<span> </span></code></pre></div>
+<span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

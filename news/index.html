@@ -71,20 +71,20 @@
 <div class="section level4">
 <h4 id="summary-report-and-tables-of-sites-header-footer-and-links-to-site-reports-2-32-6">Summary Report and Tables of Sites: Header, Footer, and Links to 1-Site Reports<a class="anchor" aria-label="anchor" href="#summary-report-and-tables-of-sites-header-footer-and-links-to-site-reports-2-32-6"></a></h4>
 <ul><li>Report footer now shows exact version number (“2.32.6” not just “2.32”) (and same with web app home page header). Also, it was missing in some reports, now fixed.</li>
-<li>URL hyperlinks to various types of 1-site reports for each site are being restored (but these are in progress/ may need patches).
-<ul><li>REPORT TYPES: So far, 2-3 report types are provided by default:
-<ul><li>link to webpage (shiny-app-generated) summary report on 1 site</li>
-<li>link to download html file of summary report on 1 site</li>
-<li>link to launch EJSCREEN app, with map zoomed to the 1 site’s location</li>
-<li>Others not fully tested but available via custom settings are ECHO, Enviromapper, FRS, Countyhealthrankings.org, and naics.com</li>
-</ul></li>
-<li>TABLES OF SITES:
+<li>Tables and Maps now have URL hyperlinks to various types of 1-site reports for each site - These were gone but now are restored and expanded (but these are in progress/ may need patches).
+<ul><li>TABLES OF SITES - These will have links to the 1-site reports:
 <ul><li>each row of webpage table of detailed results by site</li>
 <li>each row of excel table of results by site</li>
 </ul></li>
-<li>MAP POPUPS:
+<li>MAP POPUPS - These will have links to the 1-site reports:
 <ul><li>map popups in summary report webpage</li>
 <li>map popups in downloaded summary report html file</li>
+</ul></li>
+<li>REPORT TYPES: So far, links to 2-3 report types are provided by default:
+<ul><li>summary report on 1 site, as a <em>live</em> webpage (shiny-app-generated)</li>
+<li>summary report on 1 site, as a <em>downloaded</em> html file (API-generated)</li>
+<li>link to the EJSCREEN app, zoomed to the 1 site’s location</li>
+<li>Others reports are available via custom settings – see the table below for details.</li>
 </ul></li>
 </ul></li>
 </ul></div>
@@ -169,7 +169,7 @@
 <div class="section level4">
 <h4 id="weblinks--urls-for-api-and-other-single-site-reports-2-32-6">Weblinks / URLs for API and other single-site reports<a class="anchor" aria-label="anchor" href="#weblinks--urls-for-api-and-other-single-site-reports-2-32-6"></a></h4>
 <ul><li><p>Weblinks / URLs for single-site reports have been missing since 1/2025, but now are being restored to the tables of sites (results_bysite table from <code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejam2tableviewer.html">ejam2tableviewer()</a></code>, etc.) and map popups (in various map functions like <code><a href="../reference/ejam2map.html">ejam2map()</a></code> etc.)</p></li>
-<li><p>Several new reports can be included as extra columns of links in any site-by-site table or map popup (not fully tested) – These can be turned on via the <code>default_reports</code> setting found in <code>global_defaults_package.R</code>:</p></li>
+<li><p>Several new reports can be made available via extra columns of links in any site-by-site table or map popup (not fully tested) – The various report columns can be turned on/off via the <code>default_reports</code> setting found in <code>global_defaults_package.R</code> Then <code><a href="../reference/url_columns_bysite.html">url_columns_bysite()</a></code> can use these to provide URLs for reports or webpages:</p></li>
 </ul><table class="table"><colgroup><col width="22%"><col width="20%"><col width="25%"><col width="32%"></colgroup><thead><tr><th>header (column title)</th>
 <th>text (of link)</th>
 <th>function name</th>
@@ -204,10 +204,17 @@
 <td>fips, year, etc.</td>
 </tr></tbody></table><ul><li><p>The choice of what URL/link columns to include is now controlled by settings within global_defaults_package.R</p></li>
 <li><p>New function <code><a href="../reference/url_columns_bysite.html">url_columns_bysite()</a></code> is the new overall utility that compiles columns of links, based on reports/etc. specified in <code>global_defaults_package.R</code> via new setting <code>default_reports</code>. This setting lets you provide a list of URL column names and specify what function would be used to generate each URL column, such as url_ejamapi() or url_ejscreenmap() etc.</p></li>
-<li><p><code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> and other functions that provide URLs for reports or webpages were revised, cleaned up, and moved among .R files.</p></li>
+<li><p><code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> and other functions in table above were revised, cleaned up, and moved among .R files.</p></li>
 <li><p>New function <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> provides URLs to use with EJAM-API to get html summary report on 1 site at a time. Inputs to this function are like inputs to <code><a href="../reference/ejamit.html">ejamit()</a></code> but so far mostly limited to radius, sitepoints, fips, shapefile. This will enable the map popups and excel tables of sites to include links to single-site reports, for example. It is limited to blockgroup fips only, right now, and only single-site reports right now.</p></li>
 <li><p>New function <code><a href="../reference/shape2geojson.html">shape2geojson()</a></code> is a helper that converts a spatial data.frame to text string geojson, the format needed by the 8/2025 version of the EJAM-API</p></li>
 <li><p><code><a href="../reference/ejam2report.html">ejam2report()</a></code> now downloads FIPS bounds if missing.</p></li>
+<li><p><code><a href="../reference/mapfast.html">mapfast()</a></code> and some others now drop sites with empty geometry before trying to map, avoid an error</p></li>
+<li><p><code><a href="../reference/popup_from_any.html">popup_from_any()</a></code> and other popup functions now have different parameters that can handle more columns of URLs/links of any type</p></li>
+<li><p><code><a href="../reference/popup_from_any.html">popup_from_any()</a></code> and other popup functions now drop the geometry column from spatial data.frames to avoid including a mess in the popup</p></li>
+<li><p><code><a href="../reference/fips2name.html">fips2name()</a></code> now handles block fips instead of warning</p></li>
+</ul><p>fips_county_from_latlon() and fips_state_from_latlon</p>
+<ul><li><p><code>regids_valid()</code> is a new internal function</p></li>
+<li><p>testinput_fips_mix is a new dataset with fips of each type: block, blockgroup, tract, city, county, state</p></li>
 </ul></div>
 <div class="section level4">
 <h4 id="package-documentation-etc-2-32-6">Package documentation etc.<a class="anchor" aria-label="anchor" href="#package-documentation-etc-2-32-6"></a></h4>

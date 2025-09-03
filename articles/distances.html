@@ -307,8 +307,14 @@ Example of using plot_distance_by_pctd()
 </p>
 </div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 0.5))</span></span>
-<span><span class="co">#browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 3))</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># ejamapp(sitepoints = pts, radius_default = 0.5)</span></span>
+<span><span class="co"># ejamapp(sitepoints = pts, radius_default = 3)</span></span>
+<span></span>
+<span><span class="co">#browseURL(url_ejscreenmap(sitepoints = pts, radius = 0.5))</span></span>
+<span><span class="co">#browseURL(url_ejscreenmap(sitepoints = pts, radius = 3))</span></span>
+<span></span>
+<span><span class="co">#browseURL(url_ejamapi(sitepoints = pts, radius = 0.5))</span></span>
+<span><span class="co">#browseURL(url_ejamapi(sitepoints = pts, radius = 3))</span></span></code></pre></div>
 <p>Example of area that has higher %Hispanic as you go 10 to 30 miles
 away from this specific point</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">

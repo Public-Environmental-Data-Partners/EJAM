@@ -85,7 +85,7 @@ as well as other tabs such as map, plot, notes, etc.</p>
 <span>  buffer_desc <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  radius_or_buffer_description <span class="op">=</span></span>
 <span>    <span class="st">"Miles radius of circular buffer (or distance used if buffering around polygons)"</span>,</span>
-<span>  hyperlink_colnames <span class="op">=</span> <span class="st">"ECHO Report"</span>,</span>
+<span>  reports <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>,</span>
 <span>  site_method <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  mapadd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  report_map <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -154,8 +154,9 @@ prompts RStudio user interactively asking where to save the downloaded file</p><
 <dd><p>optional text phrase describing places analyzed</p></dd>
 
 
-<dt id="arg-hyperlink-colnames">hyperlink_colnames<a class="anchor" aria-label="anchor" href="#arg-hyperlink-colnames"></a></dt>
-<dd><p>optional names of columns with URLs</p></dd>
+<dt id="arg-reports">reports<a class="anchor" aria-label="anchor" href="#arg-reports"></a></dt>
+<dd><p>info about which columns to treat as URLs that should be hyperlinks -
+see ?url_columns_bysite</p></dd>
 
 
 <dt id="arg-site-method">site_method<a class="anchor" aria-label="anchor" href="#arg-site-method"></a></dt>
