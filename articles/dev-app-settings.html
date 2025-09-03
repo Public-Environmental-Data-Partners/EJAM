@@ -100,6 +100,9 @@ PARAMETERS<a class="anchor" aria-label="anchor" href="#notes-on-global-defaults-
 </h2>
 <p>This document provides technical notes on how defaults and custom
 settings are defined for the EJAM web app.</p>
+<div class="section level3">
+<h3 id="how-settings-get-passed-to-the-web-app">HOW SETTINGS GET PASSED TO THE WEB APP<a class="anchor" aria-label="anchor" href="#how-settings-get-passed-to-the-web-app"></a>
+</h3>
 <p>Many defaults are defined in files like
 <code>global_defaults_*.R</code>. They can be changed there, but also
 can be passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> aka <code><a href="../reference/ejamapp.html">run_app()</a></code> as
@@ -119,11 +122,35 @@ caps such as limits on file upload size or number of points:</p>
 users, and not all the possible changes to these have been tested, so
 anyone using them should be careful to understand the details of how
 this work and confirm it is doing what is expected.</p>
+<p><em>For example, the radius is defined like this:</em></p>
+<ol style="list-style-type: decimal">
+<li><p>if a user in RStudio launches the app with something like
+<code>ejamapp(radius_default=3.1)</code>, the setting
+<code>radius_default</code> is defined, and will override what it says
+in <code>global_defaults_shiny.R</code></p></li>
+<li><p>the files <code>global_defaults_*.R</code> are where the settings
+like <code>radius_default</code> are defined and stored as
+appOptions.</p></li>
+<li><p>that option/setting is checked in the advanced tab UI, to provide
+the initially selected value of <code>input$radius_default</code> in a
+bookmarkable input control found in the advanced tab. In this case the
+option and input used the same exact name, “radius_default” but that is
+not always the case for other settings.</p></li>
+<li><p>in the advanced tab, <code>input$radius_default</code> can then
+be adjusted by a user or just left alone. It provides the initially
+selected value of <code>input$radius_now</code> (which is for the slider
+UI, but happens to be defined in the server not ui in this
+case).</p></li>
+<li><p>the radius slider bar will change the value of
+<code>input$radius_now</code> when a user moves the radius slider bar in
+the UI.</p></li>
+<li><p>the value of <code>input$radius_now</code> is what the app uses
+in calculations when the start analysis button is clicked.</p></li>
+</ol>
+<p><em>A setting can be named differently in three places:</em></p>
 <p>Sometimes there are two or three separate names that affect the same
 setting. You only need to know about the first one unless you are
-editing URL-encoded bookmarks or editing source code! But for
-completeness, here is how a setting can be named differently in three
-places:</p>
+editing URL-encoded bookmarks or editing source code!</p>
 <ol style="list-style-type: decimal">
 <li><p>The global default constant that is the initial value of x, and
 is normally defined in a <code>global_defaults_*.R</code> file installed
@@ -138,11 +165,8 @@ app.</p></li>
 <p>The first of these three cannot be saved as a bookmark, but the
 second or third can be bookmarked since it is a shiny app input$
 variable.</p>
-<div class="section level3">
-<h3 id="how-settings-get-passed-to-the-web-app">HOW SETTINGS GET PASSED TO THE WEB APP<a class="anchor" aria-label="anchor" href="#how-settings-get-passed-to-the-web-app"></a>
-</h3>
-<p>Steps in EJAM shiny app launch, and the use of params/ defaults/
-advanced tab/ bookmarked inputs/etc.:</p>
+<p><em>Steps in EJAM shiny app launch, and the use of params/ defaults/
+advanced tab/ bookmarked inputs/etc.:</em></p>
 <div class="section level4">
 <h4 id="app-r-and-ispublict">app.R and isPublic=T<a class="anchor" aria-label="anchor" href="#app-r-and-ispublict"></a>
 </h4>
@@ -161,55 +185,67 @@ console, it skips app.R and a user can provide arguments as parameters
 in ejamapp(…). See <code><a href="../reference/ejamapp.html">?ejamapp</a></code></p>
 </div>
 <div class="section level4">
-<h4 id="global_defaults_-files">global_defaults_ files<a class="anchor" aria-label="anchor" href="#global_defaults_-files"></a>
+<h4 id="global_defaults_-r-files">global_defaults_*.R files<a class="anchor" aria-label="anchor" href="#global_defaults_-r-files"></a>
 </h4>
 <p>Many defaults/ settings used by the web app are defined in the
 global_defaults_ files (global_defaults_package.R,
-global_defaults_shiny.R, global_defaults_shiny_public.R) Note the
-parameter isPublic is special because it is checked by the
-global_defaults_shiny_public.R file and some settings depend on isPublic
-being T or F.</p>
+global_defaults_shiny.R, global_defaults_shiny_public.R). Some settings
+are needed even if the shiny app is never launched, so they are stored
+for the package as soon as the package is attached, in a list object
+called <code>global_defaults_package</code> in the global environment,
+e.g., <code>global_defaults_package$report_title</code>. (When the app
+is launched, those and many other global_defaults from the files
+<code>global_defaults_*.R</code>, including radius_default, will be
+stored in the shiny app). Note the parameter isPublic is special because
+it is checked by the global_defaults_shiny_public.R file and some
+settings depend on isPublic being T or F.</p>
 </div>
 <div class="section level4">
-<h4 id="ejamapp-params-or-global_defaults_">ejamapp() params or global_defaults_<a class="anchor" aria-label="anchor" href="#ejamapp-params-or-global_defaults_"></a>
+<h4 id="any-ejamapp-parameters-will-override-global_defaults_-r-settings">any ejamapp() parameters will override global_defaults_*.R
+settings<a class="anchor" aria-label="anchor" href="#any-ejamapp-parameters-will-override-global_defaults_-r-settings"></a>
 </h4>
-<p><code><a href="../reference/ejamapp.html">ejamapp()</a></code> calls get_global_defaults_or_user_options()
-which gets the global defaults and then overrides them with any
-user-specified options given as arguments in ejamapp(). ejamapp() then
-launches the app, storing those options as
-app<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>p</mi><mi>p</mi><mi>O</mi><mi>p</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">appOptions</annotation></semantics></math>golem_options</p>
+<p>Just before launching the app, <code><a href="../reference/ejamapp.html">ejamapp()</a></code> calls
+<code><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options()</a></code> which gets the global
+defaults and then overrides/replaces them with any user-specified
+versions of those options given as arguments in
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</p>
+</div>
+<div class="section level4">
+<h4 id="app-launch">app launch<a class="anchor" aria-label="anchor" href="#app-launch"></a>
+</h4>
+<p><code><a href="../reference/ejamapp.html">ejamapp()</a></code> launches the app – it uses a function called
+<code><a href="https://thinkr-open.github.io/golem/reference/with_golem_options.html" class="external-link">golem::with_golem_options()</a></code>, which defines the
+<code>app</code> object using <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shiny::shinyApp()</a></code>, but then
+stores all the global defaults and any user-provided parameters as
+<code>app$appOptions$golem_options</code>, just before launching the
+app. Those options can be retrieved in app or server later, via
+<code>EJAM:::global_or_param()</code> which relies on
+<code><a href="https://thinkr-open.github.io/golem/reference/get_golem_options.html" class="external-link">golem::get_golem_options()</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 id="global-env">global env?<a class="anchor" aria-label="anchor" href="#global-env"></a>
 </h4>
 <p>Then app_ui() and app_server() can check for defaults/params using
-EJAM:::global_or_param(“radius_default”) e.g. which uses
-golem::get_golem_options() to check for a named option. Usually these
-are used as initial/default values for input$ variables in the app.
-However, note if an expected setting is not found (ie not set by user in
-ejamapp() and not set in any global_defaults_ file) global_or_param()
-also looks in global env, as a last resort!! That might be a problem if
-ui or server looks for a setting that we failed to provide in
-global_defaults files and that variable name happens to be in the global
-env !</p>
+<code>EJAM:::global_or_param("radius_default")</code> which uses
+<code><a href="https://thinkr-open.github.io/golem/reference/get_golem_options.html" class="external-link">golem::get_golem_options()</a></code> to check for a named option
+stored in <code>app$appOptions$golem_options</code>. Usually these are
+used as initial/default values for input$ variables in the app. However,
+note if an expected setting is not found (ie not set by user in
+ejamapp() and not set in any global_defaults_ file)
+<code><a href="../reference/global_or_param.html">global_or_param()</a></code> also looks in global env, as a last
+resort!! That might be a problem if ui or server looks for a setting
+that we failed to provide in global_defaults files and that variable
+name happens to be in the global env !</p>
 </div>
 <div class="section level4">
 <h4 id="advanced-tab">Advanced Tab<a class="anchor" aria-label="anchor" href="#advanced-tab"></a>
 </h4>
 <p>Then, SOME BUT NOT ALL global_defaults_ settings are in the Advanced
-Tab (in app_ui) so that they can be modified there by someone using the
-app’s advanced tab, so what ui or server ends up using could be an
-input$ that is adjustable in the advanced tab and therefore can be
-bookmarked (since inputs can be bookmarked unless specifically excluded
-from that)</p>
-<p>For example:</p>
-<ul>
-<li>in global_defaults_ or param in <code><a href="../reference/ejamapp.html">ejamapp()</a></code>
-default_upload_dropdown, which is the initial selected value of</li>
-<li>input in advanced tab: input$default_ss_choose_method, which is the
-initial selected value of</li>
-<li>input in server: input$ss_choose_method</li>
-</ul>
+Tab (in app_ui) where they typically provide the default for an input$
+but that default can be overriden there by someone using the app’s
+Advanced Tab, so what ui or server ends up using could be an input$ that
+is adjustable in the Advanced Tab and therefore can be bookmarked (since
+inputs can be bookmarked unless specifically excluded from that).</p>
 </div>
 <div class="section level4">
 <h4 id="web-app-reactives-and-interactive-inputs">web app reactives and interactive inputs<a class="anchor" aria-label="anchor" href="#web-app-reactives-and-interactive-inputs"></a>
@@ -220,11 +256,22 @@ dropdowns, etc. and some selections/inputs can get changed by reactive
 observers, etc.</p>
 </div>
 <div class="section level4">
-<h4 id="bookmarked-url-saved-input-state">Bookmarked URL (saved input$ state)<a class="anchor" aria-label="anchor" href="#bookmarked-url-saved-input-state"></a>
+<h4 id="bookmarks-url-or-server-based-for-saved-input-state">Bookmarks (URL or server-based) for saved input$ state<a class="anchor" aria-label="anchor" href="#bookmarks-url-or-server-based-for-saved-input-state"></a>
 </h4>
 <p>If the app is launched by a bookmark (e.g.URL-encoded bookmark), any
 inputs encoded in the URL will override the above and the app will
 change to a state where the inputs are as specified by the bookmark.</p>
+<p>Bookmarks have limitations though: Notably, uploaded files can only
+be bookmarked if enableBookmarking=“server” not enableBookmarking=“url”.
+Also, bookmarks normally just save the state of UI inputs, not other
+reactive values (unless the server code specifies otherwise by using the
+<code><a href="https://rdrr.io/pkg/shiny/man/onBookmark.html" class="external-link">shiny::onBookmark()</a></code> and <code><a href="https://rdrr.io/pkg/shiny/man/onBookmark.html" class="external-link">shiny::onRestore()</a></code>
+functions to make bookmarks store other information, beyond just
+inputs). Some important global defaults affect the app but not by
+providing initial values for inputs in the shiny app, so some useful
+information including some that is controlled by global defaults or user
+parameters in ejamapp() cannot be bookmarked because it is stored in
+reactives but not as shiny app inputs.</p>
 </div>
 </div>
 <div class="section level3">
@@ -330,8 +377,8 @@ via URL-encoded bookmark can provide it any of the input$ variables as a
 starting state.</p>
 <p>This approach cannot provide settings that are not input$ reactives,
 like some of the defaults in global_defaults_ that are not turned into
-inputs in the app, such as “aboutpage_logo” set in
-global_defaults_shiny.R and used in app_ui.R as the src parameter for
+inputs in the app, such as “app_logo_aboutpage” set in
+global_defaults_package.R and used in app_ui.R as the src parameter for
 img().</p>
 <p>Also note that url-encoded bookmarked inputs can launch the app and
 pass various input$ settings to the app, which would override the
@@ -402,117 +449,126 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 </h4>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gdefs</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "isPublic is"</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
+<span><span class="co">#&gt; isPublic =  FALSE</span></span>
 <span><span class="va">gdefnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gdefs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>global_defaults <span class="op">=</span> <span class="va">gdefnames</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        global_defaults                                </span></span>
-<span><span class="co">#&gt;   [1,] ".app_title"                                   </span></span>
-<span><span class="co">#&gt;   [2,] ".community_report_logo_dir"                   </span></span>
-<span><span class="co">#&gt;   [3,] ".community_report_logo_file"                  </span></span>
-<span><span class="co">#&gt;   [4,] ".community_report_logo_path"                  </span></span>
-<span><span class="co">#&gt;   [5,] ".community_report_title"                      </span></span>
-<span><span class="co">#&gt;   [6,] "aboutpage_logo"                               </span></span>
-<span><span class="co">#&gt;   [7,] "aboutpage_text"                               </span></span>
-<span><span class="co">#&gt;   [8,] "bookmarking_allowed"                          </span></span>
-<span><span class="co">#&gt;   [9,] "default_add_naics_subcategories"              </span></span>
-<span><span class="co">#&gt;  [10,] "default_allow_median_in_barplot_indicators"   </span></span>
-<span><span class="co">#&gt;  [11,] "default_avoidorphans"                         </span></span>
-<span><span class="co">#&gt;  [12,] "default_calculate_ratios"                     </span></span>
-<span><span class="co">#&gt;  [13,] "default_can_show_advanced_settings"           </span></span>
-<span><span class="co">#&gt;  [14,] "default_choices_for_type_of_site_category"    </span></span>
-<span><span class="co">#&gt;  [15,] "default_choices_for_type_of_site_upload"      </span></span>
-<span><span class="co">#&gt;  [16,] "default_circleweight"                         </span></span>
-<span><span class="co">#&gt;  [17,] "default_cities_picked"                        </span></span>
-<span><span class="co">#&gt;  [18,] "default_counties_picked"                      </span></span>
-<span><span class="co">#&gt;  [19,] "default_download_city_fips_bounds"            </span></span>
-<span><span class="co">#&gt;  [20,] "default_download_noncity_fips_bounds"         </span></span>
-<span><span class="co">#&gt;  [21,] "default_epa_program_selected"                 </span></span>
-<span><span class="co">#&gt;  [22,] "default_extra_demog"                          </span></span>
-<span><span class="co">#&gt;  [23,] "default_extratable_hide_missing_rows_for"     </span></span>
-<span><span class="co">#&gt;  [24,] "default_extratable_list_of_sections"          </span></span>
-<span><span class="co">#&gt;  [25,] "default_extratable_show_ratios_in_report"     </span></span>
-<span><span class="co">#&gt;  [26,] "default_extratable_title"                     </span></span>
-<span><span class="co">#&gt;  [27,] "default_extratable_title_top_row"             </span></span>
-<span><span class="co">#&gt;  [28,] "default_hide_about_tab"                       </span></span>
-<span><span class="co">#&gt;  [29,] "default_hide_ejscreenapi_tab"                 </span></span>
-<span><span class="co">#&gt;  [30,] "default_hide_plot_barplot_tab"                </span></span>
-<span><span class="co">#&gt;  [31,] "default_hide_plot_histo_tab"                  </span></span>
-<span><span class="co">#&gt;  [32,] "default_hide_written_report"                  </span></span>
-<span><span class="co">#&gt;  [33,] "default_include_averages"                     </span></span>
-<span><span class="co">#&gt;  [34,] "default_include_ejindexes"                    </span></span>
-<span><span class="co">#&gt;  [35,] "default_include_extraindicators"              </span></span>
-<span><span class="co">#&gt;  [36,] "default_max_mb_upload"                        </span></span>
-<span><span class="co">#&gt;  [37,] "default_max_miles"                            </span></span>
-<span><span class="co">#&gt;  [38,] "default_max_pts_map"                          </span></span>
-<span><span class="co">#&gt;  [39,] "default_max_pts_run"                          </span></span>
-<span><span class="co">#&gt;  [40,] "default_max_pts_select"                       </span></span>
-<span><span class="co">#&gt;  [41,] "default_max_pts_showtable"                    </span></span>
-<span><span class="co">#&gt;  [42,] "default_max_pts_upload"                       </span></span>
-<span><span class="co">#&gt;  [43,] "default_max_shapes_map"                       </span></span>
-<span><span class="co">#&gt;  [44,] "default_maxradius"                            </span></span>
-<span><span class="co">#&gt;  [45,] "default_naics"                                </span></span>
-<span><span class="co">#&gt;  [46,] "default_naics_digits_shown"                   </span></span>
-<span><span class="co">#&gt;  [47,] "default_need_proximityscore"                  </span></span>
-<span><span class="co">#&gt;  [48,] "default_ok2plot"                              </span></span>
-<span><span class="co">#&gt;  [49,] "default_plotkind_1pager"                      </span></span>
-<span><span class="co">#&gt;  [50,] "default_print_uploaded_points_to_log"         </span></span>
-<span><span class="co">#&gt;  [51,] "default_shiny.testmode"                       </span></span>
-<span><span class="co">#&gt;  [52,] "default_show_advanced_settings"               </span></span>
-<span><span class="co">#&gt;  [53,] "default_show_full_header_footer"              </span></span>
-<span><span class="co">#&gt;  [54,] "default_show_ratios_in_report"                </span></span>
-<span><span class="co">#&gt;  [55,] "default_shp_oktypes_1"                        </span></span>
-<span><span class="co">#&gt;  [56,] "default_standard_analysis_title"              </span></span>
-<span><span class="co">#&gt;  [57,] "default_states_picked"                        </span></span>
-<span><span class="co">#&gt;  [58,] "default_subgroups_type"                       </span></span>
-<span><span class="co">#&gt;  [59,] "default_testing"                              </span></span>
-<span><span class="co">#&gt;  [60,] "default_upload_dropdown"                      </span></span>
-<span><span class="co">#&gt;  [61,] "default.an_thresh_comp1"                      </span></span>
-<span><span class="co">#&gt;  [62,] "default.an_thresh_comp2"                      </span></span>
-<span><span class="co">#&gt;  [63,] "default.an_threshgroup1"                      </span></span>
-<span><span class="co">#&gt;  [64,] "default.an_threshgroup2"                      </span></span>
-<span><span class="co">#&gt;  [65,] "default.an_threshnames1"                      </span></span>
-<span><span class="co">#&gt;  [66,] "default.an_threshnames2"                      </span></span>
-<span><span class="co">#&gt;  [67,] "epa_program_help_msg"                         </span></span>
-<span><span class="co">#&gt;  [68,] "escape_html"                                  </span></span>
-<span><span class="co">#&gt;  [69,] "fips_help_msg"                                </span></span>
-<span><span class="co">#&gt;  [70,] "fipspicker_all_counties_button_defaultchecked"</span></span>
-<span><span class="co">#&gt;  [71,] "fipspicker_all_counties_button_defaultshow"   </span></span>
-<span><span class="co">#&gt;  [72,] "fipspicker_all_regions_button_defaultchecked" </span></span>
-<span><span class="co">#&gt;  [73,] "fipspicker_all_regions_button_defaultshow"    </span></span>
-<span><span class="co">#&gt;  [74,] "fipspicker_all_states_button_defaultchecked"  </span></span>
-<span><span class="co">#&gt;  [75,] "fipspicker_all_states_button_defaultshow"     </span></span>
-<span><span class="co">#&gt;  [76,] "fipspicker_fips_type2pick_choices_default"    </span></span>
-<span><span class="co">#&gt;  [77,] "fipspicker_fips_type2pick_default"            </span></span>
-<span><span class="co">#&gt;  [78,] "fipspicker_maxOptions_default_cities_picked"  </span></span>
-<span><span class="co">#&gt;  [79,] "fipspicker_maxOptions_default_counties_picked"</span></span>
-<span><span class="co">#&gt;  [80,] "fipspicker_maxOptions_default_states_picked"  </span></span>
-<span><span class="co">#&gt;  [81,] "frs_help_msg"                                 </span></span>
-<span><span class="co">#&gt;  [82,] "html_footer_fmt"                              </span></span>
-<span><span class="co">#&gt;  [83,] "html_header_fmt"                              </span></span>
-<span><span class="co">#&gt;  [84,] "latlon_help_msg"                              </span></span>
-<span><span class="co">#&gt;  [85,] "marker_cluster_cutoff"                        </span></span>
-<span><span class="co">#&gt;  [86,] "max_radius_default"                           </span></span>
-<span><span class="co">#&gt;  [87,] "maxmax_mb_upload"                             </span></span>
-<span><span class="co">#&gt;  [88,] "maxmax_miles"                                 </span></span>
-<span><span class="co">#&gt;  [89,] "maxmax_pts_map"                               </span></span>
-<span><span class="co">#&gt;  [90,] "maxmax_pts_run"                               </span></span>
-<span><span class="co">#&gt;  [91,] "maxmax_pts_select"                            </span></span>
-<span><span class="co">#&gt;  [92,] "maxmax_pts_showtable"                         </span></span>
-<span><span class="co">#&gt;  [93,] "maxmax_pts_upload"                            </span></span>
-<span><span class="co">#&gt;  [94,] "maxmax_shapes_map"                            </span></span>
-<span><span class="co">#&gt;  [95,] "minmax_mb_upload"                             </span></span>
-<span><span class="co">#&gt;  [96,] "minradius"                                    </span></span>
-<span><span class="co">#&gt;  [97,] "minradius_shapefile"                          </span></span>
-<span><span class="co">#&gt;  [98,] "radius_default"                               </span></span>
-<span><span class="co">#&gt;  [99,] "radius_default_shapefile"                     </span></span>
-<span><span class="co">#&gt; [100,] "sanitize_numeric"                             </span></span>
-<span><span class="co">#&gt; [101,] "sanitize_text"                                </span></span>
-<span><span class="co">#&gt; [102,] "shp_help_msg"                                 </span></span>
-<span><span class="co">#&gt; [103,] "stepradius"                                   </span></span>
-<span><span class="co">#&gt; [104,] "tabshown_default"                             </span></span>
-<span><span class="co">#&gt; [105,] "use_shapefile_from_any"</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1,] "aboutpage_text"                               </span></span>
+<span><span class="co">#&gt;   [2,] "app_logo"                                     </span></span>
+<span><span class="co">#&gt;   [3,] "app_logo_aboutpage"                           </span></span>
+<span><span class="co">#&gt;   [4,] "app_logo_html"                                </span></span>
+<span><span class="co">#&gt;   [5,] "app_title"                                    </span></span>
+<span><span class="co">#&gt;   [6,] "app_version"                                  </span></span>
+<span><span class="co">#&gt;   [7,] "app_version_header_text"                      </span></span>
+<span><span class="co">#&gt;   [8,] "app_version_short"                            </span></span>
+<span><span class="co">#&gt;   [9,] "bookmarking_allowed"                          </span></span>
+<span><span class="co">#&gt;  [10,] "default_add_naics_subcategories"              </span></span>
+<span><span class="co">#&gt;  [11,] "default_allow_median_in_barplot_indicators"   </span></span>
+<span><span class="co">#&gt;  [12,] "default_avoidorphans"                         </span></span>
+<span><span class="co">#&gt;  [13,] "default_bysite_webtable_colnames"             </span></span>
+<span><span class="co">#&gt;  [14,] "default_calculate_ratios"                     </span></span>
+<span><span class="co">#&gt;  [15,] "default_can_show_advanced_settings"           </span></span>
+<span><span class="co">#&gt;  [16,] "default_choices_for_type_of_site_category"    </span></span>
+<span><span class="co">#&gt;  [17,] "default_choices_for_type_of_site_upload"      </span></span>
+<span><span class="co">#&gt;  [18,] "default_circleweight"                         </span></span>
+<span><span class="co">#&gt;  [19,] "default_cities_picked"                        </span></span>
+<span><span class="co">#&gt;  [20,] "default_counties_picked"                      </span></span>
+<span><span class="co">#&gt;  [21,] "default_download_city_fips_bounds"            </span></span>
+<span><span class="co">#&gt;  [22,] "default_download_noncity_fips_bounds"         </span></span>
+<span><span class="co">#&gt;  [23,] "default_epa_program_selected"                 </span></span>
+<span><span class="co">#&gt;  [24,] "default_extra_demog"                          </span></span>
+<span><span class="co">#&gt;  [25,] "default_extratable_hide_missing_rows_for"     </span></span>
+<span><span class="co">#&gt;  [26,] "default_extratable_list_of_sections"          </span></span>
+<span><span class="co">#&gt;  [27,] "default_extratable_show_ratios_in_report"     </span></span>
+<span><span class="co">#&gt;  [28,] "default_extratable_title"                     </span></span>
+<span><span class="co">#&gt;  [29,] "default_extratable_title_top_row"             </span></span>
+<span><span class="co">#&gt;  [30,] "default_hide_about_tab"                       </span></span>
+<span><span class="co">#&gt;  [31,] "default_hide_ejscreenapi_tab"                 </span></span>
+<span><span class="co">#&gt;  [32,] "default_hide_plot_barplot_tab"                </span></span>
+<span><span class="co">#&gt;  [33,] "default_hide_plot_histo_tab"                  </span></span>
+<span><span class="co">#&gt;  [34,] "default_hide_written_report"                  </span></span>
+<span><span class="co">#&gt;  [35,] "default_hyperlink_colnames"                   </span></span>
+<span><span class="co">#&gt;  [36,] "default_include_averages"                     </span></span>
+<span><span class="co">#&gt;  [37,] "default_include_ejindexes"                    </span></span>
+<span><span class="co">#&gt;  [38,] "default_include_extraindicators"              </span></span>
+<span><span class="co">#&gt;  [39,] "default_max_mb_upload"                        </span></span>
+<span><span class="co">#&gt;  [40,] "default_max_miles"                            </span></span>
+<span><span class="co">#&gt;  [41,] "default_max_pts_map"                          </span></span>
+<span><span class="co">#&gt;  [42,] "default_max_pts_run"                          </span></span>
+<span><span class="co">#&gt;  [43,] "default_max_pts_select"                       </span></span>
+<span><span class="co">#&gt;  [44,] "default_max_pts_showtable"                    </span></span>
+<span><span class="co">#&gt;  [45,] "default_max_pts_upload"                       </span></span>
+<span><span class="co">#&gt;  [46,] "default_max_shapes_map"                       </span></span>
+<span><span class="co">#&gt;  [47,] "default_maxradius"                            </span></span>
+<span><span class="co">#&gt;  [48,] "default_naics"                                </span></span>
+<span><span class="co">#&gt;  [49,] "default_naics_digits_shown"                   </span></span>
+<span><span class="co">#&gt;  [50,] "default_need_proximityscore"                  </span></span>
+<span><span class="co">#&gt;  [51,] "default_ok2plot"                              </span></span>
+<span><span class="co">#&gt;  [52,] "default_plotkind_1pager"                      </span></span>
+<span><span class="co">#&gt;  [53,] "default_print_uploaded_points_to_log"         </span></span>
+<span><span class="co">#&gt;  [54,] "default_reports"                              </span></span>
+<span><span class="co">#&gt;  [55,] "default_shiny.testmode"                       </span></span>
+<span><span class="co">#&gt;  [56,] "default_show_advanced_settings"               </span></span>
+<span><span class="co">#&gt;  [57,] "default_show_full_header_footer"              </span></span>
+<span><span class="co">#&gt;  [58,] "default_show_ratios_in_report"                </span></span>
+<span><span class="co">#&gt;  [59,] "default_shp_oktypes_1"                        </span></span>
+<span><span class="co">#&gt;  [60,] "default_standard_analysis_title"              </span></span>
+<span><span class="co">#&gt;  [61,] "default_states_picked"                        </span></span>
+<span><span class="co">#&gt;  [62,] "default_subgroups_type"                       </span></span>
+<span><span class="co">#&gt;  [63,] "default_testing"                              </span></span>
+<span><span class="co">#&gt;  [64,] "default_upload_dropdown"                      </span></span>
+<span><span class="co">#&gt;  [65,] "default.an_thresh_comp1"                      </span></span>
+<span><span class="co">#&gt;  [66,] "default.an_thresh_comp2"                      </span></span>
+<span><span class="co">#&gt;  [67,] "default.an_threshgroup1"                      </span></span>
+<span><span class="co">#&gt;  [68,] "default.an_threshgroup2"                      </span></span>
+<span><span class="co">#&gt;  [69,] "default.an_threshnames1"                      </span></span>
+<span><span class="co">#&gt;  [70,] "default.an_threshnames2"                      </span></span>
+<span><span class="co">#&gt;  [71,] "ejamapi_is_down"                              </span></span>
+<span><span class="co">#&gt;  [72,] "ejscreen_is_down"                             </span></span>
+<span><span class="co">#&gt;  [73,] "epa_program_help_msg"                         </span></span>
+<span><span class="co">#&gt;  [74,] "escape_html"                                  </span></span>
+<span><span class="co">#&gt;  [75,] "fips_help_msg"                                </span></span>
+<span><span class="co">#&gt;  [76,] "fipspicker_all_counties_button_defaultchecked"</span></span>
+<span><span class="co">#&gt;  [77,] "fipspicker_all_counties_button_defaultshow"   </span></span>
+<span><span class="co">#&gt;  [78,] "fipspicker_all_regions_button_defaultchecked" </span></span>
+<span><span class="co">#&gt;  [79,] "fipspicker_all_regions_button_defaultshow"    </span></span>
+<span><span class="co">#&gt;  [80,] "fipspicker_all_states_button_defaultchecked"  </span></span>
+<span><span class="co">#&gt;  [81,] "fipspicker_all_states_button_defaultshow"     </span></span>
+<span><span class="co">#&gt;  [82,] "fipspicker_fips_type2pick_choices_default"    </span></span>
+<span><span class="co">#&gt;  [83,] "fipspicker_fips_type2pick_default"            </span></span>
+<span><span class="co">#&gt;  [84,] "fipspicker_maxOptions_default_cities_picked"  </span></span>
+<span><span class="co">#&gt;  [85,] "fipspicker_maxOptions_default_counties_picked"</span></span>
+<span><span class="co">#&gt;  [86,] "fipspicker_maxOptions_default_states_picked"  </span></span>
+<span><span class="co">#&gt;  [87,] "frs_help_msg"                                 </span></span>
+<span><span class="co">#&gt;  [88,] "html_footer_fmt"                              </span></span>
+<span><span class="co">#&gt;  [89,] "html_header_fmt"                              </span></span>
+<span><span class="co">#&gt;  [90,] "latlon_help_msg"                              </span></span>
+<span><span class="co">#&gt;  [91,] "marker_cluster_cutoff"                        </span></span>
+<span><span class="co">#&gt;  [92,] "max_radius_default"                           </span></span>
+<span><span class="co">#&gt;  [93,] "maxmax_mb_upload"                             </span></span>
+<span><span class="co">#&gt;  [94,] "maxmax_miles"                                 </span></span>
+<span><span class="co">#&gt;  [95,] "maxmax_pts_map"                               </span></span>
+<span><span class="co">#&gt;  [96,] "maxmax_pts_run"                               </span></span>
+<span><span class="co">#&gt;  [97,] "maxmax_pts_select"                            </span></span>
+<span><span class="co">#&gt;  [98,] "maxmax_pts_showtable"                         </span></span>
+<span><span class="co">#&gt;  [99,] "maxmax_pts_upload"                            </span></span>
+<span><span class="co">#&gt; [100,] "maxmax_shapes_map"                            </span></span>
+<span><span class="co">#&gt; [101,] "minmax_mb_upload"                             </span></span>
+<span><span class="co">#&gt; [102,] "minradius"                                    </span></span>
+<span><span class="co">#&gt; [103,] "minradius_shapefile"                          </span></span>
+<span><span class="co">#&gt; [104,] "radius_default"                               </span></span>
+<span><span class="co">#&gt; [105,] "radius_default_shapefile"                     </span></span>
+<span><span class="co">#&gt; [106,] "report_logo"                                  </span></span>
+<span><span class="co">#&gt; [107,] "report_logo_dir"                              </span></span>
+<span><span class="co">#&gt; [108,] "report_logo_file"                             </span></span>
+<span><span class="co">#&gt; [109,] "report_title"                                 </span></span>
+<span><span class="co">#&gt; [110,] "sanitize_numeric"                             </span></span>
+<span><span class="co">#&gt; [111,] "sanitize_text"                                </span></span>
+<span><span class="co">#&gt; [112,] "shp_help_msg"                                 </span></span>
+<span><span class="co">#&gt; [113,] "stepradius"                                   </span></span>
+<span><span class="co">#&gt; [114,] "tabshown_default"                             </span></span>
+<span><span class="co">#&gt; [115,] "use_shapefile_from_any"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="function-params---compiled-full-list">&gt; function params - compiled full list<a class="anchor" aria-label="anchor" href="#function-params---compiled-full-list"></a>
@@ -546,19 +602,20 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="co">#&gt; [21,] "quiet"                       </span></span>
 <span><span class="co">#&gt; [22,] "radius"                      </span></span>
 <span><span class="co">#&gt; [23,] "radius_donut_lower_edge"     </span></span>
-<span><span class="co">#&gt; [24,] "shapefile"                   </span></span>
-<span><span class="co">#&gt; [25,] "showdrinkingwater"           </span></span>
-<span><span class="co">#&gt; [26,] "showpctowned"                </span></span>
-<span><span class="co">#&gt; [27,] "silentinteractive"           </span></span>
-<span><span class="co">#&gt; [28,] "sitepoints"                  </span></span>
-<span><span class="co">#&gt; [29,] "subgroups_type"              </span></span>
-<span><span class="co">#&gt; [30,] "testing"                     </span></span>
-<span><span class="co">#&gt; [31,] "threshgroups"                </span></span>
-<span><span class="co">#&gt; [32,] "threshnames"                 </span></span>
-<span><span class="co">#&gt; [33,] "thresholds"                  </span></span>
-<span><span class="co">#&gt; [34,] "updateProgress"              </span></span>
-<span><span class="co">#&gt; [35,] "updateProgress_getblocks"    </span></span>
-<span><span class="co">#&gt; [36,] "wtdmeancols"</span></span></code></pre></div>
+<span><span class="co">#&gt; [24,] "reports"                     </span></span>
+<span><span class="co">#&gt; [25,] "shapefile"                   </span></span>
+<span><span class="co">#&gt; [26,] "showdrinkingwater"           </span></span>
+<span><span class="co">#&gt; [27,] "showpctowned"                </span></span>
+<span><span class="co">#&gt; [28,] "silentinteractive"           </span></span>
+<span><span class="co">#&gt; [29,] "sitepoints"                  </span></span>
+<span><span class="co">#&gt; [30,] "subgroups_type"              </span></span>
+<span><span class="co">#&gt; [31,] "testing"                     </span></span>
+<span><span class="co">#&gt; [32,] "threshgroups"                </span></span>
+<span><span class="co">#&gt; [33,] "threshnames"                 </span></span>
+<span><span class="co">#&gt; [34,] "thresholds"                  </span></span>
+<span><span class="co">#&gt; [35,] "updateProgress"              </span></span>
+<span><span class="co">#&gt; [36,] "updateProgress_getblocks"    </span></span>
+<span><span class="co">#&gt; [37,] "wtdmeancols"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="shiny-inputs---compiled-full-list">&gt; shiny inputs - compiled full list<a class="anchor" aria-label="anchor" href="#shiny-inputs---compiled-full-list"></a>
@@ -832,6 +889,7 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;   thresholds = list(80, 80),</span></span>
 <span><span class="co">#&gt;   threshnames = list(c(names_ej_pctile, names_ej_state_pctile), c(names_ej_supp_pctile, names_ej_supp_state_pctile)),</span></span>
 <span><span class="co">#&gt;   threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"),</span></span>
+<span><span class="co">#&gt;   reports = EJAM:::global_or_param("default_reports"),</span></span>
 <span><span class="co">#&gt;   updateProgress = NULL,</span></span>
 <span><span class="co">#&gt;   updateProgress_getblocks = NULL,</span></span>
 <span><span class="co">#&gt;   progress_all = NULL,</span></span>
@@ -858,11 +916,11 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;     infer_sitepoints = FALSE, need_blockwt = TRUE, thresholds = list(80, </span></span>
 <span><span class="co">#&gt;         80), threshnames = list(c(names_ej_pctile, names_ej_state_pctile), </span></span>
 <span><span class="co">#&gt;         c(names_ej_supp_pctile, names_ej_supp_state_pctile)), threshgroups = list("EJ-US-or-ST", </span></span>
-<span><span class="co">#&gt;         "Supp-US-or-ST"), updateProgress = NULL, updateProgress_getblocks = NULL, </span></span>
-<span><span class="co">#&gt;     progress_all = NULL, in_shiny = FALSE, quiet = TRUE, silentinteractive = FALSE, </span></span>
-<span><span class="co">#&gt;     called_by_ejamit = TRUE, testing = FALSE, showdrinkingwater = TRUE, </span></span>
-<span><span class="co">#&gt;     showpctowned = TRUE, download_city_fips_bounds = TRUE, download_noncity_fips_bounds = FALSE, </span></span>
-<span><span class="co">#&gt;     ...)  </span></span>
+<span><span class="co">#&gt;         "Supp-US-or-ST"), reports = EJAM:::global_or_param("default_reports"), </span></span>
+<span><span class="co">#&gt;     updateProgress = NULL, updateProgress_getblocks = NULL, progress_all = NULL, </span></span>
+<span><span class="co">#&gt;     in_shiny = FALSE, quiet = TRUE, silentinteractive = FALSE, called_by_ejamit = TRUE, </span></span>
+<span><span class="co">#&gt;     testing = FALSE, showdrinkingwater = TRUE, showpctowned = TRUE, download_city_fips_bounds = TRUE, </span></span>
+<span><span class="co">#&gt;     download_noncity_fips_bounds = FALSE, ...)  </span></span>
 <span><span class="co">#&gt; NULL</span></span>
 <span></span>
 <span><span class="co"># sitepoints               NULL            -- Now can be passed to ejamapp()</span></span>
