@@ -105,7 +105,7 @@ web app and a software toolkit:</p>
 <ul>
 <li><p><a href="webapp.html">EJAM can be used as a web app</a>,
 providing a simple user interface that lets anyone quickly see the
-results of a basic analysis. EJAM is what powered the EJScreen Multisite
+results of a basic analysis. EJAM is what powered the EJSCREEN Multisite
 Tool web application in late 2024/early 2025.</p></li>
 <li><p>EJAM is also an open-source software package (and local web app)
 for developers and analysts. It is an R Package written in the <a href="https://www.r-project.org/" class="external-link">R programming language</a>, with
@@ -143,11 +143,11 @@ modeled exposure or risk, or cities/neighborhoods, etc.).</p></li>
 <h3 id="epa-data-methods">EPA Data &amp; Methods<a class="anchor" aria-label="anchor" href="#epa-data-methods"></a>
 </h3>
 <p>EJAM begins with residential population and environmental data and
-indicators. The default indicators are the ones used in EJScreen. It
-uses the same methods as EJScreen but in a way that is optimized for
+indicators. The default indicators are the ones used in EJSCREEN. It
+uses the same methods as EJSCREEN but in a way that is optimized for
 working with many locations at once.</p>
 <p>The tool runs either a polygon-based or proximity-based analysis at
-each location, just like EJScreen would provide a standard report for a
+each location, just like EJSCREEN would provide a standard report for a
 single location, except EJAM does this for each of a large number of
 locations very quickly.</p>
 </div>
@@ -175,8 +175,8 @@ summary report, plus more flexibility, accuracy, and speed than other
 tools have in the past. The website quickly provides results on the fly
 – The software was optimized to be extremely fast (allowing real-time
 exploratory work), while still using the same block-population
-calculation EJScreen has been using, making it more consistent with how
-EJScreen has always worked and more accurate than other approaches
+calculation EJSCREEN has been using, making it more consistent with how
+EJSCREEN has always worked and more accurate than other approaches
 (e.g., using “areal apportionment” of tracts or block groups, like some
 other tools have used).</p>
 <p><strong>Easy Ways to Specify the Places to Analyze</strong></p>
@@ -192,7 +192,7 @@ functions in an R package, to allow software developers or analysts to
 take advantage of these resources in running their own analyses or
 building or supplementing their own tools, websites, or mobile apps.</p>
 <p><strong>Accuracy and Spatial Resolution</strong></p>
-<p>EJAM and EJScreen use the same approach to characterizing populations
+<p>EJAM and EJSCREEN use the same approach to characterizing populations
 at each site, to maintain consistency and avoid any confusion. Compared
 to other often-used approaches, EJScreen/EJAM use high-resolution
 buffering to provide more accurate information about which populations
@@ -230,11 +230,19 @@ distribution of distances within each residential population group.</p>
 <div class="section level3">
 <h3 id="data-updates">Data Updates<a class="anchor" aria-label="anchor" href="#data-updates"></a>
 </h3>
-<p>Annual data updates were synchronized with EJScreen data updates and
-main version numbers, so EJScreen 2.32 (the updated version released in
-August 2024) and EJAM 2.32 used the same data. Version 2.32 has ACS
-2018-2022 block group residential population data and Census 2020 block
-weights.</p>
+<p>The EPA released EJSCREEN version 2.32 in August 2024 and then in
+January 2025 took EJSCREEN off line, with no plans for further updates.
+The exact same data were used in EJAM version 2.32.0 and EJSCREEN
+version 2.32 released in late 2024. Non-EPA development of EJAM at least
+through version 2.32.6 in September 2025 was still using that same
+dataset.</p>
+<p>EJAM version 2.32.6 (released September 2025) is based on American
+Community Survey (ACS) data representing the five-year period of
+2018-2022 (released by the Census Bureau 2023-12-07). The ACS data are
+the basis for block group resolution estimates of demographic and other
+data on residential populations and households.</p>
+<p>Approximation distribution of residents within a given block group is
+estimated based on Census 2020 block population counts.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -244,7 +252,7 @@ weights.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
