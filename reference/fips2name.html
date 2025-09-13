@@ -92,6 +92,12 @@ after county name</p></dd>
 where county names optionally have comma and 2-character abbreviation or full state name.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This reports the name of the census unit specified by the FIPS code.</p>
+<p>Other functions can instead report the name or code of the enclosing (parent, surrounding) unit,
+such as the State or County that each fips is located within.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="fips_counties_from_countyname.html">fips_counties_from_countyname()</a></code></p></div>
     </div>
@@ -108,8 +114,8 @@ where county names optionally have comma and 2-character abbreviation or full st
 <span>            <span class="va">testinput_fips_states</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">mixfips</span>,</span>
 <span>           sitename <span class="op">=</span> <span class="fu">fips2name</span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
-<span>           stfips <span class="op">=</span> <span class="fu"><a href="fips2state_fips.html">fips2state_fips</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
-<span>           ST <span class="op">=</span> <span class="fu"><a href="fips2state_abbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>           stfips <span class="op">=</span> <span class="fu"><a href="fips2statefips.html">fips2state_fips</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>           ST <span class="op">=</span> <span class="fu"><a href="fips2stateabbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
 <span>           state <span class="op">=</span> <span class="fu"><a href="fips2statename.html">fips2statename</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Alaska"</span><span class="op">)</span></span>
@@ -127,7 +133,7 @@ where county names optionally have comma and 2-character abbreviation or full st
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

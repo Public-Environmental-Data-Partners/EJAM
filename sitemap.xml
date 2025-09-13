@@ -161,8 +161,8 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips2countyname.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips2name.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips2pop.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/fips2state_abbrev.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/fips2state_fips.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/fips2stateabbrev.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/fips2statefips.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips2statename.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips_bg_from_latlon.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips_bgs_in_fips.html</loc></url>
@@ -206,7 +206,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_from_naics.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_from_program.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_from_programid.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/frs_from_regid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_from_sic.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_from_sitename.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_get.html</loc></url>
@@ -278,6 +277,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_join_on_bgid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_join_on_blockid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latloncsv2nexus.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/locate_by_id.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/mact_table.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/map2browser.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/map_blockgroups_over_blocks.html</loc></url>
@@ -463,6 +463,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/radius_inferred.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/read_and_clean_points.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/read_csv_or_xl.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/regid_from_input.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/regid_from_naics.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/report_setup_temp_files.html</loc></url>
@@ -503,6 +504,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/sictable.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/sitepoints_from_any.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/sites_from_file.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/sites_from_input.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/sitetype2text.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/speedmessage.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/speedreport.html</loc></url>
@@ -601,6 +603,8 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_4table.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_by_id.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_columns_bysite.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/url_county_equityatlas.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/url_county_health.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_countyhealth.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_countyhealthrankings.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_echo_facility.html</loc></url>
@@ -623,6 +627,8 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_map_google.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_naics.com.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_online.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/url_state_equityatlas.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/url_state_health.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_statehealth.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_xl_style.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/urls_clusters_and_sort_cols.html</loc></url>

@@ -106,12 +106,12 @@ and then summarized over all blocks in a given block group to create a score for
 <dt id="arg-countradius">countradius<a class="anchor" aria-label="anchor" href="#arg-countradius"></a></dt>
 <dd><p>distance within in which nearby sites are counted to create proximity score.
 In miles, and default is 5 km (5000 / meters_per_mile = 3.106856 miles)
-which is the EJScreen zone for proximity scores based on counts.</p></dd>
+which is the EJSCREEN zone for proximity scores based on counts.</p></dd>
 
 
 <dt id="arg-maxradius">maxradius<a class="anchor" aria-label="anchor" href="#arg-maxradius"></a></dt>
 <dd><p>max distance in miles to search for nearest single facility,
-if none found within countradius. EJScreen seems to use 1,000 km as the max to search,
+if none found within countradius. EJSCREEN seems to use 1,000 km as the max to search,
 since the lowest scores for proximity scores of RMP, TSDF, or NPL are ROUGHLY 0.001,
 (exactly 0.000747782)
 meaning approx. 1/1000 km and km_per_mile = 1.609344 = meters_per_mile / 1000
@@ -154,7 +154,7 @@ blockgroup gets a higher proximity score.</p>
 <p>The formula for this proximity score is the sum of (1/d)
 where each d is distance of a given site in kilometers,
 summed over all sites that are within 5 km (or the single
-closest site if none are within 5 km), just as in EJScreen proximity scores
+closest site if none are within 5 km), just as in EJSCREEN proximity scores
 like the TSDF or RMP scores.</p>
 <p>Any custom user-provided set of points can be turned into a proximity score,
 such as locations of all industrial sites of a certain type,
@@ -163,14 +163,14 @@ created for all blocks and block groups in the US (or just one State or Region).
 Then the proximity scores can be analyzed in a tool like EJAM, just as the
 existing pre-calculated proximity scores are analyzed to represent the
 number of nearby hazardous waste treatment storage and disposal facilities,
-weighted by how far away each one is, as provided in the EJScreen proximity
+weighted by how far away each one is, as provided in the EJSCREEN proximity
 score for TSDFs.</p>
 <p>A custom user-specified proximity score might focus on schools, for example.
 The schools proximity score could be analyzed in EJAM for one or more communities,
 or areas near regulated facilities, or any set of analyzed places.
 That would provide statistics demonstrating which places have more schools
 closer to them (or inside the areas defined by polygons or FIPS codes, for example).</p>
-<p>To create the proximity score, EJAM uses the same method EJScreen used
+<p>To create the proximity score, EJAM uses the same method EJSCREEN used
 to create proximity scores. The specified points first get indexed
 by a utility function called indexpoints() and are searched for and counted near
 every block and blockgroup in the US via a function called getpointsnearby().</p>
@@ -197,7 +197,7 @@ every block and blockgroup in the US via a function called getpointsnearby().</p
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -138,7 +138,7 @@ where you can find facilities based on NAICS or SIC.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="regid_from_naics.html">regid_from_naics</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3366</span>, <span class="fl">33661</span>, <span class="fl">336611</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="regid_from_naics.html">regid_from_naics</a></span><span class="op">(</span><span class="fl">3366</span>, children <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="co"># mapfast(frs_from_naics(336611)) # simple map</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="co"># get name from one code</span></span>
 <span>  <span class="fu"><a href="naics_from_code.html">naics_from_code</a></span><span class="op">(</span><span class="fl">336</span><span class="op">)</span><span class="op">$</span><span class="va">name</span></span>
 <span>  <span class="co"># get the name from each code</span></span>
@@ -148,7 +148,7 @@ where you can find facilities based on NAICS or SIC.</p>
 <span>  <span class="va">naics_counts</span><span class="op">[</span><span class="va">NAICS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">mycode</span>, <span class="op">]</span></span>
 <span>  <span class="co"># see parent codes that contain each code</span></span>
 <span>  <span class="va">naicstable</span><span class="op">[</span><span class="va">code</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">mycode</span>, <span class="op">]</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="co"># how many were found via each naics code?</span></span>
 <span>  <span class="va">found</span> <span class="op">=</span> <span class="fu">latlon_from_naics</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">211</span>,<span class="fl">331</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span> <span class="va">found</span><span class="op">$</span><span class="va">naics_found</span>, <span class="va">found</span><span class="op">$</span><span class="va">naics_query</span><span class="op">)</span></span>
@@ -161,7 +161,7 @@ where you can find facilities based on NAICS or SIC.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

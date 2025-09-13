@@ -102,7 +102,7 @@
           <code><a href="ejscreenit_for_ejam.html">ejscreenit_for_ejam()</a></code>
 
         </dt>
-        <dd>Get EJScreen results directly from EJScreen servers via their API</dd>
+        <dd>Get EJSCREEN results directly from EJSCREEN servers via their API</dd>
       </dl></div><div class="section level2">
       <h2 id="key-functions-for-viewing-results">Key Functions for Viewing Results<a class="anchor" aria-label="anchor" href="#key-functions-for-viewing-results"></a></h2>
 
@@ -209,7 +209,7 @@
           <code><a href="ejam2shapefile.html">ejam2shapefile()</a></code>
 
         </dt>
-        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJScreen, etc.</dd>
+        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJSCREEN, etc.</dd>
       </dl></div><div class="section level2">
       <h2 id="specify-points-by-lat-lon">Specify Points by Lat/Lon<a class="anchor" aria-label="anchor" href="#specify-points-by-lat-lon"></a></h2>
 
@@ -291,13 +291,7 @@
           <code><a href="latlon_from_regid.html">latlon_from_regid()</a></code>
 
         </dt>
-        <dd>Get lat lon (and NAICS) via Facility Registry ID</dd>
-      </dl><dl><dt>
-
-          <code><a href="frs_from_regid.html">frs_from_regid()</a></code>
-
-        </dt>
-        <dd>Use registry ID to see FRS Facility Registry Service data on those EPA-regulated sites</dd>
+        <dd>Get latitude, longitude (and NAICS) via EPA Facility Registry ID See FRS Facility Registry Service data on EPA-regulated sites</dd>
       </dl><dl><dt>
 
           <code><a href="latlon_from_programid.html">latlon_from_programid()</a></code>
@@ -735,7 +729,7 @@
           <code><a href="ejam2shapefile.html">ejam2shapefile()</a></code>
 
         </dt>
-        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJScreen, etc.</dd>
+        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJSCREEN, etc.</dd>
       </dl><dl><dt>
 
           <code><a href="shape2geojson.html">shape2geojson()</a></code>
@@ -776,7 +770,7 @@
           <code><a href="fips2countyfips.html">fips2countyfips()</a></code>
 
         </dt>
-        <dd>Get PARENT COUNTY FIPS of each fips (the County that contains the fips)</dd>
+        <dd>FIPS - Get FIPS codes of the Counties CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
           <code><a href="fipstype.html">fipstype()</a></code>
@@ -800,7 +794,7 @@
           <code><a href="fips2pop.html">fips2pop()</a></code>
 
         </dt>
-        <dd>Get population counts (ACS EJScreen) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
+        <dd>Get population counts (ACS EJSCREEN) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
       </dl><dl><dt>
 
           <code><a href="fips_from_table.html">fips_from_table()</a></code>
@@ -865,13 +859,13 @@
           <code><a href="fips2countyname.html">fips2countyname()</a></code>
 
         </dt>
-        <dd>FIPS - Get county names from county FIPS codes</dd>
+        <dd>FIPS - Get names for the Counties CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
           <code><a href="fips2countyfips.html">fips2countyfips()</a></code>
 
         </dt>
-        <dd>Get PARENT COUNTY FIPS of each fips (the County that contains the fips)</dd>
+        <dd>FIPS - Get FIPS codes of the Counties CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
           <code><a href="shapes_counties_from_countyfips.html">shapes_counties_from_countyfips()</a></code>
@@ -890,6 +884,18 @@
 
         </dt>
         <dd>plot comparison of counties in 1 state, for 1 indicator (variable)</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_county_health.html">url_county_health()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on Counties containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_county_equityatlas.html">url_county_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org</dd>
       </dl></div><div class="section level2">
 
       <h3 id="states">States<a class="anchor" aria-label="anchor" href="#states"></a></h3>
@@ -936,19 +942,19 @@
           <code><a href="fips2statename.html">fips2statename()</a></code>
 
         </dt>
-        <dd>FIPS - Get state names from any type of FIPS codes</dd>
+        <dd>FIPS - Get names of the States CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
-          <code><a href="fips2state_abbrev.html">fips2state_abbrev()</a></code>
+          <code><a href="fips2stateabbrev.html">fips2stateabbrev()</a></code>
 
         </dt>
-        <dd>FIPS - Get state abbreviations from any type of FIPS codes</dd>
+        <dd>FIPS - Get state abbreviations of the states containing the given census units (of any type)</dd>
       </dl><dl><dt>
 
-          <code><a href="fips2state_fips.html">fips2state_fips()</a></code>
+          <code><a href="fips2statefips.html">fips2statefips()</a></code>
 
         </dt>
-        <dd>FIPS - Get state FIPS codes from any type of FIPS codes</dd>
+        <dd>FIPS - Get FIPS codes of the States CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
           <code><a href="state_from_fips_bybg.html">state_from_fips_bybg()</a></code>
@@ -961,6 +967,18 @@
 
         </dt>
         <dd>Find what state is where each point is located</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_state_health.html">url_state_health()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on STATES containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_state_equityatlas.html">url_state_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on STATE containing the given fips, from equity atlas</dd>
       </dl></div><div class="section level2">
 
       <h3 id="regions">Regions<a class="anchor" aria-label="anchor" href="#regions"></a></h3>
@@ -1060,7 +1078,7 @@
           <code><a href="fips2pop.html">fips2pop()</a></code>
 
         </dt>
-        <dd>Get population counts (ACS EJScreen) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
+        <dd>Get population counts (ACS EJSCREEN) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
       </dl></div><div class="section level2">
       <h2 id="calculating-and-aggregating">Calculating and Aggregating<a class="anchor" aria-label="anchor" href="#calculating-and-aggregating"></a></h2>
 
@@ -1379,7 +1397,7 @@
           <code><a href="ejam2shapefile.html">ejam2shapefile()</a></code>
 
         </dt>
-        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJScreen, etc.</dd>
+        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJSCREEN, etc.</dd>
       </dl><dl><dt>
 
           <code><a href="mapfast.html">mapfast()</a></code>
@@ -2068,16 +2086,28 @@
         <dd>Get URLs of FRS reports</dd>
       </dl><dl><dt>
 
-          <code><a href="url_countyhealth.html">url_countyhealth()</a></code>
+          <code><a href="url_county_health.html">url_county_health()</a></code>
 
         </dt>
         <dd>URL functions - Get URLs of useful report(s) on Counties containing the given fips, from countyhealthrankings.org</dd>
       </dl><dl><dt>
 
-          <code><a href="url_statehealth.html">url_statehealth()</a></code>
+          <code><a href="url_state_health.html">url_state_health()</a></code>
 
         </dt>
-        <dd>URL functions - Get URLs of useful report(s) on States containing the given fips, from countyhealthrankings.org</dd>
+        <dd>URL functions - Get URLs of useful report(s) on STATES containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_county_equityatlas.html">url_county_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_state_equityatlas.html">url_state_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on STATE containing the given fips, from equity atlas</dd>
       </dl><dl><dt>
 
           <code><a href="url_naics.com.html">url_naics.com()</a></code>
@@ -2118,11 +2148,11 @@
           <code><a href="map_headernames.html">map_headernames</a></code>
 
         </dt>
-        <dd>map_headernames provides metadata about all indicators in EJAM/EJScreen</dd>
+        <dd>map_headernames provides metadata about all indicators in EJSCREEN / EJAM</dd>
       </dl></div><div class="section level2">
-      <h2 id="ejscreen-api">EJScreen API<a class="anchor" aria-label="anchor" href="#ejscreen-api"></a></h2>
+      <h2 id="ejscreen-api">EJSCREEN API<a class="anchor" aria-label="anchor" href="#ejscreen-api"></a></h2>
 
-      <div class="section-desc"><p>EJAM-EJScreen and using the EJScreen API</p></div>
+      <div class="section-desc"><p>EJAM-EJSCREEN and using the EJSCREEN API</p></div>
 
 
     </div><div class="section level2">
@@ -2135,20 +2165,20 @@
           <code><a href="ejscreenit_for_ejam.html">ejscreenit_for_ejam()</a></code>
 
         </dt>
-        <dd>Get EJScreen results directly from EJScreen servers via their API</dd>
+        <dd>Get EJSCREEN results directly from EJSCREEN servers via their API</dd>
       </dl><dl><dt>
 
           <code><a href="ejscreenit.html">ejscreenit()</a></code>
 
         </dt>
-        <dd>Get EJScreen results near each site, compiled as a table, with map and plot</dd>
+        <dd>Get EJSCREEN results near each site, compiled as a table, with map and plot</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

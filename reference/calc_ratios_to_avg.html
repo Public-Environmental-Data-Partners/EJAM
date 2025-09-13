@@ -114,7 +114,7 @@ vectors of numbers the lengths of dvarnames and evarnames</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Note that colnames returned are same as input, not renamed to say "ratio"
-If names_d_subgroups are included, those means are not in API output from EJScreen
+If names_d_subgroups are included, those means are not in API output from EJSCREEN
 so it gets the means from usastats or statestats</p>
     </div>
 
@@ -123,23 +123,23 @@ so it gets the means from usastats or statestats</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejscreenit_5</span><span class="op">$</span><span class="va">table</span> <span class="co"># has long names</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="fixcolnames.html">fixcolnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">out1</span><span class="op">)</span>,<span class="st">'long'</span>,<span class="st">'r'</span><span class="op">)</span></span>
 <span> <span class="va">out2</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejscreenapi_plus_5</span> <span class="co"># has r names already</span></span>
-<span> </span>
+<span></span>
 <span> <span class="co"># these are data.frames, but the colnames are different:</span></span>
 <span> <span class="co">#   names like "Demog.Index" but they are ratios</span></span>
 <span> <span class="fu">calc_ratios_to_avg</span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">$</span><span class="va">ratios_d</span></span>
 <span> <span class="co">#   names like "ratio.to.avg.Demog.Index"</span></span>
 <span> <span class="va">out</span><span class="op">[</span> , <span class="va">names_d_ratio_to_avg</span><span class="op">]</span> <span class="co"># needs EJAM for names_d_ratio_to_avg</span></span>
-<span> </span>
-<span> <span class="fu"><a href="plot_boxplot_ratios.html">plot_boxplot_ratios</a></span><span class="op">(</span><span class="fu">calc_ratios_to_avg</span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">$</span><span class="va">ratios_d</span>,<span class="st">"pctlowinc"</span>,<span class="st">"% low income"</span>, </span>
+<span></span>
+<span> <span class="fu"><a href="plot_boxplot_ratios.html">plot_boxplot_ratios</a></span><span class="op">(</span><span class="fu">calc_ratios_to_avg</span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">$</span><span class="va">ratios_d</span>,<span class="st">"pctlowinc"</span>,<span class="st">"% low income"</span>,</span>
 <span>     wheretext<span class="op">=</span><span class="st">"Within a mile of"</span><span class="op">)</span></span>
-<span>  </span></code></pre></div>
+<span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

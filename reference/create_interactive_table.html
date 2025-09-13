@@ -68,7 +68,8 @@
 <span>  <span class="va">out</span>,</span>
 <span>  reports <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>,</span>
 <span>  site_report_download_colname <span class="op">=</span> <span class="st">"Download EJAM Report"</span>,</span>
-<span>  columns_used <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  columns_used <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_1site_download_buttons <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -92,6 +93,10 @@
 <dd><p>if specified in server based on defaults or inputs, these are a subset of
 colnames from ejamit()$results_bysite  to show in site-by-site interactive table</p></dd>
 
+
+<dt id="arg-show-site-download-buttons">show_1site_download_buttons<a class="anchor" aria-label="anchor" href="#arg-show-site-download-buttons"></a></dt>
+<dd><p>if TRUE, add column near first with buttons to allow download of 1-site html summary report</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -103,7 +108,7 @@ colnames from ejamit()$results_bysite  to show in site-by-site interactive table
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -148,7 +148,7 @@ using min() of all blockgroup-level values.</p></dd>
 <dt id="arg-subgroups-type">subgroups_type<a class="anchor" aria-label="anchor" href="#arg-subgroups-type"></a></dt>
 <dd><p>Optional (uses default). Set this to
 "nh" for non-hispanic race subgroups as in Non-Hispanic White Alone, nhwa and others in names_d_subgroups_nh;
-"alone" for EJScreen v2.2 style race subgroups as in    White Alone, wa and others in names_d_subgroups_alone;
+"alone" for EJSCREEN v2.2 style race subgroups as in    White Alone, wa and others in names_d_subgroups_alone;
 "both" for both versions. Possibly another option is "original" or "default" but work in progress.</p></dd>
 
 
@@ -161,7 +161,7 @@ using min() of all blockgroup-level values.</p></dd>
 
 
 <dt id="arg-extra-demog">extra_demog<a class="anchor" aria-label="anchor" href="#arg-extra-demog"></a></dt>
-<dd><p>if should include extra indicators from EJScreen report,
+<dd><p>if should include extra indicators from EJSCREEN report,
 on language, more age groups, sex, percent with disability, poverty, etc.</p></dd>
 
 
@@ -238,24 +238,24 @@ the correct denominator like count of those for whom the poverty ratio is known.
 </ul><p>This function requires the following datasets:</p><ul><li><p><a href="blockwts.html">blockwts</a>: data.table with these columns: blockid , bgid, blockwt</p></li>
 <li><p><a href="quaddata.html">quaddata</a> data.table used to create localtree, a quad tree index of block points
 (and localtree that is created when package is loaded)</p></li>
-<li><p><a href="blockgroupstats.html">blockgroupstats</a> - A data.table (such as EJScreen residential population and environmental data by blockgroup)</p></li>
+<li><p><a href="blockgroupstats.html">blockgroupstats</a> - A data.table (such as EJSCREEN residential population and environmental data by blockgroup)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="identification-of-nearby-residents-methodology-"><strong>Identification of nearby residents – methodology:</strong><a class="anchor" aria-label="anchor" href="#identification-of-nearby-residents-methodology-"></a></h2>
-    <p>EJAM uses the same approach as EJScreen does to identify the count and residential population of nearby residents,
-so EJScreen technical documentation should be consulted on the approach,
-at <a href="https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads" class="external-link">EJScreen Technical Info</a>.
+    <p>EJAM uses the same approach as EJSCREEN does to identify the count and residential population of nearby residents,
+so EJSCREEN technical documentation should be consulted on the approach,
+at <a href="https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads" class="external-link">EJSCREEN Technical Info</a>.
 EJAM implements that approach using faster code and data formats, but it
-still uses the same high-resolution approach as described in EJScreen documentation
+still uses the same high-resolution approach as described in EJSCREEN documentation
 and summarized below.</p>
 <p>The identification of nearby residents is currently done in a way that includes all 2020 Census blocks whose
 "internal point" (a lat/lon provided by the Census Bureau) is within the specified distance of the facility point.
-This is taken from the EJScreen block weights file, but can also be independently calculated.</p>
+This is taken from the EJSCREEN block weights file, but can also be independently calculated.</p>
 <p>The summary or aggregation or "rollup" within the buffer is done by calculating the
 population-weighted average block group score among all the people residing in the buffer.
 The weighting is by population count for variables that are fractions of population,
 but other denominators and weights (e.g., households count) are used as appropriate,
-as explained in EJScreen technical documentation on the formulas, and
+as explained in EJSCREEN technical documentation on the formulas, and
 replicated by formulas used in EJAM functions such as doaggregate().</p>
 <p>Since the blockgroup population counts are from American Community Survey (ACS) estimates,
 but the block population counts are from a decennial census, the totals for a blockgroup differ.
@@ -291,7 +291,7 @@ the Decennial census blocks can provide, such as a dasymetric map approach.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
