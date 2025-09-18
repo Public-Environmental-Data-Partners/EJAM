@@ -242,7 +242,7 @@ name happens to be in the global env !</p>
 </h4>
 <p>Then, SOME BUT NOT ALL global_defaults_ settings are in the Advanced
 Tab (in app_ui) where they typically provide the default for an input$
-but that default can be overriden there by someone using the app’s
+but that default can be overridden there by someone using the app’s
 Advanced Tab, so what ui or server ends up using could be an input$ that
 is adjustable in the Advanced Tab and therefore can be bookmarked (since
 inputs can be bookmarked unless specifically excluded from that).</p>
@@ -566,9 +566,11 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="co">#&gt; [110,] "sanitize_numeric"                             </span></span>
 <span><span class="co">#&gt; [111,] "sanitize_text"                                </span></span>
 <span><span class="co">#&gt; [112,] "shp_help_msg"                                 </span></span>
-<span><span class="co">#&gt; [113,] "stepradius"                                   </span></span>
-<span><span class="co">#&gt; [114,] "tabshown_default"                             </span></span>
-<span><span class="co">#&gt; [115,] "use_shapefile_from_any"</span></span></code></pre></div>
+<span><span class="co">#&gt; [113,] "sitereport_download_buttons_colname"          </span></span>
+<span><span class="co">#&gt; [114,] "sitereport_download_buttons_show"             </span></span>
+<span><span class="co">#&gt; [115,] "stepradius"                                   </span></span>
+<span><span class="co">#&gt; [116,] "tabshown_default"                             </span></span>
+<span><span class="co">#&gt; [117,] "use_shapefile_from_any"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="function-params---compiled-full-list">&gt; function params - compiled full list<a class="anchor" aria-label="anchor" href="#function-params---compiled-full-list"></a>
@@ -838,14 +840,15 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;   in_shiny = FALSE,</span></span>
 <span><span class="co">#&gt;   need_blockwt = TRUE,</span></span>
 <span><span class="co">#&gt;   return_shp = FALSE,</span></span>
-<span><span class="co">#&gt;   allow_multiple_fips_types = TRUE</span></span>
+<span><span class="co">#&gt;   allow_multiple_fips_types = TRUE,</span></span>
+<span><span class="co">#&gt;   radius = 0</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; What str() shows (minus the attributes)  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; function (fips, in_shiny = FALSE, need_blockwt = TRUE, return_shp = FALSE, </span></span>
-<span><span class="co">#&gt;     allow_multiple_fips_types = TRUE)  </span></span>
+<span><span class="co">#&gt;     allow_multiple_fips_types = TRUE, radius = 0)  </span></span>
 <span><span class="co">#&gt; NULL</span></span>
 <span></span>
 <span><span class="co"># sitepoints can be a param in ejamapp()</span></span>
@@ -1180,7 +1183,7 @@ settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-pa
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
