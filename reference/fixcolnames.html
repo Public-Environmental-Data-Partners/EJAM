@@ -114,7 +114,7 @@ it returns a blank if the old name is not found at all.</p>
 <li><p>"acsname" (aka "acs", as found in a ACS data file internally used by EJSCREEN, containing all the extra residential population groups and other indicators not stored in the CSV files on the EJSCREEN FTP site)</p></li>
 <li><p>"DEJ" (whether the indicator is residential population, environmental, etc.)</p></li>
 <li><p>"varlist" (which group of names is this variable in, such as "names_d", "names_d_subgroups", "names_d_state_pctile", etc.)</p></li>
-<li><p>"calculation_type" (how it should be aggregated over block groups, such as "wtdmean", "sum of counts", etc.)</p></li>
+<li><p>"calculation_type" (how it should be aggregated over blockgroups, such as "wtdmean", "sum of counts", etc.)</p></li>
 <li><p>"denominator" (the weight to use in aggregating as a wtdmean, normally a count variable that is the universe for a percentage, such as "pop", "hhlds", etc.)</p></li>
 </ul></div>
     <div class="section level2">
@@ -125,14 +125,14 @@ it returns a blank if the old name is not found at all.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># see package tests</span></span>
-<span>  </span>
+<span></span>
 <span> <span class="va">names_d</span></span>
 <span> <span class="fu"><a href="namesbyvarlist.html">namesbyvarlist</a></span><span class="op">(</span><span class="st">'names_d'</span><span class="op">)</span></span>
 <span> <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"pctlowinc"</span><span class="op">)</span></span>
 <span> <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"pcthisp"</span><span class="op">)</span></span>
-<span> </span>
 <span></span>
-<span> <span class="co"># see the different names for the same variable, </span></span>
+<span></span>
+<span> <span class="co"># see the different names for the same variable,</span></span>
 <span> <span class="co"># and see it is not in the csv tables on the FTP site</span></span>
 <span> <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"pcthisp"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"csvname"</span>, <span class="st">"acsname"</span>, <span class="st">"apiname"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -143,13 +143,13 @@ it returns a blank if the old name is not found at all.</p>
 <span> <span class="fu">fixcolnames</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RAW_D_INCOME"</span>, <span class="st">"S_D_LIFEEXP"</span><span class="op">)</span>, newtype <span class="op">=</span> <span class="st">"longname"</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/stats/addmargins.html" class="external-link">addmargins</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">map_headernames</span><span class="op">$</span><span class="va">vartype</span>, <span class="va">map_headernames</span><span class="op">$</span><span class="va">DEJ</span><span class="op">)</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="co"># the columns "newsort" and "reportsort" provide useful sort orders</span></span>
 <span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">map_headernames</span><span class="op">$</span><span class="va">rname</span><span class="op">[</span><span class="va">map_headernames</span><span class="op">$</span><span class="va">varlist</span> <span class="op">==</span> <span class="st">"names_d"</span><span class="op">]</span></span>
-<span>  <span class="co"># same as </span></span>
-<span>  </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"original order"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> </span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>   </span>
+<span>  <span class="co"># same as</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"original order"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"out of order"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"fixed order"</span><span class="op">)</span></span>
 <span>  <span class="va">x</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu">fixcolnames</span><span class="op">(</span><span class="va">x</span>, oldtype <span class="op">=</span> <span class="st">"r"</span>, newtype <span class="op">=</span> <span class="st">"newsort"</span><span class="op">)</span><span class="op">)</span> <span class="op">]</span></span>

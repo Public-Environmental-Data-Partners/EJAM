@@ -69,7 +69,8 @@
 <span>  in_shiny <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  need_blockwt <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  return_shp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  allow_multiple_fips_types <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  allow_multiple_fips_types <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  radius <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,6 +101,10 @@ or FALSE to get the pts data.table much like output of <code><a href="getblocksn
 
 <dt id="arg-allow-multiple-fips-types">allow_multiple_fips_types<a class="anchor" aria-label="anchor" href="#arg-allow-multiple-fips-types"></a></dt>
 <dd><p>if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips</p></dd>
+
+
+<dt id="arg-radius">radius<a class="anchor" aria-label="anchor" href="#arg-radius"></a></dt>
+<dd><p>CURRENTLY NOT IMPLEMENTED - NO BUFFER IS ADDED</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -132,7 +137,7 @@ were valid and had blocks identified, then the data.table here will only include
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

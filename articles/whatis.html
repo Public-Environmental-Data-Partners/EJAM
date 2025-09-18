@@ -110,7 +110,7 @@ Tool web application in late 2024/early 2025.</p></li>
 <li><p>EJAM is also an open-source software package (and local web app)
 for developers and analysts. It is an R Package written in the <a href="https://www.r-project.org/" class="external-link">R programming language</a>, with
 source code on GitHub. It provides functions to help analysts work with
-block group data, points, and polygons, to very quickly aggregate and
+blockgroup data, points, and polygons, to very quickly aggregate and
 compare large numbers of locations.</p></li>
 </ul>
 </div>
@@ -177,7 +177,7 @@ tools have in the past. The website quickly provides results on the fly
 exploratory work), while still using the same block-population
 calculation EJSCREEN has been using, making it more consistent with how
 EJSCREEN has always worked and more accurate than other approaches
-(e.g., using “areal apportionment” of tracts or block groups, like some
+(e.g., using “areal apportionment” of tracts or blockgroups, like some
 other tools have used).</p>
 <p><strong>Easy Ways to Specify the Places to Analyze</strong></p>
 <p>The new tool also lets one pick locations through several different
@@ -199,17 +199,17 @@ buffering to provide more accurate information about which populations
 live inside a buffer, which is important in rural areas where a single
 blockgroup can cover a very large area. For circular buffers, the
 internal points of Census 2020 blocks are used, not areal apportionment
-of block groups, to estimate where residents live within each block
-group. This avoids the simplistic assumption that people are evenly
-spread out within each block group. Instead, it uses blocks to get
-information about which part of a block group is where residents
-actually live. There are several million blocks in the US, as compared
-with fewer than a quarter million block groups. The only more accurate
-approaches are 1) to use areal apportionment of blocks (not block
-groups), but that is very slow, or 2) to use something like the 30x30
-meter grid EPA developed using dasymetric estimates of where people live
-at even higher resolution than a block, but that requires large amounts
-of storage and computer time.</p>
+of blockgroups, to estimate where residents live within each blockgroup.
+This avoids the simplistic assumption that people are evenly spread out
+within each blockgroup. Instead, it uses blocks to get information about
+which part of a blockgroup is where residents actually live. There are
+several million blocks in the US, as compared with fewer than a quarter
+million blockgroups. The only more accurate approaches are 1) to use
+areal apportionment of blocks (not blockgroups), but that is very slow,
+or 2) to use something like the 30x30 meter grid EPA developed using
+dasymetric estimates of where people live at even higher resolution than
+a block, but that requires large amounts of storage and computer
+time.</p>
 <p>EJAM calculations also take note of which residences are near which
 sites, to avoid double-counting people in the summary statistics but
 still allow a user to view results for one site at a time. This is
@@ -239,10 +239,10 @@ dataset.</p>
 <p>EJAM version 2.32.6 (released September 2025) is based on American
 Community Survey (ACS) data representing the five-year period of
 2018-2022 (released by the Census Bureau 2023-12-07). The ACS data are
-the basis for block group resolution estimates of demographic and other
+the basis for blockgroup resolution estimates of demographic and other
 data on residential populations and households.</p>
 <p>Census 2020 block population counts are used for the approximate
-distribution of residents within a given block group.</p>
+distribution of residents within a given blockgroup.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

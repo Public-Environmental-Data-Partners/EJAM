@@ -75,6 +75,7 @@
 <span>  as_html <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ifna <span class="op">=</span> <span class="st">"https://ejanalysis.com"</span>,</span>
 <span>  baseurl <span class="op">=</span> <span class="st">"https://ejamapi-84652557241.us-central1.run.app/report?"</span>,</span>
+<span>  sitenumber <span class="op">=</span> <span class="st">"each"</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -120,13 +121,32 @@ which might get too long for encoding in a URL for the API using GET</p></dd>
 <dd><p>do not change unless endpoint actually changed</p></dd>
 
 
+<dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
+<dd><ul><li><p>"each" (or -1) means return each site's URL</p></li>
+<li><p>"overall" (or 0) means return one URL, combining all sites</p></li>
+<li><p>N (a number &gt; 0) means return just the Nth site's URL</p></li>
+</ul><p>Like with other url_xyz functions, the default is to output
+a vector of URLs, one per site. The default value for sitenumber is
+"each" or -1 which means we want one url for each site.
+Note there is no comparable value of sitenumber in the ejam2report() or ejam2map() or similar functions,
+which never return a vector of reports, maps, etc. Getting a vector of 1 per site is useful mainly for
+the url_xyz functions like url_ejamapi().</p>
+<p>Like the sitenumber parameter in <code><a href="ejam2report.html">ejam2report()</a></code>,
+a value of NULL or 0 or "" or "overall" in url_ejamapi() means
+a single URL is returned that requests one
+overall summary report (assuming &gt;1 sites were provided).</p>
+<p>Specifying sitenumber as a number like 3 means a report based on the third site
+found in the inputs (third point or third fips or third polygon).</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>unused</p></dd>
+<dd><p>a named list of other query parameters passed to the API,
+to allow for expansion of allowed parameters</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>vector of character string URLs</p>
+    <p>vector of character string URLs – see details on sitenumber parameter</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -141,16 +161,28 @@ app but has url-encoded parameters that are app settings, such as sitepoints, ra
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat<span class="op">=</span><span class="fl">37.64122</span>, lon<span class="op">=</span><span class="op">-</span><span class="fl">122.41065</span><span class="op">)</span></span>
-<span> <span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">37.64122</span>, <span class="fl">43.92249</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">122.41065</span>, <span class="op">-</span><span class="fl">72.663705</span><span class="op">)</span><span class="op">)</span></span>
-<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">pts</span><span class="op">)</span></span>
-<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span><span class="va">testpoints_10</span>, radius <span class="op">=</span> <span class="fl">3.1</span><span class="op">)</span></span>
-<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/latlon/testpoints_10.xlsx"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
+<span> <span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat<span class="op">=</span><span class="fl">37.64122</span>, lon<span class="op">=</span><span class="op">-</span><span class="fl">122.41065</span><span class="op">)</span></span>
+<span> <span class="va">pts2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">37.64122</span>, <span class="fl">43.92249</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">122.41065</span>, <span class="op">-</span><span class="fl">72.663705</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="va">pts10</span> <span class="op">=</span> <span class="va">testpoints_10</span></span>
+<span> <span class="va">pts_fname</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/latlon/testpoints_10.xlsx"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span></span>
 <span></span>
+<span>  <span class="co"># vector of 1-site report URLs</span></span>
+<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span><span class="va">pts_fname</span><span class="op">)</span></span>
+<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">pts2</span><span class="op">)</span></span>
+<span> <span class="va">x_bysite</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span><span class="va">pts10</span>, radius <span class="op">=</span> <span class="fl">3.1</span>, sitenumber <span class="op">=</span> <span class="st">"each"</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co">## 1 summary report URL - may not be implemented yet</span></span>
+<span> <span class="co"># x_overall = url_ejamapi(pts10, radius = 3.1, sitenumber = "overall")</span></span>
+<span></span>
+<span> <span class="co"># FIPS Census units</span></span>
 <span> <span class="va">y</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"050014801001"</span>, <span class="st">"050014802001"</span><span class="op">)</span><span class="op">)</span></span>
-<span> <span class="va">y</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_blockgroups</span><span class="op">)</span></span>
+<span> <span class="co">## blockgroups may not be implemented yet</span></span>
+<span> <span class="co"># y = url_ejamapi(fips = testinput_fips_mix)</span></span>
 <span></span>
-<span> <span class="va">z</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">testinput_shapes_2</span><span class="op">[</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geometry"</span>, <span class="st">"FIPS"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span> <span class="co"># Polygons</span></span>
+<span> <span class="va">shp</span> <span class="op">=</span> <span class="va">testinput_shapes_2</span><span class="op">[</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geometry"</span>, <span class="st">"FIPS"</span>, <span class="st">"NAME"</span><span class="op">)</span><span class="op">]</span></span>
+<span> <span class="va">z</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">shp</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="st">"https://ejamapi-84652557241.us-central1.run.app/report?lat=33&amp;lon=-112&amp;buffer=4"</span><span class="op">)</span></span>
@@ -159,6 +191,7 @@ app but has url-encoded parameters that are app settings, such as sitepoints, ra
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="co"># }</span></span>
+<span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -166,7 +199,7 @@ app but has url-encoded parameters that are app settings, such as sitepoints, ra
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

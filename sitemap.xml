@@ -296,6 +296,8 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/mapfastej_counties.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/metadata_add.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/metadata_check.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/metadata_check_print.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/metadata_update_attr.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/meters_per_mile.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/modelDoaggregate.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/modelEjamit.html</loc></url>
@@ -486,6 +488,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shapefile_from_folder.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shapefile_from_gdb.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shapefile_from_gdbzip.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/shapefile_from_geojson_text.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shapefile_from_json.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shapefile_from_sitepoints.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shapefile_from_zip.html</loc></url>

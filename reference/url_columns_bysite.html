@@ -170,6 +170,23 @@ If set FALSE, faster since avoids checking but some links might not work and not
     <div class="dont-index"><p><code><a href="url_ejscreen_report.html">url_ejscreen_report()</a></code> <code><a href="url_ejscreenmap.html">url_ejscreenmap()</a></code> <code><a href="url_echo_facility.html">url_echo_facility()</a></code> <code><a href="url_ejscreenapi_clusters_and_sort_cols.html">url_ejscreenapi_clusters_and_sort_cols()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">=</span>  <span class="fu">url_columns_bysite</span><span class="op">(</span><span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x</span> <span class="op">=</span>  <span class="fu">url_columns_bysite</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, lon<span class="op">=</span><span class="fl">101</span><span class="op">:</span><span class="fl">102</span><span class="op">)</span>, radius <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  INFO_FOR_SITE2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="st">"site2"</span><span class="op">)</span>,</span>
+<span>  Place1info <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"North"</span>, <span class="st">""</span><span class="op">)</span>,</span>
+<span>  keylist_bysite <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>newkey_all_sites <span class="op">=</span> <span class="st">"YES"</span>,</span>
+<span>                        site_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NRO"</span>, <span class="st">"CRS"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="fu">unlinkify</span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">=</span> <span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">x</span> <span class="op">=</span> <span class="va">x</span><span class="op">[</span>, <span class="st">"EJAM Report"</span><span class="op">]</span></span>
+<span><span class="fu">unlinkify</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span></code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

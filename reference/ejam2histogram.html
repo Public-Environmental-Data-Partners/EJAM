@@ -66,11 +66,19 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ejam2histogram</span><span class="op">(</span></span>
 <span>  <span class="va">ejamitout</span>,</span>
-<span>  <span class="va">varname</span>,</span>
+<span>  varname <span class="op">=</span> <span class="st">"Demog.Index"</span>,</span>
+<span>  pctile.varname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"pctile."</span>, <span class="va">varname</span><span class="op">)</span>,</span>
+<span>  popvarname <span class="op">=</span> <span class="st">"pop"</span>,</span>
 <span>  distn_type <span class="op">=</span> <span class="st">"Sites"</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="st">"raw"</span>,</span>
 <span>  n_bins <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  sitetype <span class="op">=</span> <span class="va">ejamitout</span><span class="op">$</span><span class="va">sitetype</span></span>
+<span>  sitetype <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  title_people_raw <span class="op">=</span> <span class="st">"Population Weighted Histogram of Raw Indicator Values"</span>,</span>
+<span>  title_people_pctile <span class="op">=</span> <span class="st">"Population Weighted Histogram of US Percentile Values"</span>,</span>
+<span>  title_sites_raw <span class="op">=</span> <span class="st">"Histogram of Raw Indicator Values Across Sites"</span>,</span>
+<span>  title_sites_pctile <span class="op">=</span> <span class="st">"Histogram of US Percentile Indicator Values Across Sites"</span>,</span>
+<span>  ylab_sites <span class="op">=</span> <span class="st">"Number of sites"</span>,</span>
+<span>  ylab_people <span class="op">=</span> <span class="st">"Weighted Density"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,11 +87,15 @@
 
 
 <dl><dt id="arg-ejamitout">ejamitout<a class="anchor" aria-label="anchor" href="#arg-ejamitout"></a></dt>
-<dd><p>output of an EJAM analysis, like from <code><a href="ejamit.html">ejamit()</a></code></p></dd>
+<dd><p>output of an EJAM analysis, like from <code><a href="ejamit.html">ejamit()</a></code>, or just the $results_bysite part of that</p></dd>
 
 
 <dt id="arg-varname">varname<a class="anchor" aria-label="anchor" href="#arg-varname"></a></dt>
-<dd><p>indicator name, such as 'Demog.Ind' or 'pctlowinc'</p></dd>
+<dd><p>indicator name that is a column name in ejamitout$results_bysite (or in ejamitout), such as 'Demog.Index' or 'pctlowinc'</p></dd>
+
+
+<dt id="arg-pctile-varname">pctile.varname<a class="anchor" aria-label="anchor" href="#arg-pctile-varname"></a></dt>
+<dd><p>name of percentile version of varname</p></dd>
 
 
 <dt id="arg-distn-type">distn_type<a class="anchor" aria-label="anchor" href="#arg-distn-type"></a></dt>
@@ -99,20 +111,45 @@
 
 
 <dt id="arg-sitetype">sitetype<a class="anchor" aria-label="anchor" href="#arg-sitetype"></a></dt>
-<dd><p>what type of sites were analyzed, like <code><a href="ejamit.html">ejamit()</a></code> 'sitetype'. Examples are 'latlon', 'FIPS', 'SHP'</p></dd>
+<dd><p>what type of sites were analyzed, like latlon, fips/FIPS, shp/SHP</p></dd>
+
+
+<dt id="arg-title-people-raw">title_people_raw<a class="anchor" aria-label="anchor" href="#arg-title-people-raw"></a></dt>
+<dd><p>title above plot for this type of plot</p></dd>
+
+
+<dt id="arg-title-people-pctile">title_people_pctile<a class="anchor" aria-label="anchor" href="#arg-title-people-pctile"></a></dt>
+<dd><p>title above plot for this type of plot</p></dd>
+
+
+<dt id="arg-title-sites-raw">title_sites_raw<a class="anchor" aria-label="anchor" href="#arg-title-sites-raw"></a></dt>
+<dd><p>title above plot for this type of plot</p></dd>
+
+
+<dt id="arg-title-sites-pctile">title_sites_pctile<a class="anchor" aria-label="anchor" href="#arg-title-sites-pctile"></a></dt>
+<dd><p>title above plot for this type of plot</p></dd>
+
+
+<dt id="arg-ylab-sites">ylab_sites<a class="anchor" aria-label="anchor" href="#arg-ylab-sites"></a></dt>
+<dd><p>label on y axis for this type of plot</p></dd>
+
+
+<dt id="arg-ylab-people">ylab_people<a class="anchor" aria-label="anchor" href="#arg-ylab-people"></a></dt>
+<dd><p>label on y axis for this type of plot</p></dd>
 
 </dl></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ejam2histogram</span><span class="op">(</span><span class="va">testoutput_ejamit_1000pts_1miles</span>, <span class="st">'Demog.Index'</span>, distn_type<span class="op">=</span><span class="st">'Sites'</span>, data_type<span class="op">=</span><span class="st">'raw'</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ejam2histogram</span><span class="op">(</span><span class="va">testoutput_ejamit_1000pts_1miles</span>, <span class="st">'Demog.Index'</span>, distn_type<span class="op">=</span><span class="st">'Sites'</span>, data_type<span class="op">=</span><span class="st">'raw'</span><span class="op">)</span></span>
+<span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
