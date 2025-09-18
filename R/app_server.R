@@ -1106,10 +1106,38 @@ app_server <- function(input, output, session) {
 
   data_up_fips <- reactive({
 
-    req(input$ss_upload_fips)
-    input_file_path <- input$ss_upload_fips$datapath
-    ## if acceptable file type, read in; if not, send warning text
-    fips_dt <- as.data.table(read_csv_or_xl(fname = input_file_path))
+    xfips <- NULL
+    if (is.null(input$ss_upload_fips)) {
+
+      ### if nothing uploaded, check if fips passed as parameter to ejamapp() in the form of "fips" object
+      xfips <- EJAM:::global_or_param("fips")
+      if (!is.null(xfips)) {
+        cat("fips seems to have been passed as parameter to ejamapp() \n")
+        ## via fipspicker dropdown menus,   ejamapp(fips="10001", default_upload_dropdown = "dropdown", default_selected_type_of_site_category = "FIPS_PLACE")
+        #       # shiny::updateRadioButtons(inputId = "ss_choose_method", selected = "dropdown")        ## default_upload_dropdown = "dropdown"
+        #       # shiny::updateSelectInput(inputId = "ss_choose_method_drop", selected = "FIPS_PLACE)") ## default_selected_type_of_site_category = "FIPS_PLACE"
+        #       data_fips_place(xfips) # directly updates the reactive that normally is set by fipspicker module - can't directly update the selectize in that module?
+        # ### or
+        ## via fips upload buttons,   ejamapp(fips="10001",  default_upload_dropdown = "upload", default_selected_type_of_site_upload = "FIPS")
+        shiny::updateRadioButtons(inputId = "ss_choose_method", selected = "upload") ### input$ss_choose_method = "upload" # default_upload_dropdown = "upload",
+        shiny::updateSelectInput(inputId = "ss_choose_method_upload", selected = "FIPS") # # input$ss_choose_method_upload = "FIPS" # default_selected_type_of_site_upload = "FIPS"
+
+        fips_vec <- xfips
+        fips_dt <- data.table(fips = fips_vec)
+        # fips_vec
+      }
+
+    } else {
+
+      req(input$ss_upload_fips)
+      input_file_path <- input$ss_upload_fips$datapath
+      ## if acceptable file type, read in; if not, send warning text
+      fips_dt <- as.data.table(read_csv_or_xl(fname = input_file_path))
+    }
+    ########################################## #
+
+    if (!is.null(input$ss_upload_fips) || !is.null(xfips)) {
+
     placetype <- 'FIPS'
     ########################################## #
 
@@ -1170,10 +1198,9 @@ app_server <- function(input, output, session) {
     ## reactiveVal() objects in calling envt whose values may be updated here: invalid_alert, an_map_text_pts, disable_buttons,
     ## and it sometimes does shiny::validate(errmsg)
 
-
     fips_vec
     ## update the reactive object data_up_fips() with this new vector of fips
-
+    }
   }) # END OF FIPS UPLOAD
   ################################################################################### #
 
@@ -2173,7 +2200,7 @@ app_server <- function(input, output, session) {
           }
           if (!is.null(fips_shapes) && nrow(fips_shapes) > 0) {
 
-            popups <- popup_from_ejscreen(data_processed()$results_bysite)
+            popups <- popup_from_ejscreen(data_processed()$results_bysite) # linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
             map_shapes_leaflet(fips_shapes, popup = popups)
 
           } else {
@@ -2476,7 +2503,7 @@ app_server <- function(input, output, session) {
   )
   ###############  #
   ### observe 1-site-report buttons ####
-  # (1 button per site in the table of sites, to see barplot for that site)
+  # (1 button per site in the table of sites, to see report or barplot for that site)
 
   cur_button <- reactiveVal(NULL)
   temp_file_path <- reactiveVal(NULL)
@@ -2547,13 +2574,14 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
   output$interactive_table <- DT::renderDT(server = TRUE, expr = {
     req(data_processed())
+    # This also creates the UI buttons for a 1-site report in each row
     create_interactive_table(out = data_processed(),
 
                              # reports param here controls which URL/report columns to show in this table
                              #  (among those already created in data_processed() via ejamit() etc.)
                              #  could change to be an input$ in advanced tab possibly:
                              reports = EJAM:::global_or_param("default_reports"),
-                             sitereport_download_buttons_show = input$sitereport_download_buttons_show,
+                             sitereport_download_buttons_show = isTRUE(input$sitereport_download_buttons_show),
                              sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
                              columns_used = input$bysite_webtable_colnames
@@ -2561,7 +2589,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
     )
   })
   #############################################################################  #
-  ### UI for picking columns to show in table of sites  ####
+  ### advanced tab UI for picking columns to show in table of sites  ####
   # but note this is not the same as controlling the url report columns defined by default_reports
   output$bysite_webtable_colnames_ui <- renderUI({
 

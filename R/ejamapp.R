@@ -98,9 +98,7 @@
 #'  ejamapp(shapefile = system.file("testdata/shapes/testinput_shapes_2.zip", package="EJAM"),
 #'          default_upload_dropdown = "upload", default_selected_type_of_site_upload = "SHP")
 #'
-#'  # a vector or file with fips codes will be allowed also
-#'  ejamapp(fips = testinput_fips_counties,
-#'          default_upload_dropdown = "dropdown", default_selected_type_of_site_upload = "FIPS") # vs FIPS_PLACE ?***
+#'  # a vector or file with fips codes will be allowed also - not implemented yet
 #'
 #'  ## Use preferred settings, for your set of analyses:
 #'
@@ -239,8 +237,22 @@ ejamapp <- function(
   options(shiny.autoload.r=FALSE) # instead of using the file _disable_autoload.R
   on.exit(options(shiny.autoload.r=FALSE)) # restore normal behavior for rest of R session once app halts
 
+  # handle some key convenient parameters that are special cases, not inputs and not defaults:
+  dots = rlang::list2(...)
+  if ("fips" %in% names(dots)) {
+    # dots$fips will be used
+    dots$default_upload_dropdown <- "upload"
+    dots$default_selected_type_of_site_upload <- "FIPS"
+  }
+  if ("shapefile" %in% names(dots)) {
+    # dots$shapefile will be used
+    dots$default_upload_dropdown = "upload"
+    dots$default_selected_type_of_site_upload = "SHP"
+  }
+
+
   global_defaults_or_user_options <- get_global_defaults_or_user_options(
-    user_specified_options = list(...),
+    user_specified_options = dots, # list(...),
     bookmarking_allowed = enableBookmarking
   )
 
