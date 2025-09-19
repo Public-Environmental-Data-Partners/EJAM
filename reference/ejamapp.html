@@ -85,7 +85,7 @@ name of the analysis, etc., or to override caps such as limits on
 file upload size or number of points.</p>
 <p>For example:</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">ejamapp</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">radius_default=</span><span class="fl">3.1</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">radius=</span><span class="fl">3.1</span>,</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">default_max_miles=</span><span class="dv">31</span>,</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">default_max_mb_upload=</span><span class="dv">100</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>)</span></code></pre><p></p></div>
@@ -167,30 +167,27 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span> <span class="co">## using parameters called `sitepoints` and `shapefile` as in `ejamit()`</span></span>
 <span></span>
 <span> <span class="co">#  data.frame with latitude, longitude</span></span>
-<span> <span class="fu">ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, radius_default <span class="op">=</span> <span class="fl">3.1</span>,</span>
-<span>         default_upload_dropdown <span class="op">=</span> <span class="st">"upload"</span>, default_selected_type_of_site_upload <span class="op">=</span> <span class="st">"latlon"</span><span class="op">)</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, radius <span class="op">=</span> <span class="fl">3.1</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co">#  file with latitude, longitude</span></span>
-<span> <span class="fu">ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/latlon/testpoints_10.xlsx"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span>,</span>
-<span>         default_upload_dropdown <span class="op">=</span> <span class="st">"upload"</span>, default_selected_type_of_site_upload <span class="op">=</span> <span class="st">"latlon"</span><span class="op">)</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/latlon/testpoints_10.xlsx"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co">#  spatial data.frame with polygons</span></span>
-<span> <span class="fu">ejamapp</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">testshapes_2</span>,</span>
-<span>         default_upload_dropdown <span class="op">=</span> <span class="st">"upload"</span>, default_selected_type_of_site_upload <span class="op">=</span> <span class="st">"SHP"</span><span class="op">)</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">testshapes_2</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co"># file with polygons</span></span>
-<span> <span class="fu">ejamapp</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/shapes/testinput_shapes_2.zip"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span>,</span>
-<span>         default_upload_dropdown <span class="op">=</span> <span class="st">"upload"</span>, default_selected_type_of_site_upload <span class="op">=</span> <span class="st">"SHP"</span><span class="op">)</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/shapes/testinput_shapes_2.zip"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span> <span class="co"># a vector or file with fips codes will be allowed also</span></span>
-<span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_counties</span>,</span>
-<span>         default_upload_dropdown <span class="op">=</span> <span class="st">"dropdown"</span>, default_selected_type_of_site_upload <span class="op">=</span> <span class="st">"FIPS"</span><span class="op">)</span> <span class="co"># vs FIPS_PLACE ?***</span></span>
+<span> <span class="co"># a vector or file with fips codes</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_counties</span><span class="op">)</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_cities</span><span class="op">)</span></span>
+<span></span>
 <span></span>
 <span> <span class="co">## Use preferred settings, for your set of analyses:</span></span>
 <span></span>
 <span><span class="fu">ejamapp</span><span class="op">(</span></span>
 <span>  default_standard_analysis_title <span class="op">=</span> <span class="st">"PREFERRED REPORT TITLE FOR THESE ANALYSES"</span>,</span>
-<span>  radius_default <span class="op">=</span> <span class="fl">3.1</span>, <span class="co"># PREFERRED RADIUS</span></span>
+<span>  radius <span class="op">=</span> <span class="fl">3.1</span>, <span class="co"># PREFERRED RADIUS</span></span>
 <span>  default_max_miles <span class="op">=</span> <span class="fl">31</span>,      <span class="co"># to raise the radius cap</span></span>
 <span>  default_max_mb_upload <span class="op">=</span> <span class="fl">100</span>, <span class="co"># to raise the file upload size cap</span></span>
 <span>  radius_default_shapefile <span class="op">=</span> <span class="fl">0.1</span> <span class="co"># preferred distance from polygons</span></span>
@@ -210,7 +207,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  default_selected_type_of_site_category<span class="op">=</span><span class="st">"NAICS"</span>,</span>
 <span>  default_naics_digits_shown<span class="op">=</span><span class="st">"detailed"</span>, <span class="co"># if default_naics is &gt;3 digits, this has to be "detailed" not "basic"</span></span>
 <span>  default_naics<span class="op">=</span><span class="st">"562211"</span>,</span>
-<span>  radius_default<span class="op">=</span><span class="fl">3.1</span>,</span>
+<span>  radius<span class="op">=</span><span class="fl">3.1</span>,</span>
 <span>  default_show_advanced_settings<span class="op">=</span><span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -307,7 +304,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

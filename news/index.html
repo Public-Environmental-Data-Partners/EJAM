@@ -194,13 +194,20 @@
 <li>Made some functions internal that until now had been exported, to simplify things for most R users.</li>
 <li>Updated {roxygen2} help file docs and pkgdown documentation webpages</li>
 <li>New function <code><a href="../reference/url_github_preview.html">url_github_preview()</a></code> makes it a bit easier to view rendered HTML reports that each package release or branch stores in the testdata/examples_of_outputs folder, to compare how they look in different versions.</li>
+<li>Spell checked / fixed some typos</li>
+<li>Fixed some documentation</li>
 </ul></div>
 <div class="section level4">
 <h4 id="added-or-changed-2-32-6">Added or Changed<a class="anchor" aria-label="anchor" href="#added-or-changed-2-32-6"></a></h4>
 <ul><li>
+<code><a href="../reference/ejam2report.html">ejam2report()</a></code> now has a sitenumber parameter, to get a report on one site more easily</li>
+<li>
+<code><a href="../reference/ejam2map.html">ejam2map()</a></code> now has a sitenumber parameter, to map one site more easily</li>
+<li>
 <code><a href="../reference/ejam2report.html">ejam2report()</a></code> now downloads FIPS bounds if missing.</li>
 <li>
 <code><a href="../reference/ejam2map.html">ejam2map()</a></code> now downloads FIPS bounds if missing.</li>
+<li>unit tests added for functions including ejam2map() and ejam2excel()</li>
 <li>
 <code><a href="../reference/mapfast.html">mapfast()</a></code> and some others now drop sites with empty geometry before trying to map, avoid an error</li>
 <li>
@@ -208,7 +215,11 @@
 <li>
 <code><a href="../reference/popup_from_any.html">popup_from_any()</a></code> and other map popup functions now drop the geometry column from spatial data.frames to avoid including a mess in the popup</li>
 <li>
+<code><a href="../reference/ejam2histogram.html">ejam2histogram()</a></code> is now exported and has more flexible parameters for title, y axis label, variable names</li>
+<li>
 <code><a href="../reference/shape2geojson.html">shape2geojson()</a></code> is a new helper function that tries to convert a spatial data.frame to text string geojson, the format needed by the 8/2025 version of the EJAM-API</li>
+<li>
+<code><a href="../reference/shapefile_from_any.html">shapefile_from_any()</a></code> now can also recognize a vector of character strings that are geojson polygons, via helper shapefile_from_geojson_text(), the inverse of shape2geojson()</li>
 <li>
 <code>testinput_fips_mix</code> is a new dataset with fips of each type: block, blockgroup, tract, city, county, state</li>
 <li>
@@ -225,6 +236,10 @@
 <code>regids_valid()</code> is a new internal function</li>
 <li>
 <code><a href="../reference/url_linkify.html">url_linkify()</a></code> improved and made internal</li>
+<li>
+<code>urls_from_keylists()</code> utility drafted to help assemble url-encoded API query from lists of key=value arguments, etc.</li>
+<li>
+<code>url_ejamapi2arglist()</code> is a new helper that just parses url-encoded API requests back to arguments like ejamit() would need</li>
 </ul></div>
 <div class="section level4">
 <h4 id="web-app-customization-details-2-32-6">Web app customization details<a class="anchor" aria-label="anchor" href="#web-app-customization-details-2-32-6"></a></h4>
@@ -232,11 +247,12 @@
 </li>
 <li>Added ability to set many options and defaults as parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
 <li>Added many examples to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> documentation showing how to change defaults and options. You can now
-<ul><li>Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
-<li>Provide pre-selected industry NAICS codes, or a set of specific Counties</li>
-<li>Provide a table of lat/lon coordinates to preload at launch e.g., <code>ejamapp(sitepoints=testpoints_10)</code>
+<ul><li>Provide a table of lat/lon coordinates to preload at launch e.g., <code>ejamapp(sitepoints=testpoints_10, radius=5)</code>
 </li>
 <li>Provide a shapefile to preload upon launch</li>
+<li>Provide a fips vector to preload at launch</li>
+<li>Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
+<li>Provide pre-selected industry NAICS codes, or a set of specific Counties</li>
 </ul></li>
 <li>Drafted a new article with technical details: <a href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a>
 </li>
