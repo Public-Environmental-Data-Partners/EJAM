@@ -157,6 +157,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fill_tbl_row.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fill_tbl_row_ej.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fill_tbl_row_subgroups.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/find_in_files.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips2countyfips.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips2countyname.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/fips2name.html</loc></url>
@@ -254,7 +255,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/lat_alias.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon2csv.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon2nexus.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_any_format.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_as.numeric.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_df_clean.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_from_address.html</loc></url>
@@ -266,6 +266,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_from_programid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_from_regid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_from_s2b.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_from_shapefile.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_from_sic.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_from_vectorofcsvpairs.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_infer.html</loc></url>

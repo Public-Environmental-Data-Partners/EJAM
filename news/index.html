@@ -94,9 +94,9 @@
 <li>
 <a href="https://www.ejanalysis.org/ejamdocs" class="external-link">ejanalysis.org/ejamdocs</a> directs you to the documentation:
 <ul><li>
-<a href="../articles/whatis.html">What is EJAM?</a> is an overview of what EJAM can do.</li>
+<a href="https://ejanalysis.github.io/EJAM/articles/whatis.html">What is EJAM?</a> is an overview of what EJAM can do.</li>
 <li>
-<a href="../articles/webapp.html">Accessing the Web App</a> is about the web app.</li>
+<a href="https://ejanalysis.github.io/EJAM/articles/webapp.html">Accessing the Web App</a> is about the web app.</li>
 </ul></li>
 </ul></div>
 <div class="section level4">
@@ -187,7 +187,7 @@
 <h4 id="added-documentation-2-32-6">Added documentation<a class="anchor" aria-label="anchor" href="#added-documentation-2-32-6"></a></h4>
 <ul><li>Simplified the <a href="https://github.com/ejanalysis/EJAM/#readme" class="external-link">README</a>
 </li>
-<li>Improved the <a href="../articles/installing.html">article on how to install the package</a>, but it does need some additional testing/fixes.</li>
+<li>Improved the <a href="https://ejanalysis.github.io/EJAM/articles/installing.html">article on how to install the package</a>, but it does need some additional testing/fixes.</li>
 <li>Renamed fields in the DESCRIPTION file, for VERSION and DATE info!</li>
 <li>Redid sample report, etc. outputs in <code>testdata/examples_of_outputs</code> folder to reflect changes in version numbers shown in report footer and app header, etc.</li>
 <li>Renamed various *.R files and relocated some source code among those, to make some filenames more consistent.</li>
@@ -229,9 +229,12 @@
 <li>
 <code><a href="../reference/fips2name.html">fips2name()</a></code> now handles block fips instead of warning</li>
 <li>
-<code><a href="../reference/sites_from_input.html">sites_from_input()</a></code> new internal function that helps other functions flexibly accept sites in various formats of input parameters: table of points, vectors of lat,lon, spatial data.frame, or fips code vector</li>
-<li>
-<code>sitepoints_from_latlon_or_sitepoints()</code> supports sites_from_input() - it flexibly accepts input as either lat and lon vectors or just a table of point with lat,lon columns - it figures out which to use.</li>
+<code><a href="../reference/sites_from_input.html">sites_from_input()</a></code> new internal function that helps other functions flexibly accept sites in various formats of input parameters:
+<ul><li>lat= and lon= vectors of point coordinates, or</li>
+<li>sitepoints= a data.frame with columns called lat and lon, or</li>
+<li>shapefile= a spatial data.frame of polygons, or</li>
+<li>fips= a vector of census FIPS code</li>
+</ul></li>
 <li>
 <code>regids_valid()</code> is a new internal function</li>
 <li>
@@ -243,25 +246,25 @@
 </ul></div>
 <div class="section level4">
 <h4 id="web-app-customization-details-2-32-6">Web app customization details<a class="anchor" aria-label="anchor" href="#web-app-customization-details-2-32-6"></a></h4>
-<ul><li>Added <code><a href="../reference/ejamapp.html">ejamapp()</a></code> as the new name (alias) for <code><a href="../reference/ejamapp.html">run_app()</a></code>
-</li>
+<ul><li>Added <code><a href="../reference/ejamapp.html">ejamapp()</a></code> as the new name for what was <code><a href="../reference/ejamapp.html">run_app()</a></code> – This launches EJAM as a local shiny app, in RStudio.</li>
 <li>Added ability to set many options and defaults as parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
 <li>Added many examples to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> documentation showing how to change defaults and options. You can now
 <ul><li>Provide a table of lat/lon coordinates to preload at launch e.g., <code>ejamapp(sitepoints=testpoints_10, radius=5)</code>
 </li>
 <li>Provide a shapefile to preload upon launch</li>
 <li>Provide a fips vector to preload at launch</li>
-<li>Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
+<li>Provide radius as a parameter.</li>
+<li>Specify a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
 <li>Provide pre-selected industry NAICS codes, or a set of specific Counties</li>
 </ul></li>
-<li>Drafted a new article with technical details: <a href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a>
+<li>Drafted a new article with technical details: <a href="https://ejanalysis.github.io/EJAM/articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a>
 </li>
 <li>Changed where the app title is stored. It is stored in the DESCRIPTION file as a field. (The app title also can be modified by editing <code>global_defaults_package.R</code> or by passing parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>).</li>
 <li>Fixed a bug where <code>isPublic</code> parameter in <code><a href="../reference/ejamapp.html">ejamapp()</a></code> was being ignored.</li>
 <li>Fixed a bug where threshold-related parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> were being ignored in the latlon case.</li>
 <li>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</li>
 <li>Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in ejamapp().
-<ul><li>For example, radius is now settable by <code>ejamapp(radius_default=3.1)</code> – the old <code>input$default_miles</code> is now called <code>input$radius_default</code>, and the old <code>input$bt_rad_buff</code> is now called <code>input$radius_now</code>
+<ul><li>For example, radius is now settable by <code>ejamapp(radius=3.1)</code>
 </li>
 <li>Renamed global defaults related to app title, logo, and version number, to be more clear and consistent, and moved them to global_defaults_package.R. So logos e.g. could be changed via ejamapp(report_logo=“www/EPA_logo_white_2.png”, app_logo=“www/EPA_logo_white_2.png”). Other similar changes:</li>
 <li>the old global_defaults_ variable “max_default_miles” is now called “max_radius_default”</li>

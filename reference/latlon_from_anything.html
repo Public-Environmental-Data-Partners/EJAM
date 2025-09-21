@@ -85,7 +85,7 @@ as vectors, data.frame, file, or interactively pick file.</p>
 this can be a filename (csv or xlsx, with path), or data.frame/ data.table/ matrix,
 or vector of longitudes (in which case y must be the latitudes).
 File or data.frame/data.table/matrix must have columns called lat and lon, or names that can
-be inferred to be that by latlon_infer()</p></dd>
+be inferred to be that by <code><a href="latlon_infer.html">latlon_infer()</a></code></p></dd>
 
 
 <dt id="arg-lon-if-used">lon_if_used<a class="anchor" aria-label="anchor" href="#arg-lon-if-used"></a></dt>
@@ -102,7 +102,7 @@ will prompt user for file if "anything" is missing.</p></dd>
 
 
 <dt id="arg-set-invalid-to-na">set_invalid_to_na<a class="anchor" aria-label="anchor" href="#arg-set-invalid-to-na"></a></dt>
-<dd><p>used by latlon_df_clean()</p></dd>
+<dd><p>used by <code><a href="latlon_df_clean.html">latlon_df_clean()</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -117,18 +117,11 @@ and a logical column called "valid"</p>
 <p><code><a href="read_csv_or_xl.html">read_csv_or_xl()</a></code>  and</p>
 <p><code><a href="latlon_df_clean.html">latlon_df_clean()</a></code>
 which in turn uses <code><a href="latlon_infer.html">latlon_infer()</a></code> <code><a href="latlon_as.numeric.html">latlon_as.numeric()</a></code> <code><a href="latlon_is.valid.html">latlon_is.valid()</a></code></p>
-<p>A draft function <code><a href="read_and_clean_points.html">read_and_clean_points()</a></code> would a more general way to get points,</p>
-<p>but is still work in progress... it is similar to latlon_from_anything()</p>
-<p>except it also uses these functions:</p>
-<p><code><a href="latlon_from_regid.html">latlon_from_regid()</a></code>,  <code><a href="latlon_from_programid.html">latlon_from_programid()</a></code></p>
-<p>and could eventually use  _from_naics() etc.</p>
-<p>Even more generally, FIPS and shapefile inputs could be read through a
-single wrapper function at some point.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="sitepoints_from_any.html">sitepoints_from_any()</a></code> which is like this but also adds ejam_uniq_id column,
-<code>latlon_from_fips()</code> and <code><a href="shapefile2latlon.html">latlon_from_shapefile()</a></code> that find centroids,
+<code>latlon_from_fips()</code> and <code>latlon_from_shapefile_centroids()</code> that find centroids,
 and see <code><a href="read_csv_or_xl.html">read_csv_or_xl()</a></code> and <code><a href="latlon_df_clean.html">latlon_df_clean()</a></code></p></div>
     </div>
 

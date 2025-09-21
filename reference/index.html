@@ -253,6 +253,12 @@
         <dd>geocode, but only if AOI package is installed and attached and what it imports like tidygeocoder etc.</dd>
       </dl><dl><dt>
 
+          <code><a href="latlon_from_shapefile.html">latlon_from_shapefile()</a></code>
+
+        </dt>
+        <dd>Convert shapefile (class sf) to data.table of lat and lon columns Makes lat and lon columns, from a sfc_POINT class geometry field, or finds centroids of POLYGONS</dd>
+      </dl><dl><dt>
+
           <code><a href="address_from_table.html">address_from_table()</a></code>
 
         </dt>
@@ -675,7 +681,7 @@
           <code><a href="shapefile_from_sitepoints.html">shapefile_from_sitepoints()</a></code>
 
         </dt>
-        <dd>Convert table of lat,lon points/sites into sf:: shapefile</dd>
+        <dd>Convert table of lat,lon points/sites into spatial data.frame / shapefile</dd>
       </dl><dl><dt>
 
           <code><a href="shape_buffered_from_shapefile.html">shape_buffered_from_shapefile()</a></code>
@@ -688,18 +694,6 @@
 
         </dt>
         <dd>shape_buffered_from_shapefile_points - add buffer around shape (points, here)</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_blockpoints_in_shape.html">shapefile2blockpoints()</a></code> <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>
-
-        </dt>
-        <dd>Find all Census blocks in a polygon, using internal point of block</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile2latlon.html">shapefile2latlon()</a></code>
-
-        </dt>
-        <dd>Convert shapefile (class sf) of points to data.table of lat, lon columns</dd>
       </dl><dl><dt>
 
           <code><a href="shapes_from_fips.html">shapes_from_fips()</a></code>
@@ -736,6 +730,12 @@
 
         </dt>
         <dd>convert spatial data.frame to a vector of geojson text strings</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_shapefile.html">latlon_from_shapefile()</a></code>
+
+        </dt>
+        <dd>Convert shapefile (class sf) to data.table of lat and lon columns Makes lat and lon columns, from a sfc_POINT class geometry field, or finds centroids of POLYGONS</dd>
       </dl></div><div class="section level2">
       <h2 id="specify-counties-etc-">Specify Counties etc.<a class="anchor" aria-label="anchor" href="#specify-counties-etc-"></a></h2>
 
@@ -1021,7 +1021,7 @@
         <dd>Find all blocks within each of the FIPS codes provided</dd>
       </dl><dl><dt>
 
-          <code><a href="get_blockpoints_in_shape.html">shapefile2blockpoints()</a></code> <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>
+          <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>
 
         </dt>
         <dd>Find all Census blocks in a polygon, using internal point of block</dd>
