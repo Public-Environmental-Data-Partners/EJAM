@@ -64,7 +64,10 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shape2zip</span><span class="op">(</span><span class="va">shp</span>, file <span class="op">=</span> <span class="st">"shapefile.zip"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shape2zip</span><span class="op">(</span></span>
+<span>  <span class="va">shp</span>,</span>
+<span>  filename <span class="op">=</span> <span class="fu"><a href="create_filename.html">create_filename</a></span><span class="op">(</span>file_desc <span class="op">=</span> <span class="st">"shapefile"</span>, ext <span class="op">=</span> <span class="st">".zip"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -75,13 +78,13 @@
 <dd><p>a spatial data.frame as from <code><a href="shapefile_from_any.html">shapefile_from_any()</a></code> or <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read()</a></code></p></dd>
 
 
-<dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
-<dd><p>full path to and name of the .zip file to create</p></dd>
+<dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
+<dd><p>optional, full path to and name of the .zip file to create</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>normalized path of the cleaned up file param (path and name of .zip)</p>
+    <p>normalized path of the cleaned up filename param (path and name of .zip)</p>
     </div>
 
     <div class="section level2">
@@ -90,7 +93,7 @@
 <span><span class="va">shp</span> <span class="op">&lt;-</span> <span class="va">testshapes_2</span></span>
 <span><span class="co"># \donttest{</span></span>
 <span><span class="va">fname</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"myfile.zip"</span><span class="op">)</span></span>
-<span><span class="va">fpath</span> <span class="op">&lt;-</span> <span class="fu">shape2zip</span><span class="op">(</span>shp <span class="op">=</span> <span class="va">shp</span>, file <span class="op">=</span> <span class="va">fname</span><span class="op">)</span></span>
+<span><span class="va">fpath</span> <span class="op">&lt;-</span> <span class="fu">shape2zip</span><span class="op">(</span>shp <span class="op">=</span> <span class="va">shp</span>, filename <span class="op">=</span> <span class="va">fname</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">fpath</span><span class="op">)</span></span>
 <span><span class="fu">zip</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/zip/reference/zip_list.html" class="external-link">zip_list</a></span><span class="op">(</span><span class="va">fpath</span><span class="op">)</span></span>
 <span><span class="co"># read it back in</span></span>
@@ -103,7 +106,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">

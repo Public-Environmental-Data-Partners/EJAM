@@ -66,11 +66,15 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_filename</span><span class="op">(</span></span>
 <span>  file_desc <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  filename_base <span class="op">=</span> <span class="st">"EJAM"</span>,</span>
+<span>  with_datetime <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ext <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  buffer_dist <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  site_method <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  with_datetime <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  ext <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  replace_spaces_with <span class="op">=</span> <span class="st">" "</span>,</span>
+<span>  maxchar <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  maxchar_total <span class="op">=</span> <span class="fl">150</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -82,16 +86,8 @@
 <dd><p>file description, such as "short report", "long report", "results_table"</p></dd>
 
 
-<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>analysis title</p></dd>
-
-
-<dt id="arg-buffer-dist">buffer_dist<a class="anchor" aria-label="anchor" href="#arg-buffer-dist"></a></dt>
-<dd><p>buffer distance</p></dd>
-
-
-<dt id="arg-site-method">site_method<a class="anchor" aria-label="anchor" href="#arg-site-method"></a></dt>
-<dd><p>site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT</p></dd>
+<dt id="arg-filename-base">filename_base<a class="anchor" aria-label="anchor" href="#arg-filename-base"></a></dt>
+<dd><p>optional word to start the file name</p></dd>
 
 
 <dt id="arg-with-datetime">with_datetime<a class="anchor" aria-label="anchor" href="#arg-with-datetime"></a></dt>
@@ -99,24 +95,53 @@
 
 
 <dt id="arg-ext">ext<a class="anchor" aria-label="anchor" href="#arg-ext"></a></dt>
-<dd><p>optional file extension. will check for '.' and add if not provided</p></dd>
+<dd><p>optional file extension, like ".html" etc. Will check for '.' and add if not provided.</p></dd>
+
+
+<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
+<dd><p>analysis title (capped at 100 characters)</p></dd>
+
+
+<dt id="arg-buffer-dist">buffer_dist<a class="anchor" aria-label="anchor" href="#arg-buffer-dist"></a></dt>
+<dd><p>buffer distance, to follow "Miles from"</p></dd>
+
+
+<dt id="arg-site-method">site_method<a class="anchor" aria-label="anchor" href="#arg-site-method"></a></dt>
+<dd><p>site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT, or anything to follow "places by"</p></dd>
+
+
+<dt id="arg-replace-spaces-with">replace_spaces_with<a class="anchor" aria-label="anchor" href="#arg-replace-spaces-with"></a></dt>
+<dd><p>substitutes this in place of each space in file_desc, title, "places by", "Miles from",
+and used to separate from text for buffer_dist and site_method
+@param maxchar optional max characters for each component of the name
+@param maxchar_total optional max for the entire filename, truncated at end if necessary</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns string of pasted filename with specified components</p>
+    <p>Returns string of file name (with extension but no path) with specified components</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># specify all arguments</span></span>
-<span><span class="fu">create_filename</span><span class="op">(</span></span>
-<span>  file_desc <span class="op">=</span> <span class="st">'results_table'</span>, title <span class="op">=</span> <span class="st">'My Title'</span>, </span>
-<span>  buffer_dist <span class="op">=</span> <span class="fl">1</span>, site_method <span class="op">=</span> <span class="st">'NAICS'</span>, </span>
-<span>  with_datetime<span class="op">=</span><span class="cn">TRUE</span>, ext <span class="op">=</span> <span class="st">'.xlsx'</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># specify title only</span></span>
+<span><span class="fu">create_filename</span><span class="op">(</span>title <span class="op">=</span> <span class="st">'Summary of Analysis'</span>, ext<span class="op">=</span><span class="st">".txt"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># test / see how it works for various combinations of input parameters</span></span>
+<span><span class="va">parameters_table</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span></span>
+<span>  file_desc<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"FILE DESCRIPTION"</span><span class="op">)</span>,</span>
+<span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"My Title"</span><span class="op">)</span>,</span>
+<span>  buffer_dist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3.2</span><span class="op">)</span>,</span>
+<span>  site_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"latlon"</span><span class="op">)</span>,</span>
+<span>  ext <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="st">".html"</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">F</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co"># specify title only</span></span>
-<span><span class="fu">create_filename</span><span class="op">(</span>title <span class="op">=</span> <span class="st">'Summary of Analysis'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>output_filename <span class="op">=</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap</a></span><span class="op">(</span><span class="va">parameters_table</span>, <span class="va">create_filename</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">parameters_table</span></span>
+<span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -124,7 +149,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
