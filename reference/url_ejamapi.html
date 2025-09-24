@@ -71,6 +71,7 @@
 <span>  radius <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  fips <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shapefile <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dTolerance <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  linktext <span class="op">=</span> <span class="st">"Report"</span>,</span>
 <span>  as_html <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ifna <span class="op">=</span> <span class="st">"https://ejanalysis.com"</span>,</span>
@@ -103,6 +104,10 @@
 <dt id="arg-shapefile">shapefile<a class="anchor" aria-label="anchor" href="#arg-shapefile"></a></dt>
 <dd><p>see <code><a href="ejamit.html">ejamit()</a></code>, but each polygon is encoded as geojson string
 which might get too long for encoding in a URL for the API using GET</p></dd>
+
+
+<dt id="arg-dtolerance">dTolerance<a class="anchor" aria-label="anchor" href="#arg-dtolerance"></a></dt>
+<dd><p>number of meters tolerance to use in <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_simplify()</a></code> to simplify polygons to fit as url-encoded text geojson</p></dd>
 
 
 <dt id="arg-linktext">linktext<a class="anchor" aria-label="anchor" href="#arg-linktext"></a></dt>

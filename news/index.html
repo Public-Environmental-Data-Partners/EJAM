@@ -64,15 +64,21 @@
 <div class="section level4">
 <h4 id="id_-restored-language-related-to-environmental-justice-2-32-6">* Restored language related to “Environmental Justice”<a class="anchor" aria-label="anchor" href="#id_-restored-language-related-to-environmental-justice-2-32-6"></a></h4>
 <ul><li>Changed name of tool back to “Environmental Justice Analysis Multisite” tool (from “Environmental and Residential Population Analysis Multisite” tool, the name used in early 2025 through July 2025)</li>
-<li>Restored some text: “EJ Indexes” now once again refers to what were called “Summary Indexes” in early 2025 through July 2025. “Supplementary EJ Indexes” is similarly used once again.</li>
+<li>Restored some text: “EJ Indexes” now once again refers to what were called “Summary Indexes” early 2025 through July. “Supplementary EJ Indexes” is also restored.</li>
 <li>Did not restore all old text, at least not yet: Other language related to “environmental justice” was edited in early 2025 at EPA in response to an Executive Order, but has not been changed back to its original language even in this non-EPA version of the package. For anyone interested, notes listing those changes were archived in a file saved as “EJAM/data-raw/0_generic_terms_notes.R”.</li>
 <li>Made “EJSCREEN” all-caps everywhere (not “EJScreen”)</li>
 <li>Edited descriptions of some language-related indicators (to be shorter and more consistent), changed “block group” to “blockgroup”, etc.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="summary-report-and-tables-of-sites-header-footer-and-links-to-site-reports-2-32-6">Summary Report and Tables of Sites: Header, Footer, and Links to 1-Site Reports<a class="anchor" aria-label="anchor" href="#summary-report-and-tables-of-sites-header-footer-and-links-to-site-reports-2-32-6"></a></h4>
-<ul><li>Report footer now shows exact version number (“2.32.6” not just “2.32”). Same in web app home page header. Fixed missing footer in some reports.</li>
-<li>Tables of sites (web and downloaded excel) and Map popups (web and downloaded html) now have web links to various kinds of 1-site reports, for each site. These were gone, but now are restored and expanded. Links to 2-3 report types are included by default: - summary report on 1 site, as a <em>live</em> webpage (shiny-app-generated) - summary report on 1 site, as a <em>downloaded</em> html file (API-generated) - link to the EJSCREEN app (zoomed to that 1 site) - Others reports can be shown via settings – see table below.</li>
+<ul><li><p>Report footer now shows exact version number (“2.32.6” not just “2.32”). Same in web app home page header. Fixed missing footer in some reports.</p></li>
+<li>
+<p>Tables of sites (web and downloaded excel) and Map popups (web and downloaded html) now have web links to various kinds of 1-site reports, for each site. These were gone, but now are restored and expanded. Links to 2 report types are included by default:</p>
+<ul><li>link to the EJSCREEN app (zoomed to that 1 site)</li>
+<li>summary report on 1 site, as a <em>downloaded</em> html file (API-generated)</li>
+<li>summary report on 1 site, as a <em>live</em> webpage (shiny-generated) (Not yet implemented)</li>
+<li>Others reports can be shown via settings – see table below.</li>
+</ul></li>
 </ul></div>
 <div class="section level4">
 <h4 id="website-now-at-ejanalysisorg-or-ejanalysiscom-2-32-6">Website now at <a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> (or <a href="https://www.ejanalysis.com" class="external-link">ejanalysis.com</a>)<a class="anchor" aria-label="anchor" href="#website-now-at-ejanalysisorg-or-ejanalysiscom-2-32-6"></a></h4>
@@ -109,7 +115,7 @@
 <div class="section level4">
 <h4 id="web-app-customization-2-32-6">Web App Customization<a class="anchor" aria-label="anchor" href="#web-app-customization-2-32-6"></a></h4>
 <ul><li>Added ability to configure web app (change settings), and added ability to pass inputs to the web app at launch. This allows the following:
-<ul><li>Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are. These features may continue to change.</li>
+<ul><li>Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are. These features may evolve.</li>
 <li>Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See <code><a href="../reference/ejamapp.html">ejamapp()</a></code> for examples.</li>
 <li>Anyone hosting a version of the EJAM web app can customize it, e.g., to use a different logo, different default radius, different options for how to select sites, etc.</li>
 </ul></li>
@@ -128,7 +134,8 @@
 </ul></div>
 <div class="section level4">
 <h4 id="weblinks--urls-api-reports-etc-2-32-6">Weblinks / URLs (API, reports, etc.)<a class="anchor" aria-label="anchor" href="#weblinks--urls-api-reports-etc-2-32-6"></a></h4>
-<ul><li>Restored columns of weblinks in single-site reports - they had been missing since 1/2025. Added back to the tables of sites (results_bysite table from <code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejam2tableviewer.html">ejam2tableviewer()</a></code>, etc.) and map popups (in various map functions like <code><a href="../reference/ejam2map.html">ejam2map()</a></code> etc.)</li>
+<ul><li>Restored columns of weblinks in single-site reports - they had been missing since 1/2025. Restored to tables of sites (results_bysite table from <code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejam2tableviewer.html">ejam2tableviewer()</a></code>, etc.) &amp; map popups (in functions like <code><a href="../reference/ejam2map.html">ejam2map()</a></code>)</li>
+<li>The choice of which types of reports to link to is controlled by a “default_reports” setting in the global_defaults_package.R file.</li>
 <li>Added several new functions that can provide these kinds of reports:</li>
 </ul><table class="table"><colgroup><col width="22%"><col width="20%"><col width="25%"><col width="32%"></colgroup><thead><tr><th>header (column title)</th>
 <th>text (of link)</th>
@@ -181,7 +188,22 @@
 <li>
 <code><a href="../reference/url_county_health.html">url_county_health()</a></code> and <code><a href="../reference/url_state_health.html">url_state_health()</a></code> are new or renamed and provide links to reports that used to be called county health rankings</li>
 <li>
-<code><a href="../reference/url_county_equityatlas.html">url_county_equityatlas()</a></code> and <code><a href="../reference/url_state_equityatlas.html">url_state_equityatlas()</a></code> provide links to “Equity Atlas” reports</li>
+<code><a href="../reference/url_county_equityatlas.html">url_county_equityatlas()</a></code> &amp; <code><a href="../reference/url_state_equityatlas.html">url_state_equityatlas()</a></code> make links to Equity Atlas reports</li>
+</ul></div>
+<div class="section level4">
+<h4 id="web-app-customization-details-2-32-6">Web app customization details<a class="anchor" aria-label="anchor" href="#web-app-customization-details-2-32-6"></a></h4>
+<ul><li>Added <code><a href="../reference/ejamapp.html">ejamapp()</a></code> as the new name for what was <code><a href="../reference/ejamapp.html">run_app()</a></code> – This launches EJAM as a local shiny app, in RStudio.</li>
+<li>Added ability to set many options and defaults as parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
+<li>Added many examples to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> documentation showing how to change the defaults and options. You can now provide a set of points, fips, or polygons to preload at launch e.g., <code>ejamapp(sitepoints=testpoints_10, radius=5)</code>
+</li>
+<li>Drafted a new article with technical details: <a href="https://ejanalysis.github.io/EJAM/articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a>
+</li>
+<li>Changed where the app title is stored. It is stored in the DESCRIPTION file as a field. (The app title also can be modified by editing <code>global_defaults_package.R</code> or by passing parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>).</li>
+<li>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</li>
+<li>Fixed a bug where <code>isPublic</code> parameter in <code><a href="../reference/ejamapp.html">ejamapp()</a></code> was being ignored.</li>
+<li>Fixed a bug where threshold-related params in <code><a href="../reference/ejamapp.html">ejamapp()</a></code> got ignored in latlon case.</li>
+<li>Renamed many global_defaults_ variables and shiny app input variables, and check in ejamapp() for special variables, so they are easier to use as parameters in <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
+<li>Renamed many global defaults (related to app title, logo, and version number, etc.), to be more clear and consistent, and moved several to <code>global_defaults_package.R</code>. So logos e.g. could be changed via <code>ejamapp(report_logo="www/EPA_logo_white_2.png", app_logo="www/EPA_logo_white_2.png")</code>, or report_logo=“” to show no logo on reports.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="added-documentation-2-32-6">Added documentation<a class="anchor" aria-label="anchor" href="#added-documentation-2-32-6"></a></h4>
@@ -198,7 +220,7 @@
 <li>Fixed some documentation</li>
 </ul></div>
 <div class="section level4">
-<h4 id="added-or-changed-2-32-6">Added or Changed<a class="anchor" aria-label="anchor" href="#added-or-changed-2-32-6"></a></h4>
+<h4 id="added-or-changed-functions-2-32-6">Added or changed functions<a class="anchor" aria-label="anchor" href="#added-or-changed-functions-2-32-6"></a></h4>
 <ul><li>
 <code><a href="../reference/ejam2report.html">ejam2report()</a></code> now has a sitenumber parameter, to get a report on one site more easily</li>
 <li>
@@ -243,35 +265,6 @@
 <code>urls_from_keylists()</code> utility drafted to help assemble url-encoded API query from lists of key=value arguments, etc.</li>
 <li>
 <code>url_ejamapi2arglist()</code> is a new helper that just parses url-encoded API requests back to arguments like ejamit() would need</li>
-</ul></div>
-<div class="section level4">
-<h4 id="web-app-customization-details-2-32-6">Web app customization details<a class="anchor" aria-label="anchor" href="#web-app-customization-details-2-32-6"></a></h4>
-<ul><li>Added <code><a href="../reference/ejamapp.html">ejamapp()</a></code> as the new name for what was <code><a href="../reference/ejamapp.html">run_app()</a></code> – This launches EJAM as a local shiny app, in RStudio.</li>
-<li>Added ability to set many options and defaults as parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
-<li>Added many examples to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> documentation showing how to change defaults and options. You can now
-<ul><li>Provide a table of lat/lon coordinates to preload at launch e.g., <code>ejamapp(sitepoints=testpoints_10, radius=5)</code>
-</li>
-<li>Provide a shapefile to preload upon launch</li>
-<li>Provide a fips vector to preload at launch</li>
-<li>Provide radius as a parameter.</li>
-<li>Specify a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
-<li>Provide pre-selected industry NAICS codes, or a set of specific Counties</li>
-</ul></li>
-<li>Drafted a new article with technical details: <a href="https://ejanalysis.github.io/EJAM/articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a>
-</li>
-<li>Changed where the app title is stored. It is stored in the DESCRIPTION file as a field. (The app title also can be modified by editing <code>global_defaults_package.R</code> or by passing parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>).</li>
-<li>Fixed a bug where <code>isPublic</code> parameter in <code><a href="../reference/ejamapp.html">ejamapp()</a></code> was being ignored.</li>
-<li>Fixed a bug where threshold-related parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> were being ignored in the latlon case.</li>
-<li>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</li>
-<li>Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in ejamapp().
-<ul><li>For example, radius is now settable by <code>ejamapp(radius=3.1)</code>
-</li>
-<li>Renamed global defaults related to app title, logo, and version number, to be more clear and consistent, and moved them to global_defaults_package.R. So logos e.g. could be changed via ejamapp(report_logo=“www/EPA_logo_white_2.png”, app_logo=“www/EPA_logo_white_2.png”). Other similar changes:</li>
-<li>the old global_defaults_ variable “max_default_miles” is now called “max_radius_default”</li>
-<li>the old global_defaults_ variable “intro_text” is now called “aboutpage_text”</li>
-<li>the old global_defaults_ variable “default_default_miles_shapefile” is now called “radius_default_shapefile” (to buffer polygons)</li>
-<li>the old reactive sanitized_bt_rad_buff() is now called sanitized_radius_now()</li>
-</ul></li>
 </ul></div>
 </div>
 </div>
