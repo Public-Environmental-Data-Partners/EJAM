@@ -214,7 +214,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span><span class="co">## All states, full table</span></span>
 <span><span class="co"># newvars &lt;- acs_bybg(table = "B01001")</span></span>
 <span></span>
@@ -223,7 +223,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span></span>
 <span><span class="co">## Format new data to match rows of blockgroupstats</span></span>
 <span></span>
-<span><span class="fu">setnames</span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span></span>
 <span><span class="va">newvars</span> <span class="op">&lt;-</span> <span class="va">newvars</span><span class="op">[</span><span class="va">blockgroupstats</span><span class="op">[</span>,<span class="fu">.</span><span class="op">(</span><span class="va">bgfips</span>, <span class="va">ST</span><span class="op">)</span><span class="op">]</span>, ,  on <span class="op">=</span> <span class="st">"bgfips"</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">)</span></span>
@@ -236,7 +236,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span><span class="va">mystates</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DC"</span>, <span class="st">'RI'</span><span class="op">)</span></span>
 <span><span class="va">newvars</span> <span class="op">&lt;-</span> <span class="fu">acs_bybg</span><span class="op">(</span>variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B01001_001"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"B01001_0"</span>, <span class="fl">31</span><span class="op">:</span><span class="fl">39</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  state <span class="op">=</span> <span class="va">mystates</span><span class="op">)</span></span>
-<span><span class="fu">setnames</span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
 <span><span class="va">newvars</span><span class="op">[</span>, <span class="va">ST</span> <span class="op">:=</span> <span class="fu"><a href="fips2stateabbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="va">bgfips</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"E$"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -256,7 +256,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">'age1849female'</span>, <span class="st">'Count of women ages 18-49'</span>,</span>
 <span>             <span class="fu"><a href="fixcolnames.html">fixcolnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span>, <span class="st">'r'</span>, <span class="st">'long'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># }</span></span></code></pre></div>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
