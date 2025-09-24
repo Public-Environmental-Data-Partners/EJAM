@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -65,9 +66,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">popup_from_ejscreen</span><span class="op">(</span></span>
 <span>  <span class="va">out</span>,</span>
-<span>  linkcolname <span class="op">=</span> <span class="st">"EJScreen Report"</span>,</span>
-<span>  linkcolname2 <span class="op">=</span> <span class="st">"EJScreen Map"</span>,</span>
-<span>  linkcolname3 <span class="op">=</span> <span class="st">"EJScreenACS"</span>,</span>
+<span>  linkcolnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span><span class="op">$</span><span class="va">header</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -81,16 +80,8 @@
 The table of raw data in data.frame form, with results of EJ analysis.</p></dd>
 
 
-<dt id="arg-linkcolname">linkcolname<a class="anchor" aria-label="anchor" href="#arg-linkcolname"></a></dt>
-<dd><p>Name of one column in the table that has links to some URL</p></dd>
-
-
-<dt id="arg-linkcolname-">linkcolname2<a class="anchor" aria-label="anchor" href="#arg-linkcolname-"></a></dt>
-<dd><p>Another like linkcolname</p></dd>
-
-
-<dt id="arg-linkcolname-">linkcolname3<a class="anchor" aria-label="anchor" href="#arg-linkcolname-"></a></dt>
-<dd><p>another</p></dd>
+<dt id="arg-linkcolnames">linkcolnames<a class="anchor" aria-label="anchor" href="#arg-linkcolnames"></a></dt>
+<dd><p>Vector of column names in the table that have links to URLs like reports about single sites</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -106,7 +97,7 @@ The table of raw data in data.frame form, with results of EJ analysis.</p></dd>
     <p>Popup shows up in a window when you
 click on a site on the map, when viewing the results of EJ analysis of
 each site.</p>
-<p>THIS IS CURRENTLY HARD CODED TO USE EJScreen VARIABLE NAMES.</p>
+<p>THIS IS CURRENTLY HARD CODED TO USE EJSCREEN VARIABLE NAMES.</p>
 <p>It provides raw scores (but not for summary indexes) and US and State percentiles if available:</p><ul><li><p>some site id info fields if found</p></li>
 <li><p>latitude, longitude, and size of area around site</p></li>
 <li><p>Indicators like population count, Residential Population Demog. Indicator, etc.</p></li>
@@ -120,11 +111,11 @@ each site.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

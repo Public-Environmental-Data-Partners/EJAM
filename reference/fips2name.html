@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -91,14 +92,40 @@ after county name</p></dd>
 where county names optionally have comma and 2-character abbreviation or full state name.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This reports the name of the census unit specified by the FIPS code.</p>
+<p>Other functions can instead report the name or code of the enclosing (parent, surrounding) unit,
+such as the State or County that each fips is located within.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="fips_counties_from_countyname.html">fips_counties_from_countyname()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="fu">fips2name</span><span class="op">(</span><span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AK"</span>, <span class="st">"LA"</span><span class="op">)</span><span class="op">)</span>  <span class="op">)</span></span>
-<span>  <span class="fu">fips2name</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">22</span>, <span class="fl">02013</span><span class="op">)</span><span class="op">)</span>  <span class="co"># can have mix where some are a whole state and others are a county.</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fips2name</span><span class="op">(</span><span class="fu"><a href="fips_counties_from_statename.html">fips_counties_from_statename</a></span><span class="op">(</span><span class="st">"Delaware"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cfips</span> <span class="op">=</span> <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RI"</span>, <span class="st">"DE"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">fips2name</span><span class="op">(</span><span class="va">cfips</span><span class="op">)</span></span>
+<span><span class="fu">fips2name</span><span class="op">(</span><span class="st">"10001"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mixfips</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">testinput_fips_blockgroups</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">testinput_fips_tracts</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>            <span class="va">testinput_fips_cities</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">testinput_fips_counties</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>            <span class="va">testinput_fips_states</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">mixfips</span>,</span>
+<span>           sitename <span class="op">=</span> <span class="fu">fips2name</span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>           stfips <span class="op">=</span> <span class="fu"><a href="fips2statefips.html">fips2state_fips</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>           ST <span class="op">=</span> <span class="fu"><a href="fips2stateabbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>           state <span class="op">=</span> <span class="fu"><a href="fips2statename.html">fips2statename</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Alaska"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"NY"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Kings County, NY"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Minneapolis, MN"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Anchorage, AK"</span><span class="op">)</span> <span class="co"># not found</span></span>
+<span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Anchorage, AK"</span>, usegrep <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="co"># finds the city</span></span>
+<span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Anchorage municipality, AK"</span><span class="op">)</span> <span class="co"># finds the county of same name, not city</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -106,11 +133,11 @@ where county names optionally have comma and 2-character abbreviation or full st
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

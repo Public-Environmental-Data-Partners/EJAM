@@ -11,7 +11,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -94,6 +95,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <span>  threshnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_ej_pctile</span>, <span class="va">names_ej_state_pctile</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_ej_supp_pctile</span>,</span>
 <span>    <span class="va">names_ej_supp_state_pctile</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  threshgroups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"EJ-US-or-ST"</span>, <span class="st">"Supp-US-or-ST"</span><span class="op">)</span>,</span>
+<span>  reports <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>,</span>
 <span>  updateProgress <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  updateProgress_getblocks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  progress_all <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -133,16 +135,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <dt id="arg-avoidorphans">avoidorphans<a class="anchor" aria-label="anchor" href="#arg-avoidorphans"></a></dt>
 <dd><p>logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
 it keeps looking past radius, up to maxradius, to find nearest 1 BLOCK.
-What EJScreen does in that case is report NA, right?
-So, does EJAM really need to report stats on residents presumed to be within radius,
-if no block centroid is within radius?
-Best estimate might be to report indicators from nearest block centroid
-which is probably almost always the one your site is sitting inside of,
-but ideally would adjust total count to be a fraction of blockwt
-based on what is area of circular buffer as fraction of area of block it is apparently inside of.
-Setting this to TRUE can produce unexpected results, which will not match EJScreen numbers.
-Note that if creating a proximity score, by contrast, you
-instead want to find nearest 1 SITE if none within radius of this BLOCK.</p></dd>
+EJSCREEN would just report NA in that situation.</p></dd>
 
 
 <dt id="arg-quadtree">quadtree<a class="anchor" aria-label="anchor" href="#arg-quadtree"></a></dt>
@@ -236,8 +229,14 @@ at each site. (see default)</p></dd>
 <dd><p>list of text names of the groups (see default)</p></dd>
 
 
+<dt id="arg-reports">reports<a class="anchor" aria-label="anchor" href="#arg-reports"></a></dt>
+<dd><p>optional list of lists specifying which report types to include –
+see the file "global_defaults_package.R" or source code for this function for how this is defined.</p></dd>
+
+
 <dt id="arg-updateprogress">updateProgress<a class="anchor" aria-label="anchor" href="#arg-updateprogress"></a></dt>
-<dd><p>progress bar function passed to <code><a href="doaggregate.html">doaggregate()</a></code> in shiny app</p></dd>
+<dd><p>CURRENTLY UNUSED - was a progress bar function passed to <code><a href="doaggregate.html">doaggregate()</a></code> in shiny app,
+but not actually used in ejamit().</p></dd>
 
 
 <dt id="arg-updateprogress-getblocks">updateProgress_getblocks<a class="anchor" aria-label="anchor" href="#arg-updateprogress-getblocks"></a></dt>
@@ -264,7 +263,7 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 
 
 <dt id="arg-called-by-ejamit">called_by_ejamit<a class="anchor" aria-label="anchor" href="#arg-called-by-ejamit"></a></dt>
-<dd><p>Set to TRUE by <code>ejamit()</code> to suppress some outputs even if ejamit(silentinteractive=F)</p></dd>
+<dd><p>passed to doaggregate(). Set to TRUE by <code>ejamit()</code> to suppress some outputs even if ejamit(silentinteractive=F)</p></dd>
 
 
 <dt id="arg-testing">testing<a class="anchor" aria-label="anchor" href="#arg-testing"></a></dt>
@@ -302,7 +301,7 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">dim</span>(testoutput_ejamit_10pts_1miles<span class="sc">$</span>results_summarized<span class="sc">$</span>keyindicators)</span></code></pre><p></p></div><ul><li><p><strong>results_overall</strong>  a data.table with one row that provides the summary across all sites, the aggregated results for all unique residents.</p></li>
 <li><p><strong>results_bysite</strong>   results for individual sites (buffers) - a data.table of results,
 one row per ejam_uniq_id (i.e., each site analyzed), one column per indicator</p></li>
-<li><p><strong>results_bybg_people</strong>  results for each block group, to allow for
+<li><p><strong>results_bybg_people</strong>  results for each blockgroup, to allow for
 showing the distribution of each
 indicator across everyone, including the distribution within a
 single residential population group, for example. This table is essential
@@ -410,11 +409,11 @@ one blockgroup since it may be near two analyzed sites, for example.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

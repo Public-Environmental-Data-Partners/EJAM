@@ -10,9 +10,9 @@ Each point can be the location of a regulated facility or other type of site, an
 the blocks are a high-resolution source of information about where
 residents live.
 Finding which blocks have their internal points in a circle provides
-a way to quickly estimate what fraction of a block group is
+a way to quickly estimate what fraction of a blockgroup is
 inside the circular buffer more accurately and more quickly than
-areal apportionment of block groups would provide."><meta property="og:description" content="Get distance from each site (e.g., facility) to each
+areal apportionment of blockgroups would provide."><meta property="og:description" content="Get distance from each site (e.g., facility) to each
 Census block centroid within some radius
 Given a set of points and a specified radius,
 this function quickly finds all the US Census blocks near each point.
@@ -23,9 +23,9 @@ Each point can be the location of a regulated facility or other type of site, an
 the blocks are a high-resolution source of information about where
 residents live.
 Finding which blocks have their internal points in a circle provides
-a way to quickly estimate what fraction of a block group is
+a way to quickly estimate what fraction of a blockgroup is
 inside the circular buffer more accurately and more quickly than
-areal apportionment of block groups would provide."><meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg"></head><body>
+areal apportionment of blockgroups would provide."><meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -33,7 +33,7 @@ areal apportionment of block groups would provide."><meta property="og:image" co
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@ areal apportionment of block groups would provide."><meta property="og:image" co
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -95,9 +96,9 @@ Each block is defined by its Census-provided internal point, by latitude and lon
 the blocks are a high-resolution source of information about where
 residents live.</p>
 <p>Finding which blocks have their internal points in a circle provides
-a way to quickly estimate what fraction of a block group is
+a way to quickly estimate what fraction of a blockgroup is
 inside the circular buffer more accurately and more quickly than
-areal apportionment of block groups would provide.</p>
+areal apportionment of blockgroups would provide.</p>
     </div>
 
     <div class="section level2">
@@ -140,14 +141,14 @@ areal apportionment of block groups would provide.</p>
 <dt id="arg-avoidorphans">avoidorphans<a class="anchor" aria-label="anchor" href="#arg-avoidorphans"></a></dt>
 <dd><p>logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
 it keeps looking past radius, up to maxradius, to find nearest 1 BLOCK.
-What EJScreen does in that case is report NA, right? So,
+What EJSCREEN does in that case is report NA, right? So,
 does EJAM really need to report stats on residents presumed to be within radius,
 if no block centroid is within radius?
 Best estimate might be to report indicators from nearest block centroid which is
 probably almost always the one your site is sitting inside of,
 but ideally would adjust total count to be a fraction of blockwt based on
 what is area of circular buffer as fraction of area of block it is apparently inside of.
-Setting this to TRUE can produce unexpected results, which will not match EJScreen numbers.</p>
+Setting this to TRUE can produce unexpected results, which will not match EJSCREEN numbers.</p>
 <p>Note that if creating a proximity score, by contrast, you instead want to find nearest 1 SITE if none within radius of this BLOCK.</p></dd>
 
 
@@ -206,11 +207,11 @@ The blocks are pre-indexed for the whole USA, via the data object quadtree aka l
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>
