@@ -13,7 +13,7 @@ plot_distance_mean_by_group(), but show a table not plot, by default."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,7 @@ plot_distance_mean_by_group(), but show a table not plot, by default."><meta pro
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -143,12 +144,12 @@ If returnwhat is "plot" then it returns the plot object as needed for <code><a h
 so values below 1 mean the given group lives closer to facilities.
 A value of 0.85 would mean the group is only 85% as far from a site as everyone else.</p>
 <p>Note it is in miles assuming input was in miles, and the distance for each resident is
-actually the average distance of all residents within their Census block (not block group),
+actually the average distance of all residents within their Census block (not blockgroup),
 and when a site is very close to the block internal point (like a centroid)
 relative to the size of the block, the distance to the average resident in the block is
 estimated as 90 percent of the effective radius, which is what the radius of the block
 would be if it were the same area in square meters or miles but circular in shape.</p>
-<p>This is the approach used in EJScreen to estimate average proximity of a block resident in
+<p>This is the approach used in EJSCREEN to estimate average proximity of a block resident in
 cases where the block is extremely close to the site or the site may actually be inside the block,
 or exactly on top of the internal point of the block, in which case zero would not be an
 appropriate estimate of the distance, hence this adjustment is made in EJAM <code><a href="getblocksnearby.html">getblocksnearby()</a></code></p>
@@ -163,11 +164,11 @@ appropriate estimate of the distance, hence this adjustment is made in EJAM <cod
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

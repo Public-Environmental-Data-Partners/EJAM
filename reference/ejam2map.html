@@ -9,7 +9,7 @@ create a map of the points."><meta property="og:image" content="https://ejanalys
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@ create a map of the points."><meta property="og:image" content="https://ejanalys
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -68,10 +69,10 @@ create a map of the points.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ejam2map</span><span class="op">(</span></span>
 <span>  <span class="va">ejamitout</span>,</span>
-<span>  radius <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  column_names <span class="op">=</span> <span class="st">"ej"</span>,</span>
 <span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  shp <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  shp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sitenumber <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -81,10 +82,6 @@ create a map of the points.</p>
 
 <dl><dt id="arg-ejamitout">ejamitout<a class="anchor" aria-label="anchor" href="#arg-ejamitout"></a></dt>
 <dd><p>output of ejamit()</p></dd>
-
-
-<dt id="arg-radius">radius<a class="anchor" aria-label="anchor" href="#arg-radius"></a></dt>
-<dd><p>radius in miles</p></dd>
 
 
 <dt id="arg-column-names">column_names<a class="anchor" aria-label="anchor" href="#arg-column-names"></a></dt>
@@ -97,6 +94,10 @@ create a map of the points.</p>
 
 <dt id="arg-shp">shp<a class="anchor" aria-label="anchor" href="#arg-shp"></a></dt>
 <dd><p>shapefile it can map if analysis was for polygons, for example</p></dd>
+
+
+<dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
+<dd><p>as used in <code><a href="ejam2report.html">ejam2report()</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -142,11 +143,11 @@ and see it in your web browser.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>
