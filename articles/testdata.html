@@ -53,6 +53,7 @@
     <li><a class="dropdown-item" href="../articles/testdata.html">Examples of Input/Output Files &amp; Data</a></li>
     <li><a class="dropdown-item" href="../articles/distances.html">Comparing Distances (Choosing a Radius)</a></li>
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
+    <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
@@ -129,24 +130,28 @@ this:</p>
 <span></span>
 <span><span class="co"># files</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>files.in.package <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="../reference/testdata.html">testdata</a></span><span class="op">(</span><span class="va">topic</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       files.in.package                   </span></span>
-<span><span class="co">#&gt;  [1,] "cities_2.xlsx"                    </span></span>
-<span><span class="co">#&gt;  [2,] "counties_in_AL_detailed.xlsx"     </span></span>
-<span><span class="co">#&gt;  [3,] "counties_in_Alabama.xlsx"         </span></span>
-<span><span class="co">#&gt;  [4,] "counties_in_Delaware_invalid.xlsx"</span></span>
-<span><span class="co">#&gt;  [5,] "counties_in_Delaware.xlsx"        </span></span>
-<span><span class="co">#&gt;  [6,] "county_10.xlsx"                   </span></span>
-<span><span class="co">#&gt;  [7,] "county_100.xlsx"                  </span></span>
-<span><span class="co">#&gt;  [8,] "county_1000.xlsx"                 </span></span>
-<span><span class="co">#&gt;  [9,] "county_state_300.xlsx"            </span></span>
-<span><span class="co">#&gt; [10,] "fips"                             </span></span>
-<span><span class="co">#&gt; [11,] "state_10.xlsx"                    </span></span>
-<span><span class="co">#&gt; [12,] "state_50.xlsx"                    </span></span>
-<span><span class="co">#&gt; [13,] "state_county_tract_10.xlsx"       </span></span>
-<span><span class="co">#&gt; [14,] "tract_10.csv"                     </span></span>
-<span><span class="co">#&gt; [15,] "tract_100.csv"                    </span></span>
-<span><span class="co">#&gt; [16,] "tract_1000.csv"                   </span></span>
-<span><span class="co">#&gt; [17,] "tract_state_285.xlsx"</span></span></code></pre></div>
+<span><span class="co">#&gt;       files.in.package                         </span></span>
+<span><span class="co">#&gt;  [1,] "cities_2.xlsx"                          </span></span>
+<span><span class="co">#&gt;  [2,] "counties_in_AL_detailed.xlsx"           </span></span>
+<span><span class="co">#&gt;  [3,] "counties_in_Alabama.xlsx"               </span></span>
+<span><span class="co">#&gt;  [4,] "counties_in_Delaware_invalid.xlsx"      </span></span>
+<span><span class="co">#&gt;  [5,] "counties_in_Delaware.xlsx"              </span></span>
+<span><span class="co">#&gt;  [6,] "county_10.xlsx"                         </span></span>
+<span><span class="co">#&gt;  [7,] "county_100.xlsx"                        </span></span>
+<span><span class="co">#&gt;  [8,] "county_1000.xlsx"                       </span></span>
+<span><span class="co">#&gt;  [9,] "county_state_300.xlsx"                  </span></span>
+<span><span class="co">#&gt; [10,] "fips"                                   </span></span>
+<span><span class="co">#&gt; [11,] "state_10.xlsx"                          </span></span>
+<span><span class="co">#&gt; [12,] "state_50.xlsx"                          </span></span>
+<span><span class="co">#&gt; [13,] "state_county_tract_10.xlsx"             </span></span>
+<span><span class="co">#&gt; [14,] "testoutput_ejam2excel_fips_cities.xlsx" </span></span>
+<span><span class="co">#&gt; [15,] "testoutput_ejam2report_fips_cities.html"</span></span>
+<span><span class="co">#&gt; [16,] "testoutput_ejamit_fips_counties.html"   </span></span>
+<span><span class="co">#&gt; [17,] "testoutput_ejamit_fips_counties.xlsx"   </span></span>
+<span><span class="co">#&gt; [18,] "tract_10.csv"                           </span></span>
+<span><span class="co">#&gt; [19,] "tract_100.csv"                          </span></span>
+<span><span class="co">#&gt; [20,] "tract_1000.csv"                         </span></span>
+<span><span class="co">#&gt; [21,] "tract_state_285.xlsx"</span></span></code></pre></div>
 <p><strong>Local folders with sample files</strong></p>
 <p>The best, simplest way to see all these files is the function called
 testdata()</p>
@@ -207,27 +212,27 @@ in EJAM and related packages:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^testp"</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt;     Package                Item</span></span>
-<span><span class="co">#&gt; 53     EJAM       testpoints_10</span></span>
+<span><span class="co">#&gt; 117    EJAM       testpoints_10</span></span>
 <span><span class="co">#&gt; 131    EJAM      testpoints_100</span></span>
 <span><span class="co">#&gt; 132    EJAM   testpoints_100_dt</span></span>
 <span><span class="co">#&gt; 153    EJAM     testpoints_1000</span></span>
 <span><span class="co">#&gt; 168    EJAM    testpoints_10000</span></span>
-<span><span class="co">#&gt; 120    EJAM        testpoints_5</span></span>
+<span><span class="co">#&gt; 124    EJAM        testpoints_5</span></span>
 <span><span class="co">#&gt; 129    EJAM       testpoints_50</span></span>
 <span><span class="co">#&gt; 147    EJAM      testpoints_500</span></span>
-<span><span class="co">#&gt; 121    EJAM      testpoints_bad</span></span>
-<span><span class="co">#&gt; 113    EJAM testpoints_overlap3</span></span>
+<span><span class="co">#&gt; 125    EJAM      testpoints_bad</span></span>
+<span><span class="co">#&gt; 120    EJAM testpoints_overlap3</span></span>
 <span><span class="co">#&gt;                                                        Title</span></span>
-<span><span class="co">#&gt; 53  test points data.frame with columns sitenumber, lat, lon</span></span>
+<span><span class="co">#&gt; 117 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 131 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 132 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 153 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 168 test points data.frame with columns sitenumber, lat, lon</span></span>
-<span><span class="co">#&gt; 120 test points data.frame with columns sitenumber, lat, lon</span></span>
+<span><span class="co">#&gt; 124 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 129 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 147 test points data.frame with columns sitenumber, lat, lon</span></span>
-<span><span class="co">#&gt; 121       test points data.frame with columns note, lat, lon</span></span>
-<span><span class="co">#&gt; 113       test points data.frame with columns note, lat, lon</span></span></code></pre></div>
+<span><span class="co">#&gt; 125       test points data.frame with columns note, lat, lon</span></span>
+<span><span class="co">#&gt; 120       test points data.frame with columns note, lat, lon</span></span></code></pre></div>
 <p><strong>STREET ADDRESSES</strong> for testing geocoding in
 <code><a href="../reference/latlon_from_address.html">latlon_from_address()</a></code> etc.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -240,50 +245,50 @@ in EJAM and related packages:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^test[^op_]"</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt;     Package                              Item</span></span>
-<span><span class="co">#&gt; 51     EJAM               testinput_address_2</span></span>
-<span><span class="co">#&gt; 111    EJAM               testinput_address_9</span></span>
-<span><span class="co">#&gt; 112    EJAM           testinput_address_parts</span></span>
-<span><span class="co">#&gt; 117    EJAM           testinput_address_table</span></span>
+<span><span class="co">#&gt; 32     EJAM               testinput_address_2</span></span>
+<span><span class="co">#&gt; 102    EJAM               testinput_address_9</span></span>
+<span><span class="co">#&gt; 103    EJAM           testinput_address_parts</span></span>
+<span><span class="co">#&gt; 121    EJAM           testinput_address_table</span></span>
 <span><span class="co">#&gt; 130    EJAM         testinput_address_table_9</span></span>
-<span><span class="co">#&gt; 118    EJAM testinput_address_table_goodnames</span></span>
-<span><span class="co">#&gt; 119    EJAM  testinput_address_table_withfull</span></span>
-<span><span class="co">#&gt; 16     EJAM        testinput_fips_blockgroups</span></span>
-<span><span class="co">#&gt; 1      EJAM             testinput_fips_cities</span></span>
-<span><span class="co">#&gt; 2      EJAM           testinput_fips_counties</span></span>
-<span><span class="co">#&gt; 3      EJAM                testinput_fips_mix</span></span>
-<span><span class="co">#&gt; 4      EJAM             testinput_fips_states</span></span>
-<span><span class="co">#&gt; 17     EJAM             testinput_fips_tracts</span></span>
-<span><span class="co">#&gt; 5      EJAM                    testinput_mact</span></span>
-<span><span class="co">#&gt; 6      EJAM                   testinput_naics</span></span>
-<span><span class="co">#&gt; 7      EJAM            testinput_program_name</span></span>
-<span><span class="co">#&gt; 52     EJAM          testinput_program_sys_id</span></span>
-<span><span class="co">#&gt; 8      EJAM                   testinput_regid</span></span>
-<span><span class="co">#&gt; 9      EJAM             testinput_registry_id</span></span>
+<span><span class="co">#&gt; 122    EJAM testinput_address_table_goodnames</span></span>
+<span><span class="co">#&gt; 123    EJAM  testinput_address_table_withfull</span></span>
+<span><span class="co">#&gt; 104    EJAM        testinput_fips_blockgroups</span></span>
+<span><span class="co">#&gt; 33     EJAM             testinput_fips_cities</span></span>
+<span><span class="co">#&gt; 34     EJAM           testinput_fips_counties</span></span>
+<span><span class="co">#&gt; 35     EJAM                testinput_fips_mix</span></span>
+<span><span class="co">#&gt; 36     EJAM             testinput_fips_states</span></span>
+<span><span class="co">#&gt; 105    EJAM             testinput_fips_tracts</span></span>
+<span><span class="co">#&gt; 37     EJAM                    testinput_mact</span></span>
+<span><span class="co">#&gt; 38     EJAM                   testinput_naics</span></span>
+<span><span class="co">#&gt; 39     EJAM            testinput_program_name</span></span>
+<span><span class="co">#&gt; 116    EJAM          testinput_program_sys_id</span></span>
+<span><span class="co">#&gt; 40     EJAM                   testinput_regid</span></span>
+<span><span class="co">#&gt; 41     EJAM             testinput_registry_id</span></span>
 <span><span class="co">#&gt; 136    EJAM                testinput_shapes_2</span></span>
-<span><span class="co">#&gt; 10     EJAM                     testinput_sic</span></span>
+<span><span class="co">#&gt; 42     EJAM                     testinput_sic</span></span>
 <span><span class="co">#&gt; 135    EJAM                      testshapes_2</span></span>
 <span><span class="co">#&gt;                                                                       Title</span></span>
-<span><span class="co">#&gt; 51                            datasets for trying address-related functions</span></span>
-<span><span class="co">#&gt; 111                           datasets for trying address-related functions</span></span>
-<span><span class="co">#&gt; 112                           datasets for trying address-related functions</span></span>
-<span><span class="co">#&gt; 117                           datasets for trying address-related functions</span></span>
+<span><span class="co">#&gt; 32                            datasets for trying address-related functions</span></span>
+<span><span class="co">#&gt; 102                           datasets for trying address-related functions</span></span>
+<span><span class="co">#&gt; 103                           datasets for trying address-related functions</span></span>
+<span><span class="co">#&gt; 121                           datasets for trying address-related functions</span></span>
 <span><span class="co">#&gt; 130                           datasets for trying address-related functions</span></span>
-<span><span class="co">#&gt; 118                           datasets for trying address-related functions</span></span>
-<span><span class="co">#&gt; 119                           datasets for trying address-related functions</span></span>
-<span><span class="co">#&gt; 16                                       testinput_fips_blockgroups dataset</span></span>
-<span><span class="co">#&gt; 1                                             testinput_fips_cities dataset</span></span>
-<span><span class="co">#&gt; 2                                           testinput_fips_counties dataset</span></span>
-<span><span class="co">#&gt; 3                                                testinput_fips_mix dataset</span></span>
-<span><span class="co">#&gt; 4                                             testinput_fips_states dataset</span></span>
-<span><span class="co">#&gt; 17                                            testinput_fips_tracts dataset</span></span>
-<span><span class="co">#&gt; 5                                                    testinput_mact dataset</span></span>
-<span><span class="co">#&gt; 6                                                   testinput_naics dataset</span></span>
-<span><span class="co">#&gt; 7                                            testinput_program_name dataset</span></span>
-<span><span class="co">#&gt; 52  test data, EPA program names and program system ID numbers to try using</span></span>
-<span><span class="co">#&gt; 8                  test data, EPA Facility Registry ID numbers to try using</span></span>
-<span><span class="co">#&gt; 9                  test data, EPA Facility Registry ID numbers to try using</span></span>
+<span><span class="co">#&gt; 122                           datasets for trying address-related functions</span></span>
+<span><span class="co">#&gt; 123                           datasets for trying address-related functions</span></span>
+<span><span class="co">#&gt; 104                                      testinput_fips_blockgroups dataset</span></span>
+<span><span class="co">#&gt; 33                                            testinput_fips_cities dataset</span></span>
+<span><span class="co">#&gt; 34                                          testinput_fips_counties dataset</span></span>
+<span><span class="co">#&gt; 35                                               testinput_fips_mix dataset</span></span>
+<span><span class="co">#&gt; 36                                            testinput_fips_states dataset</span></span>
+<span><span class="co">#&gt; 105                                           testinput_fips_tracts dataset</span></span>
+<span><span class="co">#&gt; 37                                                   testinput_mact dataset</span></span>
+<span><span class="co">#&gt; 38                                                  testinput_naics dataset</span></span>
+<span><span class="co">#&gt; 39                                           testinput_program_name dataset</span></span>
+<span><span class="co">#&gt; 116 test data, EPA program names and program system ID numbers to try using</span></span>
+<span><span class="co">#&gt; 40                 test data, EPA Facility Registry ID numbers to try using</span></span>
+<span><span class="co">#&gt; 41                 test data, EPA Facility Registry ID numbers to try using</span></span>
 <span><span class="co">#&gt; 136                                              testinput_shapes_2 dataset</span></span>
-<span><span class="co">#&gt; 10                                                    testinput_sic dataset</span></span>
+<span><span class="co">#&gt; 42                                                    testinput_sic dataset</span></span>
 <span><span class="co">#&gt; 135                                                    testshapes_2 dataset</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n\n"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>EXAMPLES OF OUTPUTS</strong> from <code><a href="../reference/ejamit.html">ejamit()</a></code>,

@@ -32,6 +32,7 @@ with new lat,lon columns"><meta property="og:image" content="https://ejanalysis.
     <li><a class="dropdown-item" href="../articles/testdata.html">Examples of Input/Output Files &amp; Data</a></li>
     <li><a class="dropdown-item" href="../articles/distances.html">Comparing Distances (Choosing a Radius)</a></li>
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
+    <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
@@ -88,7 +89,7 @@ with new lat,lon columns</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># quick map of blockgroups in 1 state, shown as blockgroup centroids</span></span>
 <span><span class="va">myst</span> <span class="op">&lt;-</span> <span class="st">"NY"</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">bgpts</span><span class="op">[</span><span class="fu"><a href="fips2state_abbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">bgpts</span><span class="op">[</span><span class="fu"><a href="fips2stateabbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">dat</span>, radius <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># same but popups have all the indicators from EJSCREEN</span></span>

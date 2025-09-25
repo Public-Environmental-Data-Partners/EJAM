@@ -30,6 +30,7 @@
     <li><a class="dropdown-item" href="../articles/testdata.html">Examples of Input/Output Files &amp; Data</a></li>
     <li><a class="dropdown-item" href="../articles/distances.html">Comparing Distances (Choosing a Radius)</a></li>
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
+    <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
@@ -210,11 +211,12 @@
 <ul><li>Simplified the <a href="https://github.com/ejanalysis/EJAM/#readme" class="external-link">README</a>
 </li>
 <li>Improved the <a href="https://ejanalysis.github.io/EJAM/articles/installing.html">article on how to install the package</a>, but it does need some additional testing/fixes.</li>
+<li>Added article on <a href="https://ejanalysis.github.io/EJAM/articles/counties.html">Counties</a> – about the skewed distribution across US Counties, of population and blockgroup counts</li>
 <li>Renamed fields in the DESCRIPTION file, for VERSION and DATE info!</li>
 <li>Redid sample report, etc. outputs in <code>testdata/examples_of_outputs</code> folder to reflect changes in version numbers shown in report footer and app header, etc.</li>
 <li>Renamed various *.R files and relocated some source code among those, to make some filenames more consistent.</li>
 <li>Made some functions internal that until now had been exported, to simplify things for most R users.</li>
-<li>Updated {roxygen2} help file docs and pkgdown documentation webpages</li>
+<li>Updated <a href="https://roxygen2.r-lib.org/index.html" class="external-link">roxygen2</a> help file docs and pkgdown documentation webpages</li>
 <li>New function <code><a href="../reference/url_github_preview.html">url_github_preview()</a></code> makes it a bit easier to view rendered HTML reports that each package release or branch stores in the testdata/examples_of_outputs folder, to compare how they look in different versions.</li>
 <li>Spell checked / fixed some typos</li>
 <li>Fixed some documentation</li>
@@ -365,7 +367,8 @@
 </li>
 <li>removed functions and text related to pins board (obsolete)</li>
 <li>renamed map_headernames spreadsheet file to reflect a new version (<code>EJAM/data-raw/map_headernames_2.32.5.xlsx</code>), made edits/fixes (spelling of CEJST, e.g.), and updated the data object <code><a href="../reference/map_headernames.html">?map_headernames</a></code>.</li>
-<li>rebuilt favicons per updates in {pkgdown}</li>
+<li>rebuilt favicons per updates in <a href="https://pkgdown.r-lib.org/index.html" class="external-link">pkgdown</a>
+</li>
 <li>Edited DESCRIPTION file to specify minimum versions for most packages in Imports, and a newer version of R. Almost all of these just refer to the latest version on CRAN as of this release, even though several were not strictly necessary for the functions to work correctly.</li>
 </ul></div>
 </div>
