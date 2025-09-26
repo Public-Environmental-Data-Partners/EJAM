@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,10 +72,10 @@
           <code><a href="EJAM.html">EJAM</a></code> <code><a href="EJAM.html">EJAM-package</a></code>
 
         </dt>
-        <dd>EJAM - Environment and Residential Population Analysis Multisite tool</dd>
+        <dd>EJAM - Environmental Justice Analysis Multisite tool</dd>
       </dl><dl><dt>
 
-          <code><a href="run_app.html">run_app()</a></code> <code><a href="run_app.html">app_run_EJAM()</a></code>
+          <code><a href="ejamapp.html">ejamapp()</a></code>
 
         </dt>
         <dd>Launch EJAM as Shiny web app (e.g. to run it locally in RStudio)</dd>
@@ -102,7 +102,7 @@
           <code><a href="ejscreenit_for_ejam.html">ejscreenit_for_ejam()</a></code>
 
         </dt>
-        <dd>Get EJScreen results directly from EJScreen servers via their API</dd>
+        <dd>Get EJSCREEN results directly from EJSCREEN servers via their API</dd>
       </dl></div><div class="section level2">
       <h2 id="key-functions-for-viewing-results">Key Functions for Viewing Results<a class="anchor" aria-label="anchor" href="#key-functions-for-viewing-results"></a></h2>
 
@@ -209,7 +209,7 @@
           <code><a href="ejam2shapefile.html">ejam2shapefile()</a></code>
 
         </dt>
-        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJScreen, etc.</dd>
+        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJSCREEN, etc.</dd>
       </dl></div><div class="section level2">
       <h2 id="specify-points-by-lat-lon">Specify Points by Lat/Lon<a class="anchor" aria-label="anchor" href="#specify-points-by-lat-lon"></a></h2>
 
@@ -253,6 +253,24 @@
         <dd>geocode, but only if AOI package is installed and attached and what it imports like tidygeocoder etc.</dd>
       </dl><dl><dt>
 
+          <code><a href="latlon_from_shapefile.html">latlon_from_shapefile()</a></code>
+
+        </dt>
+        <dd>Convert shapefile (class sf) to data.table of lat and lon columns Makes lat and lon columns, from a sfc_POINT class geometry field, or finds centroids of POLYGONS</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_shapefile_centroids.html">latlon_from_shapefile_centroids()</a></code>
+
+        </dt>
+        <dd>get coordinates of each polygon centroid, using INTPTLAT,INTPTLON if those columns already exist</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_fips.html">latlon_from_fips()</a></code>
+
+        </dt>
+        <dd>get approx centroid of each fips census unit</dd>
+      </dl><dl><dt>
+
           <code><a href="address_from_table.html">address_from_table()</a></code>
 
         </dt>
@@ -291,13 +309,13 @@
           <code><a href="latlon_from_regid.html">latlon_from_regid()</a></code>
 
         </dt>
-        <dd>Get lat lon (and NAICS) via Facility Registry ID</dd>
+        <dd>Get latitude, longitude (and NAICS) via EPA Facility Registry ID See FRS Facility Registry Service data on EPA-regulated sites</dd>
       </dl><dl><dt>
 
-          <code><a href="frs_from_regid.html">frs_from_regid()</a></code>
+          <code><a href="regids_valid.html">regids_valid()</a></code>
 
         </dt>
-        <dd>Use registry ID to see FRS Facility Registry Service data on those EPA-regulated sites</dd>
+        <dd>validate regids by checking if they are in the database being used currently</dd>
       </dl><dl><dt>
 
           <code><a href="latlon_from_programid.html">latlon_from_programid()</a></code>
@@ -681,7 +699,7 @@
           <code><a href="shapefile_from_sitepoints.html">shapefile_from_sitepoints()</a></code>
 
         </dt>
-        <dd>Convert table of lat,lon points/sites into sf:: shapefile</dd>
+        <dd>Convert table of lat,lon points/sites into spatial data.frame / shapefile</dd>
       </dl><dl><dt>
 
           <code><a href="shape_buffered_from_shapefile.html">shape_buffered_from_shapefile()</a></code>
@@ -694,18 +712,6 @@
 
         </dt>
         <dd>shape_buffered_from_shapefile_points - add buffer around shape (points, here)</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_blockpoints_in_shape.html">shapefile2blockpoints()</a></code> <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>
-
-        </dt>
-        <dd>Find all Census blocks in a polygon, using internal point of block</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile2latlon.html">shapefile2latlon()</a></code>
-
-        </dt>
-        <dd>Convert shapefile (class sf) of points to data.table of lat, lon columns</dd>
       </dl><dl><dt>
 
           <code><a href="shapes_from_fips.html">shapes_from_fips()</a></code>
@@ -735,11 +741,29 @@
           <code><a href="ejam2shapefile.html">ejam2shapefile()</a></code>
 
         </dt>
-        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJScreen, etc.</dd>
+        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJSCREEN, etc.</dd>
+      </dl><dl><dt>
+
+          <code><a href="shape2geojson.html">shape2geojson()</a></code>
+
+        </dt>
+        <dd>convert spatial data.frame to a vector of geojson text strings</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_shapefile.html">latlon_from_shapefile()</a></code>
+
+        </dt>
+        <dd>Convert shapefile (class sf) to data.table of lat and lon columns Makes lat and lon columns, from a sfc_POINT class geometry field, or finds centroids of POLYGONS</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_shapefile_centroids.html">latlon_from_shapefile_centroids()</a></code>
+
+        </dt>
+        <dd>get coordinates of each polygon centroid, using INTPTLAT,INTPTLON if those columns already exist</dd>
       </dl></div><div class="section level2">
       <h2 id="specify-counties-etc-">Specify Counties etc.<a class="anchor" aria-label="anchor" href="#specify-counties-etc-"></a></h2>
 
-      <div class="section-desc"><p>Tools to work with Census units and FIPS codes - block groups, tracts, counties, states, and EPA Regions</p></div>
+      <div class="section-desc"><p>Tools to work with Census units and FIPS codes - blockgroups, tracts, counties, states, and EPA Regions</p></div>
 
 
     </div><div class="section level2">
@@ -767,6 +791,12 @@
         <dd>FIPS - Get county or state names from county or state FIPS codes</dd>
       </dl><dl><dt>
 
+          <code><a href="fips2countyfips.html">fips2countyfips()</a></code>
+
+        </dt>
+        <dd>FIPS - Get FIPS codes of the Counties CONTAINING the given census units (of any type)</dd>
+      </dl><dl><dt>
+
           <code><a href="fipstype.html">fipstype()</a></code>
 
         </dt>
@@ -785,10 +815,16 @@
         <dd>FIPS - Add leading zeroes to fips codes if missing, replace with NA if length invalid</dd>
       </dl><dl><dt>
 
+          <code><a href="latlon_from_fips.html">latlon_from_fips()</a></code>
+
+        </dt>
+        <dd>get approx centroid of each fips census unit</dd>
+      </dl><dl><dt>
+
           <code><a href="fips2pop.html">fips2pop()</a></code>
 
         </dt>
-        <dd>Get population counts (ACS EJScreen) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
+        <dd>Get population counts (ACS EJSCREEN) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
       </dl><dl><dt>
 
           <code><a href="fips_from_table.html">fips_from_table()</a></code>
@@ -853,7 +889,13 @@
           <code><a href="fips2countyname.html">fips2countyname()</a></code>
 
         </dt>
-        <dd>FIPS - Get county names from county FIPS codes</dd>
+        <dd>FIPS - Get names for the Counties CONTAINING the given census units (of any type)</dd>
+      </dl><dl><dt>
+
+          <code><a href="fips2countyfips.html">fips2countyfips()</a></code>
+
+        </dt>
+        <dd>FIPS - Get FIPS codes of the Counties CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
           <code><a href="shapes_counties_from_countyfips.html">shapes_counties_from_countyfips()</a></code>
@@ -872,6 +914,18 @@
 
         </dt>
         <dd>plot comparison of counties in 1 state, for 1 indicator (variable)</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_county_health.html">url_county_health()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on Counties containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_county_equityatlas.html">url_county_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org</dd>
       </dl></div><div class="section level2">
 
       <h3 id="states">States<a class="anchor" aria-label="anchor" href="#states"></a></h3>
@@ -918,25 +972,19 @@
           <code><a href="fips2statename.html">fips2statename()</a></code>
 
         </dt>
-        <dd>FIPS - Get state names from any type of FIPS codes</dd>
+        <dd>FIPS - Get names of the States CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
-          <code><a href="fips2state_abbrev.html">fips2state_abbrev()</a></code>
+          <code><a href="fips2stateabbrev.html">fips2stateabbrev()</a></code>
 
         </dt>
-        <dd>FIPS - Get state abbreviations from any type of FIPS codes</dd>
+        <dd>FIPS - Get state abbreviations of the states containing the given census units (of any type)</dd>
       </dl><dl><dt>
 
-          <code><a href="fips2state_fips.html">fips2state_fips()</a></code>
+          <code><a href="fips2statefips.html">fips2statefips()</a></code>
 
         </dt>
-        <dd>FIPS - Get state FIPS codes from any type of FIPS codes</dd>
-      </dl><dl><dt>
-
-          <code><a href="state_from_sitetable.html">state_from_sitetable()</a></code>
-
-        </dt>
-        <dd>state_from_sitetable - Identify US State that each site is in (given ST, FIPS, or lat/lon) try ST, then FIPS, then latlon of site (not blocks), then polygon Identify US State that each site is in (given ST, lat/lon, or FIPS)</dd>
+        <dd>FIPS - Get FIPS codes of the States CONTAINING the given census units (of any type)</dd>
       </dl><dl><dt>
 
           <code><a href="state_from_fips_bybg.html">state_from_fips_bybg()</a></code>
@@ -949,6 +997,18 @@
 
         </dt>
         <dd>Find what state is where each point is located</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_state_health.html">url_state_health()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on STATES containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_state_equityatlas.html">url_state_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on STATE containing the given fips, from equity atlas</dd>
       </dl></div><div class="section level2">
 
       <h3 id="regions">Regions<a class="anchor" aria-label="anchor" href="#regions"></a></h3>
@@ -991,7 +1051,7 @@
         <dd>Find all blocks within each of the FIPS codes provided</dd>
       </dl><dl><dt>
 
-          <code><a href="get_blockpoints_in_shape.html">shapefile2blockpoints()</a></code> <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>
+          <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>
 
         </dt>
         <dd>Find all Census blocks in a polygon, using internal point of block</dd>
@@ -1018,7 +1078,7 @@
           <code><a href="proxistat.html">proxistat()</a></code>
 
         </dt>
-        <dd>DRAFT - Create a custom proximity score for every block group, representing count and proximity of specified points Indicator of proximity of residents in each US blockgroup to a custom set of facilities or sites</dd>
+        <dd>DRAFT - Create a custom proximity score for every blockgroup, representing count and proximity of specified points Indicator of proximity of residents in each US blockgroup to a custom set of facilities or sites</dd>
       </dl><dl><dt>
 
           <code><a href="indexblocks.html">indexblocks()</a></code>
@@ -1048,7 +1108,7 @@
           <code><a href="fips2pop.html">fips2pop()</a></code>
 
         </dt>
-        <dd>Get population counts (ACS EJScreen) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
+        <dd>Get population counts (ACS EJSCREEN) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
       </dl></div><div class="section level2">
       <h2 id="calculating-and-aggregating">Calculating and Aggregating<a class="anchor" aria-label="anchor" href="#calculating-and-aggregating"></a></h2>
 
@@ -1106,31 +1166,31 @@
           <code><a href="blockgroupstats.html">blockgroupstats</a></code>
 
         </dt>
-        <dd>blockgroupstats (DATA) residential population and environmental indicators for Census block groups</dd>
+        <dd>blockgroupstats (DATA) residential population and environmental indicators for Census blockgroups</dd>
       </dl><dl><dt>
 
           <code><a href="bgej.html">bgej</a></code>
 
         </dt>
-        <dd>bgej (DATA) Summary Indexes for Census block groups</dd>
+        <dd>bgej (DATA) Summary Indexes for Census blockgroups</dd>
       </dl><dl><dt>
 
           <code><a href="bgpts.html">bgpts</a></code>
 
         </dt>
-        <dd>bgpts (DATA) lat lon of popwtd center of blockgroup, and count of blocks per block group</dd>
+        <dd>bgpts (DATA) lat lon of popwtd center of blockgroup, and count of blocks per blockgroup</dd>
       </dl><dl><dt>
 
           <code><a href="bg_cenpop2020.html">bg_cenpop2020</a></code>
 
         </dt>
-        <dd>bg_cenpop2020 (DATA) data.table with all US Census 2020 block groups</dd>
+        <dd>bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups</dd>
       </dl><dl><dt>
 
           <code><a href="acs_bybg.html">acs_bybg()</a></code>
 
         </dt>
-        <dd>download ACS 5year data from Census API, at block group resolution (slowly if for entire US)</dd>
+        <dd>download ACS 5year data from Census API, at blockgroup resolution (slowly if for entire US)</dd>
       </dl><dl><dt>
 
           <code><a href="avg.in.us.html">avg.in.us</a></code>
@@ -1287,16 +1347,16 @@
 
       <dl><dt>
 
-          <code><a href="batch.summarize.html">batch.summarize()</a></code>
-
-        </dt>
-        <dd>Calculate more summary stats across all sites and all people</dd>
-      </dl><dl><dt>
-
           <code><a href="count_sites_with_n_high_scores.html">count_sites_with_n_high_scores()</a></code>
 
         </dt>
         <dd>Answers questions like how many sites have certain indicators &gt;2x the state avg?</dd>
+      </dl><dl><dt>
+
+          <code><a href="colcounter.html">colcounter()</a></code>
+
+        </dt>
+        <dd>Count columns (indicators) with Value (at or) above (or below) threshold Counts high scores, by site</dd>
       </dl><dl><dt>
 
           <code><a href="colcounter_summary_all.html">colcounter_summary_all()</a></code>
@@ -1333,6 +1393,12 @@
 
         </dt>
         <dd>Which indicators fall most as proximity does? (i.e., are higher if closer to site) Which variables have strongest trend with distance based on slope of linear fit</dd>
+      </dl><dl><dt>
+
+          <code><a href="batch.summarize.html">batch.summarize()</a></code>
+
+        </dt>
+        <dd>Calculate more summary stats across all sites and all people</dd>
       </dl></div><div class="section level2">
       <h2 id="viewing-results">Viewing Results<a class="anchor" aria-label="anchor" href="#viewing-results"></a></h2>
 
@@ -1361,7 +1427,7 @@
           <code><a href="ejam2shapefile.html">ejam2shapefile()</a></code>
 
         </dt>
-        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJScreen, etc.</dd>
+        <dd>export EJAM results as geojson/zipped shapefile/kml for use in ArcPro, EJSCREEN, etc.</dd>
       </dl><dl><dt>
 
           <code><a href="mapfast.html">mapfast()</a></code>
@@ -1814,6 +1880,12 @@
 
       <dl><dt>
 
+          <code><a href="testinput_fips_mix.html">testinput_fips_mix</a></code>
+
+        </dt>
+        <dd>testinput_fips_mix dataset</dd>
+      </dl><dl><dt>
+
           <code><a href="testinput_fips_states.html">testinput_fips_states</a></code>
 
         </dt>
@@ -2014,28 +2086,16 @@
 
       <dl><dt>
 
-          <code><a href="url_countyhealthrankings.html">url_countyhealthrankings()</a></code>
+          <code><a href="url_ejamapi.html">url_ejamapi()</a></code>
 
         </dt>
-        <dd>URL functions - Get URLs of useful report(s) on Counties from countyhealthrankings.org</dd>
-      </dl><dl><dt>
-
-          <code><a href="url_echo_facility_webpage.html">url_echo_facility_webpage()</a></code>
-
-        </dt>
-        <dd>Get URLs of ECHO reports</dd>
+        <dd>Get URL(s) of HTML summary reports for use with EJAM-API</dd>
       </dl><dl><dt>
 
           <code><a href="url_ejscreenmap.html">url_ejscreenmap()</a></code>
 
         </dt>
-        <dd>Get URL(s) for EJScreen map centered at given point(s)</dd>
-      </dl><dl><dt>
-
-          <code><a href="url_ejscreen_report.html">url_ejscreen_report()</a></code>
-
-        </dt>
-        <dd>Get URLs of EJScreen reports</dd>
+        <dd>Get URL(s) for (new) EJSCREEN app with map centered at given point(s)</dd>
       </dl><dl><dt>
 
           <code><a href="url_enviromapper.html">url_enviromapper()</a></code>
@@ -2044,10 +2104,40 @@
         <dd>Get URLs of EnviroMapper reports</dd>
       </dl><dl><dt>
 
-          <code><a href="url_frs_report.html">url_frs_report()</a></code>
+          <code><a href="url_echo_facility.html">url_echo_facility()</a></code>
+
+        </dt>
+        <dd>Get URLs of ECHO reports</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_frs_facility.html">url_frs_facility()</a></code>
 
         </dt>
         <dd>Get URLs of FRS reports</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_county_health.html">url_county_health()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on Counties containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_state_health.html">url_state_health()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on STATES containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_county_equityatlas.html">url_county_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org</dd>
+      </dl><dl><dt>
+
+          <code><a href="url_state_equityatlas.html">url_state_equityatlas()</a></code>
+
+        </dt>
+        <dd>URL functions - Get URLs of useful report(s) on STATE containing the given fips, from equity atlas</dd>
       </dl><dl><dt>
 
           <code><a href="url_naics.com.html">url_naics.com()</a></code>
@@ -2088,11 +2178,11 @@
           <code><a href="map_headernames.html">map_headernames</a></code>
 
         </dt>
-        <dd>map_headernames provides metadata about all indicators in EJAM/EJScreen</dd>
+        <dd>map_headernames provides metadata about all indicators in EJSCREEN / EJAM</dd>
       </dl></div><div class="section level2">
-      <h2 id="ejscreen-api">EJScreen API<a class="anchor" aria-label="anchor" href="#ejscreen-api"></a></h2>
+      <h2 id="ejscreen-api">EJSCREEN API<a class="anchor" aria-label="anchor" href="#ejscreen-api"></a></h2>
 
-      <div class="section-desc"><p>EJAM-EJScreen and using the EJScreen API</p></div>
+      <div class="section-desc"><p>EJAM-EJSCREEN and using the EJSCREEN API</p></div>
 
 
     </div><div class="section level2">
@@ -2105,24 +2195,24 @@
           <code><a href="ejscreenit_for_ejam.html">ejscreenit_for_ejam()</a></code>
 
         </dt>
-        <dd>Get EJScreen results directly from EJScreen servers via their API</dd>
+        <dd>Get EJSCREEN results directly from EJSCREEN servers via their API</dd>
       </dl><dl><dt>
 
           <code><a href="ejscreenit.html">ejscreenit()</a></code>
 
         </dt>
-        <dd>Get EJScreen results near each site, compiled as a table, with map and plot</dd>
+        <dd>Get EJSCREEN results near each site, compiled as a table, with map and plot</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

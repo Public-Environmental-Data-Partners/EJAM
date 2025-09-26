@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,72 +58,220 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.32.6" id="ejam-v2326-august-2025">EJAM v2.32.6 (August 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2326-august-2025"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.32.6" id="ejam-2326-september-2025">EJAM 2.32.6 (September 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326-september-2025"></a></h2>
 <div class="section level3">
-<h3 id="web-app-2-32-6">Web App<a class="anchor" aria-label="anchor" href="#web-app-2-32-6"></a></h3>
-<ul><li>
-<a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> provides links to and info about EJSCREEN and EJAM:
-<ul><li>
-<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejamapp</a> will launch a live version of the EJAM web app</li>
-<li>
-<a href="https://www.ejanalysis.org/ejscreenapp" class="external-link">ejanalysis.org/ejscreenapp</a> will launch a live version of the EJSCREEN web app</li>
-</ul></li>
-<li>Improved the <code>About page</code> (added links to ejanalysis.org, etc.).</li>
-<li>Reorganized the Advanced settings tab, which now has more options and settings that can be changed. But note that the advanced tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.</li>
+<h3 id="web-app-changes-2-32-6"><strong>WEB APP CHANGES</strong><a class="anchor" aria-label="anchor" href="#web-app-changes-2-32-6"></a></h3>
+<div class="section level4">
+<h4 id="id_-restored-language-related-to-environmental-justice-2-32-6">* Restored language related to “Environmental Justice”<a class="anchor" aria-label="anchor" href="#id_-restored-language-related-to-environmental-justice-2-32-6"></a></h4>
+<ul><li>Changed name of tool back to “Environmental Justice Analysis Multisite” tool (from “Environmental and Residential Population Analysis Multisite” tool, the name used in early 2025 through July 2025)</li>
+<li>Restored some text: “EJ Indexes” now once again refers to what were called “Summary Indexes” early 2025 through July. “Supplementary EJ Indexes” is also restored.</li>
+<li>Did not restore all old text, at least not yet: Other language related to “environmental justice” was edited in early 2025 at EPA in response to an Executive Order, but has not been changed back to its original language even in this non-EPA version of the package. For anyone interested, notes listing those changes were archived in a file saved as “EJAM/data-raw/0_generic_terms_notes.R”.</li>
+<li>Made “EJSCREEN” all-caps everywhere (not “EJScreen”)</li>
+<li>Edited descriptions of some language-related indicators (to be shorter and more consistent), changed “block group” to “blockgroup”, etc.</li>
 </ul></div>
-<div class="section level3">
-<h3 id="web-app-customization-2-32-6">Web App Customization<a class="anchor" aria-label="anchor" href="#web-app-customization-2-32-6"></a></h3>
-<p>Made a number of changes to allow web app default settings changed and other inputs to be specified. This allows the following:</p>
-<ul><li><p>Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are.</p></li>
-<li><p>Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See <code><a href="../reference/run_app.html">run_app()</a></code> for examples.</p></li>
-<li><p>Anyone hosting a version of the EJAM web app can customize it more easily, e.g., to use a different logo, different default radius, different options for how to select sites, etc.</p></li>
+<div class="section level4">
+<h4 id="summary-report-and-tables-of-sites-header-footer-and-links-to-site-reports-2-32-6">Summary Report and Tables of Sites: Header, Footer, and Links to 1-Site Reports<a class="anchor" aria-label="anchor" href="#summary-report-and-tables-of-sites-header-footer-and-links-to-site-reports-2-32-6"></a></h4>
+<ul><li><p>Report footer now shows exact version number (“2.32.6” not just “2.32”). Same in web app home page header. Fixed missing footer in some reports.</p></li>
+<li>
+<p>Tables of sites (web and downloaded excel) and Map popups (web and downloaded html) now have web links to various kinds of 1-site reports, for each site. These were gone, but now are restored and expanded. Links to 2 report types are included by default:</p>
+<ul><li>link to the EJSCREEN app (zoomed to that 1 site)</li>
+<li>summary report on 1 site, as a <em>downloaded</em> html file (API-generated)</li>
+<li>summary report on 1 site, as a <em>live</em> webpage (shiny-generated) (Not yet implemented)</li>
+<li>Others reports can be shown via settings – see table below.</li>
+</ul></li>
 </ul></div>
-<div class="section level3">
-<h3 id="rrstudio-users-analysts-and-developers-2-32-6">R/RStudio Users (Analysts and Developers)<a class="anchor" aria-label="anchor" href="#rrstudio-users-analysts-and-developers-2-32-6"></a></h3>
+<div class="section level4">
+<h4 id="website-now-at-ejanalysisorg-or-ejanalysiscom-2-32-6">Website now at <a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> (or <a href="https://www.ejanalysis.com" class="external-link">ejanalysis.com</a>)<a class="anchor" aria-label="anchor" href="#website-now-at-ejanalysisorg-or-ejanalysiscom-2-32-6"></a></h4>
 <ul><li>
-<p><a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> or <a href="https://www.ejanalysis.org/ejam" class="external-link">ejanalysis.org/ejam</a> is an easy alias to remember, and has links to documentation/code/etc.</p>
-<ul><li><a href="https://www.ejanalysis.org/about" class="external-link">A new emailing list can be joined here</a></li>
+<a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> is an easy URL to remember, with info about – and links to – EJAM and EJSCREEN.</li>
 <li>
-<a href="https://www.ejanalysis.org/docs" class="external-link">ejanalysis.org/docs</a> or <a href="https://www.ejanalysis.org/ejamdocs" class="external-link">ejanalysis.org/ejamdocs</a> directs you to the documentation for the EJAM package, including articles and vignettes.</li>
-<li>
-<a href="https://www.ejanalysis.org/repo" class="external-link">ejanalysis.org/repo</a> or <a href="https://www.ejanalysis.org/ejamrepo" class="external-link">ejanalysis.org/ejamrepo</a> directs you to the GitHub page for the EJAM package.</li>
-<li>
-<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejamapp</a> launches a live version of the EJAM web app.</li>
-<li>
-<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejscreenapp</a> launches a live version of the EJSCREEN web app.</li>
-</ul></li>
-<li><p><a href="https://github.com/ejanalysis/EJAM/issues" class="external-link">GitHub issues can be submitted here</a></p></li>
-<li><p>Improved the <a href="../articles/installing.html">article on how to install the package</a>.</p></li>
-<li><p>Fixed a bug where <code>isPublic</code> parameter in <code><a href="../reference/run_app.html">run_app()</a></code> was being ignored.</p></li>
-<li><p>Improved web app ui/server code, allowing many options and defaults to be provided as parameters to <code><a href="../reference/run_app.html">run_app()</a></code>.</p></li>
-<li>
-<p>Added many examples to <code><a href="../reference/run_app.html">run_app()</a></code> documention showing how to change defaults and options. You can now</p>
-<ul><li>Use a preferred default way to pick sites (e.g., to have the app launch with the Counties option selected by default)</li>
-<li>Provide preselected industry NAICS codes, or a set of specific Counties</li>
-<li>Provide a table of lat/lon coordinates to preload at launch</li>
-<li>Provide a shapefile to preload upon launch</li>
-<li>etc.</li>
-</ul></li>
-<li><p>Drafted new article with technical details: <a href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></p></li>
-<li><p>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</p></li>
-<li><p>Fixed a bug where threshold-related parameters passed to <code><a href="../reference/run_app.html">run_app()</a></code> were being ignored in the latlon case.</p></li>
-<li>
-<p>Renamed some global_defaults_ variables and shiny app input variables and related variables so they are easier to use as parameters in run_app(). For example, radius is now settable by <code>run_app(radius_default=3.1)</code></p>
-<ul><li>the old global_defaults_ variable “default_default_miles” is now called “radius_default”</li>
-<li>the old <code>input$default_miles</code> is now called <code>input$radius_default</code>
+<a href="https://www.ejanalysis.org/about" class="external-link">ejanalysis.org/about</a> has <a href="https://www.ejanalysis.org/about" class="external-link">a new emailing list you can join</a>
 </li>
-<li>the old <code>input$bt_rad_buff</code> is now called <code>input$radius_now</code> Other similar changes:</li>
-<li>the old global_defaults_ variable “max_default_miles” is now called “max_radius_default”</li>
-<li>the old global_defaults_ variable “intro_text” is now called “aboutpage_text”</li>
-<li>the old global_defaults_ variable “default_default_miles_shapefile” is now called “radius_default_shapefile”</li>
-<li>the old reactive sanitized_bt_rad_buff() is now called sanitized_radius_now()</li>
+<li>
+<a href="https://www.ejanalysis.org/ejamapp" class="external-link">ejanalysis.org/ejamapp</a> will go to a live version of the EJAM web app</li>
+<li>
+<a href="https://www.ejanalysis.org/ejscreenapp" class="external-link">ejanalysis.org/ejscreenapp</a> will go to a live version of the EJSCREEN web app</li>
+<li>
+<a href="https://ejanalysis.org/ejscreen" class="external-link">ejanalysis.org/ejscreen</a> has info on EJSCREEN</li>
+<li>
+<a href="https://ejanalysis.org/ejam" class="external-link">ejanalysis.org/ejam</a> has info on EJAM</li>
+<li>
+<a href="https://ejanalysis.org/status" class="external-link">ejanalysis.org/status</a> has info about the 2025 status and history of transition from EPA to non-EPA versions of EJSCREEN and EJAM</li>
+<li>
+<a href="https://www.ejanalysis.org/ejamdocs" class="external-link">ejanalysis.org/ejamdocs</a> directs you to the documentation:
+<ul><li>
+<a href="https://ejanalysis.github.io/EJAM/articles/whatis.html">What is EJAM?</a> is an overview of what EJAM can do.</li>
+<li>
+<a href="https://ejanalysis.github.io/EJAM/articles/webapp.html">Accessing the Web App</a> is about the web app.</li>
 </ul></li>
 </ul></div>
+<div class="section level4">
+<h4 id="web-app-documentation-2-32-6">Web App Documentation<a class="anchor" aria-label="anchor" href="#web-app-documentation-2-32-6"></a></h4>
+<ul><li>Improved the <code>About page</code>
+</li>
+<li>Collected copies of old user guides to inform a new one that could be developed. <a href="https://github.com/ejanalysis/EJAM/tree/EJAM-v2.32.6/data-raw/user-guides" class="external-link">See User Guide examples</a> that <a href="https://github.com/ejanalysis/EJAM/tree/main/data-raw/user-guides" class="external-link">will be here</a>
+</li>
+</ul></div>
+<div class="section level4">
+<h4 id="web-app-customization-2-32-6">Web App Customization<a class="anchor" aria-label="anchor" href="#web-app-customization-2-32-6"></a></h4>
+<ul><li>Added ability to configure web app (change settings), and added ability to pass inputs to the web app at launch. This allows the following:
+<ul><li>Anyone using the EJAM web app online can go to the app using a URL that encodes customized input settings, and therefore launches a somewhat customized app. This is because bookmarking in the app saves the state of inputs, which control more settings now. Not all settings are available this way, but many are. These features may evolve.</li>
+<li>Anyone using R/RStudio can now launch the web app locally with many more custom settings and inputs (providing sites as a parameter, using a custom default radius, overriding caps, etc.). See <code><a href="../reference/ejamapp.html">ejamapp()</a></code> for examples.</li>
+<li>Anyone hosting a version of the EJAM web app can customize it, e.g., to use a different logo, different default radius, different options for how to select sites, etc.</li>
+</ul></li>
+<li>Reorganized the “Advanced” settings tab, which now has more options and settings that can be changed. That tab is hidden by default in most cases because it is complicated, and some parts are experimental/untested.</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="non-web-app-changes-for-using-ejam-in-rrstudio-2-32-6"><strong>NON-WEB-APP CHANGES (FOR USING EJAM IN R/RSTUDIO)</strong><a class="anchor" aria-label="anchor" href="#non-web-app-changes-for-using-ejam-in-rrstudio-2-32-6"></a></h3>
+<div class="section level4">
+<h4 id="shortcuts-are-provided-via-ejanalysisorg-or-ejanalysiscom-2-32-6">Shortcuts are provided via <a href="https://www.ejanalysis.org" class="external-link">ejanalysis.org</a> (or <a href="https://www.ejanalysis.com" class="external-link">ejanalysis.com</a>)<a class="anchor" aria-label="anchor" href="#shortcuts-are-provided-via-ejanalysisorg-or-ejanalysiscom-2-32-6"></a></h4>
+<ul><li>
+<a href="https://www.ejanalysis.org/repo" class="external-link">ejanalysis.org/repo</a> or <a href="https://www.ejanalysis.org/ejamrepo" class="external-link">ejanalysis.org/ejamrepo</a> directs you to the GitHub page for the EJAM package open source software.</li>
+<li><a href="https://github.com/ejanalysis/EJAM/issues" class="external-link">GitHub issues now can be submitted here</a></li>
+<li>
+<a href="https://www.ejanalysis.org/docs" class="external-link">ejanalysis.org/docs</a> or <a href="https://www.ejanalysis.org/ejamdocs" class="external-link">ejanalysis.org/ejamdocs</a> directs you to the documentation for the EJAM package, including technical reference docs (how to install and use the R package to work directly with the more powerful tools EJAM offers beyond the web app).</li>
+</ul></div>
+<div class="section level4">
+<h4 id="weblinks--urls-api-reports-etc-2-32-6">Weblinks / URLs (API, reports, etc.)<a class="anchor" aria-label="anchor" href="#weblinks--urls-api-reports-etc-2-32-6"></a></h4>
+<ul><li>Restored columns of weblinks in single-site reports - they had been missing since 1/2025. Restored to tables of sites (results_bysite table from <code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejam2tableviewer.html">ejam2tableviewer()</a></code>, etc.) &amp; map popups (in functions like <code><a href="../reference/ejam2map.html">ejam2map()</a></code>)</li>
+<li>The choice of which types of reports to link to is controlled by a “default_reports” setting in the global_defaults_package.R file.</li>
+<li>Added several new functions that can provide these kinds of reports:</li>
+</ul><table class="table"><colgroup><col width="22%"><col width="20%"><col width="25%"><col width="32%"></colgroup><thead><tr><th>header (column title)</th>
+<th>text (of link)</th>
+<th>function name</th>
+<th>key parameters</th>
+</tr></thead><tbody><tr><td>EJAM Report</td>
+<td>Report</td>
+<td><code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code></td>
+<td>sitepoints (or lat,lon) or shapefile or fips</td>
+</tr><tr><td>EJSCREEN Map</td>
+<td>EJSCREEN</td>
+<td><code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code></td>
+<td>sitepoints (or lat,lon) or shapefile or fips</td>
+</tr><tr><td>EnviroMapper Report</td>
+<td>EnviroMapper</td>
+<td><code><a href="../reference/url_enviromapper.html">url_enviromapper()</a></code></td>
+<td>sitepoints (or lat,lon) or shapefile or fips</td>
+</tr><tr><td>ECHO Report</td>
+<td>ECHO</td>
+<td><code><a href="../reference/url_echo_facility.html">url_echo_facility()</a></code></td>
+<td>regid</td>
+</tr><tr><td>FRS Report</td>
+<td>FRS</td>
+<td><code><a href="../reference/url_frs_facility.html">url_frs_facility()</a></code></td>
+<td>regid</td>
+</tr><tr><td>County Health Report</td>
+<td>County</td>
+<td><code><a href="../reference/url_county_health.html">url_county_health()</a></code></td>
+<td>fips</td>
+</tr><tr><td>State Health Report</td>
+<td>State</td>
+<td><code><a href="../reference/url_state_health.html">url_state_health()</a></code></td>
+<td>fips</td>
+</tr><tr><td>County Equity Atlas Report</td>
+<td>County</td>
+<td><code><a href="../reference/url_county_equityatlas.html">url_county_equityatlas()</a></code></td>
+<td>fips</td>
+</tr><tr><td>State Equity Atlas Report</td>
+<td>State</td>
+<td><code><a href="../reference/url_state_equityatlas.html">url_state_equityatlas()</a></code></td>
+<td>fips</td>
+</tr></tbody></table><ul><li>
+<code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> provides URLs to use with EJAM-API to get an html summary report on 1 site at a time. Inputs to this function are like inputs to <code><a href="../reference/ejamit.html">ejamit()</a></code> but so far mostly limited to radius, sitepoints, fips, shapefile. This will enable the map popups and excel tables of sites to include links to single-site reports, for example. It is limited to blockgroup fips only, right now, and only single-site reports right now.</li>
+<li>
+<code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> and other functions in table above were revised, cleaned up, and moved among .R files.</li>
+<li>
+<code><a href="../reference/url_enviromapper.html">url_enviromapper()</a></code> and <code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> can now accept a fips code and get the approx centroid of each block, blockgroup, tract, city, county, or state - that lets it craft a link to send you to EJSCREEN or EnviroMapper zoomed to one fips unit</li>
+<li>
+<code><a href="../reference/url_frs_facility.html">url_frs_facility()</a></code> and <code><a href="../reference/url_echo_facility.html">url_echo_facility()</a></code> are the new names of functions giving links to EPA FRS and ECHO reports on regulated facilities.</li>
+<li>
+<code><a href="../reference/url_county_health.html">url_county_health()</a></code> and <code><a href="../reference/url_state_health.html">url_state_health()</a></code> are new or renamed and provide links to reports that used to be called county health rankings</li>
+<li>
+<code><a href="../reference/url_county_equityatlas.html">url_county_equityatlas()</a></code> &amp; <code><a href="../reference/url_state_equityatlas.html">url_state_equityatlas()</a></code> make links to Equity Atlas reports</li>
+</ul></div>
+<div class="section level4">
+<h4 id="web-app-customization-details-2-32-6">Web app customization details<a class="anchor" aria-label="anchor" href="#web-app-customization-details-2-32-6"></a></h4>
+<ul><li>Added <code><a href="../reference/ejamapp.html">ejamapp()</a></code> as the new name for what was <code><a href="../reference/ejamapp.html">run_app()</a></code> – This launches EJAM as a local shiny app, in RStudio.</li>
+<li>Added ability to set many options and defaults as parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
+<li>Added many examples to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> documentation showing how to change the defaults and options. You can now provide a set of points, fips, or polygons to preload at launch e.g., <code>ejamapp(sitepoints=testpoints_10, radius=5)</code>
+</li>
+<li>Drafted a new article with technical details: <a href="https://ejanalysis.github.io/EJAM/articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a>
+</li>
+<li>Changed where the app title is stored. It is stored in the DESCRIPTION file as a field. (The app title also can be modified by editing <code>global_defaults_package.R</code> or by passing parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>).</li>
+<li>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</li>
+<li>Fixed a bug where <code>isPublic</code> parameter in <code><a href="../reference/ejamapp.html">ejamapp()</a></code> was being ignored.</li>
+<li>Fixed a bug where threshold-related params in <code><a href="../reference/ejamapp.html">ejamapp()</a></code> got ignored in latlon case.</li>
+<li>Renamed many global_defaults_ variables and shiny app input variables, and check in ejamapp() for special variables, so they are easier to use as parameters in <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
+<li>Renamed many global defaults (related to app title, logo, and version number, etc.), to be more clear and consistent, and moved several to <code>global_defaults_package.R</code>. So logos e.g. could be changed via <code>ejamapp(report_logo="www/EPA_logo_white_2.png", app_logo="www/EPA_logo_white_2.png")</code>, or report_logo=“” to show no logo on reports.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="added-documentation-2-32-6">Added documentation<a class="anchor" aria-label="anchor" href="#added-documentation-2-32-6"></a></h4>
+<ul><li>Simplified the <a href="https://github.com/ejanalysis/EJAM/#readme" class="external-link">README</a>
+</li>
+<li>Improved the <a href="https://ejanalysis.github.io/EJAM/articles/installing.html">article on how to install the package</a>, but it does need some additional testing/fixes.</li>
+<li>Renamed fields in the DESCRIPTION file, for VERSION and DATE info!</li>
+<li>Redid sample report, etc. outputs in <code>testdata/examples_of_outputs</code> folder to reflect changes in version numbers shown in report footer and app header, etc.</li>
+<li>Renamed various *.R files and relocated some source code among those, to make some filenames more consistent.</li>
+<li>Made some functions internal that until now had been exported, to simplify things for most R users.</li>
+<li>Updated {roxygen2} help file docs and pkgdown documentation webpages</li>
+<li>New function <code><a href="../reference/url_github_preview.html">url_github_preview()</a></code> makes it a bit easier to view rendered HTML reports that each package release or branch stores in the testdata/examples_of_outputs folder, to compare how they look in different versions.</li>
+<li>Spell checked / fixed some typos</li>
+<li>Fixed some documentation</li>
+</ul></div>
+<div class="section level4">
+<h4 id="added-or-changed-functions-2-32-6">Added or changed functions<a class="anchor" aria-label="anchor" href="#added-or-changed-functions-2-32-6"></a></h4>
+<ul><li>
+<code><a href="../reference/ejam2report.html">ejam2report()</a></code> now has a sitenumber parameter, to get a report on one site more easily</li>
+<li>
+<code><a href="../reference/ejam2map.html">ejam2map()</a></code> now has a sitenumber parameter, to map one site more easily</li>
+<li>
+<code><a href="../reference/ejam2report.html">ejam2report()</a></code> now downloads FIPS bounds if missing.</li>
+<li>
+<code><a href="../reference/ejam2map.html">ejam2map()</a></code> now downloads FIPS bounds if missing.</li>
+<li>unit tests added for functions including ejam2map() and ejam2excel()</li>
+<li>
+<code><a href="../reference/mapfast.html">mapfast()</a></code> and some others now drop sites with empty geometry before trying to map, avoid an error</li>
+<li>
+<code><a href="../reference/popup_from_any.html">popup_from_any()</a></code> and other map popup functions now have different parameters that can handle more columns of URLs/links of any type</li>
+<li>
+<code><a href="../reference/popup_from_any.html">popup_from_any()</a></code> and other map popup functions now drop the geometry column from spatial data.frames to avoid including a mess in the popup</li>
+<li>
+<code><a href="../reference/ejam2histogram.html">ejam2histogram()</a></code> is now exported and has more flexible parameters for title, y axis label, variable names</li>
+<li>
+<code><a href="../reference/shape2geojson.html">shape2geojson()</a></code> is a new helper function that tries to convert a spatial data.frame to text string geojson, the format needed by the 8/2025 version of the EJAM-API</li>
+<li>
+<code><a href="../reference/shapefile_from_any.html">shapefile_from_any()</a></code> now can also recognize a vector of character strings that are geojson polygons, via helper shapefile_from_geojson_text(), the inverse of shape2geojson()</li>
+<li>
+<code>testinput_fips_mix</code> is a new dataset with fips of each type: block, blockgroup, tract, city, county, state</li>
+<li>
+<code><a href="../reference/fips_county_from_latlon.html">fips_county_from_latlon()</a></code> and <code><a href="../reference/fips_state_from_latlon.html">fips_state_from_latlon()</a></code> are new internal functions - for each point, they identify the county or state it is in</li>
+<li>
+<code><a href="../reference/fips2countyfips.html">fips2countyfips()</a></code> reports what US County contains each fips-based Census unit, such as the Counties in which some blockgroups are located.</li>
+<li>
+<code><a href="../reference/fips2name.html">fips2name()</a></code> now handles block fips instead of warning</li>
+<li>
+<code><a href="../reference/sites_from_input.html">sites_from_input()</a></code> new internal function that helps other functions flexibly accept sites in various formats of input parameters:
+<ul><li>lat= and lon= vectors of point coordinates, or</li>
+<li>sitepoints= a data.frame with columns called lat and lon, or</li>
+<li>shapefile= a spatial data.frame of polygons, or</li>
+<li>fips= a vector of census FIPS code</li>
+</ul></li>
+<li>
+<code><a href="../reference/regids_valid.html">regids_valid()</a></code> is a new internal function</li>
+<li>
+<code><a href="../reference/url_linkify.html">url_linkify()</a></code> improved and made internal</li>
+<li>
+<code>urls_from_keylists()</code> utility drafted to help assemble url-encoded API query from lists of key=value arguments, etc.</li>
+<li>
+<code>url_ejamapi2arglist()</code> is a new helper that just parses url-encoded API requests back to arguments like ejamit() would need</li>
+</ul></div>
+</div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.5" id="ejam-v2325-july-2025">EJAM v2.32.5 (July 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2325-july-2025"></a></h2>
 <div class="section level3">
-<h3 id="web-app-2-32-5">Web app<a class="anchor" aria-label="anchor" href="#web-app-2-32-5"></a></h3>
+<h3 id="web-app-2-32-5">Web App<a class="anchor" aria-label="anchor" href="#web-app-2-32-5"></a></h3>
 <ul><li>
 <strong>Cities, Counties, States:</strong> Census units like States, Counties, and Cities/Towns/CDPs can be selected from a menu or searched by typing part of the name. Clicking “Done” will check online for the boundaries of those places, at which point the “Start Analysis” button will be enabled. Then clicking the “Start Analysis” button analyzes the sites for which bounds were found.</li>
 <li>
@@ -230,13 +378,13 @@
 <ul><li>Fixed logo in “About” tab, app header, and report header, in app_ui, generate_html_header(), global_defaults_xyz, etc., and updated testoutput files related to <code><a href="../reference/ejam2report.html">ejam2report()</a></code> and <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code>
 </li>
 <li>corrected spelling in app and documentation</li>
-<li>added better examples of params one can pass via <code><a href="../reference/run_app.html">run_app()</a></code>
+<li>added better examples of params one can pass via <code><a href="../reference/ejamapp.html">run_app()</a></code>
 </li>
 </ul></div>
 <div class="section level3">
 <h3 id="rstudio-users-only-2-32-4">RStudio users only<a class="anchor" aria-label="anchor" href="#rstudio-users-only-2-32-4"></a></h3>
 <ul><li>New summary table and plot are available via <code><a href="../reference/ejam2areafeatures.html">ejam2areafeatures()</a></code> and <code><a href="../reference/ejam2barplot_areafeatures.html">ejam2barplot_areafeatures()</a></code>. Changes in <code><a href="../reference/ejamit.html">ejamit()</a></code> provide information about what fraction of residents have certain features or types of areas where they live, such as schools, hospitals, Tribal areas, nonattainment areas, CEJST areas, etc. This is done via many changes to <code><a href="../reference/batch.summarize.html">batch.summarize()</a></code>.</li>
-<li>added better examples of params one can pass via <code><a href="../reference/run_app.html">run_app()</a></code>
+<li>added better examples of params one can pass via <code><a href="../reference/ejamapp.html">run_app()</a></code>
 </li>
 <li>documented <code><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options()</a></code> and <code><a href="../reference/global_or_param.html">global_or_param()</a></code>
 </li>
@@ -246,7 +394,7 @@
 <code><a href="../reference/ejam2report.html">ejam2report()</a></code> gets new params, and in <code><a href="../reference/build_community_report.html">build_community_report()</a></code> added report_title = NULL, logo_path = NULL, logo_html = NULL.</li>
 <li>
 <code><a href="../reference/ejam2barplot.html">plot_barplot_ratios()</a></code> gets new ylab and caption params</li>
-<li>added warning in <code><a href="../reference/url_countyhealthrankings.html">url_countyhealthrankings()</a></code> if default year seems outdated</li>
+<li>added warning in <code><a href="../reference/url_county_health.html">url_county_health()</a></code> if default year seems outdated</li>
 <li>unexported draft <code><a href="../reference/read_and_clean_points.html">read_and_clean_points()</a></code>
 </li>
 <li>unexported draft <code><a href="../reference/ejam2quantiles.html">ejam2quantiles()</a></code>
@@ -257,12 +405,12 @@
 <div class="section level3">
 <h3 id="technical--internal-changes-2-32-4">Technical / internal changes:<a class="anchor" aria-label="anchor" href="#technical--internal-changes-2-32-4"></a></h3>
 <ul><li>enabled testing of web app functionality from the test_interactively() utility (which has more recently been renamed <code><a href="../reference/test_ejam.html">test_ejam()</a></code> and put in R folder as an unexported internal function loaded as part of the package) or via test_local(), etc., not just from a github action. (See /tests/setup.R which now has a copy of what is also in app-functionality.R)</li>
-<li>drafted revisions to ui and server to try to allow for more <code><a href="../reference/run_app.html">run_app()</a></code> params or advanced tab or global_defaults_xyz to alter default method of upload vs dropdown, e.g., output ss_choose_method_ui, default_ss_choose_method, default_upload_dropdown. This included revising server and ui to use just <code>EJAM:::global_or_param()</code> not <code><a href="https://thinkr-open.github.io/golem/reference/get_golem_options.html" class="external-link">golem::get_golem_options()</a></code>, so that non-shiny global defaults can work (e.g., logo path as <code>global_defaults_package$.community_report_logo_path</code>) even outside shiny when global_defaults_package has happened via onattach but global_defaults_shiny etc. has not happened.</li>
+<li>drafted revisions to ui and server to try to allow for more <code><a href="../reference/ejamapp.html">run_app()</a></code> params or advanced tab or global_defaults_xyz to alter default method of upload vs dropdown, e.g., output ss_choose_method_ui, default_ss_choose_method, default_upload_dropdown. This included revising server and ui to use just <code>EJAM:::global_or_param()</code> not <code><a href="https://thinkr-open.github.io/golem/reference/get_golem_options.html" class="external-link">golem::get_golem_options()</a></code>, so that non-shiny global defaults can work (e.g., logo path as <code>global_defaults_package$.community_report_logo_path</code>) even outside shiny when global_defaults_package has happened via onattach but global_defaults_shiny etc. has not happened.</li>
 <li>changed <code>.onAttach()</code> to do source(global_defaults_package) with local = FALSE not TRUE, but this might need to be revisited – note both local = F and local = T are used in <code>.onAttach()</code> versus <code><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options()</a></code>
 </li>
 <li>in server, <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> now figures out value of radius_or_buffer_description, <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> gets new parameters table_xls_from_ejam() uses improved buffer_desc_from_sitetype() and now uses <code><a href="../reference/ejam2report.html">ejam2report()</a></code> to add a report in one tab.</li>
 <li>reorganized server code by moving v1_demog_table() and v1_envt_table to long report section of server file</li>
-<li>cleaned up server code (eg, remove obsolete input$disconnect, remove obsolete community_download() and report_community_download(), and remove repetitive <code>ejam2repor()</code>, remove old EJScreen Batch Tool tab, used session = session as param in server calls to updateXYZINPUT, etc.)</li>
+<li>cleaned up server code (eg, remove obsolete input$disconnect, remove obsolete community_download() and report_community_download(), and remove repetitive <code>ejam2repor()</code>, remove old EJSCREEN Batch Tool tab, used session = session as param in server calls to updateXYZINPUT, etc.)</li>
 <li>allow shiny.testmode to be TRUE even if not set in options</li>
 <li>used silent=TRUE in more cases of <code><a href="https://rdrr.io/r/base/try.html" class="external-link">try()</a></code>
 </li>
@@ -297,7 +445,7 @@
 <li>Extensive additions of and improvements in articles/vignettes, including documentation of how to maintain repo, package, and datasets. Articles/vignettes avoid hardcoded repo urls, and use relative links within pkgdown site… unexported helper function <code>EJAM:::repo_from_desc()</code> added, avoids hardcoded repo url; download_latest_arrow_data avoids hardcoded repo url; links to testdata files on webapp UI avoid hardcoded repo url; simpler <a href="../articles/whatis.html">What is EJAM</a> doc.</li>
 <li>
 <code><a href="../reference/ejamit.html">ejamit()</a></code> in interactive mode (RStudio) now lets you select any type of file to upload if no sites specified by parameters</li>
-<li>Many options or starting values or settings for the shiny app (and in general) can now be set as parameters passed to the <code><a href="../reference/run_app.html">run_app()</a></code> function, which overrides the defaults. extensive changes to global defaults vs user parameters allowed: replaced global.R; files renamed, put in 1 folder, etc. System for using user parameters passed to <code><a href="../reference/run_app.html">run_app()</a></code>, global defaults otherwise, many can be changed in advanced tab; some may be bookmarkable. The default values are now set for the shiny app and in general in files called <code>global_defaults_package.R</code>, <code>global_defaults_shiny_public.R</code>, and <code>global_defaults_shiny.R</code> (rather than in the old files global.R or manage-public-private.R).</li>
+<li>Many options or starting values or settings for the shiny app (and in general) can now be set as parameters passed to the <code><a href="../reference/ejamapp.html">run_app()</a></code> function, which overrides the defaults. extensive changes to global defaults vs user parameters allowed: replaced global.R; files renamed, put in 1 folder, etc. System for using user parameters passed to <code><a href="../reference/ejamapp.html">run_app()</a></code>, global defaults otherwise, many can be changed in advanced tab; some may be bookmarkable. The default values are now set for the shiny app and in general in files called <code>global_defaults_package.R</code>, <code>global_defaults_shiny_public.R</code>, and <code>global_defaults_shiny.R</code> (rather than in the old files global.R or manage-public-private.R).</li>
 <li>
 <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> examples added, on how to obtain and analyze new/custom indicators from the American Community Survey (ACS) data</li>
 <li>
@@ -326,8 +474,8 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.2" id="ejam-v2322-february-2025">EJAM v2.32.2 (February 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2322-february-2025"></a></h2>
-<ul><li>Revised all language based on executive orders, to refer to environmental and residential population data analysis, rather than EJ/EJScreen/etc.</li>
-<li>Revised web links based on EJScreen website being offline</li>
+<ul><li>Revised all language based on executive orders, to refer to environmental and residential population data analysis, rather than EJ / EJSCREEN / etc.</li>
+<li>Revised web links based on EJSCREEN website being offline</li>
 <li>Some edits made considering github repositories and gh pages may change location or go offline</li>
 <li>Updated FRS datasets, pulled on 2/12/25</li>
 <li>Remove screenshots from user guide document</li>
@@ -390,11 +538,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -99,8 +100,8 @@
 <p>EJAM’s toolkit can be used to host a web application. The web app
 provides public access to batches of reports, with rapid multisite
 analysis, by leveraging the EJAM toolkit.</p>
-<p>See <a href="https://www.ejanalysis.com/ejam" class="external-link uri">https://www.ejanalysis.com/ejam</a> on where to find a
-public, non-EPA version of the EJAM web app.</p>
+<p>See ejanalysis.org/ejam on where to find a public, non-EPA version of
+the EJAM web app.</p>
 <p>The version designed for use by the general public was specifically
 configured for non-expert users, so it does not include some
 less-frequently-used, complex features. More features are available in
@@ -140,16 +141,16 @@ as follows:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>shiny.launch.browser <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># so the web app uses a browser (not the RStudio viewer)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The Multisite Tool configuration is available via
-<code>run_app(isPublic=T)</code> and the version for expert use is
-available via <code>run_app(isPublic=F)</code></p>
+<code>ejamapp(isPublic=T)</code> and the version for expert use is
+available via <code>ejamapp(isPublic=F)</code></p>
 <p>See documentation of optional parameters via
-<code>?run_app()</code></p>
+<code>?ejamapp()</code></p>
 <p>Note this is different than running a simple shiny app that is not
 also a package via the <a href="https://golemverse.org/" class="external-link">golem</a>
-package. You should use the EJAM package function <code><a href="../reference/run_app.html">run_app()</a></code>
-not <code><a href="https://rdrr.io/pkg/shiny/man/runApp.html" class="external-link">shiny::runApp()</a></code>.</p>
+package. You should use the EJAM package function <code><a href="../reference/ejamapp.html">ejamapp()</a></code>
+or <code><a href="../reference/ejamapp.html">run_app()</a></code> not <code><a href="https://rdrr.io/pkg/shiny/man/runApp.html" class="external-link">shiny::runApp()</a></code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -158,11 +159,11 @@ not <code><a href="https://rdrr.io/pkg/shiny/man/runApp.html" class="external-li
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

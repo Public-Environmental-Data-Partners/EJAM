@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -134,7 +135,7 @@ README.<u>md</u> file</strong>), R/EJAM-package.R (for
 <code>?EJAM-package</code>), <code>NEWS.md</code> used to make <a href="../news/index.html">NEWS</a>, <code>CONTRIBUTING.md</code> used to
 make <a href="../CONTRIBUTING.html">CONTRIBUTING</a>, <a href="../LICENSE.html">LICENSE</a> based on
 <code>inst/LICENSE.md</code>, <a href="../authors.html#citation">CITATION</a> based on
-<code>inst/CITATION</code>, and others.</p></li>
+<code>inst/CITATION</code>, CITATION.cff, and others.</p></li>
 <li><p>Some of these are used by and shown by the github.com repository,
 notably the <code>README.md</code> that is generated from the
 <code>README.Rmd</code> file and appears on the github repository as <a href="%60r%20paste0(code_reponame_url,%20%22?tab=readme-ov-file#readme%22)%60">README</a>
@@ -198,7 +199,8 @@ rebuild the whole pkgdown site.</p></li>
 </h3>
 <ul>
 <li>If you change the UI then new screenshots are needed for a new
-version of the User Guide that was stored as a .pdf document.</li>
+version of the User Guide that was stored as a .pdf document built from
+a Word doc.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -250,14 +252,13 @@ renamed functions/ vignettes/ datasets, or changes in what is exported,
 will require edits to the .yml file.</p></li>
 <li><p>The pkgdown-based webpages should be updated by someone who is
 managing the package, and they should use the
-<code>update_pkgdown()</code> function found in
+<code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code> function mentioned in
 <code>data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R</code>
-You have to <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code> that file and then use the function
-that it defines. Via that function, the pages get rebuilt by the
-<a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> R package, based on the above files and all other
-documentation from .R and .md files. For more information about using
-the <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> package to create documentation in the form
-of webpages, see <a href="https://pkgdown.r-lib.org/articles/pkgdown.html" class="external-link">pkgdown
+You use the function pkgdown_update() so that the pages get rebuilt by
+the <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> R package, based on the above files and all
+other documentation from .R and .md files. For more information about
+using the <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> package to create documentation in the
+form of webpages, see <a href="https://pkgdown.r-lib.org/articles/pkgdown.html" class="external-link">pkgdown
 articles</a>. The documentation is created/updated using the
 <a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a> and <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> R packages, which
 read information from the .R files in the R folder, from .Rmd file
@@ -281,6 +282,17 @@ example.</p></li>
 to remove that folder from <code>.gitignore</code> in case it was listed
 there via some <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> or <a href="https://usethis.r-lib.org" class="external-link">usethis</a>
 function.</p></li>
+<li><p>The name of the repo from which documentation is published at any
+given time needs to be recorded as part of the URL parameter in the
+<code>DESCRIPTION</code> file in the root folder of the source package.
+That repo URL can be read from there using the unexported helper
+function <code>repo_from_desc()</code> as
+<code>EJAM:::repo_from_desc('github.io', get_full_url=T)</code>, which
+currently returns (<a href="https://ejanalysis.github.io/EJAM" class="uri">https://ejanalysis.github.io/EJAM</a>). Prior to mid-2025,
+documentation webpages had been on github pages at URLs related to the
+USEPA/EJAM and USEPA/EJAM-open repositories – but those pages might be
+archived and/or unpublished, and that source of documentation has become
+obsolete.</p></li>
 </ul>
 </div>
 </div>
@@ -291,11 +303,11 @@ function.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

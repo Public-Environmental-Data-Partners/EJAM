@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -93,93 +94,58 @@
 
     
     
-<p>EJAM is not only a web app, it is also an R package you can install
-on your computer. This is useful if you want to use the full set of EJAM
-R functions, some of which are not available in the web app, to do
-customized analysis, to explore the datasets, or to reuse data or code
-in other applications.</p>
+<p>EJAM is not only a web app, it is also an R package you can install.
+This is useful if you want to use the full set of EJAM R functions, many
+of which do things not available in the web app, to do customized
+analysis, to explore the datasets, or to reuse data or code in other
+applications.</p>
 <p>This assumes you have installed and know how to use <a href="https://posit.co/download/rstudio-desktop/" class="external-link">R and RStudio</a>
 (some functions assume you have RStudio), and <a href="https://github.com/git-guides/install-git" class="external-link uri" target="_blank" rel="noreferrer noopener">git</a>. You might also want
 <a href="https://github.com/apps/desktop" class="external-link uri" target="_blank" rel="noreferrer noopener">GitHub Desktop</a> for convenience.</p>
 <div class="section level2">
-<h2 id="how-to-getinstall-ejam">How to Get/Install EJAM<a class="anchor" aria-label="anchor" href="#how-to-getinstall-ejam"></a>
+<h2 id="options">Options<a class="anchor" aria-label="anchor" href="#options"></a>
 </h2>
-<p>The EJAM package gets installed from a GitHub repository, not CRAN
-(so <code>install.packages('EJAM')</code> will <em>not</em> work).</p>
-<p>To use EJAM in RStudio, you would ideally clone the repo as a new
-RStudio Project, and then install the package from source. Cloning or
-forking makes a local copy of the source code repository. Although you
-could skip cloning (i.e., just install from a .zip source package file),
-cloning is easy and allows you to explore and edit source code or
-contribute to the package.</p>
+<p>The package is on GitHub.com, not CRAN (so
+<code>install.packages('EJAM')</code> would <em>not</em> work).</p>
+<p>To use EJAM in RStudio, you have two options:</p>
+<ol style="list-style-type: decimal">
+<li>You can clone (or fork) the repo as a new RStudio Project, and then
+install from that source. Cloning (or forking) is easy and allows you to
+explore or contribute to source code. This is the recommended
+option.</li>
+<li>Option 2 is to avoid cloning. That is easier if you only want to run
+the web app locally, but may not work if you want to use certain R
+functions directly.</li>
+</ol>
 </div>
 <div class="section level2">
-<h2 id="install-without-cloning">Install <em>without</em> cloning<a class="anchor" aria-label="anchor" href="#install-without-cloning"></a>
-</h2>
-<p>You could try to skip cloning the repository and just install the
-package from GitHub, but you will not be able to edit the source code or
-contribute to the package development. You should be able to use the
-package in RStudio without cloning, but a number of functions
-(especially those related to package development) assume a local source
-code copy is available.</p>
-<p>Trying to use [remotes::install_github()] requires having set up a
-PAT for authentication to work (see below on PATs).</p>
-<ol style="list-style-type: lower-alpha">
-<li>If you <em>don’t have a <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens" class="external-link uri" target="_blank" rel="noreferrer noopener">personal access
-token</a> (PAT) and don’t want to set one up</em>, you could <a href="https://github.com/ejanalysis/EJAM/releases/latest" class="external-link">check the
-github repository for the latest release</a> and use
-<code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> something like this:</li>
-</ol>
-<p>options(timeout = 300); if (!require(remotes))
-{install.packages(‘remotes’)}</p>
-<p>remotes::install_url(‘<a href="https://github.com/ejanalysis/EJAM/archive/refs/tags/v2.32.5.zip" class="external-link uri">https://github.com/ejanalysis/EJAM/archive/refs/tags/v2.32.5.zip</a>’,
-dependencies=T, upgrade=‘always’, build=F)</p>
-<p><em>or download the .zip and try something like this in the folder
-with the saved .zip file:</em></p>
-<p>options(timeout = 300); if (!require(remotes))
-{install.packages(‘remotes’)}</p>
-<p>remotes::install_local(‘EJAM-2.32.5.zip’, dependencies=T,
-upgrade=‘always’, build=F)</p>
-<ol start="2" style="list-style-type: lower-alpha">
-<li>If you <em>do have a PAT set up</em>, you can install from github
-with something like this:</li>
-</ol>
-<p>options(timeout = 300); if (!require(remotes))
-{install.packages(‘remotes’)}</p>
-<p>remotes::install_github(repo=‘ejanalysis/EJAM’, dependencies=T,
-upgrade=‘always’, build=F)</p>
-</div>
-<div class="section level2">
-<h2 id="install-with-cloning">Install <em>with</em> cloning<a class="anchor" aria-label="anchor" href="#install-with-cloning"></a>
+<h2 id="option-1--install-with-cloning-preferred-approach">Option 1. Install <em>with</em> cloning (preferred approach)<a class="anchor" aria-label="anchor" href="#option-1--install-with-cloning-preferred-approach"></a>
 </h2>
 <div class="section level3">
-<h3 id="clone-ejam-create-a-project-in-rstudio">1. Clone EJAM &amp; create a Project in RStudio<a class="anchor" aria-label="anchor" href="#clone-ejam-create-a-project-in-rstudio"></a>
+<h3 id="step-1--clone-ejam-create-a-project-in-rstudio">Step 1. Clone EJAM &amp; create a Project in RStudio<a class="anchor" aria-label="anchor" href="#step-1--clone-ejam-create-a-project-in-rstudio"></a>
 </h3>
-<p>Here are three options – Option “a” is probably the simplest:</p>
-<ol style="list-style-type: lower-alpha">
-<li><p>in <strong>RStudio</strong>: Click <strong>File</strong>,
-<strong>New Project</strong>, <strong>Version Control</strong>,
-<strong>Git</strong>, and for the repository URL, enter
-<code>https://github.com/ejanalysis/EJAM</code>. For help: <a href="https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository" class="external-link uri" target="_blank" rel="noreferrer noopener">How to create a
-new RStudio project by cloning a remote Git repo</a>. Then you also
-could add it to GitHub Desktop if that is a tool you use.</p></li>
-<li><p>in <strong>GitHub Desktop</strong>: Click <strong>File</strong>,
-<strong>Clone</strong>, <strong>URL</strong>, and enter
-<code>https://github.com/ejanalysis/EJAM</code> as the repository URL.
-For help: <a href="https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop" class="external-link uri" target="_blank" rel="noreferrer noopener">How to clone a
+<p>Here are three ways, but any of them should work – The first one is
+probably the simplest:</p>
+<p>method A. start in <strong>RStudio</strong>: Click
+<strong>File</strong>, <strong>New Project</strong>, <strong>Version
+Control</strong>, <strong>Git</strong>, and for the repository URL,
+enter <code>https://github.com/ejanalysis/EJAM</code>. For help: <a href="https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository" class="external-link uri" target="_blank" rel="noreferrer noopener">How to create a
+new RStudio project by cloning a remote Git repo</a>. Then add it to
+GitHub Desktop if that is a tool you use.</p>
+<p>method B. start in <strong>GitHub Desktop</strong>: Click
+<strong>File</strong>, <strong>Clone</strong>, <strong>URL</strong>, and
+for the repository URL, enter
+<code>https://github.com/ejanalysis/EJAM</code>. For help: <a href="https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop" class="external-link uri" target="_blank" rel="noreferrer noopener">How to clone a
 repo using GitHub Desktop</a>. Then in <strong>RStudio</strong>: Click
 <strong>File</strong>, <strong>New Project</strong>, <strong>Existing
-Directory</strong>, and specify the folder you just cloned
-into.</p></li>
-<li><p>at <strong>GitHub.com</strong>: Go to <a href="https://github.com/ejanalysis/EJAM" class="external-link uri" target="_blank" rel="noreferrer noopener" title="github.com/ejanalysis/EJAM">the EJAM
+Directory</strong>, and specify the folder you just cloned into.</p>
+<p>method C. start at <strong>GitHub.com</strong>: Go to <a href="https://github.com/ejanalysis/EJAM" class="external-link uri" target="_blank" rel="noreferrer noopener" title="github.com/ejanalysis/EJAM">the EJAM
 repository page</a>, click the green <strong>Code</strong> button,
 <strong>Download Zip</strong>, then unzip the zip file that contains the
 package. For help: <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository" class="external-link uri" target="_blank" rel="noreferrer noopener">How to clone a
 repo from GitHub.com</a>. Then in <strong>RStudio</strong>: Click
 <strong>File</strong>, <strong>New Project</strong>, <strong>Existing
-Directory</strong>, and specify the folder you just cloned
-into.</p></li>
-</ol>
+Directory</strong>, and specify the folder you just cloned into.</p>
 <div class="section level4">
 <h4 id="configure-build-tools-in-rstudio-optional">Configure Build Tools in RStudio (optional)<a class="anchor" aria-label="anchor" href="#configure-build-tools-in-rstudio-optional"></a>
 </h4>
@@ -188,45 +154,100 @@ example, try these settings:</p>
 <ul>
 <li>Project build tools: Package</li>
 <li>Package directory: (Project Root)</li>
-<li>Always use –preclean : checked</li>
-<li>Use devtools : checked</li>
-<li>Generate documentation with Roxygen: checked
+<li>Always use –preclean : checked (yes)</li>
+<li>Use devtools : checked (yes)</li>
+<li>Generate documentation with Roxygen: checked (yes)
 <ul>
-<li>Configure Roxygen options all checked except for Vignettes and
-optionally Build/Install</li>
+<li>Configure Roxygen options: all checked/yes, except for Vignettes and
+Build/Install</li>
 </ul>
 </li>
 <li>Install package R CMD check: –no-multiarch –with-keep.source</li>
-<li>Build source: blank</li>
-<li>Build binary: blank</li>
+<li>Build source &amp; Build binary: leave both blank</li>
 </ul>
 <p>For help: <a href="https://docs.posit.co/ide/user/ide/guide/pkg-devel/writing-packages.html#configuring-build-tools" class="external-link uri" target="_blank" rel="noreferrer noopener">How to configure
 build tools in RStudio</a>.</p>
+<hr>
 </div>
 </div>
 <div class="section level3">
-<h3 id="install-after-cloning">2. Install (after Cloning)<a class="anchor" aria-label="anchor" href="#install-after-cloning"></a>
+<h3 id="step-2--install-after-cloning">Step 2. Install (after Cloning)<a class="anchor" aria-label="anchor" href="#step-2--install-after-cloning"></a>
 </h3>
-<p>You can install like this, which ensures all packages that EJAM uses
-(depends on, imports, or suggests) get installed or updated:</p>
-<p>options(timeout = 300); if (!require(remotes))
-{install.packages(‘remotes’)}</p>
-<p>if (!(basename(getwd()) %in% ‘EJAM’ &amp;&amp;
-file.exists(‘DESCRIPTION’))) { stop(‘Working directory must be root of
-the EJAM source package’) }</p>
-<p>devtools::install(dependencies=T, upgrade=‘always’, build=F)</p>
+<p>You can use the Build menu in RStudio, or just run the following
+(which installs all the Suggests, not just Imports)</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="st">"EJAM"</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="st">"DESCRIPTION"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"must be in root folder of EJAM source package"</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span>dependencies<span class="op">=</span><span class="cn">T</span>, upgrade<span class="op">=</span><span class="st">"always"</span>, build<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="option-2--install-without-cloning-not-the-preferred-approach">Option 2. Install <em>without</em> cloning (not the preferred
+approach)<a class="anchor" aria-label="anchor" href="#option-2--install-without-cloning-not-the-preferred-approach"></a>
+</h2>
+<p>You may be able to install the package to just run the web app
+locally in RStudio without cloning, but some of the code assumes a local
+source code copy is available (especially functions or scripts related
+to analysis the web app cannot do, or for package development).</p>
+<div class="section level3">
+<h3 id="using-install_github">Using install_github()<a class="anchor" aria-label="anchor" href="#using-install_github"></a>
+</h3>
+<p>If you <em>do have a PAT set up</em>, you can use
+<code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code>. (For help on PAT setup, see the
+last section of this article).</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span>; <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="va">ref</span> <span class="op">=</span> <span class="fu"><a href="https://remotes.r-lib.org/reference/github_refs.html" class="external-link">github_release</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># specifies you want the latest released version</span></span>
+<span><span class="co">#ref = "development"   # development branch version</span></span>
+<span><span class="co">#ref = "HEAD"          # main branch</span></span>
+<span><span class="co">#ref = "EJAM-v2.32.6"  # a specific branch</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span></span>
+<span>  repo <span class="op">=</span> <span class="st">"ejanalysis/EJAM"</span>, ref <span class="op">=</span> <span class="va">ref</span>, </span>
+<span>  dependencies<span class="op">=</span><span class="cn">T</span>, upgrade<span class="op">=</span><span class="st">"always"</span>, build<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ejanalysis.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="using-install_url-or-install_local">Using install_url() or install_local()<a class="anchor" aria-label="anchor" href="#using-install_url-or-install_local"></a>
+</h3>
+<p>If you <em>don’t have a <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens" class="external-link uri" target="_blank" rel="noreferrer noopener">personal access
+token</a> (PAT) and don’t want to set one up</em>, you could <a href="https://github.com/ejanalysis/EJAM/releases/latest" class="external-link">check the
+github repository for the latest release</a> and may be able to use
+<code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> something like this:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span>; <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="va">zipname</span> <span class="op">=</span> <span class="st">"v2.32.6.zip"</span> <span class="co"># or "v2.32.5.zip", etc. - update as needed</span></span>
+<span><span class="va">remote_zip</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://github.com/ejanalysis/EJAM/archive/refs/tags/"</span>, <span class="va">zipname</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">install_url</a></span><span class="op">(</span>url <span class="op">=</span> <span class="va">remote_zip</span>, </span>
+<span>                     dependencies<span class="op">=</span><span class="cn">T</span>, upgrade<span class="op">=</span><span class="st">'always'</span>, build<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ejanalysis.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
+<p><em>or download the .zip file as a separate step, and install from
+that saved file:</em></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span>; <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="va">zipname</span> <span class="op">=</span> <span class="st">"v2.32.6.zip"</span> <span class="co"># or "v2.32.5.zip", etc. - update as needed</span></span>
+<span><span class="va">remote_zip</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://github.com/ejanalysis/EJAM/archive/refs/tags/"</span>, <span class="va">zipname</span><span class="op">)</span></span>
+<span><span class="va">local_zip</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">zipname</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">remote_zip</span>, destfile <span class="op">=</span> <span class="va">local_zip</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">local_zip</span>, </span>
+<span>                       dependencies<span class="op">=</span><span class="cn">T</span>, upgrade<span class="op">=</span><span class="st">"always"</span>, build<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ejanalysis.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 </div>
 <div class="section level2">
 <h2 id="start-using-ejam">Start Using EJAM<a class="anchor" aria-label="anchor" href="#start-using-ejam"></a>
 </h2>
-<p>After the package is installed, see the <a href="basics.html">Basics
-- Quick Start Guide</a>.</p>
+<p>After installing, see the <a href="basics.html">Basics - Quick Start
+Guide</a>.</p>
+<hr>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="technical-details">Technical Details<a class="anchor" aria-label="anchor" href="#technical-details"></a>
+<h2 id="other-technical-details">Other Technical Details<a class="anchor" aria-label="anchor" href="#other-technical-details"></a>
 </h2>
 <p>Just in case you need more details on how installing and attaching
 the package works, the following describes the package dependencies and
@@ -239,12 +260,14 @@ token</a> (PAT) for authentication to work when using a repository on
 GitHub.com. See more <a href="https://usethis.r-lib.org/articles/git-credentials.html#git-credential-helpers-and-the-credential-store" class="external-link">about
 git credentials and the credential store</a>. Note Windows takes care of
 most of this now, in conjunction with GitHub.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##  To check for existing PATs:</span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">gh_token_help</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># or</span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/git_sitrep.html" class="external-link">git_sitrep</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># git situation report</span></span>
+<span></span>
 <span><span class="co">#  To make a new PAT:</span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">create_github_token</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co">#  To register a PAT:</span></span>
 <span><span class="fu">credentials</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/credentials/reference/set_github_pat.html" class="external-link">set_github_pat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -252,28 +275,34 @@ most of this now, in conjunction with GitHub.</p>
 <h3 id="details-on-cran-packages-needed-dependencies">Details on CRAN packages needed (dependencies)<a class="anchor" aria-label="anchor" href="#details-on-cran-packages-needed-dependencies"></a>
 </h3>
 <p>You should not have to do anything other than the instructions above,
-to handle package dependencies. EJAM needs a number of other packages to
+to handle package dependencies. EJAM needs dozens of other packages to
 be installed that are (almost all) available from <a href="https://cran.r-project.org" class="external-link">CRAN</a>. Installing the EJAM package
-as explained above will handle obtaining those other packages. Cloning
-and building/installing and then trying to load/attach EJAM will also
-alert you to those other packages you need to install if you don’t
-already have them. In case it is of interest, the list of CRAN packages
-needed is in the <code>DESCRIPTION</code> file in the R package source
-code root folder (as can be found in the code repository). Note some are
-in Suggests and you might want to install those as well – using
-dependencies=T in <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code> or
-<code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> will make sure of that.</p>
+as explained above (with dependencies=TRUE, upgrade=“always”) will
+handle obtaining those other packages. Cloning and building/installing
+and then trying to load/attach EJAM will also alert you to those other
+packages you need to install if you don’t already have them. In case it
+is of interest, a list of packages needed is in the
+<code>DESCRIPTION</code> file in the R package source code root folder
+(as can be found in the code repository). Note some are in Suggests and
+you probably want to install those as well since some of them were
+actually used in some less-often-used features or functions. Using
+dependencies=T in <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code>,
+<code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code>, install(), etc. will make sure they
+are all installed.</p>
 </div>
 <div class="section level3">
 <h3 id="details-on-the-automatic-data-downloads">Details on the automatic data downloads<a class="anchor" aria-label="anchor" href="#details-on-the-automatic-data-downloads"></a>
 </h3>
 <p>To work in the RStudio console, EJAM needs some datasets not stored
-as part of the package. However, they already should be downloaded and
-loaded into memory automatically as soon as you use
-<code><a href="https://ejanalysis.github.io/EJAM">require(EJAM)</a></code>.</p>
-<p>On first use, it should automatically download some data files. Each
-time it is attached, it will check for updates and also will build a
-spatial index of Census block points.</p>
+as part of the package. However, they already should be downloaded
+(right after you first install the package) and loaded into memory
+automatically (or be ready for lazy-loading or otherwise loading as
+needed) as soon as you do require(EJAM) or library(EJAM).</p>
+<p>On first use, the package should automatically download some data
+files from a related repository. Each time the package is attached via
+library() or require(), <code>.onAttach()</code> will check for updates
+and also will build a spatial index of Census block points called
+<code><a href="../reference/quaddata.html">?localtree</a></code>, via <code><a href="../reference/indexblocks.html">indexblocks()</a></code>.</p>
 <p>Typically you would not need to download any datasets yourself,
 because EJAM just downloads these when the app starts (technically, when
 the R package is attached) (or only as needed in the case of certain
@@ -282,26 +311,13 @@ with the package, such as the <a href="../reference/blockgroupstats.html">blockg
 large files like <a href="../reference/blockpoints.html">blockpoints</a>
 are stored in a separate data repo, and EJAM downloads them from there.
 You might want your own local copies, though, for these reasons:</p>
-<p>Attaching the package actually checks for copies in memory first
-(e.g., <code>exists("quaddata", envir = globalenv())</code>), then local
-disk (using <code><a href="../reference/dataload_from_local.html">dataload_from_local()</a></code> looking in the data
-folder of the (source or installed) package, as defined by
-<code>app_sys()</code> which is just a wrapper for
-<code><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file()</a></code>), then finally tries to download any still
-needed, using internal functions.</p>
-</div>
-<div class="section level3">
-<h3 id="details-on-the-indexing-of-blocks">Details on the indexing of blocks<a class="anchor" aria-label="anchor" href="#details-on-the-indexing-of-blocks"></a>
-</h3>
-<p>EJAM also needs to build the index of more than 8 million US block
-locations (one internal point for each block), which takes a few
-seconds. EJAM does this automatically when attached via
-<code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> or <code><a href="https://rdrr.io/r/base/library.html" class="external-link">require()</a></code> e.g.,
-<code><a href="https://ejanalysis.github.io/EJAM">require(EJAM)</a></code>, by creating an object called <a href="../reference/localtree.html">localtree</a> based on the <a href="../reference/quaddata.html">quaddata</a> object obtained as
-mentioned above. Some functions check for it and try to build the index
-on the fly if it is missing. You can also (re)build it manually:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/indexblocks.html">indexblocks</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Attaching the package actually checks (using internal function
+<code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code>) for copies in memory first (e.g.,
+<code>exists("quaddata", envir = globalenv())</code>), then local disk
+(using <code><a href="../reference/dataload_from_local.html">dataload_from_local()</a></code> looking in the data folder of
+the (source or installed) package, as defined by <code>app_sys()</code>
+which is just a wrapper for <code><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file()</a></code>), then finally
+tries to download any still needed, using internal functions.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -311,11 +327,11 @@ on the fly if it is missing. You can also (re)build it manually:</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

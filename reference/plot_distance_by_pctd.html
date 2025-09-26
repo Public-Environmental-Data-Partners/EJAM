@@ -11,7 +11,7 @@ for a single population group."><meta property="og:image" content="https://ejana
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@ for a single population group."><meta property="og:image" content="https://ejana
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -130,10 +131,10 @@ radius is used in that.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Also see ejamit_compare_distances() for a plot  of several indicators at several distances!</p>
 <p>This function uses the distance of each Census block from the site in conjunction with
-the block group residential population data, to provide a relatively detailed picture of
+the blockgroup residential population data, to provide a relatively detailed picture of
 how far away residents in each group live. In contrast, the function
 <code><a href="distance_by_group_plot.html">distance_cdf_by_group_plot()</a></code> is based on ejamit()$results_bybg_people,
-which provides only block group resolution information about distance.</p>
+which provides only blockgroup resolution information about distance.</p>
     </div>
 
     <div class="section level2">
@@ -145,29 +146,29 @@ which provides only block group resolution information about distance.</p>
 <span>  <span class="fu">plot_distance_by_pctd</span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">pts</span>, radius <span class="op">=</span> <span class="fl">10</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
 <span>    score_colname <span class="op">=</span> <span class="st">"pctnhba"</span><span class="op">)</span></span>
-<span> <span class="co">#browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 0.5))</span></span>
-<span> <span class="co">#browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 3))</span></span>
-<span> </span>
-<span> <span class="co"># Example of area that has higher %Hispanic as you go </span></span>
+<span> <span class="co">#browseURL(url_ejamapi(sitepoints = pts, radius = 0.5))</span></span>
+<span> <span class="co">#browseURL(url_ejamapi(sitepoints = pts, radius = 3))</span></span>
+<span></span>
+<span> <span class="co"># Example of area that has higher %Hispanic as you go</span></span>
 <span> <span class="co"># 10 to 30 miles away from this specific point</span></span>
 <span> <span class="va">pts</span> <span class="op">=</span> <span class="fu">data.table</span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">45.75464</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">94.36791</span><span class="op">)</span></span>
 <span> <span class="fu">plot_distance_by_pctd</span><span class="op">(</span><span class="va">pts</span>,</span>
 <span>   sitenumber <span class="op">=</span> <span class="fl">1</span>, score_colname <span class="op">=</span> <span class="st">"pcthisp"</span><span class="op">)</span></span>
-<span> <span class="co"># browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 10))</span></span>
-<span> <span class="co"># browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 30))</span></span>
-<span> </span>
-<span> </span></code></pre></div>
+<span> <span class="co"># browseURL(url_ejamapi(sitepoints = pts, radius = 10))</span></span>
+<span> <span class="co"># browseURL(url_ejamapi(sitepoints = pts, radius = 30))</span></span>
+<span></span>
+<span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

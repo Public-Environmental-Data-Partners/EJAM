@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -107,9 +108,9 @@ service areas. See <code><a href="https://rdrr.io/pkg/tigris/man/zctas.html" cla
 <div class="float">
 <img src="images/many_county_fips_are_also_a_zipcode.png" style="width:75.0%" alt="many county fips are also a zipcode"><div class="figcaption">many county fips are also a zipcode</div>
 </div>
-<p>EJScreen’s API does not handle zip codes. It can show where the
-center of the zip code is but will not map its bounds or provide a
-report easily via the API.</p>
+<p>The original (pre-2025) EJSCREEN API did not handle zip codes. It can
+show where the center of the zip code is but will not map its bounds or
+provide a report easily via the API.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just see where the zipcode is, not its boundaries</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>wherestr <span class="op">=</span>  <span class="st">'10001'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -121,7 +122,7 @@ them and analyze or map them in EJAM as shown below.</strong></p>
 <p>Takes time to download!</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris" class="external-link">tigris</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>tigris_use_cache<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># options(tigris_use_cache=TRUE) # done by EJAM load/attach</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>tigris_refresh<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#zcta_DE &lt;- zctas(starts_with = fips_from_name('DE'), keep_zipped_shapefile = T) # all in the state</span></span>
 <span><span class="co">#zcta1 &lt;- zctas(starts_with = c("10001"))  # one zip</span></span>
@@ -152,13 +153,17 @@ them and analyze or map them in EJAM as shown below.</strong></p>
 <span><span class="va">response1</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="va">url1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">text1</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_string</a></span><span class="op">(</span><span class="va">response1</span><span class="op">)</span></span>
 <span><span class="va">shp1</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">text1</span><span class="op">)</span></span>
-<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="va">shp1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/mapview/reference/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="va">shp1</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="see-ejscreen-map-at-a-zip-code">see EJSCREEN map at a zip code<a class="anchor" aria-label="anchor" href="#see-ejscreen-map-at-a-zip-code"></a>
+</h3>
+<p>browseURL(url_ejscreenmap(wherestr = ‘20019’))</p>
 </div>
 <div class="section level3">
 <h3 id="analyzing-zip-codes-in-ejam">analyzing zip codes in EJAM<a class="anchor" aria-label="anchor" href="#analyzing-zip-codes-in-ejam"></a>
 </h3>
-<p>The EJScreen API does not handle zip codes, but you can analyze them
-in EJAM like this:</p>
+<p>You can analyze zip codes in EJAM like this:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">z</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -202,11 +207,11 @@ in EJAM like this:</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

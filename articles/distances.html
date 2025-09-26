@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -85,7 +86,7 @@
 <script src="distances_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="distances_files/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="distances_files/leaflet-1.3.1/leaflet.js"></script><link href="distances_files/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="distances_files/proj4-2.6.2/proj4.min.js"></script><script src="distances_files/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="distances_files/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
-<script src="distances_files/leaflet-binding-2.2.2/leaflet.js"></script><script src="distances_files/lfx-easyprint-1.0.0/dom-to-image.js"></script><script src="distances_files/lfx-easyprint-1.0.0/FileSaver.js"></script><script src="distances_files/lfx-easyprint-1.0.0/lfx-easyprint_full.js"></script><script src="distances_files/lfx-easyprint-1.0.0/lfx-easyprint-bindings.js"></script><div class="row">
+<script src="distances_files/leaflet-binding-2.2.3/leaflet.js"></script><script src="distances_files/lfx-easyprint-1.0.0/dom-to-image.js"></script><script src="distances_files/lfx-easyprint-1.0.0/FileSaver.js"></script><script src="distances_files/lfx-easyprint-1.0.0/lfx-easyprint_full.js"></script><script src="distances_files/lfx-easyprint-1.0.0/lfx-easyprint-bindings.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Comparing Distances (Choosing a Radius)</h1>
             
@@ -106,8 +107,8 @@ selecting radius.</p>
 <p>Also see the list of <a href="../reference/index.html#comparing-distances-multiple-radius-values">functions
 related to comparing distances</a>.</p>
 <div class="section level3">
-<h3 id="residential-population-group-percentages-by-distance-at-block-group-resolution">RESIDENTIAL POPULATION GROUP PERCENTAGES BY DISTANCE AT BLOCK GROUP
-RESOLUTION<a class="anchor" aria-label="anchor" href="#residential-population-group-percentages-by-distance-at-block-group-resolution"></a>
+<h3 id="residential-population-group-percentages-by-distance-at-blockgroup-resolution">RESIDENTIAL POPULATION GROUP PERCENTAGES BY DISTANCE AT BLOCKGROUP
+RESOLUTION<a class="anchor" aria-label="anchor" href="#residential-population-group-percentages-by-distance-at-blockgroup-resolution"></a>
 </h3>
 <p>It is easiest to analyze distance increments based on each
 blockgroup’s average resident here. Block resolution is covered in a
@@ -273,7 +274,7 @@ Example of using ejam2barplot_distances()
 </div>
 </div>
 <div class="section level3">
-<h3 id="residential-population-group-data-at-block-group-resolution">RESIDENTIAL POPULATION GROUP DATA AT BLOCK GROUP RESOLUTION<a class="anchor" aria-label="anchor" href="#residential-population-group-data-at-block-group-resolution"></a>
+<h3 id="residential-population-group-data-at-blockgroup-resolution">RESIDENTIAL POPULATION GROUP DATA AT BLOCKGROUP RESOLUTION<a class="anchor" aria-label="anchor" href="#residential-population-group-data-at-blockgroup-resolution"></a>
 </h3>
 <p>Most of the EJAM functions use distance to the average resident of a
 block group, which is calculated from the distance to each block’s
@@ -287,7 +288,7 @@ indicator as a function of distance, you can directly work with
 getblocksnearby() or just use the function plot_distance_by_pctd(). It
 uses the distance from the site to each block’s internal point (like a
 centroid) rather than just the distance to the average resident in each
-block group.</p>
+blockgroup.</p>
 <div class="section level4">
 <h4 id="how-residential-population-group-percentages-at-one-site-vary-as-a-continuous-function-of-distance">How residential population group percentages at <em>ONE SITE</em>
 vary as <em>a continuous function of distance</em><a class="anchor" aria-label="anchor" href="#how-residential-population-group-percentages-at-one-site-vary-as-a-continuous-function-of-distance"></a>
@@ -306,8 +307,14 @@ Example of using plot_distance_by_pctd()
 </p>
 </div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 0.5))</span></span>
-<span><span class="co">#browseURL(url_ejscreen_report(lat = pts$lat, lon = pts$lon, radius = 3))</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># ejamapp(sitepoints = pts, radius_default = 0.5)</span></span>
+<span><span class="co"># ejamapp(sitepoints = pts, radius_default = 3)</span></span>
+<span></span>
+<span><span class="co">#browseURL(url_ejscreenmap(sitepoints = pts, radius = 0.5))</span></span>
+<span><span class="co">#browseURL(url_ejscreenmap(sitepoints = pts, radius = 3))</span></span>
+<span></span>
+<span><span class="co">#browseURL(url_ejamapi(sitepoints = pts, radius = 0.5))</span></span>
+<span><span class="co">#browseURL(url_ejamapi(sitepoints = pts, radius = 3))</span></span></code></pre></div>
 <p>Example of area that has higher %Hispanic as you go 10 to 30 miles
 away from this specific point</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -566,7 +573,7 @@ radius, and analyzing conditions within that radius, such as all
 residents who live within 3 miles of a point where a regulated facility
 is located. Sometimes an analysis will look at two or even three
 distances. In some more sophisticated analyses, distance is treated as a
-continuous measure. Some tools like EJScreen use a proximity metric
+continuous measure. Some tools like EJSCREEN use a proximity metric
 based on the inverse of distance (1/d) to provide a proximity score that
 gets higher as distance gets smaller. But many EJ analyses still use a
 single distance and analyze conditions within that distance.</p>
@@ -712,28 +719,28 @@ suited for the analysis of those sites.</li>
 <p>These considerations are explained further in the discussion
 below.</p>
 <p>Residential population group counts and percentages or environmental
-indicators are calculated from block group residential population data
+indicators are calculated from blockgroup residential population data
 and environmental indicators and an estimate of what fraction of each
-block group is inside each site. For proximity analysis that means a
+blockgroup is inside each site. For proximity analysis that means a
 circle is drawn around a point using a radius, and for shapefiles a
-similar approach is used. In either case, the fraction of the block
-group counted as inside the area analyzed is based on which block
-centroids (each is technically called a block “internal point”) are
-inside the circle or polygon. All the residents of a block are assumed
-to be inside if the block centroid is inside. This is exactly true
-unless a block is on the edge of the circle or polygon. Even for the
-ones on the edge, some centroids are just outside and some just inside
-the shape, so the contributions of some blocks are over-counted and
-other under-counted, but those tend to cancel each other out in the
-sense that it is unlikely they would all be under-counted, for example.
-Still, when a large share of the block points in circle or polygon are
-from blocks not entirely inside, uncertainty is higher than when the
-vast majority of blocks are entirely inside. In other words, if the
-circle or polygon has a very large number of blocks in it, uncertainty
-is lower because only a small fraction are along the edge and bisected.
-If a radius of 3 miles is used, the area is 28 square miles. If the
-blocks in that location are only about 0.28 square miles each, the
-circle might contain or partly contain about 100 blocks.</p>
+similar approach is used. In either case, the fraction of the blockgroup
+counted as inside the area analyzed is based on which block centroids
+(each is technically called a block “internal point”) are inside the
+circle or polygon. All the residents of a block are assumed to be inside
+if the block centroid is inside. This is exactly true unless a block is
+on the edge of the circle or polygon. Even for the ones on the edge,
+some centroids are just outside and some just inside the shape, so the
+contributions of some blocks are over-counted and other under-counted,
+but those tend to cancel each other out in the sense that it is unlikely
+they would all be under-counted, for example. Still, when a large share
+of the block points in circle or polygon are from blocks not entirely
+inside, uncertainty is higher than when the vast majority of blocks are
+entirely inside. In other words, if the circle or polygon has a very
+large number of blocks in it, uncertainty is lower because only a small
+fraction are along the edge and bisected. If a radius of 3 miles is
+used, the area is 28 square miles. If the blocks in that location are
+only about 0.28 square miles each, the circle might contain or partly
+contain about 100 blocks.</p>
 <p>The dataset used by EJAM called blockwts has a column called
 block_radius_miles that is what the radius would be if the block were
 circular, and it is based on area = pi * block_radius_miles^2 or
@@ -1087,11 +1094,11 @@ mile from the site at the center.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

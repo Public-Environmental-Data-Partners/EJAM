@@ -9,7 +9,7 @@ See list of samples of input files to try in EJAM, and output examples from EJAM
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@ See list of samples of input files to try in EJAM, and output examples from EJAM
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -66,7 +67,7 @@ See list of samples of input files to try in EJAM, and output examples from EJAM
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span>pattern <span class="op">=</span> <span class="cn">NULL</span>, installed <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span>pattern <span class="op">=</span> <span class="cn">NULL</span>, installed <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, folder_only <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -88,6 +89,10 @@ rather than the locally installed version.</p></dd>
 <dd><p>set TRUE if you want to just get the path
 without seeing all the info in console and without browsing to the folder</p></dd>
 
+
+<dt id="arg-folder-only">folder_only<a class="anchor" aria-label="anchor" href="#arg-folder-only"></a></dt>
+<dd><p>set TRUE to get only directories, no files</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -96,9 +101,11 @@ without seeing all the info in console and without browsing to the folder</p></d
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span><span class="st">'shapes'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">testdata</span><span class="op">(</span><span class="st">'shape'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span><span class="st">'shape'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">'shape'</span>, quiet <span class="op">=</span> <span class="cn">T</span>, folder_only<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"id"</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"id"</span>, quiet <span class="op">=</span> <span class="cn">T</span>, folder_only<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">testdata</span><span class="op">(</span><span class="st">'fips'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="fu">testdata</span><span class="op">(</span><span class="st">'registryid'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
@@ -120,11 +127,11 @@ without seeing all the info in console and without browsing to the folder</p></d
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>
