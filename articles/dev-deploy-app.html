@@ -16,8 +16,8 @@
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Deploying the Web App">
-<meta name="description" content="Updating and deploying/hosting the shiny app">
-<meta property="og:description" content="Updating and deploying/hosting the shiny app">
+<meta name="description" content="Deploying/hosting the web app">
+<meta property="og:description" content="Deploying/hosting the web app">
 <meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg">
 </head>
 <body>
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -93,17 +94,51 @@
 
     
     
+<div class="section level2">
+<h2 id="current-approach">Current approach<a class="anchor" aria-label="anchor" href="#current-approach"></a>
+</h2>
+<p>The older info below is obsolete and is retained here just to
+document how deployment used to be done. However, these issues might
+still be relevant to deploying/hosting:</p>
+<ol style="list-style-type: decimal">
+<li><p>See info on setting isPublic=T in <a href="dev-app-settings.html">Defaults and Custom Settings for the Web
+App</a>. One way to improve this process would be to modify the
+<code>isPublic</code> toggle to be an environment variable. This would
+allow us to set the value once in each application server, and not have
+to change it each time we push updates. Moreover, it would make testing
+the app easier to handle in the GitHub actions (see <a href="dev-run-shinytests.html">shinytests vignette</a>). Note that after
+mid-2025 the isPublic setting has been handled as explained in the
+article <a href="dev-app-settings.html">Defaults and Custom Settings for
+the Web App</a>.</p></li>
+<li><p>See info on other parameters as well, in [Defaults and Custom
+Settings for the Web App](dev-app-settings.html.</p></li>
+<li><p>The EPA-hosted app used a <a href="https://docs.posit.co/connect/user/git-backed/" class="external-link">Posit Connect
+server configured to re-publish the shiny app directly from github.com
+content</a> whenever it saw changes in the specified repo and branch,
+and <a href="https://posit.co/blog/git-backed-deployment-in-posit-connect/" class="external-link">that
+same approach</a> could be used by anyone else hosting the app.</p></li>
+<li><p>The notes below about updating the <code>manifest.json</code>
+file using a script like <code>rsconnect_manifest_update.R</code> might
+still be relevant to someone deploying/ hosting the app.</p></li>
+</ol>
+</div>
+<div class="section level2">
+<h2 id="older-information">Older information<a class="anchor" aria-label="anchor" href="#older-information"></a>
+</h2>
 <p>While the EPA servers hosting the EJAM web application are no longer
 up and running as of mid-2025, this document outlines the application
-deployment process that had been used. The process involved 1)
-development work on an internal/private repo called EJAM that had been
-used to deploy an internal/expert version of the web app for staff, and
-2) a public repo called EJAM-open that had been used to share the latest
-version and publish it to host a public version of the web app for use
-in EJScreen (until early 2025).</p>
-<div class="section level2">
-<h2 id="update-ejam-application">Update EJAM Application<a class="anchor" aria-label="anchor" href="#update-ejam-application"></a>
-</h2>
+deployment process that had been used. The process involved</p>
+<ol style="list-style-type: decimal">
+<li><p>development work on an internal/private repo called EJAM that had
+been used to deploy an internal/expert version of the web app for staff,
+and</p></li>
+<li><p>a public repo called EJAM-open that had been used to share the
+latest version and publish it to host a public version of the web app
+for use in EJSCREEN (until early 2025).</p></li>
+</ol>
+<div class="section level3">
+<h3 id="update-ejam-application">Update EJAM Application<a class="anchor" aria-label="anchor" href="#update-ejam-application"></a>
+</h3>
 <p>After updating the main branch in the public EJAM code repository
 (see <a href="dev-update-package.html">Updating the Package as a New
 Release</a> vignette) so that the public repo had the latest
@@ -126,10 +161,10 @@ repo)</li>
 <li>
 <p>Updated Staging + Production servers</p>
 <ol style="list-style-type: lower-alpha">
-<li>Merged EJAM’s main branch into the PUBLIC-EJSCREEN branch (in the
+<li>Merged the EJAM main branch into the PUBLIC-EJSCREEN branch (in the
 repo to be deployed from)</li>
 <li>Ensured <code>isPublic</code> parameter was set to TRUE in the call
-to the <code><a href="../reference/run_app.html">run_app()</a></code> function in <code>app.R</code>
+to the <code><a href="../reference/ejamapp.html">ejamapp()</a></code> function in <code>app.R</code>
 <ol style="list-style-type: lower-roman">
 <li>The <code>isPublic</code> flag determined whether to show the public
 or internal/expert version of the web application.</li>
@@ -143,12 +178,15 @@ site.</li>
 <li>
 <p>Updated Deploy Posit server</p>
 <ol style="list-style-type: lower-alpha">
-<li>Merged EJAM’s main branch into the deploy-posit branch (in the repo
-to be deployed from)</li>
+<li>Merged the EJAM main branch into the deploy-posit branch (in the
+repo to be deployed from)</li>
 <li>Ensured <code>isPublic</code> parameter was set to FALSE</li>
 <li>deploy-posit was automatically connected to the
 development/internal/expert version of the web app, so changes to this
-branch were automatically pulled into the site.</li>
+branch were automatically pulled into the site. In other words, the
+EPA-hosted app had a Posit Connect server configured to re-publish the
+shiny app directly from github.com content whenever it saw changes in
+the specified repo and branch.</li>
 </ol>
 </li>
 <li><p>Merged main back into development so that development would have
@@ -156,15 +194,6 @@ the updated <code>manifest.json</code> file. This ensured all branches
 were consistent.</p></li>
 </ol>
 </div>
-<div class="section level2">
-<h2 id="potential-improvements">Potential Improvements<a class="anchor" aria-label="anchor" href="#potential-improvements"></a>
-</h2>
-<p>One way to improve this process would be to modify the
-<code>isPublic</code> toggle to be an environment variable. This would
-allow us to set the value once in each application server, and not have
-to change it each time we push updates. Moreover, it would make testing
-the public and internal versions of the app easier to handle in the
-GitHub actions (see shinytests vignette).</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -173,11 +202,11 @@ GitHub actions (see shinytests vignette).</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -112,10 +113,10 @@ below.</p>
 <p>To provide further flexibility and help avoid duplication of effort,
 an EJAM API is needed. This would allow links within the EJAM tables and
 map popups to link to a report on each site, for example, which was
-available via the EJScreen API until it was taken offline. An API also
+available via the EJSCREEN API until it was taken offline. An API also
 could provide access to services such as fast identification of nearby
-blocks or other points, summarization (aggregation over blocks or block
-groups), or data. See draft work in the plumber folder of the EJAM
+blocks or other points, summarization (aggregation over blocks or
+blockgroups), or data. See draft work in the plumber folder of the EJAM
 source package.</p>
 </div>
 <div class="section level4">
@@ -138,7 +139,7 @@ EJAM/R/PROXIMITY_FUNCTIONS.R</p>
 would summarize the proximity of all types of EPA-regulated facilities,
 or certain subcategories, for every community in the US or within one
 State of interest. This would be similar to the existing proximity
-indicators such as the RMP score in EJScreen, but cover a larger range
+indicators such as the RMP score in EJSCREEN, but cover a larger range
 of facilities. See early draft work in
 <code>EJAM/R/PROXIMITY_FUNCTIONS.R</code></p>
 </div>
@@ -146,10 +147,10 @@ of facilities. See early draft work in
 <h4 id="proximity-scores-for-user-specified-sites">Proximity Scores for User-Specified Sites<a class="anchor" aria-label="anchor" href="#proximity-scores-for-user-specified-sites"></a>
 </h4>
 <p>A feature is planned that will be able to quickly calculate a new
-proximity indicator for every block group in the US, to represent counts
+proximity indicator for every blockgroup in the US, to represent counts
 of and distances to user-specified points such as facilities. This would
 be similar to the existing proximity indicators such as the RMP score in
-EJScreen, but would be calculated on the fly for any user-specified set
+EJSCREEN, but would be calculated on the fly for any user-specified set
 of points. See early draft work in
 <code>EJAM/R/PROXIMITY_FUNCTIONS.R</code></p>
 </div>
@@ -160,8 +161,8 @@ of points. See early draft work in
 report on other residential population indicators (e.g., other Census
 ACS variables), to include user-selected EPA-hosted layers, or even
 user-provided data. In other words, an analysis would be able to include
-other layers on risks or concentrations (at block group resolution), or
-user-provided scores for each block group. See <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code>
+other layers on risks or concentrations (at blockgroup resolution), or
+user-provided scores for each blockgroup. See <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code>
 examples, <code><a href="../reference/calctype.html">calctype()</a></code>, <code><a href="../reference/doaggregate.html">doaggregate()</a></code> parameters
 like wtdmeancols, and early drafts of possible approaches
 in<code><a href="../reference/calc_ejam.html">calc_ejam()</a></code>, <code><a href="../reference/custom_doaggregate.html">custom_doaggregate()</a></code>,
@@ -212,11 +213,11 @@ functions and mapping functions</a>.</p>
 <p>EJAM is designed with growth in mind, assuming that the specific
 indicators of interest will expand or change over time. It is even
 possible that multiple resolutions of data will need to be analyzed,
-such as block, block group, and tract data for different indicators. A
+such as block, blockgroup, and tract data for different indicators. A
 subsequent refinement might even use a high-resolution raster grid of
 population estimates rather than the Census Block counts currently used
-for buffering and weighting block group scores for partially included
-block groups.</p>
+for buffering and weighting blockgroup scores for partially included
+blockgroups.</p>
 </div>
 </div>
 </div>
@@ -227,11 +228,11 @@ block groups.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

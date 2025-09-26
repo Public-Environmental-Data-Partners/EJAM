@@ -13,7 +13,7 @@ This does the work actually supporting getblocksnearby()"><meta property="og:ima
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,7 @@ This does the work actually supporting getblocksnearby()"><meta property="og:ima
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -110,14 +111,14 @@ This does the work actually supporting getblocksnearby()</p>
 <dt id="arg-avoidorphans">avoidorphans<a class="anchor" aria-label="anchor" href="#arg-avoidorphans"></a></dt>
 <dd><p>logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
 it keeps looking past radius, up to maxradius, to find nearest 1 BLOCK.
-What EJScreen does in that case is report NA, right? So,
+What EJSCREEN does in that case is report NA, right? So,
 does EJAM really need to report stats on residents presumed to be within radius,
 if no block centroid is within radius?
 Best estimate might be to report indicators from nearest block centroid which is
 probably almost always the one your site is sitting inside of,
 but ideally would adjust total count to be a fraction of blockwt based on
 what is area of circular buffer as fraction of area of block it is apparently inside of.
-Setting this to TRUE can produce unexpected results, which will not match EJScreen numbers.</p>
+Setting this to TRUE can produce unexpected results, which will not match EJSCREEN numbers.</p>
 <p>Note that if creating a proximity score, by contrast, you instead want to find nearest 1 SITE if none within radius of this BLOCK.</p></dd>
 
 
@@ -141,7 +142,7 @@ the distance_unadjusted column will save the actual distance of site to block in
 – the distance column always represents distance to average resident in the block, which is
 estimated by adjusting the site to block distance in cases where it is small relative to the
 size of the block, to put a lower limit on it, which can result in a large estimate of distance
-if the block is very large. See EJScreen documentation.</p></dd>
+if the block is very large. See EJSCREEN documentation.</p></dd>
 
 
 <dt id="arg-quadtree">quadtree<a class="anchor" aria-label="anchor" href="#arg-quadtree"></a></dt>
@@ -163,14 +164,14 @@ Each block is defined by its Census-provided internal point, by latitude and lon
 <p>Results are the sites2blocks table that would be used by doaggregate(),
 with distance in miles as one output column of data.table.
 Adjusts distance to avg resident in block when it is very small relative to block size,
-the same way EJScreen adjusts distances in creating proximity scores.</p>
+the same way EJSCREEN adjusts distances in creating proximity scores.</p>
 <p>Each point can be the location of a regulated facility or other type of site, and
 the blocks are a high-resolution source of information about where
 residents live.</p>
 <p>Finding which blocks have their internal points in a circle provides
-a way to quickly estimate what fraction of a block group is
+a way to quickly estimate what fraction of a blockgroup is
 inside the circular buffer more accurately and more quickly than
-areal apportionment of block groups would provide.</p>
+areal apportionment of blockgroups would provide.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -187,11 +188,11 @@ areal apportionment of block groups would provide.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

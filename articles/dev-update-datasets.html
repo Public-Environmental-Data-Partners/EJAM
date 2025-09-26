@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -166,10 +167,10 @@ using scripts/functions organized from within
 <em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em>.</p>
 <ul>
 <li>NOTE: Prior to 2025, several key datasets used by EJAM were obtained
-from EPA’s EJScreen-related FTP site and others directly from relevant
+from EPA’s EJSCREEN data FTP site and others directly from relevant
 staff. Many of the indicators on the Community Report for the v2.2
-(early 2024) EJScreen data were NOT provided in the gdb and csv files on
-the FTP site, so they had to be obtained directly from the EJScreen team
+(early 2024) EJSCREEN data were NOT provided in the gdb and csv files on
+the FTP site, so they had to be obtained directly from the EJSCREEN team
 as a separate .csv file. The code referred to from
 <em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em>
 assumes the basic datasets from EPA are available, and then converts
@@ -177,7 +178,7 @@ them into the datasets actually used by EJAM. However, if those are no
 longer available from those sources, the data could mostly be
 independently recreated, but this would require a combination of
 existing code and significant new work. Some relevant code was in
-archived EJScreen repositories, for creating environmental datasets.
+archived EJSCREEN repositories, for creating environmental datasets.
 Some code is in EJAM functions that can get ACS datasets. Much relevant
 code was in an older non-EPA package called ejscreen, which had been
 made private as of early 2025 but could be refreshed. That package had
@@ -186,11 +187,11 @@ the blockgroupstats and usastats/statestats datasets.</li>
 </ul>
 </li>
 <li><p><strong><em>Block Datasets</em></strong>: The <em>block</em> (not
-block group) tables might be updated less often, but Census fips codes
-do change yearly so the <code><a href="../reference/blockwts.html">?blockwts</a></code>,
-<code><a href="../reference/blockpoints.html">?blockpoints</a></code>, <code><a href="../reference/quaddata.html">?quaddata</a></code>,
-<code><a href="../reference/blockid2fips.html">?blockid2fips</a></code>, and related additional data.tables should be
-updated as needed. This is also done from within
+blockgroup) tables might be updated less often, but Census fips codes do
+change yearly so the <code><a href="../reference/blockwts.html">?blockwts</a></code>, <code><a href="../reference/blockpoints.html">?blockpoints</a></code>,
+<code><a href="../reference/quaddata.html">?quaddata</a></code>, <code><a href="../reference/blockid2fips.html">?blockid2fips</a></code>, and related
+additional data.tables should be updated as needed. This is also done
+from within
 <em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em> See
 package <code>census2020download</code> on github for the function
 <code>census2020_get_data()</code> that may be useful.</p></li>
@@ -438,11 +439,11 @@ tibble/dataframe.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer>

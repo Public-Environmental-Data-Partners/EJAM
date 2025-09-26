@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -124,18 +125,18 @@ correspond to fips for which boundaries could not be obtained for some reason.
 So the output table might not have the same number of rows as the input fips vector.</p>
 <p>When using tigris package ("tiger" as service-related parameter here),
 it uses the year that is the default in the version of the tigris package that is installed.
-You can use options(tigris_year = 2022) for example to specify it explicitly.
-This function also sets options(tigris_use_cache = TRUE), but each individual shapes_xyz_from_ function may not specify.</p>
+You can use options(tigris_year = 2022) for example to specify it explicitly.</p>
 <p>Blocks are not implemented yet here. For info on blocks bounds, see  <code><a href="https://rdrr.io/pkg/tigris/man/block_groups.html" class="external-link">tigris::block_groups()</a></code>
 Also note the <a href="blockwts.html">blockwts</a> dataset had a placeholder column block_radius_miles that as of
 v2.32.5 was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
 If it were used, it could be a way to quickly get the area of each block,
 using the formula  area = pi * (block_radius_miles^2)</p>
+<p>For zip code boundaries, see the <a href="ejanalysis.org/ejamdocs">EJAM documentation</a> article on zipcodes.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># shp2 = shapes_from_fips("10001", "10005")</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># shp2 = shapes_from_fips("10001", "10005") # Counties not zip codes!</span></span>
 <span></span>
 <span> <span class="va">fipslist</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  statefips <span class="op">=</span> <span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'DE'</span>, <span class="st">'RI'</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -160,11 +161,11 @@ using the formula  area = pi * (block_radius_miles^2)</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>

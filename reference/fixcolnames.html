@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.5</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -108,12 +109,12 @@ it returns a blank if the old name is not found at all.</p>
 <p>These are some key column names in the <a href="map_headernames.html">map_headernames</a> table:</p><ul><li><p>"shortname" (aka "short", for plot labels, etc.)</p></li>
 <li><p>"longname" (aka "long", for full explanatory headers to use on a table)</p></li>
 <li><p>"rname" (aka "r", the R variable names as used in the EJAM code)</p></li>
-<li><p>"apiname" (aka "api", as returned by EJScreen API)</p></li>
-<li><p>"csvname" (aka "csv", as found in the CSV files of just the key residential population and environmental indicators, found on the EJScreen FTP site)</p></li>
-<li><p>"acsname" (aka "acs", as found in a ACS data file internally used by EJScreen, containing all the extra residential population groups and other indicators not stored in the CSV files on the EJScreen FTP site)</p></li>
+<li><p>"apiname" (aka "api", as returned by EJSCREEN API)</p></li>
+<li><p>"csvname" (aka "csv", as found in the CSV files of just the key residential population and environmental indicators, found on the EJSCREEN FTP site)</p></li>
+<li><p>"acsname" (aka "acs", as found in a ACS data file internally used by EJSCREEN, containing all the extra residential population groups and other indicators not stored in the CSV files on the EJSCREEN FTP site)</p></li>
 <li><p>"DEJ" (whether the indicator is residential population, environmental, etc.)</p></li>
 <li><p>"varlist" (which group of names is this variable in, such as "names_d", "names_d_subgroups", "names_d_state_pctile", etc.)</p></li>
-<li><p>"calculation_type" (how it should be aggregated over block groups, such as "wtdmean", "sum of counts", etc.)</p></li>
+<li><p>"calculation_type" (how it should be aggregated over blockgroups, such as "wtdmean", "sum of counts", etc.)</p></li>
 <li><p>"denominator" (the weight to use in aggregating as a wtdmean, normally a count variable that is the universe for a percentage, such as "pop", "hhlds", etc.)</p></li>
 </ul></div>
     <div class="section level2">
@@ -124,14 +125,14 @@ it returns a blank if the old name is not found at all.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># see package tests</span></span>
-<span>  </span>
+<span></span>
 <span> <span class="va">names_d</span></span>
 <span> <span class="fu"><a href="namesbyvarlist.html">namesbyvarlist</a></span><span class="op">(</span><span class="st">'names_d'</span><span class="op">)</span></span>
 <span> <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"pctlowinc"</span><span class="op">)</span></span>
 <span> <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"pcthisp"</span><span class="op">)</span></span>
-<span> </span>
 <span></span>
-<span> <span class="co"># see the different names for the same variable, </span></span>
+<span></span>
+<span> <span class="co"># see the different names for the same variable,</span></span>
 <span> <span class="co"># and see it is not in the csv tables on the FTP site</span></span>
 <span> <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"pcthisp"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"csvname"</span>, <span class="st">"acsname"</span>, <span class="st">"apiname"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -142,13 +143,13 @@ it returns a blank if the old name is not found at all.</p>
 <span> <span class="fu">fixcolnames</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RAW_D_INCOME"</span>, <span class="st">"S_D_LIFEEXP"</span><span class="op">)</span>, newtype <span class="op">=</span> <span class="st">"longname"</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/stats/addmargins.html" class="external-link">addmargins</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">map_headernames</span><span class="op">$</span><span class="va">vartype</span>, <span class="va">map_headernames</span><span class="op">$</span><span class="va">DEJ</span><span class="op">)</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="co"># the columns "newsort" and "reportsort" provide useful sort orders</span></span>
 <span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">map_headernames</span><span class="op">$</span><span class="va">rname</span><span class="op">[</span><span class="va">map_headernames</span><span class="op">$</span><span class="va">varlist</span> <span class="op">==</span> <span class="st">"names_d"</span><span class="op">]</span></span>
-<span>  <span class="co"># same as </span></span>
-<span>  </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"original order"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> </span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>   </span>
+<span>  <span class="co"># same as</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"original order"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"out of order"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"fixed order"</span><span class="op">)</span></span>
 <span>  <span class="va">x</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu">fixcolnames</span><span class="op">(</span><span class="va">x</span>, oldtype <span class="op">=</span> <span class="st">"r"</span>, newtype <span class="op">=</span> <span class="st">"newsort"</span><span class="op">)</span><span class="op">)</span> <span class="op">]</span></span>
@@ -159,11 +160,11 @@ it returns a blank if the old name is not found at all.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>2025</p>
+  <p>September 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.5</p>
+  <p>EJAM Version 2.32.6</p>
 </div>
 
     </footer></div>
