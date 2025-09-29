@@ -260,6 +260,18 @@
         <dd>Convert shapefile (class sf) to data.table of lat and lon columns Makes lat and lon columns, from a sfc_POINT class geometry field, or finds centroids of POLYGONS</dd>
       </dl><dl><dt>
 
+          <code><a href="latlon_from_shapefile_centroids.html">latlon_from_shapefile_centroids()</a></code>
+
+        </dt>
+        <dd>get coordinates of each polygon centroid, using INTPTLAT,INTPTLON if those columns already exist</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_fips.html">latlon_from_fips()</a></code>
+
+        </dt>
+        <dd>get approx centroid of each fips census unit</dd>
+      </dl><dl><dt>
+
           <code><a href="address_from_table.html">address_from_table()</a></code>
 
         </dt>
@@ -299,6 +311,12 @@
 
         </dt>
         <dd>Get latitude, longitude (and NAICS) via EPA Facility Registry ID See FRS Facility Registry Service data on EPA-regulated sites</dd>
+      </dl><dl><dt>
+
+          <code><a href="regids_valid.html">regids_valid()</a></code>
+
+        </dt>
+        <dd>validate regids by checking if they are in the database being used currently</dd>
       </dl><dl><dt>
 
           <code><a href="latlon_from_programid.html">latlon_from_programid()</a></code>
@@ -737,6 +755,12 @@
 
         </dt>
         <dd>Convert shapefile (class sf) to data.table of lat and lon columns Makes lat and lon columns, from a sfc_POINT class geometry field, or finds centroids of POLYGONS</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_shapefile_centroids.html">latlon_from_shapefile_centroids()</a></code>
+
+        </dt>
+        <dd>get coordinates of each polygon centroid, using INTPTLAT,INTPTLON if those columns already exist</dd>
       </dl></div><div class="section level2">
       <h2 id="specify-counties-etc-">Specify Counties etc.<a class="anchor" aria-label="anchor" href="#specify-counties-etc-"></a></h2>
 
@@ -790,6 +814,12 @@
 
         </dt>
         <dd>FIPS - Add leading zeroes to fips codes if missing, replace with NA if length invalid</dd>
+      </dl><dl><dt>
+
+          <code><a href="latlon_from_fips.html">latlon_from_fips()</a></code>
+
+        </dt>
+        <dd>get approx centroid of each fips census unit</dd>
       </dl><dl><dt>
 
           <code><a href="fips2pop.html">fips2pop()</a></code>
