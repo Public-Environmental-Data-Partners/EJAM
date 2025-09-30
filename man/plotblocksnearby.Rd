@@ -56,34 +56,3 @@ Uses \code{\link[=getblocksnearby]{getblocksnearby()}} if lat,lon points provide
 but skips it if looks like user passed output of getblocksnearby(),
 and then displays a map of those blocks near the specified point.
 }
-\examples{
-  #  see all Census Blocks within 1 mile of 1 site, if already had run getblocksnearby()
-  getblocks_output <- copy(testoutput_getblocksnearby_10pts_1miles)
-  if ("siteid" \%in\% names(getblocks_output)) {
-  eg <- getblocks_output[siteid == 1,]
-  eg2 <- getblocks_output[siteid \%in\% c(4,10),]
-  } else {
-   eg <- getblocks_output[ejam_uniq_id == 1,]
-   eg2 <- getblocks_output[ejam_uniq_id \%in\% c(4,10),]
-  }
-   z <-  plotblocksnearby(sitepoints = testpoints_10,
-     sites2blocks = eg, radius = 1)
-   # see two sites if already had run getblocksnearby()
-   z2 <-  plotblocksnearby(sitepoints = testpoints_10[c(4,10),],
-     sites2blocks = eg2, radius = 1)
-  \dontrun{
-  # See one randomly selected regulated facility from FRS
-  and all Census Blocks and Blockgroups within 2 miles:
-    plotblocksnearby(testpoints_n(1), 2, overlay_blockgroups=T)
-  # See two sites and all Census Blocks within 5 kilometers
-    plotblocksnearby(testpoints_10[c(3,10),], radius = convert_units(5, from = "km", towhat = "miles"))
-  # See 100 sites and all blocks within 1 mile of each -
-  # Note you have to specify radius here or it uses default that may not match intent
-  # - and this is a bit slow
-  plotblocksnearby(
-    testoutput_ejamit_100pts_1miles$results_bysite[,
-        c("ejam_uniq_id", "lat", "lon"), with=FALSE],
-   radius = 1)
-  }
-
-}

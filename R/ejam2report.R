@@ -144,7 +144,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   # overall vs 1-site ####
 
   sitenumber <- as.numeric(sitenumber)
-  if (all(is.na(sitenumber)) || is.null(sitenumber) || length(sitenumber) == 0 || all(sitenumber %in% "") || all(sitenumber) %in% 0 || all(sitenumber) < 0) {
+  if (all(is.na(sitenumber)) || is.null(sitenumber) || length(sitenumber) == 0 ||
+      all(sitenumber %in% "") || all(sitenumber %in% 0) || all(sitenumber < 0)) {
     sitenumber <- 0
   }
   ### > nsites ####

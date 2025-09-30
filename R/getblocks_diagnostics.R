@@ -64,8 +64,8 @@ blockcounts_table <- function(blockcounts,
 #' utility - Plot How many blocks (<10, <30, etc.) are near the sites (pop density affects accuracy)
 #'
 #' @param blockcounts vector like from
-#'
-#'   out <- [testoutput_ejamit_1000pts_1mile]s
+#'  ```
+#'   out <- testoutput_ejamit_1000pts_1mile
 #'
 #'   blockcounts <- out$results_bysite$blockcount_near_site
 #'
@@ -74,7 +74,7 @@ blockcounts_table <- function(blockcounts,
 #'   getout <- testoutput_getblocksnearby_1000pts_1miles
 #'
 #'   blockcounts <- getout[ , .N, keyby = 'ejam_uniq_id']$N
-#'
+#' ```
 #' @param radius in miles (can use 0 if shapefiles analyzed)
 #' @param n optional count of sites should be length(blockcounts)
 #' @param cuts optional vector defining bins

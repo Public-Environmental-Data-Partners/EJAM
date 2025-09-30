@@ -19,7 +19,7 @@ ACS data from \verb{r a2018-2022 Each year this should be re-created as for the 
 It is a data.table of US Census blockgroups (not blocks).
 With PR, and Island Areas
 
-Column names include \code{bgfips}, \code{bgid} (for join to \link{?blockwts} by/on \code{bgid}),
+Column names include \code{bgfips}, \code{bgid} (for join to \link{blockwts} by/on \code{bgid}),
 \code{pop}, \code{pctlowinc}, etc.
 
 To see definitions of the columns (indicators) and some basic info on each:

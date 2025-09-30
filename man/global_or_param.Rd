@@ -17,7 +17,7 @@ value of the param, or NULL if not found
 utility for server/ui to check value of a global default setting or user-defined setting
 }
 \details{
-This and \code{\link[=get_golem_options]{get_golem_options()}} are very similar tools, useful in server and ui.
+This and \code{\link[golem:get_golem_options]{golem::get_golem_options()}} are very similar tools, useful in server and ui.
 See help for \code{\link[=get_global_defaults_or_user_options]{get_global_defaults_or_user_options()}}
 
 \code{\link[=global_or_param]{global_or_param()}} is used a lot in server and also ui (while sometimes

@@ -71,6 +71,7 @@ shapes_from_fips <- function(fips,
 ) {
 
   # preserve original input SORT order ####
+  fips <- fips_lead_zero(fips) # or else merge with this will fail later
   original_order <- data.frame(n = seq_along(fips), fips = fips)
 
   if (offline_cat()) {
@@ -827,7 +828,7 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 
 #' Get shapefiles/ boundaries of census places like cities
 #'
-#' @param fips vector of 7-digit City/town/CDP codes as in [censusplaces$fips]
+#' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
 #' @param year for [tigris::places()]
 #' @seealso [shapes_from_fips()]

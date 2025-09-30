@@ -70,6 +70,7 @@ test_that("latlon_from_fips works on bg", {
 test_that("latlon_from_fips works on tract", {
   expect_no_error({
     latlon_from_fips(testinput_fips_tracts[1])
+    latlon_from_fips(testinput_fips_tracts[3])# had a problem before
     x <-    latlon_from_fips(testinput_fips_tracts[1:2])
   })
   expect_true("lon" %in% names(x))

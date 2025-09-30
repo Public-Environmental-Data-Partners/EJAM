@@ -24,7 +24,7 @@ look in for locally saved copies}
 
 \item{silent}{set to TRUE to suppress cat() msgs to console}
 
-\item{return_data_table}{whether the \code{\link[=read_ipc_file]{read_ipc_file()}} should return a data.table (T, the default), or arrow (F). Passed to \code{\link[=dataload_from_local]{dataload_from_local()}}}
+\item{return_data_table}{whether the \code{\link[arrow:read_feather]{arrow::read_ipc_file()}} should return a data.table (T, the default), or arrow (F). Passed to \code{\link[=dataload_from_local]{dataload_from_local()}}}
 
 \item{onAttach}{Indicates whether the function is being called from onAttach. IF so, it will download all arrow files if necessary}
 }

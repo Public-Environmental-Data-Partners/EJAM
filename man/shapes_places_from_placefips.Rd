@@ -7,7 +7,7 @@
 shapes_places_from_placefips(fips, myservice = "tiger", year = 2024)
 }
 \arguments{
-\item{fips}{vector of 7-digit City/town/CDP codes as in \link{censusplaces$fips}}
+\item{fips}{vector of 7-digit City/town/CDP codes as in the fips column of the \link{censusplaces} dataset}
 
 \item{myservice}{only 'tiger' is implemented as source of boundaries, using the tigris package}
 

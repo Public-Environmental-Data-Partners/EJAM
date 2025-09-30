@@ -647,7 +647,7 @@ url_county_health <- function(fips = NULL, year = 2025,
 #' URL functions - Get URLs of useful report(s) on STATES containing the given fips, from countyhealthrankings.org
 #'
 #' @inheritParams url_county_health
-#' @param statereport Do not use directly here. passed here by [url_countyhealth()]
+#' @param statereport Do not use directly here. passed here by [url_county_health()]
 #' @return vector of URLs to reports on enclosing states (or generic link if fips invalid)
 #' @examples
 #' x = url_state_health(fips_state_from_state_abbrev(c("DE", "GA", "MS")))

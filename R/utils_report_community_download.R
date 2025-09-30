@@ -31,12 +31,12 @@
 #' server now just uses `ejam2report()` and/or `build_community_report()`, not report_community_download()
 #' and ejam2report() also uses `build_community_report()`.
 #'
-#' This function [report_community_download()] was very similar to [build_community_report()]
+#' This function report_community_download() was very similar to [build_community_report()]
 #' and was used by the shiny app to render the report as an HTML file for download
 #' instead of returning HTML for display in a browser.
 #'
-#' report_community_download() relied on helpers [report_setup_temp_files()] to copy files,
-#' [map_single_location()] to draw map, [v1_summary_plot_report()] to draw plot,
+#' report_community_download() relied on helpers report_setup_temp_files() to copy files,
+#' map_single_location() to draw map, v1_summary_plot_report() to draw plot,
 #' and [rmarkdown::render()] to do the parameterized render from .Rmd template into HTML
 #'
 #' @param file for download

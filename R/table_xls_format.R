@@ -41,7 +41,7 @@
 #' @param heatmap2_colors like heatmap_colors but for ratios
 #'
 #' @param reports info about which columns to treat as URLs that should be hyperlinks -
-#'   see [?url_columns_bysite]
+#'   see [url_columns_bysite]
 #'
 #' @param graycolnames which columns to de-emphasize
 #' @param narrowcolnames which column numbers to make narrow

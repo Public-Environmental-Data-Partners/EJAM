@@ -38,7 +38,7 @@ Interactive dialog box of choices (RStudio addin that wraps a Shiny Gadget)
 uses \code{\link[shiny:runGadget]{shiny::runGadget()}}
 
 *** WARNING: AS DRAFTED, CANNOT use within nontrivial scripts or functions
-because the \code{\link[=stopApp]{stopApp()}} seems to interrupt other processes and cause problems -
+because the \code{\link[shiny:stopApp]{shiny::stopApp()}} seems to interrupt other processes and cause problems -
 and seems related to a quirk seen if a script or function calls radiobox() twice -
 it will work the first time but show a blank popup window the 2d time...
 e.g., if you  try to do this:

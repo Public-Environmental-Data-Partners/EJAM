@@ -1,9 +1,19 @@
 
 
-# get approx centroid of each fips census unit
 
 
+
+#' get approx centroid of each fips census unit
+#'
+#' @param fips vector of census fips codes
+#'
+#' @returns data.table with columns ftype, fips, lat, lon
+#'
+#' @export
+#'
 latlon_from_fips <- function(fips) {
+
+  fips <- fips_lead_zero(fips)
 
   suppressWarnings( {
     ftype = fipstype(fips)
@@ -94,8 +104,8 @@ latlon_from_fips <- function(fips) {
     # get latlon pts
     latlon_join_on_bgid(x)
     #   just take average of lat and average of lon of the blocks in a tract
-    x <- x[, .(ftype = thistype, lat = mean(lat), lon = mean(lon)), by = "tfips"]
-    setnames(x, "tfips", "fips")
+    x <- x[, .(ftype = thistype, lat = mean(lat), lon = mean(lon)), by = "tractfips"]
+    setnames(x, "tractfips", "fips")
 
     ########################## #
     y = dtf[ ftype %in% thistype, .(  fips)]

@@ -37,7 +37,10 @@ plot_vs_us(
 \item{siteidlabel}{vector of text one per site to show if type 'box'}
 
 \item{refdata}{reference area dataset, like blockgroupstats, but must have columns
-named 'pop' and varname. e.g., refdata = blockgroupstats\link{ST \%in\% "DE", .(pop, pcthisp)}}
+named 'pop' and varname. e.g.,
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{refdata = blockgroupstats[ST \%in\% "DE", .(pop, pcthisp)]
+}\if{html}{\out{</div>}}}
 
 \item{nsample}{to limit dots on plot of ref area like all bg in US}
 

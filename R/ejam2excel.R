@@ -25,7 +25,7 @@
 #' @param radius_or_buffer_description optional text phrase describing places analyzed
 #'
 #' @param reports info about which columns to treat as URLs that should be hyperlinks -
-#'   see [?url_columns_bysite]
+#'   see [url_columns_bysite()]
 #'
 #' @param site_method site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
 #'   optional site method parameter used to create a more specific title with create_filename.

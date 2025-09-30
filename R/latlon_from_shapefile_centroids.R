@@ -1,4 +1,12 @@
 
+#' get coordinates of each polygon centroid, using INTPTLAT,INTPTLON if those columns already exist
+#'
+#' @param shapefile spatial data.frame of polygons
+#' @seealso [latlon_from_fips()] [latlon_from_anything()]
+#' @returns data.frame with columns lat,lon
+#'
+#' @export
+#'
 latlon_from_shapefile_centroids = function(shapefile)  {
 
   if ("INTPTLAT" %in% names(shapefile) & "INTPTLON" %in% names(shapefile)) {

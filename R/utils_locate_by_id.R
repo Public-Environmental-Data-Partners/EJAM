@@ -109,7 +109,7 @@ url_by_id <- function(idx, type='frs', ...) {
 #'   frs means all are registry_id and
 #'   program means all are pgm_sys_id
 #' @param simple use simpler method
-#' @param ... passed through to [locate_by_id1()]
+#' @param ... passed through to locate_by_id1()
 #' @seealso ?latlon_from_programid() and ?latlon_from_regid() and url_by_id() and the obsolete locate_by_id()
 #'
 #' @return data.frame with one row per queried id, columns as returned by API
@@ -126,6 +126,7 @@ url_by_id <- function(idx, type='frs', ...) {
 #' }
 #'
 #' @keywords internal
+#' @noRd
 #'
 locate_by_id <- function(idx, type='frs', simple = FALSE, ...) {
 

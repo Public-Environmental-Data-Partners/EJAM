@@ -41,74 +41,33 @@ repo <- gsub(".*/", "", owner_repo)        # had been       "EJAM-open"
 quoted_owner_repo <- paste0("'", owner_repo, "'")
 ```
 
-EJAM is not only a web app, it is also an R package you can install on your computer. This is useful if you want to use the full set of EJAM R functions, some of which are not available in the web app, to do customized analysis, to explore the datasets, or to reuse data or code in other applications.
+EJAM is not only a web app, it is also an R package you can install. This is useful if you want to use the full set of EJAM R functions, many of which do things not available in the web app, to do customized analysis, to explore the datasets, or to reuse data or code in other applications.
 
 This assumes you have installed and know how to use [R and RStudio](https://posit.co/download/rstudio-desktop/) (some functions assume you have RStudio), and [git](https://github.com/git-guides/install-git){.uri target="_blank" rel="noreferrer noopener"}. You might also want [GitHub Desktop](https://github.com/apps/desktop){.uri target="_blank" rel="noreferrer noopener"} for convenience.
 
-## How to Get/Install EJAM
+## Options
 
-The EJAM package gets installed from a GitHub repository, not CRAN (so `install.packages('EJAM')` will _not_ work).
+The package is on GitHub.com, not CRAN (so `install.packages('EJAM')` would _not_ work).
 
-To use EJAM in RStudio, you would ideally clone the repo as a new RStudio Project, and then install the package from source. Cloning or forking makes a local copy of the source code repository. Although you could skip cloning (i.e., just install from a .zip source package file), cloning is easy and allows you to explore and edit source code or contribute to the package.
+To use EJAM in RStudio, you have two options:
 
-## Install _without_ cloning
+  1. You can clone (or fork) the repo as a new RStudio Project, and then install from that source. Cloning (or forking) is easy and allows you to explore or contribute to source code. This is the recommended option. 
+  2. Option 2 is to avoid cloning. That is easier if you only want to run the web app locally, but may not work if you want to use certain R functions directly.
 
-You could try to skip cloning the repository and just install the package from GitHub, but you will not be able to edit the source code or contribute to the package development. You should be able to use the package in RStudio without cloning, but a number of functions (especially those related to package development) assume a local source code copy is available.
+## Option 1. Install _with_ cloning (preferred approach)
 
-Trying to use [remotes::install_github()] requires having set up a PAT for authentication to work (see below on PATs).
+### Step 1. Clone EJAM & create a Project in RStudio
 
-a. If you *don't have a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens){.uri target="_blank" rel="noreferrer noopener"} (PAT) and don't want to set one up*, you could [check the github repository for the latest release](`r paste0("https://github.com/", EJAM:::repo_from_desc(), "/releases/latest")`) and use `remotes::install_url()` something like this:
+Here are three ways, but any of them should work -- The first one is probably the simplest:
 
+method A. start in **RStudio**: 
+Click **File**, **New Project**, **Version Control**, **Git**, and for the repository URL, enter ``r paste0("https://github.com/", owner_repo)``. For help: [How to create a new RStudio project by cloning a remote Git repo](https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository){.uri target="_blank" rel="noreferrer noopener"}. Then add it to GitHub Desktop if that is a tool you use.
 
-```{r install url, eval=TRUE, echo=FALSE, results='asis'}
-cat("options(timeout = 300); if (!require(remotes)) {install.packages('remotes')} \n")
-cat(
-paste0("
-remotes::install_url('https://github.com/", owner_repo, "/archive/refs/tags/v", EJAM:::description_file$get("Version"),".zip', 
-  dependencies=T, upgrade='always', build=F) \n
-")
-)
-```
+method B. start in **GitHub Desktop**: 
+Click **File**, **Clone**, **URL**, and for the repository URL, enter ``r paste0("https://github.com/", owner_repo)``. For help: [How to clone a repo using GitHub Desktop](https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop){.uri target="_blank" rel="noreferrer noopener"}. Then in **RStudio**: Click **File**, **New Project**, **Existing Directory**, and specify the folder you just cloned into.
 
-
-_or download the .zip and try something like this in the folder with the saved .zip file:_
-
-
-```{r install local, eval=TRUE, echo=FALSE, results='asis'}
-cat("options(timeout = 300); if (!require(remotes)) {install.packages('remotes')} \n")
-cat(
-paste0("
-remotes::install_local('EJAM-", EJAM:::description_file$get('Version'), ".zip',
-  dependencies=T, upgrade='always', build=F) \n
-")
-)
-```
-
-
-b. If you *do have a PAT set up*, you can install from github with something like this:
-
-
-```{r install package, eval=TRUE, echo=FALSE, results='asis'}
-cat("options(timeout = 300); if (!require(remotes)) {install.packages('remotes')} \n")
-cat(
-  paste0("
-remotes::install_github(repo='",  EJAM:::repo_from_desc(),"', 
-  dependencies=T, upgrade='always', build=F) \n")
-)
-```
-
-
-## Install _with_ cloning
-
-### 1. Clone EJAM & create a Project in RStudio
-
-Here are three options -- Option "a" is probably the simplest:
-
-a.  in **RStudio**: Click **File**, **New Project**, **Version Control**, **Git**, and for the repository URL, enter ``r paste0("https://github.com/", owner_repo)``. For help: [How to create a new RStudio project by cloning a remote Git repo](https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository){.uri target="_blank" rel="noreferrer noopener"}. Then you also could add it to GitHub Desktop if that is a tool you use.
-
-b.  in **GitHub Desktop**: Click **File**, **Clone**, **URL**, and enter ``r paste0("https://github.com/", owner_repo)`` as the repository URL. For help: [How to clone a repo using GitHub Desktop](https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop){.uri target="_blank" rel="noreferrer noopener"}. Then in **RStudio**: Click **File**, **New Project**, **Existing Directory**, and specify the folder you just cloned into.
-
-c.  at **GitHub.com**: Go to [the EJAM repository page](https://github.com/`r owner_repo` `r paste0("'github.com/", owner_repo, "'")`){.uri target="_blank" rel="noreferrer noopener"}, click the green **Code** button, **Download Zip**, then unzip the zip file that contains the package. For help: [How to clone a repo from GitHub.com](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository){.uri target="_blank" rel="noreferrer noopener"}. Then in **RStudio**: Click **File**, **New Project**, **Existing Directory**, and specify the folder you just cloned into.
+method C. start at **GitHub.com**: 
+Go to [the EJAM repository page](https://github.com/`r owner_repo` `r paste0("'github.com/", owner_repo, "'")`){.uri target="_blank" rel="noreferrer noopener"}, click the green **Code** button, **Download Zip**, then unzip the zip file that contains the package. For help: [How to clone a repo from GitHub.com](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository){.uri target="_blank" rel="noreferrer noopener"}. Then in **RStudio**: Click **File**, **New Project**, **Existing Directory**, and specify the folder you just cloned into.
 
 #### Configure Build Tools in RStudio (optional)
 
@@ -116,43 +75,93 @@ You can click Build, Configure Build Tools, and change settings. For example, tr
 
 - Project build tools: Package
 - Package directory: (Project Root)
-- Always use --preclean : checked
-- Use devtools : checked
-- Generate documentation with Roxygen: checked
-  - Configure Roxygen options all checked except for Vignettes and optionally Build/Install
+- Always use --preclean : checked (yes)
+- Use devtools : checked (yes)
+- Generate documentation with Roxygen: checked (yes)
+  - Configure Roxygen options: all checked/yes, except for Vignettes and Build/Install
 - Install package R CMD check: --no-multiarch --with-keep.source
-- Build source: blank
-- Build binary: blank
+- Build source & Build binary: leave both blank
 
 For help: [How to configure build tools in RStudio](https://docs.posit.co/ide/user/ide/guide/pkg-devel/writing-packages.html#configuring-build-tools){.uri target="_blank" rel="noreferrer noopener"}.
 
-### 2. Install (after Cloning)
+------------------------------------------------------------------------
 
-You can install like this, which ensures all packages that EJAM uses (depends on, imports, or suggests) get installed or updated:
+### Step 2. Install (after Cloning)
 
-
-```{r install2, eval=TRUE, echo=FALSE, results='asis'}
-cat("options(timeout = 300); if (!require(remotes)) {install.packages('remotes')} \n")
-cat(
-paste0("
-if (!(basename(getwd()) %in% 'EJAM' && file.exists('DESCRIPTION'))) {
-  stop('Working directory must be root of the EJAM source package')
-}
-
-devtools::install(dependencies=T, upgrade='always', build=F) \n
-")
-)
+You can use the Build menu in RStudio, or just run the following (which installs all the Suggests, not just Imports)
+```{r install-post-clone}
+options(timeout=300)
+if (!require(devtools)) {install.packages("devtools")}
+if (!(basename(getwd()) == "EJAM" && file.exists("DESCRIPTION"))) {
+  stop("must be in root folder of EJAM source package")}
+devtools::install(dependencies=T, upgrade="always", build=F)
 ```
+
+
+## Option 2. Install _without_ cloning (not the preferred approach)
+
+You may be able to install the package to just run the web app locally in RStudio without cloning, but some of the code assumes a local source code copy is available (especially functions or scripts related to analysis the web app cannot do, or for package development).
+
+### Using install_github()
+
+If you *do have a PAT set up*, you can use `remotes::install_github()`. (For help on PAT setup, see the last section of this article).
+
+```{r install-gh, eval=FALSE}
+options(timeout=300); if (!require(remotes)) {install.packages("remotes")}
+ref = github_release() # specifies you want the latest released version
+#ref = "development"   # development branch version
+#ref = "HEAD"          # main branch
+#ref = "EJAM-v2.32.6"  # a specific branch
+remotes::install_github(
+  repo = "ejanalysis/EJAM", ref = ref, 
+  dependencies=T, upgrade="always", build=F)
+library(EJAM)
+```
+
+### Using install_url() or install_local()
+
+If you *don't have a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens){.uri target="_blank" rel="noreferrer noopener"} (PAT) and don't want to set one up*, you could [check the github repository for the latest release](`r paste0("https://github.com/", EJAM:::repo_from_desc(), "/releases/latest")`) and may be able to use `remotes::install_url()` something like this:
+
+```{r install-url, eval=FALSE}
+options(timeout=300); if (!require(remotes)) {install.packages("remotes")}
+zipname = "v2.32.6.zip" # or "v2.32.5.zip", etc. - update as needed
+remote_zip = paste0(
+  "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
+remotes::install_url(url = remote_zip, 
+                     dependencies=T, upgrade='always', build=F)
+library(EJAM)
+```
+
+_or download the .zip file as a separate step, and install from that saved file:_
+
+```{r install-local, eval=FALSE}
+options(timeout=300); if (!require(remotes)) {install.packages("remotes")}
+zipname = "v2.32.6.zip" # or "v2.32.5.zip", etc. - update as needed
+remote_zip = paste0(
+  "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
+local_zip = file.path(tempdir(), zipname)
+download.file(remote_zip, destfile = local_zip)
+remotes::install_local(path = local_zip, 
+                       dependencies=T, upgrade="always", build=F)
+library(EJAM)
+```
+
+```{r install-package-notes, eval=FALSE, echo=FALSE, include=FALSE}
+## note the repo name would be owner-repo obtained near top of .Rmd via EJAM:::repo_from_desc()
+```
+
 
 ------------------------------------------------------------------------
 
 ## Start Using EJAM
 
-After the package is installed, see the [Basics - Quick Start Guide](basics.html).
+After installing, see the [Basics - Quick Start Guide](basics.html).
 
 ------------------------------------------------------------------------
 
-## Technical Details
+------------------------------------------------------------------------
+
+## Other Technical Details
 
 Just in case you need more details on how installing and attaching the package works, the following describes the package dependencies and code used by the package to get the data and build an index.
 
@@ -173,22 +182,14 @@ credentials::set_github_pat()
 
 ### Details on CRAN packages needed (dependencies)
 
-You should not have to do anything other than the instructions above, to handle package dependencies. EJAM needs a number of other packages to be installed that are (almost all) available from [CRAN](https://cran.r-project.org). Installing the EJAM package as explained above will handle obtaining those other packages. Cloning and building/installing and then trying to load/attach EJAM will also alert you to those other packages you need to install if you don't already have them. In case it is of interest, the list of CRAN packages needed is in the `DESCRIPTION` file in the R package source code root folder (as can be found in the code repository). Note some are in Suggests and you might want to install those as well -- using dependencies=T in `remotes::install_github()` or `remotes::install_url()` will make sure of that.
+You should not have to do anything other than the instructions above, to handle package dependencies. EJAM needs dozens of other packages to be installed that are (almost all) available from [CRAN](https://cran.r-project.org). Installing the EJAM package as explained above (with dependencies=TRUE, upgrade="always") will handle obtaining those other packages. Cloning and building/installing and then trying to load/attach EJAM will also alert you to those other packages you need to install if you don't already have them. In case it is of interest, a list of packages needed is in the `DESCRIPTION` file in the R package source code root folder (as can be found in the code repository). Note some are in Suggests and you probably want to install those as well since some of them were actually used in some less-often-used features or functions. Using dependencies=T in `remotes::install_github()`, `remotes::install_url()`, install(), etc. will make sure they are all installed.
 
 ### Details on the automatic data downloads
 
-To work in the RStudio console, EJAM needs some datasets not stored as part of the package. However, they already should be downloaded and loaded into memory automatically as soon as you use `require(EJAM)`. 
+To work in the RStudio console, EJAM needs some datasets not stored as part of the package. However, they already should be downloaded (right after you first install the package) and loaded into memory automatically (or be ready for lazy-loading or otherwise loading as needed) as soon as you do require(EJAM) or library(EJAM).
 
-On first use, it should automatically download some data files. Each time it is attached, it will check for updates and also will build a spatial index of Census block points.
+On first use, the package should automatically download some data files from a related repository. Each time the package is attached via library() or require(), `.onAttach()` will check for updates and also will build a spatial index of Census block points called `?localtree`, via `indexblocks()`.
 
 Typically you would not need to download any datasets yourself, because EJAM just downloads these when the app starts (technically, when the R package is attached) (or only as needed in the case of certain datasets that are not always needed). Some datasets are installed along with the package, such as the [blockgroupstats](../reference/blockgroupstats.html) data. But large files like [blockpoints](../reference/blockpoints.html) are stored in a separate data repo, and EJAM downloads them from there. You might want your own local copies, though, for these reasons:
  
-Attaching the package actually checks for copies in memory first (e.g., `exists("quaddata", envir = globalenv())`), then local disk (using `dataload_from_local()` looking in the data folder of the (source or installed) package, as defined by `app_sys()` which is just a wrapper for `system.file()`), then finally tries to download any still needed, using internal functions.
-
-### Details on the indexing of blocks
-
-EJAM also needs to build the index of more than 8 million US block locations (one internal point for each block), which takes a few seconds. EJAM does this automatically when attached via `library()` or `require()` e.g., `require(EJAM)`, by creating an object called [localtree](../reference/localtree.html) based on the [quaddata](../reference/quaddata.html) object obtained as mentioned above. Some functions check for it and try to build the index on the fly if it is missing. You can also (re)build it manually:
-
-```{r indexblocks, eval=FALSE}
-indexblocks()
-```
+Attaching the package actually checks (using internal function `dataload_dynamic()`) for copies in memory first (e.g., `exists("quaddata", envir = globalenv())`), then local disk (using `dataload_from_local()` looking in the data folder of the (source or installed) package, as defined by `app_sys()` which is just a wrapper for `system.file()`), then finally tries to download any still needed, using internal functions.

@@ -30,7 +30,7 @@ test_ejam(
 
 \item{noquestions}{logical, whether to avoid questions later on about where to save shapefiles}
 
-\item{useloadall}{logical, TRUE means use \code{\link[=load_all]{load_all()}}, FALSE means use \code{\link[=library]{library()}}.
+\item{useloadall}{logical, TRUE means use \code{\link[devtools:load_all]{devtools::load_all()}}, FALSE means use \code{\link[=library]{library()}}.
 But useloadall=T is essential actually, for unexported functions to be found when they are tested!}
 
 \item{y_skipbasic}{logical, if FALSE, runs some basic \code{\link[=ejamit]{ejamit()}} functions, but NOT any unit tests.}

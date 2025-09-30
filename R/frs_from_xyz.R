@@ -12,8 +12,16 @@ regids_seem_ok = function(regid, minok = 110000300000, maxok = 110072000000) {
   return(ok)
 }
 ################################################### #################################################### #
-# validate regids by checking if they are in the database being used currently
+#
 
+#' validate regids by checking if they are in the database being used currently
+#'
+#' @param regid vector of IDs like testinput_regid
+#'
+#' @returns logical vector same length as input
+#'
+#' @export
+#'
 regids_valid = function(regid) {
 
   seemok = regids_seem_ok(regid) # basic check if plausible regid

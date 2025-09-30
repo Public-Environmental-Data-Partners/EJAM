@@ -95,6 +95,8 @@ reference:
   - latlon_from_address_table
   - latlon_from_address
   - latlon_from_shapefile
+  - latlon_from_shapefile_centroids
+  - latlon_from_fips
   - address_from_table
   - latlon_is.valid
   - lat_alias
@@ -104,6 +106,7 @@ reference:
   contents:
   - latlon_from_regid
   - frs_from_regid
+  - regids_valid
   - latlon_from_programid
   - frs_from_programid
   - frs_from_sitename
@@ -180,6 +183,7 @@ reference:
   - ejam2shapefile
   - shape2geojson
   - latlon_from_shapefile
+  - latlon_from_shapefile_centroids
 - title: "Specify Counties etc."
   desc: >
     Tools to work with Census units and FIPS codes
@@ -193,6 +197,7 @@ reference:
   - fipstype
   - fips_valid
   - fips_lead_zero
+  - latlon_from_fips
   - fips2pop
   - fips_from_table
   - fips_bgs_in_fips

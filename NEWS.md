@@ -104,7 +104,7 @@
 -   Redid sample report, etc. outputs in `testdata/examples_of_outputs` folder to reflect changes in version numbers shown in report footer and app header, etc.
 -   Renamed various \*.R files and relocated some source code among those, to make some filenames more consistent.
 -   Made some functions internal that until now had been exported, to simplify things for most R users.
--   Updated {roxygen2} help file docs and pkgdown documentation webpages
+-   Updated `{roxygen2}` help file docs and pkgdown documentation webpages
 -   New function `url_github_preview()` makes it a bit easier to view rendered HTML reports that each package release or branch stores in the testdata/examples_of_outputs folder, to compare how they look in different versions. 
 -   Spell checked / fixed some typos
 -   Fixed some documentation
@@ -115,7 +115,7 @@
 -   `ejam2map()` now has a sitenumber parameter, to map one site more easily
 -   `ejam2report()` now downloads FIPS bounds if missing.
 -   `ejam2map()` now downloads FIPS bounds if missing.
--    unit tests added for functions including ejam2map() and ejam2excel()
+-    unit tests added for functions including ejam2map() and ejam2excel() and various other functions
 -   `mapfast()` and some others now drop sites with empty geometry before trying to map, avoid an error
 -   `popup_from_any()` and other map popup functions now have different parameters that can handle more columns of URLs/links of any type
 -   `popup_from_any()` and other map popup functions now drop the geometry column from spatial data.frames to avoid including a mess in the popup

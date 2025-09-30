@@ -34,19 +34,19 @@ See
 
 These are the indicator summary stats shown:
 \itemize{
-\item \link{1,} "Number of Schools"
-\item \link{2,} "Number of Hospitals"
-\item \link{3,} "Number of Worship Places"
-\item \link{4,} "Flag for Overlapping with Tribes"
-\item \link{5,} "Flag for Overlapping with Non-Attainment Areas"
-\item \link{6,} "Flag for Overlapping with Impaired Waters"
-\item \link{7,} "Flag for Overlapping with CEJST Disadvantaged Communities"
-\item \link{8,} "Flag for Overlapping with EPA IRA Disadvantaged Communities"
-\item \link{9,} "Flag for Overlapping with Housing Burden Communities"
-\item \link{10,} "Flag for Overlapping with Transportation Disadvantaged Communities"
-\item \link{11,} "Flag for Overlapping with Food Desert Areas"
-\item \link{12,} "\% Households without Broadband Internet"
-\item \link{13,} "\% Households without Health Insurance"
+\item "Number of Schools"
+\item "Number of Hospitals"
+\item "Number of Worship Places"
+\item "Flag for Overlapping with Tribes"
+\item "Flag for Overlapping with Non-Attainment Areas"
+\item "Flag for Overlapping with Impaired Waters"
+\item "Flag for Overlapping with CEJST Disadvantaged Communities"
+\item "Flag for Overlapping with EPA IRA Disadvantaged Communities"
+\item "Flag for Overlapping with Housing Burden Communities"
+\item "Flag for Overlapping with Transportation Disadvantaged Communities"
+\item "Flag for Overlapping with Food Desert Areas"
+\item "\% Households without Broadband Internet"
+\item "\% Households without Health Insurance"
 }
 }
 \examples{

@@ -803,7 +803,7 @@ url_to_get_nearby_blocks_rest_services_ejscreen_ejquery_MapServer_71 <- function
 #' (2) Session files, if saved, are available from the default Downloads folder on your computer.
 #' (3) Users should exercise caution when saving sessions that may contain sensitive or confidential data.
 #'
-#' @param ... passed to [url_bookmark_text()]
+#' @param ... passed to  url_bookmark_text()
 #' @param file path and name of .json file you want to save locally
 #'
 #' @return URL for 1 bookmarked EJSCREEN map location and variable displayed on map
@@ -877,7 +877,6 @@ url_bookmark_save <- function(..., file="ejscreenbookmark.json") {
 #' @param ymin  calculated bounding box for map view
 #' @param ymax  calculated bounding box for map view
 #' @param urlrest Just use the default but it changes each year
-#' @seealso [url_bookmark_save()]
 #' @return URL for 1 bookmarked EJSCREEN map location and variable displayed on map
 #'
 #' @examples \donttest{

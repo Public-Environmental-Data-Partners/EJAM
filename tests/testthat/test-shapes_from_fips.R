@@ -56,6 +56,7 @@ testthat::test_that("shapes_from_fips for tractfips", {
   junk = capture.output({
 
     expect_no_error({
+      shapes_from_fips( "05001480300" ); shapes_from_fips( 05001480300 ) # had a problem earlier
       shp <- shapes_from_fips(fipslist$tractfips)
     })
   })

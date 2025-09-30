@@ -109,7 +109,7 @@ second color is for those >=2d cutpoint but <3d, etc.}
 \item{heatmap2_colors}{like heatmap_colors but for ratios}
 
 \item{reports}{info about which columns to treat as URLs that should be hyperlinks -
-see \link{?url_columns_bysite}}
+see \link{url_columns_bysite}}
 
 \item{graycolnames}{which columns to de-emphasize}
 
