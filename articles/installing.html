@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -177,11 +177,20 @@ build tools in RStudio</a>.</p>
 <p>You can use the Build menu in RStudio, or just run the following
 (which installs all the Suggests, not just Imports)</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="st">"EJAM"</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="st">"DESCRIPTION"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"must be in root folder of EJAM source package"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span>dependencies<span class="op">=</span><span class="cn">T</span>, upgrade<span class="op">=</span><span class="st">"always"</span>, build<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># To do install() below, you have to say where the cloned package was saved:</span></span>
+<span><span class="co"># ejamroot = the root directory into which you cloned!</span></span>
+<span></span>
+<span><span class="co">## If you used the RStudio default, this may be where you cloned to:</span></span>
+<span><span class="va">parentfolder</span> <span class="op">&lt;-</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/readRStudioPreference.html" class="external-link">readRStudioPreference</a></span><span class="op">(</span></span>
+<span>  <span class="st">"default_open_project_location"</span>, <span class="st">"."</span><span class="op">)</span></span>
+<span><span class="va">ejamroot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">parentfolder</span>, <span class="st">"EJAM"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">ejamroot</span><span class="op">)</span> <span class="op">==</span> <span class="st">"EJAM"</span> <span class="op">&amp;&amp;</span> </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">ejamroot</span>, <span class="st">"DESCRIPTION"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"must set ejamroot to root folder of EJAM source package"</span><span class="op">)</span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span>pkg <span class="op">=</span> <span class="va">ejamroot</span>, dependencies<span class="op">=</span><span class="cn">T</span>, upgrade<span class="op">=</span><span class="st">"always"</span>, build<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -273,6 +282,16 @@ most of this now, in conjunction with GitHub.</p>
 <span><span class="fu">credentials</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/credentials/reference/set_github_pat.html" class="external-link">set_github_pat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="tests-of-installation-on-various-platforms-and-r-versions">Tests of installation on various platforms and R versions<a class="anchor" aria-label="anchor" href="#tests-of-installation-on-various-platforms-and-r-versions"></a>
+</h3>
+<p>The package has tests of whether it can be installed on Windows,
+MacOS, and Ubuntu, with various R versions and with url_install() and
+github_install(). When a pull request or push to the main branch of EJAM
+occurs, those tests run automatically as github actions in a workflow at
+<a href="https://github.com/ejanalysis/EJAM/blob/main/.github/workflows/installation_test.yml" class="external-link uri">https://github.com/ejanalysis/EJAM/blob/main/.github/workflows/installation_test.yml</a>
+and logs of the results of those tests are here: <a href="https://github.com/ejanalysis/EJAM/actions/workflows/installation_test.yml" class="external-link uri">https://github.com/ejanalysis/EJAM/actions/workflows/installation_test.yml</a></p>
+</div>
+<div class="section level3">
 <h3 id="details-on-cran-packages-needed-dependencies">Details on CRAN packages needed (dependencies)<a class="anchor" aria-label="anchor" href="#details-on-cran-packages-needed-dependencies"></a>
 </h3>
 <p>You should not have to do anything other than the instructions above,
@@ -289,7 +308,9 @@ you probably want to install those as well since some of them were
 actually used in some less-often-used features or functions. Using
 dependencies=T in <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code>,
 <code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code>, install(), etc. will make sure they
-are all installed.</p>
+are all installed. Each of those packages in turn requires other
+packages that also get installed as needed. Future work may reduce the
+number of package dependencies to a more typical number.</p>
 </div>
 <div class="section level3">
 <h3 id="details-on-the-automatic-data-downloads">Details on the automatic data downloads<a class="anchor" aria-label="anchor" href="#details-on-the-automatic-data-downloads"></a>
