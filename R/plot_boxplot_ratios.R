@@ -127,9 +127,9 @@ plot_boxplot_ratios <- function(x, selected_dvar_colname=varlist2names('names_d'
     ggplot2::scale_fill_viridis_d(alpha = 0.6) +
     ggplot2::geom_jitter(color = "black", size = 0.4, alpha = 0.9) +
     ggplot2::theme_bw() +
-    # hrbrthemes xxx :: xxx theme_ipsum() +
-    # NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use hrbrthemes themes.
-    # Use hrbrthemes xxx :: xxx import_roboto_condensed() to install Roboto Condensed and if Arial Narrow is not on your system, please see https://bit.ly/arialnarrow
+    #   theme_ipsum() +  # that func was from the hrbrthemes pkg, not imported here, now unused - will not rely on that pkg. it was to ensure narrow font in plot
+    #    NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use hrbrthemes themes.
+    #    Would need to use  hrbrthemes function import_roboto_condensed() to install Roboto Condensed and if Arial Narrow is not on your system (but that was unlikely). see https://bit.ly/arialnarrow
     ggplot2::xlab("") +
     ggplot2::geom_abline(slope = 0, intercept = 1)
 }

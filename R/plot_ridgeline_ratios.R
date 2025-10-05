@@ -89,7 +89,3 @@ ggplot2::ggplot(ratio.to.us.d.bysite, ggplot2::aes(x = `value`, y = `indicator`,
 
 # https://r-graph-gallery.com/294-basic-ridgeline-plot.html#color
 # https://r-graph-gallery.com/294-basic-ridgeline-plot.html#shape
-#  (ggplot2)
-#  (ggridges) # listed in DESCRIPTION file Imports
-#  (viridis) # listed in DESCRIPTION file Imports
-#  (hrbrthemes) # listed in DESCRIPTION file Imports

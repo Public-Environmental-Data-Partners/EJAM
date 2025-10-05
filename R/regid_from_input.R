@@ -1,6 +1,6 @@
 
 #' utility to flexibly figure out registry id from the parameters passed to a function
-#' @seealso [sites_from_input()] [frs_from_regid()] [regids_valid()]
+#' @seealso [sites_from_input()] [frs_from_regid()] regids_valid()
 #'
 #' @param regid optional vector of EPA FRS registry IDs
 #' @param sitepoints optional data.frame with a column named regid or REGISTRY_ID

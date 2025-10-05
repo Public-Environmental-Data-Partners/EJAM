@@ -14,7 +14,7 @@ app_logo_HTML_global_or_param = function(app_logo_now = EJAM:::global_or_param("
   #  app_logo_html, that html would
   #  override any app_logo parameter passed to ejamapp() as parameter!
 
-  # And note Wwhen this function gets called from global_defaults_shiny.R during app startup,
+  # And note When this function gets called from global_defaults_shiny.R during app startup,
   # default input param app_logo_now is as app_logo set by global_defaults_package.R during attach OR
   #  as passed to ejamapp() as parameter.
   # but if app_logo setting were somehow later controlled via an input$ in app via advanced tab,

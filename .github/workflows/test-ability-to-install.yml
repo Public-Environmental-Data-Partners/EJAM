@@ -1,4 +1,4 @@
-name: EJAM Installation
+name: Test ability to install EJAM - by R-version by OS by install-method
 
 on:
   push:
@@ -10,16 +10,16 @@ permissions:
   contents: read
 
 jobs:
-  install_ejam:
+  test-ability-to-install:
     if: ${{ !github.event.repository.private }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        r-version: [4.3, 4.4, release]
+        r-version: [4.1, 4.2, 4.3, 4.4, release]
         install-method: [github, url]  # Matrix for installation method
-    
+
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GH_TOKEN: ${{ github.token }}
@@ -58,7 +58,10 @@ jobs:
             libjpeg-dev \
             libgdal-dev \
             libgeos-dev \
-            libproj-dev
+            libproj-dev \
+            libjq-dev \
+            libprotobuf-dev \
+            protobuf-compiler
 
       - name: System Libraries (macOS)
         if: matrix.os == 'macOS-latest'
@@ -74,7 +77,7 @@ jobs:
               sleep 5
             done
           done
-          
+
           # Set up environment variables for jpeg
           echo 'export PATH="/opt/homebrew/opt/jpeg/bin:$PATH"' >> $GITHUB_ENV
           echo 'export LDFLAGS="-L/opt/homebrew/opt/jpeg/lib"' >> $GITHUB_ENV
@@ -90,7 +93,7 @@ jobs:
           echo "TAR_URL=$TAR_URL" >> $GITHUB_ENV
         shell: bash
 
-    
+
       - name: Install EJAM (method- ${{ matrix.install-method }})
         if: "!(matrix.install-method == 'url' && matrix.r-version == '4.3' && matrix.os == 'macOS')"
         run: |
@@ -98,6 +101,9 @@ jobs:
           if("${{ matrix.install-method }}" == "github") {
             remotes::install_github(
               "${{ github.repository }}", # what owner/repo has the pkg to try to install
+
+
+
               dependencies=TRUE,
               force=TRUE,
               INSTALL_opts = c("--with-keep.source", "--install-tests")
@@ -110,12 +116,12 @@ jobs:
           }
         shell: Rscript {0}
 
-      - name: Restore R package cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ runner.temp }}
-          key: ${{ runner.os }}-R-${{ matrix.r-version }}-${{ hashFiles('**/DESCRIPTION') }}
-          restore-keys: ${{ runner.os }}-R-${{ matrix.r-version }}-
+      # - name: Restore R package cache  ## these seemed to be duplicates of lines 37-42 and not needed ?
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ${{ runner.temp }}
+      #     key: ${{ runner.os }}-R-${{ matrix.r-version }}-${{ hashFiles('**/DESCRIPTION') }}
+      #     restore-keys: ${{ runner.os }}-R-${{ matrix.r-version }}-
 
       - name: Test Installation
         run: |

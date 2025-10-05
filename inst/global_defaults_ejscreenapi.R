@@ -11,14 +11,15 @@ warning( " work in progress - this global.... file must be sourced only inside a
 # require(DT)    # used in ui.R and in server.R for displaying tabular data
 # require(readr) # used in server.R
 # require(leaflet) # ; require(mapview) # for mapping. leaflet is used in ui.R and in ejscreenapi.R
-# require(leaflet.extras2) # for addEasyprint() to add print button on a map
-# # require(sf)  # geospatial data, distances etc.
-# require(jsonlite)  # mostly for using API
-# require(httr) # used by ejscreenRESTbroker() for httr ::GET()
-# require(htmltools) # probably not needed... or imported by shiny? provides tags like h5() etc
-# # require(urltools) # probably want to switch to using this nice package for working with URL-encoded parameters, encoding, parsing, etc. URLs
-# require(viridis) # color palettes
-# # require(hrbrthemes) # fonts that are better for graphics - COULD USE THIS IN plot_boxplot_ratios.R but need install fonts
+# require # (leaflet.extras2) # for addEasyprint() to add print button on a map
+# # require # (sf)  # geospatial data, distances etc.
+# require # (jsonlite)  # mostly for using API
+# require # (httr) # used by ejscreenRESTbroker() for httr ::GET()
+# require # (htmltools) # probably not needed... or imported by shiny? provides tags like h5() etc
+# # require # (urltools) # probably want to switch to using this nice package for working with URL-encoded parameters, encoding, parsing, etc. URLs
+# require # (viridis) # color palettes
+# # # this used to also use the pkg  hrbrthemes no longer imported by EJAM
+
 ######################################################## #
 
 # ------------------------ ____ SET DEFAULTS / OPTIONS for app ------------------------  ####

@@ -18,6 +18,6 @@ NULL or vector of ids
 utility to flexibly figure out registry id from the parameters passed to a function
 }
 \seealso{
-\code{\link[=sites_from_input]{sites_from_input()}} \code{\link[=frs_from_regid]{frs_from_regid()}} \code{\link[=regids_valid]{regids_valid()}}
+\code{\link[=sites_from_input]{sites_from_input()}} \code{\link[=frs_from_regid]{frs_from_regid()}} regids_valid()
 }
 \keyword{internal}

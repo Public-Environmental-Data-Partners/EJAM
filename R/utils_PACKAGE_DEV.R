@@ -1141,6 +1141,8 @@ x = sort(packrat", ":::", "recursivePackageDependencies('",
              "', lib.loc = .libPaths(), ignores = NULL))
 
 x
+
+# and see EJAM:::find_transitive_minR() to see what version of R those collectively need at minimum
       "))
 
   #################### #
@@ -1184,4 +1186,50 @@ x
   ## for some reason this 1 package is identified as a dependency one way but not the other way
 
   invisible()
+}
+##################################################################################### #
+
+# REPORT WHAT R VERSION IS ALREADY THE MINIMUM REQUIREMENT ACROSS THE PACKAGE EJAM DEPENDS UPON?
+
+## based on https://www.r-bloggers.com/2022/09/minimum-r-version-dependency-in-r-packages/
+
+find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
+
+  db <- tools::CRAN_package_db()
+
+  if (is.null(recursive_deps)) {
+
+  if (package == "EJAM") {
+    msg = paste0("Try this after installing the packrat package:
+    recursive_deps <- packrat",
+                 ":::",
+                 "recursivePackageDependencies('EJAM', lib.loc = .libPaths(), ignores = NULL)
+
+                 find_transitive_minR(recursive_deps = recursive_deps)"
+                  )
+    cat(msg, "\n\n")
+    stop("EJAM package does not require packrat so you might need to install that separately")
+  } else {
+    recursive_deps <- tools::package_dependencies(
+      package = package,
+      recursive = TRUE,
+      db = db
+    )[[1]]
+  }
+  }
+
+  # These code chunks are detailed below in the 'Minimum R dependencies in CRAN
+  # packages' section
+  r_deps <- db |>
+    dplyr::filter(Package %in% recursive_deps) |>
+    # We exclude recommended pkgs as they're always shown as depending on R-devel
+    dplyr::filter(is.na(Priority) | Priority != "recommended") |>
+    dplyr::pull(Depends) |>
+    strsplit(split = ",") |>
+    purrr::map(~ grep("^R ", .x, value = TRUE)) |>
+    unlist()
+
+  r_vers <- trimws(gsub("^R \\(>=?\\s(.+)\\)", "\\1", r_deps))
+
+  return(max(package_version(r_vers)))
 }

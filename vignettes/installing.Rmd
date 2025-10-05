@@ -89,12 +89,21 @@ For help: [How to configure build tools in RStudio](https://docs.posit.co/ide/us
 ### Step 2. Install (after Cloning)
 
 You can use the Build menu in RStudio, or just run the following (which installs all the Suggests, not just Imports)
-```{r install-post-clone}
-options(timeout=300)
+```{r install-post-clone, eval=FALSE}
 if (!require(devtools)) {install.packages("devtools")}
-if (!(basename(getwd()) == "EJAM" && file.exists("DESCRIPTION"))) {
-  stop("must be in root folder of EJAM source package")}
-devtools::install(dependencies=T, upgrade="always", build=F)
+
+# To do install() below, you have to say where the cloned package was saved:
+# ejamroot = the root directory into which you cloned!
+
+## If you used the RStudio default, this may be where you cloned to:
+parentfolder <- rstudioapi::readRStudioPreference(
+  "default_open_project_location", ".")
+ejamroot <- file.path(parentfolder, "EJAM")
+if (!(basename(ejamroot) == "EJAM" && 
+      file.exists(file.path(ejamroot, "DESCRIPTION")))) {
+  stop("must set ejamroot to root folder of EJAM source package")}
+
+devtools::install(pkg = ejamroot, dependencies=T, upgrade="always", build=F)
 ```
 
 
@@ -107,7 +116,7 @@ You may be able to install the package to just run the web app locally in RStudi
 If you *do have a PAT set up*, you can use `remotes::install_github()`. (For help on PAT setup, see the last section of this article).
 
 ```{r install-gh, eval=FALSE}
-options(timeout=300); if (!require(remotes)) {install.packages("remotes")}
+options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
 #ref = "development"   # development branch version
 #ref = "HEAD"          # main branch
@@ -123,7 +132,7 @@ library(EJAM)
 If you *don't have a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens){.uri target="_blank" rel="noreferrer noopener"} (PAT) and don't want to set one up*, you could [check the github repository for the latest release](`r paste0("https://github.com/", EJAM:::repo_from_desc(), "/releases/latest")`) and may be able to use `remotes::install_url()` something like this:
 
 ```{r install-url, eval=FALSE}
-options(timeout=300); if (!require(remotes)) {install.packages("remotes")}
+options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.32.6.zip" # or "v2.32.5.zip", etc. - update as needed
 remote_zip = paste0(
   "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
@@ -135,7 +144,7 @@ library(EJAM)
 _or download the .zip file as a separate step, and install from that saved file:_
 
 ```{r install-local, eval=FALSE}
-options(timeout=300); if (!require(remotes)) {install.packages("remotes")}
+options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.32.6.zip" # or "v2.32.5.zip", etc. - update as needed
 remote_zip = paste0(
   "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
@@ -180,9 +189,13 @@ usethis::create_github_token()
 credentials::set_github_pat()
 ```
 
+### Tests of installation on various platforms and R versions
+
+The package has tests of whether it can be installed on Windows, MacOS, and Ubuntu, with various R versions and with `remotes::url_install()` and `remotes::github_install()`. When a pull request or push to the main branch of EJAM occurs, those tests run automatically as github actions in a workflow at https://github.com/ejanalysis/EJAM/blob/main/.github/workflows and logs of the results of those tests are here: https://github.com/ejanalysis/EJAM/actions. The same sort of tests could be set up to be triggered by pushes to the development branch, but just note a set of installation tests like these can take well over an hour to run on github.
+
 ### Details on CRAN packages needed (dependencies)
 
-You should not have to do anything other than the instructions above, to handle package dependencies. EJAM needs dozens of other packages to be installed that are (almost all) available from [CRAN](https://cran.r-project.org). Installing the EJAM package as explained above (with dependencies=TRUE, upgrade="always") will handle obtaining those other packages. Cloning and building/installing and then trying to load/attach EJAM will also alert you to those other packages you need to install if you don't already have them. In case it is of interest, a list of packages needed is in the `DESCRIPTION` file in the R package source code root folder (as can be found in the code repository). Note some are in Suggests and you probably want to install those as well since some of them were actually used in some less-often-used features or functions. Using dependencies=T in `remotes::install_github()`, `remotes::install_url()`, install(), etc. will make sure they are all installed.
+You should not have to do anything other than the instructions above, to handle package dependencies. EJAM needs dozens of other packages to be installed that are (almost all) available from [CRAN](https://cran.r-project.org). Installing the EJAM package as explained above (with dependencies=TRUE, upgrade="always") will handle obtaining those other packages. Cloning and building/installing and then trying to load/attach EJAM will also alert you to those other packages you need to install if you don't already have them. In case it is of interest, a list of packages needed is in the `DESCRIPTION` file in the R package source code root folder (as can be found in the code repository). Note some are in Suggests and you probably want to install those as well since some of them were actually used in some less-often-used features or functions. Using dependencies=T in `remotes::install_github()`, `remotes::install_url()`, install(), etc. will make sure they are all installed. Each of those packages in turn requires other packages that also get installed as needed. Future work may reduce the number of package dependencies to a more typical number.
 
 ### Details on the automatic data downloads
 

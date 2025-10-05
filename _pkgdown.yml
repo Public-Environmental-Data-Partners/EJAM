@@ -44,6 +44,7 @@ articles:
   - '`testdata`'
   - '`distances`'
   - '`naics`'
+  - '`counties`'
   - '`zipcodes`'
 - title: Developing & Hosting
   desc: For package/app developers
@@ -444,13 +445,10 @@ reference:
   - names_d
   - names_e
   - map_headernames
-- title: "EJSCREEN API"
-  desc: "EJAM-EJSCREEN and using the EJSCREEN API"
+- title: internal
   contents:
   - ejscreenit_for_ejam
   - ejscreenit
-- title: internal
-  contents:
   - state_from_sitetable
   - fips2state_abbrev
   - fips2state_fips

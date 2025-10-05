@@ -33,24 +33,24 @@ knitr::opts_chunk$set(eval = FALSE)
 ### Checking test coverage (where more unit tests need to be written)
 
 Some functions in the package had incomplete unit test coverage at least as of 
-mid 2025, so ideally more unit tests would be added in those cases.
+late 2025, so ideally more unit tests would be added in those cases.
+
+You should check which functions have adequate unit tests.
 
 You can see a grouped, organized list of unit test files *within the source
 code* of a function **`test_ejam()`**, which is not exported but is loaded by the package.
-
-You should check which functions have adequate unit tests. One quick but
-imperfect way is by using the rough draft function and notes found at
+That function also has an option that helps check coverage. It relies on
 **`EJAM/tests/test_coverage_check.R`**. The `test_ejam()` function noted
 above already prompts for using it, but you could separately `source()` it and
-use it.
+use it. The source code there also had notes on the topic.
 
-Note it is a bit tedious to figure out which functions have unit tests since
+It is a bit tedious to figure out which functions have unit tests since
 there is not a 1-to-1 relationship between functions like xyz() vs the
 EJAM/R/xyz.R files defining functions vs EJAM/tests/testthat/test-xyz.R files
 containing unit tests.
 
-Also see the [covr package](https://covr.r-lib.org/) and the related RStudio addin, 
-and see `devtools::test_coverage()` which is a shortcut for `covr::package_coverage()` plus `covr::report()`.
+Also see `devtools::test_coverage()` which is a shortcut for `covr::package_coverage()` plus `covr::report()`.
+The [covr package](https://covr.r-lib.org/) also has a related RStudio addin.
 
 ### Adding unit tests (for new functions or where unit tests not yet written)
 
@@ -75,27 +75,29 @@ Unit tests should be changed if necessary in these situations:
     expected outputs/ warnings/ errors change.
 
 -   if the web app UI changes - then special tests of the web app functionality
-    can be created as explained in [Testing EJAM App with
+    can be updated/created as explained in [Testing EJAM App with
     shinytest2](dev-run-shinytests.html). Also note that any screenshots for any
     [User Guide]{.underline} would need to be updated if the UI changes.
 
 ### Running unit tests
 
 There are numerous unit tests in the `EJAM/tests/testthat/` folder that you can
-run and add to as needed. They can be run automatically by the
-`devtools::test()` function.
+run and add to as needed. 
+
+The unit tests can be run automatically by the `devtools::test()` function.
 
 However, instead of running all the unit tests (run in alphabetical order by
 default), you might want to test only some groups of related functions that you
 are working on, and see a summary of which tests in which files from which
 groups are passing, skipped, etc. To do this, note there is an unexported function called
 **`test_ejam()`** that you can use to run the unit tests interactively.
-
 Assuming you want to use that function, whenever you add or rename or delete
 unit test files in the `EJAM/tests/testthat/` folder you need to edit the list
 of test file names in the source code of that function, `test_ejam()` or
 you can just try to use it and it will stop and tell you which files are missing from
 the list in the source code.
+
+A github action/workflow is another way unit tests could be run.
 
 ### Running tests of the web app functionality
 
@@ -106,7 +108,7 @@ There are recorded interactions used as tests of the web app, as explained in
 
 There is also a github workflow in the package that runs unit tests,
 automatically triggered by certain events, such as a pull request to the main or
-development branch. See `EJAM/.github/workflows/run-test.yaml`
+development branch. See `EJAM/.github/workflows/test-shiny-web-app-functionality.yml`
 
 ### Other notes
 

@@ -111,7 +111,7 @@ Using GitHub Actions (GHA) we can have GitHub run our shinytests prior to mergin
 
 -   PRs to `development`, `main`, or `deploy-posit` trigger GHA workflows.
 -   GHA sets up R, installs dependencies, runs tests, and compares snapshots.
--   The workflow is stored in `.github/workflows/run-test.yaml`.
+-   The workflow is stored in `.github/workflows/test-shiny-web-app-functionality.yml`.
 
 ### Speed Optimization
 

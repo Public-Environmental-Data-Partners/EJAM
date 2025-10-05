@@ -1,3 +1,5 @@
+name: test-shiny-web-app-functionality
+
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 # system libraries:
 #   libcurl -- needed to complete setup-renv
@@ -5,17 +7,16 @@
 #   libudunits2-dev -- needed for package "units"
 #   libgdal-dev -- needed for gdal config to configure package terra
 # https://cran.r-project.org/web/packages/shinytest2/vignettes/use-ci.html
+
 on:
   pull_request:
     branches: [development, main]
-  
-name: shiny-functionality-tests
 
 jobs:
   test:
     runs-on: ubuntu-latest
     if: ${{ !github.event.repository.private }}
-    name: shiny-functionality-tests
+    name: test-shiny-web-app-functionality
 
     strategy:
       fail-fast: false
@@ -44,8 +45,8 @@ jobs:
           pandoc --version
 
 
-      
-      
+
+
       - name: Install GitHub CLI
         run: sudo apt-get install gh
 

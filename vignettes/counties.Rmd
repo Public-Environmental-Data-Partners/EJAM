@@ -1,0 +1,140 @@
+---
+title: "Counties"
+description: "Counties"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Counties}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+```{r developernote, eval=FALSE, echo=FALSE, include=FALSE}
+#  *>>>>>>>>>> Developer note: vignettes need to be tested/edited/rebuilt regularly <<<<<<<<<<<*
+#    - **See ?pkgdown::build_site** and script in EJAM/data-raw/- EJAM uses the pkgdown R package to build help and articles/ vignettes as web pages
+```
+
+```{r SETUP_default_eval_or_not, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.height = 6, fig.width = 7,
+  comment = "#>"
+)
+knitr::opts_chunk$set(eval = FALSE)
+# https://r-pkgs.org/vignettes.html
+```
+
+```{r libraryEJAM, eval=TRUE, echo=FALSE, include=FALSE}
+# rm(list = ls()); golem::detach_all_attached(); devtools::load_all()
+
+if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if pkg not yet attached
+library(data.table)
+# dataload_dynamic('all') # varnames = all  currently means all defined by .arrow_ds_names
+
+# indexblocks()
+```
+ 
+
+# Perspectives on US Counties and how skewed population distributions are
+
+A few large counties contain a large proportion of the US population. This
+vignette briefly explores the distribution of counties in the US, particularly how many counties
+have a large number of block groups and residents.
+
+_Note there are also [guides to using EJAM in R for County/FIPS analysis](https://ejanalysis.github.io/EJAM/articles/analyzing.html#fips-codes) and [reference documents on relevant R functions](../reference/index.html#specify-counties-etc-) and [county-related test data](../reference/index.html#examples-of-inputs-census-units-by-fips-)._
+
+The US has over 3,200 Counties but the 80/20 rule applies almost exactly -- About 80% of the population is in just 20% of all Counties. In fact, most of the US population lives in less than 5% of all US Counties. About 150 counties account for most of the US residents. 
+```{r stats1, eval=TRUE}
+# code to get stats on population and blockgroup counts by county
+z <- blockgroupstats[ , .(pop = sum(pop), bgcount = .N), 
+     by = .(countyfips = substr(bgfips,1,5))][order(bgcount), ]
+z[ , name := fips2name(countyfips)]
+setcolorder(z, "countyfips", after = NCOL(z))
+setcolorder(z, "bgcount")
+setorder(z, -bgcount)
+# percent of residents and percent of counties
+zz <- z[order(-pop), ]
+zz$cumpop = cumsum(zz$pop)
+zz$cumpctpop = round(100 * zz$cumpop / sum(zz$pop),1)
+zz[, cumpctcounties := round(100 * .I/NROW(zz), 1) ]
+which(zz$cumpctpop >= 50 )[1]
+zz[cumpctpop >= 50, ][1, .(cumpctpop, cumpctcounties)]
+```
+
+
+Map of counties with at least 1 million residents each
+
+```{r map1, eval=TRUE, fig.alt="US map of key counties, mostly at large metro areas"}
+# code to show the map of key counties
+suppressWarnings({ suppressMessages({
+shp1 <- shapes_from_fips(fips = z[pop >= 1e6, ]$countyfips)
+shp1 <- cbind(shp1, pop = z[pop >= 1e6, ]$pop)
+mapfast(shp1)
+})}) 
+  ## to see the map of key counties in a web browser:
+  # mp <- mapfast(shp1, launch_browser = TRUE)
+```
+
+
+Histogram showing county population is usually between 10 thousand and 100 thousand, but can be much less or much more fairly often.
+
+```{r histopop, eval=TRUE, fig.alt="histogram shows county population is usually between 10 thousand and 100 thousand, but can be much less or much more fairly often"}
+hist(log10(z$pop), 1000 , axes=F,
+     xlab="Log scale of population count by county",
+     main = "Population size varies greatly across US Counties")
+axis(side = 1, at = 2:7,
+     labels = c(100, '1,000','10 thousand', '100 thousand', 
+                "1 million", "10 m")) 
+```
+
+
+Scatterplot of population and \# of blockgroups, by county
+
+```{r scatterpopbg, eval=TRUE,fig.alt="scatterplot shows high correlation between pop and blockgroup count"}
+plot(z$bgcount, z$pop, 
+     xlab = "# of blockgroups in the county",
+     ylab = "County population", log =  'xy')
+
+```
+
+Map of counties with more than 1,000 blockgroups each
+
+```{r map2, eval=F}
+shp2 <- cbind(
+  shapes_from_fips(fips = z[bgcount >= 1000, ]$countyfips),
+  blockgroup_count = z[bgcount >= 1000, ]$bgcount)
+suppressMessages(suppressWarnings({
+  mapfast(shp2)
+  ## to see the map of key counties in a web browser:
+  # mp <- mapfast(shp2, launch_browser = TRUE)
+}))
+```
+
+
+A handful of counties have over 1,000 block groups each, while most counties have less
+than 25 block groups each. These are the largest counties in terms of how many
+blockgroups they contain:
+
+```{r stats2, eval=TRUE, echo=TRUE}
+x = data.frame(z[bgcount >= 1000, ])
+x$pop = prettyNum(x$pop, big.mark = ",")
+x$bgcount = prettyNum(x$bgcount, big.mark = ",")
+print(x)
+# print( z[bgcount >= 1000, ][] )
+```
+
+Histogram showing that most counties have fewer than 25 blockgroups, but a few
+have over 1000 each
+
+```{r histobgcount, eval=TRUE, fig.alt="historgram shows most counties have fewer than 25 blockgroups, but a few have over 1000 each"}
+hist(z$bgcount, breaks = c((0:60)*10,10000), xlim=c(0, 600), 
+     main = "Most US Counties have fewer than 25 blockgroups 
+but 31 Counties (<1% of all) have 1k-7k each, 
+& contain 22% of blockgroups", 
+xlab = "count of blockgroups", 
+ylab = "Relative Share of Counties", yaxt="n")
+```
