@@ -44,6 +44,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgej.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgid2fips.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/bgid_from_blockid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgpts.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/blockgroupstats.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/blockid2fips.html</loc></url>
@@ -280,7 +281,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_join_on_bgid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latlon_join_on_blockid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/latloncsv2nexus.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/locate_by_id.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/mact_table.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/map2browser.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/map_blockgroups_over_blocks.html</loc></url>

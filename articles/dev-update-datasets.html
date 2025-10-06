@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,6 +154,24 @@ datasets if useful:</p>
 <span><span class="co">## [33] "stateinfo2"                         "states_shapefile"                  </span></span>
 <span><span class="co">## [35] "statestats"                         "usastats"                          </span></span>
 <span><span class="co">## [37] "x_anyother"</span></span></code></pre>
+<div class="section level3">
+<h3 id="where-the-datasets-are-stored">Where the datasets are stored<a class="anchor" aria-label="anchor" href="#where-the-datasets-are-stored"></a>
+</h3>
+<p>EJAM relies on datasets mostly stored in the package itself or in a
+separate, data-related repository:</p>
+<ul>
+<li><p>Datasets stored within the EJAM package (.rda files): <a href="https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-">Documentation</a>
+and <a href="https://github.com/ejanalysis/EJAM/tree/main/data" class="external-link">access
+to data files</a></p></li>
+<li><p>Datasets used by EJAM but stored separately (large .arrow files):
+<a href="https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-">Documentation</a>
+and <a href="https://github.com/ejanalysis/ejamdata/tree/main/data" class="external-link">access to
+data files</a></p></li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="key-datasets">Key datasets<a class="anchor" aria-label="anchor" href="#key-datasets"></a>
+</h3>
 <p>Some notable data files, code details, and other objects that may
 need to be changed ANNUALLY or more often:</p>
 <ul>
@@ -251,6 +269,7 @@ versions of data in the data folder if appropriate.</p>
 <p>The information below focuses on the other type of data objects – the
 set of large <a href="https://github.com/apache/arrow/" class="external-link">arrow</a> files that are stored outside the
 package code repository.</p>
+</div>
 <div class="section level3">
 <h3 id="repository-that-stores-the-large-arrow-files">Repository that stores the large arrow files<a class="anchor" aria-label="anchor" href="#repository-that-stores-the-large-arrow-files"></a>
 </h3>
@@ -263,8 +282,8 @@ distinct from the <em>package code</em> repository) must be recorded/
 updated in the EJAM package DESCRIPTION file, so that the package will
 know where to look for the data files if the datasets were moved to a
 new repository, for example. The current (either installed or loaded
-source version) of that repository is <a href="https://ejanalysis.github.io/EJAM" class="uri">https://ejanalysis.github.io/EJAM</a> (which can be checked
-via
+source version) of that repository is ejanalysis/ejamdata (which can be
+checked via
 <code>desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")</code>)</p>
 </div>
 <div class="section level3">
@@ -285,7 +304,8 @@ faster format of what had been called the <code><a href="../reference/frs.html">
 .arrow_ds_names that is used by functions like
 <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> and
 <code><a href="../reference/dataload_from_local.html">dataload_from_local()</a></code>.</p>
-<p>As of mid-2025, there were 11 arrow files used by EJAM:</p>
+<p>As of EJAM version v2.32.6, there were 11 arrow files used by
+EJAM:</p>
 </div>
 <div class="section level3">
 <h3 id="blockgroup-and-block-level-arrow-files">Blockgroup and block-level arrow files<a class="anchor" aria-label="anchor" href="#blockgroup-and-block-level-arrow-files"></a>
@@ -440,11 +460,11 @@ tibble/dataframe.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>September 2025</p>
+  <p>October 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6</p>
+  <p>EJAM Version 2.32.6.001</p>
 </div>
 
     </footer>

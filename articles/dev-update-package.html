@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,8 +100,8 @@ EJAM (for a new release of the package) or relocating it to a different
 repository (repo name and/or github user name), or changing the full
 name of the tool. Also see the separate vignettes on <a href="dev-update-datasets.html">updating datasets</a> and <a href="dev-update-documentation.html">updating documentation</a>.</p>
 <div class="section level2">
-<h2 id="if-relevant-carefully-change-owners-and-names-of-repositories-etc-">If relevant, carefully change owners and names of repositories
-etc.<a class="anchor" aria-label="anchor" href="#if-relevant-carefully-change-owners-and-names-of-repositories-etc-"></a>
+<h2 id="if-relevant-carefully-change-owners-and-names-of-github-repositories">If relevant, carefully change owners and names of github
+repositories<a class="anchor" aria-label="anchor" href="#if-relevant-carefully-change-owners-and-names-of-github-repositories"></a>
 </h2>
 <ul>
 <li><p>The full name/title of the web tool is used in several places and
@@ -122,23 +122,21 @@ etc. since there still are places where it does not check in DESCRIPTION
 for the repo name or assumes repo and package names are
 identical.</p></li>
 </ul>
-<p>If the package were renamed – or especially if a new name were used
-for the repository or the owner of the repository changed – several
-files would need to be updated for everything to work correctly. This is
-also true of the data repository.</p>
+<p>If the package were renamed or relocated (if a new name were used for
+the repository or the owner of the repository changed, or the location
+of the data repository changed), several files would need to be updated
+for everything to work correctly:</p>
 <ul>
-<li><p>The name of the github repository storing the package code should
+<li><p>The name of the github repository storing the package code must
 be recorded as part of the URL parameter in the DESCRIPTION file in the
 root folder of the source package.</p></li>
 <li><p>The name of the repo (or other domain) where webpages of package
-documentation are published also should be recorded as part of the URL
+documentation are published also must be recorded as part of the URL
 parameter in the DESCRIPTION file in the root folder of the source
 package. The website providing documentation of the R package is created
-via <code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code> as noted in
-<code>EJAM/data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R</code>,
-relying on the R package <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> and hosted on github
-pages (or other domain).</p></li>
-<li><p>The name of the repo where datasets are stored should be recorded
+via <code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code>, as explained in <a href="dev-update-documentation.html">updating
+documentation</a>.</p></li>
+<li><p>The name of the repo where datasets are stored must be recorded
 as the ejam_data_repo parameter in the DESCRIPTION file in the root
 folder of the source package.</p></li>
 </ul>
@@ -158,38 +156,41 @@ made. Use the numbering x.y.z (same numbering as was put in
 DESCRIPTION).</p></li>
 <li><p>Merge development into main branch</p></li>
 <li><p>Update the EJAM release/ create a new release on github.com,
-using the <code>NEWS.md</code> as the changelog, tagging to the main
-branch.</p></li>
+using the <code>NEWS.md</code> as the changelog, creating a new tag like
+“v2.32.N”.</p></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="test-the-installation-process">Test the Installation Process<a class="anchor" aria-label="anchor" href="#test-the-installation-process"></a>
+<h2 id="update-the-test-installation-script">Update the test installation script<a class="anchor" aria-label="anchor" href="#update-the-test-installation-script"></a>
+</h2>
+<p>You may want to update the test script.</p>
+<ul>
+<li>Remove older versions of R from the testing and add more recent
+ones</li>
+<li>Add new system libraries required by newly added packages
+(e.g. certain libraries need for installation on Ubuntu)</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="test-the-installation-process">Test the installation process<a class="anchor" aria-label="anchor" href="#test-the-installation-process"></a>
 </h2>
 <p>To ensure that, after changes are made, the package can still be
 installed by users with various operating systems and versions of R, a
-workflow file, <code>.github/workflows/installation_test.yaml</code>, is
-triggered by any pushes to the ejanalysis/EJAM main branch. This file
-tests installation with the following matrix of options:</p>
+workflow file,
+<code>.github/workflows/test-ability-to-install.yml</code>, is triggered
+by any push to the main branch. This file tests installation with the
+following matrix of options:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>OS</strong>: Latest Ubuntu, Windows, macOS</p></li>
-<li><p><strong>R version</strong>: 4.3 and 4.4</p></li>
-<li><p><strong>Install Method</strong>:
+<li><p><strong>R version</strong>: latest release and some prior
+versions</p></li>
+<li><p><strong>Using install_url() versus install_github()</strong>:
 <code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> and
 <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code></p></li>
 </ol>
 <p>But also note users may need to set up a personal access token (PAT)
 if they want to install from github - <a href="installing.html">see
 article on installing for info on setting up a PAT</a>.</p>
-<div class="section level3">
-<h3 id="update-the-test-installation-script">Update the Test Installation Script<a class="anchor" aria-label="anchor" href="#update-the-test-installation-script"></a>
-</h3>
-<p>You may want to update this test script in the future for a couple
-reasons:</p>
-<ul>
-<li>Remove older versions of R to test on</li>
-<li>Add new system libraries required by newly added packages</li>
-</ul>
-</div>
 </div>
 <div class="section level2">
 <h2 id="obsolete-step-make-updates-public-before-a-new-release-from-when-a-nonpublic-repo-was-used-for-development-at-epa">obsolete step: Make updates public before a new release (from when a
@@ -237,11 +238,11 @@ repo release.</li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>September 2025</p>
+  <p>October 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6</p>
+  <p>EJAM Version 2.32.6.001</p>
 </div>
 
     </footer>

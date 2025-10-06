@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -119,9 +119,9 @@ Counties. About 150 counties account for most of the US residents.</p>
 <span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">blockgroupstats</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span>pop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span>, bgcount <span class="op">=</span> <span class="va">.N</span><span class="op">)</span>, </span>
 <span>     by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>countyfips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">bgcount</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="va">z</span><span class="op">[</span> , <span class="va">name</span> <span class="op">:=</span> <span class="fu"><a href="../reference/fips2name.html">fips2name</a></span><span class="op">(</span><span class="va">countyfips</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu">setcolorder</span><span class="op">(</span><span class="va">z</span>, <span class="st">"countyfips"</span>, after <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">setcolorder</span><span class="op">(</span><span class="va">z</span>, <span class="st">"bgcount"</span><span class="op">)</span></span>
-<span><span class="fu">setorder</span><span class="op">(</span><span class="va">z</span>, <span class="op">-</span><span class="va">bgcount</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setcolorder.html" class="external-link">setcolorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"countyfips"</span>, after <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setcolorder.html" class="external-link">setcolorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"bgcount"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="op">-</span><span class="va">bgcount</span><span class="op">)</span></span>
 <span><span class="co"># percent of residents and percent of counties</span></span>
 <span><span class="va">zz</span> <span class="op">&lt;-</span> <span class="va">z</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pop</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="va">zz</span><span class="op">$</span><span class="va">cumpop</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">zz</span><span class="op">$</span><span class="va">pop</span><span class="op">)</span></span>
@@ -229,11 +229,11 @@ but a few have over 1000 each</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>September 2025</p>
+  <p>October 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6</p>
+  <p>EJAM Version 2.32.6.001</p>
 </div>
 
     </footer>
