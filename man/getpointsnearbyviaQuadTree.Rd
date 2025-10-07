@@ -22,7 +22,7 @@ getpointsnearbyviaQuadTree(
 \item{frompoints}{data.table with columns lat, lon giving point locations of
 sites or facilities or blocks around which are circular buffers defined by radius.
 \itemize{
-\item pointid is the indexed topoints id.
+\item pointid will be the indexed topoints id.
 \item ejam_uniq_id is the frompoints id
 }}
 
@@ -48,11 +48,13 @@ which might be zero. adjusted distance uses a lower limit, min_distance}
 \item{quiet}{Optional.}
 
 \item{quadtree}{(a pointer to the large quadtree object)
-created using indexpoints() which uses the SearchTree package.}
+created using indexpoints() which uses the SearchTree package.
+Helps find the "topoints"}
 
 \item{quaddatatable}{data.table like quaddata passed to function
 \itemize{
 \item the data.table used to create quadtree, such as blockpoints or frs.
+Helps find the "topoints"
 }}
 
 \item{updateProgress, }{optional function to update Shiny progress bar}

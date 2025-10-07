@@ -31,7 +31,7 @@ latlon_df_clean <- function(df, invalid_msg_table = FALSE, set_invalid_to_na = T
   names(df) <- latlon_infer(gsub(".1$", "", names(df)))
 
   # Cleans up lat and lon values (removes extra characters, makes numeric)
-  if ('lat' %in% names(df) & 'lon' %in% names(df)) {
+  if ('lat' %in% names(df) && 'lon' %in% names(df)) {
     df$lon <- latlon_as.numeric(df$lon)
     df$lat <- latlon_as.numeric(df$lat)
   } else {
@@ -68,7 +68,7 @@ latlon_df_clean <- function(df, invalid_msg_table = FALSE, set_invalid_to_na = T
     df <- data.table(df, valid = ok, invalid_msg = validinfo$invalid_msg)
 
   }
-  if (any(!ok) & set_invalid_to_na) {
+  if (any(!ok) && set_invalid_to_na) {
     # warning and console msg are done in latlon_is.valid()
     ## convert invalid latlons to NA
     df[!ok, c('lat','lon')] <- NA

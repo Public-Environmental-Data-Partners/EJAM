@@ -72,7 +72,7 @@ app_ui  <- function(request) {
                             actionButton(inputId = 'ui_show_advanced_settings','Show Advanced Settings Tab', class = 'usa-button'),
                             actionButton(inputId = 'ui_hide_advanced_settings','Hide Advanced Settings Tab', class = 'usa-button')
                           ),
-                          br(),br(),
+                          br(),br()
                    ),
                    column(4,
                           img(id = "biglogo", src = EJAM:::global_or_param("app_logo_aboutpage"),
@@ -136,7 +136,7 @@ app_ui  <- function(request) {
                                 choices = EJAM:::global_or_param("default_choices_for_type_of_site_upload"),
                                 selected = EJAM:::global_or_param("default_selected_type_of_site_upload")
                     )
-                  ),
+                  )
               ),
               br(),
 
@@ -310,7 +310,7 @@ app_ui  <- function(request) {
                               ## add X to remove selected options from list
                               options = list('plugins' = list('remove_button'))
                             ),#, # xxx
-                            br(), ## vertical space
+                            br() ## vertical space
                           ), # end NAICS conditionalPanel overall
 
                           ## _NAICS details conditionalPanel
@@ -356,7 +356,7 @@ app_ui  <- function(request) {
                                            ## add X to remove selected options from list
                                            options = list('plugins' = list('remove_button'))
                             ),
-                            br(), ## vertical space
+                            br() ## vertical space
                           ), # end SIC conditionalPanel
                           ################################################################# #
 
@@ -435,9 +435,9 @@ app_ui  <- function(request) {
                                       class = 'usa-button usa-button--outline')
                        ),
                        div(
-                         htmlOutput(outputId = 'an_map_text'),
+                         htmlOutput(outputId = 'an_map_text')
                        )
-                     ),
+                     )
                    ), # end view data uploads
                    uiOutput('invalid_sites_alert2'),
 
@@ -479,10 +479,10 @@ app_ui  <- function(request) {
                               class = 'usa-button',
                               role = 'button'
                             )
-                     ),
+                     )
                    ) # end fluidRow with radius slide and analysis title and start button
             ) # end of column with map
-          ), # end of fluidRow container for upload method (left column) and map (right column)
+          ) # end of fluidRow container for upload method (left column) and map (right column)
         ), # end Site Selection tab panel
 
         #############################################################################  #
@@ -547,7 +547,7 @@ app_ui  <- function(request) {
                                  shiny::downloadButton(
                                    outputId = 'community_download_all',
                                    label = 'Download Community Report', class = 'usa-button'), style = 'text-align: center;'
-                               ),
+                               )
                              ),  # end report tab
 
                              ######################################################################################################### #
@@ -582,7 +582,7 @@ app_ui  <- function(request) {
        The downloaded version includes more columns than are displayed here.'),
                                                      fluidRow(
                                                        column(6,
-                                                              #h3(id = 'site_by_site', 'Site-by-Site Table'),
+                                                              #h3(id = 'site_by_site', 'Site-by-Site Table')
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
@@ -668,7 +668,7 @@ app_ui  <- function(request) {
 
                                                                 ## input: Histogram settings - number of bins
                                                                 sliderInput(inputId = 'summ_hist_bins', label = h5('Bins'),
-                                                                            min = 5, max = 50, step = 5, value = 10),
+                                                                            min = 5, max = 50, step = 5, value = 10)
                                                          ),
                                                          column(10, align = 'center',
                                                                 ## output: display histogram
@@ -679,7 +679,7 @@ app_ui  <- function(request) {
                                                                 fluidRow(
                                                                   column(6, offset = 3,
                                                                          ## input: indicator dropdown for histogram
-                                                                         uiOutput('summ_hist_ind_out'),
+                                                                         uiOutput('summ_hist_ind_out')
                                                                   ) # column with indicator selections
                                                                 ) # row with indicator selections
                                                          ) #end column with hist
@@ -759,7 +759,7 @@ app_ui  <- function(request) {
                                                    ## input:  - which sites analyzed  #    param is called   sectorname_short
                                                    textInput(inputId = "rg_enter_sites",
                                                              label = "Describe sites analyzed:",
-                                                             value = "facilities in the _____ source category"),
+                                                             value = "facilities in the _____ source category")
                                             )
                                           ),
 
@@ -855,7 +855,7 @@ app_ui  <- function(request) {
                                                    ## input:
                                                    textInput(inputId = 'source_of_latlons',
                                                              label = 'Source of Points',
-                                                             placeholder = "EPA's Facility Registry Service (FRS)"),
+                                                             placeholder = "EPA's Facility Registry Service (FRS)")
                                             )
                                           ),
 
@@ -944,13 +944,13 @@ app_ui  <- function(request) {
                                                    ## input:
                                                    textInput(inputId = 'demog_how_elevated',
                                                              label = 'Elevation of Residential Population Indicators',
-                                                             placeholder = 'moderately elevated'),
+                                                             placeholder = 'moderately elevated')
                                             ),
                                             column(4,
                                                    ## input:
                                                    textInput(inputId = 'envt_how_elevated',
                                                              label = 'Elevation of Environmental Indicators',
-                                                             placeholder = 'moderately elevated'),
+                                                             placeholder = 'moderately elevated')
                                             )
                                           ),
                                           fluidRow(
@@ -961,7 +961,7 @@ app_ui  <- function(request) {
                                                                choices = c('a surprisingly large share of these sites',
                                                                            'some of these sites, just as it varies nationwide',
                                                                            'a relatively small share of these sites'),
-                                                               selected = 'some of these sites, just as it varies nationwide'),
+                                                               selected = 'some of these sites, just as it varies nationwide')
                                             ),
                                             column(4,
                                                    ## input:
@@ -970,7 +970,7 @@ app_ui  <- function(request) {
                                                                choices = c('a surprisingly large share of these sites',
                                                                            'some of these sites, just as it varies nationwide',
                                                                            'a relatively small share of these sites'),
-                                                               selected = 'some of these sites, just as it varies nationwide'),
+                                                               selected = 'some of these sites, just as it varies nationwide')
                                             )
                                           ),
                                           fluidRow(
@@ -997,7 +997,7 @@ app_ui  <- function(request) {
                                                                  label = 'Conclusion 3',
                                                                  placeholder = "The average resident near these sites is 1.5 times as likely to be Hispanic as the average person in their State overall. (for example)")
                                             )
-                                          ),
+                                          )
                                         ) # end wellpanel
                                )  # end written report  tab
                              }
@@ -1260,7 +1260,9 @@ app_ui  <- function(request) {
 
                  ## _radio button on format of short report
                  #                  was DISABLED while PDF KNITTING DEBUGGED
-                 radioButtons(inputId = "format1pager", "Format", choices = c(html = "html", html = "pdf"), inline = TRUE),
+                 radioButtons(inputId = "format1pager", "Format",
+                              choices = c(html = "html", pdf_not_available_yet = "html"),  # "pdf"),
+                              inline = TRUE),
 
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),
 

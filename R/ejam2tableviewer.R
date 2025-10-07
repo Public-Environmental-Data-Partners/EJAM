@@ -130,11 +130,11 @@ ejam2tableviewer = function(out, filename = 'automatic', maxrows = 1000, launch_
           filename = file.path(mydir, filename)
         } else {
           # good folder, WITH a filename w good extension, that may not yet exist?
-          if (validfoldernotfile(dirname(filename)) & tools::file_ext(filename) == "html") {
+          if (validfoldernotfile(dirname(filename)) && tools::file_ext(filename) == "html") {
             # all set
           } else {
             # good folder, WITH BAD extension
-            if (validfoldernotfile(dirname(filename)) & !tools::file_ext(filename) == "html") {
+            if (validfoldernotfile(dirname(filename)) && !tools::file_ext(filename) == "html") {
               warning("wrong extension, so adding .html")
               filename = paste0(filename, ".html")
             }

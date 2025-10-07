@@ -49,7 +49,7 @@ popup_from_any <- function(x, column_names = names(x), labels = column_names, n 
     stop("x must be a data.frame for popup_from_any() to be able to create map popups")
   }
   if (testing) {print('popup_from_any'); print(names(x)); print(labels); print(n)}
-  if (n == "all" | n > NCOL(x)) {
+  if (n == "all" || n > NCOL(x)) {
     # nothing
   } else {
     if (data.table::is.data.table(x)) {
@@ -84,7 +84,7 @@ popup_from_any <- function(x, column_names = names(x), labels = column_names, n 
     x <- x[, column_names, drop = FALSE]
   }
 
-  if (missing(labels) & !missing(column_names)) {labels <- column_names}
+  if (missing(labels) && !missing(column_names)) {labels <- column_names}
   if (length(labels) != length(column_names)) {
     labels <- column_names
     warning("for map popups, column_names and labels must be same length. Using column_names as labels.")

@@ -156,7 +156,7 @@ batch.summarize <- function(ejamitout,
   if (is.null(threshnames) || !all(unlist(threshnames) %in% colnames(sitestats)) || is.null(thresholds) || is.null(threshgroups)) {
     warning("specified threshnames not all found in sitestats colnames or other problem with thresholds or threshgroups, so using defaults")
     # try to use some available set of pctiles, or just set count and max to NA.
-    if (all(names_e_pctile %in% names(sitestats)) & all(names_e_state_pctile %in% names(sitestats))) {
+    if (all(names_e_pctile %in% names(sitestats)) && all(names_e_state_pctile %in% names(sitestats))) {
       threshnames = list(names_e_pctile, names_e_state_pctile,
                          names_e_pctile, names_e_state_pctile)
       threshgroups = list('Envt_US_pctiles', 'Envt_ST_pctiles',

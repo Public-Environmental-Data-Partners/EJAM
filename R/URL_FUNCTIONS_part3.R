@@ -160,11 +160,11 @@ url_ejscreen_report <- function(sitepoints = NULL, lat='', lon='', radius='', mo
         if (anyNA(radius)       || anyNA(lat)       || anyNA(lon))       {warning("lat or lon or radius contain NA value(s)")}
         if (length(lat)  != length(lon)) {warning("did not find exactly one lat for each lon value (lengths of vectors differ)")}
         if (!(length(radius) %in% c(1, length(lat), length(lon)))) {warning("must provide either 1 radius value for all sites or exactly one per site")}
-        if (!( "" %in% lat | "" %in% lon ) & (any(is.na(radius)) | "" %in% radius)) {warning('radius is missing but needed when lat/lon specified')} # ??
+        if (!( "" %in% lat || "" %in% lon ) && (any(is.na(radius)) || "" %in% radius)) {warning('radius is missing but needed when lat/lon specified')} # ??
       }
       latlon_radius_validate_lengths(lat = lat, lon = lon, radius = radius)
     }
-    if (( "" %in% lat | "" %in% lon ) & ("" %in% areaid)) {
+    if (( "" %in% lat || "" %in% lon ) && ("" %in% areaid)) {
       warning('at least some of lat or lon are empty and at least one areaid is empty as well - must use one or the other')
     }
 

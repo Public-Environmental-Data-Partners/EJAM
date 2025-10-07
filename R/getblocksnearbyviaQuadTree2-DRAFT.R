@@ -215,7 +215,7 @@ getblocksnearbyviaQuadTree2 <- function(sitepoints, radius = 3, maxradius = 31.0
     ### end of if avoidorphans
     ################################# #
 
-    if ((i %% report_progress_every_n) == 0 & interactive()) {print(paste("Cells currently processing: ",i ," of ", nRowsDf) ) } # i %% report_progress_every_n indicates i mod report_progress_every_n (“i modulo report_progress_every_n”)
+    if ((i %% report_progress_every_n) == 0 && interactive()) {print(paste("Cells currently processing: ",i ," of ", nRowsDf) ) } # i %% report_progress_every_n indicates i mod report_progress_every_n (“i modulo report_progress_every_n”)
 
   } # do next site in loop, etc., until end of this loop.
   # end loop over sites ################################################################################################ #
@@ -271,7 +271,7 @@ getblocksnearbyviaQuadTree2 <- function(sitepoints, radius = 3, maxradius = 31.0
 
 
 
-  if (interactive() & !quiet) {
+  if (interactive() && !quiet) {
     cat("You can use  getblocks_diagnostics(sites2blocks)  to see this info on distances found:\n\n")
     getblocks_diagnostics(sites2blocks)
   }

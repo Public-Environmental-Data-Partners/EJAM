@@ -1,6 +1,6 @@
 
 #' See which of the lists of names a single term appears in
-#' 
+#'
 #' @details EJAM::namez has a list of lists of names used for indicators or variables, such as
 #'   namez$d_subgroups_state_pctile which is a vector of terms like
 #'     "state.pctile.pcthisp", "state.pctile.pctnhba", etc.
@@ -14,20 +14,20 @@
 #'
 #' @seealso [varinfo()]
 #' @return a data.frame of whichlist, exactmatch, grepmatch, and grephits (examples)
-#' 
-#' @examples  
+#'
+#' @examples
 #'    x <- names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
 #'    subset(x, !grepl("friendly", x$whichlist))
-#'    
+#'
 #'    subset(x,  grepl("friendly", x$whichlist))
 #'    subset(namez, names(namez) != "all_r" & names(namez) %in%
 #'       subset(x, x$grepmatch == "yes" & !grepl("friendly", x$whichlist))$whichlist  )
 #'    grep("\\.eo$", namez$ej, value = T)
 #'
 #' @keywords internal
-#' 
+#'
 names_whichlist <- function(x, exact=T, grepmatching=T, ignore.case.exact=FALSE, ignore.case.grep = FALSE, keylists=F, exactonly=FALSE) {
-  
+
   hits = vector()
   everylist = names(namez)
   hitlist = data.frame(
@@ -37,7 +37,7 @@ names_whichlist <- function(x, exact=T, grepmatching=T, ignore.case.exact=FALSE,
     grephits =  rep("", length(everylist))
   )
   for (i in 1:length(namez)) {
-    if (grepmatching & any(grepl(x, unlist(namez[i]), ignore.case = ignore.case.grep))) {
+    if (grepmatching && any(grepl(x, unlist(namez[i]), ignore.case = ignore.case.grep))) {
       # cat('grep match in', everylist[i], '\n')
       hits <- c(hits, everylist[i])
       hitlist[i,'grepmatch'] <- 'yes'
@@ -63,7 +63,7 @@ names_whichlist <- function(x, exact=T, grepmatching=T, ignore.case.exact=FALSE,
     hitlist <- hitlist[hitlist$whichlist %in% grep('friendly|all|these|need|^state_pctile$', names(namez), value = T, invert = T),]
   }
   if (exactonly) {
-    return(hitlist[hitlist$exactmatch == 'yes',]) 
+    return(hitlist[hitlist$exactmatch == 'yes',])
   } else {
     return(hitlist)
   }
@@ -72,20 +72,20 @@ names_whichlist <- function(x, exact=T, grepmatching=T, ignore.case.exact=FALSE,
 
 
 #' See which lists of names the given indicator names are in
-#' 
+#'
 #' @param x vector of names (query terms)
 #' @param ... passed to names_whichlist()
 #'
 #' @seealso [varinfo()]
 #' @return a list of sets of names
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 names_whichlist_multi = function(x, ...) {
-  
+
   out = list()
   for (i in 1:length(x)) {
-  out[[i]] <- names_whichlist(x[i], ...)  
+  out[[i]] <- names_whichlist(x[i], ...)
   }
   # out <- do.call(rbind, out)
   return(out)
@@ -94,16 +94,16 @@ names_whichlist_multi = function(x, ...) {
 
 
 #' See which key lists of names the given indicator names are in
-#' 
+#'
 #' @param x vector of names
 #' @param ... passed to names_whichlist_multi()
 #'
 #' @seealso [varinfo()]
 #' @return vector maybe
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 names_whichlist_multi_key = function(x, ...) {
-  
+
   sapply( names_whichlist_multi( x, exactonly = T, keylists = T, ...) , function(x) x$whichlist)
 }

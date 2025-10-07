@@ -106,13 +106,13 @@ ejscreenRESTbroker <- function(lon = NULL, lat = NULL, radius = 3,
   url <- sub('(https://).*?(/mapper)', paste0('\\1',ipurl,'\\2'), url)
   if (!url_online(url)) {stop("API URL does not seem to be accessible")}
 
-  if (!missing(shapefile) & !is.null(shapefile)) {
+  if (!missing(shapefile) && !is.null(shapefile)) {
     sitetype <- 'shp'
   } else {
     if (!is.null(fips)) {
       sitetype <- 'fips'
     } else {
-      if (!is.null(lon) & !is.null(lat)) {
+      if (!is.null(lon) && !is.null(lat)) {
         sitetype <- 'latlon'
       } else {
         # no type found
@@ -162,7 +162,7 @@ ejscreenRESTbroker <- function(lon = NULL, lat = NULL, radius = 3,
   if (sitetype == 'latlon') {
 
     if (any(NROW(lon) > 1, NROW(lat) > 1, NROW(radius) > 1 )) {stop('input must be only one point with one distance, so lat, lon, and radius must each be a single number')}
-    if (all(is.na(lat)) | all(is.na(lon))) {stop('lat and lon must not be NA values')}
+    if (all(is.na(lat)) || all(is.na(lon))) {stop('lat and lon must not be NA values')}
 
     # MAY WANT TO SPLIT THIS OUT AS A FUNCTION, TO MAKE IT EASIER TO GET JSON AND ALSO APPEND THE PDF URL TO THAT
     # see url_ejscreen_report() for obtaining a vector of URLs, with more options and error-handling

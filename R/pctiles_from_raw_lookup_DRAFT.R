@@ -65,7 +65,7 @@ for (i in seq_along(varsneedpctiles)) {
 
   # USA ########################## #
 
-  if ((myvar %in% names(usastats)) & (myvar %in% names(results_bysite)) & (myvar %in% names(results_overall))) {
+  if ((myvar %in% names(usastats)) && (myvar %in% names(results_bysite)) && (myvar %in% names(results_overall))) {
     # use this function to look in the lookup table to find the percentile that corresponds to each raw score value:
 
     us.pctile.cols_bysite[    , varnames.us.pctile[[i]]]    <- pctile_from_raw_lookup(
@@ -82,7 +82,7 @@ for (i in seq_along(varsneedpctiles)) {
 
   # STATES ########################## #
 
-  if ((myvar %in% names(statestats)) & (myvar %in% names(results_bysite)) ) {
+  if ((myvar %in% names(statestats)) && (myvar %in% names(results_bysite)) ) {
 
 
     ### VERY SLOW STEP 289 msec

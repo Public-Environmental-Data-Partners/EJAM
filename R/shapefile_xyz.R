@@ -421,7 +421,7 @@ shapefile_from_gdb <- function(fname, layer = NULL, ...) {
     if (length(lrz$name) > 1) {
       print(lrz)
 
-      if (interactive() & !shiny::isRunning()) {
+      if (interactive() && !shiny::isRunning()) {
         # ask which layer
         layer <- rstudioapi::showPrompt("Layer selection", "Which layer?", default = lrz$name[1])
         if (!(layer %in% lrz$name)) {

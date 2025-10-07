@@ -194,7 +194,7 @@ locate_by_id1 <- function(idx, type='frs', simple = FALSE, ...) {
   if (length(idx) > 1) {stop('only one id at a time')}
   if (length(type) > 1) {stop('only one type at a time')}
   if (is.null(idx)) idx <- NA
-  if (is.na(idx) | length(idx) == 0 | nchar(idx) == 0 | (grepl('[^[:alnum:]]', idx))) {
+  if (is.na(idx) || length(idx) == 0 || nchar(idx) == 0 || (grepl('[^[:alnum:]]', idx))) {
     warning('bad id - function will return NA values')
     idx <- NA # If "NA" API returns results for some default site it looks like,
     # and then later below we can replace those results with NA values

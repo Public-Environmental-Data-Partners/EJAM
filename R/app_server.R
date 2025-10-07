@@ -1988,7 +1988,7 @@ app_server <- function(input, output, session) {
         sitetype <- ejamit_sitetype_from_output(out)
 
         ## stop and return NULL if no valid sites left after doaggregate
-        if (all(out$results_bysite$valid == FALSE)) {
+        if (all(!out$results_bysite$valid)) {
           message('No valid sites remaining. Quitting analysis')
           data_processed(NULL)
 

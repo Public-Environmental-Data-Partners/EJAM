@@ -1183,7 +1183,7 @@ fips_place_from_placename = function(place_st, geocoding = FALSE, exact = FALSE,
 
   rownames(results) <- NULL
 
-  if (verbose & NROW(results) > 0) {
+  if (verbose && NROW(results) > 0) {
     cat("\nCities/CDPs including NA values but only 1 best guess per queried place:\n\n")
     print(results)
   }
@@ -1865,7 +1865,7 @@ fips2countyname <- function(fips, includestate = c("ST", "Statename", "")[1]) {
       addon <- ""
     }
   }
-  if (all(addon == "") | all(is.na(out))) {
+  if (all(addon == "") || all(is.na(out))) {
     return(out)
   } else {
     out[!is.na(out)] <- paste(out[!is.na(out)], addon[!is.na(out)], sep = ", ")

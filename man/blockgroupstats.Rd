@@ -5,34 +5,55 @@
 \alias{blockgroupstats}
 \title{blockgroupstats (DATA) residential population and environmental indicators for Census blockgroups}
 \description{
-The dataset of residential population data and environmental indicators originally from EJSCREEN.
-
-For Summary Indexes, see \link{bgej}
+This is the dataset of residential population data and environmental indicators used by EJSCREEN.
+It is a data.table with one row for every US Census blockgroup.
 }
 \details{
 \itemize{
-\item Version 2.32.6 of EJAM
-uses EPA environmental indicators and population indicators derived from
-ACS data from \verb{r a2018-2022 Each year this should be re-created as for the latest version.   See }attributes(blockgroupstats)`
+\item Environmental indicators were provided by EPA.
+\item Demographics such as percentages are calculated from Census Bureau data from the American Community Survey
+5-year summary file, as documented by EJSCREEN.
+\item The EJ Indexes (Summary Indexes) are stored in a separate table, \link{bgej}
 }
 
-It is a data.table of US Census blockgroups (not blocks).
-With PR, and Island Areas
+The source of data for each indicator was documented by EJSCREEN, as archived on these pages:
+\itemize{
+\item \href{https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log}{EJSCREEN Change Log - newest indicators, etc.}
+\item \href{https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions}{Full list of indicators, with definitions}
+\item \href{https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen}{Year and source of each environmental indicator}
+}
 
-Column names include \code{bgfips}, \code{bgid} (for join to \link{blockwts} by/on \code{bgid}),
+More about blockgroupstats
+\itemize{
+\item Version 2.32.6 of EJAM used EPA environmental indicators along with population indicators derived
+from 2018-2022 ACS data. Each year this should be re-created as for the latest version.
+\item See \code{attributes(blockgroupstats)} to confirm vintage of each dataset
+\item Geographic scope includes States, DC, and Puerto Rico (PR), but not any Island Areas (VI, GU, AS, etc.)
+\item Column names include \code{bgfips}, \code{bgid} (for join to \link{blockwts} by/on \code{bgid}),
 \code{pop}, \code{pctlowinc}, etc.
+\item For metadata on each column, see \link{map_headernames}
+\item To see definitions of the columns (indicators) and some basic info on each:
+}
 
-To see definitions of the columns (indicators) and some basic info on each:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{x = data.frame(
+\if{html}{\out{<div class="sourceCode">}}\preformatted{x <- data.frame(
  colname = names(blockgroupstats),
  definition = fixcolnames(names(blockgroupstats), 'r', 'long'),
  varinfo(names(blockgroupstats), info = c("varlist", "varcategory",
  "vartype", "calculation_type", "denominator", "sigfigs", "decimals")))
+rownames(x) <- NULL
+x[1:20, ]
 }\if{html}{\out{</div>}}
 
 The columns called arealand and areawater are in square meters,
 not square miles - to convert units:
 \code{convert_units(sum( blockgroupstats$arealand) , "sqm", "sqmi")}
 The column called "area" is not used and not documented.
+
+Other key datasets:
+\itemize{
+\item List of key datasets used by EJAM and details about annual updates: \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}.
+\item Datasets stored within the EJAM package (.rda files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-}{Documentation} and \href{https://github.com/ejanalysis/EJAM/tree/main/data}{access to data files}
+\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-}{Documentation} and \href{https://github.com/ejanalysis/ejamdata/tree/main/data}{access to data files}
+\item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
+}
 }

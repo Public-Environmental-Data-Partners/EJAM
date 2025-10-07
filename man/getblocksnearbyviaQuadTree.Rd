@@ -27,7 +27,8 @@ getblocksnearbyviaQuadTree(
 
 \item{maxradius}{miles distance (max distance to check if not even 1 block point is within radius)}
 
-\item{avoidorphans}{logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
+\item{avoidorphans}{MAY BE OBSOLETE/UNUSED NOW.
+logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
 it keeps looking past radius, up to maxradius, to find nearest 1 BLOCK.
 What EJSCREEN does in that case is report NA, right? So,
 does EJAM really need to report stats on residents presumed to be within radius,

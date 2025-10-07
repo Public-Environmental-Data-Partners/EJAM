@@ -43,11 +43,11 @@ testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_onl
     # text_to_print <- "system.file('testdata', package = 'EJAM')" # redundant
   }
 
-  if (!installed & file.exists("DESCRIPTION")) {
+  if (!installed && file.exists("DESCRIPTION")) {
     # testdata_folder <- "./inst/testdata"
     # text_to_print <-  '"./inst/testdata"' # redundant
   }
-  if (!installed & !file.exists("DESCRIPTION")) {
+  if (!installed && !file.exists("DESCRIPTION")) {
     warning('testdata(installed = F) can only be used while working directory is the root of a source package - showing testdata(installed = T) instead')
     return(testdata(installed = TRUE, pattern = pattern, quiet = quiet, folder_only = folder_only))
   }

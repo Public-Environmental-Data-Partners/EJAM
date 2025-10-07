@@ -146,11 +146,11 @@ latlon_from_anything <- function(anything, lon_if_used, interactiveprompt = TRUE
   # of lat, lon values, and clean it up for use.
   # otherwise, do the same assuming anything,lon_if_used are lat,lon values as vectors.
   if (data.table::is.data.table(x)) data.table::setDF(x) # syntax is easier here this way. note that a data.table is also a list and data.frame
-  if (is.list(x) & !is.data.frame(x)) {x <- as.data.frame(x)} # like if x <- list(lon = 1:5, lat = 1:5)
-  if (is.matrix(x) | is.array(x) ) {x <- as.data.frame(x)}
+  if (is.list(x) && !is.data.frame(x)) {x <- as.data.frame(x)} # like if x <- list(lon = 1:5, lat = 1:5)
+  if (is.matrix(x) || is.array(x) ) {x <- as.data.frame(x)}
 
   if (!is.data.frame(x)) { # also if data.table (but not if a matrix or a non-df-list or array or vector)
-    if (is.atomic(x) && is.character(x) & length(x) == 1) {
+    if (is.atomic(x) && is.character(x) && length(x) == 1) {
       # seems to be a file name with path, so read it
       if (file.exists(x)) {
         pts <- read_csv_or_xl(x)

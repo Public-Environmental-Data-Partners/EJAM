@@ -234,7 +234,7 @@ shapes_from_fips <- function(fips,
   }
 
   ####################### #
-  if (allow_multiple_fips_types == FALSE) {
+  if (!allow_multiple_fips_types) {
     if (length(intersect(ftype, oktypes)) > 1) {
       if (shiny::isRunning()) {
         shiny::validate("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")

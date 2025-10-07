@@ -22,7 +22,7 @@ latlon_join_on_blockid = function(s2b) {
     warning('No value provided for argument "s2b".')
     return(NULL)
   }
-  else if (all(is.na(s2b)) | is.null(s2b)) {
+  else if (all(is.na(s2b)) || is.null(s2b)) {
       warning('NULL or NA "s2b" passed as inputs.')
       return(NULL)
   }

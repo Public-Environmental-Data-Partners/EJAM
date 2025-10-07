@@ -394,7 +394,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         }
         # reset which states are available (states_choices) and selected
         inregions <- states_table$REGION %in% regions_reset
-        if (length(inregions) == 0 || all(inregions == FALSE)) {
+        if (length(inregions) == 0 || all(!inregions)) {
           states_choices <- NULL
         } else {
           states_choices <- all_states_choices[inregions]

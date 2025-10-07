@@ -68,7 +68,7 @@ calc_ratios_to_avg <- function(out,
 
   if (all(names_d_subgroups %in% dvarnames)) {
     if (zone.prefix == "") {
-      if (!(all(names_d_subgroups_avg %in%  names(out)) & all(names_d_subgroups %in%  names(usastats)))) {
+      if (!(all(names_d_subgroups_avg %in%  names(out)) && all(names_d_subgroups %in%  names(usastats)))) {
         message("US averages for demog subgroups like pcthisp not found (note they are not provided by the EJSCREEN API)
         so looking up and adding those, and rescaling as 0-100, which is how ejscreen tables store percentages though not how ejamit() does")
         out[, names_d_subgroups_avg] <-  100 * usastats[usastats$PCTILE == "mean", names_d_subgroups]
@@ -120,7 +120,7 @@ calc_ratios_to_avg <- function(out,
   ratios_e <- out[ , evarnames] / out[ , avg.evarnames]
   ratios_d <- out[ , dvarnames] / out[ , avg.dvarnames]
 
-  if (any(sapply(ratios_d, is.infinite)) | any(sapply(ratios_e, is.infinite))) {
+  if (any(sapply(ratios_d, is.infinite)) || any(sapply(ratios_e, is.infinite))) {
     warning('some averages probably were zero because ratio is infinite and replaced with NA')
     ratios_d[sapply(ratios_d, function(x) !is.na(x) & is.infinite(x))  ] <- NA
     ratios_e[sapply(ratios_e, function(x) !is.na(x) & is.infinite(x))  ] <- NA

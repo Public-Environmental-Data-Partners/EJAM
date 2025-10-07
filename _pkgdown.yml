@@ -16,8 +16,8 @@ footer:
     left: [datefooter]
     right: [package, versionmsg]
   components:
-    datefooter: September 2025
-    versionmsg: Version 2.32.6
+    datefooter: October 2025
+    versionmsg: Version 2.32.6.001
 development:
   mode: release
   destination:

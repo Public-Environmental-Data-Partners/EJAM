@@ -90,7 +90,7 @@ getblocksnearby  <- function(sitepoints, radius = 3, maxradius = 31.07, radius_d
     if (exists("localtree")) {
       quadtree <- localtree
     } else {    #  SEE IF WE EVER NEED TO OR EVEN CAN CREATE THIS ON THE FLY HERE FOR SOME INTERACTIVE USERS, BUT SHOULD NOT BE AN ISSUE IF PKG LOADED
-      if (!exists("quaddata") | !exists("blockwts") | !exists("blockpoints") ) {  #| !exists("bgid2fips")
+      if (!exists("quaddata") || !exists("blockwts") || !exists("blockpoints") ) {  #| !exists("bgid2fips")
         # should
         cat('census block data file(s) not already loaded, so key data will now be downloaded (or loaded from a local copy if possible)...\n')
         # loads quaddata needed to make localtree index, and several other large files pkg uses.

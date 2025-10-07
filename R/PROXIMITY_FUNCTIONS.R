@@ -959,7 +959,7 @@ proxistat <- function(topoints, bpoints = NULL,
                       quadtree = NULL,
                       quaddatatable = NULL) {
 
-  if (missing(bpoints) | is.null(bpoints)) {
+  if (missing(bpoints) || is.null(bpoints)) {
     warning('using Delaware just as an example/demo since bpoints was not specified')
     bpoints <- blockpoints[state_from_blockid(blockpoints$blockid) == "DE", ]
   }
@@ -1520,7 +1520,7 @@ custom_doaggregate <- function(sites2blocks,
     #
     #
     #   if (is.null(custom_cols)) {
-    #     custom_cols = EJAMformula_varname(custom_formulas)
+    #     custom_cols = EJAM:::formula_varname(custom_formulas)
     #   }
     #
     # results_bysite_custom  <-  bybg_bysite[ , calc_ejam( ..???? ), by = "ejam_uniq_id"]
@@ -1809,11 +1809,11 @@ doaggregate_newscores <- function(
   data.table::setDT(userstats)
 
   # use a join to get bgid if only fips was provided
-  if (!("bgid" %in% names(userstats)) & !("bgfips" %in% names(userstats))) {
+  if (!("bgid" %in% names(userstats)) && !("bgfips" %in% names(userstats))) {
     userstats[ , bgid := .I]  # not the true bgid though !
     warning("unique bgid column had to be invented, as 1:N since not provided and bgid2fips missing. This means you cannot join to other blockgroup tables simply on bgid. Use bgfips if available.")
   }
-  if (!("bgid" %in% names(userstats)) & "bgfips" %in% names(userstats)) {
+  if (!("bgid" %in% names(userstats)) && "bgfips" %in% names(userstats)) {
     if (exists("bgid2fips")) {
       userstats[bgid2fips, bgid := bgid, on = "bgfips"]
     } else {
@@ -1866,7 +1866,7 @@ doaggregate_newscores <- function(
   # }
 
   # weighted means ####
-  if (length(popmeancols_inbgstats) > 0 & "pop" %in% names(sites2bgs_plusblockgroupdata_bysite)) {
+  if (length(popmeancols_inbgstats) > 0 && "pop" %in% names(sites2bgs_plusblockgroupdata_bysite)) {
     results_bysite_popmeans <- sites2bgs_plusblockgroupdata_bysite[   ,  lapply(.SD, FUN = function(x) {
       collapse::fmean(x, w = bgwt * pop)   # stats::weighted.mean(x, w = bgwt * pop, na.rm = TRUE)
     }), .SDcols = popmeancols_inbgstats, by = .(ejam_uniq_id) ]
@@ -1915,12 +1915,12 @@ doaggregate_newscores <- function(
 
   ################################################################################# #
   # WHAT STATE IS EACH SITE IN? (TO ENABLE STATE PERCENTILE LOOKUP) ####
-  if (missing(sites2states_or_latlon) | !("ST" %in% names(sites2states_or_latlon))) { # must or should figure out state based on blockid -> blockfips -> ST
+  if (missing(sites2states_or_latlon) || !("ST" %in% names(sites2states_or_latlon))) { # must or should figure out state based on blockid -> blockfips -> ST
     sites2states <- ST_by_site_from_sites2blocks(sites2blocks)
     # returns a data.table with these columns:  siteid, ST  (and only 1 row per siteid! It is just to know the ST of each unique siteid)
     if (!missing(sites2states_or_latlon)) {
       # add in the lat,lon columns - this is always available if ejamit() called this since it passes the pts as sites2states_or_latlon
-      if ("ejam_uniq_id" %in% names(sites2states_or_latlon) & "ejam_uniq_id" %in% names(sites2states)) {
+      if ("ejam_uniq_id" %in% names(sites2states_or_latlon) && "ejam_uniq_id" %in% names(sites2states)) {
         #if ("siteid" %in% names(sites2states_or_latlon) & "siteid" %in% names(sites2states)) {
         sites2states <- merge(sites2states, sites2states_or_latlon, by = 'ejam_uniq_id') #  error if  ejam_uniq_id is not there
         #sites2states <- merge(sites2states, sites2states_or_latlon, by = 'siteid') #  error if  siteid is not there
@@ -1978,7 +1978,7 @@ doaggregate_newscores <- function(
   # SLOW:
   for (i in seq_along(varsneedpctiles)) {
     myvar <- varsneedpctiles[i]
-    if ((myvar %in% names(usastats_newscores)) & (myvar %in% names(results_bysite)) & (myvar %in% names(results_overall))) {  # use this function to look in the lookup table to find the percentile that corresponds to each raw score value:
+    if ((myvar %in% names(usastats_newscores)) && (myvar %in% names(results_bysite)) && (myvar %in% names(results_overall))) {  # use this function to look in the lookup table to find the percentile that corresponds to each raw score value:
       us.pctile.cols_bysite[    , varnames.us.pctile[[i]]]    <- pctile_from_raw_lookup(
         unlist(results_bysite[  , ..myvar]), varname.in.lookup.table = myvar, lookup = usastats_newscores)
       us.pctile.cols_overall[   , varnames.us.pctile[[i]]]    <- pctile_from_raw_lookup(
@@ -1988,7 +1988,7 @@ doaggregate_newscores <- function(
       us.pctile.cols_bysite[    , varnames.us.pctile[[i]]] <- NA
       us.pctile.cols_overall[   , varnames.us.pctile[[i]]] <- NA
     }
-    if ((myvar %in% names(statestats_newscores)) & (myvar %in% names(results_bysite)) ) {
+    if ((myvar %in% names(statestats_newscores)) && (myvar %in% names(results_bysite)) ) {
       state.pctile.cols_bysite[ , varnames.state.pctile[[i]]] <- pctile_from_raw_lookup(    ### VERY SLOW STEP 289 msec
         unlist(results_bysite[  , ..myvar]), varname.in.lookup.table = myvar, lookup = statestats_newscores, zone =  results_bysite$ST)
       ## These must be done later, as avg of sites:
@@ -2042,7 +2042,7 @@ doaggregate_newscores <- function(
     results_bybg_people = sites2bgs_plusblockgroupdata_bysite,  # each indicator, at each BG-site combo, not just each UNIQUE BG !!
     #  That allows one to see distrib within each demog at each site, not just overall,
     #  but need be careful when looking at that stat overall to not count some bgs twice. ?
-    longnames = longnames,
+    longnames = longnames
   )
 
   return(results)

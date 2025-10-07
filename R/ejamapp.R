@@ -255,7 +255,7 @@ ejamapp <- function(
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "latlon"
   }
-  if ("lat" %in% names(dots) & "lon" %in% names(dots) & !("sitepoints" %in% names(dots))) {
+  if ("lat" %in% names(dots) && "lon" %in% names(dots) && !("sitepoints" %in% names(dots))) {
     dots$sitepoints = data.frame(lat=dots$lat, lon = dots$lon)
   }
   if ("radius" %in% names(dots)) {

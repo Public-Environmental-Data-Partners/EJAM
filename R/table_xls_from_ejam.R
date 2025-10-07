@@ -265,7 +265,7 @@ table_xls_from_ejam <- function(ejamitout,
   )
 
   if (save_now) {
-    if (interactive_console & interactive()) {
+    if (interactive_console && interactive()) {
       if (!fname_was_provided) {
         repeat {
           pathname <- rstudioapi::showPrompt(

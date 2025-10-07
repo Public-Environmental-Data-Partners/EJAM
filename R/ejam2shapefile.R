@@ -80,7 +80,7 @@ To include averages, ratios, and raw EJ scores, set varnames = 'all' or NULL.
 To include specific columns provides those as a character vector of varnames.")
     } else {
 
-      if ((is.null(shp)) & !('radius.miles' %in% varnames)) {
+      if ((is.null(shp)) && !('radius.miles' %in% varnames)) {
         varnames = c(varnames, 'radius.miles')
       } # radius will be needed to draw circles, unless shp provided
       ok <- varnames %in% names(df)

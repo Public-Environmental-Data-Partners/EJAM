@@ -14,7 +14,7 @@ mod_get_shape_upload_ui <- function(id){
                      placeholder = "test_shapefile.shp",
                      multiple = FALSE,
                      # placeholder = 'folder that contains files like shapefile.shp', multiple = FALSE, # if from a whole folder
-                     label = 'Upload shapefile of areas to analyze',
+                     label = 'Upload shapefile of areas to analyze'
                      # add hover tips here maybe, or even a button to get examples of valid formats and details on that.
                      )
   )

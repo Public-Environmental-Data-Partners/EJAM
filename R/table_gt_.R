@@ -15,7 +15,7 @@
 #'
 table_gt_from_ejamit <- function(ejamitoutput = NULL, type = c("demog", "envt")[1]) {
 
-  if (!is.list(ejamitoutput) | !("results_overall" %in% names(ejamitoutput))) {
+  if (!is.list(ejamitoutput) || !("results_overall" %in% names(ejamitoutput))) {
     warning('RETURNING NA VALUES FOR ALL INDICATORS - Data must be a list of results exactly like the output of ejamit() such as testoutput_ejamit_10pts_1miles')
     return(
       table_gt_from_ejamit_overall(NULL, type = type)
@@ -84,7 +84,7 @@ table_gt_from_ejamit_1site <- function(...) {
 #'
 table_validated_ejamit_row <- function(ejamit_results_1row = NULL) {
 
-  if (!is.data.frame(ejamit_results_1row) | NROW(ejamit_results_1row) != 1) {
+  if (!is.data.frame(ejamit_results_1row) || NROW(ejamit_results_1row) != 1) {
     warning('RETURNING NA VALUES FOR ALL INDICATORS - Data must be a 1-row table like testoutput_ejamit_10pts_1miles$results_bysite[1, ] or testoutput_ejamit_10pts_1miles$results_overall')
     ejamit_results_1row <- testoutput_ejamit_10pts_1miles$results_overall # used as a template here, but will be filled with NA values
     ejamit_results_1row[ , ] <- NA

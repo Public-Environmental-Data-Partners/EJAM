@@ -178,7 +178,7 @@ find_in_files <- function(pattern, path = "./tests/testthat", filename_pattern =
       cat("\n------------------------------------------------------------------------- \n")
       cat("------------------------------------------------------------------------- \n")
     }
-    if (value == TRUE) {
+    if (value) {
       print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
     } else {
       print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
@@ -664,7 +664,7 @@ pkg_functions_with_keywords_internal_tag <- function(
   base_path <- normalizePath(package.dir)
   is_first <- roxygen2:::roxygen_setup(base_path)
   roxygen2:::roxy_meta_load(base_path)
-  packages <- roxygen2:::roxy_meta_get("packages")
+  packages <- roxygen2::roxy_meta_get("packages")
   lapply(packages, loadNamespace)
   if (loadagain) {
     load_code <- roxygen2:::find_load_strategy(load_code)
@@ -674,7 +674,7 @@ pkg_functions_with_keywords_internal_tag <- function(
   }
   roxygen2:::local_roxy_meta_set("env", env)
 
-  blocks <- roxygen2:::parse_package(base_path, env = NULL)  # slow step
+  blocks <- roxygen2::parse_package(base_path, env = NULL)  # slow step
 
   results <- list()
   i <- 0
@@ -685,7 +685,7 @@ pkg_functions_with_keywords_internal_tag <- function(
     # block <- blocks[[671]]
     # block <- blocks[[1]]
 
-    object_name <- roxygen2:::block_get_tag_value(block, 'name')
+    object_name <- roxygen2::block_get_tag_value(block, 'name')
     if (is.null(object_name) || length(object_name) == 0 || any(is.na(object_name))) {
       object_name <- NA
       # cat("cannot find name in this block: \n")
@@ -710,7 +710,7 @@ pkg_functions_with_keywords_internal_tag <- function(
     if (!quiet) {
       cat(paste0(i, ". ", paste0(object_call, " / ", object_name), " "))
     }
-    tags <- roxygen2:::block_get_tags(block, "keywords")
+    tags <- roxygen2::block_get_tags(block, "keywords")
 
     if (length(tags) == 0) {
       if (!quiet) {cat(' \n')}
@@ -996,7 +996,7 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
   #                                                                   distances.all not found in proxistat
   #                                                                Called from: pkg_functions_all_equal(fun = var, package1 = ddd$package[ddd$variable ==
 
-  if (!(is.character(fun) & is.character(package1) & is.character(package2))) {
+  if (!(is.character(fun) && is.character(package1) && is.character(package2))) {
     warning("all params must be quoted ")
     return(NA)
   }
@@ -1026,7 +1026,7 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
   }
   if (!(is.function(f2))) {warning(package2, "::", fun, " is not a function");return(NA)}
 
-  x <- (TRUE == all.equal(body(f1), body(f2))) & (TRUE == all.equal(formals(f1), formals(f2)))
+  x <- isTRUE(all.equal(body(f1), body(f2))) && isTRUE(all.equal(formals(f1), formals(f2)))
   return(x)
 }
 ##################################################################################### #
@@ -1058,7 +1058,7 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
 pkg_functions_that_use <- function(text = "stop\\(", pkg = "EJAM", ignore_comments = TRUE) {
 
 
-  if (grepl("\\(", text) & !grepl("\\\\\\(", text)) {warning('to look for uses of stop(), for example, use two slashes before the open parens, etc. as when using grepl()')}
+  if (grepl("\\(", text) && !grepl("\\\\\\(", text)) {warning('to look for uses of stop(), for example, use two slashes before the open parens, etc. as when using grepl()')}
 
   stops <- NULL
   if (inherits(try(find.package(pkg), silent = TRUE), "try-error")) {

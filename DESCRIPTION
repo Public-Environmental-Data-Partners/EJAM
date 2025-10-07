@@ -1,7 +1,7 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
-Version: 2.32.7.001
-VersionDate: September 2025
+Version: 2.32.6.001
+VersionDate: October 2025
 Description: Actively maintained non-EPA version of EJAM, the web app
     and set of tools that supported the EJSCREEN multisite capability.
     EJAM lets you easily summarize demographic and environmental indicators

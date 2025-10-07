@@ -4,7 +4,13 @@
 \alias{calc_ejam}
 \title{DRAFT utility to use formulas provided as text, to calculate indicators}
 \usage{
-calc_ejam(bg, keep.old = c("bgid", "pop"), keep.new = "all", formulas)
+calc_ejam(
+  bg,
+  keep.old = c("bgid", "pop"),
+  keep.new = "all",
+  formulas,
+  quiet = TRUE
+)
 }
 \arguments{
 \item{bg}{data.frame//table of indicators or variables to use}
@@ -14,6 +20,8 @@ calc_ejam(bg, keep.old = c("bgid", "pop"), keep.new = "all", formulas)
 \item{keep.new}{names of calculated variables to retain in output}
 
 \item{formulas}{text strings of formulas}
+
+\item{quiet}{if FALSE, prints to console success/failure of each formula}
 }
 \value{
 data.frame of calculated variables one row per bg row
@@ -22,7 +30,11 @@ data.frame of calculated variables one row per bg row
 DRAFT utility to use formulas provided as text, to calculate indicators
 }
 \details{
-may be used by custom_doaggregate()
+\itemize{
+\item \code{\link[=custom_doaggregate]{custom_doaggregate()}} may use \code{\link[=calc_ejam]{calc_ejam()}}
+\item \code{\link[=calc_ejam]{calc_ejam()}} uses \code{\link[=calc_byformula]{calc_byformula()}}
+\item \code{\link[=calc_byformula]{calc_byformula()}} uses \code{\link[=formula_varname]{formula_varname()}} and maybe source_this_codetext()
+}
 }
 \examples{
 \dontrun{

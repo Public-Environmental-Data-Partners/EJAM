@@ -111,7 +111,7 @@ distance_by_group_plot <- function(
     demoglabel <- fixcolnames(demogvarname, 'r', 'shortlabel') # renames those it is able to, using  fixcolnames
   }
 
-  if (is.list(results_bybg_people) & ("results_bybg_people" %in% names(results_bybg_people))) {
+  if (is.list(results_bybg_people) && ("results_bybg_people" %in% names(results_bybg_people))) {
     # assume it was a mistake and they meant to provide out$results_bybg_people not out itself
     results_bybg_people <- results_bybg_people$results_bybg_people
   }
@@ -269,7 +269,7 @@ distance_cdf_by_group_plot <- function(
     demogvarname="Demog.Index", demoglabel=demogvarname,
     color1="red", color2="black") {
 
-  if (is.list(results_bybg_people) & ("results_bybg_people" %in% names(results_bybg_people))) {
+  if (is.list(results_bybg_people) && ("results_bybg_people" %in% names(results_bybg_people))) {
     # assume it was a mistake and they meant to provide out$results_bybg_people not out itself
     results_bybg_people <- results_bybg_people$results_bybg_people
   }

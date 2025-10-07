@@ -154,7 +154,7 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
 
   ## use getblocksnearby() only if shapefile was actually POINTS NOT POLYGONS ####
 
-  if (is.null(blocksnearby) & ARE_POINTS) {
+  if (is.null(blocksnearby) && ARE_POINTS) {
 
     if (is.function(updateProgress)) {
       boldtext <- 'Finding blocks nearby each point'
@@ -180,7 +180,7 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
 
   # use sf::st_join() on POLYGONS, to find exactly which of the filtered blocks are inside each polygon ####
 
-  if (is.null(blocksnearby) & !ARE_POINTS) {
+  if (is.null(blocksnearby) && !ARE_POINTS) {
 
     if (dissolved) {
       # warning("using getblocksnearby() to filter US blocks to those near each site must be done before a dissolve  ")

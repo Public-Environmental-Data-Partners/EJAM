@@ -255,6 +255,7 @@ pkgdown_update = function(
     if (doclean_man ) {
       cat('deleting all .Rd (help) files in ./man folder \n')
       file.remove(list.files('./man', full.names = TRUE, include.dirs = FALSE)) # leave the figures directory that has a logo in it
+      ## might
     }
     # notes on doclean_man:
     # # MAYBE NEED TO DELETE ALL IN THE man/ FOLDER TO REMOVE OBSOLETE .Rd files like no longer documented or renamed functions ?
@@ -262,7 +263,7 @@ pkgdown_update = function(
   }
   # if dodocument, README & DOCUMENT via via render() & document() ####
 
-  if (dodocument) {
+  if (dodocument || doclean_man) {
     cat('rendering README.Rmd to .md  \n')
     print(Sys.time())
     rmarkdown::render("README.Rmd")  # renders .Rmd to create a  .md file that works in github as a webpage

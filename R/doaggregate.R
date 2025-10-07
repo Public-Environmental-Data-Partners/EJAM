@@ -409,7 +409,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   ##################################################### #
 
-  if (include_ejindexes & !exists("bgej")) {
+  if (include_ejindexes && !exists("bgej")) {
     dataload_dynamic('bgej') # load it on demand when needed
     # if failed to find it, give up
     if (!exists("bgej")) {
@@ -1828,7 +1828,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   # Show _overall in console, _bysite in viewer pane ####
 
-  if (interactive() & !silentinteractive) { # false if using shiny web app
+  if (interactive() && !silentinteractive) { # false if using shiny web app
 
     if (!called_by_ejamit) {
       x <- as.list(results$results_overall)

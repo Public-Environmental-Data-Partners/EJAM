@@ -365,7 +365,7 @@ metadata_check <- function(packages = EJAM::ejampackages,
       }
     }
 
-    if (!isNamespaceLoaded(pkg) & loadifnotloaded) {
+    if (!isNamespaceLoaded(pkg) && loadifnotloaded) {
       wasnotloaded <- pkg
       cat(paste0(pkg, ' package was not loaded, loading and attaching now\n'))
       attachNamespace(pkg, include.only = rdafiles)   # library(pkg, character.only = TRUE)
@@ -387,7 +387,7 @@ if (FALSE) {
 
     } else {
 
-      if (!isNamespaceLoaded(pkg) & loadifnotloaded) {
+      if (!isNamespaceLoaded(pkg) && loadifnotloaded) {
         wasnotloaded <- pkg
         cat(paste0(pkg, ' package was not loaded, loading and attaching now\n'))
         attachNamespace(pkg, include.only = rdafiles)   # library(pkg, character.only = TRUE)

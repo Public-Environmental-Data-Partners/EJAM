@@ -73,7 +73,7 @@ latlon_from_address_table <- function(x) {
 
     warning('No value provided for argument "x".')
     return(NULL)
-  }else if (all(is.na(x)) | is.null(x)){
+  }else if (all(is.na(x)) || is.null(x)){
     warning('No value provided for argument "x".')
     return(NULL)
   }
@@ -110,7 +110,7 @@ address_from_table <- function(x) {
 
     warning('No value provided for argument "x".')
     return(NULL)
-  }else if (all(is.na(x)) | is.null(x)){
+  }else if (all(is.na(x)) || is.null(x)){
     warning('No value provided for argument "x".')
     return(NULL)
   }
@@ -158,7 +158,7 @@ address_from_table_goodnames <- function(x, colnames_allowed = c('address', 'str
 
     warning('No value provided for argument "x".')
     return(NULL)
-  }else if (all(is.na(x)) | is.null(x)){
+  }else if (all(is.na(x)) || is.null(x)){
     warning('No value provided for argument "x".')
     return(NULL)
   }

@@ -51,7 +51,7 @@ radiobox <- function(choiceNames  = c("Points", "Shapes", "FIPS"), # what is sho
                      title = "", #
                      height = 250, width = 100) {
 
-  if (!missing(choiceNames) & missing(choiceValues)) {
+  if (!missing(choiceNames) && missing(choiceValues)) {
     # this way, the user can specify only the 1st parameter, like  x = radiobox(1:3)
     choiceValues <- choiceNames
   }

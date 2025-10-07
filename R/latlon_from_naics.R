@@ -77,9 +77,9 @@
 #'
 latlon_from_naics <- function(naics, children = TRUE, id_only = FALSE, ...) {
 
-  if (missing(naics)) {return(NULL)} else if (all(is.na(naics)) | is.null(naics)) {return(NULL)}
+  if (missing(naics)) {return(NULL)} else if (all(is.na(naics)) || is.null(naics)) {return(NULL)}
 
-  if (data.table::is.data.table(naics) & "code" %in% names(naics)) {naics <- naics$code} # flexible in case it was given output of naics_from_any() which is a table not just code
+  if (data.table::is.data.table(naics) && "code" %in% names(naics)) {naics <- naics$code} # flexible in case it was given output of naics_from_any() which is a table not just code
 
   if (!exists("frs_by_naics")) dataload_dynamic("frs_by_naics")
 

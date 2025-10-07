@@ -46,7 +46,7 @@ plot_distance_mean_by_group <- function(results_bybg_people,
     return(NA)
   }
 
-  if (is.null(demoglabel) & is.null(demogvarname)) {
+  if (is.null(demoglabel) && is.null(demogvarname)) {
     demoglabel <- fixcolnames(c(names_d, names_d_subgroups), oldtype = 'r', newtype = 'shortlabel')
   }
   if (is.null(demogvarname)) {demogvarname <- c(names_d, names_d_subgroups)} # available from EJAM package. cannot safely put this info in the defaults of the functions without referring to pkg name but want to avoid doing that so this code will work even pkg not installed and just loaded data files and sourced code
@@ -245,7 +245,7 @@ distance_by_group1 <- function(results_bybg_people,
                                demogvarname=varlist2names('names_d')[1],
                                demoglabel=fixcolnames(demogvarname, "r", "shortlabel")) {
 
-  if (is.list(results_bybg_people) & ("results_bybg_people" %in% names(results_bybg_people))) {
+  if (is.list(results_bybg_people) && ("results_bybg_people" %in% names(results_bybg_people))) {
     # assume it was a mistake and they meant to provide out$results_bybg_people not out itself
     results_bybg_people <- results_bybg_people$results_bybg_people
   }

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,6 +30,7 @@
     <li><a class="dropdown-item" href="../articles/testdata.html">Examples of Input/Output Files &amp; Data</a></li>
     <li><a class="dropdown-item" href="../articles/distances.html">Comparing Distances (Choosing a Radius)</a></li>
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
+    <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
@@ -64,7 +65,12 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_byformula</span><span class="op">(</span><span class="va">mydf</span>, formulas <span class="op">=</span> <span class="cn">NULL</span>, keep <span class="op">=</span> <span class="fu"><a href="formula_varname.html">formula_varname</a></span><span class="op">(</span><span class="va">formulas</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_byformula</span><span class="op">(</span></span>
+<span>  <span class="va">mydf</span>,</span>
+<span>  formulas <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  keep <span class="op">=</span> <span class="fu"><a href="formula_varname.html">formula_varname</a></span><span class="op">(</span><span class="va">formulas</span><span class="op">)</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -76,7 +82,8 @@
 
 
 <dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
-<dd><p>text strings of formulas</p></dd>
+<dd><p>text strings of formulas - WARNING: this should not really be used on user-provided, untrused formula strings,
+since the contents could potentially be a security risk</p></dd>
 
 
 <dt id="arg-keep">keep<a class="anchor" aria-label="anchor" href="#arg-keep"></a></dt>
@@ -84,23 +91,34 @@
 creating evanescent variables created only for use in later formulas
 and not needed after that</p></dd>
 
+
+<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
+<dd><p>if FALSE, prints to console the success/failure of each formula</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>data.frame of results, but
 if mydf was a data.table, returns a data.table</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+
+<ul><li><p><code><a href="custom_doaggregate.html">custom_doaggregate()</a></code> may use <code><a href="calc_ejam.html">calc_ejam()</a></code></p></li>
+<li><p><code><a href="calc_ejam.html">calc_ejam()</a></code> uses <code>calc_byformula()</code></p></li>
+<li><p><code>calc_byformula()</code> uses <code><a href="formula_varname.html">formula_varname()</a></code> and maybe source_this_codetext()</p></li>
+</ul></div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>September 2025</p>
+  <p>October 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6</p>
+  <p>EJAM Version 2.32.6.001</p>
 </div>
 
     </footer></div>

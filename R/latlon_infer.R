@@ -6,14 +6,14 @@
 #' @return returns all of mycolnames except replacing the best candidates with lat and lon
 #' @seealso latlon_df_clean() latlon_is.valid() latlon_as.numeric()[fixnames_aliases()] [fixcolnames_infer()]
 #'
-#' @examples 
-#'   latlon_infer(c('trilat', 'belong', 'belong')) # warns if no alias found, 
+#' @examples
+#'   latlon_infer(c('trilat', 'belong', 'belong')) # warns if no alias found,
 #'     #  but doesnt warn of dupes in other terms, just preferred term.
 #'   latlon_infer(c('a', 'LONG', 'Longitude', 'lat')) # only the best alias is converted/used
 #'   latlon_infer(c('a', 'LONGITUDE', 'Long', 'Lat')) # only the best alias is converted/used
-#'   latlon_infer(c('a', 'longing', 'Lat', 'lat', 'LAT')) # case variants of preferred are 
+#'   latlon_infer(c('a', 'longing', 'Lat', 'lat', 'LAT')) # case variants of preferred are
 #'       # left alone only if lowercase one is found
-#'   latlon_infer(c('LONG', 'long', 'lat')) # case variants of a single alias are 
+#'   latlon_infer(c('LONG', 'long', 'lat')) # case variants of a single alias are
 #'       # converted to preferred word (if pref not found), creating dupes!  warn!
 #'   latlon_infer(c('LONG', 'LONG')) # dupes of an alias are renamed and still are dupes! warn!
 #'   latlon_infer(c('lat', 'lat', 'Lon')) # dupes left as dupes but warn!
@@ -21,12 +21,12 @@
 #' @keywords internal
 #'
 latlon_infer <- function(mycolnames) {
-  
+
   if (missing(mycolnames)){
     warning('No value provided for argument "mycolnames".')
     return(NULL)
   }
-  else if(all(is.na(mycolnames)) | is.null(mycolnames)){
+  else if(all(is.na(mycolnames)) || is.null(mycolnames)){
     warning('NULL or NA "mycolnames" passed as inputs.')
     return(NULL)
   }
@@ -41,7 +41,7 @@ latlon_infer <- function(mycolnames) {
   if (all(is.na(x))) {warning("all of mycolnames were NA")} else {
     if (any(is.na(x))) {warning("some of mycolnames were NA")}
   }
-  
+
   infer <- function(lword, x) {
     if (!(lword %in% x)) {
       if (lword == 'lat') {
@@ -54,8 +54,8 @@ latlon_infer <- function(mycolnames) {
         # aliases <- tolower(c('lon', 'longitude83', 'longitude', 'longitudes', 'faclong', 'lons','long', 'longs', 'lng', "x"))
         aliases <- lon_alias
       }
-      
-      bestfound <- intersect(aliases, tolower(x))[1] 
+
+      bestfound <- intersect(aliases, tolower(x))[1]
       # bestfound <- x[which.min( match(x, aliases ) )] # another way
       if (is.na(bestfound)) { # intersect()[1] returns NA if none
         warning(paste0(lword, ' missing and no synonyms found')) # do not change x at all
@@ -67,7 +67,7 @@ latlon_infer <- function(mycolnames) {
     if (sum(grepl(paste0('^', lword, '$'), x)) > 1) {warning(paste0('DUPLICATED ', lword))}
     x
   }
-  
+
   x <- infer('lat', x)
   x <- infer('lon', x)
   if (!isTRUE(all.equal(x, mycolnames))) {

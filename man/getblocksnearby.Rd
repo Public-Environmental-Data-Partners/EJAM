@@ -27,7 +27,8 @@ getblocksnearby(
 
 \item{radius_donut_lower_edge}{radius of lower edge of ring if analyzing ring not full circle}
 
-\item{avoidorphans}{logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
+\item{avoidorphans}{MAY BE OBSOLETE/UNUSED NOW.
+logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
 it keeps looking past radius, up to maxradius, to find nearest 1 BLOCK.
 What EJSCREEN does in that case is report NA, right? So,
 does EJAM really need to report stats on residents presumed to be within radius,

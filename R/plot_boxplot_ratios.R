@@ -60,13 +60,13 @@
 plot_boxplot_ratios <- function(x, selected_dvar_colname=varlist2names('names_d')[1], selected_dvar_nicename=selected_dvar_colname, towhat_nicename='US average',
                             maxratio = 5, wheretext="Near") {
 
-  if (is.list(x) & "results_bysite" %in% names(x)) {
+  if (is.list(x) && "results_bysite" %in% names(x)) {
     x <- x$results_bysite
     if (selected_dvar_colname)
     x <- as.data.frame(x)[, selected_dvar_colname]
   } # for convenience, in case x was output of ejamit()
   if (is.data.table(x)) {x <- as.data.frame(x)}
-  if (is.list(x) & is.data.frame(x[[1]]) & "ratios_d" %in% names(x)) {x <- x$ratios_d } # for convenience, in case you said  plot_boxplot_ratios(calc_ratios_to_avg(out))
+  if (is.list(x) && is.data.frame(x[[1]]) && "ratios_d" %in% names(x)) {x <- x$ratios_d } # for convenience, in case you said  plot_boxplot_ratios(calc_ratios_to_avg(out))
 
 
 

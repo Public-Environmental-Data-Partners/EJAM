@@ -94,7 +94,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup=usa
 
   # CHECK FOR FATAL PROBLEMS  ####
 
-  if (missing(lookup) & !exists("usastats")) {
+  if (missing(lookup) && !exists("usastats")) {
     if (shiny::isRunning()) {
       warning("lookup default usastats was not found, but should be available as usastats")
       return(rep(NA, length(myvector)))
@@ -119,7 +119,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup=usa
       stop('lookup must have a field called "PCTILE" that contains quantiles/percentiles')
     }
   }
-  if (missing(zone) & any(lookup$REGION != 'USA')) {
+  if (missing(zone) && any(lookup$REGION != 'USA')) {
     if (shiny::isRunning()) {
       warning('If no zone (like "NY") is specified, lookup table must have column called REGION that has "USA" in every row.')
       return(rep(NA, length(myvector)))
@@ -129,7 +129,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup=usa
   }
   ######################################################################################### #
   if (length(varname.in.lookup.table) > 1 )  {
-    if (length(zone) == 1 & length(varname.in.lookup.table) == length(myvector) ) {
+    if (length(zone) == 1 && length(varname.in.lookup.table) == length(myvector) ) {
       ##   allow multiple indicators at once, for a vector of corresponding values, but only 1 zone, like this:
 
       message("checking each value for its corresponding indicator, such as c(12,40)  for  ('pm','o3')  ")
@@ -185,7 +185,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup=usa
     return(rep(NA, length(myvector)))
   }
   # warn if looks like maybe units mismatch ####
-  if (any(!is.na(myvector)) && max(myvector, na.rm = TRUE) > 1 & max(lookup[,varname.in.lookup.table], na.rm = TRUE) <= 1) {
+  if (any(!is.na(myvector)) && max(myvector, na.rm = TRUE) > 1 && max(lookup[,varname.in.lookup.table], na.rm = TRUE) <= 1) {
     warning("Raw scores are > 1, but lookup table values are not. Check if percentages should be expressed as fractions (0 to 1.00) instead of as integers 0-100, for ", varname.in.lookup.table)
   }
 

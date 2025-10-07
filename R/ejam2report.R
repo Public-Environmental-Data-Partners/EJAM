@@ -362,7 +362,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         quiet = TRUE
       )
       output_file <- normalizePath(output_file) # allows it to work on MacOS, e.g.
-      if (interactive() & !shiny::isRunning()) {
+      if (interactive() && !shiny::isRunning()) {
         cat("file saved at", output_file, '\n')
         cat("To open that folder from R, you could copy/paste this into the RStudio console:\n")
         cat(paste0("browseURL('", dirname(output_file),"')"), '\n')

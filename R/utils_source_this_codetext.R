@@ -83,10 +83,10 @@ source_this_codetext_careful <- function(text_expression, data_list = NULL, eval
   stopifnot(is.null(eval_envir) || is.environment(eval_envir))
   # default environment for convenience
   if (is.null(eval_envir)) {
-    arithmetic_funcs <- list("+" = `+`, "-" = `-`, "*" = `*`, "/" = `/`, "^" = `^`, "(" = `(`, "==" = `==`)
+    arithmetic_funcs <- list("+" = `+`, "-" = `-`, "*" = `*`, "/" = `/`, "^" = `^`, "(" = `(`, "==" = `==`, "<-" = `<-`)
 
     ### EXAMPLES OF OTHER FUNCTIONS TO ENABLE ???
-    arithmetic_funcs <- c(arithmetic_funcs, list("sum" = sum, "min" = min, "max" = max, "sqrt" = sqrt, "ifelse" = ifelse))
+    arithmetic_funcs <- c(arithmetic_funcs, list("sum" = sum, "min" = min, "max" = max, "sqrt" = sqrt, "ifelse" = ifelse, "as.numeric" = as.numeric))
 
     eval_envir = rlang::new_environment(data = arithmetic_funcs, parent = rlang::empty_env())
   }
@@ -101,45 +101,24 @@ source_this_codetext_careful <- function(text_expression, data_list = NULL, eval
 
 ################################################################ #
 
+# source_this_codetext() is a useful alias only because it is hard to remember how to do this:   eval(parse(text =
+# data_list must be a named list of objects to put into the evaluation envt, such as as.list(mydf) to do something like attach(mydf)
+# note data_list = mydf would not work as expected, and would just make mydf available in that envt, not its columns by name.
+# data_list = as.list(mydf) # would be like if you had done attach(mydf) first, but does not result in myf being attached to the calling envt
 
-source_this_codetext <- function(codetext, env = parent.frame()) {
+source_this_codetext <- function(codetext, env = parent.frame(), data_list = NULL) {
 
-  # useful tool because it is hard to remember how to do this:   eval(parse(text =
-  # and that can be useful because we...
+  # useful alias only because it is hard to remember how to do this:   eval(parse(text =
 
-  # may want to store formulas for indicators as a table of metadata
-  # (rather than formulas being buried in code like doaggregate
-  # or even pulled out into a function focused on just that)
-
-  # and/or want to allow user to specify a custom indicator or summary stat via formula they provide as text,
-  # so EJAM could then aggregate and report the new stat alongside the built-in indicators.
-
-  # see datacreate_formulas.R
-
+  # see calc_ejam() and calc_byformula() and related functions
+  if (is.null(data_list)) {
+    eval_envir <- env
+  } else {
+    #
+    eval_envir <- list2env(data_list, envir = env)
+  }
   return(
-    eval(parse(text = codetext), envir = env)
+    eval(parse(text = codetext), envir = eval_envir)
   )
-
-  ## EJAM::calc_ejam() which uses calc_byformula()
-  ## was based on
-  ## ejscreen::ejscreen.acs.calc() which used analyze.stuff::calc.fields()
-  ##
-  # https://rdrr.io/github/ejanalysis/ejscreen/man/ejscreen.acs.calc.html
-  # or more generally here
-  #  https://rdrr.io/github/ejanalysis/analyze.stuff/man/calc.fields.html
-  #  stored at
-  #  https://github.com/ejanalysis/analyze.stuff
-  #  https://github.com/ejanalysis/analyze.stuff/blob/36afe6b102cb2cef90b87a48dfea9479b1a2447a/R/calc.fields.R
-  #  devtools::install_github("ejanalysis/analyze.stuff")
-  #  ?analyze.stuff::calc.fields()
-  #
-  # example using just 10 blockgroups from 1 county in Delaware
-  #   c1 <- fips2countyname(fips_counties_from_state_abbrev('DE'), includestate = F)[1]
-  #   bgdf = data.frame(EJAM::blockgroupstats[ST == "DE" & countyname == c1, ..names_d])[1:10, ]
-  #    newdf <-  ejscreen::ejscreen.acs.calc(bgdf, keep.old = "", keep.new = c("my_custom_stat", "mystat2"), formulas = c(
-  #      "my_custom_stat <- (pctlowinc + pctmin)/2",
-  #      "mystat2  = 100 * pctlowinc"))
-  # newdf
-
 }
 ################################################################ #

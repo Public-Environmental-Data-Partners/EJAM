@@ -84,7 +84,7 @@ latlon_from_sic <- function(sic, id_only=FALSE) {
 
   if (!exists("frs_by_sic")) dataload_dynamic("frs_by_sic")
 
-  if (data.table::is.data.table(sic) & "code" %in% names(sic)) {sic <- sic$code} # flexible in case it was given output of sic_from_any() which is a table not just code
+  if (data.table::is.data.table(sic) && "code" %in% names(sic)) {sic <- sic$code} # flexible in case it was given output of sic_from_any() which is a table not just code
 
 
   df <- frs_by_sic[SIC %in% sic]

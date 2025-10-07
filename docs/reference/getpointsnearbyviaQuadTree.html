@@ -17,7 +17,7 @@ proxistat works to create proximity indicators."><meta property="og:image" conte
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,7 +101,7 @@ proxistat works to create proximity indicators.</p>
 
 <dl><dt id="arg-frompoints">frompoints<a class="anchor" aria-label="anchor" href="#arg-frompoints"></a></dt>
 <dd><p>data.table with columns lat, lon giving point locations of
-sites or facilities or blocks around which are circular buffers defined by radius.</p><ul><li><p>pointid is the indexed topoints id.</p></li>
+sites or facilities or blocks around which are circular buffers defined by radius.</p><ul><li><p>pointid will be the indexed topoints id.</p></li>
 <li><p>ejam_uniq_id is the frompoints id</p></li>
 </ul></dd>
 
@@ -142,11 +142,13 @@ which might be zero. adjusted distance uses a lower limit, min_distance</p></dd>
 
 <dt id="arg-quadtree">quadtree<a class="anchor" aria-label="anchor" href="#arg-quadtree"></a></dt>
 <dd><p>(a pointer to the large quadtree object)
-created using indexpoints() which uses the SearchTree package.</p></dd>
+created using indexpoints() which uses the SearchTree package.
+Helps find the "topoints"</p></dd>
 
 
 <dt id="arg-quaddatatable">quaddatatable<a class="anchor" aria-label="anchor" href="#arg-quaddatatable"></a></dt>
-<dd><p>data.table like quaddata passed to function</p><ul><li><p>the data.table used to create quadtree, such as blockpoints or frs.</p></li>
+<dd><p>data.table like quaddata passed to function</p><ul><li><p>the data.table used to create quadtree, such as blockpoints or frs.
+Helps find the "topoints"</p></li>
 </ul></dd>
 
 
@@ -175,11 +177,11 @@ with distance in miles as one output column of data.table.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>September 2025</p>
+  <p>October 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6</p>
+  <p>EJAM Version 2.32.6.001</p>
 </div>
 
     </footer></div>

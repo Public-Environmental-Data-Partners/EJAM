@@ -30,7 +30,8 @@
 #' @param radius in miles, defining circular buffer around a site point
 #' @param radius_donut_lower_edge radius of lower edge of ring if analyzing ring not full circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
-#' @param avoidorphans logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
+#' @param avoidorphans MAY BE OBSOLETE/UNUSED NOW.
+#'   logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
 #'   it keeps looking past radius, up to maxradius, to find nearest 1 BLOCK.
 #'   What EJSCREEN does in that case is report NA, right? So,
 #'   does EJAM really need to report stats on residents presumed to be within radius,
@@ -142,7 +143,7 @@ getblocksnearbyviaQuadTree  <- function(sitepoints, radius = 3, radius_donut_low
 
   # LOOP OVER SITES ####
 
-  res <- lapply(1:nRowsDf, FUN = function(a){
+  res <- lapply(1:nRowsDf, FUN = function(a) {
 
     ### * FAST SEARCH - WHICH BLOCKS ARE APPROX NEARBY ####
 
@@ -164,7 +165,7 @@ getblocksnearbyviaQuadTree  <- function(sitepoints, radius = 3, radius_donut_low
     tmp[, ejam_uniq_id := sitepoints[a, .(ejam_uniq_id)]]
 
     ### progress bar ####
-    ## add check that data has enough points to show increments with rounding
+    ## could add check that data has enough points to show increments with rounding ***
     ## i.e. if 5% increments, need at least 20 points or %% will return NaN
     if (((a %% report_progress_every_n) == 0) & interactive()) {cat(paste("Finished finding blocks near ",a ," of ", nRowsDf),"\n" ) }   # i %% report_progress_every_n indicates i mod report_progress_every_n (“i modulo report_progress_every_n”)
     pct_inc <- 5
@@ -241,20 +242,14 @@ getblocksnearbyviaQuadTree  <- function(sitepoints, radius = 3, radius_donut_low
     getblocks_diagnostics(sites2blocks)
     cat("\n")
   }
-  ### and with above idea, cant we subset to keep only distance <=  radius here, instead of inside the loop ? Or do it even later, after adjusting short distances? What would make sense to report as distance to avg resident if the effective radius happends to be > radius specified, as with small radius circle in rural huge block?
-  # sites2blocks <- sites2blocks[distance <= truedistance, ]
   ########################################################################### ##
 
-  # if (interactive() & !quiet) {
-  #   cat("You can use  getblocks_diagnostics(sites2blocks)  to see this info on distances found:\n\n")
-  #   getblocks_diagnostics(sites2blocks)
-  # }
-
-  # SORT OUTPUT LIKE INPUT ####
+  # SORT OUTPUT LIKE INPUT ? ####
   # >sort again to return sites in same sort order as inputs were in
   # sitepoints$ejam_uniq_id is vector of ids in correct order, original order. do not assume they are sorted as 1:N
   # do join to return sites2blocks with ejam_unique_id in the order in which they are found in sitepoints, and the .SD prevents it from pulling in the lat lon cols from sitepoints
-# but also omit invalid and no-block sites:
+
+
   # > DROP from s2b SITES WITH NO BLOCKS FOUND ####
   sites2blocks <- sites2blocks[sitepoints, .SD, on = "ejam_uniq_id"][!is.na(blockid), ]
 

@@ -102,7 +102,7 @@ ejscreen_vs_ejam <- function(latlon, radius = 3,
   }
   # if it is not NULL (because it was provided as something other than NULL, F, or FALSE)...
   if (!is.null(save_ejscreen_output)) {
-    if (missing(save_ejscreen_output) & interactive()) {
+    if (missing(save_ejscreen_output) && interactive()) {
       mydir = rstudioapi::selectDirectory("save ejscreen results in what folder?")
       if (is.na(mydir)) {stop('halted')}
     } else {
@@ -227,11 +227,11 @@ ejscreen_vs_ejam_alreadyrun <- function(apisite, ejamsite, nadrop = FALSE,
 
   n <- NROW(apisite)
 
-  if (!is.data.frame(apisite) | NROW(apisite) != n) {
+  if (!is.data.frame(apisite) || NROW(apisite) != n) {
     warning("apisite must be a data.frame of ", n, " rows")
     return(NULL)
   }
-  if (!is.data.frame(ejamsite) | NROW(ejamsite) != n) {
+  if (!is.data.frame(ejamsite) || NROW(ejamsite) != n) {
     warning("ejamsite must be a data.frame of ", n, " rows")
     return(NULL)
   }
@@ -435,7 +435,7 @@ ejscreen_vs_ejam_summary <- function(vs = NULL,
 
   if ("all" %in% myvars) {myvars <- colnames(vs$EJSCREEN)}
 
-  if ('inboth' %in% myvars | 'bad' %in% myvars) {
+  if ('inboth' %in% myvars || 'bad' %in% myvars) {
     sites.with.data.both     <- colSums(!is.na(z$EJAM) & !is.na(z$EJSCREEN))
     sites.DISAGREE.rounded      <- colSums(!z$same_shown, na.rm = na.rm)
     inboth <- sites.with.data.both > 0
@@ -539,7 +539,7 @@ ejscreen_vs_ejam_summary <- function(vs = NULL,
   # rownames(pct_agree) <- pct_agree$indicator  # right now they have original rownum but prints sorted by largest disagreement
 
   cat("\n\nComparison of results for", NROW(z$EJAM), "sites.\n")
-  if (z$EJAM[1,'radius.miles'] > 0 & !is.na(z$EJAM[1,'radius.miles'])) {cat("Radius =", z$EJAM[1,'radius.miles'], "\n")}
+  if (z$EJAM[1,'radius.miles'] > 0 && !is.na(z$EJAM[1,'radius.miles'])) {cat("Radius =", z$EJAM[1,'radius.miles'], "\n")}
   cat("\n")
   cat("SELECTED KEY INDICATORS\n\n")
   toprint = pct_agree[pct_agree$indicator %in% usefulvars, usefulstats]
@@ -783,8 +783,8 @@ ejscreen_vs_ejam_1var_cdf = function(vs, varname = 'pop') {
 #'
 ejscreen_vs_ejam_see1 <- function(vs, myvars = c("ejam_uniq_id", 'pop', names_d), mysite = 1) {
 
-  if (!is.list(vs) | !("EJAM" %in% names(vs))) {stop('vs must be output of ejscreen_vs_ejam() or ejscreen_vs_ejam_alreadyrun()')}
-  if (length(mysite) > 1 | mysite > NROW(vs$EJAM)) {stop('mysite must be the row number of 1 site in the table vs$EJAM')}
+  if (!is.list(vs) || !("EJAM" %in% names(vs))) {stop('vs must be output of ejscreen_vs_ejam() or ejscreen_vs_ejam_alreadyrun()')}
+  if (length(mysite) > 1 || mysite > NROW(vs$EJAM)) {stop('mysite must be the row number of 1 site in the table vs$EJAM')}
 
   # define myvars
 
@@ -924,12 +924,12 @@ ejscreen_vs_ejam_see1map <- function(vs, n = 1, overlay_blockgroups = FALSE,
   explained = FALSE
   if (!psame) {
     # does a single block explain the discrepancy?########################## #
-    if (pdif %in% round(these$blockpop, 0) & bdif %in% c(-1, 1)) {
+    if (pdif %in% round(these$blockpop, 0) && bdif %in% c(-1, 1)) {
       these$explanation[round(these$blockpop, 0) == pdif] <- "pop of this 1 block matches pop diff"
       explained = TRUE
     }
     if (bdif != 1) {
-      if (!explained & abs(bdif) <= NROW(these)) {
+      if (!explained && abs(bdif) <= NROW(these)) {
 
         ### too slow to check all combinations of abs(bdif) of 7 blocks out of 20 checked, e.g.
         ### so this should cap the number of combos to check, or iterate to more blocks if no explanation,
@@ -967,7 +967,7 @@ ejscreen_vs_ejam_see1map <- function(vs, n = 1, overlay_blockgroups = FALSE,
     # could it be bdif blocks but also 1 more missed and 1 more extra?
     #   would check as above with combn but where m  = bdif +2
     #   includes case where bdif == 0
-    if (!explained & abs(bdif) + 2 <= NROW(these)) {
+    if (!explained && abs(bdif) + 2 <= NROW(these)) {
       # could it be a combo of some exactly bdif +2 number of blocks that explains the pdif? e.g., missed all 3 or all 3 are extra ########################## #
       combs = combn(seq_along((these$blockpop)), m = abs(bdif) + 2)
       possible_explanations <- combs[, which(round(colSums(combn((these$blockpop), m = abs(bdif) + 2)), 0) == pdif)]
@@ -1216,7 +1216,7 @@ ejscreen_vs_explain_summary = function(whyall, radius = "analyzed radius", showm
   } else {
     cat("also see  ejscreen_vs_explain_pop_cdf(vs, radius) \n\n")
   }
-  if (showmeters | showpop) {
+  if (showmeters || showpop) {
     cat("
         (note this may create more than 1 plot so click on the back arrow of the plots pane to see the rest)
         ")
@@ -1401,7 +1401,7 @@ ejscreen_vs <- function(defdir = '.',
   oldir = getwd()
   on.exit(setwd(oldir))
 
-  if ((missing(defdir) | !dir.exists(defdir))) {
+  if ((missing(defdir) || !dir.exists(defdir))) {
     if (!dir.exists(defdir)) {message("specified defdir not found - please specify a valid folder")}
     defdir = ifelse(dir.exists(defdir), defdir, getwd())
     mydir = rstudioapi::selectDirectory("Folder for saving files?", path = defdir)
@@ -1579,7 +1579,7 @@ ejscreen_vs <- function(defdir = '.',
     }
   } else {
     # user can specify they dont want to get asked about using saved results like this:
-    if ((length(savedejscreentableoutput) == 1 && savedejscreentableoutput[1] == FALSE) || is.null(savedejscreentableoutput) || all(is.na(savedejscreentableoutput))) {
+    if ((length(savedejscreentableoutput) == 1 && isFALSE(savedejscreentableoutput[1])) || is.null(savedejscreentableoutput) || all(is.na(savedejscreentableoutput))) {
       usesavedejscreen <- FALSE
     } else {
       usesavedejscreen <- TRUE

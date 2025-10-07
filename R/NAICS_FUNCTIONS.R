@@ -15,19 +15,19 @@
 #' @seealso [latlon_from_naics()]  [frs_from_naics()]  [naics_subcodes_from_code()] [naics_from_code()]  [naics_from_name()]
 #'
 #' @return a subset of the [naicstable] data.table (not just the codes column)
-#' 
-#' @details Finding the right NAICS/SIC and finding all the right 
+#'
+#' @details Finding the right NAICS/SIC and finding all the right
 #'   sites is complicated. See discussion of [latlon_from_naics()].
-#'   
+#'
 #' @examples # Also see vignettes for many more examples, and discussion.
 #'   naics_categories()
-#'   
+#'
 #'   naics_from_any("textile mills", children = FALSE)
 #'   naics_from_any("textile mills", children = TRUE)
-#' 
+#'
 #'   frs_from_naics("textile mills", children = FALSE)
 #'   frs_from_naics("textile mills", children = TRUE)
-#'   
+#'
 #'   \donttest{
 #'   naics_from_any(naics_categories(3))[order(name),.(name,code)][1:10,]
 #'   naics_from_any(naics_categories(3))[order(code),.(code,name)][1:10,]
@@ -67,7 +67,7 @@
 #'  NROW(naics_from_any("chem", children = T))
 #' #[1] 104
 #' }
-#' 
+#'
 #' @export
 #'
 naics_from_any <- function(query, children = FALSE, ignore.case = TRUE, fixed = FALSE,
@@ -177,7 +177,7 @@ naics_categories <- function(digits=2, dataset=EJAM::NAICS) {
 #'
 naics_validation <- function(naics_enter, naics_select) {
 
-  if (all(nchar(naics_enter) > 0) | length(naics_select) > 0) {
+  if (all(nchar(naics_enter) > 0) || length(naics_select) > 0) {
     return(TRUE)
   } else {
     return(FALSE)
@@ -195,13 +195,13 @@ naics_validation <- function(naics_enter, naics_select) {
 #' - For the next longest set of codes in original list of codes, do same thing.
 #' - continue until done for 5-digit ones to get 6-digit children.
 #' - Take the `unique(allthat)`
-#' 
+#'
 #' `table(nchar(as.character(NAICS)))`
-#' 
+#'
 #' `   2    3    4    5    6`
-#' 
+#'
 #' `  17   99  311  709 1057`
-#' 
+#'
 #' @param codes vector of numerical or character
 #' @param allcodes Optional (already loaded with package) - dataset with all the codes
 #' @param quiet whether to avoid printing results to console
@@ -295,7 +295,7 @@ naics_from_code <- function(mycodes, children = FALSE) {
 
   # find naicstable data.table rows by exact matches on numeric NAICS codes vector
   # results <- naicstable[match(mycodes, naicstable$code), ] # this would preserve sort order better BUT ONLY RETURNS 1st match !!!
-  results <- naicstable[code %in% mycodes, ] # this does not preserve order of mycodes queried, but cannot use match which would return only 1st match. 
+  results <- naicstable[code %in% mycodes, ] # this does not preserve order of mycodes queried, but cannot use match which would return only 1st match.
   if (children) {
     # add subcategories
     results <- naics_subcodes_from_code(results$code)

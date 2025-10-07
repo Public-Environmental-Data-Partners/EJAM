@@ -111,8 +111,8 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
     ejscreen_ejam_caveat <- "Some numbers as shown on pre-2025 EPA EJSCREEN reports using ACS 2018-2022 in some cases were very slightly different than estimates in 2025 EJSCREEN reports (as calculations were transitioned from EPA to non-EPA software based on EJAM). All numbers shown in both types of reports are estimates, and any differences are well within the range of uncertainty inherent in the American Community Survey data as used in EJSCREEN. Slight differences are inherent in very quickly calculating results for multiple locations."
   }
 
-  if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  & isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &
-      isTRUE(all.equal(heatmap2_cuts, c(1.009, 2, 3))) & isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
+  if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  && isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &&
+      isTRUE(all.equal(heatmap2_cuts, c(1.009, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
     color_legend <- paste0(
       "PERCENTILES \n  Red: at least 95th, Orange: 90-95th, Yellow: 80-90th \n",
       "RATIOS      \n  Red: at least 3x average, Orange: 2-3x average, Yellow: 1-2x average"
@@ -203,7 +203,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
   }
 
 
-  if (!is.null(narrowcolnames) & !all(narrowcolnames %in% names(eachsite)))   {
+  if (!is.null(narrowcolnames) && !all(narrowcolnames %in% names(eachsite)))   {
     warning('all column names in narrowcolnames should be found in eachsite table')
     narrowcolnames <- intersect(narrowcolnames, names(eachsite))
     if (length(narrowcolnames) == 0) {narrowcolnames <- NULL}
@@ -308,7 +308,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
   }
   ### *plot_distance_by_group ####
   if (ok2plot) {
-    if (!is.null(bybg) & plot_distance_by_group) {
+    if (!is.null(bybg) && plot_distance_by_group) {
       cat('plotting mean distance by group\n')
       fname <- try(
         suppressWarnings(
@@ -320,7 +320,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
         ),
         silent = TRUE
       )
-      if (inherits(fname, "try-error") | is.na(fname)) {
+      if (inherits(fname, "try-error") || is.na(fname)) {
         fname <- NULL; warning('cannot create distance table')
       } else {
         openxlsx::addWorksheet(wb, sheetName = "plot_distances",  gridLines = FALSE)
@@ -508,7 +508,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
      lon = NULL # rep('', NROW(eachsite))
      sitepoints = NULL
   }
-  if (radius_or_buffer_in_miles == 0 | is.na(radius_or_buffer_in_miles) | !is.numeric(radius_or_buffer_in_miles)) {
+  if (radius_or_buffer_in_miles == 0 || is.na(radius_or_buffer_in_miles) || !is.numeric(radius_or_buffer_in_miles)) {
     radlink <- ''
   } else {
     radlink <- radius_or_buffer_in_miles
@@ -558,7 +558,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
     hyperlink_colnames <-  sapply(reports, function(x) x$header)
     hyperlink_text      <- sapply(reports, function(x) x$text)
 
-    if (!is.null(hyperlink_colnames) & !all(hyperlink_colnames %in% names(eachsite)))   {
+    if (!is.null(hyperlink_colnames) && !all(hyperlink_colnames %in% names(eachsite)))   {
       warning('all column names in hyperlink_colnames should be found in eachsite table')
       ok = hyperlink_colnames %in% names(eachsite)
       hyperlink_colnames <- hyperlink_colnames[ok]

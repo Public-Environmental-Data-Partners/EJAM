@@ -9,7 +9,7 @@
 #'
 latlon_from_shapefile_centroids = function(shapefile)  {
 
-  if ("INTPTLAT" %in% names(shapefile) & "INTPTLON" %in% names(shapefile)) {
+  if ("INTPTLAT" %in% names(shapefile) && "INTPTLON" %in% names(shapefile)) {
   sitepoints = data.frame(lat = as.numeric(shapefile$INTPTLAT),
                           lon = as.numeric(shapefile$INTPTLON))
 } else {

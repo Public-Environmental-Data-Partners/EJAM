@@ -39,7 +39,7 @@ popup_from_df <- function(x, column_names=names(x), labels=column_names, n="all"
   if ("sf" %in% class(x)) {
     x <- sf::st_drop_geometry(x) # or else popup is blown up by geometry points data
   }
-  if (n == 'all' | n > NCOL(x)) {
+  if (n == 'all' || n > NCOL(x)) {
     # x <- x
   } else {
     x <- x[ , 1:n, drop = FALSE]  #  drop = FALSE  is in case only 1 column specified

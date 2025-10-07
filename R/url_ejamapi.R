@@ -300,7 +300,7 @@ url_ejamapi = function(
       url_of_report <- paste0(
         urls_from_keylists(
           baseurl = baseurl,
-          keylist_bysite = list(shape=geotxt, buffer=radius, sitenumber=sitenumber),
+          keylist_bysite = list(shape=geotxt, buffer=radius, sitenumber=sitenumber)
         ), and_other_query_terms
       )
       # url_of_report <- paste0(
@@ -348,7 +348,7 @@ url_ejamapi = function(
         url_of_report <- paste0(
           urls_from_keylists(
             baseurl = baseurl,
-            keylist_bysite = list(fips=fips, buffer=radius, sitenumber=sitenumber),
+            keylist_bysite = list(fips=fips, buffer=radius, sitenumber=sitenumber)
           ), and_other_query_terms
         )
         # url_of_report <- paste0(
@@ -400,7 +400,7 @@ url_ejamapi = function(
           url_of_report <- paste0(
             urls_from_keylists(
               baseurl = baseurl,
-              keylist_bysite = list(lat=lat, lon=lon, buffer=radius, sitenumber=sitenumber),
+              keylist_bysite = list(lat=lat, lon=lon, buffer=radius, sitenumber=sitenumber)
             ), and_other_query_terms
             )
           # url_of_report <- paste0(

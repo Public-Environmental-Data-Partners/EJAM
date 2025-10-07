@@ -106,7 +106,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   if (sum(!shpout$valid, na.rm = TRUE) > 0 ) {
     message("There were ", sum(!shpout$valid, na.rm = TRUE), " invalid polygons." )
   }
-  shpout <- shpout[shpout$valid == TRUE, ] # Drop invalid polygons, dont try to map
+  shpout <- shpout[shpout$valid, ] # Drop invalid polygons, dont try to map
 
     # linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
   pops <- popup_from_ejscreen(
@@ -169,14 +169,14 @@ map_facilities_proxy <- function(mymap, rad = 3, highlight = FALSE, clustered = 
   circleweight <- 4
 
   ## if checkbox to highlight clusters is checked
-  if (highlight == TRUE) {
+  if (highlight) {
     ## compare latlons using is_clustered() reactive
-    circle_color <- ifelse(clustered == TRUE, cluster_color, base_color)
+    circle_color <- ifelse(clustered, cluster_color, base_color)
   } else {
     circle_color <- base_color
   }
 
-  if (use_marker_clusters == FALSE) {
+  if (!use_marker_clusters) {
     ## add to leafletProxy call from Shiny app
     mymap <- mymap %>%
       leaflet::clearShapes() %>%
@@ -273,7 +273,7 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 
   if (type == "leaflet") {
 
-    if (length(unique(colorscore)) > 10 & is.numeric(colorscore)) {
+    if (length(unique(colorscore)) > 10 && is.numeric(colorscore)) {
       # continuous ramp of map colors
       vpal <- leaflet::colorNumeric("viridis", domain = NULL)
       x = map_shapes_leaflet(cshapes,
@@ -349,7 +349,7 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
 
   # *** CANNOT HANDLE colorvarname = ANYTHING ELSE BESIDES THOSE SCALED 0 TO 100, SO FAR
   if (!(colorvarname %in% names(mydf))) {
-    if ( (colorvarname[1] %in% colors()) | substr(colorvarname[1], 1, 1) == "#") {
+    if ( (colorvarname[1] %in% colors()) || substr(colorvarname[1], 1, 1) == "#") {
       # try to interpret colorvarname as a single R color name like "red" or as hex code of color
       if (length(colorvarname) != 1) {
         warning('using only first colorvarname')
@@ -366,7 +366,7 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
       return(NULL)
     }
   } else {
-    if (missing(colorfills) & missing(colorlabels) & missing(colorbins) & missing(colorpalette)) {
+    if (missing(colorfills) && missing(colorlabels) && missing(colorbins) && missing(colorpalette)) {
       if (!grepl('pctile', colorvarname)) {
         # it is not one of the standard percentile variables so it might not vary 0:100 as defaults assume it does
         setDF(mydf)
@@ -541,7 +541,7 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
     shapes = shapes[!empty, ]
   }
 
-  if ("FIPS" %in% names(shapes) & !("pop" %in% names(shapes))) {
+  if ("FIPS" %in% names(shapes) && !("pop" %in% names(shapes))) {
     # if it already has "pop" then dont bother with this sometimes slow way of getting pop counts:
     shapes$Population_ACS <- fips2pop(shapes$FIPS)
   }

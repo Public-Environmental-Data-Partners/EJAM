@@ -89,7 +89,7 @@ shape2geojson = function(shp, file = file.path(tempdir(), "shp.geojson"),
       } else {
         # multifile vector of filepaths
         geoj <- vector()
-        if (missing(file) || length(file != NROW(shp))) {
+        if (missing(file) || length(file) != NROW(shp)) {
           # create unique name for each file
           files = paste0(gsub("\\.geojson$", "", file), "_", 1:NROW(shp), ".geojson")
         }
@@ -105,7 +105,7 @@ shape2geojson = function(shp, file = file.path(tempdir(), "shp.geojson"),
       } else {
         # param said 1 file, but ignore that and do multifiles to create multistring since txt==T
         geoj <- vector()
-        if (missing(file) || length(file != NROW(shp))) {
+        if (missing(file) || length(file) != NROW(shp)) {
           # create unique name for each file
           files = paste0(gsub("\\.geojson$", "", file), "_", 1:NROW(shp), ".geojson")
         }

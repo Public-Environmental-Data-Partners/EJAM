@@ -830,7 +830,7 @@ ejamit <- function(sitepoints = NULL,
   out$sitetype <- sitetype
 
   ###################################### #
-  if (interactive() & !silentinteractive & !in_shiny) {
+  if (interactive() && !silentinteractive && !in_shiny) {
 
     ## * show summary in RStudio ####
     # and sites table in viewer pane

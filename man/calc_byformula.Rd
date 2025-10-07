@@ -4,16 +4,24 @@
 \alias{calc_byformula}
 \title{DRAFT utility to use formulas provided as text, to calculate indicators}
 \usage{
-calc_byformula(mydf, formulas = NULL, keep = formula_varname(formulas))
+calc_byformula(
+  mydf,
+  formulas = NULL,
+  keep = formula_varname(formulas),
+  quiet = FALSE
+)
 }
 \arguments{
 \item{mydf}{data.frame of indicators or variables to use}
 
-\item{formulas}{text strings of formulas}
+\item{formulas}{text strings of formulas - WARNING: this should not really be used on user-provided, untrused formula strings,
+since the contents could potentially be a security risk}
 
 \item{keep}{useful if some of the formulas are just interim steps
 creating evanescent variables created only for use in later formulas
 and not needed after that}
+
+\item{quiet}{if FALSE, prints to console the success/failure of each formula}
 }
 \value{
 data.frame of results, but
@@ -21,4 +29,11 @@ if mydf was a data.table, returns a data.table
 }
 \description{
 DRAFT utility to use formulas provided as text, to calculate indicators
+}
+\details{
+\itemize{
+\item \code{\link[=custom_doaggregate]{custom_doaggregate()}} may use \code{\link[=calc_ejam]{calc_ejam()}}
+\item \code{\link[=calc_ejam]{calc_ejam()}} uses \code{\link[=calc_byformula]{calc_byformula()}}
+\item \code{\link[=calc_byformula]{calc_byformula()}} uses \code{\link[=formula_varname]{formula_varname()}} and maybe source_this_codetext()
+}
 }

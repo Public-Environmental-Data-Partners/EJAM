@@ -49,6 +49,16 @@ x <- EJAM:::pkg_data()
 x$Item[!grepl("names_|^test", x$Item)]
 ```
 
+### Where the datasets are stored
+
+EJAM relies on datasets mostly stored in the package itself or in a separate, data-related repository:
+
+- Datasets stored within the EJAM package (.rda files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-) and [access to data files](https://github.com/ejanalysis/EJAM/tree/main/data)
+
+- Datasets used by EJAM but stored separately (large .arrow files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-) and [access to data files](https://github.com/ejanalysis/ejamdata/tree/main/data)
+
+### Key datasets
+
 Some notable data files, code details, and other objects that may need to be changed ANNUALLY or more often:
 
 -   ***Blockgroup Datasets***: These include datasets included with the package `?blockgroupstats`, [usastats](../reference/usastats.html), `?statestats`, etc.) as well as larger tables stored in a separate repository and downloaded by the EJAM package (`?bgpts`, `?bgej`, `?bgid2fips`, `?bg_cenpop2020`, etc.). They are all created or modified using scripts/functions organized from within *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
@@ -79,7 +89,7 @@ The information below focuses on the other type of data objects -- the set of la
 
 Several large `{data.table}` files are not installed as part of the R package in the typical /data/ folder that contains .rda files lazyloaded by the package. Instead, they are kept in a separate github repository that we refer to here as the data repository.
 
-*IMPORTANT:* The name of the *data* repository (as distinct from the *package code* repository) must be recorded/ updated in the EJAM package DESCRIPTION file, so that the package will know where to look for the data files if the datasets were moved to a new repository, for example. The current (either installed or loaded source version) of that repository is `r docs_reponame_url` (which can be checked via `desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")`)
+*IMPORTANT:* The name of the *data* repository (as distinct from the *package code* repository) must be recorded/ updated in the EJAM package DESCRIPTION file, so that the package will know where to look for the data files if the datasets were moved to a new repository, for example. The current (either installed or loaded source version) of that repository is `r data_reponame_with_owner` (which can be checked via `desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")`)
 
 ### arrow package and arrow file format
 
@@ -89,7 +99,7 @@ Earlier version of EJAM did not use the actual arrow format, so there still may 
 
 The names of these tables should be listed in a file called `R/arrow_ds_names.R` and the global variable called .arrow_ds_names that is used by functions like `dataload_dynamic()` and `dataload_from_local()`.
 
-As of mid-2025, there were 11 arrow files used by EJAM:
+As of EJAM version v2.32.6, there were 11 arrow files used by EJAM:
 
 ### Blockgroup and block-level arrow files
 

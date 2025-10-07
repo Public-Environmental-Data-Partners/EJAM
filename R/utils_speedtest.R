@@ -75,7 +75,7 @@ speedtest <- function(n=10, sitepoints=NULL, weighting='frs',
     }
     test_getblocksnearby = FALSE; test_doaggregate = FALSE; test_batch.summarize = FALSE
   }
-  if (test_batch.summarize & !test_doaggregate) {
+  if (test_batch.summarize && !test_doaggregate) {
     warning("cannot test batch.summarize without doing doaggregate")
     return(NULL)
   }
@@ -92,12 +92,12 @@ speedtest <- function(n=10, sitepoints=NULL, weighting='frs',
 
   ######################### #
 
-  if (n[1] == 0 & is.null(sitepoints)) {
+  if (n[1] == 0 && is.null(sitepoints)) {
     if (interactive()) {sitepoints <- rstudioapi::selectFile("Select xlsx or csv file with lat,lon coordinates", path = ".", existing = FALSE)
     }
   }
 
-  if (logging |  !missing(logfolder) | !missing(logfilename))  {
+  if (logging ||  !missing(logfolder) || !missing(logfilename))  {
     # PREP LOG FILE
     logfilename <- paste0("logfile_", ntextfile, "_pts_", rtextfile, "_miles_", Sys.time_txt(), ".txt")  # file.path(logfolder, fname)
     logto = file.path( logfolder, logfilename)
@@ -131,7 +131,7 @@ speedtest <- function(n=10, sitepoints=NULL, weighting='frs',
   }
 
   # PICK SOME OPTIONS FOR RADIUS
-  if (length(radii) > 10 | any(radii < 1)) {stop("Did you intend to provide more than 10 radius values? Cannot try more than 10 radius values in one run.")}
+  if (length(radii) > 10 || any(radii < 1)) {stop("Did you intend to provide more than 10 radius values? Cannot try more than 10 radius values in one run.")}
   # radii <- c(1, 3.106856, 5, 10, 20)
   # 3.1 miles IS 5 KM ... 5*1000/ meters_per_mile
 
@@ -249,7 +249,7 @@ speedtest <- function(n=10, sitepoints=NULL, weighting='frs',
       speedtable[[combonumber]] <- list(points = n, miles = radius, perhr = perhour)
 
       #  show diagnostics here like how many blocks were found nearby? this slows it down
-      if (test_getblocksnearby & getblocks_diagnostics_shown) {
+      if (test_getblocksnearby && getblocks_diagnostics_shown) {
         getblocks_diagnostics(mysites2blocks)
       }
 

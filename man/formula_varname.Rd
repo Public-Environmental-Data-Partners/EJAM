@@ -7,8 +7,24 @@
 formula_varname(myforms)
 }
 \arguments{
-\item{myforms}{see calc_byformula()}
+\item{myforms}{see \code{\link[=calc_byformula]{calc_byformula()}}}
+}
+\value{
+a vector as long as myforms input vector
 }
 \description{
 utility to check formulas and extract variable names they calculate values for
 }
+\details{
+\itemize{
+\item \code{\link[=custom_doaggregate]{custom_doaggregate()}} may use \code{\link[=calc_ejam]{calc_ejam()}}
+\item \code{\link[=calc_ejam]{calc_ejam()}} uses \code{\link[=calc_byformula]{calc_byformula()}}
+\item \code{\link[=calc_byformula]{calc_byformula()}} uses \code{\link[=formula_varname]{formula_varname()}} and maybe source_this_codetext()
+}
+}
+\examples{
+EJAM:::formula_varname(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
+head(cbind(EJAM:::formula_varname(formulas_d), formulas_d))
+
+}
+\keyword{internal}

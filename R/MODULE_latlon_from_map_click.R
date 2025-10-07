@@ -103,7 +103,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
             leaflet::addCircles(lng = input$mymap_click$lng, lat = input$mymap_click$lat,     # new point is drawn here when map is clicked
                                 radius = input$pointradius_input * meters_per_mile, fillOpacity = 0.1,
                                 highlightOptions = leaflet::highlightOptions(fillOpacity = 0.5), # this just makes it shaded when mouse hovers above the circle
-                                layerId = "mycircle",
+                                layerId = "mycircle"
             ) %>%
             leaflet::addPopups(lng = input$mymap_click$lng, lat = input$mymap_click$lat,
                                popup = paste0("lat,lon: ", input$mymap_click$lat, ", ", input$mymap_click$lng))

@@ -56,7 +56,7 @@ shapefix = function(shp,
     disable_buttons_SHP <- TRUE
     validate_errmsg <- "Uploaded file should have valid file extension(s)"
   }
-  if (any(sf::st_geometry_type(shp) == "POINT") & !interactive() & shiny::isRunning()) {
+  if (any(sf::st_geometry_type(shp) == "POINT") && !interactive() && shiny::isRunning()) {
     disable_buttons_SHP <- TRUE
     validate_errmsg <- ("Shape file must be of polygon geometry.") # which does stop() if not in shiny
   }

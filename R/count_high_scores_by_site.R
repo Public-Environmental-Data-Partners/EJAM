@@ -10,11 +10,11 @@
 #'   If TRUE, specify one threshold per column.
 #' @return vector of counts as long as NROW(x)
 #' @seealso [colcounter_summary_all()] [colcounter_summary()] [colcounter_summary_cum()] [colcounter_summary_pct()] [colcounter_summary_cum_pct()]
-#' 
+#'
 #' @examples \donttest{
 #'   pdata <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
 #'  # pdata <- data.frame(testoutput_ejamit_10pts_1miles$results_bysite)[ , names_e_pctile]
-#'  pcuts <-  5 * (0:20) 
+#'  pcuts <-  5 * (0:20)
 #' colcounter_summary(        pdata, pcuts)
 #' colcounter_summary_pct(    pdata, pcuts)
 #' colcounter_summary_cum(    pdata, pcuts)
@@ -33,7 +33,7 @@
 colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.cut.per.col=FALSE) {
   # Function to count SCORES ABOVE BENCHMARK(S) at each place, returns list as long as NROW(x).
   #
-  
+
   if (is.null(dim(x))) {
     numcols <- 1
     if (shiny::isRunning()) {
@@ -63,7 +63,7 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
     }
     x <- t(as.matrix(x)) # this allows it to compare vector of N thresholds to N columns
   } else {
-    if ((length(threshold) != NROW(x)) & (length(threshold) != 1)) {
+    if ((length(threshold) != NROW(x)) && (length(threshold) != 1)) {
       if (shiny::isRunning()) {
         warning('length of threshold should be 1 or same as number of columns in x, if one.cut.per.col=F')
         return(rep(NA, length(x)))
@@ -87,15 +87,15 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
 
 
 #' Summarize how many rows have N columns at or above (or below) various thresholds?
-#' 
-#' @description 
+#'
+#' @description
 #' Like colcounter() or cols.above.count()
 #'   but will handle multiple thresholds to compare to each indicator, etc.
-#'   
+#'
 #'   Table of counts, percents, cumulative counts, cumulative percents
 #'   of places with N, or at least N, of the indicators
 #'   at or above the benchmark(s)
-#'   
+#'
 #' @param x Data.frame or matrix of numbers to be compared to threshold value,
 #'   like percentiles for example.
 #' @param thresholdlist vector of numeric threshold values to compare to
@@ -111,7 +111,7 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
 #' @examples
 #'  pdata <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
 #'   ### pdata <- EJAM::blockgroupstats[ , names_e_pctile]
-#'  pcuts <-  5 * (0:20)  
+#'  pcuts <-  5 * (0:20)
 #' colcounter_summary(        pdata, pcuts)
 #' colcounter_summary_pct(    pdata, pcuts)
 #' colcounter_summary_cum(    pdata, pcuts)
@@ -124,7 +124,7 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
 #' table(x95)
 #' tablefixed(x95, NCOL(pdata))
 #' cbind(at80=tablefixed(x80, NCOL(pdata)), at95=tablefixed(x95, NCOL(pdata)))
-#' 
+#'
 #' @keywords internal
 #'
 colcounter_summary <- function(x, thresholdlist, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.cut.per.col=FALSE) {
@@ -148,9 +148,9 @@ colcounter_summary <- function(x, thresholdlist, or.tied=TRUE, na.rm=TRUE, below
 
 
 #' Summarize how many rows have AT LEAST N columns at or above (or below) various thresholds
-#' 
+#'
 #' See colcounter_summary() for details and examples
-#' 
+#'
 #' @param x Data.frame or matrix of numbers to be compared to threshold value,
 #'   like percentiles for example.
 #' @param thresholdlist vector of numeric threshold values to compare to
@@ -171,9 +171,9 @@ colcounter_summary_cum <- function(x, thresholdlist, or.tied=TRUE, na.rm=TRUE, b
 
 
 #' Summarize what percent of rows have N columns at or above (or below) various thresholds
-#' 
+#'
 #' See colcounter_summary() for details and examples
-#' 
+#'
 #' @param x Data.frame or matrix of numbers to be compared to threshold value,
 #'   like percentiles for example.
 #' @param thresholdlist vector of numeric threshold values to compare to
@@ -207,23 +207,23 @@ colcounter_summary_cum_pct <- function(x, thresholdlist, ...) {
 
 
 #' Summarize count (and percent) of rows with exactly (and at least) N cols >= various thresholds
-#' 
+#'
 #' @description This wraps 4 functions to return 4 tables:
 #'   using [colcounter_summary()], [colcounter_summary_pct()],
 #'   [colcounter_summary_cum()], [colcounter_summary_cum_pct()]
 #'   For another view and text explanations of the findings, see
 #'   [count_sites_with_n_high_scores()]
-#'   
+#'
 #' @param x Data.frame or matrix of numbers to be compared to threshold value,
 #'   like percentiles for example.
 #' @param thresholdlist vector of numeric threshold values to compare to
 #' @param ... passed to the 4 functions
 #'   like or.tied=TRUE, na.rm=TRUE, below=FALSE, one.cut.per.col=FALSE
 #' @seealso [colcounter_summary_all()] [colcounter_summary()] [colcounter_summary_cum()] [colcounter_summary_pct()] [colcounter_summary_cum_pct()]
-#' 
+#'
 #' @return A table of cumulative frequency counts etc., including
-#'   count, cum, pct, cum_pct 
-#'   
+#'   count, cum, pct, cum_pct
+#'
 #' @examples
 #'     # df <-  bg22[ , names.ej.pctile]
 #'  df <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
@@ -234,7 +234,7 @@ colcounter_summary_cum_pct <- function(x, thresholdlist, ...) {
 #'  a3['0',,]; a3[1,,]
 #'  a3[dim(a3)[1],,]
 #'  # a3['12',,]; a3[13,,]
-#'  
+#'
 #'  \donttest{
 #'  barplot(colcounter_summary_cum_pct(pdata, pcuts)[ , '80'],
 #'     ylab='% of places', xlab='# of indicators at/above threshold',
@@ -260,21 +260,21 @@ colcounter_summary_cum_pct <- function(x, thresholdlist, ...) {
 #'   # pdata <- bg22[ ,  names.ej.pctile]
 #'   colcounter_summary_cum_pct(pdata,c(50,80,90,95))
 #'   xs <- 1:13
-#'   plot(x=xs, y=colcounter_summary_cum_pct(pdata, 50)[xs+1], 
+#'   plot(x=xs, y=colcounter_summary_cum_pct(pdata, 50)[xs+1],
 #'     type='b', col='gray', ylim=c(0, 40),
-#'     main='% of places with at least x/13 indicators >=Nth percentile', ylab='% of places', 
+#'     main='% of places with at least x/13 indicators >=Nth percentile', ylab='% of places',
 #'     xlab='# of indicators')
 #'   points(xs, colcounter_summary_cum_pct(pdata, 80)[xs+1], type='b', col='blue')
 #'   points(xs, colcounter_summary_cum_pct(pdata, 90)[xs+1], type='b', col='orange')
 #'   points(xs, colcounter_summary_cum_pct(pdata, 95)[xs+1], type='b', col='red')
-#'   legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'), 
+#'   legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'),
 #'     fill = c('gray', 'blue', 'orange', 'red'))
 #' }
 #'
 #' @export
 #'
 colcounter_summary_all <- function(x, thresholdlist, ...) {
-  
+
   listall <- list(
     counts =  colcounter_summary(        x, thresholdlist = thresholdlist, ...),
     cum =     colcounter_summary_cum(    x, thresholdlist = thresholdlist, ...),
@@ -284,7 +284,7 @@ colcounter_summary_all <- function(x, thresholdlist, ...) {
   bincount <- length(0:NCOL(x))
   arrayall <- array(NA, dim = c(bincount, length(thresholdlist), 4))
   for (i in 1:4) {arrayall[ ,, i] <- listall[[i]]}
-  dimnames(arrayall) <- list(count = 0:NCOL(x), cut = thresholdlist, 
+  dimnames(arrayall) <- list(count = 0:NCOL(x), cut = thresholdlist,
                              stat = c('count', 'cum', 'pct', 'cum_pct'))
   arrayall
 }

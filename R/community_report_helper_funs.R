@@ -18,7 +18,7 @@ fill_tbl_row <- function(output_df, Rname, longname, show_ratios_in_report) {
 
   # id_col <- "selected-variables"
 
-  if (show_ratios_in_report == FALSE) {
+  if (!show_ratios_in_report) {
     hdr_names <- c('value',
                    'state-average', 'percentile-in-state',
                    'usa average','percentile-in-usa')
@@ -326,7 +326,7 @@ fill_tbl_full_ej <- function(output_df,
 #'
 fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_ratios_in_report) {
 
-  if (extratable_show_ratios_in_report == FALSE) {
+  if (!extratable_show_ratios_in_report) {
     hdr_names <- 'value'
     Rnames <- Rname
   } else {

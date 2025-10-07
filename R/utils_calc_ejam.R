@@ -7,17 +7,55 @@
 
 ######################################## #
 
+## notes
+
+# may want to store formulas for indicators as a table of metadata
+# (rather than formulas being buried in code like doaggregate
+# or even pulled out into a function focused on just that)
+
+# and/or want to allow user to specify a custom indicator or summary stat via formula they provide as text,
+# so EJAM could then aggregate and report the new stat alongside the built-in indicators.
+
+# see datacreate_formulas.R
+
+
+## EJAM::calc_ejam() which uses calc_byformula()
+## was based on
+## ejscreen::ejscreen.acs.calc() which used analyze.stuff::calc.fields()
+##
+# https://rdrr.io/github/ejanalysis/ejscreen/man/ejscreen.acs.calc.html
+# or more generally here
+#  https://rdrr.io/github/ejanalysis/analyze.stuff/man/calc.fields.html
+#  stored at
+#  https://github.com/ejanalysis/analyze.stuff
+#  https://github.com/ejanalysis/analyze.stuff/blob/36afe6b102cb2cef90b87a48dfea9479b1a2447a/R/calc.fields.R
+#  devtools::install_github("ejanalysis/analyze.stuff")
+#  ?analyze.stuff::calc.fields()
+#
+# example using just 10 blockgroups from 1 county in Delaware
+#   c1 <- fips2countyname(fips_counties_from_state_abbrev('DE'), includestate = F)[1]
+#   bgdf = data.frame(EJAM::blockgroupstats[ST == "DE" & countyname == c1, ..names_d])[1:10, ]
+#    newdf <-  ejscreen::ejscreen.acs.calc(bgdf, keep.old = "", keep.new = c("my_custom_stat", "mystat2"), formulas = c(
+#      "my_custom_stat <- (pctlowinc + pctmin)/2",
+#      "mystat2  = 100 * pctlowinc"))
+# newdf
 
 ################################################################ #
 
 
 #' DRAFT utility to use formulas provided as text, to calculate indicators
 #'
-#' @details may be used by custom_doaggregate()
 #' @param bg data.frame//table of indicators or variables to use
 #' @param keep.old names of columns (variables) to retain from among those provided in bg
 #' @param keep.new names of calculated variables to retain in output
 #' @param formulas text strings of formulas
+#' @param quiet if FALSE, prints to console success/failure of each formula
+#' @details
+#' - [custom_doaggregate()] may use [calc_ejam()]
+#'
+#' - [calc_ejam()] uses [calc_byformula()]
+#'
+#' - [calc_byformula()] uses [formula_varname()] and maybe source_this_codetext()
 #'
 #' @return data.frame of calculated variables one row per bg row
 #' @examples
@@ -68,7 +106,8 @@ calc_ejam <- function(bg,
                       keep.old = c("bgid", "pop"),
                       keep.new = 'all',
                       # formulafile,
-                      formulas) {
+                      formulas,
+                      quiet = TRUE) {
 
   if (is.null(formulas)) {
     if (exists("formulas_d")) {
@@ -118,7 +157,7 @@ calc_ejam <- function(bg,
   if (keep.new[1] == 'all') {
     keep.new <- formula_varname(myformulas) # tries to keep all of those formulas would try to create
   }
-  bg <- calc_byformula(bg, formulas = myformulas, keep = c(keep.old, keep.new))
+  bg <- calc_byformula(bg, formulas = myformulas, keep = c(keep.old, keep.new), quiet = quiet)
   # if any of these are not successfully created by calc_byformula(), they just won't be returned by that function.
   return(bg)
 }
@@ -128,14 +167,18 @@ calc_ejam <- function(bg,
 #' DRAFT utility to use formulas provided as text, to calculate indicators
 #'
 #' @param mydf data.frame of indicators or variables to use
-#' @param formulas text strings of formulas
+#' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrused formula strings,
+#'   since the contents could potentially be a security risk
 #' @param keep useful if some of the formulas are just interim steps
 #'   creating evanescent variables created only for use in later formulas
 #'   and not needed after that
+#' @param quiet if FALSE, prints to console the success/failure of each formula
+#' @inherit calc_ejam details
+#'
 #' @return data.frame of results, but
 #'   if mydf was a data.table, returns a data.table
 #'
-calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formulas)) {
+calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formulas), quiet = FALSE) {
 
 
   # DRAFT WORK NOT COMPLETED
@@ -156,18 +199,20 @@ calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formula
   #  cat('\n formulas: ', formulas,'\n\n')
   #  cat('\n keep: ', keep,'\n\n')
 
-  warning("attach() cannot be done here or it fails CRAN checks like devtools::check() ") # look at envt etc.
-  # attach(mydf)
-  # on.exit(detach(mydf))
+  # instead of doing attach(), we will make each colname available in an evaluation environment this way
+  data_list = as.list(mydf)
+  ## simpler to avoid loop but cannot catch each formula errors:
+  y <- try(source_this_codetext(paste0(formulas, collapse = "; "),  data_list = data_list), silent = TRUE)
+  if (inherits(y, "try-error")) {
 
   for (thisformula in formulas) {
 
-    # *** Need to handle cases where formula tries to use some variable that was not a colname in mydf
-    #   but is in the search path, like in the calling envt.
+    # *** do we still Need to handle cases where formula tries to use some variable that was not a colname in mydf
+    #   but is in the search path, like in the calling envt. ?
 
-    # May need to more carefully specify environment, as in
-
-    #  as we probably do not want formulas to use variables defined globally or where this function was called from, right?
+    # May need to more carefully specify environment, to evaluate in a new envt that contains ONLY the mydf columns? no global envt settings, datasets, etc.??
+  # but some functions might expect and rely on those?
+    # We probably do not want formulas to use variables defined globally or where this function was called from, right?
     # If not careful about the environment in which things are evaluated,
     # A problem arises if a formula relies on a variable that is not in mydf but is used by some loaded package,
     # for example if mydf does not contain the field called cancer but the survival package is attached and provides a dataset lazyloaded called cancer,
@@ -183,11 +228,8 @@ calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formula
     # and it splits up on _ etc.
     ## Also might consider package called  sourcetools that has a tokenize function to parse text into parts
 
-    # y <- try(source_this_codetext(thisformula), silent = FALSE)
-
-    y <- try(source_this_codetext(thisformula), silent = TRUE)
-
-    # tries to evaluate formula in THIS environment (the one that called the function source_this... )
+      y <- try(source_this_codetext(thisformula,  data_list = data_list), silent = TRUE)
+if (!quiet) {
     suppressWarnings(
       if (inherits(y, "try-error")) {
         cat('Cannot use formula: '); cat(thisformula, '\n') # print(as.character(parse(text=thisformula)))
@@ -195,15 +237,17 @@ calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formula
         cat(paste0('Using ', thisformula, '\n'))
       }
     )
+      }
   }
-
+}
   # RETURN ONLY THE ONES SUCCESSFULLY CREATED, OUT OF ALL REQUESTED TO BE KEPT
 
   keep.from.mydf <- keep[keep %in% names(mydf)]
   keep.other <- keep[!(keep %in% keep.from.mydf)]
   if (length(keep.other) > 0) {keep.other <- keep.other[keep.other %in% ls()] }
 
-  # COULD ADD WARNINGS HERE ABOUT VARIABLES USER ASKED TO KEEP THAT DO NOT EXIST
+  # COULD ADD WARNINGS HERE ABOUT VARIABLES USER ASKED TO KEEP THAT DO NOT EXIST ***
+
   if (length(keep.from.mydf) > 0) {
     if (length(keep.other) > 0) {
       outdf <- data.frame( mydf[ , keep.from.mydf, drop = FALSE],
@@ -231,21 +275,23 @@ calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formula
 
 #' utility to check formulas and extract variable names they calculate values for
 #'
-#' @param myforms see calc_byformula()
+#' @param myforms see [calc_byformula()]
 #'
+#' @inherit calc_ejam details
+#'
+#' @examples
+#' EJAM:::formula_varname(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
+#' head(cbind(EJAM:::formula_varname(formulas_d), formulas_d))
+#'
+#' @return a vector as long as myforms input vector
+#'
+#' @keywords internal
 #'
 formula_varname <- function(myforms) {
 
   return(
     gsub("^([^ <=]*)[ <=].*", "\\1", trimws(myforms))
   )
-
-  # formula_varname(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
-  # formula_varname(formulas_d)
-  # > length(formulas_d)
-  # [1] 40
-  # > length(formula_varname(formulas_d))
-  # [1] 40
 
 }
 ################################################################ #

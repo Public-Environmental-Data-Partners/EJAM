@@ -64,25 +64,25 @@ read_and_clean_points <- function(filepath, default_points=NULL) {
 
     pts_filecontents <- latlon_df_clean(pts_filecontents)
     #    a set of latlon cleaning functions using latlon_infer(), latlon_as.numeric(), latlon_is.valid()
-    if ('lat' %in% names(pts_filecontents) & 'lon' %in% names(pts_filecontents)) {
+    if ('lat' %in% names(pts_filecontents) && 'lon' %in% names(pts_filecontents)) {
       # ALL SET - using lat/lon
-      if (('registry_id' %in% names(pts_filecontents) ) | ('pgm_sys_id' %in% names(pts_filecontents))) {
+      if (('registry_id' %in% names(pts_filecontents) ) || ('pgm_sys_id' %in% names(pts_filecontents))) {
         shiny::showModal(shiny::modalDialog(title = 'Warning', 'lat/lon found, so ignoring registry_id/pgm_sys_id', easyClose = TRUE))
       }
     } else {
-      if ('FacLong' %in% names(pts_filecontents) & 'FacLat' %in% names(pts_filecontents)) {
+      if ('FacLong' %in% names(pts_filecontents) && 'FacLat' %in% names(pts_filecontents)) {
         #  ECHO column names  - but latlon_infer() has already renamed them anyway, actually so we can't get here probably
         names(pts_filecontents) <- gsub('FacLat', 'lat', names(pts_filecontents)); names(pts_filecontents) <- gsub('FacLong', 'lon', names(pts_filecontents)) # as used by leaflet, and so names are unique even when uploaded table is merged with EJSCREEN results
         # the variable names latitude and longitude are compatible with leaflet() but we will not rename them except for that one purpose right when mapping
         # ALL SET - using FacLat/FacLong
-        if (('registry_id' %in% names(pts_filecontents) ) | ('pgm_sys_id' %in% names(pts_filecontents))) {
+        if (('registry_id' %in% names(pts_filecontents) ) || ('pgm_sys_id' %in% names(pts_filecontents))) {
           shiny::showModal(shiny::modalDialog(title = 'Warning', 'lat/lon found, so ignoring registry_id/pgm_sys_id', easyClose = TRUE))
         }
       }  else {
 
         # if only "ID" or "id" column found, try interpret it as program or registry id ####
 
-        if (!('registry_id' %in% names(pts_filecontents) ) & !('pgm_sys_id' %in% names(pts_filecontents))) {
+        if (!('registry_id' %in% names(pts_filecontents) ) && !('pgm_sys_id' %in% names(pts_filecontents))) {
           # as last resort, try to see if id or ID or Id column works as a registry ID
           if ("id" %in% tolower(names(pts_filecontents))) {
             idcol <- (names(pts_filecontents)[tolower(names(pts_filecontents)) == 'id'])[1]
