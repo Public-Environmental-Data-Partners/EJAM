@@ -19,29 +19,29 @@ test_that('numeric selector works',{
   expect_true(val)
 })
 
-#  No naics_validation() selector gives invalid
-test_that('naics_validation() with no selectors gives error',{
-  expect_error(naics_validation(naics_enter = "211"))
-})
+# #  No naics_validation() selector gives invalid - But changed the function to not error in this case
+# test_that('naics_validation() with no selectors gives error',{
+#   expect_error(naics_validation(naics_enter = "211"))
+# })
 
-# 
+#
 # #  list of NAICS gives error ?? does it need to for shiny app?
 # test_that('is multiple NAICS supposed to give error? does it need to for shiny app??', {
 #   expect_error({
 #     val <- naics_validation(naics_enter = c("211", "452"), naics_select = "1")
 #   })
-# 
+#
 # })
 
-################################################## # 
+################################################## #
 
 ## THIS NEWER FUNCGTION IS BETTER AT ACTUALLY VALIDATING NAICS CODES AGAINST LIST OF VALID CODES:
 
 test_that('naics_is.valid() correctly reports 1 NAICS as not valid', {
   expect_no_warning({
     val <- naics_is.valid("LOL")
-  })  
-  expect_false(val) 
+  })
+  expect_false(val)
 })
 test_that('naics_is.valid() correctly reports some NAICS as not valid', {
 expect_equal(
@@ -49,7 +49,7 @@ expect_equal(
   c(TRUE, TRUE, FALSE)
 )
 })
-################################################## # 
+################################################## #
 # <<<<<<<<<<<<<<<<<<<<<<<<
 test_that('fake NAICS in naics_validation() should report that valid is FALSE but ???', {
   expect_no_warning({
@@ -64,7 +64,7 @@ test_that('fake NAICS in naics_validation() should report that valid is FALSE bu
 test_that('is multiple values for naics_validation(naics_select) supposed to give error? does it need to for shiny app??',{
   expect_no_error({
     capture_output({
-      val <- naics_validation(naics_enter = "211", naics_select = c(1,2))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   NO ERROR 
+      val <- naics_validation(naics_enter = "211", naics_select = c(1,2))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   NO ERROR
     #           - not sure this makes sense to have no error or warning and it reports valid (TRUE) -- naics_validation() is too weak a test of validity
     })
     })

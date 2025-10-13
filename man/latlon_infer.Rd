@@ -16,13 +16,13 @@ returns all of mycolnames except replacing the best candidates with lat and lon
 Guess which columns have lat and lon based on aliases like latitude, FacLat, etc.
 }
 \examples{
-  latlon_infer(c('trilat', 'belong', 'belong')) # warns if no alias found, 
+  latlon_infer(c('trilat', 'belong', 'belong')) # warns if no alias found,
     #  but doesnt warn of dupes in other terms, just preferred term.
   latlon_infer(c('a', 'LONG', 'Longitude', 'lat')) # only the best alias is converted/used
   latlon_infer(c('a', 'LONGITUDE', 'Long', 'Lat')) # only the best alias is converted/used
-  latlon_infer(c('a', 'longing', 'Lat', 'lat', 'LAT')) # case variants of preferred are 
+  latlon_infer(c('a', 'longing', 'Lat', 'lat', 'LAT')) # case variants of preferred are
       # left alone only if lowercase one is found
-  latlon_infer(c('LONG', 'long', 'lat')) # case variants of a single alias are 
+  latlon_infer(c('LONG', 'long', 'lat')) # case variants of a single alias are
       # converted to preferred word (if pref not found), creating dupes!  warn!
   latlon_infer(c('LONG', 'LONG')) # dupes of an alias are renamed and still are dupes! warn!
   latlon_infer(c('lat', 'lat', 'Lon')) # dupes left as dupes but warn!

@@ -41,17 +41,17 @@ See \code{ejamit()} (or \code{batch.summarize()}) instead of this, for percentil
 \examples{
 
 # pctiles
-  ejam2quantiles(out,  vars = names_e_state_pctile, topx_insteadof_pctile = F) 
-# ratios  
+  ejam2quantiles(out,  vars = names_e_state_pctile, topx_insteadof_pctile = F)
+# ratios
   ejam2quantiles(out, vars = names_e_ratio_to_state_avg,  topx_insteadof_pctile = T)
 # see the quantiles and mean together
  t(rbind(
   AvgPerson = ejam2means(out, vars = names_e_ratio_to_state_avg),
   ejam2quantiles(
-     out, 
-     vars = names_e_ratio_to_state_avg, 
+     out,
+     vars = names_e_ratio_to_state_avg,
      probs = 0.5, topx_insteadof_pctile = T
-  ) 
+  )
   ))
 
 }

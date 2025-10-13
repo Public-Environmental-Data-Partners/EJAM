@@ -1859,7 +1859,7 @@ fips2countyname <- function(fips, includestate = c("ST", "Statename", "")[1]) {
       substr(blockgroupstats$bgfips, 1, 5)
       )]
 
-  if (includestate == TRUE) {includestate <- "Statename"}
+  if (isTRUE(includestate)) {includestate <- "Statename"}
   if (includestate == "Statename") {addon <- fips2statename(cfips)} else {
     if (includestate == "ST") {addon <- fips2state_abbrev(cfips)} else {
       addon <- ""

@@ -50,12 +50,12 @@ easy high-level function for getting a quick look at top few groups of sites
 see \code{\link[=ejamit_compare_types_of_places]{ejamit_compare_types_of_places()}} for more examples
 }
 \examples{
- out <- ejamit_compare_types_of_places(testpoints_10[1:4, ], 
+ out <- ejamit_compare_types_of_places(testpoints_10[1:4, ],
    typeofsite <- c("A", "B", "B", "C"))
    cbind(Rows_or_length = sapply(out, NROW))
-  
+
  ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = F)
- 
+
 }
 \seealso{
 \code{\link[=plot_barplot_sitegroups]{plot_barplot_sitegroups()}}

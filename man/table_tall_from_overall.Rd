@@ -21,6 +21,6 @@ Take a quick look at results in the RStudio console
 \examples{
  table_tall_from_overall(testoutput_ejamit_10pts_1miles$results_overall)
  table_tall_from_overall(x$results_bysite[1, ])
- 
+
 }
 \keyword{internal}

@@ -20,15 +20,15 @@ Get minimum of each column of data.frame
 }
 \examples{
 df <- rbind(NA, data.frame(
-  n1 = c(0, 0:8), n2 = c(0.1 + (0:9)), n3 = c(1:10), 
+  n1 = c(0, 0:8), n2 = c(0.1 + (0:9)), n3 = c(1:10),
   allnas = c(rep(NA, 10)),
-  logic = TRUE, 
-  factortxt = factor('factor'), 
+  logic = TRUE,
+  factortxt = factor('factor'),
   txt = 'words',
   numberlike = as.character(6:15),
   numberlikefact = factor(as.character(6:15)),
   stringsAsFactors = FALSE))
-  
+
 df
 colMins2(df)
 

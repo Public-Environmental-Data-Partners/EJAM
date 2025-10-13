@@ -237,7 +237,7 @@ pkgdown_update = function(
     if (doask && interactive()  && rstudioapi::isAvailable()) {
       cat('\n\n')
       yn <- utils::askYesNo("Halt now to edit/fix _pkgdown.yml etc. ?")
-      if (is.na(yn) || yn == TRUE) {
+      if (is.na(yn) || isTRUE(yn)) {
         if (file.exists('_pkgdown.yml')) {rstudioapi::documentOpen('_pkgdown.yml')}
         message('stopped to fix _pkgdown.yml')
         cat('\n\n MISSING according to dataset_pkgdown_yaml_check() are the following: \n\n')

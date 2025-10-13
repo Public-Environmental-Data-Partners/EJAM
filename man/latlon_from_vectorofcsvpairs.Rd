@@ -21,7 +21,7 @@ helper function - convert vector of lat,lon pairs to data.frame
 lat_x = testpoints_10$lat
 lon_x = testpoints_10$lon
 latlon_pairs = latlon2csv(lat = lat_x, lon = lon_x)
-latlon_from_vectorofcsvpairs(latlon_pairs) 
+latlon_from_vectorofcsvpairs(latlon_pairs)
 all.equal(testpoints_10[, c("lat", "lon")], latlon_from_vectorofcsvpairs(latlon_pairs))
 
 x = latlon_from_vectorofcsvpairs(c("30,-83",  "  32.5,  -86.377325 "))

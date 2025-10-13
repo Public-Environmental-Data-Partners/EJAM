@@ -85,7 +85,7 @@ if (FALSE) {
 
   ## to lint ALL files in the R folder, using a custom list of linters
   #
-   lint_dir("./R", linters = mine)
+  lint_dir("./R", linters = mine)
 
   ###########
 }
@@ -123,28 +123,43 @@ lint_current_doc <- function(mylintfunction = lint_trailing_spaces) {
 
 if (FALSE) {
 
-## SCRIPT TO USE DRAFT LINTING FUNCTION(S) TO ACTUALLY EDIT ALL .R FILES:
-#
-# Use a github diff to see what effects it has, confirming each change is ok
+  ## SCRIPT TO USE DRAFT LINTING FUNCTION(S) TO ACTUALLY EDIT ALL .R FILES:
+  #
+  # Use a github diff to see what effects it has, confirming each change is ok
 
   lint_current_doc()
 
   lint_current_doc()
 
-rfiles <- file.path("./R", list.files("./R", pattern = "\\.R$"))
+  rfiles <- file.path("./R", list.files("./R", pattern = "\\.R$"))
 
-for (f1 in rfiles) {
+  for (f1 in rfiles) {
 
-  cat('linting file: ', f1, '\n')
+    cat('linting file: ', f1, '\n')
 
-  x <- readLines(f1)
+    x <- readLines(f1)
 
-  x <- lint_trailing_spaces(x)
+    x <- lint_trailing_spaces(x)
 
-  #                         x <- lint_misc(x) # or others
+    #                         x <- lint_misc(x) # or others
 
-  writeLines(x, f1)
+    writeLines(x, f1)
+  }
+
 }
+################################################### #
+if (FALSE) {
+
+  # check for nul or incomplete final lines in .R files
+  #
+  # In readLines(f1) : incomplete final line found
+  rfiles <- file.path("./R", list.files("./R", pattern = "\\.R$"))
+  for (f1 in rfiles) {
+    cat('reading file: ', f1, '\n')
+    x <- readLines(f1)
+  }
+
+  summary(warnings())
 
 
 }

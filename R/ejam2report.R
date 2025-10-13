@@ -237,11 +237,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # report_setup_temp_files() copies files to where they need to be for rendering ####
     ## returns path to .Rmd template copied to a temp folder, but
     ## tempReport is not used - report_setup_temp_files() is used for side efx
-    tempReport <- report_setup_temp_files(
+    tempReport <- report_setup_temp_files()
       # Rmd_name = 'community_report_template.Rmd', # default, for summary report
       # # Rmd_name = 'barplot_report_template.Rmd' # for single site barplot report
       # Rmd_folder = 'report/community_report/'
-    )
+
 
     # use create_filename() here like server does:
     if (!is.null(selected_location_name_react)) {

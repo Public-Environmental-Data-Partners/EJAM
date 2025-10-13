@@ -100,23 +100,23 @@ using the normal name and a synonym name, as with TOTALPOP and "totalPop"
    lat =      c(30.494982,   30.45)
   )
   # pts <- testpoints_5
-  
+
   myradius <- 1
-  
+
   x <- testoutput_ejscreenapi_plus_5; names(x) <- fixcolnames(names(x), "r", "long")
   # x <- ejscreenapi_plus(pts,              radius = myradius, usewhichnames = "long")
   # x <- ejscreenapi_plus(x = pts$lon, y = pts$lat, radius = myradius, usewhichnames = "long")
   # x <- ejscreenapi_plus(pts,              radius = myradius, usewhichnames = "long")
-  
+
   ## view results
   t(x[1, 3:ncol(x)])
   DT::datatable(x , escape = FALSE)
-  
+
   names(x) <- fixcolnames(names(x), "long", "r")
   plot_boxplot_ratios((calc_ratios_to_avg(x))$ratios_d, wheretext = myradius)
-  
+
  }
- 
+
 }
 \seealso{
 \code{\link[=ejscreenit]{ejscreenit()}} which also demonstrates a map and a plot,

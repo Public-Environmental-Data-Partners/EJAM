@@ -40,7 +40,7 @@ Counts high scores, by site
 \donttest{
   pdata <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
  # pdata <- data.frame(testoutput_ejamit_10pts_1miles$results_bysite)[ , names_e_pctile]
- pcuts <-  5 * (0:20) 
+ pcuts <-  5 * (0:20)
 colcounter_summary(        pdata, pcuts)
 colcounter_summary_pct(    pdata, pcuts)
 colcounter_summary_cum(    pdata, pcuts)

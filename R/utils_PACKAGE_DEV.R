@@ -1088,7 +1088,7 @@ pkg_functions_that_use <- function(text = "stop\\(", pkg = "EJAM", ignore_commen
     }
   } else {
     # it is an installed package
-    if (ignore_comments == FALSE) {warning('always ignores commented lines when checking exported functions of an installed package')}
+    if (!ignore_comments) {warning('always ignores commented lines when checking exported functions of an installed package')}
     for (this in getNamespaceExports(pkg)) {
 
       text_lines_of_function_body <- as.character(functionBody(get(this)))

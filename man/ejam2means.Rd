@@ -23,7 +23,7 @@ ejam2means(out, vars = names_e_ratio_to_state_avg)
 
 #' # these should tell you the same thing:
 out$results_summarized$keystats[
-  rownames(out$results_summarized$keystats) \%in\% names_e_ratio_to_state_avg, 
+  rownames(out$results_summarized$keystats) \%in\% names_e_ratio_to_state_avg,
 ]
 ejam2means(out, vars = names_e_ratio_to_state_avg)
 

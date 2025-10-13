@@ -26,8 +26,8 @@ statestats_queryd - convenient way to see mean, pctiles of DEMOG indicators from
 \examples{
 \donttest{
 
-usastats_querye() 
-#  data.frame where names_e are the names(), 
+usastats_querye()
+#  data.frame where names_e are the names(),
 #  means plus other percentiles, and there are other cols REGION PCTILE
 
 avg.in.us                # This is a data.frame, 1 row, where colnames are indicators
@@ -52,7 +52,7 @@ head(statestats_query(varnames = longlist))
 
 ## in USA overall, see mean and key percentiles
 # for all demog and envt indicators
-usastats_query() # or statestats_query('us') 
+usastats_query() # or statestats_query('us')
 # can say us or US or USA or usa etc.
 usastats_query(PCTILES = 'mean')
 usastats_means() # same but nicer looking format in console
@@ -77,12 +77,12 @@ statestats_query('MD','proximity.tsdf')
 ## mean of 1 indicator for each state
 statestats_query(varnames = 'proximity.tsdf')
 
-## using full blockgroup dataset, not lookup tables of percentiles, 
+## using full blockgroup dataset, not lookup tables of percentiles,
 blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm=T)),
    .SDcols= c(names_d, names_e)]
 
-##   see all total counts (not just US means), 
-##   residential populations including subgroups, 
+##   see all total counts (not just US means),
+##   residential populations including subgroups,
 ##   but not environmental indicators.
 t(blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm=T)),
     .SDcols= c(names_e, names_d)])

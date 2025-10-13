@@ -42,7 +42,7 @@ at or above the benchmark(s)
 \examples{
  pdata <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
   ### pdata <- EJAM::blockgroupstats[ , names_e_pctile]
- pcuts <-  5 * (0:20)  
+ pcuts <-  5 * (0:20)
 colcounter_summary(        pdata, pcuts)
 colcounter_summary_pct(    pdata, pcuts)
 colcounter_summary_cum(    pdata, pcuts)
