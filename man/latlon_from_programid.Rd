@@ -49,13 +49,13 @@ Also note the FRS API:
 }
 \examples{
  ids = c("00603DSCFPRD459", "00603MCRNTRD11K", "00605VNMRBMONTA" )
- latlon_from_programid("TRIS", ids) 
- 
- latlon_from_programid('EGRID', 1) 
+ latlon_from_programid("TRIS", ids)
+
+ latlon_from_programid('EGRID', 1)
  latlon_from_programid('ICIS', 1)
- 
+
  # ambiguous to only use the number! 354362 is used by two programs here:
  frs_by_programid[match(testinput_program_sys_id, frs_by_programid$pgm_sys_id), ]
  frs_by_programid[frs_by_programid$pgm_sys_id \%in\% testinput_program_sys_id, ]
- 
+
 }

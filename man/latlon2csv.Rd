@@ -22,7 +22,7 @@ into one vector of comma-separated pairs like latitude,longitude
    lat_example = c(30.01,30.26,30.51)
    lon_example = c(-90.61,-90.95,-91.23)
    latloncsv_example = c("30.01,-90.61", "30.26,-90.95", "30.51,-91.23")
-   all.equal(latloncsv_example, 
+   all.equal(latloncsv_example,
              latlon2csv(lat = lat_example, lon = lon_example)
    )
 

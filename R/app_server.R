@@ -157,7 +157,7 @@ app_server <- function(input, output, session) {
   # initial state (or if input$show_advanced_settings is changed in the adv. tab)
   observe({
     req(input$show_advanced_settings)
-    if (input$show_advanced_settings == FALSE) {
+    if (isFALSE(input$show_advanced_settings)) {
       hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
       isolate({
         if (input$can_show_advanced_settings) {
@@ -1323,8 +1323,8 @@ app_server <- function(input, output, session) {
         showNotification(id = 'radius_warning', session = session,
                          duration = NULL, type = 'error', closeButton = F,
                          'Please use a numeric radius greater than 0 for analyzing points.')
-      } else if (current_slider_val[[current_upload_method()]] > 0 &
-                 disable_buttons[[current_upload_method()]] == FALSE) {
+      } else if (current_slider_val[[current_upload_method()]] > 0 &&
+                 isFALSE(disable_buttons[[current_upload_method()]])) {
         shinyjs::enable(id = 'bt_get_results')
         removeNotification(id = 'radius_warning', session = session)
       } else {
@@ -1339,7 +1339,7 @@ app_server <- function(input, output, session) {
                        duration = NULL, type = 'error', closeButton = F,
                        paste0('Too many sites provided. This web app currently caps analyses at ', input$max_pts_run,' sites.'))
     } else {
-      if (disable_buttons[[current_upload_method()]] == FALSE) {
+      if (isFALSE(disable_buttons[[current_upload_method()]])) {
         shinyjs::enable(id = 'bt_get_results')
       }
       removeNotification(id = 'max_pts_warning', session = session)
@@ -1813,7 +1813,7 @@ app_server <- function(input, output, session) {
                     radius = 999, # because FIPS analysis
 
                     maxradius = input$maxradius,
-                    avoidorphans = input$avoidorphans,
+                    avoidorphans = isTRUE(as.logical(input$avoidorphans)),
                     # quadtree = localtree,
 
                     # countcols      = NULL,
@@ -1823,10 +1823,10 @@ app_server <- function(input, output, session) {
                     # calctype_minbg = NULL,
 
                     subgroups_type      = input$subgroups_type,
-                    extra_demog         = TRUE == as.character(input$extra_demog),
-                    include_ejindexes   = TRUE == as.character(input$include_ejindexes),
-                    calculate_ratios    = TRUE == as.character(input$calculate_ratios),
-                    need_proximityscore = TRUE == as.character(input$need_proximityscore), # not relevant for FIPS
+                    extra_demog         = isTRUE(as.logical(input$extra_demog)),
+                    include_ejindexes   = isTRUE(as.logical(input$include_ejindexes)),
+                    calculate_ratios    = isTRUE(as.logical(input$calculate_ratios)),
+                    need_proximityscore = isTRUE(as.logical(input$need_proximityscore)), # not relevant for FIPS
                     # infer_sitepoints = FALSE,
                     # need_blockwt = TRUE,
 
@@ -1903,10 +1903,10 @@ app_server <- function(input, output, session) {
                       # calctype_minbg = NULL,
 
                       subgroups_type      = input$subgroups_type,
-                      extra_demog         = TRUE == as.character(input$extra_demog),
-                      include_ejindexes   = TRUE == as.character(input$include_ejindexes),
-                      calculate_ratios    = TRUE == as.character(input$calculate_ratios),
-                      need_proximityscore = TRUE == as.character(input$need_proximityscore), # not relevant for FIPS
+                      extra_demog         = isTRUE(as.logical(input$extra_demog)),
+                      include_ejindexes   = isTRUE(as.logical(input$include_ejindexes)),
+                      calculate_ratios    = isTRUE(as.logical(input$calculate_ratios)),
+                      need_proximityscore = isTRUE(as.logical(input$need_proximityscore)),
                       # infer_sitepoints = FALSE,
                       # need_blockwt = TRUE,
 
@@ -1962,10 +1962,10 @@ app_server <- function(input, output, session) {
                        # calctype_minbg = NULL,
 
                        subgroups_type      = input$subgroups_type,
-                       extra_demog         = TRUE == as.character(input$extra_demog),
-                       include_ejindexes   = TRUE == as.character(input$include_ejindexes),
-                       calculate_ratios    = TRUE == as.character(input$calculate_ratios),
-                       need_proximityscore = TRUE == as.character(input$need_proximityscore), # not relevant for FIPS
+                       extra_demog         = isTRUE(as.logical(input$extra_demog)),
+                       include_ejindexes   = isTRUE(as.logical(input$include_ejindexes)),
+                       calculate_ratios    = isTRUE(as.logical(input$calculate_ratios)),
+                       need_proximityscore = isTRUE(as.logical(input$need_proximityscore)), # not relevant for FIPS
                        # infer_sitepoints = FALSE,
                        # need_blockwt = TRUE,
 
@@ -2122,9 +2122,9 @@ app_server <- function(input, output, session) {
                                         analysis_title =  sanitized_analysis_title(),
                                         totalpop = popstr,
                                         locationstr = residents_within_xyz,
-                                        include_ejindexes = (input$include_ejindexes == 'TRUE'),
-                                        show_ratios_in_report = (input$show_ratios_in_report == 'TRUE'),
-                                        extratable_show_ratios_in_report = (input$extratable_show_ratios_in_report == 'TRUE'),
+                                        include_ejindexes = isTRUE(as.logical(input$include_ejindexes)),
+                                        show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
+                                        extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
                                         extratable_title = input$extratable_title, # above the table, not in the upper left cell
                                         extratable_title_top_row = input$extratable_title_top_row,
                                         extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
@@ -2455,8 +2455,8 @@ app_server <- function(input, output, session) {
         shp = shp_for_report,
         analysis_title =  sanitized_analysis_title(),
         launch_browser = FALSE,
-        show_ratios_in_report = input$show_ratios_in_report,
-        extratable_show_ratios_in_report = input$extratable_show_ratios_in_report,
+        show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
+        extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
         extratable_title = input$extratable_title,
         extratable_title_top_row = input$extratable_title_top_row,
         extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
@@ -2549,8 +2549,8 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           shp = shp_for_report, # NULL or data_uploaded()
           analysis_title =  sanitized_analysis_title(),
           launch_browser = FALSE,
-          show_ratios_in_report = input$show_ratios_in_report,
-          extratable_show_ratios_in_report = input$extratable_show_ratios_in_report,
+          show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
+          extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
           extratable_title = input$extratable_title,
           extratable_title_top_row = input$extratable_title_top_row,
           extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
@@ -2684,8 +2684,8 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           shp = shp_for_report,
           analysis_title =  sanitized_analysis_title(),
           launch_browser = FALSE,
-          show_ratios_in_report = input$show_ratios_in_report,
-          extratable_show_ratios_in_report = input$extratable_show_ratios_in_report,
+          show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
+          extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
           extratable_title = input$extratable_title,
           extratable_title_top_row = input$extratable_title_top_row,
           extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
@@ -2737,7 +2737,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
   # see notes on   https://exts.ggplot2.tidyverse.org/gallery/
 
   output$summ_bar_ind_out <- renderUI({
-    if ((input$include_ejindexes == "TRUE")) {
+    if (isTRUE(as.logical(input$include_ejindexes))) {
       radioButtons(inputId = 'summ_bar_ind',
                    label = h5('Indicator type'),
                    choiceNames = c('Residential Populations', 'Environmental',
@@ -2820,7 +2820,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
     req(input$include_ejindexes)
     req(input$summ_hist_data)
 
-    if ((input$include_ejindexes == "TRUE")) {
+    if (isTRUE(as.logical(input$include_ejindexes))) {
 
       ## use same root names so dropdown does not reset with other settings changing
       root_nms <-  c(names_d,

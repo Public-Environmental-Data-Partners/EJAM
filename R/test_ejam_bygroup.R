@@ -156,6 +156,8 @@ test_ejam_bygroup <- function(testlist,
       if (sum(xtable[[i]]$failed) > 0) {
         cat(paste0("     ***      Some FAILED in ", tgroupname, ": ",
                    paste0(unique(xtable[[i]]$file[xtable[[i]]$failed > 0]), collapse = ","), "\n"))
+        cat(paste0("tests failed: ",
+                   paste0(unique(xtable[[i]]$test[xtable[[i]]$failed > 0]), collapse = ","), "\n"))
       } else {
         cat(paste0("     ***      Some UNTESTED or WARNED in ", tgroupname, ": ",
                    paste0(unique(xtable[[i]]$file[xtable[[i]]$flagged > 0]), collapse = ","), "\n"))

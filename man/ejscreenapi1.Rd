@@ -72,21 +72,20 @@ using the normal name and a synonym name, as with TOTALPOP and "totalPop"
 See  (https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/ejscreen-api)
 }
 \examples{
- 
  \donttest{
  # Specify size of buffer circle and pick random points as example data
  myradius <- 1
- pts <- structure(list(lon = c(-96.4798957, -111.7674343, -75.4173589, 
- -95.9573172, -87.8402677, -77.9996191, -73.920702, -79.9545638, 
- -76.0638877, -114.9881473), lat = c(31.782716, 33.7522735, 39.8697972, 
- 33.2522474, 41.9763992, 38.4661259, 41.2940801, 32.8099327, 40.9888266, 
+ pts <- structure(list(lon = c(-96.4798957, -111.7674343, -75.4173589,
+ -95.9573172, -87.8402677, -77.9996191, -73.920702, -79.9545638,
+ -76.0638877, -114.9881473), lat = c(31.782716, 33.7522735, 39.8697972,
+ 33.2522474, 41.9763992, 38.4661259, 41.2940801, 32.8099327, 40.9888266,
  36.0043628), id = 1:10), row.names = c(NA, -10L), class = "data.frame")
  out1 <- ejscreenapi1(lon = pts$lon[1], lat=pts$lat[1], radius = myradius)
  t(out1)
  #out <- ejscreenapi(lon=pts$lon, lat=pts$lat, radius = myradius)
  #t(out[1:2,])
  }
- 
+
 }
 \seealso{
 \code{\link[=ejscreenit]{ejscreenit()}} \code{\link[=ejscreenapi_plus]{ejscreenapi_plus()}} \code{\link[=ejscreenapi]{ejscreenapi()}}

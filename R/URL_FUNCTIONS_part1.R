@@ -298,30 +298,30 @@ if (FALSE ) {
 
   # examples or tests
 
-  url_from_keylist(lat = 35, lon = -100, radius = 3.2)
-  url_from_keylist(lat = c(35,36), lon = c(-100,-99), radius = 3.14)
-
-  lat = c(35,36)
-  lon = c(-100,-99)
-  radius = 3.14
-  url_from_keylist(lat = lat, lon = lon, radius = radius)
-
-  keys = list(lat = c(35,36), lon = c(-100,-99), radius = 3.14)
-  url_from_keylist(keylist = keys)
-
-
-
-  # might want NULL to be encoded as empty parameter but that gets removed anyway
-  url_from_keylist(lat = c(35,36), lon = c(-100,-99), radius = 3.14, xyz = NULL, abc = NULL)
-
-  url_from_keylist(sitepoints=testpoints_10)
-
-
-  # bad:
-
-  url_from_keylist(keylist = list(a = 1, ))
-  url_from_keylist(a=, b=1)
-  url_from_keylist(keylist = list(a=, b=1 ))
+  # url_from_keylist(lat = 35, lon = -100, radius = 3.2)
+  # url_from_keylist(lat = c(35,36), lon = c(-100,-99), radius = 3.14)
+  #
+  # lat = c(35,36)
+  # lon = c(-100,-99)
+  # radius = 3.14
+  # url_from_keylist(lat = lat, lon = lon, radius = radius)
+  #
+  # keys = list(lat = c(35,36), lon = c(-100,-99), radius = 3.14)
+  # url_from_keylist(keylist = keys)
+  #
+  #
+  #
+  # # might want NULL to be encoded as empty parameter but that gets removed anyway
+  # url_from_keylist(lat = c(35,36), lon = c(-100,-99), radius = 3.14, xyz = NULL, abc = NULL)
+  #
+  # url_from_keylist(sitepoints=testpoints_10)
+  #
+  #
+  # # bad:
+  #
+  # url_from_keylist(keylist = list(a = 1, ))
+  # url_from_keylist(a=, b=1)
+  # url_from_keylist(keylist = list(a=, b=1 ))
 
 }
 # ########################################################### #

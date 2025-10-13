@@ -35,6 +35,7 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
   }))
   ############### #
   try(test_that(paste0(funcname, " BG FIPS works"), {
+    oldwidth = options("width")
     expect_no_error({
       x <- FUN(fips = testinput_fips_blockgroups[1] , ...)
     })
@@ -42,13 +43,16 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
       x <- FUN(fips = testinput_fips_blockgroups[1:2] , ...)
     })
     expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
   try(test_that(paste0(funcname, " mix of FIPS works"), {
+    oldwidth = options("width")
     expect_no_error({
       x <- FUN(fips = fipsmix, ...)
     })
     expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
   try(test_that(paste0(funcname, " SHAPEFILE works"), {
@@ -103,6 +107,7 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_equal(length(x), 6)
     expect_true(substr(x[1], 1, 5) == "https")
   }))
+
 }
 ############## ############### ############### ############### ############### #
 ############## ############### ############### ############### ############### #

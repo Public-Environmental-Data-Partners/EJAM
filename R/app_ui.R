@@ -581,8 +581,8 @@ app_ui  <- function(request) {
                                                      helpText('This table shows results for each Location in the analysis. It includes location and residential population, environmental, and summary indicator information.\n
        The downloaded version includes more columns than are displayed here.'),
                                                      fluidRow(
-                                                       column(6,
-                                                              #h3(id = 'site_by_site', 'Site-by-Site Table')
+                                                       column(6
+                                                              # , h3(id = 'site_by_site', 'Site-by-Site Table')
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()

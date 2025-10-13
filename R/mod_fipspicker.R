@@ -584,7 +584,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
           # show/hide these units
           shinyjs::show(("all_regions_button")) # always show if picking this type
           isolate({
-            if (input$all_regions_button == TRUE) {
+            if (isTRUE(input$all_regions_button)) {
               shinyjs::hide(("regions_picked"))
             } else {
               shinyjs::show(("regions_picked"))
@@ -619,7 +619,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
           # show/hide these units
           shinyjs::show(("all_states_button")) # always show if picking this type
           isolate({
-            if (input$all_states_button == TRUE) {
+            if (isTRUE(input$all_states_button)) {
               shinyjs::hide(("states_picked"))
             } else {
               shinyjs::show(("states_picked"))
@@ -660,7 +660,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
             shinyjs::hide(("all_counties_button"))
           }
           isolate({
-            if (input$all_counties_button == TRUE) {
+            if (isTRUE(input$all_counties_button)) {
               shinyjs::hide(("counties_picked"))
             } else {
               shinyjs::show(("counties_picked"))
@@ -716,7 +716,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
       ## > REGIONS ####
       observe({ # all regions checkbox click
 
-        if (input$all_regions_button == FALSE) {
+        if (isFALSE(input$all_regions_button)) {
           if (testing_this_module) {cat("NO regions BUTTON \n")}
           updateCheckboxGroupInput(session, inputId = "regions_picked",
                                    selected = NULL, inline = TRUE) # clears them
@@ -729,7 +729,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
           shinyjs::hide("regions_picked")
         }
 
-        if (input$all_regions_button == TRUE) {
+        if (isTRUE(input$all_regions_button)) {
           if (testing_this_module) {cat("ALL regions BUTTON \n")}
           updateCheckboxGroupInput(session, inputId = "regions_picked",
                                    selected = all_regions_choices, inline = TRUE)
@@ -747,7 +747,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
       ## > STATES ####
       observe({ # all states checkbox click
 
-        if (input$all_states_button == FALSE) {
+        if (isFALSE(input$all_states_button)) {
           if (testing_this_module) {cat("NO states BUTTON \n")}
           updateSelectizeInput(session, inputId = "states_picked", server = TRUE,
                                selected = NULL,  # clears them
@@ -791,7 +791,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
       ## > COUNTIES ####
       observe({  # allcounties checkbox click
 
-        if (input$all_counties_button == FALSE) {
+        if (isFALSE(input$all_counties_button)) {
           if (testing_this_module) {cat("NO counties BUTTON \n")}
           updateSelectizeInput(session, inputId = "counties_picked", server = TRUE,
                                choices = all_counties_choices,
@@ -808,7 +808,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
             shinyjs::hide("counties_picked") # if selecting regions/states it is irrelevant. if cities, MAYBE want to see counties as a filter?
           }
         }
-        if (input$all_counties_button == TRUE) {
+        if (isTRUE(input$all_counties_button)) {
           if (testing_this_module) {cat("ALL counties BUTTON \n")}
           updateSelectizeInput(session, inputId = "counties_picked", server = TRUE,
                                choices = all_counties_choices,

@@ -39,13 +39,13 @@ sites is complicated. See discussion of \code{\link[=latlon_from_naics]{latlon_f
 \examples{
 # Also see vignettes for many more examples, and discussion.
   naics_categories()
-  
+
   naics_from_any("textile mills", children = FALSE)
   naics_from_any("textile mills", children = TRUE)
 
   frs_from_naics("textile mills", children = FALSE)
   frs_from_naics("textile mills", children = TRUE)
-  
+
   \donttest{
   naics_from_any(naics_categories(3))[order(name),.(name,code)][1:10,]
   naics_from_any(naics_categories(3))[order(code),.(code,name)][1:10,]

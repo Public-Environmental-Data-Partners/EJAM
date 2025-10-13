@@ -46,12 +46,12 @@ same as \code{\link[=barplot]{barplot()}}
 barplot comparing groups of sites on 1 indicator, based on table of grouped site data
 }
 \examples{
- out <- ejamit_compare_types_of_places(testpoints_10[1:4, ], 
+ out <- ejamit_compare_types_of_places(testpoints_10[1:4, ],
    typeofsite <- c("A", "B", "B", "C"))
    cbind(Rows_or_length = sapply(out, NROW))
-  
+
  ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = F)
- 
+
 }
 \seealso{
 \code{\link[=ejam2barplot_sitegroups]{ejam2barplot_sitegroups()}}

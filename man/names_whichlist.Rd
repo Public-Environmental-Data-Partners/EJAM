@@ -41,10 +41,9 @@ namez$d_subgroups_state_pctile which is a vector of terms like
 "state.pctile.pcthisp", "state.pctile.pctnhba", etc.
 }
 \examples{
- 
    x <- names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
    subset(x, !grepl("friendly", x$whichlist))
-   
+
    subset(x,  grepl("friendly", x$whichlist))
    subset(namez, names(namez) != "all_r" & names(namez) \%in\%
       subset(x, x$grepmatch == "yes" & !grepl("friendly", x$whichlist))$whichlist  )

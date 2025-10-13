@@ -36,7 +36,7 @@ For another view and text explanations of the findings, see
  a3['0',,]; a3[1,,]
  a3[dim(a3)[1],,]
  # a3['12',,]; a3[13,,]
- 
+
  \donttest{
  barplot(colcounter_summary_cum_pct(pdata, pcuts)[ , '80'],
     ylab='\% of places', xlab='# of indicators at/above threshold',
@@ -62,14 +62,14 @@ For another view and text explanations of the findings, see
   # pdata <- bg22[ ,  names.ej.pctile]
   colcounter_summary_cum_pct(pdata,c(50,80,90,95))
   xs <- 1:13
-  plot(x=xs, y=colcounter_summary_cum_pct(pdata, 50)[xs+1], 
+  plot(x=xs, y=colcounter_summary_cum_pct(pdata, 50)[xs+1],
     type='b', col='gray', ylim=c(0, 40),
-    main='\% of places with at least x/13 indicators >=Nth percentile', ylab='\% of places', 
+    main='\% of places with at least x/13 indicators >=Nth percentile', ylab='\% of places',
     xlab='# of indicators')
   points(xs, colcounter_summary_cum_pct(pdata, 80)[xs+1], type='b', col='blue')
   points(xs, colcounter_summary_cum_pct(pdata, 90)[xs+1], type='b', col='orange')
   points(xs, colcounter_summary_cum_pct(pdata, 95)[xs+1], type='b', col='red')
-  legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'), 
+  legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'),
     fill = c('gray', 'blue', 'orange', 'red'))
 }
 

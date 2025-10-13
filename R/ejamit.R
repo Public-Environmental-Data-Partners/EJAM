@@ -8,7 +8,7 @@
 #' @details See examples in vignettes/ articles at `r EJAM:::repo_from_desc('github.io', get_full_url = T)`
 #'
 #' @param sitepoints data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers
-#' @param radius in miles, defining circular buffer around a site point
+#' @param radius in miles, defining circular buffer around a site point (assumes zero in fips or shapefile cases)
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
 #' @param avoidorphans logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
@@ -302,7 +302,9 @@ ejamit <- function(sitepoints = NULL,
     # . radius (buffer) for polygons ####
     if (missing(radius)) {
       if (interactive() && !silentinteractive && !in_shiny && rstudioapi::isAvailable()) {
-        radius <- askradius(default = 0, message = "To add a buffer around each polygon, enter distance in miles. For none, use 0.")
+        radius = 0
+        ## it was asking user to confirm zero radius in shapefile case but that is almost never useful so drop that behavior now.
+        # radius <- askradius(default = 0, message = "To add a buffer around each polygon, enter distance in miles. For none, use 0.")
       } else {
         radius = 0 # default is no buffer around polygon
       }

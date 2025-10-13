@@ -36,15 +36,15 @@
   ## notloaded <- inherits(try( path.package("EJAM") , silent = TRUE), "try-error")
   notloaded_and_notinstalled <- inherits(try( find.package("EJAM") , silent = TRUE), "try-error")
   if (notloaded_and_notinstalled) {
-    cat("EJAM package must be installed or at least loaded from source already for .onAttach() to be able to use system.file(package = 'EJAM') \n")
+    packageStartupMessage("EJAM package must be installed or at least loaded from source already for .onAttach() to be able to use system.file(package = 'EJAM') \n")
     # try using local source package folders
     localpath <- file.path('./inst/global_defaults_package.R')
     if (!file.exists(localpath)) {
-      cat("Cannot find", localpath, "to create global_defaults_package object\n")
+      packageStartupMessage("Cannot find", localpath, "to create global_defaults_package object\n")
     } else {
       junk = try(source(localpath))
       if (inherits(junk, "try-error")) {
-        cat("Cannot source", localpath, "to create global_defaults_package object\n")
+        packageStartupMessage("Cannot source", localpath, "to create global_defaults_package object\n")
       }
     }
   } else {
@@ -54,7 +54,7 @@
   # It will source the file in the global environment by using local=FALSE
   # BUT, when this tries to source that .R file during .onAttach(), R has not yet attached all the .R files ?
   if (!file.exists(localpath)) {
-    cat("EJAM package is installed or loaded but cannot find file at", localpath, "\n")
+    packageStartupMessage("EJAM package is installed or loaded but cannot find file at", localpath, "\n")
   } else {
     packageStartupMessage("Trying to source a local source code copy from ", localpath, " \n")
   }
@@ -62,15 +62,15 @@
     source(localpath, local = FALSE)
     }, silent = TRUE)
   if (file.exists(localpath) && inherits(junk1, "try-error")) {
-    cat("in .onAttach() -- Unable to do
+    packageStartupMessage("in .onAttach() -- Unable to do
     source(system.file('global_defaults_package.R', package = 'EJAM')
     ")
     # localpath <- system.file('inst/global_defaults_package.R', package = 'EJAM') # system.file() does not like starting with inst/
     localpath <- file.path(dirname(system.file(package = "EJAM")), "inst", "global_defaults_package.R")
-    cat("Trying to source a local source code copy from ", localpath, " \n")
+    packageStartupMessage("Trying to source a local source code copy from ", localpath, " \n")
     junk2 = try(source(localpath), silent = TRUE)
     if (inherits(junk2, "try-error")) {
-      cat("Cannot source", localpath, "to create global_defaults_package object\n")
+      packageStartupMessage("Cannot source", localpath, "to create global_defaults_package object\n")
       warning(paste0("
     Problem in .onAttach() -- Unable to create global_defaults_package object because cannot do
        source(system.file('global_defaults_package.R', package = 'EJAM'))

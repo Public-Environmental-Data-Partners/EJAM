@@ -37,8 +37,8 @@ rm(app_version,
 # app_title is used in shiny app headers, documentation pages, etc., e.g.
 #   "Environmental Justice Analysis Multisite tool"  or    "Environmental and Residential Population Analysis Multisite tool"
 
-global_defaults_package$app_title = as.vector(desc::desc_get("Title"))
-
+# global_defaults_package$app_title = as.vector(desc::desc_get("Title"))
+global_defaults_package$app_title = as.vector(desc::desc_get("Title", file = system.file("DESCRIPTION", package = "EJAM")))
 # REPORT TITLE ####
 
 # report_title is used in header of summary /community report page.
