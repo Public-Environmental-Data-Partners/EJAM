@@ -207,23 +207,23 @@ uses <code><a href="ejscreenapi1.html">ejscreenapi1()</a></code> and <code><a hr
 <span>   lat <span class="op">=</span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30.494982</span>,   <span class="fl">30.45</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span>  <span class="co"># pts &lt;- testpoints_5</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="va">myradius</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejscreenapi_plus_5</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="fixcolnames.html">fixcolnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="st">"r"</span>, <span class="st">"long"</span><span class="op">)</span></span>
 <span>  <span class="co"># x &lt;- ejscreenapi_plus(pts,              radius = myradius, usewhichnames = "long")</span></span>
 <span>  <span class="co"># x &lt;- ejscreenapi_plus(x = pts$lon, y = pts$lat, radius = myradius, usewhichnames = "long")</span></span>
 <span>  <span class="co"># x &lt;- ejscreenapi_plus(pts,              radius = myradius, usewhichnames = "long")</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="co">## view results</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span><span class="va">x</span> , escape <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="fixcolnames.html">fixcolnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="st">"long"</span>, <span class="st">"r"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="plot_boxplot_ratios.html">plot_boxplot_ratios</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="calc_ratios_to_avg.html">calc_ratios_to_avg</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">ratios_d</span>, wheretext <span class="op">=</span> <span class="va">myradius</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span> </span>
-<span> </span></code></pre></div>
+<span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

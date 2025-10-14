@@ -93,8 +93,8 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
 <span></span>
-<span><span class="fu"><a href="usastats_querye.html">usastats_querye</a></span><span class="op">(</span><span class="op">)</span> </span>
-<span><span class="co">#  data.frame where names_e are the names(), </span></span>
+<span><span class="fu"><a href="usastats_querye.html">usastats_querye</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#  data.frame where names_e are the names(),</span></span>
 <span><span class="co">#  means plus other percentiles, and there are other cols REGION PCTILE</span></span>
 <span></span>
 <span><span class="va">avg.in.us</span>                <span class="co"># This is a data.frame, 1 row, where colnames are indicators</span></span>
@@ -119,7 +119,7 @@
 <span></span>
 <span><span class="co">## in USA overall, see mean and key percentiles</span></span>
 <span><span class="co"># for all demog and envt indicators</span></span>
-<span><span class="fu"><a href="usastats_query.html">usastats_query</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># or statestats_query('us') </span></span>
+<span><span class="fu"><a href="usastats_query.html">usastats_query</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># or statestats_query('us')</span></span>
 <span><span class="co"># can say us or US or USA or usa etc.</span></span>
 <span><span class="fu"><a href="usastats_query.html">usastats_query</a></span><span class="op">(</span>PCTILES <span class="op">=</span> <span class="st">'mean'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="usastats_means.html">usastats_means</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># same but nicer looking format in console</span></span>
@@ -144,12 +144,12 @@
 <span><span class="co">## mean of 1 indicator for each state</span></span>
 <span><span class="fu"><a href="statestats_query.html">statestats_query</a></span><span class="op">(</span>varnames <span class="op">=</span> <span class="st">'proximity.tsdf'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## using full blockgroup dataset, not lookup tables of percentiles, </span></span>
+<span><span class="co">## using full blockgroup dataset, not lookup tables of percentiles,</span></span>
 <span><span class="va">blockgroupstats</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span>, na.rm<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>   .SDcols<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_d</span>, <span class="va">names_e</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">##   see all total counts (not just US means), </span></span>
-<span><span class="co">##   residential populations including subgroups, </span></span>
+<span><span class="co">##   see all total counts (not just US means),</span></span>
+<span><span class="co">##   residential populations including subgroups,</span></span>
 <span><span class="co">##   but not environmental indicators.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span>, na.rm<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    .SDcols<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_e</span>, <span class="va">names_d</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>

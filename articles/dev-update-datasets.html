@@ -219,25 +219,46 @@ facilities or other types of sites, and their
 <em>NAICS/SIC/MACT/program</em> information, may need frequent updates,
 ideally, since facilities open, close, relocate, or have their
 information corrected or otherwise updated. EPA’s FRS is the source for
-much of this information stored in tables EJAM uses, such as these:
-<code><a href="../reference/frs.html">?frs</a></code>, <code><a href="../reference/frs_by_programid.html">?frs_by_programid</a></code>,
-<code><a href="../reference/frs_by_naics.html">?frs_by_naics</a></code>, <code><a href="../reference/frs_by_sic.html">?frs_by_sic</a></code>, and
-<code><a href="../reference/frs_by_mact.html">?frs_by_mact</a></code>, <code><a href="../reference/NAICS.html">?NAICS</a></code>, <code><a href="../reference/SIC.html">?SIC</a></code>,
-<code><a href="../reference/naics_counts.html">?naics_counts</a></code>, <code><a href="../reference/naicstable.html">?naicstable</a></code>, <code><a href="../reference/SIC.html">?SIC</a></code>,
-<code><a href="../reference/sictable.html">?sictable</a></code>, <code><a href="../reference/mact_table.html">?mact_table</a></code>, and
-<code><a href="../reference/epa_programs.html">?epa_programs</a></code>, <code><a href="../reference/frsprogramcodes.html">?frsprogramcodes</a></code>, etc. Again
-these are updated from within
-<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em></p></li>
-<li><p><code><a href="../reference/map_headernames.html">?map_headernames</a></code> and associated .xlsx, etc. are
-critical. This needs to updated especially if indicator names change or
-are added, for example. <code><a href="../reference/map_headernames.html">?map_headernames</a></code> holds most of the
-useful metadata about each variable (each indicator, like %low income) –
-e.g., how many digits to use in rounding, units, a long name of
-indicator, the type or category of indicator, sort order to use in
-reports, method of calculating aggregations of the indicator over
-blockgroups, etc. This is modified directly in the spreadsheet
-map_headernames, and then functions/scripts read that .xlsx to create
-the map_headernames dataset. See
+much of this information and the FRS is updated by EPA frequently and is
+available via an API. Through at least v2.32.6, EJAM (and therefore the
+community reports in EJSCREEN) used a snapshot of the EPA FRS data
+rather than using an API to obtain the latest info on demand – that is
+something that could be changed in a future version. Facility-related
+info is stored in tables EJAM uses, such as these: <code><a href="../reference/frs.html">?frs</a></code>,
+<code><a href="../reference/frs_by_programid.html">?frs_by_programid</a></code>, <code><a href="../reference/frs_by_naics.html">?frs_by_naics</a></code>,
+<code><a href="../reference/frs_by_sic.html">?frs_by_sic</a></code>, and <code><a href="../reference/frs_by_mact.html">?frs_by_mact</a></code>,
+<code><a href="../reference/NAICS.html">?NAICS</a></code>, <code><a href="../reference/SIC.html">?SIC</a></code>, <code><a href="../reference/naics_counts.html">?naics_counts</a></code>,
+<code><a href="../reference/naicstable.html">?naicstable</a></code>, <code><a href="../reference/SIC.html">?SIC</a></code>, <code><a href="../reference/sictable.html">?sictable</a></code>,
+<code><a href="../reference/mact_table.html">?mact_table</a></code>, and <code><a href="../reference/epa_programs.html">?epa_programs</a></code>,
+<code><a href="../reference/frsprogramcodes.html">?frsprogramcodes</a></code>, etc. These FRS, MACT, and Program info
+tables of EPA-relevant data are updated in the EJAM package from within
+<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em> The
+<code><a href="../reference/NAICS.html">?NAICS</a></code>, <code><a href="../reference/naicstable.html">?naicstable</a></code>, and
+<code><a href="../reference/sictable.html">?sictable</a></code> objects (viewable using
+<code><a href="../reference/naics_categories.html">naics_categories()</a></code> and <code><a href="../reference/sic_categories.html">sic_categories()</a></code>
+utilities) have no EPA-specific data so they do not need frequent
+updates – The NAICS data object stores just the name of each NAICS code
+number, and new codes/names are published every five years, such as in
+2017 and 2022, so a new version would typically be expected in 2027. The
+tables called <code><a href="../reference/SIC.html">?SIC</a></code> (unlike the NAICS table) and
+<code><a href="../reference/naics_counts.html">?naics_counts</a></code> (which has no analogous sic version),
+however, contain counts of EPA FRS facilities, so they need updates when
+FRS data are updated. The inconsistency in how NAICS vs SIC tables and
+the naics_counts table were named and defined was by historical
+accident, not intentional, so it would be OK if refactoring later made
+them consistent or even switched entirely to more frequent automated
+updates or even reliance on the FRS API.</p></li>
+<li><p><code><a href="../reference/map_headernames.html">?map_headernames</a></code> and associated .xlsx, etc. store
+critical metadata. This needs to updated especially if indicator names
+change or are added, for example. <code><a href="../reference/map_headernames.html">?map_headernames</a></code> holds
+most of the useful metadata about each variable (each indicator, like
+%low income) – e.g., how many digits to use in rounding, units, a long
+name of indicator, the type or category of indicator, sort order to use
+in reports, method of calculating aggregations of the indicator over
+blockgroups, etc. This is modified directly in the spreadsheet at
+data-raw/map_headernames____.xlsx (renamed for each package version),
+and then functions or scripts read that .xlsx to create the
+map_headernames dataset. See
 <em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em></p></li>
 <li><p><a href="testdata.Rmd">Test data (inputs) and examples of
 outputs</a> may have to be updated (every time parameters change &amp;
