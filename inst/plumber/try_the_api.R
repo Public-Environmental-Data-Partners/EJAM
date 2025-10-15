@@ -1,64 +1,107 @@
 ####################################################### #
 # TO TRY plumber API ON LOCAL SERVER ####
 ####################################################### #
+####################################################### #
+# you could START UP THE API this way below,
+# or simply open the plumber.R file in RStudio and click "Run API" button.
 
-if (1 == 0) {
-
-  ####################################################### #
-  # you could START UP THE API this way below,
-  # or simply open the plumber.R file in RStudio and click "Run API" button.
-
-  # use the pr() function to translate this R file into a Plumber API
-  # The pr object encapsulates all the logic represented in your plumber.R file.
-  # To bring the API to life use the pr_run() method.
-  # You should see a message about your API running on your computer on port 8000.
-  # The API will continue running in your R session until you press the Esc key.
-  #
-  #   setwd(mysource()) # my own
-  # If in a package, plumber.R MUST BE PUT IN /inst/plumber/  of SOURCE package,
-  # since installing deletes folders like EJAM/plumber/
-  #  and moves all in /inst/   to the root of installed version!
-  # But while testing it is confusing since the location of the
-  # plumber.R file differs from where it will be in the installed package.
-  # This would refer to where it will be once installed:
-    fname_installed <- system.file("plumber/plumber.R", package = "EJAM")
-  # what was in inst folder of source pkg, installed version puts in root folder
-  # This would refer to where it is during testing:
-    fname_source <- "./inst/plumber/plumber.R"
-  library(EJAM)
-  library(plumber)
-  root <- pr(fname_source)
-  pr_run(root)
-
-    ####################################################### #
-
-  # If you’re running this code locally on your personal machine,
-  # you can do what is below in a separate R session than the one running the API:
-
-  # BUT YOU HAVE TO USE THE RIGHT FULL IP:PORT WHICH CHANGES EACH TIME !
-
-  PORT = 3035
-
-  ##############  #
-  # try echo
-
-  #  https://127.0.0.1:7705/echo?msg=asdf
-
-  # browseURL(paste0("https://localhost:", PORT, "/echo"))
+# use the pr() function to translate this R file into a Plumber API
+# The pr object encapsulates all the logic represented in your plumber.R file.
+# To bring the API to life use the pr_run() method.
+# You should see a message about your API running on your computer on port 8000.
+# The API will continue running in your R session until you press the Esc key.
+####################################################### #
+## to use the INSTALLED version:
+##
+## If in a package, plumber.R MUST BE PUT IN /inst/plumber/  of SOURCE package,
+## since installing deletes folders like EJAM/plumber/
+##  and moves all in /inst/   to the root of installed version!
+## But while testing it is confusing since the location of the
+## plumber.R file differs from where it will be in the installed package.
+## This would refer to where it will be once installed:
+## what was in inst folder of source pkg, installed version puts in root folder
+# rstudioapi::restartSession(clean = TRUE)
+# fname_installed <- system.file("plumber/plumber.R", package = "EJAM")
+## or
+# rstudioapi::restartSession(clean = TRUE)
+# library(EJAM)
+# fname_installed <- system.file("plumber/plumber.R", package = "EJAM")
+####################################################### #
+## to use the CURRENT CHECKED-OUT LOCAL SOURCE version:
+##
+## This would refer to where it is during testing:
+# rstudioapi::restartSession(clean = TRUE)
+# library(EJAM) # must do this before load_all() for it to correctly create  cbind(global_defaults_package), e.g., global_defaults_package$report_logo
+# devtools::load_all(".")
+# fname_source <- system.file("plumber/plumber.R", package = "EJAM")
+## or
+# fname_source <- "./inst/plumber/plumber.R"
+###################################################### #
+# fname_source <- "./inst/plumber/rest_controller_ejam-api.R"
+# source("~/Documents/R PACKAGES/EJAM/inst/plumber/rest_controller_ejam-api.R")
+### source version
+# fname_source <- normalizePath("./inst/plumber/plumber.R")
+### installed version unless used load_all() after library()
+# fname_source <- system.file("plumber/plumber.R", package = "EJAM")
+# test_host <- "127.0.0.1"
+# test_port <- 3035
+# test_url <- paste0("http://", test_host, ":", test_port)
 
 
+api_run()
 
+
+####################################################### #
+## another idea:
+# library(job)
+# empty({
+#   library(plumber)
+#   pr_run(pr(file =
+#               system.file("plumber/plumber.R", package = "EJAM")
+#   ))
+# })
+
+
+####################################################### #
+# If you’re running this code locally on your personal machine,
+# you can do what is below in a separate R session than the one running the API:
+
+# BUT YOU HAVE TO USE THE RIGHT FULL IP:PORT WHICH CHANGES EACH TIME unless you specify it
+
+# PORT = 3073
+PORT <- test_port # or whatever
+##############  #
+# try echo
+
+#  https://127.0.0.1:7705/echo?msg=asdf
+# browseURL(paste0("https://localhost:", PORT, "/echo"))
+
+if (FALSE) {
   ##############  #
   # try ejamit
 
+  url2 <- "http://127.0.0.1:3035/getblocksnearby?lat=33&lon=-99&radius=2"
+  req2 <- httr2::request(url2)
+  httr2::req_dry_run(req2)
+  out2 <- httr2::req_perform(req2)
+  s2b <- data.table::rbindlist(httr2::resp_body_json(out2))   ####  *********
   ##############  #
-  url2 = paste0("https://127.0.0.1:", PORT, "/ejamit?lon=-101&lat=36&radius=1")
-  req2 = httr2::request(url2)
-  out2 = httr2::req_perform(req2)
+  url2 <- paste0("http://127.0.0.1:", PORT, "/report?lon=-101&lat=36&radius=1")
+
+  # url2 = paste0("https://127.0.0.1:", PORT, "/ejamit?lon=-101&lat=36&radius=1")
+  req2 <- httr2::request(url2)
+  httr2::req_dry_run(req2)
+  out2 <- httr2::req_perform(req2)
   class(out2)
   str(out2)
   print(out2)
   ##############  #
+
+  urlx <- (url_ejamapi(sitepoints = testpoints_10[1, ], radius = 3.14, baseurl = "http://127.0.0.1:3035/report?")) # buffer vs radius as param in url?
+  print(urlx)
+
+  out2 <- httr2::req_perform(httr2::request(urlx))
+
 
   browseURL(url2)
   #  paste0("https://127.0.0.1:", PORT, "/ejamit?lat=31.34653&lon=-92.40151&radius=1.2&attachment=false&test=false")
@@ -69,11 +112,11 @@ if (1 == 0) {
   browseURL(paste0("https://localhost:", PORT, "/ejamit"))
 
 
-  url2 = paste0("https://127.0.0.1:", PORT, "/ejamit?lon=-101&lat=36&radius=1")
+  url2 <- paste0("https://127.0.0.1:", PORT, "/ejamit?lon=-101&lat=36&radius=1")
   browseURL(url2)
 
 
-  url2csv = paste0("https://127.0.0.1:", PORT, "/ejamit_csv?lon=-101&lat=36&radius=1")
+  url2csv <- paste0("https://127.0.0.1:", PORT, "/ejamit_csv?lon=-101&lat=36&radius=1")
   browseURL(url2csv)
 
 
@@ -84,10 +127,10 @@ if (1 == 0) {
   #
   # browseURL(paste0("https://localhost:", PORT, "/getblocksnearby"))
 
-  url3 = paste0("https://127.0.0.1:", PORT, "/getblocksnearby?lon=-101&lat=39&radius=1")
+  url3 <- paste0("https://127.0.0.1:", PORT, "/getblocksnearby?lon=-101&lat=39&radius=1")
 
-  req3 = httr2::request(url3)
-  out3 = httr2::req_perform(req3)
+  req3 <- httr2::request(url3)
+  out3 <- httr2::req_perform(req3)
   class(out3)
   str(out3)
   print(out3)
@@ -99,8 +142,8 @@ if (1 == 0) {
   # try doaggregate
   #
   # browseURL(paste0("http://localhost:", PORT, "/doaggregate"))
-
 }
+
 # ####################################################### # # ####################################################### #
 # ####################################################### # # ####################################################### #
 # Help/notes on setting up API:
