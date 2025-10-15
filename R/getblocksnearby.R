@@ -43,7 +43,7 @@
 #'
 #' @export
 #'
-getblocksnearby  <- function(sitepoints, radius = 3, maxradius = 31.07, radius_donut_lower_edge = 0,
+getblocksnearby <- function(sitepoints, radius = 3, maxradius = 31.07, radius_donut_lower_edge = 0,
                              avoidorphans = FALSE,
                              # indexgridsize,
                              quadtree = NULL,

@@ -27,6 +27,6 @@ helper func to update 1 metadata attribute (e.g. "ejam_package_version") in all 
 updates EJAM/data/*.rda (BUT NOT ARROW & NOT TXT FILES)
 }
 \seealso{
-\code{\link[=metadata_check_print]{metadata_check_print()}} \code{\link[=metadata_check]{metadata_check()}} \code{\link[=metadata_add]{metadata_add()}} \code{\link[=metadata_update_attr]{metadata_update_attr()}}
+\code{\link[=metadata_check_print]{metadata_check_print()}} \code{\link[=metadata_check]{metadata_check()}} \code{\link[=metadata_add]{metadata_add()}} \code{\link[=metadata_update_attr]{metadata_update_attr()}} \code{\link[=metadata_add_and_use_this]{metadata_add_and_use_this()}} \code{\link[=dataset_documenter]{dataset_documenter()}}
 }
 \keyword{internal}

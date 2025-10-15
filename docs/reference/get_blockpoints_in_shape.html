@@ -78,7 +78,8 @@ such as places at elevated risk, redlined areas, watersheds, etc.</p>
 <span>  dissolved <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  safety_margin_ratio <span class="op">=</span> <span class="fl">1.1</span>,</span>
 <span>  crs <span class="op">=</span> <span class="fl">4269</span>,</span>
-<span>  updateProgress <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  updateProgress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  oldway <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -116,6 +117,10 @@ blocks nearby using getblocksnearby(), before using those found to do the inters
 
 <dt id="arg-updateprogress">updateProgress<a class="anchor" aria-label="anchor" href="#arg-updateprogress"></a></dt>
 <dd><p>optional Shiny progress bar to update</p></dd>
+
+
+<dt id="arg-oldway">oldway<a class="anchor" aria-label="anchor" href="#arg-oldway"></a></dt>
+<dd><p>whether to use older method that works but may be slower vs newer/draft</p></dd>
 
 </dl></div>
     <div class="section level2">

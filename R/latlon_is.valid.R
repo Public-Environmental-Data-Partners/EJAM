@@ -8,7 +8,7 @@
 #'
 #' @keywords internal
 #'
-latlon_is.available  <- function(lat, lon) {
+latlon_is.available <- function(lat, lon) {
   if(missing(lat) || missing(lon)){
     warning('"lat" and/or "lon" argument not provided, please provide both values.')
     return(FALSE)

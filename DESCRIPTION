@@ -70,10 +70,11 @@ Imports:
     tibble (>= 3.3.0),
     tidycensus (>= 1.6),
     tidyr (>= 1.3),
+    viridisLite,
     webshot (>= 0.5.5),
-    writexl(>= 1.5.3),
+    writexl (>= 1.5.3),
     XML (>= 3.99-0.18)
-Suggests: 
+Suggests:
     AOI,
     beepr,
     bookdown,

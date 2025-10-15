@@ -239,7 +239,7 @@ usastats_query   <- function(varnames = c(EJAM::names_e, EJAM::names_d, EJAM::na
 #'
 #' @export
 #'
-usastats_querye  <- function(varnames=EJAM::names_e, PCTILES=NULL, dig=4) {
+usastats_querye <- function(varnames=EJAM::names_e, PCTILES=NULL, dig=4) {
    statestats_query(ST = "us", varnames = varnames, PCTILES = PCTILES, dig = dig)
 }
 ################################################################################ #
@@ -254,7 +254,7 @@ usastats_querye  <- function(varnames=EJAM::names_e, PCTILES=NULL, dig=4) {
 #'
 #' @export
 #'
-usastats_queryd  <- function(varnames=c(EJAM::names_d, EJAM::names_d_subgroups_nh), PCTILES=NULL, dig=4) {
+usastats_queryd <- function(varnames=c(EJAM::names_d, EJAM::names_d_subgroups_nh), PCTILES=NULL, dig=4) {
   statestats_query(ST = "us", varnames = varnames, PCTILES = PCTILES, dig = dig)
 }
 ################################################################################ #

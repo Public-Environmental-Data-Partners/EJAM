@@ -90,11 +90,13 @@ area_sqmi_from_table <- function(df, download_city_fips_bounds = TRUE, download_
   return(rep(NA, NROW(df)))
 }
 ############################################################################### #
+
 area_sqmi_from_pts <- function(radius.miles) {
   stopifnot(is.vector(radius.miles))
   pi * radius.miles^2
 }
 ############################################################################### #
+
 area_sqmi_from_shp <- function(shp, units_needed = "miles^2") {
 
   area <- sf::st_area(shp)
@@ -105,6 +107,7 @@ area_sqmi_from_shp <- function(shp, units_needed = "miles^2") {
   return(area)
 }
 ############################################################################### #
+
 area_sqmi_from_fips_made_of_bgs <- function(fips, includewater = FALSE) {
 
   # ASSUMES you already checked/confirmed each fips here is made up of some number of 1+ WHOLE blockgroups,
@@ -126,6 +129,7 @@ area_sqmi_from_fips_made_of_bgs <- function(fips, includewater = FALSE) {
   return(areas_sqmi)
 }
 ############################################################################### #
+
 area_sqmi_from_fips <- function(fips, download_city_fips_bounds = TRUE, download_noncity_fips_bounds = FALSE, includewater = FALSE) {
 
   # download_noncity_fips_bounds = F default since it is faster and roughly accurate to rely on the arealand

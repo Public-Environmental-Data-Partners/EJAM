@@ -598,7 +598,7 @@ url_county_health <- function(fips = NULL, year = 2025,
   ## > MAKE URL ####
 
   ################ #
-  url_ch_county_in_county_out  = function(fips, year = 2025, as_html = FALSE,
+  url_ch_county_in_county_out <- function(fips, year = 2025, as_html = FALSE,
                                           baseurl = "https://www.countyhealthrankings.org/health-data/") {
     if (is.null(fips) || length(fips) == 0) {return(NA)}
     statename  <- tolower(fips2statename( fips))

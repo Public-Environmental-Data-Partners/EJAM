@@ -2,26 +2,55 @@
 % Please edit documentation in R/NAICS_FUNCTIONS.R
 \name{naics_download}
 \alias{naics_download}
-\title{NAICS - Script to download NAICS file with code and name of sector}
+\title{NAICS - Script to download/read NAICS file that provides industry code and name of sector}
 \usage{
 naics_download(
-  year = 2017,
+  year = NULL,
   urlpattern = "https://www.census.gov/naics/YYYYNAICS/2-6\%20digit_YYYY_Codes.xlsx",
-  destfile = paste0("~/Downloads/", year, "NAICS.xlsx")
+  destfile = NULL
 )
 }
 \arguments{
-\item{year}{which vintage of NAICS codes to use, 2012, 2017, or 2022}
+\item{year}{optional, tries to figure out what might be latest available -
+which vintage of NAICS codes to use, such as 2022 or 2027
+(confirmed it worked for 2012,2017,2022 releases of new codes)}
 
-\item{urlpattern}{full url of xlsx file to use, but with YYYY instead of year}
+\item{urlpattern}{optional full url of xlsx file to use, but with YYYY instead of year}
 
-\item{destfile}{full path and name of file to save as locally}
+\item{destfile}{optional full path and name of file to save as locally - uses tempdir() and yyyyNAICS.xlsx by default}
 }
 \value{
 names list with year as an attribute
 }
 \description{
-See source code. Mostly just a short script to get the 2017 or 2022 codes and names.
-See <'https://www.census.gov/naics/?48967'>
+NAICS - Script to download/read NAICS file that provides industry code and name of sector
 }
+\details{
+See data-raw/datacreate_NAICS.R for more information.
+
+Can be used to update the NAICS codes list every 5 years, for use in the EJAM package,
+by EJAM/data-raw/datacreate_NAICS.R script via EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R
+Essentially a way to get a version/release (2017 or 2022 or maybe 2027 etc.) of codes and names.
+See \url{https://www.census.gov/naics/?48967}
+}
+\section{compare versions of naics codes and version stored in the package}{
+naics22 = naics_download(year = 2022)
+
+naics17 = naics_download(year = 2017)
+
+naics_v6 = EJAM::NAICS
+
+all.equal( naics_v6, naics17, check.attributes = F)
+
+length(naics22); length(naics17)
+}
+
+\section{see which version of naics codes seems to have been used by the FRS data}{
+dataload_dynamic("frs_by_naics")
+
+table(frs_by_naics$NAICS \%in\% naics22)
+
+table(frs_by_naics$NAICS \%in\% naics17)
+}
+
 \keyword{internal}

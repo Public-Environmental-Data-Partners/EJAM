@@ -70,7 +70,7 @@
 #' @export
 #' @keywords internal
 #'
-getblocksnearbyviaQuadTree  <- function(sitepoints, radius = 3, radius_donut_lower_edge = 0, maxradius = 31.07, avoidorphans = FALSE,
+getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lower_edge = 0, maxradius = 31.07, avoidorphans = FALSE,
                                         report_progress_every_n = 500, quiet = FALSE,
                                         use_unadjusted_distance = FALSE,
                                         retain_unadjusted_distance = TRUE,

@@ -6,7 +6,7 @@
 #'
 #' @keywords internal
 #'
-app_ui  <- function(request) {
+app_ui <- function(request) {
 
   tagList(
     golem_add_external_resources(), # defined at end of this file.

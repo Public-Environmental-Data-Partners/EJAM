@@ -41,6 +41,7 @@ shapefile2blockpoints <- function(polys, addedbuffermiles = 0, blocksnearby = NU
 #'   blocks nearby using getblocksnearby(), before using those found to do the intersection via sf::
 #' @param crs used in st_as_sf() and st_transform() and shape_buffered_from_shapefile_points(), crs = 4269 or Geodetic CRS NAD83
 #' @param updateProgress optional Shiny progress bar to update
+#' @param oldway whether to use older method that works but may be slower vs newer/draft
 #' @return Block points table for those blocks whose internal point is inside the buffer
 #'   which is just a circular buffer of specified radius if polys are just points.
 #'   This is like the output of  [getblocksnearby()], or [getblocksnearby_from_fips()] if return_shp=F.
@@ -61,7 +62,7 @@ shapefile2blockpoints <- function(polys, addedbuffermiles = 0, blocksnearby = NU
 get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby = NULL,
                                      dissolved = FALSE, safety_margin_ratio = 1.10, crs = 4269,
                                      # return_shp could be a param as in getblocksnearby_from_fips()
-                                     updateProgress = NULL) {
+                                     updateProgress = NULL, oldway=TRUE) {
 
   ############################################################################################################### #
   # NOTE: For comparison or validation one could get the results from the EJSCREEN API, for a polygon:
@@ -94,9 +95,11 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
     boldtext <- 'Defining bounding box around each polygon'
     updateProgress(message_main = boldtext, value = 0.1)
   }
-
+  if (oldway) {
   bbox_polys <- lapply(polys$geometry, sf::st_bbox)
-
+  } else {
+  bbox_polys <- shapefile2bboxdf(polys) # newer way
+  }
   ############################ ############################ ########################### #
 
   ## filter to just blockpoints in each polygon's bbox, via SearchTrees::rectLookup() using quadtree index ####
@@ -108,6 +111,9 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
 
   ## filter blockpoints using lat/lon, NOT polar coordinates/radians?
 
+  if (!oldway) {
+  blockpoints_filt <- getblocksrowsinbox(bb = bbox_polys) # newer way
+} else {
   earthRadius_miles <- 3959
   radians_per_degree <- pi / 180
 
@@ -118,6 +124,7 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
                             ylims = c(earthRadius_miles * sin(a$ymin * radians_per_degree), earthRadius_miles * sin(a$ymax * radians_per_degree)))
 
   }) %>% unlist(use.names = FALSE) %>% unique
+  }
   ############################ ############################ ########################### #
 
   ## transform as a spatial data.frame ####
@@ -192,7 +199,7 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
       updateProgress(message_main = boldtext, value = 0.6)
     }
 
-    # can be extremely slow ?
+    # can be extremely slow ? ***
     blocksinside <- sf::st_join(blockpoints_sf, sf::st_transform(polys, crs = crs), join = sf::st_intersects, left = 'FALSE' )
   }
   ############################################### #

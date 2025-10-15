@@ -60,7 +60,7 @@
 #' @param shapefile not implemented
 #' @param namestr optional text
 #' @param report_every_n Should it report ETA snd possibly save interim file after every n points
-#' @param save_when_report optional, write .rdata file to working directory
+#' @param save_when_report optional, write .rda file to working directory
 #'   with results so far, after ever n points, to have most results even if it crashes
 #' @param format_report_or_json  default is pjson but could modify to allow it to be report to get just a pdf URL
 #'   but that also can be gotten via [url_ejscreen_report()]
@@ -181,8 +181,8 @@ ejscreenapi <- function(lon, lat, radius = 3, unit = 'miles', wkid = 4326 ,
   finished_without_crashing <- FALSE
   on.exit({if (!finished_without_crashing) {
     if (!on_server_so_dont_save_files) {
-      save(outlist, file = file.path(tdir, 'saved_this_before_crash.rdata'))
-      cat("see ", file.path(tdir, 'saved_this_before_crash.rdata'), "\n")
+      save(outlist, file = file.path(tdir, 'saved_this_before_crash.rda'))
+      cat("see ", file.path(tdir, 'saved_this_before_crash.rda'), "\n")
     }
   } })
 
@@ -314,7 +314,7 @@ ejscreenapi <- function(lon, lat, radius = 3, unit = 'miles', wkid = 4326 ,
       chunkend <- i
       if (save_when_report && (!on_server_so_dont_save_files) ) {
         x <- outlist[chunkstart:chunkend]
-        save(x, file = file.path(tdir, paste('temp_ejscreenapibatch_outlist_chunk', chunknum, '.rdata', sep = '')))
+        save(x, file = file.path(tdir, paste('temp_ejscreenapibatch_outlist_chunk', chunknum, '.rda', sep = '')))
       }
       # Report speed so far in loop####
       if (verbose) {
@@ -348,9 +348,9 @@ ejscreenapi <- function(lon, lat, radius = 3, unit = 'miles', wkid = 4326 ,
   # Save to local file the interim results if still need to  ####
   if (n < report_every_n && save_when_report && (!on_server_so_dont_save_files) ) {
     # we did not save any chunks, so save whole, in case rbind fails
-    save(outlist, file = file.path(tdir, 'temp_ejscreenapibatch_outlist_full.rdata'))
+    save(outlist, file = file.path(tdir, 'temp_ejscreenapibatch_outlist_full.rda'))
     if (verbose) {
-      cat("see ", file.path(tdir, 'temp_ejscreenapibatch_outlist_full.rdata'), "\n")
+      cat("see ", file.path(tdir, 'temp_ejscreenapibatch_outlist_full.rda'), "\n")
     }}
 
   # *** Compile results in a data.table *** (like a data.frame) ####

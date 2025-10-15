@@ -81,7 +81,7 @@
 #'
 #' @export
 #'
-fixcolnames <-  function(namesnow, oldtype='csvname', newtype='r', mapping_for_names) {
+fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_names) {
 
   if (missing(mapping_for_names)) {
     if (exists('map_headernames')) {

@@ -12,7 +12,8 @@ get_blockpoints_in_shape(
   dissolved = FALSE,
   safety_margin_ratio = 1.1,
   crs = 4269,
-  updateProgress = NULL
+  updateProgress = NULL,
+  oldway = TRUE
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ blocks nearby using getblocksnearby(), before using those found to do the inters
 \item{crs}{used in st_as_sf() and st_transform() and shape_buffered_from_shapefile_points(), crs = 4269 or Geodetic CRS NAD83}
 
 \item{updateProgress}{optional Shiny progress bar to update}
+
+\item{oldway}{whether to use older method that works but may be slower vs newer/draft}
 }
 \value{
 Block points table for those blocks whose internal point is inside the buffer
