@@ -1,3 +1,41 @@
+# EJAM 2.32.6.001 (October 2025)
+
+This update does not add any web app features.
+
+It mainly does the following:
+
+- Fixes a couple of key issues related to installing and/or hosting
+- Provides a new article about US Counties
+- Provides a list of URLs of archived EPA webpages with EJSCREEN documentation
+- Improves or adds code related to updating and maintaining this package
+- Drafts code in progress that will support new features:
+  - API
+  - reports on user-provided indicators
+  - counts of nearby user-provided points of interest
+
+## Fixed
+
+- Fixed some issues that were obstacles to installing the package and/or deploying to server
+- Fixed code and tests so that when running more than 2,000 unit tests, zero tests fail now
+
+## Changed or Added
+
+- Added a list of URLs of archived EPA webpages documenting various aspects of EJSCREEN, in data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.md (This may get moved later 
+or could even be converted to a subset of a website)
+- Added text to improve the articles on installing the package and updating datasets and others
+- Added an article about US Counties
+- `ejamit()` no longer will ask to confirm zero radius in shapefile case
+- Drafted changes in `getpointsnearbyviaQuadTree()` that will enable reports counting nearby user-provided points of interest, etc.
+- Drafted changes in `calc_ejam()` and related functions that will enable reports aggregating custom, user-provided indicators.
+- Drafted changes to draft API code to provide more endpoints, start work on POST vs just GET, added `api_run()` to run API in background locally while testing/in dev, etc.
+- Drafted sites_from_input() helper function called sites_only(), added as prelude to allowing lat,lon or sitepoints or fips or shapefile as inputs to more ejam2__ functions
+- Fixed code that can update the NAICS codes table.
+- Removed obsolete article about EPA EJSCREEN API that was taken down in early 2025.
+- Cleaned up, reformatted, or improved/ fixed code via lintr and in general, such as && or || instead of & or | within if().
+- Improved documentation of `?blockgroupstats` dataset
+- Added utilities supporting package development, like map_add_pts() in MAP_FUNCTIONS.R, `pause()`, bgid_from_blockid(), pkg_functions_preceding_lines(), pkg_sizes(), find_transitive_minR(), functions in getblocks_helpers.R, etc.
+- Documented the dataset_documenter() utility
+
 
 # EJAM 2.32.6 (September 2025)
 
