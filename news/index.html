@@ -59,6 +59,43 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.32.6.001" id="ejam-2326001-october-2025">EJAM 2.32.6.001 (October 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326001-october-2025"></a></h2>
+<p>This update does not add any web app features.</p>
+<p>It mainly does the following:</p>
+<ul><li>Fixes a couple of key issues related to installing and/or hosting</li>
+<li>Provides a new article about US Counties</li>
+<li>Provides a list of URLs of archived EPA webpages with EJSCREEN documentation</li>
+<li>Improves or adds code related to updating and maintaining this package</li>
+<li>Drafts code in progress that will support new features:
+<ul><li>API</li>
+<li>reports on user-provided indicators</li>
+<li>counts of nearby user-provided points of interest</li>
+</ul></li>
+</ul><div class="section level3">
+<h3 id="fixed-2-32-6-001">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2-32-6-001"></a></h3>
+<ul><li>Fixed some issues that were obstacles to installing the package and/or deploying to server</li>
+<li>Fixed code and tests so that when running more than 2,000 unit tests, zero tests fail now</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed-or-added-2-32-6-001">Changed or Added<a class="anchor" aria-label="anchor" href="#changed-or-added-2-32-6-001"></a></h3>
+<ul><li>Added a list of URLs of archived EPA webpages documenting various aspects of EJSCREEN, in data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.md (This may get moved later or could even be converted to a subset of a website)</li>
+<li>Added text to improve the articles on installing the package and updating datasets and others</li>
+<li>Added an article about US Counties</li>
+<li>
+<code><a href="../reference/ejamit.html">ejamit()</a></code> no longer will ask to confirm zero radius in shapefile case</li>
+<li>Drafted changes in <code><a href="../reference/getpointsnearbyviaQuadTree.html">getpointsnearbyviaQuadTree()</a></code> that will enable reports counting nearby user-provided points of interest, etc.</li>
+<li>Drafted changes in <code><a href="../reference/calc_ejam.html">calc_ejam()</a></code> and related functions that will enable reports aggregating custom, user-provided indicators.</li>
+<li>Drafted changes to draft API code to provide more endpoints, start work on POST vs just GET, added <code><a href="../reference/api_run.html">api_run()</a></code> to run API in background locally while testing/in dev, etc.</li>
+<li>Drafted sites_from_input() helper function called sites_only(), added as prelude to allowing lat,lon or sitepoints or fips or shapefile as inputs to more ejam2__ functions</li>
+<li>Fixed code that can update the NAICS codes table.</li>
+<li>Removed obsolete article about EPA EJSCREEN API that was taken down in early 2025.</li>
+<li>Cleaned up, reformatted, or improved/ fixed code via lintr and in general, such as &amp;&amp; or || instead of &amp; or | within if().</li>
+<li>Improved documentation of <code><a href="../reference/blockgroupstats.html">?blockgroupstats</a></code> dataset</li>
+<li>Added utilities supporting package development, like map_add_pts() in MAP_FUNCTIONS.R, <code>pause()</code>, bgid_from_blockid(), pkg_functions_preceding_lines(), pkg_sizes(), find_transitive_minR(), functions in getblocks_helpers.R, etc.</li>
+<li>Documented the dataset_documenter() utility</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.6" id="ejam-2326-september-2025">EJAM 2.32.6 (September 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326-september-2025"></a></h2>
 <div class="section level3">
 <h3 id="web-app-changes-2-32-6"><strong>WEB APP CHANGES</strong><a class="anchor" aria-label="anchor" href="#web-app-changes-2-32-6"></a></h3>
