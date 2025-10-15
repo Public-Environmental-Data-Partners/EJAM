@@ -75,7 +75,7 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 #' @keywords internal
 #'
 metadata_add_and_use_this <- function(objectname) {
-
+  if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   text_to_do <- paste0("", objectname, " = metadata_add(", objectname, ")")
   eval(parse(text = text_to_do))
 
@@ -122,7 +122,7 @@ metadata_add_and_use_this <- function(objectname) {
 metadata_add <- function(x, metadata=NULL,
                          update_date_saved_in_package = TRUE,
                          update_ejam_package_version = TRUE) {
-
+  if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   # source("R/metadata_mapping.R")  # this already would get loaded via devtools::load_all() or library(EJAM)
   # rstudioapi::documentOpen("./R/metadata_mapping.R")
   if (is.null(metadata)) {
@@ -166,7 +166,7 @@ metadata_add <- function(x, metadata=NULL,
 metadata_check_print = function(...) {
 
   ## check which dataset objects have which metadata info about vintage, etc.
-
+  if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   x = EJAM:::metadata_check(...)
   cat("\n\n See what metadata is stored as attributes \n\n")
   print(t(head(x,1)))
@@ -262,6 +262,7 @@ metadata_check <- function(packages = EJAM::ejampackages,
                            grepdatasets = FALSE,
                            loadifnotloaded = TRUE) {
 
+if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   # > dput(default_metadata)
   # list(
   #   ejam_package_version = c(Version = "2.32.0"),
