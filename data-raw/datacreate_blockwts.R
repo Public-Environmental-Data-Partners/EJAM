@@ -62,7 +62,7 @@ warning("Note that the file from EJSCREEN team lacks area info for blocks, while
 cat("
 The dataset used by EJAM called blockwts has a column called block_radius_miles
 that is what the radius would be if the block were circular, and it is based on
-   area = pi \* block_radius_miles\^2
+   area = (pi) x (block_radius_miles squared)
 or
    block_radius_miles = sqrt(area /pi)
 where area is in square miles. However through at least EJAM v2.32.5, that field

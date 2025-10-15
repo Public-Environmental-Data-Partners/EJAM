@@ -86,7 +86,7 @@ frs_from_programid <- function(programname, programid) {
 #'
 #' @export
 #'
-frs_from_program  <- function(program) {
+frs_from_program <- function(program) {
 
   if (!exists("frs_arrow")) {
     dataload_dynamic("frs", return_data_table = FALSE)

@@ -45,7 +45,7 @@ ejscreenapi(
 
 \item{report_every_n}{Should it report ETA snd possibly save interim file after every n points}
 
-\item{save_when_report}{optional, write .rdata file to working directory
+\item{save_when_report}{optional, write .rda file to working directory
 with results so far, after ever n points, to have most results even if it crashes}
 
 \item{format_report_or_json}{default is pjson but could modify to allow it to be report to get just a pdf URL

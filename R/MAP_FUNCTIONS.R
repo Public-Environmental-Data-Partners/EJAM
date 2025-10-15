@@ -130,7 +130,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
                          popup = pops,
                          popupOptions = leaflet::popupOptions(maxHeight = 200))
 
-  # see in browser ####
+  # see in browser ### #
 
   if (launch_browser && !shiny::isRunning()) {
     # map2browser() would do the same
@@ -592,6 +592,120 @@ map_shapes_leaflet_proxy <- function(mymap, shapes, color = "green", popup = sha
 }
 ########################### # ########################### # ########################### # ########################### #
 
+## helpers for leaflet maps ####
+
+########################## ########################### #
+
+# see examples below
+
+map_add_shp = function(map = leaflet::leaflet(), shp, group="polygons", layerId = "polygons", ...) {
+  # x = geojsonio::geojson_json(shp)
+  # x = geojsonio::geojson_list(shp)
+  leaflet::addGeoJSON(map = map, group = group, layerId = layerId,
+                      geojson = geojsonio::geojson_json(shp),
+                      ...) %>%
+    leaflet::addLayersControl(overlayGroups = group)
+}
+########################## ########################### #
+map_add_pts = function(map = leaflet::leaflet(), sitepoints,
+                       group="points", layerId = "points", ...) {
+
+  leaflet::addCircles(map = map, group = group, layerId = layerId,
+                      lng = sitepoints$lon,
+                      lat = sitepoints$lat,
+                      ...) %>%
+    leaflet::addLayersControl(overlayGroups = group)
+}
+########################## ########################### #
+map_add_bbox = function(map = leaflet::leaflet(), bb, group="boundingbox", layerId = "boundingbox", ...) {
+  # bb = shapefile2bboxdf(testinput_shapes_2[1, ])
+  leaflet::addRectangles(map = map, group = group, layerId = layerId,
+                         lng1 = bb$xmin, lat1 = bb$ymin,
+                         lng2 = bb$xmax, lat2 = bb$ymax,
+                         ...)   %>%
+    leaflet::addLayersControl(overlayGroups = group)
+
+  # leaflet::addPolygons(map = map, group = group,
+  #   lng = c(bb$xmin, bb$xmin, bb$xmax, bb$xmax, bb$xmin),
+  #   lat = c(bb$ymin, bb$ymax, bb$ymax, bb$ymin, bb$ymin)
+  # )
+}
+########################## ########################### #
+########################## ########################### #
+
+if (FALSE) {
+
+  ### MAP EXAMPLES using these helpers -- MUST DO load_all() for these to work
+  # since pipe is not attached and ejam functions are internal, etc.
+
+  shp <- testinput_shapes_2[1,]
+  # shp <- testinput_shapes_2 # not working yet
+  bb = EJAM:::shapefile2bboxdf(shp)
+  whichblocks = EJAM:::getblocksrowsinbox(bb)
+
+  ########################### #
+
+  leaflet::leaflet() %>% map_add_shp(shp) %>% leaflet::addTiles() %>%
+    # does draw all points:
+    leaflet::addCircles(lng = blockpoints[whichblocks, lon],
+                        lat = blockpoints[whichblocks, lat],
+                        group="points") %>%
+    EJAM:::map_add_bbox(bb, color="lightgreen")  %>%
+
+    leaflet::addTiles(group = "OpenStreetMap") %>%
+    leaflet::addProviderTiles("CartoDB.Voyager", group = "Carto Voyager") %>%
+    leaflet::addLayersControl(
+      baseGroups = c("Carto Voyager", "OpenStreetMap"),
+      overlayGroups = c( "points", "boundingbox"),
+      options = leaflet::layersControlOptions(collapsed=FALSE)
+    )
+  ########################### #
+
+  leaflet::leaflet()  %>% leaflet::addTiles() %>% map_add_shp(shp) %>%
+    # fails to draw all points - why? same for map_add_bbox() that only maps one bounding box
+    map_add_pts(blockpoints[whichblocks, ])
+  ########################### #
+
+  # fails to draw all points -
+
+  mapfast(shp) %>%
+
+    EJAM:::map_add_pts(sitepoints = blockpoints[whichblocks, ], color="red") %>%
+    EJAM:::map_add_bbox(bb) %>%
+
+    leaflet::addTiles(group = "OpenStreetMap") %>%
+    leaflet::addProviderTiles("CartoDB.Voyager", group = "Carto Voyager") %>%
+    leaflet::addLayersControl(
+      baseGroups = c("OpenStreetMap", "Carto Voyager"),
+      overlayGroups = c( "points", "boundingbox"),
+      options = leaflet::layersControlOptions(collapsed=FALSE)
+    )
+
+  ## or
+
+  # fails to draw all points -
+  leaflet::leaflet() %>% map_add_shp(shp) %>%
+
+    map_add_pts(blockpoints[whichblocks, ], color="red",
+                popup=popup_from_df(blockpoints[whichblocks,])) %>%
+    map_add_bbox(bb) %>%
+
+    leaflet::addTiles(group = "OpenStreetMap") %>%
+    leaflet::addProviderTiles("CartoDB.Voyager", group = "Carto Voyager") %>%
+    leaflet::addLayersControl(
+      baseGroups = c("OpenStreetMap", "Carto Voyager"),
+      overlayGroups = c("polygons", "points", "boundingbox"),
+      options = leaflet::layersControlOptions(collapsed=FALSE)
+    )
+
+
+}
+########################## ########################### #
+########################## ########################### #
+
+## other ####
+
+########################### # ########################### # ########################### # ########################### #
 
 #' Map - polygons - Use mapview package if available
 #'

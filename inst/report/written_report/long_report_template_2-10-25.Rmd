@@ -1,9 +1,6 @@
 ---
 title: "Analysis of residential population and environmental conditions in selected locations"
-#author:
-#  name: `r params$authorname1`
-#  email: `r params$authoremail1`
-date: "`r format(Sys.Date(), "%B %d, %Y")`"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
   bookdown::word_document2:
     toc: true

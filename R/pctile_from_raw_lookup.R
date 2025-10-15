@@ -335,7 +335,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup=usa
 #'
 #' @export
 #'
-lookup_pctile  <- function(myvector, varname.in.lookup.table, lookup = usastats, zone = "USA") {
+lookup_pctile <- function(myvector, varname.in.lookup.table, lookup = usastats, zone = "USA") {
 
   pctile_from_raw_lookup(myvector = myvector, varname.in.lookup.table = varname.in.lookup.table, lookup = lookup, zone = zone)
 } #  function(...) {pctile_from_raw_lookup(...)}

@@ -511,7 +511,7 @@ if (askquestions && interactive()) {
 
 ################################################################################ #
 if (interactive() && askquestions) {
-  SAVEIMAGE = askYesNo("Save globalenv() as an .RData file now?")
+  SAVEIMAGE = askYesNo("Save globalenv() as an .rda file now?")
   if (is.na(SAVEIMAGE)) {SAVEIMAGE <- FALSE}
 }
 if (SAVEIMAGE) { # ARCHIVE as IMAGE?
@@ -840,27 +840,24 @@ source_maybe('datacreate_epa_programs_defined.R')
 
 ######################################### ########################################## #
 
-# ** NAICS & SIC (INDUSTRY) Counts ? from FRS, etc. ####
+# ** NAICS & SIC (INDUSTRY) Counts from FRS, etc. ####
 
-## >>>             ADD SCRIPTS HERE ? <<< ####
 ## . ####
-cat(                                        "naics functions not here yet? ... \n")
-warning("naics functions not here yet")
-
-
-
-
-#                            TO BE ADDED HERE
-
-
-
-
 
 cat('\n-------------------------\n These scripts on naics/sic may need work...-------------\n\n')
 
 # THESE BELOW JUST DO COUNTS BY CODE - they dont actually update the NAICS/SIC info from the FRS data
-# (nor the names of industries by code that change maybe every 3 yrs for NAICS)
+# (and note the names of industries by NAICS code have been changing every 5 yrs, such as in 2017 and 2022)
 
+stop("See datacreate_NAICS.R before using these scripts!
+    Must check which version of NAICS codes are recorded in EPA FRS data ")
+
+  ### every five yrs e.g. 2027:
+### datacreate_NAICS.R ####
+# documentOpen('./data-raw/datacreate_NAICS.R')
+source_maybe('datacreate_NAICS.R')
+
+  ### when frs or NAICS changes:
 ### datacreate_naics_counts.R ####
 # documentOpen('./data-raw/datacreate_naics_counts.R')    # bad script
 source_maybe('datacreate_naics_counts.R')
@@ -868,6 +865,7 @@ source_maybe('datacreate_naics_counts.R')
 ### datacreate_naicstable.R ####
 # documentOpen('./data-raw/datacreate_naicstable.R')      #  #ok script. does date_saved_in_package & use_data
 source_maybe('datacreate_naicstable.R')
+
 
 ### datacreate_SIC.R ####
 # documentOpen('./data-raw/datacreate_SIC.R')

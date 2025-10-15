@@ -391,49 +391,111 @@ naics_findwebscrape <- function(query) {
 }
 ################################################################## #
 
+# update dataset for new release of the package ####
 
-#' NAICS - Script to download NAICS file with code and name of sector
+#' NAICS - Script to download/read NAICS file that provides industry code and name of sector
+#' @details
+#' See data-raw/datacreate_NAICS.R for more information.
 #'
-#' See source code. Mostly just a short script to get the 2017 or 2022 codes and names.
-#' See <'https://www.census.gov/naics/?48967'>
-#' @param year which vintage of NAICS codes to use, 2012, 2017, or 2022
-#' @param urlpattern full url of xlsx file to use, but with YYYY instead of year
-#' @param destfile full path and name of file to save as locally
+#' Can be used to update the NAICS codes list every 5 years, for use in the EJAM package,
+#'  by EJAM/data-raw/datacreate_NAICS.R script via EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R
+#'  Essentially a way to get a version/release (2017 or 2022 or maybe 2027 etc.) of codes and names.
+#'  See <https://www.census.gov/naics/?48967>
+#'
+#'  # compare versions of naics codes and version stored in the package
+#'
+#'  naics22 = naics_download(year = 2022)
+#'
+#'  naics17 = naics_download(year = 2017)
+#'
+#'  naics_v6 = EJAM::NAICS
+#'
+#'  all.equal( naics_v6, naics17, check.attributes = F)
+#'
+#'  length(naics22); length(naics17)
+#'
+#'  # see which version of naics codes seems to have been used by the FRS data
+#'
+#'  dataload_dynamic("frs_by_naics")
+#'
+#'  table(frs_by_naics$NAICS %in% naics22)
+#'
+#'  table(frs_by_naics$NAICS %in% naics17)
+#'
+#' @param year optional, tries to figure out what might be latest available -
+#'   which vintage of NAICS codes to use, such as 2022 or 2027
+#'   (confirmed it worked for 2012,2017,2022 releases of new codes)
+#' @param urlpattern optional full url of xlsx file to use, but with YYYY instead of year
+#' @param destfile optional full path and name of file to save as locally - uses tempdir() and yyyyNAICS.xlsx by default
 #'
 #' @return names list with year as an attribute
 #'
 #' @keywords internal
 #'
-naics_download <- function(year=2017, urlpattern='https://www.census.gov/naics/YYYYNAICS/2-6%20digit_YYYY_Codes.xlsx', destfile= paste0('~/Downloads/', year, 'NAICS.xlsx')) {
-  # this can be used to create the NAICS dataset as for this package
+naics_download <- function(year = NULL,
+                           urlpattern = 'https://www.census.gov/naics/YYYYNAICS/2-6%20digit_YYYY_Codes.xlsx',
+                           destfile = NULL) {
   # See \url{https://www.census.gov/naics/}
-  if (!(year %in% c(2012, 2017, 2020))) {warning('only works for 2012, 2017, 2020')
+
+  years_plausible <- 2012 + c(0,5,10,15,20,25)
+  latest_update_guess <- function(years_updated = years_plausible, year_now = substr(Sys.Date(),1,4)) {
+    years_updated <- years_updated[years_updated <= year_now]
+    if (length(years_updated) == 0) {return(NA)}
+    return(max(years_updated))
+  }
+  if (missing(year) || is.null(year)) {
+    year <- latest_update_guess()
+    cat("Assuming the latest update available might be", year, "\n")
+  } else {
+    if (year > latest_update_guess()) {
+      cat(paste0("year provided, ", year, " seems later than the most recent update likely to be available (", latest_update_guess(),")", "\n"))
+      cat("Assuming the latest update available might be", year, "\n")
+      year <- latest_update_guess()
+    }
+  }
+  if (!(year %in% years_plausible)) {
+    warning("years of NAICS release were every 5 years, so probably year provided, ", year, " would not work. check https://www.census.gov/naics \n")
     return(NULL)
   }
+
+  defaultfilepath <- file.path(tempdir(), paste0(year, 'NAICS.xlsx'))
+  if (missing(destfile) || is.null(destfile)) {
+    destfile <- defaultfilepath
+  } else {
+    if (!("xlsx" %in% tools::file_ext(destfile)) || length(destfile) > 1) {
+      warning("destfile must be a single .xlsx file - using default instead")
+      destfile <- defaultfilepath
+    }
+    if (!dir.exists(dirname(destfile))) {
+      warning(dirname(destfile), " does not exist, so using default tempdir()")
+      destfile <- defaultfilepath
+    }
+  }
+
   url <- gsub('YYYY',year, urlpattern)
   if (year == 2012) {url <- gsub('6%20', '', url)}
   # 'https://www.census.gov/naics/2022NAICS/2-6%20digit_2022_Codes.xlsx'
   # 'https://www.census.gov/naics/2017NAICS/2-6%20digit_2017_Codes.xlsx'
   # 'https://www.census.gov/naics/2012NAICS/2-digit_2012_Codes.xls'
+  x = try(
   download.file(
     url = url,
     destfile = destfile
-  )
-  x <- readxl::read_xlsx(path = destfile, skip = 2, col_names = c('n','code','title','b','c','d'))
+  ))
+  if (inherits(x, "try-error")) {stop("cannot find/download a file from ", url)}
+
+  x <- readxl::read_xlsx(path = destfile ) #, skip = 2) # , col_names = c('n','code','title'))
+  x <- x[!is.na(x[,1]), 1:3]
+  colnames(x) <- c("n", "code", "title")
+
   mynames <- paste(x$code, ' - ', x$title, sep = '')
   mycodes <- as.numeric(as.list(x$code))
   # mynames[(is.na(mycodes))]  # remove the ones that are ranges instead of being a 2-digit or longer code
   # ###  "31-33 - Manufacturing"  "44-45 - Retail Trade"   "48-49 - Transportation and Warehousing"
-  NAICS        <- as.list(mycodes[!is.na(mycodes)])
+  NAICS <- as.vector(mycodes[!is.na(mycodes)])
   names(NAICS) <- mynames[!is.na(mycodes)]
   # table(as.numeric(sapply((NAICS), FUN=nchar)))
   # head(cbind(NAICS[substr(NAICS,1,2)=='31']))
-
-  # save as NAICS dataset for package, but with year attribute indicating vintage:
-  NAICS <- structure(NAICS, year = year)
-  # attr(NAICS, 'year')
-  # [1] 2017 # for example
-
   ################# #  ################# #  ################# #  ################# #
   ################# #  ################# #  ################# #  ################# #
   # ADDED IN 2023:
@@ -458,7 +520,6 @@ naics_download <- function(year=2017, urlpattern='https://www.census.gov/naics/Y
   )
 
   NAICS <- c(NAICS, extrarows)
-  # usethis::use_data(NAICS, overwrite = TRUE)
 
   # code	industry_title
   # 11	Agriculture, Forestry, Fishing and Hunting
@@ -481,21 +542,14 @@ naics_download <- function(year=2017, urlpattern='https://www.census.gov/naics/Y
   # 72	Accommodation and Food Services
   # 81	Other Services (except Public Administration)
   # 92	Public Administration
-
-
-
-
   ################# #
-
-  cat('To update source code R package, try usethis::use_data(NAICS.rdata) or just save(NAICS, file = \'yourpath/EJAM/data/NAICS.rdata\') \n')
-  # usethis::use_data(NAICS.rdata, overwrite = TRUE)
-  # ### not ### save(NAICS, file = './data/NAICS.rdata')
-
+  cat("File saved in ", destfile, "\n")
+  cat('To update the copy of this dataset as used in the R package, see datacreate_0_UPDATE_ALL_DATASETS.R and datacreate_NAICS.R \n')
   return(NAICS)
 }
 ################################################################## #
 
-
+# draft tool for Federal Register notices of rules ####
 
 #' NAICS - Try to extract which NAICS could be affected by a rule published in the Federal Register
 #' by reading the NAICS listed near the top of the preamble - DRAFT WORK IN PROGRESS
@@ -509,8 +563,6 @@ naics_from_federalregister <- function(naics_text_copy_from_fr) {
 
 
   # WORK IN PROGRESS
-
-
 
 
 

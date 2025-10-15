@@ -117,17 +117,17 @@ to avoid overlaps between sites to get unique people.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
 <span><span class="co"># pctiles</span></span>
-<span>  <span class="fu">ejam2quantiles</span><span class="op">(</span><span class="va">out</span>,  vars <span class="op">=</span> <span class="va">names_e_state_pctile</span>, topx_insteadof_pctile <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> </span>
-<span><span class="co"># ratios  </span></span>
+<span>  <span class="fu">ejam2quantiles</span><span class="op">(</span><span class="va">out</span>,  vars <span class="op">=</span> <span class="va">names_e_state_pctile</span>, topx_insteadof_pctile <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co"># ratios</span></span>
 <span>  <span class="fu">ejam2quantiles</span><span class="op">(</span><span class="va">out</span>, vars <span class="op">=</span> <span class="va">names_e_ratio_to_state_avg</span>,  topx_insteadof_pctile <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="co"># see the quantiles and mean together</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  AvgPerson <span class="op">=</span> <span class="fu"><a href="ejam2means.html">ejam2means</a></span><span class="op">(</span><span class="va">out</span>, vars <span class="op">=</span> <span class="va">names_e_ratio_to_state_avg</span><span class="op">)</span>,</span>
 <span>  <span class="fu">ejam2quantiles</span><span class="op">(</span></span>
-<span>     <span class="va">out</span>, </span>
-<span>     vars <span class="op">=</span> <span class="va">names_e_ratio_to_state_avg</span>, </span>
+<span>     <span class="va">out</span>,</span>
+<span>     vars <span class="op">=</span> <span class="va">names_e_ratio_to_state_avg</span>,</span>
 <span>     probs <span class="op">=</span> <span class="fl">0.5</span>, topx_insteadof_pctile <span class="op">=</span> <span class="cn">T</span></span>
-<span>  <span class="op">)</span> </span>
+<span>  <span class="op">)</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>

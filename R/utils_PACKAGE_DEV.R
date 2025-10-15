@@ -24,8 +24,27 @@
 # find names of functions with @export or other tag
 
 #  exported_functions <- pkg_functions_by_roxygen_tag()
+#
+## 252 functions with export tag per this approach  ***********
+#
 ####################################################### #
+## a newer function to compare to others
+#
+# x <- pkg_functions_preceding_lines()
+# tail(x)
+# colSums(x[,2:6])
 
+# 562 functions found by this approach (seems to miss some)
+# 104 functions lack documentation because have no roxygen tags
+# 458 functions have roxygen tags per this approach
+#  53 functions lack documentation because have a noRd tag
+#    table(EXPORT = x$export, NORD= x$nord) # >50 say noRd (but just 1 is exported)
+# 405 functions have roxygen tags and do create documentation as .Rd file
+# 237 functions have export tag per this approach ***********
+# 219 functions have keywords internal tag
+# table(EXPORT = x$export, x$internal) # some are exported but "internal" in sense of not being listed in the index of functions
+
+####################################################### #
 ##   look for those tagged as export, or keywords internal
 #
 # pkg_functions_export_tag <-
@@ -35,21 +54,27 @@
 #  keywords_internal  <- pkg_functions_by_roxygen_tag(tagpattern = "#' @keywords internal")
 #
 #   length(unique(union(exported_functions, keywords_internal)))
-## [1] 430 functions have 1 or both of those tags
-## 56 have both.
+## [1] 440 functions have 1 or both of those tags
+## 55 have both.
 #     length(exported_functions)
-## [1] 249
+## [1] 252
 #  length(keywords_internal)
-## [1] 237
+## [1] 243
 #  length(
 #    intersect(exported_functions, keywords_internal)
 #   )
-## [1] 56
+## [1] 55
 #
 ## pkg_functions_found_in_files() ### #
 #
 ################################ #
-
+# others
+#
+# y = pkg_functions_and_data()
+#
+# z = pkg_functions_and_sourcefiles()
+#
+####################################################### #
 # any_functions = pkg_functions_found_in_files()
 # length(z)
 # # [1] 614 total
@@ -79,6 +104,7 @@
 ## package directory ####
 
 pkg_dir_installed = function(pkg="EJAM") {find.package(pkg, lib.loc = .libPaths())}
+
 pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 
 ##################################################################################### #
@@ -173,8 +199,8 @@ find_in_files <- function(pattern, path = "./tests/testthat", filename_pattern =
       if (!whole_line) {
         print(sapply(found, cbind))
       } else {
-      print(sapply(found, function(y) cbind(linenumber = names(y), text = y)))
-}
+        print(sapply(found, function(y) cbind(linenumber = names(y), text = y)))
+      }
       cat("\n------------------------------------------------------------------------- \n")
       cat("------------------------------------------------------------------------- \n")
     }
@@ -649,7 +675,7 @@ pkg_functions_and_sourcefiles2 <- function(funcnames, pkg = "EJAM", full.names =
 
 pkg_functions_with_keywords_internal_tag <- function(
 
-    package.dir = ".", loadagain = TRUE, quiet = FALSE) {
+  package.dir = ".", loadagain = TRUE, quiet = FALSE) {
 
   # Does load_all() first if loadagain==TRUE so even unexported functions will seem exported, fyi
   #
@@ -718,7 +744,7 @@ pkg_functions_with_keywords_internal_tag <- function(
     } else {
       if (length(tags) > 1) {
         if (!quiet) {cat("   MULTIPLE KEYWORDS TAGS FOUND - showing 1st only\n")}
-        }
+      }
       if (!quiet) {cat(' @keywords ')}
       # for (tag in tags) {
       #    keyword <- roxygen2:::block_get_tag_value(block, 'keywords')  # or
@@ -806,6 +832,76 @@ pkg_functions_found_in_files <- function(
   z = gsub(pattern_gsub,  "\\1", z)
   z = z[!(z %in% "")]
   return(z)
+}
+################################ #
+
+## view a few lines of code just above a function definition,
+## to see if it has any roxygen comments at all
+## or says #' @keywords internal  or whatever
+
+pkg_functions_preceding_lines = function(path = "./R") {
+
+  n <- 0
+  info_roxy_nobreak <- vector()
+  info_roxy <- vector()
+  info_roxy <- vector()
+  info_func <- vector()
+  info_internal <- vector()
+  info_nord <- vector()
+  info_export <- vector()
+
+  query = "^[^ #]* *<- *function"
+  files_defining_functions <- EJAM:::find_in_files(query, path = path, quiet = TRUE)
+  filenames = (names(files_defining_functions))
+
+  for (thisfile in seq_along(files_defining_functions)) {
+
+    textrows = readLines(filenames[thisfile])
+    linenums = as.numeric(names(files_defining_functions[[thisfile]]))
+    funcnames = as.vector(gsub("^([^ ]*) .*", "\\1", files_defining_functions[[thisfile]]))
+
+    for (thisfunction in 1:length(funcnames)) {
+      n = n + 1
+      priorlinenums = (linenums[thisfunction] - (5:0))
+      priorlinenums[priorlinenums < 1] <- 1
+      priorlinenums <- unique(priorlinenums)
+
+      text2show = textrows[priorlinenums]
+      # show just the function name not that whole line
+      funcname <- gsub(" .*", "", text2show[length(text2show)])
+      # text2show[length(text2show)] <- paste0(funcname, " <- ")
+      # drop func definition line itself
+      text2show <- text2show[1:(length(text2show) - 1)]
+      # drop all but blank and #' roxygen lines, for display purposes
+      text2show <- text2show[nchar(text2show) == 0 | grepl("^#' [^ ]", text2show)]
+      text2show[nchar(text2show) == 0] <- "     [just a blank line is here]"
+      text2show <- unique(text2show)
+
+      priorlinetext = textrows[max(priorlinenums)]
+      info_roxy_nobreak[n] <- substr(priorlinetext,1,2) == "#'" # only in the last row
+      info_roxy[n] <- any(grepl("#'", text2show)) # any of last few rows
+      info_func[n] <- funcname
+      info_internal[n] <- any(grepl("@keywords internal", text2show))
+      info_nord[n]     <- any(grepl("@noRd", text2show))
+      info_export[n]   <- any(grepl("@export", text2show))
+
+      cat("------------------ File: ", as.vector(basename(filenames[thisfile])),
+          "--------- Func: ", paste0(funcname, "() "), "\n")
+
+      cat(text2show, sep = "\n")
+      # cat("\n")
+    }
+  }
+  return(
+    data.frame(
+      func = info_func,
+      roxy_nobreak = info_roxy_nobreak,
+      roxy = info_roxy,
+      export = info_export,
+      internal = info_internal,
+      nord = info_nord
+    )
+  )
 }
 ################################ ################################# #
 # . ####
@@ -1136,16 +1232,60 @@ pkg_dependencies <- function(localpkg = "EJAM", depth = 6, ignores_grep = "09128
 
   # This may be useful to see dependencies of a package like EJAM:
 
+x1 = renv::dependencies()
+
 x = sort(packrat", ":::", "recursivePackageDependencies('",
              localpkg,
              "', lib.loc = .libPaths(), ignores = NULL))
 
-x
+# but note that https://rstudio.github.io/renv/articles/packrat.html explains that
+# the renv package has replaced the packrat package
+
+# For example try this:
+
+pkgs_needed = sort(packrat:::recursivePackageDependencies('EJAM', lib.loc = .libPaths(), ignores = NULL))
+# shorter list because direct not all recursive, but provides rationale for each inference:
+pkgs_needed_newerinfo = renv::dependencies()
+pkgs_needed2 = sort(unique(pkgs_needed_newerinfo$Package))
+
+pkgs_in_imports  = desc::desc_get('Imports',  file = system.file('DESCRIPTION', package='EJAM'))
+pkgs_in_suggests = desc::desc_get('Suggests', file = system.file('DESCRIPTION', package='EJAM'))
+cleanit = function(x) {
+ x = gsub('\n', '', x)
+ x = trimws(as.vector(unlist(strsplit(x, ','))))
+ x = gsub(' .*', '', x)
+ return(x)
+}
+pkgs_in_imports = cleanit(pkgs_in_imports)
+pkgs_in_suggests = cleanit(pkgs_in_suggests)
+pkgs_missing_from_desc_supposedly_needed = sort(setdiff(pkgs_needed, c(pkgs_in_imports, pkgs_in_suggests)))
+pkgs_in_desc_supposedly_not_needed       = sort(setdiff(c(pkgs_in_imports, pkgs_in_suggests), pkgs_needed))
+
+pkgs_missing_from_desc_supposedly_needed
+pkgs_in_desc_supposedly_not_needed
+setdiff(pkgs_needed2, pkgs_needed) # found by renv but not by packrat
+
+# > setdiff(setdiff(pkgs_needed2, pkgs_needed), pkgs_in_desc_supposedly_not_needed)
+#  [1] 'base'               'census2020download' 'EJAM'               'githubr'            'graphics'           'grDevices'          'parallel'           'plumber'
+#  [9] 'roxygen2'           'rsconnect'          'stats'              'svglite'            'tools'              'utils'
+# > setdiff(pkgs_in_desc_supposedly_not_needed, setdiff(pkgs_needed2, pkgs_needed))
+# [1] 'datasets'      'fipio'         'rnaturalearth' 'tidygeocoder'
+
+# but should confirm these truly reflect what is actually needed and not needed
+# for web app to work,
+# functions used by analysts but not web app, and
+# functions only used in maintaining the pkg!
+pkgs_all = unique(c(pkgs_in_imports, pkgs_in_suggests, pkgs_needed))
+pkgs_all_sizes = EJAM:::pkg_sizes(pkgs_all, quiet=T) # e.g., nearly 1 GB
+# Largest packages:  (size of folder once installed)
+cat(length(pkgs_all), ' packages appear to be needed.\n')
+tail(pkgs_all_sizes, 15)
+
 
 # and see EJAM:::find_transitive_minR() to see what version of R those collectively need at minimum
       "))
 
-  #################### #
+
 
   #   cat(paste0("
   #
@@ -1189,6 +1329,65 @@ x
 }
 ##################################################################################### #
 
+#################### #  #################### #  #################### #
+
+pkg_sizes = function(pkgs, quiet=FALSE) {
+
+  get_directory_size <- function(path, recursive = TRUE) {
+    # Ensure the provided path is a character string
+    stopifnot(is.character(path))
+
+    # List all files within the directory, including subdirectories if recursive is TRUE
+    # full.names = TRUE ensures the full path is returned for each file
+    files <- list.files(path, full.names = TRUE, recursive = recursive)
+
+    # Get file information for all listed files
+    # The 'size' column contains the size of each file in bytes
+    file_details <- file.info(files)
+
+    # Sum the sizes of all files to get the total directory size
+    total_size <- sum(file_details$size, na.rm = TRUE)
+    return(total_size / 1e6)
+  }
+
+  x = vector(length = length(pkgs))
+  for (i in seq_along(pkgs)) {
+    loc <- try(find.package(pkgs[i])[1], silent = TRUE)
+    if (inherits(loc, "try-error")) {
+      x[i] <- NA
+    } else {
+      x[i] <- get_directory_size(loc)
+    }
+    if (!quiet) {
+      cat(paste0(i, "/", length(pkgs), " ", pkgs[i], " size = ", round(x[i], 2), " MB\n"))
+    }
+  }
+  y = data.frame(meg = round(x, 3), pkg = pkgs)
+  cat("\n\nTOTAL: ", round(sum(y$meg, na.rm = TRUE), 1), "MB in ", length(y$meg)," packages. \n\n")
+  y = y[order(-y$meg), ]
+  rownames(y) <- NULL
+  y = y[order(y$meg), ]
+  return(y)
+
+  # # Save directory
+  # save.dir = "F:/CRANMirror"
+  #
+  # # Create a directory to store package .tar.gz
+  # dir.create(save.dir)
+  #
+  # # Obtain a list of packages
+  # pkgs = available.packages()[,'Package']
+  #
+  # # Download those packages
+  # download.packages(pkgs = pkg$package.list, destdir = save.dir)
+  # pkg.files = list.files(save.dir)
+  # pkg.sizes = round(file.size(file.path(save.dir,pkg.files))/ 1024^2,2) # Convert to MB from Bytes
+}
+
+# x = pkg_sizes(pkgs_all )
+
+#################### #  #################### #  #################### #
+
 # REPORT WHAT R VERSION IS ALREADY THE MINIMUM REQUIREMENT ACROSS THE PACKAGE EJAM DEPENDS UPON?
 
 ## based on https://www.r-bloggers.com/2022/09/minimum-r-version-dependency-in-r-packages/
@@ -1199,23 +1398,23 @@ find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
 
   if (is.null(recursive_deps)) {
 
-  if (package == "EJAM") {
-    msg = paste0("Try this after installing the packrat package:
+    if (package == "EJAM") {
+      msg = paste0("Try this after installing the packrat package:
     recursive_deps <- packrat",
-                 ":::",
-                 "recursivePackageDependencies('EJAM', lib.loc = .libPaths(), ignores = NULL)
+                   ":::",
+                   "recursivePackageDependencies('EJAM', lib.loc = .libPaths(), ignores = NULL)
 
                  find_transitive_minR(recursive_deps = recursive_deps)"
-                  )
-    cat(msg, "\n\n")
-    stop("EJAM package does not require packrat so you might need to install that separately")
-  } else {
-    recursive_deps <- tools::package_dependencies(
-      package = package,
-      recursive = TRUE,
-      db = db
-    )[[1]]
-  }
+      )
+      cat(msg, "\n\n")
+      stop("EJAM package does not require packrat so you might need to install that separately")
+    } else {
+      recursive_deps <- tools::package_dependencies(
+        package = package,
+        recursive = TRUE,
+        db = db
+      )[[1]]
+    }
   }
 
   # These code chunks are detailed below in the 'Minimum R dependencies in CRAN

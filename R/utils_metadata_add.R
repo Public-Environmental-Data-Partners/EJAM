@@ -22,7 +22,7 @@ attributes2 = function(x) {
 #' @param newvalue the new value of that attribute
 #' @param exclude_atomic_vectors if TRUE, avoids updating attributes on atomic vectors like names_e,
 #'   since it is distracting when printing them to console
-#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()]
+#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @keywords internal
 #'
@@ -66,9 +66,14 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 #   metadata_update_attr()
 ###################################################### #
 
-#  helper func to update ALL metadata attributes for JUST ONE pkg dataset AND save in EJAM/data/
-# used in data-raw/datacreate_*.R functions while updating/making datasets
-
+#' update ALL metadata attributes for JUST 1 pkg dataset AND save in EJAM/data/
+#' @details used in data-raw/datacreate_*.R functions while updating/making datasets
+#' @param objectname text/character string of object name (ie quoted)
+#' @returns just for side effects
+#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
+#'
+#' @keywords internal
+#'
 metadata_add_and_use_this <- function(objectname) {
 
   text_to_do <- paste0("", objectname, " = metadata_add(", objectname, ")")
@@ -103,7 +108,7 @@ metadata_add_and_use_this <- function(objectname) {
 #' @param update_ejam_package_version  can set to FALSE to avoid changing this attribute
 #' @param metadata optional - when omitted, it checks metadata_mapping using get_metadata_mapping().
 #'   Can provide a list of key=value attributes to add
-#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()]
+#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @return returns x but with new or altered attributes
 #' @examples
@@ -154,7 +159,8 @@ metadata_add <- function(x, metadata=NULL,
 #' # x = metadata_check( which = "ejam_package_version")
 #' # x[!x$ejam_package_version %in% "2.32.6", ]
 #'
-#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()]
+#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
+#'
 #' @keywords internal
 #'
 metadata_check_print = function(...) {
@@ -181,7 +187,7 @@ metadata_check_print = function(...) {
   }
   rownames(y) <- NULL
   y$is.atomic <- sapply(y$item, function(z) try(is.atomic(get(z))))
-browser()
+
   # y[,  ]
   cat("\n\n See which data objects have outdated or missing metadata about ejam_package_version, etc. \n\n")
   cat("but omit atomic vectors since adding attributes to those makes them nonvectors and messier to print \n")
@@ -226,7 +232,7 @@ cat("\n\n")
 #'   via grep to identify which datasets to check. It always uses ignore.case=TRUE for this.
 #' @param loadifnotloaded Optional to control if func should temporarily attach packages not already loaded.
 #'
-#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()]
+#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'   [pkg_functions_and_data()]
 #' @examples
 #' x = metadata_check( which = "ejam_package_version")
@@ -428,6 +434,8 @@ if (FALSE) {
 
   cat(
     '\n
+Also see ?metadata_check_print() ?metadata_check() ?metadata_add() ?metadata_update_attr() ?metadata_add_and_use_this() ?dataset_documenter()
+
 Also see
 
     x = EJAM:::pkg_functions_and_data(pkg = "EJAM",

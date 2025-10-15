@@ -121,13 +121,13 @@ sites is complicated. See discussion of <code><a href="latlon_from_naics.html">l
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># Also see vignettes for many more examples, and discussion.</span></span>
 <span>  <span class="fu"><a href="naics_categories.html">naics_categories</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="fu">naics_from_any</span><span class="op">(</span><span class="st">"textile mills"</span>, children <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span>  <span class="fu">naics_from_any</span><span class="op">(</span><span class="st">"textile mills"</span>, children <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="fu"><a href="frs_from_naics.html">frs_from_naics</a></span><span class="op">(</span><span class="st">"textile mills"</span>, children <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="frs_from_naics.html">frs_from_naics</a></span><span class="op">(</span><span class="st">"textile mills"</span>, children <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="co"># \donttest{</span></span>
 <span>  <span class="fu">naics_from_any</span><span class="op">(</span><span class="fu"><a href="naics_categories.html">naics_categories</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span>,<span class="fu">.</span><span class="op">(</span><span class="va">name</span>,<span class="va">code</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span></span>
 <span>  <span class="fu">naics_from_any</span><span class="op">(</span><span class="fu"><a href="naics_categories.html">naics_categories</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">code</span><span class="op">)</span>,<span class="fu">.</span><span class="op">(</span><span class="va">code</span>,<span class="va">name</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span></span>

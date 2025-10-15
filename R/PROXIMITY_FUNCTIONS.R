@@ -424,7 +424,7 @@ indexfrs <- function(frspts = NULL, indexname = "frs_index", envir = globalenv()
 #'
 #' @export
 #'
-getpointsnearby  <- function(frompoints, topoints,
+getpointsnearby <- function(frompoints, topoints,
                              radius = 3, maxradius = 31.07, avoidorphans = FALSE, retain_unadjusted_distance = TRUE,
                              quadtree = NULL,
                              quaddatatable = NULL,
@@ -497,7 +497,7 @@ getpointsnearby  <- function(frompoints, topoints,
 #'
 #' @export
 #'
-getfrsnearby  <- function(frompoints,
+getfrsnearby <- function(frompoints,
                           radius = 3, maxradius = 31.07,
                           avoidorphans = FALSE,
                           quadtree = NULL,

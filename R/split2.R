@@ -1,7 +1,7 @@
 
 # split up into a vector of parts
 
-split2  <- function(x, split = ",") {unlist(strsplit(x, split))}
+split2 <- function(x, split = ",") {unlist(strsplit(x, split))}
 
 unsplit <- function(x, split = ", ") {paste0(x, collapse = split)} # note space after comma is added
 
