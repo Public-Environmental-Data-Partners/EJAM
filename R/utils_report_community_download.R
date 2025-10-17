@@ -181,7 +181,7 @@ report_community_download <- function(file,
     nsites <- 1
     locationstr <- report_residents_within_xyz(
       sitetype = tolower(react_submitted_upload_method),
-      radius = rad,
+      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
       nsites = nsites,
       area_in_square_miles = NULL # area_in_square_miles
     ) # ***
@@ -253,7 +253,7 @@ report_community_download <- function(file,
     # )
     locationstr <- report_residents_within_xyz(
       sitetype = tolower(react_submitted_upload_method),
-      radius = rad,
+      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
       nsites = nsites,
       area_in_square_miles = NULL # area_in_square_miles
     )

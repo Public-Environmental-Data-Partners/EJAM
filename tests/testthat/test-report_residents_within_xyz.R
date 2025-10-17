@@ -58,7 +58,7 @@ checkit <- function(mytest) {
                  report_residents_within_xyz(
 
                    sitetype = z[[1]],
-                   radius = z[[2]],
+                   radius = z[[2]], # gets rounded in this function (if it can be interpreted as a number)
                    nsites = z[[3]]
                    #, ejam_uniq_id = z[[4]]
                  )
@@ -77,7 +77,7 @@ checkit <- function(mytest) {
                  report_residents_within_xyz(
 
                    sitetype = z[[1]],
-                   radius = z[[2]],
+                   radius = z[[2]], # gets rounded in this function (if it can be interpreted as a number)
                    nsites = z[[3]]
                    , ejam_uniq_id = z[[4]]
                  )

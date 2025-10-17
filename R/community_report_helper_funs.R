@@ -697,7 +697,7 @@ generate_html_header <- function(analysis_title,
 
   logo_html <- report_logo_html_from_inputs(logo_path = logo_path, logo_html = logo_html)
 
-########## #
+  ########## #
   if (is.null(report_title)) {
     if (shiny::isRunning()) {
       report_title <- EJAM:::global_or_param("report_title")
@@ -930,6 +930,8 @@ sitetype2text <- function(sitetype = NULL) {
 #'   it should end with words like "a safe distance from" or
 #'   "the vicinity of" or "proximity to" or "near"
 #'   -- but may need to specify custom text1 also.
+#'   If numeric (or a number stored as text like "3.5"), it gets rounded for display,
+#'   where rounding depends on table_rounding_info("radius.miles")
 #' @param unitsingular 'mile' by default, but can use 'kilometer' etc.
 #'   Ignored if radius is not a number.
 #' @param nsites number of places or text in lieu of number
@@ -964,7 +966,12 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                         )[1]
 
 ) {
-
+  # round radius only if it is a number, since this func can handle a phrase like radius = "seven kilometers from"
+  if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
+  if (is.numeric(radius)) {
+    digits <- table_rounding_info("radius.miles")
+    radius <- round(radius, digits)
+  }
   xmilesof <- report_xmilesof(radius, unitsingular = unitsingular)
 
   location_type <- sitetype2text(sitetype)

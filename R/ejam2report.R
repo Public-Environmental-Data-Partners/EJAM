@@ -219,7 +219,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     residents_within_xyz <- report_residents_within_xyz(
       sitetype = sitetype,
-      radius = rad,
+      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
       nsites = nsites,  # but should note these are only the ones where $results_bysite$valid %in% TRUE
       area_in_square_miles = area_in_square_miles,
       sitenumber = sitenumber,

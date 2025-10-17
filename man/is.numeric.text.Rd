@@ -2,18 +2,37 @@
 % Please edit documentation in R/utils_is.numeric.text.R
 \name{is.numeric.text}
 \alias{is.numeric.text}
-\title{DRAFT utility to check if vector is numbers stored as text like "01"}
+\title{utility to check which elements of vector are numbers, even if stored as text like "01"}
 \usage{
-\method{is.numeric}{text}(x, trim_ = FALSE)
+\method{is.numeric}{text}(x, na.is = c(NA, TRUE, FALSE)[1])
 }
 \arguments{
-\item{x}{character vector (or it reports FALSE)}
+\item{x}{character vector OR numeric vector}
+
+\item{na.is}{optional, what to return for the NA values  (NA, TRUE, or FALSE)}
 }
 \value{
-TRUE or FALSE (not a vector as long as x... just length 1).
-Always ignores any or all NA values.
+vector of TRUE / FALSE
 }
 \description{
-DRAFT utility to check if vector is numbers stored as text like "01"
+utility to check which elements of vector are numbers, even if stored as text like "01"
+}
+\details{
+Checks which elements of vector contain
+only digits or leading/trailing spaces
+and have only zero or one period (decimal)
+and have only zero or one minus sign,
+which must be the first nonspace character if it is there.
+
+Does not matter if stored as text character or numeric, so
+number can be stored as text like
+"01" or " -1.32"
+".3" or "3."
+even "." ?
+even "-" ?
+NOT "-  2" and not "3-1" and not "2.32.6"
+}
+\seealso{
+\code{\link[=is.numericish]{is.numericish()}}
 }
 \keyword{internal}

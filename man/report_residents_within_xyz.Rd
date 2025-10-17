@@ -24,7 +24,9 @@ report_residents_within_xyz(
 or custom text like "seven kilometers from" in which case
 it should end with words like "a safe distance from" or
 "the vicinity of" or "proximity to" or "near"
--- but may need to specify custom text1 also.}
+-- but may need to specify custom text1 also.
+If numeric (or a number stored as text like "3.5"), it gets rounded for display,
+where rounding depends on table_rounding_info("radius.miles")}
 
 \item{unitsingular}{'mile' by default, but can use 'kilometer' etc.
 Ignored if radius is not a number.}

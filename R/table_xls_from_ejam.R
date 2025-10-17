@@ -195,7 +195,7 @@ table_xls_from_ejam <- function(ejamitout,
 
   ## for the notes tab of spreadsheet
   if (missing(radius_or_buffer_description) || is.null(radius_or_buffer_description)) {
-    radius_or_buffer_description <- report_residents_within_xyz(radius = radius_or_buffer_in_miles,
+    radius_or_buffer_description <- report_residents_within_xyz(radius = radius_or_buffer_in_miles, # gets rounded in this function (if it can be interpreted as a number)
                                                                 nsites = npts,
                                                                 sitetype = sitetype)
   }
