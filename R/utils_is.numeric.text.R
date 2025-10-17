@@ -30,7 +30,7 @@ is.numeric.text = function(x,
   # suppressWarnings({
   #   verdict <- (!is.na(as.numeric(x)))
   # })
-
+  if (is.null(x)) {return(FALSE)}
   if (!is.atomic(x)) {
     warning("x should be a vector")
     return(FALSE)

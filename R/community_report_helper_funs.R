@@ -828,40 +828,15 @@ generate_extra_header <- function(title = 'Additional Information') {
 }
 ################################################################### #
 
-
-## within X miles of ####
-
-
-#' helper for [report_residents_within_xyz()]
-#' @param radius distance from site
-#' @param unitsingular use default units
-#'
-#' @keywords internal
-#'
-report_xmilesof <- function(radius, unitsingular = 'mile') {
-
-  if (all(is.character(radius))) {
-    # make sure it/each has a trailing space
-    radius[substr(radius, nchar(radius) - 1, nchar(radius)) != " "] <- paste0(radius[substr(radius, nchar(radius) - 1, nchar(radius)) != " "], ' ')
-    return(radius) # e.g., "1.3 km from "
-    #  but if you provide custom text without ending with "of " then it will look odd
-  }
-  # See  https://cli.r-lib.org/articles/pluralization.html
-  xmilesof <- ifelse(
-    (is.null(radius) || radius == 0 || is.na(radius)), "",
-    paste0(radius, " ", unitsingular, ifelse(radius > 1, "s", ""), " of ")
-  )
-  return(xmilesof)
-}
-################################################################### #
-
-
 #' helper to convert sitetype code ("latlon") to text describing it (" specified point")
 #'
-#' @param sitetype code like (if lowercase) latlon, shp, fips, fips_place, frs, echo, naics, sic, mact, epa_program_sel, epa_program_up as used in server
+#' @param sitetype character string, like (if lowercase)
+#'   latlon, shp, fips, fips_place, frs, echo,
+#'   naics, sic, mact, epa_program_sel, epa_program_up as used in server
 #'   or some of which come from ejamit()$sitetype like latlon, fips, or shp
 #'
-#' @returns phrase to use in report header or excel notes tab
+#' @returns text string, phrase to use in report header (or excel notes tab, etc.)
+#'
 #' @keywords internal
 #'
 sitetype2text <- function(sitetype = NULL) {
@@ -921,9 +896,32 @@ sitetype2text <- function(sitetype = NULL) {
 }
 ################################################################### #
 
+## within X miles of ####
+
+#' helper for [report_residents_within_xyz()]
+#' @param radius distance from site
+#' @param unitsingular use default units
+#'
+#' @keywords internal
+#'
+report_xmilesof <- function(radius, unitsingular = 'mile') {
+
+  if (is.null(radius)) {return("")}
+
+  #  but if you provide custom text without ending with "of " then it will look odd
+  # See  https://cli.r-lib.org/articles/pluralization.html
+  # Make sure it/each has a trailing space
+  radius[!is.na(radius) & substr(radius, nchar(radius) - 1, nchar(radius)) != " "] <- paste0(radius[!is.na(radius) & substr(radius, nchar(radius) - 1, nchar(radius)) != " "], ' ')
+
+  xmilesof <- rep("", length(radius))
+  xmilesof <- paste0(radius, " ", unitsingular, ifelse(radius > 1, "s", ""), " of ")
+  xmilesof <- xmilesof[is.na(radius) | radius == 0] <- ""
+  return(xmilesof)
+}
+################################################################### #
 
 #' Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
-#' used in app_server to create locationstr for  [build_community_report()]
+#' Help app_server create locationstr for [build_community_report()]
 #' @param text1 text to start the phrase, like "Residents within "
 #' @param radius The distance from each place, normally in miles (which can be 0),
 #'   or custom text like "seven kilometers from" in which case
@@ -943,7 +941,7 @@ sitetype2text <- function(sitetype = NULL) {
 #'   works better than ending with "... facility" since that would print as "facilitys" here.
 #' @param area_in_square_miles number if available, area in square miles, added as a second line
 #'
-#' @seealso [buffer_desc_from_sitetype()]
+#' @seealso [report_xmilesof()] [buffer_desc_from_sitetype()]
 #'
 #' @keywords internal
 #'
@@ -967,6 +965,8 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
 
 ) {
   # round radius only if it is a number, since this func can handle a phrase like radius = "seven kilometers from"
+  if (length(radius) > 1) {stop("radius must be a single value")}
+  if (is.na(radius)) {radius <- NULL}
   if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
   if (is.numeric(radius)) {
     digits <- table_rounding_info("radius.miles")
@@ -1010,9 +1010,10 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     siteidtext_in_parens <- paste0("(", siteidtext, ")")
   }
   # see https://cli.r-lib.org/articles/pluralization.html
+  anyofthe <- ifelse(is.na(nsites), "any of the", "any of the ")
   anyoftheplaces <- ifelse(nsites == 1,
                            paste0('this', location_type, " ", siteidtext_in_parens, ""),
-                           paste0("any of the ", nsites, location_type, "s") # "(in aggregate)"
+                           paste0(anyofthe, nsites, location_type, "s") # "(in aggregate)"
   )
 
   residents_within_xyz <- paste0(text1,
