@@ -1,3 +1,9 @@
+# development draft
+
+- deleted obsolete file that had the old function called report_community_download
+
+
+
 # EJAM 2.32.6.001 (October 2025)
 
 This update does not add any web app features.
