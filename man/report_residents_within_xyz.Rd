@@ -3,7 +3,7 @@
 \name{report_residents_within_xyz}
 \alias{report_residents_within_xyz}
 \title{Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
-used in app_server to create locationstr for  \code{\link[=build_community_report]{build_community_report()}}}
+Help app_server create locationstr for \code{\link[=build_community_report]{build_community_report()}}}
 \usage{
 report_residents_within_xyz(
   text1 = "Residents within ",
@@ -13,8 +13,9 @@ report_residents_within_xyz(
   nsites = 1,
   sitenumber = NULL,
   ejam_uniq_id = NULL,
-  sitetype = c("latlon", "fips", "shp", "frs", "epa_program_up", "echo", "naics", "sic",
-    "mact", "epa_program_sel")[1]
+  sitetype = c(NA, "latlon", "fips", "shp", "frs", "epa_program_up", "echo", "naics",
+    "sic", "mact", "epa_program_sel")[1],
+  sitetype_nullna = " place"
 )
 }
 \arguments{
@@ -40,15 +41,18 @@ Ignored if radius is not a number.}
 \item{ejam_uniq_id}{if the 1 site is from a list of sites, can say which ID}
 
 \item{sitetype}{can be 'latlon', 'fips', 'shp', or
-some singular custom text like "Georgia location"
+some singular custom text like "Georgia location" or "place"
 but should be something that can be made plural by just adding "s" so ending with "site"
 works better than ending with "... facility" since that would print as "facilitys" here.}
+
+\item{sitetype_nullna}{optional, to use if sitetype is NULL --
+should be a singular word preceded by a space, like " location"}
 }
 \description{
 Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
-used in app_server to create locationstr for  \code{\link[=build_community_report]{build_community_report()}}
+Help app_server create locationstr for \code{\link[=build_community_report]{build_community_report()}}
 }
 \seealso{
-\code{\link[=buffer_desc_from_sitetype]{buffer_desc_from_sitetype()}}
+\code{\link[=report_xmilesof]{report_xmilesof()}} \code{\link[=buffer_desc_from_sitetype]{buffer_desc_from_sitetype()}}
 }
 \keyword{internal}

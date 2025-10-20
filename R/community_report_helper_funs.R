@@ -828,20 +828,23 @@ generate_extra_header <- function(title = 'Additional Information') {
 }
 ################################################################### #
 
+## within X miles of ####
+
+
 #' helper to convert sitetype code ("latlon") to text describing it (" specified point")
 #'
 #' @param sitetype character string, like (if lowercase)
 #'   latlon, shp, fips, fips_place, frs, echo,
 #'   naics, sic, mact, epa_program_sel, epa_program_up as used in server
 #'   or some of which come from ejamit()$sitetype like latlon, fips, or shp
-#'
+#' @param sitetype_nullna optional, to use if sitetype is NULL --
+#'   should be a singular word preceded by a space, like " location"
 #' @returns text string, phrase to use in report header (or excel notes tab, etc.)
 #'
 #' @keywords internal
 #'
-sitetype2text <- function(sitetype = NULL) {
+sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place") {
 
-  sitetype_nullna <- " place"
   if (is.null(sitetype)) {sitetype <- sitetype_nullna}
   sitetype[is.na(sitetype)] <- sitetype_nullna
 
@@ -896,7 +899,6 @@ sitetype2text <- function(sitetype = NULL) {
 }
 ################################################################### #
 
-## within X miles of ####
 
 #' helper for [report_residents_within_xyz()]
 #' @param radius distance from site
@@ -904,18 +906,19 @@ sitetype2text <- function(sitetype = NULL) {
 #'
 #' @keywords internal
 #'
-report_xmilesof <- function(radius, unitsingular = 'mile') {
+report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 
   if (is.null(radius)) {return("")}
 
   #  but if you provide custom text without ending with "of " then it will look odd
   # See  https://cli.r-lib.org/articles/pluralization.html
   # Make sure it/each has a trailing space
+  justradius = radius
   radius[!is.na(radius) & substr(radius, nchar(radius) - 1, nchar(radius)) != " "] <- paste0(radius[!is.na(radius) & substr(radius, nchar(radius) - 1, nchar(radius)) != " "], ' ')
 
   xmilesof <- rep("", length(radius))
-  xmilesof <- paste0(radius, " ", unitsingular, ifelse(radius > 1, "s", ""), " of ")
-  xmilesof <- xmilesof[is.na(radius) | radius == 0] <- ""
+  xmilesof <- paste0(radius, unitsingular, ifelse(justradius > 1, "s", ""), " of ")
+  xmilesof[is.na(justradius) | justradius == 0] <- ""
   return(xmilesof)
 }
 ################################################################### #
@@ -936,9 +939,11 @@ report_xmilesof <- function(radius, unitsingular = 'mile') {
 #' @param sitenumber if the 1 site is from a list of sites, can say which one (1:N)
 #' @param ejam_uniq_id if the 1 site is from a list of sites, can say which ID
 #' @param sitetype can be 'latlon', 'fips', 'shp', or
-#'   some singular custom text like "Georgia location"
+#'   some singular custom text like "Georgia location" or "place"
 #'   but should be something that can be made plural by just adding "s" so ending with "site"
 #'   works better than ending with "... facility" since that would print as "facilitys" here.
+#' @param sitetype_nullna optional, to use if sitetype is NULL --
+#'   should be a singular word preceded by a space, like " location"
 #' @param area_in_square_miles number if available, area in square miles, added as a second line
 #'
 #' @seealso [report_xmilesof()] [buffer_desc_from_sitetype()]
@@ -952,6 +957,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                         sitenumber = NULL,
                                         ejam_uniq_id = NULL,
                                         sitetype = c(
+                                          NA, # now default is "place(s)" not "specified point(s)"
                                           # uploaded each site
                                           'latlon', 'fips', 'shp',
 
@@ -961,20 +967,31 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                           # selected pulldown category
                                           'naics', 'sic', 'mact',
                                           'epa_program_sel'
-                                        )[1]
+                                        )[1],
+                                        sitetype_nullna = " place"
 
 ) {
+
   # round radius only if it is a number, since this func can handle a phrase like radius = "seven kilometers from"
+  if (is.null(radius)) {
+    xmilesof <- report_xmilesof(unitsingular = unitsingular)
+  } else {
   if (length(radius) > 1) {stop("radius must be a single value")}
-  if (is.na(radius)) {radius <- NULL}
+  if (is.na(radius) || radius == "") {radius <- NULL}
   if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
   if (is.numeric(radius)) {
     digits <- table_rounding_info("radius.miles")
     radius <- round(radius, digits)
   }
-  xmilesof <- report_xmilesof(radius, unitsingular = unitsingular)
-
-  location_type <- sitetype2text(sitetype)
+    xmilesof <- report_xmilesof(radius = radius, unitsingular = unitsingular)
+  }
+  # handle the unlikely case of needing to avoid it saying "Residents within this specified point " when radius is somehow bad/missing for latlon case
+  if (sitetype == "latlon" && (is.null(radius) || !(radius > 0))) {
+    if (text1 == "Residents within ") {
+      text1 <- "Residents at "
+    }
+  }
+  location_type <- sitetype2text(sitetype, sitetype_nullna = sitetype_nullna)
 
   if (is.null(nsites)) {nsites <- ''}
   nsites[is.na(nsites)] <- ""

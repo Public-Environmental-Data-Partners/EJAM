@@ -245,7 +245,7 @@ x <- EJAM:::test_ejam(
         "test-getblocksnearby.R",
         "test-getblocksnearby_from_fips.R",
         "test-getblocksnearbyviaQuadTree.R",
-        "test-report_residents_within_xyz.R",
+        "test-report_residents_within_xyz.R",  ## actually this is for reports, excel, popups, etc.
         "test-proxistat.R",
         "test-utils_indexpoints.R",
         "test-get_blockpoints_in_shape.R",
@@ -303,7 +303,6 @@ x <- EJAM:::test_ejam(
         "test-mod_view_results.R"
       ),
       test_app = c( # not to be confused with shinytest2::test_app() !
-        #"test-report_residents_within_xyz.R",  # maybe belongs in a separate group about reports/tables?
         "test-ui_and_server.R",
         "test-FIPS-functionality.R",
         "test-latlon-functionality.R",
