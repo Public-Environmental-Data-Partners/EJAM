@@ -697,7 +697,7 @@ generate_html_header <- function(analysis_title,
 
   logo_html <- report_logo_html_from_inputs(logo_path = logo_path, logo_html = logo_html)
 
-########## #
+  ########## #
   if (is.null(report_title)) {
     if (shiny::isRunning()) {
       report_title <- EJAM:::global_or_param("report_title")
@@ -977,7 +977,9 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     if (is.null(sitenumber)) {
       siteidtext <- ''
     } else {
-      if (length(sitenumber) > 1) {siteidtext = ''} else {
+      if (length(sitenumber) > 1) {
+        siteidtext = ''
+      } else {
         siteidtext = paste0("Site ", sitenumber)
       }
     }
