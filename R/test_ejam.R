@@ -1035,7 +1035,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ejam2report(x3, analysis_title = "3 polygon portland example", shp = shp)
       ejam2report(x3, analysis_title = "3 polygon portland example, 1 site", shp = shp, sitenumber = 2)
 
-      ejam2map(x3) # no latlon or geometry is in output of ejamit() here so just shows a point at each poly!!
+      ejam2map(x3) # no latlon or geometry is in output of ejamit() here so ideall could at least show a point at each poly, but now latlon is not in outputs of shp case, so we cannot do any mapping if polygons not provided
       ejam2map(x3, shp = shp)  # if shp is provided, map works!
 
       # map_ejam_plus_shp(out = x3, shp = shp) # also works
