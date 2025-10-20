@@ -965,6 +965,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
     if (y_latlon) {
       # latlon
+      cat("--- TRYING latlon CASES -------------------------------------------------------------------------------\n")
       x <- ejamit(testpoints_5[1:2,], radius = 1)
       # names(x)
       ejam2table_tall(x)
@@ -989,7 +990,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
     if (y_shp) {
       # shapefile
-
+      cat("--- TRYING shapefile CASES -------------------------------------------------------------------------------\n")
       shp <- shape_buffered_from_shapefile( shapefile_from_sitepoints(testpoints_5[1:2,]), radius.miles = 1)
       # or use test data  shp <- shapefile_from_any()
       shp <- shapefile_from_any(
@@ -1020,6 +1021,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
     if (y_fips) {
       # fips
+      cat("--- TRYING fips CASES -------------------------------------------------------------------------------\n")
       fipstest = fips_bgs_in_fips(fips_counties_from_state_abbrev("DE")[1])[1:2]
       x2 <- ejamit(fips = fipstest) # just 2 blockgroups
       names(x2)
@@ -1036,8 +1038,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ejam2map(x2) # no latlon or geometry is in output of ejamit() but this does work!
       # ejam2map(x2, shp = shapes_from_fips(fipstest)) # not needed and replaces fips with id 1:N
 
-      ejam2shapefile(x2, folder = tempdir()) # no latlon or geometry is in output of ejamit() here so this is not working for FIPS or shapefile analysis cases yet, except see  mapfastej_counties()
-      x3b <- ejamit(fips = fips_counties_from_state_abbrev("DE"))  #   3 Counties
+      # ejam2shapefile(x2, folder = tempdir()) # ERROR/STOP - no latlon or geometry is in output of ejamit() here so this is not working for FIPS or shapefile analysis cases yet, except see  mapfastej_counties()
+      ejam2shapefile(x2, save = FALSE, shp = shapes_from_fips(fipstest))
+                     x3b <- ejamit(fips = fips_counties_from_state_abbrev("DE"))  #   3 Counties
       mapfastej_counties(x3b$results_bysite) # not (x)
       cat("\n\n DONE WITH fips CHECKS \n\n")
       x1 = x3b
