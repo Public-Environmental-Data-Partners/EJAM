@@ -111,6 +111,9 @@ To include specific columns provides those as a character vector of varnames.")
     ## Try to create circles at lat,lon pts ####
 
     bysite_shp <- shape_buffered_from_shapefile_points(df, radius.miles = NULL, crs = crs)
+    if (all(is.na(bysite_shp))) {
+      stop("no polygons provided and no lat,lon provided so not saving as shapefile")
+    }
 
     ######################################################################################### #
   }
