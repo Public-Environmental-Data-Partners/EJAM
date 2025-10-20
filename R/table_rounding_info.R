@@ -2,7 +2,7 @@
 #' How many decimal places to round to for given variable(s)
 #'
 #' @param var vector of variable names such as c("pctlowinc", "pm") or c(names_d, names_d_subgroups)
-#' @param varnametype which column of [?map_headernames] to use when looking for var, like "rname" or "api" or "long"
+#' @param varnametype which column of [map_headernames] to use when looking for var, like "rname" or "api" or "long"
 #' @seealso [table_signif_round_x100()] [table_signif()] [table_round()] [table_x100()]
 #' @return named vector same size as var, with var as names.
 #' @examples
