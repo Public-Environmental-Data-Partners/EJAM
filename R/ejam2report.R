@@ -180,11 +180,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     nsites <- 1
 
     ### > name of 1 location ####
-    selected_location_name_react <- ejamout1[sitenumber, "statename"]
+    selected_location_name_react <- ejamout1$statename
 
     ### > fips bounds ####
     if (submitted_upload_method %in% "FIPS" && is.null(shp)) {
-      shp <- shapes_from_fips(ejamitout$results_bysite$fips[sitenumber])
+      shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
     } else {
       if (!is.null(shp)) {
         shp <- shp[sitenumber, ]

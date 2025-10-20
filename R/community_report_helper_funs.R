@@ -984,7 +984,9 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     if (is.null(sitenumber)) {
       siteidtext <- ''
     } else {
-      if (length(sitenumber) > 1) {siteidtext = ''} else {
+      if (length(sitenumber) > 1) {
+        siteidtext = ''
+      } else {
         siteidtext = paste0("Site ", sitenumber)
       }
     }
