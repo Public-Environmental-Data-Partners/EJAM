@@ -125,7 +125,11 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                       # radius_buffer = radius,
                       launch_browser = launch_browser)
   } else {
-    ## latlon (or missing polygons) ####
+    if (is.null(shp) && (sitetype %in% "shp")) {
+      stop("cannot map results of shapefile analysis if no polygons provided in shp parameter")
+      # return(NULL)
+    }
+    ## latlon (or missing polygons for fips case) ####
     mapfast(mydf = ejamitout$results_bysite,
             radius = radius,
             column_names = column_names,
