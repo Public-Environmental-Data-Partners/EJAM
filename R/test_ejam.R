@@ -911,34 +911,6 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     # test_coverage_info table is not used. the function prints info.
   }
   ########################### #  ########################################## #
-  ## load_all() or library(EJAM) ####
-  cat('\n')
-  if (useloadall) {
-
-    # Note devtools package is in Suggests not Imports, in DESCRIPTION file
-    dx = try({suppressWarnings(suppressMessages({devtools_available <- requireNamespace("devtools")}))}, silent = TRUE)
-    if (!devtools_available) {
-      # if (inherits(dx, "try-error")) {
-      stop("this requires installing the package devtools first, e.g., \n  install.packages('devtools') \n")
-    }
-    junk <- capture.output({
-      suppressPackageStartupMessages(    devtools::load_all()   )
-    })
-  } else {
-    cat("useloadall=F WILL FAIL TO FIND THE UNEXPORTED FUNCTIONS WHEN IT TRIES TO TEST THEM without load_all() !! \n")
-    # junk <- capture.output({
-    #   suppressPackageStartupMessages({   library(EJAM)   })
-    # })
-  }
-  cat("Downloading all large datasets that might be needed...\n")
-  dataload_dynamic("all")
-  ##
-  if (file.exists("./tests/testthat/setup.R")) {
-    source("./tests/testthat/setup.R")
-  } else {
-    cat("Need to source the setup.R file first \n")
-  }
-  ########################### #  ########################################## #
 
   ## DO BASIC QUICK CHECKS, NOT UNIT TESTS   ####
   # for easy/basic case, main functions, without actually running unit tests with testthat
@@ -1076,7 +1048,34 @@ and all filenames listed there actually exist as in that folder called `test`.\n
   } # halts if this gets done - just basic checks get done if !y_skipbasic
   ########################### #  ########################################## #
   ########################### #  ########################################## #
+  ########################### #  ########################################## #
+  ## load_all() or library(EJAM) ####
+  cat('\n')
+  if (useloadall) {
 
+    # Note devtools package is in Suggests not Imports, in DESCRIPTION file
+    dx = try({suppressWarnings(suppressMessages({devtools_available <- requireNamespace("devtools")}))}, silent = TRUE)
+    if (!devtools_available) {
+      # if (inherits(dx, "try-error")) {
+      stop("this requires installing the package devtools first, e.g., \n  install.packages('devtools') \n")
+    }
+    junk <- capture.output({
+      suppressPackageStartupMessages(    devtools::load_all()   )
+    })
+  } else {
+    cat("useloadall=F WILL FAIL TO FIND THE UNEXPORTED FUNCTIONS WHEN IT TRIES TO TEST THEM without load_all() !! \n")
+    # junk <- capture.output({
+    #   suppressPackageStartupMessages({   library(EJAM)   })
+    # })
+  }
+  cat("Downloading all large datasets that might be needed...\n")
+  dataload_dynamic("all")
+  ##
+  if (file.exists("./tests/testthat/setup.R")) {
+    source("./tests/testthat/setup.R")
+  } else {
+    cat("Need to source the setup.R file first \n")
+  }
 
   ########################### #  ########################################## #
 
