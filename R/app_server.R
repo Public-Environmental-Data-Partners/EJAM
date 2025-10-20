@@ -2419,7 +2419,7 @@ app_server <- function(input, output, session) {
   ##############################################  #
   # REPORT Overall - for DOWNLOAD ####
 
-  # community_download() and report_community_download() NO LONGER USED HERE
+
 
   ### ejam2report() in Overall downloadHandler() ####
 
