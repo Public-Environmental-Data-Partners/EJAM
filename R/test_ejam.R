@@ -1030,7 +1030,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ejam2barplot_sites(x3)
       ejam2tableviewer(x3 , filename = file.path(tempdir(), "ejam2tableviewer_3polygon_test.html")) # should be able to pick name
 
-      junk = ejam2excel(x3, save_now = F, launchexcel = T)
+      junk = ejam2excel(x3, save_now = F, launchexcel = T)  ##  BUT NEED shp TO INCLUDE REPORT SNAPSHOT WITH MAP IN EXCEL TAB ! ,¡shp = shp
 
       ejam2report(x3, analysis_title = "3 polygon portland example", shp = shp)
       ejam2report(x3, analysis_title = "3 polygon portland example, 1 site", shp = shp, sitenumber = 2)

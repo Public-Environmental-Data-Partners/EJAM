@@ -986,7 +986,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     xmilesof <- report_xmilesof(radius = radius, unitsingular = unitsingular)
   }
   # handle the unlikely case of needing to avoid it saying "Residents within this specified point " when radius is somehow bad/missing for latlon case
-  if (sitetype == "latlon" && (is.null(radius) || !(radius > 0))) {
+  if (!is.na(sitetype) && sitetype == "latlon" && (is.null(radius) || !(radius > 0))) {
     if (text1 == "Residents within ") {
       text1 <- "Residents at "
     }
@@ -1012,7 +1012,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
       siteidtext <- ''
     } else {
       if (length(ejam_uniq_id) > 1) {siteidtext = ''} else {
-        if (sitetype == 'fips') {
+        if (!is.na(sitetype) && sitetype == 'fips') {
           siteidtext <- paste0("FIPS ", ejam_uniq_id, "")
         } else {
           siteidtext = paste0("ejam_uniq_id ", ejam_uniq_id)
