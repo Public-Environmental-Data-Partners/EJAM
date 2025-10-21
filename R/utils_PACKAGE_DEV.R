@@ -1230,18 +1230,35 @@ pkg_dependencies <- function(localpkg = "EJAM", depth = 6, ignores_grep = "09128
 
   cat(paste0("
 
-  # This may be useful to see dependencies of a package like EJAM:
+  # Some notes on ways to see dependencies of a package like EJAM:
 
 x1 = renv::dependencies()
 
-x = sort(packrat", ":::", "recursivePackageDependencies('",
+x2 = sort(packrat", ":::", "recursivePackageDependencies('",
              localpkg,
              "', lib.loc = .libPaths(), ignores = NULL))
 
 # but note that https://rstudio.github.io/renv/articles/packrat.html explains that
 # the renv package has replaced the packrat package
 
-# For example try this:
+# For example try this for the EJAM package:
+
+
+# from root of source pkg:
+x1 = renv::dependencies() ; x1 = unique(x1$Package)
+x2 = sort(packrat:::recursivePackageDependencies('EJAM', lib.loc = .libPaths(), ignores = NULL))
+x3 = attachment::att_from_rscripts()
+x4 = attachment::att_from_examples()
+x5 = attachment::att_from_description()
+x6 = attachment::att_from_rmds()
+xl = list(x1,x2,x3,x4,x5,x6)
+names(xl) <- c('renv', 'packrat', 'rscripts', 'examples', 'desc', 'rmds')
+print(sapply(xl, length))
+length(setdiff(xl$renv, xl$packrat))
+length(setdiff(xl$packrat, xl$rscripts))
+length(intersect(xl$packrat, xl$rscripts))
+length(setdiff(xl$rscripts, xl$packrat))
+
 
 pkgs_needed = sort(packrat:::recursivePackageDependencies('EJAM', lib.loc = .libPaths(), ignores = NULL))
 # shorter list because direct not all recursive, but provides rationale for each inference:

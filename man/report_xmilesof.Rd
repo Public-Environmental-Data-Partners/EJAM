@@ -4,7 +4,7 @@
 \alias{report_xmilesof}
 \title{helper for \code{\link[=report_residents_within_xyz]{report_residents_within_xyz()}}}
 \usage{
-report_xmilesof(radius, unitsingular = "mile")
+report_xmilesof(radius = NA, unitsingular = "mile")
 }
 \arguments{
 \item{radius}{distance from site}

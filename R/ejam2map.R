@@ -117,7 +117,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
 
   # MAP ####
 
-  if (sitetype %in% "shp" || (sitetype %in% "fips" && !is.null(shp))) {
+  if (!is.null(shp) && (sitetype %in% "shp" || (sitetype %in% "fips" ))) {
     ## shp/fips ####
     # we have to assume that buffer was already added to polygons passed here - do not add them again
     map_ejam_plus_shp(shp = shp,
@@ -125,7 +125,10 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                       # radius_buffer = radius,
                       launch_browser = launch_browser)
   } else {
-    ## latlon ####
+    if (is.null(shp) && (sitetype %in% "shp")) {
+      stop("cannot map results of shapefile analysis if no polygons provided in shp parameter")
+    }
+    ## latlon (or missing polygons for fips case) ####
     mapfast(mydf = ejamitout$results_bysite,
             radius = radius,
             column_names = column_names,

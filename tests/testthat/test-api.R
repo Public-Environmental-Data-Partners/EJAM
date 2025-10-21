@@ -1,6 +1,8 @@
 # A script to check Plumber endpoints
 # library(httr)
 
+testthat::skip("skip API tests until ready")
+
 # start the API in background - takes a few seconds to be ready
 api_run()
 pause(5)

@@ -77,7 +77,8 @@ ejam2barplot = function(ejamitout, varnames = c(names_d_ratio_to_avg , names_d_s
                         main = "Residential Populations at the Analyzed Locations Compared to US Overall",
                         ...) {
 
-  if (is.null(sitenumber)) {
+  if (length(sitenumber) > 1) {stop("ejam2barplot() requires that the sitenumber parameter if provided be a single number")}
+  if (is.null(sitenumber) || is.na(sitenumber) || 0 %in% sitenumber || any(sitenumber <= 0)) {
     # ejamitout <- ejamitout$results_overall
     single_location <- FALSE
     row_index <- NULL

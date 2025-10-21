@@ -111,7 +111,7 @@ if (try_this_module_here) {
     init_data <- structure(list(
       lat = c(47,    46, 33.7477, 26, 40.814),
       lon = c(-123, -69, -118,   -81,  -96.7),
-      sitenumber = c(1,  2,     3,     4,      5),
+      sitenum = c(1,  2,     3,     4,      5),
       sitename = c("Site in upper northwest", "Site in Maine", "Site near Los Angeles", "Site in south FL", "Site near Lincoln Nebraska")
     ), row.names = 1:5, class = "data.frame")
     # init_data <-   testpoints_10[1:2, ]

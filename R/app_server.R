@@ -2108,7 +2108,7 @@ app_server <- function(input, output, session) {
 
     residents_within_xyz <- report_residents_within_xyz(
       sitetype = sitetype,
-      radius = rad,
+      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
       nsites = nsites,
       area_in_square_miles = area_in_square_miles
       # sitenumber not relevant for overall report
@@ -2419,7 +2419,7 @@ app_server <- function(input, output, session) {
   ##############################################  #
   # REPORT Overall - for DOWNLOAD ####
 
-  # community_download() and report_community_download() NO LONGER USED HERE
+
 
   ### ejam2report() in Overall downloadHandler() ####
 

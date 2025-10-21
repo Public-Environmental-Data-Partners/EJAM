@@ -10,6 +10,14 @@
 report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
                                     # or Rmd_name = 'barplot_report_template.Rmd' for single site barplot report
                                     Rmd_folder = 'report/community_report/') {
+
+  if (!dir.exists(app_sys(Rmd_folder))) {
+    if (dir.exists(app_sys(paste0("inst/", Rmd_folder)))) {
+    Rmd_folder <- paste0("inst/", Rmd_folder)
+    } else {
+        stop("Cannot find the folder with necessary files at", app_sys(Rmd_folder), "or", app_sys(paste0("inst/", Rmd_folder)))
+      }
+  }
   tempReport <- file.path(tempdir( ), Rmd_name)
   if (!file.exists(app_sys(paste0(Rmd_folder, Rmd_name))) ||
       !file.exists(app_sys(paste0(Rmd_folder, 'communityreport.css'))) ||
@@ -18,7 +26,7 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 
       ## does not check for or handle logo .png
   ) {
-    stop(paste0("Necessary files missing from ", app_sys(paste0(Rmd_folder))))
+    warning(paste0("Necessary files missing from ", app_sys(Rmd_folder)))
   }
   # ------------------------------------  maybe it still needs the logo file?
   if (file.exists(app_sys(paste0(Rmd_folder, EJAM:::global_or_param("report_logo_file"))))) {

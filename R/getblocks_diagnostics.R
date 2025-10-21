@@ -24,17 +24,6 @@ blockcounts_table_just_counts <- function(blockcounts, cuts = c(-1, 0, 9, 29, 99
 }
 ######################################################################################### #
 
-## no documentation
-## but see the better function report_residents_within_xyz()
-text_in_or_within_x_miles_of <- function(radius) {
-  ifelse(radius == 0,
-         "in",
-         # within x mile(s) of
-         paste0("within ", radius, " mile", ifelse(radius == 1, "", "s"), " of")
-  )
-}
-######################################################################################### #
-
 #' utility - How many blocks (<10, <30, etc.) are near the sites (pop density affects accuracy)
 #'
 #' @param blockcounts vector like from
@@ -91,9 +80,6 @@ blockcounts_plot <- function(blockcounts, radius, n = length(blockcounts),
 
   justcounts <- blockcounts_table_just_counts(blockcounts = blockcounts, cuts = cuts)
 
-  ## similar to the more full-featured  EJAM:::report_residents_within_xyz(radius = 4, nsites = 7, sitetype = "fips")
-  # milestext <- text_in_or_within_x_miles_of(radius)
-  # maintext  <- paste0("How many blocks are ", milestext, " these ", n, " sites?")
   maintext  <- paste0("How many blocks are ", gsub("Residents ", "", report_residents_within_xyz(nsites = n, radius = radius)), "?")
 
   barplot(

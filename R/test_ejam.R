@@ -245,7 +245,7 @@ x <- EJAM:::test_ejam(
         "test-getblocksnearby.R",
         "test-getblocksnearby_from_fips.R",
         "test-getblocksnearbyviaQuadTree.R",
-        "test-report_residents_within_xyz.R",
+        "test-report_residents_within_xyz.R",  ## actually this is for reports, excel, popups, etc.
         "test-proxistat.R",
         "test-utils_indexpoints.R",
         "test-get_blockpoints_in_shape.R",
@@ -285,7 +285,9 @@ x <- EJAM:::test_ejam(
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
         "test-is.numericish.R",
-        "test-create_filename.R"
+        "test-create_filename.R",
+
+        "test-api.R"
       ),
       ### skip ejscreenapi tests - do not work / get skipped WHILE EJSCREEN API IS DOWN MID 2025  ####
       test_ejscreenapi = c(
@@ -301,7 +303,6 @@ x <- EJAM:::test_ejam(
         "test-mod_view_results.R"
       ),
       test_app = c( # not to be confused with shinytest2::test_app() !
-        #"test-report_residents_within_xyz.R",  # maybe belongs in a separate group about reports/tables?
         "test-ui_and_server.R",
         "test-FIPS-functionality.R",
         "test-latlon-functionality.R",
@@ -910,34 +911,6 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     # test_coverage_info table is not used. the function prints info.
   }
   ########################### #  ########################################## #
-  ## load_all() or library(EJAM) ####
-  cat('\n')
-  if (useloadall) {
-
-    # Note devtools package is in Suggests not Imports, in DESCRIPTION file
-    dx = try({suppressWarnings(suppressMessages({devtools_available <- requireNamespace("devtools")}))}, silent = TRUE)
-    if (!devtools_available) {
-      # if (inherits(dx, "try-error")) {
-      stop("this requires installing the package devtools first, e.g., \n  install.packages('devtools') \n")
-    }
-    junk <- capture.output({
-      suppressPackageStartupMessages(    devtools::load_all()   )
-    })
-  } else {
-    cat("useloadall=F WILL FAIL TO FIND THE UNEXPORTED FUNCTIONS WHEN IT TRIES TO TEST THEM without load_all() !! \n")
-    # junk <- capture.output({
-    #   suppressPackageStartupMessages({   library(EJAM)   })
-    # })
-  }
-  cat("Downloading all large datasets that might be needed...\n")
-  dataload_dynamic("all")
-  ##
-  if (file.exists("./tests/testthat/setup.R")) {
-    source("./tests/testthat/setup.R")
-  } else {
-    cat("Need to source the setup.R file first \n")
-  }
-  ########################### #  ########################################## #
 
   ## DO BASIC QUICK CHECKS, NOT UNIT TESTS   ####
   # for easy/basic case, main functions, without actually running unit tests with testthat
@@ -992,6 +965,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
     if (y_latlon) {
       # latlon
+      cat("--- TRYING latlon CASES -------------------------------------------------------------------------------\n")
       x <- ejamit(testpoints_5[1:2,], radius = 1)
       # names(x)
       ejam2table_tall(x)
@@ -1016,7 +990,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
     if (y_shp) {
       # shapefile
-
+      cat("--- TRYING shapefile CASES -------------------------------------------------------------------------------\n")
       shp <- shape_buffered_from_shapefile( shapefile_from_sitepoints(testpoints_5[1:2,]), radius.miles = 1)
       # or use test data  shp <- shapefile_from_any()
       shp <- shapefile_from_any(
@@ -1029,12 +1003,12 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ejam2barplot_sites(x3)
       ejam2tableviewer(x3 , filename = file.path(tempdir(), "ejam2tableviewer_3polygon_test.html")) # should be able to pick name
 
-      junk = ejam2excel(x3, save_now = F, launchexcel = T)
+      junk = ejam2excel(x3, save_now = F, launchexcel = T)  ##  BUT NEED shp TO INCLUDE REPORT SNAPSHOT WITH MAP IN EXCEL TAB ! ,¡shp = shp
 
       ejam2report(x3, analysis_title = "3 polygon portland example", shp = shp)
       ejam2report(x3, analysis_title = "3 polygon portland example, 1 site", shp = shp, sitenumber = 2)
 
-      ejam2map(x3) # no latlon or geometry is in output of ejamit() here so just shows a point at each poly!!
+      ejam2map(x3) # no latlon or geometry is in output of ejamit() here so ideall could at least show a point at each poly, but now latlon is not in outputs of shp case, so we cannot do any mapping if polygons not provided
       ejam2map(x3, shp = shp)  # if shp is provided, map works!
 
       # map_ejam_plus_shp(out = x3, shp = shp) # also works
@@ -1047,6 +1021,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
     if (y_fips) {
       # fips
+      cat("--- TRYING fips CASES -------------------------------------------------------------------------------\n")
       fipstest = fips_bgs_in_fips(fips_counties_from_state_abbrev("DE")[1])[1:2]
       x2 <- ejamit(fips = fipstest) # just 2 blockgroups
       names(x2)
@@ -1063,8 +1038,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ejam2map(x2) # no latlon or geometry is in output of ejamit() but this does work!
       # ejam2map(x2, shp = shapes_from_fips(fipstest)) # not needed and replaces fips with id 1:N
 
-      ejam2shapefile(x2, folder = tempdir()) # no latlon or geometry is in output of ejamit() here so this is not working for FIPS or shapefile analysis cases yet, except see  mapfastej_counties()
-      x3b <- ejamit(fips = fips_counties_from_state_abbrev("DE"))  #   3 Counties
+      # ejam2shapefile(x2, folder = tempdir()) # ERROR/STOP - no latlon or geometry is in output of ejamit() here so this is not working for FIPS or shapefile analysis cases yet, except see  mapfastej_counties()
+      ejam2shapefile(x2, save = FALSE, shp = shapes_from_fips(fipstest))
+                     x3b <- ejamit(fips = fips_counties_from_state_abbrev("DE"))  #   3 Counties
       mapfastej_counties(x3b$results_bysite) # not (x)
       cat("\n\n DONE WITH fips CHECKS \n\n")
       x1 = x3b
@@ -1075,7 +1051,34 @@ and all filenames listed there actually exist as in that folder called `test`.\n
   } # halts if this gets done - just basic checks get done if !y_skipbasic
   ########################### #  ########################################## #
   ########################### #  ########################################## #
+  ########################### #  ########################################## #
+  ## load_all() or library(EJAM) ####
+  cat('\n')
+  if (useloadall) {
 
+    # Note devtools package is in Suggests not Imports, in DESCRIPTION file
+    dx = try({suppressWarnings(suppressMessages({devtools_available <- requireNamespace("devtools")}))}, silent = TRUE)
+    if (!devtools_available) {
+      # if (inherits(dx, "try-error")) {
+      stop("this requires installing the package devtools first, e.g., \n  install.packages('devtools') \n")
+    }
+    junk <- capture.output({
+      suppressPackageStartupMessages(    devtools::load_all()   )
+    })
+  } else {
+    cat("useloadall=F WILL FAIL TO FIND THE UNEXPORTED FUNCTIONS WHEN IT TRIES TO TEST THEM without load_all() !! \n")
+    # junk <- capture.output({
+    #   suppressPackageStartupMessages({   library(EJAM)   })
+    # })
+  }
+  cat("Downloading all large datasets that might be needed...\n")
+  dataload_dynamic("all")
+  ##
+  if (file.exists("./tests/testthat/setup.R")) {
+    source("./tests/testthat/setup.R")
+  } else {
+    cat("Need to source the setup.R file first \n")
+  }
 
   ########################### #  ########################################## #
 
