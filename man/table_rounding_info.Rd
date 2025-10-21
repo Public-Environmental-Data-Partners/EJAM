@@ -9,7 +9,7 @@ table_rounding_info(var, varnametype = "rname")
 \arguments{
 \item{var}{vector of variable names such as c("pctlowinc", "pm") or c(names_d, names_d_subgroups)}
 
-\item{varnametype}{which column of \link{?map_headernames} to use when looking for var, like "rname" or "api" or "long"}
+\item{varnametype}{which column of \link{map_headernames} to use when looking for var, like "rname" or "api" or "long"}
 }
 \value{
 named vector same size as var, with var as names.
