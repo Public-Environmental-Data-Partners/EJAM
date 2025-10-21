@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -212,8 +212,8 @@ last section of this article).</p>
 <span><span class="va">ref</span> <span class="op">=</span> <span class="fu"><a href="https://remotes.r-lib.org/reference/github_refs.html" class="external-link">github_release</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># specifies you want the latest released version</span></span>
 <span><span class="co">#ref = "development"   # development branch version</span></span>
 <span><span class="co">#ref = "HEAD"          # main branch</span></span>
-<span><span class="co">#ref = "EJAM-v2.32.6"  # a specific branch</span></span>
-<span><span class="co">#ref = "v2.32.6.001"   # a specific tag as the way to identify a specific release</span></span>
+<span><span class="co">#ref = "EJAM-v2.32.6.002"  # a specific branch</span></span>
+<span><span class="co">#ref = "v2.32.6.002"   # a specific tag as the way to identify a specific release</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span></span>
 <span>  repo <span class="op">=</span> <span class="st">"ejanalysis/EJAM"</span>, ref <span class="op">=</span> <span class="va">ref</span>, </span>
 <span>  dependencies<span class="op">=</span><span class="cn">T</span>, upgrade<span class="op">=</span><span class="st">"always"</span>, build<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
@@ -228,7 +228,7 @@ github repository for the latest release</a> and may be able to use
 <code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> something like this:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span>; <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="va">zipname</span> <span class="op">=</span> <span class="st">"v2.32.6.001.zip"</span> <span class="co"># or whatever the latest release is - update as needed</span></span>
+<span><span class="va">zipname</span> <span class="op">=</span> <span class="st">"v2.32.6.002.zip"</span> <span class="co"># or whatever the latest release is - update as needed</span></span>
 <span><span class="va">remote_zip</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
 <span>  <span class="st">"https://github.com/ejanalysis/EJAM/archive/refs/tags/"</span>, <span class="va">zipname</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">install_url</a></span><span class="op">(</span>url <span class="op">=</span> <span class="va">remote_zip</span>, </span>
@@ -238,7 +238,7 @@ github repository for the latest release</a> and may be able to use
 that saved file:</em></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span>; <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="va">zipname</span> <span class="op">=</span> <span class="st">"v2.32.6.001.zip"</span> <span class="co"># or whatever the latest release is - update as needed</span></span>
+<span><span class="va">zipname</span> <span class="op">=</span> <span class="st">"v2.32.6.002.zip"</span> <span class="co"># or whatever the latest release is - update as needed</span></span>
 <span><span class="va">remote_zip</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
 <span>  <span class="st">"https://github.com/ejanalysis/EJAM/archive/refs/tags/"</span>, <span class="va">zipname</span><span class="op">)</span></span>
 <span><span class="va">local_zip</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">zipname</span><span class="op">)</span></span>
@@ -358,7 +358,7 @@ tries to download any still needed, using internal functions.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.001</p>
+  <p>EJAM Version 2.32.6.002</p>
 </div>
 
     </footer>

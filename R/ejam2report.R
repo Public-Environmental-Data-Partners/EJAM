@@ -180,11 +180,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     nsites <- 1
 
     ### > name of 1 location ####
-    selected_location_name_react <- ejamout1[sitenumber, "statename"]
+    selected_location_name_react <- ejamout1$statename
 
     ### > fips bounds ####
     if (submitted_upload_method %in% "FIPS" && is.null(shp)) {
-      shp <- shapes_from_fips(ejamitout$results_bysite$fips[sitenumber])
+      shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
     } else {
       if (!is.null(shp)) {
         shp <- shp[sitenumber, ]
@@ -219,7 +219,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     residents_within_xyz <- report_residents_within_xyz(
       sitetype = sitetype,
-      radius = rad,
+      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
       nsites = nsites,  # but should note these are only the ones where $results_bysite$valid %in% TRUE
       area_in_square_miles = area_in_square_miles,
       sitenumber = sitenumber,

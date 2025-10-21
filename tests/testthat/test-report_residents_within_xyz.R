@@ -58,7 +58,7 @@ checkit <- function(mytest) {
                  report_residents_within_xyz(
 
                    sitetype = z[[1]],
-                   radius = z[[2]],
+                   radius = z[[2]], # gets rounded in this function (if it can be interpreted as a number)
                    nsites = z[[3]]
                    #, ejam_uniq_id = z[[4]]
                  )
@@ -77,7 +77,7 @@ checkit <- function(mytest) {
                  report_residents_within_xyz(
 
                    sitetype = z[[1]],
-                   radius = z[[2]],
+                   radius = z[[2]], # gets rounded in this function (if it can be interpreted as a number)
                    nsites = z[[3]]
                    , ejam_uniq_id = z[[4]]
                  )
@@ -89,7 +89,7 @@ checkit <- function(mytest) {
 }
 ############################## #   ############################## #
 
-test_that("report_residents_within_xyz test123", {
+test_that("report_residents_within_xyz normal cases", {
 
   test1 <- list(
 
@@ -140,7 +140,7 @@ test_that("report_residents_within_xyz test123", {
 })
 ############################## #   ############################## #
 
-test_that("report_residents_within_xyz test1_with_id", {
+test_that("ejam_uniq_id ok", {
 
   test1_with_id <- list(
     ## now with IDs
@@ -199,7 +199,7 @@ test_that("report_residents_within_xyz test1_with_id", {
 })
 ############################## #   ############################## #
 
-test_that("report_residents_within_xyz test2", {
+test_that("pluralize, 'within', empty param cases", {
 
   test2 <- list(
 
@@ -228,14 +228,14 @@ test_that("report_residents_within_xyz test2", {
 })
 ############################## #   ############################## #
 
-test_that("report_residents_within_xyz test3", {
+test_that("NA params ok", {
 
   test3 <- list(
 
     #   na values
-    list(NA, 3, 100),
+    list(     NA,   3, 100),
     list('latlon', NA, 100),
-    list('latlon', 3, NA)
+    list('latlon',  3, NA)
   )
   ############################## #
 
@@ -254,7 +254,7 @@ test_that("report_residents_within_xyz test3", {
 ########################################################################### #
 ########################################################################### #
 
-test_that("report_residents_within_xyz test4 warns if NULL params", {
+test_that("warn if NULL params", {
 
   test4 <- list(
     # NULL values

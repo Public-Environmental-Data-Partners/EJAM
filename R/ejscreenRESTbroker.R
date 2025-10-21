@@ -11,41 +11,52 @@
 #'
 #'    - <https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/ejscreen-api>
 #'
-#'    API URL was <https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?geometry={%22spatialReference%22:{%22wkid%22:4326},%22x%22:-100.2,%22y%22:36}&distance=1&unit=9035&f=json>
+#'    API URL was
+#'    https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?
+#'      geometry={
+#'      %22spatialReference%22:{%22wkid%22:4326},%22x%22:-100.2,%22y%22:36
+#'      }
+#'      &distance=1&unit=9035&f=json
 #'
 #'    for example of json output format, or see source code of this function.
 #'
-#'    API URL was <https://ejscreen.epa.gov/mapper/EJscreen_SOE_report.aspx?namestr=&geometry={%22spatialReference%22:{%22wkid%22:4326},%22x%22:-100.12811027526683,%22y%22:36.6582500495267}&distance=10&unit=9035&areatype=&areaid=&f=report>
+#'    API URL was
+#'    https://ejscreen.epa.gov/mapper/EJscreen_SOE_report.aspx?namestr=
+#'      &geometry={
+#'      %22spatialReference%22:{%22wkid%22:4326},%22x%22:-100.12811027526683,%22y%22:36.6582500495267
+#'      }
+#'      &distance=10&unit=9035&areatype=&areaid=&f=report
+#'
 #'     for an example of the pdf report output.
 #'
 #'    Note some variables are duplicated in outputs.
 #'
 #'    API: Simple web interface to try out the API and learn how parameters can be specified in URL:
 #'
-#'    - 2023_07         ver 2.2 was at        <https://ejscreen.epa.gov/mapper/ejscreenapi1.html>
-#'    - old style/mini ver 2.2 (fewer indicators) was at <https://ejscreen.epa.gov/mapper/ejscreenapi.html>
+#'    - 2023_07         ver 2.2 was at        "https://ejscreen.epa.gov/mapper/ejscreenapi1.html"
+#'    - old style/mini ver 2.2 (fewer indicators) was at "https://ejscreen.epa.gov/mapper/ejscreenapi.html"
 #'
 #'    API: REST endpoint:
 #'
-#'    - 2023_07  ver 2.2 was at <https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?namestr=>
-#'    - old style/mini ver 2.2 was at <https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx?namestr=>
+#'    - 2023_07  ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?namestr="
+#'    - old style/mini ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx?namestr="
 #'
 #'    csv/gdb files: Data dictionary for downloadable dataset:
 #'
-#'    - 2023_07  ver 2.2 was at <https://gaftp.epa.gov/EJScreen/2023/EJSCREEN_2023_BG_Columns.xlsx>
+#'    - 2023_07  ver 2.2 was at "https://gaftp.epa.gov/EJScreen/2023/EJSCREEN_2023_BG_Columns.xlsx"
 #'
 #'    API: Data dictionary of variable names:
 #'
-#'    - 2023_07  ver 2.2 was at <https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html>
-#'    - old style/mini ver 2.2 was at <https://ejscreen.epa.gov/mapper/ejsoefielddesc.html>
+#'    - 2023_07  ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html"
+#'    - old style/mini ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejsoefielddesc.html"
 #'
 #'    Webpage explaining the indicators
 #'
-#'    - ver 2.2 was at <https://origin-awswest-www.epa.gov/ejscreen/ejscreen-map-descriptions>
+#'    - ver 2.2 was at "https://origin-awswest-www.epa.gov/ejscreen/ejscreen-map-descriptions"
 #'
 #'    Web tool user guide:
 #'
-#'    - 2023_07         ver 2.2 was at <https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf>
+#'    - 2023_07         ver 2.2 was at "https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf"
 #'
 #' @param lon a longitude
 #' @param lat a latitude
