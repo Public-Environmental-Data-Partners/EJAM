@@ -1,7 +1,15 @@
-# development draft
+# EJAM 2.32.6.002 (October 2025)
 
-- deleted obsolete file that had the old function called report_community_download
+This update does not add any web app features.
 
+It does the following:
+
+- Fixed some bugs in `ejam2report()`, `ejamit()`, `ejam2map()`, `ejam2tableviewer()`, `report_residents_within_xyz()`, and some helper functions related to report creation, etc. to support new API and R users, for handling sitenumber, missing shapefile, etc.
+- Fixed some obstacles to using the package and/or app locally from a working directory other than root of source pkg
+- Round off the radius in the report header
+- Fixed misc minor issues in reference documentation
+- Deleted obsolete file and function report_community_download
+- Changed github actions that run tests of ability to install the package on various R versions, operating systems, etc.
 
 
 # EJAM 2.32.6.001 (October 2025)
