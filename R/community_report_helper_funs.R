@@ -917,8 +917,14 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
   radius[!is.na(radius) & substr(radius, nchar(radius) - 1, nchar(radius)) != " "] <- paste0(radius[!is.na(radius) & substr(radius, nchar(radius) - 1, nchar(radius)) != " "], ' ')
 
   xmilesof <- rep("", length(radius))
-  xmilesof <- paste0(radius, unitsingular, ifelse(justradius > 1, "s", ""), " of ")
-  xmilesof[is.na(justradius) | justradius == 0] <- ""
+  # Only pluralize if justradius is numeric and not NA
+  if (is.numeric(justradius) || (is.character(justradius) && !any(is.na(suppressWarnings(as.numeric(justradius)))))) {
+    numradius <- suppressWarnings(as.numeric(justradius))
+    xmilesof <- paste0(radius, unitsingular, ifelse(numradius > 1, "s", ""), " of ")
+    xmilesof[is.na(numradius) | numradius == 0] <- ""
+  } else {
+    xmilesof <- paste0(radius, unitsingular, " of ")
+  }
   return(xmilesof)
 }
 ################################################################### #
