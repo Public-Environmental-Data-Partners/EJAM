@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] # , windows-latest, macOS-latest]
-        r-version: [4.1, 4.3]  # MORE OPTIONS CAN BE ADDED HERE BUT ARE IN TESTS OF MAIN BRANCH, e.g.,   4.1, 4.2, 4.3, 4.4, 4.5, release
+        r-version: [4.5]  # MORE OPTIONS CAN BE ADDED HERE BUT ARE IN TESTS OF MAIN BRANCH, e.g.,   4.1, 4.2, 4.3, 4.4, 4.5, release
         install-method: [github] # [github, url]  # Matrix for installation method
 
     env:

@@ -945,7 +945,7 @@ shapefile2latlon <- function(shp, include_only_latlon = TRUE) {
 #' @return data.table with columns named lat and lon,
 #'   and optionally all from shp as well,
 #'   as can be used as input to [ejamit()], [mapfast()], etc.
-#' @aliases [shapefile2latlon()]
+#' @aliases shapefile2latlon
 #' @seealso [latlon_from_shapefile_centroids()]
 #'
 #' @export

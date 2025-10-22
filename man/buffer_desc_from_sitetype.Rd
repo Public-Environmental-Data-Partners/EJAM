@@ -7,13 +7,13 @@
 buffer_desc_from_sitetype(sitetype, site_method)
 }
 \arguments{
-\item{sitetype}{character string, one of "shp", "latlon", "fips" and to describe locations}
+\item{sitetype}{character string, one of "shp", "latlon", "fips"}
 
 \item{site_method}{string used in filename for saved report and to describe locations
 site_method can be SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, or MACT}
 }
 \value{
-text string
+text string, phrase to use in excel notes tab
 }
 \description{
 helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____

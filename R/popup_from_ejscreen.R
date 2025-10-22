@@ -43,6 +43,9 @@ popup_from_ejscreen <- function(out,
   if ("results_bysite" %in% names(out)) {
     # looks like not just 1 table was provided
     out <- out$results_bysite
+    sitetype <- out$sitetype
+  } else {
+    sitetype <- sitetype_from_dt(out)
   }
   if ("sf" %in% class(out)) {
     out <- sf::st_drop_geometry(out) # or else popup is blown up by geometry points data
@@ -397,8 +400,16 @@ popup_from_ejscreen <- function(out,
   if ('siteid'       %in% names(out)) {pops_siteid       <- paste0('siteid: ',       out$siteid,       '<br>')} else {pops_siteid       <- ''}
   if ('sitenumber'   %in% names(out)) {pops_sitenumber   <- paste0('sitenumber: ',   out$sitenumber,   '<br>')} else {pops_sitenumber   <- ''}
   if ('sitename'     %in% names(out)) {pops_sitename     <- paste0('sitename: ',     out$sitename,     '<br>')} else {pops_sitename     <- ''}
-  if ('radius.miles' %in% names(out)) {pops_radmile      <- paste0('Area within ',   out$radius.miles, ' miles of site', '<br>')} else {pops_radmile <- ''}
+  if ('radius.miles' %in% names(out)) {pops_radmile <- paste0(report_residents_within_xyz(radius = out$radius.miles[1], sitetype = sitetype),     '<br>')} else {pops_radmile <- ''}
+    # pops_radmile      <- paste0('Area within ',   out$radius.miles, ' miles of site', '<br>')
   if ('area_sqmi' %in% names(out)) {pops_sqmi      <- paste0('Area: ',   out$area_sqmi, ' square miles', '<br>')} else {pops_sqmi <- ''}
+
+  if (!(all(is.na(out$lon)))) {
+    pops_latlon <- paste0('long, lat: ',  out$lon, ', ', out$lat,             '<br>')
+  } else {
+    pops_latlon <- ''
+  }
+
 
   # ASSEMBLE ALL THE INDICATORS ####
   z <- paste0(
@@ -417,7 +428,7 @@ popup_from_ejscreen <- function(out,
     '</b>',
 
     pops_radmile,
-    paste0('long, lat: ',  out$lon, ', ', out$lat,             '<br>'),
+    pops_latlon,
     pops_sqmi,
 
     ## > LINKS to Reports ####

@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapefile_xyz.R
 \name{latlon_from_shapefile}
 \alias{latlon_from_shapefile}
-\alias{[shapefile2latlon()]}
+\alias{shapefile2latlon}
 \title{Convert shapefile (class sf) to data.table of lat and lon columns
 Makes lat and lon columns, from a sfc_POINT class geometry field, or finds centroids of POLYGONS}
 \usage{

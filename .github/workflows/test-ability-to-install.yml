@@ -1,8 +1,8 @@
 name: Test ability to install EJAM - by R-version by OS by install-method
 
 on:
-  push:
-    branches: [ "main" ]
+#  push:
+#    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        r-version: [4.1, 4.2, 4.3, 4.4, release]
-        install-method: [github, url]  # Matrix for installation method
+        r-version: [4.3, 4.4, 4.5, release]   ########   SKIP 4.1, 4.2 -- R 4.1 failed on macOS missing fortran compiler, etc, 4.2 windows problems too.
+        install-method: [github]  # Matrix for installation method can also test ,url
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true

@@ -107,11 +107,11 @@ ejam2tableviewer = function(out, filename = 'automatic', maxrows = 1000, launch_
     if (!is.null(filename)) {trysave <- TRUE} else {trysave <- FALSE}
 
     if (trysave)  {
-    # (NULL would mean do not save and do not browse)
+      # (NULL would mean do not save and do not browse)
 
-    # Validate folder and or file
+      # Validate folder and or file
 
-    validfoldernotfile = dir.exists # function(x) {x = file.info(x)$isdir; x[is.na(x)] <- FALSE; return(x)}
+      validfoldernotfile = dir.exists # function(x) {x = file.info(x)$isdir; x[is.na(x)] <- FALSE; return(x)}
       # BAD folder or missing param
       if (!validfoldernotfile(dirname(filename))) {
         if (!missing(filename)) {
@@ -129,14 +129,21 @@ ejam2tableviewer = function(out, filename = 'automatic', maxrows = 1000, launch_
                                       site_method = sitetype, with_datetime = TRUE)
           filename = file.path(mydir, filename)
         } else {
-          # good folder, WITH a filename w good extension, that may not yet exist?
-          if (validfoldernotfile(dirname(filename)) && tools::file_ext(filename) == "html") {
-            # all set
+          # use a default name and tempdir
+          if ("automatic" %in% filename || missing(filename)) {
+            filename <- create_filename(ext = ".html", file_desc = "results_bysite", buffer_dist = x$radius.miles[1],
+                                        site_method = sitetype, with_datetime = TRUE)
+            filename <- file.path(tempdir(), filename)
           } else {
-            # good folder, WITH BAD extension
-            if (validfoldernotfile(dirname(filename)) && !tools::file_ext(filename) == "html") {
-              warning("wrong extension, so adding .html")
-              filename = paste0(filename, ".html")
+            # good folder, WITH a filename w good extension, that may not yet exist?
+            if (validfoldernotfile(dirname(filename)) && tools::file_ext(filename) == "html") {
+              # all set
+            } else {
+              # good folder, WITH BAD extension
+              if (validfoldernotfile(dirname(filename)) && !tools::file_ext(filename) == "html") {
+                warning("wrong extension, so adding .html")
+                filename = paste0(filename, ".html")
+              }
             }
           }
         }

@@ -28,19 +28,21 @@
 #' acstabs <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025",
 #'              "B18101") # disability at tract resolution only
 #' acstabs2 <- paste0(acstabs, "_")
-#' mytables <- data.table::rbindlist(lapply(acstabs2, function(z) {x[substr(x$name,1,7) %in% z, ][1,]}))
+#' mytables <- data.table::rbindlist(lapply(acstabs2, function(z) {
+#'   x[substr(x$name,1,7) %in% z, ][1, ]
+#'   }))
 #' print(mytables)
 #'
-#'          name            label                                                            concept   geography
-#'        <char>           <char>                                                             <char>      <char>
-#'   1: B01001_001 Estimate!!Total:                                                         Sex by Age block group
-#'   2: B03002_001 Estimate!!Total:                                  Hispanic or Latino Origin by Race block group
-#'   3: B15002_001 Estimate!!Total: Sex by Educational Attainment for the Population 25 Years and Over block group
-#'   4: C16002_001 Estimate!!Total:    Household Language by Household Limited English Speaking Status block group
-#'   5: C17002_001 Estimate!!Total:             Ratio of Income to Poverty Level in the Past 12 Months block group
-#'   6: B25034_001 Estimate!!Total:                                               Year Structure Built block group
-#'   7: B23025_001 Estimate!!Total:             Employment Status for the Population 16 Years and Over block group
-#'   8: B18101_001 Estimate!!Total:                                    Sex by Age by Disability Status       tract
+#'  #        name            label                                                            concept   geography
+#'  #      <char>           <char>                                                             <char>      <char>
+#'  # 1: B01001_001 Estimate!!Total:                                                         Sex by Age block group
+#'  # 2: B03002_001 Estimate!!Total:                                  Hispanic or Latino Origin by Race block group
+#'  # 3: B15002_001 Estimate!!Total: Sex by Educational Attainment for the Population 25 Years and Over block group
+#'  # 4: C16002_001 Estimate!!Total:    Household Language by Household Limited English Speaking Status block group
+#'  # 5: C17002_001 Estimate!!Total:             Ratio of Income to Poverty Level in the Past 12 Months block group
+#'  # 6: B25034_001 Estimate!!Total:                                               Year Structure Built block group
+#'  # 7: B23025_001 Estimate!!Total:             Employment Status for the Population 16 Years and Over block group
+#'  # 8: B18101_001 Estimate!!Total:                                    Sex by Age by Disability Status       tract
 #'
 #'   # see details of the variables
 #'

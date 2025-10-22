@@ -2,27 +2,25 @@
 
 #' helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____
 #'
-#' @param sitetype character string, one of "shp", "latlon", "fips" and to describe locations
+#' @param sitetype character string, one of "shp", "latlon", "fips"
+#'
 #' @param site_method string used in filename for saved report and to describe locations
 #'   site_method can be SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, or MACT
+#'
 #' @seealso [report_residents_within_xyz()]
-#' @returns text string
+#'
+#' @returns text string, phrase to use in excel notes tab
 #'
 #' @keywords internal
 #'
 buffer_desc_from_sitetype <- function(sitetype, site_method) {
 
-  # see also the closely related function report_residents_within_xyz()
-
-  ## old way in server:
-  # if (submitted_upload_method() %in% c("SHP", "FIPS", "FIPS_PLACE")) {
-  #   radius_or_buffer_description <- 'Distance from each shape (buffering around each polygon)'
-  # } else {
-  #   radius_or_buffer_description <- 'Distance from each site (radius of circle around a point/site)'
-  # }
+  # see also the closely related functions report_residents_within_xyz() and sitetype2text()
 
   ######### #
+
   site_method2text <- function(site_method) {
+
     if (missing(site_method) || is.null(site_method)) {
       return("")
     }
@@ -195,7 +193,7 @@ table_xls_from_ejam <- function(ejamitout,
 
   ## for the notes tab of spreadsheet
   if (missing(radius_or_buffer_description) || is.null(radius_or_buffer_description)) {
-    radius_or_buffer_description <- report_residents_within_xyz(radius = radius_or_buffer_in_miles,
+    radius_or_buffer_description <- report_residents_within_xyz(radius = radius_or_buffer_in_miles, # gets rounded in this function (if it can be interpreted as a number)
                                                                 nsites = npts,
                                                                 sitetype = sitetype)
   }

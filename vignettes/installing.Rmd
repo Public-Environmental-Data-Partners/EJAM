@@ -120,8 +120,8 @@ options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
 #ref = "development"   # development branch version
 #ref = "HEAD"          # main branch
-#ref = "EJAM-v2.32.6"  # a specific branch
-#ref = "v2.32.6.001"   # a specific tag as the way to identify a specific release
+#ref = "EJAM-v2.32.6.002"  # a specific branch
+#ref = "v2.32.6.002"   # a specific tag as the way to identify a specific release
 remotes::install_github(
   repo = "ejanalysis/EJAM", ref = ref, 
   dependencies=T, upgrade="always", build=F)
@@ -134,7 +134,7 @@ If you *don't have a [personal access token](https://docs.github.com/en/authenti
 
 ```{r install-url, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.6.001.zip" # or whatever the latest release is - update as needed
+zipname = "v2.32.6.002.zip" # or whatever the latest release is - update as needed
 remote_zip = paste0(
   "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
 remotes::install_url(url = remote_zip, 
@@ -146,7 +146,7 @@ _or download the .zip file as a separate step, and install from that saved file:
 
 ```{r install-local, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.6.001.zip" # or whatever the latest release is - update as needed
+zipname = "v2.32.6.002.zip" # or whatever the latest release is - update as needed
 remote_zip = paste0(
   "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
 local_zip = file.path(tempdir(), zipname)

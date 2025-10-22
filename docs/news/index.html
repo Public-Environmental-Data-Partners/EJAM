@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,17 @@
       <small>Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.32.6.002" id="ejam-2326002-october-2025">EJAM 2.32.6.002 (October 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326002-october-2025"></a></h2>
+<p>This update does not add any web app features.</p>
+<p>Changes:</p>
+<ul><li>Started rounding off the radius shown in the report header</li>
+<li>Fixed some small bugs in <code><a href="../reference/ejam2report.html">ejam2report()</a></code>, <code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejam2map.html">ejam2map()</a></code>, <code><a href="../reference/ejam2tableviewer.html">ejam2tableviewer()</a></code>, <code><a href="../reference/report_residents_within_xyz.html">report_residents_within_xyz()</a></code>, and some helper functions related to report creation, etc. to support new API and R users, for handling sitenumber, missing shapefile, etc. For example, ejamit(fips=x) had a problem if x was a fips missing a needed leading zero.</li>
+<li>Fixed some obstacles to using the package and/or app locally from a working directory other than root of source pkg</li>
+<li>Fixed misc minor issues in reference documentation</li>
+<li>Deleted obsolete file and function report_community_download</li>
+<li>Changed github actions that run tests of ability to install the package on various R versions, operating systems, etc.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.6.001" id="ejam-2326001-october-2025">EJAM 2.32.6.001 (October 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326001-october-2025"></a></h2>
 <p>This update does not add any web app features.</p>
@@ -580,7 +591,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.001</p>
+  <p>EJAM Version 2.32.6.002</p>
 </div>
 
     </footer></div>
