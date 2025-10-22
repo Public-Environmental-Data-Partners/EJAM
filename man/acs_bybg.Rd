@@ -85,7 +85,7 @@ acstabs <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025
              "B18101") # disability at tract resolution only
 acstabs2 <- paste0(acstabs, "_")
 mytables <- data.table::rbindlist(lapply(acstabs2, function(z) \{
-  x[(substr(x$name,1,7) \%in\% z)[1], ]
+  x[substr(x$name,1,7) \%in\% z, ][1, ]
   \}))
 print(mytables)
 
