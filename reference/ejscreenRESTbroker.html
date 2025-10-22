@@ -11,7 +11,7 @@ functions like ejscreenapi() and overall ejscreenit()"><meta property="og:image"
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.001</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -155,20 +155,30 @@ status_code</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Note the public and internal IP addresses differ.</p>
 <p>API: Introduction to how the API works:</p><ul><li><p><a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/ejscreen-api" class="external-link">https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/ejscreen-api</a></p></li>
-</ul><p>API URL was <a href="https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?geometry=%7B%22spatialReference%22:%7B%22wkid%22:4326%7D,%22x%22:-100.2,%22y%22:36%7D&amp;distance=1&amp;unit=9035&amp;f=json" class="external-link">https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?geometry={%22spatialReference%22:{%22wkid%22:4326},%22x%22:-100.2,%22y%22:36}&amp;distance=1&amp;unit=9035&amp;f=json</a></p>
+</ul><p>API URL was
+https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?
+geometry=
+%22spatialReference%22:%22wkid%22:4326,%22x%22:-100.2,%22y%22:36
+
+&amp;distance=1&amp;unit=9035&amp;f=json</p>
 <p>for example of json output format, or see source code of this function.</p>
-<p>API URL was <a href="https://ejscreen.epa.gov/mapper/EJscreen_SOE_report.aspx?namestr=&amp;geometry=%7B%22spatialReference%22:%7B%22wkid%22:4326%7D,%22x%22:-100.12811027526683,%22y%22:36.6582500495267%7D&amp;distance=10&amp;unit=9035&amp;areatype=&amp;areaid=&amp;f=report" class="external-link">https://ejscreen.epa.gov/mapper/EJscreen_SOE_report.aspx?namestr=&amp;geometry={%22spatialReference%22:{%22wkid%22:4326},%22x%22:-100.12811027526683,%22y%22:36.6582500495267}&amp;distance=10&amp;unit=9035&amp;areatype=&amp;areaid=&amp;f=report</a>
-for an example of the pdf report output.</p>
+<p>API URL was
+https://ejscreen.epa.gov/mapper/EJscreen_SOE_report.aspx?namestr=
+&amp;geometry=
+%22spatialReference%22:%22wkid%22:4326,%22x%22:-100.12811027526683,%22y%22:36.6582500495267
+
+&amp;distance=10&amp;unit=9035&amp;areatype=&amp;areaid=&amp;f=report</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">for</span> an example of the pdf report output.</span></code></pre><p></p></div>
 <p>Note some variables are duplicated in outputs.</p>
-<p>API: Simple web interface to try out the API and learn how parameters can be specified in URL:</p><ul><li><p>2023_07         ver 2.2 was at        <a href="https://ejscreen.epa.gov/mapper/ejscreenapi1.html" class="external-link">https://ejscreen.epa.gov/mapper/ejscreenapi1.html</a></p></li>
-<li><p>old style/mini ver 2.2 (fewer indicators) was at <a href="https://ejscreen.epa.gov/mapper/ejscreenapi.html" class="external-link">https://ejscreen.epa.gov/mapper/ejscreenapi.html</a></p></li>
-</ul><p>API: REST endpoint:</p><ul><li><p>2023_07  ver 2.2 was at <a href="https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?namestr=" class="external-link">https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?namestr=</a></p></li>
-<li><p>old style/mini ver 2.2 was at <a href="https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx?namestr=" class="external-link">https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx?namestr=</a></p></li>
-</ul><p>csv/gdb files: Data dictionary for downloadable dataset:</p><ul><li><p>2023_07  ver 2.2 was at <a href="https://gaftp.epa.gov/EJScreen/2023/EJSCREEN_2023_BG_Columns.xlsx" class="external-link">https://gaftp.epa.gov/EJScreen/2023/EJSCREEN_2023_BG_Columns.xlsx</a></p></li>
-</ul><p>API: Data dictionary of variable names:</p><ul><li><p>2023_07  ver 2.2 was at <a href="https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html" class="external-link">https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html</a></p></li>
-<li><p>old style/mini ver 2.2 was at <a href="https://ejscreen.epa.gov/mapper/ejsoefielddesc.html" class="external-link">https://ejscreen.epa.gov/mapper/ejsoefielddesc.html</a></p></li>
-</ul><p>Webpage explaining the indicators</p><ul><li><p>ver 2.2 was at <a href="https://origin-awswest-www.epa.gov/ejscreen/ejscreen-map-descriptions" class="external-link">https://origin-awswest-www.epa.gov/ejscreen/ejscreen-map-descriptions</a></p></li>
-</ul><p>Web tool user guide:</p><ul><li><p>2023_07         ver 2.2 was at <a href="https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf" class="external-link">https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf</a></p></li>
+<p>API: Simple web interface to try out the API and learn how parameters can be specified in URL:</p><ul><li><p>2023_07         ver 2.2 was at        "https://ejscreen.epa.gov/mapper/ejscreenapi1.html"</p></li>
+<li><p>old style/mini ver 2.2 (fewer indicators) was at "https://ejscreen.epa.gov/mapper/ejscreenapi.html"</p></li>
+</ul><p>API: REST endpoint:</p><ul><li><p>2023_07  ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejscreenRESTbroker1.aspx?namestr="</p></li>
+<li><p>old style/mini ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx?namestr="</p></li>
+</ul><p>csv/gdb files: Data dictionary for downloadable dataset:</p><ul><li><p>2023_07  ver 2.2 was at "https://gaftp.epa.gov/EJScreen/2023/EJSCREEN_2023_BG_Columns.xlsx"</p></li>
+</ul><p>API: Data dictionary of variable names:</p><ul><li><p>2023_07  ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html"</p></li>
+<li><p>old style/mini ver 2.2 was at "https://ejscreen.epa.gov/mapper/ejsoefielddesc.html"</p></li>
+</ul><p>Webpage explaining the indicators</p><ul><li><p>ver 2.2 was at "https://origin-awswest-www.epa.gov/ejscreen/ejscreen-map-descriptions"</p></li>
+</ul><p>Web tool user guide:</p><ul><li><p>2023_07         ver 2.2 was at "https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf"</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -208,7 +218,7 @@ and that uses <code><a href="ejscreenapi.html">ejscreenapi()</a></code> that use
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.001</p>
+  <p>EJAM Version 2.32.6.002</p>
 </div>
 
     </footer></div>
