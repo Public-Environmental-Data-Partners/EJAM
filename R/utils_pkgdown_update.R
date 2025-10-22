@@ -254,7 +254,7 @@ pkgdown_update = function(
     ## if doclean_man ####
     if (doclean_man ) {
       cat('deleting all .Rd (help) files in ./man folder \n')
-      file.remove(list.files('./man', full.names = TRUE, include.dirs = FALSE)) # leave the figures directory that has a logo in it
+      file.remove(list.files('./man', pattern = ".*[^figures]$", full.names = TRUE, include.dirs = FALSE)) # leave the figures directory that has a logo in it
       ## might
     }
     # notes on doclean_man:

@@ -24,7 +24,7 @@ VersionACS: 2018-2022
 ReleaseDateACS: 2023-12-07
 VersionCensus: 2020
 Depends: 
-    R (>= 4.1.0)
+    R (>= 4.3.0)
 Imports:
     arrow (>= 20.0.0),
     collapse (>= 2.1.0),
