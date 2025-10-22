@@ -6,7 +6,6 @@
 # (mostly for the shiny app to work rather than for the RStudio-focused functions like ejamit() etc.)
 
 # Note: Do not set defaults specific to a shiny module UNTIL INSIDE THE MODULE, typically, (though fipspicker options may get set here).
-#   e.g., The EJAM ejscreenapi module used its own defaults file: source(system.file("global_defaults_ejscreenapi.R", package = "EJAM"))
 
 ################################################################### #
 ################################################################### #
@@ -128,7 +127,7 @@ global_defaults_shiny <- list(
 
   ## ------------------------ fipspicker module ####
 
-  # *** but perhaps these should be set only inside the module, just to avoid clutter, unneeded settings if module usused, and possible namespace conflicts. as had been noted for the ejscreenapi module settings
+  # *** but perhaps these should be set only inside the module, just to avoid clutter, unneeded settings if module unused, and possible namespace conflicts.
   default_cities_picked = "",
   default_counties_picked = "",
   default_states_picked = "",
@@ -340,27 +339,10 @@ global_defaults_shiny <- list(
   ## ------------------------ Map formatting options ####
 
 
-  ##  Map colors, weights, opacity (for ejscreenapi module?)
+  ##  Map colors, weights, opacity
 
-  ### in ejscreenapi global_defaults_ejscreenapi.R:
+  ### not used (yet)
   default_circleweight = 4,
-  # opacitymin   <- 0
-  # opacitymax   <- 0.5
-  # opacitystep  <- 0.025
-  # opacitystart <- 0.5
-  # opacityratio <- 2 / 5
-  # base_color_default      <- "blue"  ;
-  # cluster_color_default   <- "red"   ;
-  # highlight_color_default <- 'orange';
-
-  # (predict time to complete for ejscreenapi module)
-  # perhourslow  <- 3000  # to give an estimate of how long it will take
-  # perhourguess <- 6000  # seeing 8k if 1 mile, 4.7k if 5 miles, roughly. 207 ECHO run was 2 . 1  minutes, 5.9k/hr.
-  # perhourfast <- 12000  # approx 12k RMP sites would take almost 2 hours (1 to 2 hours, or even 4?).
-  # report_every_n_default <- 100
-
-  ## (download as excel vs csv, for ejscreenapi module)
-  # asExcel <- TRUE # WHETHER TO DOWNLOAD RESULTS AS EXCEL OR CSV
 
   ## ------------------------ by-site interactive web table ####
 

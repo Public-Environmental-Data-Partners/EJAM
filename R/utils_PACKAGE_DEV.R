@@ -1061,7 +1061,7 @@ pkg_dupenames <- function(pkg = EJAM::ejampackages, sortbypkg=FALSE, compare.fun
 ## (helper for pkg_dupenames) ### #
 
 #' UTILITY - check different versions of function with same name in 2 packages
-#' obsolete since EJAMejscreenapi phased out? was used by pkg_dupenames() to check different versions of function with same name in 2 packages
+#' obsolete since old EPA ejscreen api functions were phased out - was used by pkg_dupenames() to check different versions of function with same name in 2 packages
 #' @param fun quoted name of function, like "latlon_infer"
 #' @param package1 quoted name of package, like "EJAM"
 #' @param package2 quoted name of other package
@@ -1086,11 +1086,6 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
   # eg doing this:
   # pkg_functions_all_equal("get.distance.all", "proxistat", "EJAM") # something odd about proxistat pkg
   #   and note there is now a function called proxistat()
-  ### or
-  # pkg_dupenames(c("proxistat", "EJAMejscreenapi"), compare.functions = T)
-  # Error in pkg_functions_all_equal(fun = var, package1 = ddd$package[ddd$variable ==  :
-  #                                                                   distances.all not found in proxistat
-  #                                                                Called from: pkg_functions_all_equal(fun = var, package1 = ddd$package[ddd$variable ==
 
   if (!(is.character(fun) && is.character(package1) && is.character(package2))) {
     warning("all params must be quoted ")

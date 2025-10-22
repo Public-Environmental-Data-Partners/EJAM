@@ -61,7 +61,7 @@ test_that("still same exact results_overall as previously saved", {
 # doaggregate() aggregation over 3 complete bgs at the 1 site
 
 #   Do numbers look right in results_bysite, etc.?
-# had done replication via comparison to ejscreenapi outputs and to prior results
+# had done replication via comparison to ejscreen epa api outputs and to prior results
 
 # replicate = function() {
 

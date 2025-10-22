@@ -35,12 +35,9 @@ ap
 api
 apiname
 app_run_EJAM
-app_run_EJAMejscreenapi
 app_server
-app_server_EJAMejscreenapi
 app_sys
 app_ui
-app_ui_EJAMejscreenapi
 appendixa
 appOptions
 appsilon
@@ -126,7 +123,6 @@ calc_byformula
 calc_counties_from_bg
 calc_ejam
 calc_ratios_to_avg
-calc_ratios_to_avg_for_ejscreenapi
 calc_wtdmeans
 calctype
 calcweight
@@ -234,7 +230,6 @@ de
 deemphasize
 deepdep
 default_metadata
-default_points_shown_at_startup
 DEJ
 demog
 Demog
@@ -326,7 +321,6 @@ ejamdata
 ejamdata_version
 ejamdata's
 ejamdocs
-EJAMejscreenapi
 EJAMejscreendata
 EJAMfrsdata
 ejamit
@@ -349,37 +343,8 @@ ejscreen
 EJScreen
 EJScreen Map
 EJScreen Report
-ejscreen_vs
-ejscreen_vs_ejam
-ejscreen_vs_ejam_1var
-ejscreen_vs_ejam_1var_bysite
-ejscreen_vs_ejam_1var_cdf
-ejscreen_vs_ejam_alreadyrun
-ejscreen_vs_ejam_see1
-ejscreen_vs_ejam_see1map
-ejscreen_vs_ejam_summary
-ejscreen_vs_ejam_summary_byvarlist
-ejscreen_vs_ejam_summary_quantiles
-ejscreen_vs_explain
-ejscreen_vs_explain_meters_cdf
-ejscreen_vs_explain_meterstats
-ejscreen_vs_explain_summary
-ejscreen_vs_explain_summary_plot
-EJScreen's
-ejscreenapi
-ejscreenapi_online
-ejscreenapi_plus
-ejscreenapi1
-ejscreenapi2ejam_format
-ejscreenapp
-ejscreenit
-ejscreenit_for_ejam
-ejscreenit_see_table
 ejscreenmap
 ejscreenmaplink
-ejscreenRESTbroker
-ejscreenRESTbroker2table
-ejscreenRESTbroker2table_na_filler
 elsevier
 enableBookmarking
 enurl
@@ -704,7 +669,6 @@ mact_table
 mactsubpart
 magrittr
 make_action_button
-makenumericdfFORSHINY
 map_blockgroups_over_blocks
 map_counties_in_state
 map_ejam_plus_shp
@@ -740,8 +704,6 @@ minbg
 miniUI
 minLatitude
 minLongitude
-mod_ejscreenapi_server
-mod_ejscreenapi_ui
 mod_get_shape_upload_server
 mod_get_shape_upload_ui
 mod_save_report_server
@@ -1291,7 +1253,6 @@ tempfile
 terra
 testdata
 testdatafolder
-testing_ejscreenapi_module
 testing_this_module
 testinput
 testinput_address_2
@@ -1321,12 +1282,6 @@ testoutput_doaggregate_10pts_1miles
 testoutput_ejamit_1000pts_1miles
 testoutput_ejamit_100pts_1miles
 testoutput_ejamit_10pts_1miles
-testoutput_ejscreenapi_1pts_1miles
-testoutput_ejscreenapi_plus_5
-testoutput_ejscreenit_5
-testoutput_ejscreenit_50
-testoutput_ejscreenit_500
-testoutput_ejscreenRESTbroker_1pts_1miles
 testoutput_getblocksnearby_1000pts_1miles
 testoutput_getblocksnearby_100pts_1miles
 testoutput_getblocksnearby_10pts_1miles

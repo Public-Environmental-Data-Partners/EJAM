@@ -58,6 +58,7 @@ articles:
   - dev-update-documentation
   - dev-update-package
   - dev-future-plans
+  - dev-speed
 reference:
 - title: "Key Functions for Starting an Analysis"
   desc: "Starting the Analysis"
@@ -67,7 +68,6 @@ reference:
   - ejamit
   - ejamit_compare_distances
   - ejamit_compare_types_of_places
-  - ejscreenit_for_ejam
 - title: "Key Functions for Viewing Results"
   desc: "Viewing the Results"
   contents:
@@ -376,7 +376,6 @@ reference:
   - ejam2means
   - ejam2tableviewer
   - ejam2table_tall
-  - ejscreenit_see_table
   - table_ratios_from_ejamit
   - table_gt_from_ejamit
   - table_gt_from_ejamit_1site
@@ -448,8 +447,6 @@ reference:
 - title: internal
   contents:
   - api_run
-  - ejscreenit_for_ejam
-  - ejscreenit
   - state_from_sitetable
   - fips2state_abbrev
   - fips2state_fips
@@ -461,9 +458,6 @@ reference:
   - testoutput_doaggregate_10pts_1miles
   - testoutput_doaggregate_100pts_1miles
   - testoutput_doaggregate_1000pts_1miles
-  - testoutput_ejscreenit_5
-  - testoutput_ejscreenit_50
-  - testoutput_ejscreenit_500
   - acsendyear
   - app_run_EJAM
   - app_server
@@ -476,18 +470,11 @@ reference:
   - dataload_from_local
   - dataload_dynamic
   - download_latest_arrow_data
-  - default_points_shown_at_startup
   - getpointsnearbyviaQuadTree
   - proxistat_via_getblocks
   - colcounter
   - plot_st_v_us
   - plot_vs_us
-  - url_ejscreen_report
-  - ejscreen_vs
-  - ejscreen_vs_ejam_1var
-  - ejscreen_vs_ejam
-  - ejscreenapi2ejam_format
-  - ejscreenRESTbroker2table_na_filler
   - frs_get
   - frs_download
   - frs_drop_inactive
@@ -565,10 +552,7 @@ reference:
   - testinput_address_table_9
   - testinput_address_table_goodnames
   - testinput_address_table_withfull
-  - testoutput_ejscreenapi_1pts_1miles
-  - testoutput_ejscreenRESTbroker_1pts_1miles
   - testpoints_100_dt
-  - testoutput_ejscreenapi_plus_5
   - namez
   - names_age
   - names_age_count
@@ -655,7 +639,6 @@ reference:
   - names_misc
   - names_pct_as_fraction_blockgroupstats
   - names_pct_as_fraction_ejamit
-  - names_pct_as_fraction_ejscreenit
   - names_sitesinarea
   - names_these
   - names_these_avg

@@ -1,3 +1,6 @@
+- Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit__, ejscreenapi__, ejscreen_vs__, ejscreenREST__, testoutput___, etc.
+
+
 # EJAM 2.32.6.001 (October 2025)
 
 This update does not add any web app features.

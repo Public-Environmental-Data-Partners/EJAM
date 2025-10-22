@@ -220,12 +220,6 @@ usastats_query   <- function(varnames = c(EJAM::names_e, EJAM::names_d, EJAM::na
                              PCTILES = NULL,
                              dig = 4) {
   statestats_query(ST = "us", varnames = varnames, PCTILES = PCTILES, dig = dig)
-  ## see all total counts too not just US means for just demographics not envt, including subgroups:
-  # t(round( ustotals2(bg = blockgroupstats),2))
-  # t(round(rbind(
-  #   ustotals2(bg=ejscreen package file bg22),
-  #    ustotals2(bg = blockgroupstats)
-  # ),3))
 }
 ################################################################################ #
 

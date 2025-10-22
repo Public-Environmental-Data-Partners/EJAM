@@ -101,22 +101,7 @@ if (y) {
 ## use full metadata if related to ejscreen or census/acs
 # x <- metadata_add(x)
 ######################################### #
-# As of 2024-08-29
-
-#                name                                        title  type file_size             created ejscreen_version varnames
-
-# 1               frs              frs data from EJScreen for EJAM arrow   146.01M 2024-08-05 14:42:49             2.32     TRUE
-# 2       frs_by_mact      frs_by_mact data from EJScreen for EJAM arrow     4.63M 2024-08-05 14:43:17             2.32     TRUE
-# 3        frs_by_sic       frs_by_sic data from EJScreen for EJAM arrow    20.25M 2024-08-05 14:43:21             2.32     TRUE
-# 4      frs_by_naics     frs_by_naics data from EJScreen for EJAM arrow    14.68M 2024-08-05 14:43:28             2.32     TRUE
-# 5  frs_by_programid frs_by_programid data from EJScreen for EJAM arrow    154.7M 2024-08-05 14:43:33             2.32     TRUE
-# 6         bgid2fips                      bgid2fips data for EJAM arrow     2.98M 2024-08-22 18:34:28             2.32     TRUE
-# 7      blockid2fips                   blockid2fips data for EJAM arrow    98.17M 2024-08-22 18:34:34             2.32     TRUE
-# 8       blockpoints                    blockpoints data for EJAM arrow   155.97M 2024-08-22 18:34:56             2.32     TRUE
-# 9          blockwts         blockwts data from EJ Screen for EJAM arrow    68.64M 2024-08-22 18:35:34             2.32     TRUE
-# 10         quaddata                       quaddata data for EJAM arrow   218.36M 2024-08-22 18:35:52             2.32     TRUE
-# 11             bgej             bgej data from EJ Screen for EJAM arrow    84.94M 2024-08-22 18:54:56             2.32     TRUE
-
+#
 ########################################## #
 
 ## > loadall, require ####
@@ -161,7 +146,6 @@ if (0 == 1) {  # collapsable list
          "datacreate_testdata_frs.R",  "datacreate_testinput_shapes_2.R",
          # testdata standard names, testinput_ or testoutput_
          "datacreate_testinput_address_table.R", "datacreate_testinput_fips.R", "datacreate_testinput_mact.R", "datacreate_testinput_naics.R", "datacreate_testinput_program_name.R", "datacreate_testinput_sic.R",
-         "datacreate_ejscreenRESTbroker2table_na_filler.R", "datacreate_default_points_shown_at_startup.R", "datacreate_testoutput_ejscreenit_or_ejscreenapi_plus_50.R",
          "datacreate_testinput_program_sys_id.R", "datacreate_testinput_registry_id.R",
          "datacreate_testoutput_ejamit_fips_.R", "datacreate_testoutput_ejamit_shapes_2.R",
 
@@ -237,10 +221,7 @@ if (0 == 1) {  # collapsable list
     documentOpen('./data-raw/datacreate_testinput_naics.R')
     documentOpen('./data-raw/datacreate_testinput_program_name.R')
     documentOpen('./data-raw/datacreate_testinput_sic.R')
-    documentOpen('./data-raw/datacreate_ejscreenRESTbroker2table_na_filler.R')
     documentOpen('./data-raw/datacreate_default_points_shown_at_startup.R')
-    documentOpen('./data-raw/datacreate_testoutput_ejscreenit_or_ejscreenapi_plus_50.R')
-    documentOpen('./data-raw/datacreate_testinput_program_sys_id.R')
     documentOpen('./data-raw/datacreate_testinput_registry_id.R')
     documentOpen('./data-raw/datacreate_testoutput_ejamit_fips_.R')
     documentOpen('./data-raw/datacreate_testoutput_ejamit_shapes_2.R')
@@ -703,23 +684,10 @@ source_maybe('datacreate_testoutput_ejamit_shapes_2.R')
 source_maybe("datacreate_testoutput_ejamit_fips_.R")
 
 # ~------------------------------------------- ####
-## Old / related to ejscreenapi  ####
-######################################### #
 
-### datacreate_default_points_shown_at_startup.R ####
-source_maybe('datacreate_default_points_shown_at_startup.R')
 ### datacreate_testpoints_5_50_500.R ####
 # rstudioapi::documentOpen("./data-raw/datacreate_testpoints_5_50_500.R")
 source_maybe('datacreate_testpoints_5_50_500.R')
-
-### datacreate_ejscreenRESTbroker2table_na_filler.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_ejscreenRESTbroker2table_na_filler.R")
-source_maybe('datacreate_ejscreenRESTbroker2table_na_filler.R')
-
-### datacreate_testoutput_ejscreenit_or_ejscreenapi_plus_50.R  ####
-# rstudioapi::documentOpen("./data-raw/datacreate_testoutput_ejscreenit_or_ejscreenapi_plus_50.R")
-source_maybe('datacreate_testoutput_ejscreenit_or_ejscreenapi_plus_50.R')
-
 
 ######################################### ########################################## #
 ###############################          pause here
