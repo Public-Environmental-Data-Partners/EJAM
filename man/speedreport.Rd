@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_speedreport.R
 \name{speedreport}
 \alias{speedreport}
-\title{helper function that reports on how long buffering took}
+\title{helper function that reports on how long an analysis took}
 \usage{
 speedreport(start, end, n)
 }
@@ -11,13 +11,13 @@ speedreport(start, end, n)
 
 \item{end}{end time}
 
-\item{n}{how many buffers were completed}
+\item{n}{how many places were analyzed}
 }
 \value{
 text string summarizing the speed
 }
 \description{
-helper function that reports on how long buffering took
+helper function that reports on how long an analysis took
 }
 \seealso{
 \code{\link[=speedmessage]{speedmessage()}}
