@@ -73,8 +73,6 @@ fname = map2browser(x)
 # browseURL(normalizePath(dirname(fname))) # to open the temp folder
 # file.copy(fname, "./map.html") # to copy map file to working directory
 
-out <- testoutput_ejscreenapi_plus_5
-mapfastej(out)
 }
 }
 \seealso{

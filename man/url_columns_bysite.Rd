@@ -11,7 +11,6 @@ url_columns_bysite(
   shapefile = NULL,
   fips = NULL,
   wherestr = "",
-  namestr = NULL,
   regid = NULL,
   radius = NULL,
   reports = EJAM:::global_or_param("default_reports"),
@@ -41,8 +40,6 @@ from fips2name(201090), or "new rochelle, ny" or "AK"
 or even a zip code, but NOT a fips code! (for FIPS, use the fips parameter instead).
 Note that nearly half of all county fips codes are impossible to distinguish from
 5-digit zipcodes because the same numbers are used for both purposes.}
-
-\item{namestr}{no longer used - had been passed to \code{\link[=url_ejscreen_report]{url_ejscreen_report()}}}
 
 \item{regid}{optional vector of FRS registry IDs if available to use to create links
 to detailed ECHO facility reports}
@@ -94,6 +91,6 @@ unlinkify(x)
 
 }
 \seealso{
-\code{\link[=url_ejscreen_report]{url_ejscreen_report()}} \code{\link[=url_ejscreenmap]{url_ejscreenmap()}} \code{\link[=url_echo_facility]{url_echo_facility()}} \code{\link[=url_ejscreenapi_clusters_and_sort_cols]{url_ejscreenapi_clusters_and_sort_cols()}}
+\code{\link[=url_ejamapi]{url_ejamapi()}} \code{\link[=url_ejscreenmap]{url_ejscreenmap()}} \code{\link[=url_echo_facility]{url_echo_facility()}}
 }
 \keyword{internal}

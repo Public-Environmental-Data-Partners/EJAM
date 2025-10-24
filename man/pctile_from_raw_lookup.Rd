@@ -100,18 +100,6 @@ data.frame(value = eg,
 
 data.frame(value = eg, pctile = lookup_pctile(eg, names_d))
 
-
-  # compare ejscreen API output percentiles to those from this function:
-  for (vname in c(names_d[c(1,3:6,8:10)] )) {
-     print(pctile_from_raw_lookup(testoutput_ejscreenapi_plus_100[,vname] / 100, vname,
-       lookup = usastats)
-       - testoutput_ejscreenapi_plus_100[,paste0("pctile.",vname)] )
-  }
-  for (vname in c(names_e )) {
-     print(pctile_from_raw_lookup(testoutput_ejscreenapi_plus_100[,vname], vname,
-       lookup = usastats)
-         - testoutput_ejscreenapi_plus_100[,paste0("pctile.",vname)] )
-  }
 }
 
 }

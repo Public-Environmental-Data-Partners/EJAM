@@ -25,9 +25,9 @@ which points are near any of the others in a list?
 }
 \examples{
 mapfast(testpoints_500[distance_near_eachother(
-  lon = testpoints_500$lon, 
-  lat = testpoints_500$lat, 
+  lon = testpoints_500$lon,
+  lat = testpoints_500$lat,
   3.1), ], radius = 3.1)
-   
+
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/table_xls_varname2color.R
 \name{xls_varname2vartype}
 \alias{xls_varname2vartype}
-\title{helper function - given indicator names, look up what type each is}
+\title{helper function - given indicator names, look up what type each is - NOT USED except by unused function xls_varname2color()}
 \usage{
 xls_varname2vartype(varname, varnameinfo)
 }
@@ -15,11 +15,11 @@ xls_varname2vartype(varname, varnameinfo)
 vector same size as varname
 }
 \description{
-helper function - given indicator names, look up what type each is
+helper function - given indicator names, look up what type each is - NOT USED except by unused function xls_varname2color()
 }
 \details{
 The types are things like raw data count for indicator, average, percentile, etc.
-Variable names are stored in column of map_headernames called newnames_ejscreenapi
+Variable names can be from column of map_headernames called rname, e.g.
 Types are stored in column of map_headernames called jsondoc_vartype
 }
 \seealso{
