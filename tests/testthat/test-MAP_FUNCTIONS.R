@@ -214,7 +214,7 @@ test_that("mapfastej_counties() works", {     # slow
 # what if no CENSUS_API_KEY, and different services tried
 ## see places where it does or does not do this, e.g. :
 # if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
-#   stop("this requires having set up a census api key - see ?tidycensus::census_api_key  ")
+#   warning("envt var CENSUS_API_KEY not found - this requires having set up a census api key - see ?tidycensus::census_api_key  ")
 # }
 
 ftypes <- c("blockgroups", "tracts", "cities", "counties", "states")

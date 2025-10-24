@@ -1,6 +1,8 @@
 # development
 
 - Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit__, ejscreenapi__, ejscreen_vs__, ejscreenREST__, testoutput___, etc.
+- Added warnings when envt var CENSUS_API_KEY not found before trying to use tidycensus package or tigris package downlaods of ACS Info or Census unit boundaries, e.g., in shapes_from_fips() and elsewhere
+
 
 # EJAM 2.32.6.002 (October 2025)
 
