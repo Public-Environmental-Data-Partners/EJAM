@@ -9,9 +9,6 @@
 # purrr, rvest,  rappdirs, readr, xml2, units, utils, rlang, crayon, tidyselect
 ################################# #
 
-# #  a census api key would be needed here if large number queries needed
-
-################################# ################################## #
 ################################# ################################## #
 
 
@@ -163,7 +160,7 @@ acs_bybg <- function(
   # NEED API KEY POSSIBLY, FOR LARGE QUERIES AT LEAST
 
   if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
-    stop("this requires having set up a census api key - see ?tidycensus::census_api_key  ")
+    warning("envt var CENSUS_API_KEY not found - tidycensus::get_acs() may require having set up a census api key - see ?tidycensus::census_api_key  ")
   }
 
   # if (!exists("get_acs")) {  # now in Imports of DESCRIPTION file
@@ -179,6 +176,7 @@ acs_bybg <- function(
 
   for (i in 1:length(state)) {
     MYST <- state[i]
+    ## probably will stop/error if we try this and no key exists. NULL probably tries to use default key assuming one is set
     bgs <- tidycensus::get_acs(geography = geography,   # requires tidycensus package - refer to it like this
                                variables = variables,
                                table = table,

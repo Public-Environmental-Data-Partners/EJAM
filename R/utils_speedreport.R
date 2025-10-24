@@ -1,17 +1,17 @@
-#' helper function that reports on how long buffering took
+#' helper function that reports on how long an analysis took
 #'
-#' @param start start time 
+#' @param start start time
 #' @param end end time
-#' @param n how many buffers were completed
+#' @param n how many places were analyzed
 #'
 #' @return text string summarizing the speed
 #' @seealso [speedmessage()]
-#' 
+#'
 #' @keywords internal
 #' @export
 #'
 speedreport <- function(start,end,n) {
-  
+
   # define speedreport function ####
   # report time elapsed and avg speed
   benchmark.start <- start
@@ -23,10 +23,10 @@ speedreport <- function(start,end,n) {
     #cat('\n')
     cat(paste0(
       'Rate of ',
-      format(round((n / as.numeric(total.seconds)) * 3600, 0), big.mark = ',', scientific = FALSE), 
-      ' buffers per hour: ',
+      format(round((n / as.numeric(total.seconds)) * 3600, 0), big.mark = ',', scientific = FALSE),
+      ' places per hour: ',
       format(n,big.mark = ',', scientific = FALSE),
-      ' lat/long pairs took ',
+      ' places took ',
       format(round(    as.numeric(total.seconds), 0),         big.mark = ',', scientific = FALSE),
       ' seconds'
     )  )
@@ -44,19 +44,19 @@ speedreport <- function(start,end,n) {
 #' @param perhourfast n per hour if fast
 #' @param perhourguess n per hour best guess
 #' @seealso [speedreport()]
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 speedmessage <- function(n, perhourslow = 1000, perhourfast = 12000, perhourguess = 6000) {
-  
+
   fast_minutes  <- round(60 * n / perhourfast, 1)
   guess_minutes <- round(60 * n / perhourguess, 1)
   slow_minutes  <- round(60 * n / perhourslow, 1)
-  
+
   msg <- paste0(
     'Results for ', n, ' points may take ',
     guess_minutes, ' minutes (but up to ',
-    # fast_minutes, '-', 
+    # fast_minutes, '-',
     slow_minutes,')'
   )
   return(msg)
