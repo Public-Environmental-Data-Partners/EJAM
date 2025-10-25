@@ -87,4 +87,4 @@ rsconnect::writeManifest(appFiles = deploy_files)
 
 cat("Now commit that updated manifest file, push to github,
     and if Posit Connect server is configured to deploy a shiny app from that repo and branch then it will detect the changes and redeploy
-    or you can specify the manifest.json file when deploying using Posit Cloud, for example. \n")
+    or you can specify the manifest.json file when deploying using Posit Connect Cloud, for example. \n")

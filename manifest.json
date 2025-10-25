@@ -112,12 +112,12 @@
         "RemoteRepo": "EJAM",
         "RemoteUsername": "ejanalysis",
         "RemoteRef": "posit-connect",
-        "RemoteSha": "7e99f6bac313447936e1b8d644ca08e013ca0aba",
+        "RemoteSha": "eb1ca99b203087189c554acd5776006ab29fe52c",
         "GithubRepo": "EJAM",
         "GithubUsername": "ejanalysis",
         "GithubRef": "posit-connect",
-        "GithubSHA1": "7e99f6bac313447936e1b8d644ca08e013ca0aba",
-        "Built": "R 4.5.1; ; 2025-10-25 02:57:26 UTC; unix"
+        "GithubSHA1": "eb1ca99b203087189c554acd5776006ab29fe52c",
+        "Built": "R 4.5.1; ; 2025-10-25 03:17:14 UTC; unix"
       }
     },
     "KernSmooth": {
@@ -7645,7 +7645,7 @@
       "checksum": "d5a15c7506145fd4a1fc7caf082d2122"
     },
     "R/data_names_all.R": {
-      "checksum": "c9286f44adc80b67cb17aaf14938211f"
+      "checksum": "782b97812fb1686cb8c6b1c4d2712bd8"
     },
     "R/data_names_climate_avg.R": {
       "checksum": "baf2ad80426b421d5ebe2bdff5904470"
