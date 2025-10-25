@@ -77,9 +77,9 @@ deploy_files <- all_files[-c(
 print(deploy_files)
 
 ## check dependency list
-x <- rsconnect::appDependencies(appFiles = deploy_files) # roughly 220
+x <- rsconnect::appDependencies(appFiles = deploy_files)
 
-print(dim(x))
+print(dim(x)) # roughly 214
 
 ## update manifest.json file
 rsconnect::writeManifest(appFiles = deploy_files)
