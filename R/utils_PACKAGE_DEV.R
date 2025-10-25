@@ -1240,6 +1240,7 @@ x2 = sort(packrat", ":::", "recursivePackageDependencies('",
 
 # but note that https://rstudio.github.io/renv/articles/packrat.html explains that
 # the renv package has replaced the packrat package
+# But note Posit Connect does not seem to work with renv? it uses rsconnect etc.
 
 # For example try this for the EJAM package:
 
@@ -1449,3 +1450,54 @@ find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
 
   return(max(package_version(r_vers)))
 }
+############################ #
+
+
+pkg_available <- function(pkg,
+                          if_not_installed = c("stop", "warning", "message", "cat")[2],
+                          if_not_loaded = c("stop", "warning", "message", "cat")[2]
+                          # ,if_not_attached =  c("stop", "warning", "message", "cat")[2]
+) {
+
+  # is a package loaded or just installed or not even installed?
+
+  stopifnot(!missing(pkg), !is.null(pkg), length(pkg) == 1)
+  stopifnot(length(if_not_installed) == 1, if_not_installed %in% c("stop", "warning", "message", "cat"),
+            length(if_not_loaded) == 1, if_not_loaded %in% c("stop", "warning", "message", "cat")
+            # ,length(if_not_attached) == 1, if_not_attached %in% c("stop", "warning", "message", "cat")
+  )
+
+  installed <- !inherits(try(find.package(pkg), silent = TRUE), "try-error")
+  loaded <- isNamespaceLoaded(pkg)
+  # attached <- paste0("package:", pkg) %in% search()
+
+  ## isNamespaceLoaded()  checks if loaded but does not check if also attached.
+  ##  if library() or require() has been used, it will be both loaded and attached.
+  ##  A package that is loaded by EJAM even though not attached is still available for use by functions,
+  ##  so being loaded should be sufficient even if not attached.
+
+  # if (!attached) {
+  #   msg <- paste0(pkg, " package is needed here but is not attached")
+
+  if (loaded) {
+
+    return(TRUE)
+
+  } else {
+    # msg <- paste0(pkg, " package is needed here but is not loaded")
+
+    if (!installed) {
+      msg <- paste0(pkg, " package is needed for this but does not appear to be installed \n")
+      get(if_not_installed)(msg) # stop or warning or message or cat()
+
+      return(FALSE)
+
+    } else {
+      msg <- paste0(pkg, " package must be loaded for this and appears to be installed but not loaded. Try using library(", pkg,") or require(", pkg,") \n")
+      get(if_not_loaded)(msg) # stop or warning or message or cat()
+
+      return(FALSE)
+    }
+  }
+}
+############################ #
