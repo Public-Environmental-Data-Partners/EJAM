@@ -240,7 +240,7 @@ if (FALSE) {
     if (geometries) {
       output_shape <- switch(method,
                              "latlon" = sf::st_as_sf(sites, coords = c("lon", "lat"), crs = 4326),
-                             "SHP" = geojson_sf::geojson_sf(shape),
+                             "SHP" = geojsonsf::geojson_sf(shape),
                              "FIPS" = shapes_from_fips(fips)
       )
       # Combine the analysis results with the geographic shapes.
