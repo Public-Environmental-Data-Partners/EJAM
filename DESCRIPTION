@@ -85,7 +85,6 @@ Suggests:
     doSNOW,
     fipio,
     foreach,
-    gglorenz,
     ggridges (>= 0.5.7),
     htmlwidgets (>= 1.6.2),
     jsonlite (>= 0.9.16),
