@@ -17,10 +17,10 @@
 #'
 #'
 MODULE_UI_latlontypedin <- function(id) {
-
+  pkg_available("rhandsontable", if_not_loaded = "stop")
   ns <- NS(id)
   tagList(
-    rhandsontable::rHandsontableOutput(outputId = ns("TYPED_IN_DATA")), # if you want to display the table output ?
+    rHandsontableOutput(outputId = ns("TYPED_IN_DATA")), # if you want to display the table output ?  needs rhandsontable pkg
     # actionButton(inputId = 'latlontypedin_submit_button', label='Type in latitudes,longitudes. Click when done.', class = 'usa-button usa-button--outline'),
     shiny::br()
   )
@@ -42,15 +42,16 @@ MODULE_SERVER_latlontypedin <- function(id,
     id = id,
     function(input, output, session) {
       ns <- session$ns
-
-      output$TYPED_IN_DATA <- rhandsontable::renderRHandsontable({
+      pkg_available("rhandsontable", if_not_loaded = "stop")
+      output$TYPED_IN_DATA <- renderRHandsontable({ # need rhandsontable pkg
         tmp <- isolate(reactdat()) # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
         rownames(tmp) <- NULL
-        rhandsontable::rhandsontable(tmp, allowRowEdit = allowRowEdit, allowColumnEdit = allowColumnEdit, manualRowMove = manualRowMove, ...)
+        rhandsontable(tmp,  # need rhandsontable pkg
+                      allowRowEdit = allowRowEdit, allowColumnEdit = allowColumnEdit, manualRowMove = manualRowMove, ...)
       })
 
       observe({
-        tmp <- rhandsontable::hot_to_r(input$TYPED_IN_DATA) # Update the reactive values for this user-manipulated data to pass back to main environment
+        tmp <- hot_to_r(input$TYPED_IN_DATA) # need rhandsontable pkg # Update the reactive values for this user-manipulated data to pass back to main environment
         reactdat(tmp) # !!! update the value of reactdat()  based on new value of input$TYPED_IN_DATA
       }) %>% bindEvent(input$TYPED_IN_DATA)
       return( reactdat ) # no parentheses here - return the reactive object not just its current value
@@ -76,10 +77,10 @@ if (try_this_module_here) {
    # rm(list = ls())
    # golem::detach_all_attached()
   # pkgs <- 'EJAM'
+  # pkg_available("rhandsontable", if_not_loaded = "stop")
    ### pkgs <- c('shiny', 'dplyr', 'rhandsontable', 'data.table', 'leaflet', 'magrittr')
   # for (pkg in pkgs) {require(pkg, character.only = TRUE)}
    ### must attach all of those for this to work when testing the app separate from EJAM package
-  #
 
 
   # SIMPLIFIED OVERALL APP ####

@@ -92,7 +92,6 @@ Suggests:
     mapview,
     miniUI,
     remotes,
-    rhandsontable,
     rnaturalearth,
     rvest,
     shinytest2,
