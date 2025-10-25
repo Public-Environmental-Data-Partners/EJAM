@@ -632,7 +632,7 @@ options(shiny.maxRequestSize = global_defaults_shiny$default_max_mb_upload * 102
 # sanitize_functions is used by get_global_defaults_or_user_options()
 sanitize_functions <- list(
   # sanitize_functions ####
-  sanitize_text = function(text) {
+   sanitize_text = function(text) {
     gsub("[^a-zA-Z0-9 .-]", "", text)
   },
 

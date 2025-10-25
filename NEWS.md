@@ -1,6 +1,11 @@
 # development
 
-- Added warnings when envt var CENSUS_API_KEY not found before trying to use tidycensus package or tigris package downlaods of ACS Info or Census unit boundaries, e.g., in shapes_from_fips() and elsewhere
+- Hosting:
+  - Revise article (vignette) on hosting, to add posit vs docker info, and updated files supporting deployment of shiny app to Posit Connect Cloud (manifest.json, etc.).
+  - Fixed dependency issue where package geojsonsf used in draft API code (plumber.R) had a typo so deployment to posit would fail due to not finding a package of that name.
+  - edited apparently problematic file data_names_all.R and may add back the _disable_autoload.R file
+- Census API key: Added warnings when envt var CENSUS_API_KEY not found before trying to use tidycensus package or tigris package downlaods of ACS Info or Census unit boundaries, e.g., in shapes_from_fips() and elsewhere
+- Added a github action workflow to run R CMD check, via `rcmdcheck::rcmdcheck()`
 
 
 # EJAM 2.32.6.002 (October 2025)

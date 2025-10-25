@@ -156,12 +156,13 @@ deployment works.</p>
 for hosting.</p>
 </div>
 <div class="section level4">
-<h4 id="using-posit-connect-or-posit-cloud-for-hosting">2. Using Posit Connect (or Posit Cloud) for Hosting<a class="anchor" aria-label="anchor" href="#using-posit-connect-or-posit-cloud-for-hosting"></a>
+<h4 id="using-posit-connect-or-posit-connectcloud-for-hosting">2. Using Posit Connect (or Posit ConnectCloud) for Hosting<a class="anchor" aria-label="anchor" href="#using-posit-connect-or-posit-connectcloud-for-hosting"></a>
 </h4>
 <p>Shiny apps can be hosted using <a href="https://posit.co/products/enterprise/connect/" class="external-link">Posit Connect</a>
-or <a href="https://posit.cloud" class="external-link">Posit Cloud</a>, which are commercial
-products that have a full set of features focused on hosting shiny apps
-and APIs based on R/Python.</p>
+or <a href="https://connect.posit.cloud" class="external-link">Posit Connect Cloud</a>, which
+are commercial products that have a full set of features focused on
+hosting shiny apps and APIs based on R/Python.</p>
+<p>An example of the EJAM app hosted via Posit Cloud Connect is here: <a href="https://ejanalysis-ejam.share.connect.posit.cloud/" class="external-link uri">https://ejanalysis-ejam.share.connect.posit.cloud/</a></p>
 <ul>
 <li><p>Configure Posit Connect to deploy from a github.com repository -
 The EPA-hosted (pre-2025) app used a <a href="https://docs.posit.co/connect/user/git-backed/" class="external-link">Posit Connect
@@ -169,8 +170,8 @@ server configured to re-publish the shiny app directly from github.com
 content</a> whenever it saw changes in the specified repo and branch,
 and <a href="https://posit.co/blog/git-backed-deployment-in-posit-connect/" class="external-link">that
 same approach</a> could be used by anyone else hosting the app.</p></li>
-<li><p>Handle dependencies with Posit Connect/Cloud - Posit Connect uses
-the rsconnect package and tracks where each package was installed from,
+<li><p>Handle dependencies with Posit Connect - Posit Connect uses the
+rsconnect package and tracks where each package was installed from,
 including EJAM itself, so EJAM should be installed from github. See
 notes on doing that, in the file
 EJAM/data-raw/rsconnect-manifest-update.R Also note that if the renv
