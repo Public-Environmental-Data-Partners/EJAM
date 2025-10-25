@@ -29,7 +29,8 @@ reponame = "ejanalysis/EJAM"
 devtools::install_github(
 
   repo = reponame,
-  ref = 'development',  # or 'main' or a specific tagged release like 'v2.32.6.002'
+  # ref = 'development',  # or 'main' or a specific tagged release like 'v2.32.6.002'
+  ref = 'posit-connect',  # or 'main' or a specific tagged release like 'v2.32.6.002'
 
   build_vignettes = FALSE,
   build_manual = FALSE,
