@@ -25,7 +25,7 @@ if (!is.null("isPublic")) {
   #isPublic <- isPublic
 } else {
   # if user didn't specify isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
-  isPublic <- FALSE
+  isPublic <- TRUE ### FALSE ### TEMPORARILY SET THIS WAY
 }
 ########## #
 # use_fipspicker ####
