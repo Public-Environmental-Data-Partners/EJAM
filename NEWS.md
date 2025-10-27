@@ -1,10 +1,14 @@
 # development
 
 - Require R version 4.3 minimum, as specified in DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the [R universe platform](https://ropensci.org/r-universe/) and maybe eventually [CRAN](https://cran.r-project.org) are other options.
-- Added Dockerfile used to deploy the shiny app to a server.
-- Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://ejanalysis.github.io/EJAM/articles/dev-speed.html)
 - Added recommendation that you obtain a Census API key, in the [guide to installing the package](https://ejanalysis.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downlaods of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
-- Added github action that can do R CMD check to find various problems in a package.
+- Hosting:
+  - Revised article (vignette) on hosting, to add posit vs docker info, and updated files supporting deployment of shiny app to Posit Connect Cloud (manifest.json, etc.).
+  - Added Dockerfile used to deploy the shiny app to a server.
+  - Fixed dependency issue where package geojsonsf used in draft API code (plumber.R) had a typo so deployment to posit would fail due to not finding a package of that name.
+  - edited apparently problematic file data_names_all.R and may add back the _disable_autoload.R file
+- Added a github action workflow to run R CMD check, via `rcmdcheck::rcmdcheck()` to find various problems in package.
+- Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://ejanalysis.github.io/EJAM/articles/dev-speed.html)
 - Added example of using `api_run()` to locally run API draft in background 
 
 

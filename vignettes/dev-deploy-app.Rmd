@@ -13,47 +13,48 @@ editor_options:
     wrap: 80
 ---
 
-# Current approach
+# Hosting the Web App 
 
-The older info below is obsolete and is retained here just to document how deployment used to be done. However, these  issues might still be relevant to deploying/hosting:
+These issues might be relevant to deploying/hosting:
 
-1. See info on setting isPublic=T in [Defaults and Custom Settings for the Web App](dev-app-settings.html). One way to improve this process would be to modify the `isPublic` toggle to be an environment variable. This would allow us to set the value once in each application server, and not have to change it each time we push updates. Moreover, it would make testing the app easier to handle in the GitHub actions (see [shinytests vignette](dev-run-shinytests.html)). Note that after mid-2025 the isPublic setting has been handled as explained in the article [Defaults and Custom Settings for the Web App](dev-app-settings.html).
+## Consider the isPublic parameter
 
-2. See info on other parameters as well, in [Defaults and Custom Settings for the Web App](dev-app-settings.html.
+Consider the `isPublic` parameter as set in the file app.R -- The `isPublic` flag determined whether to show the public/basic or expert version of the web application. See the help in `ejamapp()` and for more details see [Defaults and Custom Settings for the Web App](dev-app-settings.html). One way to improve this process would be to modify the `isPublic` toggle to be an environment variable. This would allow us to set the value once in each application server, and not have to change it each time we push updates. Moreover, it would make testing the app easier to handle in the GitHub actions (see [shinytests vignette](dev-run-shinytests.html)). Note that after mid-2025 the isPublic setting is defined in the file app.R and has been handled as explained in the article [Defaults and Custom Settings for the Web App](dev-app-settings.html).
 
-3. The EPA-hosted app used a [Posit Connect server configured to re-publish the shiny app directly from github.com content](https://docs.posit.co/connect/user/git-backed/) whenever it saw changes in the specified repo and branch, and [that same approach](https://posit.co/blog/git-backed-deployment-in-posit-connect/) could be used by anyone else hosting the app.
+## Consider other parameters
 
-4. The notes below about updating the `manifest.json` file using a script like `rsconnect_manifest_update.R` might still be relevant to someone deploying/ hosting the app.
-
-
-# Older information
-
-While the EPA servers hosting the EJAM web application are no longer up and running as of mid-2025, this document outlines the application deployment process that had been used. The process involved 
-
-1. development work on an internal/private repo called EJAM that had been used to deploy an internal/expert version of the web app for staff, and
-
-2. a public repo called EJAM-open that had been used to share the latest version and publish it to host a public version of the web app for use in EJSCREEN (until early 2025).
+Consider the other parameters like logo-related and app title parameters, defined in the files `global_defaults_package.R` or `global_defaults_shiny.R`. See the help in `ejamapp()` and for more details see [Defaults and Custom Settings for the Web App](dev-app-settings.html).
 
 ## Update EJAM Application
 
-After updating the main branch in the public EJAM code repository (see [Updating the Package as a New Release](dev-update-package.html) vignette) so that the public repo had the latest version...
+Update the app. See [Updating the Package as a New Release](dev-update-package.html) vignette.
 
-1.  Sourced `rsconnect_manifest_update.R`, using the public repo as the repo specified in the `remotes::install_github()` command.
+## Decide which branch to deploy from
 
-    a.  In this way, we were updating the `manifest.json` file in the repo from which the web app was deployed, but with reference to the repo that was public (since those were not the same repo). 
-    b.  It was important to use the public repo as this ensured the Posit Connect server for the hosted site could install the EJAM package as a dependency. (It did not necessarily have access to the private EJAM repo)
+Update the branch from which the app will be deployed, which could be a different branch, such as "deploy-from" if that is useful.
 
-2.  Updated Staging + Production servers
 
-    a.  Merged the EJAM main branch into the PUBLIC-EJSCREEN branch (in the repo to be deployed from)
-    b.  Ensured `isPublic` parameter was set to TRUE in the call to the `ejamapp()` function in `app.R`
-        i.  The `isPublic` flag determined whether to show the public or internal/expert version of the web application.
-    c.  The branch PUBLIC-EJSCREEN was automatically connected to the public site, so changes to this branch were automatically pulled into the site.
+## Deploy via Docker, AWS, Posit Connect/Cloud, or whatever approach you prefer
 
-3.  Updated Deploy Posit server
 
-    a.  Merged the EJAM main branch into the deploy-posit branch (in the repo to be deployed from)
-    b.  Ensured `isPublic` parameter was set to FALSE
-    c.  deploy-posit was automatically connected to the development/internal/expert version of the web app, so changes to this branch were automatically pulled into the site. In other words, the EPA-hosted app had a Posit Connect server configured to re-publish the shiny app directly from github.com content whenever it saw changes in the specified repo and branch.
 
-4.  Merged main back into development so that development would have the updated `manifest.json` file. This ensured all branches were consistent.
+### 1. Using Docker/AWS for hosting
+
+The live EJAM app in 2025 was being hosted via AWS and Docker using the Dockerfile now included with the EJAM package, and is hosted at a URL you can be directed to from this shortcut: https://ejanalysis.org/ejamapp The EJAM fork at https://github.com/Environmental-Policy-Innovation-Center/ejam-mc-pedp shows how the deployment works, but essentially it is based on the Dockerfile.
+
+The [EJAM-API](https://github.com/edgi-govdata-archiving/EJAM-API) is deployed via Docker as well, and that repository shows how the deployment works.
+
+The EPA-hosted (pre-2025) app used [Posit Connect](https://posit.co/products/enterprise/connect/) for hosting.
+
+
+### 2. Using Posit Connect (or Posit ConnectCloud) for Hosting
+
+Shiny apps can be hosted using [Posit Connect](https://posit.co/products/enterprise/connect/) or [Posit Connect Cloud](https://connect.posit.cloud), which are commercial products that have a full set of features focused on hosting shiny apps and APIs based on R/Python.
+
+An example of the EJAM app hosted via Posit Cloud Connect is here: https://ejanalysis-ejam.share.connect.posit.cloud/ 
+
+* Configure Posit Connect to deploy from a github.com repository - The EPA-hosted (pre-2025) app used a [Posit Connect server configured to re-publish the shiny app directly from github.com content](https://docs.posit.co/connect/user/git-backed/) whenever it saw changes in the specified repo and branch, and [that same approach](https://posit.co/blog/git-backed-deployment-in-posit-connect/) could be used by anyone else hosting the app.
+
+* Handle dependencies with Posit Connect - Posit Connect uses the rsconnect package and tracks where each package was installed from, including EJAM itself, so EJAM should be installed from github. See notes on doing that, in the file EJAM/data-raw/rsconnect-manifest-update.R Also note that if the renv package is being used to handle dependencies then publishing to Posit Connect has to take that into account as explained here: https://rstudio.github.io/renv/articles/rsconnect.html
+
+* Update the `manifest.json` file to deploy to Posit Connect/Cloud - If using Posit, use a script like `EJAM/data-raw/rsconnect_manifest_update.R` to update the manifest file.
