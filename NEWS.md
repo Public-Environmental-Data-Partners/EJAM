@@ -5,6 +5,7 @@
 - Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://ejanalysis.github.io/EJAM/articles/dev-speed.html)
 - Added recommendation that you obtain a Census API key, in the [guide to installing the package](https://ejanalysis.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downlaods of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
 - Added github action that can do R CMD check to find various problems in a package.
+- Added example of using `api_run()` to locally run API draft in background 
 
 
 # EJAM 2.32.6.002 (October 2025)
