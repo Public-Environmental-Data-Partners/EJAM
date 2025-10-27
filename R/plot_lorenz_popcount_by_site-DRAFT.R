@@ -1,18 +1,7 @@
 
 # Could show share of total population across sites, e.g.,
 # or any other cumulative distribution
-
-# (tidyverse)
-# (ggplot2)
-# (magrittr)
-# this used to also use the pkg  hrbrthemes no longer imported by EJAM
-
-#                       (gglorenz)
-
-
-#
-
-
+######################################################################################################## #
 
 #' lorenz plot bysite (cumulative share of x vs cum share of y) - DRAFT/EXPERIMENTAL
 #' COMPARES TWO subsets OF SITES (or people??)
@@ -24,6 +13,8 @@
 #'
 plot_lorenz_popcount_by_site <- function(bysite, radius) {
 
+  pkg_available("gglorenz", if_not_loaded = "stop")
+
   bysite$`Demog Index State Percentile` <- ifelse(bysite$state.pctile.pctlowinc >= 80, "High Demog.Index (at least 80th pctile in State)", "All Other Sites")
 
   bysite |>
@@ -31,7 +22,7 @@ plot_lorenz_popcount_by_site <- function(bysite, radius) {
     # ggplot(aes(pop)) +
     ggplot2::ggplot(ggplot2::aes(x = pop, colour = "Demog Index State Percentile")) +
 
-    gglorenz::stat_lorenz(desc = TRUE) +
+    stat_lorenz(desc = TRUE) +  # from the gglorenz package, not in Imports or Suggests for now
     ggplot2::coord_fixed() +
     ggplot2::geom_abline(linetype = "dashed") +
     ggplot2::theme_minimal() +
@@ -39,11 +30,11 @@ plot_lorenz_popcount_by_site <- function(bysite, radius) {
     ggplot2::scale_y_continuous(labels = scales::label_percent(scale=1)) +
     ggplot2::theme_bw() +
     ggplot2::labs(x = "Cumulative Percentage of the Sites (Facilities)",
-         y = "Cumulative Percentage of Total Population Near All Sites Overall",
-         title = "Differences in Size of Population Living Near Site",
-         caption = paste0("Total number of sites analyzed: ", NROW(bysite), " "))
+                  y = "Cumulative Percentage of Total Population Near All Sites Overall",
+                  title = "Differences in Size of Population Living Near Site",
+                  caption = paste0("Total number of sites analyzed: ", NROW(bysite), " "))
 }
-
+######################################################################################################## #
 
 #' lorenz plot bybg_people (cumulative share of x vs cum share of y) - DRAFT/EXPERIMENTAL
 #' COUNT OF SITES (or PEOPLE?) BY BIN
@@ -54,12 +45,14 @@ plot_lorenz_popcount_by_site <- function(bysite, radius) {
 #' @return a ggplot
 #' @export
 #'
-plot_lorenz_distance_by_dcount <- function(bybg_people, varname) {
+plot_lorenz_distance_by_dcount <- function(bybg_people, varname = NULL) {
+
+  pkg_available("gglorenz", if_not_loaded = "stop")
 
   bysite |>
     ggplot2::ggplot(ggplot2::aes(x = distance_min_avgperson, n = pop * pctnhaa)) +
 
-    gglorenz::stat_lorenz(desc = TRUE) +
+    stat_lorenz(desc = TRUE) +    # from the gglorenz package, not in Imports or Suggests for now
     ggplot2::coord_fixed() +
     ggplot2::geom_abline(linetype = "dashed") +
     ggplot2::theme_minimal() +
@@ -67,7 +60,8 @@ plot_lorenz_distance_by_dcount <- function(bybg_people, varname) {
     ggplot2::scale_y_continuous(labels = scales::label_percent(scale=1))+
     ggplot2::theme_bw() +
     ggplot2::labs(x = "Cumulative Share of the Distances",
-         y = "Cumulative Percentage of Total Low Income Residents",
-         title = "Distance distribution in one group",
-         caption = paste0("Total number of sites analyzed: ", NROW(bysite), " "))
+                  y = "Cumulative Percentage of Total Low Income Residents",
+                  title = "Distance distribution in one group",
+                  caption = paste0("Total number of sites analyzed: ", NROW(bysite), " "))
 }
+######################################################################################################## #
