@@ -616,6 +616,8 @@ indexname
 indexpoints
 input_names_listing
 installable
+INTPTLAT
+INTPTLON
 io
 ip
 is.island
