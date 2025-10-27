@@ -163,6 +163,10 @@ library(EJAM)
 
 ------------------------------------------------------------------------
 
+## Census API key
+
+It is recommended that you [obtain and use a Census API key](https://walker-data.com/tidycensus/articles/basic-usage.html) that will be used to download boundaries of Census units when analyzing based on FIPS codes, such as when comparing cities (or counties, tracts, etc.).
+
 ## Start Using EJAM
 
 After installing, see the [Basics - Quick Start Guide](basics.html).
