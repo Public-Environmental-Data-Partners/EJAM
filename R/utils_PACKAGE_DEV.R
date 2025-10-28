@@ -1227,8 +1227,8 @@ pkg_dependencies <- function(localpkg = "EJAM", depth = 6, ignores_grep = "09128
 
   # Some notes on ways to see dependencies of a package like EJAM:
 
-x1 = renv::dependencies()
-
+# x1 = renv::dependencies()
+#
 x2 = sort(packrat", ":::", "recursivePackageDependencies('",
              localpkg,
              "', lib.loc = .libPaths(), ignores = NULL))
