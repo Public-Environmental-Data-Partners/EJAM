@@ -18,11 +18,11 @@ fixnames_to_type(
 and that column has old column names that overlap with those in namesnow,
 like "ejscreen_csv" aka "csvname2.2" or
 like "ejscreen_api" aka "apiname" or
-like "rname" maybe aka "newnames_ejscreenapi"}
+like "rname"}
 
 \item{newtype}{string with name of a column in data.frame mapping_for_names,
-like "rname" maybe aka "newnames_ejscreenapi" or
-like  "longname_tableheader" or "shortlabel"
+like "rname" or
+like  "longname" or "shortlabel"
 and that column has old column names that overlap with those in namesnow}
 
 \item{mapping_for_names}{data.frame passed to \code{\link[=fixnames]{fixnames()}} to do the work

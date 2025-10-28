@@ -3,7 +3,7 @@
 \name{pkg_functions_all_equal}
 \alias{pkg_functions_all_equal}
 \title{UTILITY - check different versions of function with same name in 2 packages
-obsolete since EJAMejscreenapi phased out? was used by pkg_dupenames() to check different versions of function with same name in 2 packages}
+obsolete since old EPA ejscreen api functions were phased out - was used by pkg_dupenames() to check different versions of function with same name in 2 packages}
 \usage{
 pkg_functions_all_equal(fun = "latlon_infer", package1 = "EJAM", package2)
 }
@@ -19,7 +19,7 @@ TRUE or FALSE
 }
 \description{
 UTILITY - check different versions of function with same name in 2 packages
-obsolete since EJAMejscreenapi phased out? was used by pkg_dupenames() to check different versions of function with same name in 2 packages
+obsolete since old EPA ejscreen api functions were phased out - was used by pkg_dupenames() to check different versions of function with same name in 2 packages
 }
 \seealso{
 \code{\link[=pkg_dupenames]{pkg_dupenames()}} \code{\link[=all.equal.function]{all.equal.function()}}

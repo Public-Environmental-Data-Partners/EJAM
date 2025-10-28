@@ -51,8 +51,6 @@ The EPA-hosted (pre-2025) app used [Posit Connect](https://posit.co/products/ent
 
 Shiny apps can be hosted using [Posit Connect](https://posit.co/products/enterprise/connect/) or [Posit Connect Cloud](https://connect.posit.cloud), which are commercial products that have a full set of features focused on hosting shiny apps and APIs based on R/Python.
 
-An example of the EJAM app hosted via Posit Cloud Connect is here: https://ejanalysis-ejam.share.connect.posit.cloud/ 
-
 * Configure Posit Connect to deploy from a github.com repository - The EPA-hosted (pre-2025) app used a [Posit Connect server configured to re-publish the shiny app directly from github.com content](https://docs.posit.co/connect/user/git-backed/) whenever it saw changes in the specified repo and branch, and [that same approach](https://posit.co/blog/git-backed-deployment-in-posit-connect/) could be used by anyone else hosting the app.
 
 * Handle dependencies with Posit Connect - Posit Connect uses the rsconnect package and tracks where each package was installed from, including EJAM itself, so EJAM should be installed from github. See notes on doing that, in the file EJAM/data-raw/rsconnect-manifest-update.R Also note that if the renv package is being used to handle dependencies then publishing to Posit Connect has to take that into account as explained here: https://rstudio.github.io/renv/articles/rsconnect.html

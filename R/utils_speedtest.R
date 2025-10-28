@@ -408,7 +408,9 @@ speedtable_expand <- function(speedtable) {
 #'
 #' @param rows number of locations to be analyzed
 #' @param radius buffer radius distance, in miles
+#'
 #' @keywords internal
+#'
 predict_ejamit_runtime <- function(rows, radius){
   ejamit_model_data <- data.frame(input_number = rows, radius = radius)
   predicted_runtime <- predict(modelEjamit, newdata = ejamit_model_data, interval = "prediction", level =0.95)

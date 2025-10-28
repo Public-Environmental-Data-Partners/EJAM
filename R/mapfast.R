@@ -72,10 +72,10 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
   names(mydf) <- fixcolnames(names(mydf), "long", "r") # if already r, this does nothing. if long, it makes them r format so popup_from_ejscreen() will work
   ##
   # I think this is ok, since it is just for the popups to work right if mydf was output of analysis but used the long form variable names as headers
-  # popup_from_ejscreen() code was written to assume rnames (as from ejscreenapi_plus) not longnames (as from ejscreenit),
-  # so try to accomodate that here if user provided output of ejscreenit() or long names in general
+  # popup_from_ejscreen() code was written to assume rnames not longnames
+  # so try to accomodate that here if user provided output using long names in general
   # popup_from_ejscreen() needs to flexibly allow long format names as input.
-  # ejscreenit() and app_server already handle this issue by renaming to rnames before calling popup_from_ejscreen()
+  #  app_server already handles this issue by renaming to rnames before calling popup_from_ejscreen()
 
   ######################################################### #
 

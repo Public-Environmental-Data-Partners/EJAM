@@ -56,8 +56,6 @@
 # 16              create_filename      6    10
 # 17 distance_via_surfacedistance      6    11
 
-# 9           plot_barplot_ratios      8    18  But this is used ONLY by old ejscreenapi functions
-# 15           calc_ratios_to_avg      6    10  But this is used ONLY by old ejscreenapi functions (via plot_boxplot_ratios() etc.)
 #   and maybe calc_ejam ?
 
 ################################ ################################# #

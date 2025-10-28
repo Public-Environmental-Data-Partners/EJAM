@@ -188,22 +188,9 @@ test_that(
 #
 
 # do tests of MODULES? ####
-#
-# if (!exists("mod_ejscreenapi_server")) {
-#   cat("mod_ejscreenapi_server() is an unexported function -- cannot be tested without devtools::load_all() to test the local source version,
-#       or using ::: to test the installed version")
-# }
-# # # attempting to be able to test a module... not working yet... need session, etc.
-#
-# test_that("mod_ejscreenapi_server  receives its input", {
-#   skip_if_not(exists("mod_ejscreenapi_server"), message = "mod_ejscreenapi_server() not found, skipping test")
-#    # unexported function, so would require using ::: or devtools::load_all()
-#
-#   shiny::testServer(mod_ejscreenapi_server, {
-#     session$setInputs(pointsfile = list(datapath= system.file("testdata/latlon/"testpoints_5.xlsx")     )
-#     expect_equal( output$count, 3)
-#   })
-# })
+
+# # #   to be able to test a module... not working yet... need session, etc.
+
 ################################################# #
 
 # > CLEANUP: rm() each global default value from this envt ####

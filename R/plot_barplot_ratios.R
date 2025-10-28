@@ -111,7 +111,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   #    - in EJAM server for LONG report passed as a parameter
   # - plot_boxplot_ratios()
   #    (NOT in EJAM server for Detailed Results interactive views)
-  # - ejscreenapi_script() code also relevant?
+  #
   # - box/scatter examples in ggplot, <https://r-graph-gallery.com/89-box-and-scatter-plot-with-ggplot2.html>
   # - boxplots in base R, <https://www.r-bloggers.com/2023/09/how-to-reorder-boxplots-in-r-a-comprehensive-guide>
   #

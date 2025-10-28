@@ -10,8 +10,7 @@ varin_map_headernames(
   exact = FALSE,
   cols_with_names = c("oldname", "apiname", "api_synonym", "acsname", "csvname",
     "ejscreen_csv", "rname", "topic_root_term", "basevarname", "denominator",
-    "shortlabel", "longname", "description", "csvlongname", "api_description",
-    "acs_description", "varlist")
+    "shortlabel", "longname", "api_description", "acs_description", "varlist")
 )
 }
 \arguments{
@@ -42,8 +41,8 @@ varin_map_headernames( "traffic.score", exact = T)
 
 varin_map_headernames( "traffic" )
 
-t(varinfo("traffic.score", 
-  info = c("oldname","apiname", "acsname" ,"csvname", 
+t(varinfo("traffic.score",
+  info = c("oldname","apiname", "acsname" ,"csvname",
   "basevarname", 'shortlabel', 'longname', 'varlist')))
 
 }

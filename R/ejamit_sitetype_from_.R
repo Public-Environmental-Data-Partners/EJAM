@@ -90,7 +90,6 @@ sitetype_from_dt <- function(dt) {
 
   #   latlon
 
-  # names(dt) <- fixcolnames(names(dt), 'long', 'r') # in case they were long column headers? like from one of the ejscreenapi functions?
   names(dt) <- fixcolnames_infer(names(dt))    ## or just  # names(dt) <- latlon_infer(names(dt))
   # if it has lat and lon columns, call it sitetype 'latlon' unless all coordinates are NA
   # *** This is no longer a way to be sure it was latlon type !

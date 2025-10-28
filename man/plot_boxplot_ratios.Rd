@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_boxplot_ratios.R
 \name{plot_boxplot_ratios}
 \alias{plot_boxplot_ratios}
-\title{For the outputs of ejscreenit(), get boxplots of Residential Population Percentages across sites as ratios to US means}
+\title{For the outputs of the old ejscreenit function, was used to get boxplots of Residential Population Percentages across sites as ratios to US means}
 \usage{
 plot_boxplot_ratios(
   x,
@@ -15,13 +15,8 @@ plot_boxplot_ratios(
 }
 \arguments{
 \item{x}{ratios derived from
-a data.frame that is the output of ejscreen analysis, for example:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{df <- ejscreenit(testpoints_5)$table
-df <- testoutput_ejscreenapi_plus_5
-x <- calc_ratios_to_avg(df)$ratios_d
-
-}\if{html}{\out{</div>}}}
+a data.frame that is the output of analysis, like from
+ejamit()$results_bysite}
 
 \item{selected_dvar_colname}{default is the first column name of x, such as "Demog.Index"
 if given a table with just ratios that are named as regular indicators,
@@ -56,10 +51,6 @@ USING THE AVERAGE RESIDENT AT THAT SITE,
 SO A BOXPLOT SHOWS ONE DOT PER SITE AND THE BOXPLOT IS NOT POP WTD
 MEANING IT SHOWS THE MEDIAN AND 75TH PERCENTILE SITE NOT RESIDENT, ETC.
 
-This function originally was used for \code{\link[=ejscreenit]{ejscreenit()}} output, and
-was just a quick interim solution that could be replaced.
-It assumed colnames were not r variable names.
-
 To communicate whether this is skewed to the right
 (more high scores than might expect) also could say that
 X\% OF SITES OR PEOPLE have scores in top Y\% of US range, >= 100-Y percentile.
@@ -72,9 +63,9 @@ from US blockgroups or people's bg scores)
 }
 }
 \examples{
-  # x <- testoutput_ejscreenit_50$table # or
-  x <- testoutput_ejscreenapi_plus_5
-  myradius <- x$radius.miles[1]
+  df <- testoutput_ejamit_100pts_1miles$results_bysite
+  x <- calc_ratios_to_avg(df)$ratios_d
+  myradius <- df$radius.miles[1]
   plot_boxplot_ratios(calc_ratios_to_avg(x)$ratios_d, wheretext = myradius)
   #plot_boxplot_ratios(calc_ratios_to_avg(x)$ratios_e, wheretext = myradius)
 

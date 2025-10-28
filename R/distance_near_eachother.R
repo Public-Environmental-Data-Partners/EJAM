@@ -2,23 +2,35 @@
 #' which points are near any of the others in a list?
 #'
 #' @param lon longitude
-#' @param lat latitude 
-#' @param distance distance between points in miles to check 
+#' @param lat latitude
+#' @param distance distance between points in miles to check
 #' @param or_tied if TRUE, checks if less than or equal to distance, otherwise if less than
 #' @return logical vector the length of lon or lat, telling if the point is
-#'   within distance of any other point in list for example, 
+#'   within distance of any other point in list for example,
 #'   which sites have residents that might also be near others sites?
-#' @examples 
+#' @examples
 #' mapfast(testpoints_500[distance_near_eachother(
-#'   lon = testpoints_500$lon, 
-#'   lat = testpoints_500$lat, 
+#'   lon = testpoints_500$lon,
+#'   lat = testpoints_500$lat,
 #'   3.1), ], radius = 3.1)
-#'    
+#'
 #' @export
 #' @keywords internal
 #'
 distance_near_eachother <- function(lon, lat, distance, or_tied=FALSE) {
-  
+
+  # ########################################### #
+  # # Add column to flag sites that are near each other ####
+  # #
+  # # want this to reflect radius in this data run, not whatever user may have just changed it to for the next run, so do not use is_clustered()
+  # if (!is.null(lat)) {
+  #   results_bysite$overlaps_another <- distance_near_eachother(lon = lon, lat = lat,
+  #                                                             distance = 2 * results_bysite$distance)
+  # } else {
+  #   results_bysite$overlaps_another <- NA
+  # }
+  # ########################################### #
+
 # returns logical vector the length of lon or lat, telling if the point is within distance of any other point in list
 # for example,  which sites have residents that might also be near others sites?
 df <- data.frame(lon = lon, lat = lat)
@@ -33,7 +45,7 @@ return(original_rownums_near_any)
 # nnn <- distance_near_eachother(blah$lon, blah$lat, 10)
 # plot(blah$lon, blah$lat, main='red points are the ones near some other point')
 # points(blah$lon[nnn],blah$lat[nnn], col='red')
-# 
+#
 # plot(blah$lon, blah$lat,  main='red points are the ones near some other point')
 # points(blah$lon[nnn],blah$lat[nnn], col='red')
 

@@ -64,20 +64,6 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
                                      # return_shp could be a param as in getblocksnearby_from_fips()
                                      updateProgress = NULL, oldway=TRUE) {
 
-  ############################################################################################################### #
-  # NOTE: For comparison or validation one could get the results from the EJSCREEN API, for a polygon:
-  #      Example of how the API could be used to analyze a polygon, which must use POST not GET:
-  # HTTP POST URL: https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx
-  # HTTP POST Body:
-  #   namestr=
-  #   geometry={"spatialReference":{"wkid":4326},"rings":[[[-76.6418006649668,39.41979061319584],[-76.54223706633402,39.403875492879656],[-76.48158343568997,39.32424541053687],[-76.45526191279846,39.24452456392063],[-76.63378974482964,39.202856485626576],[-76.74021979854052,39.284396329589654],[-76.74594187237864,39.37911140807963],[-76.6418006649668,39.41979061319584]]]}
-  #   distance=
-  #   unit=9035
-  #   areatype=
-  #   areaid=
-  #   f=pjson
-  ############################################################################################################ #
-
   if (!("ejam_uniq_id" %in% names(polys))) {
     polys$ejam_uniq_id <- 1:NROW(polys) # added by functions like shapefile_from_folder() but not here if user directly used read_sf or st_read
   }

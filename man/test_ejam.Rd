@@ -17,7 +17,7 @@ test_ejam(
   y_runall = TRUE,
   y_runsome = FALSE,
   run_these = NULL,
-  skip_these = c("ejscreenapi", "app"),
+  skip_these = c("app"),
   y_stopif = FALSE,
   y_seeresults = TRUE,
   y_save = TRUE,

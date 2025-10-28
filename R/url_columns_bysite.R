@@ -21,7 +21,6 @@
 #'   or even a zip code, but NOT a fips code! (for FIPS, use the fips parameter instead).
 #'   Note that nearly half of all county fips codes are impossible to distinguish from
 #'   5-digit zipcodes because the same numbers are used for both purposes.
-#' @param namestr no longer used - had been passed to [url_ejscreen_report()]
 #'
 #' @param regid optional vector of FRS registry IDs if available to use to create links
 #'   to detailed ECHO facility reports
@@ -57,7 +56,7 @@
 #' x = x[, "EJAM Report"]
 #' unlinkify(x)
 #'
-#' @seealso  [url_ejscreen_report()] [url_ejscreenmap()] [url_echo_facility()] [url_ejscreenapi_clusters_and_sort_cols()]
+#' @seealso  [url_ejamapi()] [url_ejscreenmap()] [url_echo_facility()]
 #' @return list of data.frames to append to the list of data.frames created by
 #'   [ejamit()] or [doaggregate()],
 #'
@@ -69,7 +68,7 @@
 #'
 url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                                shapefile = NULL,
-                               fips = NULL, wherestr = "", namestr = NULL,
+                               fips = NULL, wherestr = "",
                                regid = NULL, # see details
                                radius = NULL,
 
@@ -86,7 +85,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   # clean/check inputs and sitetype
 
   if (is.null(lat) && is.null(lon) && is.null(shapefile) && is.null(fips) && !("" %in% wherestr) && !is.null(wherestr)) {
-    fips <- fips_from_name(wherestr) # old ejscreenapi used wherestr not fips so this is in case that is the only thing provided here
+    fips <- fips_from_name(wherestr) # old ejscreen api used wherestr not fips so this is in case that is the only thing provided here
   }
 
   sites <- sites_from_input(sitepoints = sitepoints, lat = lat, lon = lon, shapefile = shapefile, fips = fips)

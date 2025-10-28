@@ -103,6 +103,14 @@ ejamit_interface <- function(area, method, buffer = 0, scale = "blockgroup", end
   }
 
   # Process the request based on the specified method.
+  if (method == "SHP") {
+    if (paste0("package:", geojson_sf) %in% search()) {
+    # needs geojson_sf package attached !
+    shp <- geojson_sf(area)
+    } else {
+      stop("need geojson_sf package")
+    }
+  }
   switch(method,
          "latlon" = {
            # Ensure the area is a data frame before passing it to ejamit.
@@ -114,7 +122,7 @@ ejamit_interface <- function(area, method, buffer = 0, scale = "blockgroup", end
          "SHP" = {
            # Convert the GeoJSON input to an sf object.
            sf_area <- tryCatch(
-             geojson_sf(area),
+             shp,
              error = function(e) stop("Invalid GeoJSON provided.")
            )
            ejamit(shapefile = sf_area, radius = buffer)
@@ -206,7 +214,7 @@ if (FALSE) {
 
   #* Return EJAM analysis data as JSON
   #* @param sites A data frame of site coordinates (lat/lon) passed to `sf::st_as_sf()`
-  #* @param shape A GeoJSON string representing the area of interest passed to `geojson_sf()`
+  #* @param shape A GeoJSON string representing the area of interest passed to geojson_sf
   #* @param fips A FIPS code for a specific US Census geography passed to `shapes_from_fips()`
   #* @param buffer The buffer radius in miles
   #* @param geometries A boolean to indicate whether to include geometries in the output
@@ -238,9 +246,16 @@ if (FALSE) {
 
     # Prepare the final JSON output.
     if (geometries) {
+      if (method == "SHP") {
+        if (!(paste0("package:", geojson_sf) %in% search())) {
+          shp <- NULL
+        } else {
+          shp <- geojson_sf(shape) # needs geojson_sf package attached !
+        }
+      }
       output_shape <- switch(method,
                              "latlon" = sf::st_as_sf(sites, coords = c("lon", "lat"), crs = 4326),
-                             "SHP" = geojsonsf::geojson_sf(shape),
+                             "SHP" = shp,
                              "FIPS" = shapes_from_fips(fips)
       )
       # Combine the analysis results with the geographic shapes.

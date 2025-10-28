@@ -14,8 +14,6 @@
 #'   structure.of.output.list(testoutput_getblocksnearby_10pts_1miles)
 #'   structure.of.output.list(testoutput_doaggregate_10pts_1miles)
 #'   structure.of.output.list(testoutput_ejamit_10pts_1miles)
-#'   structure.of.output.list(testoutput_ejscreenapi_plus_5)
-#'   structure.of.output.list(testoutput_ejscreenit_5)
 #'
 #' @keywords internal
 #'

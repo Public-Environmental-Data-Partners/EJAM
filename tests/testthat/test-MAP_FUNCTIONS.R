@@ -24,8 +24,6 @@
 test_that("popup_from_ejscreen() works even if 1 row or 1 indicator", {
   expect_no_error({
     suppressWarnings({
-      x = popup_from_ejscreen(testoutput_ejscreenapi_plus_5)
-
       x = popup_from_ejscreen(testoutput_ejamit_10pts_1miles$results_bysite[1:2,])
 
       # only one place (one row)

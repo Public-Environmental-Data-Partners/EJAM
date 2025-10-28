@@ -6,7 +6,6 @@
 # (mostly for the shiny app to work rather than for the RStudio-focused functions like ejamit() etc.)
 
 # Note: Do not set defaults specific to a shiny module UNTIL INSIDE THE MODULE, typically, (though fipspicker options may get set here).
-#   e.g., The EJAM ejscreenapi module used its own defaults file: source(system.file("global_defaults_ejscreenapi.R", package = "EJAM"))
 
 ################################################################### #
 ################################################################### #
@@ -91,278 +90,261 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
 
     #   radius miles for slider input where user specifies radius. Note 5 km is 3.1 miles, 10 km is 6.2 miles ; and 10 miles is 16 kilometers (10 * meters_per_mile/1000). 50 km is too much/ too slow.
 
-    # input$minradius   # bottom end of slider right now
-    minradius  = 0.50, # miles -- significant uncertainty as radius shrinks, at least if blockgroups are small such as if # of blockgroups in circle << 30.
-    minradius_shapefile = 0,
+  # input$minradius   # bottom end of slider right now
+  minradius  = 0.50, # miles -- significant uncertainty as radius shrinks, at least if blockgroups are small such as if # of blockgroups in circle << 30.
+  minradius_shapefile = 0,
 
-    stepradius = 0.05, # miles.  0.25 allows quarter miles. 0.10 allows tenths. 0.05 is awkwardly small but allows both quarter mile and tenth of mile.
+  stepradius = 0.05, # miles.  0.25 allows quarter miles. 0.10 allows tenths. 0.05 is awkwardly small but allows both quarter mile and tenth of mile.
 
-    # input$radius_default   # initial value of slider
-    radius_default = 1,      # and can override this with ejamapp(radius_default=3.1), and also see effects of bookmarked advanced settings
-    radius_default_shapefile = 0,
+  # input$radius_default   # initial value of slider
+  radius_default = 1,      # and can override this with ejamapp(radius_default=3.1), and also see effects of bookmarked advanced settings
+  radius_default_shapefile = 0,
 
-    # input$max_miles        # current cap, top end of slider right now
-    # These 3 names are tricky - They are the "normal cap" (10 miles)  vs  "absolute cap on slider range" (31 miles) vs  "abs cap on initial value" (31 miles)
-    default_max_miles  = 10, # default cap/top end of slider initially #  ** normal cap on slider for current radius (normal top of slider)
-    maxmax_miles = 50 * 1000 / EJAM::meters_per_mile, # 50 km.       # ** absolute cap on slider for current radius (max you can make top of slider, in adv tab)
-    max_radius_default = 50 * 1000 / EJAM::meters_per_mile, # 50 km. # ** absolute cap on default/initial radius (max starting radius, even using advanced tab)
+  # input$max_miles        # current cap, top end of slider right now
+  # These 3 names are tricky - They are the "normal cap" (10 miles)  vs  "absolute cap on slider range" (31 miles) vs  "abs cap on initial value" (31 miles)
+  default_max_miles  = 10, # default cap/top end of slider initially #  ** normal cap on slider for current radius (normal top of slider)
+  maxmax_miles = 50 * 1000 / EJAM::meters_per_mile, # 50 km.       # ** absolute cap on slider for current radius (max you can make top of slider, in adv tab)
+  max_radius_default = 50 * 1000 / EJAM::meters_per_mile, # 50 km. # ** absolute cap on default/initial radius (max starting radius, even using advanced tab)
 
-    ## ------------------------ Site Selection options  #####
+  ## ------------------------ Site Selection options  #####
 
-    # upload or dropdown method of site selection
-    default_upload_dropdown = "upload",
-    # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
-    # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
-    # input in server:              input$ss_choose_method
+  # upload or dropdown method of site selection
+  default_upload_dropdown = "upload",
+  # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
+  # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
+  # input in server:              input$ss_choose_method
 
-    # NAICS
-    default_naics = "313", # 313 is about 900 textile mills and subcategories of that #  initial value of ss_select_naics
-    default_naics_digits_shown = "basic", # if default_naics is >3 digits, this has to be "detailed" not "basic"
-    default_add_naics_subcategories = TRUE,
+  # NAICS
+  default_naics = "313", # 313 is about 900 textile mills and subcategories of that #  initial value of ss_select_naics
+  default_naics_digits_shown = "basic", # if default_naics is >3 digits, this has to be "detailed" not "basic"
+  default_add_naics_subcategories = TRUE,
 
-    # EPA Programs (to limit NAICS/ facilities query)
-    # used by inputId 'ss_limit_fac1' and 'ss_limit_fac2'
-    default_epa_program_selected = "CAMDBS", # has only about 739 sites # ss_select_program
-    # cbind(epa_programs)
-    # sort(unique(frs_by_programid$program)) # similar  # EJAM :: frs_by_programid
+  # EPA Programs (to limit NAICS/ facilities query)
+  # used by inputId 'ss_limit_fac1' and 'ss_limit_fac2'
+  default_epa_program_selected = "CAMDBS", # has only about 739 sites # ss_select_program
+  # cbind(epa_programs)
+  # sort(unique(frs_by_programid$program)) # similar  # EJAM :: frs_by_programid
 
-    ##################################################################################### #
+  ##################################################################################### #
 
-    ## ------------------------ fipspicker module ####
+  ## ------------------------ fipspicker module ####
 
-    # *** but perhaps these should be set only inside the module, just to avoid clutter, unneeded settings if module usused, and possible namespace conflicts. as had been noted for the ejscreenapi module settings
-    default_cities_picked = "",
-    default_counties_picked = "",
-    default_states_picked = "",
-    fipspicker_fips_type2pick_default = "Counties",  #"Cities or Places",
-    fipspicker_fips_type2pick_choices_default = c(
-      # `EPA Regions` = "EPA Regions", # if we wanted to allow user to pick an entire EPA Region or two to compare. More useful for filtering mode, like if picking all states within Region 2.
-      States = "States",
-      Counties = "Counties",
-      `Cities/Places` = "Cities or Places"
-    ),
-    # Limits height of pulldown list of possible choices, but does NOT limit the number of selections shown in selectize box!
-    fipspicker_maxOptions_default_states_picked   = 255,
-    fipspicker_maxOptions_default_counties_picked = 255,
-    fipspicker_maxOptions_default_cities_picked   = 255,
+  # *** but perhaps these should be set only inside the module, just to avoid clutter, unneeded settings if module unused, and possible namespace conflicts.
+  default_cities_picked = "",
+  default_counties_picked = "",
+  default_states_picked = "",
+  fipspicker_fips_type2pick_default = "Counties",  #"Cities or Places",
+  fipspicker_fips_type2pick_choices_default = c(
+    # `EPA Regions` = "EPA Regions", # if we wanted to allow user to pick an entire EPA Region or two to compare. More useful for filtering mode, like if picking all states within Region 2.
+    States = "States",
+    Counties = "Counties",
+    `Cities/Places` = "Cities or Places"
+  ),
+  # Limits height of pulldown list of possible choices, but does NOT limit the number of selections shown in selectize box!
+  fipspicker_maxOptions_default_states_picked   = 255,
+  fipspicker_maxOptions_default_counties_picked = 255,
+  fipspicker_maxOptions_default_cities_picked   = 255,
 
-    fipspicker_all_regions_button_defaultchecked  = TRUE,
-    fipspicker_all_states_button_defaultchecked   = TRUE,
-    fipspicker_all_counties_button_defaultchecked = FALSE,
+  fipspicker_all_regions_button_defaultchecked  = TRUE,
+  fipspicker_all_states_button_defaultchecked   = TRUE,
+  fipspicker_all_counties_button_defaultchecked = FALSE,
 
-    fipspicker_all_regions_button_defaultshow  = FALSE,
-    fipspicker_all_states_button_defaultshow   = FALSE,
-    fipspicker_all_counties_button_defaultshow = FALSE,
-    ##################################################################################### #
+  fipspicker_all_regions_button_defaultshow  = FALSE,
+  fipspicker_all_states_button_defaultshow   = FALSE,
+  fipspicker_all_counties_button_defaultshow = FALSE,
+  ##################################################################################### #
 
-    ######################################################################################################## #
-
-
-    # ~ ####
-    # CALCULATIONS & what stats to return ####
-
-    default_include_averages = TRUE,         # not implemented and is not a param of a function
-    default_include_extraindicators = TRUE,  # not implemented and is not a param of a function
+  ######################################################################################################## #
 
 
-    ## ------------------------ ejamit() params ####
+  # ~ ####
+  # CALCULATIONS & what stats to return ####
+
+  default_include_averages = TRUE,         # not implemented and is not a param of a function
+  default_include_extraindicators = TRUE,  # not implemented and is not a param of a function
 
 
-    ### params whose defaults could be included here and in advanced tab:
-
-    # > cbind(formals(ejamit)) or EJAM:::args2()
-    #
-    # sitepoints               NULL         na
-    # radius                   3         for getblocksnearby(), shiny default is set in global
-    # radius_donut_lower_edge  0         na
-    # maxradius                31.07     for getblocksnearby(), shiny default is set in global
-    # avoidorphans             FALSE     for getblocksnearby(), shiny default is set in global
-    # quadtree                 NULL      na
-    # fips                     NULL      na
-    # shapefile                NULL      na
-    # countcols                NULL      for doaggregate() ** shiny default NOT specified here
-    # popmeancols              NULL      for doaggregate() ** shiny default NOT specified here
-    # calculatedcols           NULL      for doaggregate() ** shiny default NOT specified here
-    # calctype_maxbg           NULL      for doaggregate() ** shiny default NOT specified here
-    # calctype_minbg           NULL      for doaggregate() ** shiny default NOT specified here
-    # subgroups_type           "nh"      for doaggregate(), shiny default is set in global
-    # include_ejindexes        TRUE      for doaggregate(), shiny default is set in global
-    # calculate_ratios         TRUE      for doaggregate(), shiny default is set in global
-    # extra_demog              TRUE      for doaggregate(), shiny default is set in global
-    # need_proximityscore      FALSE     for doaggregate(), shiny default is set in global
-    # infer_sitepoints         FALSE     for doaggregate() ** shiny default NOT specified here
-    # need_blockwt             TRUE      for getblocksnearby_from_fips(), shiny default not specified here, but by function defaults
-    # thresholds               expression  for batch.summarize() , shiny default is set in global but name may differ
-    # threshnames              expression  for batch.summarize(), shiny default is set in global but name may differ
-    # threshgroups             expression  for batch.summarize(), shiny default is set in global but name may differ
-    # updateProgress           NULL      ** shiny default NOT specified here
-    # updateProgress_getblocks NULL      ** shiny default NOT specified here
-    # in_shiny                 FALSE     for ejamit(), build_community_report(), and related functions
-    # quiet                    TRUE      for getblocksnearby() and batch.summarize(), na
-
-    # silentinteractive        FALSE    for doaggregate() etc. na
-    # called_by_ejamit         TRUE     for doaggregate(), na
-    # testing                  FALSE    for doaggregate(), shiny default is set in global
-    # showdrinkingwater        TRUE     for doaggregate(), na
-    # showpctowned             TRUE     for doaggregate(), na
-    #   download_fips_bounds_to_calc_areas FALSE
-    # ...                      ?         for getblocksnearby(), like use_unadjusted_distance ** shiny default NOT specified here
+  ## ------------------------ ejamit() params ####
 
 
-    ## ------------------------ getblocksnearby() params ####
+  ### params whose defaults could be included here and in advanced tab:
 
-    # > cbind(formals(getblocksnearby)) or EJAM:::args2()
-    #
-    # sitepoints              ?       na
-    # radius                  3       shiny default is set in global
-    # maxradius               31.07   shiny default is set in global
-    # radius_donut_lower_edge 0       na
-    # avoidorphans            FALSE   shiny default is set in global
-    # quadtree                NULL    na
-    # quaddatatable           NULL
-    # quiet                   FALSE
-    # parallel                FALSE
-    # use_unadjusted_distance TRUE    ** shiny default NOT specified here
-    # ...                     ?
+  # > cbind(formals(ejamit)) or EJAM:::args2()
+  #
+  # sitepoints               NULL         na
+  # radius                   3         for getblocksnearby(), shiny default is set in global
+  # radius_donut_lower_edge  0         na
+  # maxradius                31.07     for getblocksnearby(), shiny default is set in global
+  # avoidorphans             FALSE     for getblocksnearby(), shiny default is set in global
+  # quadtree                 NULL      na
+  # fips                     NULL      na
+  # shapefile                NULL      na
+  # countcols                NULL      for doaggregate() ** shiny default NOT specified here
+  # popmeancols              NULL      for doaggregate() ** shiny default NOT specified here
+  # calculatedcols           NULL      for doaggregate() ** shiny default NOT specified here
+  # calctype_maxbg           NULL      for doaggregate() ** shiny default NOT specified here
+  # calctype_minbg           NULL      for doaggregate() ** shiny default NOT specified here
+  # subgroups_type           "nh"      for doaggregate(), shiny default is set in global
+  # include_ejindexes        TRUE      for doaggregate(), shiny default is set in global
+  # calculate_ratios         TRUE      for doaggregate(), shiny default is set in global
+  # extra_demog              TRUE      for doaggregate(), shiny default is set in global
+  # need_proximityscore      FALSE     for doaggregate(), shiny default is set in global
+  # infer_sitepoints         FALSE     for doaggregate() ** shiny default NOT specified here
+  # need_blockwt             TRUE      for getblocksnearby_from_fips(), shiny default not specified here, but by function defaults
+  # thresholds               expression  for batch.summarize() , shiny default is set in global but name may differ
+  # threshnames              expression  for batch.summarize(), shiny default is set in global but name may differ
+  # threshgroups             expression  for batch.summarize(), shiny default is set in global but name may differ
+  # updateProgress           NULL      ** shiny default NOT specified here
+  # updateProgress_getblocks NULL      ** shiny default NOT specified here
+  # in_shiny                 FALSE     for ejamit(), build_community_report(), and related functions
+  # quiet                    TRUE      for getblocksnearby() and batch.summarize(), na
 
-    # > cbind( formals(getblocksnearbyviaQuadTree)[setdiff(names(formals(getblocksnearbyviaQuadTree)), names(formals(getblocksnearby))) ])
-    # or EJAM:::args2()
-    # report_progress_every_n    500    ** shiny default NOT specified here
-    # retain_unadjusted_distance TRUE   ** shiny default NOT specified here
-    # updateProgress             NULL   ** shiny default NOT specified here
-
-    default_avoidorphans        = FALSE, # seems like EJSCREEN itself essentially uses FALSE? not quite clear
-    default_maxradius =  31.06856,  # max search dist if no block within radius # 50000 / meters_per_mile #, # 31.06856 miles !!
-    # also used as the maxmax allowed
-
-    ## ------------------------ doaggregate() params ####
-
-    default_download_city_fips_bounds = TRUE, # if FALSE, area in sq miles would be NA for any city/CDP types of FIPS
-    default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses arealand column from blockgroupstats
-
-    # > cbind(formals(doaggregate)) or EJAM:::args2()
-    #
-    # sites2blocks           ?       na
-    # sites2states_or_latlon NA      na
-    # radius                 NULL    shiny default is set in global
-    # countcols              NULL  ** shiny default NOT specified here
-    # wtdmeancols            NULL  ** shiny default NOT specified here
-    # calculatedcols         NULL  ** shiny default NOT specified here
-    # calctype_maxbg         NULL
-    # calctype_minbg         NULL
-    # subgroups_type         "nh"     shiny default is set in global
-    # include_ejindexes      FALSE    shiny default is set in global
-    # calculate_ratios       TRUE     shiny default is set in global
-    # extra_demog            TRUE     shiny default is set in global
-    # need_proximityscore    FALSE    shiny default is set in global
-    # infer_sitepoints       FALSE ** shiny default NOT specified here
-    # called_by_ejamit       FALSE    na
-    # updateProgress         NULL  ** shiny default NOT specified here
-    # silentinteractive      TRUE     na
-    # testing                FALSE    shiny default is set in global
-    # showdrinkingwater      TRUE     na
-    # showpctowned           TRUE     na
-    # ...                    ?
-
-    default_include_ejindexes = TRUE, # include_ejindexes is a param in doaggregate() or ejamit()
-    default_calculate_ratios = TRUE,   # and see default_show_ratios_in_report;  probably need to calculate even if not shown in excel download, since plots and short summary report rely on them/
-    default_extra_demog = TRUE, # extra_demog is a param in  doaggregate() or ejamit(),
-    # label = "Need extra indicators, on language, age groups, sex, percent with disability, poverty, etc.",
-    default_need_proximityscore = FALSE, # need_proximityscore is a param in doaggregate() or ejamit()
-
-    default_subgroups_type = 'nh',
-    # this sets the default in the web app only, not in functions doaggregate() and ejamit() and plot_distance_mean_by_group() etc.,
-    # if used outside web app app_server and app_ui code, as in using datacreate_testpoints_testoutputs.R
-    # "nh" for non-hispanic race subgroups as in Non-Hispanic White Alone, nhwa and others in names_d_subgroups_nh;
-    # "alone" for EJSCREEN v2.2 style race subgroups as in    White Alone, wa and others in names_d_subgroups_alone;
-    # "both" for both versions.
+  # silentinteractive        FALSE    for doaggregate() etc. na
+  # called_by_ejamit         TRUE     for doaggregate(), na
+  # testing                  FALSE    for doaggregate(), shiny default is set in global
+  # showdrinkingwater        TRUE     for doaggregate(), na
+  # showpctowned             TRUE     for doaggregate(), na
+  #   download_fips_bounds_to_calc_areas FALSE
+  # ...                      ?         for getblocksnearby(), like use_unadjusted_distance ** shiny default NOT specified here
 
 
-    ## ------------------------ batch.summarize() params, Threshold comparisons etc ####
+  ## ------------------------ getblocksnearby() params ####
 
-    # > cbind(formals(batch.summarize))
-    #
-    # sitestats     ?            na
-    # popstats      ?            na
-    # cols          "all"        ** shiny default NOT specified here
-    # wtscolname    "pop"        see doaggregate()
-    # probs         expression   ** shiny default NOT specified here. probs = c(0, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 0.99, 1)
-    # thresholds    expression   shiny default is set in global
-    # threshnames   expressions  shiny default is set in global
-    # threshgroups  expression   shiny default is set in global
-    # na.rm         TRUE         na
-    # rowfun.picked "all"     ** shiny default NOT specified here
-    # colfun.picked "all"     ** shiny default NOT specified here
-    # quiet         FALSE        na
-    # testing       FALSE        shiny default is set in global
+  # > cbind(formals(getblocksnearby)) or EJAM:::args2()
+  #
+  # sitepoints              ?       na
+  # radius                  3       shiny default is set in global
+  # maxradius               31.07   shiny default is set in global
+  # radius_donut_lower_edge 0       na
+  # avoidorphans            FALSE   shiny default is set in global
+  # quadtree                NULL    na
+  # quaddatatable           NULL
+  # quiet                   FALSE
+  # parallel                FALSE
+  # use_unadjusted_distance TRUE    ** shiny default NOT specified here
+  # ...                     ?
 
-    ### ---------- threshold comparisons ----------- ####
+  # > cbind( formals(getblocksnearbyviaQuadTree)[setdiff(names(formals(getblocksnearbyviaQuadTree)), names(formals(getblocksnearby))) ])
+  # or EJAM:::args2()
+  # report_progress_every_n    500    ** shiny default NOT specified here
+  # retain_unadjusted_distance TRUE   ** shiny default NOT specified here
+  # updateProgress             NULL   ** shiny default NOT specified here
 
-    # stats summarizing EJ percentiles to count how many are at/above threshold percentile(s)
+  default_avoidorphans        = FALSE, # seems like EJSCREEN itself essentially uses FALSE? not quite clear
+  default_maxradius =  31.06856,  # max search dist if no block within radius # 50000 / meters_per_mile #, # 31.06856 miles !!
+  # also used as the maxmax allowed
 
-    # label for each group of indicators
+  ## ------------------------ doaggregate() params ####
 
-    default.an_threshgroup1 = "EJ-US-or-ST",
-    default.an_threshgroup2 = "Supp-US-or-ST",
-    ### threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"), # list(c("EJ US", "EJ State", "Suppl EJ US", "Suppl EJ State")), # list("EJ US", "EJ State", "Suppl EJ US", "Suppl EJ State"), # list("variables"),
-    ### threshgroups = list(input$an_threshgroup1, input$an_threshgroup2),
+  default_download_city_fips_bounds = TRUE, # if FALSE, area in sq miles would be NA for any city/CDP types of FIPS
+  default_download_noncity_fips_bounds = FALSE, # if false, area_sqmi() uses arealand column from blockgroupstats
 
-    # variable names of indicators compared to threshold
+  # > cbind(formals(doaggregate)) or EJAM:::args2()
+  #
+  # sites2blocks           ?       na
+  # sites2states_or_latlon NA      na
+  # radius                 NULL    shiny default is set in global
+  # countcols              NULL  ** shiny default NOT specified here
+  # wtdmeancols            NULL  ** shiny default NOT specified here
+  # calculatedcols         NULL  ** shiny default NOT specified here
+  # calctype_maxbg         NULL
+  # calctype_minbg         NULL
+  # subgroups_type         "nh"     shiny default is set in global
+  # include_ejindexes      FALSE    shiny default is set in global
+  # calculate_ratios       TRUE     shiny default is set in global
+  # extra_demog            TRUE     shiny default is set in global
+  # need_proximityscore    FALSE    shiny default is set in global
+  # infer_sitepoints       FALSE ** shiny default NOT specified here
+  # called_by_ejamit       FALSE    na
+  # updateProgress         NULL  ** shiny default NOT specified here
+  # silentinteractive      TRUE     na
+  # testing                FALSE    shiny default is set in global
+  # showdrinkingwater      TRUE     na
+  # showpctowned           TRUE     na
+  # ...                    ?
 
-    default.an_threshnames1 = c(EJAM::names_ej_pctile, EJAM::names_ej_state_pctile), # regular in US or ST
-    default.an_threshnames2 = c(EJAM::names_ej_supp_pctile, EJAM::names_ej_supp_state_pctile), # supplemental in US or ST
-    ### threshnames = list(input$an_threshnames1, input$an_threshnames2)
-    ### threshnames = list(c(names_ej_pctile, names_ej_state_pctile), c(names_ej_supp_pctile, names_ej_supp_state_pctile)), # list(c(names_ej_pctile, names_ej_state_pctile, names_ej_supp_pctile, names_ej_supp_state_pctile)),  #list(names_ej_pctile, names_ej_state_pctile, names_ej_supp_pctile, names_ej_supp_state_pctile),  # list(names(which(sapply(sitestats, class) != "character")))
+  default_include_ejindexes = TRUE, # include_ejindexes is a param in doaggregate() or ejamit()
+  default_calculate_ratios = TRUE,   # and see default_show_ratios_in_report;  probably need to calculate even if not shown in excel download, since plots and short summary report rely on them/
+  default_extra_demog = TRUE, # extra_demog is a param in  doaggregate() or ejamit(),
+  # label = "Need extra indicators, on language, age groups, sex, percent with disability, poverty, etc.",
+  default_need_proximityscore = FALSE, # need_proximityscore is a param in doaggregate() or ejamit()
 
-    # what threshold to compare to
-
-    default.an_thresh_comp1 = 80, # regular
-    default.an_thresh_comp2 = 80, # supplemental
-    ### thresholds   = list(input$an_thresh_comp1, input$an_thresh_comp2)
-    ### thresholds   = list(90, 90) # percentile threshold(s) to compare to like to 90th
-
-    ### ---------- quantiles (probs) ----------- ####
-    #
-    # unused, but could be used by batch.summarize( probs = as.numeric(input$an_list_pctiles) )
-    #
-    # probs.default.selected <- c(   0.25,            0.80,     0.95)
-    # probs.default.values   <- c(0, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 0.99, 1)
-    # probs.default.names <- formatC(probs.default.values, digits = 2, format = 'f', zero.print = '0')
-
-    ######################################################################################################## #
+  default_subgroups_type = 'nh',
+  # this sets the default in the web app only, not in functions doaggregate() and ejamit() and plot_distance_mean_by_group() etc.,
+  # if used outside web app app_server and app_ui code, as in using datacreate_testpoints_testoutputs.R
+  # "nh" for non-hispanic race subgroups as in Non-Hispanic White Alone, nhwa and others in names_d_subgroups_nh;
+  # "alone" for EJSCREEN v2.2 style race subgroups as in    White Alone, wa and others in names_d_subgroups_alone;
+  # "both" for both versions.
 
 
-    # ~ ####
-    # RESULTS VIEWS ####
+  ## ------------------------ batch.summarize() params, Threshold comparisons etc ####
 
-    ## ------------------------ Interactive plots options ####
+  # > cbind(formals(batch.summarize))
+  #
+  # sitestats     ?            na
+  # popstats      ?            na
+  # cols          "all"        ** shiny default NOT specified here
+  # wtscolname    "pop"        see doaggregate()
+  # probs         expression   ** shiny default NOT specified here. probs = c(0, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 0.99, 1)
+  # thresholds    expression   shiny default is set in global
+  # threshnames   expressions  shiny default is set in global
+  # threshgroups  expression   shiny default is set in global
+  # na.rm         TRUE         na
+  # rowfun.picked "all"     ** shiny default NOT specified here
+  # colfun.picked "all"     ** shiny default NOT specified here
+  # quiet         FALSE        na
+  # testing       FALSE        shiny default is set in global
 
-    default_allow_median_in_barplot_indicators = FALSE,
+  ### ---------- threshold comparisons ----------- ####
 
-    ## ------------------------ Map formatting options ####
+  # stats summarizing EJ percentiles to count how many are at/above threshold percentile(s)
+
+  # label for each group of indicators
+
+  default.an_threshgroup1 = "EJ-US-or-ST",
+  default.an_threshgroup2 = "Supp-US-or-ST",
+  ### threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"), # list(c("EJ US", "EJ State", "Suppl EJ US", "Suppl EJ State")), # list("EJ US", "EJ State", "Suppl EJ US", "Suppl EJ State"), # list("variables"),
+  ### threshgroups = list(input$an_threshgroup1, input$an_threshgroup2),
+
+  # variable names of indicators compared to threshold
+
+  default.an_threshnames1 = c(EJAM::names_ej_pctile, EJAM::names_ej_state_pctile), # regular in US or ST
+  default.an_threshnames2 = c(EJAM::names_ej_supp_pctile, EJAM::names_ej_supp_state_pctile), # supplemental in US or ST
+  ### threshnames = list(input$an_threshnames1, input$an_threshnames2)
+  ### threshnames = list(c(names_ej_pctile, names_ej_state_pctile), c(names_ej_supp_pctile, names_ej_supp_state_pctile)), # list(c(names_ej_pctile, names_ej_state_pctile, names_ej_supp_pctile, names_ej_supp_state_pctile)),  #list(names_ej_pctile, names_ej_state_pctile, names_ej_supp_pctile, names_ej_supp_state_pctile),  # list(names(which(sapply(sitestats, class) != "character")))
+
+  # what threshold to compare to
+
+  default.an_thresh_comp1 = 80, # regular
+  default.an_thresh_comp2 = 80, # supplemental
+  ### thresholds   = list(input$an_thresh_comp1, input$an_thresh_comp2)
+  ### thresholds   = list(90, 90) # percentile threshold(s) to compare to like to 90th
+
+  ### ---------- quantiles (probs) ----------- ####
+  #
+  # unused, but could be used by batch.summarize( probs = as.numeric(input$an_list_pctiles) )
+  #
+  # probs.default.selected <- c(   0.25,            0.80,     0.95)
+  # probs.default.values   <- c(0, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 0.99, 1)
+  # probs.default.names <- formatC(probs.default.values, digits = 2, format = 'f', zero.print = '0')
+
+  ######################################################################################################## #
 
 
-    ##  Map colors, weights, opacity (for ejscreenapi module?)
+  # ~ ####
+  # RESULTS VIEWS ####
 
-    ### in ejscreenapi global_defaults_ejscreenapi.R:
-    default_circleweight = 4,
-    # opacitymin   <- 0
-    # opacitymax   <- 0.5
-    # opacitystep  <- 0.025
-    # opacitystart <- 0.5
-    # opacityratio <- 2 / 5
-    # base_color_default      <- "blue"  ;
-    # cluster_color_default   <- "red"   ;
-    # highlight_color_default <- 'orange';
+  ## ------------------------ Interactive plots options ####
 
-    # (predict time to complete for ejscreenapi module)
-    # perhourslow  <- 3000  # to give an estimate of how long it will take
-    # perhourguess <- 6000  # seeing 8k if 1 mile, 4.7k if 5 miles, roughly. 207 ECHO run was 2 . 1  minutes, 5.9k/hr.
-    # perhourfast <- 12000  # approx 12k RMP sites would take almost 2 hours (1 to 2 hours, or even 4?).
-    # report_every_n_default <- 100
+  default_allow_median_in_barplot_indicators = FALSE,
 
-    ## (download as excel vs csv, for ejscreenapi module)
-    # asExcel <- TRUE # WHETHER TO DOWNLOAD RESULTS AS EXCEL OR CSV
+  ## ------------------------ Map formatting options ####
+
+
+  ##  Map colors, weights, opacity
+
+  ### not used (yet)
+  default_circleweight = 4,
 
     ## ------------------------ by-site interactive web table ####
 

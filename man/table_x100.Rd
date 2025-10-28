@@ -14,9 +14,7 @@ table_x100(df, cnames = names_pct_as_fraction_ejamit)
 
 names_pct_as_fraction_ejamit,
 
-names_pct_as_fraction_blockgroupstats, or
-
-names_pct_as_fraction_ejscreenit}
+names_pct_as_fraction_blockgroupstats}
 }
 \value{
 df with data in specified columns multiplied by 100
@@ -38,25 +36,23 @@ table_signif(
 )
 
  y = data.frame(pctlowinc = 1:2, pctpre1960 = 1:2, avg.pctunemployed = 1:2, avg.pctpre1960 = 1:2)
- 
- table_x100(y, names_pct_as_fraction_ejscreenit)
+
  table_x100(y, names_pct_as_fraction_blockgroupstats)
  table_x100(y, names_pct_as_fraction_ejamit)
  cat("\n\n")
- names_pct_as_fraction_ejscreenit
  names_pct_as_fraction_blockgroupstats
  names_pct_as_fraction_ejamit
  cat("\n\n")
  ytable = data.table(pctlowinc = 1:2, pctpre1960 = 1:2,
-                     avg.pctunemployed = 1:2, 
+                     avg.pctunemployed = 1:2,
                      avg.pctpre1960 = 1:2)
- 
- table_x100(ytable, names_pct_as_fraction_blockgroupstats) 
+
+ table_x100(ytable, names_pct_as_fraction_blockgroupstats)
  table_x100(ytable, names_pct_as_fraction_ejamit)
  cat("\n\n")
  y
  ytable
- 
+
 }
 \seealso{
 \code{\link[=table_signif_round_x100]{table_signif_round_x100()}} \code{\link[=table_signif]{table_signif()}} \code{\link[=table_round]{table_round()}} \code{\link[=table_x100]{table_x100()}}

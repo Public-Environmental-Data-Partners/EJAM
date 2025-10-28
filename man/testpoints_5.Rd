@@ -19,7 +19,5 @@ the equivalent of results of reading the .xlsx test data files.
 }
 \seealso{
 \link{testpoints_5} \link{testpoints_50} \link{testpoints_500}
-
-\link{testoutput_ejscreenit_5} \link{testoutput_ejscreenit_50} \link{testoutput_ejscreenit_500}
 }
 \keyword{datasets}

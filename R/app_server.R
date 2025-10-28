@@ -470,7 +470,7 @@ app_server <- function(input, output, session) {
   # #
   # # Use a default initial template of lat lon values table ready for user to type into
   # # and then the module updates that reactive_data1 object as the user types
-  # latlon_template <- data.table(lat = 0, lon = 0, sitenumber = 1, sitename = "")  # default_points_shown_at_startup[1:2, ] #  testpoints_5[1:2, ]
+  # latlon_template <- data.table(lat = 0, lon = 0, sitenumber = 1, sitename = "")
   # reactive_data1 <-  reactiveVal(latlon_template)
   # ## or... try something like this:   Try to pass to module as param the last uploaded pts() ?
   # observe(
@@ -1703,7 +1703,7 @@ app_server <- function(input, output, session) {
       max_pts <- input$max_pts_map # was the fixed max_pts_map
 
       if (nrow(data_uploaded()) > max_pts) { # would have already been stopped probably
-        ## Max allowed points was exceeded! see code in ejscreenapi that handled that case using  input$max_pts_map
+        ## Max allowed points was exceeded!
         if (nrow(data_uploaded) > input$max_pts_run) {
           validate(paste0('Too many points (> ', prettyNum(max_pts, big.mark = ','),
                           ') uploaded for map to be displayed'))

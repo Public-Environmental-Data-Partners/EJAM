@@ -66,9 +66,9 @@ test_ejam <- function(ask = TRUE,
                       run_these = NULL,  ## or...
                       # run_these = c("test_fips", "test_naics", "test_frs", "test_latlon", "test_maps",
                       #   "test_shape", "test_getblocks", "test_fixcolnames", "test_doag",
-                      #   "test_ejamit", "test_misc", "test_ejscreenapi", "test_mod", "test_app",
+                      #   "test_ejamit", "test_misc",  "test_mod", "test_app",
                       #   "test_test", "test_golem"),
-                      skip_these = c("ejscreenapi", "app"),
+                      skip_these = c(  "app"),
 
                       y_stopif = FALSE,
                       y_seeresults = TRUE,
@@ -112,7 +112,7 @@ x <- EJAM:::test_ejam(
   run_these = NULL,  # or some of these:
   # run_these = c("test_fips", "test_naics", "test_frs", "test_latlon", "test_maps",
   #   "test_shape", "test_getblocks", "test_fixcolnames", "test_doag",
-  #   "test_ejamit", "test_misc", "test_ejscreenapi", "test_mod", "test_app",
+  #   "test_ejamit", "test_misc", "test_mod", "test_app",
   #   "test_test", "test_golem"),
 
   y_stopif     = FALSE, # stop as soon as problem is hit?
@@ -289,14 +289,6 @@ x <- EJAM:::test_ejam(
 
         "test-api.R"
       ),
-      ### skip ejscreenapi tests - do not work / get skipped WHILE EJSCREEN API IS DOWN MID 2025  ####
-      test_ejscreenapi = c(
-        "test-ejscreenapi.R",
-        "test-ejscreenapi_plus.R",
-        "test-ejscreenapi1.R",
-        "test-ejscreenit.R",
-        "test-ejscreenRESTbroker-functions.R"
-      ),
       test_mod = c(
         "test-mod_save_report.R",
         "test-mod_specify_sites.R",
@@ -324,7 +316,7 @@ x <- EJAM:::test_ejam(
     )
     # c("test_fips", "test_naics", "test_frs", "test_latlon", "test_maps",
     #   "test_shape", "test_getblocks", "test_fixcolnames", "test_doag",
-    #   "test_ejamit", "test_misc", "test_ejscreenapi", "test_mod", "test_app",
+    #   "test_ejamit", "test_misc", "test_mod", "test_app",
     #   "test_test", "test_golem")
 
     ########################################## #
@@ -409,7 +401,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # 9         test_doag            doag         5
       # 10      test_ejamit          ejamit         8
       # 11        test_misc            misc         7
-      # 12 test_ejscreenapi     ejscreenapi         5
+      #
       # 13         test_mod             mod         3
       # 14         test_app             app         8
       # 15        test_test            test         2
@@ -519,17 +511,12 @@ and all filenames listed there actually exist as in that folder called `test`.\n
             "test-shp-unzip-functionality.R",   "test-shp-zip-functionality.R",
             "test-FIPS-functionality.R",
             "test-NAICS-functionality.R",
-            "test-ui_and_server.R", "test-golem_utils_server.R",
-            c("test-ejscreenRESTbroker-functions.R",
-              "test-ejscreenapi.R", "test-ejscreenapi1.R", "test-ejscreenapi_plus.R",
-              "test-ejscreenit.R")
+            "test-ui_and_server.R", "test-golem_utils_server.R"
           ),
           seconds_byfile = c(
             120, 157, 156, 160, 163,
             134, 115,
-            2.7, 2.4,
-            c(67, 7,
-              7.8, 14 , 13)
+            2.7, 2.4
           )
         )
       )
@@ -637,11 +624,6 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # 92:                 test-NAICS-functionality.R            115         test_app
       # 93:                       test-ui_and_server.R              3         test_app
       # 94:                  test-golem_utils_server.R              2       test_golem
-      # 95:        test-ejscreenRESTbroker-functions.R             67 test_ejscreenapi
-      # 96:                         test-ejscreenapi.R              7 test_ejscreenapi
-      # 97:                        test-ejscreenapi1.R              8 test_ejscreenapi
-      # 98:                    test-ejscreenapi_plus.R             14 test_ejscreenapi
-      # 99:                          test-ejscreenit.R             13 test_ejscreenapi
       #                                           file seconds_byfile        testgroup
 
       ################# #
@@ -662,7 +644,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       #                       167, 41, 65, 8, 13, 51, 44, 8)
       # )
       # timebygroup = rbind(timebygroup, cbind(testgroup = 'test_app', seconds_bygroup = 1006))
-      # timebygroup = rbind(timebygroup, cbind(testgroup = 'test_ejscreenapi', seconds_bygroup = 0))
+      #
       # timebygroup$seconds_bygroup = as.numeric(timebygroup$seconds_bygroup)
       # timebygroup$minutes_bygroup = round(as.numeric(timebygroup$seconds_bygroup) / 60, 1)
       # data.table::setDT(timebygroup)
@@ -687,7 +669,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       #  7:      test_latlon              49             0.8
       #  8:       test_shape              51             0.8
       #  9:        test_maps              87             1.4
-      # 10: test_ejscreenapi             109             1.8  make it zero now? obsolete
+      # 10:
       # 11:        test_fips             111             1.9
       # 12:        test_doag             144             2.4
       # 13:        test_misc             156             2.6
@@ -792,7 +774,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
           run_these = rstudioapi::showPrompt(
             "WHICH TEST GROUPS TO RUN? Enter a comma-separated list like  maps,frs  (or Esc to specify none)",
             paste0(shortgroupnames, collapse = ",")
-            #e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,ejscreenapi,mod,app"
+            #e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,mod,app"
           )
         }
 
@@ -815,7 +797,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               default = ifelse(length(skip_these) > 0,
                                paste0(skip_these, collapse = ","),
                                "")
-              # e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,ejscreenapi,mod,app"
+              # e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,mod,app"
             )
             if (is.na(skip_these)) {stop("canceled")}
           }}
@@ -1082,24 +1064,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
   ########################### #  ########################################## #
 
-  # try to do this once here and not in setup.R
+  # was in setup.R and here but now obsolete: out_api
   ## out_api (obsolete) ####
-  if (exists("out_api" , envir = globalenv() )) {
-    cat("Using the copy of out_api that already is in globalenv() so if that is outdated you should halt and do rm(out_api) now\n")
-  } else {
-    eee = ejscreenapi_online()
-    if (is.na(eee) || !eee) {
-      cat("offline or ejscreen API URL does not seem to be accessible according to EJAM:::ejscreenapi_online() \n\n")
-    } else {
-      cat("Creating out_api in the globalenv(), using ejscreenapi()\n\n")
-      test2lat <- c(33.943883,    39.297209)
-      test2lon <- c(-118.241073, -76.641674)
-      pts <- data.frame(lat = test2lat, lon = test2lon)
-      testradius = 1
-      out_api       <- ejscreenapi(lon = test2lon, lat = test2lat, radius = testradius, on_server_so_dont_save_files = TRUE, save_when_report = FALSE)
-      assign(x = "out_api", out_api, envir = globalenv())
-    }
-  }
   ########################### #  ########################################## #
 
   ## log file started ####
@@ -1455,7 +1421,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       Need to update the timing info on unit tests.
       Copy text output of dput (as done below) into source code of this file test_ejam.R
 
-        x = test_ejam(ask=F, skip_these = '') # instead of default that was skipping app functionality tests that may have trouble working # skip_these = c('ejscreenapi', 'app')
+        x = test_ejam(ask=F, skip_these = '') # instead of default that was skipping app functionality tests that may have trouble working # skip_these = c(  'app')
         dput(data.frame(unique(x$bytest_all[, .(file, seconds_byfile)])))
 
              ------------------------------------------------ \n")
