@@ -1,10 +1,10 @@
+
 name: build-deploy-pkgdown.yml
+description: 'build and deploy documentation website on github pages'
 
 on:
   push:
-    branches: [main]
-#  pull_request:
-#    branches: [main]
+    branches: [ "main" ]
   release:
     types: [published]
   workflow_dispatch:
@@ -47,5 +47,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           clean: true
-          branch: gh-pages
+          branch: main
           folder: docs

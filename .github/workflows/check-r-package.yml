@@ -1,14 +1,16 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/check-r-package  https://github.com/r-lib/actions/tree/v2/check-r-package
-# see https://github.com/r-lib/actions?tab=readme-ov-file#readme
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+
+name: check-r-package.yml
+description: 'Action to check R package with rcmdcheck. Assumes that rcmdcheck has already been installed.'
+author: 'Jim Hester'
 
 on:
   pull_request:
     branches: [ "main" ]
 
-name: 'check-r-package'
-description: 'Action to check R package with rcmdcheck. Assumes that rcmdcheck has already been installed.'
-author: 'Jim Hester'
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/check-r-package  https://github.com/r-lib/actions/tree/v2/check-r-package
+# see https://github.com/r-lib/actions?tab=readme-ov-file#readme
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+
 inputs:
   args:
     description: 'Arguments to pass to the `args` parameter of rcmdcheck. Must be an R expression. Note that it often needs to be quoted in YAML, see the README for details.'
