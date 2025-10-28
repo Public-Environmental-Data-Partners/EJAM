@@ -1,9 +1,11 @@
 
-name: build-deploy-pkgdown.yml
+name: pkgdown.yml
 description: 'build and deploy documentation website on github pages'
 
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
     branches: [ "main" ]
   release:
     types: [published]
@@ -46,6 +48,6 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
-          clean: true
+          clean: false
           branch: main
           folder: docs
