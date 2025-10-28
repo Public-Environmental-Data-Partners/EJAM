@@ -22,7 +22,7 @@ if (!exists("localtree")) indexblocks()
 
 library(rlang)
 # library(plumber)
-library(geojsonsf)
+# library(geojsonsf) # needed here but not elsewhere in pkg so if this draft API is not used then avoid creating dependency
 library(jsonlite)
 library(sf)
 
@@ -104,11 +104,11 @@ ejamit_interface <- function(area, method, buffer = 0, scale = "blockgroup", end
 
   # Process the request based on the specified method.
   if (method == "SHP") {
-    if (paste0("package:", geojson_sf) %in% search()) {
-    # needs geojson_sf package attached !
+    if (paste0("package:", "geojsonsf") %in% search()) {
+    # needs geojsonsf package attached !
     shp <- geojson_sf(area)
     } else {
-      stop("need geojson_sf package")
+      stop("need geojsonsf package")
     }
   }
   switch(method,
@@ -247,10 +247,10 @@ if (FALSE) {
     # Prepare the final JSON output.
     if (geometries) {
       if (method == "SHP") {
-        if (!(paste0("package:", geojson_sf) %in% search())) {
+        if (!(paste0("package:", "geojsonsf") %in% search())) {
           shp <- NULL
         } else {
-          shp <- geojson_sf(shape) # needs geojson_sf package attached !
+          shp <- geojson_sf(shape) # needs geojsonsf package attached !
         }
       }
       output_shape <- switch(method,
