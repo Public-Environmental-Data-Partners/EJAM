@@ -1027,7 +1027,7 @@ app_server <- function(input, output, session) {
 
   # fips_dt_react() as returned from the module happens to be a reactive
   fips_dt_react <- fipspicker_module_server(id = "pickermoduleid",
-                                            testing_this_module = testing_this_module,
+                                            #testing_this_module = testing_this_module,
                                             reactdat = reactive("") # can pass reactive param
   )
 
