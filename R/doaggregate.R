@@ -1451,6 +1451,8 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   ######################################### #
   ### Statewide  ####
 
+  # CONSIDER USING HERE HELPER FUNCTION  avg_from_raw_lookup()    ***
+
   # pull averages from statestats table (note using data.frame syntax here not data.table)
   # There may be a cleaner way to do this part ***
   stinfo <- data.table::setDT(statestats[ statestats$PCTILE == "mean" , c("REGION", names_these)])
