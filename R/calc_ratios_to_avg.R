@@ -1,10 +1,14 @@
 
+
 #' get ratios of each site's scores to US means (using output of batch buffering)
 #'
 #' Used to create input to [plot_boxplot_ratios()] and can be used elsewhere now
 #'
 #' @details  Note that colnames returned are same as input, not renamed to say "ratio"
 #'   If names_d_subgroups are included, it gets the means from usastats or statestats
+#'
+#'   Also see [doaggregate()] code that creates ratios.
+#'
 #' @param out data.frame output from ejamit()$results_bysite or from doaggregate(), e.g.,
 #'   like testoutput_ejamit_10pts_1miles$results_bysite,
 #'   one row per buffer or site, and
@@ -31,7 +35,6 @@
 #'      wheretext="Within a mile of")
 #'
 #' @keywords internal
-#' @export
 #'
 calc_ratios_to_avg <- function(out,
                                evarnames = names_e,
@@ -120,3 +123,4 @@ calc_ratios_to_avg <- function(out,
 
   return(list(ratios_d = ratios_d, ratios_e = ratios_e))
 }
+############################################################################################ #
