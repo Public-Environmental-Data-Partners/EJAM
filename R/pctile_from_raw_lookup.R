@@ -1,9 +1,12 @@
 
-#' Find approx percentiles in lookup table that is in memory
+#' Find approx percentiles in lookup table for just 1 indicator or 1 zone (State or US)
 #'
 #' @description This is used with a lookup table to
 #'   convert a raw indicator vector to percentiles in US or States.
-#' @details This function can handle 2 kinds of inputs right now:
+#' @details
+#'   For handling a whole table of raw indicators, see [pctile_cols_from_raw_lookup()]
+#'
+#'   This function can handle 2 kinds of inputs right now:
 #'
 #'   - a vector of scores and vector of corresponding indicator names, in only 1 zone (e.g. 1 State)
 #'
@@ -12,7 +15,7 @@
 #'
 #'   This could be recoded to be more efficient - could use data.table.
 #'
-#'s
+#'
 #'   The data.frame lookup table must have a field called "PCTILE" that has quantiles/percentiles
 #'   and other column(s) with values that fall at those percentiles.
 #'   [usastats] and [statestats] are such lookup tables.
@@ -59,6 +62,7 @@
 #' @param quiet set to FALSE to see details on where certain scores were all NA values like in 1 state
 #' @aliases lookup_pctile
 #' @return By default, returns numeric vector length of myvector.
+#' @seealso [pctile_cols_from_raw_lookup()] for handling a table not just a vector
 #' @examples \donttest{
 #'
 #' eg <- dput(
@@ -74,9 +78,9 @@
 #'
 #' }
 #'
-#' @export
+#' @keywords internal
 #'
-pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup=usastats, zone = "USA", quiet=TRUE) {
+pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = usastats, zone = "USA", quiet=TRUE) {
 
   # CHECK FOR FATAL PROBLEMS  ####
 
@@ -315,9 +319,9 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup=usa
 ########################################################################### #
 
 
-#' Find approx percentiles in lookup table that is in memory
+#' Find approx percentiles in lookup table for just 1 indicator or 1 zone (State or US)
+#'
 #' @rdname pctile_from_raw_lookup
-#' @seealso Identical to [pctile_from_raw_lookup()] [usastats] [statestats]
 #'
 #' @export
 #'

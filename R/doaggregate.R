@@ -1197,10 +1197,10 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   ### PERCENTILES - express raw scores (from results_bysite AND  results_overall) in percentile terms ####
   #  VIA  lookup tables of US/State  percentiles, called usastats   and statestats
   #
-  #
   #  *** this should be extracted as a function (but keeping the efficiency of data.table changes by reference using := or set___)
   # these lines about names of variables should be pulled out of here and defined as params or another way
   # to specify which variables get converted to percentile form ***
+  # CONSIDER USING HERE HELPER FUNCTION  pctile_cols_from_raw_lookup()    ***
   ##################################################### #
 
   # the ejscreen community report shows percentiles only for E,D,EJ, plus health,climate,criticalservice tables:
@@ -1287,6 +1287,9 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     results_overall[, (vars_not_in_overall) := NA_real_]
   }
 
+  ######################################## #    ######################################## #
+##### SECTION BELOW APPROX COULD BE REPLACED BY pctile_from_raw_lookup(results_bysite) *** ########## #
+
   myvars_to_use <- ifelse(varsneedpctiles %in% c("Demog.Index", "Demog.Index.Supp"),
                           paste0(varsneedpctiles, ".State"), varsneedpctiles)
 
@@ -1334,6 +1337,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     }, valid_state_vars, valid_state_vars_to_use, SIMPLIFY = FALSE)]
     ######################################## #
   }
+  ######################################## #    ######################################## #
 
   if (is.function(updateProgress)) {
     boldtext <- paste0('Computing results')

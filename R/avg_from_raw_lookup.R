@@ -16,10 +16,6 @@
 
 
 
-
-
-
-
 #' helper that looks up US or State averages for a vector of variable names (and optional vector of States)
 #'
 #' @param varnames vector of character string names of indicators (like "pctlowinc" or names_e)
@@ -28,37 +24,14 @@
 #' @param lookup optional, but for custom indicators a data.frame can be provided that
 #'   is analogous to statestats and usastats -- see examples
 #' @details
+#' For examples, see [pctile_cols_from_raw_lookup()]
+#'
 #' could be used, e.g., in doaggregate() or similar to get means for indicators being analyzed
 #'
 #' assume you want to name output columns like varnames but with hardcoded prefixes "avg." or "state.avg."
 #'
-#' @returns data.frame, one column per element of varnames vector, one row per element of zones vector
-#'
-#' @examples
-#' vars = names_e
-#'
-#' EJAM:::avg_from_raw_lookup(vars[1]) # 1 var, USA
-#' EJAM:::avg_from_raw_lookup(vars)   # multivar, USA
-#'
-#' EJAM:::avg_from_raw_lookup(vars,    zone = "TX")                # multivar, 1 zone
-#' EJAM:::avg_from_raw_lookup(vars[1], zone = "TX")                # 1 var,    1 zone
-#' EJAM:::avg_from_raw_lookup(vars[1], zone = c("TX", "TX", "GA")) # 1 var,    multizone
-#' EJAM:::avg_from_raw_lookup(vars,    zone = c("TX", "TX", "GA")) # multivar, multizone
-#'
-#' customstats = data.frame(PCTILE = "mean",
-#'                           REGION        = c("USA", "GA", "TX"),
-#'                           pctlefthanded = c(0.20, 0.30, 0.10),
-#'                           airqualityscore = c(58.3, 71, 48)
-#' )
-#' custom_vars = setdiff(names(customstats), c("PCTILE", "REGION"))
-#'
-#' EJAM:::avg_from_raw_lookup(custom_vars[1], lookup = customstats) # 1 var, USA
-#' EJAM:::avg_from_raw_lookup(custom_vars,    lookup = customstats)   # multivar, USA
-#'
-#' EJAM:::avg_from_raw_lookup(custom_vars,    zone = "TX",                lookup = customstats) # multivar, 1 zone
-#' EJAM:::avg_from_raw_lookup(custom_vars[1], zone = "TX",                lookup = customstats) # 1 var,    1 zone
-#' EJAM:::avg_from_raw_lookup(custom_vars[1], zone = c("TX", "TX", "GA"), lookup = customstats) # 1 var,    multizone
-#' EJAM:::avg_from_raw_lookup(custom_vars,    zone = c("TX", "TX", "GA"), lookup = customstats) # multivar, multizone
+#' @returns data.frame, one column per indicator or element of varnames vector,
+#'   one row per site or element of zones vector
 #'
 #' @keywords internal
 #'
@@ -116,17 +89,19 @@ avg_from_raw_lookup <- function(varnames = intersect(EJAM::names_all_r,  names(E
   # 1 variable, 1 zone
   if (length(varnames) == 1 && length(zones) == 1) {
     x <- data.frame(lookup_mean1zone(varname = varnames, zone = zones, lookup = lookup))
-    rownames(x) <- zones
+    # rownames(x) <- zones
+    rownames(x) <- NULL
     colnames(x) <- varnames_avg_for_output
-    return(x)
+    return(as.data.frame(x))
   }
 
   # N variables, 1 zone
   if (length(varnames) > 1 && length(zones) == 1) {
     x <- lookup_mean1zone(varname = varnames, zone = zones, lookup = lookup)
-    rownames(x) <- zones
+    # rownames(x) <- zones
+    rownames(x) <- NULL
     colnames(x) <- varnames_avg_for_output
-    return(x)
+    return(as.data.frame(x))
   }
 
   # 1 variable, N zones
@@ -134,8 +109,9 @@ avg_from_raw_lookup <- function(varnames = intersect(EJAM::names_all_r,  names(E
     x <- cbind(sapply(zones, FUN = function(z) {
       lookup_mean1zone(varname = varnames, zone = z, lookup = lookup)
     }))
+    rownames(x) <- NULL
     colnames(x) <- varnames_avg_for_output
-    return(x)
+    return(as.data.frame(x))
   }
 
   # N variables, N zones
@@ -145,13 +121,18 @@ avg_from_raw_lookup <- function(varnames = intersect(EJAM::names_all_r,  names(E
     # so this can return a matrix, one row per zone, one col per variable name
     # varnames is a fixed vector that is used for all zones.
 
-    x <- t(
-      sapply(zones, FUN = function(z) {
-        lookup_mean1zone(varname = varnames, zone = z, lookup = lookup)
-      })
-    )
+    # x <- t(
+    #   sapply(zones, FUN = function(z) {
+    #     lookup_mean1zone(varname = varnames, zone = z, lookup = lookup)
+    #   })
+    # )
+    x <- lapply(zones, FUN = function(z) {
+      lookup_mean1zone(varname = varnames, zone = z, lookup = lookup)
+    })
+    x <- do.call(rbind, x)
     colnames(x) <- varnames_avg_for_output
-    return(x)
+    rownames(x) <- NULL # or else cbind of us and st versions gives warning
+    return(as.data.frame(x))
   }
 }
 ################################################################################ #
