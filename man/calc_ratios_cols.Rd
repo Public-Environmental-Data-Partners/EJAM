@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_ratios_cols.R
 \name{calc_ratios_cols}
 \alias{calc_ratios_cols}
-\title{Calculate ratios to US and State average for each indicator in each place - DRAFT NOT FINISHED - NEED TO HANDLE SPECIAL CASE OF DEMOG INDEXES STATE VS US STYLE RAW}
+\title{Calculate ratios to US and State average for each indicator in each place}
 \usage{
 calc_ratios_cols(
   mytable,
@@ -34,7 +34,7 @@ special numerator that is state-specific version of the index}
 data.frame with 1 row per row of mytable and set of columns for US ratios and set of columns for State ratios
 }
 \description{
-Calculate ratios to US and State average for each indicator in each place - DRAFT NOT FINISHED - NEED TO HANDLE SPECIAL CASE OF DEMOG INDEXES STATE VS US STYLE RAW
+Calculate ratios to US and State average for each indicator in each place
 }
 \details{
 For examples, see \code{\link[=pctile_cols_from_raw_lookup]{pctile_cols_from_raw_lookup()}}

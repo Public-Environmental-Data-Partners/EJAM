@@ -10,7 +10,7 @@
 
 
 
-#' Calculate ratios to US and State average for each indicator in each place - DRAFT NOT FINISHED - NEED TO HANDLE SPECIAL CASE OF DEMOG INDEXES STATE VS US STYLE RAW
+#' Calculate ratios to US and State average for each indicator in each place
 #'
 #' @param mytable data.table with 1 row per place, 1 column per raw data indicator values
 #' @param varnames column names of mytable that contain the raw indicator values (numerators of ratios)
