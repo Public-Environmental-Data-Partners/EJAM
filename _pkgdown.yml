@@ -253,18 +253,7 @@ reference:
   - indexfrs
   - convert_units
   - fips2pop
-- title: "Calculating and Aggregating"
-  desc: >
-    Tools that Calculate and Aggregate Indicators
-    at each Place and Overall, and Report Percentiles
-  contents:
-  - doaggregate
-  - calc_ejam
-  - calc_byformula
-  - pctile_from_raw_lookup
-  - lookup_pctile
-  - high_pctiles_tied_with_min
-- subtitle: "Datasets with Indicators, etc."
+- subtitle: "Datasets with Indicators (raw data, means, percentiles)"
   contents:
   - blockgroupstats
   - bgej
@@ -273,30 +262,32 @@ reference:
   - acs_bybg
   - avg.in.us
   - usastats
+  - stateinfo
+  - stateinfo2
+  - statestats
+  - modelDoaggregate
+  - modelEjamit
+- title: "Calculating and Aggregating"
+  desc: >
+    Tools that Calculate and Aggregate Indicators
+    at each Place and Overall, and Report Percentiles
+  contents:
+  - doaggregate
+  - calc_ejam
+  - calc_byformula
+- subtitle: "Means and percentiles"
+  contents:
+  - lookup_pctile
+  - pctile_cols_from_raw_lookup
+  - avg_from_raw_lookup
   - usastats_means
   - usastats_query
   - usastats_queryd
   - usastats_querye
-  - stateinfo
-  - stateinfo2
-  - statestats
   - statestats_means
   - statestats_query
   - statestats_queryd
   - statestats_querye
-  - modelDoaggregate
-  - modelEjamit
-- subtitle: "Comparing Distances / Multiple Radius Values"
-  contents:
-  - ejamit_compare_distances
-  - ejamit_compare_distances_fulloutput
-  - ejam2barplot_distances
-  - distance_by_group_by_site
-  - distance_by_group_plot
-  - distance_cdf_by_group_plot
-  - distance_mean_by_group
-  - distance_by_group
-  - distance_trends
 - subtitle: "Calculating Summary Stats, etc."
   contents:
   - count_sites_with_n_high_scores
@@ -308,6 +299,17 @@ reference:
   - popshare_p_lives_at_what_pct
   - distance_trends
   - batch.summarize
+- subtitle: "Comparing Distances / Multiple Radius Values"
+  contents:
+  - ejamit_compare_distances
+  - ejamit_compare_distances_fulloutput
+  - ejam2barplot_distances
+  - distance_by_group_by_site
+  - distance_by_group_plot
+  - distance_cdf_by_group_plot
+  - distance_mean_by_group
+  - distance_by_group
+  - distance_trends
 - title: "Viewing Results"
 - subtitle: "Maps of Points"
   contents:
@@ -447,6 +449,10 @@ reference:
   - map_headernames
 - title: internal
   contents:
+  - calc_ratios_to_avg
+  - calc_ratios_cols
+  - high_pctiles_tied_with_min
+  - pctile_from_raw_lookup
   - api_run
   - state_from_sitetable
   - fips2state_abbrev
