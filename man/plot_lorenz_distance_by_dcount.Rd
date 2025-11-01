@@ -5,7 +5,7 @@
 \title{lorenz plot bybg_people (cumulative share of x vs cum share of y) - DRAFT/EXPERIMENTAL
 COUNT OF SITES (or PEOPLE?) BY BIN}
 \usage{
-plot_lorenz_distance_by_dcount(bybg_people, varname)
+plot_lorenz_distance_by_dcount(bybg_people, varname = NULL)
 }
 \arguments{
 \item{bybg_people}{from ejamit()$results_bybg_people}

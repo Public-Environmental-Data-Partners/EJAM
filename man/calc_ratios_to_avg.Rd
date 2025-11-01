@@ -41,6 +41,8 @@ Used to create input to \code{\link[=plot_boxplot_ratios]{plot_boxplot_ratios()}
 \details{
 Note that colnames returned are same as input, not renamed to say "ratio"
 If names_d_subgroups are included, it gets the means from usastats or statestats
+
+Also see \code{\link[=doaggregate]{doaggregate()}} code that creates ratios.
 }
 \examples{
  out1 <- testoutput_ejamit_10pts_1miles$results_bysite
