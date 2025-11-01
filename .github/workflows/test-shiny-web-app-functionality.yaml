@@ -1,4 +1,9 @@
-name: test-shiny-web-app-functionality
+
+name: 'Test web app UI and functionality vs snapshots of expected behavior'
+
+on:
+  pull_request:
+    branches: [ "main" ]
 
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 # system libraries:
@@ -7,10 +12,6 @@ name: test-shiny-web-app-functionality
 #   libudunits2-dev -- needed for package "units"
 #   libgdal-dev -- needed for gdal config to configure package terra
 # https://cran.r-project.org/web/packages/shinytest2/vignettes/use-ci.html
-
-on:
-  pull_request:
-    branches: [development, main]
 
 jobs:
   test:

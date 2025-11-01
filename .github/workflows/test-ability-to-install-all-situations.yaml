@@ -1,8 +1,7 @@
-name: Test ability to install EJAM - by R-version by OS by install-method
+
+name: 'Test ability to install EJAM - Comprehensive list of R-versions and OS'
 
 on:
-#  push:
-#    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -22,8 +21,9 @@ jobs:
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      GH_TOKEN: ${{ github.token }}
-      GITHUB_PAT: ${{ github.token }}
+      # GH_TOKEN: ${{ github.token }}
+      # GITHUB_PAT: ${{ github.token }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
