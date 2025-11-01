@@ -264,7 +264,11 @@ x <- EJAM:::test_ejam(
         "test-doaggregate.R",
         "test-area_sqmi.R",
         "test-batch.summarize.R",
-        "test-utils_flagged_FUNCTIONS.R"
+        "test-utils_flagged_FUNCTIONS.R",
+
+        "test-avg_from_raw_lookup.R",
+        "test-calc_ratios_cols.R",
+        "test-pctile_cols_from_raw_lookup.R"
       ),
       test_ejamit = c(
         "test-ejamit.R",

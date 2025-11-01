@@ -1,10 +1,9 @@
-name: Test ability to install EJAM - limited checks in dev branch only
+
+name: 'Test ability to install EJAM - Limited checks'
 
 on:
   push:
     branches: [ "development" ]
-
-
 
 permissions:
   contents: read
@@ -22,8 +21,9 @@ jobs:
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      GH_TOKEN: ${{ github.token }}
-      GITHUB_PAT: ${{ github.token }}
+      # GH_TOKEN: ${{ github.token }}
+      # GITHUB_PAT: ${{ github.token }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
