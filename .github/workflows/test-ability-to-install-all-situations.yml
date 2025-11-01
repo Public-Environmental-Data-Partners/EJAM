@@ -1,6 +1,5 @@
 
-name: test-ability-to-install-all-situations.yml
-# - 'Test ability to install EJAM - Comprehensive list of R-versions and OS'
+name: 'Test ability to install EJAM - Comprehensive list of R-versions and OS'
 
 on:
   pull_request:

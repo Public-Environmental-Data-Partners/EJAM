@@ -1,6 +1,5 @@
 
-name: lintr.yml
-# - 'lintr checks code style and syntax errors'
+name: 'lintr checks code style and syntax errors'
 
 on:
   pull_request:
