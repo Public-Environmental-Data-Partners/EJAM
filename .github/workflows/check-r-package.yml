@@ -1,6 +1,6 @@
 
 name: check-r-package.yml
-description: 'Action to check R package with rcmdcheck. Assumes that rcmdcheck has already been installed.'
+# - 'Action to check R package with rcmdcheck. Assumes that rcmdcheck has already been installed.'
 author: 'Jim Hester'
 
 on:

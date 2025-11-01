@@ -1,6 +1,6 @@
 
 name: test-shiny-web-app-functionality.yml
-description: 'Test web app UI and functionality vs snapshots of expected behavior'
+# - 'Test web app UI and functionality vs snapshots of expected behavior'
 
 on:
   pull_request:

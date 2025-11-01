@@ -1,6 +1,6 @@
 
 name: test-ability-to-install-limited-cases.yml
-description: 'Test ability to install EJAM - Limited checks'
+# - 'Test ability to install EJAM - Limited checks'
 
 on:
   push:
