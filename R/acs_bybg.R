@@ -9,6 +9,9 @@
 # purrr, rvest,  rappdirs, readr, xml2, units, utils, rlang, crayon, tidyselect
 ################################# #
 
+
+
+
 ################################# ################################## #
 
 
@@ -16,7 +19,7 @@
 #' @details
 #'
 #' Probably requires [getting and specifying an API key for Census Bureau](https://api.census.gov/data/key_signup.html) ! (at least if query is large).
-#'   see [tidycensus package help](https://walker-data.com/tidycensus/)
+#'   see [tidycensus package help](https://walker-data.com/tidycensus/)  envt var CENSUS_API_KEY
 #'
 #' NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 #' ```
@@ -26,10 +29,8 @@
 #'              "B18101") # disability at tract resolution only
 #' acstabs2 <- paste0(acstabs, "_")
 #' mytables <- data.table::rbindlist(lapply(acstabs2, function(z) {
-#'   x[substr(x$name,1,7) %in% z, ][1,]
-#' }))
-#' ejscreen_tables = substr(mytables$name, 1, 6)
-#'
+#'   x[substr(x$name,1,7) %in% z, ][1, ]
+#'   }))
 #' print(mytables)
 #'
 #'  #        name            label                                                            concept   geography
