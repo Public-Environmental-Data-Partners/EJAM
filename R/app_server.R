@@ -12,7 +12,7 @@
 #' @importFrom graphics abline barplot legend points boxplot text
 #' @importFrom methods Summary as formalArgs functionBody is
 #' @importFrom stats aggregate density na.omit quantile runif setNames addmargins ecdf line lm median na.exclude predict reorder weighted.mean
-#' @importFrom utils data download.file installed.packages object.size read.csv stack tail URLencode askYesNo browseURL capture.output combn edit getFromNamespace getSrcFilename glob2rx head str write.csv zip
+#' @importFrom utils unzip data download.file installed.packages object.size read.csv stack tail URLencode askYesNo browseURL capture.output combn edit getFromNamespace getSrcFilename glob2rx head str write.csv zip
 #'
 #' @rawNamespace import(dplyr, except = c(first, last, between))
 #'

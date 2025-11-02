@@ -135,7 +135,6 @@
 #'   usethis::use_data(frs_by_programid, overwrite = TRUE)
 #'   usethis::use_data(frs_by_naics,     overwrite = TRUE)
 #' }
-#' @importFrom utils download.file unzip
 #'
 frs_get <- function(only_essential_cols=TRUE, folder=NULL, downloaded_and_unzipped_already=FALSE,
                     zfile = 'national_single.zip', zipbaseurl = 'https://ordsext.epa.gov/FLA/www3/state_files/',
