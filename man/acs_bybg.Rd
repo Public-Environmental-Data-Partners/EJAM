@@ -85,8 +85,10 @@ acstabs <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025
              "B18101") # disability at tract resolution only
 acstabs2 <- paste0(acstabs, "_")
 mytables <- data.table::rbindlist(lapply(acstabs2, function(z) \{
-  x[substr(x$name,1,7) \%in\% z, ][1, ]
-  \}))
+  x[substr(x$name,1,7) \%in\% z, ][1,]
+\}))
+ejscreen_tables = substr(mytables$name, 1, 6)
+
 print(mytables)
 
  #        name            label                                                            concept   geography
@@ -160,6 +162,38 @@ mapfast(newvars[1:10,], column_names = colnames(newvars),
      labels = gsub('pct1849female', 'Women 18-49 as \% of residents',
               gsub('age1849female', 'Count of women ages 18-49',
              fixcolnames(colnames(newvars), 'r', 'long'))))
+
+
+## ACS tables and variables most relevant to EJSCREEN
+
+acsinfo <- tidycensus::load_variables(2022, "acs5")
+ejscreentables <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025",
+             "B18101") # disability at tract resolution only
+acstabs2 <- paste0(ejscreentables, "_")
+acsinfo$table = gsub("_.*", "", acsinfo$name)
+myacsinfo <- acsinfo[acsinfo$table \%in\% ejscreentables, ]
+mytables <- data.table::rbindlist(lapply(ejscreentables, function(z) {acsinfo[acsinfo$table \%in\% z, ][1,]}))
+ejscreen_tables <-  mytables$table # same as ejscreentables
+
+myvars <- myacsinfo$name # 184 variables among 8 tables
+
+
+# Slowly download data for all these tables in ALL STATES and DC and PR
+# but not Island Areas
+mystates <- stateinfo2[stateinfo2$is.usa.plus.pr, ]$ST
+## PR has to be handled separately? B05001PR is what PR table names look like
+mystates = mystates[mystates != "PR"]
+### takes time to download each table for each state:
+system.time({
+  newvars <- acs_bybg(variables = myvars, state = mystates)
+})
+setnames(newvars, "GEOID", "bgfips")
+newvars[, ST := fips2state_abbrev(bgfips)]
+names(newvars) <- gsub("E$", "", names(newvars))
+dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
+t(head(newvars))
+ejscreeen_acs = newvars
+save(ejscreeen_acs, file="ejscreeen_acs.rda")
 
 }
 }
