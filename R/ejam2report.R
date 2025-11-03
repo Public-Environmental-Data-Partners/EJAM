@@ -162,6 +162,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ejamout1 <- ejamitout$results_overall # one row
     ejamout1$valid <- TRUE
     # but shp is all rows, remember, and popup can still be like for site by site
+    rad <- ejamout1$radius.miles
 
     ## > no name of location, just overall ####
     selected_location_name_react <- NULL
@@ -169,12 +170,15 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > fips bounds ####
     if (submitted_upload_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
+      if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
+      # radius would have to be used here to add any buffer ! ***
     }
   } else {
 
     ## ONE SITE (or summary but just 1 site) ###################################################
 
     ejamout1 <- ejamitout$results_bysite[sitenumber, ]
+    rad <- ejamout1$radius.miles
 
     ### > nsites ####
     nsites <- 1
@@ -185,6 +189,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ### > fips bounds ####
     if (submitted_upload_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
+      if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
+      # radius would have to be used here to add any buffer ! ***
     } else {
       if (!is.null(shp)) {
         shp <- shp[sitenumber, ]
@@ -204,7 +210,6 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     #
     # as adapted from app_server
 
-    rad <- ejamout1$radius.miles
     # nsites
     popstr <- prettyNum(round(ejamout1$pop, table_rounding_info("pop")), big.mark = ',')
 
@@ -313,16 +318,18 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     if (is.null(sitenumber) || length(sitenumber) == 0 || sitenumber %in% 0) {
       # Map from community report should be ALL the sites that were passed here, UNLESS sitenumber param was used to pick 1
       if (sitetype %in% c("fips", "shp") && !is.null(shp)) {
-        map <- ejam2map(ejamitout = ejamitout, shp = shp, launch_browser = FALSE) # it figures out radius if used
+        # radius gets found, and used just in popups since shapefile given
+        map <- ejam2map(ejamitout = ejamitout, shp = shp, launch_browser = FALSE, radius = rad)
       } else {
-        map <- mapfastej(ejamitout)
+        map <- mapfastej(ejamitout, radius = rad)
       }
     } else {
       # just 1 site specified by sitenumber so map should show just that 1 site! shp and ejamout1 both 1 row already in this case
       if (sitetype %in% c("fips", "shp") && !is.null(shp)) {
-        map <- ejam2map(ejamitout = ejamout1, shp = shp, launch_browser = FALSE) # it figures out radius if used
+        # radius gets found, and used just in popups since shapefile given
+        map <- ejam2map(ejamitout = ejamout1, shp = shp, launch_browser = FALSE)
       } else {
-        map <- mapfastej(ejamout1)
+        map <- mapfastej(ejamout1, radius = rad)
       }
     }
     if (is.null(map)) {

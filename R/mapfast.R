@@ -11,6 +11,13 @@
 #'
 mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_names, launch_browser = FALSE, color = "#03F") {
 
+  if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
+    if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf))) {
+      radius = mydf$results_bysite$radius.miles[1]
+    }
+  }
+  }
+
   mapfast(mydf = mydf, radius = radius, column_names = column_names, labels = labels, launch_browser = launch_browser, color = color)
 }
 ############################################################################ #
@@ -31,7 +38,8 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'   or cities/towns/Census Designated Places (7 digits including any leading zeroes),
 #'   e.g., as from \code{names2fips('DE')} or \code{ejamit(fips='01')$results_bysite}.
 #'
-#' @param radius in miles, converted to meters and passed to leaflet::addCircles() if appropriate
+#' @param radius in miles, converted to meters and passed to leaflet::addCircles() if appropriate.
+#'   If not provided, function tries to find it in mydf (in case that is output of ejamit() for example)
 #' @param column_names If "ej" then nice popup made based on just key EJSCREEN
 #'   indicators. If "all" then every column in the entire mydf table is shown
 #'   in the popup. If a vector of colnames, only those are shown in popups.
@@ -50,6 +58,14 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #' @export
 #'
 mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names, launch_browser = FALSE, color = "#03F") {
+
+  if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
+    if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf))) {
+      radius = mydf$results_bysite$radius.miles[1]
+    }
+  }
+  }
+  ## NOTE:   fips case might not yet be adding buffering to downloaded shapes, but when it does, default radius would need to be 0 in fips case!
 
   x <- NULL
   fromejam <- FALSE
@@ -146,14 +162,14 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       if (!fromejam) {
         # it is not from EJAM, so assume it is a table of points needing circular buffers added
 
-      # If mydf is not spatial/geom, but do have lat,lon,radius,
-      # handle that via adding buffer and then mapping as shapefile
-      ## example:
-      # mydf <- ejamit(shapefile = testshapes_2, radius = 0)$results_bysite ; mapfast(mydf)
+        # If mydf is not spatial/geom, but do have lat,lon,radius,
+        # handle that via adding buffer and then mapping as shapefile
+        ## example:
+        # mydf <- ejamit(shapefile = testshapes_2, radius = 0)$results_bysite ; mapfast(mydf)
 
-      shp <- ejam2shapefile(mydf, save = FALSE) # has all columns but they get ignored in next step
-      x <- map_ejam_plus_shp(shp = shp, out = mydf, radius_buffer = radius, launch_browser = launch_browser)
-      xok <- TRUE
+        shp <- ejam2shapefile(mydf, save = FALSE) # has all columns but they get ignored in next step
+        x <- map_ejam_plus_shp(shp = shp, out = mydf, radius_buffer = radius, launch_browser = launch_browser)
+        xok <- TRUE
       } else {
         # has latlon but reported as "shp"
 
@@ -278,6 +294,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     if (all(ftype %in% 'state')) {
       # fips <- mydf$ejam_uniq_id
       shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color)
       xok = TRUE
     }
@@ -293,6 +310,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # x <- map_shapes_leaflet(shp, popup = mypop, color = color)
       # xok = TRUE
       ## *** handle specified color here...
+      ## any added buffer via radius parameter would have to be passed to and added by function below ***
       x <- mapfastej_counties(mydf, colorvarname = color) # handles popups, ignores params above, assumes mydf$ejam_uniq_id is fips
       xok <- TRUE
     }
@@ -304,6 +322,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # fips <- mydf$ejam_uniq_id
       # shp <- shapes_places_from_placefips(fips)
       shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color)
       xok = TRUE
     }
@@ -312,6 +331,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     if (all(ftype %in% 'tract')) {
       # fips <- mydf$ejam_uniq_id
       shp <- shapes_from_fips(fips) #  SLOW if many, like > 20  #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color)
       xok <- TRUE
     }
@@ -322,6 +342,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # fips <- mydf$ejam_uniq_id
       # shp <- shapes_blockgroups_from_bgfips(fips)
       shp <- shapes_from_fips(fips) #  SLOW if many, like > 20  #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color)
       xok <- TRUE
 
