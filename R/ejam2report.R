@@ -319,7 +319,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       # Map from community report should be ALL the sites that were passed here, UNLESS sitenumber param was used to pick 1
       if (sitetype %in% c("fips", "shp") && !is.null(shp)) {
         # radius gets found, and used just in popups since shapefile given
-        map <- ejam2map(ejamitout = ejamitout, shp = shp, launch_browser = FALSE, radius = rad)
+        map <- ejam2map(ejamitout = ejamitout, shp = shp, launch_browser = FALSE)
       } else {
         map <- mapfastej(ejamitout, radius = rad)
       }

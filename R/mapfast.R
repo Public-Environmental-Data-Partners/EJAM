@@ -12,7 +12,7 @@
 mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_names, launch_browser = FALSE, color = "#03F") {
 
   if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
-    if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf))) {
+    if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf$results_bysite))) {
       radius = mydf$results_bysite$radius.miles[1]
     }
   }
@@ -60,7 +60,7 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names, launch_browser = FALSE, color = "#03F") {
 
   if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
-    if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf))) {
+    if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf$results_bysite))) {
       radius = mydf$results_bysite$radius.miles[1]
     }
   }
