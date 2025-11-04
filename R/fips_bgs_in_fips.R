@@ -74,6 +74,7 @@ fips_bgs_in_fips <- function(fips) {
     howmanyna = sum(is.na(fips))
     warning("NA returned for ", howmanyna," values that failed to match")
     fips <- fips[!is.na(fips)]
+    ftype <- ftype[!is.na(fips)]
   }
 
   # note a 7-digit place/city/town FIPS cannot be neatly broken into blockgroups
