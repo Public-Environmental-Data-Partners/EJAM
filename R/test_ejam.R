@@ -994,7 +994,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ejam2report(x3, analysis_title = "3 polygon portland example", shp = shp)
       ejam2report(x3, analysis_title = "3 polygon portland example, 1 site", shp = shp, sitenumber = 2)
 
-      ejam2map(x3) # no latlon or geometry is in output of ejamit() here so ideall could at least show a point at each poly, but now latlon is not in outputs of shp case, so we cannot do any mapping if polygons not provided
+      #ejam2map(x3) # no latlon or geometry is in output of ejamit() here so ideally could at least show a point at each poly, but now latlon is not in outputs of shp case, so we cannot do any mapping if polygons not provided
       ejam2map(x3, shp = shp)  # if shp is provided, map works!
 
       # map_ejam_plus_shp(out = x3, shp = shp) # also works
@@ -1021,7 +1021,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ejam2report(x2)
       ejam2report(x2, sitenumber = 2)
 
-      ejam2map(x2) # no latlon or geometry is in output of ejamit() but this does work!
+      ejam2map(x2) # no latlon or geometry is in output of ejamit() but since fips it does work!
       # ejam2map(x2, shp = shapes_from_fips(fipstest)) # not needed and replaces fips with id 1:N
 
       # ejam2shapefile(x2, folder = tempdir()) # ERROR/STOP - no latlon or geometry is in output of ejamit() here so this is not working for FIPS or shapefile analysis cases yet, except see  mapfastej_counties()
@@ -1033,7 +1033,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     }
 
     cat("Done with basic checks. Not doing any other testing. \n\n")
-    invisible(x1)
+    return(invisible(x1))
   } # halts if this gets done - just basic checks get done if !y_skipbasic
   ########################### #  ########################################## #
   ########################### #  ########################################## #

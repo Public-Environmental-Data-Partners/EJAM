@@ -28,7 +28,8 @@ or cities/towns/Census Designated Places (7 digits including any leading zeroes)
 e.g., as from \code{names2fips('DE')} or \code{ejamit(fips='01')$results_bysite}.
 }}
 
-\item{radius}{in miles, converted to meters and passed to leaflet::addCircles() if appropriate}
+\item{radius}{in miles, converted to meters and passed to leaflet::addCircles() if appropriate.
+If not provided, function tries to find it in mydf (in case that is output of ejamit() for example)}
 
 \item{column_names}{If "ej" then nice popup made based on just key EJSCREEN
 indicators. If "all" then every column in the entire mydf table is shown
