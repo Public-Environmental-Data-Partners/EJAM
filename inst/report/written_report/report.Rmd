@@ -795,7 +795,7 @@ Residents / conditions ...
 -   EDGAR Electronic Data Gathering, Analysis, and Retrieval database
     (SEC)
 -   EGU electricity generating unit in a power plant
--   EJAM `r EJAM:::global_or_param(".app_title")`
+-   EJAM `r EJAM:::global_or_param("app_title")`
 -   ELG effluent limitation guideline
 -   EO Executive Order
 -   EP313 EPCRA Section 313 (established TRI)
