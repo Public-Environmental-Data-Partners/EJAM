@@ -1,19 +1,27 @@
-# development
+# EJAM 2.32.6.003 (November 2025)
 
+- Bug fixes:
+  - Fixed issue where States could not be analyzed in the web app.
+  - Fixed issue where size of circular buffer at each point on map in the report was not reflecting the actual radius.
+  - Fixed issue affecting API where a request to find all blockgroups in a city did not work.
 - Require R version 4.3 minimum, as specified in DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the [R universe platform](https://ropensci.org/r-universe/) and maybe eventually [CRAN](https://cran.r-project.org) are other options.
-- Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit__, ejscreenapi__, ejscreen_vs__, ejscreenREST__, testoutput___, etc.
+- Added recommendation that you obtain a Census API key, in the [guide to installing the package](https://ejanalysis.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downloads of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
 - Remove dependency on a few packages rarely needed.
-- Added Dockerfile used to deploy the shiny app to a server.
-- Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://ejanalysis.github.io/EJAM/articles/dev-speed.html)
-- Added recommendation that you obtain a Census API key, in the [guide to installing the package](https://ejanalysis.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downlaods of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
+- Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit__, ejscreenapi__, ejscreen_vs__, ejscreenREST__, testoutput___, etc.
 - Hosting:
-  - Revised article (vignette) on hosting, to add posit vs docker info, and updated files supporting deployment of shiny app to Posit Connect Cloud (manifest.json, etc.).
   - Added Dockerfile used to deploy the shiny app to a server.
+  - Added notes on hosting on Posit connect cloud
+  - Revised article (vignette) on hosting, to add posit vs docker info, and updated files supporting deployment of shiny app to Posit Connect Cloud (manifest.json, etc.).
   - Fixed dependency issue where package geojsonsf used in draft API code (plumber.R) had a typo so deployment to posit would fail due to not finding a package of that name.
   - edited apparently problematic file data_names_all.R and may add back the _disable_autoload.R file
-- Added a github action workflow to run R CMD check, via `rcmdcheck::rcmdcheck()` to find various problems in package.
+  - Added example of using `api_run()` to locally run API draft in background 
+  - Revised github actions; Added a github action workflow to run R CMD check, via `rcmdcheck::rcmdcheck()` to find various problems in package.
 - Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://ejanalysis.github.io/EJAM/articles/dev-speed.html)
-- Added example of using `api_run()` to locally run API draft in background 
+- Improved `acs_bybg()` for creating new indicators based on Census Bureau ACS data
+- Improved `popshare_p_lives_at_what_n()` for reporting how most of the residents are at a few key sites typically
+- add `sites_only()` helper; add `sites_from_input()` examples
+- `ejam2map()` gets radius parameter
+- added helper functions to make columns of averages, ratios to avg, and percentiles (can use later to replace parts of `doaggregate()`)
 
 
 # EJAM 2.32.6.002 (October 2025)
