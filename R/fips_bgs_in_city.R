@@ -42,6 +42,8 @@ fips_bgs_intersect_city_approx = function(fips = testinput_fips_cities) {
 fips_bgs_intersect_city_exact = function(fips = testinput_fips_cities) {
   ## find all that intersect, but SLOW since it downloads all blockgroup bounds in relevant counties
   countyfips <- fips2countyfips(fips)
+  # The following call is safe from infinite recursion because countyfips are guaranteed
+  # to be county FIPS codes, not city FIPS codes. fips2countyfips() always returns county FIPS.
   all_bgs_in_these_counties <- fips_bgs_in_fips(countyfips)
   bgshps = shapes_from_fips(all_bgs_in_these_counties)
 
