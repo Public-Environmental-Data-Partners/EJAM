@@ -44,7 +44,6 @@ ejam2shapefile <- function(ejamitout,
                            folder = tempdir(), # only used if not specified and in shiny or not interactive
                            save = TRUE,
                            crs = 4269,
-                           shortcolnames = TRUE, varnames = "basic250",
                            shp = NULL,
                            quiet = TRUE,
                            ...
@@ -125,8 +124,7 @@ To include specific columns provides those as a character vector of varnames.")
 
     ## folder OK? ####
     if (interactive() && !shiny::isRunning()) {
-      if (!dir.exists(folder)) {
-        folder <- rstudioapi::selectDirectory("Select valid Folder to Save in", path = folder)
+      if (missing(folder)) {
       }
     }
     if (!dir.exists(folder)) {stop("folder does not exist")}
