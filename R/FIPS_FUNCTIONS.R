@@ -748,9 +748,10 @@ fips_from_table <- function(fips_table, addleadzeroes=TRUE, in_shiny=FALSE) {
                   'countyfips', 'FIPS.COUNTY','COUNTY_FIPS',
                   'FIPS.TRACT', 'tractfips', 'tract_fips','TRACT_FIPS',
                   'bgfips', 'blockgroupfips', 'blockgroup_fips', 'blockgroup_fips_code',
-                  'blockfips'
+                  'blockfips',
+                  'GEOID'
   )
-  if (any(tolower(colnames(fips_table)) %in% fips_alias)) {
+  if (any(colnames(fips_table) %in% fips_alias)) {
     firstmatch <- intersect(fips_alias, colnames(fips_table))[1]
 
     if (addleadzeroes) {

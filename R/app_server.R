@@ -1027,7 +1027,7 @@ app_server <- function(input, output, session) {
 
   # fips_dt_react() as returned from the module happens to be a reactive
   fips_dt_react <- fipspicker_module_server(id = "pickermoduleid",
-                                            #testing_this_module = testing_this_module,
+                                            testing_this_module = FALSE,
                                             reactdat = reactive("") # can pass reactive param
   )
 
@@ -1042,7 +1042,7 @@ app_server <- function(input, output, session) {
 
     ## copy of code used in data_up_fips()
 
-    cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n")
+    cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n"); cat("colnames:", paste0(names(fips_dt), collapse = ","), "\n")
     fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
     ftypeUpload <- fipstype(fips_vec)
     typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
@@ -1051,12 +1051,14 @@ app_server <- function(input, output, session) {
       # fips_alias <- c('FIPS','fips','fips_code','fipscode','Fips','statefips','countyfips', 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST', 'FIPS.COUNTY', 'FIPS.TRACT')
       # see fips_from_table(), fixnames_aliases(), and fixcolnames_infer()
       errmsg    = paste0('No FIPS column found. Please use "FIPS" or a synonym.')
+      cat(errmsg, "\n")
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL
       disable_buttons[[placetype]] <- TRUE
       shiny::validate(errmsg)
     } else if (length(intersect(ftypeUpload, typesUpload)) > 1) {
       errmsg    = paste0('This dataset contains more than one type of FIPS code. Analysis can only be ran on datasets with one type of FIPS codes.')
+      cat(errmsg, "\n")
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL
       disable_buttons[[placetype]] <- TRUE
