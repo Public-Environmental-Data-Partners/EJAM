@@ -1033,8 +1033,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     }
 
     cat("Done with basic checks. Not doing any other testing. \n\n")
-    invisible(x1)
-    stop("Done with basic checks. Not doing any other testing.")
+    return(invisible(x1))
   } # halts if this gets done - just basic checks get done if !y_skipbasic
   ########################### #  ########################################## #
   ########################### #  ########################################## #
