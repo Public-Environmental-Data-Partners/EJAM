@@ -44,6 +44,7 @@ ejam2shapefile <- function(ejamitout,
                            folder = tempdir(), # only used if not specified and in shiny or not interactive
                            save = TRUE,
                            crs = 4269,
+                           shortcolnames = TRUE, varnames = "all", # "basic250",
                            shp = NULL,
                            quiet = TRUE,
                            ...
@@ -52,40 +53,60 @@ ejam2shapefile <- function(ejamitout,
   #  ejamitout <- testoutput_ejamit_10pts_1miles; crs = 4269; file = "bysite.shp" ;  folder =  "~/../Downloads"  # getwd()
   if ('results_bysite' %in% names(ejamitout)) {
     df <- data.table::setDF(ejamitout$results_bysite)
+    intype <- ejamitout$sitetype
   } else {
     # in case just 1 table was passed to this function
     if (is.data.frame(ejamitout)) {
       df <- data.table::setDF(ejamitout)
+      intype <- sitetype_from_dt(df)
     } else {
       stop('ejamitout must be a data.table or at least a data.frame')
     }
   }
+  if (intype %in% "fips" && is.null(shp)) {
+    shp <- shapes_from_fips(df)
+  }
 
   # WHICH COLUMNS? ####
   if (is.null(varnames) || all(is.na(varnames)) || varnames[1] == "all") {
-    varnames <- "all"
-    # df <- df
-  } else {
-    if (all(varnames[1] == "basic250")) {
-      # because shapefiles have a cap on number of fields in some implementations
-      # omits averages, ratios, and raw EJ scores, which are not essential or are not in typical EJSCREEN outputs
-      names_basic250 <- sort(grep("^avg|^state.avg|^ratio|^EJ.D|^state.EJ", names(df), invert = T, value = T))
-      ok <- names_basic250 %in% names(df)
-      if (any(!ok)) {warning("Some of basic250 varnames not found in ejamitout$results_bysite")}
-      if (all(!ok)) {stop("None of basic250 varnames found in ejamitout$results_bysite") }
-      df <- df[ , names_basic250[ok]]
-      message("Using only basic 250 or so columns -
+    varnames <- unique(c(names(df), names(shp)))
+  }
+  if (!all(varnames %in% "basic250")) {
+    if (!all(varnames %in% c(names(df), names(shp)))) {warning("Some specified varnames not found in provided data.table or shp")}
+    varnames <- varnames[varnames %in% c(names(df), names(shp)) ]   # keep only those that are in df
+    df <- df[ , names(df)[names(df) %in% varnames]]
+  }
+
+  # if shp/zip format, we may need to limit the # of columns
+  save_file_type <- tolower(tools::file_ext(file)) # it removes the dot
+  if ((save_file_type %in% c("shp", "zip"))) {
+    if (NCOL(df) > 250) {
+      if (length(varnames) > 250) {
+        # we have to limit it to 250 since shp/zip format file
+        varnames <- "basic250"
+      }
+      if (all(varnames %in% "basic250")) {
+        # because shapefiles have a cap on number of fields in some implementations
+        # omits averages, ratios, and raw EJ scores, which are not essential or are not in typical EJScreen outputs
+        names_basic250 <- sort(grep("^avg|^state.avg|^ratio|^EJ.D|^state.EJ", names(df), invert = T, value = T))
+        ok <- names_basic250 %in% names(df)
+        if (any(!ok)) {warning("Some of basic250 varnames not found in ejamitout$results_bysite")}
+        if (all(!ok)) {stop("None of basic250 varnames found in ejamitout$results_bysite") }
+        df <- df[ , names(df)[names(df) %in% names_basic250]] # retain order of columns
+        varnames <- c(names(df)[names(df) %in% names_basic250], "geometry")
+        message("Using only basic 250 or so columns -
 To include averages, ratios, and raw EJ scores, set varnames = 'all' or NULL.
 To include specific columns provides those as a character vector of varnames.")
-    } else {
+      } else {
 
-      if ((is.null(shp)) && !('radius.miles' %in% varnames)) {
-        varnames = c(varnames, 'radius.miles')
-      } # radius will be needed to draw circles, unless shp provided
-      ok <- varnames %in% names(df)
-      if (any(!ok)) {warning("Some specified varnames not found in ejamitout$results_bysite")}
-      if (all(!ok)) {stop("No specified varnames found in ejamitout$results_bysite") }
-      df <- df[ , varnames[ok]]
+        if ((is.null(shp)) & !('radius.miles' %in% varnames)) {
+          varnames = c(varnames, 'radius.miles')
+        } # radius will be needed to draw circles, unless shp provided
+        ok <- varnames %in% c(names(df), names(shp))
+        if (any(!ok)) {warning("Some specified varnames not found")}
+        if (all(!ok)) {stop("No specified varnames found") }
+        df <- df[ , names(df)[names(df) %in% varnames]]
+      }
     }
   }
 
@@ -102,6 +123,7 @@ To include specific columns provides those as a character vector of varnames.")
     # shp <- shapefix(shp) # ?? in case problems with columns but should have fixed when imported.
     if (NROW(shp) != NROW(df)) {stop("ejamitout$results_bysite and shp must have exactly the same number of rows, matching each other")}
     bysite_shp <- cbind(shp, df) # or could merge using ejam_uniq_id? but output of ejamit()$results_bysite should already have 1 row for every row of original shapefile input, even invalid ones, so merge typically won't be needed here.
+    bysite_shp <- bysite_shp[, names(bysite_shp) %in% varnames]
     ## note class(cbind(df,shp)) is just data.frame but class(cbind(shp,df)) is  "sf" and data.frame !
   } else {
     ######################################################################################### #
@@ -125,15 +147,15 @@ To include specific columns provides those as a character vector of varnames.")
     ## folder OK? ####
     if (interactive() && !shiny::isRunning()) {
       if (missing(folder)) {
+        folder <- rstudioapi::selectDirectory("Select/confirm Folder to Save in", path = folder)
       }
     }
     if (!dir.exists(folder)) {stop("folder does not exist")}
     # folder <- normalizePath(folder) # ?? converts from x/y/z  to  x\\y\\z  on windows.
 
     ## file and type OK? ####
-    ftype <- tools::file_ext(file) # it removes the dot
     if (missing(file)) {
-      file <- create_filename(ext = paste0(".", ftype), file_desc = "results_bysite") # e.g.,  "EJAM_results_bysite_20240901_162119.shp"
+      file <- create_filename(ext = paste0(".", save_file_type), file_desc = "results_bysite") # e.g.,  "EJAM_results_bysite_20240901_162119.shp"
     }
     if (basename(file) != file) {
       stop("file parameter must not include path, only filename with extension - use folder parameter to specify folder")
@@ -152,16 +174,16 @@ To include specific columns provides those as a character vector of varnames.")
 
     ## .geojson, .json, .kml    ####
 
-    if (!(ftype %in% c("shp", "zip"))) {
+    if (!(save_file_type %in% c("shp", "zip"))) {
 
-      finalpath = paste0(normalizePath(folder), "\\", file)
+      finalpath <- file.path(folder, file) # (paste0(normalizePath(folder), "\\", file))
       if (file.exists(finalpath)) {
         message("File by that name already exists, but will overwrite it.")
         file.remove(finalpath)
       }
 
-      if (ftype %in% c("geojson", "json")) {
-        junk = capture.output({
+      if (save_file_type %in% c("geojson", "json")) {
+        # junk = capture.output({
         sf::st_write(
           obj = bysite_shp,
           dsn = finalpath,
@@ -171,26 +193,40 @@ To include specific columns provides those as a character vector of varnames.")
           quiet = quiet,
           ...
         )
-        })
+        # })
       } else {
-        junk = capture.output({
-        sf::st_write(
-          obj = bysite_shp,
-          dsn = finalpath,
-          # driver = "KML", # infers it from extension
-          delete_layer = TRUE, # delete_layer not supported?
-          append = FALSE,
-          quiet = quiet,
-          ...
-        )
-        })
+        if (save_file_type %in% c("kml")) {
+          # junk = capture.output({
+          sf::st_write(
+            obj = bysite_shp,
+            dsn = finalpath,
+            driver = "kml",
+            delete_layer = TRUE, # delete_layer not supported?
+            append = FALSE,
+            quiet = quiet,
+            ...
+          )
+          # })
+        } else {
+          # junk = capture.output({
+          sf::st_write(
+            obj = bysite_shp,
+            dsn = finalpath,
+            # driver = "KML", # infers it from extension
+            delete_layer = TRUE, # delete_layer not supported?
+            append = FALSE,
+            quiet = quiet,
+            ...
+          )
+          # })
+        }
       }
     }
     ##################################### #
 
     ## .shp  ####
 
-    if (ftype %in% c("shp", "zip")) {
+    if (save_file_type %in% c("shp", "zip")) {
       ### need >=10 character colnames to save as .shp file format. see sf:::abbreviate_shapefile_names etc.
       ### so shortening them but "geometry" must not be changed
       if (shortcolnames) {
@@ -203,21 +239,21 @@ To include specific columns provides those as a character vector of varnames.")
       }
       #  Creating a 256th field, but some DBF readers might only support 255 fields
 
-      if (ftype == "zip") {
+      if (save_file_type == "zip") {
         zipname <- file
-        ftype <- "shp"
+        save_file_type <- "shp"
         file <- paste0(tools::file_path_sans_ext(file), ".shp")
       } else {
         zipname <- paste0(file, ".zip")
       }
-      tds <- file.path(tempdir(), ftype)
+      tds <- file.path(tempdir(), save_file_type)
       if (!dir.exists(tds)) {dir.create(tds)}
       if (!dir.exists(tds)) {stop('could not create temp directory')}
       if (file.exists(file.path(tds, file))) {
         message("File by that name already exists, but will overwrite it.")
         file.remove(file.path(tds, file))
       }
-      junk = capture.output({
+      # junk = capture.output({
       sf::st_write(
         obj = bysite_shp,
         dsn = file.path(tds, file),
@@ -226,7 +262,7 @@ To include specific columns provides those as a character vector of varnames.")
         quiet = quiet,
         ...
       )
-      })
+      # })
       if (!file.exists(file.path(tds, file))) {stop('could not write to file at ', file.path(tds, file))}
 
       # now make it a zip file
