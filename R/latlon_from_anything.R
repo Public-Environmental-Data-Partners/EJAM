@@ -91,22 +91,21 @@ select_valid_file <- function(silentinteractive = FALSE) {
 #'
 latlon_from_anything <- function(anything, lon_if_used, interactiveprompt = TRUE, invalid_msg_table = FALSE, set_invalid_to_na = TRUE) {
 
-
-  # refactor this latlon_from_anything()? NOTES: ***
-#
-#    A draft function [read_and_clean_points()] would a more general way to get points from many types of inputs,
-#    but was still work in progress... it is similar to latlon_from_anything()
-#     except it also uses these functions:
-#
-#     [latlon_from_regid()],  [latlon_from_programid()]
-#     and could eventually use  _from_naics() etc.
-#     and  could  accept inputs like  sitepoints,lat,lon   using   sitepoints_from_latlon_or_sitepoints()
-  #      but note this is more flexible in sense that input can be a file while
-  #      sitepoints_from_latlon_or_sitepoints() is more flexible in sense that input can be lat=1,lon=2 or sitepoints=3 etc.
-
-  #     Even more generally, FIPS and shapefile inputs could be read through a
-#     single wrapper function at some point.
-
+  # NOTES: ***
+  #
+  #   Could refactor latlon_from_anything() to accept input parameters  sitepoints,lat,lon (and even fips or shapefile if centroids are needed)
+  #   using   newer more general functions  sites_from_input()  and  sites_only()
+  #   and sitepoints_from_latlon_or_sitepoints()
+  #   but note sitepoints_from_latlon_or_sitepoints() is more flexible in sense that input can be lat=1,lon=2 or sitepoints=3 etc.
+  #   and latlon_from_anything() was more flexible in sense that input can be a file
+  #
+  # Even more generally, FIPS and shapefile inputs could be read through a
+  #   single wrapper function at some point.
+  #   A draft function [read_and_clean_points()] would a more general way to get points from many types of inputs,
+  #   but was still work in progress... it is similar to latlon_from_anything()
+  #   except it also uses these functions:
+  #     [latlon_from_regid()],  [latlon_from_programid()]
+  #     and could eventually use  _from_naics() etc.
 
 #   all(is.na(anything)) || was removed since it caught data.frame(lat=NA, lon=NA) but we want to treat that as invalid points, not do interactive request for a table
   if (missing(anything) || is.null(anything) || all(length(anything) == 0) || all(anything %in% "")) {

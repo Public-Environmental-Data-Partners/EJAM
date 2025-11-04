@@ -163,6 +163,7 @@ This function creates the following:
   usethis::use_data(frs_by_programid, overwrite = TRUE)
   usethis::use_data(frs_by_naics,     overwrite = TRUE)
 }
+
 }
 \seealso{
 \code{\link[=frs_update_datasets]{frs_update_datasets()}} \code{\link[=frs_read]{frs_read()}} \code{\link[=frs_clean]{frs_clean()}} frs_by_naics \code{\link[=frs_active_ids]{frs_active_ids()}}
