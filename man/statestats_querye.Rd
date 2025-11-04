@@ -91,5 +91,5 @@ t(blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm=T)),
 
 }
 \seealso{
-\code{\link[=avg_from_raw_lookup]{avg_from_raw_lookup()}}
+\code{\link[=calc_avg_columns]{calc_avg_columns()}}
 }

@@ -505,6 +505,7 @@ reference:
   - custom
   - formula_varname
   - formulas_all
+  - formulas_ejscreen_acs
   - formulas_d
   - batch.clean
   - rowMaxs2

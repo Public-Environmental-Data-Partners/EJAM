@@ -198,10 +198,10 @@ pts <- data.table::data.table(lat = 45.75464, lon = -94.36791)
 
 y <- plot_distance_by_pctd(pts,
                       sitenumber = 1, score_colname = "pcthisp")
-ejam2report(ejamit())
-# out2 = ejamit_compare_distances(pts,radii = c(10,30))
-# ejam2barplot_distances(out2, myvars = c("pcthisp", "pctlowinc"),
-#                        ylim = c(0,0.05))
+
+out2 = ejamit_compare_distances(pts,radii = c(10,30))
+ejam2barplot_distances(out2, myvars = c("pcthisp", "pctlowinc"),
+                       ylim = c(0,0.05))
 ```
 
 ### *Step through all the sites* to see an indicator versus distance at each

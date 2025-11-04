@@ -28,5 +28,5 @@ how many sites account for P percent of residents?
  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
- 
+
 }
