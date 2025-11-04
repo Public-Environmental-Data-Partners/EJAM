@@ -250,7 +250,7 @@ getblocksnearby_from_fips_cityshape <- function(fips, return_shp = FALSE) {
 
 getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny = FALSE, need_blockwt = TRUE, allow_multiple_fips_types = TRUE) {
 
-  if (!exists('blockid2fips')) {dataload_dynamic(varnames = 'blockid2fips')}
+  if (!exists('blockid2fips')) {dataload_dynamic(varnames = 'blockid2fips')} # *** will drop need for this
   if (!exists('bgid2fips')) {dataload_dynamic(varnames = 'bgid2fips')}
 
   ##  > SORT order of input fips is saved including invalid fips input ####
