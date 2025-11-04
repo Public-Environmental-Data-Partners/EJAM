@@ -4,7 +4,7 @@
 
 ################################################################################################## #
 
-#       SCRIPT USED TO REDEPLOY SHINY APP AFTER UPDATES/EDITS
+#       SCRIPT USED TO HELP REDEPLOY SHINY APP AFTER UPDATES/EDITS
 #
 # 1) Source the steps below (to install the pkg from github, then update the manifest file) and then
 # 2) commit changes (updated manifest file) to git repo and then
@@ -29,8 +29,8 @@ reponame = "ejanalysis/EJAM"
 devtools::install_github(
 
   repo = reponame,
-  # ref = 'development',  # or 'main' or a specific tagged release like 'v2.32.6.002'
-  ref = 'posit-connect',  # or 'main' or a specific tagged release like 'v2.32.6.002'
+  # ref = 'development',  # or 'main' or a specific tagged release like 'v2.32.6.003'
+  ref = 'posit-connect',  # or 'main' or a specific tagged release like 'v2.32.6.003'
 
   build_vignettes = FALSE,
   build_manual = FALSE,

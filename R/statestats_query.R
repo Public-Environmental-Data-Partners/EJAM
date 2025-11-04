@@ -15,9 +15,9 @@
 #'
 statestats_means_bystates <- function(ST = unique(EJAM::statestats$REGION), varnames = names_these, PCTILES = "mean") {
 
-  ## BUT NOTE THIS IS VERY SIMILAR TO avg_from_raw_lookup()
-  ## except not identical and avg_from_raw_lookup() might be faster?
-  ## and avg_from_raw_lookup() is intended to do that job within doaggregate() rather than for viewing a few stats interactively?
+  ## BUT NOTE THIS IS VERY SIMILAR TO calc_avg_columns()
+  ## except not identical and calc_avg_columns() might be faster?
+  ## and calc_avg_columns() is intended to do that job within doaggregate() rather than for viewing a few stats interactively?
 
 
   # Help add (to a table of info on multiple states) columns of a few indicators with averages of appropriate state for each row
@@ -76,7 +76,7 @@ statestats_means <- function(ST=unique(EJAM::statestats$REGION), varnames=c(EJAM
 #' @param PCTILES vector of percentiles 0-100 and/or "mean"
 #' @param dig digits to round to
 #'
-#' @seealso [avg_from_raw_lookup()]
+#' @seealso [calc_avg_columns()]
 #'
 #' @examples \donttest{
 #'

@@ -1,8 +1,8 @@
-# pctile_cols_from_raw_lookup
+# calc_pctile_columns
 
 
 
-test_that("pctile_cols_from_raw_lookup() matches doaggregate()", {
+test_that("calc_pctile_columns() matches doaggregate()", {
 
   expect_no_error({
     # examples of getting pctiles, averages, and ratios to averages
@@ -39,8 +39,8 @@ test_that("pctile_cols_from_raw_lookup() matches doaggregate()", {
     #   ----------------- AVERAGES -----------------
 
     avgs <- cbind(
-      avg_from_raw_lookup(varnames = names_these, zones = "USA"),
-      avg_from_raw_lookup(varnames = names_these, zones = testbgs$ST)
+      calc_avg_columns(varnames = names_these, zones = "USA"),
+      calc_avg_columns(varnames = names_these, zones = testbgs$ST)
     )
     data.table::setDT(avgs)
     # t(avgs)
@@ -51,7 +51,7 @@ test_that("pctile_cols_from_raw_lookup() matches doaggregate()", {
 
     #   ----------------- RATIOS TO AVERAGES -----------------
     # ### tested elsewhere
-    # ratios <- calc_ratios_cols(testbgs)  # needs raw and avg cols be in 1 dt
+    # ratios <- calc_ratio_columns(testbgs)  # needs raw and avg cols be in 1 dt
     # data.table::setDT(ratios)
     # t(ratios)
     # expect_true(
@@ -61,8 +61,8 @@ test_that("pctile_cols_from_raw_lookup() matches doaggregate()", {
     #   ----------------- PERCENTILES -----------------
     #
       pctiles <- cbind(
-        pctile_cols_from_raw_lookup(testbgs, varnames = names_these, zones = "USA"),
-        pctile_cols_from_raw_lookup(testbgs, varnames = names_these, zones = testbgs$ST)
+        calc_pctile_columns(testbgs, varnames = names_these, zones = "USA"),
+        calc_pctile_columns(testbgs, varnames = names_these, zones = testbgs$ST)
       )
       data.table::setDT(pctiles)
       expect_true(

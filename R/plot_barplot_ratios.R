@@ -109,7 +109,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   # - v1_summary_plot <- reactive({ })     and output$view1_summary_plot <- renderPlot({v1_summary_plot()})
   #    - in EJAM server for SHORT report if box type, and
   #    - in EJAM server for LONG report passed as a parameter
-  # - plot_boxplot_ratios()
+  # - plot_boxplot_ratios() is an older/obsolete related function
   #    (NOT in EJAM server for Detailed Results interactive views)
   #
   # - box/scatter examples in ggplot, <https://r-graph-gallery.com/89-box-and-scatter-plot-with-ggplot2.html>
