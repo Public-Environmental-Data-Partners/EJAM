@@ -34,6 +34,30 @@ fips would be a vector of Census FIPS codes or NULL
 helps other functions have flexible input parameters - can provide points in a table, points as lat,lon vectors, polygons in a spatial data.frame, or Census units as a fips code vector
 figures out which type of inputs were provided, and returns them
 }
+\examples{
+# After sites <- sites_from_input(),
+# get data type from sites$sitetype
+# get data itself from sites_only(sites)
+
+EJAM:::sites_only({sites <- EJAM:::sites_from_input(
+  lat = 44:43, lon = -99:-98
+  ) })
+sites$sitetype
+EJAM:::sites_only({sites <- EJAM:::sites_from_input(
+  sitepoints = data.frame(lat = 44:43, lon = -99:-98)
+  ) })
+sites$sitetype
+EJAM:::sites_only({sites <- EJAM:::sites_from_input(
+  fips = testinput_fips_mix
+  ) })
+sites$sitetype
+EJAM:::sites_only({sites <- EJAM:::sites_from_input(
+  shapefile = testinput_shapes_2
+  ) })
+sites$sitetype
+
+
+}
 \seealso{
 \code{\link[=sites_from_file]{sites_from_file()}}
 }

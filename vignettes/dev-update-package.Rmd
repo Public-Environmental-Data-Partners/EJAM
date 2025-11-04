@@ -37,7 +37,7 @@ This document outlines the general development process for updating EJAM (for a 
 
 ## If relevant, carefully change owners and names of github repositories
 
-- The full name/title of the web tool is used in several places and all of those should be reading the full name from where it is defined. The app title is stored in the DESCRIPTION file, and is available for vignettes, functions, etc. directly via `as.vector(desc::desc_get("Title"))`. After the package is attached, the name as potentially modified via global_defaults_package.R or parameters to `ejamapp()` is available as `EJAM:::global_or_param(".app_title")`
+- The full name/title of the web tool is used in several places and all of those should be reading the full name from where it is defined. The app title is stored in the DESCRIPTION file, and is available for vignettes, functions, etc. directly via `as.vector(desc::desc_get("Title"))`. After the package is attached, the name as potentially modified via global_defaults_package.R or parameters to `ejamapp()` is available as `EJAM:::global_or_param("app_title")`
 
 - The name of the *package* (e.g., "`r code_reponame`") is assumed to be the same as the name of the github *repository*, and there are many places where the package name is mentioned in vignettes/ articles, etc. Changing just the repo name is feasible, as described here, but you would have to be careful about this distinction. You would have to globally find in files all hardcoded references to the old names, urls, etc. since there still are places where it does not check in DESCRIPTION for the repo name or assumes repo and package names are identical.
 

@@ -51,7 +51,7 @@ This is used with a lookup table to
 convert a raw indicator vector to percentiles in US or States.
 }
 \details{
-For handling a whole table of raw indicators, see \code{\link[=pctile_cols_from_raw_lookup]{pctile_cols_from_raw_lookup()}}
+For handling a whole table of raw indicators, see \code{\link[=calc_pctile_columns]{calc_pctile_columns()}}
 
 This function can handle 2 kinds of inputs right now:
 \itemize{
@@ -105,6 +105,6 @@ data.frame(value = eg, pctile = lookup_pctile(eg, names_d))
 
 }
 \seealso{
-\code{\link[=pctile_cols_from_raw_lookup]{pctile_cols_from_raw_lookup()}} for handling a table not just a vector
+\code{\link[=calc_pctile_columns]{calc_pctile_columns()}} for handling a table not just a vector
 }
 \keyword{internal}

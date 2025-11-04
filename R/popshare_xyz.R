@@ -1,7 +1,7 @@
-##################################################################### # 
+##################################################################### #
 
 #' top X percent of sites account for what percent of residents?
-#' 
+#'
 #' What fraction of total population is accounted for by the top X percent of places?
 #' @param pop vector of population totals across places,
 #'   like out$results_bysite$pop where out is the output of ejamit()
@@ -15,24 +15,24 @@
 #'  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
 #'  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
 #'  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
-#'  
+#'
 #' @export
 #'
-popshare_at_top_x_pct = function(pop, x=0.20, astext=FALSE, dig=0) {
-  
+popshare_at_top_x_pct = function(pop, x = 0.20, astext = FALSE, dig = 0) {
+
   if (!is.vector(pop)) {
     warning('pop must be a vector')
     return(NULL)
   }
-  
+
   pop = sort(pop,decreasing = T)
   frac = cumsum(pop) / sum(pop)
   share = quantile(frac, probs = x)
-  
+
   sharetext <- paste0( paste0(round(100 * share, 0), "%"), collapse = ", ")
   xtext <- paste0( paste0(round(100 * x, dig), "%"), collapse = ", ")
   msg <- paste0(xtext, " of places account for ", sharetext, " of the total population")
-  
+
   if (astext) {
     return(msg)
   } else {
@@ -41,11 +41,11 @@ popshare_at_top_x_pct = function(pop, x=0.20, astext=FALSE, dig=0) {
     return(share)
   }
 }
-##################################################################### # 
+##################################################################### #
 
 
 #' top N sites account for what percent of residents?
-#' 
+#'
 #' What fraction of total population is accounted for by the top N places?
 #' @param pop vector of population totals across places,
 #'   like out$results_bysite$pop where out is the output of ejamit()
@@ -59,11 +59,11 @@ popshare_at_top_x_pct = function(pop, x=0.20, astext=FALSE, dig=0) {
 #'  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
 #'  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
 #'  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
-#'  
+#'
 #' @export
 #'
 popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
-  
+
   if (!is.vector(pop)) {
     warning('pop must be a vector')
     return(NULL)
@@ -71,11 +71,11 @@ popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
   pop = sort(pop, decreasing = T)
   frac = cumsum(pop) / sum(pop)
   share = frac[n]
-  
+
   sharetext <- paste0( paste0(round(100 * share, dig), "%"), collapse = ", ")
   ntext <- paste0( n,  collapse = ", ")
   msg <- paste0(ntext, " places account for ", sharetext, " of the total population")
-  
+
   if (astext) {
     return(msg)
   } else {
@@ -84,7 +84,7 @@ popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
     return(share)
   }
 }
-##################################################################### # 
+##################################################################### #
 
 
 #' how many sites account for P percent of residents?
@@ -102,100 +102,103 @@ popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
 #'  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
 #'  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
 #'  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
-#'  
+#'
 #' @export
 #'
-popshare_p_lives_at_what_n <- function(pop, p, astext=FALSE, dig=0) {
-  
-  if (!is.vector(pop)) {
-    warning('pop must be a vector')
-    return(NULL)
-  }
-  
-  pop = sort(pop, decreasing = T)
-  frac = cumsum(pop) / sum(pop)
-  n_low = findInterval(p, frac)
-  n_high = n_low + 1
-  p_low  = frac[n_low]
-  p_high = frac[n_high]
-  
-  sharetext      <- paste0( paste0(round(100 * p,      dig), "%"), collapse = ", ") 
-  sharetext_low  <- paste0( paste0(round(100 * p_low,  dig), "%"), collapse = ", ") 
-  sharetext_high <- paste0( paste0(round(100 * p_high, dig), "%"), collapse = ", ") 
-  
-  ntext      <- paste0( n_low,  collapse = ", ")
-  ntext_low  <- paste0( n_low,  collapse = ", ")
-  ntext_high <- paste0( n_high, collapse = ", ")
-  
-  msg      <- paste0(ntext,      " places account for ", sharetext,      " of the total population (approx.)")
-  msg_low  <- paste0(ntext_low,  " places account for ", sharetext_low,  " of the total population")
-  msg_high <- paste0(ntext_high, " places account for ", sharetext_high, " of the total population")
-  
-  if (astext) {
-    return(msg)
-  } else {
-    cat(paste0(msg_low, "\n", msg, "\n", msg_high))
-    cat("\n\n")
-    return(n_low)
-  }
+popshare_p_lives_at_what_n <- function(pop, p, astext = FALSE, dig = 0) {
+
+  popshare_p_lives_at_what_pct(pop = pop, p = p, astext = astext, dig = dig, whatn = TRUE)
+
 }
-##################################################################### # 
+##################################################################### #
 
 
-#' what percent of sites account for P percent of residents?
-#'
+#' what percent of sites is enough to account for (at least) P percent of residents?
+#' minimum share of sites that can account for at least P% of population
 #' @param pop vector of population totals across places,
 #'   like out$results_bysite$pop where out is the output of ejamit()
 #' @param p share of population (0-1, fraction), vector of one or more
 #' @param astext if TRUE, return text of description of results
 #' @param dig rounding digits for text output
+#' @param atleast_not_exact if atleast_not_exact=TRUE and astext=T, answer is like
+#'   "10% of places account for at least 50% of the total population"
+#'   and if atleast_not_exact=F, answer is like
+#' @param whatn if TRUE, returns count of sites not fraction
 #'
 #' @return vector of fractions 0-1 of all sites, or text about that
 #' @examples
 #'  x <- testoutput_ejamit_10pts_1miles$results_bysite[4:9,]
+#'  cbind(pctofsites= round((1:length(x$pop))/length(x$pop),2),
+#'    pctofpop = round(cumsum(sort(x$pop, decreasing = T))/sum(x$pop) ,2))
 #'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE)
+#'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE, atleast_not_exact=FALSE)
+#'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F)
+#'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F, atleast_not_exact=FALSE)
+#'  ## for more than one p
+#' popshare_p_lives_at_what_pct(x$pop, p = c(0.50, 0.67, 0.80, 0.95) )
+#'
 #'  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
 #'  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
 #'  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
-#'  
+#'
 #' @export
 #'
-popshare_p_lives_at_what_pct <- function(pop, p, astext=FALSE, dig=0) {
-  
+popshare_p_lives_at_what_pct <- function(pop, p, astext = FALSE, dig = 0, atleast_not_exact = TRUE, whatn = FALSE) {
+
   if (!is.vector(pop)) {
     warning('pop must be a vector')
     return(NULL)
   }
-  
   pop = sort(pop, decreasing = T)
-  frac = cumsum(pop) / sum(pop)
-  n_low = findInterval(p, frac)
-  n_high = n_low + 1
-  p_low  = frac[n_low]
-  p_high = frac[n_high]
-  
-  siteshare      <- n_low  / length(pop)
-  siteshare_low  <- n_low  / length(pop)
-  siteshare_high <- n_high / length(pop)
-  
-  sharetext      <- paste0( paste0(round(100 * p,      dig), "%"), collapse = ", ") 
-  sharetext_low  <- paste0( paste0(round(100 * p_low,  dig), "%"), collapse = ", ") 
-  sharetext_high <- paste0( paste0(round(100 * p_high, dig), "%"), collapse = ", ") 
-  
-  sitesharetext      <- paste0(round(100 * siteshare,      dig), "%",  collapse = ", ")
-  sitesharetext_low  <- paste0(round(100 * siteshare_low,  dig), "%",  collapse = ", ")
-  sitesharetext_high <- paste0(round(100 * siteshare_high, dig), "%",  collapse = ", ")
-  
-  msg      <- paste0(sitesharetext,      " of places account for ", sharetext,      " of the total population (approx.)")
-  msg_low  <- paste0(sitesharetext_low,  " of places account for ", sharetext_low,  " of the total population")
-  msg_high <- paste0(sitesharetext_high, " of places account for ", sharetext_high, " of the total population")
-  
-  if (astext) {
-    return(msg)
+
+  # simpler/better way if length(p) == 1 only !
+
+  accounts_for_at_least_p = vector(length = length(p))
+  siteshare = vector(length = length(p))
+  sitecountcan = vector(length = length(p))
+  pct_of_pop_for_siteshare = vector(length = length(p))
+
+  for (i in 1:length(p)) {
+
+    pct_of_pop = cumsum(pop) / sum(pop)
+    pct_of_sites = (1:length(pop)) / length(pop)
+
+    accounts_for_at_least_p[i] = pct_of_pop >= p[i]
+    siteshare[i] <- min(pct_of_sites[accounts_for_at_least_p[i]])
+    sitecountcan[i] = sum(accounts_for_at_least_p[i])
+    pct_of_pop_for_siteshare[i] <- min(pct_of_pop[accounts_for_at_least_p[i]])
+  }
+
+  sharetext      <- paste0( paste0(round(100 * p,      dig), "%"), collapse = ", ")
+  # sharetext_low  <- paste0( paste0(round(100 * p_low,  dig), "%"), collapse = ", ")
+  # sharetext_high <- paste0( paste0(round(100 * p_high, dig), "%"), collapse = ", ")
+
+  if (whatn) {
+    sitesharetext      <- paste0(sitecountcan, collapse = ", ")
   } else {
-    cat(paste0(msg_low, "\n", msg, "\n", msg_high))
-    cat("\n\n")
-    return(siteshare_low)
+    sitesharetext      <- paste0(round(100 * siteshare,      dig), "%",  collapse = ", ")
+  }
+  pct_of_pop_for_siteshare_text  <- paste0(round(100 * pct_of_pop_for_siteshare,      dig), "%",  collapse = ", ")
+
+  msg        <- paste0("The most-populated ", sitesharetext, " of the places can account for at least ", sharetext,                     " of the total population of all sites as a whole.")
+  msg_exact  <- paste0("The most-populated ", sitesharetext, " of the places can account for exactly ", pct_of_pop_for_siteshare_text,  " of the total population of all sites as a whole. ")
+
+  cat(paste0( msg, "\n", msg_exact))
+  cat("\n\n")
+
+  if (astext) {
+    if (atleast_not_exact) {
+      return(msg)
+    } else {
+      return(msg_exact)
+    }
+  } else {
+
+    if (atleast_not_exact) {
+      return(siteshare)
+    } else {
+      return(siteshare)
+    }
   }
 }
-##################################################################### # 
+##################################################################### #

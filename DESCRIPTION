@@ -1,7 +1,7 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
-Version: 2.32.6.002
-VersionDate: October 2025
+Version: 2.32.6.003
+VersionDate: November 2025
 Description: Actively maintained non-EPA version of EJAM, the web app
     and set of tools that supported the EJSCREEN multisite capability.
     EJAM lets you easily summarize demographic and environmental indicators
@@ -32,6 +32,7 @@ Imports:
     config (>= 0.3.1),
     curl (>= 6.4.0),
     data.table (>= 1.17.2),
+    desc,
     digest,
     dplyr (>= 1.1.4),
     DT (>= 0.31),
@@ -42,8 +43,12 @@ Imports:
     glue (>= 1.7.0),
     golem (>= 0.5.0),
     gt (>= 1.0.0),
+    htmltools (>= 0.5.4),
+    htmlwidgets (>= 1.6.2),
     httr,
     httr2 (>= 1.2.0),
+    jsonlite (>= 0.9.16),
+    knitr (>= 1.8),
     leaflet (>= 2.2.2),
     leaflet.extras2,
     magrittr (>= 2.0.3),
@@ -79,14 +84,9 @@ Suggests:
     beepr,
     bookdown,
     datasets,
-    desc,
     devtools,
     fipio,
     ggridges (>= 0.5.7),
-    htmlwidgets (>= 1.6.2),
-    jsonlite (>= 0.9.16),
-    knitr (>= 1.8),
-    htmltools (>= 0.5.4),
     leaflet.extras,
     mapview,
     miniUI,

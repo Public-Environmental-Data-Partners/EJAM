@@ -104,8 +104,7 @@
 
 # R/utils_pctiles_lookup_create.R  has  pctiles_lookup_create() and helpers to create the lookup table annually or on demand for a custom indicator.
 
-# R/pctile_from_raw_lookup.R is the function to use a lookup table
-# R/pctiles_from_raw_lookup_DRAFT.R  has notes on possible faster way
+# calc_pctile_columns() or pctile_from_raw_lookup() is the function to use a lookup table
 
 ################################################################################################################ #
 #~ ####
@@ -1573,8 +1572,7 @@ custom_doaggregate <- function(sites2blocks,
 
   # R/utils_pctiles_lookup_create.R  has  pctiles_lookup_create() and helpers to create the lookup table annually or on demand for a custom indicator.
 
-  # R/pctile_from_raw_lookup.R is the function to use a lookup table
-  # R/pctiles_from_raw_lookup_DRAFT.R  has notes on possible faster way
+  # R/calc_pctile_columns.R is the function to use a lookup table
 
 
   ########## no other columns added like radius.miles?
@@ -1853,7 +1851,7 @@ doaggregate_newscores <- function(
   us.pctile.cols_bysite     <- data.frame(matrix(nrow = NROW(results_bysite),  ncol = length(varsneedpctiles))); colnames(us.pctile.cols_bysite)     <- varnames.us.pctile
   state.pctile.cols_bysite  <- data.frame(matrix(nrow = NROW(results_bysite),  ncol = length(varsneedpctiles))); colnames(state.pctile.cols_bysite)  <- varnames.state.pctile
   us.pctile.cols_overall    <- data.frame(matrix(nrow = NROW(results_overall), ncol = length(varsneedpctiles))); colnames(us.pctile.cols_overall)    <- varnames.us.pctile
-  # SLOW:
+  # SLOW: # can replace loop with the vectorized function calc_pctile_columns()
   for (i in seq_along(varsneedpctiles)) {
     myvar <- varsneedpctiles[i]
     if ((myvar %in% names(usastats_newscores)) && (myvar %in% names(results_bysite)) && (myvar %in% names(results_overall))) {  # use this function to look in the lookup table to find the percentile that corresponds to each raw score value:

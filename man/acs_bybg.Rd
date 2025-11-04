@@ -75,7 +75,7 @@ download ACS 5year data from Census API, at blockgroup resolution (slowly if for
 }
 \details{
 Probably requires \href{https://api.census.gov/data/key_signup.html}{getting and specifying an API key for Census Bureau} ! (at least if query is large).
-see \href{https://walker-data.com/tidycensus/}{tidycensus package help}
+see \href{https://walker-data.com/tidycensus/}{tidycensus package help}  envt var CENSUS_API_KEY
 
 NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 
@@ -160,6 +160,38 @@ mapfast(newvars[1:10,], column_names = colnames(newvars),
      labels = gsub('pct1849female', 'Women 18-49 as \% of residents',
               gsub('age1849female', 'Count of women ages 18-49',
              fixcolnames(colnames(newvars), 'r', 'long'))))
+
+
+## ACS tables and variables most relevant to EJSCREEN
+
+acsinfo <- tidycensus::load_variables(2022, "acs5")
+ejscreentables <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025",
+             "B18101") # disability at tract resolution only
+acstabs2 <- paste0(ejscreentables, "_")
+acsinfo$table = gsub("_.*", "", acsinfo$name)
+myacsinfo <- acsinfo[acsinfo$table \%in\% ejscreentables, ]
+mytables <- data.table::rbindlist(lapply(ejscreentables, function(z) {acsinfo[acsinfo$table \%in\% z, ][1,]}))
+ejscreen_tables <-  mytables$table # same as ejscreentables
+
+myvars <- myacsinfo$name # 184 variables among 8 tables
+
+
+# Slowly download data for all these tables in ALL STATES and DC and PR
+# but not Island Areas
+mystates <- stateinfo2[stateinfo2$is.usa.plus.pr, ]$ST
+## PR has to be handled separately? B05001PR is what PR table names look like
+mystates = mystates[mystates != "PR"]
+### takes time to download each table for each state:
+system.time({
+  newvars <- acs_bybg(variables = myvars, state = mystates)
+})
+setnames(newvars, "GEOID", "bgfips")
+newvars[, ST := fips2state_abbrev(bgfips)]
+names(newvars) <- gsub("E$", "", names(newvars))
+dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
+t(head(newvars))
+ejscreen_acs = newvars
+save(ejscreen_acs, file="ejscreen_acs.rda")
 
 }
 }

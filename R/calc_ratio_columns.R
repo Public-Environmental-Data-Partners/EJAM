@@ -1,13 +1,7 @@
 
+  ## could be redone to replace doaggregate() code for ratios, around line 1500
 
-## calc_ratios_to_avg() was originally designed for ejscreenapi obsolete code -
-## could be redone to replace doaggregate() code for ratios, around line 1500
-
-
-
-
-
-
+# related # calc_pctile_columns(), calc_avg_columns(), calc_ratio_columns()
 
 
 #' Calculate ratios to US and State average for each indicator in each place
@@ -18,12 +12,12 @@
 #' @param varnames_state_avg column names of mytable that contain the State averages (denominators of ratios to State avg)
 #' @param varnames_ratio_to_avg optional names to use for the calculated ratios to US avg
 #' @param varnames_ratio_to_state_avg optional names to use for the calculated ratios to State avg
-#' @seealso [doaggregate()] [avg_from_raw_lookup()] [pctile_cols_from_raw_lookup()]
+#' @seealso [doaggregate()] [calc_avg_columns()] [calc_pctile_columns()]
 #' @param varnames_state_special handles special case of ratio to state avg for Demog.Index and Demog.Index.Supp needing
 #'  special numerator that is state-specific version of the index
 #' @returns data.frame with 1 row per row of mytable and set of columns for US ratios and set of columns for State ratios
 #' @details
-#' For examples, see [pctile_cols_from_raw_lookup()]
+#' For examples, see [calc_pctile_columns()]
 #'
 #' Note how averages (or percentiles) are defined in EJSCREEN data --
 #'   technically it has been defined as average blockgroup (or percentile across blockgroups) in US or State,
@@ -35,10 +29,9 @@
 #'   the average blockgroup in the US or State, so technically they are not exactly comparable, but in practice the ratio
 #'   would be almost the same if compared to a population weighted average of all US blockgroups (i.e., the average US resident).
 #'
+#' @export
 #'
-#' @keywords internal
-#'
-calc_ratios_cols = function(mytable,
+calc_ratio_columns = function(mytable,
                             varnames = names_these,
                             varnames_avg       = paste0(      "avg.", varnames) ,
                             varnames_state_avg = paste0("state.avg.", varnames),

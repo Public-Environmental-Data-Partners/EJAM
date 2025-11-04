@@ -185,6 +185,7 @@ x <- EJAM:::test_ejam(
     testlist = list(
 
       test_fips = c(
+        "test-fips_bgs_in_city.R",
         "test-fips_bgs_in_fips.R",  # supports getblocksnearby_from_fips() that is tested in "test-getblocksnearby_from_fips.R"
         "test-FIPS_FUNCTIONS.R",
         "test-state_from_fips_bybg.R",
@@ -260,15 +261,15 @@ x <- EJAM:::test_ejam(
         "test-utils_metadata_add.R"
       ),
       test_doag = c(
-        "test-pctile_from_raw_lookup.R",
         "test-doaggregate.R",
         "test-area_sqmi.R",
         "test-batch.summarize.R",
         "test-utils_flagged_FUNCTIONS.R",
 
-        "test-avg_from_raw_lookup.R",
-        "test-calc_ratios_cols.R",
-        "test-pctile_cols_from_raw_lookup.R"
+        "test-pctile_from_raw_lookup.R",
+        "test-calc_pctile_columns.R",
+        "test-calc_avg_columns.R",
+        "test-calc_ratio_columns.R"
       ),
       test_ejamit = c(
         "test-ejamit.R",
