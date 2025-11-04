@@ -185,6 +185,7 @@ x <- EJAM:::test_ejam(
     testlist = list(
 
       test_fips = c(
+        "test-fips_bgs_in_city.R",
         "test-fips_bgs_in_fips.R",  # supports getblocksnearby_from_fips() that is tested in "test-getblocksnearby_from_fips.R"
         "test-FIPS_FUNCTIONS.R",
         "test-state_from_fips_bybg.R",
