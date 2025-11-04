@@ -10,6 +10,9 @@
 #' Takes a vector of one or more FIPS that could be State (2-digit), County (5-digit),
 #'   Tract (11-digit), or blockgroup (12 digit), or even block (15-digit fips).
 #'
+#' It also works for city/CDP fips but finds the blockgroups that are at least partly in the city bounds
+#' (see [fips_bgs_in_city()]).
+#'
 #'   Returns unique vector of FIPS of all US blockgroups (including DC and Puerto Rico)
 #'   that contain any specified blocks, are equal to any specified blockgroup fips,
 #'   or are contained within any provided tract/county/state FIPS.
@@ -40,7 +43,7 @@
 #' testfipslist <- list(
 #'   blockgroup = testinput_fips_blockgroups,
 #'   tract = testinput_fips_tracts,
-#'   city = testinput_fips_cities, # for cities, must use getblocksnearby_from_fips()
+#'   city = testinput_fips_cities, #
 #'   county = testinput_fips_counties,
 #'   state = testinput_fips_states,
 #'   mix = c(testinput_fips_blockgroups[1],
@@ -62,12 +65,24 @@
 #'
 fips_bgs_in_fips <- function(fips) {
 
-  fips <- fips_lead_zero(fips)
-  fips[fipstype(fips) %in% "city"] <- NA # because a 7-digit place/city/town FIPS cannot be neatly broken into blockgroups
+  suppressWarnings({
+    fips <- fips_lead_zero(fips)
+    ftype <- fipstype(fips)
+  })
+  fips[is.na(ftype)] <- NA
   if (anyNA(fips)) {
     howmanyna = sum(is.na(fips))
     warning("NA returned for ", howmanyna," values that failed to match")
     fips <- fips[!is.na(fips)]
+  }
+
+  # note a 7-digit place/city/town FIPS cannot be neatly broken into blockgroups
+  # treat separately
+  if (any(ftype %in% "city")) {
+    bg_in_cities <- fips_bgs_in_city(fips[ftype %in% "city"])
+    fips <- fips[!(ftype %in% "city")] # drop city fips since handled those already
+  } else {
+    bg_in_cities <- NULL
   }
 
   # census unit type depends on number of digits (characters) in fips
@@ -95,6 +110,7 @@ fips_bgs_in_fips <- function(fips) {
   for (lenx in lens) {
     bgs <- c(bgs, blockgroupstats[substr(bgfips, 1, lenx) %in% fips[len == lenx], bgfips])
   }
+  bgs <- c(bgs, bg_in_cities)
   return(unique(bgs))
 }
 ############################################################################# #
