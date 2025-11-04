@@ -51,7 +51,7 @@ fips_bgs_intersect_city_exact = function(fips = testinput_fips_cities) {
   cityshps <- sf::st_transform(cityshps, crs = sf::st_crs(bgshps))
 
   overlap <- sf::st_intersects(bgshps, cityshps)
-  bgfips <- unique(bgshps$FIPS[which(overlap %in% 1)])
+  bgfips <- unique(bgshps$FIPS[lengths(overlap) > 0])
 
   if (length(bgfips) == 0) {
     return(NULL)
