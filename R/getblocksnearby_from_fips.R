@@ -289,23 +289,25 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
 
   suppressWarnings({
     ######################################## #
-    ## create two-column dataframe with bgs (values) and original fips (ind)
-    # fips_bgs_in_fips1() returns all blockgroup fips codes contained within each fips provided
-    # fips_bgs_in_fips() replaces fips_bgs_in_fips1()
-    # all_bgs <- stack(sapply(fips_vec, fips_bgs_in_fips)) # newer - fast alone but slow in sapply?
+    ## create two-column dataframe with bgs (values. bgfips or just bgid) and original fips (ind)
+
+    # notes:
+    #   fips_bgs_in_fips1() returns all blockgroup fips codes contained within each fips provided
+    #   fips_bgs_in_fips() replaces fips_bgs_in_fips1() ? which is faster?
+    #   all_bgs <- stack(sapply(fips_vec, fips_bgs_in_fips)) # newer - fast alone but slow in sapply?
     ######################################## #
     # SLOW -- e.g. 1.4 seconds for all counties in region 6
-    # *** It might be more efficient to
-    #     replace the above fips_bgs_in_fips1()
-    #     or make a new func to provide bgid_from_anyfips()
+    # *** It would be more efficient to avoid fips_bgs_in_fips1()
+    #     to use a new func to provide bgid_from_anyfips()
     #     instead of 1st getting bgfips and then needing to look up bgid by bgfips.
-    # Consider trying to do it like this:
-    #      use fips_bgs_in_fips() to get all bg fips values
+    # We should switch to doing it all this way:
+    #      use fips_bgs_in_fips() to get all bgfips values in each of the bg/tract/county/state fips codes analyzed (which does fips_lead_zero() and fipstypte() and uses blockgroupstats)
     #      use join to blockgroupstats on bgfips, to get all bgid values
+    #  OR use a variation on
     #      use join to blockwts on bgid, to get all the blockid values.
     ######################################## #
 
-    all_bgs <- lapply(fips_vec, fips_bgs_in_fips1)
+    all_bgs <- lapply(fips_vec, fips_bgs_in_fips1)  ## we could replace this with a new
     oknow <- !sapply(all_bgs, is.null)
     all_bgs   <- all_bgs[oknow]   # drop input fips that had no bgs found
     fips_vec <- fips_vec[oknow] # ditto
@@ -326,7 +328,7 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
   ######################################## #
   ### Get bgid:
 
-  all_bgs[bgid2fips, bgid := bgid, on = "bgfips"]
+  all_bgs[bgid2fips, bgid := bgid, on = "bgfips"]  # we can just convert fips to bgid via blockgroupstats and avoid using bgid2fips?
 
   if (NROW(all_bgs) == 0) {
     if (in_shiny) {
@@ -341,13 +343,11 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
 
     ## Get BLOCKS in each blockgroup ####
 
-    # WOULD data.table join or merge be faster than dplyr here? This seems SLOW ***
-
     suppressMessages({
       setDF(all_bgs)
       fips_blockpoints <- dplyr::left_join(all_bgs,
                                            ## create 12-digit column inline (original table not altered)
-                                           ## do not actually need blockfips here except to join on its first 12 chars
+                                           ## do not actually need blockfips here except to join on its first 12 chars *** try to remove need for large blockid2fips file (and/or store fips as integer?)
                                            blockid2fips[, .(blockid, blockfips, blockfips12 = substr(blockfips,1,12))],
                                            by = c('bgfips' = 'blockfips12'), multiple = 'all') |>
         dplyr::left_join(blockpoints) |>
