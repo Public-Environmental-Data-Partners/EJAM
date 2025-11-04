@@ -751,8 +751,9 @@ fips_from_table <- function(fips_table, addleadzeroes=TRUE, in_shiny=FALSE) {
                   'blockfips',
                   'GEOID'
   )
-  if (any(colnames(fips_table) %in% fips_alias)) {
-    firstmatch <- intersect(fips_alias, colnames(fips_table))[1]
+  if (any((colnames(fips_table)) %in% (fips_alias))) {
+    firstmatch <-  intersect(fips_alias, colnames(fips_table))[1] # uses preferred order but must keep it case sensitive
+      # fails to use preferred order: # colnames(fips_table)[match(TRUE, tolower(colnames(fips_table)) %in% tolower(fips_alias))]
 
     if (addleadzeroes) {
       fips_vec <- fips_lead_zero(as.character(fips_table[[firstmatch]]))

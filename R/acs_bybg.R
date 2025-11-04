@@ -158,8 +158,8 @@
 #' names(newvars) <- gsub("E$", "", names(newvars))
 #' dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
 #' t(head(newvars))
-#' ejscreeen_acs = newvars
-#' save(ejscreeen_acs, file="ejscreeen_acs.rda")
+#' ejscreen_acs = newvars
+#' save(ejscreen_acs, file="ejscreen_acs.rda")
 #'
 #' }
 #' @return data.table (not tibble, and not just a data.frame)

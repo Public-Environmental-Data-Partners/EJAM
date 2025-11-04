@@ -26,7 +26,7 @@
 # used (or mentioned) by the most R/*.R files
 # (excluding commented-out lines):
 #
-#   Need to add unit tests for ejam2report, ejam2excel, calc_ratios_to_avg, plot_barplot_ratios, table_signif_round_x100, popup_from_ejscreen, popup_from_df, mapfast, sitepoints_from_any
+#   Need to add unit tests for ejam2report, ejam2excel, plot_barplot_ratios, table_signif_round_x100, popup_from_ejscreen, popup_from_df, mapfast, sitepoints_from_any
 #
 # term nfiles nhits
 #

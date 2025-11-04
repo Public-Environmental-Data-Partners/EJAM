@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,12 +99,6 @@
 
         </dt>
         <dd>Compare subsets (types) of places that are all from one list</dd>
-      </dl><dl><dt>
-
-          <code><a href="ejscreenit_for_ejam.html">ejscreenit_for_ejam()</a></code>
-
-        </dt>
-        <dd>Get EJSCREEN results directly from EJSCREEN servers via their API</dd>
       </dl></div><div class="section level2">
       <h2 id="key-functions-for-viewing-results">Key Functions for Viewing Results<a class="anchor" aria-label="anchor" href="#key-functions-for-viewing-results"></a></h2>
 
@@ -1112,49 +1106,8 @@
         </dt>
         <dd>Get population counts (ACS EJSCREEN) by FIPS Utility to aggregate just population count for each FIPS Census unit</dd>
       </dl></div><div class="section level2">
-      <h2 id="calculating-and-aggregating">Calculating and Aggregating<a class="anchor" aria-label="anchor" href="#calculating-and-aggregating"></a></h2>
 
-      <div class="section-desc"><p>Tools that Calculate and Aggregate Indicators at each Place and Overall, and Report Percentiles</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="doaggregate.html">doaggregate()</a></code>
-
-        </dt>
-        <dd>Summarize environmental and residential population indicators at each location and overall</dd>
-      </dl><dl><dt>
-
-          <code><a href="calc_ejam.html">calc_ejam()</a></code>
-
-        </dt>
-        <dd>DRAFT utility to use formulas provided as text, to calculate indicators</dd>
-      </dl><dl><dt>
-
-          <code><a href="calc_byformula.html">calc_byformula()</a></code>
-
-        </dt>
-        <dd>DRAFT utility to use formulas provided as text, to calculate indicators</dd>
-      </dl><dl><dt>
-
-          <code><a href="pctile_from_raw_lookup.html">pctile_from_raw_lookup()</a></code> <code><a href="pctile_from_raw_lookup.html">lookup_pctile()</a></code>
-
-        </dt>
-        <dd>Find approx percentiles in lookup table that is in memory</dd>
-      </dl><dl><dt>
-
-          <code><a href="high_pctiles_tied_with_min.html">high_pctiles_tied_with_min</a></code>
-
-        </dt>
-        <dd>high_pctiles_tied_with_min (DATA) internal data used to handle cases where multiple places are tied for the lowest indicator score</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="datasets-with-indicators-etc-">Datasets with Indicators, etc.<a class="anchor" aria-label="anchor" href="#datasets-with-indicators-etc-"></a></h3>
+      <h3 id="datasets-with-indicators-raw-data-means-percentiles-">Datasets with Indicators (raw data, means, percentiles)<a class="anchor" aria-label="anchor" href="#datasets-with-indicators-raw-data-means-percentiles-"></a></h3>
 
 
 
@@ -1207,6 +1160,89 @@
         <dd>usastats (DATA) data.frame of 100 percentiles and means</dd>
       </dl><dl><dt>
 
+          <code><a href="stateinfo.html">stateinfo</a></code>
+
+        </dt>
+        <dd>stateinfo (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)</dd>
+      </dl><dl><dt>
+
+          <code><a href="stateinfo2.html">stateinfo2</a></code>
+
+        </dt>
+        <dd>stateinfo2 (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)</dd>
+      </dl><dl><dt>
+
+          <code><a href="statestats.html">statestats</a></code>
+
+        </dt>
+        <dd>statestats (DATA) data.frame of 100 percentiles and means for each US State and PR and DC.</dd>
+      </dl><dl><dt>
+
+          <code><a href="modelDoaggregate.html">modelDoaggregate</a></code>
+
+        </dt>
+        <dd>Regression model to predict runtime for doaggregate</dd>
+      </dl><dl><dt>
+
+          <code><a href="modelEjamit.html">modelEjamit</a></code>
+
+        </dt>
+        <dd>Regression model to predict runtime for ejamit</dd>
+      </dl></div><div class="section level2">
+      <h2 id="calculating-and-aggregating">Calculating and Aggregating<a class="anchor" aria-label="anchor" href="#calculating-and-aggregating"></a></h2>
+
+      <div class="section-desc"><p>Tools that Calculate and Aggregate Indicators at each Place and Overall, and Report Percentiles or Means</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="doaggregate.html">doaggregate()</a></code>
+
+        </dt>
+        <dd>Summarize environmental and residential population indicators at each location and overall</dd>
+      </dl><dl><dt>
+
+          <code><a href="calc_ejam.html">calc_ejam()</a></code>
+
+        </dt>
+        <dd>DRAFT utility to use formulas provided as text, to calculate indicators</dd>
+      </dl><dl><dt>
+
+          <code><a href="calc_byformula.html">calc_byformula()</a></code>
+
+        </dt>
+        <dd>DRAFT utility to use formulas provided as text, to calculate indicators</dd>
+      </dl><dl><dt>
+
+          <code><a href="calc_avg_columns.html">calc_avg_columns()</a></code>
+
+        </dt>
+        <dd>helper that looks up US or State averages for a vector of variable names (and optional vector of States)</dd>
+      </dl><dl><dt>
+
+          <code><a href="calc_ratio_columns.html">calc_ratio_columns()</a></code>
+
+        </dt>
+        <dd>Calculate ratios to US and State average for each indicator in each place</dd>
+      </dl><dl><dt>
+
+          <code><a href="calc_pctile_columns.html">calc_pctile_columns()</a></code>
+
+        </dt>
+        <dd>Convert raw indicator values to percentiles, for a table of indicators and places</dd>
+      </dl><dl><dt>
+
+          <code><a href="pctile_from_raw_lookup.html">pctile_from_raw_lookup()</a></code> <code><a href="pctile_from_raw_lookup.html">lookup_pctile()</a></code>
+
+        </dt>
+        <dd>Find approx percentiles in lookup table for just 1 indicator or 1 zone (State or US)</dd>
+      </dl><dl><dt>
+
           <code><a href="usastats_means.html">usastats_means()</a></code>
 
         </dt>
@@ -1231,24 +1267,6 @@
         <dd>usastats_querye - convenient way to see US mean, pctiles of ENVIRONMENTAL indicators in lookup table</dd>
       </dl><dl><dt>
 
-          <code><a href="stateinfo.html">stateinfo</a></code>
-
-        </dt>
-        <dd>stateinfo (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)</dd>
-      </dl><dl><dt>
-
-          <code><a href="stateinfo2.html">stateinfo2</a></code>
-
-        </dt>
-        <dd>stateinfo2 (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)</dd>
-      </dl><dl><dt>
-
-          <code><a href="statestats.html">statestats</a></code>
-
-        </dt>
-        <dd>statestats (DATA) data.frame of 100 percentiles and means for each US State and PR and DC.</dd>
-      </dl><dl><dt>
-
           <code><a href="statestats_means.html">statestats_means()</a></code>
 
         </dt>
@@ -1271,18 +1289,71 @@
 
         </dt>
         <dd>statestats_querye - convenient way to see mean, pctiles of ENVIRONMENTAL indicators from lookup table</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
 
-          <code><a href="modelDoaggregate.html">modelDoaggregate</a></code>
+      <h3 id="calculating-summary-stats-etc-">Calculating Summary Stats, etc.<a class="anchor" aria-label="anchor" href="#calculating-summary-stats-etc-"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="count_sites_with_n_high_scores.html">count_sites_with_n_high_scores()</a></code>
 
         </dt>
-        <dd>Regression model to predict runtime for doaggregate</dd>
+        <dd>Answers questions like how many sites have certain indicators &gt;2x the state avg?</dd>
       </dl><dl><dt>
 
-          <code><a href="modelEjamit.html">modelEjamit</a></code>
+          <code><a href="colcounter.html">colcounter()</a></code>
 
         </dt>
-        <dd>Regression model to predict runtime for ejamit</dd>
+        <dd>Count columns (indicators) with Value (at or) above (or below) threshold Counts high scores, by site</dd>
+      </dl><dl><dt>
+
+          <code><a href="colcounter_summary_all.html">colcounter_summary_all()</a></code>
+
+        </dt>
+        <dd>Summarize count (and percent) of rows with exactly (and at least) N cols &gt;= various thresholds</dd>
+      </dl><dl><dt>
+
+          <code><a href="popshare_at_top_n.html">popshare_at_top_n()</a></code>
+
+        </dt>
+        <dd>top N sites account for what percent of residents?</dd>
+      </dl><dl><dt>
+
+          <code><a href="popshare_at_top_x_pct.html">popshare_at_top_x_pct()</a></code>
+
+        </dt>
+        <dd>top X percent of sites account for what percent of residents?</dd>
+      </dl><dl><dt>
+
+          <code><a href="popshare_p_lives_at_what_n.html">popshare_p_lives_at_what_n()</a></code>
+
+        </dt>
+        <dd>how many sites account for P percent of residents?</dd>
+      </dl><dl><dt>
+
+          <code><a href="popshare_p_lives_at_what_pct.html">popshare_p_lives_at_what_pct()</a></code>
+
+        </dt>
+        <dd>what percent of sites is enough to account for (at least) P percent of residents? minimum share of sites that can account for at least P% of population</dd>
+      </dl><dl><dt>
+
+          <code><a href="distance_trends.html">distance_trends()</a></code>
+
+        </dt>
+        <dd>Which indicators fall most as proximity does? (i.e., are higher if closer to site) Which variables have strongest trend with distance based on slope of linear fit</dd>
+      </dl><dl><dt>
+
+          <code><a href="batch.summarize.html">batch.summarize()</a></code>
+
+        </dt>
+        <dd>Calculate more summary stats across all sites and all people</dd>
       </dl></div><div class="section level2">
 
       <h3 id="comparing-distances-multiple-radius-values">Comparing Distances / Multiple Radius Values<a class="anchor" aria-label="anchor" href="#comparing-distances-multiple-radius-values"></a></h3>
@@ -1336,71 +1407,6 @@
 
         </dt>
         <dd>Which indicators fall most as proximity does? (i.e., are higher if closer to site) Which variables have strongest trend with distance based on slope of linear fit</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="calculating-summary-stats-etc-">Calculating Summary Stats, etc.<a class="anchor" aria-label="anchor" href="#calculating-summary-stats-etc-"></a></h3>
-
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="count_sites_with_n_high_scores.html">count_sites_with_n_high_scores()</a></code>
-
-        </dt>
-        <dd>Answers questions like how many sites have certain indicators &gt;2x the state avg?</dd>
-      </dl><dl><dt>
-
-          <code><a href="colcounter.html">colcounter()</a></code>
-
-        </dt>
-        <dd>Count columns (indicators) with Value (at or) above (or below) threshold Counts high scores, by site</dd>
-      </dl><dl><dt>
-
-          <code><a href="colcounter_summary_all.html">colcounter_summary_all()</a></code>
-
-        </dt>
-        <dd>Summarize count (and percent) of rows with exactly (and at least) N cols &gt;= various thresholds</dd>
-      </dl><dl><dt>
-
-          <code><a href="popshare_at_top_n.html">popshare_at_top_n()</a></code>
-
-        </dt>
-        <dd>top N sites account for what percent of residents?</dd>
-      </dl><dl><dt>
-
-          <code><a href="popshare_at_top_x_pct.html">popshare_at_top_x_pct()</a></code>
-
-        </dt>
-        <dd>top X percent of sites account for what percent of residents?</dd>
-      </dl><dl><dt>
-
-          <code><a href="popshare_p_lives_at_what_n.html">popshare_p_lives_at_what_n()</a></code>
-
-        </dt>
-        <dd>how many sites account for P percent of residents?</dd>
-      </dl><dl><dt>
-
-          <code><a href="popshare_p_lives_at_what_pct.html">popshare_p_lives_at_what_pct()</a></code>
-
-        </dt>
-        <dd>what percent of sites account for P percent of residents?</dd>
-      </dl><dl><dt>
-
-          <code><a href="distance_trends.html">distance_trends()</a></code>
-
-        </dt>
-        <dd>Which indicators fall most as proximity does? (i.e., are higher if closer to site) Which variables have strongest trend with distance based on slope of linear fit</dd>
-      </dl><dl><dt>
-
-          <code><a href="batch.summarize.html">batch.summarize()</a></code>
-
-        </dt>
-        <dd>Calculate more summary stats across all sites and all people</dd>
       </dl></div><div class="section level2">
       <h2 id="viewing-results">Viewing Results<a class="anchor" aria-label="anchor" href="#viewing-results"></a></h2>
 
@@ -1648,12 +1654,6 @@
         <dd>Make boxplot of ratios to US averages</dd>
       </dl><dl><dt>
 
-          <code><a href="plot_boxplot_ratios.html">plot_boxplot_ratios()</a></code>
-
-        </dt>
-        <dd>For the outputs of ejscreenit(), get boxplots of Residential Population Percentages across sites as ratios to US means</dd>
-      </dl><dl><dt>
-
           <code><a href="plot_boxplot_pctiles.html">plot_boxplot_pctiles()</a></code>
 
         </dt>
@@ -1787,12 +1787,6 @@
 
         </dt>
         <dd>Simple quick look at results of ejamit() in RStudio console</dd>
-      </dl><dl><dt>
-
-          <code><a href="ejscreenit_see_table.html">ejscreenit_see_table()</a></code>
-
-        </dt>
-        <dd>Utility to get quick view in RStudio viewer of datatable of ejscreenapi results</dd>
       </dl><dl><dt>
 
           <code><a href="table_ratios_from_ejamit.html">table_ratios_from_ejamit()</a></code>
@@ -2187,11 +2181,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

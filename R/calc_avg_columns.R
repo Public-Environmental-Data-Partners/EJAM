@@ -1,19 +1,6 @@
 ################################################################################ #
 
-
-
-# helper that returns columns of US or state averages, given indicator names and States, using lookup tables
-
-# avg_from_raw_lookup()
-#  is a function name that is consistent with analogous function
-# pctile_from_raw_lookup()
-
 # seealso usastats_means() and similar functions that are very similar but intended be a simple way to view those stats
-
-#####   examples
-
-################################################################################ #
-
 
 
 #' helper that looks up US or State averages for a vector of variable names (and optional vector of States)
@@ -23,19 +10,20 @@
 #' @param zones optional vector of 2-character upper case state abbreviations. can include repeats.
 #' @param lookup optional, but for custom indicators a data.frame can be provided that
 #'   is analogous to statestats and usastats -- see examples
-#' @details
-#' For examples, see [pctile_cols_from_raw_lookup()]
+#' @details Note the averages are not "calculated" per se, but are actually looked up in a table of averages
 #'
-#' could be used, e.g., in doaggregate() or similar to get means for indicators being analyzed
+#' For examples, see [calc_pctile_columns()]
 #'
-#' assume you want to name output columns like varnames but with hardcoded prefixes "avg." or "state.avg."
+#' This could be used, e.g., in doaggregate() or similar to get means for indicators being analyzed
+#'
+#' It assume you want to name output columns like varnames but with hardcoded prefixes "avg." or "state.avg."
 #'
 #' @returns data.frame, one column per indicator or element of varnames vector,
 #'   one row per site or element of zones vector
 #'
-#' @keywords internal
+#' @export
 #'
-avg_from_raw_lookup <- function(varnames = intersect(EJAM::names_all_r,  names(EJAM::usastats)),
+calc_avg_columns <- function(varnames = intersect(EJAM::names_all_r,  names(EJAM::usastats)),
                                 zones = "USA",
                                 lookup = NULL
                                 # could expose   varnames_avg_for_output as a parameter too maybe

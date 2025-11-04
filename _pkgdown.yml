@@ -270,16 +270,15 @@ reference:
 - title: "Calculating and Aggregating"
   desc: >
     Tools that Calculate and Aggregate Indicators
-    at each Place and Overall, and Report Percentiles
+    at each Place and Overall, and Report Percentiles or Means
   contents:
   - doaggregate
   - calc_ejam
   - calc_byformula
-- subtitle: "Means and percentiles"
-  contents:
+  - calc_avg_columns
+  - calc_ratio_columns
+  - calc_pctile_columns
   - lookup_pctile
-  - pctile_cols_from_raw_lookup
-  - avg_from_raw_lookup
   - usastats_means
   - usastats_query
   - usastats_queryd
@@ -354,7 +353,6 @@ reference:
   contents:
   - ejam2histogram
   - ejam2boxplot_ratios
-  - plot_boxplot_ratios
   - plot_boxplot_pctiles
   - plot_ridgeline_ratios_ez
   - plot_ridgeline_ratios
@@ -449,8 +447,7 @@ reference:
   - map_headernames
 - title: internal
   contents:
-  - calc_ratios_to_avg
-  - calc_ratios_cols
+  - plot_boxplot_ratios
   - high_pctiles_tied_with_min
   - pctile_from_raw_lookup
   - api_run
@@ -508,6 +505,7 @@ reference:
   - custom
   - formula_varname
   - formulas_all
+  - formulas_ejscreen_acs
   - formulas_d
   - batch.clean
   - rowMaxs2

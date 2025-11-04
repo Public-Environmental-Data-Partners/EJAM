@@ -1200,7 +1200,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   #  *** this should be extracted as a function (but keeping the efficiency of data.table changes by reference using := or set___)
   # these lines about names of variables should be pulled out of here and defined as params or another way
   # to specify which variables get converted to percentile form ***
-  # CONSIDER USING HERE HELPER FUNCTION  pctile_cols_from_raw_lookup()    ***
+  # CONSIDER USING HERE HELPER FUNCTION  calc_pctile_columns()    ***
   ##################################################### #
 
   # the ejscreen community report shows percentiles only for E,D,EJ, plus health,climate,criticalservice tables:
@@ -1261,6 +1261,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   if (length(valid_us_vars) > 0) {
     results_bysite[, (valid_us_pctl_names) := lapply(valid_us_vars, function(var) {
+      # but note newer vectorized calc_pctile_columns()
       pctile_from_raw_lookup(
         columns_bysite[[var]],
         varname.in.lookup.table = var,
@@ -1274,6 +1275,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   if (length(valid_us_vars_overall) > 0) {
     results_overall[, (valid_us_pctl_names_overall) := lapply(valid_us_vars_overall, function(var) {
+      # but note newer vectorized calc_pctile_columns()
       pctile_from_raw_lookup(
         columns_overall[[var]],
         varname.in.lookup.table = var,
@@ -1288,7 +1290,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
 
   ######################################## #    ######################################## #
-##### SECTION BELOW APPROX COULD BE REPLACED BY pctile_from_raw_lookup(results_bysite) *** ########## #
+##### SECTION BELOW APPROX COULD BE REPLACED BY the vectorized calc_pctile_columns(results_bysite) *** ########## #
 
   myvars_to_use <- ifelse(varsneedpctiles %in% c("Demog.Index", "Demog.Index.Supp"),
                           paste0(varsneedpctiles, ".State"), varsneedpctiles)
@@ -1361,7 +1363,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     columns_bysite_ej <- as.list(results_bysite[, ..ejnames_raw])
     columns_overall_ej <- as.list(results_overall[, ..ejnames_raw])
     if (length(valid_ej_vars_us) > 0) {
-      results_bysite[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) {
+      results_bysite[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) { # could replace with vectorized calc_pctile_columns()
         pctile_from_raw_lookup(
           columns_bysite_ej[[var]],
           varname.in.lookup.table = var,
@@ -1376,7 +1378,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     }
 
     if (length(valid_ej_vars_us) > 0) {
-      results_overall[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) {
+      results_overall[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) { # could replace with vectorized calc_pctile_columns()
         pctile_from_raw_lookup(
           columns_overall_ej[[var]],
           varname.in.lookup.table = var,
@@ -1389,7 +1391,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
       st_vector <- results_bysite$ST
       idx_not_na_st <- !is.na(st_vector)
 
-      results_bysite[idx_not_na_st, (varnames.state.pctile_EJ) := lapply(valid_ej_vars_state, function(var) {
+      results_bysite[idx_not_na_st, (varnames.state.pctile_EJ) := lapply(valid_ej_vars_state, function(var) { # could replace with vectorized calc_pctile_columns()
         pctile_from_raw_lookup(
           columns_bysite_ej[[var]][idx_not_na_st],
           varname.in.lookup.table = var,
@@ -1455,7 +1457,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   ######################################### #
   ### Statewide  ####
 
-  # CONSIDER USING HERE HELPER FUNCTION  avg_from_raw_lookup()    ***
+  # CONSIDER USING HERE HELPER FUNCTION  calc_avg_columns()    ***
 
   # pull averages from statestats table (note using data.frame syntax here not data.table)
   # There may be a cleaner way to do this part ***

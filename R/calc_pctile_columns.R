@@ -1,10 +1,11 @@
 
-# vectorized version of pctile_from_raw_lookup()
+# Vectorized version of pctile_from_raw_lookup()
 #
 # as needed in doaggregate() lines 1200 or 1290 up to 1340 (and even for EJ indexes up to line 1400 or so?) ***
 
-#' get table of percentiles for a table of raw indicators and places
+#' Convert raw indicator values to percentiles, for a table of indicators and places
 #'
+#' @details Note each percentile is not "calculated" per se, but is actually looked up in a table of percentiles and raw cutoffs
 #' @param mytable data.frame with one indicator per column, one row per place
 #' @param varnames optional vector of indicators with raw scores to convert to percentiles,
 #'   such as names_these or "pm" - must be among colnames of mytable and lookup
@@ -18,7 +19,7 @@
 #'
 #' @returns  data.frame of percentiles for a table of indicators and places
 #'  one indicator per column, one place per row
-#' @seealso [pctile_from_raw_lookup()] [avg_cols_from_raw_lookup()]
+#' @seealso [pctile_from_raw_lookup()] [calc_avg_columns()]
 #'
 #' @examples
 #' # examples of getting pctiles, averages, and ratios to averages
@@ -53,8 +54,8 @@
 #' #   ----------------- AVERAGES -----------------
 #'
 #' avgs <- cbind(
-#'   EJAM:::avg_from_raw_lookup(varnames = names_these, zones = "USA"),
-#'   EJAM:::avg_from_raw_lookup(varnames = names_these, zones = testbgs$ST)
+#'   EJAM:::calc_avg_columns(varnames = names_these, zones = "USA"),
+#'   EJAM:::calc_avg_columns(varnames = names_these, zones = testbgs$ST)
 #' )
 #' data.table::setDT(avgs)
 #' t(avgs)
@@ -63,7 +64,7 @@
 #'
 #' #   ----------------- RATIOS TO AVERAGES -----------------
 #'
-#' ratios <- EJAM:::calc_ratios_cols(testbgs)  # needs raw and avg cols be in 1 dt
+#' ratios <- EJAM:::calc_ratio_columns(testbgs)  # needs raw and avg cols be in 1 dt
 #' data.table::setDT(ratios)
 #' t(ratios)
 #' all.equal(ratios, ratios0)
@@ -71,8 +72,8 @@
 #' #   ----------------- PERCENTILES -----------------
 #'
 #' pctiles <- cbind(
-#'   EJAM:::pctile_cols_from_raw_lookup(testbgs, varnames = names_these, zones = "USA"),
-#'   EJAM:::pctile_cols_from_raw_lookup(testbgs, varnames = names_these, zones = testbgs$ST)
+#'   EJAM:::calc_pctile_columns(testbgs, varnames = names_these, zones = "USA"),
+#'   EJAM:::calc_pctile_columns(testbgs, varnames = names_these, zones = testbgs$ST)
 #' )
 #' data.table::setDT(pctiles)
 #' all.equal(pctiles, pctiles0)
@@ -82,7 +83,7 @@
 #'
 #' @export
 #'
-pctile_cols_from_raw_lookup <- function(mytable,
+calc_pctile_columns <- function(mytable,
                                         varnames = intersect(names(mytable),  names(EJAM::usastats)),
                                         # varnames = names_these,
                                         # varnames = c(names_these, names_d_demogindexstate),

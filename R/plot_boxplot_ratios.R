@@ -1,4 +1,4 @@
-#' For the outputs of the old ejscreenit function, was used to get boxplots of Residential Population Percentages across sites as ratios to US means
+#' Not used/OBSOLETE. For the outputs of the old ejscreenit function, was used to get boxplots of Residential Population Percentages across sites as ratios to US means
 #'
 #' @description boxplots show range of scores here vs range in US overall
 #' @md
@@ -8,10 +8,10 @@
 #' See [plot_boxplot_pctiles()] now espec. for percentiles.
 #'
 #' IMPORTANTLY,
-#'   NOTE this uses the ratio at each site
+#'   NOTE this used the ratio at each site
 #'   USING THE AVERAGE RESIDENT AT THAT SITE,
-#'   SO A BOXPLOT SHOWS ONE DOT PER SITE AND THE BOXPLOT IS NOT POP WTD
-#'   MEANING IT SHOWS THE MEDIAN AND 75TH PERCENTILE SITE NOT RESIDENT, ETC.
+#'   SO A BOXPLOT SHOWED ONE DOT PER SITE AND THE BOXPLOT WAS NOT POP WTD
+#'   MEANING IT SHOWED THE MEDIAN AND 75TH PERCENTILE SITE NOT RESIDENT, ETC.
 #'
 #'  To communicate whether this is skewed to the right
 #'  (more high scores than might expect) also could say that
@@ -27,9 +27,8 @@
 #'   ejamit()$results_bysite
 #' @param selected_dvar_colname  default is the first column name of x, such as "Demog.Index"
 #'   if given a table with just ratios that are named as regular indicators,
-#'   as with output of calc_ratios_to_avg()$ratios_d,
 #'   but it tries to figure out if ratios are available and what the base name is
-#'   in case output of ejamit() was provided.
+#'   in case output of [ejamit()] was provided.
 #' @param selected_dvar_nicename default is the "short" name of selected_dvar_colname
 #'   as converted using [fixcolnames()]
 #' @param towhat_nicename default is "US average"
@@ -39,14 +38,7 @@
 #'
 #' @return same format as output of [ggplot2::ggplot()]
 #'
-#' @examples
-#'   df <- testoutput_ejamit_100pts_1miles$results_bysite
-#'   x <- calc_ratios_to_avg(df)$ratios_d
-#'   myradius <- df$radius.miles[1]
-#'   plot_boxplot_ratios(calc_ratios_to_avg(x)$ratios_d, wheretext = myradius)
-#'   #plot_boxplot_ratios(calc_ratios_to_avg(x)$ratios_e, wheretext = myradius)
-#'
-#' @export
+#' @keywords internal
 #'
 plot_boxplot_ratios <- function(x, selected_dvar_colname=varlist2names('names_d')[1], selected_dvar_nicename=selected_dvar_colname, towhat_nicename='US average',
                             maxratio = 5, wheretext="Near") {
@@ -57,9 +49,6 @@ plot_boxplot_ratios <- function(x, selected_dvar_colname=varlist2names('names_d'
     x <- as.data.frame(x)[, selected_dvar_colname]
   } # for convenience, in case x was output of ejamit()
   if (is.data.table(x)) {x <- as.data.frame(x)}
-  if (is.list(x) && is.data.frame(x[[1]]) && "ratios_d" %in% names(x)) {x <- x$ratios_d } # for convenience, in case you said  plot_boxplot_ratios(calc_ratios_to_avg(out))
-
-
 
   if (!(selected_dvar_colname %in% names(x))) {
     message(paste0(selected_dvar_colname, ' not found in x - using the one with max ratio'))

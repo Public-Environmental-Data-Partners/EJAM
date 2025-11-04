@@ -4,7 +4,7 @@
 #' @description This is used with a lookup table to
 #'   convert a raw indicator vector to percentiles in US or States.
 #' @details
-#'   For handling a whole table of raw indicators, see [pctile_cols_from_raw_lookup()]
+#'   For handling a whole table of raw indicators, see [calc_pctile_columns()]
 #'
 #'   This function can handle 2 kinds of inputs right now:
 #'
@@ -62,7 +62,7 @@
 #' @param quiet set to FALSE to see details on where certain scores were all NA values like in 1 state
 #' @aliases lookup_pctile
 #' @return By default, returns numeric vector length of myvector.
-#' @seealso [pctile_cols_from_raw_lookup()] for handling a table not just a vector
+#' @seealso [calc_pctile_columns()] for handling a table not just a vector
 #' @examples \donttest{
 #'
 #' eg <- dput(

@@ -24,6 +24,9 @@ This is a way to get a list of blockgroups, specified by state/county/tract or e
 Takes a vector of one or more FIPS that could be State (2-digit), County (5-digit),
 Tract (11-digit), or blockgroup (12 digit), or even block (15-digit fips).
 
+It also works for city/CDP fips but finds the blockgroups that are at least partly in the city bounds
+(see \code{\link[=fips_bgs_in_city]{fips_bgs_in_city()}}).
+
 Returns unique vector of FIPS of all US blockgroups (including DC and Puerto Rico)
 that contain any specified blocks, are equal to any specified blockgroup fips,
 or are contained within any provided tract/county/state FIPS.
@@ -48,7 +51,7 @@ or are contained within any provided tract/county/state FIPS.
 testfipslist <- list(
   blockgroup = testinput_fips_blockgroups,
   tract = testinput_fips_tracts,
-  city = testinput_fips_cities, # for cities, must use getblocksnearby_from_fips()
+  city = testinput_fips_cities, #
   county = testinput_fips_counties,
   state = testinput_fips_states,
   mix = c(testinput_fips_blockgroups[1],
