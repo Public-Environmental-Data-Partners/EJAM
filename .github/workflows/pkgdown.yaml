@@ -1,10 +1,11 @@
-name: build-deploy-pkgdown.yml
+
+name: 'build and deploy documentation website on github pages'
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
   release:
     types: [published]
   workflow_dispatch:
