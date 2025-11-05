@@ -26,15 +26,27 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     testinput_fips_states[2]
   )
 
+  ############### #  ############### #
 
-  ############### #
+  ############### #  ############### #
   try(test_that(paste0(funcname, " sitepoints POINTS works"), {
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10[1,], ...)})})
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10, radius = 1, ...)})})
     expect_true(url_online(x[1]))
   }))
-  ############### #
-  try(test_that(paste0(funcname, " BG FIPS works"), {
+  ############### #  ############### #
+
+  try(test_that(paste0(funcname, " 1 BLOCK FIPS works?"), {   ##  FAILS TO WORK FOR A BLOCK - created github issue for that
+    oldwidth = options("width")
+    expect_no_error({
+      x <- FUN(fips = "091701844002024", ...) # fipsmix[1] # blockid is 1203214, parent bgid is 43168
+    })
+    expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
+  }))
+  ############### #  ############### #
+
+  try(test_that(paste0(funcname, " 1 or 2 BG FIPS works"), {
     oldwidth = options("width")
     expect_no_error({
       x <- FUN(fips = testinput_fips_blockgroups[1] , ...)
@@ -46,15 +58,70 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
-  try(test_that(paste0(funcname, " mix of FIPS works"), {
+  try(test_that(paste0(funcname, " TRACT FIPS works"), {
     oldwidth = options("width")
     expect_no_error({
-      x <- FUN(fips = fipsmix, ...)
+      x <- FUN(fips = testinput_fips_tracts[1], ...)
     })
     expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
+  try(test_that(paste0(funcname, " CITY FIPS works"), {
+    oldwidth = options("width")
+    expect_no_error({
+      x <- FUN(fips = testinput_fips_cities[1], ...)
+    })
+    expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
+  }))
+  ############### #
+  try(test_that(paste0(funcname, " COUNTY FIPS works"), {
+    oldwidth = options("width")
+    expect_no_error({
+      x <- FUN(fips = testinput_fips_counties[1], ...)
+    })
+    expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
+  }))
+  ############### #
+
+  ############### #  ############### #
+  try(test_that(paste0(funcname, " 2 BG FIPS COMBINED as 1 URL if sitenumber=0"), {
+    expect_equal(
+      length(FUN(fips = testinput_fips_blockgroups[1:2])),
+      2
+    )
+    expect_equal(
+      length(FUN(fips = testinput_fips_blockgroups[1:2], sitenumber = 0)),
+      1
+    )
+  }))
+  ############### #
+  try(test_that(paste0(funcname, " 1 COUNTY and 1 STATE FIPS as 2 urls"), {
+    oldwidth = options("width")
+    expect_no_error({
+      x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), ...) #
+    })
+    expect_equal(length(x), 2)
+    expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
+  }))
+  ############### #     MULTISITE OVERALL RESULTS REPORT MIGHT NOT BE IMPLEMENTED YET:
+
+  try(test_that(paste0(funcname, " 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL if sitenumber=0"), {
+    oldwidth = options("width")
+    expect_no_error({
+      x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
+    })
+    expect_equal(length(x), 1)
+    expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
+  }))
+  ############### #  ############### #
+
+  ############### #  ############### #
+
   try(test_that(paste0(funcname, " SHAPEFILE works"), {
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2[1, ], ...)})})
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2, radius = 1, ...)})})
@@ -111,8 +178,6 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
 }
 ############## ############### ############### ############### ############### #
 ############## ############### ############### ############### ############### #
-
-# fips must be blockgroup fips currently? - other types not yet implemented 9/2025
 
 do_url_tests("url_ejamapi", url_ejamapi)
 
