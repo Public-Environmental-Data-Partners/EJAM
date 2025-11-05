@@ -1,14 +1,16 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+
+name: 'lintr checks code style and syntax errors'
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
 # lintr provides static code analysis for R.
 # It checks for adherence to a given style,
 # identifying syntax errors and possible semantic issues,
 # then reports them to you so you can take action.
-
 # More details at https://lintr.r-lib.org/
-
+#
 # ## to use just a subset of the most important checks:
 ## see  EJAM/R/utils_lint_trailing_spaces.R
 #  mine = c(
@@ -23,19 +25,6 @@
 #     )
 #   )
 #   # ### but not "object_usage_linter"
-
-name: lintr
-
-on:
-  push:
-    branches: [ "development" ]
-#    branches: [ "lintr-workflow", "development" ]
-#  pull_request:
-#    # The branches below must be a subset of the branches above
-#    branches: [ "development" ]
-  schedule:
-    - cron: '40 7 * * 2'
-#     eg every 2 weeks
 
 permissions:
   contents: read
