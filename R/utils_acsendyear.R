@@ -121,7 +121,7 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
         }
       }
     }
-    message("Guessing based on what may be the case as of", as.character(guess_as_of), "\n")
+    message("Guessing based on what may be the case as of ", as.character(guess_as_of), "\n")
 
     likely_already_published_yr = substr(  guess_as_of - 365 * lag_yrs_endyr_to_census_publishes, 1, 4)
     # based on published schedules and actual release at end of 2024, we know the 2019-2023 data are the ACS data available during almost all of 2025:
