@@ -23,6 +23,9 @@ acs_yr_range = function(end.year, parens=TRUE) {
 #'  Setting this TRUE will return an earlier year than if FALSE, usually, given the lag
 #'  from Census Bureau publishing to EJAM incorporating.
 #'  If this is set TRUE, then the guess_always parameter is ignored.
+#'
+#'  @param lag_yrs_endyr_to_census_publishes years to assume lag between end of endyear and when Census Bureau releases ACS dataset for 5yr summary file
+#'  @param lag_yrs_endyr_to_ejscreen years to assume lag between end of endyear and when ejscreen gets updated with ACS data
 #' @details
 #' - The 2020-2024 data should be released by Census Bureau 12/11/2025.
 #'
@@ -37,15 +40,18 @@ acs_yr_range = function(end.year, parens=TRUE) {
 #'
 #' @keywords internal
 #'
-acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_census_has_published = FALSE) {
+acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_census_has_published = FALSE,
+                       lag_yrs_endyr_to_census_publishes = 1,
+                       lag_yrs_endyr_to_ejscreen = 1.6
+                       ) {
 
-  lag_yrs_endyr_to_census_publishes = 1
+  # lag_yrs_endyr_to_census_publishes = 1
   ## end year (December) + 1 year (December) has been date ACS published by Census.
   # so  rounded year now minus 1 should be the endyear that is already published by Census Bureau, typically.
 
   # https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html
 
-  lag_yrs_endyr_to_ejscreen = 1.6
+  # lag_yrs_endyr_to_ejscreen = 1.6
   ## publication date of acs + about 6-8 months was date EJSCREEN updated to use it.
   # e.g., 2018-2022 ACS was still used until at least mid-2025 and actually it was not updating EJSCREEN after that.
 
@@ -132,6 +138,7 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
     yr <- substr( guess_as_of - 365 * lag_yrs_endyr_to_ejscreen, 1, 4)
     # regardless of typical lags, all of 2025 will have used the 2022 acs since no update to 2023 was done in mid or even late 2025, at least as of November 2025.
     if (guess_as_of <= "2025-12-31" && guess_as_of >= "2025-01-01") {yr <- "2022"}
+    # we could even validate that yr by checking the website. see ACSdownload:::validate.end.year(2023) ***
     message(paste0("It is a guess that ACS data may already be incorporated into this package for the 5-year survey period of ",
                    yr, " ", acs_yr_range(yr), " but not later periods"))
   }
