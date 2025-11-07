@@ -1025,8 +1025,13 @@ app_ui <- function(request) {
                  ## BOOKMARKS button ####
                  h2("Bookmarking to save settings and inputs"),
 
-                 conditionalPanel(condition = 'EJAM:::global_or_param("bookmarking_allowed") != "disable"', {
-                   bookmarkButton()  # https://mastering-shiny.org/action-bookmark.html
+                 conditionalPanel(condition = 'input.bookmarking_allowed_input == true', {
+                   fluidRow(
+                     column(3,
+                   bookmarkButton(),  # https://mastering-shiny.org/action-bookmark.html
+                   shiny::checkboxInput("bookmarking_allowed_input", "Allow bookmarking?",
+                                        value = EJAM:::global_or_param("bookmarking_allowed") != 'disable')
+                     ))
                  }),
                  ######################################################## #
                  ## ------------------------ app title ### #
