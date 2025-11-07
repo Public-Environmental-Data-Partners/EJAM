@@ -200,7 +200,7 @@ To include specific columns provides those as a character vector of varnames.")
           sf::st_write(
             obj = bysite_shp,
             dsn = finalpath,
-            driver = "kml",
+            driver = "KML",
             delete_layer = TRUE, # delete_layer not supported?
             append = FALSE,
             quiet = quiet,
