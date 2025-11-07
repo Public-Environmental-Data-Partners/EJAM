@@ -25,7 +25,7 @@ if (!is.null(isPublic)) {
   #isPublic <- isPublic
 } else {
   # if user didn't specify isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
-  isPublic <- TRUE ### FALSE ### TEMPORARILY SET THIS WAY
+  isPublic <-  FALSE ###
 }
 ########## #
 # use_fipspicker ####
@@ -49,7 +49,7 @@ global_defaults_shiny_public <- list(
                                           FALSE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via ejamapp(default_show_advanced_settings=T))
   ),
   #   is user able to unhide the tab? (via buttons)
-  default_can_show_advanced_settings = !isTRUE(isPublic),
+  default_can_show_advanced_settings = !isTRUE(isPublic), # public version cannot show advanced tab
 
   # Histograms tab
   default_hide_plot_histo_tab = isTRUE(isPublic),  # hidden because complicated and public may not want it anyway
