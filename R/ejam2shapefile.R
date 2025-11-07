@@ -64,7 +64,7 @@ ejam2shapefile <- function(ejamitout,
     }
   }
   if (intype %in% "fips" && is.null(shp)) {
-    shp <- shapes_from_fips(df)
+    shp <- shapes_from_fips(df$fips)
   }
 
   # WHICH COLUMNS? ####
