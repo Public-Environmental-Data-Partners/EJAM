@@ -100,7 +100,7 @@ To include specific columns provides those as a character vector of varnames.")
       } else {
         if (!is.null(shp)) {shpnames <- names(shp)} else {shpnames <- NULL}
         if ((is.null(shp)) & !('radius.miles' %in% varnames)) {
-          varnames = c(varnames, 'radius.miles')
+          varnames <- c(varnames, 'radius.miles')
         } # radius will be needed to draw circles, unless shp provided
         ok <- varnames %in% c(names(df), shpnames)
         if (any(!ok)) {warning("Some specified varnames not found")}

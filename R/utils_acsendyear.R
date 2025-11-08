@@ -1,6 +1,6 @@
 
 ######################
-acs_yr_range = function(end.year, parens=TRUE) {
+acs_yr_range <- function(end.year, parens=TRUE) {
   txt = paste0(end.year - 4, "-", end.year)
   if (parens) {
     txt = paste0("(", txt, ")")
@@ -24,8 +24,8 @@ acs_yr_range = function(end.year, parens=TRUE) {
 #'  from Census Bureau publishing to EJAM incorporating.
 #'  If this is set TRUE, then the guess_always parameter is ignored.
 #'
-#'  @param lag_yrs_endyr_to_census_publishes years to assume lag between end of endyear and when Census Bureau releases ACS dataset for 5yr summary file
-#'  @param lag_yrs_endyr_to_ejscreen years to assume lag between end of endyear and when ejscreen gets updated with ACS data
+#' @param lag_yrs_endyr_to_census_publishes years to assume lag between end of endyear and when Census Bureau releases ACS dataset for 5yr summary file
+#' @param lag_yrs_endyr_to_ejscreen years to assume lag between end of endyear and when ejscreen gets updated with ACS data
 #' @details
 #' - The 2020-2024 data should be released by Census Bureau 12/11/2025.
 #'
@@ -123,7 +123,7 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
     }
     message("Guessing based on what may be the case as of ", as.character(guess_as_of), "\n")
 
-    likely_already_published_yr = substr(  guess_as_of - 365 * lag_yrs_endyr_to_census_publishes, 1, 4)
+    likely_already_published_yr <- substr(  guess_as_of - 365 * lag_yrs_endyr_to_census_publishes, 1, 4)
     # based on published schedules and actual release at end of 2024, we know the 2019-2023 data are the ACS data available during almost all of 2025:
     if (guess_as_of <= "2025-12-11" && guess_as_of >= "2024-12-13") {likely_already_published_yr <- "2023"}
     if (guess_as_of <= "2026-12-12" && guess_as_of >= "2025-12-12") {likely_already_published_yr <- "2024"}
