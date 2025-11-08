@@ -22,7 +22,7 @@ test_that("ejam2shapefile ok if save=F", {
         junk <- testthat::capture_output({
 
           # make the test data smaller to try to speed it up
-          tout = list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
+          tout <- list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
           shp <- ejam2shapefile(tout, save = FALSE)
           # shp <- ejam2shapefile(testoutput_ejamit_10pts_1miles, save = FALSE)
         })
@@ -48,7 +48,7 @@ test_that("ejam2shapefile ok if folder=tempdir()", {
           tout = list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
           x = ejam2shapefile(tout, folder = tempdir())
         })
-        junk = capture_output({
+        junk <- capture_output({
           shp <- shapefile_from_any(x)
         })
       })
@@ -82,7 +82,7 @@ test_that("ejam2shapefile ok if folder and .shp specified", {
 ########################################################################## #
 
 test_that("ejam2shapefile ok if folder and .zip specified", {
-  extension = ".zip"
+  extension <- ".zip"
   expect_no_error({
     suppressWarnings({
       suppressMessages({
@@ -102,7 +102,7 @@ test_that("ejam2shapefile ok if folder and .zip specified", {
 ########################################################################## #
 
 test_that("ejam2shapefile ok if folder and .json specified", {
-  extension = ".json"
+  extension <- ".json"
   expect_no_error({
     suppressWarnings({
       suppressMessages({
@@ -122,7 +122,7 @@ test_that("ejam2shapefile ok if folder and .json specified", {
 ########################################################################## #
 
 test_that("ejam2shapefile ok if folder and .geojson specified", {
-  extension = ".geojson"
+  extension <- ".geojson"
   expect_no_error({
     suppressWarnings({
       suppressMessages({

@@ -23,7 +23,7 @@ fips_bgs_in_fips1 <- function(fips, na.rm = TRUE) {
   # if exactly 12 digits now, return as bgfips
   bgfips <- fips[len == 12 & !is.na(len)]
 
-  # if bigger than bg (<12 digits), return all the child bgs, and call those the nonbg-related fips
+  # if larger geographic area than bg (<12 digits), return all the child bgs, and call those the nonbg-related fips
   #   if nchar==2, state, so get all bg starting with that
   #   if nchar is N, get all bg starting with those N characters
   nonbg <- fips[len !=  12 & !is.na(len)]
