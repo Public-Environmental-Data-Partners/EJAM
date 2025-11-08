@@ -51,9 +51,11 @@ ejam2shapefile <- function(ejamitout,
 ) {
 
   #  ejamitout <- testoutput_ejamit_10pts_1miles; crs = 4269; file = "bysite.shp" ;  folder =  "~/../Downloads"  # getwd()
+  intype <- NULL
   if ('results_bysite' %in% names(ejamitout)) {
+    if ("sitetype" %in% names(ejamitout)) {intype <- ejamitout$sitetype}
     df <- data.table::setDF(ejamitout$results_bysite)
-    intype <- ejamitout$sitetype
+    if (is.null(intype)) {intype <- sitetype_from_dt(df)}
   } else {
     # in case just 1 table was passed to this function
     if (is.data.frame(ejamitout)) {
@@ -63,7 +65,7 @@ ejam2shapefile <- function(ejamitout,
       stop('ejamitout must be a data.table or at least a data.frame')
     }
   }
-  if (intype %in% "fips" && is.null(shp)) {
+  if ("fips" %in% intype && is.null(shp)) {
     shp <- shapes_from_fips(df$fips)
   }
   if (!is.null(shp)) {shpnames <- names(shp)} else {shpnames <- NULL}
