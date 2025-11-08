@@ -124,8 +124,8 @@ get_global_defaults_or_user_options <- function(user_specified_options = NULL, b
   # We handle isPublic in this special way below since it has to be available in this calling envt
   # so that when we source global_defaults_shiny_public.R local=T it can be checked and used to set defaults correctly.
 
-  if ("isPublic" %in% names(user_specified_options)) {
-    isPublic <- user_specified_options$isPublic
+  if ("isPublic" %in% names(global_defaults_or_user_options)) {
+    isPublic <- global_defaults_or_user_options$isPublic
   }
   source(system.file("global_defaults_shiny_public.R", package = "EJAM"), local = TRUE) # local=T avoids filling global env with the lists like help_texts etc.
   global_defaults_or_user_options <- update_global_defaults_or_user_options(global_defaults_shiny_public)

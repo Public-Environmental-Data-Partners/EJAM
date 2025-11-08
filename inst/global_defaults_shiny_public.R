@@ -24,7 +24,7 @@ isPublic <- EJAM:::global_or_param("isPublic")
 if (!is.null(isPublic)) {
   #isPublic <- isPublic
 } else {
-  # if user didn't specify isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
+  # if neither user nor app.R  specified isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
   isPublic <-  FALSE ###
 }
 ########## #
@@ -44,7 +44,8 @@ global_defaults_shiny_public <- list(
 
   # Advanced tab (NOT ideal for public-facing version)
   #   is the tab hidden initially?
-  default_show_advanced_settings = ifelse(isPublic,
+  default_show_advanced_settings = ifelse(isTRUE(isPublic),
+                                          # but a user setting this TRUE via ejamapp() can override efx of isPublic
                                           FALSE,  # if hosted public app, and app.R  sets isPublic=T, this hides the Adv. tab
                                           FALSE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via ejamapp(default_show_advanced_settings=T))
   ),

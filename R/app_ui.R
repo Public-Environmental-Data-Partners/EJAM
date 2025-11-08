@@ -68,7 +68,7 @@ app_ui <- function(request) {
                           conditionalPanel(
                             # So that About tab can be shown without necessarily allowing users to show/hide the advanced tab,
                             ## button to show/hide Advanced tab  ####
-                            condition = "input.can_show_advanced_settings == 'TRUE'",
+                            condition = "input.can_show_advanced_settings == 'TRUE'", # javascript syntax supposedly says true but 'TRUE' is what works hee
                             actionButton(inputId = 'ui_show_advanced_settings','Show Advanced Settings Tab', class = 'usa-button'),
                             actionButton(inputId = 'ui_hide_advanced_settings','Hide Advanced Settings Tab', class = 'usa-button')
                           ),
@@ -1387,10 +1387,10 @@ app_ui <- function(request) {
                  h3("Advanced tab"),
                  radioButtons(inputId = "show_advanced_settings", "Start with Advanced tab shown?", choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected =  EJAM:::global_or_param("default_show_advanced_settings")), # see global_defaults_shiny_public.R
+                              selected =  as.logical(EJAM:::global_or_param("default_show_advanced_settings"))), # see global_defaults_shiny_public.R
                  radioButtons(inputId = "can_show_advanced_settings", "Provide buttons to let user Show/Hide advanced tab?", choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected = EJAM:::global_or_param("default_can_show_advanced_settings")),
+                              selected = as.logical(EJAM:::global_or_param("default_can_show_advanced_settings"))),
 
                  ##################################################### #
                  ### testing modes ####

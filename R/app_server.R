@@ -157,7 +157,7 @@ app_server <- function(input, output, session) {
   # initial state (or if input$show_advanced_settings is changed in the adv. tab)
   observe({
     req(input$show_advanced_settings)
-    if (!isTRUE(input$show_advanced_settings)) {
+    if (!isTRUE(as.logical(input$show_advanced_settings))) {
       hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
       isolate({
         if (input$can_show_advanced_settings) {
