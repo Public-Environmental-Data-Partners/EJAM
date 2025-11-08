@@ -301,7 +301,7 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
     #     to use a new func to provide bgid_from_anyfips()
     #     instead of 1st getting bgfips and then needing to look up bgid by bgfips.
     # We should switch to doing it all this way:
-    #      use fips_bgs_in_fips() to get all bgfips values in each of the bg/tract/county/state fips codes analyzed (which does fips_lead_zero() and fipstypte() and uses blockgroupstats)
+    #      use fips_bgs_in_fips() to get all bgfips values in each of the bg/tract/county/state fips codes analyzed (which does fips_lead_zero() and fipstype() and uses blockgroupstats)
     #      use join to blockgroupstats on bgfips, to get all bgid values
     #  OR use a variation on
     #      use join to blockwts on bgid, to get all the blockid values.

@@ -1,9 +1,9 @@
 
 ######################
 acs_yr_range <- function(end.year, parens=TRUE) {
-  txt = paste0(end.year - 4, "-", end.year)
+  txt <- paste0(end.year - 4, "-", end.year)
   if (parens) {
-    txt = paste0("(", txt, ")")
+    txt <- paste0("(", txt, ")")
   }
   return(txt)
 }
@@ -12,7 +12,7 @@ acs_yr_range <- function(end.year, parens=TRUE) {
 
 #' check which ACS 5-year survey is available, per EJAM metadata or guessed via published or typical schedules
 #'
-#' @param guess_as_of optional alternative data to use if guessing what is available
+#' @param guess_as_of optional alternative date to use if guessing what is available
 #'  as of this date, e.g., "2025-01-01" -- Date class like Sys.Date()
 #' @param guess_always optional, set TRUE to ignore metadata and just guess at year.
 #'  But guess_always=F is ignored if guess_census_has_published=T

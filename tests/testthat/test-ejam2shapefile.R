@@ -142,7 +142,7 @@ test_that("ejam2shapefile ok if folder and .geojson specified", {
 ########################################################################## #
 
 test_that("ejam2shapefile ok if folder and .kml specified", {
-  extension = ".kml"
+  extension <- ".kml"
   expect_no_error({
     suppressWarnings({
       suppressMessages({
