@@ -19,15 +19,13 @@ test_that("ejam2shapefile ok if save=F", {
     expect_no_warning( #
       # save FALSE
       suppressMessages({
-
-
-        # make the test data smaller to try to speed it up
-        tout = list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
         junk <- testthat::capture_output({
+
+          # make the test data smaller to try to speed it up
+          tout <- list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
           shp <- ejam2shapefile(tout, save = FALSE)
           # shp <- ejam2shapefile(testoutput_ejamit_10pts_1miles, save = FALSE)
         })
-        rm(junk)
       })
     )
     # map_shapes_leaflet(shp)
@@ -41,30 +39,18 @@ test_that("ejam2shapefile ok if save=F", {
 ## note: cannot find a way to suppress the text output about 4 files being created - sink and capture output and suppressMessages dont help
 
 test_that("ejam2shapefile ok if folder=tempdir()", {
-  # provide folder
 
   expect_no_error({
     suppressWarnings({
       suppressMessages({
         junk = capture_output({
-
           # make the test data smaller to try to speed it up
           tout = list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
           x = ejam2shapefile(tout, folder = tempdir())
-          # x = ejam2shapefile(testoutput_ejamit_10pts_1miles, folder = tempdir())
-
-          # zip::zip_list(x)  # not required by EJAM pkg
-          # browseURL(dirname(x))
-          # dir(dirname(x), pattern = "zip")
         })
-
-        junk = capture_output({
-
-          shp <- shapefile_from_any(x, silentinteractive=TRUE)
-          # shp[1:3,4:8]
-
+        junk <- capture_output({
+          shp <- shapefile_from_any(x)
         })
-        rm(junk)
       })
     })
   })
@@ -75,28 +61,16 @@ test_that("ejam2shapefile ok if folder=tempdir()", {
 })
 ################################# #
 
-## note: cannot find a way to suppress the text output about 4 files being created - sink and capture output and suppressMessages dont help
-
-test_that("ejam2shapefile ok if folder and file both specified", {
+test_that("ejam2shapefile ok if folder and .shp specified", {
+  extension = ".shp"
   expect_no_error({
     suppressWarnings({
       suppressMessages({
-
-        # make the test data smaller to try to speed it up
-        tout = list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
-
-        # both
         junk = capture_output({
-          x = ejam2shapefile(tout, file = 'test.shp', folder = tempdir())
+          tout <- list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
+          x <- ejam2shapefile(tout, file = paste0('test', extension), folder = tempdir())
+          shp <- shapefile_from_any(x)
         })
-        # x = ejam2shapefile(testoutput_ejamit_10pts_1miles, file = 'test.shp', folder = tempdir())
-        # zip::zip_list(x) # not required by EJAM pkg
-        junk = capture_output({
-          shp <- shapefile_from_any(x, silentinteractive=TRUE)
-        })
-
-
-        rm(junk)
       })
     })
   })
@@ -105,7 +79,86 @@ test_that("ejam2shapefile ok if folder and file both specified", {
   # expect_equal(NROW(shp), 10)
   expect_equal(NROW(shp), 2)
 })
+########################################################################## #
 
+test_that("ejam2shapefile ok if folder and .zip specified", {
+  extension <- ".zip"
+  expect_no_error({
+    suppressWarnings({
+      suppressMessages({
+        junk = capture_output({
+          tout <- list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
+          x <- ejam2shapefile(tout, file = paste0('test', extension), folder = tempdir())
+          shp <- shapefile_from_any(x)
+        })
+      })
+    })
+  })
+  expect_true(file.exists(x))
+  expect_true("sf" %in% class(shp))
+  # expect_equal(NROW(shp), 10)
+  expect_equal(NROW(shp), 2)
+})
+########################################################################## #
+
+test_that("ejam2shapefile ok if folder and .json specified", {
+  extension <- ".json"
+  expect_no_error({
+    suppressWarnings({
+      suppressMessages({
+        junk = capture_output({
+          tout <- list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
+          x <- ejam2shapefile(tout, file = paste0('test', extension), folder = tempdir())
+          shp <- shapefile_from_any(x)
+        })
+      })
+    })
+  })
+  expect_true(file.exists(x))
+  expect_true("sf" %in% class(shp))
+  # expect_equal(NROW(shp), 10)
+  expect_equal(NROW(shp), 2)
+})
+########################################################################## #
+
+test_that("ejam2shapefile ok if folder and .geojson specified", {
+  extension <- ".geojson"
+  expect_no_error({
+    suppressWarnings({
+      suppressMessages({
+        junk = capture_output({
+          tout <- list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
+          x <- ejam2shapefile(tout, file = paste0('test', extension), folder = tempdir())
+          shp <- shapefile_from_any(x)
+        })
+      })
+    })
+  })
+  expect_true(file.exists(x))
+  expect_true("sf" %in% class(shp))
+  # expect_equal(NROW(shp), 10)
+  expect_equal(NROW(shp), 2)
+})
+########################################################################## #
+
+test_that("ejam2shapefile ok if folder and .kml specified", {
+  extension = ".kml"
+  expect_no_error({
+    suppressWarnings({
+      suppressMessages({
+        junk = capture_output({
+          tout <- list(results_bysite = testoutput_ejamit_10pts_1miles$results_bysite[1:2, ])
+          x <- ejam2shapefile(tout, file = paste0('test', extension), folder = tempdir())
+          shp <- shapefile_from_any(x)
+        })
+      })
+    })
+  })
+  expect_true(file.exists(x))
+  expect_true("sf" %in% class(shp))
+  # expect_equal(NROW(shp), 10)
+  expect_equal(NROW(shp), 2)
+})
 ########################################################################## #
 
 
