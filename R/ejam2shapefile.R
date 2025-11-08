@@ -71,7 +71,7 @@ ejam2shapefile <- function(ejamitout,
   if (is.null(varnames) || all(is.na(varnames)) || varnames[1] == "all") {
     varnames <- unique(c(names(df), shpnames))
   }
-  if (!all(varnames %in% "basic250")) {
+  if (!(length(varnames) == 1 && varnames[1] == "basic250")) {
     if (!all(varnames %in% c(names(df), shpnames))) {warning("Some specified varnames not found in provided data.table or shp")}
     varnames <- varnames[varnames %in% c(names(df), shpnames) ]   # keep only those that are in df
     df <- df[ , names(df)[names(df) %in% varnames]]
@@ -85,7 +85,7 @@ ejam2shapefile <- function(ejamitout,
         # we have to limit it to 250 since shp/zip format file
         varnames <- "basic250"
       }
-      if (all(varnames %in% "basic250")) {
+      if (length(varnames) == 1 && varnames[1] == "basic250") {
         # because shapefiles have a cap on number of fields in some implementations
         # omits averages, ratios, and raw EJ scores, which are not essential or are not in typical EJScreen outputs
         names_basic250 <- sort(grep("^avg|^state.avg|^ratio|^EJ.D|^state.EJ", names(df), invert = T, value = T))
