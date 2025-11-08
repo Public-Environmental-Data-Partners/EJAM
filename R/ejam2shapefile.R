@@ -66,14 +66,14 @@ ejam2shapefile <- function(ejamitout,
   if (intype %in% "fips" && is.null(shp)) {
     shp <- shapes_from_fips(df$fips)
   }
-
+  if (!is.null(shp)) {shpnames <- names(shp)} else {shpnames <- NULL}
   # WHICH COLUMNS? ####
   if (is.null(varnames) || all(is.na(varnames)) || varnames[1] == "all") {
-    varnames <- unique(c(names(df), names(shp)))
+    varnames <- unique(c(names(df), shpnames))
   }
   if (!all(varnames %in% "basic250")) {
-    if (!all(varnames %in% c(names(df), names(shp)))) {warning("Some specified varnames not found in provided data.table or shp")}
-    varnames <- varnames[varnames %in% c(names(df), names(shp)) ]   # keep only those that are in df
+    if (!all(varnames %in% c(names(df), shpnames))) {warning("Some specified varnames not found in provided data.table or shp")}
+    varnames <- varnames[varnames %in% c(names(df), shpnames) ]   # keep only those that are in df
     df <- df[ , names(df)[names(df) %in% varnames]]
   }
 
@@ -98,11 +98,11 @@ ejam2shapefile <- function(ejamitout,
 To include averages, ratios, and raw EJ scores, set varnames = 'all' or NULL.
 To include specific columns provides those as a character vector of varnames.")
       } else {
-
+        if (!is.null(shp)) {shpnames <- names(shp)} else {shpnames <- NULL}
         if ((is.null(shp)) & !('radius.miles' %in% varnames)) {
           varnames = c(varnames, 'radius.miles')
         } # radius will be needed to draw circles, unless shp provided
-        ok <- varnames %in% c(names(df), names(shp))
+        ok <- varnames %in% c(names(df), shpnames)
         if (any(!ok)) {warning("Some specified varnames not found")}
         if (all(!ok)) {stop("No specified varnames found") }
         df <- df[ , names(df)[names(df) %in% varnames]]
