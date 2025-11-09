@@ -42,15 +42,16 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 
 This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.
 
-Some of this is work-in-progress.
+Most of what you might want to do is shown in documentation showing examples of using the `ejamapp()` function. This article is only needed if you want even more detail. First reading the `ejamapp()` reference info is recommended before reading any of the details below.
+
 
 ## HOW SETTINGS GET PASSED TO THE WEB APP
 
-Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` aka `run_app()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. For example, one can change default settings for the radius, the type of sites to analyze, name of the analysis, etc., or to override caps such as limits on file upload size or number of points:
+Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` aka `run_app()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. It can be used on a laptop, for example interactively with custom settings. For example, one can change the radius, the type of sites to analyze, default name of the analysis, report title/logo, etc., or to override caps such as limits on file upload size or number of points:
 
 ```{r run-app1, eval=FALSE}
 ejamapp(
-  radius=3.1,
+  radius=3.14,
   default_max_miles=31,
   default_max_mb_upload=100
 )
@@ -103,7 +104,7 @@ and some settings depend on isPublic being T or F.
 
 ### ejamapp() parameters
 
-If the app is launched directly via ejamapp() by a user in RStudio console, it skips app.R
+If the app is launched directly via `ejamapp()` by a user in RStudio console, it skips app.R
 and a user can provide arguments as parameters in ejamapp(...). See `?ejamapp`
 
 ### global_defaults_*.R files
@@ -140,11 +141,13 @@ setting that we failed to provide in global_defaults files and that variable nam
 
 ### Advanced Tab
 
-Then, SOME BUT NOT ALL global_defaults_ settings are in the Advanced Tab (in app_ui)
+SOME BUT NOT ALL global_defaults_ settings are in the Advanced Tab (in app_ui)
 where they typically provide the default for an input$ but that default can be overridden
 there by someone using the app's Advanced Tab,
 so what ui or server ends up using could be an input$ that is adjustable in the Advanced Tab
 and therefore can be bookmarked (since inputs can be bookmarked unless specifically excluded from that).
+
+To view the Advanced tab in the web app, click the About tab and then the Show advanced button on that page. If that button is not visible, use ejamapp(default_can_show_advanced_settings=TRUE). To show the advanced tab at launch, use ejamapp(default_show_advanced_settings=TRUE).
 
 ### web app reactives and interactive inputs
 
@@ -179,10 +182,10 @@ but not as shiny app inputs.
 
 ### Launch local app (the R user's computer) with custom settings
 
+See the examples in the documentation of the function `ejamapp()`  
+
+One such example:
 ```{r run-app, eval=FALSE}
-
-# Type out the custom settings each time you use ejamapp()
-
 ejamapp(
   default_standard_analysis_title="Custom NAICS Analysis",
   default_upload_dropdown="dropdown",
@@ -194,16 +197,12 @@ ejamapp(
 )
 ```
 
-
-
-
-
-<!--   not finished 
+<!--   not finished   - hidden from article until ready...
 
 
 Functions to help launch with custom parameters
 
-```{r run-app-with-params, eval=FALSE}
+```{r run-app-with-params, eval=FALSE, }
 
 # Define helper functions -   *************** UNFINISHED DRAFT  -   *************** 
 
@@ -236,7 +235,7 @@ myparams <- c(
   default_naics_digits_shown="detailed",
   default_naics="562211",
   radius_default=3.1,
-  default_ui_show_advanced_settings=1
+  default_show_advanced_settings=TRUE
 )
 
 run_with_paramlist(myparams)
@@ -253,7 +252,7 @@ myparams <- c(
   default_naics_digits_shown="detailed",
   default_naics="562211",
   radius_default=3.1,
-  default_ui_show_advanced_settings=1
+  default_show_advanced_settings=TRUE
 )
 
 # create your reusable customized app launcher
@@ -292,12 +291,9 @@ Note this tries to specify the NAICS method, but at least initially the draft co
 
 Here is an example using the URL of one copy of the hosted app:
 
-*** THIS EXAMPLE WILL WORK only with VERSION 2.32.6 or later:
-
 Locally hosted app example
 
 ```{r, eval=FALSE}
-
 # In 1 R session, launch locally with advanced tab disabled
 myport <- 5432
 ejamapp(isPublic=TRUE, options = list(port=myport))
@@ -310,7 +306,6 @@ params <- c('ui_show_advanced_settings=1')
 urlbase <- paste0("http://127.0.0.1:", myport, "/?_inputs_&")
 urlx <- URLencode(paste0(urlbase, paste0(params, collapse = "&")))
 browseURL(urlx)
-
 ```
 
 
@@ -342,9 +337,7 @@ browseURL(urlx)
 
 # URL tried, with fips picked
 # http://127.0.0.1:4200/?_inputs_&standard_analysis_title=%22Custom%20COUNTIES%20Analysis%22&pickermoduleid-all_regions_button=%22TRUE%22&pickermoduleid-all_states_button=%22TRUE%22&ui_show_advanced_settings=1&ss_choose_method=%22dropdown%22&fipspicker_done_button=2&ss_choose_method_drop=%22FIPS_PLACE%22&pickermoduleid-fips_type2pick=%22Counties%22&pickermoduleid-counties_picked=%2202110%22
-
 ```
-
 
 --------------
 --------------
@@ -399,57 +392,34 @@ dput(inputnames)
 ```{r inputnames, eval=TRUE}
 
 inputnames = c("add_naics_subcategories", "all_tabs", "allow_median_in_barplot_indicators", 
-               "an_map_clusters",
-               "an_thresh_comp2", "an_threshgroup1", "an_threshgroup2", "an_threshnames2", 
-               "analysis_title", 
-               "avoidorphans",
-               "back_to_site_sel", "back_to_site_sel2", "bt_get_results",
-               "calculate_ratios", "checkbox1", 
-               "coauthor_emails", "coauthor_names", "conclusion1", "conclusion2", "conclusion3", 
-               "Custom_title_for_bar_plot_of_indicators",
-               
-               "default_ss_choose_method", 
-               
-               "demog_high_at_what_share_of_sites", "demog_how_elevated", 
-               "envt_high_at_what_share_of_sites", "envt_how_elevated",
-               "epa_program_help",
-               "extra_demog", "extratable_hide_missing_rows_for", 
-               "extratable_show_ratios_in_report", "extratable_title", "extratable_title_top_row", 
-               
-               "facilities_studied", "facilities_studied_enter", "fips_help", 
-               "fipspicker_done_button",
-               "format1pager", "frs_help", "fundingsource", 
-               "go", "in_areas_where_enter", "in_the_x_zone", "in_the_x_zone_enter", 
-               "include_ejindexes", "latlon_help", "latlontypedin_submit_button", 
-               
-               "max_mb_upload", "max_miles", "maxradius",
-               "max_pts_map", "max_pts_run", "max_pts_select", "max_pts_upload", "max_shapes_map",
-               
-               "naics_digits_shown", 
-               "need_proximityscore", "ok2plot", "plotkind_1pager", 
-               
-               "radius_default", "radius_default_shapefile", "radius_now", "radius_units", 
-               
-               "results_tabs", "return_to_results",
-               
-               "rg_author_email", "rg_author_name",
-               "rg_enter_miles", "rg_enter_sites", "rg_zonetype", "risks_are_x", 
-               "shiny.testmode", 
-               "show_data_preview", "show_ratios_in_report", "shp_help", "source_of_latlons", 
-               
-               "ss_choose_method", "ss_choose_method_drop", "ss_choose_method_upload", 
-               "ss_select_mact", "ss_select_naics", "ss_select_program", "ss_select_sic", 
-               "ss_upload_fips", "ss_upload_frs", "ss_upload_latlon", "ss_upload_program", 
-               "ss_upload_shp", 
-               
-               "standard_analysis_title",
-               "subgroups_type",
-               
-               "summ_bar_data", "summ_bar_ind", "summ_bar_stat", "summ_hist_bins", 
-               "summ_hist_data", "summ_hist_distn", "summ_hist_ind",
-               
-               "testing", 
-               "ui_hide_advanced_settings", "ui_show_advanced_settings", "y"
+"an_map_clusters", "an_thresh_comp2", "an_threshgroup1", "an_threshgroup2", 
+"an_threshnames2", "analysis_title", "avoidorphans", "back_to_site_sel", 
+"back_to_site_sel2", "bt_get_results", "bysite_webtable_colnames", 
+"calculate_ratios", "can_show_advanced_settings", "checkbox1", 
+"coauthor_emails", "coauthor_names", "conclusion1", "conclusion2", 
+"conclusion3", "Custom_title_for_bar_plot_of_indicators", "default_ss_choose_method", 
+"demog_high_at_what_share_of_sites", "demog_how_elevated", "envt_high_at_what_share_of_sites", 
+"envt_how_elevated", "epa_program_help", "extra_demog", "extratable_hide_missing_rows_for", 
+"extratable_show_ratios_in_report", "extratable_title", "extratable_title_top_row", 
+"facilities_studied", "facilities_studied_enter", "fips_help", 
+"fipspicker_done_button", "format1pager", "frs_help", "fundingsource", 
+"go", "in_areas_where_enter", "in_the_x_zone", "in_the_x_zone_enter", 
+"include_ejindexes", "latlon_help", "latlontypedin_submit_button", 
+"max_mb_upload", "max_miles", "max_pts_map", "max_pts_run", "max_pts_select", 
+"max_pts_upload", "max_shapes_map", "maxradius", "naics_digits_shown", 
+"need_proximityscore", "ok2plot", "plotkind_1pager", "radius_default", 
+"radius_default_shapefile", "radius_now", "radius_units", "results_tabs", 
+"return_to_results", "rg_author_email", "rg_author_name", "rg_enter_miles", 
+"rg_enter_sites", "rg_zonetype", "risks_are_x", "shiny.testmode", 
+"show_advanced_settings", "show_data_preview", "show_ratios_in_report", 
+"shp_help", "sitereport_download_buttons_show", "source_of_latlons", 
+"ss_choose_method", "ss_choose_method_drop", "ss_choose_method_upload", 
+"ss_select_mact", "ss_select_naics", "ss_select_program", "ss_select_sic", 
+"ss_upload_fips", "ss_upload_frs", "ss_upload_latlon", "ss_upload_program", 
+"ss_upload_shp", "standard_analysis_title", "subgroups_type", 
+"summ_bar_data", "summ_bar_ind", "summ_bar_stat", "summ_hist_bins", 
+"summ_hist_data", "summ_hist_distn", "summ_hist_ind", "testing", 
+"ui_hide_advanced_settings", "ui_show_advanced_settings", "y"
 )
 ```
 
@@ -565,7 +535,8 @@ EJAM:::args2(ejamit)
 # called_by_ejamit         TRUE     for doaggregate(), na
 # showdrinkingwater        TRUE     for doaggregate(), na
 # showpctowned             TRUE     for doaggregate(), na
-#   download_fips_bounds_to_calc_areas FALSE
+# download_city_fips_bounds = TRUE,
+# download_noncity_fips_bounds = FALSE,
 # ...                      ?   for getblocksnearby(), like use_unadjusted_distance ** shiny default NOT specified here
 ```
 
@@ -583,7 +554,7 @@ all_tabs="See Results"   # or # all_tabs="Advanced Settings"
 results_tabs="Community Report"
 details_subtabs="Site-by-Site Table"
 
-show_advanced_settings="TRUE" # ??
+show_advanced_settings="TRUE" 
 can_show_advanced_settings="TRUE"
 
 # buttons:

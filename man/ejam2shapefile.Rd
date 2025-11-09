@@ -11,7 +11,7 @@ ejam2shapefile(
   save = TRUE,
   crs = 4269,
   shortcolnames = TRUE,
-  varnames = "basic250",
+  varnames = "all",
   shp = NULL,
   quiet = TRUE,
   ...
