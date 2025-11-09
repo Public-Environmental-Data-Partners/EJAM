@@ -36,7 +36,7 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
   }))
   ############### #  ############### #
 
-  try(test_that(paste0(funcname, " 1 BLOCK FIPS works?"), {   ##  FAILS TO WORK FOR A BLOCK - created github issue for that
+  try(test_that(paste0(funcname, " 1 BLOCK FIPS works IN API?"), {   ## until implemented, would FAIL TO WORK FOR A BLOCK - created github issue for that
     oldwidth = options("width")
     expect_no_error({
       x <- FUN(fips = "091701844002024", ...) # fipsmix[1] # blockid is 1203214, parent bgid is 43168
@@ -107,15 +107,26 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
-  ############### #     MULTISITE OVERALL RESULTS REPORT MIGHT NOT BE IMPLEMENTED YET:
+  ############### #     MULTISITE OVERALL RESULTS REPORT url:
 
-  try(test_that(paste0(funcname, " 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL if sitenumber=0"), {
+  try(test_that(paste0(funcname, " 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL if sitenumber=0 (makes url)"), {
     oldwidth = options("width")
     expect_no_error({
       x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
     })
-    expect_equal(length(x), 1)
-    expect_true(url_online(x[1]))
+    expect_equal(length(x), 1) # (makes url)
+    # expect_true(url_online(x[1]))
+    options(width = as.vector(unlist(oldwidth)))
+  }))
+  ############### #     MULTISITE OVERALL RESULTS REPORT - API MIGHT NOT IMPLEMENTED this YET:
+
+  try(test_that(paste0(funcname, " 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL if sitenumber=0 (API HANDLES IT?)"), {
+    oldwidth = options("width")
+    expect_no_error({
+      x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
+    })
+    # expect_equal(length(x), 1)
+    expect_true(url_online(x[1])) # (API HANDLES IT?)
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #  ############### #
