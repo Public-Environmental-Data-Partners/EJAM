@@ -933,8 +933,6 @@ AIR,	IL000031012ACJ<br>
 
         ### old EPA-specific tags removed here ####
 
-        tags$meta(property="og:image:width", content="1200"),
-        tags$meta(property="og:image:height", content="630"),
 
         tags$meta(name="MobileOptimized", content="width"),
         tags$meta(name="HandheldFriendly", content="true"),
