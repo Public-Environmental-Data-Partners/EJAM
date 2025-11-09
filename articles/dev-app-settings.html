@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +57,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -101,6 +102,11 @@ PARAMETERS<a class="anchor" aria-label="anchor" href="#notes-on-global-defaults-
 </h2>
 <p>This document provides technical notes on how defaults and custom
 settings are defined for the EJAM web app.</p>
+<p>Most of what you might want to do is shown in documentation showing
+examples of using the <code><a href="../reference/ejamapp.html">ejamapp()</a></code> function. This article is
+only needed if you want even more detail. First reading the
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code> reference info is recommended before reading any
+of the details below.</p>
 <div class="section level3">
 <h3 id="how-settings-get-passed-to-the-web-app">HOW SETTINGS GET PASSED TO THE WEB APP<a class="anchor" aria-label="anchor" href="#how-settings-get-passed-to-the-web-app"></a>
 </h3>
@@ -110,12 +116,14 @@ can be passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> 
 parameters, to override those global default settings for the duration
 of the app. Using <code><a href="../reference/ejamapp.html">ejamapp()</a></code> parameters allows experienced
 analysts to customize how the web app works without having to edit any
-files. For example, one can change default settings for the radius, the
-type of sites to analyze, name of the analysis, etc., or to override
-caps such as limits on file upload size or number of points:</p>
+files. It can be used on a laptop, for example interactively with custom
+settings. For example, one can change the radius, the type of sites to
+analyze, default name of the analysis, report title/logo, etc., or to
+override caps such as limits on file upload size or number of
+points:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span></span>
-<span>  radius_default<span class="op">=</span><span class="fl">3.1</span>,</span>
+<span>  radius<span class="op">=</span><span class="fl">3.14</span>,</span>
 <span>  default_max_miles<span class="op">=</span><span class="fl">31</span>,</span>
 <span>  default_max_mb_upload<span class="op">=</span><span class="fl">100</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -181,9 +189,9 @@ isPublic being T or F.</p>
 <div class="section level4">
 <h4 id="ejamapp-parameters">ejamapp() parameters<a class="anchor" aria-label="anchor" href="#ejamapp-parameters"></a>
 </h4>
-<p>If the app is launched directly via ejamapp() by a user in RStudio
-console, it skips app.R and a user can provide arguments as parameters
-in ejamapp(…). See <code><a href="../reference/ejamapp.html">?ejamapp</a></code></p>
+<p>If the app is launched directly via <code><a href="../reference/ejamapp.html">ejamapp()</a></code> by a user
+in RStudio console, it skips app.R and a user can provide arguments as
+parameters in ejamapp(…). See <code><a href="../reference/ejamapp.html">?ejamapp</a></code></p>
 </div>
 <div class="section level4">
 <h4 id="global_defaults_-r-files">global_defaults_*.R files<a class="anchor" aria-label="anchor" href="#global_defaults_-r-files"></a>
@@ -241,12 +249,17 @@ name happens to be in the global env !</p>
 <div class="section level4">
 <h4 id="advanced-tab">Advanced Tab<a class="anchor" aria-label="anchor" href="#advanced-tab"></a>
 </h4>
-<p>Then, SOME BUT NOT ALL global_defaults_ settings are in the Advanced
-Tab (in app_ui) where they typically provide the default for an input$
-but that default can be overridden there by someone using the app’s
-Advanced Tab, so what ui or server ends up using could be an input$ that
-is adjustable in the Advanced Tab and therefore can be bookmarked (since
+<p>SOME BUT NOT ALL global_defaults_ settings are in the Advanced Tab
+(in app_ui) where they typically provide the default for an input$ but
+that default can be overridden there by someone using the app’s Advanced
+Tab, so what ui or server ends up using could be an input$ that is
+adjustable in the Advanced Tab and therefore can be bookmarked (since
 inputs can be bookmarked unless specifically excluded from that).</p>
+<p>To view the Advanced tab in the web app, click the About tab and then
+the Show advanced button on that page. If that button is not visible,
+use ejamapp(default_can_show_advanced_settings=TRUE). To show the
+advanced tab at launch, use
+ejamapp(default_show_advanced_settings=TRUE).</p>
 </div>
 <div class="section level4">
 <h4 id="web-app-reactives-and-interactive-inputs">web app reactives and interactive inputs<a class="anchor" aria-label="anchor" href="#web-app-reactives-and-interactive-inputs"></a>
@@ -285,20 +298,20 @@ reactives but not as shiny app inputs.</p>
 <div class="section level4">
 <h4 id="launch-local-app-the-r-users-computer-with-custom-settings">Launch local app (the R user’s computer) with custom settings<a class="anchor" aria-label="anchor" href="#launch-local-app-the-r-users-computer-with-custom-settings"></a>
 </h4>
+<p>See the examples in the documentation of the function
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code></p>
+<p>One such example:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># Type out the custom settings each time you use ejamapp()</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span></span>
 <span>  default_standard_analysis_title<span class="op">=</span><span class="st">"Custom NAICS Analysis"</span>,</span>
 <span>  default_upload_dropdown<span class="op">=</span><span class="st">"dropdown"</span>,</span>
 <span>  default_selected_type_of_site_category<span class="op">=</span><span class="st">"NAICS"</span>,</span>
 <span>  default_naics_digits_shown<span class="op">=</span><span class="st">"detailed"</span>,</span>
 <span>  default_naics<span class="op">=</span><span class="st">"562211"</span>,</span>
 <span>  radius_default<span class="op">=</span><span class="fl">3.1</span>,</span>
-<span>  default_ui_show_advanced_settings<span class="op">=</span><span class="fl">1</span></span>
+<span>  default_show_advanced_settings<span class="op">=</span><span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<!--   not finished 
+<!--   not finished   - hidden from article until ready...
 
 
 Functions to help launch with custom parameters
@@ -338,7 +351,7 @@ myparams <- c(
   default_naics_digits_shown="detailed",
   default_naics="562211",
   radius_default=3.1,
-  default_ui_show_advanced_settings=1
+  default_show_advanced_settings=TRUE
 )
 
 run_with_paramlist(myparams)
@@ -356,7 +369,7 @@ myparams <- c(
   default_naics_digits_shown="detailed",
   default_naics="562211",
   radius_default=3.1,
-  default_ui_show_advanced_settings=1
+  default_show_advanced_settings=TRUE
 )
 
 # create your reusable customized app launcher
@@ -392,11 +405,9 @@ radius</strong></p>
 the draft code handling this could not specify the NAICS code itself or
 start analysis via URL bookmark:</p>
 <p>Here is an example using the URL of one copy of the hosted app:</p>
-<p>*** THIS EXAMPLE WILL WORK only with VERSION 2.32.6 or later:</p>
 <p>Locally hosted app example</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># In 1 R session, launch locally with advanced tab disabled</span></span>
+<code class="sourceCode R"><span><span class="co"># In 1 R session, launch locally with advanced tab disabled</span></span>
 <span><span class="va">myport</span> <span class="op">&lt;-</span> <span class="fl">5432</span></span>
 <span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span>isPublic<span class="op">=</span><span class="cn">TRUE</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>port<span class="op">=</span><span class="va">myport</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -485,93 +496,91 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="co">#&gt;  [28,] "default_extratable_title"                     </span></span>
 <span><span class="co">#&gt;  [29,] "default_extratable_title_top_row"             </span></span>
 <span><span class="co">#&gt;  [30,] "default_hide_about_tab"                       </span></span>
-<span><span class="co">#&gt;  [31,] "default_hide_ejscreenapi_tab"                 </span></span>
-<span><span class="co">#&gt;  [32,] "default_hide_plot_barplot_tab"                </span></span>
-<span><span class="co">#&gt;  [33,] "default_hide_plot_histo_tab"                  </span></span>
-<span><span class="co">#&gt;  [34,] "default_hide_written_report"                  </span></span>
-<span><span class="co">#&gt;  [35,] "default_hyperlink_colnames"                   </span></span>
-<span><span class="co">#&gt;  [36,] "default_include_averages"                     </span></span>
-<span><span class="co">#&gt;  [37,] "default_include_ejindexes"                    </span></span>
-<span><span class="co">#&gt;  [38,] "default_include_extraindicators"              </span></span>
-<span><span class="co">#&gt;  [39,] "default_max_mb_upload"                        </span></span>
-<span><span class="co">#&gt;  [40,] "default_max_miles"                            </span></span>
-<span><span class="co">#&gt;  [41,] "default_max_pts_map"                          </span></span>
-<span><span class="co">#&gt;  [42,] "default_max_pts_run"                          </span></span>
-<span><span class="co">#&gt;  [43,] "default_max_pts_select"                       </span></span>
-<span><span class="co">#&gt;  [44,] "default_max_pts_showtable"                    </span></span>
-<span><span class="co">#&gt;  [45,] "default_max_pts_upload"                       </span></span>
-<span><span class="co">#&gt;  [46,] "default_max_shapes_map"                       </span></span>
-<span><span class="co">#&gt;  [47,] "default_maxradius"                            </span></span>
-<span><span class="co">#&gt;  [48,] "default_naics"                                </span></span>
-<span><span class="co">#&gt;  [49,] "default_naics_digits_shown"                   </span></span>
-<span><span class="co">#&gt;  [50,] "default_need_proximityscore"                  </span></span>
-<span><span class="co">#&gt;  [51,] "default_ok2plot"                              </span></span>
-<span><span class="co">#&gt;  [52,] "default_plotkind_1pager"                      </span></span>
-<span><span class="co">#&gt;  [53,] "default_print_uploaded_points_to_log"         </span></span>
-<span><span class="co">#&gt;  [54,] "default_reports"                              </span></span>
-<span><span class="co">#&gt;  [55,] "default_shiny.testmode"                       </span></span>
-<span><span class="co">#&gt;  [56,] "default_show_advanced_settings"               </span></span>
-<span><span class="co">#&gt;  [57,] "default_show_full_header_footer"              </span></span>
-<span><span class="co">#&gt;  [58,] "default_show_ratios_in_report"                </span></span>
-<span><span class="co">#&gt;  [59,] "default_shp_oktypes_1"                        </span></span>
-<span><span class="co">#&gt;  [60,] "default_standard_analysis_title"              </span></span>
-<span><span class="co">#&gt;  [61,] "default_states_picked"                        </span></span>
-<span><span class="co">#&gt;  [62,] "default_subgroups_type"                       </span></span>
-<span><span class="co">#&gt;  [63,] "default_testing"                              </span></span>
-<span><span class="co">#&gt;  [64,] "default_upload_dropdown"                      </span></span>
-<span><span class="co">#&gt;  [65,] "default.an_thresh_comp1"                      </span></span>
-<span><span class="co">#&gt;  [66,] "default.an_thresh_comp2"                      </span></span>
-<span><span class="co">#&gt;  [67,] "default.an_threshgroup1"                      </span></span>
-<span><span class="co">#&gt;  [68,] "default.an_threshgroup2"                      </span></span>
-<span><span class="co">#&gt;  [69,] "default.an_threshnames1"                      </span></span>
-<span><span class="co">#&gt;  [70,] "default.an_threshnames2"                      </span></span>
-<span><span class="co">#&gt;  [71,] "ejamapi_is_down"                              </span></span>
-<span><span class="co">#&gt;  [72,] "ejscreen_is_down"                             </span></span>
-<span><span class="co">#&gt;  [73,] "epa_program_help_msg"                         </span></span>
-<span><span class="co">#&gt;  [74,] "escape_html"                                  </span></span>
-<span><span class="co">#&gt;  [75,] "fips_help_msg"                                </span></span>
-<span><span class="co">#&gt;  [76,] "fipspicker_all_counties_button_defaultchecked"</span></span>
-<span><span class="co">#&gt;  [77,] "fipspicker_all_counties_button_defaultshow"   </span></span>
-<span><span class="co">#&gt;  [78,] "fipspicker_all_regions_button_defaultchecked" </span></span>
-<span><span class="co">#&gt;  [79,] "fipspicker_all_regions_button_defaultshow"    </span></span>
-<span><span class="co">#&gt;  [80,] "fipspicker_all_states_button_defaultchecked"  </span></span>
-<span><span class="co">#&gt;  [81,] "fipspicker_all_states_button_defaultshow"     </span></span>
-<span><span class="co">#&gt;  [82,] "fipspicker_fips_type2pick_choices_default"    </span></span>
-<span><span class="co">#&gt;  [83,] "fipspicker_fips_type2pick_default"            </span></span>
-<span><span class="co">#&gt;  [84,] "fipspicker_maxOptions_default_cities_picked"  </span></span>
-<span><span class="co">#&gt;  [85,] "fipspicker_maxOptions_default_counties_picked"</span></span>
-<span><span class="co">#&gt;  [86,] "fipspicker_maxOptions_default_states_picked"  </span></span>
-<span><span class="co">#&gt;  [87,] "frs_help_msg"                                 </span></span>
-<span><span class="co">#&gt;  [88,] "html_footer_fmt"                              </span></span>
-<span><span class="co">#&gt;  [89,] "html_header_fmt"                              </span></span>
-<span><span class="co">#&gt;  [90,] "latlon_help_msg"                              </span></span>
-<span><span class="co">#&gt;  [91,] "marker_cluster_cutoff"                        </span></span>
-<span><span class="co">#&gt;  [92,] "max_radius_default"                           </span></span>
-<span><span class="co">#&gt;  [93,] "maxmax_mb_upload"                             </span></span>
-<span><span class="co">#&gt;  [94,] "maxmax_miles"                                 </span></span>
-<span><span class="co">#&gt;  [95,] "maxmax_pts_map"                               </span></span>
-<span><span class="co">#&gt;  [96,] "maxmax_pts_run"                               </span></span>
-<span><span class="co">#&gt;  [97,] "maxmax_pts_select"                            </span></span>
-<span><span class="co">#&gt;  [98,] "maxmax_pts_showtable"                         </span></span>
-<span><span class="co">#&gt;  [99,] "maxmax_pts_upload"                            </span></span>
-<span><span class="co">#&gt; [100,] "maxmax_shapes_map"                            </span></span>
-<span><span class="co">#&gt; [101,] "minmax_mb_upload"                             </span></span>
-<span><span class="co">#&gt; [102,] "minradius"                                    </span></span>
-<span><span class="co">#&gt; [103,] "minradius_shapefile"                          </span></span>
-<span><span class="co">#&gt; [104,] "radius_default"                               </span></span>
-<span><span class="co">#&gt; [105,] "radius_default_shapefile"                     </span></span>
-<span><span class="co">#&gt; [106,] "report_logo"                                  </span></span>
-<span><span class="co">#&gt; [107,] "report_logo_dir"                              </span></span>
-<span><span class="co">#&gt; [108,] "report_logo_file"                             </span></span>
-<span><span class="co">#&gt; [109,] "report_title"                                 </span></span>
-<span><span class="co">#&gt; [110,] "sanitize_numeric"                             </span></span>
-<span><span class="co">#&gt; [111,] "sanitize_text"                                </span></span>
-<span><span class="co">#&gt; [112,] "shp_help_msg"                                 </span></span>
-<span><span class="co">#&gt; [113,] "sitereport_download_buttons_colname"          </span></span>
-<span><span class="co">#&gt; [114,] "sitereport_download_buttons_show"             </span></span>
-<span><span class="co">#&gt; [115,] "stepradius"                                   </span></span>
-<span><span class="co">#&gt; [116,] "tabshown_default"                             </span></span>
-<span><span class="co">#&gt; [117,] "use_shapefile_from_any"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [31,] "default_hide_plot_barplot_tab"                </span></span>
+<span><span class="co">#&gt;  [32,] "default_hide_plot_histo_tab"                  </span></span>
+<span><span class="co">#&gt;  [33,] "default_hide_written_report"                  </span></span>
+<span><span class="co">#&gt;  [34,] "default_hyperlink_colnames"                   </span></span>
+<span><span class="co">#&gt;  [35,] "default_include_averages"                     </span></span>
+<span><span class="co">#&gt;  [36,] "default_include_ejindexes"                    </span></span>
+<span><span class="co">#&gt;  [37,] "default_include_extraindicators"              </span></span>
+<span><span class="co">#&gt;  [38,] "default_max_mb_upload"                        </span></span>
+<span><span class="co">#&gt;  [39,] "default_max_miles"                            </span></span>
+<span><span class="co">#&gt;  [40,] "default_max_pts_map"                          </span></span>
+<span><span class="co">#&gt;  [41,] "default_max_pts_run"                          </span></span>
+<span><span class="co">#&gt;  [42,] "default_max_pts_select"                       </span></span>
+<span><span class="co">#&gt;  [43,] "default_max_pts_showtable"                    </span></span>
+<span><span class="co">#&gt;  [44,] "default_max_pts_upload"                       </span></span>
+<span><span class="co">#&gt;  [45,] "default_max_shapes_map"                       </span></span>
+<span><span class="co">#&gt;  [46,] "default_maxradius"                            </span></span>
+<span><span class="co">#&gt;  [47,] "default_naics"                                </span></span>
+<span><span class="co">#&gt;  [48,] "default_naics_digits_shown"                   </span></span>
+<span><span class="co">#&gt;  [49,] "default_need_proximityscore"                  </span></span>
+<span><span class="co">#&gt;  [50,] "default_ok2plot"                              </span></span>
+<span><span class="co">#&gt;  [51,] "default_plotkind_1pager"                      </span></span>
+<span><span class="co">#&gt;  [52,] "default_print_uploaded_points_to_log"         </span></span>
+<span><span class="co">#&gt;  [53,] "default_reports"                              </span></span>
+<span><span class="co">#&gt;  [54,] "default_shiny.testmode"                       </span></span>
+<span><span class="co">#&gt;  [55,] "default_show_advanced_settings"               </span></span>
+<span><span class="co">#&gt;  [56,] "default_show_full_header_footer"              </span></span>
+<span><span class="co">#&gt;  [57,] "default_show_ratios_in_report"                </span></span>
+<span><span class="co">#&gt;  [58,] "default_shp_oktypes_1"                        </span></span>
+<span><span class="co">#&gt;  [59,] "default_standard_analysis_title"              </span></span>
+<span><span class="co">#&gt;  [60,] "default_states_picked"                        </span></span>
+<span><span class="co">#&gt;  [61,] "default_subgroups_type"                       </span></span>
+<span><span class="co">#&gt;  [62,] "default_testing"                              </span></span>
+<span><span class="co">#&gt;  [63,] "default_upload_dropdown"                      </span></span>
+<span><span class="co">#&gt;  [64,] "default.an_thresh_comp1"                      </span></span>
+<span><span class="co">#&gt;  [65,] "default.an_thresh_comp2"                      </span></span>
+<span><span class="co">#&gt;  [66,] "default.an_threshgroup1"                      </span></span>
+<span><span class="co">#&gt;  [67,] "default.an_threshgroup2"                      </span></span>
+<span><span class="co">#&gt;  [68,] "default.an_threshnames1"                      </span></span>
+<span><span class="co">#&gt;  [69,] "default.an_threshnames2"                      </span></span>
+<span><span class="co">#&gt;  [70,] "ejamapi_is_down"                              </span></span>
+<span><span class="co">#&gt;  [71,] "epa_program_help_msg"                         </span></span>
+<span><span class="co">#&gt;  [72,] "escape_html"                                  </span></span>
+<span><span class="co">#&gt;  [73,] "fips_help_msg"                                </span></span>
+<span><span class="co">#&gt;  [74,] "fipspicker_all_counties_button_defaultchecked"</span></span>
+<span><span class="co">#&gt;  [75,] "fipspicker_all_counties_button_defaultshow"   </span></span>
+<span><span class="co">#&gt;  [76,] "fipspicker_all_regions_button_defaultchecked" </span></span>
+<span><span class="co">#&gt;  [77,] "fipspicker_all_regions_button_defaultshow"    </span></span>
+<span><span class="co">#&gt;  [78,] "fipspicker_all_states_button_defaultchecked"  </span></span>
+<span><span class="co">#&gt;  [79,] "fipspicker_all_states_button_defaultshow"     </span></span>
+<span><span class="co">#&gt;  [80,] "fipspicker_fips_type2pick_choices_default"    </span></span>
+<span><span class="co">#&gt;  [81,] "fipspicker_fips_type2pick_default"            </span></span>
+<span><span class="co">#&gt;  [82,] "fipspicker_maxOptions_default_cities_picked"  </span></span>
+<span><span class="co">#&gt;  [83,] "fipspicker_maxOptions_default_counties_picked"</span></span>
+<span><span class="co">#&gt;  [84,] "fipspicker_maxOptions_default_states_picked"  </span></span>
+<span><span class="co">#&gt;  [85,] "frs_help_msg"                                 </span></span>
+<span><span class="co">#&gt;  [86,] "html_footer_fmt"                              </span></span>
+<span><span class="co">#&gt;  [87,] "html_header_fmt"                              </span></span>
+<span><span class="co">#&gt;  [88,] "latlon_help_msg"                              </span></span>
+<span><span class="co">#&gt;  [89,] "marker_cluster_cutoff"                        </span></span>
+<span><span class="co">#&gt;  [90,] "max_radius_default"                           </span></span>
+<span><span class="co">#&gt;  [91,] "maxmax_mb_upload"                             </span></span>
+<span><span class="co">#&gt;  [92,] "maxmax_miles"                                 </span></span>
+<span><span class="co">#&gt;  [93,] "maxmax_pts_map"                               </span></span>
+<span><span class="co">#&gt;  [94,] "maxmax_pts_run"                               </span></span>
+<span><span class="co">#&gt;  [95,] "maxmax_pts_select"                            </span></span>
+<span><span class="co">#&gt;  [96,] "maxmax_pts_showtable"                         </span></span>
+<span><span class="co">#&gt;  [97,] "maxmax_pts_upload"                            </span></span>
+<span><span class="co">#&gt;  [98,] "maxmax_shapes_map"                            </span></span>
+<span><span class="co">#&gt;  [99,] "minmax_mb_upload"                             </span></span>
+<span><span class="co">#&gt; [100,] "minradius"                                    </span></span>
+<span><span class="co">#&gt; [101,] "minradius_shapefile"                          </span></span>
+<span><span class="co">#&gt; [102,] "radius_default"                               </span></span>
+<span><span class="co">#&gt; [103,] "radius_default_shapefile"                     </span></span>
+<span><span class="co">#&gt; [104,] "report_logo"                                  </span></span>
+<span><span class="co">#&gt; [105,] "report_logo_dir"                              </span></span>
+<span><span class="co">#&gt; [106,] "report_logo_file"                             </span></span>
+<span><span class="co">#&gt; [107,] "report_title"                                 </span></span>
+<span><span class="co">#&gt; [108,] "sanitize_numeric"                             </span></span>
+<span><span class="co">#&gt; [109,] "sanitize_text"                                </span></span>
+<span><span class="co">#&gt; [110,] "shp_help_msg"                                 </span></span>
+<span><span class="co">#&gt; [111,] "sitereport_download_buttons_colname"          </span></span>
+<span><span class="co">#&gt; [112,] "sitereport_download_buttons_show"             </span></span>
+<span><span class="co">#&gt; [113,] "stepradius"                                   </span></span>
+<span><span class="co">#&gt; [114,] "tabshown_default"                             </span></span>
+<span><span class="co">#&gt; [115,] "use_shapefile_from_any"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="function-params---compiled-full-list">&gt; function params - compiled full list<a class="anchor" aria-label="anchor" href="#function-params---compiled-full-list"></a>
@@ -647,57 +656,34 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">inputnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"add_naics_subcategories"</span>, <span class="st">"all_tabs"</span>, <span class="st">"allow_median_in_barplot_indicators"</span>, </span>
-<span>               <span class="st">"an_map_clusters"</span>,</span>
-<span>               <span class="st">"an_thresh_comp2"</span>, <span class="st">"an_threshgroup1"</span>, <span class="st">"an_threshgroup2"</span>, <span class="st">"an_threshnames2"</span>, </span>
-<span>               <span class="st">"analysis_title"</span>, </span>
-<span>               <span class="st">"avoidorphans"</span>,</span>
-<span>               <span class="st">"back_to_site_sel"</span>, <span class="st">"back_to_site_sel2"</span>, <span class="st">"bt_get_results"</span>,</span>
-<span>               <span class="st">"calculate_ratios"</span>, <span class="st">"checkbox1"</span>, </span>
-<span>               <span class="st">"coauthor_emails"</span>, <span class="st">"coauthor_names"</span>, <span class="st">"conclusion1"</span>, <span class="st">"conclusion2"</span>, <span class="st">"conclusion3"</span>, </span>
-<span>               <span class="st">"Custom_title_for_bar_plot_of_indicators"</span>,</span>
-<span>               </span>
-<span>               <span class="st">"default_ss_choose_method"</span>, </span>
-<span>               </span>
-<span>               <span class="st">"demog_high_at_what_share_of_sites"</span>, <span class="st">"demog_how_elevated"</span>, </span>
-<span>               <span class="st">"envt_high_at_what_share_of_sites"</span>, <span class="st">"envt_how_elevated"</span>,</span>
-<span>               <span class="st">"epa_program_help"</span>,</span>
-<span>               <span class="st">"extra_demog"</span>, <span class="st">"extratable_hide_missing_rows_for"</span>, </span>
-<span>               <span class="st">"extratable_show_ratios_in_report"</span>, <span class="st">"extratable_title"</span>, <span class="st">"extratable_title_top_row"</span>, </span>
-<span>               </span>
-<span>               <span class="st">"facilities_studied"</span>, <span class="st">"facilities_studied_enter"</span>, <span class="st">"fips_help"</span>, </span>
-<span>               <span class="st">"fipspicker_done_button"</span>,</span>
-<span>               <span class="st">"format1pager"</span>, <span class="st">"frs_help"</span>, <span class="st">"fundingsource"</span>, </span>
-<span>               <span class="st">"go"</span>, <span class="st">"in_areas_where_enter"</span>, <span class="st">"in_the_x_zone"</span>, <span class="st">"in_the_x_zone_enter"</span>, </span>
-<span>               <span class="st">"include_ejindexes"</span>, <span class="st">"latlon_help"</span>, <span class="st">"latlontypedin_submit_button"</span>, </span>
-<span>               </span>
-<span>               <span class="st">"max_mb_upload"</span>, <span class="st">"max_miles"</span>, <span class="st">"maxradius"</span>,</span>
-<span>               <span class="st">"max_pts_map"</span>, <span class="st">"max_pts_run"</span>, <span class="st">"max_pts_select"</span>, <span class="st">"max_pts_upload"</span>, <span class="st">"max_shapes_map"</span>,</span>
-<span>               </span>
-<span>               <span class="st">"naics_digits_shown"</span>, </span>
-<span>               <span class="st">"need_proximityscore"</span>, <span class="st">"ok2plot"</span>, <span class="st">"plotkind_1pager"</span>, </span>
-<span>               </span>
-<span>               <span class="st">"radius_default"</span>, <span class="st">"radius_default_shapefile"</span>, <span class="st">"radius_now"</span>, <span class="st">"radius_units"</span>, </span>
-<span>               </span>
-<span>               <span class="st">"results_tabs"</span>, <span class="st">"return_to_results"</span>,</span>
-<span>               </span>
-<span>               <span class="st">"rg_author_email"</span>, <span class="st">"rg_author_name"</span>,</span>
-<span>               <span class="st">"rg_enter_miles"</span>, <span class="st">"rg_enter_sites"</span>, <span class="st">"rg_zonetype"</span>, <span class="st">"risks_are_x"</span>, </span>
-<span>               <span class="st">"shiny.testmode"</span>, </span>
-<span>               <span class="st">"show_data_preview"</span>, <span class="st">"show_ratios_in_report"</span>, <span class="st">"shp_help"</span>, <span class="st">"source_of_latlons"</span>, </span>
-<span>               </span>
-<span>               <span class="st">"ss_choose_method"</span>, <span class="st">"ss_choose_method_drop"</span>, <span class="st">"ss_choose_method_upload"</span>, </span>
-<span>               <span class="st">"ss_select_mact"</span>, <span class="st">"ss_select_naics"</span>, <span class="st">"ss_select_program"</span>, <span class="st">"ss_select_sic"</span>, </span>
-<span>               <span class="st">"ss_upload_fips"</span>, <span class="st">"ss_upload_frs"</span>, <span class="st">"ss_upload_latlon"</span>, <span class="st">"ss_upload_program"</span>, </span>
-<span>               <span class="st">"ss_upload_shp"</span>, </span>
-<span>               </span>
-<span>               <span class="st">"standard_analysis_title"</span>,</span>
-<span>               <span class="st">"subgroups_type"</span>,</span>
-<span>               </span>
-<span>               <span class="st">"summ_bar_data"</span>, <span class="st">"summ_bar_ind"</span>, <span class="st">"summ_bar_stat"</span>, <span class="st">"summ_hist_bins"</span>, </span>
-<span>               <span class="st">"summ_hist_data"</span>, <span class="st">"summ_hist_distn"</span>, <span class="st">"summ_hist_ind"</span>,</span>
-<span>               </span>
-<span>               <span class="st">"testing"</span>, </span>
-<span>               <span class="st">"ui_hide_advanced_settings"</span>, <span class="st">"ui_show_advanced_settings"</span>, <span class="st">"y"</span></span>
+<span><span class="st">"an_map_clusters"</span>, <span class="st">"an_thresh_comp2"</span>, <span class="st">"an_threshgroup1"</span>, <span class="st">"an_threshgroup2"</span>, </span>
+<span><span class="st">"an_threshnames2"</span>, <span class="st">"analysis_title"</span>, <span class="st">"avoidorphans"</span>, <span class="st">"back_to_site_sel"</span>, </span>
+<span><span class="st">"back_to_site_sel2"</span>, <span class="st">"bt_get_results"</span>, <span class="st">"bysite_webtable_colnames"</span>, </span>
+<span><span class="st">"calculate_ratios"</span>, <span class="st">"can_show_advanced_settings"</span>, <span class="st">"checkbox1"</span>, </span>
+<span><span class="st">"coauthor_emails"</span>, <span class="st">"coauthor_names"</span>, <span class="st">"conclusion1"</span>, <span class="st">"conclusion2"</span>, </span>
+<span><span class="st">"conclusion3"</span>, <span class="st">"Custom_title_for_bar_plot_of_indicators"</span>, <span class="st">"default_ss_choose_method"</span>, </span>
+<span><span class="st">"demog_high_at_what_share_of_sites"</span>, <span class="st">"demog_how_elevated"</span>, <span class="st">"envt_high_at_what_share_of_sites"</span>, </span>
+<span><span class="st">"envt_how_elevated"</span>, <span class="st">"epa_program_help"</span>, <span class="st">"extra_demog"</span>, <span class="st">"extratable_hide_missing_rows_for"</span>, </span>
+<span><span class="st">"extratable_show_ratios_in_report"</span>, <span class="st">"extratable_title"</span>, <span class="st">"extratable_title_top_row"</span>, </span>
+<span><span class="st">"facilities_studied"</span>, <span class="st">"facilities_studied_enter"</span>, <span class="st">"fips_help"</span>, </span>
+<span><span class="st">"fipspicker_done_button"</span>, <span class="st">"format1pager"</span>, <span class="st">"frs_help"</span>, <span class="st">"fundingsource"</span>, </span>
+<span><span class="st">"go"</span>, <span class="st">"in_areas_where_enter"</span>, <span class="st">"in_the_x_zone"</span>, <span class="st">"in_the_x_zone_enter"</span>, </span>
+<span><span class="st">"include_ejindexes"</span>, <span class="st">"latlon_help"</span>, <span class="st">"latlontypedin_submit_button"</span>, </span>
+<span><span class="st">"max_mb_upload"</span>, <span class="st">"max_miles"</span>, <span class="st">"max_pts_map"</span>, <span class="st">"max_pts_run"</span>, <span class="st">"max_pts_select"</span>, </span>
+<span><span class="st">"max_pts_upload"</span>, <span class="st">"max_shapes_map"</span>, <span class="st">"maxradius"</span>, <span class="st">"naics_digits_shown"</span>, </span>
+<span><span class="st">"need_proximityscore"</span>, <span class="st">"ok2plot"</span>, <span class="st">"plotkind_1pager"</span>, <span class="st">"radius_default"</span>, </span>
+<span><span class="st">"radius_default_shapefile"</span>, <span class="st">"radius_now"</span>, <span class="st">"radius_units"</span>, <span class="st">"results_tabs"</span>, </span>
+<span><span class="st">"return_to_results"</span>, <span class="st">"rg_author_email"</span>, <span class="st">"rg_author_name"</span>, <span class="st">"rg_enter_miles"</span>, </span>
+<span><span class="st">"rg_enter_sites"</span>, <span class="st">"rg_zonetype"</span>, <span class="st">"risks_are_x"</span>, <span class="st">"shiny.testmode"</span>, </span>
+<span><span class="st">"show_advanced_settings"</span>, <span class="st">"show_data_preview"</span>, <span class="st">"show_ratios_in_report"</span>, </span>
+<span><span class="st">"shp_help"</span>, <span class="st">"sitereport_download_buttons_show"</span>, <span class="st">"source_of_latlons"</span>, </span>
+<span><span class="st">"ss_choose_method"</span>, <span class="st">"ss_choose_method_drop"</span>, <span class="st">"ss_choose_method_upload"</span>, </span>
+<span><span class="st">"ss_select_mact"</span>, <span class="st">"ss_select_naics"</span>, <span class="st">"ss_select_program"</span>, <span class="st">"ss_select_sic"</span>, </span>
+<span><span class="st">"ss_upload_fips"</span>, <span class="st">"ss_upload_frs"</span>, <span class="st">"ss_upload_latlon"</span>, <span class="st">"ss_upload_program"</span>, </span>
+<span><span class="st">"ss_upload_shp"</span>, <span class="st">"standard_analysis_title"</span>, <span class="st">"subgroups_type"</span>, </span>
+<span><span class="st">"summ_bar_data"</span>, <span class="st">"summ_bar_ind"</span>, <span class="st">"summ_bar_stat"</span>, <span class="st">"summ_hist_bins"</span>, </span>
+<span><span class="st">"summ_hist_data"</span>, <span class="st">"summ_hist_distn"</span>, <span class="st">"summ_hist_ind"</span>, <span class="st">"testing"</span>, </span>
+<span><span class="st">"ui_hide_advanced_settings"</span>, <span class="st">"ui_show_advanced_settings"</span>, <span class="st">"y"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -966,7 +952,8 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co"># called_by_ejamit         TRUE     for doaggregate(), na</span></span>
 <span><span class="co"># showdrinkingwater        TRUE     for doaggregate(), na</span></span>
 <span><span class="co"># showpctowned             TRUE     for doaggregate(), na</span></span>
-<span><span class="co">#   download_fips_bounds_to_calc_areas FALSE</span></span>
+<span><span class="co"># download_city_fips_bounds = TRUE,</span></span>
+<span><span class="co"># download_noncity_fips_bounds = FALSE,</span></span>
 <span><span class="co"># ...                      ?   for getblocksnearby(), like use_unadjusted_distance ** shiny default NOT specified here</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -984,7 +971,7 @@ characters</p>
 <span><span class="va">results_tabs</span><span class="op">=</span><span class="st">"Community Report"</span></span>
 <span><span class="va">details_subtabs</span><span class="op">=</span><span class="st">"Site-by-Site Table"</span></span>
 <span></span>
-<span><span class="va">show_advanced_settings</span><span class="op">=</span><span class="st">"TRUE"</span> <span class="co"># ??</span></span>
+<span><span class="va">show_advanced_settings</span><span class="op">=</span><span class="st">"TRUE"</span> </span>
 <span><span class="va">can_show_advanced_settings</span><span class="op">=</span><span class="st">"TRUE"</span></span>
 <span></span>
 <span><span class="co"># buttons:</span></span>
@@ -1185,11 +1172,11 @@ settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-pa
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer>
