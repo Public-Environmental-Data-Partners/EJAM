@@ -61,7 +61,7 @@ global_or_param = function(vname) {
     }
     ################################ #
     ## 3d, as last resort, check calling env (not global envt) for the variable/option/param name
-# this is a hack to look in the envt that called the function global_or_param()... there is a simpler way but for not this works
+# this is a hack to look in the envt that called the function global_or_param()... there is a simpler way but for now this works
 # helps to find isPublic parameter, e.g.
         x <- try(get(vname, envir = sys.frames()[[sys.nframe() - 1]]), silent = TRUE)
 

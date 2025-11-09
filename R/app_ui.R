@@ -68,7 +68,7 @@ app_ui <- function(request) {
                           conditionalPanel(
                             # So that About tab can be shown without necessarily allowing users to show/hide the advanced tab,
                             ## button to show/hide Advanced tab  ####
-                            condition = "input.can_show_advanced_settings == 'TRUE'", # javascript syntax supposedly says true but 'TRUE' is what works hee
+                            condition = "input.can_show_advanced_settings == 'TRUE'", # javascript syntax supposedly says true but 'TRUE' is what works here
                             actionButton(inputId = 'ui_show_advanced_settings','Show Advanced Settings Tab', class = 'usa-button'),
                             actionButton(inputId = 'ui_hide_advanced_settings','Hide Advanced Settings Tab', class = 'usa-button')
                           ),

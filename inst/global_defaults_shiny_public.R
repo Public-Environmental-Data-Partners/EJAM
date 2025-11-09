@@ -24,7 +24,7 @@ isPublic <- EJAM:::global_or_param("isPublic")
 if (!is.null(isPublic)) {
   #isPublic <- isPublic
 } else {
-  # if neither user nor app.R  specified isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
+  # if neither the user nor app.R  specified isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
   isPublic <-  FALSE ###
 }
 ########## #
