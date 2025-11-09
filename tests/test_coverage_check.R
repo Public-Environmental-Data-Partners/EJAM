@@ -121,7 +121,7 @@ test_coverage_check <- function(loadagain = FALSE, quiet = TRUE) {
 
   funcs_not_in_txt_of_testfiles_at_all = NULL
   func2searchfor = tdat$object[!is.na(tdat$object) & tdat$notes == "cant find testfile of exact name,"]
-  #browser()
+
   for (i in seq_along(func2searchfor)) {
     x = EJAM:::find_in_files(paste0(func2searchfor[i], ""), ignorecomments = TRUE)
     if (length(x) > 0) {

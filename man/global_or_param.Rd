@@ -40,10 +40,10 @@ That lets any function or vignette find the values defined in global_defaults_pa
 even if a shiny app has not yet launched.
 
 Then as a last resort, check if the param called vname is
-defined in the search path such as in the
-calling or global envt already somehow,
+defined in the
+calling envt already somehow,
 and return that value if it exists.
-But if it is not in golem options and not found in search path,
+But if it is not in golem options and not found,
 this returns NULL
 }
 \keyword{internal}
