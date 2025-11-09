@@ -235,7 +235,7 @@ myparams <- c(
   default_naics_digits_shown="detailed",
   default_naics="562211",
   radius_default=3.1,
-  default_ui_show_advanced_settings=1
+  default_show_advanced_settings=TRUE
 )
 
 run_with_paramlist(myparams)
@@ -252,7 +252,7 @@ myparams <- c(
   default_naics_digits_shown="detailed",
   default_naics="562211",
   radius_default=3.1,
-  default_ui_show_advanced_settings=1
+  default_show_advanced_settings=TRUE
 )
 
 # create your reusable customized app launcher
