@@ -147,7 +147,7 @@ ejamapp(
   default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
   default_naics="562211",
   radius=3.1,
-  default_show_advanced_settings=TRUE
+  default_show_advanced_settings=TRUE # to make advanced tab visible at start
 )
 
   ## Cities dropdown list as default shown at launch:
@@ -207,17 +207,18 @@ ejamapp(
  # will launch a simpler version of the web app
  # (e.g., for more general public use rather than the full set of complicated
  # features that are used less often).
+
  # To make a hosted app default to the full set of features
  # edit app.R to override/change its default,
- #  and to disable and hide Advanced tab (even though isPublic=FALSE)
+ #  and to still disable and hide Advanced tab
  #  and perhaps hide histograms since they are complicated,
- #  note these settings:
+ #  try these settings:
 
  ejamapp(
-  isPublic = FALSE,
-  default_show_advanced_settings = FALSE, # hides Advanced tab when app launches
+  isPublic = FALSE, # to allow full set of features (menus)
   default_can_show_advanced_settings = FALSE, # removes user's ability to show Advanced tab
-  default_hide_plot_histo_tab = TRUE
+  default_show_advanced_settings = FALSE, # just confirms default -- hiding Advanced tab when app launches
+  default_hide_plot_histo_tab = TRUE # to hide just this feature
   )
 
  ## Other options:
@@ -237,7 +238,4 @@ ejamapp(
   # aka  options=list(test.mode=TRUE)
   default_testing=TRUE
 }
-}
-\seealso{
-\code{\link[=ejamapp]{ejamapp()}}, \code{\link[=run_app]{run_app()}}, and \code{\link[=app_run_EJAM]{app_run_EJAM()}} are synonymous
 }
