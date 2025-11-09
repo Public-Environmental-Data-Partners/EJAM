@@ -42,7 +42,7 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 
 This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.
 
-Most of what you might want to do is shown in documentation showing examples of using the `ejamapp()` function. This article is only need if you want even more detail. First reading the `ejamapp()` reference info is recommended before reading any of the details below.
+Most of what you might want to do is shown in documentation showing examples of using the `ejamapp()` function. This article is only needed if you want even more detail. First reading the `ejamapp()` reference info is recommended before reading any of the details below.
 
 
 ## HOW SETTINGS GET PASSED TO THE WEB APP
@@ -192,7 +192,7 @@ ejamapp(
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
-  radius_default=3.1,
+  radius=3.1,
   default_ui_show_advanced_settings=1
 )
 ```
