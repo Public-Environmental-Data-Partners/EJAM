@@ -203,13 +203,15 @@ find_in_files <- function(pattern, path = "./tests/testthat", filename_pattern =
       }
       cat("\n------------------------------------------------------------------------- \n")
       cat("------------------------------------------------------------------------- \n")
-    }
-    if (value) {
-      print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
-    } else {
-      print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
+
+      if (value) {
+        print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
+      } else {
+        print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
+      }
     }
   }
+  if (length(found) == 0) {found <- NULL}
   invisible(found)
 }
 ################################ #
