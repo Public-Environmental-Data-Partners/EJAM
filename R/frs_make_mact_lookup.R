@@ -226,6 +226,11 @@ frs_make_mact_lookup <- function(frs_by_programid, folder=NULL) {
   # save(frs_by_mact, file = "frs_by_mact.rda")
   # save(mact_table, "mact_table.rda")
 
+  mact_table$title <- gsub(  "^ ", "", mact_table$title)
+  mact_table$dropdown_label <- gsub("  ", " ", mact_table$dropdown_label)
+
+  frs_by_mact$title <- gsub(  "^ ", "", frs_by_mact$title)
+  frs_by_mact$dropdown_label <- gsub("  ", " ", frs_by_mact$dropdown_label)
 
   return(
     list(
