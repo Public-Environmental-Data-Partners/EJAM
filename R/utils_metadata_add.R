@@ -22,13 +22,16 @@ attributes2 = function(x) {
 #' @param newvalue the new value of that attribute
 #' @param exclude_atomic_vectors if TRUE, avoids updating attributes on atomic vectors like names_e,
 #'   since it is distracting when printing them to console
+#' @param only_update_if_had_been_set set to TRUE to only update this attribute for data objects where
+#'   that object already had a value set for this attribute, to update only but not create/add attribute.
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @keywords internal
 #'
 metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
                                  attr_name = "ejam_package_version", newvalue = desc::desc_get("Version"),
-                                 exclude_atomic_vectors = TRUE) {
+                                 exclude_atomic_vectors = TRUE,
+                                 only_update_if_had_been_set = FALSE) {
 
   # x param is vector of names of data objects to update in the source package
   fnamesimplied = tolower(paste0(x, ".rda"))
@@ -40,7 +43,10 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 
   cat("newvalue is: \n")
   print(newvalue)
-
+  if (only_update_if_had_been_set) {
+  x_attr_present <- as.vector(unlist(sapply(x, function(z)  if (!is.null(attr(get(z), attr_name))) {z} )))
+  x <- x_attr_present
+}
   for (i in 1:length(x))  {
     if (exclude_atomic_vectors && is.atomic(get(x[i])) && is.vector(get(x[i]))) {
       # ignore this object
