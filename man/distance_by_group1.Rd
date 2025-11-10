@@ -57,6 +57,7 @@ So to retain flexibility doaggregate() reports all instances of blockgroup-site 
  # plot cumulative share of group by distance vs overall population
   distance_by_group_plot(y$results_bybg_people,
      demogvarname = 'pctlowinc' )
+ \dontrun{
  if (interactive()) {
  # plot is too busy for all groups at once so this is a way to tap through them 1 by 1
  these = c(names_d, names_d_subgroups)
@@ -64,7 +65,7 @@ So to retain flexibility doaggregate() reports all instances of blockgroup-site 
    readline("press any key to see the next plot")
    print(distance_by_group_plot(y$results_bybg_people, demogvarname = these[i]) )
  }
-}
+}}
 
 }
 \seealso{

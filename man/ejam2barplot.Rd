@@ -122,7 +122,7 @@ ejam2barplot(out,
 # Environmental only
 
 ejam2barplot(out,
-  varnames = c(names_e_ratio_to_avg, names_e_ratio_to_state_avg),
+  varnames = c(names_e_ratio_to_avg), # names_e_ratio_to_state_avg
   main = "Environmental Indicators at Selected Sites Compared to Averages")
 
  ## select your own ratio-type indicators that are available
