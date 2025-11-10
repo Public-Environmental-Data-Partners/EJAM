@@ -16,6 +16,7 @@
 #' @param na.rm default is TRUE. not tested for FALSE
 #' @return max of each row
 #' @seealso colMaxs2()
+#'
 #' @keywords internal
 #'
 rowMaxs2 <- function(df, na.rm = TRUE) {
@@ -58,8 +59,9 @@ rowMaxs2 <- function(df, na.rm = TRUE) {
 #'   stringsAsFactors = FALSE))
 #'
 #' df
-#' colMaxs2(df)
+#' EJAM:::colMaxs2(df)
 #' @seealso [colMins2()]
+#'
 #' @keywords internal
 #'
 colMaxs2 <- function(df, na.rm = TRUE) {
@@ -102,7 +104,7 @@ colMaxs2 <- function(df, na.rm = TRUE) {
 #'   stringsAsFactors = FALSE))
 #'
 #' df
-#' colMins2(df)
+#' EJAM:::colMins2(df)
 #'
 #' @keywords internal
 #'

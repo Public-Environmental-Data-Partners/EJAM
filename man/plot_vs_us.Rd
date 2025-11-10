@@ -73,19 +73,19 @@ more generally like for \code{\link[=ejamit_compare_types_of_places]{ejamit_comp
   out <- testoutput_ejamit_1000pts_1miles
   # ejam2boxplot(out)
   # plot_boxplot_vs_ref(out$results_bysite)
-  plot_vs_us(out$results_bysite, type = 'box')
-  plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'box', ylim=c(0, 20))
-  plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'ggplot')
-  plot_vs_us(out$results_bysite, varname = "pctnhaa", type =  'ggplot')
-  plot_vs_us(out$results_bysite, varname = "pctnhaa", type = 'box', ylim = c(0, 20))
+  EJAM:::plot_vs_us(out$results_bysite, type = 'box')
+  EJAM:::plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'box', ylim=c(0, 20))
+  EJAM:::plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'ggplot')
+  EJAM:::plot_vs_us(out$results_bysite, varname = "pctnhaa", type =  'ggplot')
+  EJAM:::plot_vs_us(out$results_bysite, varname = "pctnhaa", type = 'box', ylim = c(0, 20))
 
  # td = testoutput_ejamit_1000pts_1miles$results_bysite
- # plot_vs_us(, type = 'box')
- # plot_vs_us(td, varname = "pctlingiso", type =  'box', ylim=c(0,20))
- # plot_vs_us(td, varname = "pctlingiso", type =  'ggplot')
- # plot_vs_us(td, varname = "pctnhaa", type =  'ggplot')
- # plot_vs_us(td, varname = "pctnhaa", type = 'box', ylim = c(0,20))
- # plot_vs_us(td[td$ST \%in\% "DE", ], 'pcthisp', refdata = blockgroupstats[ST \%in\% "DE", .(pop, pcthisp)])
+ # EJAM:::plot_vs_us(, type = 'box')
+ # EJAM:::plot_vs_us(td, varname = "pctlingiso", type =  'box', ylim=c(0,20))
+ # EJAM:::plot_vs_us(td, varname = "pctlingiso", type =  'ggplot')
+ # EJAM:::plot_vs_us(td, varname = "pctnhaa", type =  'ggplot')
+ # EJAM:::plot_vs_us(td, varname = "pctnhaa", type = 'box', ylim = c(0,20))
+ # EJAM:::plot_vs_us(td[td$ST \%in\% "DE", ], 'pcthisp', refdata = blockgroupstats[ST \%in\% "DE", .(pop, pcthisp)])
   }
 
 }

@@ -14,4 +14,5 @@ Uses 1 row from the results_bysite part of ejamit() output
 }
 \examples{
  table_gt_from_ejamit_1site(testoutput_ejamit_100pts_1miles$results_bysite[ 1, ])
+
 }

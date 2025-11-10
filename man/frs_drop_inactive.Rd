@@ -47,12 +47,13 @@ Codes assumed to mean site is closed:
 }
 }
 \examples{
- 
   # frs <- frs_get()
   # closedid <- frs_inactive_ids()
   # frs <- frs_drop_inactive(frs, closedid = closedid)
   # usethis::use_data(frs, overwrite = TRUE)
+
 }
 \seealso{
 \code{\link[=frs_update_datasets]{frs_update_datasets()}} which uses \code{\link[=frs_get]{frs_get()}} and \code{\link[=frs_inactive_ids]{frs_inactive_ids()}} \code{\link[=frs_active_ids]{frs_active_ids()}}
 }
+\keyword{internal}

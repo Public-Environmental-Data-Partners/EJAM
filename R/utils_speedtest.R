@@ -40,14 +40,14 @@
 #' @param getblocks_diagnostics_shown set TRUE to see more details on block counts etc.
 #' @param ... passed to plotting function
 #' @examples \donttest{
-#'   speedseen_few <- speedtest(c(50,500), radii=c(1, 3.106856), logging=FALSE, honk=FALSE)
+#'   speedseen_few <- EJAM:::speedtest(c(50,500), radii=c(1, 3.106856), logging=FALSE, honk=FALSE)
 #'
-#'   speedseen_nearer_to1k <- speedtest(n = c(1e2,1e3,1e4 ), radii=c(1, 3.106856,5 ),
+#'   speedseen_nearer_to1k <- EJAM:::speedtest(n = c(1e2,1e3,1e4 ), radii=c(1, 3.106856,5 ),
 #'     logging=TRUE, honk=FALSE)
 #'   save( speedseen_nearer_to1k, file = "~/../Downloads/speedseen_nearer_to1k.rda")
 #'   rstudioapi::savePlotAsImage(        "~/../Downloads/speedseen_nearer_to1k.png")
 #'
-#'   speedseen_all <- speedtest(
+#'   speedseen_all <- EJAM:::speedtest(
 #'     n = c(1e2,1e3,1e4),
 #'     radii=c(1, 3.106856, 5, 10, 31.06856),
 #'     logging=TRUE, honk=TRUE

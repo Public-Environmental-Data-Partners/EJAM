@@ -29,8 +29,8 @@ or addresses that can be converted to lat lon columns, renames those in the data
 Cleans up lat and lon values (removes extra characters, makes numeric)
 }
 \examples{
-#  x <- latlon_df_clean(x)
- latlon_df_clean(testpoints_bad, set_invalid_to_na = F, invalid_msg_table = T)
+  #  x <- EJAM:::latlon_df_clean(x)
+ EJAM:::latlon_df_clean(testpoints_bad, set_invalid_to_na = F, invalid_msg_table = T)
 
 }
 \seealso{

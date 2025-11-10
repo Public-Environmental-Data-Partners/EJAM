@@ -21,9 +21,6 @@
 #' @param ...  see [ejamit()]
 #'
 #' @return similar to ejamit output but results_overall has one row per unique typeofsite
-#'
-#' @export
-#'
 #' @examples
 #'   out <- ejamit_compare_types_of_places(testpoints_10[1:4, ],
 #'     typeofsite = c("A", "B", "B", "C"))
@@ -80,6 +77,8 @@
 #'      main = "Sites by State")
 #'
 #'   }
+#'
+#' @export
 #'
 ejamit_compare_types_of_places <- function(sitepoints, typeofsite = NULL,
                                            shapefile = NULL, fips = NULL,

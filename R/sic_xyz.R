@@ -9,7 +9,6 @@
 #'  where you can find facilities based on NAICS or SIC.
 #'
 #' @seealso [regid_from_sic()] [sic_from_any()] [latlon_from_sic()]
-#' @export
 #'
 #' @examples
 #'   frs_from_sic("glass")
@@ -20,6 +19,8 @@
 #'   frs_from_sic('0780')
 #'   regid_from_sic('0780')
 #'   latlon_from_sic('0780')
+#'
+#' @export
 #'
 frs_from_sic <- function(sic_code_or_name, ...) {
 
@@ -120,6 +121,7 @@ regid_from_sic <- latlon_from_sic
 #'   sic_subcodes_from_code('07')
 #'   # codes starting with '078'
 #'   sic_subcodes_from_code('078')
+#'
 #' @export
 #'
 sic_subcodes_from_code <- function(mycodes) {
@@ -172,6 +174,7 @@ sic_from_code <- function(mycodes, children=FALSE) {
 #' @examples
 #'  data.table::fintersect(sic_from_any( "glass"), sic_from_any("paint"))
 #' @return a subset of the [sictable] data.table (not just the codes column)
+#'
 #' @export
 #'
 sic_from_name <- function(mynames, children = FALSE, ignore.case = TRUE, fixed = FALSE) {

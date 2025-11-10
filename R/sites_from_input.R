@@ -13,7 +13,7 @@
 #'   shapefile would be a spatial data.frame "sf" class or NULL
 #'   fips would be a vector of Census FIPS codes or NULL
 #' @examples
-#' # After sites <- sites_from_input(),
+#' # After sites <- EJAM:::sites_from_input(),
 #' # get data type from sites$sitetype
 #' # get data itself from sites_only(sites)
 #'

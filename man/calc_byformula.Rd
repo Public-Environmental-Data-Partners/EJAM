@@ -14,7 +14,7 @@ calc_byformula(
 \arguments{
 \item{mydf}{data.frame of indicators or variables to use}
 
-\item{formulas}{text strings of formulas - WARNING: this should not really be used on user-provided, untrused formula strings,
+\item{formulas}{text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
 since the contents could potentially be a security risk}
 
 \item{keep}{useful if some of the formulas are just interim steps

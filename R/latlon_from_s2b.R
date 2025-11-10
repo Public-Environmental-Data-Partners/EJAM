@@ -26,8 +26,8 @@
 #' @return data.table with columns ejam_uniq_id, lat, lon, one row per site
 #' @examples
 #'  pts = testpoints_10
-#'  #x = latlon_from_s2b(getblocksnearby(pts, quiet = T))
-#'  x = latlon_from_s2b(testoutput_getblocksnearby_10pts_1miles)
+#'  #x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = T))
+#'  x = EJAM:::latlon_from_s2b(testoutput_getblocksnearby_10pts_1miles)
 #'  cbind(estimate = x, pts,
 #'    latratio = x$lat/pts$lat, lonratio = x$lon/pts$lon)
 #'

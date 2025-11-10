@@ -55,13 +55,13 @@ ejam2means <- function(ejamitout, vars = names_these) {
 #' @examples
 #'
 #' # pctiles
-#'   ejam2quantiles(out,  vars = names_e_state_pctile, topx_insteadof_pctile = F)
+#'   EJAM:::ejam2quantiles(out,  vars = names_e_state_pctile, topx_insteadof_pctile = F)
 #' # ratios
-#'   ejam2quantiles(out, vars = names_e_ratio_to_state_avg,  topx_insteadof_pctile = T)
+#'   EJAM:::ejam2quantiles(out, vars = names_e_ratio_to_state_avg,  topx_insteadof_pctile = T)
 #' # see the quantiles and mean together
 #'  t(rbind(
 #'   AvgPerson = ejam2means(out, vars = names_e_ratio_to_state_avg),
-#'   ejam2quantiles(
+#'   EJAM:::ejam2quantiles(
 #'      out,
 #'      vars = names_e_ratio_to_state_avg,
 #'      probs = 0.5, topx_insteadof_pctile = T

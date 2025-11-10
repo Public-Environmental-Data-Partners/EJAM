@@ -25,16 +25,15 @@ If anything other than empty or NA could not be interpreted as a number, it
 returns NA for those and offers a warning.
 }
 \examples{
-  
-  latlon_as.numeric(c("-97.179167000000007", " -94.0533", "-95.152083000000005"))
-  latlon_as.numeric(-3:3)
-  latlon_as.numeric(c(1:3, NA))
-  latlon_as.numeric(c(1, 'asdf'))
-  latlon_as.numeric(c(1, ''))
-  latlon_as.numeric(c(1, '', NA))
-  latlon_as.numeric(c('aword', '$b'))
-  latlon_as.numeric(c('-10.5\%', '<5', '$100'))
-  latlon_as.numeric(c(Inf, 1))
+  EJAM:::latlon_as.numeric(c("-97.179167000000007", " -94.0533", "-95.152083000000005"))
+  EJAM:::latlon_as.numeric(-3:3)
+  EJAM:::latlon_as.numeric(c(1:3, NA))
+  EJAM:::latlon_as.numeric(c(1, 'asdf'))
+  EJAM:::latlon_as.numeric(c(1, ''))
+  EJAM:::latlon_as.numeric(c(1, '', NA))
+  EJAM:::latlon_as.numeric(c('aword', '$b'))
+  EJAM:::latlon_as.numeric(c('-10.5\%', '<5', '$100'))
+  EJAM:::latlon_as.numeric(c(Inf, 1))
 
 }
 \seealso{

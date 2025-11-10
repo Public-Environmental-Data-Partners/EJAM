@@ -27,7 +27,7 @@ utility to convert aliases to proper colnames of map_headernames
 used by varinfo() and fixcolnames()
 }
 \examples{
-  fixmapheadernamescolname(c('long', 'csv', 'api', 'r'))
+  EJAM:::fixmapheadernamescolname(c('long', 'csv', 'api', 'r'))
 
 }
 \seealso{

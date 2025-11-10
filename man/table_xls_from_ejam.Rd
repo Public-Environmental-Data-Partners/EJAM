@@ -88,7 +88,7 @@ Almost identical to \code{\link[=ejam2excel]{ejam2excel()}}
 }
 \examples{
 \donttest{
-  table_xls_from_ejam(testoutput_ejamit_10pts_1miles)
+  EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles)
   }
 }
 \keyword{internal}

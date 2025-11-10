@@ -124,7 +124,7 @@ frs_from_program <- function(program) {
 #'   frs_from_naics("uranium")
 #'   mapfast(frs_from_naics(naics_from_any("nuclear")$code))
 #'   naics_from_any("silver")
-#'   naics_from_name("silver")
+#'   EJAM:::naics_from_name("silver")
 #'   naics_from_any(212222 )
 #'   frs_from_naics(21222)
 #'   regid_from_naics(21222)

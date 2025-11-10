@@ -39,7 +39,7 @@
 #'    "ObjectId" "FacName" "RegistryID" "FacLat" "FacLong" "lat" "lon" "registry_id"
 #' @import data.table
 #' @examples
-#'   x1 = get_facility_info_via_ECHO(562213, url_not_query = F)
+#'   x1 = EJAM:::get_facility_info_via_ECHO(562213, url_not_query = F)
 #'   x2 = latlon_from_naics(562213)
 #'
 #' @keywords internal

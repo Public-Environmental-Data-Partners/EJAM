@@ -43,7 +43,7 @@ See \code{\link[=pkg_functions_and_data]{pkg_functions_and_data()}}, pkg_functio
 See \code{\link[=pkg_data]{pkg_data()}}
 }
 \examples{
- # pkg_functions_and_data("datasets")
+ # EJAM:::pkg_functions_and_data("datasets")
 
 }
 \seealso{

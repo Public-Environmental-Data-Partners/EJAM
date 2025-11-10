@@ -118,9 +118,9 @@ metadata_add_and_use_this <- function(objectname) {
 #'
 #' @return returns x but with new or altered attributes
 #' @examples
-#'   # metadata_check() # internal function
+#'   # EJAM:::metadata_check() # internal function
 #'   x <- data.frame(a=1:10,b=1001:1010)
-#'   # x <- metadata_add(x) # internal function
+#'   # x <- EJAM:::metadata_add(x) # internal function
 #'   attributes(x)
 #'
 #' @keywords internal
@@ -162,7 +162,7 @@ metadata_add <- function(x, metadata=NULL,
 #' @inheritParams metadata_check
 #' @return same as [metadata_check()], invisibly
 #' @examples
-#' # x = metadata_check( which = "ejam_package_version")
+#' # x = EJAM:::metadata_check( which = "ejam_package_version")
 #' # x[!x$ejam_package_version %in% "2.32.6", ]
 #'
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
@@ -241,7 +241,7 @@ cat("\n\n")
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'   [pkg_functions_and_data()]
 #' @examples
-#' x = metadata_check( which = "ejam_package_version")
+#' x = EJAM:::metadata_check( which = "ejam_package_version")
 #' x[!x$ejam_package_version %in% "2.32.6", ]
 #'
 #'   # tail(EJAM:::metadata_check( ))

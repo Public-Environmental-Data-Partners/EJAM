@@ -271,7 +271,7 @@ ejamit_compare_distances <- function(sitepoints, radii = c(1,2,3),
 #' @param myvars optional, vector of some colnames of results_bydistance
 #' @param radii optional vector - taken from results_bydistance$radius.miles
 #' @param n optional number of indicators to list. n=3 would mean show the top 3.
-#' @examples distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
+#' @examples EJAM:::distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
 #' @return vector of text names of indicators
 #'
 #' @keywords internal

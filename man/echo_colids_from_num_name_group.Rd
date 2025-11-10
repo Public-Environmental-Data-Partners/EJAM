@@ -21,13 +21,12 @@ Not the same sort order or length as input necessarily! A valid list of numbers 
 Interpret and check the list of requested columns to be asked of the ECHO API get_facility_info
 }
 \examples{
- 
-  x <- echo_colids_from_num_name_group(c('critical', 'NC', 'CensusBlockGroup' ))
+  x <- EJAM:::echo_colids_from_num_name_group(c('critical', 'NC', 'CensusBlockGroup' ))
   x
   varsinfo_ECHO_API$ObjectName[match( x, varsinfo_ECHO_API$ColumnID)]
-  echo_colids_from_num_name_group(300:400)
-  echo_colids_from_num_name_group(5:1)
-  echo_colids_from_num_name_group(c(5:1,1:3))
+  EJAM:::echo_colids_from_num_name_group(300:400)
+  EJAM:::echo_colids_from_num_name_group(5:1)
+  EJAM:::echo_colids_from_num_name_group(c(5:1,1:3))
 
 }
 \seealso{

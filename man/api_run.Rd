@@ -27,7 +27,7 @@ NA
 Run API in background to test/develop it
 }
 \examples{
- \donttest{
+\dontrun{
  # launch and try it in R console
  api_run()
 
@@ -38,7 +38,6 @@ Run API in background to test/develop it
 
  s2b <- data.table::rbindlist(httr2::resp_body_json(outx))
  s2b
-}
 
  urlx <- "http://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-99&radius=2"
  reqx <- httr2::request(urlx)
@@ -48,7 +47,6 @@ Run API in background to test/develop it
  x <- httr2::resp_body_html(outx)
  fname <- tempfile("report", fileext = ".html")
  xml2::write_html(x, file = fname)
- ## not fully formatted/css/etc. but shows rough results
  browseURL(fname)
-
+}
 }

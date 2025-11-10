@@ -18,7 +18,7 @@ a tag, with "shiny.tag" class:  class(enurl("google.com", "click here"))
 Create an url
 }
 \examples{
-enurl("https://www.thinkr.fr", "ThinkR")
+EJAM:::enurl("https://www.thinkr.fr", "ThinkR")
 
 }
 \seealso{

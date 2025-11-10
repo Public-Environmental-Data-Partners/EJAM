@@ -1258,6 +1258,7 @@ fips_state_from_state_abbrev <- function(ST) {
 #' @examples
 #'   fips_state_from_statename("Delaware")
 #'   fips_state_from_statename(c("dc", 'district of columbia', 'georgia'))
+#'
 #' @export
 #'
 fips_state_from_statename <- function(statename) {
@@ -2127,7 +2128,7 @@ statename2st = function(statename) {
 #' @return returns vector of state names as long as ST vector,
 #'   with NA for elements that are neither statename nor ST
 #' @examples
-#' st2statename(c("TX", 'dc', "Illinois"))
+#' EJAM:::st2statename(c("TX", 'dc', "Illinois"))
 #'
 #' @keywords internal
 #'

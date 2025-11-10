@@ -12,28 +12,28 @@
 #' @examples
 #' out <- testoutput_ejamit_10pts_1miles
 #' mytable <- out$results_bysite[1:2, ..names_these]
-#' table_signif_round_x100(mytable)
+#' EJAM:::table_signif_round_x100(mytable)
 #' # same as this:
-#' table_signif(
-#'   table_round(
-#'     table_x100(
+#' EJAM:::table_signif(
+#'   EJAM:::table_round(
+#'     EJAM:::table_x100(
 #'       mytable, names_pct_as_fraction_ejamit
 #'     )
 #'   )
 #' )
-#' 
-#' 
+#'
+#'
 #' @keywords internal
 #'
 table_signif <- function(dat, digits = NULL) {
-  
+
   if (missing(digits) || is.null(digits) || any(digits %in% 'ejscreen')) {
     suppressWarnings({
       # digits <- as.numeric(esigfigs.api[match(colnames(dat), esigfigs.api$evar), 'sigfigs'])
       digits <- as.numeric(varinfo(colnames(dat), 'sigfigs')$sigfigs)
     })
   }
-  
+
   signifarray.api <- function(dat, digits = NULL) {
     if (!(is.data.frame(dat))) {dat <- as.data.frame(dat)}
     if (length(digits) != NCOL(dat)) {
@@ -50,9 +50,9 @@ table_signif <- function(dat, digits = NULL) {
     # dat <- mapply(FUN = signif, x = dat, digits = digits)
     return(dat)
   }
-  
+
   return(
     signifarray.api(dat = dat, digits = digits)
   )
 }
-############################################################################# #  
+############################################################################# #

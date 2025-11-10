@@ -317,6 +317,7 @@ naics_from_code <- function(mycodes, children = FALSE) {
 #' @seealso [naics_findwebscrape()] [naics_subcodes_from_code()] [naics_from_code()]  [naics_from_name()]  [naics_from_any()]
 #' @examples
 #'  data.table::fintersect(naics_from_any( "manufac"), naics_from_any("chem"))
+#'   EJAM:::naics_from_name("silver")
 #' @return a subset of the [naicstable] data.table (not just the codes column)
 #'
 #' @keywords internal

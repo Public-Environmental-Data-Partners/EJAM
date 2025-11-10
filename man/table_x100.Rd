@@ -29,7 +29,7 @@ table_signif_round_x100(mytable)
 # same as this:
 table_signif(
   table_round(
-    table_x100(
+    EJAM:::table_x100(
       mytable, names_pct_as_fraction_ejamit
     )
   )
@@ -37,8 +37,8 @@ table_signif(
 
  y = data.frame(pctlowinc = 1:2, pctpre1960 = 1:2, avg.pctunemployed = 1:2, avg.pctpre1960 = 1:2)
 
- table_x100(y, names_pct_as_fraction_blockgroupstats)
- table_x100(y, names_pct_as_fraction_ejamit)
+ EJAM:::table_x100(y, names_pct_as_fraction_blockgroupstats)
+ EJAM:::table_x100(y, names_pct_as_fraction_ejamit)
  cat("\n\n")
  names_pct_as_fraction_blockgroupstats
  names_pct_as_fraction_ejamit
@@ -47,8 +47,8 @@ table_signif(
                      avg.pctunemployed = 1:2,
                      avg.pctpre1960 = 1:2)
 
- table_x100(ytable, names_pct_as_fraction_blockgroupstats)
- table_x100(ytable, names_pct_as_fraction_ejamit)
+ EJAM:::table_x100(ytable, names_pct_as_fraction_blockgroupstats)
+ EJAM:::table_x100(ytable, names_pct_as_fraction_ejamit)
  cat("\n\n")
  y
  ytable

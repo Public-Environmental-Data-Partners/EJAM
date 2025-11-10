@@ -26,6 +26,7 @@ See \code{\link[=naics_from_any]{naics_from_any()}} which uses this
 }
 \examples{
  data.table::fintersect(naics_from_any( "manufac"), naics_from_any("chem"))
+  EJAM:::naics_from_name("silver")
 }
 \seealso{
 \code{\link[=naics_findwebscrape]{naics_findwebscrape()}} \code{\link[=naics_subcodes_from_code]{naics_subcodes_from_code()}} \code{\link[=naics_from_code]{naics_from_code()}}  \code{\link[=naics_from_name]{naics_from_name()}}  \code{\link[=naics_from_any]{naics_from_any()}}

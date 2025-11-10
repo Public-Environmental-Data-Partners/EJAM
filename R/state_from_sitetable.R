@@ -14,11 +14,12 @@
 #'   new columns if ST was not already a column:
 #'   ejam_uniq_id, ST, statename, FIPS.ST, REGION, n
 #' @examples
-#'   state_from_sitetable(testpoints_10)
-#'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ejam_uniq_id, ST, pop)])
-#'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
-#'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
+#'   EJAM:::state_from_sitetable(testpoints_10)
+#'   EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ejam_uniq_id, ST, pop)])
+#'   EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
+#'   EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
 #'
+#' @keywords internal
 #'
 state_from_sitetable <- function(sites, ignorelatlon = FALSE) {
 

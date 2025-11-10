@@ -27,7 +27,7 @@ mapfast(dat, radius = 0.1)
 myst <- "NY"
 dat <- copy(blockgroupstats[ST == myst, ])
 # add latlon cols by reference:
-latlon_join_on_bgid(dat)
+EJAM:::latlon_join_on_bgid(dat)
 # specify useful labels for the map popups
 mapfast(dat, radius = 0.1,
         labels = fixcolnames(names(dat), 'r', 'shortlabel'))

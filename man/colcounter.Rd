@@ -50,8 +50,8 @@ colcounter_summary_cum_pct(pdata, 5 * (10:20))
 x80 <- colcounter(pdata, threshold = 80, or.tied = T)
 x95 <- colcounter(pdata, threshold = 95, or.tied = T)
 table(x95)
-tablefixed(x95, NCOL(pdata))
-cbind(at80=tablefixed(x80, NCOL(pdata)), at95=tablefixed(x95, NCOL(pdata)))
+EJAM:::tablefixed(x95, NCOL(pdata))
+cbind(at80=EJAM:::tablefixed(x80, NCOL(pdata)), at95=EJAM:::tablefixed(x95, NCOL(pdata)))
   }
 
 }

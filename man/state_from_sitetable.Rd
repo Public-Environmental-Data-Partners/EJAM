@@ -28,14 +28,14 @@ try ST, then FIPS, then latlon of site (not blocks), then polygon
 Identify US State that each site is in (given ST, lat/lon, or FIPS)
 }
 \examples{
-  state_from_sitetable(testpoints_10)
-  state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ejam_uniq_id, ST, pop)])
-  state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
-  state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
-
+  EJAM:::state_from_sitetable(testpoints_10)
+  EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ejam_uniq_id, ST, pop)])
+  EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
+  EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
 
 }
 \seealso{
 \code{\link[=state_from_blockid_table]{state_from_blockid_table()}} \code{\link[=state_per_site_for_doaggregate]{state_per_site_for_doaggregate()}}
 \code{\link[=state_from_latlon]{state_from_latlon()}} \code{\link[=state_from_fips_bybg]{state_from_fips_bybg()}}
 }
+\keyword{internal}

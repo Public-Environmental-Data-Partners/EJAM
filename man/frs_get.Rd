@@ -148,24 +148,8 @@ This function creates the following:
       NAICS_CODES = 'c',  # csv of NAICS
 }
 }
-\examples{
-\donttest{
-  # These steps in the examples are all done by frs_update_datasets()
-  #  (a function not exported by the package)
-  # Note these take a long time to run, for downloads and processing.
-  frs <- frs_get()
-  # keep only if an active site, or unclear whether active. Remove clearly inactive ones.
-  closedidlist <- frs_inactive_ids()
-  frs <- frs_drop_inactive(frs, closedid = closedidlist)
-  frs_by_programid <- frs_make_programid_lookup(x = frs) # another super slow step
-  frs_by_naics     <- frs_make_naics_lookup(    x = frs) #  NAs introduced by coercion
-  usethis::use_data(frs,              overwrite = TRUE)
-  usethis::use_data(frs_by_programid, overwrite = TRUE)
-  usethis::use_data(frs_by_naics,     overwrite = TRUE)
-}
-
-}
 \seealso{
 \code{\link[=frs_update_datasets]{frs_update_datasets()}} \code{\link[=frs_read]{frs_read()}} \code{\link[=frs_clean]{frs_clean()}} frs_by_naics \code{\link[=frs_active_ids]{frs_active_ids()}}
 \code{\link[=frs_drop_inactive]{frs_drop_inactive()}} \code{\link[=frs_make_programid_lookup]{frs_make_programid_lookup()}} \code{\link[=frs_make_naics_lookup]{frs_make_naics_lookup()}}
 }
+\keyword{internal}

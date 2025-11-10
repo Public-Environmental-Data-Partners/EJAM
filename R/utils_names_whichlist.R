@@ -16,7 +16,7 @@
 #' @return a data.frame of whichlist, exactmatch, grepmatch, and grephits (examples)
 #'
 #' @examples
-#'    x <- names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
+#'    x <- EJAM:::names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
 #'    subset(x, !grepl("friendly", x$whichlist))
 #'
 #'    subset(x,  grepl("friendly", x$whichlist))

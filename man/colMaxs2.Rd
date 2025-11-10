@@ -30,7 +30,7 @@ df <- rbind(NA, data.frame(
   stringsAsFactors = FALSE))
 
 df
-colMaxs2(df)
+EJAM:::colMaxs2(df)
 }
 \seealso{
 \code{\link[=colMins2]{colMins2()}}

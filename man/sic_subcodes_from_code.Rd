@@ -24,6 +24,7 @@ See \code{\link[=sic_from_any]{sic_from_any()}} which uses this
   sic_subcodes_from_code('07')
   # codes starting with '078'
   sic_subcodes_from_code('078')
+
 }
 \seealso{
 \code{\link[=sic_subcodes_from_code]{sic_subcodes_from_code()}} \code{\link[=sic_from_code]{sic_from_code()}}  \code{\link[=sic_from_name]{sic_from_name()}}  \code{\link[=sic_from_any]{sic_from_any()}}

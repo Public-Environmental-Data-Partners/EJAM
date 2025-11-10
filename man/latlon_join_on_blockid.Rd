@@ -20,7 +20,7 @@ with new lat,lon columns
 }
 \examples{
  s2b = copy(testoutput_getblocksnearby_10pts_1miles)
- latlon_join_on_blockid(s2b)
+ EJAM:::latlon_join_on_blockid(s2b)
 
 }
 \keyword{internal}

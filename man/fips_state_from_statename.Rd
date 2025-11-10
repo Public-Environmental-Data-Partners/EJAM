@@ -21,4 +21,5 @@ FIPS - Get state fips for each state name
 \examples{
   fips_state_from_statename("Delaware")
   fips_state_from_statename(c("dc", 'district of columbia', 'georgia'))
+
 }

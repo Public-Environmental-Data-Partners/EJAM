@@ -23,11 +23,11 @@ Round numbers in a table, each column to appropriate number of significant digit
 \examples{
 out <- testoutput_ejamit_10pts_1miles
 mytable <- out$results_bysite[1:2, ..names_these]
-table_signif_round_x100(mytable)
+EJAM:::table_signif_round_x100(mytable)
 # same as this:
-table_signif(
-  table_round(
-    table_x100(
+EJAM:::table_signif(
+  EJAM:::table_round(
+    EJAM:::table_x100(
       mytable, names_pct_as_fraction_ejamit
     )
   )

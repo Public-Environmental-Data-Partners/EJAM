@@ -12,7 +12,7 @@
 #' @return returns the input data.table but with lat,lon columns added as block coordinates
 #' @examples
 #'  s2b = copy(testoutput_getblocksnearby_10pts_1miles)
-#'  latlon_join_on_blockid(s2b)
+#'  EJAM:::latlon_join_on_blockid(s2b)
 #'
 #' @keywords internal
 #'

@@ -59,7 +59,7 @@ The web interface at \url{https://echo.epa.gov/facilities/facility-search}
 allows data entry of up to 2,000 IDs pasted from spreadsheet column, or comma- or return-separated.
 }
 \examples{
-  x1 = get_facility_info_via_ECHO(562213, url_not_query = F)
+  x1 = EJAM:::get_facility_info_via_ECHO(562213, url_not_query = F)
   x2 = latlon_from_naics(562213)
 
 }

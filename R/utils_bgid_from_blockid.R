@@ -11,8 +11,8 @@
 #' rad = 0.658
 #' pts = data.frame(lat=39.4347105, lon=-74.7203421)
 #' s2b = getblocksnearby(sitepoints=pts, radius = rad)
-#' bgid_from_blockid(s2b$blockid) # vector of unique ids
-#' bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
+#' EJAM:::bgid_from_blockid(s2b$blockid) # vector of unique ids
+#' EJAM:::bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
 #'
 #'  # plotblocksnearby(pts, radius = rad, overlay_blockgroups = T)
 #'

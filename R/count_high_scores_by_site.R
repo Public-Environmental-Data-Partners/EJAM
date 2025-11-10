@@ -24,8 +24,8 @@
 #' x80 <- colcounter(pdata, threshold = 80, or.tied = T)
 #' x95 <- colcounter(pdata, threshold = 95, or.tied = T)
 #' table(x95)
-#' tablefixed(x95, NCOL(pdata))
-#' cbind(at80=tablefixed(x80, NCOL(pdata)), at95=tablefixed(x95, NCOL(pdata)))
+#' EJAM:::tablefixed(x95, NCOL(pdata))
+#' cbind(at80=EJAM:::tablefixed(x80, NCOL(pdata)), at95=EJAM:::tablefixed(x95, NCOL(pdata)))
 #'   }
 #'
 #' @export
@@ -112,18 +112,18 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
 #'  pdata <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
 #'   ### pdata <- EJAM::blockgroupstats[ , names_e_pctile]
 #'  pcuts <-  5 * (0:20)
-#' colcounter_summary(        pdata, pcuts)
-#' colcounter_summary_pct(    pdata, pcuts)
-#' colcounter_summary_cum(    pdata, pcuts)
-#' colcounter_summary_cum_pct(pdata, pcuts)
-#' colcounter_summary_cum_pct(pdata, 5 * (10:20))
+#' EJAM:::colcounter_summary(        pdata, pcuts)
+#' EJAM:::colcounter_summary_pct(    pdata, pcuts)
+#' EJAM:::colcounter_summary_cum(    pdata, pcuts)
+#' EJAM:::colcounter_summary_cum_pct(pdata, pcuts)
+#' EJAM:::colcounter_summary_cum_pct(pdata, 5 * (10:20))
 #' a3 <- colcounter_summary_all(    pdata, pcuts)
 #'
 #' x80 <- colcounter(pdata, threshold = 80, or.tied = T)
 #' x95 <- colcounter(pdata, threshold = 95, or.tied = T)
 #' table(x95)
-#' tablefixed(x95, NCOL(pdata))
-#' cbind(at80=tablefixed(x80, NCOL(pdata)), at95=tablefixed(x95, NCOL(pdata)))
+#' EJAM:::tablefixed(x95, NCOL(pdata))
+#' cbind(at80=EJAM:::tablefixed(x80, NCOL(pdata)), at95=EJAM:::tablefixed(x95, NCOL(pdata)))
 #'
 #' @keywords internal
 #'
