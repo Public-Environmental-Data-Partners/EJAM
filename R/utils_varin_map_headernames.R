@@ -11,7 +11,7 @@
 #' @examples
 #' EJAM:::varin_map_headernames("spanish")
 #' EJAM:::varin_map_headernames("lowinc")
-#' EJAM:::vvarin_map_headernames("pop")
+#' EJAM:::varin_map_headernames("pop")
 #' EJAM:::varin_map_headernames("POV", ignore.case = T)
 #' EJAM:::varin_map_headernames("POV", ignore.case = F)
 #'

@@ -33,7 +33,7 @@ utility to check if a variable or term is in map_headernames and where
 \examples{
 EJAM:::varin_map_headernames("spanish")
 EJAM:::varin_map_headernames("lowinc")
-EJAM:::vvarin_map_headernames("pop")
+EJAM:::varin_map_headernames("pop")
 EJAM:::varin_map_headernames("POV", ignore.case = T)
 EJAM:::varin_map_headernames("POV", ignore.case = F)
 

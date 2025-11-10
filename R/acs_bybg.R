@@ -144,8 +144,9 @@
 #' myvars <- myacsinfo$name # 184 variables among 8 tables
 #'
 #'
-#' # Slowly download data for all these tables in ALL STATES and DC and PR
-#' # but not Island Areas
+#' # VERY SLOWLY download data for all these tables
+#' # in ALL STATES and DC and PR but not Island Areas
+#'
 #' mystates <- stateinfo2[stateinfo2$is.usa.plus.pr, ]$ST
 #' ## PR has to be handled separately? B05001PR is what PR table names look like
 #' mystates = mystates[mystates != "PR"]
