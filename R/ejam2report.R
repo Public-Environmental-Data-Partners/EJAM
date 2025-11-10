@@ -52,12 +52,12 @@
 #' out <- testoutput_ejamit_10pts_1miles
 #'
 #' ejam2report(out)
-#' table_gt_from_ejamit_overall(out$results_overall)
-#' table_tall_from_overall(out$results_overall)
-#'
-#' x <- ejam2report(out, sitenumber = 1)
-#' table_gt_from_ejamit_1site(out$results_bysite[1, ])
-#' browseURL(x)
+#' ejam2table_tall(out$results_overall)
+#' if (interactive()) {
+#'  x <- ejam2report(out, sitenumber = 1, launch_browser = T)
+#'  table_gt_from_ejamit_overall(out$results_overall)
+#'  table_gt_from_ejamit_1site(out$results_bysite[1, ])
+#' }
 #'
 #' @export
 #'

@@ -153,7 +153,7 @@ out_bydistance2results_bydistance <- function(out_bydistance) {
 #'   pts <- testpoints_10
 #'
 #'   bydist <- ejamit_compare_distances(pts, radii = radii)
-#'   ejamit_compare_distances2plot(bydist, myvars = c(
+#'   EJAM:::ejamit_compare_distances2plot(bydist, myvars = c(
 #'     "ratio.to.avg.pctlowinc", "ratio.to.avg.pcthisp", "ratio.to.avg.pctnhba"))
 #'
 #'   names(bydist) <- fixcolnames(names(bydist), "r", "shortlabel")
