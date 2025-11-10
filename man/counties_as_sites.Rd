@@ -43,7 +43,7 @@ See more below under "Value"
  myfips = topcounties$FIPS
 
  # simplest map of top counties
- map_shapes_leaflet(shapes = shapes_counties_from_countyfips(myfips))
+ map_shapes_leaflet(shapes = EJAM:::shapes_counties_from_countyfips(myfips))
 
  # simplest way to get and map results county by county
  out_c1 = ejamit(fips = myfips)

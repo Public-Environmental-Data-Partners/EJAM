@@ -546,7 +546,7 @@ getfrsnearby <- function(frompoints,
 #' EJAM:::countpoints_after_getpoints(s2s, radius = 3)
 #'
 #' @return counts data.table with column N for count, and a column named via frompoints_id_colname
-#' @examples countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
+#' @examples EJAM:::countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
 #'
 #' @keywords internal
 #'

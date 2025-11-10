@@ -191,7 +191,7 @@ the Decennial census blocks can provide, such as a dasymetric map approach.
 }
 
 \examples{
-structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
 
 }
 \seealso{

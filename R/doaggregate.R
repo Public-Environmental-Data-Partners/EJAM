@@ -131,7 +131,7 @@
 #' @seealso [ejamit]   [getblocksnearby()]
 #'
 #' @examples
-#' structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+#' EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
 #'
 #' @return list with named elements:
 #'

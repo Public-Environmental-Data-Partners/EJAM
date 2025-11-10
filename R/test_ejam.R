@@ -250,7 +250,8 @@ x <- EJAM:::test_ejam(
         "test-proxistat.R",
         "test-utils_indexpoints.R",
         "test-get_blockpoints_in_shape.R",
-        "test-bgid_from_blockid.R"
+        "test-bgid_from_blockid.R",
+        "test-distances.all.R"
       ),
       test_fixcolnames = c(
         "test-fixcolnames.R",

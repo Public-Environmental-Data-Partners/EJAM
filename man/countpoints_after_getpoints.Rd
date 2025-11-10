@@ -39,7 +39,7 @@ counts data.table with column N for count, and a column named via frompoints_id_
 utility - count topoints near each frompoint, AFTER getpointsnearby() or getfrsnearby() or getblocksnearby() was already run
 }
 \examples{
-countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
+EJAM:::countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
 
 }
 \keyword{internal}
