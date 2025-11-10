@@ -1047,7 +1047,7 @@ shapefile_addcols <- function(shp, addthese = c('fipstype', 'pop', 'NAME', 'STAT
   }
   if ('STATE_ABBR' %in% addthese) {
     suppressWarnings({
-      shp$STATE_ABBR <- fips2state_abbrev(fipsvector) # NA if fips is NA
+      shp$STATE_ABBR <- fips2stateabbrev(fipsvector) # NA if fips is NA
     })
   }
   if ('STATE_NAME' %in% addthese) {

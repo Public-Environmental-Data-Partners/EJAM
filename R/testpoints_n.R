@@ -51,7 +51,7 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
     if (!is.null(ST)) {
       stop('cannot specify both region and ST, just one of the two (or neither for entire US)')
     }
-    ST = fips2state_abbrev(fips_states_in_eparegion(region))
+    ST = fips2stateabbrev(fips_states_in_eparegion(region))
   }
   if (!is.null(ST)) {
 
@@ -213,7 +213,7 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
       ## It now uses joins of blockwts and blockgroupstats instead.
       ## It is almost as fast as using bgid2fips but avoids needing even that.
       ## Example data and comparing two methods:
-      # region = sample(1:10, 1); cat("REGION:", region, '\n'); ST_needed = fips2state_abbrev(fips_states_in_eparegion(region)); print(ST_needed)
+      # region = sample(1:10, 1); cat("REGION:", region, '\n'); ST_needed = fips2stateabbrev(fips_states_in_eparegion(region)); print(ST_needed)
       # if (!exists("bgid2fips")) dataload_dynamic("bgid2fips")
       # staterownums_via_bgid2fips <- which(blockwts[bgid2fips, substr(bgfips,1,2) %in% fips_state_from_state_abbrev(ST_needed), on = "bgid"])
       # all.equal(staterownums, staterownums_via_bgid2fips)

@@ -142,7 +142,7 @@ mystates = c("DC", 'RI')
 newvars <- acs_bybg(variables = c("B01001_001", paste0("B01001_0", 31:39)),
   state = mystates)
 data.table::setnames(newvars, "GEOID", "bgfips")
-newvars[, ST := fips2state_abbrev(bgfips)]
+newvars[, ST := fips2stateabbrev(bgfips)]
 names(newvars) <- gsub("E$", "", names(newvars))
 
 # provide formulas for calculating new indicators from ACS raw data:
@@ -187,7 +187,7 @@ system.time({
   newvars <- acs_bybg(variables = myvars, state = mystates)
 })
 setnames(newvars, "GEOID", "bgfips")
-newvars[, ST := fips2state_abbrev(bgfips)]
+newvars[, ST := fips2stateabbrev(bgfips)]
 names(newvars) <- gsub("E$", "", names(newvars))
 dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
 t(head(newvars))

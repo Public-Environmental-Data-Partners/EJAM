@@ -11,7 +11,7 @@
 # state_from_fips_bybg()    # confusing name
 
 
-# fips2state_abbrev() *** # this is the one to use for a single state per FIPS
+# fips2state_abbrev() *** # now fips2stateabbrev() this is the one to use for a single state per FIPS
 
 # fips_state_from_state_abbrev()
 # fips2state_fips()
@@ -187,21 +187,21 @@ state_from_blockid <- function(blockid) {
 #'
 #' Get the State abbreviations of ALL blockgroups WITHIN the input FIPS
 #'
-#' @details Unlike [fips2state_abbrev()], this returns a vector of 2-letter State abbreviations that is
+#' @details Unlike [fips2stateabbrev()], this returns a vector of 2-letter State abbreviations that is
 #'   one per blockgroup that matches the input FIPS,
 #'   not necessarily a vector as long as the input vector of FIPS codes!,
 #'   and not just a short list of unique states!
 #' @param fips Census FIPS codes vector, numeric or char, 2-digit, 5-digit, etc. OK
 #' @param uniqueonly If set to TRUE, returns only unique results.
 #'   This parameter is here mostly to remind user that default is not uniques only.
-#' @seealso [fips2state_abbrev()] to get just one state per FIPS
+#' @seealso [fips2stateabbrev()] to get just one state per FIPS
 #' @return vector of 2-character state abbreviations like CA,CA,CA,MD,MD,TX
 #'
 #' @export
 #'
 state_from_fips_bybg <- function(fips, uniqueonly=FALSE) {
 
-  message("This function provides the states of ALL blockgroups within the FIPS, not just one state per fips. see also fips2state_abbrev() ")
+  message("This function provides the states of ALL blockgroups within the FIPS, not just one state per fips. see also fips2stateabbrev() ")
   fips <- fips_bgs_in_fips(fips) # returns all the blockgroups fips codes that match, such as all bg in the state or county
   x <- stateinfo$ST[match(substr(fips,1,2), stateinfo$FIPS.ST)]
   if (uniqueonly) {return(unique(x))} else {return(x)}

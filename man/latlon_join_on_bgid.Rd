@@ -20,7 +20,7 @@ with new lat,lon columns
 \examples{
 # quick map of blockgroups in 1 state, shown as blockgroup centroids
 myst <- "NY"
-dat <- bgpts[fips2state_abbrev(substr(bgfips,1,2)) == myst, ]
+dat <- bgpts[fips2stateabbrev(substr(bgfips,1,2)) == myst, ]
 mapfast(dat, radius = 0.1)
 
 # same but popups have all the indicators from EJSCREEN

@@ -20,7 +20,7 @@ fips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
   testinput_fips_cities[1], testinput_fips_counties[1],
   testinput_fips_states[2])
 data.frame(fips, sitename = fips2name(fips),
-  stfips = fips2state_fips(fips),
+  stfips = fips2statefips(fips),
   state = fips2statename(fips))
 
 }

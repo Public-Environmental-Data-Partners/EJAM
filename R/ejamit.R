@@ -436,7 +436,7 @@ ejamit <- function(sitepoints = NULL,
 
     sites2states_or_latlon <- data.table(n = seq_along(fips),
                                          ejam_uniq_id = as.character(fips),
-                                         ST = fips2state_abbrev(fips)) # includes invalid fips here
+                                         ST = fips2stateabbrev(fips)) # includes invalid fips here
 
     # . doaggregate  fips ####
 
