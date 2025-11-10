@@ -167,7 +167,7 @@ calc_ejam <- function(bg,
 #' DRAFT utility to use formulas provided as text, to calculate indicators
 #'
 #' @param mydf data.frame of indicators or variables to use
-#' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrused formula strings,
+#' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
 #'   since the contents could potentially be a security risk
 #' @param keep useful if some of the formulas are just interim steps
 #'   creating evanescent variables created only for use in later formulas
