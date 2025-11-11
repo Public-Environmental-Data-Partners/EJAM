@@ -144,8 +144,9 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
     warning("Some shortlabels are not unique, so they will be made unique by adding a number suffix.")
     names(ratio.to.us.d.overall) <- make.unique(names(ratio.to.us.d.overall), sep = " ")
   }
-
-  ratio.to.us.d.overall[is.infinite(ratio.to.us.d.overall)] <- 0
+  if (any(sapply(ratio.to.us.d.overall, is.infinite))) {
+    ratio.to.us.d.overall[, sapply(ratio.to.us.d.overall, is.infinite)] <- 0
+  }
   # use yellow/orange/red for ratio >= 1x, 2x, 3x  #  work in progress
   mycolors <- mycolorsavailable[1 + findInterval(ratio.to.us.d.overall, c(1.01, 2, 3))]
 
@@ -156,7 +157,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   # abline(h=1, col="gray")
 
   thisdata <-  data.frame(name = factor(names(ratio.to.us.d.overall),levels = names(ratio.to.us.d.overall)),
-                          value = ratio.to.us.d.overall,
+                          value = as.vector(unlist(ratio.to.us.d.overall)),
                           color =  factor(
                             mycolors,
                             levels = c( "red","orange","yellow","gray") #Set correct order from least to most
