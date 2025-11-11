@@ -1348,7 +1348,7 @@ fips_counties_from_statefips <- function(statefips) {
 #'
 #' @examples
 #'   fips_counties_from_state_abbrev("DE")
-#'   fips_counties_from_state_abbrev("RI", "RI")
+#'   fips_counties_from_state_abbrev(c("RI", "RI"))
 #'
 #' @export
 #'

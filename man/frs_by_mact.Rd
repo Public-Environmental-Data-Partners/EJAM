@@ -26,8 +26,8 @@ The programid column here should be found in the pgm_sys_id column in frs_by_pro
 but as of mid 2025 only 55k of them were found there.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{ table(frs_by_mact$programid \%in\% frs_by_programid$pgm_sys_id)
-FALSE  TRUE 
-59944  55429 
+FALSE  TRUE
+59944  55429
 }\if{html}{\out{</div>}}
 
 Also note we have found some typos and nonstandard abbreviations
@@ -44,17 +44,17 @@ in subpart titles in downloaded data from ECHO/FRS, such as
 \code{frs_by_mact[grepl("ORGNCS", frs_by_mact$title), ]}
 }
 \examples{
- 
-  mact_table
+  dataload_dynamic("frs_by_mact")
+  head(mact_table)
   mact_table[order(mact_table$title),]
   mycodes <- c("BBBBBB", "OOOO")
   frs_by_mact[subpart \%in\% mycodes, ]
   mact_table[grepl("smelt", mact_table$title, ignore.case = T), ]
   frs_by_mact[grepl("smelt", title, ignore.case = T), ]
   # a single site can be covered by 19 categories
-  frs_by_mact[, howmany := .N, by="programid"][order(howmany), ] 
+  frs_by_mact[, howmany := .N, by="programid"][order(howmany), ]
   table(frs_by_mact[, howmany := .N, by="programid"][order(howmany), howmany])
-  
+
 }
 \seealso{
 \code{\link[=dataload_dynamic]{dataload_dynamic()}} \link{mact_table} \link{frs_by_programid}  \link{frs}

@@ -46,7 +46,7 @@ sites is complicated. See discussion of \code{\link[=latlon_from_naics]{latlon_f
   frs_from_naics("textile mills", children = FALSE)
   frs_from_naics("textile mills", children = TRUE)
 
-  \donttest{
+  \dontrun{
   naics_from_any(naics_categories(3))[order(name),.(name,code)][1:10,]
   naics_from_any(naics_categories(3))[order(code),.(code,name)][1:10,]
   naics_from_code(211)

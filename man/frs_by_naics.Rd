@@ -42,29 +42,32 @@ length(unique(frs_by_naics$REGISTRY_ID))
 3: 34.04722 -81.15136 110000854246 325222
 }
 \examples{
+ dataload_dynamic("frs")
+ dataload_dynamic("frs_by_naics")
+ library(data.table)
  # NAICS is missing for almost 80 percent of facilities
- `frs[ NAICS == "", .N] / frs[,.N] `
+ frs[ NAICS == "", .N] / frs[,.N]
  # only about 647k facilities had some NAICS info as of 02/2025
- `frs[ NAICS != "", .N]`
- `frs_by_naics[, uniqueN(REGISTRY_ID)]` # about 581k as of 02/2025
- 
- dim(frs_by_naics) 
+ frs[ NAICS != "", .N]
+ frs_by_naics[, uniqueN(REGISTRY_ID)]  # about 581k as of 02/2025
+
+ dim(frs_by_naics)
  # about 680k rows here, or pairs of 1 NAICS - 1 registry ID pair,
  #  since some IDs have 2 or more NAICS so appear as 2 or more rows here.
- 
+
  # About 1858 different NAICS codes appear here:
- `frs_by_naics[,  uniqueN(NAICS)]`
- `frs_by_naics[, .(sum(.N > 1)), by=NAICS][,sum(V1)]`
+ frs_by_naics[,  uniqueN(NAICS)]
+ frs_by_naics[, .(sum(.N > 1)), by=NAICS][,sum(V1)]
    #  1,699 NAICS codes are used to describe more than one Registry ID
-  `frs_by_naics[, .(sum(.N == 1)), by=NAICS][,sum(V1)]`
-   #  almost 200 NAICS codes appear only once, i.e., apply to only a single facility 
-   
+  frs_by_naics[, .(sum(.N == 1)), by=NAICS][,sum(V1)]
+   #  almost 200 NAICS codes appear only once, i.e., apply to only a single facility
+
  # Which 2-digit NAICS are found here most often?
- `frs_by_naics[ , .N, keyby=substr(NAICS,1,2)]`
- `frs_by_naics[ , .N,   by=substr(NAICS,1,2)][order(N),]` # Most common are 33 and 81
+ frs_by_naics[ , .N, keyby=substr(NAICS,1,2)]
+ frs_by_naics[ , .N,   by=substr(NAICS,1,2)][order(N),] # Most common are 33 and 81
  # Top 10 most common 3-digit NAICS here:
- `x = tail(frs_by_naics[ , .N,   by=.(n3 = substr(NAICS,1,3))][order(N), ],10)`
- `cbind(x, industry = rownames(naics_categories(3))[match(x$n3, naics_categories(3))])`
+ x = tail(frs_by_naics[ , .N,   by=.(n3 = substr(NAICS,1,3))][order(N), ],10)
+ cbind(x, industry = rownames(naics_categories(3))[match(x$n3, naics_categories(3))])
 }
 \seealso{
 \link{frs} \code{\link[=frs_from_naics]{frs_from_naics()}} \code{\link[=naics_categories]{naics_categories()}} \link{frs_by_programid} and see naics_from_any in EJAM pkg.

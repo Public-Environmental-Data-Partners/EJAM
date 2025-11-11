@@ -165,7 +165,7 @@ getblocks_summarize_sites_per_block <- function(x, varname='blockid') {
 #'  zz <- getblocks_diagnostics(z, detailed = T, see_pctiles = T)
 #' cbind(stats = zz)
 #'
-#'   getblocks_diagostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
+#'   getblocks_diagnostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
 #'
 #' @import data.table
 #'
