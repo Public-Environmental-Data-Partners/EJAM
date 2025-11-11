@@ -23,6 +23,7 @@
 #' @param ... passed to [plot_barplot_ratios()], to change color scheme etc.
 #'
 #' @examples
+#' out <- testoutput_ejamit_100pts_1miles
 #' ejam2barplot(out)
 #'
 #' out <- testoutput_ejamit_100pts_1miles

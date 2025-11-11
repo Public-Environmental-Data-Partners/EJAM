@@ -43,6 +43,7 @@ so the ratio.to.us.d.overall parameter should be either
 just ratios to average in US or just ratios to average in State.
 }
 \examples{
+out <- testoutput_ejamit_100pts_1miles
 ejam2barplot(out)
 
 out <- testoutput_ejamit_100pts_1miles

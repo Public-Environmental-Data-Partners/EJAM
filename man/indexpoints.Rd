@@ -30,16 +30,4 @@ to be used by \code{\link[=getpointsnearby]{getpointsnearby()}} to support \code
 to create a new proximity score for every block and blockgroup in the US.
 It relies on \code{\link[=create_quaddata]{create_quaddata()}} for one step, then \code{\link[SearchTrees:createTree]{SearchTrees::createTree()}}
 }
-\examples{
-\donttest{
-  # EXAMPLES NOT TESTED YET ***
-  pts <- testpoints_10
-  tempenv <- new.env()
-  index10 <- indexpoints(pts, "index10", envir = tempenv)
-  x <- getpointsnearby(pts, quadtree = get(index10, envir = tempenv))
-  # y <- proxistat(pts)
-  # rm(custom_index)
- }
-
-}
 \keyword{internal}

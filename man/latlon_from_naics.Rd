@@ -67,10 +67,10 @@ See more about NAICS industry codes at \url{https://www.naics.com/search}
   # mapfast(frs_from_naics(336611)) # simple map
 
   # get name from one code
-  naics_from_code(336)$name
+  EJAM:::naics_from_code(336)$name
   # get the name from each code
   mycode = c(33611, 336111, 336112)
-  naics_from_code(mycode)$name
+  EJAM:::naics_from_code(mycode)$name
   # see counts of facilities by code (parent) and subcategories (children)
   naics_counts[NAICS \%in\% mycode, ]
   # see parent codes that contain each code

@@ -123,11 +123,12 @@
 #'  # All in one step, using functions not shiny app:
 #'  out <- ejamit(testpoints_100_dt, 2)
 #'
-#'  \donttest{
+#'  \dontrun{
 #'  # Do not specify sitepoints and it will prompt you for a file,
 #'  # if in RStudio in interactive mode!
+#'  if (interactive()) {
 #'  out <- ejamit(radius = 3)
-#'
+#'  }
 #'   # Specify facilities or sites as points for test data,
 #'   # use 1000 test facility points from the R package
 #'   testsites <- testpoints_1000

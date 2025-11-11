@@ -279,16 +279,6 @@ create_quaddata <- function(pts,
 #'   (or specified envir) that spatial index with name defined by indexname,
 #'   as created by [indexpoints()].
 #'
-#' @examples \donttest{
-#'   # EXAMPLES NOT TESTED YET ***
-#'   pts <- testpoints_10
-#'   tempenv <- new.env()
-#'   index10 <- indexpoints(pts, "index10", envir = tempenv)
-#'   x <- getpointsnearby(pts, quadtree = get(index10, envir = tempenv))
-#'   # y <- proxistat(pts)
-#'   # rm(custom_index)
-#'  }
-#'
 #' @keywords internal
 #' @export
 #'
@@ -326,6 +316,15 @@ indexpoints <- function(pts, indexname = "custom_index", envir = globalenv()) {
   # So we need to create a new index every time indexpoints() is called
   # unlike  indexblocks() where the only thing you ever index is
   # blocks that never change (at least not within a year or more)
+
+  # draft notes on examples but not yet working or tested:
+    # pts <- testpoints_10
+    # tempenv <- new.env()
+    # index10 <- indexpoints(pts, "index10", envir = tempenv)
+    # x <- getpointsnearby(frompoints = testpoints_10[1:2,], topoints = pts, quadtree = get(index10, envir = tempenv))
+    # y <- proxistat(pts)
+    # rm(custom_index)
+
 }
 ############################################################################### #
 

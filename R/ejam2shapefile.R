@@ -22,13 +22,14 @@
 #' @param ... Passed to [sf::st_write()]
 #'
 #' @return path to saved file
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   # folder = getwd()
 #'   # out <- ejamit(testpoints_100 , radius = 3.1)
 #'   # file <- ejam2shapefile(out, file = "test100_3miles.geojson", folder = folder)
-#'
 #'   out <- testoutput_ejamit_10pts_1miles
-#'   file <- ejam2shapefile(out)
+#'   if (interactive()) {
+#'     file <- ejam2shapefile(out)
+#'   }
 #'   shp <- shapefile_from_any(file)
 #'   map_shapes_leaflet(shp)
 #'   }

@@ -97,12 +97,8 @@ latlon_is.possible   <- function(lat, lon) {
 #'   is approximately in one of the rough bounding boxes that includes the 4 Island Areas.
 #' @seealso  [is.island()] [latlon_is.usa()] [latlon_is.islandareas()] [latlon_is.available()] [latlon_is.possible()]
 #' @examples
-#' \donttest{
-#' # this would require the testpoints_1000 data from the EJAM package:
-#'   isles <- which(EJAM:::latlon_is.islandareas(lat = testpoints_1000$lat, lon = testpoints_1000$lon))
-#'   mapfast(testpoints_1000[isles, ]) # c(213,785)
-#'   which(!(EJAM:::latlon_is.usa(lat = testpoints_1000$lat, lon = testpoints_1000$lon)))
-#' }
+#'   isles <- stateinfo2[ EJAM:::latlon_is.islandareas(lat = stateinfo2$lat, lon = stateinfo2$lon) & !is.na(stateinfo2$lat), ]
+#'   mapfast(isles)
 #'
 #' @keywords internal
 #'
@@ -176,9 +172,9 @@ latlon_is.islandareas <- function(lat, lon, exact_but_slow_islandareas = FALSE) 
 #' @examples  \donttest{
 #'  # this would only work using the EJAM package datasets frs and blockpoints:
 #'    if (!exists("frs")) dataload_dynamic("frs")
-#'  table(latlon_is.valid(lat =  frs$lat, lon =  frs$lon))
+#'  table(EJAM:::latlon_is.valid(lat =  frs$lat, lon =  frs$lon))
 #'  # blockpoints may need to be downloaded using dataload_dynamic()
-#'  table(latlon_is.valid(lat =  blockpoints$lat, lon =  blockpoints$lon))
+#'  table(EJAM:::latlon_is.valid(lat =  blockpoints$lat, lon =  blockpoints$lon))
 #'   }
 #'
 #' @export

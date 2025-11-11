@@ -24,12 +24,8 @@ is approximately in one of the rough bounding boxes that includes the 4 Island A
 See \link{islandareas}
 }
 \examples{
-\donttest{
-# this would require the testpoints_1000 data from the EJAM package:
-  isles <- which(EJAM:::latlon_is.islandareas(lat = testpoints_1000$lat, lon = testpoints_1000$lon))
-  mapfast(testpoints_1000[isles, ]) # c(213,785)
-  which(!(EJAM:::latlon_is.usa(lat = testpoints_1000$lat, lon = testpoints_1000$lon)))
-}
+  isles <- stateinfo2[ EJAM:::latlon_is.islandareas(lat = stateinfo2$lat, lon = stateinfo2$lon) & !is.na(stateinfo2$lat), ]
+  mapfast(isles)
 
 }
 \seealso{

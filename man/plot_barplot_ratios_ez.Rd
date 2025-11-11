@@ -45,6 +45,7 @@ whether to use overall results from ejamit()$results_overall
 or just one site from ejamit()$results_bysite
 }
 \examples{
+out <- testoutput_ejamit_100pts_1miles
 ejam2barplot(out)
 
 out <- testoutput_ejamit_100pts_1miles

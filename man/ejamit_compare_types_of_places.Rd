@@ -81,7 +81,8 @@ e.g., change output formats of results_bytype vs results_overall
       main = "By EPA Region", ylim = c(0, 2))
    abline(h = 1)
 
-   # Analyze by State (slow)
+   # Analyze by State (slow! e.g., may take 2-3 minutes
+   # for 1,000 sites state by state)
 
    out_bystate <- ejamit_compare_types_of_places(pts, typeofsite = pts$ST)
 

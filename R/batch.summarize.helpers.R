@@ -22,9 +22,9 @@
 rowMaxs2 <- function(df, na.rm = TRUE) {
 
   # had been doing this:
-  # mymax <- do.call(pmax, c(bg[,names.ej.pctile], na.rm = TRUE))
+  # mymax <- do.call(pmax, c(bg[,names_ej_pctile], na.rm = TRUE))
   # now can do this:
-  # mymax <- rowMaxs2(bg[,names.ej.pctile])
+  # mymax <- rowMaxs2(bg[,names_ej_pctile])
 
   if (is.matrix(df)) {df <- data.frame(df, stringsAsFactors = FALSE)}
   valid.cols <- sapply(df, function(x) { is.numeric(x) || is.logical(x) || is.character(x)})
