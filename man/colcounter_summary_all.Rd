@@ -27,7 +27,7 @@ For another view and text explanations of the findings, see
 \code{\link[=count_sites_with_n_high_scores]{count_sites_with_n_high_scores()}}
 }
 \examples{
-    # df <-  bg22[ , names.ej.pctile]
+
  df <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
  bench <- 5 * (0:20)
  a3 <- colcounter_summary_all(df, bench)
@@ -38,39 +38,100 @@ For another view and text explanations of the findings, see
  # a3['12',,]; a3[13,,]
 
  \donttest{
- barplot(colcounter_summary_cum_pct(pdata, pcuts)[ , '80'],
+
+ # frequency of multiple high percentile scores, over entire US, not just analyzed places:
+
+ pcuts <- c(80,90,95)
+ dataload_dynamic("bgej")
+ usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
+                              varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
+ EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
+ xs <- 1:13
+ plot(x=xs, y=EJAM:::colcounter_summary_cum_pct(usdata, 50)[xs+1],
+   type='b', col='gray', ylim=c(0, 50),
+   main='\% of US with at least x/13 EJ Indexes >=Nth percentile',
+   ylab='\% of US', xlab='# of US EJ Indexes (not supplemental, not State)')
+ points(xs, EJAM:::colcounter_summary_cum_pct(usdata, 80)[xs+1], type='b', col='blue')
+ points(xs, EJAM:::colcounter_summary_cum_pct(usdata, 90)[xs+1], type='b', col='orange')
+ points(xs, EJAM:::colcounter_summary_cum_pct(usdata, 95)[xs+1], type='b', col='red')
+ legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'),
+    fill = c('gray', 'blue', 'orange', 'red'))
+ abline(h=20, col='blue')
+ abline(h=10, col='orange')
+ abline(h=5, col='red')
+ abline(h=0, col='black')
+
+ # frequency among analyzed places (percentiles of places, not residents)
+
+ pcuts <- c(80,90,95)
+ pdata <- testoutput_ejamit_1000pts_1miles$results_bysite[, ..names_ej_pctile]
+
+ barplot(EJAM:::colcounter_summary_cum_pct(pdata, pcuts)[ , '80'],
     ylab='\% of places', xlab='# of indicators at/above threshold',
     main='\% of places with at least N/13 indicators >=80th percentile')
 
- barplot(colcounter_summary(pdata, pcuts)[2:13 , '95'],
+ barplot(EJAM:::colcounter_summary(pdata, pcuts)[2:13 , '95'],
     ylab='# of places', xlab='# of indicators at/above threshold',
     main='# of places with exactly N/13 indicators >=95th percentile')
 
-  # pdata <- ejscreen package file bg22[ , names.e.pctile]
-  colcounter_summary_cum_pct(pdata,c(50,80,90,95))
+ # frequency of multiple high percentile scores, over entire US, not just analyzed places:
+ dataload_dynamic("bgej")
+ usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
+   varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
+  EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
   xs <- 1:13
-  plot(x=xs, y=colcounter_summary_cum_pct(pdata, 50)[xs+1],
+  plot(x=xs, y=EJAM:::colcounter_summary_cum_pct(usdata, 50)[xs+1],
    type='b', col='gray', ylim=c(0, 100),
-    main='\% of places with at least x/13 indicators >=Nth percentile',
-     ylab='\% of places', xlab='# of indicators')
-  points(xs, colcounter_summary_cum_pct(pdata, 80)[xs+1], type='b', col='blue')
-  points(xs, colcounter_summary_cum_pct(pdata, 90)[xs+1], type='b', col='orange')
-  points(xs, colcounter_summary_cum_pct(pdata, 95)[xs+1], type='b', col='red')
+    main='\% of US with at least x/13 indicators >=Nth percentile',
+     ylab='\% of US', xlab='# of indicators')
+  points(xs, EJAM:::colcounter_summary_cum_pct(usdata, 80)[xs+1], type='b', col='blue')
+  points(xs, EJAM:::colcounter_summary_cum_pct(usdata, 90)[xs+1], type='b', col='orange')
+  points(xs, EJAM:::colcounter_summary_cum_pct(usdata, 95)[xs+1], type='b', col='red')
   legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'),
    fill = c('gray', 'blue', 'orange', 'red'))
 
-  # pdata <- bg22[ ,  names.ej.pctile]
-  colcounter_summary_cum_pct(pdata,c(50,80,90,95))
+
+  EJAM:::colcounter_summary_cum_pct(pdata, c(50,80,90,95))
   xs <- 1:13
-  plot(x=xs, y=colcounter_summary_cum_pct(pdata, 50)[xs+1],
-    type='b', col='gray', ylim=c(0, 40),
-    main='\% of places with at least x/13 indicators >=Nth percentile', ylab='\% of places',
-    xlab='# of indicators')
-  points(xs, colcounter_summary_cum_pct(pdata, 80)[xs+1], type='b', col='blue')
-  points(xs, colcounter_summary_cum_pct(pdata, 90)[xs+1], type='b', col='orange')
-  points(xs, colcounter_summary_cum_pct(pdata, 95)[xs+1], type='b', col='red')
+  plot(x=xs, y=EJAM:::colcounter_summary_cum_pct(pdata, 50)[xs+1],
+   type='b', col='gray', ylim=c(0, 100),
+    main='\% of places with at least x/13 indicators >=Nth percentile',
+     ylab='\% of places', xlab='# of indicators')
+  points(xs, EJAM:::colcounter_summary_cum_pct(pdata, 80)[xs+1], type='b', col='blue')
+  points(xs, EJAM:::colcounter_summary_cum_pct(pdata, 90)[xs+1], type='b', col='orange')
+  points(xs, EJAM:::colcounter_summary_cum_pct(pdata, 95)[xs+1], type='b', col='red')
   legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'),
-    fill = c('gray', 'blue', 'orange', 'red'))
+   fill = c('gray', 'blue', 'orange', 'red'))
+
+  EJAM:::colcounter_summary_cum_pct(pdata, c(50,80,90,95))
+  xs <- 1:13
+ plot(x=xs, y=EJAM:::colcounter_summary_cum_pct(pdata, 50)[xs+1],
+ type='b', col='gray', ylim=c(0,50),
+ main='\% of analyzed places with X or more indicators in top few \% (high \%iles)',
+ ylab='\% of analyzed places', xlab='# of indicators')
+ points(xs, EJAM:::colcounter_summary_cum_pct(pdata, 80)[xs+1], type='b', col='blue')
+ points(xs, EJAM:::colcounter_summary_cum_pct(pdata, 90)[xs+1], type='b', col='orange')
+ points(xs, EJAM:::colcounter_summary_cum_pct(pdata, 95)[xs+1], type='b', col='red')
+ legend(x = 'topright', legend = paste0('Top ', c(50, 20, 10, 5),'\% of US scores'),
+        fill = c('gray', 'blue', 'orange', 'red'))
+        abline(h=20, col='blue')
+        abline(h=10, col='orange')
+        abline(h=5, col='red')
+
+plot(x=xs, y=100-EJAM:::colcounter_summary_cum_pct(pdata, 50)[xs+1],
+     type='b', col='gray', ylim=c(50, 100),
+     main='\%iles among analyzed places
+     (\% of places with < x/13 indicators >=Nth percentile)',
+     ylab='\% of places', xlab='# of indicators')
+points(xs, 100-EJAM:::colcounter_summary_cum_pct(pdata, 80)[xs+1], type='b', col='blue')
+points(xs, 100-EJAM:::colcounter_summary_cum_pct(pdata, 90)[xs+1], type='b', col='orange')
+points(xs, 100-EJAM:::colcounter_summary_cum_pct(pdata, 95)[xs+1], type='b', col='red')
+legend(x = 'topright', legend = paste0('>= ', c(50, 80, 90, 95),'th percentile'),
+       fill = c('gray', 'blue', 'orange', 'red'))
+abline(h=80, col='blue')
+abline(h=90, col='orange')
+abline(h=95, col='red')
+
 }
 
 }
