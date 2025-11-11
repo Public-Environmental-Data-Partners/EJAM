@@ -16,7 +16,7 @@
 #' @return A vector of strings, one per row or map point,
 #'   with a line break separating column elements
 #' @examples
-#'  dat <- data.table(
+#'  dat <- data.table::data.table(
 #'    RegistryId = c("110071102551", "110015787683"),
 #'    FacilityName = c("USDOI FWS AK MARITIME NWR etc", "ADAK POWER PLANT"),
 #'    LocationAddress = c("65 MI W. OF ADAK NAVAL FACILITY", "100 HILLSIDE BLVD"),
