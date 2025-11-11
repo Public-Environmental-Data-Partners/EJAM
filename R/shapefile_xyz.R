@@ -769,12 +769,10 @@ shapefile_filepaths_validize <- function(filepaths, inputname = NULL) {
 #' @examples
 #' # Within 3 miles of the county borders
 #' fips_counties_from_state_abbrev("DE")[1]
-#' x = shapes_counties_from_countyfips("10001")
+#' x = shapes_from_fips("10001")
 #' xtra = shape_buffered_from_shapefile(x, radius.miles = 3)
 #' map_shapes_leaflet(x) %>%
-#'   map_shapes_leaflet_proxy(xtra, color = "black")
-#'
-# (ignoring projectiong/datum for this example)
+#'   EJAM:::map_shapes_leaflet_proxy(xtra, color = "black")
 #'
 #' @export
 #'

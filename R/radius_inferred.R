@@ -36,8 +36,8 @@
 #' @return a single number such as 1.5 or 3 that is the estimate of the miles distance that was
 #'   originally requested in getblocksnearby()
 #'
-#' @examples  EJAM:::radius_inferred()
-#'   # EJAM:::radius_inferred(getblocksnearby(testpoints_n(100), radius = 3.25))
+#' @examples
+#' EJAM:::radius_inferred(getblocksnearby(testpoints_n(100), radius = 3.25))
 #'
 #' @keywords internal
 #'

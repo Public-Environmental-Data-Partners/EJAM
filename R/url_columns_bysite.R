@@ -51,18 +51,14 @@
 #'   keylist_bysite = list(newkey_all_sites = "YES",
 #'                         site_name = c("NRO", "CRS"))
 #'   )
-#' unlinkify(x[[2]])
+#' EJAM:::unlinkify(x[[2]])
 #' x = x[[1]]
 #' x = x[, "EJAM Report"]
-#' unlinkify(x)
+#' EJAM:::unlinkify(x)
 #'
 #' @seealso  [url_ejamapi()] [url_ejscreenmap()] [url_echo_facility()]
 #' @return list of data.frames to append to the list of data.frames created by
-#'   [ejamit()] or [doaggregate()],
-#'
-#'  `list(results_bysite = results_bysite, `
-#'  `    results_overall = results_overall,`
-#'  `      newcolnames=newcolnames)`
+#'   [ejamit()] or [doaggregate()]
 #'
 #' @keywords internal
 #'

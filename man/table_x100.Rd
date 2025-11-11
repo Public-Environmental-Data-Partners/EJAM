@@ -25,10 +25,10 @@ multiplies some data to rescale percentages stored as 0 to 1, into 0-100
 \examples{
 out <- testoutput_ejamit_10pts_1miles
 mytable <- out$results_bysite[1:2, ..names_these]
-table_signif_round_x100(mytable)
+EJAM:::table_signif_round_x100(mytable)
 # same as this:
-table_signif(
-  table_round(
+EJAM:::table_signif(
+  EJAM:::table_round(
     EJAM:::table_x100(
       mytable, names_pct_as_fraction_ejamit
     )
@@ -43,7 +43,7 @@ table_signif(
  names_pct_as_fraction_blockgroupstats
  names_pct_as_fraction_ejamit
  cat("\n\n")
- ytable = data.table(pctlowinc = 1:2, pctpre1960 = 1:2,
+ ytable = data.table::data.table(pctlowinc = 1:2, pctpre1960 = 1:2,
                      avg.pctunemployed = 1:2,
                      avg.pctpre1960 = 1:2)
 

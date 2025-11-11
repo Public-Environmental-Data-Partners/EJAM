@@ -62,11 +62,7 @@ If set FALSE, faster since avoids checking but some links might not work and not
 }
 \value{
 list of data.frames to append to the list of data.frames created by
-\code{\link[=ejamit]{ejamit()}} or \code{\link[=doaggregate]{doaggregate()}},
-
-\verb{list(results_bysite = results_bysite, }
-\verb{    results_overall = results_overall,}
-\verb{      newcolnames=newcolnames)}
+\code{\link[=ejamit]{ejamit()}} or \code{\link[=doaggregate]{doaggregate()}}
 }
 \description{
 URL functions - Compile URLs in columns, for EJAM
@@ -84,10 +80,10 @@ x =  EJAM:::url_columns_bysite(
   keylist_bysite = list(newkey_all_sites = "YES",
                         site_name = c("NRO", "CRS"))
   )
-unlinkify(x[[2]])
+EJAM:::unlinkify(x[[2]])
 x = x[[1]]
 x = x[, "EJAM Report"]
-unlinkify(x)
+EJAM:::unlinkify(x)
 
 }
 \seealso{

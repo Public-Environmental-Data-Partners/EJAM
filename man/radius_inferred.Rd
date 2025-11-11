@@ -60,8 +60,7 @@ This function is based largely on a practical algorithm that is accurate to with
 the vast majority of the time for a radius of 1 to 3 miles.
 }
 \examples{
- EJAM:::radius_inferred()
-  # EJAM:::radius_inferred(getblocksnearby(testpoints_n(100), radius = 3.25))
+EJAM:::radius_inferred(getblocksnearby(testpoints_n(100), radius = 3.25))
 
 }
 \keyword{internal}
