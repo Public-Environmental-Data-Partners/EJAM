@@ -35,7 +35,7 @@
 #'  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 #'
 #'  ## convert to data frame, works the same way
-#'  dat_df <- as.data.frame(dat_df)
+#'  dat_df <- as.data.frame(dat)
 #'  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 #'
 #' @export

@@ -39,7 +39,7 @@ Each popup is made from one row of the data.frame.
 Each popup has one row of text per column of the data.frame
 }
 \examples{
- dat <- data.table(
+ dat <- data.table::data.table(
    RegistryId = c("110071102551", "110015787683"),
    FacilityName = c("USDOI FWS AK MARITIME NWR etc", "ADAK POWER PLANT"),
    LocationAddress = c("65 MI W. OF ADAK NAVAL FACILITY", "100 HILLSIDE BLVD"),
@@ -58,7 +58,7 @@ Each popup has one row of text per column of the data.frame
  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 
  ## convert to data frame, works the same way
- dat_df <- as.data.frame(dat_df)
+ dat_df <- as.data.frame(dat)
  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 
 }
