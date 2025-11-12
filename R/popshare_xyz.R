@@ -149,42 +149,45 @@ popshare_p_lives_at_what_pct <- function(pop, p, astext = FALSE, dig = 0, atleas
     warning('pop must be a vector')
     return(NULL)
   }
-  pop = sort(pop, decreasing = T)
+  if (any(is.na(pop))) {
+    warning("some pop were NA, likely due to very small area being analyzed, so those will be treated as zero population for reporting on share of population vs share of sites")
+    pop[is.na(pop)] <- 0
+    }
 
-  # simpler/better way if length(p) == 1 only !
+  pop <- sort(pop, decreasing = T)
 
-  accounts_for_at_least_p = vector(length = length(p))
-  siteshare = vector(length = length(p))
-  sitecountcan = vector(length = length(p))
-  pct_of_pop_for_siteshare = vector(length = length(p))
+  siteshare                <- vector(length = length(p))
+  sitecountcan             <- vector(length = length(p))
+  pct_of_pop_for_siteshare <- vector(length = length(p))
 
   for (i in 1:length(p)) {
 
-    pct_of_pop = cumsum(pop) / sum(pop)
-    pct_of_sites = (1:length(pop)) / length(pop)
+    pct_of_pop   <-    cumsum(pop)  /    sum(pop)
+    pct_of_sites <- (1:length(pop)) / length(pop)
 
-    accounts_for_at_least_p[i] = pct_of_pop >= p[i]
-    siteshare[i] <- min(pct_of_sites[accounts_for_at_least_p[i]])
-    sitecountcan[i] = sum(accounts_for_at_least_p[i])
-    pct_of_pop_for_siteshare[i] <- min(pct_of_pop[accounts_for_at_least_p[i]])
+    accounts_for_at_least_p  <- pct_of_pop >= p[i]
+    sitecountcan[i]             <- sum(             accounts_for_at_least_p)
+    siteshare[i]                <- min(pct_of_sites[accounts_for_at_least_p])
+    pct_of_pop_for_siteshare[i] <- min(pct_of_pop[  accounts_for_at_least_p])
   }
 
-  sharetext      <- paste0( paste0(round(100 * p,      dig), "%"), collapse = ", ")
-  # sharetext_low  <- paste0( paste0(round(100 * p_low,  dig), "%"), collapse = ", ")
-  # sharetext_high <- paste0( paste0(round(100 * p_high, dig), "%"), collapse = ", ")
+  sharetext       <- paste0( paste0(round(100 * p, dig), "%"), collapse = ", ")
 
   if (whatn) {
-    sitesharetext      <- paste0(sitecountcan, collapse = ", ")
+    sitesharetext <- paste0(sitecountcan, collapse = ", ")
   } else {
-    sitesharetext      <- paste0(round(100 * siteshare,      dig), "%",  collapse = ", ")
+    sitesharetext <- paste0(round(100 * siteshare, dig), "%",  collapse = ", ")
   }
-  pct_of_pop_for_siteshare_text  <- paste0(round(100 * pct_of_pop_for_siteshare,      dig), "%",  collapse = ", ")
+  pct_of_pop_for_siteshare_text <- paste0(round(100 * pct_of_pop_for_siteshare, dig), "%",  collapse = ", ")
 
-  msg        <- paste0("The most-populated ", sitesharetext, " of the places can account for at least ", sharetext,                     " of the total population of all sites as a whole.")
-  msg_exact  <- paste0("The most-populated ", sitesharetext, " of the places can account for exactly ", pct_of_pop_for_siteshare_text,  " of the total population of all sites as a whole. ")
+  msg        <- paste0("The most-populated ", sitesharetext, " of the ", length(pop)," places can account for at least ",
+                       sharetext,
+                       " of the total population of all sites as a whole.")
+  msg_exact  <- paste0("The most-populated ", sitesharetext, " of the ", length(pop)," places can account for exactly ",
+                       pct_of_pop_for_siteshare_text,
+                       " of the total population of all sites as a whole.")
 
-  cat(paste0( msg, "\n", msg_exact))
-  cat("\n\n")
+  cat(paste0( msg, "\n", msg_exact), "\n\n")
 
   if (astext) {
     if (atleast_not_exact) {
