@@ -1,6 +1,10 @@
 
 # script to make a set of formulas that can convert raw ACS5 data into ejscreen indicators
 
+# Formulas as documented by EPA archived at
+# https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf
+# and more links recorded at EJAM/data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.md
+
 # x <- ejscreen::ejscreenformulasnoej
 # # or
 # > dput(ejscreen::ejscreenformulasnoej)
@@ -442,12 +446,209 @@ rm(x, formulas_ejscreen_acs2r, formulas_ejscreen_r2r)
 print(as.matrix(formulas_ejscreen_acs)[1:69,])
 ######################################## #
 
-# formulas_ejscreen_acs
+
+
+# see datacreate_formulas.R
+
+
+# fix errors in formulas_d
+# and
+# see which of the original so-called formulas_d were actually formulas for creating indicators based on raw counts or components
+# as opposed to many that were simply trying to aggregate via wtd mean or were just wrong
+
+formula_RHS1 = function(one_formula) {gsub(paste0("^", trimws(EJAM:::formula_varname(one_formula))), " ", one_formula)}
+formula_was_for_aggregation1 = function(one_formula) {grepl(EJAM:::formula_varname(one_formula), formula_RHS1(one_formula))}
+formula_was_for_aggregation = function(formulas) {sapply(formulas, FUN = formula_was_for_aggregation1)}
+
+x = data.frame(agg = formula_was_for_aggregation(formulas_d))
+x$var = EJAM:::formula_varname(rownames(x))
+x$varlist = EJAM:::varinfo(x$var)$varlist
+x$formula = rownames(x); rownames(x) <- NULL
+x = x[order(x$agg,x$varlist, x$var), ]
+
+#  fix errors in these 4:
+# > x[!x$agg & !grepl("^pct", x$var),]
+#       agg                                var             varlist                                                                                                           formula
+# 15  FALSE         EJ.DISPARITY.pctpre1960.eo            names_ej                 EJ.DISPARITY.pctpre1960.eo      <- ifelse(pop == 0, 0, as.numeric(EJ.DISPARITY.pre1960.eo) / pop)
+# 16  FALSE       EJ.DISPARITY.pctpre1960.supp       names_ej_supp             EJ.DISPARITY.pctpre1960.supp      <- ifelse(pop == 0, 0, as.numeric(EJ.DISPARITY.pre1960.supp) / pop)
+# 111 FALSE   state.EJ.DISPARITY.pctpre1960.eo      names_ej_state     state.EJ.DISPARITY.pctpre1960.eo      <- ifelse(pop == 0, 0, as.numeric(state.EJ.DISPARITY.pre1960.eo) / pop)
+# 112 FALSE state.EJ.DISPARITY.pctpre1960.supp names_ej_supp_state state.EJ.DISPARITY.pctpre1960.supp      <- ifelse(pop == 0, 0, as.numeric(state.EJ.DISPARITY.pre1960.supp) / pop)
+
+formulas_d <- gsub("EJ.DISPARITY.pre1960", "EJ.DISPARITY.pctpre1960", formulas_d)
+
+EJAM:::metadata_add_and_use_this("formulas_d")  # to re-save it
+
+x$formula <- gsub("EJ.DISPARITY.pre1960", "EJ.DISPARITY.pctpre1960", x$formula)
+
+x = data.frame(agg = formula_was_for_aggregation(formulas_d))
+x$var = EJAM:::formula_varname(rownames(x))
+x$varlist = EJAM:::varinfo(x$var)$varlist
+x$formula = rownames(x); rownames(x) <- NULL
+x = x[order(x$agg,x$varlist, x$var), ]
+x
+
+######################################## #
+# added formulas to formulas_ejscreen_acs that were only in formulas_d
+#
+x = x[!x$agg,]
+add = !(x$var %in% formulas_ejscreen_acs$rname)
+formulas_ejscreen_acs_newrows = data.frame(rname = x$var[add], formula = x$formula[add], longname_old = NA, longname = fixcolnames(x$var[add], 'rname', 'long'))
+formulas_ejscreen_acs <- rbind(formulas_ejscreen_acs, formulas_ejscreen_acs_newrows)
+
+######################################## #
+
+
+####  FORMULAS FOR GEOGRAPHIC INFO: bgid, etc., from fips
+#
+## e.g., ## fips = c("721537506021", "010010201002")
+
+formulas_ejscreen_acs_newrows = data.frame(
+  rname = c(
+    'bgid',
+    'countyname',
+    'statename',
+    'ST',
+    'REGION'
+  ),
+  formula = c(
+    "bgid = EJAM::bgpts[match(fips, bgfips), bgid]",
+    "countyname = fips2countyname(fips, includestate = FALSE)",
+    "statename = fips2statename(fips)",
+    "ST = fips2stateabbrev(fips)",
+    "REGION = EJAM:::fips_st2eparegion(ST)"
+  ),
+  longname_old = NA,
+  longname = NA
+  )
+formulas_ejscreen_acs_newrows$longname <- fixcolnames(formulas_ejscreen_acs_newrows$rname, 'rname', 'long')
+
+formulas_ejscreen_acs <- rbind(formulas_ejscreen_acs, formulas_ejscreen_acs_newrows)
+rm(formulas_ejscreen_acs_newrows)
+######################################## #
+# fill in 61 longname where had not been availbale
+
+need <- formulas_ejscreen_acs$longname == formulas_ejscreen_acs$rname
+formulas_ejscreen_acs$longname[need] <- formulas_ejscreen_acs$longname_old[need]
+rm(need, formulas_ejscreen_acs_newrows, add )
+######################################## #
+# add a few more that were missing
+
+## broadband tables search
+endyr = 2022
+x <- tidycensus::load_variables(endyr, "acs5")
+x[grepl("B28003", x$name) & "block group" == x$geography & !is.na(x$geography), ] |> print(n=10 )
+# health insurance tables/variables
+x[grepl("no health insurance", x$label, ignore.case = T) & "block group" == x$geography & !is.na(x$geography), ] |> print(n=100 )
+
+formulas_ejscreen_acs_newrows <- data.frame(
+  rname = NA,
+  formula = c(
+  "under18 <- ageunder5m + age5to9m + age10to14m + age15to17m + ageunder5m + age5to9f + age10to14f + age15to17f",
+  "over17 <- pop - under18",
+  "female = B01001_026",
+  "male = B01001_002",
+  "ownedunits = B25032_002",
+  "nobroadband = B28003_001 - B28003_004", # ie, all minue "Has a computer:!!With a broadband Internet subscription" *** ##  NEED TO CONFIRM THIS IS WHAT EJSCREEN USED
+  "nohealthinsurance = B27010_017 + B27010_033 + B27010_050 + B27010_066",  ##  NEED TO CONFIRM THIS IS WHAT EJSCREEN USED
+  "poor = pov50 + pov99"
+  ),
+  longname_old = NA,
+  longname = NA
+)
+formulas_ejscreen_acs_newrows$rname = formula_varname(formulas_ejscreen_acs_newrows$formula)
+formulas_ejscreen_acs_newrows$longname <- fixcolnames(formulas_ejscreen_acs_newrows$rname, 'rname', 'long')
+
+formulas_ejscreen_acs <- rbind(formulas_ejscreen_acs, formulas_ejscreen_acs_newrows)
+rm(formulas_ejscreen_acs_newrows)
+
+############################################################## #
+# FORMULAS FOR RACE WITHOUT ETHNICITY
+
+# B03002_003 Estimate!!Total:!!Not Hispanic or Latino:!!White alone
+# is the non-hispanic version Census ACS table.
+## B02001 is a different table than the NonHispanic Alone table
+
+
+formulas_ejscreen_acs_newrows <- data.frame(
+  rname = NA,
+  formula = c(
+    c(
+      "wa = B02001_002",  # "pctwa = ifelse( pop"
+      "ba = B02001_003",  #  "pctba"
+      "aa = B02001_005",  #  "pctaa"
+      "aiana = B02001_004",  #  "pctaiana"
+      "nhpia = B02001_006",  # "pctnhpia"
+      "otheralone = B02001_007", #  "pctotheralone"
+      "multi = B02001_008"      # "pctmulti"
+    )
+    # ,   #   ALREADY HAD THESE:
+    # c(
+    #   "pctwa <- ifelse(pop==0, 0, as.numeric(wa ) / pop)",  #                (percent White alone)
+    #   "pctba <- ifelse(pop==0, 0, as.numeric(ba ) / pop)",  #                (percent Black or African American alone)
+    #   "pctaiana <- ifelse(pop==0, 0, as.numeric(aiana ) / pop)", #           (percent American Indian and Alaska Native alone)
+    #   "pctaa <- ifelse(pop==0, 0, as.numeric(aa ) / pop)",       #           (percent Asian alone)
+    #   "pctnhpia <- ifelse(pop==0, 0, as.numeric(nhpia ) / pop)", #           (percent Native Hawaiian and Other Pacific Islander alone)
+    #   "pctotheralone <- ifelse(pop==0, 0, as.numeric(otheralone ) / pop)", # (percent Some other race alone)
+    #   "pctmulti <- ifelse(pop==0, 0, as.numeric(multi ) / pop)"           # (percent Two or more races)
+    # )
+  ),
+  longname_old = NA,
+  longname = NA
+)
+formulas_ejscreen_acs_newrows$rname = formula_varname(formulas_ejscreen_acs_newrows$formula)
+formulas_ejscreen_acs_newrows$longname <- fixcolnames(formulas_ejscreen_acs_newrows$rname, 'rname', 'long')
+
+formulas_ejscreen_acs <- rbind(formulas_ejscreen_acs, formulas_ejscreen_acs_newrows)
+rm(formulas_ejscreen_acs_newrows)
+############################################################## #
+# fill in more missing longname entries
+
+formulas_ejscreen_acs$longname[is.na(formulas_ejscreen_acs$longname)  ] <- formulas_ejscreen_acs$rname[is.na(formulas_ejscreen_acs$longname)  ]
+
+############################################################## #
+
+## SIMPLIFY TWO KEY FORMULAS
+
+formulas_ejscreen_acs$formula[formulas_ejscreen_acs$rname == "lowinc"] <-
+  "lowinc = povknownratio - pov2plus"
+# "lowinc = C17002_001 - C17002_008"
+
+formulas_ejscreen_acs$formula[formulas_ejscreen_acs$rname == "pctlowinc"] <-
+  "pctlowinc = ifelse( povknownratio==0, 0, lowinc / povknownratio)"
+
+############################################################## #
+
+# formulas_ejscreen_acs  saved for use in package
 
 EJAM:::metadata_add_and_use_this("formulas_ejscreen_acs")
-EJAM:::dataset_documenter("formulas_ejscreen_acs", description = "Formulas and metadata about Census ACS variables and how to calculate indicators from those raw Census variables, such as creating pctunder5 starting from ACS table B01001 variables.",
+EJAM:::dataset_documenter("formulas_ejscreen_acs",
+                          description = "Formulas and metadata about Census ACS variables and how to calculate indicators from those raw Census variables, such as creating pctunder5 starting from ACS table B01001 variables.",
+                          details = "[Formulas as documented by EPA were archived here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)",
                           seealso = "`acs_bybg()`")
 
+
+
+
+############################################################## #
+
+# "lowlifex"  is from CDC so no formula here except possibly
+# "lowlifex = 1 - (lifex / maxlifex)"
+# but lifex by bg is imported from CDC 1st, not from ACS, and maxlifex is a US constant based on that source.
+# % Low Life Expectancy is defined as “1 – (Life Expectancy / Max Life Expectancy)”
+# Note: This is derived from the CDC life expectancy at birth data using the formula above.
+############################################################## #
+
+# special case of disability
+
+# Another offline/separate calculation is needed to convert ACS download into the count variable "disability"
+# before pctdisability can be calculated using these formulas
+# Persons with Disabilities—Percent of all persons with disabilities. This data is derived from 2022 ACS
+# “Sex by Age by Disability Status” table (B18101) for Census tracts. Block group values are calculated
+# by multiplying the tract value by the block group population weights. The weights are derived from
+# the same Census source used by the EJScreen buffer reports and analysis—2020 Decennial Census
+# P.L. 94-171 Redistricting data.
+
+#"disab_universe" "disability" "pctdisability"
 
 
 

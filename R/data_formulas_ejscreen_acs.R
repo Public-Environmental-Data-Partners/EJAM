@@ -6,5 +6,6 @@
 #' @docType data
 #' @title formulas_ejscreen_acs dataset
 #' @description Formulas and metadata about Census ACS variables and how to calculate indicators from those raw Census variables, such as creating pctunder5 starting from ACS table B01001 variables.
+#' @details [Formulas as documented by EPA were archived here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)
 #' @seealso `acs_bybg()`
 'formulas_ejscreen_acs'

@@ -3,7 +3,7 @@
 # calc_ejam()  which uses  calc_byformula()  -  read the formulas and execute them
 # formula_varname()  - utility to get the names of variables created by the formulas
 # formulas_d  - a vector of formulas as text strings like "a = 1 + b" see data-raw/datacreate_formulas.R
-
+# formulas_ejscreen_acs
 
 ######################################## #
 

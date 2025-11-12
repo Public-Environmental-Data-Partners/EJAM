@@ -30,13 +30,11 @@ acs_bybg(
 
 \item{table}{see get_acs from tidycensus package.
 
-EJSCREEN-relevant key tables at blockgroup resolution include these:
-acstabs <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025")
-and at tract resolution:   "B18101"}
+EJSCREEN-relevant key tables are listed in the details section here.}
 
 \item{cache_table}{see get_acs from tidycensus package}
 
-\item{year}{e.g., 2022  see get_acs from tidycensus package, and
+\item{year}{e.g., 2022 or 2023 see get_acs from tidycensus package, and
 the helper function in the EJAM package called \code{\link[=acsendyear]{acsendyear()}}}
 
 \item{output}{see get_acs from tidycensus package}
@@ -81,8 +79,11 @@ NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x <- tidycensus::load_variables(2022, "acs5")
 
-acstabs <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025",
-             "B18101") # disability at tract resolution only
+acstabs <- c("B01001",
+ "B03002", "B02001",  # race with/without hispanic ethnicity
+ "B15002", "C16002", "C17002", "B25034", "B23025",
+ "B18101", # disability at tract resolution only
+ "B25032", "B28003", "B27010") # owned units, no broadband, no health insurance
 acstabs2 <- paste0(acstabs, "_")
 mytables <- data.table::rbindlist(lapply(acstabs2, function(z) \{
   x[substr(x$name,1,7) \%in\% z, ][1, ]
@@ -91,25 +92,23 @@ print(mytables)
 
  #        name            label                                                            concept   geography
  #      <char>           <char>                                                             <char>      <char>
- # 1: B01001_001 Estimate!!Total:                                                         Sex by Age block group
- # 2: B03002_001 Estimate!!Total:                                  Hispanic or Latino Origin by Race block group
- # 3: B15002_001 Estimate!!Total: Sex by Educational Attainment for the Population 25 Years and Over block group
- # 4: C16002_001 Estimate!!Total:    Household Language by Household Limited English Speaking Status block group
- # 5: C17002_001 Estimate!!Total:             Ratio of Income to Poverty Level in the Past 12 Months block group
- # 6: B25034_001 Estimate!!Total:                                               Year Structure Built block group
- # 7: B23025_001 Estimate!!Total:             Employment Status for the Population 16 Years and Over block group
- # 8: B18101_001 Estimate!!Total:                                    Sex by Age by Disability Status       tract
+#:  B01001_001 Estimate!!Total:                                                            Sex by Age block group
+#:  B03002_001 Estimate!!Total:                                     Hispanic or Latino Origin by Race block group
+#:  B02001_001 Estimate!!Total:                                                                  Race block group
+#:  B15002_001 Estimate!!Total:    Sex by Educational Attainment for the Population 25 Years and Over block group
+#:  C16002_001 Estimate!!Total:       Household Language by Household Limited English Speaking Status block group
+#:  C17002_001 Estimate!!Total:                Ratio of Income to Poverty Level in the Past 12 Months block group
+#:  B25034_001 Estimate!!Total:                                                  Year Structure Built block group
+#:  B23025_001 Estimate!!Total:                Employment Status for the Population 16 Years and Over block group
+#:  B18101_001 Estimate!!Total:                                       Sex by Age by Disability Status       tract
+#:  B25032_001 Estimate!!Total:                                          Tenure by Units in Structure block group
+#:  B28003_001 Estimate!!Total: Presence of a Computer and Type of Internet Subscription in Household block group
+#:  B27010_001 Estimate!!Total:                             Types of Health Insurance Coverage by Age block group
 
-  # see details of the variables
-
-x[substr(x$name,1,7) \%in\% "B01001_", ] |> print(n=50)
-x[substr(x$name,1,7) \%in\% "B03002_", ] |> print(n=50)
-x[substr(x$name,1,7) \%in\% "B15002_", ] |> print(n=50)
-x[substr(x$name,1,7) \%in\% "C16002_", ] |> print(n=50)
-x[substr(x$name,1,7) \%in\% "C17002_", ] |> print(n=50)
-x[substr(x$name,1,7) \%in\% "B25034_", ] |> print(n=50)
-x[substr(x$name,1,7) \%in\% "B23025_", ] |> print(n=50)
-x[substr(x$name,1,7) \%in\% "B18101_", ] |> print(n=50)
+  # see details of ALL the variables in these tables
+# for (i in 1:NROW(mytables)) \{
+#    x[substr(x$name,1,7) \%in\% substr(mytables[i,]$name,1,7), ] |> print(n=50)
+# \}
 
  # disability is by tract only:
 
