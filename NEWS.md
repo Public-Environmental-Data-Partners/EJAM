@@ -11,6 +11,7 @@
 - Specified R version 4.3 as the minimum required per the DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the [R universe platform](https://ropensci.org/r-universe/) and maybe eventually [CRAN](https://cran.r-project.org) are other options.
 - Removed dependency on a few packages rarely needed.
 - Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit__, ejscreenapi__, ejscreen_vs__, ejscreenREST__, testoutput___, etc.
+- Stopped exporting several shapefile_from_XYZ helper functions since shapefile_from_any() can be used.
 
 - Hosting:
   - Added Dockerfile used to deploy the shiny app to a server.

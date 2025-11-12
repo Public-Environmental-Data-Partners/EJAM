@@ -16,7 +16,7 @@
 #'   Note that trying to use txt=T and combine_in_one_string = T for large polygons or many polygons
 #'   would create a very long string that might exceed URL length limits for GET requests,
 #'   if that is what you're using the text for.
-#' @seealso [shapefile_from_any()] [shapefile_from_geojson_text()]
+#' @seealso [shapefile_from_any()] [EJAM:::shapefile_from_geojson_text()]
 #' @examples
 #' shp =  testinput_shapes_2[2, c("geometry", "FIPS")]
 #' x = shape2geojson(shp)

@@ -7,6 +7,17 @@
 ### list of functions here ### #
 # see source code Outline for list
 
+# #  stopped exporting several shapefile_from_xyz helper functions since shapefile_from_any() can be used
+# - shapefile_from_gdbzip
+# - shapefile_from_gdb
+# - shapefile_from_zip
+# - shapefile_from_json
+# - shapefile_from_filepaths
+# - shapefile_filepaths_from_folder
+# - shapefile_filepaths_valid
+# - shapefile_filepaths_validize
+# - shapefile_from_folder
+
 ############################################################################################## #
 # key function ####
 
@@ -20,26 +31,28 @@
 #'     cannot be read by this function,
 #'     and must be unzipped and handled separately.
 #'
-#'   - If folder, tries to read with [shapefile_from_folder()]
+#'   - If folder, tries to read with helper [EJAM:::shapefile_from_folder()]
 #'     Folder must contain one each of files with
 #'     extensions .shp, .shx, .dbf, and .prj
 #'
-#'   - If .zip containing a folder, unzips, then tries to read with
-#'     [shapefile_from_folder()] or [shapefile_from_gdbzip()] ?
+#'   - If .zip containing a folder, unzips, then tries to read with helpers
+#'     [EJAM:::shapefile_from_folder()] or [EJAM:::shapefile_from_gdbzip()]
 #'
-#'   - If .zip containing .gdb, reads with [shapefile_from_gdbzip()]
+#'   - If .zip containing .gdb, reads with helper [EJAM:::shapefile_from_gdbzip()]
 #'
-#'   - If .gdb, reads with [shapefile_from_gdb()]
+#'   - If .gdb, reads with helper [EJAM:::shapefile_from_gdb()]
 #'
-#'   - If .json or .geojson, reads with [shapefile_from_json()]
+#'   - If .json or .geojson, reads with helper [EJAM:::shapefile_from_json()]
+#'
+#'   - If text in geojson format, reads with helper [EJAM:::shapefile_from_geojson_text()]
 #'
 #'   - If .kml or .shp, uses [sf::st_read()]
 #'
 #'   - If vector of .shp, .shx, .dbf, and .prj file names
-#'     (that may include paths), reads with [shapefile_from_filepaths()]
+#'     (that may include paths), reads with helper [EJAM:::shapefile_from_filepaths()]
 #'
 #' @param cleanit set to FALSE if you want to skip validation and dropping invalid rows
-#' @param crs passed to shapefile_from_filepaths() etc. and
+#' @param crs passed to helper functions and
 #'    default is crs = 4269 or Geodetic CRS NAD83
 #' @param layer optional layer name passed to [sf::st_read()]
 #' @param inputname vector of shiny fileInput uploaded filenames
@@ -47,7 +60,6 @@
 #' @param ... passed to [sf::st_read()]
 #'
 #' @return a simple feature [sf::sf] class object using [sf::st_read()]
-#' @seealso [shapefile_from_folder()]
 #'
 #' @export
 #'
@@ -243,14 +255,14 @@ shapefile_from_sitepoints <- function(sitepoints, crs = 4269, ...) {
 #'
 #' @param path path and filename
 #' @param cleanit optional, whether to use [shapefile_clean()]
-#' @param crs passed to [shapefile_from_filepaths()] etc. and
+#' @param crs passed to helper functions and
 #'    default is crs = 4269 or Geodetic CRS NAD83
 #' @param layer optional layer name passed to [sf::st_read()]
 #' @param ... passed to [sf::st_read()]
-#'
+#' @seealso [shapefile_from_any()]
 #' @return like output of [sf::st_read()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_from_json <- function(path, cleanit = TRUE, crs = 4269, layer = NULL, ...) {
 
@@ -271,6 +283,7 @@ shapefile_from_json <- function(path, cleanit = TRUE, crs = 4269, layer = NULL, 
 #' @param x single text string like from [shape2geojson()]
 #' @param quiet whether to avoid warning on failure
 #' @returns spatial data.frame like from [shapefile_from_any()]
+#' @seealso [shapefile_from_any()]
 #'
 #' @keywords internal
 #'
@@ -303,14 +316,14 @@ shapefile_from_geojson_text <- function(x, quiet = FALSE) {
 #'
 #' @param path path and filename for .zip file
 #' @param cleanit optional, whether to use [shapefile_clean()]
-#' @param crs passed to [shapefile_from_filepaths()] etc. and
+#' @param crs passed to helper functions and
 #'    default is crs = 4269 or Geodetic CRS NAD83
 #' @param layer optional layer name passed to [sf::st_read()]
 #' @param ... passed to [sf::st_read()]
-#'
+#' @seealso [shapefile_from_any()]
 #' @return like output of [sf::st_read()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_from_zip <- function(path, cleanit = TRUE, crs = 4269, layer = NULL, ...) {
 
@@ -389,12 +402,13 @@ shapefile_from_zip <- function(path, cleanit = TRUE, crs = 4269, layer = NULL, .
 #' @return like output of [sf::st_read()] but with ejam_uniq_id column 1:NROW()
 #' @examples
 #'   # npl <- sf::st_read("~/../Desktop/NPL/NPL_Boundaries.gdb")
-#'   # npl <- shapefile_from_gdb("~/../Desktop/NPL/NPL_Boundaries.gdb",
+#'   # npl <- EJAM:::shapefile_from_gdb("~/../Desktop/NPL/NPL_Boundaries.gdb",
 #'   #   layer = "SITE_BOUNDARIES_SF")
-#'   # npl <- shapefile_from_gdbzip("~/../Desktop/NPL/NPL_Boundaries.zip")
+#'   # npl <- EJAM:::shapefile_from_gdbzip("~/../Desktop/NPL/NPL_Boundaries.zip")
 #'   # mapview::mapview(npl[x$STATE_CODE == "CA", ])
+#' @seealso [shapefile_from_any()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_from_gdb <- function(fname, layer = NULL, ...) {
 
@@ -451,9 +465,9 @@ shapefile_from_gdb <- function(fname, layer = NULL, ...) {
 #' @param layer optional name of layer, see [sf::st_read()]
 #' @param ... passed to [sf::st_read()]
 #'
-#' @return see [shapefile_from_gdb()]
+#' @return see [shapefile_from_any()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_from_gdbzip <- function(fname, layer = NULL, ...) {
 
@@ -491,28 +505,28 @@ shapefile_from_gdbzip <- function(fname, layer = NULL, ...) {
 #'
 #' @param folder path of folder that contains the files (.shp, .shx, .dbf, and .prj)
 #' @param cleanit set to FALSE if you want to skip validation and dropping invalid rows
-#' @param crs passed to shapefile_from_filepaths() default is crs = 4269 or Geodetic CRS NAD83
+#' @param crs passed to helper functions, default is crs = 4269 or Geodetic CRS NAD83
 #' @param ... passed to [sf::st_read()]
-#'
+#' @seealso [shapefile_from_any()]
 #' @return a shapefile object using sf::st_read()
 #'
-#' @examples \donttest{
-#'   testfolder <- system.file("testdata/shapes/Portland_neighborhoods", package = "EJAM")
-#'   testshape <- shapefile_from_folder(testfolder)
+#' @examples
+#'   testfolder <- system.file("testdata/shapes/portland_folder_shp", package = "EJAM")
+#'   testshape <- EJAM:::shapefile_from_folder(testfolder)
+#'   testpaths <- EJAM:::shapefile_filepaths_from_folder(testfolder)
+#'   testshape <- EJAM:::shapefile_from_filepaths(testpaths)
 #'
-#'   testpaths <- shapefile_filepaths_from_folder(testfolder)
-#'   testshape <- shapefile_from_filepaths(testpaths)
-#'
-#'   ## if interactive(), R user can point to right folder or select the right set of files:
-#'   # testshape <- shapefile_from_filepaths()
-#'   # testshape <- shapefile_from_folder()
-#'
+#'   if (interactive()) {
+#'   ##  R user can navigate to and select a folder that has .shp and related files:
+#'   testshape <- EJAM:::shapefile_from_folder()
+#'   ##  R user can select just the .shp file:
+#'   # testshape <- shapefile_from_any()
+#'   }
 #'   x <- get_blockpoints_in_shape(testshape)
 #'   leaflet::leaflet(x$polys) %>% leaflet::addTiles() %>% leaflet::addPolygons(color = "blue")
-#'   DT::datatable(out$results_bysite)
+#'   DT::datatable(x$pts)
 #'
-#'   }
-#' @seealso [shapefile_from_folder()]
+#' @seealso [shapefile_from_any()]
 #'
 #' @export
 #'
@@ -551,9 +565,9 @@ shapefile_from_folder <- function(folder = NULL, cleanit = TRUE, crs = 4269, ...
 #' @param ... passed to [sf::st_read()]
 #'
 #' @return a shapefile object using [sf::st_read()]
-#' @seealso [shapefile_from_folder()]
+#' @seealso [shapefile_from_any()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_from_filepaths <- function(filepaths = NULL, cleanit = TRUE, crs = 4269, layer = NULL, inputname = NULL, ...) {
 
@@ -650,9 +664,9 @@ shapefile_from_filepaths <- function(filepaths = NULL, cleanit = TRUE, crs = 426
 #' @param folder path of folder that contains the files (.shp, .shx, .dbf, and .prj)
 #'
 #' @return string vector of filenames including full paths
-#' @seealso [shapefile_from_folder()]
+#' @seealso [shapefile_from_any()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_filepaths_from_folder <- function(folder = NULL) {
 
@@ -680,11 +694,10 @@ shapefile_filepaths_from_folder <- function(folder = NULL) {
 #' Confirm files have ALL the extensions .shp, .shx, .dbf, and .prj
 #'
 #' @param filepaths vector of full paths with filenames (types .shp, .shx, .dbf, and .prj) as strings
-#'
 #' @return logical, indicating if all 4 extensions are found among the filepaths
-#' @seealso [shapefile_filepaths_validize()] [shapefile_from_folder()]
+#' @seealso [EJAM:::shapefile_filepaths_validize()] [shapefile_from_any()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_filepaths_valid <- function(filepaths) {
 
@@ -714,9 +727,9 @@ shapefile_filepaths_valid <- function(filepaths) {
 #'   But returns NULL if more than one base name was provided (since ambiguous),
 #'   or none of 4 extensions was provided.
 #'   Ignores and drops files with other extensions.
-#' @seealso [shapefile_filepaths_valid()] [shapefile_from_folder()]
+#' @seealso [EJAM:::shapefile_filepaths_valid()] [shapefile_from_any()]
 #'
-#' @export
+#' @keywords internal
 #'
 shapefile_filepaths_validize <- function(filepaths, inputname = NULL) {
 
@@ -893,7 +906,7 @@ Except, if Counties were analyzed, see  mapfastej_counties() \n')
 #'
 #' @return like input shp, but applying crs and dropping if not valid,
 #'   plus column ejam_uniq_id 1:NROW()
-#' @seealso [shapefile_from_folder()]
+#' @seealso [shapefile_from_any()]
 #'
 #' @export
 #'

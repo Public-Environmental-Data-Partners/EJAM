@@ -19,5 +19,5 @@ plus column ejam_uniq_id 1:NROW()
 Drop invalid rows, warn if all invalid, add unique ID, transform (CRS)
 }
 \seealso{
-\code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }

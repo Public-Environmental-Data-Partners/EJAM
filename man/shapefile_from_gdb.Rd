@@ -21,9 +21,12 @@ read .gdb geodatabase file via sf::st_read()
 }
 \examples{
   # npl <- sf::st_read("~/../Desktop/NPL/NPL_Boundaries.gdb")
-  # npl <- shapefile_from_gdb("~/../Desktop/NPL/NPL_Boundaries.gdb",
+  # npl <- EJAM:::shapefile_from_gdb("~/../Desktop/NPL/NPL_Boundaries.gdb",
   #   layer = "SITE_BOUNDARIES_SF")
-  # npl <- shapefile_from_gdbzip("~/../Desktop/NPL/NPL_Boundaries.zip")
+  # npl <- EJAM:::shapefile_from_gdbzip("~/../Desktop/NPL/NPL_Boundaries.zip")
   # mapview::mapview(npl[x$STATE_CODE == "CA", ])
-
 }
+\seealso{
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
+}
+\keyword{internal}

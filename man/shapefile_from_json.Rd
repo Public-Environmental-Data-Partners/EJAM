@@ -11,7 +11,7 @@ shapefile_from_json(path, cleanit = TRUE, crs = 4269, layer = NULL, ...)
 
 \item{cleanit}{optional, whether to use \code{\link[=shapefile_clean]{shapefile_clean()}}}
 
-\item{crs}{passed to \code{\link[=shapefile_from_filepaths]{shapefile_from_filepaths()}} etc. and
+\item{crs}{passed to helper functions and
 default is crs = 4269 or Geodetic CRS NAD83}
 
 \item{layer}{optional layer name passed to \code{\link[sf:st_read]{sf::st_read()}}}
@@ -24,3 +24,7 @@ like output of \code{\link[sf:st_read]{sf::st_read()}}
 \description{
 read .json or .geojson shapefile data
 }
+\seealso{
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
+}
+\keyword{internal}

@@ -21,22 +21,23 @@ shapefile_from_any(
 \item If .zip or folder that has more than one shapefile in it,
 cannot be read by this function,
 and must be unzipped and handled separately.
-\item If folder, tries to read with \code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
+\item If folder, tries to read with helper \code{\link[EJAM:::shapefile_from_folder]{EJAM::::shapefile_from_folder()}}
 Folder must contain one each of files with
 extensions .shp, .shx, .dbf, and .prj
-\item If .zip containing a folder, unzips, then tries to read with
-\code{\link[=shapefile_from_folder]{shapefile_from_folder()}} or \code{\link[=shapefile_from_gdbzip]{shapefile_from_gdbzip()}} ?
-\item If .zip containing .gdb, reads with \code{\link[=shapefile_from_gdbzip]{shapefile_from_gdbzip()}}
-\item If .gdb, reads with \code{\link[=shapefile_from_gdb]{shapefile_from_gdb()}}
-\item If .json or .geojson, reads with \code{\link[=shapefile_from_json]{shapefile_from_json()}}
+\item If .zip containing a folder, unzips, then tries to read with helpers
+\code{\link[EJAM:::shapefile_from_folder]{EJAM::::shapefile_from_folder()}} or \code{\link[EJAM:::shapefile_from_gdbzip]{EJAM::::shapefile_from_gdbzip()}}
+\item If .zip containing .gdb, reads with helper \code{\link[EJAM:::shapefile_from_gdbzip]{EJAM::::shapefile_from_gdbzip()}}
+\item If .gdb, reads with helper \code{\link[EJAM:::shapefile_from_gdb]{EJAM::::shapefile_from_gdb()}}
+\item If .json or .geojson, reads with helper \code{\link[EJAM:::shapefile_from_json]{EJAM::::shapefile_from_json()}}
+\item If text in geojson format, reads with helper \code{\link[EJAM:::shapefile_from_geojson_text]{EJAM::::shapefile_from_geojson_text()}}
 \item If .kml or .shp, uses \code{\link[sf:st_read]{sf::st_read()}}
 \item If vector of .shp, .shx, .dbf, and .prj file names
-(that may include paths), reads with \code{\link[=shapefile_from_filepaths]{shapefile_from_filepaths()}}
+(that may include paths), reads with helper \code{\link[EJAM:::shapefile_from_filepaths]{EJAM::::shapefile_from_filepaths()}}
 }}
 
 \item{cleanit}{set to FALSE if you want to skip validation and dropping invalid rows}
 
-\item{crs}{passed to shapefile_from_filepaths() etc. and
+\item{crs}{passed to helper functions and
 default is crs = 4269 or Geodetic CRS NAD83}
 
 \item{layer}{optional layer name passed to \code{\link[sf:st_read]{sf::st_read()}}}
@@ -52,7 +53,4 @@ a simple feature \link[sf:sf]{sf::sf} class object using \code{\link[sf:st_read]
 }
 \description{
 Read shapefile from any file or folder (trying to infer the format)
-}
-\seealso{
-\code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
 }

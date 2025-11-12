@@ -14,8 +14,9 @@ shapefile_from_gdbzip(fname, layer = NULL, ...)
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
 }
 \value{
-see \code{\link[=shapefile_from_gdb]{shapefile_from_gdb()}}
+see \code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
 \description{
 read .zip that contains geodatabase file via unzip and st_read
 }
+\keyword{internal}

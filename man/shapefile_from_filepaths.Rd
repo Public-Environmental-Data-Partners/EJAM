@@ -35,5 +35,6 @@ a shapefile object using \code{\link[sf:st_read]{sf::st_read()}}
 Read shapefile from disk based on the filenames given
 }
 \seealso{
-\code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
+\keyword{internal}

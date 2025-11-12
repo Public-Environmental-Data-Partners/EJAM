@@ -19,4 +19,7 @@ spatial data.frame like from \code{\link[=shapefile_from_any]{shapefile_from_any
 read text string that is geojson, return spatial data.frame
 helper for \code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
+\seealso{
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
+}
 \keyword{internal}
