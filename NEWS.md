@@ -5,8 +5,11 @@
   - Fixed bug where size of circular buffer at each point on map in a report did not reflect actual radius.
   - Fixed limitation affecting API where a request to find all blockgroups in a city did not work.
   - Fixed bug where `ejamapp()` settings/parameters isPublic and default_show_advanced_settings were ignored and advanced tab was being shown even if isPublic=TRUE and default_show_advanced_settings=FALSE.
+  - Fixed bug in `plot_barplot_ratios()` that could affect `ejam2barplot()`
+  - Fixed bug in `popshare_p_lives_at_what_pct()`, which reports info in notes tab of excel download
+  - Fixed bug in utility `EJAM:::find_in_files()`
+  - Fixed examples in documentation of many functions.
   - Fixed various smaller issues like edge cases or typos in comments or messages.
-  
 - Added (strong) recommendation that you obtain a Census API key, in the [guide to installing the package](https://ejanalysis.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downloads of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
 - Specified R version 4.3 as the minimum required per the DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the [R universe platform](https://ropensci.org/r-universe/) and maybe eventually [CRAN](https://cran.r-project.org) are other options.
 - Removed dependency on a few packages rarely needed.
