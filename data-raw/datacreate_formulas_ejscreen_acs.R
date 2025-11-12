@@ -547,9 +547,14 @@ formulas_ejscreen_acs_newrows <- data.frame(
   "over17 <- pop - under18",
   "female = B01001_026",
   "male = B01001_002",
+
   "ownedunits = B25032_002",
+
+  ## B28002 ?
   "nobroadband = B28003_001 - B28003_004", # ie, all minue "Has a computer:!!With a broadband Internet subscription" *** ##  NEED TO CONFIRM THIS IS WHAT EJSCREEN USED
+
   "nohealthinsurance = B27010_017 + B27010_033 + B27010_050 + B27010_066",  ##  NEED TO CONFIRM THIS IS WHAT EJSCREEN USED
+
   "poor = pov50 + pov99"
   ),
   longname_old = NA,
@@ -618,6 +623,19 @@ formulas_ejscreen_acs$formula[formulas_ejscreen_acs$rname == "pctlowinc"] <-
 
 ############################################################## #
 
+# the only other ones I could add now based on ACS?
+
+# "percapincome"
+
+# "lan_universe"
+# "lan_nonenglish" "lan_eng_na" "lan_spanish" "lan_ie" "lan_api" "lan_other"
+# "spanish_li" "ie_li" "api_li" "other_li"
+
+############################################################## #
+
+message("SAVING FORMULAS, AND CAN USE IN CREATING INITIAL blockgroupstats table from raw acs as with acs_bybg()
+        or newer get_acs_new_dat() but  then need final steps for Demog.Index scores and for disability by blockgroup not tract")
+
 # formulas_ejscreen_acs  saved for use in package
 
 EJAM:::metadata_add_and_use_this("formulas_ejscreen_acs")
@@ -637,20 +655,3 @@ EJAM:::dataset_documenter("formulas_ejscreen_acs",
 # % Low Life Expectancy is defined as “1 – (Life Expectancy / Max Life Expectancy)”
 # Note: This is derived from the CDC life expectancy at birth data using the formula above.
 ############################################################## #
-
-# special case of disability
-
-# Another offline/separate calculation is needed to convert ACS download into the count variable "disability"
-# before pctdisability can be calculated using these formulas
-# Persons with Disabilities—Percent of all persons with disabilities. This data is derived from 2022 ACS
-# “Sex by Age by Disability Status” table (B18101) for Census tracts. Block group values are calculated
-# by multiplying the tract value by the block group population weights. The weights are derived from
-# the same Census source used by the EJScreen buffer reports and analysis—2020 Decennial Census
-# P.L. 94-171 Redistricting data.
-
-#"disab_universe" "disability" "pctdisability"
-
-
-
-
-
