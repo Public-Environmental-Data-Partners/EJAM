@@ -51,12 +51,12 @@ Note this function could be defined as an RStudio addin and assigned a keyboard 
 \examples{
 # chosen <- EJAM:::radiobox()
 # cat("you chose", chosen, '\n')
-\donttest{
  junk = function() {
   z =  EJAM:::radiobox()
   # print(z)
   return(z)
- }
+\dontrun{
+ if (interactive()) {
  # (note this works after load_all or if it is an exported function)
  radius <- EJAM:::radiobox(
   c("Far (3 miles)", "Medium (2 miles)", "Near (1 mile)"),
@@ -64,7 +64,8 @@ Note this function could be defined as an RStudio addin and assigned a keyboard 
   label = "Radius"
  )
  cat("The radius will be", radius, "miles. \n")
-
+}
+}
 }
 
 }

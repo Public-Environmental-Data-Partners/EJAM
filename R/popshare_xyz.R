@@ -9,12 +9,8 @@
 #' @param astext if TRUE, return text of description of results
 #' @param dig rounding digits for text output
 #' @return A fraction of 1 (or a vector of results) or text
-#' @examples
-#'  x <- testoutput_ejamit_100pts_1miles$results_bysite
-#'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE)
-#'  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
-#'  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
-#'  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
+#' @seealso [popshare_at_top_x_pct()] [popshare_at_top_n()] [popshare_p_lives_at_what_n()] [popshare_p_lives_at_what_pct()]
+#' @inherit popshare_at_top_n examples
 #'
 #' @export
 #'
@@ -53,6 +49,7 @@ popshare_at_top_x_pct = function(pop, x = 0.20, astext = FALSE, dig = 0) {
 #' @param astext if TRUE, return text of description of results
 #' @param dig rounding digits for text output
 #' @return A fraction of 1
+#' @seealso [popshare_at_top_x_pct()] [popshare_at_top_n()] [popshare_p_lives_at_what_n()] [popshare_p_lives_at_what_pct()]
 #' @examples
 #'  x <- testoutput_ejamit_100pts_1miles$results_bysite
 #'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE)
@@ -85,6 +82,7 @@ popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
   }
 }
 ##################################################################### #
+##################################################################### #
 
 
 #' how many sites account for P percent of residents?
@@ -94,14 +92,9 @@ popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
 #' @param p share of population (0-1, fraction), vector of one or more
 #' @param astext if TRUE, return text of description of results
 #' @param dig rounding digits for text output
-#'
 #' @return vector of numbers of sites, or text about that
-#' @examples
-#'  x <- testoutput_ejamit_100pts_1miles$results_bysite
-#'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE)
-#'  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
-#'  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
-#'  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
+#' @seealso [popshare_at_top_x_pct()] [popshare_at_top_n()] [popshare_p_lives_at_what_n()] [popshare_p_lives_at_what_pct()]
+#' @inherit popshare_p_lives_at_what_pct examples
 #'
 #' @export
 #'
@@ -124,18 +117,22 @@ popshare_p_lives_at_what_n <- function(pop, p, astext = FALSE, dig = 0) {
 #'   "10% of places account for at least 50% of the total population"
 #'   and if atleast_not_exact=F, answer is like
 #' @param whatn if TRUE, returns count of sites not fraction
-#'
 #' @return vector of fractions 0-1 of all sites, or text about that
+#' @seealso [popshare_at_top_x_pct()] [popshare_at_top_n()] [popshare_p_lives_at_what_n()] [popshare_p_lives_at_what_pct()]
 #' @examples
-#'  x <- testoutput_ejamit_10pts_1miles$results_bysite[4:9,]
-#'  cbind(pctofsites= round((1:length(x$pop))/length(x$pop),2),
-#'    pctofpop = round(cumsum(sort(x$pop, decreasing = T))/sum(x$pop) ,2))
+#'  x <- testoutput_ejamit_10pts_1miles$results_bysite[4:9, ]
+#'  # x <- testoutput_ejamit_1000pts_1miles$results_bysite
+#'  x <- x[!is.na(x$pop), ] # set pop to zero or just remove sites where pop was NA since area too small to determine accurately
+#'  cbind(pctofsites = round((1:length(x$pop)) / length(x$pop), 2),
+#'    pctofpop = round(cumsum(sort(x$pop, decreasing = T)) / sum(x$pop, na.rm=T), 2))
+#'
 #'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE)
 #'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE, atleast_not_exact=FALSE)
 #'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F)
 #'  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F, atleast_not_exact=FALSE)
+#'
 #'  ## for more than one p
-#' popshare_p_lives_at_what_pct(x$pop, p = c(0.50, 0.67, 0.80, 0.95) )
+#'  popshare_p_lives_at_what_pct(x$pop, p = c(0.50, 0.67, 0.80, 0.95) )
 #'
 #'  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
 #'  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))

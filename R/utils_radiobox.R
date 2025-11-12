@@ -27,12 +27,12 @@
 #' @examples
 #' # chosen <- EJAM:::radiobox()
 #' # cat("you chose", chosen, '\n')
-#' \donttest{
 #'  junk = function() {
 #'   z =  EJAM:::radiobox()
 #'   # print(z)
 #'   return(z)
-#'  }
+#' \dontrun{
+#'  if (interactive()) {
 #'  # (note this works after load_all or if it is an exported function)
 #'  radius <- EJAM:::radiobox(
 #'   c("Far (3 miles)", "Medium (2 miles)", "Near (1 mile)"),
@@ -40,7 +40,8 @@
 #'   label = "Radius"
 #'  )
 #'  cat("The radius will be", radius, "miles. \n")
-#'
+#' }
+#' }
 #' }
 #'
 #' @keywords internal
@@ -85,7 +86,7 @@ radiobox <- function(choiceNames  = c("Points", "Shapes", "FIPS"), # what is sho
 
   dviewer <- shiny::dialogViewer(dialogName = title, height = height, width = width)
   shiny::runGadget(app = ui, server = server,
-                             stopOnCancel = FALSE, # To handle input$cancel via our own observe() with bindEvent()
-                             viewer = dviewer
+                   stopOnCancel = FALSE, # To handle input$cancel via our own observe() with bindEvent()
+                   viewer = dviewer
   )
 }
