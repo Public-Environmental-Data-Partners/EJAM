@@ -143,25 +143,24 @@
 #'
 #' myvars <- myacsinfo$name # 184 variables among 8 tables
 #'
-#'
-#' # VERY SLOWLY download data for all these tables
-#' # in ALL STATES and DC and PR but not Island Areas
-#'
-#' mystates <- stateinfo2[stateinfo2$is.usa.plus.pr, ]$ST
-#' ## PR has to be handled separately? B05001PR is what PR table names look like
-#' mystates = mystates[mystates != "PR"]
-#' ### takes time to download each table for each state:
-#' system.time({
-#'   newvars <- acs_bybg(variables = myvars, state = mystates)
-#' })
-#' setnames(newvars, "GEOID", "bgfips")
-#' newvars[, ST := fips2stateabbrev(bgfips)]
-#' names(newvars) <- gsub("E$", "", names(newvars))
-#' dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
-#' t(head(newvars))
-#' ejscreen_acs = newvars
-#' save(ejscreen_acs, file="ejscreen_acs.rda")
-#'
+#' if ("want to run example that takes a few minutes" == "yes") {
+#'   # VERY SLOWLY download data for all these tables
+#'   # in ALL STATES and DC and PR but not Island Areas
+#'   mystates <- stateinfo2[stateinfo2$is.usa.plus.pr, ]$ST
+#'   ## PR must be handled separately. see e.g., B05001PR
+#'   mystates = mystates[mystates != "PR"]
+#'   ### takes time to download each table for each state:
+#'   system.time({
+#'     newvars <- acs_bybg(variables = myvars, state = mystates)
+#'   })
+#'   data.table::setnames(newvars, "GEOID", "bgfips")
+#'   newvars[, ST := fips2stateabbrev(bgfips)]
+#'   names(newvars) <- gsub("E$", "", names(newvars))
+#'   dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
+#'   t(head(newvars))
+#'   ejscreen_acs = newvars
+#'   save(ejscreen_acs, file="ejscreen_acs.rda")
+#' }
 #' }
 #' @return A [data.table](https://r-datatable.com) (not tibble, and not just a data.frame)
 #'
