@@ -19,12 +19,12 @@ proxistat(
 \arguments{
 \item{topoints}{Representing nearby amenities or hazards counted by the proximity scores --
 such as Superfund NPL sites used for a NPL proximity score --
-a data.table of lat lon, all points representing some amenity or hazard that
+a \href{https://r-datatable.com}{data.table} of lat lon, all points representing some amenity or hazard that
 the proximity score indicates proximity to. It could be a subset of the \link{frs} table, e.g.}
 
 \item{bpoints}{Representing places to be assigned proximity scores --
 such as \link{blockpoints}, the centroid/internal point of every block in the USA --
-a data.table of Census block points lat lon, representing where residents are,
+a \href{https://r-datatable.com}{data.table} of Census block points lat lon, representing where residents are,
 for the entire US (or at least a whole State, for example -- it should be all blocks for which you need a proximity score).
 The score is calculated for a given block based on all topoints near the block,
 and then summarized over all blocks in a given blockgroup to create a score for that blockgroup.}
@@ -54,7 +54,7 @@ built during use of EJAM package. create_quaddata()}
 created by create_quaddata() utility, and used to create quadtree}
 }
 \value{
-data.table of blockgroups, with proximityscore, bgfips, lat, lon, etc.
+\href{https://r-datatable.com}{data.table} of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 }
 \description{
 DRAFT - Create a custom proximity score for every blockgroup, representing count and proximity of specified points

@@ -23,7 +23,7 @@
 #'
 #' @param s2b sites2blocks data.table that is output of [getblocksnearby()]
 #'
-#' @return data.table with columns ejam_uniq_id, lat, lon, one row per site
+#' @return table in [data.table](https://r-datatable.com) format with columns ejam_uniq_id, lat, lon, one row per site
 #' @examples
 #'  pts = testpoints_10
 #'  #x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = T))

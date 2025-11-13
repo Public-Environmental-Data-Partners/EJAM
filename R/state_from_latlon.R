@@ -123,7 +123,7 @@ state_from_latlon <- function(lat, lon) {
 
 #' given data.table with blockid column, get state abbreviation of each (function might not be used)
 #'
-#' @param dt_with_blockid (or any data.table with either blockid or bgid column)
+#' @param dt_with_blockid (or any table in [data.table](https://r-datatable.com) format with either blockid or bgid column)
 #' @return vector of ST info like AK, CA, DE, etc.
 #'
 #' @examples

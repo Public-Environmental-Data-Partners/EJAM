@@ -19,7 +19,7 @@ and to st_crs(x)$units otherwise)}
 \item{...}{passed to st_buffer()}
 }
 \value{
-same format as \code{\link[sf:geos_unary]{sf::st_buffer()}} returns
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame, same format as \code{\link[sf:geos_unary]{sf::st_buffer()}} returns
 }
 \description{
 shape_buffered_from_shapefile - add buffer around shape

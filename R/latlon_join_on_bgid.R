@@ -5,7 +5,7 @@
 #' get expanded version of data.table, such as copy(blockgroupstats),
 #' with new lat,lon columns
 #'
-#' @param x data.table with column called bgid
+#' @param x table in [data.table](https://r-datatable.com) format with column called bgid
 #'   (as used in bgid2fips or blockgroupstats)
 #' @return x with 2 new columns but side effect is it updates x in calling envt
 #' @examples

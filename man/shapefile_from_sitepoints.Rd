@@ -7,19 +7,19 @@
 shapefile_from_sitepoints(sitepoints, crs = 4269, ...)
 }
 \arguments{
-\item{sitepoints}{a data.table or data.frame with columns called lat,lon (or aliases of those)}
+\item{sitepoints}{a table in \href{https://r-datatable.com}{data.table} format or data.frame with columns called lat,lon (or aliases of those)}
 
 \item{crs}{used in st_as_sf() default is crs = 4269 or Geodetic CRS NAD83}
 
 \item{...}{passed to \code{\link[sf:st_as_sf]{sf::st_as_sf()}}}
 }
 \value{
-A shapefile via \code{\link[sf:st_as_sf]{sf::st_as_sf()}}.
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame via \code{\link[sf:st_as_sf]{sf::st_as_sf()}}.
 Note other columns get returned,
 and the lat,lon columns do get returned but as "lat" and "lon" even if they were provided as aliases of those
 }
 \description{
-Creates a simple feature (sf) dataframe from points
+Creates a simple feature (sf) clas spatial data.frame from points
 }
 \seealso{
 \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}} \code{\link[=shapefile_from_sitepoints]{shapefile_from_sitepoints()}} \code{\link[=shape_buffered_from_shapefile_points]{shape_buffered_from_shapefile_points()}}

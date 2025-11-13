@@ -9,7 +9,7 @@ bgid_from_blockid(blockids, asdt = FALSE)
 \arguments{
 \item{blockids}{vector of blockid values as in \link{blockwts} table or in \link{testoutput_getblocksnearby_10pts_1miles}}
 
-\item{asdt}{set to TRUE if you want it to return a data.table with colnames bgid, blockid,
+\item{asdt}{set to TRUE if you want it to return a table in \href{https://r-datatable.com}{data.table} format with colnames bgid, blockid,
 one row per input blockid, so it may have duplicates in the bgid column.
 set to FALSE if you want it to return a vector of bgid values (integer class)}
 }

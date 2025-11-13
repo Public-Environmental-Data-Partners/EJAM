@@ -52,7 +52,7 @@ when reporting which indicators most strongly increase as radius decreases.}
 \item{...}{optional, passed to \code{\link[=ejamit]{ejamit()}}}
 }
 \value{
-data.table you can call results_bydistance,
+table in \href{https://r-datatable.com}{data.table} format you can call results_bydistance,
 like ejamit()$results_overall but with one row per radius
 }
 \description{

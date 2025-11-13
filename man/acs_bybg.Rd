@@ -68,7 +68,7 @@ the helper function in the EJAM package called \code{\link[=acsendyear]{acsendye
 \item{...}{see get_acs from tidycensus package}
 }
 \value{
-data.table (not tibble, and not just a data.frame)
+A \href{https://r-datatable.com}{data.table} (not tibble, and not just a data.frame)
 }
 \description{
 download ACS 5year data from Census API, at blockgroup resolution (slowly if for entire US)

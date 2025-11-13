@@ -3,7 +3,7 @@
 #' Round numbers in a table, each column to appropriate number of decimal places
 #' @details Percentages stored as 0 to 1 rather than 0 to 100 will not be shown correctly unless adjusted,
 #' because rounding info says 0 digits when the intent is to show 0 digits after the 0-100 percent number.
-#' @param x data.frame, data.table, or vector with at least some numerical columns, like the results
+#' @param x data.frame, table in [data.table](https://r-datatable.com) format, or vector with at least some numerical columns, like the results
 #'   of ejamit()$results_bysite
 #' @param var optional, but assumed to be names(x) by default, specifies colnames of table
 #'   or names of vector elements, within x

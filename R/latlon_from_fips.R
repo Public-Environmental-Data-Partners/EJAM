@@ -7,7 +7,7 @@
 #'
 #' @param fips vector of census fips codes
 #'
-#' @returns data.table with columns ftype, fips, lat, lon
+#' @returns table in [data.table](https://r-datatable.com) format with columns ftype, fips, lat, lon
 #'
 #' @export
 #'

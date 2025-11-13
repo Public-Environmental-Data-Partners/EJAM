@@ -19,7 +19,7 @@ default is crs = 4269 or Geodetic CRS NAD83}
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
 }
 \value{
-like output of \code{\link[sf:st_read]{sf::st_read()}}
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame like output of \code{\link[sf:st_read]{sf::st_read()}}
 }
 \description{
 read .json or .geojson shapefile data

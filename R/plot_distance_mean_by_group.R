@@ -22,7 +22,7 @@
 #'    appropriate estimate of the distance, hence this adjustment is made in EJAM [getblocksnearby()]
 #'
 #' @rdname plot_distance_mean_by_group
-#' @param results_bybg_people data.table from `doaggregate()$results_bybg_people`
+#' @param results_bybg_people table in [data.table](https://r-datatable.com) format from `doaggregate()$results_bybg_people`
 #' @param demogvarname vector of column names like "pctlowinc" etc.
 #' @param demoglabel vector of labels like "Low Income Residents" etc.
 #' @param returnwhat If returnwhat is "table", invisibly returns a

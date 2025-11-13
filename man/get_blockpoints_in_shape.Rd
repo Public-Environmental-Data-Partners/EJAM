@@ -17,7 +17,7 @@ get_blockpoints_in_shape(
 )
 }
 \arguments{
-\item{polys}{Spatial data as from sf::st_as_sf(), with
+\item{polys}{Spatial data as from \code{\link[sf:st_as_sf]{sf::st_as_sf()}}, with
 points as from \code{\link[=shapefile_from_sitepoints]{shapefile_from_sitepoints()}},
 or a table of points with lat,lon columns that will first be converted here using that function,
 or polygons}
@@ -26,12 +26,12 @@ or polygons}
 
 \item{blocksnearby}{optional table of blocks with blockid, etc (from which lat,lon can be looked up in blockpoints dt)}
 
-\item{dissolved}{If TRUE, use sf::st_union(polys) to find unique blocks inside any one or more of polys}
+\item{dissolved}{If TRUE, use \code{\link[sf:geos_combine]{sf::st_union()}} to find unique blocks inside any one or more of polys}
 
 \item{safety_margin_ratio}{multiplied by addedbuffermiles, how far to search for
-blocks nearby using getblocksnearby(), before using those found to do the intersection via sf::}
+blocks nearby using \code{\link[=getblocksnearby]{getblocksnearby()}}, before using those found to do the intersection via sf::}
 
-\item{crs}{used in st_as_sf() and st_transform() and shape_buffered_from_shapefile_points(), crs = 4269 or Geodetic CRS NAD83}
+\item{crs}{used in \code{\link[sf:st_as_sf]{sf::st_as_sf()}} and \code{\link[sf:st_transform]{sf::st_transform()}} and \code{\link[=shape_buffered_from_shapefile_points]{shape_buffered_from_shapefile_points()}}, crs = 4269 or Geodetic CRS NAD83}
 
 \item{updateProgress}{optional Shiny progress bar to update}
 
@@ -52,12 +52,12 @@ blocks near each facility. For analyzing all residents in certain zones
 such as places at elevated risk, redlined areas, watersheds, etc.
 }
 \details{
-This uses getblocksnearby() to get a very fast rough/good estimate of
+This uses \code{\link[=getblocksnearby]{getblocksnearby()}} to get a very fast rough/good estimate of
 which US block points are nearby (with a safety margin - see param below),
 before then using sf:: to carefully identify which of those candidate blocks are actually
 inside each polygon (e.g., circle) according to sf:: methods.
 
-For circular buffers, just using getblocksnearby() should work and not need this function.
+For circular buffers, just using \code{\link[=getblocksnearby]{getblocksnearby()}} should work and not need this function.
 
 For non-circular polygons, buffered or not, this function will provide a way to very quickly
 filter down to which of the millions of US blocks should be examined by the sf:: join / intersect,

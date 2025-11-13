@@ -33,7 +33,7 @@ EJAM:::countpoints_after_getpoints(s2s, radius = 5)
 EJAM:::countpoints_after_getpoints(s2s, radius = 3)}
 }
 \value{
-counts data.table with column N for count, and a column named via frompoints_id_colname
+counts \href{https://r-datatable.com}{data.table} with column N for count, and a column named via frompoints_id_colname
 }
 \description{
 utility - count topoints near each frompoint, AFTER getpointsnearby() or getfrsnearby() or getblocksnearby() was already run

@@ -7,14 +7,14 @@
 frs_make_naics_lookup(x)
 }
 \arguments{
-\item{x}{data.table frs from \code{\link[=frs_get]{frs_get()}}}
+\item{x}{data.table \link{frs} from \code{\link[=frs_get]{frs_get()}}}
 }
 \value{
-data.table with columns NAICS, REGISTRY_ID, etc.
+table in \href{https://r-datatable.com}{data.table} format with columns NAICS, REGISTRY_ID, etc.
 }
 \description{
 Reformat frs datatable to look up by NAICS
 }
 \seealso{
-\code{\link[=frs_update_datasets]{frs_update_datasets()}} which uses \code{\link[=frs_get]{frs_get()}} to create frs_by_naics
+\code{\link[=frs_update_datasets]{frs_update_datasets()}} which uses \code{\link[=frs_get]{frs_get()}} to create \link{frs_by_naics}
 }

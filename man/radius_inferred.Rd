@@ -14,7 +14,7 @@ radius_inferred(
 )
 }
 \arguments{
-\item{s2b}{data.table of ejam_uniq_id, distance, etc. that is the output of getblocksnearby()}
+\item{s2b}{table in \href{https://r-datatable.com}{data.table} format of ejam_uniq_id, distance, etc. that is the output of \code{\link[=getblocksnearby]{getblocksnearby()}}}
 
 \item{decimalsreported}{parameter to fine tune estimates - generally should not be changed}
 

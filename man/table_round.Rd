@@ -7,7 +7,7 @@
 table_round(x, var = names(x), varnametype = "rname", ...)
 }
 \arguments{
-\item{x}{data.frame, data.table, or vector with at least some numerical columns, like the results
+\item{x}{data.frame, table in \href{https://r-datatable.com}{data.table} format, or vector with at least some numerical columns, like the results
 of ejamit()$results_bysite}
 
 \item{var}{optional, but assumed to be names(x) by default, specifies colnames of table

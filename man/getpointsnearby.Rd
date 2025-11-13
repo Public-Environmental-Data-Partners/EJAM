@@ -51,7 +51,7 @@ format provided by internal helper function create_quaddata() as needed).}
 \item{...}{passed to \code{\link[=getpointsnearbyviaQuadTree]{getpointsnearbyviaQuadTree()}}}
 }
 \value{
-sites2points data.table one row per pair of frompoint and nearby topoint,
+sites2points \href{https://r-datatable.com}{data.table} one row per pair of frompoint and nearby topoint,
 like output of \code{\link[=getpointsnearbyviaQuadTree]{getpointsnearbyviaQuadTree()}}
 }
 \description{

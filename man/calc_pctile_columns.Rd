@@ -59,7 +59,7 @@ names_these_state_pctile = paste0("state.pctile.", names_these)
 avgs0    = x[ , c(..names_these_avg,          ..names_these_state_avg)]
 ratios0  = x[ , c(..names_these_ratio_to_avg, ..names_these_ratio_to_state_avg)]
 pctiles0 = x[ , c(..names_these_pctile,       ..names_these_state_pctile)]
-# outputs are data.tables, 1 row per site, 1 col per indicator
+# outputs are tables in [data.table](https://r-datatable.com) format, 1 row per site, 1 col per indicator
 names(avgs0); dim(avgs0)
 names(ratios0); dim(ratios0)
 names(pctiles0); dim(pctiles0)

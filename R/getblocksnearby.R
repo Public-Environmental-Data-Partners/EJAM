@@ -32,7 +32,7 @@
 #' @param parallel Not implemented
 #' @param ...  passed to [getblocksnearbyviaQuadTree()] or other such functions
 #'
-#' @return data.table like testoutput_getblocksnearby_10pts_1miles, with
+#' @return table in [data.table](https://r-datatable.com) format like testoutput_getblocksnearby_10pts_1miles, with
 #'   columns named "ejam_uniq_id", "blockid", "distance", etc.
 #'   The ejam_uniq_id represents which of the input sites is being referred to, and the table
 #'   will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8

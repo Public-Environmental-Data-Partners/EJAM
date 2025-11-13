@@ -48,7 +48,7 @@
 #'   [out_bydistance2results_bydistance()] [out_bydistance2results_bydistance_bysite()] [out_bydistance2results_bysite_bydistance()]
 
 #' @return list you can think of as "out_bydistance"
-#'   where each element is the full output of ejamit() for 1 radius
+#'   where each element is the full output of [ejamit()] for 1 radius
 #'
 #' @export
 #'
@@ -162,7 +162,7 @@ out_bydistance2results_bydistance <- function(out_bydistance) {
 #' @seealso [ejam2barplot_distances()] [plot_distance_by_pctd()], [distance_by_group()],
 #'   and [ejamit_compare_distances_fulloutput()]
 #'
-#' @return data.table you can call results_bydistance,
+#' @return table in [data.table](https://r-datatable.com) format you can call results_bydistance,
 #'   like ejamit()$results_overall but with one row per radius
 #'
 #' @export

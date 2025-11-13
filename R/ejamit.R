@@ -7,7 +7,7 @@
 #'   or in a set of polygons from a shapefile, or in a list of Census Units like Counties.
 #' @details See examples in vignettes/ articles at `r EJAM:::repo_from_desc('github.io', get_full_url = T)`
 #'
-#' @param sitepoints data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers
+#' @param sitepoints data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers
 #' @param radius in miles, defining circular buffer around a site point (assumes zero in fips or shapefile cases)
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
@@ -84,15 +84,16 @@
 #' dim(testoutput_ejamit_10pts_1miles$results_summarized$keyindicators)
 #' ```
 #'
-#'   * **results_overall**  a data.table with one row that provides the summary across all sites, the aggregated results for all unique residents.
+#'   * **results_overall**  a table in [data.table](https://r-datatable.com) format,
+#'     with one row that provides the summary across all sites, the aggregated results for all unique residents.
 #'
-#'   * **results_bysite**   results for individual sites (buffers) - a data.table of results,
+#'   * **results_bysite**   results for individual sites (buffers) - a table in [data.table](https://r-datatable.com) format, of results,
 #'     one row per ejam_uniq_id (i.e., each site analyzed), one column per indicator
 #'
 #'   * **results_bybg_people**  results for each blockgroup, to allow for
 #'      showing the distribution of each
 #'      indicator across everyone, including the distribution within a
-#'      single residential population group, for example. This table is essential
+#'      single residential population group, for example. This table in [data.table](https://r-datatable.com) format is essential
 #'      for analyzing the distribution of an indicator across all the unique residents analyzed.
 #'      Not all columns from results_bysite are here, however.
 #'      One row is one blockgroup that was either partly or entirely counted as

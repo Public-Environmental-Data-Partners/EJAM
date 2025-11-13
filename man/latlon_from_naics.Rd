@@ -23,7 +23,7 @@ within that overall category.}
 \item{...}{passed to \code{\link[=naics_from_any]{naics_from_any()}}}
 }
 \value{
-A data.table (not just data.frame) with columns called
+A table in \href{https://r-datatable.com}{data.table} format (not just data.frame) with columns called
 lat, lon, REGISTRY_ID, NAICS, naics_found, naics_query (unless id_only parameter set TRUE).
 naics_query is the input parameter that was used (that had been provided to this function as naics).
 naics_found and NAICS are identical (redundant), and are the code found that

@@ -12,7 +12,7 @@ shapefile_clean(shp, crs = 4269)
 \item{crs}{used in shp <- sf::st_transform(shp, crs = crs), default is crs = 4269 or Geodetic CRS NAD83}
 }
 \value{
-like input shp, but applying crs and dropping if not valid,
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame like input shp, but applying crs and dropping if not valid,
 plus column ejam_uniq_id 1:NROW()
 }
 \description{

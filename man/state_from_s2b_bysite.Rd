@@ -11,7 +11,7 @@ state_from_s2b_bysite(sites2blocks)
 from \code{\link[=getblocksnearby]{getblocksnearby()}} that has columns ejam_uniq_id and blockid and distance}
 }
 \value{
-data.table with columns  ejam_uniq_id, ST
+table in \href{https://r-datatable.com}{data.table} format with columns  ejam_uniq_id, ST
 }
 \description{
 Find the 2-character State abbreviation (ST), but only for sites entirely in 1 state.

@@ -185,17 +185,17 @@ custom_ejamit <- function(sitepoints, radius = 3, fips = NULL, shapefile = NULL,
 #'   so it may be useful to store the index during a session
 #'   rather than building it each time it is used. But it cannot be saved
 #'   on disk because of what it is and how it works.
-#' @param pts a data.frame or data.table with columns name lat and lon, one row
+#' @param pts a data.frame or [data.table](https://r-datatable.com) with columns name lat and lon, one row
 #' per location (point), and any other columns are ignored.
 #' @param idcolname if NULL (default), a pointid column is created as a
 #'   unique id 1:NROW(). If creating the index of blocks, idcolname is "blockid"
 #'   If set to "id" it just uses that even if not unique id.
-#'   indexpoints() does not directly refer to this column but index
+#'   [indexpoints()] does not directly refer to this column but index
 #'   probably incorporates it.
 #' @param xyzcolnames For creating quaddata and then localtree index of blocks,
 #'   this must be set to c("BLOCK_X", "BLOCK_Z", "BLOCK_Y") ??
 #'
-#' @return returns a data.table one row per point, columns with names that are
+#' @return returns a [data.table](https://r-datatable.com) one row per point, columns with names that are
 #'   c(xyzcolnames, idcolname)
 #'
 #' @keywords internal
@@ -269,7 +269,7 @@ create_quaddata <- function(pts,
 #'   to create a new proximity score for every block and blockgroup in the US.
 #'   It relies on [create_quaddata()] for one step, then [SearchTrees::createTree()]
 #'
-#' @param pts a data.frame or data.table with columns name lat and lon,
+#' @param pts a data.frame or [data.table](https://r-datatable.com) with columns name lat and lon,
 #'   one row per location (point), and any other columns are ignored.
 #' @param envir optional environment - default is to assign index object to globalenv()
 #' @param indexname optional name to give the index
@@ -341,7 +341,7 @@ indexpoints <- function(pts, indexname = "custom_index", envir = globalenv()) {
 #'   via [proxistat()]
 #'
 #' @param frspts optional, default is the frs table from the EJAM package,
-#'   but could be a subset of that data.table with columns name lat and lon, one row
+#'   but could be a subset of that [data.table](https://r-datatable.com) with columns name lat and lon, one row
 #'   per location (point), and any other columns are ignored.
 #'   If frspts not specified and indexname exists already, just returns that index without rebuilding it.
 #'   If frspts is specified, such as just frs from one industry or one state,
@@ -417,7 +417,7 @@ indexfrs <- function(frspts = NULL, indexname = "frs_index", envir = globalenv()
 #' @param updateProgress progress bar object, passed to [getpointsnearbyviaQuadTree()]
 #' @param ...  passed to [getpointsnearbyviaQuadTree()]
 #'
-#' @return sites2points data.table one row per pair of frompoint and nearby topoint,
+#' @return sites2points [data.table](https://r-datatable.com) one row per pair of frompoint and nearby topoint,
 #'   like output of [getpointsnearbyviaQuadTree()]
 #'
 #' @export
@@ -490,7 +490,7 @@ getpointsnearby <- function(frompoints, topoints,
 #' @param quiet  passed to [getblocksnearby()]
 #' @param ...  passed to [getblocksnearby()]
 #'
-#' @return sites2points data.table one row per pair of frompoint and nearby frs point,
+#' @return sites2points [data.table](https://r-datatable.com) one row per pair of frompoint and nearby frs point,
 #'   like output of [getblocksnearby()]
 #'
 #' @export
@@ -544,7 +544,7 @@ getfrsnearby <- function(frompoints,
 #' EJAM:::countpoints_after_getpoints(s2s, radius = 5)
 #' EJAM:::countpoints_after_getpoints(s2s, radius = 3)
 #'
-#' @return counts data.table with column N for count, and a column named via frompoints_id_colname
+#' @return counts [data.table](https://r-datatable.com) with column N for count, and a column named via frompoints_id_colname
 #' @examples EJAM:::countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
 #'
 #' @keywords internal
@@ -744,7 +744,7 @@ if (1 == 0) {
 #'   but then filling in that info for rest of blocks in US
 #'   The inverse approach compared to [proxistat()]
 #'
-#' @param pts data.table with lat lon column names
+#' @param pts [data.table](https://r-datatable.com) with lat lon column names
 #' @param countradius distance within in which nearby sites are counted to create proximity score.
 #'   In miles, and default is 5 km (5000 / meters_per_mile = 3.106856 miles)
 #'   which is the EJSCREEN zone for proximity scores based on counts.
@@ -757,7 +757,7 @@ if (1 == 0) {
 #'   However, the exact min value implies 1337.288 kilometers, or 830.9523 miles?
 #'
 #'
-#' @return data.table of blockgroups, with proximityscore, bgfips, lat, lon, etc.
+#' @return [data.table](https://r-datatable.com) of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 #'
 #' @export
 #'
@@ -899,12 +899,12 @@ proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 #'
 #' @param topoints Representing nearby amenities or hazards counted by the proximity scores --
 #'   such as Superfund NPL sites used for a NPL proximity score --
-#'   a data.table of lat lon, all points representing some amenity or hazard that
+#'   a [data.table](https://r-datatable.com) of lat lon, all points representing some amenity or hazard that
 #'   the proximity score indicates proximity to. It could be a subset of the [frs] table, e.g.
 #'
 #' @param bpoints Representing places to be assigned proximity scores --
 #'   such as [blockpoints], the centroid/internal point of every block in the USA --
-#'   a data.table of Census block points lat lon, representing where residents are,
+#'   a [data.table](https://r-datatable.com) of Census block points lat lon, representing where residents are,
 #'   for the entire US (or at least a whole State, for example -- it should be all blocks for which you need a proximity score).
 #'   The score is calculated for a given block based on all topoints near the block,
 #'   and then summarized over all blocks in a given blockgroup to create a score for that blockgroup.
@@ -930,7 +930,7 @@ proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 #' @param quaddatatable optional, created from pts if not passed,
 #'   created by create_quaddata() utility, and used to create quadtree
 #'
-#' @return data.table of blockgroups, with proximityscore, bgfips, lat, lon, etc.
+#' @return [data.table](https://r-datatable.com) of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 #'
 #' @import data.table
 #'
@@ -1187,7 +1187,7 @@ proximity.score.in.miles <- function(scoresdf=NULL) {
 #'   or input to [doaggregate()] or [custom_doaggregate()]
 #' @seealso [custom_doaggregate()]
 #'
-#' @return data.table, 1 row per site-bg pair.
+#' @return [data.table](https://r-datatable.com), 1 row per site-bg pair.
 #'   May have same bgid or bgfips in 2,3, more rows
 #'   since it is here once per site that the bg is near.
 #'   It is like a sites2blockgroups table.
@@ -1207,7 +1207,7 @@ calc_bgwts_bysite <- function(sites2blocks) {
 #' @param sites2blocks like output of [getblocksnearby()]
 #'   or input to [doaggregate()] or [custom_doaggregate()]
 #' @seealso [custom_doaggregate()]
-#' @return data.table, 1 row per blockgroup (even if bg is near 2+ sites),
+#' @return [data.table](https://r-datatable.com), 1 row per blockgroup (even if bg is near 2+ sites),
 #'   so it is a table of all the unique blockgroups in the overall
 #'   analysis (merged across all sites), with a weight that indicates
 #'   what fraction of that bg population is included in the overall
@@ -1269,7 +1269,7 @@ calcweight <- function(varnames) {
 #' DRAFT - Calculate (aggregate) county scores from blockgroup scores
 #' @description Redo as more generic and TO HANDLE >1 INDICATOR AT A TIME ! See other functions in PROXIMITY_FUNCTIONS.R !
 #'
-#' @param childDT data.table (or data.frame)
+#' @param childDT [data.table](https://r-datatable.com) (or data.frame)
 #' @param score_colname name of a column in childDT
 #' @param wt_colname name of a column in childDT, used as weights for weighted mean of scores in each county
 #' @param bgfips_colname name of a column in childDT, must be unique rows,
@@ -1277,7 +1277,7 @@ calcweight <- function(varnames) {
 #' @details This ignores any rows with NA in the score_colname, but
 #'   if you want an NA weight (in wt_colname) to count as a weight of 0, you have to convert them to zeroes first,
 #'   or this function will return NA any time there is any NA value at all in the wt_colname
-#' @return data.table of 1 row per county (each county that is in the childDT provided),
+#' @return [data.table](https://r-datatable.com) of 1 row per county (each county that is in the childDT provided),
 #'   just columns "countyfips", "Countyname", score_colname, wt_colname
 #'
 #' @keywords internal
@@ -1611,7 +1611,7 @@ custom_doaggregate <- function(sites2blocks,
 #'
 #' @param sites2blocks output of [getblocksnearby()], as for [doaggregate()]
 #'
-#' @param userstats like blockgroupstats but data.frame or data.table of all US
+#' @param userstats like blockgroupstats but data.frame or [data.table](https://r-datatable.com) of all US
 #'   blockgroups and one or more columns of user provided raw indicator scores
 #'   and any other variables needed for formulas to aggregate indicators
 #'   across blockgroups in each site.

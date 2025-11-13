@@ -5,11 +5,11 @@
 #' get expanded version of data.table, such as sites2blocks,
 #' with new lat,lon columns
 #'
-#' @param s2b data.table like [testoutput_getblocksnearby_10pts_1miles],
+#' @param s2b table in [data.table](https://r-datatable.com) format like [testoutput_getblocksnearby_10pts_1miles],
 #' output of [getblocksnearby()],
 #' with column called blockid
 #'
-#' @return returns the input data.table but with lat,lon columns added as block coordinates
+#' @return returns the input table in [data.table](https://r-datatable.com) format but with lat,lon columns added as block coordinates
 #' @examples
 #'  s2b = copy(testoutput_getblocksnearby_10pts_1miles)
 #'  EJAM:::latlon_join_on_blockid(s2b)

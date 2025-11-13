@@ -12,7 +12,7 @@
 #'   every block within the circle defined by the radius.
 #'   Each block is defined by its Census-provided internal point, by latitude and longitude.
 #'
-#'   Results are the sites2blocks table that would be used by doaggregate(),
+#'   Results are the sites2blocks table in [data.table](https://r-datatable.com) format that would be used by [doaggregate()],
 #'   with distance in miles as one output column of data.table.
 #'   Adjusts distance to avg resident in block when it is very small relative to block size,
 #'   the same way EJSCREEN adjusts distances in creating proximity scores.
@@ -25,8 +25,8 @@
 #'   a way to quickly estimate what fraction of a blockgroup is
 #'   inside the circular buffer more accurately and more quickly than
 #'   areal apportionment of blockgroups would provide.
-#'
-#' @param sitepoints data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers
+#' @returns see details
+#' @param sitepoints table in [data.table](https://r-datatable.com) format with columns lat, lon giving point locations of sites or facilities around which are circular buffers
 #' @param radius in miles, defining circular buffer around a site point
 #' @param radius_donut_lower_edge radius of lower edge of ring if analyzing ring not full circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)

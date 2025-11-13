@@ -16,6 +16,6 @@ logical, indicating if all 4 extensions are found among the filepaths
 Confirm files have ALL the extensions .shp, .shx, .dbf, and .prj
 }
 \seealso{
-\code{\link[EJAM:::shapefile_filepaths_validize]{EJAM::::shapefile_filepaths_validize()}} \code{\link[=shapefile_from_any]{shapefile_from_any()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
 \keyword{internal}

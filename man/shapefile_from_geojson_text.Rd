@@ -13,7 +13,7 @@ shapefile_from_geojson_text(x, quiet = FALSE)
 \item{quiet}{whether to avoid warning on failure}
 }
 \value{
-spatial data.frame like from \code{\link[=shapefile_from_any]{shapefile_from_any()}}
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame like from \code{\link[sf:st_read]{sf::st_read()}}
 }
 \description{
 read text string that is geojson, return spatial data.frame

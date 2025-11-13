@@ -21,10 +21,10 @@
 #'
 #' @param region optional vector of EPA Regions (1-10) to pick from only some regions.
 #' @param ST optional vector of State abbreviations like "NC" to pick from only some States.
-#' @param dt logical, whether to return a data.table (DEFAULT) instead of normal data.frame
+#' @param dt logical, whether to return a table in [data.table](https://r-datatable.com) format (DEFAULT) instead of normal data.frame
 #' @param validonly return only points with valid lat/lon coordinates. Defaults to TRUE.
 #'
-#' @return data.frame or data.table with columns lat, lon in decimal degrees, and
+#' @return data.frame or table in [data.table](https://r-datatable.com) format with columns lat, lon in decimal degrees, and
 #'   any other columns that are in the table used (based on weighting)
 #' @param ST optional, can be a character vector of 2 letter State abbreviations to pick from only some States.
 #' @examples

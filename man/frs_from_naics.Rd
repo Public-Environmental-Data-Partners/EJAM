@@ -14,7 +14,7 @@ frs_from_naics(naics_code_or_name, childrenForNAICS = TRUE, ...)
 \item{...}{passed to \code{\link[=naics_from_any]{naics_from_any()}}}
 }
 \value{
-relevant rows of the data.table called frs, which has column names that are
+relevant rows of the table in \href{https://r-datatable.com}{data.table} format called \link{frs}, which has column names that are
 "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 }
 \description{

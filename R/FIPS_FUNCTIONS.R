@@ -461,7 +461,7 @@ if (!quiet) {
 #'   like fips_counties_from_state_abbrev("DE")
 #' @seealso [getblocksnearby_from_fips()]
 #' @return provides table similar to the output of getblocksnearby(),
-#'   data.table with one row per blockgroup in these counties, or
+#'   [data.table](https://r-datatable.com) with one row per blockgroup in these counties, or
 #'   all pairs of county fips - bgid, and ejam_uniq_id (1 through N) assigned to each county
 #'   but missing blockid and distance so not ready for doaggregate().
 #' @examples
@@ -529,10 +529,10 @@ counties_as_sites <- function(fips) {
 #' @param fips State FIPS vector, like c("01", "02") or
 #'   fips_state_from_state_abbrev(c("DE", "RI"))
 #'
-#' @return provides table similar to the output of getblocksnearby(),
-#'   data.table with one row per blockgroup in these states, or
+#' @return provides table similar to the output of [getblocksnearby()],
+#'   [data.table](https://r-datatable.com) with one row per blockgroup in these states, or
 #'   all pairs of states fips - bgid, and ejam_uniq_id (1 through N) assigned to each state
-#'   but missing blockid and distance so not ready for doaggregate().
+#'   but missing blockid and distance so not ready for [doaggregate()].
 #' @examples
 #'   s2b <- states_as_sites(fips_state_from_state_abbrev(c("DE", "RI")))
 #'
@@ -722,7 +722,7 @@ fips_from_name = function(...) {
 #'
 #' Just read the codes in one column of a table obtained from something like read.csv, or excel, etc.
 #'
-#' @param fips_table data.frame or data.table of FIPS codes for counties, states, or tracts,
+#' @param fips_table data.frame or [data.table](https://r-datatable.com) of FIPS codes for counties, states, or tracts,
 #'   for example, in a column whose name can be interpreted as FIPS
 #'   (is one of the aliases like fips, countyfips, etc.)
 #'   Aliases are: c("FIPS", "fips", "fips_code", "fipscode", "Fips", "statefips",

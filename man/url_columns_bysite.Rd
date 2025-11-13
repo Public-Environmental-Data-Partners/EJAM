@@ -21,7 +21,7 @@ url_columns_bysite(
 )
 }
 \arguments{
-\item{sitepoints}{data.frame or data.table with lat and lon columns
+\item{sitepoints}{data.frame or table in \href{https://r-datatable.com}{data.table} format with lat and lon columns
 (and should have ejam_uniq_id column or assume 1 output row per input row, same order)}
 
 \item{lat, lon}{if sitepoints NULL/missing, vectors of latitudes and longitudes

@@ -4,6 +4,7 @@
 \alias{frs_by_naics}
 \title{frs_by_naics (DATA) data.table of NAICS code(s) for each EPA-regulated site in Facility Registry Service}
 \description{
+Table in \href{https://r-datatable.com}{data.table} format.
 This is the format with one row per site-NAICS pair,
 so multiple rows for one site if it is in multiple NAICS.
 @details

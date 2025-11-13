@@ -3,7 +3,7 @@
 #'
 #' @details used in [table_xls_format()], and server, to create hyperlinks to reports or webpages, one per site
 #'
-#' @param sitepoints data.frame or data.table with lat and lon columns
+#' @param sitepoints data.frame or table in [data.table](https://r-datatable.com) format with lat and lon columns
 #'   (and should have ejam_uniq_id column or assume 1 output row per input row, same order)
 #' @param lat,lon if sitepoints NULL/missing, vectors of latitudes and longitudes
 #'   (assumes ejam_uniq_id is not available and treats output as 1 per input same order)

@@ -7,7 +7,7 @@
 table_validated_ejamit_row(ejamit_results_1row = NULL)
 }
 \arguments{
-\item{ejamit_results_1row}{1-row data.table like testoutput_ejamit_100pts_1miles$results_overall,
+\item{ejamit_results_1row}{1-row table in \href{https://r-datatable.com}{data.table} format like testoutput_ejamit_100pts_1miles$results_overall,
 
 as would come from ejamit(testpoints_10)$results_overall
 

@@ -16,7 +16,7 @@ shapefile_from_folder(folder = NULL, cleanit = TRUE, crs = 4269, ...)
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
 }
 \value{
-a shapefile object using sf::st_read()
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame using \code{\link[sf:st_read]{sf::st_read()}}
 }
 \description{
 Read shapefile from a folder
@@ -29,7 +29,7 @@ Read shapefile from a folder
 
   if (interactive()) {
   ##  R user can navigate to and select a folder that has .shp and related files:
-  testshape <- EJAM:::shapefile_from_folder()
+  testshape <- try({EJAM:::shapefile_from_folder()})
   ##  R user can select just the .shp file:
   # testshape <- shapefile_from_any()
   }
@@ -39,7 +39,5 @@ Read shapefile from a folder
 
 }
 \seealso{
-\code{\link[=shapefile_from_any]{shapefile_from_any()}}
-
 \code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }

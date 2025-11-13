@@ -25,7 +25,7 @@ and not needed after that}
 }
 \value{
 data.frame of results, but
-if mydf was a data.table, returns a data.table
+if mydf was a data.table, returns a table in \href{https://r-datatable.com}{data.table} format
 }
 \description{
 DRAFT utility to use formulas provided as text, to calculate indicators

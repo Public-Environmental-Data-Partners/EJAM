@@ -6,7 +6,7 @@
 #'   from [getblocksnearby()] that has columns ejam_uniq_id and blockid and distance
 #'
 #' @seealso [state_from_blockid_table()] [state_per_site_for_doaggregate()]
-#' @return data.table with columns  ejam_uniq_id, ST
+#' @return table in [data.table](https://r-datatable.com) format with columns  ejam_uniq_id, ST
 #'
 #' @details
 #'   This function is for when you need to quickly find out the state each site is in,

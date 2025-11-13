@@ -1,5 +1,5 @@
 #' Remove inactive sites from downloaded FRS data.table
-#' @param frs Required, data.table from frs_get()
+#' @param frs Required, table in [data.table](https://r-datatable.com) format from [frs_get()]
 #' @param closedid Required, vector of codes to treat as inactive,
 #'   obtained from [frs_inactive_ids()] which downloads national dataset and
 #'   uses assumed codes and returns ids of the inactive sites.
@@ -30,7 +30,7 @@
 #'  - CANCELED, POSTPONED, OR NO LONGER PLANNED
 #'
 #' @seealso  [frs_update_datasets()] which uses [frs_get()] and [frs_inactive_ids()] [frs_active_ids()]
-#' @return Returns the full frs data.table but without the inactive ids
+#' @return Returns the full [frs] table in [data.table](https://r-datatable.com) format but without the inactive ids
 #'
 #' @examples
 #'   # frs <- frs_get()

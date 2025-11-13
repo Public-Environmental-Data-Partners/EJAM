@@ -27,7 +27,7 @@
 #'  This function is based largely on a practical algorithm that is accurate to within 0.01 miles
 #'   the vast majority of the time for a radius of 1 to 3 miles.
 #'
-#' @param s2b data.table of ejam_uniq_id, distance, etc. that is the output of getblocksnearby()
+#' @param s2b table in [data.table](https://r-datatable.com) format of ejam_uniq_id, distance, etc. that is the output of [getblocksnearby()]
 #' @param decimalsreported parameter to fine tune estimates - generally should not be changed
 #' @param decimalsforinferring  parameter to fine tune estimates - generally should not be changed
 #' @param pctile_of_sites  parameter to fine tune estimates - generally should not be changed

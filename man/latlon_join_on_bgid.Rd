@@ -7,7 +7,7 @@
 latlon_join_on_bgid(x)
 }
 \arguments{
-\item{x}{data.table with column called bgid
+\item{x}{table in \href{https://r-datatable.com}{data.table} format with column called bgid
 (as used in bgid2fips or blockgroupstats)}
 }
 \value{

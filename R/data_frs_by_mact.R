@@ -1,7 +1,8 @@
 #' @name frs_by_mact
 #' @title frs_by_mact (DATA) MACT NESHAP subpart(s) that each EPA-regulated site is subject to
 #' @description
-#'    This is a data.table with one row per site -- MACT subpart pair,
+#'    This is a table in [data.table](https://r-datatable.com) format,
+#'    with one row per site -- MACT subpart pair,
 #'    so it has multiple rows for one site if the site is covered by multiple subparts.
 #'    It has been joined with frs_by_programid to get latlons for matching facilities.
 #'  @details

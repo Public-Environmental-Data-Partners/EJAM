@@ -7,7 +7,7 @@
 indexpoints(pts, indexname = "custom_index", envir = globalenv())
 }
 \arguments{
-\item{pts}{a data.frame or data.table with columns name lat and lon,
+\item{pts}{a data.frame or \href{https://r-datatable.com}{data.table} with columns name lat and lon,
 one row per location (point), and any other columns are ignored.}
 
 \item{indexname}{optional name to give the index}

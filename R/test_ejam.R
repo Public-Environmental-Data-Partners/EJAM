@@ -48,7 +48,7 @@
 #'
 #'   }
 #'
-#' @return a named list of objects like data.tables, e.g., named
+#' @return a named list of objects with tables in [data.table](https://r-datatable.com) format, e.g., named
 #'   'bytest', 'byfile', 'bygroup', 'params', 'passcount' and other summary stats, etc.
 #'
 #' @keywords internal

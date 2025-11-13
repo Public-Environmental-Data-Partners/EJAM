@@ -18,7 +18,7 @@
 #' @param justchecking  use defaults. DEPRECATED
 #' @param testing  use defaults
 #' @param silent set to TRUE to stop cat() printing to console like when running tests
-#' @param return_data_table whether the [read_ipc_file()] should return a data.table (T, the default), or arrow (F)
+#' @param return_data_table whether the [read_ipc_file()] should return a table in [data.table](https://r-datatable.com) format (T, the default), or arrow (F)
 #' @return vector of paths to files (as derived from varnames) that were
 #'   actually found in folder_local_source,
 #'   but only for those not already in memory, so it is
@@ -43,7 +43,7 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
   }
 
   fnames     <- paste0(sub("_arrow","", varnames), ".arrow") # varnames are like bgid2fips, ext is .rda, fnames are like bgid2fips.rda
-  
+
   localpaths  <- paste0(folder_local_source, '/', fnames)
   localpaths_found <- NULL
   # make output in console easier to read:

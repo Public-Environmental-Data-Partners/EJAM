@@ -4,7 +4,7 @@
 #' @description SLOW / needs to be optimized.
 #'   CDF Line Plots of cumulative share of each residential population group, within each distance
 #'
-#' @param results_bybg_people data.table from doaggregate()$results_bybg_people
+#' @param results_bybg_people table in [data.table](https://r-datatable.com) format from doaggregate()$results_bybg_people
 #' @param radius_miles miles radius that was max distance analyzed
 #' @param subgroups_type optional, can be set to "nh" or "alone".
 #'   Specifies types of race ethnicity subgroups to use for demogvarname

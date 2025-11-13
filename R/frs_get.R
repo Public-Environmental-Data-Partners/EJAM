@@ -6,10 +6,10 @@
 #'  **See examples for how package maintainer might use this.**
 #'
 #'  See source code of this function for more notes.
-#'  For a developer updating the frs datasets in this package,
+#'  For a developer updating the [frs] datasets in this package,
 #'  see [frs_update_datasets()]
 #'
-#'  frs_get() invisibly returns the table of data, as a data.table.
+#'  [frs_get()] invisibly returns the table of data, as a table in [data.table](https://r-datatable.com) format
 #'  It will download, unzip, read, clean, and set metadata for the data.
 #'
 #'  This function gets the whole thing in one file from

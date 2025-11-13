@@ -12,7 +12,7 @@ like fips_counties_from_state_abbrev("DE")}
 }
 \value{
 provides table similar to the output of getblocksnearby(),
-data.table with one row per blockgroup in these counties, or
+\href{https://r-datatable.com}{data.table} with one row per blockgroup in these counties, or
 all pairs of county fips - bgid, and ejam_uniq_id (1 through N) assigned to each county
 but missing blockid and distance so not ready for doaggregate().
 }

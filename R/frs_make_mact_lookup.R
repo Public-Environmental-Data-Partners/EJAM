@@ -3,7 +3,7 @@
 #' @param frs_by_programid from output of frs_make_programid_lookup()
 #' @param folder optional, where to download ICIS-AIR_downloads.zip to, tempdir() by default
 #'
-#' @return list, of frs_by_mact data.table and mact_table data.frame
+#' @return list, of [frs_by_mact] table in [data.table](https://r-datatable.com) format and [mact_table] data.frame
 #'
 frs_make_mact_lookup <- function(frs_by_programid, folder=NULL) {
 

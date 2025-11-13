@@ -2,7 +2,7 @@
 
 #' Round numbers in a table, each column to appropriate number of significant digits
 #'
-#' @param dat data.frame or data.table of numbers
+#' @param dat data.frame or table in [data.table](https://r-datatable.com) format of numbers
 #' @param digits vector as long as number of columns in dat,
 #'   or use default which is to get the number of significant digits from
 #'   varinfo(colnames(dat), 'sigfigs')$sigfigs which gets it from

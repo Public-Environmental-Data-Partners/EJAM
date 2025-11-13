@@ -7,7 +7,7 @@
 state_from_blockid_table(dt_with_blockid)
 }
 \arguments{
-\item{dt_with_blockid}{(or any data.table with either blockid or bgid column)}
+\item{dt_with_blockid}{(or any table in \href{https://r-datatable.com}{data.table} format with either blockid or bgid column)}
 }
 \value{
 vector of ST info like AK, CA, DE, etc.

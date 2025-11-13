@@ -176,7 +176,7 @@ calc_ejam <- function(bg,
 #' @inherit calc_ejam details
 #'
 #' @return data.frame of results, but
-#'   if mydf was a data.table, returns a data.table
+#'   if mydf was a data.table, returns a table in [data.table](https://r-datatable.com) format
 #'
 calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formulas), quiet = FALSE) {
 

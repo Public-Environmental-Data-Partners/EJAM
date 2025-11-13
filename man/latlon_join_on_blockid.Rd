@@ -7,12 +7,12 @@
 latlon_join_on_blockid(s2b)
 }
 \arguments{
-\item{s2b}{data.table like \link{testoutput_getblocksnearby_10pts_1miles},
+\item{s2b}{table in \href{https://r-datatable.com}{data.table} format like \link{testoutput_getblocksnearby_10pts_1miles},
 output of \code{\link[=getblocksnearby]{getblocksnearby()}},
 with column called blockid}
 }
 \value{
-returns the input data.table but with lat,lon columns added as block coordinates
+returns the input table in \href{https://r-datatable.com}{data.table} format but with lat,lon columns added as block coordinates
 }
 \description{
 get expanded version of data.table, such as sites2blocks,

@@ -11,7 +11,7 @@ latlon_from_s2b(s2b)
 \item{s2b}{sites2blocks data.table that is output of \code{\link[=getblocksnearby]{getblocksnearby()}}}
 }
 \value{
-data.table with columns ejam_uniq_id, lat, lon, one row per site
+table in \href{https://r-datatable.com}{data.table} format with columns ejam_uniq_id, lat, lon, one row per site
 }
 \description{
 DRAFT - NOT WORKING YET - Estimate lat,lon of site(s) from sites2blocks output of getblocksnearby()

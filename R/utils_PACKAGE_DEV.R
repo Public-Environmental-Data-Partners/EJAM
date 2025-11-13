@@ -283,7 +283,7 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #' @param vectoronly set to TRUE to just get a character vector of object names instead of the data.frame table output
 #' @seealso [ls()] [getNamespace()] [getNamespaceExports()] [loadedNamespaces()]
 #'
-#' @return data.table with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
+#' @return table in [data.table](https://r-datatable.com) format with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
 #'   unless vectoronly = TRUE in which case it returns a character vector
 #' @examples  # EJAM:::pkg_functions_and_data("datasets")
 #'

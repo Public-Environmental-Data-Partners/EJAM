@@ -163,7 +163,7 @@
 #' save(ejscreen_acs, file="ejscreen_acs.rda")
 #'
 #' }
-#' @return data.table (not tibble, and not just a data.frame)
+#' @return A [data.table](https://r-datatable.com) (not tibble, and not just a data.frame)
 #'
 #' @export
 #'

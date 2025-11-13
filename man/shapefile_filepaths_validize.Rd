@@ -25,6 +25,6 @@ Ignores and drops files with other extensions.
 Convert filepath(s) into one complete set (if possible) of a single basename and extensions .shp, .shx, .dbf, .prj
 }
 \seealso{
-\code{\link[EJAM:::shapefile_filepaths_valid]{EJAM::::shapefile_filepaths_valid()}} \code{\link[=shapefile_from_any]{shapefile_from_any()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
 \keyword{internal}
