@@ -1,7 +1,7 @@
 
 ######################
 acs_yr_range <- function(end.year, parens=TRUE) {
-  txt <- paste0(end.year - 4, "-", end.year)
+  txt <- paste0(as.numeric(end.year) - 4, "-", end.year)
   if (parens) {
     txt <- paste0("(", txt, ")")
   }
@@ -41,7 +41,7 @@ acs_yr_range <- function(end.year, parens=TRUE) {
 #' @keywords internal
 #'
 acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_census_has_published = FALSE,
-                       lag_yrs_endyr_to_census_publishes = 1,
+                       lag_yrs_endyr_to_census_publishes = 0.9452055, # 1- 20/365
                        lag_yrs_endyr_to_ejscreen = 1.6
                        ) {
 
@@ -128,8 +128,8 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
     if (guess_as_of <= "2025-12-11" && guess_as_of >= "2024-12-13") {likely_already_published_yr <- "2023"}
     if (guess_as_of <= "2026-12-12" && guess_as_of >= "2025-12-12") {likely_already_published_yr <- "2024"}
     # we could even validate that guess by checking the website. see ACSdownload:::validate.end.year(2023) ***
-    message("It is likely that ACS data has already been released for the 5-year survey period whose last year is ",
-            likely_already_published_yr, " ", acs_yr_range(likely_already_published_yr), " but not later periods")
+    message(paste0("As of ", guess_as_of,", it is likely that ACS data was already released (in December ", as.numeric(likely_already_published_yr) + 1,") for the 5-year survey period whose last year is ",
+            likely_already_published_yr, " ", acs_yr_range(likely_already_published_yr), " but not later periods"))
 
     if (guess_census_has_published) {
       return(likely_already_published_yr)
