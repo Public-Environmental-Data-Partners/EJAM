@@ -1,7 +1,7 @@
 
 ######################
-acs_yr_range <- function(end.year, parens=TRUE) {
-  txt <- paste0(as.numeric(end.year) - 4, "-", end.year)
+acs_yr_range <- function(end.year, parens = FALSE) {
+  txt <- paste0(as.character(as.numeric(end.year) - 4), "-", end.year)
   if (parens) {
     txt <- paste0("(", txt, ")")
   }
@@ -44,6 +44,12 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
                        lag_yrs_endyr_to_census_publishes = 0.9452055, # 1- 20/365
                        lag_yrs_endyr_to_ejscreen = 1.6
                        ) {
+
+if (guess_census_has_published) {
+  if (guess_always) {
+    warning("guess_census_has_published and ")
+  }
+}
 
   # lag_yrs_endyr_to_census_publishes = 1
   ## end year (December) + 1 year (December) has been date ACS published by Census.
@@ -129,7 +135,7 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
     if (guess_as_of <= "2026-12-12" && guess_as_of >= "2025-12-12") {likely_already_published_yr <- "2024"}
     # we could even validate that guess by checking the website. see ACSdownload:::validate.end.year(2023) ***
     message(paste0("As of ", guess_as_of,", it is likely that ACS data was already released (in December ", as.numeric(likely_already_published_yr) + 1,") for the 5-year survey period whose last year is ",
-            likely_already_published_yr, " ", acs_yr_range(likely_already_published_yr), " but not later periods"))
+            likely_already_published_yr, " ", acs_yr_range(likely_already_published_yr, parens = TRUE), " but not later periods"))
 
     if (guess_census_has_published) {
       return(likely_already_published_yr)
@@ -140,7 +146,7 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
     if (guess_as_of <= "2025-12-31" && guess_as_of >= "2025-01-01") {yr <- "2022"}
     # we could even validate that yr by checking the website. see ACSdownload:::validate.end.year(2023) ***
     message(paste0("It is a guess that ACS data may already be incorporated into this package for the 5-year survey period of ",
-                   yr, " ", acs_yr_range(yr), " but not later periods"))
+                   yr, " ", acs_yr_range(yr, parens = TRUE), " but not later periods"))
   }
 
   return(yr)

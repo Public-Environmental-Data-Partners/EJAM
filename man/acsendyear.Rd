@@ -8,7 +8,7 @@ acsendyear(
   guess_as_of = Sys.Date(),
   guess_always = FALSE,
   guess_census_has_published = FALSE,
-  lag_yrs_endyr_to_census_publishes = 1,
+  lag_yrs_endyr_to_census_publishes = 0.9452055,
   lag_yrs_endyr_to_ejscreen = 1.6
 )
 }

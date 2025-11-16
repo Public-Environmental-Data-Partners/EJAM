@@ -67,9 +67,8 @@
 #'
 #'   EJSCREEN-relevant key tables are listed in the details section here.
 #'
-#' @param cache_table  see get_acs from tidycensus package
-#' @param year e.g., 2022 or 2023 see get_acs from tidycensus package, and
-#'   the helper function in the EJAM package called [acsendyear()]
+#' @param year e.g., 2022, 2023, or 2024
+#' @param cache_table  see [tidycensus::get_acs()]
 #' @param output   see get_acs from tidycensus package
 #' @param state Default is 2-character abbreviations, vector of all US States, DC, and PR.
 #' @param county   see get_acs from tidycensus package
@@ -167,9 +166,9 @@
 #'
 acs_bybg <- function(
     variables = c(pop = "B01001_001"),
-    table = NULL,
-    cache_table = FALSE,
+    table = NULL, # can only specify one table per call, but can specify a vector of variables from multiple tables
     year = NULL,
+    cache_table = FALSE,
     output = "wide",
     state = stateinfo$ST, # has DC, PR, but not "AS" "GU" "MP" "UM" "VI" # state.abb from datasets pkg would lack DC and PR # stateinfo2 would add "US"
     county = NULL,
@@ -187,7 +186,8 @@ acs_bybg <- function(
 )  {
 
   if (missing(year) || is.null(year)) {
-    year <- acsendyear()
+    year <- acsendyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
+                       guess_census_has_published = TRUE)
   }
   year <- as.numeric(year)
 
@@ -201,8 +201,8 @@ acs_bybg <- function(
   #   stop('requires the tidycensus package be installed and attached')
   #   } else {
   if (!is.null(table) && !is.null(variables)) {
-    warning( "Specify variables or a table to retrieve; they cannot be combined. Using table and ignoring variables.")
-    variables = NULL
+    warning( "Specify either variables or table parameter; they cannot be combined. Using variables and ignoring table parameter")
+    table = NULL
   }
   # x <- load_variables(year, survey) # slow and requires tidycensus package
   # print(x[grepl("b01001_", x$name, ignore.case = T) & grepl("Female", x$label) & grepl("group", x$geography), ], n = 25)
@@ -213,7 +213,7 @@ acs_bybg <- function(
     ## probably will stop/error if we try this and no key exists. NULL probably tries to use default key assuming one is set
     bgs <- tidycensus::get_acs(geography = geography,   # requires tidycensus package - refer to it like this
                                variables = variables,
-                               table = table,
+                               table = table, # Only one table may be requested per call.
                                cache_table = cache_table,
                                year = year,
                                output = output,

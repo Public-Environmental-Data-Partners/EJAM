@@ -1,9 +1,59 @@
 
 # script to make a set of formulas that can convert raw ACS5 data into ejscreen indicators
 
+acstabs <- c("B01001", # sex and age / basic population counts
+             "B03002", # race with hispanic ethnicity
+             "B02001", # race without hispanic ethnicity
+             "B15002", # education
+             "C16002", # language/ lingiso
+             "C17002", # low income, poor, etc.
+             "B25034", # pre1960, for lead paint indicator
+             "B23025", # unemployed
+             "B18101", # disability -- at tract resolution only ########### #
+             "B25032", # owned units vs rented units
+             "B28003", # no broadband
+             "B27010"  # no health insurance
+)
+## get metadata about tables and variables using an API key and the tidycensus package
+
+# v22 = tidycensus::load_variables(year = 2022, dataset = "acs5"); v22$table = gsub("_.*$", "", v22$name)
+# v23 = tidycensus::load_variables(year = 2023, dataset = "acs5"); v23$table = gsub("_.*$", "", v23$name)
+# v24 = tidycensus::load_variables(year = 2024, dataset = "acs5"); v24$table = gsub("_.*$", "", v24$name)
+
+## get the topic (concept) of each table
+
+# concept = v22$concept[match(acstabs, v22$table)]
+# cbind(acstabs, concept = v22$concept[match(acstabs, v22$table)] )
+
+##       acstabs  concept
+## [1,] "B01001" "Sex by Age"
+## [2,] "B03002" "Hispanic or Latino Origin by Race"
+## [3,] "B02001" "Race"
+## [4,] "B15002" "Sex by Educational Attainment for the Population 25 Years and Over"
+## [5,] "C16002" "Household Language by Household Limited English Speaking Status"
+## [6,] "C17002" "Ratio of Income to Poverty Level in the Past 12 Months"
+## [7,] "B25034" "Year Structure Built"
+## [8,] "B23025" "Employment Status for the Population 16 Years and Over"
+## [9,] "B18101" "Sex by Age by Disability Status"
+## [10,] "B25032" "Tenure by Units in Structure"
+## [11,] "B28003" "Presence of a Computer and Type of Internet Subscription in Household"
+## [12,] "B27010" "Types of Health Insurance Coverage by Age"
+
+# unique(v22$table) # over 1,000 tables if all geo scales counted
+# unique(v22$table[v22$geography == "block group"]) #  about 400 tables for just bg data
+## to list just blockgroup and tract tables:
+# v22 = v22[v22$geography %in% c("tract", "block group"), ]
+# unique(v22$table) # almost 1,000 tables if bg and tract scales kept
+## confirmed all tables listed as ejscreen relevant are in fact found in this list of all acs5 tables
+# cbind(acstabs, acs2022 = acstabs %in% v22$table, acs2023 = acstabs %in% v23$table)
+
+########################################################################################## #
+
 # Formulas as documented by EPA archived at
 # https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf
 # and more links recorded at EJAM/data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.md
+
+# start from partially done table, that had some formulas but not all:
 
 # x <- ejscreen::ejscreenformulasnoej
 # # or
@@ -525,7 +575,7 @@ formulas_ejscreen_acs_newrows$longname <- fixcolnames(formulas_ejscreen_acs_newr
 formulas_ejscreen_acs <- rbind(formulas_ejscreen_acs, formulas_ejscreen_acs_newrows)
 rm(formulas_ejscreen_acs_newrows)
 ######################################## #
-# fill in 61 longname where had not been availbale
+# fill in 61 longname where had not been available
 
 need <- formulas_ejscreen_acs$longname == formulas_ejscreen_acs$rname
 formulas_ejscreen_acs$longname[need] <- formulas_ejscreen_acs$longname_old[need]
@@ -549,6 +599,7 @@ formulas_ejscreen_acs_newrows <- data.frame(
   "male = B01001_002",
 
   "ownedunits = B25032_002",
+  "occupiedunits = ",
 
   ## B28002 ?
   "nobroadband = B28003_001 - B28003_004", # ie, all minue "Has a computer:!!With a broadband Internet subscription" *** ##  NEED TO CONFIRM THIS IS WHAT EJSCREEN USED
@@ -623,18 +674,46 @@ formulas_ejscreen_acs$formula[formulas_ejscreen_acs$rname == "pctlowinc"] <-
 
 ############################################################## #
 
+##    CAN ADD THESE FORMULAS ASAP: ***   just need to confirm the ACS variable numbers/tables and add formulas here:
+
+# [39,] "occupiedunits"          "names_community"
+# [27,] "percapincome"           "names_community"
+
+# [28,] "lan_universe"           "names_d_language_count"
+# [29,] "lan_nonenglish"         "names_d_language_count"
+# [30,] "lan_eng_na"             "names_d_language_count"
+# [31,] "lan_spanish"            "names_d_language_count"
+# [32,] "lan_ie"                 "names_d_language_count"
+# [33,] "lan_api"                "names_d_language_count"
+# [34,] "lan_other"              "names_d_language_count"
+
+# [35,] "spanish_li"             "names_d_languageli_count"
+# [36,] "ie_li"                  "names_d_languageli_count"
+# [37,] "api_li"                 "names_d_languageli_count"
+# [38,] "other_li"               "names_d_languageli_count"
+
+
+
+
+
+
+
+############################################################## #
+
 # the only other ones I could add now based on ACS?
 
 # "percapincome"
 
-# "lan_universe"
-# "lan_nonenglish" "lan_eng_na" "lan_spanish" "lan_ie" "lan_api" "lan_other"
-# "spanish_li" "ie_li" "api_li" "other_li"
 
 ############################################################## #
 
 message("SAVING FORMULAS, AND CAN USE IN CREATING INITIAL blockgroupstats table from raw acs as with acs_bybg()
         or newer get_acs_new_dat() but  then need final steps for Demog.Index scores and for disability by blockgroup not tract")
+
+### confirmed all of acstabs are mentioned among formulas created here
+# for (i in 1:length(acstabs)) {cat(acstabs[i]); print( any(grepl(acstabs[i], EJAM::formulas_ejscreen_acs$formula))) }
+# cbind(acstabs, concept = v22$concept[match(acstabs, v22$table)] )
+
 
 # formulas_ejscreen_acs  saved for use in package
 

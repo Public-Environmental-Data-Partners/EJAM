@@ -7,8 +7,8 @@
 acs_bybg(
   variables = c(pop = "B01001_001"),
   table = NULL,
-  cache_table = FALSE,
   year = NULL,
+  cache_table = FALSE,
   output = "wide",
   state = stateinfo$ST,
   county = NULL,
@@ -32,10 +32,9 @@ acs_bybg(
 
 EJSCREEN-relevant key tables are listed in the details section here.}
 
-\item{cache_table}{see get_acs from tidycensus package}
+\item{year}{e.g., 2022, 2023, or 2024}
 
-\item{year}{e.g., 2022 or 2023 see get_acs from tidycensus package, and
-the helper function in the EJAM package called \code{\link[=acsendyear]{acsendyear()}}}
+\item{cache_table}{see \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}}}
 
 \item{output}{see get_acs from tidycensus package}
 
