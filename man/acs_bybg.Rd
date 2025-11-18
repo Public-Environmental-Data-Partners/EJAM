@@ -78,31 +78,33 @@ NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x <- tidycensus::load_variables(2022, "acs5")
 
-acstabs <- c("B01001",
- "B03002", "B02001",  # race with/without hispanic ethnicity
- "B15002", "C16002", "C17002", "B25034", "B23025",
- "B18101", # disability at tract resolution only
- "B25032", "B28003", "B27010") # owned units, no broadband, no health insurance
-acstabs2 <- paste0(acstabs, "_")
+tables = c("B01001", # sex and age / basic population counts
+            "B03002", # race with hispanic ethnicity
+            "B02001", # race without hispanic ethnicity
+            "B15002", # education
+
+            "C16002", # language/ lingiso
+            "B16004", # language category and English not at all
+
+            "C17002", # low income, poor, etc.
+            "B25034", # pre1960, for lead paint indicator
+            "B23025", # unemployed
+
+            "B25032", # owned units vs rented units # ***
+            "B25003", # owned vs rented             # ***
+
+            "B28003", # no broadband
+            "B27010" ,  # no health insurance
+
+          "B18101" # disability -- at tract resolution only ########### #
+)
+
+acstabs2 <- paste0(tables, "_")
 mytables <- data.table::rbindlist(lapply(acstabs2, function(z) \{
   x[substr(x$name,1,7) \%in\% z, ][1, ]
   \}))
 print(mytables)
 
- #        name            label                                                            concept   geography
- #      <char>           <char>                                                             <char>      <char>
-#:  B01001_001 Estimate!!Total:                                                            Sex by Age block group
-#:  B03002_001 Estimate!!Total:                                     Hispanic or Latino Origin by Race block group
-#:  B02001_001 Estimate!!Total:                                                                  Race block group
-#:  B15002_001 Estimate!!Total:    Sex by Educational Attainment for the Population 25 Years and Over block group
-#:  C16002_001 Estimate!!Total:       Household Language by Household Limited English Speaking Status block group
-#:  C17002_001 Estimate!!Total:                Ratio of Income to Poverty Level in the Past 12 Months block group
-#:  B25034_001 Estimate!!Total:                                                  Year Structure Built block group
-#:  B23025_001 Estimate!!Total:                Employment Status for the Population 16 Years and Over block group
-#:  B18101_001 Estimate!!Total:                                       Sex by Age by Disability Status       tract
-#:  B25032_001 Estimate!!Total:                                          Tenure by Units in Structure block group
-#:  B28003_001 Estimate!!Total: Presence of a Computer and Type of Internet Subscription in Household block group
-#:  B27010_001 Estimate!!Total:                             Types of Health Insurance Coverage by Age block group
 
   # see details of ALL the variables in these tables
 # for (i in 1:NROW(mytables)) \{
@@ -163,8 +165,27 @@ mapfast(newvars[1:10,], column_names = colnames(newvars),
 ## ACS tables and variables most relevant to EJSCREEN
 
 acsinfo <- tidycensus::load_variables(2022, "acs5")
-ejscreentables <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025",
-             "B18101") # disability at tract resolution only
+ejscreentables <- c("B01001", # sex and age / basic population counts
+            "B03002", # race with hispanic ethnicity
+            "B02001", # race without hispanic ethnicity
+            "B15002", # education
+
+            "C16002", # language/ lingiso
+            "B16004", # language category and English not at all
+
+            "C17002", # low income, poor, etc.
+            "B25034", # pre1960, for lead paint indicator
+            "B23025", # unemployed
+
+            "B25032", # owned units vs rented units # ***
+            "B25003", # owned vs rented             # ***
+
+            "B28003", # no broadband
+            "B27010" ,  # no health insurance
+
+          "B18101" # disability -- at tract resolution only ########### #
+)
+
 acstabs2 <- paste0(ejscreentables, "_")
 acsinfo$table = gsub("_.*", "", acsinfo$name)
 myacsinfo <- acsinfo[acsinfo$table \%in\% ejscreentables, ]
