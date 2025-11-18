@@ -1,43 +1,54 @@
 
 # script to make a set of formulas that can convert raw ACS5 data into ejscreen indicators
 
-acstabs <- c("B01001", # sex and age / basic population counts
+tables <- c("B01001", # sex and age / basic population counts
              "B03002", # race with hispanic ethnicity
              "B02001", # race without hispanic ethnicity
              "B15002", # education
-             "C16002", # language/ lingiso
+
+             "C16002", # does b16002 provide all this? language category, limited English, "Household Language by Household Limited English Speaking Status"
+             "B16002", # languages (e.g., Chinese, slavic), "Detailed Household Language by Household Limited English Speaking Status"
+             "B16004", # language category and English not at all
+
              "C17002", # low income, poor, etc.
              "B25034", # pre1960, for lead paint indicator
              "B23025", # unemployed
-             "B18101", # disability -- at tract resolution only ########### #
-             "B25032", # owned units vs rented units
+             "B19301", # per capita income
+             "B25003", # owned vs rented occupied units (same universe as B25032)
+
              "B28003", # no broadband
-             "B27010"  # no health insurance
+             "B27010", # no health insurance
+
+             "B18101" # disability -- at tract resolution only ########### #
 )
 ## get metadata about tables and variables using an API key and the tidycensus package
 
 # v22 = tidycensus::load_variables(year = 2022, dataset = "acs5"); v22$table = gsub("_.*$", "", v22$name)
 # v23 = tidycensus::load_variables(year = 2023, dataset = "acs5"); v23$table = gsub("_.*$", "", v23$name)
-# v24 = tidycensus::load_variables(year = 2024, dataset = "acs5"); v24$table = gsub("_.*$", "", v24$name)
+## v24 = tidycensus::load_variables(year = 2024, dataset = "acs5"); v24$table = gsub("_.*$", "", v24$name)
 
 ## get the topic (concept) of each table
 
-# concept = v22$concept[match(acstabs, v22$table)]
-# cbind(acstabs, concept = v22$concept[match(acstabs, v22$table)] )
+# concept = v22$concept[match(tables, v22$table)]
+# cbind(tables, concept = v22$concept[match(tables, v22$table)] )
 
-##       acstabs  concept
-## [1,] "B01001" "Sex by Age"
-## [2,] "B03002" "Hispanic or Latino Origin by Race"
-## [3,] "B02001" "Race"
-## [4,] "B15002" "Sex by Educational Attainment for the Population 25 Years and Over"
-## [5,] "C16002" "Household Language by Household Limited English Speaking Status"
-## [6,] "C17002" "Ratio of Income to Poverty Level in the Past 12 Months"
-## [7,] "B25034" "Year Structure Built"
-## [8,] "B23025" "Employment Status for the Population 16 Years and Over"
-## [9,] "B18101" "Sex by Age by Disability Status"
-## [10,] "B25032" "Tenure by Units in Structure"
-## [11,] "B28003" "Presence of a Computer and Type of Internet Subscription in Household"
-## [12,] "B27010" "Types of Health Insurance Coverage by Age"
+##       tables  concept
+# [1,] "B01001" "Sex by Age"
+# [2,] "B03002" "Hispanic or Latino Origin by Race"
+# [3,] "B02001" "Race"
+# [4,] "B15002" "Sex by Educational Attainment for the Population 25 Years and Over"
+# [5,] "C16002" "Household Language by Household Limited English Speaking Status"
+# [6,] "C17002" "Ratio of Income to Poverty Level in the Past 12 Months"
+# [7,] "B25034" "Year Structure Built"
+# [8,] "B23025" "Employment Status for the Population 16 Years and Over"
+
+# [9,] "B25032" "Tenure by Units in Structure"
+# [10,] "B25003" "Tenure"
+
+# [11,] "B28003" "Presence of a Computer and Type of Internet Subscription in Household"
+# [12,] "B27010" "Types of Health Insurance Coverage by Age"
+
+# [13,] "B18101" "Sex by Age by Disability Status"
 
 # unique(v22$table) # over 1,000 tables if all geo scales counted
 # unique(v22$table[v22$geography == "block group"]) #  about 400 tables for just bg data
@@ -45,7 +56,7 @@ acstabs <- c("B01001", # sex and age / basic population counts
 # v22 = v22[v22$geography %in% c("tract", "block group"), ]
 # unique(v22$table) # almost 1,000 tables if bg and tract scales kept
 ## confirmed all tables listed as ejscreen relevant are in fact found in this list of all acs5 tables
-# cbind(acstabs, acs2022 = acstabs %in% v22$table, acs2023 = acstabs %in% v23$table)
+# cbind(tables, acs2022 = tables %in% v22$table, acs2023 = tables %in% v23$table)
 
 ########################################################################################## #
 
@@ -598,8 +609,14 @@ formulas_ejscreen_acs_newrows <- data.frame(
   "female = B01001_026",
   "male = B01001_002",
 
-  "ownedunits = B25032_002",
-  "occupiedunits = ",
+  "ownedhhlds    = B25003_002", # per ACS5 metadata via tidycensus for 2022yr  ***
+  "occupiedhhlds = B25003_001",
+  "pctownedhhlds <- ifelse(occupied == 0, 0, ownedhhlds / occupiedhhlds)",
+  ##
+  "ownedunits    = B25032_002", # (housing units)
+  "occupiedunits = B25032_001", # (housing units)
+  # "pctownedunits      <- ifelse(occupiedunits == 0, 0, as.numeric(ownedunits) / occupiedunits)" # already was in the formulas
+
 
   ## B28002 ?
   "nobroadband = B28003_001 - B28003_004", # ie, all minue "Has a computer:!!With a broadband Internet subscription" *** ##  NEED TO CONFIRM THIS IS WHAT EJSCREEN USED
@@ -623,7 +640,6 @@ rm(formulas_ejscreen_acs_newrows)
 # B03002_003 Estimate!!Total:!!Not Hispanic or Latino:!!White alone
 # is the non-hispanic version Census ACS table.
 ## B02001 is a different table than the NonHispanic Alone table
-
 
 formulas_ejscreen_acs_newrows <- data.frame(
   rname = NA,
@@ -674,45 +690,220 @@ formulas_ejscreen_acs$formula[formulas_ejscreen_acs$rname == "pctlowinc"] <-
 
 ############################################################## #
 
-##    CAN ADD THESE FORMULAS ASAP: ***   just need to confirm the ACS variable numbers/tables and add formulas here:
+##    CAN ADD THESE FORMULAS ASAP: ***
 
-# [39,] "occupiedunits"          "names_community"
-# [27,] "percapincome"           "names_community"
+# these counts, inputs, need to be added to map_headernames$rname:
+ formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs$formula),]
+#                  rname                                                                                               formula longname_old                                                    longname
+# 112          pctlan_api                   pctlan_api      <- ifelse(lan_universe == 0, 0, as.numeric(lan_api) / lan_universe)         <NA>       % speaking Asian and Pacific Island languages at home
+# 113       pctlan_arabic             pctlan_arabic      <- ifelse(lan_universe == 0, 0, as.numeric(lan_arabic) / lan_universe)         <NA>                                   % speaking Arabic at home
+# 114      pctlan_english           pctlan_english      <- ifelse(lan_universe == 0, 0, as.numeric(lan_english) / lan_universe)         <NA>                                  % speaking English at home
+# 115       pctlan_french             pctlan_french      <- ifelse(lan_universe == 0, 0, as.numeric(lan_french) / lan_universe)         <NA>                                   % speaking French at home
+# 116           pctlan_ie                     pctlan_ie      <- ifelse(lan_universe == 0, 0, as.numeric(lan_ie) / lan_universe)         <NA>                      % speaking Other Indo-European at home
+# 117   pctlan_nonenglish     pctlan_nonenglish      <- ifelse(lan_universe == 0, 0, as.numeric(lan_nonenglish) / lan_universe)         <NA>                    % speaking Non English languages at home
+# 118        pctlan_other               pctlan_other      <- ifelse(lan_universe == 0, 0, as.numeric(lan_other) / lan_universe)         <NA>          % speaking Other and Unspecified languages at home
+# 119  pctlan_other_asian   pctlan_other_asian      <- ifelse(lan_universe == 0, 0, as.numeric(lan_other_asian) / lan_universe)         <NA> % speaking Other Asian and Pacific Island languages at home
+# 120     pctlan_other_ie         pctlan_other_ie      <- ifelse(lan_universe == 0, 0, as.numeric(lan_other_ie) / lan_universe)         <NA>                            % speaking Indo-European at home
+# 121 pctlan_rus_pol_slav pctlan_rus_pol_slav      <- ifelse(lan_universe == 0, 0, as.numeric(lan_rus_pol_slav) / lan_universe)         <NA>          % speaking Russian, Polish or Other Slavic at home
+# 122      pctlan_spanish           pctlan_spanish      <- ifelse(lan_universe == 0, 0, as.numeric(lan_spanish) / lan_universe)         <NA>                                  % speaking Spanish at home
+# 123   pctlan_vietnamese     pctlan_vietnamese      <- ifelse(lan_universe == 0, 0, as.numeric(lan_vietnamese) / lan_universe)         <NA>                               % speaking Vietnamese at home
+   dput(gsub("pct","", formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs$formula),]$rname))
+   setdiff(gsub("pct","", formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs$formula),]$rname), map_headernames$rname)
+   # [1] "lan_arabic"       "lan_english"      "lan_french"       "lan_other_asian"  "lan_other_ie"
+   # [6] "lan_rus_pol_slav" "lan_vietnamese"
 
-# [28,] "lan_universe"           "names_d_language_count"
-# [29,] "lan_nonenglish"         "names_d_language_count"
-# [30,] "lan_eng_na"             "names_d_language_count"
-# [31,] "lan_spanish"            "names_d_language_count"
-# [32,] "lan_ie"                 "names_d_language_count"
-# [33,] "lan_api"                "names_d_language_count"
-# [34,] "lan_other"              "names_d_language_count"
 
-# [35,] "spanish_li"             "names_d_languageli_count"
-# [36,] "ie_li"                  "names_d_languageli_count"
-# [37,] "api_li"                 "names_d_languageli_count"
-# [38,] "other_li"               "names_d_languageli_count"
+# these need denominator filled in within map_headernames:
+# "lan_api" "lan_eng_na" "lan_ie" "lan_nonenglish" "lan_other" "lan_spanish"
+
+# >  (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator", "apisection","longname")])
+#                                   rname  denominator                            apisection                                                                       longname
+# api_li                           api_li                                                  0            Number speaking Asian-Pacific Island (in limited English household)
+# ie_li                             ie_li                                                  0             Number speaking Other Indo-European (in limited English household)
+# lan_api                         lan_api                                                  0                          Number speaking Asian-Pacific Island language at Home
+# lan_eng_na                   lan_eng_na                                                  0                                             Number speaking English Not at All
+# lan_ie                           lan_ie                                                  0                                    Number speaking Other Indo-European at Home
+# lan_nonenglish           lan_nonenglish                                                  0                                            Number speaking non-English at home
+# lan_other                     lan_other                                                                           Number speaking Other and Unspecified languages at home
+# lan_spanish                 lan_spanish                                                  0                                                Number speaking Spanish at Home
+# lan_universe               lan_universe                                                  0    Number of Persons for whom Language Ability is Determined--age 5 and above.
+# other_li                       other_li                                                                              Number speaking Other (in limited English household)
+# pctapi_li                     pctapi_li      lingiso Breakdown by Limited English Speaking % speaking Asian-Pacific Island languages (as % of limited English households)
+# pctie_li                       pctie_li      lingiso Breakdown by Limited English Speaking  % speaking Other Indo-European languages (as % of limited English households)
+# pctlan_api                   pctlan_api lan_universe              Languages Spoken at Home                          % speaking Asian and Pacific Island languages at home
+# pctlan_arabic             pctlan_arabic lan_universe              Languages Spoken at Home                                                      % speaking Arabic at home
+# pctlan_english           pctlan_english lan_universe              Languages Spoken at Home                                                     % speaking English at home
+# pctlan_french             pctlan_french lan_universe              Languages Spoken at Home                                                      % speaking French at home
+# pctlan_ie                     pctlan_ie lan_universe              Languages Spoken at Home                                         % speaking Other Indo-European at home
+       # note formulas have  pctlan_other_ie  and also  pctlan_ie, an alias to drop probably.
+# pctlan_nonenglish     pctlan_nonenglish lan_universe              Languages Spoken at Home                                       % speaking Non English languages at home
+# pctlan_other               pctlan_other lan_universe              Languages Spoken at Home                             % speaking Other and Unspecified languages at home
+# pctlan_other_asian   pctlan_other_asian lan_universe              Languages Spoken at Home                    % speaking Other Asian and Pacific Island languages at home
+# pctlan_other_ie         pctlan_other_ie lan_universe              Languages Spoken at Home                                               % speaking Indo-European at home
+# pctlan_rus_pol_slav pctlan_rus_pol_slav lan_universe              Languages Spoken at Home                             % speaking Russian, Polish or Other Slavic at home
+# pctlan_spanish           pctlan_spanish lan_universe              Languages Spoken at Home                                                     % speaking Spanish at home
+# pctlan_vietnamese     pctlan_vietnamese lan_universe              Languages Spoken at Home                                                  % speaking Vietnamese at home
+# pctother_li                 pctother_li      lingiso Breakdown by Limited English Speaking                % speaking Other languages (as % of limited English households)
+# pctspanish_li             pctspanish_li      lingiso Breakdown by Limited English Speaking                        % speaking Spanish (as % of limited English households)
+# spanish_li                   spanish_li                                                  0                         Number speaking Spanish (in limited English household)
 
 
+formulas_ejscreen_acs_newrows <- data.frame(
+  rname = NA,
+  formula = c(
+
+      "percapincome = B19301_001",
+
+      "lan_universe =  ",
+      "lan_nonenglish = ",        # "names_d_language_count"
+      "lan_eng_na = B16004_008 + B16004_013 + B16004_018 + B16004_023 + B16004_030 + B16004_035 + B16004_040 + B16004_045 + B16004_052 + B16004_057 + B16004_062 + B16004_067",            # "names_d_language_count"
+      "lan_spanish =  ",          #  "names_d_language_count"
+      "lan_ie = ",                # "names_d_language_count"
+      lan_other_ie ???
+      "lan_api = ",               # "names_d_language_count"
+      "lan_other = ",             # "names_d_language_count"
+
+      "spanish_li = C16002_004",  #           "names_d_languageli_count"
+      "ie_li = C16002_007",       #           "names_d_languageli_count"
+      "api_li = C16002_010",      #           "names_d_languageli_count"
+      "other_li = C16002_013",     #           "names_d_languageli_count"
+
+      "lan_english"
+      "lan_arabic"
+      "lan_french"
+      "lan_other_asian"
+      "lan_rus_pol_slav"
+      "lan_vietnamese"
+  ),
+  longname_old = NA,
+  longname = NA
+)
+formulas_ejscreen_acs_newrows$rname = formula_varname(formulas_ejscreen_acs_newrows$formula)
+formulas_ejscreen_acs_newrows$longname <- fixcolnames(formulas_ejscreen_acs_newrows$rname, 'rname', 'long')
+
+formulas_ejscreen_acs <- rbind(formulas_ejscreen_acs, formulas_ejscreen_acs_newrows)
+rm(formulas_ejscreen_acs_newrows)
+# ######################### ## ######################### ## ######################### #
+## see
+ejscreen_acs_tables <- c(
+
+  "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
+
+  "B01001", # sex and age / basic population counts
+  "B03002", # race with breakdown by hispanic ethnicity
+  "B02001", # race without breakdown by hispanic ethnicity
+  "B15002", # education (less than high school)
+  "B23025", # unemployed
+  "C17002", # low income, poor, etc.
+  "B19301", # per capita income
+  "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
+  "B28003", # no broadband
+  "B27010", # no health insurance
+  "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
+  "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
+  "C16001", # languages detailed list: % of residents (not hhlds) speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
+
+  "B18101" # disability -- at tract resolution only ########### #
+)
+# ######################### #
+x = tidycensus::load_variables(2023, "acs5")
+# x = x[x$geography %in% "block group", ] # BUT THAT EXCLUDES C16001, B18101
+# x = x[x$geography %in% c("tract", "block group"), ] # INCL C16001, B18101
+x$geography <- NULL
+x$table = gsub("_.*$", "", x$name)
+x = x[x$table %in% ejscreen_acs_tables, ]
+# x |> print(n=320)
+## language variables:
+x[x$table %in% c("C16002","B16004", "C16001"), ] |> print(n=100)
+## lang vars in EJAM
+bg = data.table::copy(EJAM::blockgroupstats); bg= data.table::setDF(bg)
+t(bg[bg$bgfips == "040131042124", c("pop", "bgfips", grep("lan|li", names(bg),value = T))])
 
 
+x[!duplicated(x$table), ]
+# A tibble: 13 × 4
+#         name       label                                                                                  concept                                                                                        table
+#        <chr>      <chr>                                                                                  <chr>                                                                                          <chr>
+# 1 B01001_001 Estimate!!Total:                                                                       Sex by Age                                                                                     B01001
+# 2 B02001_001 Estimate!!Total:                                                                       Race                                                                                           B02001
+# 3 B03002_001 Estimate!!Total:                                                                       Hispanic or Latino Origin by Race                                                              B03002
+# 4 B15002_001 Estimate!!Total:                                                                       Sex by Educational Attainment for the Population 25 Years and Over                             B15002
+# 5 B16004_001 Estimate!!Total:    for no english at all
+# TRACT ONLY:  #   B18101_001    Estimate!!Total: Sex by Age by Disability Status   B18101
+# 6 B19301_001 Estimate!!Per capita income in the past 12 months (in 2023 inflation-adjusted dollars) Per Capita Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)                   B19301
+# 7 B23025_001 Estimate!!Total:                                                                       Employment Status for the Population 16 Years and Over                                         B23025
+# 8 B25032_001 Estimate!!Total:                                                                       Tenure by Units in Structure                                                                   B25032
+# 9 B25034_001 Estimate!!Total:                                                                       Year Structure Built                                                                           B25034
+#10 B27010_001 Estimate!!Total:                                                                       Types of Health Insurance Coverage by Age                                                      B27010
+#11 B28003_001 Estimate!!Total:                                                                       Presence of a Computer and Type of Internet Subscription in Household                          B28003
+# TRACT ONLY: #   C16001_001     Estimate!!Total:  Language Spoken at Home for the Population 5 Years and Over   C16001
+#12 C16002_001 Estimate!!Total:                                                                       Household Language by Household Limited English Speaking Status                                C16002
+#13 C17002_001 Estimate!!Total:                                                                       Ratio of Income to Poverty Level in the Past 12 Months                                         C17002
 
+# ######################### #
+# url_acs_table_info <- function(tables = ejscreen_acs_tables, yr = acsdefaultendyearhere, fiveorone=5) {
+#   paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", yr, ".", tables)
+# }
+# url_acs_table_info()
+# ######################### #
+# [1] "https://data.census.gov/table/ACSDT5Y2023.B25034"
+# [2] "https://data.census.gov/table/ACSDT5Y2023.B01001"
+# [3] "https://data.census.gov/table/ACSDT5Y2023.B03002"
+# [4] "https://data.census.gov/table/ACSDT5Y2023.B02001"
+# [5] "https://data.census.gov/table/ACSDT5Y2023.B15002"
+# [6] "https://data.census.gov/table/ACSDT5Y2023.B23025"
+# [7] "https://data.census.gov/table/ACSDT5Y2023.C17002"
+# [8] "https://data.census.gov/table/ACSDT5Y2023.B19301"
+# [9] "https://data.census.gov/table/ACSDT5Y2023.B25032"
+# [10] "https://data.census.gov/table/ACSDT5Y2023.B28003"
+# [11] "https://data.census.gov/table/ACSDT5Y2023.B27010"
 
+# [12] "https://data.census.gov/table/ACSDT5Y2023.C16002"
+# [13] "https://data.census.gov/table/ACSDT5Y2023.B16004"
+# [14] "https://data.census.gov/table/ACSDT5Y2023.C16001"
 
-############################################################## #
+# [15] "https://data.census.gov/table/ACSDT5Y2023.B18101"
 
-# the only other ones I could add now based on ACS?
+# 1 C16002_001 Estimate!!Total:                                                                                Household Language by Household Limite… block gr…
+# 2 C16002_002 Estimate!!Total:!!English only                                                                  Household Language by Household Limite… block gr…
+# 3 C16002_003 Estimate!!Total:!!Spanish:                                                                      Household Language by Household Limite… block gr…
+# 4 C16002_004 Estimate!!Total:!!Spanish:!!Limited English speaking household                                  Household Language by Household Limite… block gr…
+# 5 C16002_005 Estimate!!Total:!!Spanish:!!Not a limited English speaking household                            Household Language by Household Limite… block gr…
+# 6 C16002_006 Estimate!!Total:!!Other Indo-European languages:                                                Household Language by Household Limite… block gr…
+# 7 C16002_007 Estimate!!Total:!!Other Indo-European languages:!!Limited English speaking household            Household Language by Household Limite… block gr…
+# 8 C16002_008 Estimate!!Total:!!Other Indo-European languages:!!Not a limited English speaking household      Household Language by Household Limite… block gr…
+# 9 C16002_009 Estimate!!Total:!!Asian and Pacific Island languages:                                           Household Language by Household Limite… block gr…
+# 10 C16002_010 Estimate!!Total:!!Asian and Pacific Island languages:!!Limited English speaking household       Household Language by Household Limite… block gr…
+# 11 C16002_011 Estimate!!Total:!!Asian and Pacific Island languages:!!Not a limited English speaking household Household Language by Household Limite… block gr…
+# 12 C16002_012 Estimate!!Total:!!Other languages:                                                              Household Language by Household Limite… block gr…
+# 13 C16002_013 Estimate!!Total:!!Other languages:!!Limited English speaking household                          Household Language by Household Limite… block gr…
+# 14 C16002_014 Estimate!!Total:!!Other languages:!!Not a limited English speaking household                    Household Language by Household Limite… block gr…
 
-# "percapincome"
-
+# x[grepl("B16004", x$name, ignore.case = T) & grepl("not at all", x$label, ignore.case = T)  & "block group" == x$geography & !is.na(x$geography), ] |> print(n=100 )
+# A tibble: 12 × 4
+# name       label                                                                                                           concept                 geography
+# <chr>      <chr>                                                                                                           <chr>                   <chr>
+#   1 B16004_008 "Estimate!!Total:!!5 to 17 years:!!Speak Spanish:!!Speak English \"not at all\""                                Age by Language Spoken… block gr…
+# 2 B16004_013 "Estimate!!Total:!!5 to 17 years:!!Speak other Indo-European languages:!!Speak English \"not at all\""          Age by Language Spoken… block gr…
+# 3 B16004_018 "Estimate!!Total:!!5 to 17 years:!!Speak Asian and Pacific Island languages:!!Speak English \"not at all\""     Age by Language Spoken… block gr…
+# 4 B16004_023 "Estimate!!Total:!!5 to 17 years:!!Speak other languages:!!Speak English \"not at all\""                        Age by Language Spoken… block gr…
+# 5 B16004_030 "Estimate!!Total:!!18 to 64 years:!!Speak Spanish:!!Speak English \"not at all\""                               Age by Language Spoken… block gr…
+# 6 B16004_035 "Estimate!!Total:!!18 to 64 years:!!Speak other Indo-European languages:!!Speak English \"not at all\""         Age by Language Spoken… block gr…
+# 7 B16004_040 "Estimate!!Total:!!18 to 64 years:!!Speak Asian and Pacific Island languages:!!Speak English \"not at all\""    Age by Language Spoken… block gr…
+# 8 B16004_045 "Estimate!!Total:!!18 to 64 years:!!Speak other languages:!!Speak English \"not at all\""                       Age by Language Spoken… block gr…
+# 9 B16004_052 "Estimate!!Total:!!65 years and over:!!Speak Spanish:!!Speak English \"not at all\""                            Age by Language Spoken… block gr…
+# 10 B16004_057 "Estimate!!Total:!!65 years and over:!!Speak other Indo-European languages:!!Speak English \"not at all\""      Age by Language Spoken… block gr…
+# 11 B16004_062 "Estimate!!Total:!!65 years and over:!!Speak Asian and Pacific Island languages:!!Speak English \"not at all\"" Age by Language Spoken… block gr…
+# 12 B16004_067 "Estimate!!Total:!!65 years and over:!!Speak other languages:!!Speak English \"not at all\""                    Age by Language Spoken… block gr…
 
 ############################################################## #
 
 message("SAVING FORMULAS, AND CAN USE IN CREATING INITIAL blockgroupstats table from raw acs as with acs_bybg()
         or newer get_acs_new_dat() but  then need final steps for Demog.Index scores and for disability by blockgroup not tract")
 
-### confirmed all of acstabs are mentioned among formulas created here
-# for (i in 1:length(acstabs)) {cat(acstabs[i]); print( any(grepl(acstabs[i], EJAM::formulas_ejscreen_acs$formula))) }
-# cbind(acstabs, concept = v22$concept[match(acstabs, v22$table)] )
+### confirmed all of tables are mentioned among formulas created here
+# for (i in 1:length(tables)) {cat(tables[i]); print( any(grepl(tables[i], EJAM::formulas_ejscreen_acs$formula))) }
+# cbind(tables, concept = v22$concept[match(tables, v22$table)] )
 
 
 # formulas_ejscreen_acs  saved for use in package

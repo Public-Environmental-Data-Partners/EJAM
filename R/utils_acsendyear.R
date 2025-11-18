@@ -46,8 +46,9 @@ acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_cen
                        ) {
 
 if (guess_census_has_published) {
-  if (guess_always) {
-    warning("guess_census_has_published and ")
+  if (!guess_always) {
+    guess_always <- TRUE
+    warning("guess_census_has_published=TRUE and guess_always=FALSE, so guess_always is being ignored")
   }
 }
 

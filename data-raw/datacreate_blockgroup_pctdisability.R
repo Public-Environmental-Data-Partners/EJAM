@@ -5,7 +5,7 @@
 # to get counts, first need tract counts and then apportion to blockgroup counts:
 #≥data
 # - download tract level acs for B18101
-tracts <- ACSdownload::get_acs_new(acstabs = "B18101", fips = "tract", yr = 2022)
+tracts <- ACSdownload::get_acs_new(tables = "B18101", fips = "tract", yr = 2022)
 tracts <- tracts[[1]]
 
 # - use formulas_ejscreen_acs_disability to get ONLY disability and disab_universe calculated in each tract, not the percentages by tract, or at least we wont use those % by tract
