@@ -1008,7 +1008,7 @@ cbind(t(bg[bg$bgfips == "440030205001", varnames]),
 if (FALSE) {
   fips = blockgroupstats$bgfips[sample(1:NROW(blockgroupstats), 1)]
   browseURL(paste0("https://data.census.gov/table?q=B01001&g=1500000US", fips, "&y=2022"))
-  browseURL(paste0("https://data.census.gov/table?q=B16004&g=1500000US", fips,"&y=2022")) # browseURL(url_acs_table("B16004", fips = fips, yr = 2022))
+  browseURL(paste0("https://data.census.gov/table?q=B16004&g=1500000US", fips,"&y=2022")) # browseURL(paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", 2022, ".", "B16004")
   browseURL(paste0("https://data.census.gov/table?q=c16002&g=1500000US", fips,"&y=2022"))
   browseURL(paste0("https://data.census.gov/table?q=c16001&g=1400000US", substr(fips, 1, 11),"&y=2022")) # TRACT
   cbind(t(bg[bg$bgfips == fips, varnames]), varinfo(varnames)$varlist) # BLOCKGROUP
@@ -1150,7 +1150,7 @@ x[!duplicated(x$table), ] # to see list of 1 table per row
 # url_acs_table_info <- function(tables = ejscreen_acs_tables, yr = acsdefaultendyearhere, fiveorone=5) {
 #   paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", yr, ".", tables)
 # }
-# url_acs_table_info()
+# url_acs_table_info()  # but see ACSdownload::url_acs_table()
 # ######################### #
 # [1] "https://data.census.gov/table/ACSDT5Y2023.B25034"
 # [2] "https://data.census.gov/table/ACSDT5Y2023.B01001"
