@@ -5,7 +5,7 @@
 \alias{formulas_ejscreen_acs}
 \title{formulas_ejscreen_acs dataset}
 \format{
-An object of class \code{data.frame} with 155 rows and 4 columns.
+An object of class \code{data.frame} with 183 rows and 5 columns.
 }
 \usage{
 formulas_ejscreen_acs
@@ -17,6 +17,6 @@ Formulas and metadata about Census ACS variables and how to calculate indicators
 \href{https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf}{Formulas as documented by EPA were archived here}
 }
 \seealso{
-\code{acs_bybg()}
+\code{acs_bybg()} and \code{ACSdownload::get_acs_new()}
 }
 \keyword{datasets}

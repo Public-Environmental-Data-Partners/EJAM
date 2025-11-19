@@ -25,33 +25,30 @@
 #' ```
 #' x <- tidycensus::load_variables(2022, "acs5")
 #'
-#' tables = c("B01001", # sex and age / basic population counts
-#'             "B03002", # race with hispanic ethnicity
-#'             "B02001", # race without hispanic ethnicity
-#'             "B15002", # education
-#'
-#'             "C16002", # language/ lingiso
-#'             "B16004", # language category and English not at all
-#'
-#'             "C17002", # low income, poor, etc.
-#'             "B25034", # pre1960, for lead paint indicator
-#'             "B23025", # unemployed
-#'
-#'             "B25032", # owned units vs rented units # ***
-#'             "B25003", # owned vs rented             # ***
-#'
-#'             "B28003", # no broadband
-#'             "B27010" ,  # no health insurance
-#'
-#'           "B18101" # disability -- at tract resolution only ########### #
+#' tables = c(
+#'   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
+#'   "B01001", # sex and age / basic population counts
+#'   "B03002", # race with hispanic ethnicity
+#'   "B02001", # race without hispanic ethnicity
+#'   "B15002", # education
+#'   "B23025", # unemployed
+#'   "C17002", # low income, poor, etc.
+#'   "B19301", # per capita income
+#'   "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
+#'   "B28003", # no broadband
+#'   "B27010", # no health insurance
+#'   "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
+#'   "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
+#'   ####### TRACT ONLY:
+#'   #   used by EJSCREEN but only available at tract resolution:
+#'   "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
+#'   "B18101" # disability -- at tract resolution only ########### #
 #' )
-#'
 #' acstabs2 <- paste0(tables, "_")
 #' mytables <- data.table::rbindlist(lapply(acstabs2, function(z) {
 #'   x[substr(x$name,1,7) %in% z, ][1, ]
 #'   }))
 #' print(mytables)
-#'
 #'
 #'   # see details of ALL the variables in these tables
 #' # for (i in 1:NROW(mytables)) {

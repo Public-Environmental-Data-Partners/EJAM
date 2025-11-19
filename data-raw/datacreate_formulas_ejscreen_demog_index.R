@@ -1,5 +1,5 @@
 
-############################################################## #
+############################################################## ############################################################### #
 
 # special case of Demog.Index creation yearly for entire US, all blockgroups
 
@@ -27,22 +27,7 @@
 # After calculation, the absolute value of
 # the smallest demographic index value was added to individual demographic indexes to make them non-
 #   negative. This shift was applied to national and state levels.
-
-## # incomplete:  ***
-
-stop("not done with writing this script yet")
-
-avg.pctlowlifex = mean(blockgroupstats$lowlifex, na.rm=TRUE)
-# etc.
-# etc.
-
-sd.pctlowlifex = sd(blockgroupstats$lowlifex, na.rm = TRUE)
-# etc.
-# etc.
-
-# These formulas below can only be used after all the other ones are run, because they need avg and SD, where
-# avg.* and sd.* will be nationwide constants calculated after pct indicators are calculated at each bg in US.
-
+############################################################## ############################################################### #
 
 formulas_ejscreen_demog_index <- data.frame(
 
@@ -50,6 +35,7 @@ formulas_ejscreen_demog_index <- data.frame(
   formula = c(
 
     "pctlowlifex = lowlifex", # alias
+
     "z.pctlowlifex = (pctlowlifex - avg.pctlowlifex) / sd.pctlowlifex",
     "z.pctmin      = (pctmin - avg.pctmin) / sd.pctmin",
     "z.pctlowinc   = (pctlowinc - avg.pctlowinc) / sd.pctlowinc",
@@ -60,37 +46,22 @@ formulas_ejscreen_demog_index <- data.frame(
     "Demog.Index = (z.pctlowinc + z.pctmin) / 2",
     "Demog.Index.Supp = (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5",
 
-    "Demog.Index.State = NA",
-    "Demog.Index.Supp.State = NA"
+    "Demog.Index.State      = (z.pctlowinc + z.pctmin) / 2", # # ??
+    "Demog.Index.Supp.State = (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5" # ???
   ),
   longname_old = NA,
   longname = NA
 )
-formulas_ejscreen_demog_index$rname = formula_varname(formulas_ejscreen_demog_index$formula)
+formulas_ejscreen_demog_index$rname = EJAM:::formula_varname(formulas_ejscreen_demog_index$formula)
 formulas_ejscreen_demog_index$longname <- fixcolnames(formulas_ejscreen_demog_index$rname, 'rname', 'long')
 
-
-stop("not done with writing this script yet")
-
-x = calc_ejam(blockgroupstats,
-
-          )
-
-## after those formulas are used, a final separate adjustment must be made per the EJSCREEN Tech Doc:
-# "After calculation, the absolute value of
-# the smallest demographic index value was added to individual demographic indexes to make them non-
-#   negative. This shift was applied to national and state levels."
-
-
-
-
-############################################################## #
+########################################################## #
 
 EJAM:::metadata_add_and_use_this("formulas_ejscreen_demog_index")
-dataset_documenter(
+EJAM:::dataset_documenter(
   "formulas_ejscreen_demog_index",
-  title = "formulas_ejscreen_demog_index (DATA) special formulas for the Demog.Index annual update"
+  title = "formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update"
 )
 
-
-############################################################## #
+########################################################## ########################################################### #
+########################################################## ########################################################### #
