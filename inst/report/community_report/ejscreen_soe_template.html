@@ -1248,10 +1248,10 @@ function doBuffer(geometry) {
 
         function doLingIsoChart() {
             //do LINGISO linear graphs by adjusting div width based on
-            document.getElementById("speak_spanish_linear_gauge").style.width = statHash["P_HLI_SPANISH_LI"] + "%";
-            document.getElementById("speak_other_indio_european_linear_gauge").style.width = statHash["P_HLI_IE_LI"] + "%";
-            document.getElementById("speak_asian_pacific_islander_linear_gauge").style.width = statHash["P_HLI_API_LI"] + "%";
-            document.getElementById("speak_other_languages_linear_gauge").style.width = statHash["P_HLI_OTHER_LI"] + "%";
+            document.getElementById("speak_spanish_linear_gauge").style.width = {{P_HLI_SPANISH_LI}} + "%";
+            document.getElementById("speak_other_indio_european_linear_gauge").style.width = {{P_HLI_IE_LI}} + "%";
+            document.getElementById("speak_asian_pacific_islander_linear_gauge").style.width = {{P_HLI_API_LI}} + "%";
+            document.getElementById("speak_other_languages_linear_gauge").style.width = {{P_HLI_OTHER_LI}} + "%";
         }
     </script>
     <!--end report logic-->
@@ -2569,7 +2569,7 @@ function doBuffer(geometry) {
     function doGauges() {
         //low income
         var options = {
-           // series: [statHash["P_LOWINC"]],
+           // series: [{{P_LOWINC}}],
             series: [67],
             chart: {
                 type: "radialBar",
@@ -2640,7 +2640,7 @@ function doBuffer(geometry) {
 
         //people of color
         var options = {
-           // series: [statHash["PCT_MINORITY"]],
+           // series: [{{PCT_MINORITY}}],
            series: [33],
             chart: {
                 type: "radialBar",
@@ -2712,7 +2712,7 @@ function doBuffer(geometry) {
 
         //less than high school
         var options = {
-      //      series: [statHash["P_EDU_LTHS"]],
+      //      series: [{{P_EDU_LTHS}}],
                        series: [33],
 
             chart: {
@@ -2785,7 +2785,7 @@ function doBuffer(geometry) {
 
         //limited english households
         var options = {
-         //   series: [statHash["P_LIMITED_ENG_HH"]],
+         //   series: [{{P_LIMITED_ENG_HH}}],
                     series: [33],
 
             chart: {
@@ -2858,7 +2858,7 @@ function doBuffer(geometry) {
 
         //unemployment
         var options = {
-          //  series: [statHash["P_EMP_STAT_UNEMPLOYED"]],
+          //  series: [{{P_EMP_STAT_UNEMPLOYED}}],
                      series: [33],
   chart: {
                 type: "radialBar",
@@ -2930,7 +2930,7 @@ function doBuffer(geometry) {
 
         //persons with disabilities
         var options = {
-//            series: [statHash["P_DISABILITY"]],
+//            series: [{{P_DISABILITY}}],
                        series: [33],
 
             chart: {
@@ -3003,7 +3003,7 @@ function doBuffer(geometry) {
 
         //male
         var options = {
-      //      series: [statHash["P_MALES"]],
+      //      series: [{{P_MALES}}],
                    series: [33],
     chart: {
                 type: "radialBar",
@@ -3075,7 +3075,7 @@ function doBuffer(geometry) {
 
         //female
         var options = {
-         //   series: [statHash["P_FEMALES"]],
+         //   series: [{{P_FEMALES}}],
                    series: [33],
     chart: {
                 type: "radialBar",
@@ -3147,7 +3147,7 @@ function doBuffer(geometry) {
 
         //owner occupied
         var options = {
-          //  series: [statHash["P_OWN_OCCUPIED"]],
+          //  series: [{{P_OWN_OCCUPIED}}],
                       series: [33],
  chart: {
                 type: "radialBar",
@@ -3219,7 +3219,7 @@ function doBuffer(geometry) {
 
         //white percent
         var options = {
-        //    series: [statHash["P_NHWHITE"]],
+        //    series: [{{P_NHWHITE}}],
                    series: [33],
     chart: {
                 type: "radialBar",
@@ -3291,7 +3291,7 @@ function doBuffer(geometry) {
 
         //black percent
         var options = {
-      //      series: [statHash["P_NHBLACK"]],
+      //      series: [{{P_NHBLACK}}],
                  series: [33],
       chart: {
                 type: "radialBar",
@@ -3363,7 +3363,7 @@ function doBuffer(geometry) {
 
         //american indian percent
         var options = {
-        //    series: [statHash["P_NHAMERIND"]],
+        //    series: [{{P_NHAMERIND}}],
                    series: [33],
     chart: {
                 type: "radialBar",
@@ -3435,7 +3435,7 @@ function doBuffer(geometry) {
 
         //asian percent
         var options = {
-    //        series: [statHash["P_NHASIAN"]],
+    //        series: [{{P_NHASIAN}}],
                series: [33],
         chart: {
                 type: "radialBar",
@@ -3509,7 +3509,7 @@ function doBuffer(geometry) {
 
         //hawaiian / pacific islander percent
         var options = {
-       //     series: [statHash["P_NHHAWPAC"]],
+       //     series: [{{P_NHHAWPAC}}],
                    series: [33],
     chart: {
                 type: "radialBar",
@@ -3581,7 +3581,7 @@ function doBuffer(geometry) {
 
         //other race percent
         var options = {
-     //       series: [statHash["P_NHOTHER_RACE"]],
+     //       series: [{{P_NHOTHER_RACE}}],
                  series: [0],
       chart: {
                 type: "radialBar",
@@ -3653,7 +3653,7 @@ function doBuffer(geometry) {
 
         //multiple races percent
         var options = {
-        //    series: [statHash["P_NHTWOMORE"]],
+        //    series: [{{P_NHTWOMORE}}],
                series: [0],
                chart: {
                 type: "radialBar",
@@ -3725,7 +3725,7 @@ function doBuffer(geometry) {
 
         //hispanic percent
         var options = {
-       //     series: [statHash["P_HISP"]],
+       //     series: [{{P_HISP}}],
                series: [30],
                chart: {
                 type: "radialBar",
@@ -3808,16 +3808,16 @@ function doBuffer(geometry) {
     function doAgeChart() {
 
         //do LINGISO linear graphs by adjusting div width based on
-        document.getElementById("ages_1_to_4_linear_gauge").style.width = statHash["P_AGE_LT5"] + "%";
-        document.getElementById("ages_1_to_18_linear_gauge").style.width = statHash["P_AGE_LT18"] + "%";
-        document.getElementById("ages_18_and_up_linear_gauge").style.width = statHash["P_AGE_GT17"] + "%";
-        document.getElementById("ages_65_and_up_linear_gauge").style.width = statHash["P_AGE_GT64"] + "%";
+        document.getElementById("ages_1_to_4_linear_gauge").style.width = {{P_AGE_LT5}} + "%";
+        document.getElementById("ages_1_to_18_linear_gauge").style.width = {{P_AGE_LT18}} + "%";
+        document.getElementById("ages_18_and_up_linear_gauge").style.width = {{P_AGE_GT17}} + "%";
+        document.getElementById("ages_65_and_up_linear_gauge").style.width = {{P_AGE_GT64}} + "%";
 
     //The rest of this <script> block is the old radial bar chart generation
     //Generate the Age Distribution Pie Chart
     //     var options = {
     //         //"Age 1 - 4", "Age 1 - 18", "Age 18+", "Age 65+"
-    //         series: [Number(statHash["P_AGE_LT5"]), Number(statHash["P_AGE_LT18"]), Number(statHash["P_AGE_GT17"]), Number(statHash["P_AGE_GT64"])],
+    //         series: [Number({{P_AGE_LT5}}), Number({{P_AGE_LT18}}), Number({{P_AGE_GT17}}), Number({{P_AGE_GT64}})],
     //         chart: {
     //             type: "radialBar",
     //             height: 175,
