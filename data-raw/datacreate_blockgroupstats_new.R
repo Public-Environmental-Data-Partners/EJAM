@@ -4,14 +4,11 @@
 
 # - get new ACS data for most indicators using
 bg <- ACSdownload::get_acs_new(
+  yr = 2023,
+  return_list_not_merged = FALSE,
   fips = "blockgroup",
   tables = c("B25034", "B01001", "B03002", "B02001" ,"B15002", "B23025" ,"C17002" ,"B19301", "B25032", "B28003" ,"B27010" ,"C16002" ,"B16004" )
 ) # ejscreen_acs_tables) # most variables
-x=bg
-y <- cbind(x[[1]], x[[2]], x[[3]], x[[4]], x[[5]], x[[6]], x[[7]])
-y <- y[, .SD, .SDcols = !duplicated(names(y))]
-bg=y
-rm(x,y)
 
 #   clarify how language variables work at tract level applied to bg table - similar to how disability was done?
 tracts_acs <-  ACSdownload::get_acs_new(fips = "blockgroup", tables = "C16001_001") # language at tract scale
