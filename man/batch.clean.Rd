@@ -11,7 +11,7 @@ batch.clean(x, namesfile = "keepnames", oldcolnames, newcolnames)
 
 \item{namesfile}{Optional but must specify either namesfile, or both oldcolnames and newcolnames.
 A csv filename, of file that maps fieldnames from those in raw output of batch processor
-to more useful and friendly names that make more sense.
+to more useful and clearn names that make more sense.
 If function is called with the special value namesfile='keepnames' then
 the names are unchanged from those in x.}
 

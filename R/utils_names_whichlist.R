@@ -9,7 +9,7 @@
 #' @param grepmatching whether to look for matches via grep (partial match)
 #' @param ignore.case.exact whether to ignore capitalization in exact matches
 #' @param ignore.case.grep passed to grep as ignore.case param
-#' @param keylists if true, only report for the key lists not friendly, all, these, need types.
+#' @param keylists if true, only report for the key lists not state_pctile types.
 #' @param exactonly to limit output to rows with exact matches
 #'
 #' @seealso [varinfo()]
@@ -17,11 +17,12 @@
 #'
 #' @examples
 #'    x <- names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
-#'    subset(x, !grepl("friendly", x$whichlist))
 #'
-#'    subset(x,  grepl("friendly", x$whichlist))
-#'    subset(namez, names(namez) != "all_r" & names(namez) %in%
-#'       subset(x, x$grepmatch == "yes" & !grepl("friendly", x$whichlist))$whichlist  )
+#'    subset(x,  grepl("all", x$whichlist))
+#'    subset(x,  grepl("state_p", x$whichlist))
+#'    z=subset(namez, names(namez) != "all_r" & names(namez) %in%
+#'       subset(x, x$grepmatch == "yes")$whichlist  )
+#'    lapply(z, as.vector) # avoids showing attributes if they were set and are distracting here
 #'    grep("\\.eo$", namez$ej, value = T)
 #'
 #' @keywords internal
@@ -60,6 +61,7 @@ names_whichlist <- function(x, exact=T, grepmatching=T, ignore.case.exact=FALSE,
     }
   }
   if (keylists) {
+    # only state_pctile is still relevant here, but ok
     hitlist <- hitlist[hitlist$whichlist %in% grep('friendly|all|these|need|^state_pctile$', names(namez), value = T, invert = T),]
   }
   if (exactonly) {

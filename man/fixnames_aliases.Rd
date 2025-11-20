@@ -79,5 +79,5 @@ fixnames_aliases(c(1:4, "na", "tbd"),
 
 }
 \seealso{
-\code{\link[=fixcolnames_infer]{fixcolnames_infer()}} \code{\link[=latlon_infer]{latlon_infer()}}
+\code{\link[=fixcolnames_infer]{fixcolnames_infer()}} \code{\link[=latlon_infer]{latlon_infer()}} \code{\link[=fixcolnames]{fixcolnames()}}
 }

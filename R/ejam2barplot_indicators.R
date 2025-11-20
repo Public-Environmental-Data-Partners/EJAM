@@ -38,7 +38,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
                       'Supplementary EJ Index' = names_ej_supp # aka Suppl. Summary Index
   )
 
-  ## set indicator group friendly names - use shortlabel
+  ## set indicator group shorter names - use shortlabel
   mybarvars.friendly <- fixcolnames(mybarvars, oldtype = 'r', newtype = 'shortlabel')
 
   ## filter to necessary parts of batch.summarize output - may need work here ***
@@ -112,7 +112,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
                                                'Average site',
                                                'Average person at these sites'))
 
-    ## merge with friendly names and plot
+    ## merge with shoarter labels/ names and plot
     p_out <- barplot_input %>%
       dplyr::left_join( data.frame(indicator = mybarvars, indicator_label = gsub(' \\(.*', '', mybarvars.friendly))) %>%
       ggplot2::ggplot() +

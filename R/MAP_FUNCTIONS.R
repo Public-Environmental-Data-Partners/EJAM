@@ -412,7 +412,7 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
     popindicators <- table_round(popindicators) # decimal places set
     countynames <- fips2countyname(mydf$ejam_uniq_id)
     popindicators <- cbind(County = countynames, popindicators)
-    poplabels <- fixcolnames(names(popindicators), 'r', 'shortlabel') # friendly labels for indicators
+    poplabels <- fixcolnames(names(popindicators), 'r', 'shortlabel') # shorter, plain-English labels for indicators
     popup2 <- popup_from_any(popindicators, labels = poplabels)
 
     mymap <- map_shapes_leaflet(mymapdata, popup = popup2,
