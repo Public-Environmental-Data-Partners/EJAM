@@ -94,9 +94,9 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
       return(namesnow)
     }
   }
-
+  # interpret aliases for the column names in map_headernames, like "r" as an alias for the colname "rname"
   fromcolname <- fixmapheadernamescolname(oldtype)
-  tocolname   <- fixmapheadernamescolname(newtype)
+  tocolname   <- fixmapheadernamescolname(newtype) # converts "long" to "longname" etc.
 
   if (!(tocolname %in% colnames(mapping_for_names)))   {
     warning(paste('returning unchanged names because mapping_for_names has no column called ', tocolname))
@@ -109,14 +109,20 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
 
   oldnames <- mapping_for_names[, fromcolname]
   newnames <- mapping_for_names[, tocolname]
-  newnames <- newnames[oldnames %in% namesnow]
-  oldnames <- oldnames[oldnames %in% namesnow]
 
-  # if no match found in oldnames, we will just return the name unfixed/unchanged,
-  # if they asked for renaming to a name type like api, csv, original, etc.
-  # BUT, if they asked to rename to some other column such as varlist or vartype,
-  #  then for the cases where there is no match found among oldnames, we should return NA or empty string
-  # rather than returning the name unchanged, since it is confusing to ask for varlist and get back the input term.
+  # rename only the ones that are in the oldnames list, i.e., renameable
+  namesnow[namesnow %in% oldnames] <- newnames[match(namesnow[namesnow %in% oldnames], oldnames)]
+
+  # old way failed to rename duplicates among the namesnow inputs, only 1st match via match()
+
+  ###################### #   ###################### #   ###################### #
+  ### HANDLE SPECIAL CASE WHERE fixcolnames() is USED TO QUERY METADATA/TRAITS/INFO ABOUT A VARIABLE
+  ### RATHER THAN AN EFFORT TO RENAME THE VARIABLE:
+  # If they asked for renaming to a name type like "long", "r", etc.,
+  #  then for the cases where namesnow is not found in mapping_for_names, we just return the name unfixed/unchanged.
+  # BUT, if they asked to "rename to" (actually query) some other column such as "varlist" or "vartype",
+  #  then for the cases where namesnow is not found in mapping_for_name, we should return empty string
+  #  (rather than returning the name unchanged, since it is confusing to ask for varlist and get back the input term).
 
   nametypes <- sort(c(
     # canonical terms
@@ -124,13 +130,10 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
     # synonyms for those
     as.vector(unlist(eval(formals(fixmapheadernamescolname)$alias_list)))
   ))
-
   if (!(newtype %in% nametypes)) {
     namesnow[!(namesnow %in% oldnames)] <- ''
-    # so that when there is no match below, it is left like this and is returned as ''
   }
-
-  namesnow[match(oldnames, namesnow)] <- newnames
+  ###################### #   ###################### #   ###################### #
 
   return(namesnow)
 }
