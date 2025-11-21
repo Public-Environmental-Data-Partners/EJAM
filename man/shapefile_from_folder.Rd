@@ -26,12 +26,13 @@ Read shapefile from a folder
   testshape <- EJAM:::shapefile_from_folder(testfolder)
   testpaths <- EJAM:::shapefile_filepaths_from_folder(testfolder)
   testshape <- EJAM:::shapefile_from_filepaths(testpaths)
-
+  \dontrun{
   if (interactive()) {
   ##  R user can navigate to and select a folder that has .shp and related files:
   testshape <- try({EJAM:::shapefile_from_folder()})
   ##  R user can select just the .shp file:
   # testshape <- shapefile_from_any()
+  }
   }
   x <- get_blockpoints_in_shape(testshape)
   leaflet::leaflet(x$polys) \%>\% leaflet::addTiles() \%>\% leaflet::addPolygons(color = "blue")
