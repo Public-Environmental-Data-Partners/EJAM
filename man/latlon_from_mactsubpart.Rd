@@ -17,7 +17,7 @@ of interest, such as "FFFF" - see for example,
 \item{include_if_no_latlon}{logical - many in the database lack lat lon values but have a MACT code}
 }
 \value{
-a data.table with columns named
+a table in \href{https://r-datatable.com}{data.table} format with columns named
 
 programid, subpart, title, lat, lon, REGISTRY_ID, program
 
@@ -43,5 +43,5 @@ also provide search by NAICS or SIC, and by MACT subpart.
   mact_table
   latlon_from_mactsubpart("OOOO", include_if_no_latlon = FALSE) # default
   latlon_from_mactsubpart("OOOO", include_if_no_latlon = TRUE)
-  
+
 }

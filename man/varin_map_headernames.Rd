@@ -31,17 +31,17 @@ data.frame of info about where query was found and how many hits.
 utility to check if a variable or term is in map_headernames and where
 }
 \examples{
-varin_map_headernames("spanish")
-varin_map_headernames("lowinc")
-varin_map_headernames("pop")
-varin_map_headernames("POV", ignore.case = T)
-varin_map_headernames("POV", ignore.case = F)
+EJAM:::varin_map_headernames("spanish")
+EJAM:::varin_map_headernames("lowinc")
+EJAM:::varin_map_headernames("pop")
+EJAM:::varin_map_headernames("POV", ignore.case = T)
+EJAM:::varin_map_headernames("POV", ignore.case = F)
 
-varin_map_headernames( "traffic.score", exact = T)
+EJAM:::varin_map_headernames( "traffic.score", exact = T)
 
-varin_map_headernames( "traffic" )
+EJAM:::varin_map_headernames( "traffic" )
 
-t(varinfo("traffic.score",
+t(EJAM:::varinfo("traffic.score",
   info = c("oldname","apiname", "acsname" ,"csvname",
   "basevarname", 'shortlabel', 'longname', 'varlist')))
 

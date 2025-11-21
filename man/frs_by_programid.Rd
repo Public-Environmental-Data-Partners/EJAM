@@ -9,6 +9,7 @@ frs_by_programid (DATA) data.table of Program System ID code(s) for each EPA-reg
 the Facility Registry Service
 }
 \details{
+Table in \href{https://r-datatable.com}{data.table} format.
 This file is not stored in the package, but is obtained via \code{\link[=dataload_dynamic]{dataload_dynamic()}}.
 
 Created by frs_make_programid_lookup()
@@ -25,7 +26,7 @@ Key: <pgm_sys_id, program, REGISTRY_ID>
          lat       lon  REGISTRY_ID  PGM_SYS_ACRNMS program pgm_sys_id
        <num>     <num>       <char>          <char>  <char>     <char>
  1: 42.01282 -78.54799 110010618705 ICIS:1400013175    ICIS 1400013175
- 2: 42.01282 -78.54799 110010618705 ICIS:1400013176    ICIS 1400013176       
+ 2: 42.01282 -78.54799 110010618705 ICIS:1400013176    ICIS 1400013176
 
 nn=sample(1:nrow(frs_by_programid), 1); frs_by_programid[REGISTRY_ID == frs_by_programid$REGISTRY_ID[nn],]
 

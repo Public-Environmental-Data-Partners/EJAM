@@ -10,7 +10,7 @@ latlon_from_fips(fips)
 \item{fips}{vector of census fips codes}
 }
 \value{
-data.table with columns ftype, fips, lat, lon
+table in \href{https://r-datatable.com}{data.table} format with columns ftype, fips, lat, lon
 }
 \description{
 get approx centroid of each fips census unit

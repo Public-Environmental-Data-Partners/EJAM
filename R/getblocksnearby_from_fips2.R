@@ -11,16 +11,6 @@
 #' @param in_shiny used by shiny app server code to handle errors via validate() instead of stop()
 #' @param need_blockwt ignored now
 #' @return same as for [getblocksnearby] but one row per FIPS, and the distance column is irrelevant
-#'
-#' @examples
-#'   x <- getblocksnearby_from_fips(fips_counties_from_state_abbrev("DE"))
-#'   counties_ej <- doaggregate(x)
-#'   #cannot use mapfast(counties_ej$results_bysite) since no lat lon.
-#'   # mapfastej_counties() should work...
-#'   y =  ejamit(fips=fips_counties_from_statename("Delaware"))
-#'
-#'   # x=getblocksnearby_from_fips("482011000011") # one blockgroup only
-#'   # y=doaggregate(x)
 #' @seealso [getblocksnearby()] [fips_bgs_in_fips()] [fips_lead_zero()] [getblocksnearby_from_fips()] [fips_from_table()]
 #'
 #' @keywords internal

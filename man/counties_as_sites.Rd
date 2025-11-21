@@ -12,7 +12,7 @@ like fips_counties_from_state_abbrev("DE")}
 }
 \value{
 provides table similar to the output of getblocksnearby(),
-data.table with one row per blockgroup in these counties, or
+\href{https://r-datatable.com}{data.table} with one row per blockgroup in these counties, or
 all pairs of county fips - bgid, and ejam_uniq_id (1 through N) assigned to each county
 but missing blockid and distance so not ready for doaggregate().
 }
@@ -43,7 +43,7 @@ See more below under "Value"
  myfips = topcounties$FIPS
 
  # simplest map of top counties
- map_shapes_leaflet(shapes = shapes_counties_from_countyfips(myfips))
+ map_shapes_leaflet(shapes = EJAM:::shapes_counties_from_countyfips(myfips))
 
  # simplest way to get and map results county by county
  out_c1 = ejamit(fips = myfips)

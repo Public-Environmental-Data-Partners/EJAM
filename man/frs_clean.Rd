@@ -30,3 +30,4 @@ and it drops rows lacking lat/lon location info in the LATITUDE83 or LONGITUDE83
 \seealso{
 \code{\link[=frs_update_datasets]{frs_update_datasets()}}
 }
+\keyword{internal}

@@ -7,7 +7,7 @@
 indexpoints(pts, indexname = "custom_index", envir = globalenv())
 }
 \arguments{
-\item{pts}{a data.frame or data.table with columns name lat and lon,
+\item{pts}{a data.frame or \href{https://r-datatable.com}{data.table} with columns name lat and lon,
 one row per location (point), and any other columns are ignored.}
 
 \item{indexname}{optional name to give the index}
@@ -29,17 +29,5 @@ This creates a spatial index
 to be used by \code{\link[=getpointsnearby]{getpointsnearby()}} to support \code{\link[=proxistat]{proxistat()}},
 to create a new proximity score for every block and blockgroup in the US.
 It relies on \code{\link[=create_quaddata]{create_quaddata()}} for one step, then \code{\link[SearchTrees:createTree]{SearchTrees::createTree()}}
-}
-\examples{
-\donttest{
-  # EXAMPLES NOT TESTED YET ***
-  pts <- testpoints_10
-  tempenv <- new.env()
-  index10 <- indexpoints(pts, "index10", envir = tempenv)
-  x <- getpointsnearby(pts, quadtree = get(index10, envir = tempenv))
-  # y <- proxistat(pts)
-  # rm(custom_index)
- }
-
 }
 \keyword{internal}

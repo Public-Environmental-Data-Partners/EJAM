@@ -5,20 +5,20 @@
 #' get expanded version of data.table, such as copy(blockgroupstats),
 #' with new lat,lon columns
 #'
-#' @param x data.table with column called bgid
+#' @param x table in [data.table](https://r-datatable.com) format with column called bgid
 #'   (as used in bgid2fips or blockgroupstats)
 #' @return x with 2 new columns but side effect is it updates x in calling envt
 #' @examples
 #' # quick map of blockgroups in 1 state, shown as blockgroup centroids
 #' myst <- "NY"
-#' dat <- bgpts[fips2state_abbrev(substr(bgfips,1,2)) == myst, ]
+#' dat <- bgpts[fips2stateabbrev(substr(bgfips,1,2)) == myst, ]
 #' mapfast(dat, radius = 0.1)
 #'
 #' # same but popups have all the indicators from EJSCREEN
 #' myst <- "NY"
 #' dat <- copy(blockgroupstats[ST == myst, ])
 #' # add latlon cols by reference:
-#' latlon_join_on_bgid(dat)
+#' EJAM:::latlon_join_on_bgid(dat)
 #' # specify useful labels for the map popups
 #' mapfast(dat, radius = 0.1,
 #'         labels = fixcolnames(names(dat), 'r', 'shortlabel'))

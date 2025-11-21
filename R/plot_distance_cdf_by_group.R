@@ -4,7 +4,7 @@
 #' @description SLOW / needs to be optimized.
 #'   CDF Line Plots of cumulative share of each residential population group, within each distance
 #'
-#' @param results_bybg_people data.table from doaggregate()$results_bybg_people
+#' @param results_bybg_people table in [data.table](https://r-datatable.com) format from doaggregate()$results_bybg_people
 #' @param radius_miles miles radius that was max distance analyzed
 #' @param subgroups_type optional, can be set to "nh" or "alone".
 #'   Specifies types of race ethnicity subgroups to use for demogvarname
@@ -41,19 +41,15 @@
 #'  # plot cumulative share of group by distance vs overall population
 #'   distance_by_group_plot(y$results_bybg_people,
 #'      demogvarname = 'pctlowinc' )
-#'
-#'  # plot cum. shares for two groups
-#'  # about 14% of black and 12% of asian residents have a site within 1 mile.
-#'  # 29% vs 21% have a site within 1.5 miles.
-#'  round(xyz[findInterval(c(1, 1.5),  xyz$dist), ], 3)
-#'
+#'  \dontrun{
+#'  if (interactive()) {
 #'  # plot is too busy for all groups at once so this is a way to tap through them 1 by 1
 #'  these = c(names_d, names_d_subgroups)
 #'  for (i in 1:length(these)) {
 #'    readline("press any key to see the next plot")
 #'    print(distance_by_group_plot(y$results_bybg_people, demogvarname = these[i]) )
 #'  }
-#'
+#' }}
 #'
 #' @export
 #'

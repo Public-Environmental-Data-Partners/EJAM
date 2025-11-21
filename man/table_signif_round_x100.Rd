@@ -21,7 +21,7 @@ Does table_signif() and table_round() and fix_pctcols_x100() in one call.
 }
 \examples{
 out <- testoutput_ejamit_10pts_1miles$results_bysite
-table_signif_round_x100(
+EJAM:::table_signif_round_x100(
   out[1:2, ..names_these]
 )
 

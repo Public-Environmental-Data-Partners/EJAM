@@ -7,8 +7,7 @@
 #' @return vector where aliases are replaced with actual colnames and unmatched ones left as-is
 #' @seealso [fixnames_aliases()] [fixcolnames()] [varinfo()]
 #' @examples
-#'   fixmapheadernamescolname(c('long', 'csv', 'api', 'r'))
-#'
+#'   EJAM:::fixmapheadernamescolname(c('long', 'csv', 'api', 'r'))
 #'
 #' @keywords internal
 #'

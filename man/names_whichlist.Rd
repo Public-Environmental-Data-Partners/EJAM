@@ -41,7 +41,7 @@ namez$d_subgroups_state_pctile which is a vector of terms like
 "state.pctile.pcthisp", "state.pctile.pctnhba", etc.
 }
 \examples{
-   x <- names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
+   x <- EJAM:::names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
 
    subset(x,  grepl("all", x$whichlist))
    subset(x,  grepl("state_p", x$whichlist))

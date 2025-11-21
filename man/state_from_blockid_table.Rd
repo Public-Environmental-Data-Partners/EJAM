@@ -7,7 +7,7 @@
 state_from_blockid_table(dt_with_blockid)
 }
 \arguments{
-\item{dt_with_blockid}{(or any data.table with either blockid or bgid column)}
+\item{dt_with_blockid}{(or any table in \href{https://r-datatable.com}{data.table} format with either blockid or bgid column)}
 }
 \value{
 vector of ST info like AK, CA, DE, etc.
@@ -17,13 +17,13 @@ given data.table with blockid column, get state abbreviation of each (function m
 }
 \examples{
 x = sample(blockpoints$blockid, 3)
-state_from_blockid_table(blockpoints[blockid \%in\% x, ])[]
+EJAM:::state_from_blockid_table(blockpoints[blockid \%in\% x, ])[]
 mapfast(blockpoints[blockid \%in\% x, ])
 
-table(state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
-# unique(state_from_latlon(testpoints_10)$ST) # slow
+table(EJAM:::state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
+# unique(EJAM:::state_from_latlon(testpoints_10)$ST) # slow
 
-all.equal(state_from_blockid(x), state_from_blockid_table(blockpoints[blockid \%in\% x, ]))
+all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid \%in\% x, ]))
 
 }
 \keyword{internal}

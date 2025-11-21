@@ -22,7 +22,7 @@ doaggregate_newscores(
 \arguments{
 \item{sites2blocks}{output of \code{\link[=getblocksnearby]{getblocksnearby()}}, as for \code{\link[=doaggregate]{doaggregate()}}}
 
-\item{userstats}{like blockgroupstats but data.frame or data.table of all US
+\item{userstats}{like blockgroupstats but data.frame or \href{https://r-datatable.com}{data.table} of all US
 blockgroups and one or more columns of user provided raw indicator scores
 and any other variables needed for formulas to aggregate indicators
 across blockgroups in each site.}

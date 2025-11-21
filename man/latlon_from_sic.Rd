@@ -9,13 +9,13 @@ latlon_from_sic(sic, id_only = FALSE)
 }
 \arguments{
 \item{sic}{a vector of SIC codes, or
-a data.table with column named code, as with output of \code{\link[=sic_from_any]{sic_from_any()}}}
+a table in \href{https://r-datatable.com}{data.table} format with column named code, as with output of \code{\link[=sic_from_any]{sic_from_any()}}}
 
 \item{id_only}{logical optional, set TRUE to get only the vector of REGISTRY_ID
 values back instead of a data.frame with lat,lon,SIC columns too.}
 }
 \value{
-A data.table (not just data.frame) with columns called
+A table in \href{https://r-datatable.com}{data.table} format (not just data.frame) with columns called
 lat, lon, REGISTRY_ID, SIC (unless the id_only parameter is set to TRUE)
 }
 \description{
@@ -31,7 +31,7 @@ NOTE: many FRS sites lack SIC code!
 Also, this function does not find the sites
 identified by FRS data as being in a child SIC (subcategory of your exact query)!
 
-Relies on  frs_by_sic (a data.table)
+Relies on  \link{frs_by_sic}
 
 See info about SIC industry codes at \url{https://www.naics.com/search}
 }

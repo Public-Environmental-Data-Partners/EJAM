@@ -46,11 +46,11 @@ https://frs-public.epa.gov/ords/frs_public2/frs_rest_services.get_facilities?pgm
 https://frs-public.epa.gov/ords/frs_public2/frs_rest_services.get_facilities?registry_id=110010912496
 }
 \examples{
-url_by_id(testinput_regid)
+EJAM:::url_by_id(testinput_regid)
 \donttest{
-browseURL(url_by_id(testinput_regid)[1])
+browseURL(EJAM:::url_by_id(testinput_regid)[1])
 
-urlx = url_by_id(testinput_regid[1])
+urlx = EJAM:::url_by_id(testinput_regid[1])
 x = xml2::read_xml(urlx)
 x = xml2::as_list(x)
 cbind( unlist(x$Results$FRSFacility))

@@ -18,7 +18,7 @@ lat lon columns plus all of columns in shp. If TRUE, just returns
 lat lon columns.}
 }
 \value{
-data.table with columns named lat and lon,
+\href{https://r-datatable.com}{data.table} with columns named lat and lon,
 and optionally all from shp as well,
 as can be used as input to \code{\link[=ejamit]{ejamit()}}, \code{\link[=mapfast]{mapfast()}}, etc.
 }

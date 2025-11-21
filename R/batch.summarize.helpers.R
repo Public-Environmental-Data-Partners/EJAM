@@ -16,14 +16,15 @@
 #' @param na.rm default is TRUE. not tested for FALSE
 #' @return max of each row
 #' @seealso colMaxs2()
+#'
 #' @keywords internal
 #'
 rowMaxs2 <- function(df, na.rm = TRUE) {
 
   # had been doing this:
-  # mymax <- do.call(pmax, c(bg[,names.ej.pctile], na.rm = TRUE))
+  # mymax <- do.call(pmax, c(bg[,names_ej_pctile], na.rm = TRUE))
   # now can do this:
-  # mymax <- rowMaxs2(bg[,names.ej.pctile])
+  # mymax <- rowMaxs2(bg[,names_ej_pctile])
 
   if (is.matrix(df)) {df <- data.frame(df, stringsAsFactors = FALSE)}
   valid.cols <- sapply(df, function(x) { is.numeric(x) || is.logical(x) || is.character(x)})
@@ -58,8 +59,9 @@ rowMaxs2 <- function(df, na.rm = TRUE) {
 #'   stringsAsFactors = FALSE))
 #'
 #' df
-#' colMaxs2(df)
+#' EJAM:::colMaxs2(df)
 #' @seealso [colMins2()]
+#'
 #' @keywords internal
 #'
 colMaxs2 <- function(df, na.rm = TRUE) {
@@ -102,7 +104,7 @@ colMaxs2 <- function(df, na.rm = TRUE) {
 #'   stringsAsFactors = FALSE))
 #'
 #' df
-#' colMins2(df)
+#' EJAM:::colMins2(df)
 #'
 #' @keywords internal
 #'

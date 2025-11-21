@@ -7,10 +7,10 @@
 table_tall_from_overall(results_overall, longnames = NULL)
 }
 \arguments{
-\item{results_overall}{data.table of 1 row, from output of ejamit() or doaggregate()}
+\item{results_overall}{table in \href{https://r-datatable.com}{data.table} format of 1 row, from output of \code{ejamit()} or doaggregate()}
 
 \item{longnames}{vector of names of variables in results_overall,
-from output of ejamit() or doaggregate()}
+from output of \code{\link[=ejamit]{ejamit()}} or doaggregate()}
 }
 \value{
 data.frame with one indicator per row
@@ -19,8 +19,8 @@ data.frame with one indicator per row
 Take a quick look at results in the RStudio console
 }
 \examples{
- table_tall_from_overall(testoutput_ejamit_10pts_1miles$results_overall)
- table_tall_from_overall(x$results_bysite[1, ])
+ EJAM:::table_tall_from_overall(testoutput_ejamit_10pts_1miles$results_overall)
+ EJAM:::table_tall_from_overall(testoutput_ejamit_10pts_1miles$results_bysite[1, ])
 
 }
 \keyword{internal}

@@ -7,7 +7,7 @@
 table_round(x, var = names(x), varnametype = "rname", ...)
 }
 \arguments{
-\item{x}{data.frame, data.table, or vector with at least some numerical columns, like the results
+\item{x}{data.frame, table in \href{https://r-datatable.com}{data.table} format, or vector with at least some numerical columns, like the results
 of ejamit()$results_bysite}
 
 \item{var}{optional, but assumed to be names(x) by default, specifies colnames of table
@@ -28,17 +28,16 @@ Percentages stored as 0 to 1 rather than 0 to 100 will not be shown correctly un
 because rounding info says 0 digits when the intent is to show 0 digits after the 0-100 percent number.
 }
 \examples{
- 
-  table_round(c(12.123456, 9, NA ), 'pm')
+  EJAM:::table_round(c(12.123456, 9, NA ), 'pm')
 
  x <- testoutput_ejamit_10pts_1miles$results_bysite[
-   1:2, c('lat','lon', 'pop', names_these, names_these_ratio_to_avg, names_e_pctile), 
+   1:2, c('lat','lon', 'pop', names_these, names_these_ratio_to_avg, names_e_pctile),
    with = FALSE
  ]
 
- table_rounding_info(names(x))
+ EJAM:::table_rounding_info(names(x))
 
- table_round(x)
+ EJAM:::table_round(x)
 
 }
 \seealso{

@@ -7,7 +7,7 @@
 table_gt_format_step1(ejamit_results_1row = NULL, type = "demog")
 }
 \arguments{
-\item{ejamit_results_1row}{data.table (or data.frame) like testoutput_ejamit_100pts_1miles$results_overall
+\item{ejamit_results_1row}{table in \href{https://r-datatable.com}{data.table} format (or data.frame) like testoutput_ejamit_100pts_1miles$results_overall
 from something like ejamit(testpoints_100, radius = 1)$results_overall}
 
 \item{type}{demog or envt to specify which type of table}

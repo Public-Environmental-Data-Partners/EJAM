@@ -1,10 +1,10 @@
 
 
-#' Map popups - Simple map popup from a data.table or data.frame, one point per row
-#' @description Creates popup vector leaflet::addCircles or leaflet::addPopups can use.
+#' Map popups - Simple map popup from a table in [data.table](https://r-datatable.com) format or data.frame, one point per row
+#' @description Creates popup vector [leaflet::addCircles()] or [leaflet::addPopups()] can use.
 #' @details Each popup is made from one row of the data.frame.
 #'   Each popup has one row of text per column of the data.frame
-#' @param x, a data table or data frame
+#' @param x, a table in [data.table](https://r-datatable.com) format table or data frame
 #' @param n Show the first n columns of mypoints, in popup. "all" means all of them.
 #' @param column_names default is all, or a vector of column names from x to use.
 #'   If some of column_names requested are not found in names(x),
@@ -16,7 +16,7 @@
 #' @return A vector of strings, one per row or map point,
 #'   with a line break separating column elements
 #' @examples
-#'  dat <- data.table(
+#'  dat <- data.table::data.table(
 #'    RegistryId = c("110071102551", "110015787683"),
 #'    FacilityName = c("USDOI FWS AK MARITIME NWR etc", "ADAK POWER PLANT"),
 #'    LocationAddress = c("65 MI W. OF ADAK NAVAL FACILITY", "100 HILLSIDE BLVD"),
@@ -35,7 +35,7 @@
 #'  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 #'
 #'  ## convert to data frame, works the same way
-#'  dat_df <- as.data.frame(dat_df)
+#'  dat_df <- as.data.frame(dat)
 #'  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 #'
 #' @export

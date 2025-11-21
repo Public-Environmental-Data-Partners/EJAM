@@ -10,7 +10,7 @@ latlon_from_program(query)
 \item{query}{like "RMP", "RCRAINFO", "TRIS", "RMP", or others.}
 }
 \value{
-data.table with lat  lon  REGISTRY_ID  program -- but not pgm_sys_id
+table in \href{https://r-datatable.com}{data.table} format with lat  lon  REGISTRY_ID  program -- but not pgm_sys_id
 since there could be duplicates where same REGISTRY_ID has 2 different pgm_sys_id values
 in the same program, so results were sometimes longer than if using \code{\link[=frs_from_program]{frs_from_program()}}
 }

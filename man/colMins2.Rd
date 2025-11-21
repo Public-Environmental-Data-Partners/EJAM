@@ -30,7 +30,7 @@ df <- rbind(NA, data.frame(
   stringsAsFactors = FALSE))
 
 df
-colMins2(df)
+EJAM:::colMins2(df)
 
 }
 \seealso{

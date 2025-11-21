@@ -63,7 +63,7 @@ testfipslist <- list(
 testfipslist = lapply(testfipslist, function(z) {attributes(z) <- NULL; z}) # drop distracting metadata
 
 x  = sapply(testfipslist, function(v) sapply(v, fips_bgs_in_fips ))
-x1 = sapply(testfipslist, function(v) sapply(v, fips_bgs_in_fips1))
+x1 = sapply(testfipslist, function(v) sapply(v, EJAM:::fips_bgs_in_fips1))
 all.equal(x, x1)
 x['tract']
 x['county']

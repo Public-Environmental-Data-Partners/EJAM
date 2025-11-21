@@ -36,8 +36,8 @@ ejam2report(
 )
 }
 \arguments{
-\item{ejamitout}{output as from \code{\link[=ejamit]{ejamit()}}, list with a data.table called \code{results_bysite}
-if sitenumber parameter is used, or a data.table called \code{results_overall} otherwise}
+\item{ejamitout}{output as from \code{\link[=ejamit]{ejamit()}}, list with a table in \href{https://r-datatable.com}{data.table} format called \code{results_bysite}
+if sitenumber parameter is used, or a table in \href{https://r-datatable.com}{data.table} format called \code{results_overall} otherwise}
 
 \item{sitenumber}{If a number is provided, the report is about
 \code{ejamitout$results_bysite[sitenumber, ]} and if no number is provided (param is NULL or "")
@@ -103,11 +103,11 @@ You can customize the report somewhat by using parameters like extratable_list_o
 out <- testoutput_ejamit_10pts_1miles
 
 ejam2report(out)
-table_gt_from_ejamit_overall(out$results_overall)
-table_tall_from_overall(out$results_overall)
-
-x <- ejam2report(out, sitenumber = 1)
-table_gt_from_ejamit_1site(out$results_bysite[1, ])
-browseURL(x)
+ejam2table_tall(out$results_overall)
+if (interactive()) {
+ x <- ejam2report(out, sitenumber = 1, launch_browser = T)
+ table_gt_from_ejamit_overall(out$results_overall)
+ table_gt_from_ejamit_1site(out$results_bysite[1, ])
+}
 
 }

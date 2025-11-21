@@ -461,7 +461,7 @@ if (!quiet) {
 #'   like fips_counties_from_state_abbrev("DE")
 #' @seealso [getblocksnearby_from_fips()]
 #' @return provides table similar to the output of getblocksnearby(),
-#'   data.table with one row per blockgroup in these counties, or
+#'   [data.table](https://r-datatable.com) with one row per blockgroup in these counties, or
 #'   all pairs of county fips - bgid, and ejam_uniq_id (1 through N) assigned to each county
 #'   but missing blockid and distance so not ready for doaggregate().
 #' @examples
@@ -483,7 +483,7 @@ if (!quiet) {
 #'  myfips = topcounties$FIPS
 #'
 #'  # simplest map of top counties
-#'  map_shapes_leaflet(shapes = shapes_counties_from_countyfips(myfips))
+#'  map_shapes_leaflet(shapes = EJAM:::shapes_counties_from_countyfips(myfips))
 #'
 #'  # simplest way to get and map results county by county
 #'  out_c1 = ejamit(fips = myfips)
@@ -529,10 +529,10 @@ counties_as_sites <- function(fips) {
 #' @param fips State FIPS vector, like c("01", "02") or
 #'   fips_state_from_state_abbrev(c("DE", "RI"))
 #'
-#' @return provides table similar to the output of getblocksnearby(),
-#'   data.table with one row per blockgroup in these states, or
+#' @return provides table similar to the output of [getblocksnearby()],
+#'   [data.table](https://r-datatable.com) with one row per blockgroup in these states, or
 #'   all pairs of states fips - bgid, and ejam_uniq_id (1 through N) assigned to each state
-#'   but missing blockid and distance so not ready for doaggregate().
+#'   but missing blockid and distance so not ready for [doaggregate()].
 #' @examples
 #'   s2b <- states_as_sites(fips_state_from_state_abbrev(c("DE", "RI")))
 #'
@@ -598,7 +598,7 @@ is.island <- function(ST=NULL, statename=NULL, fips=NULL) {
     )
   }
   if (!is.null(fips)) {
-    fips <- fips2state_fips(fips)
+    fips <- fips2statefips(fips)
     return(
       stateinfo2$is.island.areas[match(fips, stateinfo2$FIPS.ST)]
     )
@@ -641,6 +641,7 @@ is.island <- function(ST=NULL, statename=NULL, fips=NULL) {
 #' name2fips(c("delaware", "NY"))
 #' name2fips(c("Magnolia town, DE", "Delaware City city, DE"))
 #' name2fips(c('denver',  "new york" ), exact = F)
+#' name2fips('denver,co')
 #'
 #' @export
 #'
@@ -682,7 +683,7 @@ name2fips = function(x, exact = FALSE, usegrep = FALSE, geocoding = FALSE, detai
   }
 
   # pname = pre_comma(x)
-  # ST = fips2state_abbrev(fips_state_from_statename( post_comma(x)))
+  # ST = fips2stateabbrev(fips_state_from_statename( post_comma(x)))
   #
   # if (any(toupper(ST) %in% c("AS", "GU","MP", "UM", "VI"))) {
   #   message("note some of ST are among AS, GU, MP, UM, VI")
@@ -690,7 +691,7 @@ name2fips = function(x, exact = FALSE, usegrep = FALSE, geocoding = FALSE, detai
   # if (any(substr(fips,1,2) %in% c("60" "66" "69" "74" "78"))) {
   #
   # }
-  if (details) {
+  if (details & (!all(is.na(fips)))) {
     return(allinfo)
   } else {
     return(fips)
@@ -722,7 +723,7 @@ fips_from_name = function(...) {
 #'
 #' Just read the codes in one column of a table obtained from something like read.csv, or excel, etc.
 #'
-#' @param fips_table data.frame or data.table of FIPS codes for counties, states, or tracts,
+#' @param fips_table data.frame or [data.table](https://r-datatable.com) of FIPS codes for counties, states, or tracts,
 #'   for example, in a column whose name can be interpreted as FIPS
 #'   (is one of the aliases like fips, countyfips, etc.)
 #'   Aliases are: c("FIPS", "fips", "fips_code", "fipscode", "Fips", "statefips",
@@ -786,7 +787,7 @@ fips_place2placename = function(fips, append_st = TRUE) {
   })
   if (append_st) {
     suppressWarnings({
-      st <- fips2state_abbrev(fips)
+      st <- fips2stateabbrev(fips)
     })
     place_st =  paste0(place_nost, ", ", st)
     place_st[is.na(place_nost) | is.na(st)] <- NA
@@ -868,7 +869,7 @@ fips_place_from_placename = function(place_st, geocoding = FALSE, exact = FALSE,
 
   ### for exact=F, could recode to query name using grep within given ST, separately?
   # pname = pre_comma(place_st)
-  # st = fips2state_abbrev(fips_state_from_statename( post_comma(place_st)))
+  # st = fips2stateabbrev(fips_state_from_statename( post_comma(place_st)))
 
   ######################################################################################## #
   # words to ignore like "city" ####
@@ -932,7 +933,7 @@ fips_place_from_placename = function(place_st, geocoding = FALSE, exact = FALSE,
   ######################################################################################## #
 
   if (geocoding) {
-    if (!exists("geocoding")) {
+    if (!exists("geocode")) {
       warning("Need to load the AOI package for geocoding to work. Using geocoding=FALSE instead, here.")
     } else {
       # geocoding fails sometimes when CDP is part of the name (but it is unlikely query would use that here)
@@ -1235,7 +1236,7 @@ fips_state_from_state_abbrev <- function(ST) {
 #
 # suppressWarnings({
 #   statefips = fips_state_from_statename(statetext)
-#   ST = fips2state_abbrev(statefips)
+#   ST = fips2stateabbrev(statefips)
 # })
 # statetext[!is.na(ST)] <- ST[!is.na(ST)]
 # method2 = statetext
@@ -1258,6 +1259,7 @@ fips_state_from_state_abbrev <- function(ST) {
 #' @examples
 #'   fips_state_from_statename("Delaware")
 #'   fips_state_from_statename(c("dc", 'district of columbia', 'georgia'))
+#'
 #' @export
 #'
 fips_state_from_statename <- function(statename) {
@@ -1287,7 +1289,7 @@ fips_state_from_statename <- function(statename) {
 #' @examples
 #'   fips_states_in_eparegion(2)
 #'   fips_states_in_eparegion(6)
-#'   fips2state_abbrev(fips_states_in_eparegion(6))
+#'   fips2stateabbrev(fips_states_in_eparegion(6))
 #' @export
 #'
 fips_states_in_eparegion <- function(region) {
@@ -1347,7 +1349,7 @@ fips_counties_from_statefips <- function(statefips) {
 #'
 #' @examples
 #'   fips_counties_from_state_abbrev("DE")
-#'   fips_counties_from_state_abbrev("RI", "RI")
+#'   fips_counties_from_state_abbrev(c("RI", "RI"))
 #'
 #' @export
 #'
@@ -1559,9 +1561,9 @@ fips_counties_from_countynamefull <- function(fullname, exact = TRUE) {
 
 # fips2pop() and f2p() helper
 
-# fips_st2eparegion()
+# fips_st2eparegion() aka fips2stateabbrev()
 # fips2state_abbrev()
-# fips2state_fips()
+# fips2state_fips() aka fips2statefips()
 # fips2statename()
 # fips2countyname()
 # fips2name()
@@ -1659,7 +1661,7 @@ f2p = function(fips, onetype) {
 #'   testinput_fips_cities[1], testinput_fips_counties[1],
 #'   testinput_fips_states[2])
 #' data.frame(fips, sitename = fips2name(fips),
-#'   stfips = fips2state_fips(fips),
+#'   stfips = fips2statefips(fips),
 #'   state = fips2statename(fips))
 #'
 #' @export
@@ -1707,7 +1709,7 @@ fips_st2eparegion <- function(stfips) {
 #'   testinput_fips_states[2])
 #' data.frame(mixfips,
 #'   sitename = fips2name(mixfips),
-#'   stfips = fips2state_fips(mixfips),
+#'   stfips = fips2statefips(mixfips),
 #'   state = fips2statename(mixfips))
 #'
 #' @export
@@ -1828,10 +1830,10 @@ fips2statename <- function(fips) {
 #'   - FIRST 5 LETTERS OF FIPS ARE NOT THE UNIQUE "COUNTY" CODE IN Northern Mariana Islands
 #' @examples
 #' cbind(
-#'   fips = fipsmix,
-#'   type = fipstype(fipsmix),
-#'   cfips = fips2countyfips(fipsmix),
-#'   countyname = fips2countyname(fipsmix)
+#'   fips = testinput_fips_mix,
+#'   type = fipstype(testinput_fips_mix),
+#'   cfips = fips2countyfips(testinput_fips_mix),
+#'   countyname = fips2countyname(testinput_fips_mix)
 #' )
 #'
 #' cfips = fips_counties_from_state_abbrev("RI")
@@ -1863,7 +1865,7 @@ fips2countyname <- function(fips, includestate = c("ST", "Statename", "")[1]) {
 
   if (isTRUE(includestate)) {includestate <- "Statename"}
   if (includestate == "Statename") {addon <- fips2statename(cfips)} else {
-    if (includestate == "ST") {addon <- fips2state_abbrev(cfips)} else {
+    if (includestate == "ST") {addon <- fips2stateabbrev(cfips)} else {
       addon <- ""
     }
   }
@@ -1959,8 +1961,8 @@ fips2tractname <- function(fips, ftype = 'tract', prefix = "tract ") {
 #'             testinput_fips_states[2])
 #' data.frame(mixfips,
 #'            sitename = fips2name(mixfips),
-#'            stfips = fips2state_fips(mixfips),
-#'            ST = fips2state_abbrev(mixfips),
+#'            stfips = EJAM:::fips2statefips(mixfips),
+#'            ST = fips2stateabbrev(mixfips),
 #'            state = fips2statename(mixfips) )
 #'
 #' name2fips("Alaska")
@@ -2082,7 +2084,7 @@ place_statename2place_st = function(fullname) {
   # ST   <-   statename2st(statetext)
   suppressWarnings({
     statefips = fips_state_from_statename(statetext)
-    ST = fips2state_abbrev(statefips)
+    ST = fips2stateabbrev(statefips)
   })
   statetext[!is.na(ST)] <- ST[!is.na(ST)]
 
@@ -2127,7 +2129,7 @@ statename2st = function(statename) {
 #' @return returns vector of state names as long as ST vector,
 #'   with NA for elements that are neither statename nor ST
 #' @examples
-#' st2statename(c("TX", 'dc', "Illinois"))
+#' EJAM:::st2statename(c("TX", 'dc', "Illinois"))
 #'
 #' @keywords internal
 #'

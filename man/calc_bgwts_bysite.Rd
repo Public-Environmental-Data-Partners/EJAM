@@ -11,7 +11,7 @@ calc_bgwts_bysite(sites2blocks)
 or input to \code{\link[=doaggregate]{doaggregate()}} or \code{\link[=custom_doaggregate]{custom_doaggregate()}}}
 }
 \value{
-data.table, 1 row per site-bg pair.
+\href{https://r-datatable.com}{data.table}, 1 row per site-bg pair.
 May have same bgid or bgfips in 2,3, more rows
 since it is here once per site that the bg is near.
 It is like a sites2blockgroups table.

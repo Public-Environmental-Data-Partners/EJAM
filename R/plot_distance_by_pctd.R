@@ -51,7 +51,7 @@
 #'
 #'  # Example of area that has higher %Hispanic as you go
 #'  # 10 to 30 miles away from this specific point
-#'  pts = data.table(lat = 45.75464, lon = -94.36791)
+#'  pts = data.table::data.table(lat = 45.75464, lon = -94.36791)
 #'  plot_distance_by_pctd(pts,
 #'    sitenumber = 1, score_colname = "pcthisp")
 #'  # browseURL(url_ejamapi(sitepoints = pts, radius = 10))

@@ -6,11 +6,11 @@
 #' @seealso [table_signif_round_x100()] [table_signif()] [table_round()] [table_x100()]
 #' @return named vector same size as var, with var as names.
 #' @examples
-#'   table_rounding_info("pm")
-#'   table_round(8.252345, "pm")
-#'   table_round(8, "pm")
+#'   EJAM:::table_rounding_info("pm")
+#'   EJAM:::table_round(8.252345, "pm")
+#'   EJAM:::table_round(8, "pm")
 #'
-#'   cbind(table_rounding_info(names_all_r), fixcolnames(names_all_r, "r", "long"))
+#'   cbind(EJAM:::table_rounding_info(names_all_r), fixcolnames(names_all_r, "r", "long"))
 #'
 #' @keywords internal
 #'

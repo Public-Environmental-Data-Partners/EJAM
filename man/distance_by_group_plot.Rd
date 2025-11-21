@@ -103,19 +103,15 @@ The function distance_cdf_by_group_plot is SLOW - ***needs to be optimized
  # plot cumulative share of group by distance vs overall population
   distance_by_group_plot(y$results_bybg_people,
      demogvarname = 'pctlowinc' )
-
- # plot cum. shares for two groups
- # about 14\% of black and 12\% of asian residents have a site within 1 mile.
- # 29\% vs 21\% have a site within 1.5 miles.
- round(xyz[findInterval(c(1, 1.5),  xyz$dist), ], 3)
-
+ \dontrun{
+ if (interactive()) {
  # plot is too busy for all groups at once so this is a way to tap through them 1 by 1
  these = c(names_d, names_d_subgroups)
  for (i in 1:length(these)) {
    readline("press any key to see the next plot")
    print(distance_by_group_plot(y$results_bybg_people, demogvarname = these[i]) )
  }
-
+}}
 
 }
 \seealso{

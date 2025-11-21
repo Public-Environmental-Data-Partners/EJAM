@@ -44,8 +44,8 @@ mixfips = c(testinput_fips_blockgroups[1], testinput_fips_tracts[1],
             testinput_fips_states[2])
 data.frame(mixfips,
            sitename = fips2name(mixfips),
-           stfips = fips2state_fips(mixfips),
-           ST = fips2state_abbrev(mixfips),
+           stfips = EJAM:::fips2statefips(mixfips),
+           ST = fips2stateabbrev(mixfips),
            state = fips2statename(mixfips) )
 
 name2fips("Alaska")

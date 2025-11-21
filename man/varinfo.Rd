@@ -66,6 +66,7 @@ and the various related data objects like map_headernames and namez
 }
 \examples{
 varinfo("traffic.score", "decimals")
+\dontrun{
 varinfo(names_d, "long")
 myvars <- c(names_d, names_d_subgroups, names_e)
 myinfo <- "percentage"
@@ -73,7 +74,7 @@ cbind(  is.a.percentage = varinfo(myvars, myinfo) )
 cbind(varinfo(names_all_r, "pctile."))
 myinfo <- "long"
 cbind(varinfo(myvars, myinfo) )
-table_rounding_info(names_e)
+EJAM:::table_rounding_info(names_e)
 
 varinfo(
  var = c(names_these, names_d_pctile),
@@ -81,19 +82,20 @@ varinfo(
  "topic_root_term", "varcategory", "vartype", "percentage", "pctile.", "calculation_type"
 ))
 
-varinfo(names_all_r, c("varcategory", "varlist", "in_api", "in_bgcsv"))
+varinfo(names_all_r, c("varcategory", "varlist", "in_api", "in_csv"))
 
 cbind(
-  namez$d, 
-  names_d, 
-  varinfo(names_d, "varlist"), 
-  usavg = unlist(avg.in.us[names_d]), 
-  usavg_varname = EJAM:::fixcolnames2related(names_d, "usavg"), 
+  namez$d,
+  names_d,
+  varinfo(names_d, "varlist"),
+  usavg = unlist(avg.in.us[names_d]),
+  usavg_varname = EJAM:::fixcolnames2related(names_d, "usavg"),
   categ = varname2varcategory_ejam(names_d)
 )
 
 names(map_headernames)
 t(varinfo(names_d[1]))
+}
 
 }
 \seealso{

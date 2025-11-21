@@ -47,7 +47,7 @@ a quick way to plot a calculated variable at each site, which ejam2barplot_sites
 }
 \examples{
 # Quickly compare top few sites by population count nearby
-out <- copy(testoutput_ejamit_10pts_1miles)
+out <- data.table::copy(testoutput_ejamit_10pts_1miles)
 ejam2barplot_sites(out, "pop")
 
 # Show all 10,
@@ -58,7 +58,7 @@ ejam2barplot_sites(out, "blockcount_near_site", topn = 10,
   sortby = -1 * out$results_bysite$ejam_uniq_id)
 
 # Plot a calculated variable
-sites <- copy(out$results_bysite)
+sites <- data.table::copy(out$results_bysite)
 sites$log_traffic = log10(sites$traffic.score)
 plot_barplot_sites(sites, "log_traffic", ylab = "Traffic Score (log10 scale)", topn = 10)
 

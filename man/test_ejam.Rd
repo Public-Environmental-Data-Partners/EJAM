@@ -63,7 +63,7 @@ see source code for list}
 \item{mydir}{optional folder}
 }
 \value{
-a named list of objects like data.tables, e.g., named
+a named list of objects with tables in \href{https://r-datatable.com}{data.table} format, e.g., named
 'bytest', 'byfile', 'bygroup', 'params', 'passcount' and other summary stats, etc.
 }
 \description{

@@ -7,7 +7,7 @@
 fips_from_table(fips_table, addleadzeroes = TRUE, in_shiny = FALSE)
 }
 \arguments{
-\item{fips_table}{data.frame or data.table of FIPS codes for counties, states, or tracts,
+\item{fips_table}{data.frame or \href{https://r-datatable.com}{data.table} of FIPS codes for counties, states, or tracts,
 for example, in a column whose name can be interpreted as FIPS
 (is one of the aliases like fips, countyfips, etc.)
 Aliases are: c("FIPS", "fips", "fips_code", "fipscode", "Fips", "statefips",

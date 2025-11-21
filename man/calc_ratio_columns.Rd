@@ -15,7 +15,7 @@ calc_ratio_columns(
 )
 }
 \arguments{
-\item{mytable}{data.table with 1 row per place, 1 column per raw data indicator values}
+\item{mytable}{table in \href{https://r-datatable.com}{data.table} format with 1 row per place, 1 column per raw data indicator values}
 
 \item{varnames}{column names of mytable that contain the raw indicator values (numerators of ratios)}
 

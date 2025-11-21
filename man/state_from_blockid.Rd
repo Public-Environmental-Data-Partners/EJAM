@@ -19,10 +19,10 @@ unused. Not needed if you have sites2blocks table that includes a bgid column
 }
 \examples{
 x = sample(blockpoints$blockid, 3)
-state_from_blockid(x)[]
+EJAM:::state_from_blockid(x)[]
 mapfast(blockpoints[blockid \%in\% x, ])
 
-all.equal(state_from_blockid(x), state_from_blockid_table(blockpoints[blockid \%in\% x, ]))
+all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid \%in\% x, ]))
 
 }
 \seealso{

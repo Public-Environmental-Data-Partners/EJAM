@@ -17,16 +17,6 @@
 #' @param radius_buffer optional but can be obtained from out
 #' @param circle_color optional
 #' @param launch_browser set TRUE to have it launch browser to show map.
-#' @examples
-#' \dontrun{
-#' shp1 <- shapefile_from_any(file.path(
-#'   testdatafolder(), "shapes/portland_shp.zip"))
-#' ejam2map(ejamit(shapefile = shp1), shp = shp1)
-#' shp2 <- testshapes_2
-#' ejam2map(ejamit(shapefile = shp2), shp = shp2)
-#' ejam2map(ejamit(shapefile = shp2), shp = shp2)
-#'
-#' }
 #'
 #' @returns map html widget
 #'
@@ -223,7 +213,7 @@ map_facilities_proxy <- function(mymap, rad = 3, highlight = FALSE, clustered = 
 #'
 #'   ST = "ME"  or  ST = c("de", "RI"), or
 #'
-#'   \code{ST = fips2state_abbrev(fips_state_from_statename(c("Rhode Island", "district of columbia")))}
+#'   \code{ST = fips2stateabbrev(fips_state_from_statename(c("Rhode Island", "district of columbia")))}
 #'
 #'   or e.g., all counties in EPA Region 1:
 #'

@@ -72,7 +72,7 @@ fixnames_aliases("LATITUDE")
 fixnames_aliases("LATITUDE", ignore.case = F)
 fixnames_aliases("LATITUDE", na_if_no_match = T)
 fixnames_aliases("LATITUDE", na_if_no_match = T, ignore.case = F)
-fixnames_aliases(c(NA, 1, "typo", 1:2, list()))
+fixnames_aliases(c(NA, 1, "typo", 1:2))
 
 fixnames_aliases(c(1:4, "na", "tbd"),
   alias_list = list(upto1 = 0:1, company = 2, crowd = 3:10, other = c("na", "tbd")))

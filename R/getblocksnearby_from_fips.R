@@ -8,19 +8,21 @@
 #'    one will be getting stats on one or more tracts,
 #'   or analyzing and comparing blockgroups in a county,
 #'   or comparing whole counties to each other, within a State.
-#' @param in_shiny used by shiny app server code to handle errors via validate() instead of stop()
+#' @param in_shiny used by shiny app server code to handle errors via [shiny::validate()] instead of [stop()]
 #' @param need_blockwt set to FALSE to speed it up if you do not need blockwt
-#' @param return_shp set to TRUE to get a named list, pts and polys, that are sites2blocks table and spatial data.frame,
-#'   or FALSE to get the pts data.table much like output of [getblocksnearby()] or  [get_blockpoints_in_shape()]
+#' @param return_shp set to TRUE to get a named list, pts and polys, that are
+#'   a sites2blocks table in [data.table](https://r-datatable.com) format and a spatial data.frame, respectively,
+#'   or FALSE to get the pts table in [data.table](https://r-datatable.com) format
+#'   much like output of [getblocksnearby()] or  [get_blockpoints_in_shape()]
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #'
 #' @param radius CURRENTLY NOT IMPLEMENTED - NO BUFFER IS ADDED
 #'
 #' @return
-#' - if return_shp=F, returns just a sites2blocks data.table with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
+#' - if return_shp=F, returns just a sites2blocks table in [data.table](https://r-datatable.com) format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
 #'  This is like the [getblocksnearby()] and [get_blockpoints_in_shape()] outputs.
 #'
-#' - if return_shp=T, returns a named list where pts is the data.table of sites2blocks,
+#' - if return_shp=T, returns a named list where pts is the table in [data.table](https://r-datatable.com) format of sites2blocks,
 #'   and polys is the spatial data.frame with one row per input fips (including invalid ones).
 #'
 #'   The ejam_uniq_id represents which of the input sites is being referred to, and the table

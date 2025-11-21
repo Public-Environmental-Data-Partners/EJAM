@@ -39,7 +39,7 @@ utility - How many blocks and many other stats about blocks and sites
  zz <- getblocks_diagnostics(z, detailed = T, see_pctiles = T)
 cbind(stats = zz)
 
-  getblocks_diagostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
+  getblocks_diagnostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
 
 }
 \seealso{

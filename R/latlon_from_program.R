@@ -22,7 +22,7 @@
 #'
 #' @param query like "RMP", "RCRAINFO", "TRIS", "RMP", or others.
 #'
-#' @return data.table with lat  lon  REGISTRY_ID  program -- but not pgm_sys_id
+#' @return table in [data.table](https://r-datatable.com) format with lat  lon  REGISTRY_ID  program -- but not pgm_sys_id
 #'   since there could be duplicates where same REGISTRY_ID has 2 different pgm_sys_id values
 #'   in the same program, so results were sometimes longer than if using [frs_from_program()]
 #' @examples \donttest{

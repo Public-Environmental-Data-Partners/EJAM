@@ -11,7 +11,7 @@ state_from_s2b_bysite(sites2blocks)
 from \code{\link[=getblocksnearby]{getblocksnearby()}} that has columns ejam_uniq_id and blockid and distance}
 }
 \value{
-data.table with columns  ejam_uniq_id, ST
+table in \href{https://r-datatable.com}{data.table} format with columns  ejam_uniq_id, ST
 }
 \description{
 Find the 2-character State abbreviation (ST), but only for sites entirely in 1 state.
@@ -56,21 +56,21 @@ NROW(testoutput_getblocksnearby_10pts_1miles)
 \examples{
 \donttest{
 # unexported function, so use load_all() or :::
-table(state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
-state_from_s2b_bysite(testoutput_getblocksnearby_10pts_1miles)[]
-
+table(EJAM:::state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
+EJAM:::state_from_s2b_bysite(testoutput_getblocksnearby_10pts_1miles)[]
+ pts = testpoints_10
   x = getblocksnearby(pts, radius = 30)
-  y = state_from_s2b_bysite(x)
+  y = EJAM:::state_from_s2b_bysite(x)
   table(y$in_how_many_states)
   y
 
-  fname = './inst/testdata/testpoints_207_sites_with_signif_violations_NAICS_326_ECHO.csv'
-  x = state_from_s2b_bysite(
+  fname = testdata("testpoints_100_sites_", quiet = T)
+  x = EJAM:::state_from_s2b_bysite(
     getblocksnearby( latlon_from_anything(fname), quadtree = localtree))
   y = read_csv_or_xl(fname)
   x$ST == y$FacState
   }
-  state_from_s2b_bysite(testoutput_getblocksnearby_10pts_1miles)
+  EJAM:::state_from_s2b_bysite(testoutput_getblocksnearby_10pts_1miles)
 
 }
 \seealso{
