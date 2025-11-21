@@ -29,7 +29,6 @@ used by varinfo() and fixcolnames()
 \examples{
   EJAM:::fixmapheadernamescolname(c('long', 'csv', 'api', 'r'))
 
-
 }
 \seealso{
 \code{\link[=fixnames_aliases]{fixnames_aliases()}} \code{\link[=fixcolnames]{fixcolnames()}} \code{\link[=varinfo]{varinfo()}}
