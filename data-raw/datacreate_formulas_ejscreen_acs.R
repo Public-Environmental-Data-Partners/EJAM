@@ -615,7 +615,6 @@ formulas_ejscreen_acs_newrows = data.frame(
 formulas_ejscreen_acs_newrows$longname <- fixcolnames(formulas_ejscreen_acs_newrows$rname, 'rname', 'long')
 
 formulas_ejscreen_acs <- rbind(formulas_ejscreen_acs, formulas_ejscreen_acs_newrows)
-rm
 ######################################## #
 # fill in 61 longname where had not been available
 
