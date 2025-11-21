@@ -61,7 +61,7 @@ test_that("still same exact results_overall as previously saved", {
 # doaggregate() aggregation over 3 complete bgs at the 1 site
 
 #   Do numbers look right in results_bysite, etc.?
-# had done replication via comparison to ejscreenapi outputs and to prior results
+# had done replication via comparison to ejscreen epa api outputs and to prior results
 
 # replicate = function() {
 
@@ -147,6 +147,7 @@ forpctilecols = gsub("pctile.", "", uspctilecols)
 test_that("replicate percentiles US", {
 
   suppressWarnings({
+    # and see calc_pctile_columns()
     x_calculated_here = as.vector(pctile_from_raw_lookup(bysite[,..forpctilecols],
                                                          varname.in.lookup.table = forpctilecols))
   })
@@ -169,6 +170,7 @@ test_that("replicate percentiles STATE", {
   # bysite = doaggregate(s2b)$results_bysite
 
   suppressWarnings({
+    # and see calc_pctile_columns()
     x_calculated_here = as.vector(pctile_from_raw_lookup(bysite[, ..forpctilecols], # this would use Demog.Index, Demog.Index.Supp, but need .State after those here
                                                          varname.in.lookup.table = forpctilecols, # ok
                                                          lookup = statestats,
@@ -177,6 +179,7 @@ test_that("replicate percentiles STATE", {
     # account for pctile.Demog.Index      since it does not use Demog.Index      as basis, but needs Demog.Index.State
     # account for pctile.Demog.Index.Supp since it does not use Demog.Index.Supp as basis, but needs Demog.Index.Supp.State
     forpctilecols_fixed = gsub("(Demog.Index.*)", "\\1.State", forpctilecols)
+    # and see calc_pctile_columns()
     x_calculated_here_fixed = as.vector(pctile_from_raw_lookup(bysite[, ..forpctilecols_fixed],  # fixed
                                                                varname.in.lookup.table = forpctilecols,
                                                                lookup = statestats,

@@ -65,7 +65,7 @@ at least (R) times the (State/National average)
 # out <- ejamit(testpoints_100, radius = 1)
 out <- testoutput_ejamit_1000pts_1miles
 x <- out$results_bysite
-x <- setDF(copy(x))
+x <- data.table::setDF(data.table::copy(x))
 ratio_data <- x[, names_d_ratio_to_state_avg]
 ratio_benchmarks <- c(2, 3, 5, 10)
 
@@ -94,7 +94,7 @@ y <- count_sites_with_n_high_scores(pctile_data, pctile_benchmarks,
   )
 
 # At how many sites is at least one of these indicators at least 90th pctile nationwide?
-sum(rowMaxs2(data.frame(pctile_data)) >= 90, na.rm = T)
+sum(EJAM:::rowMaxs2(data.frame(pctile_data)) >= 90, na.rm = T)
 ## or
 count_sites_with_n_high_scores(pctile_data, 90,
   xwide = "nationwide", quiet = T)$stats[count = "1", cut = "90", stat = "cum"]

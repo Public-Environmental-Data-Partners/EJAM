@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -58,6 +59,47 @@
       <small>Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.32.6.003" id="ejam-2326003-november-2025">EJAM 2.32.6.003 (November 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326003-november-2025"></a></h2>
+<ul><li>
+<p>Bug fixes:</p>
+<ul><li>Fixed bug where States could not be analyzed in the web app.</li>
+<li>Fixed bug where size of circular buffer at each point on map in a report did not reflect actual radius.</li>
+<li>Fixed limitation affecting API where a request to find all blockgroups in a city did not work.</li>
+<li>Fixed bug where <code><a href="../reference/ejamapp.html">ejamapp()</a></code> settings/parameters isPublic and default_show_advanced_settings were ignored and advanced tab was being shown even if isPublic=TRUE and default_show_advanced_settings=FALSE.</li>
+<li>Fixed examples in documentation of all functions.</li>
+<li>Fixed bug in <code><a href="../reference/plot_barplot_ratios.html">plot_barplot_ratios()</a></code> that could affect <code><a href="../reference/ejam2barplot.html">ejam2barplot()</a></code>
+</li>
+<li>Fixed bug in <code><a href="../reference/popshare_p_lives_at_what_pct.html">popshare_p_lives_at_what_pct()</a></code>, which reports info in notes tab of excel download</li>
+<li>Fixed bug in utility <code>EJAM:::find_in_files()</code>
+</li>
+<li>Fixed bug affecting geocoding in <code><a href="../reference/name2fips.html">names2fips()</a></code> based on fips_place_from_placename()</li>
+<li>Fixed bug in <code><a href="../reference/fixcolnames.html">fixcolnames()</a></code> that was only renaming the first instance of any duplicated inputs</li>
+<li>Fixed various smaller issues like edge cases or typos in comments or messages.</li>
+</ul></li>
+<li><p>Added (strong) recommendation that you obtain a Census API key, in the <a href="https://ejanalysis.github.io/EJAM/articles/installing.html">guide to installing the package</a>. Also added warnings when envt var CENSUS_API_KEY not found before trying to use <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a> / <a href="https://cran.r-project.org/web/packages/tidycensus/index.html" class="external-link">tidycensus on CRAN</a> or <a href="https://cran.r-project.org/web/packages/tigris/index.html" class="external-link">tigris package</a> downloads of ACS Info or Census unit boundaries, e.g., in <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> and elsewhere.</p></li>
+<li><p>Specified R version 4.3 as the minimum required per the DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the <a href="https://ropensci.org/r-universe/" class="external-link">R universe platform</a> and maybe eventually <a href="https://cran.r-project.org" class="external-link">CRAN</a> are other options.</p></li>
+<li><p>Removed dependency on a few packages rarely needed.</p></li>
+<li><p>Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit_<em>, ejscreenapi<strong>, ejscreen_vs</strong>, ejscreenREST<strong>, testoutput</strong></em>, etc.</p></li>
+<li><p>Stopped exporting several shapefile_from_XYZ helper functions since shapefile_from_any() can be used.</p></li>
+<li>
+<p>Hosting:</p>
+<ul><li>Added Dockerfile used to deploy the shiny app to a server.</li>
+<li>Added notes on hosting on Posit connect cloud</li>
+<li>Revised article (vignette) on hosting, to add posit vs docker info, and updated files supporting deployment of shiny app to Posit Connect Cloud (manifest.json, etc.).</li>
+<li>Fixed dependency issue where package <a href="https://github.com/SymbolixAU/geojsonsf" class="external-link">geojsonsf</a> used in draft API code (plumber.R) had a typo so deployment to posit would fail due to not finding a package of that name.</li>
+<li>Edited apparently problematic file data_names_all.R and may add back the _disable_autoload.R file</li>
+<li>Added example of using <code><a href="../reference/api_run.html">api_run()</a></code> to locally run API draft in background</li>
+<li>Revised github actions; Added a github action workflow to run R CMD check, via <code><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck::rcmdcheck()</a></code> to find various problems in package.</li>
+</ul></li>
+<li><p>Added article (vignette) about <a href="https://ejanalysis.github.io/EJAM/articles/dev-speed.html">speed – how long it takes to analyze thousands of sites</a></p></li>
+<li><p>Improved <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> for creating new indicators based on Census Bureau ACS data</p></li>
+<li><p>Improved <code><a href="../reference/popshare_p_lives_at_what_n.html">popshare_p_lives_at_what_n()</a></code> for reporting how most of the residents are at a few key sites typically</p></li>
+<li><p>Added <code>sites_only()</code> helper; added <code><a href="../reference/sites_from_input.html">sites_from_input()</a></code> examples</p></li>
+<li><p>In <code><a href="../reference/ejam2map.html">ejam2map()</a></code>, added a radius parameter</p></li>
+<li><p>Added <code><a href="../reference/calc_pctile_columns.html">calc_pctile_columns()</a></code>, <code><a href="../reference/calc_avg_columns.html">calc_avg_columns()</a></code>, <code><a href="../reference/calc_ratio_columns.html">calc_ratio_columns()</a></code> – Added (or renamed to be consistent) these helper functions to make columns of averages, ratios to average, and percentiles (all of which can be used later to replace parts of <code><a href="../reference/doaggregate.html">doaggregate()</a></code>). Old, now-removed function avg_from_raw_lookup() was renamed as <code><a href="../reference/calc_avg_columns.html">calc_avg_columns()</a></code>. New function <code><a href="../reference/calc_pctile_columns.html">calc_pctile_columns()</a></code> is vectorized form of retained function <code><a href="../reference/pctile_from_raw_lookup.html">pctile_from_raw_lookup()</a></code>. <code><a href="../reference/calc_ratio_columns.html">calc_ratio_columns()</a></code> is new. Removed/replaced the old, obsolete function calc_ratios_to_avg().</p></li>
+<li><p>Stopped exporting plot_boxplot_ratios() since ‘ejam2boxplot_ratios()’ and ‘plot_boxplot_pctiles()’ work better.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.6.002" id="ejam-2326002-october-2025">EJAM 2.32.6.002 (October 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326002-october-2025"></a></h2>
 <p>This update does not add any web app features.</p>
@@ -409,7 +451,7 @@
 <li>
 <code>linesofcode2()</code> utility was improved, just as a way for package maintainers/contributors to look at which files have most of the lines of code, are mostly comments, etc.</li>
 <li>
-<code><a href="../reference/table_xls_format_api.html">table_xls_format_api()</a></code> is what used to be called table_xls_formatting_api() (but is not used unless the ejscreenapi module or server is working).</li>
+<code>table_xls_format_api()</code> is what used to be called table_xls_formatting_api() (but is not used unless the ejscreenapi module or server is working).</li>
 <li>fixed inconsistent use of parameter <code>in_shiny</code> versus <code>inshiny</code>, to always call it <code>in_shiny</code>
 </li>
 <li>removed functions and text related to pins board (obsolete)</li>
@@ -442,11 +484,11 @@
 <li>
 <code><a href="../reference/ejam2report.html">ejam2report()</a></code> gets new params, and in <code><a href="../reference/build_community_report.html">build_community_report()</a></code> added report_title = NULL, logo_path = NULL, logo_html = NULL.</li>
 <li>
-<code><a href="../reference/ejam2barplot.html">plot_barplot_ratios()</a></code> gets new ylab and caption params</li>
+<code><a href="../reference/plot_barplot_ratios.html">plot_barplot_ratios()</a></code> gets new ylab and caption params</li>
 <li>added warning in <code><a href="../reference/url_county_health.html">url_county_health()</a></code> if default year seems outdated</li>
 <li>unexported draft <code><a href="../reference/read_and_clean_points.html">read_and_clean_points()</a></code>
 </li>
-<li>unexported draft <code><a href="../reference/ejam2quantiles.html">ejam2quantiles()</a></code>
+<li>unexported draft <code>ejam2quantiles()</code>
 </li>
 <li>removed reference to obsolete testids_registry_id, replaced by <code><a href="../reference/testinput_regid.html">?testinput_regid</a></code>
 </li>
@@ -587,11 +629,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

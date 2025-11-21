@@ -7,10 +7,10 @@
 frs_make_sic_lookup(x)
 }
 \arguments{
-\item{x}{data.table frs from \code{\link[=frs_clean_sic]{frs_clean_sic()}}}
+\item{x}{table in \href{https://r-datatable.com}{data.table} format \link{frs} from \code{\link[=frs_clean_sic]{frs_clean_sic()}}}
 }
 \value{
-data.table with lat, lon, REGISTRY_ID, SIC columns
+table in \href{https://r-datatable.com}{data.table} format with lat, lon, REGISTRY_ID, SIC columns
 }
 \description{
 Reformat frs datatable to look up facilities by SIC code

@@ -36,15 +36,15 @@ c(names_e, names_d, names_d_subgroups)
 }
 \examples{
 names_d
-fixcolnames2related(names_d, 'stateratio')
+EJAM:::fixcolnames2related(names_d, 'stateratio')
 names_d_ratio_to_state_avg
-fixcolnames2related(names_e, "stateavg")
-fixcolnames2related(names_e, "usvag")
+EJAM:::fixcolnames2related(names_e, "stateavg")
+EJAM:::fixcolnames2related(names_e, "usvag")
 paste0("avg.", names_e)
-fixcolnames2related(names_e, "usratio")
+EJAM:::fixcolnames2related(names_e, "usratio")
 # names_ej # does not work with this as input
-# fixcolnames2related(names_ej, "uspctile") # does not return names_ej_pctile
-  
+# EJAM:::fixcolnames2related(names_ej, "uspctile") # does not return names_ej_pctile
+
 }
 \seealso{
 \code{\link[=varinfo]{varinfo()}} \code{\link[=fixcolnames]{fixcolnames()}}

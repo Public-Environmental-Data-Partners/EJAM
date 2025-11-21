@@ -1,16 +1,16 @@
 
 
-# THIS MAY BE USED ONLY FOR distance_near_eachother()
+#  USED ONLY FOR distance_near_eachother()
 
 
 #' Find all distances between two sets of points (based on lat/lon)
-#'
-#' @description Returns all the distances from one set of geographic points to another set of points.
+#' USED ONLY FOR distance_near_eachother()
+#' @details Returns all the distances from one set of geographic points to another set of points.
 #' Can return a matrix of distances (m x n points) or vector or data.frame with one row per pair.
 #' Lets you specify units and whether you need lat/lon etc, but essentially just a wrapper for
-#' the \pkg{sf} package for the [sf::st_distance] and [sf::st_as_sf] functions.
+#' the [sf](https://r-spatial.github.io/sf/) package for the [sf::st_distance] and [sf::st_as_sf] functions.
 #'
-#' @details  \preformatted{
+#'    \preformatted{
 #'   *** Probably slower than it needs to be partly by using data.frame
 #'    instead of matrix class? Maybe 10-20 percent faster if as.df=FALSE than if TRUE
 #'   Just using distances.all is reasonably fast?
@@ -69,90 +69,6 @@
 #'   within a specified search radius instead of all topoints, and
 #'   proxistat or proxistat2  which will which create a proximity score for each spatial unit
 #'   based on distances to nearby points.
-#' @examples
-#' set.seed(999)
-#' t1=testpoints_500[1,c("lon", "lat")]
-#' t10=testpoints_500[1:10,c("lon", "lat")]
-#' t100=testpoints_500[1:100,c("lon", "lat")]
-#' t1k=rbind(testpoints_500, testpoints_500)
-#'
-#' distances.all(t1, t1)
-#' distances.all(t1, t10[2, , drop = FALSE])
-#' x=distances.all(t10, t100[1:20 , ], units = 'km')
-#'  plot(x$tolon, x$tolat,pch='.')
-#'  points(x$fromlon, x$fromlat)
-#'  with(x, linesegments(fromlon, fromlat, tolon, tolat ))
-#'  with(x[x$d < 500, ], linesegments(fromlon, fromlat, tolon, tolat ,col='red'))
-#'
-#'    test.from <- structure(list(fromlat = c(38.9567309094, 45),
-#'      fromlon = c(-77.0896572305, -100)), .Names = c("lat", "lon"),
-#'      row.names = c("1", "2"), class = "data.frame")
-#'
-#'    test.to <- structure(list(tolat = c(38.9575019287, 38.9507043428, 45),
-#'     tolon = c(-77.0892818598, -77.2, -90)),
-#'     .Names = c("lat", "lon"), class = "data.frame",
-#'     row.names = c("1", "2", "3"))
-#'  test.to.NA = rbind(c(NA,NA), test.to[2:3,])
-#'  test.from.NA = rbind(test.from[1,], c(NA,NA))
-#'
-#' distances.all(test.from, test.to)
-#' distances.all(test.from, test.to, return.crosstab=TRUE)
-#' distances.all(test.from, test.to, return.rownums=FALSE)
-#' distances.all(test.from, test.to, return.latlons=FALSE)
-#' distances.all(test.from, test.to, return.latlons=FALSE,
-#'   return.rownums=FALSE)
-#'
-#'      # test cases
-#' distances.all(test.from,    test.to.NA)
-#' distances.all(test.from.NA, test.to)
-#' distances.all(test.from.NA, test.to.NA)
-#' distances.all(test.from[1,],test.to[1,],return.rownums=F,
-#' return.latlons=F)
-#' distances.all(test.from[1,],test.to[1,],return.rownums=FALSE,
-#' return.latlons=TRUE)
-#' distances.all(test.from[1,],test.to[1,],return.rownums=TRUE,
-#' return.latlons=FALSE)
-#' distances.all(test.from[1,],test.to[1,],return.rownums=TRUE,
-#' return.latlons=TRUE)
-#'
-#' distances.all(test.from[1,],test.to[1:3,],return.rownums=F,
-#' return.latlons=F)
-#' distances.all(test.from[1,],test.to[1:3,],return.rownums=FALSE,
-#' return.latlons=TRUE)
-#' distances.all(test.from[1,],test.to[1:3,],return.rownums=TRUE,
-#' return.latlons=FALSE)
-#' distances.all(test.from[1,],test.to[1:3,],return.rownums=TRUE,
-#' return.latlons=TRUE)
-#'
-#' distances.all(test.from[1:2,],test.to[1,],return.rownums=F,
-#' return.latlons=F)
-#' distances.all(test.from[1:2,],test.to[1,],return.rownums=FALSE,
-#' return.latlons=TRUE)
-#' distances.all(test.from[1:2,],test.to[1,],return.rownums=TRUE,
-#' return.latlons=FALSE)
-#' distances.all(test.from[1:2,],test.to[1,],return.rownums=TRUE,
-#' return.latlons=TRUE)
-#'
-#' round(distances.all(test.from[1:2,],test.to[1:3,],return.rownums=F,
-#' return.latlons=F),1)
-#' distances.all(test.from[1:2,],test.to[1:3,],return.rownums=FALSE,
-#' return.latlons=T)
-#' distances.all(test.from[1:2,],test.to[1:3,],return.rownums=TRUE,
-#' return.latlons=F)
-#' distances.all(test.from[1:2,],test.to[1:3,],return.rownums=TRUE,
-#' return.latlons=TRUE)
-#' distances.all(test.from[1:2,],test.to[1:3,], return.rownums=TRUE,
-#'   return.latlons=TRUE, units='km')
-#' distances.all(test.from[1:2,],test.to[1:3,], return.rownums=TRUE,
-#'   return.latlons=TRUE, units='miles')
-#'
-#' distances.all(test.from[1,],test.to[1:3, ], return.crosstab=TRUE)
-#' distances.all(test.from[1:2,],test.to[1, ], return.crosstab=TRUE)
-#' round(distances.all(test.from[1:2,],test.to[1:3, ],
-#' return.crosstab=TRUE, units='miles'),2)
-#' round(distances.all(test.from[1:2,],test.to[1:3, ],
-#' return.crosstab=TRUE, units='km'),2)
-#'
 #'
 #' @export
 #'

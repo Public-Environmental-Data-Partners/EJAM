@@ -34,7 +34,7 @@ format provided by internal helper function create_quaddata() as needed).}
 \item{...}{passed to \code{\link[=getblocksnearby]{getblocksnearby()}}}
 }
 \value{
-sites2points data.table one row per pair of frompoint and nearby frs point,
+sites2points \href{https://r-datatable.com}{data.table} one row per pair of frompoint and nearby frs point,
 like output of \code{\link[=getblocksnearby]{getblocksnearby()}}
 }
 \description{

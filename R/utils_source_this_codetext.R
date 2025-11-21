@@ -7,26 +7,13 @@
 
 ######################################## #
 
-
 ######################################## #
 ## example showing how it works
 #
 # formula_varname(formulas_d)
 #
-# bgdf <- data.frame(blockgroupstats)
-# newdf <- ejscreen::ejscreen.acs.calc(bgdf,
-#                                      keep.old = c('bgid', 'pop', 'hisp'),
-#                                      keep.new = "all",
-#                                      formulas = formulas_d
-#                                      )
-# round(t(newdf[1001:1002, ]), 3)
-#
-# cbind(
-#   newdf[11001:11020, c('hisp', 'pop', 'pcthisp')],
-#   check = (newdf$hisp[11001:11020] / newdf$pop[11001:11020])
-# )
-# ## note the 0-100 percentages in blockgroupstats versus the 0-1 calculated percentages
-#  rm(bgdf, newdf)
+##  see calc_ejam()
+
 ######################################## #
 ###   example:
 # source_this_codetext_careful("(a+b)^c - d", list(a = 1, b = 2, c = 3, d = 4))
@@ -57,8 +44,6 @@
 # newdf <- calc_ejam(bgdf, formulas = formulas_d)
 # newdf
 ######################################## #
-
-
 
 
 source_this_codetext_careful <- function(text_expression, data_list = NULL, eval_envir = NULL) {
@@ -98,8 +83,6 @@ source_this_codetext_careful <- function(text_expression, data_list = NULL, eval
 }
 ######################################## #
 
-
-################################################################ #
 
 # source_this_codetext() is a useful alias only because it is hard to remember how to do this:   eval(parse(text =
 # data_list must be a named list of objects to put into the evaluation envt, such as as.list(mydf) to do something like attach(mydf)

@@ -104,8 +104,7 @@
 
 # R/utils_pctiles_lookup_create.R  has  pctiles_lookup_create() and helpers to create the lookup table annually or on demand for a custom indicator.
 
-# R/pctile_from_raw_lookup.R is the function to use a lookup table
-# R/pctiles_from_raw_lookup_DRAFT.R  has notes on possible faster way
+# calc_pctile_columns() or pctile_from_raw_lookup() is the function to use a lookup table
 
 ################################################################################################################ #
 #~ ####
@@ -186,17 +185,17 @@ custom_ejamit <- function(sitepoints, radius = 3, fips = NULL, shapefile = NULL,
 #'   so it may be useful to store the index during a session
 #'   rather than building it each time it is used. But it cannot be saved
 #'   on disk because of what it is and how it works.
-#' @param pts a data.frame or data.table with columns name lat and lon, one row
+#' @param pts a data.frame or [data.table](https://r-datatable.com) with columns name lat and lon, one row
 #' per location (point), and any other columns are ignored.
 #' @param idcolname if NULL (default), a pointid column is created as a
 #'   unique id 1:NROW(). If creating the index of blocks, idcolname is "blockid"
 #'   If set to "id" it just uses that even if not unique id.
-#'   indexpoints() does not directly refer to this column but index
+#'   [indexpoints()] does not directly refer to this column but index
 #'   probably incorporates it.
 #' @param xyzcolnames For creating quaddata and then localtree index of blocks,
 #'   this must be set to c("BLOCK_X", "BLOCK_Z", "BLOCK_Y") ??
 #'
-#' @return returns a data.table one row per point, columns with names that are
+#' @return returns a [data.table](https://r-datatable.com) one row per point, columns with names that are
 #'   c(xyzcolnames, idcolname)
 #'
 #' @keywords internal
@@ -270,7 +269,7 @@ create_quaddata <- function(pts,
 #'   to create a new proximity score for every block and blockgroup in the US.
 #'   It relies on [create_quaddata()] for one step, then [SearchTrees::createTree()]
 #'
-#' @param pts a data.frame or data.table with columns name lat and lon,
+#' @param pts a data.frame or [data.table](https://r-datatable.com) with columns name lat and lon,
 #'   one row per location (point), and any other columns are ignored.
 #' @param envir optional environment - default is to assign index object to globalenv()
 #' @param indexname optional name to give the index
@@ -279,16 +278,6 @@ create_quaddata <- function(pts,
 #'   put into the globalenv()
 #'   (or specified envir) that spatial index with name defined by indexname,
 #'   as created by [indexpoints()].
-#'
-#' @examples \donttest{
-#'   # EXAMPLES NOT TESTED YET ***
-#'   pts <- testpoints_10
-#'   tempenv <- new.env()
-#'   index10 <- indexpoints(pts, "index10", envir = tempenv)
-#'   x <- getpointsnearby(pts, quadtree = get(index10, envir = tempenv))
-#'   # y <- proxistat(pts)
-#'   # rm(custom_index)
-#'  }
 #'
 #' @keywords internal
 #' @export
@@ -327,6 +316,15 @@ indexpoints <- function(pts, indexname = "custom_index", envir = globalenv()) {
   # So we need to create a new index every time indexpoints() is called
   # unlike  indexblocks() where the only thing you ever index is
   # blocks that never change (at least not within a year or more)
+
+  # draft notes on examples but not yet working or tested:
+    # pts <- testpoints_10
+    # tempenv <- new.env()
+    # index10 <- indexpoints(pts, "index10", envir = tempenv)
+    # x <- getpointsnearby(frompoints = testpoints_10[1:2,], topoints = pts, quadtree = get(index10, envir = tempenv))
+    # y <- proxistat(pts)
+    # rm(custom_index)
+
 }
 ############################################################################### #
 
@@ -343,7 +341,7 @@ indexpoints <- function(pts, indexname = "custom_index", envir = globalenv()) {
 #'   via [proxistat()]
 #'
 #' @param frspts optional, default is the frs table from the EJAM package,
-#'   but could be a subset of that data.table with columns name lat and lon, one row
+#'   but could be a subset of that [data.table](https://r-datatable.com) with columns name lat and lon, one row
 #'   per location (point), and any other columns are ignored.
 #'   If frspts not specified and indexname exists already, just returns that index without rebuilding it.
 #'   If frspts is specified, such as just frs from one industry or one state,
@@ -419,7 +417,7 @@ indexfrs <- function(frspts = NULL, indexname = "frs_index", envir = globalenv()
 #' @param updateProgress progress bar object, passed to [getpointsnearbyviaQuadTree()]
 #' @param ...  passed to [getpointsnearbyviaQuadTree()]
 #'
-#' @return sites2points data.table one row per pair of frompoint and nearby topoint,
+#' @return sites2points [data.table](https://r-datatable.com) one row per pair of frompoint and nearby topoint,
 #'   like output of [getpointsnearbyviaQuadTree()]
 #'
 #' @export
@@ -492,7 +490,7 @@ getpointsnearby <- function(frompoints, topoints,
 #' @param quiet  passed to [getblocksnearby()]
 #' @param ...  passed to [getblocksnearby()]
 #'
-#' @return sites2points data.table one row per pair of frompoint and nearby frs point,
+#' @return sites2points [data.table](https://r-datatable.com) one row per pair of frompoint and nearby frs point,
 #'   like output of [getblocksnearby()]
 #'
 #' @export
@@ -540,14 +538,14 @@ getfrsnearby <- function(frompoints,
 #' \code{
 #' s2s <- getpointsnearby(frompoints = testpoints_10[1,], topoints = frs_from_naics("cement"), radius = 30)
 #' }
-#' countpoints_after_getpoints(s2s)
-#' countpoints_after_getpoints(s2s, radius = 20)
-#' countpoints_after_getpoints(s2s, radius = 10)
-#' countpoints_after_getpoints(s2s, radius = 5)
-#' countpoints_after_getpoints(s2s, radius = 3)
+#' EJAM:::countpoints_after_getpoints(s2s)
+#' EJAM:::countpoints_after_getpoints(s2s, radius = 20)
+#' EJAM:::countpoints_after_getpoints(s2s, radius = 10)
+#' EJAM:::countpoints_after_getpoints(s2s, radius = 5)
+#' EJAM:::countpoints_after_getpoints(s2s, radius = 3)
 #'
-#' @return counts data.table with column N for count, and a column named via frompoints_id_colname
-#' @examples countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
+#' @return counts [data.table](https://r-datatable.com) with column N for count, and a column named via frompoints_id_colname
+#' @examples EJAM:::countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
 #'
 #' @keywords internal
 #'
@@ -581,50 +579,49 @@ countpoints_after_getpoints <- function(sites2points,
 #' @return table or vector??  1 row per frompoints row, column
 #'   attribute called "unique" will store the count of unique topoints overall
 #' @examples
-#' # countpoints_nearby(pts_sites, pts_features, radius = 3)
+#' # EJAM:::countpoints_nearby(pts_sites, pts_features, radius = 3)
 #'
-#'
-## test
-#
-# pts_sites = data.table(
-#   lat = c(41.79301, 41.518315, 41.84412, 41.83891,   41.76743),
-#   lon = c(-71.42342, -71.300945, -71.71703, -71.38376, -71.4178)
-# )
-#
-# pts_features <- structure(list(
-#   lat = c(41.50958, 41.77985, 41.86525, 41.73999, 41.83418,
-#           41.559002, 41.57486, 41.89026, 41.81997, 41.880934,
-#           41.700584, 41.83047, 41.54797, 41.8069, 41.793183, 41.81779,
-#           41.84606, 41.6968, 41.81065, 41.81318, 41.879506, 41.68472, 41.82752,
-#           41.552271, 41.89775, 41.82958, 41.78916, 41.93013, 42.01508,
-#           41.69871, 41.59766, 41.729195, 41.870997, 41.74905, 41.43086,
-#           41.88212, 41.708578, 41.88529, 41.571509, 41.50431, 41.825374,
-#           41.89325, 41.72495, 41.70488, 41.78912, 41.72462, 41.922604,
-#           41.846839, 41.826651, 41.92107, 41.881966, 41.70161, 41.876275,
-#           41.862773, 41.827688, 41.50541, 41.545833, 41.8333, 41.587371,
-#           42.01564, 41.48326, 41.77052, 41.581667),
-#   lon = c(-71.25856,
-#           -71.44302, -71.39965, -71.44142, -71.42563, -71.663738, -71.4642,
-#           -71.37302, -71.44043, -71.382677, -71.46893, -71.4305, -71.44174,
-#           -71.38511, -71.397363, -71.38547, -71.48027, -71.7837, -71.34597,
-#           -71.35813, -71.388366, -71.5879, -71.38863, -71.302016, -71.388563,
-#           -71.39096, -71.75443, -71.48187, -71.47112, -71.46064, -71.71367,
-#           -71.280662, -71.387853, -71.30763, -71.45846, -71.38238, -71.49114,
-#           -71.37125, -71.453616, -71.28119, -71.664778, -71.40459, -71.51259,
-#           -71.523978, -71.42382, -71.49025, -71.400359, -71.500078, -71.433561,
-#           -71.73731, -71.389893, -71.52736, -71.501516, -71.493923, -71.392876,
-#           -71.30026, -71.291667, -71.55536, -71.412662, -71.47669, -71.30445,
-#           -71.40538, -71.486667)),
-#   row.names = c(NA, -63L),
-#   class = c("data.table", "data.frame"))
-#
-# x = countpoints_nearby(pts_sites, pts_features, radius = 3)
-
-
 #'
 #' @keywords internal
 #'
 countpoints_nearby <- function(frompoints, topoints, radius = 3) {
+
+  ## for testing
+  #
+  # pts_sites = data.table(
+  #   lat = c(41.79301, 41.518315, 41.84412, 41.83891,   41.76743),
+  #   lon = c(-71.42342, -71.300945, -71.71703, -71.38376, -71.4178)
+  # )
+  #
+  # pts_features <- structure(list(
+  #   lat = c(41.50958, 41.77985, 41.86525, 41.73999, 41.83418,
+  #           41.559002, 41.57486, 41.89026, 41.81997, 41.880934,
+  #           41.700584, 41.83047, 41.54797, 41.8069, 41.793183, 41.81779,
+  #           41.84606, 41.6968, 41.81065, 41.81318, 41.879506, 41.68472, 41.82752,
+  #           41.552271, 41.89775, 41.82958, 41.78916, 41.93013, 42.01508,
+  #           41.69871, 41.59766, 41.729195, 41.870997, 41.74905, 41.43086,
+  #           41.88212, 41.708578, 41.88529, 41.571509, 41.50431, 41.825374,
+  #           41.89325, 41.72495, 41.70488, 41.78912, 41.72462, 41.922604,
+  #           41.846839, 41.826651, 41.92107, 41.881966, 41.70161, 41.876275,
+  #           41.862773, 41.827688, 41.50541, 41.545833, 41.8333, 41.587371,
+  #           42.01564, 41.48326, 41.77052, 41.581667),
+  #   lon = c(-71.25856,
+  #           -71.44302, -71.39965, -71.44142, -71.42563, -71.663738, -71.4642,
+  #           -71.37302, -71.44043, -71.382677, -71.46893, -71.4305, -71.44174,
+  #           -71.38511, -71.397363, -71.38547, -71.48027, -71.7837, -71.34597,
+  #           -71.35813, -71.388366, -71.5879, -71.38863, -71.302016, -71.388563,
+  #           -71.39096, -71.75443, -71.48187, -71.47112, -71.46064, -71.71367,
+  #           -71.280662, -71.387853, -71.30763, -71.45846, -71.38238, -71.49114,
+  #           -71.37125, -71.453616, -71.28119, -71.664778, -71.40459, -71.51259,
+  #           -71.523978, -71.42382, -71.49025, -71.400359, -71.500078, -71.433561,
+  #           -71.73731, -71.389893, -71.52736, -71.501516, -71.493923, -71.392876,
+  #           -71.30026, -71.291667, -71.55536, -71.412662, -71.47669, -71.30445,
+  #           -71.40538, -71.486667)),
+  #   row.names = c(NA, -63L),
+  #   class = c("data.table", "data.frame"))
+  #
+  # x = EJAM:::countpoints_nearby(pts_sites, pts_features, radius = 3)
+
 
   sfpkg = TRUE
   # sfpkg = FALSE # still debugging
@@ -747,7 +744,7 @@ if (1 == 0) {
 #'   but then filling in that info for rest of blocks in US
 #'   The inverse approach compared to [proxistat()]
 #'
-#' @param pts data.table with lat lon column names
+#' @param pts [data.table](https://r-datatable.com) with lat lon column names
 #' @param countradius distance within in which nearby sites are counted to create proximity score.
 #'   In miles, and default is 5 km (5000 / meters_per_mile = 3.106856 miles)
 #'   which is the EJSCREEN zone for proximity scores based on counts.
@@ -760,7 +757,7 @@ if (1 == 0) {
 #'   However, the exact min value implies 1337.288 kilometers, or 830.9523 miles?
 #'
 #'
-#' @return data.table of blockgroups, with proximityscore, bgfips, lat, lon, etc.
+#' @return [data.table](https://r-datatable.com) of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 #'
 #' @export
 #'
@@ -902,12 +899,12 @@ proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 #'
 #' @param topoints Representing nearby amenities or hazards counted by the proximity scores --
 #'   such as Superfund NPL sites used for a NPL proximity score --
-#'   a data.table of lat lon, all points representing some amenity or hazard that
+#'   a [data.table](https://r-datatable.com) of lat lon, all points representing some amenity or hazard that
 #'   the proximity score indicates proximity to. It could be a subset of the [frs] table, e.g.
 #'
 #' @param bpoints Representing places to be assigned proximity scores --
 #'   such as [blockpoints], the centroid/internal point of every block in the USA --
-#'   a data.table of Census block points lat lon, representing where residents are,
+#'   a [data.table](https://r-datatable.com) of Census block points lat lon, representing where residents are,
 #'   for the entire US (or at least a whole State, for example -- it should be all blocks for which you need a proximity score).
 #'   The score is calculated for a given block based on all topoints near the block,
 #'   and then summarized over all blocks in a given blockgroup to create a score for that blockgroup.
@@ -933,7 +930,7 @@ proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 #' @param quaddatatable optional, created from pts if not passed,
 #'   created by create_quaddata() utility, and used to create quadtree
 #'
-#' @return data.table of blockgroups, with proximityscore, bgfips, lat, lon, etc.
+#' @return [data.table](https://r-datatable.com) of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 #'
 #' @import data.table
 #'
@@ -1190,7 +1187,7 @@ proximity.score.in.miles <- function(scoresdf=NULL) {
 #'   or input to [doaggregate()] or [custom_doaggregate()]
 #' @seealso [custom_doaggregate()]
 #'
-#' @return data.table, 1 row per site-bg pair.
+#' @return [data.table](https://r-datatable.com), 1 row per site-bg pair.
 #'   May have same bgid or bgfips in 2,3, more rows
 #'   since it is here once per site that the bg is near.
 #'   It is like a sites2blockgroups table.
@@ -1210,7 +1207,7 @@ calc_bgwts_bysite <- function(sites2blocks) {
 #' @param sites2blocks like output of [getblocksnearby()]
 #'   or input to [doaggregate()] or [custom_doaggregate()]
 #' @seealso [custom_doaggregate()]
-#' @return data.table, 1 row per blockgroup (even if bg is near 2+ sites),
+#' @return [data.table](https://r-datatable.com), 1 row per blockgroup (even if bg is near 2+ sites),
 #'   so it is a table of all the unique blockgroups in the overall
 #'   analysis (merged across all sites), with a weight that indicates
 #'   what fraction of that bg population is included in the overall
@@ -1272,7 +1269,7 @@ calcweight <- function(varnames) {
 #' DRAFT - Calculate (aggregate) county scores from blockgroup scores
 #' @description Redo as more generic and TO HANDLE >1 INDICATOR AT A TIME ! See other functions in PROXIMITY_FUNCTIONS.R !
 #'
-#' @param childDT data.table (or data.frame)
+#' @param childDT [data.table](https://r-datatable.com) (or data.frame)
 #' @param score_colname name of a column in childDT
 #' @param wt_colname name of a column in childDT, used as weights for weighted mean of scores in each county
 #' @param bgfips_colname name of a column in childDT, must be unique rows,
@@ -1280,7 +1277,7 @@ calcweight <- function(varnames) {
 #' @details This ignores any rows with NA in the score_colname, but
 #'   if you want an NA weight (in wt_colname) to count as a weight of 0, you have to convert them to zeroes first,
 #'   or this function will return NA any time there is any NA value at all in the wt_colname
-#' @return data.table of 1 row per county (each county that is in the childDT provided),
+#' @return [data.table](https://r-datatable.com) of 1 row per county (each county that is in the childDT provided),
 #'   just columns "countyfips", "Countyname", score_colname, wt_colname
 #'
 #' @keywords internal
@@ -1573,8 +1570,7 @@ custom_doaggregate <- function(sites2blocks,
 
   # R/utils_pctiles_lookup_create.R  has  pctiles_lookup_create() and helpers to create the lookup table annually or on demand for a custom indicator.
 
-  # R/pctile_from_raw_lookup.R is the function to use a lookup table
-  # R/pctiles_from_raw_lookup_DRAFT.R  has notes on possible faster way
+  # R/calc_pctile_columns.R is the function to use a lookup table
 
 
   ########## no other columns added like radius.miles?
@@ -1602,128 +1598,6 @@ custom_doaggregate <- function(sites2blocks,
 ############################################### #
 # stop() !!!
 
-### test/debug/ try these new functions ...
-#
-# outapi = ejscreenit_for_ejam(testpoints_10, radius = 1)
-#
-#   ## s2b = getblocksnearby(testpoints_10, radius = 1)
-#   s2b = testoutput_getblocksnearby_10pts_1miles
-#   x = custom_doaggregate(s2b)
-if (1 == 0) {
-  data.frame(
-    custom = round(t(x$results_overall[, ..names_these]),3),
-    ejamit = round(t(testoutput_ejamit_10pts_1miles$results_overall[, ..names_these]),3)
-  )
-
-  ##                    custom    ejamit
-  ## Demog.Index         0.413    0.402   ## pop mean not quite same as how it was calculated as ratio of sums of counts or correct-denominator-wtd-mean.
-  ## Demog.Index.Supp    0.180    0.177   ## pop mean not quite same as how it was calculated as ratio of sums of counts or correct-denominator-wtd-mean.
-  ## pctlowinc           0.417    0.396   ## pop mean not quite same as how it was calculated as ratio of sums of counts or correct-denominator-wtd-mean.
-  ## pctlingiso          0.070    0.068   ## pop mean not quite same as how it was calculated as ratio of sums of counts or correct-denominator-wtd-mean.
-  ## pctunemployed       0.059    0.057   ## pop mean not quite same as how it was calculated as ratio of sums of counts or correct-denominator-wtd-mean.
-  ## pctlths             0.141    0.149   ## pop mean not quite same as how it was calculated as ratio of sums of counts or correct-denominator-wtd-mean.
-  ## lowlifex            0.216    0.216
-  ## pctunder5           0.064    0.064
-  ## pctover64           0.108    0.108
-  ## pctmin              0.408    0.408
-  ## pcthisp            25.471    0.255  ******* 100x
-  ## pctnhba             8.590    0.086  ******* 100x
-  ## pctnhaa             2.968    0.030  ******* 100x
-  ## pctnhaiana          0.884    0.009  ******* 100x
-  ## pctnhnhpia          0.002    0.000  ******* 100x
-  ## pctnhotheralone     0.091    0.001  ******* 100x
-  ## pctnhmulti          2.836    0.028  ******* 100x
-  ## pctnhwa            59.158    0.592  ******* 100x
-  ## pm                  8.034    8.034
-  ## o3                 60.623   60.623
-  ## cancer             26.527   26.527
-  ## resp                0.289    0.289
-  ## dpm                 0.363    0.363
-  ## pctpre1960         38.380    0.413  ******* 100x and ## pop mean not quite same as how it was calculated as ratio of sums of counts or correct-denominator-wtd-mean.
-  ## traffic.score     179.121  179.121
-  ## proximity.npl       0.387    0.387
-  ## proximity.rmp       0.595    0.595
-  ## proximity.tsdf      1.353    1.353
-  ## proximity.npdes     0.014    0.014
-  ## ust                 5.489    5.489
-  ## rsei             6492.776 6492.776
-
-  i = 3
-
-  cbind(
-    custom = round(t(x$results_bysite[i, ..names_these]),3),
-    ejamit = round(t(testoutput_ejamit_10pts_1miles$results_bysite[i, ..names_these]),3),
-    ejscreenit = round(t(outapi[i, ..names_these]),3) # just one site
-  )
-  ######################################################### #
-  ######################################################### #
-
-  supressWarnings({
-    x = custom_ejamit(testpoints_10,
-                      custom_blockgroupstats = data.frame(blockgroupstats[,.(pop, bgfips, bgid, pctlowinc)]),
-                      countcols = "pop",
-                      popmeancols = "pctlowinc",
-                      wtcols = "pop",
-                      custom_formulas = formulas_d,
-                      custom_map_headernames = map_headernames)
-  })
-
-  y = ejamit(testpoints_10)
-  x$results_bysite[,.(ejam_uniq_id,      pop,  pctlowinc )]
-  y$results_bysite[,.(ejam_uniq_id,      pop,  pctlowinc )]
-
-  ######################################################### #
-  ######################################################### #
-
-  # define some test inputs
-
-  formulas_test = c("high_pctlowinc <- pctlowinc >= 0.50", "high_pop <- pop >= 5000")
-
-  formulas_test = c(formulas_test, formulas_d)
-
-  bg_test = data.frame(blockgroupstats[, .(bgid, bgfips, pop, pctlowinc)])
-
-  map_headernames_test = data.frame(
-    rname  = c("pop", "pctlowinc", "high_pctlowinc", "high_pop"),
-    shortlabel = c("Pop", "%low-inc.", "High %lowinc?", "Large Pop.?"),
-    longname_tableheader = c("Pop", "% low income", "% low income is High", "Population is Large"),
-    pct_as_fraction_blockgroupstats = FALSE,
-    pct_as_fraction_ejamit = FALSE
-  )
-
-
-  sitepoints = testpoints_10
-  custom_blockgroupstats = bg_test
-  countcols = "pop"
-  popmeancols = "pctlowinc"
-  wtcols = "pop"
-  # custom_cols = NULL
-  custom_formulas = formulas_test
-  custom_map_headernames = map_headernames_test
-  radius = 3
-
-  # do this which is in custom_ejamit()
-  sites2blocks <- getblocksnearby(sitepoints = sitepoints, radius = radius)
-
-
-
-  # out_test <- custom_ejamit(
-  #   sitepoints = testpoints_10,
-  #   custom_blockgroupstats = bg_test,
-  #   countcols = "pop",
-  #   popmeancols = "pctlowinc",
-  #   wtcols = "pop",
-  #   # custom_cols = NULL,
-  #   custom_formulas = formulas_test,
-  #   custom_map_headernames = map_headernames_test
-  # )
-
-  out_test$results_bysite
-
-
-  # out_test$results_bysite[out_test$results_bysite$high_pctlowinc, ]
-
-}
 ################################################################################################################ #
 # ~ ------------------ ####
 
@@ -1737,7 +1611,7 @@ if (1 == 0) {
 #'
 #' @param sites2blocks output of [getblocksnearby()], as for [doaggregate()]
 #'
-#' @param userstats like blockgroupstats but data.frame or data.table of all US
+#' @param userstats like blockgroupstats but data.frame or [data.table](https://r-datatable.com) of all US
 #'   blockgroups and one or more columns of user provided raw indicator scores
 #'   and any other variables needed for formulas to aggregate indicators
 #'   across blockgroups in each site.
@@ -1975,7 +1849,7 @@ doaggregate_newscores <- function(
   us.pctile.cols_bysite     <- data.frame(matrix(nrow = NROW(results_bysite),  ncol = length(varsneedpctiles))); colnames(us.pctile.cols_bysite)     <- varnames.us.pctile
   state.pctile.cols_bysite  <- data.frame(matrix(nrow = NROW(results_bysite),  ncol = length(varsneedpctiles))); colnames(state.pctile.cols_bysite)  <- varnames.state.pctile
   us.pctile.cols_overall    <- data.frame(matrix(nrow = NROW(results_overall), ncol = length(varsneedpctiles))); colnames(us.pctile.cols_overall)    <- varnames.us.pctile
-  # SLOW:
+  # SLOW: # can replace loop with the vectorized function calc_pctile_columns()
   for (i in seq_along(varsneedpctiles)) {
     myvar <- varsneedpctiles[i]
     if ((myvar %in% names(usastats_newscores)) && (myvar %in% names(results_bysite)) && (myvar %in% names(results_overall))) {  # use this function to look in the lookup table to find the percentile that corresponds to each raw score value:

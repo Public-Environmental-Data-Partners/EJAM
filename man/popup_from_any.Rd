@@ -2,7 +2,7 @@
 % Please edit documentation in R/popup_from_any.R
 \name{popup_from_any}
 \alias{popup_from_any}
-\title{Map popups - Simple map popup from a data.table or data.frame, one point per row}
+\title{Map popups - Simple map popup from a table in \href{https://r-datatable.com}{data.table} format or data.frame, one point per row}
 \usage{
 popup_from_any(
   x,
@@ -13,7 +13,7 @@ popup_from_any(
 )
 }
 \arguments{
-\item{x, }{a data table or data frame}
+\item{x, }{a table in \href{https://r-datatable.com}{data.table} format table or data frame}
 
 \item{column_names}{default is all, or a vector of column names from x to use.
 If some of column_names requested are not found in names(x),
@@ -32,14 +32,14 @@ A vector of strings, one per row or map point,
 with a line break separating column elements
 }
 \description{
-Creates popup vector leaflet::addCircles or leaflet::addPopups can use.
+Creates popup vector \code{\link[leaflet:map-layers]{leaflet::addCircles()}} or \code{\link[leaflet:map-layers]{leaflet::addPopups()}} can use.
 }
 \details{
 Each popup is made from one row of the data.frame.
 Each popup has one row of text per column of the data.frame
 }
 \examples{
- dat <- data.table(
+ dat <- data.table::data.table(
    RegistryId = c("110071102551", "110015787683"),
    FacilityName = c("USDOI FWS AK MARITIME NWR etc", "ADAK POWER PLANT"),
    LocationAddress = c("65 MI W. OF ADAK NAVAL FACILITY", "100 HILLSIDE BLVD"),
@@ -58,7 +58,7 @@ Each popup has one row of text per column of the data.frame
  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 
  ## convert to data frame, works the same way
- dat_df <- as.data.frame(dat_df)
+ dat_df <- as.data.frame(dat)
  leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
 
 }

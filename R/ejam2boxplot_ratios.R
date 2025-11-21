@@ -27,7 +27,7 @@
 ejam2boxplot_ratios <- function(ejamitout, radius, varnames = c(names_d, names_d_subgroups),
                                 main = NULL, maxratio = 5) {
 
-  ## *** much of this is plotting code is based on plot_boxplot_ratios() - should consolidate
+  ## *** much of this is plotting code is based on older plot_boxplot_ratios() - should consolidate
 
   if (missing(radius)) {radius <- ejamitout$results_bysite$radius.miles[1]}
 
@@ -95,7 +95,7 @@ ejam2boxplot_ratios <- function(ejamitout, radius, varnames = c(names_d, names_d
   #   value = unlist(ratio.to.us.d[rationames])
   # )
 
-  ## much of this is plotting code is based on plot_boxplot_ratios() - should consolidate
+  ## much of this is plotting code is based on older plot_boxplot_ratios() - should consolidate
 
   ggplot2::ggplot(
     ratio.to.us.d.bysite,
@@ -112,7 +112,7 @@ ejam2boxplot_ratios <- function(ejamitout, radius, varnames = c(names_d, names_d
     # ) +
 
     #  show average SITE's ratio to US,  for each boxplot column  ?
-    stat_summary(fun.y = mean, geom = "point",
+    ggplot2::stat_summary(fun.y = mean, geom = "point",
                  shape = 20, size = 5, color = "gray", fill = "gray") +
 
     ## wrap indicator labels on x axis

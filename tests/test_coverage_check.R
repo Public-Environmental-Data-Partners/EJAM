@@ -26,7 +26,7 @@
 # used (or mentioned) by the most R/*.R files
 # (excluding commented-out lines):
 #
-#   Need to add unit tests for ejam2report, ejam2excel, calc_ratios_to_avg, plot_barplot_ratios, table_signif_round_x100, popup_from_ejscreen, popup_from_df, mapfast, sitepoints_from_any
+#   Need to add unit tests for ejam2report, ejam2excel, plot_barplot_ratios, table_signif_round_x100, popup_from_ejscreen, popup_from_df, mapfast, sitepoints_from_any
 #
 # term nfiles nhits
 #
@@ -56,8 +56,6 @@
 # 16              create_filename      6    10
 # 17 distance_via_surfacedistance      6    11
 
-# 9           plot_barplot_ratios      8    18  But this is used ONLY by old ejscreenapi functions
-# 15           calc_ratios_to_avg      6    10  But this is used ONLY by old ejscreenapi functions (via plot_boxplot_ratios() etc.)
 #   and maybe calc_ejam ?
 
 ################################ ################################# #
@@ -123,7 +121,7 @@ test_coverage_check <- function(loadagain = FALSE, quiet = TRUE) {
 
   funcs_not_in_txt_of_testfiles_at_all = NULL
   func2searchfor = tdat$object[!is.na(tdat$object) & tdat$notes == "cant find testfile of exact name,"]
-  #browser()
+
   for (i in seq_along(func2searchfor)) {
     x = EJAM:::find_in_files(paste0(func2searchfor[i], ""), ignorecomments = TRUE)
     if (length(x) > 0) {

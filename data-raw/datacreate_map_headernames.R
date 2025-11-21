@@ -22,8 +22,6 @@ datacreate_map_headernames <- function(rawdir = "./data-raw",
 
   cat('must redo sample dataset outputs in EJAM/inst/testdata/  via
   EJAM/data-raw/datacreate_testpoints_testoutputs.R
-  and possibly also EJAMejscreen/ files via
-  datacreate_testoutput_ejscreenit_or_ejscreenapi_plus_50.R
       \n')
 
   # cbind(names(map_headernames))

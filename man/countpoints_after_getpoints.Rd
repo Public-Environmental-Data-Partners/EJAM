@@ -26,20 +26,20 @@ to create sites2points). You can run for example,
 \code{
 s2s <- getpointsnearby(frompoints = testpoints_10[1,], topoints = frs_from_naics("cement"), radius = 30)
 }
-countpoints_after_getpoints(s2s)
-countpoints_after_getpoints(s2s, radius = 20)
-countpoints_after_getpoints(s2s, radius = 10)
-countpoints_after_getpoints(s2s, radius = 5)
-countpoints_after_getpoints(s2s, radius = 3)}
+EJAM:::countpoints_after_getpoints(s2s)
+EJAM:::countpoints_after_getpoints(s2s, radius = 20)
+EJAM:::countpoints_after_getpoints(s2s, radius = 10)
+EJAM:::countpoints_after_getpoints(s2s, radius = 5)
+EJAM:::countpoints_after_getpoints(s2s, radius = 3)}
 }
 \value{
-counts data.table with column N for count, and a column named via frompoints_id_colname
+counts \href{https://r-datatable.com}{data.table} with column N for count, and a column named via frompoints_id_colname
 }
 \description{
 utility - count topoints near each frompoint, AFTER getpointsnearby() or getfrsnearby() or getblocksnearby() was already run
 }
 \examples{
-countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
+EJAM:::countpoints_after_getpoints(testoutput_getblocksnearby_10pts_1miles)
 
 }
 \keyword{internal}

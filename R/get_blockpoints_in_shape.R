@@ -20,26 +20,26 @@ shapefile2blockpoints <- function(polys, addedbuffermiles = 0, blocksnearby = NU
 #'
 #' @aliases shapefile2blockpoints
 #'
-#' @details This uses getblocksnearby() to get a very fast rough/good estimate of
+#' @details This uses [getblocksnearby()] to get a very fast rough/good estimate of
 #'   which US block points are nearby (with a safety margin - see param below),
 #'   before then using sf:: to carefully identify which of those candidate blocks are actually
 #'   inside each polygon (e.g., circle) according to sf:: methods.
 #'
-#'   For circular buffers, just using getblocksnearby() should work and not need this function.
+#'   For circular buffers, just using [getblocksnearby()] should work and not need this function.
 #'
 #'   For non-circular polygons, buffered or not, this function will provide a way to very quickly
 #'   filter down to which of the millions of US blocks should be examined by the sf:: join / intersect,
 #'   since otherwise it takes forever for sf:: to check all US blocks.
-#' @param polys Spatial data as from sf::st_as_sf(), with
+#' @param polys Spatial data as from [sf::st_as_sf()], with
 #'   points as from [shapefile_from_sitepoints()],
 #'   or a table of points with lat,lon columns that will first be converted here using that function,
 #'   or polygons
 #' @param addedbuffermiles width of optional buffering to add to the points (or edges), in miles
 #' @param blocksnearby optional table of blocks with blockid, etc (from which lat,lon can be looked up in blockpoints dt)
-#' @param dissolved If TRUE, use sf::st_union(polys) to find unique blocks inside any one or more of polys
+#' @param dissolved If TRUE, use [sf::st_union()] to find unique blocks inside any one or more of polys
 #' @param safety_margin_ratio multiplied by addedbuffermiles, how far to search for
-#'   blocks nearby using getblocksnearby(), before using those found to do the intersection via sf::
-#' @param crs used in st_as_sf() and st_transform() and shape_buffered_from_shapefile_points(), crs = 4269 or Geodetic CRS NAD83
+#'   blocks nearby using [getblocksnearby()], before using those found to do the intersection via sf::
+#' @param crs used in [sf::st_as_sf()] and [sf::st_transform()] and [shape_buffered_from_shapefile_points()], crs = 4269 or Geodetic CRS NAD83
 #' @param updateProgress optional Shiny progress bar to update
 #' @param oldway whether to use older method that works but may be slower vs newer/draft
 #' @return Block points table for those blocks whose internal point is inside the buffer
@@ -63,20 +63,6 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
                                      dissolved = FALSE, safety_margin_ratio = 1.10, crs = 4269,
                                      # return_shp could be a param as in getblocksnearby_from_fips()
                                      updateProgress = NULL, oldway=TRUE) {
-
-  ############################################################################################################### #
-  # NOTE: For comparison or validation one could get the results from the EJSCREEN API, for a polygon:
-  #      Example of how the API could be used to analyze a polygon, which must use POST not GET:
-  # HTTP POST URL: https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx
-  # HTTP POST Body:
-  #   namestr=
-  #   geometry={"spatialReference":{"wkid":4326},"rings":[[[-76.6418006649668,39.41979061319584],[-76.54223706633402,39.403875492879656],[-76.48158343568997,39.32424541053687],[-76.45526191279846,39.24452456392063],[-76.63378974482964,39.202856485626576],[-76.74021979854052,39.284396329589654],[-76.74594187237864,39.37911140807963],[-76.6418006649668,39.41979061319584]]]}
-  #   distance=
-  #   unit=9035
-  #   areatype=
-  #   areaid=
-  #   f=pjson
-  ############################################################################################################ #
 
   if (!("ejam_uniq_id" %in% names(polys))) {
     polys$ejam_uniq_id <- 1:NROW(polys) # added by functions like shapefile_from_folder() but not here if user directly used read_sf or st_read

@@ -8,19 +8,21 @@
 #'    one will be getting stats on one or more tracts,
 #'   or analyzing and comparing blockgroups in a county,
 #'   or comparing whole counties to each other, within a State.
-#' @param in_shiny used by shiny app server code to handle errors via validate() instead of stop()
+#' @param in_shiny used by shiny app server code to handle errors via [shiny::validate()] instead of [stop()]
 #' @param need_blockwt set to FALSE to speed it up if you do not need blockwt
-#' @param return_shp set to TRUE to get a named list, pts and polys, that are sites2blocks table and spatial data.frame,
-#'   or FALSE to get the pts data.table much like output of [getblocksnearby()] or  [get_blockpoints_in_shape()]
+#' @param return_shp set to TRUE to get a named list, pts and polys, that are
+#'   a sites2blocks table in [data.table](https://r-datatable.com) format and a spatial data.frame, respectively,
+#'   or FALSE to get the pts table in [data.table](https://r-datatable.com) format
+#'   much like output of [getblocksnearby()] or  [get_blockpoints_in_shape()]
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #'
 #' @param radius CURRENTLY NOT IMPLEMENTED - NO BUFFER IS ADDED
 #'
 #' @return
-#' - if return_shp=F, returns just a sites2blocks data.table with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
+#' - if return_shp=F, returns just a sites2blocks table in [data.table](https://r-datatable.com) format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
 #'  This is like the [getblocksnearby()] and [get_blockpoints_in_shape()] outputs.
 #'
-#' - if return_shp=T, returns a named list where pts is the data.table of sites2blocks,
+#' - if return_shp=T, returns a named list where pts is the table in [data.table](https://r-datatable.com) format of sites2blocks,
 #'   and polys is the spatial data.frame with one row per input fips (including invalid ones).
 #'
 #'   The ejam_uniq_id represents which of the input sites is being referred to, and the table
@@ -250,7 +252,7 @@ getblocksnearby_from_fips_cityshape <- function(fips, return_shp = FALSE) {
 
 getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny = FALSE, need_blockwt = TRUE, allow_multiple_fips_types = TRUE) {
 
-  if (!exists('blockid2fips')) {dataload_dynamic(varnames = 'blockid2fips')}
+  if (!exists('blockid2fips')) {dataload_dynamic(varnames = 'blockid2fips')} # *** will drop need for this
   if (!exists('bgid2fips')) {dataload_dynamic(varnames = 'bgid2fips')}
 
   ##  > SORT order of input fips is saved including invalid fips input ####
@@ -289,23 +291,25 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
 
   suppressWarnings({
     ######################################## #
-    ## create two-column dataframe with bgs (values) and original fips (ind)
-    # fips_bgs_in_fips1() returns all blockgroup fips codes contained within each fips provided
-    # fips_bgs_in_fips() replaces fips_bgs_in_fips1()
-    # all_bgs <- stack(sapply(fips_vec, fips_bgs_in_fips)) # newer - fast alone but slow in sapply?
+    ## create two-column dataframe with bgs (values. bgfips or just bgid) and original fips (ind)
+
+    # notes:
+    #   fips_bgs_in_fips1() returns all blockgroup fips codes contained within each fips provided
+    #   fips_bgs_in_fips() replaces fips_bgs_in_fips1() ? which is faster?
+    #   all_bgs <- stack(sapply(fips_vec, fips_bgs_in_fips)) # newer - fast alone but slow in sapply?
     ######################################## #
     # SLOW -- e.g. 1.4 seconds for all counties in region 6
-    # *** It might be more efficient to
-    #     replace the above fips_bgs_in_fips1()
-    #     or make a new func to provide bgid_from_anyfips()
+    # *** It would be more efficient to avoid fips_bgs_in_fips1()
+    #     to use a new func to provide bgid_from_anyfips()
     #     instead of 1st getting bgfips and then needing to look up bgid by bgfips.
-    # Consider trying to do it like this:
-    #      use fips_bgs_in_fips() to get all bg fips values
+    # We should switch to doing it all this way:
+    #      use fips_bgs_in_fips() to get all bgfips values in each of the bg/tract/county/state fips codes analyzed (which does fips_lead_zero() and fipstype() and uses blockgroupstats)
     #      use join to blockgroupstats on bgfips, to get all bgid values
+    #  OR use a variation on
     #      use join to blockwts on bgid, to get all the blockid values.
     ######################################## #
 
-    all_bgs <- lapply(fips_vec, fips_bgs_in_fips1)
+    all_bgs <- lapply(fips_vec, fips_bgs_in_fips1)  ## we could replace this with a new
     oknow <- !sapply(all_bgs, is.null)
     all_bgs   <- all_bgs[oknow]   # drop input fips that had no bgs found
     fips_vec <- fips_vec[oknow] # ditto
@@ -326,14 +330,14 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
   ######################################## #
   ### Get bgid:
 
-  all_bgs[bgid2fips, bgid := bgid, on = "bgfips"]
+  all_bgs[bgid2fips, bgid := bgid, on = "bgfips"]  # we can just convert fips to bgid via blockgroupstats and avoid using bgid2fips?
 
   if (NROW(all_bgs) == 0) {
     if (in_shiny) {
-      shiny::validate('No blockgroups found for noncity FIP codes.')
+      shiny::validate('No blockgroups found for noncity (or invalid) FIP codes.')
       return(NULL)
     } else {
-      cat('No blockgroups found for noncity FIP codes.\n') # maybe  give a warning so that mix of valid city and no valid noncity can continue
+      cat('No blockgroups found for noncity (or invalid) FIP codes.\n') # maybe  give a warning so that mix of valid city and no valid noncity can continue
       return(NULL)
     }
   } else {
@@ -341,13 +345,11 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
 
     ## Get BLOCKS in each blockgroup ####
 
-    # WOULD data.table join or merge be faster than dplyr here? This seems SLOW ***
-
     suppressMessages({
       setDF(all_bgs)
       fips_blockpoints <- dplyr::left_join(all_bgs,
                                            ## create 12-digit column inline (original table not altered)
-                                           ## do not actually need blockfips here except to join on its first 12 chars
+                                           ## do not actually need blockfips here except to join on its first 12 chars *** try to remove need for large blockid2fips file (and/or store fips as integer?)
                                            blockid2fips[, .(blockid, blockfips, blockfips12 = substr(blockfips,1,12))],
                                            by = c('bgfips' = 'blockfips12'), multiple = 'all') |>
         dplyr::left_join(blockpoints) |>

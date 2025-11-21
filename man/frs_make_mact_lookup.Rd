@@ -12,7 +12,7 @@ frs_make_mact_lookup(frs_by_programid, folder = NULL)
 \item{folder}{optional, where to download ICIS-AIR_downloads.zip to, tempdir() by default}
 }
 \value{
-list, of frs_by_mact data.table and mact_table data.frame
+list, of \link{frs_by_mact} table in \href{https://r-datatable.com}{data.table} format and \link{mact_table} data.frame
 }
 \description{
 Create updated version of frs_by_mact and mact_table

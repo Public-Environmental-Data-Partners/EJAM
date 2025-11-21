@@ -23,10 +23,25 @@ vector of numbers of sites, or text about that
 how many sites account for P percent of residents?
 }
 \examples{
- x <- testoutput_ejamit_100pts_1miles$results_bysite
+ x <- testoutput_ejamit_10pts_1miles$results_bysite[4:9, ]
+ # x <- testoutput_ejamit_1000pts_1miles$results_bysite
+ x <- x[!is.na(x$pop), ] # set pop to zero or just remove sites where pop was NA since area too small to determine accurately
+ cbind(pctofsites = round((1:length(x$pop)) / length(x$pop), 2),
+   pctofpop = round(cumsum(sort(x$pop, decreasing = T)) / sum(x$pop, na.rm=T), 2))
+
  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE)
+ popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE, atleast_not_exact=FALSE)
+ popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F)
+ popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F, atleast_not_exact=FALSE)
+
+ ## for more than one p
+ popshare_p_lives_at_what_pct(x$pop, p = c(0.50, 0.67, 0.80, 0.95) )
+
  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
- 
+
+}
+\seealso{
+\code{\link[=popshare_at_top_x_pct]{popshare_at_top_x_pct()}} \code{\link[=popshare_at_top_n]{popshare_at_top_n()}} \code{\link[=popshare_p_lives_at_what_n]{popshare_p_lives_at_what_n()}} \code{\link[=popshare_p_lives_at_what_pct]{popshare_p_lives_at_what_pct()}}
 }

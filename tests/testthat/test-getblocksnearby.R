@@ -42,7 +42,7 @@ test_that("getblocksnearby() same results as saved", {
 # > NROW(testpoints_10)
 # [1] 10
 
-# BUT... not every point shows up in output of getblocksnearby(), though those get filled back into ejscreenit()
+# BUT... not every point shows up in output of getblocksnearby()
 
 # > sort(unique(testoutput_getblocksnearby_10pts_1miles$ejam_uniq_id))
 # [1]  1  2  3  4  5    7  8  9 10

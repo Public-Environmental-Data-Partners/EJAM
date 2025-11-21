@@ -37,8 +37,8 @@ NAICS - query NAICS codes and also see all children (subcategories) of any of th
 }
 \examples{
   naics2children(211)
-  naics_from_code(211)
-  naics_from_code(211, children = TRUE)
+  EJAM:::naics_from_code(211)
+  EJAM:::naics_from_code(211, children = TRUE)
   NAICS[211][1:3] # wrong
   NAICS[NAICS == 211]
   NAICS["211 - Oil and Gas Extraction"]

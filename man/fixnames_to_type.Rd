@@ -14,16 +14,12 @@ fixnames_to_type(
 \arguments{
 \item{namesnow}{vector of strings, such as from colnames(x)}
 
-\item{oldtype}{string with name of a column in data.frame mapping_for_names,
-and that column has old column names that overlap with those in namesnow,
-like "ejscreen_csv" aka "csvname2.2" or
-like "ejscreen_api" aka "apiname" or
-like "rname" maybe aka "newnames_ejscreenapi"}
+\item{oldtype}{designation of the type of variables in namesnow:
+"long" or "shortlabel" or "original", or "csv" or "r" (aka "rname") or "api"
+or "longname" or "shortname" etc. (colnames of map_headernames,
+or aliases per helper \code{\link[=fixmapheadernamescolname]{fixmapheadernamescolname()}})}
 
-\item{newtype}{string with name of a column in data.frame mapping_for_names,
-like "rname" maybe aka "newnames_ejscreenapi" or
-like  "longname_tableheader" or "shortlabel"
-and that column has old column names that overlap with those in namesnow}
+\item{newtype}{the type to rename to (or column to query for metadata) -- see similar oldtype parameter}
 
 \item{mapping_for_names}{data.frame passed to \code{\link[=fixnames]{fixnames()}} to do the work
 with colnames that are referred to by oldtype and newtype}
@@ -32,7 +28,7 @@ with colnames that are referred to by oldtype and newtype}
 Vector or new column names same length as input
 }
 \description{
-helps convert between original, friendly, and long versions of variable names
+helps convert between original variable names and plain-English short or long versions of variable names
 }
 \details{
 YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like "apiname" or "rname",
@@ -42,6 +38,6 @@ in the column specified by oldtype
 and replaces it with the corresponding string in the column specified by newtype
 }
 \seealso{
-varinfo() from EJAM pkg, and \code{\link[=fixnames_to_type]{fixnames_to_type()}} \code{\link[=fixcolnames]{fixcolnames()}} \code{\link[=fixnames]{fixnames()}}
+\code{\link[=varinfo]{varinfo()}}   \code{\link[=fixcolnames]{fixcolnames()}} \code{\link[=fixnames]{fixnames()}}
 }
 \keyword{internal}

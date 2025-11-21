@@ -3,7 +3,7 @@
 #'
 #' @details used in [table_xls_format()], and server, to create hyperlinks to reports or webpages, one per site
 #'
-#' @param sitepoints data.frame or data.table with lat and lon columns
+#' @param sitepoints data.frame or table in [data.table](https://r-datatable.com) format with lat and lon columns
 #'   (and should have ejam_uniq_id column or assume 1 output row per input row, same order)
 #' @param lat,lon if sitepoints NULL/missing, vectors of latitudes and longitudes
 #'   (assumes ejam_uniq_id is not available and treats output as 1 per input same order)
@@ -21,7 +21,6 @@
 #'   or even a zip code, but NOT a fips code! (for FIPS, use the fips parameter instead).
 #'   Note that nearly half of all county fips codes are impossible to distinguish from
 #'   5-digit zipcodes because the same numbers are used for both purposes.
-#' @param namestr no longer used - had been passed to [url_ejscreen_report()]
 #'
 #' @param regid optional vector of FRS registry IDs if available to use to create links
 #'   to detailed ECHO facility reports
@@ -43,33 +42,29 @@
 #' @param ... passed to each function, and can be any parameter that any of them uses
 #'
 #' @examples
-#' x =  url_columns_bysite(testpoints_10[1:2,], radius = 1)
+#' x =  EJAM:::url_columns_bysite(testpoints_10[1:2,], radius = 1)
 #'
-#' x =  url_columns_bysite(
+#' x =  EJAM:::url_columns_bysite(
 #'   data.frame(lat=1:2, lon=101:102), radius = 1,
 #'   INFO_FOR_SITE2 = c(NA, "site2"),
 #'   Place1info = c("North", ""),
 #'   keylist_bysite = list(newkey_all_sites = "YES",
 #'                         site_name = c("NRO", "CRS"))
 #'   )
-#' unlinkify(x[[2]])
+#' EJAM:::unlinkify(x[[2]])
 #' x = x[[1]]
 #' x = x[, "EJAM Report"]
-#' unlinkify(x)
+#' EJAM:::unlinkify(x)
 #'
-#' @seealso  [url_ejscreen_report()] [url_ejscreenmap()] [url_echo_facility()] [url_ejscreenapi_clusters_and_sort_cols()]
+#' @seealso  [url_ejamapi()] [url_ejscreenmap()] [url_echo_facility()]
 #' @return list of data.frames to append to the list of data.frames created by
-#'   [ejamit()] or [doaggregate()],
-#'
-#'  `list(results_bysite = results_bysite, `
-#'  `    results_overall = results_overall,`
-#'  `      newcolnames=newcolnames)`
+#'   [ejamit()] or [doaggregate()]
 #'
 #' @keywords internal
 #'
 url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                                shapefile = NULL,
-                               fips = NULL, wherestr = "", namestr = NULL,
+                               fips = NULL, wherestr = "",
                                regid = NULL, # see details
                                radius = NULL,
 
@@ -86,7 +81,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   # clean/check inputs and sitetype
 
   if (is.null(lat) && is.null(lon) && is.null(shapefile) && is.null(fips) && !("" %in% wherestr) && !is.null(wherestr)) {
-    fips <- fips_from_name(wherestr) # old ejscreenapi used wherestr not fips so this is in case that is the only thing provided here
+    fips <- fips_from_name(wherestr) # old ejscreen api used wherestr not fips so this is in case that is the only thing provided here
   }
 
   sites <- sites_from_input(sitepoints = sitepoints, lat = lat, lon = lon, shapefile = shapefile, fips = fips)

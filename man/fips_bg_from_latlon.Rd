@@ -32,12 +32,12 @@ FIPS - for a set of points (lat,lon) quickly find the blockgroup each is inside
 \examples{
 \dontrun{
 # Looks like it finds the right blockgroup:
-x10 = fips_bg_from_latlon(testpoints_10)
+x10 = EJAM:::fips_bg_from_latlon(testpoints_10)
 mapfast( data.frame(ejam_uniq_id = x10[3]) )
 mapfast(testpoints_10[3, ], radius = 0.1)
 
 # Looks like it finds the right blockgroup:
-x100 = fips_bg_from_latlon(testpoints_100)
+x100 = EJAM:::fips_bg_from_latlon(testpoints_100)
 mapfast( data.frame(ejam_uniq_id = x100[34]) )
 mapfast(testpoints_100[34, ], radius = 0.1)
   }

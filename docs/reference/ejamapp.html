@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -154,10 +155,6 @@ to tell the server to NOT source all the .R files,
 since they are already loaded as part of the EJAM package when someone does <code><a href="https://ejanalysis.github.io/EJAM">require(EJAM)</a></code>,
 i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-link">require()</a></code> or <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code>.</p>
     </div>
-    <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code>ejamapp()</code>, <code>run_app()</code>, and <code>app_run_EJAM()</code> are synonymous</p></div>
-    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -209,7 +206,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  default_naics_digits_shown<span class="op">=</span><span class="st">"detailed"</span>, <span class="co"># if default_naics is &gt;3 digits, this has to be "detailed" not "basic"</span></span>
 <span>  default_naics<span class="op">=</span><span class="st">"562211"</span>,</span>
 <span>  radius<span class="op">=</span><span class="fl">3.1</span>,</span>
-<span>  default_show_advanced_settings<span class="op">=</span><span class="cn">TRUE</span></span>
+<span>  default_show_advanced_settings<span class="op">=</span><span class="cn">TRUE</span> <span class="co"># to make advanced tab visible at start</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co">## Cities dropdown list as default shown at launch:</span></span>
@@ -269,17 +266,18 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span> <span class="co"># will launch a simpler version of the web app</span></span>
 <span> <span class="co"># (e.g., for more general public use rather than the full set of complicated</span></span>
 <span> <span class="co"># features that are used less often).</span></span>
+<span></span>
 <span> <span class="co"># To make a hosted app default to the full set of features</span></span>
 <span> <span class="co"># edit app.R to override/change its default,</span></span>
-<span> <span class="co">#  and to disable and hide Advanced tab (even though isPublic=FALSE)</span></span>
+<span> <span class="co">#  and to still disable and hide Advanced tab</span></span>
 <span> <span class="co">#  and perhaps hide histograms since they are complicated,</span></span>
-<span> <span class="co">#  note these settings:</span></span>
+<span> <span class="co">#  try these settings:</span></span>
 <span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span></span>
-<span>  isPublic <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  default_show_advanced_settings <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># hides Advanced tab when app launches</span></span>
+<span>  isPublic <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># to allow full set of features (menus)</span></span>
 <span>  default_can_show_advanced_settings <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># removes user's ability to show Advanced tab</span></span>
-<span>  default_hide_plot_histo_tab <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  default_show_advanced_settings <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># just confirms default -- hiding Advanced tab when app launches</span></span>
+<span>  default_hide_plot_histo_tab <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># to hide just this feature</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span> <span class="co">## Other options:</span></span>
@@ -305,11 +303,11 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

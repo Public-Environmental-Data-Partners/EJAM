@@ -26,10 +26,10 @@ NOTE THAT ISLAND AREAS WORK DIFFERENTLY SINCE THEIR FIPS ARE NOT QUITE LIKE COUN
 }
 \examples{
 cbind(
-  fips = fipsmix,
-  type = fipstype(fipsmix),
-  cfips = fips2countyfips(fipsmix),
-  countyname = fips2countyname(fipsmix)
+  fips = testinput_fips_mix,
+  type = fipstype(testinput_fips_mix),
+  cfips = fips2countyfips(testinput_fips_mix),
+  countyname = fips2countyname(testinput_fips_mix)
 )
 
 cfips = fips_counties_from_state_abbrev("RI")

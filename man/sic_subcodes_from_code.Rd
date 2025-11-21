@@ -10,7 +10,7 @@ sic_subcodes_from_code(mycodes)
 \item{mycodes}{SIC codes vector, of 2 to 4 digits each. See \url{https://siccode.com}}
 }
 \value{
-a subset of the \link{sictable} data.table (not just the codes column)
+a subset of the \link{sictable} table in \href{https://r-datatable.com}{data.table} format (not just the codes column)
 }
 \description{
 Given 3-digit SIC code, for example, get all SIC that start with those digits.
@@ -24,6 +24,7 @@ See \code{\link[=sic_from_any]{sic_from_any()}} which uses this
   sic_subcodes_from_code('07')
   # codes starting with '078'
   sic_subcodes_from_code('078')
+
 }
 \seealso{
 \code{\link[=sic_subcodes_from_code]{sic_subcodes_from_code()}} \code{\link[=sic_from_code]{sic_from_code()}}  \code{\link[=sic_from_name]{sic_from_name()}}  \code{\link[=sic_from_any]{sic_from_any()}}

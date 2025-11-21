@@ -98,7 +98,7 @@ blockcounts_plot <- function(blockcounts, radius, n = length(blockcounts),
 #' @description Number of blocks near avg site, how many sites have only 1 or fewer than 30 blocks nearby, etc.
 #'
 #' @param x The output of [getblocksnearby()] like [testoutput_getblocksnearby_1000pts_1miles]
-#' @param varname colname of variable in data.table x that is the one to summarize by
+#' @param varname colname of variable in x, a table in [data.table](https://r-datatable.com) format, that is the one to summarize by
 #' @return invisibly, a list of stats, and plot
 #' @import data.table
 #' @seealso [getblocks_diagnostics()]
@@ -165,7 +165,7 @@ getblocks_summarize_sites_per_block <- function(x, varname='blockid') {
 #'  zz <- getblocks_diagnostics(z, detailed = T, see_pctiles = T)
 #' cbind(stats = zz)
 #'
-#'   getblocks_diagostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
+#'   getblocks_diagnostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
 #'
 #' @import data.table
 #'

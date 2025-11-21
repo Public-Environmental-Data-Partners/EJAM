@@ -10,7 +10,6 @@
 # units, utils, rlang, crayon, tidyselect
 ################################# #
 
-# #  a census api key would be needed here if large number queries needed
 ################################# #
 
 
@@ -37,7 +36,7 @@
 #' @export
 #'
 acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = 2022) {
-  
+
   if (missing(yr)) {message("Using default yr of ", yr)}
   ## This right now only works if all extra packages have been attached by hand or added to DESCRIPTION Imports
   ### ## Packages required:
@@ -48,8 +47,12 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = 2022) {
   ## httr, tigris, stringr, jsonlite,
   ## purrr, rvest,  rappdirs, readr, xml2,
   ## units, utils, rlang, crayon, tidyselect
-  
-  # if (exists("get_acs")) {  # now in Imports of DESCRIPTION file
+
+  # >>> check if census api key available *** ####
+  if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
+    warning("envt var CENSUS_API_KEY not found - tidycensus::get_acs() may require having set up a census api key - see ?tidycensus::census_api_key  ")
+  }
+
     data_county <- tidycensus::get_acs(
       geography = "county",
       variables = unlist(myvars),
@@ -57,10 +60,6 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = 2022) {
       year = yr
     )
     return(data_county)
-  # } else {
-  #   warning("Requires the tidycensus package (and supporting packages) be installed, loaded, and attached.")
-  #   return(NULL)
-  # }
 }
 ################################# ################################## #
 
@@ -86,51 +85,51 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = 2022) {
 #'
 plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate = NULL,
                           labeltype = NULL, acsinfo = NULL, yr = 2022) {
-  
-  # if (exists("get_acs") & exists("str_remove") & exists("label_number_auto")) {  # now in Imports of DESCRIPTION file 
+
+  # if (exists("get_acs") & exists("str_remove") & exists("label_number_auto")) {  # now in Imports of DESCRIPTION file
     # see acs_bycounty() notes
     if (is.null(labeltype)) {labeltype <- label_number_auto()} # requires scales pkg
     if (missing(mystate) || is.null(mystate)) {
       mystate <- gsub("^.*, ", "", x$NAME[1])
     }
-    
+
     if (length(unique(x$variable)) > 1) {stop("x$variable must be one unique variable only")}
     if (length(myvars) > 1) {stop("myvars must be length 1")}
-    
+
     ### get long name of variable and of state
     if (missing(myvarnames) || is.null(myvarnames)) {
       if (missing(acsinfo)) {
         cat("downloading acs variable information to get myvarnames (plain English names of variables) ... \n")
-        acsinfo <- load_variables(yr, "acs5")  # requires tidycensus package 
+        acsinfo <- load_variables(yr, "acs5")  # requires tidycensus package
       }
       myvarnames <- acsinfo$label[match(myvars, acsinfo$name)]   # match is ok since each unique name should appear only once in acsinfo table.  anyDuplicated(acsinfo$name)
-    shortname <- gsub(".*!!([^!]*)$", "\\1", myvarnames)  # e.g., Male:  or   
+    shortname <- gsub(".*!!([^!]*)$", "\\1", myvarnames)  # e.g., Male:  or
     startofname <- gsub("(.*!!)([^!]*)$", "\\1", myvarnames) # can be ""      myvarnames <- gsub("!!", " ", myvarnames)
       myvarnames <- gsub("^Estimate", "", myvarnames)
     } else {
       shortname = myvarnames
       startofname = myvarnames
     }
-    
+
     plot_errorbar <- ggplot2::ggplot(x,
                             ggplot2::aes(x = estimate,
                                 y = reorder(NAME, estimate))) +
       ggplot2::geom_errorbar(aes(xmin = estimate - moe, xmax = estimate + moe), #<<
                              width = 0.5, linewidth = 0.5) + #<<
       ggplot2::geom_point(color = "darkblue", size = 2) +
-      
+
       ggplot2::scale_x_continuous(labels = labeltype) +
-      
+
       ggplot2::scale_y_discrete(labels = function(x) {
-        stringr::str_remove(x, paste0(" County, ", mystate))  # requires stringr package 
-      }) + 
+        stringr::str_remove(x, paste0(" County, ", mystate))  # requires stringr package
+      }) +
       ggplot2::labs(title = paste0(shortname, ", ", yr - 4, "-", yr," ACS"),
                     subtitle = paste0("Counties in ", mystate),
                     caption = "Data acquired with R and tidycensus. Error bars represent margin of error around estimates.",
                     x = myvarnames, # startofname, # "ACS estimate",
                     y = "") +
       ggplot2::theme_minimal(base_size = 12)
-    
+
     plot_errorbar
   # } else {
   #   warning("Requires the tidycensus package (and supporting packages like stringr and scales) be installed, loaded, and attached.")

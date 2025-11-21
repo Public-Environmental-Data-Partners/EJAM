@@ -37,9 +37,8 @@ pkg_update_testpoints_testoutputs <- function(
   resaving_ejamit_rda           = TRUE,
   resaving_ejamit_helpdocs      = TRUE,
   resaving_ejam2excel         = TRUE,
-  resaving_ejam2report        = TRUE,
+  resaving_ejam2report        = TRUE
 
-  redoing_ejscreenit_10_for_ejam_to_have  = FALSE # no longer in the mid-2025 version of EJAM (it had been outdated)
   # and  there are these:  5, 50, 500  ## handled by a separate file
 
 ) {
@@ -427,43 +426,6 @@ pkg_update_testpoints_testoutputs <- function(
 
   } # end of loop over point counts
 
-  ############################################# #
-  # _ ####
-  # >_____ejscreenit() output examples _____________________ ####
-
-  ## save as DATA IN PACKAGE ####
-  if (redoing_ejscreenit_10_for_ejam_to_have) {  ## NO LONGER USED IN MID-2025 VERSION OF EJAM
-    # using the API that EJSCREEN provides, for comparison, to have available as data saved in EJAM pkg:
-    testpoints_name <- "testpoints_10"
-    myrad = 1
-    testoutput_ejscreenit_10pts_1miles <- ejscreenit(
-      testpoints_10, radius = 1, calculate_ratios = TRUE,
-      nosave = TRUE, nosee = TRUE,
-      interactiveprompt = FALSE)
-
-    metadata_add_and_use_this("testoutput_ejscreenit_10pts_1miles")
-    # text_to_do <- paste0(
-    #   "", "testoutput_ejscreenit_10pts_1miles", " = metadata_add(", "testoutput_ejscreenit_10pts_1miles", ")"
-    # )
-    # eval(parse(text = text_to_do))
-    # usethis::use_data(testoutput_ejscreenit_10pts_1miles, overwrite = TRUE)
-
-    ## save as DOCUMENTATION ####
-
-    dataset_documenter("testoutput_ejscreenit_10pts_1miles",
-                       title = "test output of ejscreenit(), using the EJSCREEN API",
-                       details = "This is the output of
-#'
-#'  ejscreenit(
-#'    testpoints_10, radius = 1,
-#'    nosave = T, nosee = T, interactiveprompt = F, calculate_ratios = T
-#'  )
-#'
-#'  See testoutput_ejscreenit_10pts_1miles$table
-#'  See testoutput_ejamit_10pts_1miles$results_bysite",
-                       seealso = "[ejscreenit_for_ejam()]"
-    )
-  }
 ############################################# #
 
   cat('

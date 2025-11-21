@@ -8,6 +8,7 @@
 #' You can use browse=TRUE to save it as a shareable .html file
 #' and see it in your web browser.
 #' @param ejamitout output of ejamit()
+#' @param radius radius in miles
 #' @param column_names can be "ej", passed to [mapfast()]
 #' @param launch_browser logical optional whether to open the web browser to view the map
 #' @param shp shapefile it can map if analysis was for polygons, for example
@@ -37,24 +38,20 @@
 #' # browseURL(normalizePath(dirname(fname))) # to open the temp folder
 #' # file.copy(fname, "./map.html") # to copy map file to working directory
 #'
-#' out <- testoutput_ejscreenapi_plus_5
-#' mapfastej(out)
 #' }
 #' @export
 #'
 ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp = NULL,
+                     radius = NULL,
                      sitenumber = NULL) {
 
-  # mydf, radius = 3, column_names='all', labels = column_names,
-
-  # got a list or table ? ####
   if (is.data.frame(ejamitout)) {
     # if it's a data.frame not the whole list output of ejamit(), assume it's the results_bysite, so make it look like we expected
     if (!("pop" %in% names(ejamitout))) {stop('ejamitout as passed to ejam2map should be either output of ejamit() or results_bysite element (table) from that output')}
-    ejamitout <- list(results_bysite = ejamitout)
+    if (!is.null(shp)) {sitetype <- "shp"} else {sitetype <- sitetype_from_dt(ejamitout)}
+    # sitetype ####
+    ejamitout <- list(results_bysite = ejamitout, sitetype = sitetype)
   }
-
-  # sitetype ####
   if ("sitetype" %in% names(ejamitout)) {
     sitetype <- ejamitout$sitetype
   } else {
@@ -62,8 +59,10 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
   }
 
   # radius ####
+  if (is.null(radius)) {
     radius <- ejamitout$results_bysite$radius.miles[1]
-    if (is.na(radius)) {radius <- 0}
+  }
+  if (is.na(radius)) {radius <- 0}
 
   ################################################## #  ################################################## #
   # sitenumber (overall vs 1-site) ####
@@ -122,7 +121,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     # we have to assume that buffer was already added to polygons passed here - do not add them again
     map_ejam_plus_shp(shp = shp,
                       out = ejamitout,
-                      # radius_buffer = radius,
+                      radius = radius,
                       launch_browser = launch_browser)
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {

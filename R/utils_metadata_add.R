@@ -22,13 +22,16 @@ attributes2 = function(x) {
 #' @param newvalue the new value of that attribute
 #' @param exclude_atomic_vectors if TRUE, avoids updating attributes on atomic vectors like names_e,
 #'   since it is distracting when printing them to console
+#' @param only_update_if_had_been_set set to TRUE to only update this attribute for data objects where
+#'   that object already had a value set for this attribute, to update only but not create/add attribute.
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @keywords internal
 #'
 metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
                                  attr_name = "ejam_package_version", newvalue = desc::desc_get("Version"),
-                                 exclude_atomic_vectors = TRUE) {
+                                 exclude_atomic_vectors = TRUE,
+                                 only_update_if_had_been_set = FALSE) {
 
   # x param is vector of names of data objects to update in the source package
   fnamesimplied = tolower(paste0(x, ".rda"))
@@ -40,7 +43,10 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 
   cat("newvalue is: \n")
   print(newvalue)
-
+  if (only_update_if_had_been_set) {
+  x_attr_present <- as.vector(unlist(sapply(x, function(z)  if (!is.null(attr(get(z), attr_name))) {z} )))
+  x <- x_attr_present
+}
   for (i in 1:length(x))  {
     if (exclude_atomic_vectors && is.atomic(get(x[i])) && is.vector(get(x[i]))) {
       # ignore this object
@@ -75,7 +81,7 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 #' @keywords internal
 #'
 metadata_add_and_use_this <- function(objectname) {
-
+  if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   text_to_do <- paste0("", objectname, " = metadata_add(", objectname, ")")
   eval(parse(text = text_to_do))
 
@@ -112,9 +118,9 @@ metadata_add_and_use_this <- function(objectname) {
 #'
 #' @return returns x but with new or altered attributes
 #' @examples
-#'   # metadata_check() # internal function
+#'   # EJAM:::metadata_check() # internal function
 #'   x <- data.frame(a=1:10,b=1001:1010)
-#'   # x <- metadata_add(x) # internal function
+#'   # x <- EJAM:::metadata_add(x) # internal function
 #'   attributes(x)
 #'
 #' @keywords internal
@@ -122,7 +128,7 @@ metadata_add_and_use_this <- function(objectname) {
 metadata_add <- function(x, metadata=NULL,
                          update_date_saved_in_package = TRUE,
                          update_ejam_package_version = TRUE) {
-
+  if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   # source("R/metadata_mapping.R")  # this already would get loaded via devtools::load_all() or library(EJAM)
   # rstudioapi::documentOpen("./R/metadata_mapping.R")
   if (is.null(metadata)) {
@@ -156,7 +162,7 @@ metadata_add <- function(x, metadata=NULL,
 #' @inheritParams metadata_check
 #' @return same as [metadata_check()], invisibly
 #' @examples
-#' # x = metadata_check( which = "ejam_package_version")
+#' # x = EJAM:::metadata_check( which = "ejam_package_version")
 #' # x[!x$ejam_package_version %in% "2.32.6", ]
 #'
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
@@ -166,7 +172,7 @@ metadata_add <- function(x, metadata=NULL,
 metadata_check_print = function(...) {
 
   ## check which dataset objects have which metadata info about vintage, etc.
-
+  if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   x = EJAM:::metadata_check(...)
   cat("\n\n See what metadata is stored as attributes \n\n")
   print(t(head(x,1)))
@@ -235,7 +241,7 @@ cat("\n\n")
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'   [pkg_functions_and_data()]
 #' @examples
-#' x = metadata_check( which = "ejam_package_version")
+#' x = EJAM:::metadata_check( which = "ejam_package_version")
 #' x[!x$ejam_package_version %in% "2.32.6", ]
 #'
 #'   # tail(EJAM:::metadata_check( ))
@@ -262,6 +268,7 @@ metadata_check <- function(packages = EJAM::ejampackages,
                            grepdatasets = FALSE,
                            loadifnotloaded = TRUE) {
 
+if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   # > dput(default_metadata)
   # list(
   #   ejam_package_version = c(Version = "2.32.0"),

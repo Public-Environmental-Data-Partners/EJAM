@@ -27,7 +27,7 @@ pkg_functions_and_data(
 \item{vectoronly}{set to TRUE to just get a character vector of object names instead of the data.frame table output}
 }
 \value{
-data.table with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
+table in \href{https://r-datatable.com}{data.table} format with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
 unless vectoronly = TRUE in which case it returns a character vector
 }
 \description{
@@ -43,7 +43,7 @@ See \code{\link[=pkg_functions_and_data]{pkg_functions_and_data()}}, pkg_functio
 See \code{\link[=pkg_data]{pkg_data()}}
 }
 \examples{
- # pkg_functions_and_data("datasets")
+ # EJAM:::pkg_functions_and_data("datasets")
 
 }
 \seealso{

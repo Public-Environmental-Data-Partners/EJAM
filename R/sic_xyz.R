@@ -9,7 +9,6 @@
 #'  where you can find facilities based on NAICS or SIC.
 #'
 #' @seealso [regid_from_sic()] [sic_from_any()] [latlon_from_sic()]
-#' @export
 #'
 #' @examples
 #'   frs_from_sic("glass")
@@ -20,6 +19,8 @@
 #'   frs_from_sic('0780')
 #'   regid_from_sic('0780')
 #'   latlon_from_sic('0780')
+#'
+#' @export
 #'
 frs_from_sic <- function(sic_code_or_name, ...) {
 
@@ -53,14 +54,14 @@ frs_from_sic <- function(sic_code_or_name, ...) {
 #'   Also, this function does not find the sites
 #'   identified by FRS data as being in a child SIC (subcategory of your exact query)!
 #'
-#'   Relies on  frs_by_sic (a data.table)
+#'   Relies on  [frs_by_sic]
 #'
 #'   See info about SIC industry codes at <https://www.naics.com/search>
 #' @param sic a vector of SIC codes, or
-#'   a data.table with column named code, as with output of [EJAM::sic_from_any()]
+#'   a table in [data.table](https://r-datatable.com) format with column named code, as with output of [EJAM::sic_from_any()]
 #' @param id_only logical optional, set TRUE to get only the vector of REGISTRY_ID
 #'   values back instead of a data.frame with lat,lon,SIC columns too.
-#' @return A data.table (not just data.frame) with columns called
+#' @return A table in [data.table](https://r-datatable.com) format (not just data.frame) with columns called
 #'   lat, lon, REGISTRY_ID, SIC (unless the id_only parameter is set to TRUE)
 #' @aliases regid_from_sic
 #' @examples
@@ -96,7 +97,7 @@ latlon_from_sic <- function(sic, id_only=FALSE) {
 
 #' Alias for latlon_from_sic()
 #' @inheritParams latlon_from_sic
-#' @return A data.table (not just data.frame) with columns called
+#' @return A table in [data.table](https://r-datatable.com) format (not just data.frame) with columns called
 #'   lat, lon, REGISTRY_ID, SIC (but see the id_only parameter)
 #' @noRd
 #' @export
@@ -113,13 +114,14 @@ regid_from_sic <- latlon_from_sic
 #' See [sic_from_any()] which uses this
 #' @param mycodes SIC codes vector, of 2 to 4 digits each. See <https://siccode.com>
 #'
-#' @return a subset of the [sictable] data.table (not just the codes column)
+#' @return a subset of the [sictable] table in [data.table](https://r-datatable.com) format (not just the codes column)
 #' @seealso [sic_subcodes_from_code()] [sic_from_code()]  [sic_from_name()]  [sic_from_any()]
 #' @examples
 #'   # codes starting with '07'
 #'   sic_subcodes_from_code('07')
 #'   # codes starting with '078'
 #'   sic_subcodes_from_code('078')
+#'
 #' @export
 #'
 sic_subcodes_from_code <- function(mycodes) {
@@ -144,7 +146,7 @@ sic_subcodes_from_code <- function(mycodes) {
 #' @param children logical, if TRUE, also return all the subcategories - where SIC starts with the same digits
 #' @seealso [sic_subcodes_from_code()] [sic_from_code()]  [sic_from_name()]
 #'
-#' @return a subset of the [sictable] data.table (not just the codes column)
+#' @return a subset of the [sictable] table in [data.table](https://r-datatable.com) format (not just the codes column)
 #' @export
 #'
 sic_from_code <- function(mycodes, children=FALSE) {
@@ -171,7 +173,8 @@ sic_from_code <- function(mycodes, children=FALSE) {
 #' @seealso [sic_subcodes_from_code()] [sic_from_code()]  [sic_from_name()]  [sic_from_any()]
 #' @examples
 #'  data.table::fintersect(sic_from_any( "glass"), sic_from_any("paint"))
-#' @return a subset of the [sictable] data.table (not just the codes column)
+#' @return a subset of the [sictable] table in [data.table](https://r-datatable.com) format (not just the codes column)
+#'
 #' @export
 #'
 sic_from_name <- function(mynames, children = FALSE, ignore.case = TRUE, fixed = FALSE) {
@@ -202,7 +205,7 @@ sic_from_name <- function(mynames, children = FALSE, ignore.case = TRUE, fixed =
 #' @param website_url whether to return the URL of the webpage with info on the NAICS (web query uses synonyms so gets more hits)
 #' @seealso [sic_subcodes_from_code()] [sic_from_code()]  [sic_from_name()]  [sic_from_any()]
 #'
-#' @return a subset of the [sictable] data.table (not just the codes column)
+#' @return a subset of the [sictable] table in [data.table](https://r-datatable.com) format (not just the codes column)
 #' @export
 #'
 sic_from_any <- function(query, children=FALSE, ignore.case = TRUE, fixed = FALSE, website_scrape=FALSE, website_url=FALSE) {

@@ -21,8 +21,7 @@ attribute called "unique" will store the count of unique topoints overall
 count the number of topoints within a specified radius of each frompoint
 }
 \examples{
-# countpoints_nearby(pts_sites, pts_features, radius = 3)
-
+# EJAM:::countpoints_nearby(pts_sites, pts_features, radius = 3)
 
 
 }

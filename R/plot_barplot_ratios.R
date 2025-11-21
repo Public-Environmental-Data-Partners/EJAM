@@ -1,8 +1,8 @@
 
 #' Helper - Barplot of ratios of indicators (at a site or all sites overall) to US or State average
-#' @rdname ejam2barplot
 #' @details
-#' Used by and similar to [ejam2barplot()], which is an easier way to do this!
+#'   Used by and similar to [ejam2barplot()], which is an easier way to do this!
+#'
 #'   This function requires you to specify single_location = TRUE when
 #'   using the row_index param. The [ejam2barplot()] function just uses a sitenumber parameter.
 #'
@@ -20,7 +20,23 @@
 #' @param single_location set to TRUE and provide row_index to view one site,
 #'  set to FALSE to view overall results from out$results_overall
 #' @param row_index the number of the row to use from out$results_bysite, if single_location = TRUE.
-#' @param ... passed to plot_barplot_ratios()
+#' @param ... passed to [plot_barplot_ratios()], to change color scheme etc.
+#'
+#' @examples
+#' out <- testoutput_ejamit_100pts_1miles
+#' ejam2barplot(out)
+#'
+#' out <- testoutput_ejamit_100pts_1miles
+#' plot_barplot_ratios_ez(
+#'   out,
+#'   varnames = c(names_d_ratio_to_avg , names_d_subgroups_ratio_to_avg)
+#' )
+#'
+#' out <- testoutput_ejamit_100pts_1miles
+#' plot_barplot_ratios(
+#'   unlist(out$results_overall[ ,
+#'      c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ])
+#' )
 #'
 #' @export
 #' @keywords internal
@@ -56,8 +72,10 @@ plot_barplot_ratios_ez = function(out,
 
 
 #' helper - Barplot of ratios of residential population percentages (or other scores) to averages (or other references)
-#' @rdname ejam2barplot
-#' @details If the parameter called main has the word "State" in it, then the legend
+#' @details
+#'   See [plot_barplot_ratios_ez()] which is easier to use, or [ejam2barplot()] which is even easier.
+#'
+#'   If the parameter called main has the word "State" in it, then the legend
 #'   will refer to "State Average" instead of "US Average" -- You cannot plot both types at the same time,
 #'   so the ratio.to.us.d.overall parameter should be either
 #'   just ratios to average in US or just ratios to average in State.
@@ -69,7 +87,7 @@ plot_barplot_ratios_ez = function(out,
 #'   or if using state ratios, include the word "State" to have it try to infer what the legend should be
 #' @param ylab optional, label for y axis
 #' @param caption text for a key defining some terms that are abbreviations
-#'
+#' @inherit plot_barplot_ratios_ez examples
 #' @seealso  [ejam2ratios()] [ejam2barplot()] [plot_barplot_ratios_ez()] [ejam2excel()]
 #' @return ggplot should be returned
 #'
@@ -109,9 +127,9 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   # - v1_summary_plot <- reactive({ })     and output$view1_summary_plot <- renderPlot({v1_summary_plot()})
   #    - in EJAM server for SHORT report if box type, and
   #    - in EJAM server for LONG report passed as a parameter
-  # - plot_boxplot_ratios()
+  # - plot_boxplot_ratios() is an older/obsolete related function
   #    (NOT in EJAM server for Detailed Results interactive views)
-  # - ejscreenapi_script() code also relevant?
+  #
   # - box/scatter examples in ggplot, <https://r-graph-gallery.com/89-box-and-scatter-plot-with-ggplot2.html>
   # - boxplots in base R, <https://www.r-bloggers.com/2023/09/how-to-reorder-boxplots-in-r-a-comprehensive-guide>
   #
@@ -144,8 +162,9 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
     warning("Some shortlabels are not unique, so they will be made unique by adding a number suffix.")
     names(ratio.to.us.d.overall) <- make.unique(names(ratio.to.us.d.overall), sep = " ")
   }
-
-  ratio.to.us.d.overall[is.infinite(ratio.to.us.d.overall)] <- 0
+  if (any(sapply(ratio.to.us.d.overall, is.infinite))) {
+    ratio.to.us.d.overall[, sapply(ratio.to.us.d.overall, is.infinite)] <- 0
+  }
   # use yellow/orange/red for ratio >= 1x, 2x, 3x  #  work in progress
   mycolors <- mycolorsavailable[1 + findInterval(ratio.to.us.d.overall, c(1.01, 2, 3))]
 
@@ -156,7 +175,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   # abline(h=1, col="gray")
 
   thisdata <-  data.frame(name = factor(names(ratio.to.us.d.overall),levels = names(ratio.to.us.d.overall)),
-                          value = ratio.to.us.d.overall,
+                          value = as.vector(unlist(ratio.to.us.d.overall)),
                           color =  factor(
                             mycolors,
                             levels = c( "red","orange","yellow","gray") #Set correct order from least to most

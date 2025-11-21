@@ -10,7 +10,7 @@ table_gt_from_ejamit_overall(
 )
 }
 \arguments{
-\item{ejamit_results_1row}{1-row data.table like testoutput_ejamit_100pts_1miles$results_overall,
+\item{ejamit_results_1row}{1-row table in \href{https://r-datatable.com}{data.table} format like testoutput_ejamit_100pts_1miles$results_overall,
 as would come from ejamit(testpoints_10)$results_overall}
 
 \item{type}{Must be "demog" or "envt" -- Creates one of these at a time}

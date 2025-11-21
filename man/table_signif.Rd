@@ -7,7 +7,7 @@
 table_signif(dat, digits = NULL)
 }
 \arguments{
-\item{dat}{data.frame or data.table of numbers}
+\item{dat}{data.frame or table in \href{https://r-datatable.com}{data.table} format of numbers}
 
 \item{digits}{vector as long as number of columns in dat,
 or use default which is to get the number of significant digits from
@@ -23,11 +23,11 @@ Round numbers in a table, each column to appropriate number of significant digit
 \examples{
 out <- testoutput_ejamit_10pts_1miles
 mytable <- out$results_bysite[1:2, ..names_these]
-table_signif_round_x100(mytable)
+EJAM:::table_signif_round_x100(mytable)
 # same as this:
-table_signif(
-  table_round(
-    table_x100(
+EJAM:::table_signif(
+  EJAM:::table_round(
+    EJAM:::table_x100(
       mytable, names_pct_as_fraction_ejamit
     )
   )

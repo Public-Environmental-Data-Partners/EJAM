@@ -13,7 +13,7 @@ calc_counties_from_bg(
 )
 }
 \arguments{
-\item{childDT}{data.table (or data.frame)}
+\item{childDT}{\href{https://r-datatable.com}{data.table} (or data.frame)}
 
 \item{score_colname}{name of a column in childDT}
 
@@ -23,7 +23,7 @@ calc_counties_from_bg(
 and first 5 characters must be the county FIPS code (and must include any leading zeroes)}
 }
 \value{
-data.table of 1 row per county (each county that is in the childDT provided),
+\href{https://r-datatable.com}{data.table} of 1 row per county (each county that is in the childDT provided),
 just columns "countyfips", "Countyname", score_colname, wt_colname
 }
 \description{

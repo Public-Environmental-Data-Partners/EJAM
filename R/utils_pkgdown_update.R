@@ -97,7 +97,7 @@
 #' @param dobuild_site should leave this TRUE
 #'
 #' @examples
-#'   # pkgdown_update(doask = TRUE)
+#'   # EJAM:::pkgdown_update(doask = TRUE)
 #'
 #' @returns NULL
 #'
@@ -336,7 +336,7 @@ pkgdown_update = function(
     golem::detach_all_attached()
     library(devtools) # library() stops with error where require() would only warn
     library(pkgdown)
-    devtools::load_all() # got error lazy-load database ... corrupt
+    devtools::load_all() # doing load_all() without having done library() first might fail to do some of what is needed?
   } else {
     cat('doing library(EJAM) \n')
     x = try( library(EJAM) ) # library() stops with error where require() would only warn

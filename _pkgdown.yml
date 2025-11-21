@@ -16,8 +16,8 @@ footer:
     left: [datefooter]
     right: [package, versionmsg]
   components:
-    datefooter: October 2025
-    versionmsg: Version 2.32.6.002
+    datefooter: November 2025
+    versionmsg: Version 2.32.6.003
 development:
   mode: release
   destination:
@@ -50,6 +50,7 @@ articles:
   desc: For package/app developers
   navbar: For package/app developers
   contents:
+  - dev-speed
   - dev-app-settings
   - dev-deploy-app
   - dev-run-shinytests
@@ -58,6 +59,7 @@ articles:
   - dev-update-documentation
   - dev-update-package
   - dev-future-plans
+  - dev-speed
 reference:
 - title: "Key Functions for Starting an Analysis"
   desc: "Starting the Analysis"
@@ -67,7 +69,6 @@ reference:
   - ejamit
   - ejamit_compare_distances
   - ejamit_compare_types_of_places
-  - ejscreenit_for_ejam
 - title: "Key Functions for Viewing Results"
   desc: "Viewing the Results"
   contents:
@@ -166,15 +167,8 @@ reference:
   contents:
   - testinput_shapes_2
   - shapefile_from_any
-  - shapefile_from_folder
-  - shapefile_from_filepaths
-  - shapefile_from_zip
-  - shapefile_from_gdb
-  - shapefile_from_gdbzip
-  - shapefile_filepaths_from_folder
-  - shapefile_filepaths_valid
-  - shapefile_clean
   - shapefile_from_sitepoints
+  - shapefile_clean
   - shape_buffered_from_shapefile
   - shape_buffered_from_shapefile_points
   - shapes_from_fips
@@ -252,18 +246,7 @@ reference:
   - indexfrs
   - convert_units
   - fips2pop
-- title: "Calculating and Aggregating"
-  desc: >
-    Tools that Calculate and Aggregate Indicators
-    at each Place and Overall, and Report Percentiles
-  contents:
-  - doaggregate
-  - calc_ejam
-  - calc_byformula
-  - pctile_from_raw_lookup
-  - lookup_pctile
-  - high_pctiles_tied_with_min
-- subtitle: "Datasets with Indicators, etc."
+- subtitle: "Datasets with Indicators (raw data, means, percentiles)"
   contents:
   - blockgroupstats
   - bgej
@@ -272,30 +255,31 @@ reference:
   - acs_bybg
   - avg.in.us
   - usastats
+  - stateinfo
+  - stateinfo2
+  - statestats
+  - modelDoaggregate
+  - modelEjamit
+- title: "Calculating and Aggregating"
+  desc: >
+    Tools that Calculate and Aggregate Indicators
+    at each Place and Overall, and Report Percentiles or Means
+  contents:
+  - doaggregate
+  - calc_ejam
+  - calc_byformula
+  - calc_avg_columns
+  - calc_ratio_columns
+  - calc_pctile_columns
+  - lookup_pctile
   - usastats_means
   - usastats_query
   - usastats_queryd
   - usastats_querye
-  - stateinfo
-  - stateinfo2
-  - statestats
   - statestats_means
   - statestats_query
   - statestats_queryd
   - statestats_querye
-  - modelDoaggregate
-  - modelEjamit
-- subtitle: "Comparing Distances / Multiple Radius Values"
-  contents:
-  - ejamit_compare_distances
-  - ejamit_compare_distances_fulloutput
-  - ejam2barplot_distances
-  - distance_by_group_by_site
-  - distance_by_group_plot
-  - distance_cdf_by_group_plot
-  - distance_mean_by_group
-  - distance_by_group
-  - distance_trends
 - subtitle: "Calculating Summary Stats, etc."
   contents:
   - count_sites_with_n_high_scores
@@ -307,6 +291,17 @@ reference:
   - popshare_p_lives_at_what_pct
   - distance_trends
   - batch.summarize
+- subtitle: "Comparing Distances / Multiple Radius Values"
+  contents:
+  - ejamit_compare_distances
+  - ejamit_compare_distances_fulloutput
+  - ejam2barplot_distances
+  - distance_by_group_by_site
+  - distance_by_group_plot
+  - distance_cdf_by_group_plot
+  - distance_mean_by_group
+  - distance_by_group
+  - distance_trends
 - title: "Viewing Results"
 - subtitle: "Maps of Points"
   contents:
@@ -351,7 +346,6 @@ reference:
   contents:
   - ejam2histogram
   - ejam2boxplot_ratios
-  - plot_boxplot_ratios
   - plot_boxplot_pctiles
   - plot_ridgeline_ratios_ez
   - plot_ridgeline_ratios
@@ -376,7 +370,6 @@ reference:
   - ejam2means
   - ejam2tableviewer
   - ejam2table_tall
-  - ejscreenit_see_table
   - table_ratios_from_ejamit
   - table_gt_from_ejamit
   - table_gt_from_ejamit_1site
@@ -447,9 +440,10 @@ reference:
   - map_headernames
 - title: internal
   contents:
+  - plot_boxplot_ratios
+  - high_pctiles_tied_with_min
+  - pctile_from_raw_lookup
   - api_run
-  - ejscreenit_for_ejam
-  - ejscreenit
   - state_from_sitetable
   - fips2state_abbrev
   - fips2state_fips
@@ -461,9 +455,6 @@ reference:
   - testoutput_doaggregate_10pts_1miles
   - testoutput_doaggregate_100pts_1miles
   - testoutput_doaggregate_1000pts_1miles
-  - testoutput_ejscreenit_5
-  - testoutput_ejscreenit_50
-  - testoutput_ejscreenit_500
   - acsendyear
   - app_run_EJAM
   - app_server
@@ -476,18 +467,11 @@ reference:
   - dataload_from_local
   - dataload_dynamic
   - download_latest_arrow_data
-  - default_points_shown_at_startup
   - getpointsnearbyviaQuadTree
   - proxistat_via_getblocks
   - colcounter
   - plot_st_v_us
   - plot_vs_us
-  - url_ejscreen_report
-  - ejscreen_vs
-  - ejscreen_vs_ejam_1var
-  - ejscreen_vs_ejam
-  - ejscreenapi2ejam_format
-  - ejscreenRESTbroker2table_na_filler
   - frs_get
   - frs_download
   - frs_drop_inactive
@@ -514,6 +498,7 @@ reference:
   - custom
   - formula_varname
   - formulas_all
+  - formulas_ejscreen_acs
   - formulas_d
   - batch.clean
   - rowMaxs2
@@ -530,8 +515,15 @@ reference:
   - fips_counties_from_countyname
   - fips_place_from_placename
   - shapefile2blockpoints
-  - shapefile_filepaths_validize
+  - shapefile_from_gdb
+  - shapefile_from_gdbzip
+  - shapefile_from_zip
   - shapefile_from_json
+  - shapefile_from_filepaths
+  - shapefile_from_folder
+  - shapefile_filepaths_from_folder
+  - shapefile_filepaths_valid
+  - shapefile_filepaths_validize
   - state_from_s2b_bysite
   - state_from_blockid_table
   - state_from_blockid
@@ -565,10 +557,7 @@ reference:
   - testinput_address_table_9
   - testinput_address_table_goodnames
   - testinput_address_table_withfull
-  - testoutput_ejscreenapi_1pts_1miles
-  - testoutput_ejscreenRESTbroker_1pts_1miles
   - testpoints_100_dt
-  - testoutput_ejscreenapi_plus_5
   - namez
   - names_age
   - names_age_count
@@ -655,7 +644,6 @@ reference:
   - names_misc
   - names_pct_as_fraction_blockgroupstats
   - names_pct_as_fraction_ejamit
-  - names_pct_as_fraction_ejscreenit
   - names_sitesinarea
   - names_these
   - names_these_avg
@@ -663,3 +651,5 @@ reference:
   - names_these_ratio_to_state_avg
   - names_these_state_avg
   - names_wts
+  - formulas_ejscreen_acs_disability
+  - formulas_ejscreen_demog_index

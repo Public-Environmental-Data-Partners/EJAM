@@ -7,14 +7,14 @@
 frs_drop_inactive(frs, closedid)
 }
 \arguments{
-\item{frs}{Required, data.table from frs_get()}
+\item{frs}{Required, table in \href{https://r-datatable.com}{data.table} format from \code{\link[=frs_get]{frs_get()}}}
 
 \item{closedid}{Required, vector of codes to treat as inactive,
 obtained from \code{\link[=frs_inactive_ids]{frs_inactive_ids()}} which downloads national dataset and
 uses assumed codes and returns ids of the inactive sites.}
 }
 \value{
-Returns the full frs data.table but without the inactive ids
+Returns the full \link{frs} table in \href{https://r-datatable.com}{data.table} format but without the inactive ids
 }
 \description{
 Remove inactive sites from downloaded FRS data.table
@@ -47,12 +47,13 @@ Codes assumed to mean site is closed:
 }
 }
 \examples{
- 
   # frs <- frs_get()
   # closedid <- frs_inactive_ids()
   # frs <- frs_drop_inactive(frs, closedid = closedid)
   # usethis::use_data(frs, overwrite = TRUE)
+
 }
 \seealso{
 \code{\link[=frs_update_datasets]{frs_update_datasets()}} which uses \code{\link[=frs_get]{frs_get()}} and \code{\link[=frs_inactive_ids]{frs_inactive_ids()}} \code{\link[=frs_active_ids]{frs_active_ids()}}
 }
+\keyword{internal}

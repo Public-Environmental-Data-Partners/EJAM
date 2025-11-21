@@ -14,12 +14,12 @@
 #' @param url the URL to check
 #' @returns TRUE or FALSE (but NA if no internet connection seems to be available at all)
 #' @details
-#' Also see EJAM:::global_or_param("ejamapi_is_down") and EJAM:::global_or_param("ejscreenapi_is_down")
+#' Also see EJAM:::global_or_param("ejamapi_is_down")
 #'    as set in global_defaults_package.R
 #'
 #' @keywords internal
 #'
-url_online <- function(url = "ejscreen.epa.gov") {
+url_online <- function(url = "https://ejam.policyinnovation.info") {
 
   if (missing(url)) {stop("must specify a URL")}
   if (length(url) > 1) {stop("can only check one URL at a time using url_online()")}
@@ -463,19 +463,5 @@ collapse_keylist <- function(klist, encode=TRUE) {
 # }
 ########################################################### #
 #
-# ### how ejscreenRESTbroker.R  used to do it
-# areatype <- ''
-# fips     <- ''
+# ### how old api-related function  used to do it
 # geometry <- paste0('{"spatialReference":{"wkid":',wkid, '},','"x":', lon, ',"y":', lat, '}')
-# geotext <- paste0(
-#   '&geometry=', geometry,
-#   '&distance=', radius
-# )
-# this_request <-  paste0(url,
-#                         '&areatype=', areatype,
-#                         '&areaid=',   fips,
-#                         '&namestr=',  namestr,
-#                         geotext,
-#                         '&unit=', unit,
-#                         '&f=', f
-# )

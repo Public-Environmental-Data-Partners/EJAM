@@ -28,5 +28,8 @@ What fraction of total population is accounted for by the top N places?
  popshare_p_lives_at_what_n(  x$pop, p = c(0.50, 0.67, 0.80, 0.95))
  popshare_at_top_x_pct(       x$pop, x = c(0.25, 0.50, .90))
  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
- 
+
+}
+\seealso{
+\code{\link[=popshare_at_top_x_pct]{popshare_at_top_x_pct()}} \code{\link[=popshare_at_top_n]{popshare_at_top_n()}} \code{\link[=popshare_p_lives_at_what_n]{popshare_p_lives_at_what_n()}} \code{\link[=popshare_p_lives_at_what_pct]{popshare_p_lives_at_what_pct()}}
 }

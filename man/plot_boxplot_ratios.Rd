@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_boxplot_ratios.R
 \name{plot_boxplot_ratios}
 \alias{plot_boxplot_ratios}
-\title{For the outputs of ejscreenit(), get boxplots of Residential Population Percentages across sites as ratios to US means}
+\title{Not used/OBSOLETE. For the outputs of the old ejscreenit function, was used to get boxplots of Residential Population Percentages across sites as ratios to US means}
 \usage{
 plot_boxplot_ratios(
   x,
@@ -15,19 +15,13 @@ plot_boxplot_ratios(
 }
 \arguments{
 \item{x}{ratios derived from
-a data.frame that is the output of ejscreen analysis, for example:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{df <- ejscreenit(testpoints_5)$table
-df <- testoutput_ejscreenapi_plus_5
-x <- calc_ratios_to_avg(df)$ratios_d
-
-}\if{html}{\out{</div>}}}
+a data.frame that is the output of analysis, like from
+ejamit()$results_bysite}
 
 \item{selected_dvar_colname}{default is the first column name of x, such as "Demog.Index"
 if given a table with just ratios that are named as regular indicators,
-as with output of calc_ratios_to_avg()$ratios_d,
 but it tries to figure out if ratios are available and what the base name is
-in case output of ejamit() was provided.}
+in case output of \code{\link[=ejamit]{ejamit()}} was provided.}
 
 \item{selected_dvar_nicename}{default is the "short" name of selected_dvar_colname
 as converted using \code{\link[=fixcolnames]{fixcolnames()}}}
@@ -51,14 +45,10 @@ See \code{\link[=ejam2boxplot_ratios]{ejam2boxplot_ratios()}} now for ratios plo
 See \code{\link[=plot_boxplot_pctiles]{plot_boxplot_pctiles()}} now espec. for percentiles.
 
 IMPORTANTLY,
-NOTE this uses the ratio at each site
+NOTE this used the ratio at each site
 USING THE AVERAGE RESIDENT AT THAT SITE,
-SO A BOXPLOT SHOWS ONE DOT PER SITE AND THE BOXPLOT IS NOT POP WTD
-MEANING IT SHOWS THE MEDIAN AND 75TH PERCENTILE SITE NOT RESIDENT, ETC.
-
-This function originally was used for \code{\link[=ejscreenit]{ejscreenit()}} output, and
-was just a quick interim solution that could be replaced.
-It assumed colnames were not r variable names.
+SO A BOXPLOT SHOWED ONE DOT PER SITE AND THE BOXPLOT WAS NOT POP WTD
+MEANING IT SHOWED THE MEDIAN AND 75TH PERCENTILE SITE NOT RESIDENT, ETC.
 
 To communicate whether this is skewed to the right
 (more high scores than might expect) also could say that
@@ -71,11 +61,4 @@ ie whether this could be by chance if sites were randomly picked
 from US blockgroups or people's bg scores)
 }
 }
-\examples{
-  # x <- testoutput_ejscreenit_50$table # or
-  x <- testoutput_ejscreenapi_plus_5
-  myradius <- x$radius.miles[1]
-  plot_boxplot_ratios(calc_ratios_to_avg(x)$ratios_d, wheretext = myradius)
-  #plot_boxplot_ratios(calc_ratios_to_avg(x)$ratios_e, wheretext = myradius)
-
-}
+\keyword{internal}

@@ -20,11 +20,12 @@
 ########## #
 # isPublic ####
 # if user (or app.R) did specify isPublic like by calling ejamapp(isPublic = TRUE), use that setting
-if (exists("isPublic")) {
+isPublic <- EJAM:::global_or_param("isPublic")
+if (!is.null(isPublic)) {
   #isPublic <- isPublic
 } else {
-  # if user didn't specify isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
-  isPublic <- FALSE
+  # if neither the user nor app.R  specified isPublic, default to FALSE so RStudio user gets more features without having to say isPublic=FALSE
+  isPublic <-  FALSE ###
 }
 ########## #
 # use_fipspicker ####
@@ -43,17 +44,16 @@ global_defaults_shiny_public <- list(
 
   # Advanced tab (NOT ideal for public-facing version)
   #   is the tab hidden initially?
-  default_show_advanced_settings = ifelse(isPublic,
+  default_show_advanced_settings = ifelse(isTRUE(isPublic),
+                                          # but a user setting this TRUE via ejamapp() can override efx of isPublic
                                           FALSE,  # if hosted public app, and app.R  sets isPublic=T, this hides the Adv. tab
                                           FALSE  # initially, at least, we hide it even if isPublic=FALSE (but can override this via ejamapp(default_show_advanced_settings=T))
   ),
   #   is user able to unhide the tab? (via buttons)
-  default_can_show_advanced_settings = !isTRUE(isPublic),
+  default_can_show_advanced_settings = !isTRUE(isPublic), # public version cannot show advanced tab
 
   # Histograms tab
   default_hide_plot_histo_tab = isTRUE(isPublic),  # hidden because complicated and public may not want it anyway
-  # EJSCREEN API tab
-  default_hide_ejscreenapi_tab = isTRUE(isPublic),  # not used by UI unless ejscreenapi module/tab is re-enabled
 
   ############################################################################## #
 

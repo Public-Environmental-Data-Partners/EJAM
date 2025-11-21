@@ -2,7 +2,7 @@
 % Please edit documentation in R/table_xls_varname2color.R
 \name{xls_vartype2color}
 \alias{xls_vartype2color}
-\title{helper function - assign fill color to shade excel cells by indicator type}
+\title{helper function - assign fill color to shade excel cells by indicator type - NOT USED except by unused function xls_varname2color()}
 \usage{
 xls_vartype2color(vartype)
 }

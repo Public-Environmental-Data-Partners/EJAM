@@ -2,7 +2,7 @@
 % Please edit documentation in R/table_xls_varname2color.R
 \name{xls_varname2color}
 \alias{xls_varname2color}
-\title{helper function - for color coding excel sheet columns}
+\title{helper function - for color coding excel sheet columns - NOT USED (but could be)}
 \usage{
 xls_varname2color(varname, varnameinfo)
 }
@@ -15,7 +15,7 @@ xls_varname2color(varname, varnameinfo)
 vector of colors
 }
 \description{
-helper function - for color coding excel sheet columns
+helper function - for color coding excel sheet columns - NOT USED (but could be)
 }
 \seealso{
 \code{\link[=xls_varname2vartype]{xls_varname2vartype()}} \code{\link[=xls_vartype2color]{xls_vartype2color()}} \code{\link[=xls_varname2color]{xls_varname2color()}}

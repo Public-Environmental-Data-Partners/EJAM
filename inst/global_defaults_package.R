@@ -123,8 +123,7 @@ rm(report_logo, app_logo)
 global_defaults_package <- c(
   global_defaults_package,
 
-  ejscreen_is_down = TRUE,  #
-  ejamapi_is_down = FALSE
+  ejamapi_is_down = FALSE # could check here?
 )
 ############################### #
 

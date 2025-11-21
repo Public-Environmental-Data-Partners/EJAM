@@ -10,8 +10,9 @@
 #'   as would be the output of ejamit()
 #' @param type Must be "demog" or "envt" -- Creates one of these at a time
 #' @return Provides table in gt format from the R package called gt
-#' @export
 #' @examples  table_gt_from_ejamit(testoutput_ejamit_100pts_1miles)
+#'
+#' @export
 #'
 table_gt_from_ejamit <- function(ejamitoutput = NULL, type = c("demog", "envt")[1]) {
 
@@ -32,13 +33,14 @@ table_gt_from_ejamit <- function(ejamitoutput = NULL, type = c("demog", "envt")[
 #' Create a formatted table of results from EJAM overall summary stats
 #'
 #' Uses the results_overall element of ejamit() output
-#' @param ejamit_results_1row 1-row data.table like testoutput_ejamit_100pts_1miles$results_overall,
+#' @param ejamit_results_1row 1-row table in [data.table](https://r-datatable.com) format like testoutput_ejamit_100pts_1miles$results_overall,
 #'   as would come from ejamit(testpoints_10)$results_overall
 #' @param type Must be "demog" or "envt" -- Creates one of these at a time
 #' @return Provides table in gt format from the R package called gt
-#' @export
 #' @examples
 #'  x <- table_gt_from_ejamit_overall(testoutput_ejamit_100pts_1miles$results_overall)
+#'
+#' @export
 #'
 table_gt_from_ejamit_overall   <- function(ejamit_results_1row = NULL, type = c("demog", "envt")[1] ) {
 
@@ -57,6 +59,7 @@ table_gt_from_ejamit_overall   <- function(ejamit_results_1row = NULL, type = c(
 #' @param ... passed to [table_gt_from_ejamit_overall()]
 #' @examples
 #'  table_gt_from_ejamit_1site(testoutput_ejamit_100pts_1miles$results_bysite[ 1, ])
+#'
 #' @export
 #'
 table_gt_from_ejamit_1site <- function(...) {
@@ -70,17 +73,18 @@ table_gt_from_ejamit_1site <- function(...) {
 #' Cleans/validates EJAM results for 1 place or overall
 #'
 #' This is a first step in formatting results in nice tables
-#' @param ejamit_results_1row 1-row data.table like testoutput_ejamit_100pts_1miles$results_overall,
+#' @param ejamit_results_1row 1-row table in [data.table](https://r-datatable.com) format like testoutput_ejamit_100pts_1miles$results_overall,
 #'
 #'   as would come from ejamit(testpoints_10)$results_overall
 #'
 #'   or a single row of testoutput_ejamit_100pts_1miles$results_bysite
 #' @return Returns the input as a 1-row data.table, indicators etc. in the columns.
 #'   If not a 1 row table, or colnames are not what is expected, it returns correct structure filled with NA values.
-#' @export
 #' @examples
 #'   x <- table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_bysite[ 1, ])
 #'   x <- table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_overall)
+#'
+#' @export
 #'
 table_validated_ejamit_row <- function(ejamit_results_1row = NULL) {
 
@@ -112,10 +116,11 @@ table_validated_ejamit_row <- function(ejamit_results_1row = NULL) {
 #' Validate and reshape 1 row of ejamit results to prep for formatting as gt table/report
 #'
 #' Reshapes a few columns of a 1 row data.table into a tall multirow data.frame.
-#' @param ejamit_results_1row data.table (or data.frame) like testoutput_ejamit_100pts_1miles$results_overall
+#' @param ejamit_results_1row table in [data.table](https://r-datatable.com) format (or data.frame) like testoutput_ejamit_100pts_1miles$results_overall
 #'    from something like ejamit(testpoints_100, radius = 1)$results_overall
 #' @param type demog or envt to specify which type of table
 #' @seealso [table_gt_from_ejamit()] [table_gt_from_ejamit_overall()] [table_gt_from_ejamit_1site()] [table_validated_ejamit_row()] [table_gt_format_step1()] [table_gt_format_step2()]
+#'
 #' @export
 #'
 table_gt_format_step1 <- function(ejamit_results_1row = NULL, type = "demog") {
@@ -208,6 +213,7 @@ table_gt_format_step1 <- function(ejamit_results_1row = NULL, type = "demog") {
 #'
 #' @seealso [table_gt_from_ejamit()]
 #' @return a gt-style table with formatting to closely match EJSCREEN standard report formatting
+#'
 #' @export
 #'
 table_gt_format_step2 <- function(df, type = c("demog", "envt")[1], my_cell_color =  '#dce6f0', my_border_color = '#aaaaaa',

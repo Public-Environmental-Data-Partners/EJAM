@@ -3,7 +3,7 @@
 # calc_ejam()  which uses  calc_byformula()  -  read the formulas and execute them
 # formula_varname()  - utility to get the names of variables created by the formulas
 # formulas_d  - a vector of formulas as text strings like "a = 1 + b" see data-raw/datacreate_formulas.R
-
+# formulas_ejscreen_acs
 
 ######################################## #
 
@@ -167,7 +167,7 @@ calc_ejam <- function(bg,
 #' DRAFT utility to use formulas provided as text, to calculate indicators
 #'
 #' @param mydf data.frame of indicators or variables to use
-#' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrused formula strings,
+#' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
 #'   since the contents could potentially be a security risk
 #' @param keep useful if some of the formulas are just interim steps
 #'   creating evanescent variables created only for use in later formulas
@@ -176,7 +176,7 @@ calc_ejam <- function(bg,
 #' @inherit calc_ejam details
 #'
 #' @return data.frame of results, but
-#'   if mydf was a data.table, returns a data.table
+#'   if mydf was a data.table, returns a table in [data.table](https://r-datatable.com) format
 #'
 calc_byformula <- function(mydf, formulas = NULL, keep = formula_varname(formulas), quiet = FALSE) {
 

@@ -45,7 +45,6 @@ statestats_query()[,names_e]
 statestats_query(varnames = names_e)
 
 statestats_query(varnames = names_d_subgroups)
-head(statestats_query(varnames = longlist))
 
 ## in USA overall, see mean and key percentiles
 # for all demog and envt indicators
@@ -57,6 +56,7 @@ usastats_means(dig=4)
 
 # long list of variables:
 x = intersect(EJAM::names_all_r,  names(EJAM::usastats))
+x=setdiff(x,"REGION")
 usastats_means(x)
 
 usastats[!(usastats$PCTILE < 50), c("PCTILE", names_d)]
@@ -86,4 +86,7 @@ t(blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm=T)),
 
 }
 
+}
+\seealso{
+\code{\link[=calc_avg_columns]{calc_avg_columns()}}
 }

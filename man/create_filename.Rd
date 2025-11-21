@@ -45,7 +45,7 @@ Builds filename from file description, analysis title, buffer distance, and site
 }
 \examples{
 # specify title only
-create_filename(title = 'Summary of Analysis', ext=".txt")
+EJAM:::create_filename(title = 'Summary of Analysis', ext=".txt")
 
 # test / see how it works for various combinations of input parameters
 parameters_table = expand.grid(
@@ -58,7 +58,7 @@ parameters_table = expand.grid(
 )
 cbind(output_filename =
   cbind(
-    purrr::pmap(parameters_table, create_filename)
+    purrr::pmap(parameters_table, EJAM:::create_filename)
   ),
   parameters_table
 )

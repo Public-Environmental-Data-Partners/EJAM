@@ -11,7 +11,7 @@ ejam2shapefile(
   save = TRUE,
   crs = 4269,
   shortcolnames = TRUE,
-  varnames = "basic250",
+  varnames = "all",
   shp = NULL,
   quiet = TRUE,
   ...
@@ -59,13 +59,14 @@ see
 \href{https://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm}{Shapefile format basics from arcgis.com}
 }
 \examples{
-\donttest{
+\dontrun{
   # folder = getwd()
   # out <- ejamit(testpoints_100 , radius = 3.1)
   # file <- ejam2shapefile(out, file = "test100_3miles.geojson", folder = folder)
-
   out <- testoutput_ejamit_10pts_1miles
-  file <- ejam2shapefile(out)
+  if (interactive()) {
+    file <- ejam2shapefile(out)
+  }
   shp <- shapefile_from_any(file)
   map_shapes_leaflet(shp)
   }

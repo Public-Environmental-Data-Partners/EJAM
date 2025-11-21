@@ -39,15 +39,15 @@
 #' @param avoidorphans see [getblocksnearby()] or [ejamit()] regarding this param
 #' @param getblocks_diagnostics_shown set TRUE to see more details on block counts etc.
 #' @param ... passed to plotting function
-#' @examples \donttest{
-#'   speedseen_few <- speedtest(c(50,500), radii=c(1, 3.106856), logging=FALSE, honk=FALSE)
+#' @examples \dontrun{
+#'   speedseen_few <- EJAM:::speedtest(c(50,500), radii=c(1, 3.106856), logging=FALSE, honk=FALSE)
 #'
-#'   speedseen_nearer_to1k <- speedtest(n = c(1e2,1e3,1e4 ), radii=c(1, 3.106856,5 ),
+#'   speedseen_nearer_to1k <- EJAM:::speedtest(n = c(1e2,1e3,1e4 ), radii=c(1, 3.106856,5 ),
 #'     logging=TRUE, honk=FALSE)
 #'   save( speedseen_nearer_to1k, file = "~/../Downloads/speedseen_nearer_to1k.rda")
 #'   rstudioapi::savePlotAsImage(        "~/../Downloads/speedseen_nearer_to1k.png")
 #'
-#'   speedseen_all <- speedtest(
+#'   speedseen_all <- EJAM:::speedtest(
 #'     n = c(1e2,1e3,1e4),
 #'     radii=c(1, 3.106856, 5, 10, 31.06856),
 #'     logging=TRUE, honk=TRUE
@@ -408,7 +408,9 @@ speedtable_expand <- function(speedtable) {
 #'
 #' @param rows number of locations to be analyzed
 #' @param radius buffer radius distance, in miles
+#'
 #' @keywords internal
+#'
 predict_ejamit_runtime <- function(rows, radius){
   ejamit_model_data <- data.frame(input_number = rows, radius = radius)
   predicted_runtime <- predict(modelEjamit, newdata = ejamit_model_data, interval = "prediction", level =0.95)

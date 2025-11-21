@@ -18,7 +18,7 @@ with NA for elements that are neither statename nor ST
 utility to convert between statename and ST abbreviation
 }
 \examples{
-st2statename(c("TX", 'dc', "Illinois"))
+EJAM:::st2statename(c("TX", 'dc', "Illinois"))
 
 }
 \keyword{internal}

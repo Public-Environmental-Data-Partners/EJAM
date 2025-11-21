@@ -16,12 +16,14 @@
 #'    and invalid lat or lon values cleaned up if possible or else replaced with NA,
 #'    and optional columns "valid" and "invalid_msg"
 #'
-#' @examples #  x <- latlon_df_clean(x)
-#'  latlon_df_clean(testpoints_bad, set_invalid_to_na = F, invalid_msg_table = T)
+#' @examples
+#'   #  x <- EJAM:::latlon_df_clean(x)
+#'  EJAM:::latlon_df_clean(testpoints_bad, set_invalid_to_na = F, invalid_msg_table = T)
 #'
 #' @keywords internal
 #'
 latlon_df_clean <- function(df, invalid_msg_table = FALSE, set_invalid_to_na = TRUE) {
+
   if (missing(df)) {
     warning('No value provided for argument "df".')
     return(NULL)

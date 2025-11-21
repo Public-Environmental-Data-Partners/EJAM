@@ -16,7 +16,7 @@ if the full record was  RCRAINFO:XJW000000174}
 if the full record was  RCRAINFO:XJW000000174}
 }
 \value{
-data.table with lat  lon  REGISTRY_ID  program   pgm_sys_id
+table in \href{https://r-datatable.com}{data.table} format with lat  lon  REGISTRY_ID  program   pgm_sys_id
 }
 \description{
 Get lat lon, Registry ID, and NAICS, for given FRS Program System ID

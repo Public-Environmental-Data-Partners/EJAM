@@ -3,7 +3,7 @@
 \name{pctile_from_raw_lookup}
 \alias{pctile_from_raw_lookup}
 \alias{lookup_pctile}
-\title{Find approx percentiles in lookup table that is in memory}
+\title{Find approx percentiles in lookup table for just 1 indicator or 1 zone (State or US)}
 \usage{
 pctile_from_raw_lookup(
   myvector,
@@ -51,15 +51,16 @@ This is used with a lookup table to
 convert a raw indicator vector to percentiles in US or States.
 }
 \details{
+For handling a whole table of raw indicators, see \code{\link[=calc_pctile_columns]{calc_pctile_columns()}}
+
 This function can handle 2 kinds of inputs right now:
 \itemize{
 \item a vector of scores and vector of corresponding indicator names, in only 1 zone (e.g. 1 State)
 \item a vector of scores and vector of corresponding zones (States), for only 1 indicator (e.g., pctlowinc)
 }
 
-This could be recoded to be more efficient - could use data.table.
+This could be recoded to be more efficient - could use \href{https://r-datatable.com}{data.table} package.
 
-s
 The data.frame lookup table must have a field called "PCTILE" that has quantiles/percentiles
 and other column(s) with values that fall at those percentiles.
 \link{usastats} and \link{statestats} are such lookup tables.
@@ -100,21 +101,10 @@ data.frame(value = eg,
 
 data.frame(value = eg, pctile = lookup_pctile(eg, names_d))
 
-
-  # compare ejscreen API output percentiles to those from this function:
-  for (vname in c(names_d[c(1,3:6,8:10)] )) {
-     print(pctile_from_raw_lookup(testoutput_ejscreenapi_plus_100[,vname] / 100, vname,
-       lookup = usastats)
-       - testoutput_ejscreenapi_plus_100[,paste0("pctile.",vname)] )
-  }
-  for (vname in c(names_e )) {
-     print(pctile_from_raw_lookup(testoutput_ejscreenapi_plus_100[,vname], vname,
-       lookup = usastats)
-         - testoutput_ejscreenapi_plus_100[,paste0("pctile.",vname)] )
-  }
 }
 
 }
 \seealso{
-Identical to \code{\link[=pctile_from_raw_lookup]{pctile_from_raw_lookup()}} \link{usastats} \link{statestats}
+\code{\link[=calc_pctile_columns]{calc_pctile_columns()}} for handling a table not just a vector
 }
+\keyword{internal}

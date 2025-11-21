@@ -32,12 +32,12 @@
 #'
 #'   This function requires the following datasets:
 #'
-#'    - [blockwts]: data.table with these columns: blockid , bgid, blockwt
+#'    - [blockwts]: table in [data.table](https://r-datatable.com) format with these columns: blockid , bgid, blockwt
 #'
-#'    - [quaddata] data.table used to create localtree, a quad tree index of block points
+#'    - [quaddata] table in [data.table](https://r-datatable.com) format used to create localtree, a quad tree index of block points
 #'      (and localtree that is created when package is loaded)
 #'
-#'    - [blockgroupstats] - A data.table (such as EJSCREEN residential population and environmental data by blockgroup)
+#'    - [blockgroupstats] - A table in [data.table](https://r-datatable.com) format (such as EJSCREEN residential population and environmental data by blockgroup)
 #'
 #' @details  # **Identification of nearby residents -- methodology:** ####################################################################
 #'
@@ -80,7 +80,7 @@
 #' the Decennial census blocks can provide, such as a dasymetric map approach.
 #'
 #'
-#' @param sites2blocks data.table of distances in miles between all sites (facilities) and
+#' @param sites2blocks table in [data.table](https://r-datatable.com) format, of distances in miles between all sites (facilities) and
 #'   nearby Census block internal points, with columns ejam_uniq_id, blockid, distance,
 #'   created by getblocksnearby  function.
 #'   See [testoutput_getblocksnearby_10pts_1miles] dataset in package, as input to this function
@@ -131,18 +131,18 @@
 #' @seealso [ejamit]   [getblocksnearby()]
 #'
 #' @examples
-#' structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+#' EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
 #'
 #' @return list with named elements:
 #'
-#'   * **`results_overall`**   one row data.table, like results_bysite, but just one row with
+#'   * **`results_overall`**   one row table in [data.table](https://r-datatable.com) format, like results_bysite, but just one row with
 #'     aggregated results for all unique residents.
 #'
-#'   * **`results_bysite`**   results for individual sites (buffers) - a data.table of results,
+#'   * **`results_bysite`**   results for individual sites (buffers) - a table in [data.table](https://r-datatable.com) format, of results,
 #'     one row per ejam_uniq_id, one column per indicator
 #'
 #'   * **results_bybg_people**  results for each blockgroup, to allow for showing the distribution of each
-#'      indicator across everyone within each residential population group.
+#'      indicator across everyone within each residential population group. table in [data.table](https://r-datatable.com) format.
 #'
 #'   * **longnames**  descriptive long names for the indicators in the above outputs
 #'
@@ -1197,10 +1197,10 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   ### PERCENTILES - express raw scores (from results_bysite AND  results_overall) in percentile terms ####
   #  VIA  lookup tables of US/State  percentiles, called usastats   and statestats
   #
-  #
   #  *** this should be extracted as a function (but keeping the efficiency of data.table changes by reference using := or set___)
   # these lines about names of variables should be pulled out of here and defined as params or another way
   # to specify which variables get converted to percentile form ***
+  # CONSIDER USING HERE HELPER FUNCTION  calc_pctile_columns()    ***
   ##################################################### #
 
   # the ejscreen community report shows percentiles only for E,D,EJ, plus health,climate,criticalservice tables:
@@ -1261,6 +1261,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   if (length(valid_us_vars) > 0) {
     results_bysite[, (valid_us_pctl_names) := lapply(valid_us_vars, function(var) {
+      # but note newer vectorized calc_pctile_columns()
       pctile_from_raw_lookup(
         columns_bysite[[var]],
         varname.in.lookup.table = var,
@@ -1274,6 +1275,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   if (length(valid_us_vars_overall) > 0) {
     results_overall[, (valid_us_pctl_names_overall) := lapply(valid_us_vars_overall, function(var) {
+      # but note newer vectorized calc_pctile_columns()
       pctile_from_raw_lookup(
         columns_overall[[var]],
         varname.in.lookup.table = var,
@@ -1286,6 +1288,9 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   if (length(vars_not_in_overall) > 0) {
     results_overall[, (vars_not_in_overall) := NA_real_]
   }
+
+  ######################################## #    ######################################## #
+##### SECTION BELOW APPROX COULD BE REPLACED BY the vectorized calc_pctile_columns(results_bysite) *** ########## #
 
   myvars_to_use <- ifelse(varsneedpctiles %in% c("Demog.Index", "Demog.Index.Supp"),
                           paste0(varsneedpctiles, ".State"), varsneedpctiles)
@@ -1334,6 +1339,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     }, valid_state_vars, valid_state_vars_to_use, SIMPLIFY = FALSE)]
     ######################################## #
   }
+  ######################################## #    ######################################## #
 
   if (is.function(updateProgress)) {
     boldtext <- paste0('Computing results')
@@ -1357,7 +1363,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     columns_bysite_ej <- as.list(results_bysite[, ..ejnames_raw])
     columns_overall_ej <- as.list(results_overall[, ..ejnames_raw])
     if (length(valid_ej_vars_us) > 0) {
-      results_bysite[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) {
+      results_bysite[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) { # could replace with vectorized calc_pctile_columns()
         pctile_from_raw_lookup(
           columns_bysite_ej[[var]],
           varname.in.lookup.table = var,
@@ -1372,7 +1378,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     }
 
     if (length(valid_ej_vars_us) > 0) {
-      results_overall[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) {
+      results_overall[, (varnames.us.pctile_EJ) := lapply(valid_ej_vars_us, function(var) { # could replace with vectorized calc_pctile_columns()
         pctile_from_raw_lookup(
           columns_overall_ej[[var]],
           varname.in.lookup.table = var,
@@ -1385,7 +1391,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
       st_vector <- results_bysite$ST
       idx_not_na_st <- !is.na(st_vector)
 
-      results_bysite[idx_not_na_st, (varnames.state.pctile_EJ) := lapply(valid_ej_vars_state, function(var) {
+      results_bysite[idx_not_na_st, (varnames.state.pctile_EJ) := lapply(valid_ej_vars_state, function(var) { # could replace with vectorized calc_pctile_columns()
         pctile_from_raw_lookup(
           columns_bysite_ej[[var]][idx_not_na_st],
           varname.in.lookup.table = var,
@@ -1450,6 +1456,8 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   names_these_ratio_to_state_avg <- paste0("ratio.to.", names_these_state_avg) #  <- c(names_d_ratio_to_state_avg, names_d_subgroups_ratio_to_state_avg, names_e_ratio_to_state_avg)  #
   ######################################### #
   ### Statewide  ####
+
+  # CONSIDER USING HERE HELPER FUNCTION  calc_avg_columns()    ***
 
   # pull averages from statestats table (note using data.frame syntax here not data.table)
   # There may be a cleaner way to do this part ***

@@ -17,6 +17,7 @@
 #'
 #' @examples
 #' \donttest{
+#' out <- testoutput_ejamit_1000pts_1miles
 #' bplot = plot_boxplot_pctiles
 #' bplot(out, names_d_state_pctile)
 #' bplot(out, names_d_subgroups_state_pctile)

@@ -26,12 +26,12 @@ vector as from order(), to be used in sorting a data.frame for example
 Get order of variable names to sort by, as seen in EJSCREEN Community Report
 }
 \examples{
-  cbind(table_order_variables(c(names_d, names_d_subgroups, names_e)))
+  cbind(EJAM:::table_order_variables(c(names_d, names_d_subgroups, names_e)))
 
   out <- testoutput_ejamit_10pts_1miles
   vars <- out$formatted[ , 'indicator']
   vars <- fixcolnames(vars, 'long', 'r')
-  out$formatted[table_order_variables(vars), ]
+  out$formatted[EJAM:::table_order_variables(vars), ]
 
 
 }

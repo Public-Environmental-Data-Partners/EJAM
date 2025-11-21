@@ -50,5 +50,6 @@ name2fips("rhode island")
 name2fips(c("delaware", "NY"))
 name2fips(c("Magnolia town, DE", "Delaware City city, DE"))
 name2fips(c('denver',  "new york" ), exact = F)
+name2fips('denver,co')
 
 }

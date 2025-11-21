@@ -5,7 +5,7 @@
 \alias{mact_table}
 \title{mact_table (DATA) MACT NESHAP subparts (the code and the description)}
 \description{
-This is a data.table with one row per MACT subpart such as BBBBBB or ZZZZZZ
+This is a table in \href{https://r-datatable.com}{data.table} format with one row per MACT subpart such as BBBBBB or ZZZZZZ
 and the title of each category. From the ECHO download of ICIS Air
 @seealso \link{frs_by_mact}
 }

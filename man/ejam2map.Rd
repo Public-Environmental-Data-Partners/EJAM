@@ -9,6 +9,7 @@ ejam2map(
   column_names = "ej",
   launch_browser = TRUE,
   shp = NULL,
+  radius = NULL,
   sitenumber = NULL
 )
 }
@@ -20,6 +21,8 @@ ejam2map(
 \item{launch_browser}{logical optional whether to open the web browser to view the map}
 
 \item{shp}{shapefile it can map if analysis was for polygons, for example}
+
+\item{radius}{radius in miles}
 
 \item{sitenumber}{as used in \code{\link[=ejam2report]{ejam2report()}}}
 }
@@ -57,7 +60,5 @@ fname = map2browser(x)
 # browseURL(normalizePath(dirname(fname))) # to open the temp folder
 # file.copy(fname, "./map.html") # to copy map file to working directory
 
-out <- testoutput_ejscreenapi_plus_5
-mapfastej(out)
 }
 }

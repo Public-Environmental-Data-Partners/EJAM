@@ -1,6 +1,6 @@
 #' app_server - EJAM app server
 #'
-#' @param input,output,session Internal parameters for {shiny}.
+#' @param input,output,session Internal parameters for shiny app.
 #'     DO NOT REMOVE.
 #' @rawNamespace import(shiny, except = c(dataTableOutput, renderDataTable))
 #' @import data.table
@@ -12,7 +12,7 @@
 #' @importFrom graphics abline barplot legend points boxplot text
 #' @importFrom methods Summary as formalArgs functionBody is
 #' @importFrom stats aggregate density na.omit quantile runif setNames addmargins ecdf line lm median na.exclude predict reorder weighted.mean
-#' @importFrom utils data download.file installed.packages object.size read.csv stack tail URLencode askYesNo browseURL capture.output combn edit getFromNamespace getSrcFilename glob2rx head str write.csv zip
+#' @importFrom utils unzip data download.file installed.packages object.size read.csv stack tail URLencode askYesNo browseURL capture.output combn edit getFromNamespace getSrcFilename glob2rx head str write.csv zip
 #'
 #' @rawNamespace import(dplyr, except = c(first, last, between))
 #'
@@ -157,7 +157,7 @@ app_server <- function(input, output, session) {
   # initial state (or if input$show_advanced_settings is changed in the adv. tab)
   observe({
     req(input$show_advanced_settings)
-    if (isFALSE(input$show_advanced_settings)) {
+    if (!isTRUE(as.logical(input$show_advanced_settings))) {
       hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
       isolate({
         if (input$can_show_advanced_settings) {
@@ -470,7 +470,7 @@ app_server <- function(input, output, session) {
   # #
   # # Use a default initial template of lat lon values table ready for user to type into
   # # and then the module updates that reactive_data1 object as the user types
-  # latlon_template <- data.table(lat = 0, lon = 0, sitenumber = 1, sitename = "")  # default_points_shown_at_startup[1:2, ] #  testpoints_5[1:2, ]
+  # latlon_template <- data.table(lat = 0, lon = 0, sitenumber = 1, sitename = "")
   # reactive_data1 <-  reactiveVal(latlon_template)
   # ## or... try something like this:   Try to pass to module as param the last uploaded pts() ?
   # observe(
@@ -1027,7 +1027,7 @@ app_server <- function(input, output, session) {
 
   # fips_dt_react() as returned from the module happens to be a reactive
   fips_dt_react <- fipspicker_module_server(id = "pickermoduleid",
-                                            testing_this_module = testing_this_module,
+                                            testing_this_module = FALSE,
                                             reactdat = reactive("") # can pass reactive param
   )
 
@@ -1042,7 +1042,7 @@ app_server <- function(input, output, session) {
 
     ## copy of code used in data_up_fips()
 
-    cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n")
+    cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n"); cat("colnames:", paste0(names(fips_dt), collapse = ","), "\n")
     fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
     ftypeUpload <- fipstype(fips_vec)
     typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
@@ -1051,12 +1051,14 @@ app_server <- function(input, output, session) {
       # fips_alias <- c('FIPS','fips','fips_code','fipscode','Fips','statefips','countyfips', 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST', 'FIPS.COUNTY', 'FIPS.TRACT')
       # see fips_from_table(), fixnames_aliases(), and fixcolnames_infer()
       errmsg    = paste0('No FIPS column found. Please use "FIPS" or a synonym.')
+      cat(errmsg, "\n")
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL
       disable_buttons[[placetype]] <- TRUE
       shiny::validate(errmsg)
     } else if (length(intersect(ftypeUpload, typesUpload)) > 1) {
       errmsg    = paste0('This dataset contains more than one type of FIPS code. Analysis can only be ran on datasets with one type of FIPS codes.')
+      cat(errmsg, "\n")
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL
       disable_buttons[[placetype]] <- TRUE
@@ -1703,7 +1705,7 @@ app_server <- function(input, output, session) {
       max_pts <- input$max_pts_map # was the fixed max_pts_map
 
       if (nrow(data_uploaded()) > max_pts) { # would have already been stopped probably
-        ## Max allowed points was exceeded! see code in ejscreenapi that handled that case using  input$max_pts_map
+        ## Max allowed points was exceeded!
         if (nrow(data_uploaded) > input$max_pts_run) {
           validate(paste0('Too many points (> ', prettyNum(max_pts, big.mark = ','),
                           ') uploaded for map to be displayed'))

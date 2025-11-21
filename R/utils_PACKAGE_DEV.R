@@ -203,13 +203,15 @@ find_in_files <- function(pattern, path = "./tests/testthat", filename_pattern =
       }
       cat("\n------------------------------------------------------------------------- \n")
       cat("------------------------------------------------------------------------- \n")
-    }
-    if (value) {
-      print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
-    } else {
-      print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
+
+      if (value) {
+        print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
+      } else {
+        print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
+      }
     }
   }
+  if (length(found) == 0) {found <- NULL}
   invisible(found)
 }
 ################################ #
@@ -281,9 +283,9 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #' @param vectoronly set to TRUE to just get a character vector of object names instead of the data.frame table output
 #' @seealso [ls()] [getNamespace()] [getNamespaceExports()] [loadedNamespaces()]
 #'
-#' @return data.table with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
+#' @return table in [data.table](https://r-datatable.com) format with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
 #'   unless vectoronly = TRUE in which case it returns a character vector
-#' @examples  # pkg_functions_and_data("datasets")
+#' @examples  # EJAM:::pkg_functions_and_data("datasets")
 #'
 #' @keywords internal
 #'
@@ -421,14 +423,14 @@ pkg_functions_and_data <- function(pkg = "EJAM",
 #'  data(package = "EJAM")$results[, 'Item']
 #'
 #'  # not actually sorted within each pkg by default
-#'  pkg_data()
+#'  EJAM:::pkg_data()
 #'  # not actually sorted by default
-#'  pkg_data("EJAM")$Item
-#'  ##pkg_data("MASS", simple=T)
+#'  EJAM:::pkg_data("EJAM")$Item
+#'  ##EJAM:::pkg_data("MASS", simple=T)
 #'
 #'  # sorted by size if simple=F
-#'  ##pkg_data("datasets", simple=F)
-#'  x <- pkg_data(simple = F)
+#'  ##EJAM:::pkg_data("datasets", simple=F)
+#'  x <- EJAM:::pkg_data(simple = F)
 #'  # sorted by size already, to see largest ones among all these pkgs:
 #'  tail(x[, 1:3], 20)
 #'
@@ -1061,7 +1063,7 @@ pkg_dupenames <- function(pkg = EJAM::ejampackages, sortbypkg=FALSE, compare.fun
 ## (helper for pkg_dupenames) ### #
 
 #' UTILITY - check different versions of function with same name in 2 packages
-#' obsolete since EJAMejscreenapi phased out? was used by pkg_dupenames() to check different versions of function with same name in 2 packages
+#' obsolete since old EPA ejscreen api functions were phased out - was used by pkg_dupenames() to check different versions of function with same name in 2 packages
 #' @param fun quoted name of function, like "latlon_infer"
 #' @param package1 quoted name of package, like "EJAM"
 #' @param package2 quoted name of other package
@@ -1086,11 +1088,6 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
   # eg doing this:
   # pkg_functions_all_equal("get.distance.all", "proxistat", "EJAM") # something odd about proxistat pkg
   #   and note there is now a function called proxistat()
-  ### or
-  # pkg_dupenames(c("proxistat", "EJAMejscreenapi"), compare.functions = T)
-  # Error in pkg_functions_all_equal(fun = var, package1 = ddd$package[ddd$variable ==  :
-  #                                                                   distances.all not found in proxistat
-  #                                                                Called from: pkg_functions_all_equal(fun = var, package1 = ddd$package[ddd$variable ==
 
   if (!(is.character(fun) && is.character(package1) && is.character(package2))) {
     warning("all params must be quoted ")
@@ -1232,14 +1229,15 @@ pkg_dependencies <- function(localpkg = "EJAM", depth = 6, ignores_grep = "09128
 
   # Some notes on ways to see dependencies of a package like EJAM:
 
-x1 = renv::dependencies()
-
+# x1 = renv::dependencies()
+#
 x2 = sort(packrat", ":::", "recursivePackageDependencies('",
              localpkg,
              "', lib.loc = .libPaths(), ignores = NULL))
 
 # but note that https://rstudio.github.io/renv/articles/packrat.html explains that
 # the renv package has replaced the packrat package
+# But note Posit Connect does not seem to work with renv? it uses rsconnect etc.
 
 # For example try this for the EJAM package:
 
@@ -1449,3 +1447,54 @@ find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
 
   return(max(package_version(r_vers)))
 }
+############################ #
+
+
+pkg_available <- function(pkg,
+                          if_not_installed = c("stop", "warning", "message", "cat")[2],
+                          if_not_loaded = c("stop", "warning", "message", "cat")[2]
+                          # ,if_not_attached =  c("stop", "warning", "message", "cat")[2]
+) {
+
+  # is a package loaded or just installed or not even installed?
+
+  stopifnot(!missing(pkg), !is.null(pkg), length(pkg) == 1)
+  stopifnot(length(if_not_installed) == 1, if_not_installed %in% c("stop", "warning", "message", "cat"),
+            length(if_not_loaded) == 1, if_not_loaded %in% c("stop", "warning", "message", "cat")
+            # ,length(if_not_attached) == 1, if_not_attached %in% c("stop", "warning", "message", "cat")
+  )
+
+  installed <- !inherits(try(find.package(pkg), silent = TRUE), "try-error")
+  loaded <- isNamespaceLoaded(pkg)
+  # attached <- paste0("package:", pkg) %in% search()
+
+  ## isNamespaceLoaded()  checks if loaded but does not check if also attached.
+  ##  if library() or require() has been used, it will be both loaded and attached.
+  ##  A package that is loaded by EJAM even though not attached is still available for use by functions,
+  ##  so being loaded should be sufficient even if not attached.
+
+  # if (!attached) {
+  #   msg <- paste0(pkg, " package is needed here but is not attached")
+
+  if (loaded) {
+
+    return(TRUE)
+
+  } else {
+    # msg <- paste0(pkg, " package is needed here but is not loaded")
+
+    if (!installed) {
+      msg <- paste0(pkg, " package is needed for this but does not appear to be installed \n")
+      get(if_not_installed)(msg) # stop or warning or message or cat()
+
+      return(FALSE)
+
+    } else {
+      msg <- paste0(pkg, " package must be loaded for this and appears to be installed but not loaded. Try using library(", pkg,") or require(", pkg,") \n")
+      get(if_not_loaded)(msg) # stop or warning or message or cat()
+
+      return(FALSE)
+    }
+  }
+}
+############################ #

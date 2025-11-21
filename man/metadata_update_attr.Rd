@@ -9,7 +9,8 @@ metadata_update_attr(
   x = pkg_data("EJAM")$Item,
   attr_name = "ejam_package_version",
   newvalue = desc::desc_get("Version"),
-  exclude_atomic_vectors = TRUE
+  exclude_atomic_vectors = TRUE,
+  only_update_if_had_been_set = FALSE
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ metadata_update_attr(
 
 \item{exclude_atomic_vectors}{if TRUE, avoids updating attributes on atomic vectors like names_e,
 since it is distracting when printing them to console}
+
+\item{only_update_if_had_been_set}{set to TRUE to only update this attribute for data objects where
+that object already had a value set for this attribute, to update only but not create/add attribute.}
 }
 \description{
 helper func to update 1 metadata attribute (e.g. "ejam_package_version") in all pkg datasets

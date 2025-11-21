@@ -11,7 +11,6 @@ url_columns_bysite(
   shapefile = NULL,
   fips = NULL,
   wherestr = "",
-  namestr = NULL,
   regid = NULL,
   radius = NULL,
   reports = EJAM:::global_or_param("default_reports"),
@@ -22,7 +21,7 @@ url_columns_bysite(
 )
 }
 \arguments{
-\item{sitepoints}{data.frame or data.table with lat and lon columns
+\item{sitepoints}{data.frame or table in \href{https://r-datatable.com}{data.table} format with lat and lon columns
 (and should have ejam_uniq_id column or assume 1 output row per input row, same order)}
 
 \item{lat, lon}{if sitepoints NULL/missing, vectors of latitudes and longitudes
@@ -41,8 +40,6 @@ from fips2name(201090), or "new rochelle, ny" or "AK"
 or even a zip code, but NOT a fips code! (for FIPS, use the fips parameter instead).
 Note that nearly half of all county fips codes are impossible to distinguish from
 5-digit zipcodes because the same numbers are used for both purposes.}
-
-\item{namestr}{no longer used - had been passed to \code{\link[=url_ejscreen_report]{url_ejscreen_report()}}}
 
 \item{regid}{optional vector of FRS registry IDs if available to use to create links
 to detailed ECHO facility reports}
@@ -65,11 +62,7 @@ If set FALSE, faster since avoids checking but some links might not work and not
 }
 \value{
 list of data.frames to append to the list of data.frames created by
-\code{\link[=ejamit]{ejamit()}} or \code{\link[=doaggregate]{doaggregate()}},
-
-\verb{list(results_bysite = results_bysite, }
-\verb{    results_overall = results_overall,}
-\verb{      newcolnames=newcolnames)}
+\code{\link[=ejamit]{ejamit()}} or \code{\link[=doaggregate]{doaggregate()}}
 }
 \description{
 URL functions - Compile URLs in columns, for EJAM
@@ -78,22 +71,22 @@ URL functions - Compile URLs in columns, for EJAM
 used in \code{\link[=table_xls_format]{table_xls_format()}}, and server, to create hyperlinks to reports or webpages, one per site
 }
 \examples{
-x =  url_columns_bysite(testpoints_10[1:2,], radius = 1)
+x =  EJAM:::url_columns_bysite(testpoints_10[1:2,], radius = 1)
 
-x =  url_columns_bysite(
+x =  EJAM:::url_columns_bysite(
   data.frame(lat=1:2, lon=101:102), radius = 1,
   INFO_FOR_SITE2 = c(NA, "site2"),
   Place1info = c("North", ""),
   keylist_bysite = list(newkey_all_sites = "YES",
                         site_name = c("NRO", "CRS"))
   )
-unlinkify(x[[2]])
+EJAM:::unlinkify(x[[2]])
 x = x[[1]]
 x = x[, "EJAM Report"]
-unlinkify(x)
+EJAM:::unlinkify(x)
 
 }
 \seealso{
-\code{\link[=url_ejscreen_report]{url_ejscreen_report()}} \code{\link[=url_ejscreenmap]{url_ejscreenmap()}} \code{\link[=url_echo_facility]{url_echo_facility()}} \code{\link[=url_ejscreenapi_clusters_and_sort_cols]{url_ejscreenapi_clusters_and_sort_cols()}}
+\code{\link[=url_ejamapi]{url_ejamapi()}} \code{\link[=url_ejscreenmap]{url_ejscreenmap()}} \code{\link[=url_echo_facility]{url_echo_facility()}}
 }
 \keyword{internal}

@@ -9,7 +9,7 @@ so getpointsnearby() can find them very quickly"><meta property="og:image" conte
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@ so getpointsnearby() can find them very quickly"><meta property="og:image" conte
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -76,7 +77,7 @@ so <code><a href="getpointsnearby.html">getpointsnearby()</a></code> can find th
 
 
 <dl><dt id="arg-pts">pts<a class="anchor" aria-label="anchor" href="#arg-pts"></a></dt>
-<dd><p>a data.frame or data.table with columns name lat and lon,
+<dd><p>a data.frame or <a href="https://r-datatable.com" class="external-link">data.table</a> with columns name lat and lon,
 one row per location (point), and any other columns are ignored.</p></dd>
 
 
@@ -103,29 +104,16 @@ to create a new proximity score for every block and blockgroup in the US.
 It relies on <code><a href="create_quaddata.html">create_quaddata()</a></code> for one step, then <code><a href="https://rdrr.io/pkg/SearchTrees/man/createTree.html" class="external-link">SearchTrees::createTree()</a></code></p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
-<span>  <span class="co"># EXAMPLES NOT TESTED YET ***</span></span>
-<span>  <span class="va">pts</span> <span class="op">&lt;-</span> <span class="va">testpoints_10</span></span>
-<span>  <span class="va">tempenv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">index10</span> <span class="op">&lt;-</span> <span class="fu">indexpoints</span><span class="op">(</span><span class="va">pts</span>, <span class="st">"index10"</span>, envir <span class="op">=</span> <span class="va">tempenv</span><span class="op">)</span></span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="getpointsnearby.html">getpointsnearby</a></span><span class="op">(</span><span class="va">pts</span>, quadtree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">index10</span>, envir <span class="op">=</span> <span class="va">tempenv</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="co"># y &lt;- proxistat(pts)</span></span>
-<span>  <span class="co"># rm(custom_index)</span></span>
-<span> <span class="co"># }</span></span>
-<span></span></code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

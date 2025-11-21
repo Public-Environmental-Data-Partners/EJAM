@@ -11,8 +11,8 @@
 #'   instead of passing just the colnames, this function will see that and still
 #'   return just a vector of new colnames
 #' @param namesnow vector of colnames (but can be a data.frame or data.table too)
-#' @param oldtype friendly or long or original, or csv or r or api
-#' @param newtype friendly or long or original, or csv or r or api
+#' @param oldtype designation of the type of variables in namesnow: "long" or "original", or "csv" or "r" or "api" (colnames of map_headernames, or aliases per helper [fixmapheadernamescolname()])
+#' @param newtype the type to rename to -- see similar oldtype parameter
 #' @param mapping_for_names data.frame passed to [fixnames()] to do the work.
 #'
 #' @seealso [varinfo()]  [fixnames_to_type()] [fixcolnames()] [fixnames()]

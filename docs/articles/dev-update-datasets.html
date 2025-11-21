@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +57,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -135,25 +136,24 @@ datasets if useful:</p>
 <span><span class="co">## ignoring sortbysize because simple=TRUE</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"names_|^test"</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] "NAICS"                              "SIC"                               </span></span>
-<span><span class="co">##  [3] "avg.in.us"                          "bg_cenpop2020"                     </span></span>
-<span><span class="co">##  [5] "bgpts"                              "blockgroupstats"                   </span></span>
-<span><span class="co">##  [7] "censusplaces"                       "custom"                            </span></span>
-<span><span class="co">##  [9] "default_points_shown_at_startup"    "ejamdata_version"                  </span></span>
-<span><span class="co">## [11] "ejampackages"                       "ejscreenRESTbroker2table_na_filler"</span></span>
-<span><span class="co">## [13] "epa_programs"                       "epa_programs_defined"              </span></span>
-<span><span class="co">## [15] "formulas_all"                       "formulas_d"                        </span></span>
-<span><span class="co">## [17] "frsprogramcodes"                    "high_pctiles_tied_with_min"        </span></span>
-<span><span class="co">## [19] "islandareas"                        "lat_alias"                         </span></span>
-<span><span class="co">## [21] "lon_alias"                          "mact_table"                        </span></span>
-<span><span class="co">## [23] "map_headernames"                    "metadata4pins"                     </span></span>
-<span><span class="co">## [25] "meters_per_mile"                    "modelDoaggregate"                  </span></span>
-<span><span class="co">## [27] "modelEjamit"                        "naics_counts"                      </span></span>
-<span><span class="co">## [29] "naicstable"                         "namez"                             </span></span>
-<span><span class="co">## [31] "sictable"                           "stateinfo"                         </span></span>
-<span><span class="co">## [33] "stateinfo2"                         "states_shapefile"                  </span></span>
-<span><span class="co">## [35] "statestats"                         "usastats"                          </span></span>
-<span><span class="co">## [37] "x_anyother"</span></span></code></pre>
+<pre><code><span><span class="co">##  [1] "NAICS"                      "SIC"                       </span></span>
+<span><span class="co">##  [3] "avg.in.us"                  "bg_cenpop2020"             </span></span>
+<span><span class="co">##  [5] "bgpts"                      "blockgroupstats"           </span></span>
+<span><span class="co">##  [7] "censusplaces"               "custom"                    </span></span>
+<span><span class="co">##  [9] "ejamdata_version"           "ejampackages"              </span></span>
+<span><span class="co">## [11] "epa_programs"               "epa_programs_defined"      </span></span>
+<span><span class="co">## [13] "formulas_all"               "formulas_d"                </span></span>
+<span><span class="co">## [15] "formulas_ejscreen_acs"      "frsprogramcodes"           </span></span>
+<span><span class="co">## [17] "high_pctiles_tied_with_min" "islandareas"               </span></span>
+<span><span class="co">## [19] "lat_alias"                  "lon_alias"                 </span></span>
+<span><span class="co">## [21] "mact_table"                 "map_headernames"           </span></span>
+<span><span class="co">## [23] "meters_per_mile"            "modelDoaggregate"          </span></span>
+<span><span class="co">## [25] "modelEjamit"                "naics_counts"              </span></span>
+<span><span class="co">## [27] "naicstable"                 "namez"                     </span></span>
+<span><span class="co">## [29] "sictable"                   "stateinfo"                 </span></span>
+<span><span class="co">## [31] "stateinfo2"                 "states_shapefile"          </span></span>
+<span><span class="co">## [33] "statestats"                 "usastats"                  </span></span>
+<span><span class="co">## [35] "x_anyother"</span></span></code></pre>
 <div class="section level3">
 <h3 id="where-the-datasets-are-stored">Where the datasets are stored<a class="anchor" aria-label="anchor" href="#where-the-datasets-are-stored"></a>
 </h3>
@@ -481,11 +481,11 @@ tibble/dataframe.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer>

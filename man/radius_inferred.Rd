@@ -14,7 +14,7 @@ radius_inferred(
 )
 }
 \arguments{
-\item{s2b}{data.table of ejam_uniq_id, distance, etc. that is the output of getblocksnearby()}
+\item{s2b}{table in \href{https://r-datatable.com}{data.table} format of ejam_uniq_id, distance, etc. that is the output of \code{\link[=getblocksnearby]{getblocksnearby()}}}
 
 \item{decimalsreported}{parameter to fine tune estimates - generally should not be changed}
 
@@ -60,8 +60,7 @@ This function is based largely on a practical algorithm that is accurate to with
 the vast majority of the time for a radius of 1 to 3 miles.
 }
 \examples{
- radius_inferred()
-  # radius_inferred(getblocksnearby(testpoints_n(100), radius = 3.25))
-  
+EJAM:::radius_inferred(getblocksnearby(testpoints_n(100), radius = 3.25))
+
 }
 \keyword{internal}

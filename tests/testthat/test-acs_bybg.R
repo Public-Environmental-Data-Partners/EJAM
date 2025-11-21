@@ -6,7 +6,7 @@
 
 # ## Format new data to match rows of blockgroupstats
 #
-# setnames(newvars, "GEOID", "bgfips")
+# data.table::setnames(newvars, "GEOID", "bgfips")
 # dim(newvars)
 # newvars <- newvars[blockgroupstats[,.(bgfips, ST)], ,  on = "bgfips"]
 # dim(blockgroupstats)
@@ -17,7 +17,7 @@
 test_that("acs_bybg() ok, 1 state", {
 
   # this requires having set up a census api key - see ?tidycensus::census_api_key
-  skip_if(nchar(Sys.getenv("CENSUS_API_KEY")) == 0, message = "missing census API key so cannot test where tidycensus package is used")
+  skip_if(nchar(Sys.getenv("CENSUS_API_KEY")) == 0, message = "envt var CENSUS_API_KEY not found - missing census API key so cannot test where tidycensus package is used")
   testthat::skip_if_not_installed("tidycensus") # also maybe has to be attached?
 
   TEST_ST = "DC"
@@ -48,7 +48,7 @@ test_that("acs_bybg() ok, 1 state", {
 test_that("calc_ejam() can get/use ACS data 2 states", {
 
   # this requires having set up a census api key - see ?tidycensus::census_api_key
-  skip_if(nchar(Sys.getenv("CENSUS_API_KEY")) == 0, message = "missing census API key so cannot test where tidycensus package is used")
+  skip_if(nchar(Sys.getenv("CENSUS_API_KEY")) == 0, message = "envt var CENSUS_API_KEY not found - missing census API key so cannot test where tidycensus package is used")
   testthat::skip_if_not_installed("tidycensus") # also maybe has to be attached?
 
   expect_no_error({
@@ -56,7 +56,7 @@ test_that("calc_ejam() can get/use ACS data 2 states", {
     mystates = c("DC", 'RI')
     newvars <- acs_bybg(variables = c("B01001_001", paste0("B01001_0", 31:39)),
                         state = mystates)
-    setnames(newvars, "GEOID", "bgfips")
+    data.table::setnames(newvars, "GEOID", "bgfips")
     newvars[, ST := fips2state_abbrev(bgfips)]
     names(newvars) <- gsub("E$", "", names(newvars))
 

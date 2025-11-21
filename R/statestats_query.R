@@ -15,6 +15,11 @@
 #'
 statestats_means_bystates <- function(ST = unique(EJAM::statestats$REGION), varnames = names_these, PCTILES = "mean") {
 
+  ## BUT NOTE THIS IS VERY SIMILAR TO calc_avg_columns()
+  ## except not identical and calc_avg_columns() might be faster?
+  ## and calc_avg_columns() is intended to do that job within doaggregate() rather than for viewing a few stats interactively?
+
+
   # Help add (to a table of info on multiple states) columns of a few indicators with averages of appropriate state for each row
   # Given a vector of 2-char ST abbrevs, and vector of colnames in statestats table (indicator names),
   # return data.frame of state averages for those, one row per ST provided (can have repeats) and colnames are varnames.
@@ -71,6 +76,8 @@ statestats_means <- function(ST=unique(EJAM::statestats$REGION), varnames=c(EJAM
 #' @param PCTILES vector of percentiles 0-100 and/or "mean"
 #' @param dig digits to round to
 #'
+#' @seealso [calc_avg_columns()]
+#'
 #' @examples \donttest{
 #'
 #' usastats_querye()
@@ -95,7 +102,6 @@ statestats_means <- function(ST=unique(EJAM::statestats$REGION), varnames=c(EJAM
 #' statestats_query(varnames = names_e)
 #'
 #' statestats_query(varnames = names_d_subgroups)
-#' head(statestats_query(varnames = longlist))
 #'
 #' ## in USA overall, see mean and key percentiles
 #' # for all demog and envt indicators
@@ -107,6 +113,7 @@ statestats_means <- function(ST=unique(EJAM::statestats$REGION), varnames=c(EJAM
 #'
 #' # long list of variables:
 #' x = intersect(EJAM::names_all_r,  names(EJAM::usastats))
+#' x=setdiff(x,"REGION")
 #' usastats_means(x)
 #'
 #' usastats[!(usastats$PCTILE < 50), c("PCTILE", names_d)]
@@ -220,12 +227,6 @@ usastats_query   <- function(varnames = c(EJAM::names_e, EJAM::names_d, EJAM::na
                              PCTILES = NULL,
                              dig = 4) {
   statestats_query(ST = "us", varnames = varnames, PCTILES = PCTILES, dig = dig)
-  ## see all total counts too not just US means for just demographics not envt, including subgroups:
-  # t(round( ustotals2(bg = blockgroupstats),2))
-  # t(round(rbind(
-  #   ustotals2(bg=ejscreen package file bg22),
-  #    ustotals2(bg = blockgroupstats)
-  # ),3))
 }
 ################################################################################ #
 
@@ -240,7 +241,7 @@ usastats_query   <- function(varnames = c(EJAM::names_e, EJAM::names_d, EJAM::na
 #' @export
 #'
 usastats_querye <- function(varnames=EJAM::names_e, PCTILES=NULL, dig=4) {
-   statestats_query(ST = "us", varnames = varnames, PCTILES = PCTILES, dig = dig)
+  statestats_query(ST = "us", varnames = varnames, PCTILES = PCTILES, dig = dig)
 }
 ################################################################################ #
 
@@ -277,67 +278,5 @@ usastats_means <- function(varnames=c(EJAM::names_e, EJAM::names_d, EJAM::names_
 
 ################################################################################ #
 ################################################################################ #
-################################################################################ #
 
-
-
-
-
-### variations that were drafted that do roughly the same kinds of things:
-
-
-
-
-
-lookup_means <- function(varnames = intersect(EJAM::names_all_r,  names(EJAM::usastats)), zones = "USA") {
-
-  #    examples
-  #
-  #  t(round(lookup_means(), 3))
-
-
-  # 1 variable, 1 zone
-  if (length(varnames) == 1 && length(zones) == 1) {
-    return(
-      lookup_mean1zone(varname = varnames, zone = zones)
-    )
-  }
-
-  # N variables, 1 zone
-  if (length(varnames) > 1 && length(zones) == 1) {
-    return(
-      lookup_mean1zone(varname = varnames, zone = zones)
-    )
-  }
-
-  # 1 variable, N zones
-  if (length(varnames) == 1 && length(zones) > 1) {
-    return(
-      sapply(zones, FUN = function(z) lookup_mean1zone(varname = varnames, zone = z))
-    )
-  }
-
-  # N variables, N zones
-  if (length(varnames) > 1 && length(zones) > 1) {
-
-    # N variables, N zones - ASSUME THEY WANT A MATRIX (NOT A SINGLE VECTOR BASED ON THE NTH VARIABLE IN THE NTH ZONE, LIKE VIA MAPPLY)
-    # so this can return a matrix, one row per zone, one col per variable name
-    # varnames is a fixed vector that is used for all zones.
-
-    return(
-      sapply(zones, FUN = function(z) lookup_mean1zone(varname = varnames, zone = z))
-    )
-  }
-}
-################################################################################ #
-
-
-lookup_mean1zone <- function(varname,
-                             zone = "USA",
-                             lookup = EJAM::usastats) {
-  if (!("USA" %in% zone)) {lookup <- EJAM::statestats}
-  if (length(zone) > 1) {stop('can only report on one state or USA overall')}
-  lookup[lookup$PCTILE == "mean" & lookup$REGION == zone, varname]
-}
-################################################################################ #
 

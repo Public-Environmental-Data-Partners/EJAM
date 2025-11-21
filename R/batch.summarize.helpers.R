@@ -16,14 +16,15 @@
 #' @param na.rm default is TRUE. not tested for FALSE
 #' @return max of each row
 #' @seealso colMaxs2()
+#'
 #' @keywords internal
 #'
 rowMaxs2 <- function(df, na.rm = TRUE) {
 
   # had been doing this:
-  # mymax <- do.call(pmax, c(bg[,names.ej.pctile], na.rm = TRUE))
+  # mymax <- do.call(pmax, c(bg[,names_ej_pctile], na.rm = TRUE))
   # now can do this:
-  # mymax <- rowMaxs2(bg[,names.ej.pctile])
+  # mymax <- rowMaxs2(bg[,names_ej_pctile])
 
   if (is.matrix(df)) {df <- data.frame(df, stringsAsFactors = FALSE)}
   valid.cols <- sapply(df, function(x) { is.numeric(x) || is.logical(x) || is.character(x)})
@@ -58,8 +59,9 @@ rowMaxs2 <- function(df, na.rm = TRUE) {
 #'   stringsAsFactors = FALSE))
 #'
 #' df
-#' colMaxs2(df)
+#' EJAM:::colMaxs2(df)
 #' @seealso [colMins2()]
+#'
 #' @keywords internal
 #'
 colMaxs2 <- function(df, na.rm = TRUE) {
@@ -102,7 +104,7 @@ colMaxs2 <- function(df, na.rm = TRUE) {
 #'   stringsAsFactors = FALSE))
 #'
 #' df
-#' colMins2(df)
+#' EJAM:::colMins2(df)
 #'
 #' @keywords internal
 #'
@@ -303,7 +305,7 @@ change.fieldnames <- function(
 #' @param x Required. output of batch processor that runs EJSCREEN report once per site.
 #' @param namesfile Optional but must specify either namesfile, or both oldcolnames and newcolnames.
 #'   A csv filename, of file that maps fieldnames from those in raw output of batch processor
-#'   to more useful and friendly names that make more sense.
+#'   to more useful and clear names that make more sense.
 #'   If function is called with the special value namesfile='keepnames' then
 #'   the names are unchanged from those in x.
 #' @param oldcolnames Optional. The names to be found in x, ignored if namesfile specified.

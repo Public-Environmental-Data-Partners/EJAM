@@ -14,11 +14,12 @@
 #'   new columns if ST was not already a column:
 #'   ejam_uniq_id, ST, statename, FIPS.ST, REGION, n
 #' @examples
-#'   state_from_sitetable(testpoints_10)
-#'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ejam_uniq_id, ST, pop)])
-#'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
-#'   state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
+#'   EJAM:::state_from_sitetable(testpoints_10)
+#'   EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ejam_uniq_id, ST, pop)])
+#'   EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
+#'   EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
 #'
+#' @keywords internal
 #'
 state_from_sitetable <- function(sites, ignorelatlon = FALSE) {
 
@@ -83,7 +84,7 @@ state_from_sitetable <- function(sites, ignorelatlon = FALSE) {
 
   # 1. ST: if already there
 
-  # 2. FIPS like if fips or some shp analyses:   stfips, bgfips, blockfips, then fips  etc.:   ST <- fips2state_abbrev(fips)
+  # 2. FIPS like if fips or some shp analyses:   stfips, bgfips, blockfips, then fips  etc.:   ST <- fips2stateabbrev(fips)
 
   # 3. latlon of sites, points analyzed (not of blocks nearby)       state_from_latlon(lat = , lon = )  # but this is slowest
 
@@ -107,7 +108,7 @@ state_from_sitetable <- function(sites, ignorelatlon = FALSE) {
 
     suppressWarnings({x = fips_from_table(sites2states)}) # returns NULL if no column could be interpreted as fips column name, and returns vector of values otherwise
     if (!is.null(x) && (sum(fips_valid(x), na.rm = TRUE) > 0)) {
-      sites2states$ST <- fips2state_abbrev(fips2state_fips(x))       # fips2state_abbrev() is NOT the same as state_from_fips_bybg(sites2states$fips)
+      sites2states$ST <- fips2stateabbrev(fips2state_fips(x))       # fips2stateabbrev() is NOT the same as state_from_fips_bybg(sites2states$fips)
     } else {
 
       if (!ignorelatlon) {

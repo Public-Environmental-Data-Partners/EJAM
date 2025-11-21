@@ -23,7 +23,7 @@ within that overall category.}
 \item{...}{passed to \code{\link[=naics_from_any]{naics_from_any()}}}
 }
 \value{
-A data.table (not just data.frame) with columns called
+A table in \href{https://r-datatable.com}{data.table} format (not just data.frame) with columns called
 lat, lon, REGISTRY_ID, NAICS, naics_found, naics_query (unless id_only parameter set TRUE).
 naics_query is the input parameter that was used (that had been provided to this function as naics).
 naics_found and NAICS are identical (redundant), and are the code found that
@@ -67,10 +67,10 @@ See more about NAICS industry codes at \url{https://www.naics.com/search}
   # mapfast(frs_from_naics(336611)) # simple map
 
   # get name from one code
-  naics_from_code(336)$name
+  EJAM:::naics_from_code(336)$name
   # get the name from each code
   mycode = c(33611, 336111, 336112)
-  naics_from_code(mycode)$name
+  EJAM:::naics_from_code(mycode)$name
   # see counts of facilities by code (parent) and subcategories (children)
   naics_counts[NAICS \%in\% mycode, ]
   # see parent codes that contain each code
