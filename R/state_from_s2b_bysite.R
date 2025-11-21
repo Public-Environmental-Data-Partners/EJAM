@@ -47,15 +47,15 @@
 #'
 #' @examples \donttest{
 #' # unexported function, so use load_all() or :::
-#' table(state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
+#' table(EJAM:::state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
 #' EJAM:::state_from_s2b_bysite(testoutput_getblocksnearby_10pts_1miles)[]
-#'
+#'  pts = testpoints_10
 #'   x = getblocksnearby(pts, radius = 30)
 #'   y = EJAM:::state_from_s2b_bysite(x)
 #'   table(y$in_how_many_states)
 #'   y
 #'
-#'   fname = './inst/testdata/testpoints_207_sites_with_signif_violations_NAICS_326_ECHO.csv'
+#'   fname = testdata("testpoints_100_sites_", quiet = T)
 #'   x = EJAM:::state_from_s2b_bysite(
 #'     getblocksnearby( latlon_from_anything(fname), quadtree = localtree))
 #'   y = read_csv_or_xl(fname)

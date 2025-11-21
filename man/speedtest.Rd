@@ -84,7 +84,7 @@ This is essentially a test script that times each step of EJAM for a large datas
 }
 }
 \examples{
-\donttest{
+\dontrun{
   speedseen_few <- EJAM:::speedtest(c(50,500), radii=c(1, 3.106856), logging=FALSE, honk=FALSE)
 
   speedseen_nearer_to1k <- EJAM:::speedtest(n = c(1e2,1e3,1e4 ), radii=c(1, 3.106856,5 ),

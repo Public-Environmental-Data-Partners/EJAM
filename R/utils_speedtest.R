@@ -39,7 +39,7 @@
 #' @param avoidorphans see [getblocksnearby()] or [ejamit()] regarding this param
 #' @param getblocks_diagnostics_shown set TRUE to see more details on block counts etc.
 #' @param ... passed to plotting function
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   speedseen_few <- EJAM:::speedtest(c(50,500), radii=c(1, 3.106856), logging=FALSE, honk=FALSE)
 #'
 #'   speedseen_nearer_to1k <- EJAM:::speedtest(n = c(1e2,1e3,1e4 ), radii=c(1, 3.106856,5 ),
