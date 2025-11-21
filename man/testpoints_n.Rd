@@ -33,10 +33,10 @@ Note the default is frs, but you may want to use pop even though it is slower.
 
 \item{validonly}{return only points with valid lat/lon coordinates. Defaults to TRUE.}
 
-\item{dt}{logical, whether to return a data.table (DEFAULT) instead of normal data.frame}
+\item{dt}{logical, whether to return a table in \href{https://r-datatable.com}{data.table} format (DEFAULT) instead of normal data.frame}
 }
 \value{
-data.frame or data.table with columns lat, lon in decimal degrees, and
+data.frame or table in \href{https://r-datatable.com}{data.table} format with columns lat, lon in decimal degrees, and
 any other columns that are in the table used (based on weighting)
 }
 \description{

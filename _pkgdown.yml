@@ -167,15 +167,8 @@ reference:
   contents:
   - testinput_shapes_2
   - shapefile_from_any
-  - shapefile_from_folder
-  - shapefile_from_filepaths
-  - shapefile_from_zip
-  - shapefile_from_gdb
-  - shapefile_from_gdbzip
-  - shapefile_filepaths_from_folder
-  - shapefile_filepaths_valid
-  - shapefile_clean
   - shapefile_from_sitepoints
+  - shapefile_clean
   - shape_buffered_from_shapefile
   - shape_buffered_from_shapefile_points
   - shapes_from_fips
@@ -522,8 +515,15 @@ reference:
   - fips_counties_from_countyname
   - fips_place_from_placename
   - shapefile2blockpoints
-  - shapefile_filepaths_validize
+  - shapefile_from_gdb
+  - shapefile_from_gdbzip
+  - shapefile_from_zip
   - shapefile_from_json
+  - shapefile_from_filepaths
+  - shapefile_from_folder
+  - shapefile_filepaths_from_folder
+  - shapefile_filepaths_valid
+  - shapefile_filepaths_validize
   - state_from_s2b_bysite
   - state_from_blockid_table
   - state_from_blockid
@@ -651,3 +651,5 @@ reference:
   - names_these_ratio_to_state_avg
   - names_these_state_avg
   - names_wts
+  - formulas_ejscreen_acs_disability
+  - formulas_ejscreen_demog_index

@@ -83,7 +83,7 @@
 <dl><dt id="arg-mydf">mydf<a class="anchor" aria-label="anchor" href="#arg-mydf"></a></dt>
 <dd><p>Typically something like the output of ejamit()$results_bysite, but
 can also be the full output of <code><a href="ejamit.html">ejamit()</a></code> in which case this uses just the $results_bysite table,
-and in general mydf can be a data.frame or data.table that has a set of
+and in general mydf can be a data.frame or table in <a href="https://r-datatable.com" class="external-link">data.table</a> format that has a set of
 points or polygons or Census FIPS codes.</p><ol><li><p>point data defined by columns named lat and lon, or columns that <code><a href="latlon_infer.html">latlon_infer()</a></code> can infer to be that,
 as from <code><a href="sitepoints_from_any.html">sitepoints_from_any()</a></code> or <code><a href="ejamit.html">ejamit()</a></code>$results_bysite</p></li>
 <li><p>polygon data in a spatial data.frame that has a geometry column of polygons, as from <code><a href="shapefile_from_any.html">shapefile_from_any()</a></code>, or</p></li>
@@ -95,7 +95,7 @@ e.g., as from <code>names2fips('DE')</code> or <code>ejamit(fips='01')$results_b
 
 
 <dt id="arg-radius">radius<a class="anchor" aria-label="anchor" href="#arg-radius"></a></dt>
-<dd><p>in miles, converted to meters and passed to leaflet::addCircles() if appropriate.
+<dd><p>in miles, converted to meters and passed to <code><a href="https://rstudio.github.io/leaflet/reference/map-layers.html" class="external-link">leaflet::addCircles()</a></code> if appropriate.
 If not provided, function tries to find it in mydf (in case that is output of ejamit() for example)</p></dd>
 
 

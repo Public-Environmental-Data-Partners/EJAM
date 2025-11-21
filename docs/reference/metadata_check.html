@@ -123,7 +123,7 @@ via grep to identify which datasets to check. It always uses ignore.case=TRUE fo
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">=</span> <span class="fu">metadata_check</span><span class="op">(</span> which <span class="op">=</span> <span class="st">"ejam_package_version"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">metadata_check</span><span class="op">(</span> which <span class="op">=</span> <span class="st">"ejam_package_version"</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">[</span><span class="op">!</span><span class="va">x</span><span class="op">$</span><span class="va">ejam_package_version</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"2.32.6"</span>, <span class="op">]</span></span>
 <span></span>
 <span>  <span class="co"># tail(EJAM:::metadata_check( ))</span></span>

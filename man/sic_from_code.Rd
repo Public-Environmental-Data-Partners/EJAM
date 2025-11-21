@@ -12,7 +12,7 @@ sic_from_code(mycodes, children = FALSE)
 \item{children}{logical, if TRUE, also return all the subcategories - where SIC starts with the same digits}
 }
 \value{
-a subset of the \link{sictable} data.table (not just the codes column)
+a subset of the \link{sictable} table in \href{https://r-datatable.com}{data.table} format (not just the codes column)
 }
 \description{
 Search for industry names by SIC code(s), 4 digits each

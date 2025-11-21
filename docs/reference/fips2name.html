@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -115,8 +116,8 @@ such as the State or County that each fips is located within.</p>
 <span>            <span class="va">testinput_fips_states</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">mixfips</span>,</span>
 <span>           sitename <span class="op">=</span> <span class="fu">fips2name</span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
-<span>           stfips <span class="op">=</span> <span class="fu"><a href="fips2statefips.html">fips2state_fips</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
-<span>           ST <span class="op">=</span> <span class="fu"><a href="fips2stateabbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>           stfips <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="fips2statefips.html">fips2statefips</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
+<span>           ST <span class="op">=</span> <span class="fu"><a href="fips2stateabbrev.html">fips2stateabbrev</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span>,</span>
 <span>           state <span class="op">=</span> <span class="fu"><a href="fips2statename.html">fips2statename</a></span><span class="op">(</span><span class="va">mixfips</span><span class="op">)</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="st">"Alaska"</span><span class="op">)</span></span>
@@ -134,11 +135,11 @@ such as the State or County that each fips is located within.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

@@ -35,7 +35,7 @@ helps other functions have flexible input parameters - can provide points in a t
 figures out which type of inputs were provided, and returns them
 }
 \examples{
-# After sites <- sites_from_input(),
+# After sites <- EJAM:::sites_from_input(),
 # get data type from sites$sitetype
 # get data itself from sites_only(sites)
 

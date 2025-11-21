@@ -4,10 +4,12 @@
 #' @param class a class for the list
 #'
 #' @return an HTML list
-#' @noRd
 #'
 #' @examples
-#' list_to_li(c("a", "b"))
+#' EJAM:::list_to_li(c("a", "b"))
+#'
+#' @noRd
+#'
 list_to_li <- function(list, class = NULL) {
   if (is.null(class)) {
     tagList(
@@ -41,10 +43,11 @@ list_to_li <- function(list, class = NULL) {
 #' @param class a class for the paragraph tags
 #'
 #' @return An HTML tag
-#' @noRd
 #'
 #' @examples
-#' list_to_p(c("This is the first paragraph", "this is the second paragraph"))
+#' EJAM:::list_to_p(c("This is the first paragraph", "this is the second paragraph"))
+#'
+#' @noRd
 #'
 list_to_p <- function(list, class = NULL) {
   if (is.null(class)) {
@@ -120,11 +123,13 @@ named_to_li <- function(list, class = NULL) {
 #' @param ... the attributes to remove
 #'
 #' @return a new tag
-#' @noRd
 #'
 #' @examples
 #' a <- shiny::tags$p(src = "plop", "pouet")
-#' tagRemoveAttributes(a, "src")
+#' EJAM:::tagRemoveAttributes(a, "src")
+#'
+#' @noRd
+#'
 tagRemoveAttributes <- function(tag, ...) {
   attrs <- as.character(list(...))
   for (i in seq_along(attrs)) {
@@ -139,14 +144,16 @@ tagRemoveAttributes <- function(tag, ...) {
 #' @param tag the tag
 #'
 #' @return a tag
-#' @noRd
 #'
 #' @examples
 #' ## Hide
 #' a <- shiny::tags$p(src = "plop", "pouet")
 #' undisplay(a)
 #' b <- shiny::actionButton(inputId = "go_filter", "go")
-#' undisplay(b)
+#' EJAM:::undisplay(b)
+#'
+#' @noRd
+#'
 undisplay <- function(tag) {
   # if not already hidden
   if (
@@ -197,10 +204,12 @@ jq_hide <- function(id) {
 #' @param text the HTLM text to put before the red star
 #'
 #' @return an html element
-#' @noRd
 #'
 #' @examples
-#' with_red_star("Enter your name here")
+#' EJAM:::with_red_star("Enter your name here")
+#'
+#' @noRd
+#'
 with_red_star <- function(text) {
   shiny::tags$span(
     HTML(
@@ -216,16 +225,17 @@ with_red_star <- function(text) {
 }
 
 
-
 #' Repeat tags$br
 #'
 #' @param times the number of br to return
 #'
 #' @return the number of br specified in times
-#' @noRd
 #'
 #' @examples
-#' rep_br(5)
+#' EJAM:::rep_br(5)
+#'
+#' @noRd
+#'
 rep_br <- function(times = 1) {
   HTML(rep("<br/>", times = times))
 }
@@ -240,7 +250,7 @@ rep_br <- function(times = 1) {
 #' @seealso [url_linkify()]
 #'
 #' @examples
-#' enurl("https://www.thinkr.fr", "ThinkR")
+#' EJAM:::enurl("https://www.thinkr.fr", "ThinkR")
 #'
 #' @keywords internal
 #'
@@ -304,7 +314,6 @@ col_1 <- function(...) {
 #' on the server side.
 #'
 #' @return The modified tag with an extra id and the action button class.
-#' @noRd
 #'
 #' @examples
 #' if (interactive()) {
@@ -313,7 +322,7 @@ col_1 <- function(...) {
 #'   link <- a(href = "#", "My super link", style = "color: lightblue;")
 #'
 #'   ui <- fluidPage(
-#'     make_action_button(link, inputId = "mylink")
+#'     EJAM:::make_action_button(link, inputId = "mylink")
 #'   )
 #'
 #'   server <- function(input, output, session) {
@@ -324,6 +333,9 @@ col_1 <- function(...) {
 #'
 #'   shinyApp(ui, server)
 #' }
+#'
+#' @noRd
+#'
 make_action_button <- function(tag, inputId = NULL) {
   # some obvious checks
   if (!inherits(tag, "shiny.tag")) stop("Must provide a shiny tag.")

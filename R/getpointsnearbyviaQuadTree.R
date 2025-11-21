@@ -9,7 +9,7 @@
 #'
 #' @details
 #'   The explanation below is assuming frompoints are "sites" such as facilities and
-#'   topoints are Census blocks, but they can be reversed as long as the quaddata index
+#'   topoints are Census blocks, but they can be reversed as long as the index
 #'   passed is an index of the topoints.
 #'
 #'   For each point, this function uses the specified search radius and finds the distance to
@@ -17,7 +17,7 @@
 #'   Each topoint is defined by its latitude and longitude.
 #'
 #'   Results are the sites2points table that would be used by doaggregate(),
-#'   with distance in miles as one output column of data.table.
+#'   with distance in miles as one output column of table in [data.table](https://r-datatable.com) format
 #'
 #' @param frompoints data.table with columns lat, lon giving point locations of
 #'   sites or facilities or blocks around which are circular buffers defined by radius.
@@ -36,11 +36,11 @@
 #'
 #'   Note that if creating a proximity score, by contrast, you instead want to find nearest 1 SITE if none within radius of this BLOCK.
 #'
-#' @param quadtree (a pointer to the large quadtree object)
-#'    created using indexpoints() which uses the SearchTree package.
+#' @param quadtree (actually a pointer to a large quadtree object)
+#'    created using [indexpoints()] which uses the SearchTree package.
 #'    Helps find the "topoints"
-#' @param quaddatatable data.table like quaddata passed to function
-#'   - the data.table used to create quadtree, such as blockpoints or frs.
+#' @param quaddatatable table in [data.table](https://r-datatable.com) format like [quaddata] passed to function
+#'   - the data.table used to create quadtree, such as [blockpoints] or [frs].
 #'     Helps find the "topoints"
 #'
 #' @param report_progress_every_n Reports progress to console after every n points
@@ -49,7 +49,7 @@
 #'   the distance_unadjusted column will save the actual distance of site to the topoint,
 #'   which might be zero. adjusted distance uses a lower limit, min_distance
 #' @param updateProgress, optional function to update Shiny progress bar
-#'
+#' @returns see details
 #' @seealso  [getpointsnearby()]
 #' @import data.table
 #'

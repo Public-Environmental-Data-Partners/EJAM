@@ -89,7 +89,7 @@ such as places at elevated risk, redlined areas, watersheds, etc.</p>
 
 
 <dl><dt id="arg-polys">polys<a class="anchor" aria-label="anchor" href="#arg-polys"></a></dt>
-<dd><p>Spatial data as from sf::st_as_sf(), with
+<dd><p>Spatial data as from <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">sf::st_as_sf()</a></code>, with
 points as from <code><a href="shapefile_from_sitepoints.html">shapefile_from_sitepoints()</a></code>,
 or a table of points with lat,lon columns that will first be converted here using that function,
 or polygons</p></dd>
@@ -104,16 +104,16 @@ or polygons</p></dd>
 
 
 <dt id="arg-dissolved">dissolved<a class="anchor" aria-label="anchor" href="#arg-dissolved"></a></dt>
-<dd><p>If TRUE, use sf::st_union(polys) to find unique blocks inside any one or more of polys</p></dd>
+<dd><p>If TRUE, use <code><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">sf::st_union()</a></code> to find unique blocks inside any one or more of polys</p></dd>
 
 
 <dt id="arg-safety-margin-ratio">safety_margin_ratio<a class="anchor" aria-label="anchor" href="#arg-safety-margin-ratio"></a></dt>
 <dd><p>multiplied by addedbuffermiles, how far to search for
-blocks nearby using getblocksnearby(), before using those found to do the intersection via sf::</p></dd>
+blocks nearby using <code><a href="getblocksnearby.html">getblocksnearby()</a></code>, before using those found to do the intersection via sf::</p></dd>
 
 
 <dt id="arg-crs">crs<a class="anchor" aria-label="anchor" href="#arg-crs"></a></dt>
-<dd><p>used in st_as_sf() and st_transform() and shape_buffered_from_shapefile_points(), crs = 4269 or Geodetic CRS NAD83</p></dd>
+<dd><p>used in <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">sf::st_as_sf()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">sf::st_transform()</a></code> and <code><a href="shape_buffered_from_shapefile_points.html">shape_buffered_from_shapefile_points()</a></code>, crs = 4269 or Geodetic CRS NAD83</p></dd>
 
 
 <dt id="arg-updateprogress">updateProgress<a class="anchor" aria-label="anchor" href="#arg-updateprogress"></a></dt>
@@ -135,11 +135,11 @@ were valid and had blocks identified, then the data.table here will only include
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This uses getblocksnearby() to get a very fast rough/good estimate of
+    <p>This uses <code><a href="getblocksnearby.html">getblocksnearby()</a></code> to get a very fast rough/good estimate of
 which US block points are nearby (with a safety margin - see param below),
 before then using sf:: to carefully identify which of those candidate blocks are actually
 inside each polygon (e.g., circle) according to sf:: methods.</p>
-<p>For circular buffers, just using getblocksnearby() should work and not need this function.</p>
+<p>For circular buffers, just using <code><a href="getblocksnearby.html">getblocksnearby()</a></code> should work and not need this function.</p>
 <p>For non-circular polygons, buffered or not, this function will provide a way to very quickly
 filter down to which of the millions of US blocks should be examined by the sf:: join / intersect,
 since otherwise it takes forever for sf:: to check all US blocks.</p>

@@ -13,7 +13,7 @@
 #'
 #' @return character vector like x but where some or all may be replaced by
 #'   standardized versions of the elements of x, or NA if appropriate
-#' @seealso [fixcolnames_infer()] [latlon_infer()]
+#' @seealso [fixcolnames_infer()] [latlon_infer()] [fixcolnames()]
 #' @details [fixcolnames_infer()] and [fixnames_aliases()] are very similar.
 #'
 #'   - [fixcolnames_infer()] is designed to figure out for a data.frame
@@ -53,7 +53,7 @@
 #' fixnames_aliases("LATITUDE", ignore.case = F)
 #' fixnames_aliases("LATITUDE", na_if_no_match = T)
 #' fixnames_aliases("LATITUDE", na_if_no_match = T, ignore.case = F)
-#' fixnames_aliases(c(NA, 1, "typo", 1:2, list()))
+#' fixnames_aliases(c(NA, 1, "typo", 1:2))
 #'
 #' fixnames_aliases(c(1:4, "na", "tbd"),
 #'   alias_list = list(upto1 = 0:1, company = 2, crowd = 3:10, other = c("na", "tbd")))
@@ -101,7 +101,7 @@ fixnames_aliases <- function(x, na_if_no_match = FALSE, alias_list = NULL, ignor
       lon = lon_alias, #"lon" "longitude83" "longitude" "longitudes" "faclong" "lons" "long" "longs" "lng" "x"
 
       # could be used by fips_from_table() etc.  NOTE THESE ARE NOT REALLY IDENTICAL, but fipstype() can differentiate them
-      fips = c('FIPS',   'Fips', 'fips_code', 'fipscode',
+      fips = c('FIPS', 'Fips', 'fips_code', 'fipscode',
                'blockfips',
                'bgfips', 'blockgroupfips', 'blockgroup_fips', 'blockgroup_fips_code',
                'FIPS.TRACT', 'tractfips', 'tract_fips',
@@ -109,18 +109,18 @@ fixnames_aliases <- function(x, na_if_no_match = FALSE, alias_list = NULL, ignor
                'statefips', 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST'
          ),
 
-      # had been used in fixcolnames("pctlowinc", "rname", "long") etc. but "friendly" is ambiguous and should be phased out
-      rname = c("r", "friendly"),
+      # had been used in fixcolnames("pctlowinc", "rname", "long") etc. but "friendly" was ambiguous and was phased out - had been using friendly as alias for longname in several places but as alias for rname in fixmapheadernamescolname()
+      rname = c("r", "rname", "rnames"),
 
       longname = c(
         # "long",  # *** problem! we already interpret "long" as "lon" (longitude)
         "longname", "longnames", "full", "description", "header"),
 
-      shortlabel = c("short", "shortname", "shortnames", "shortlabel", "shortlabels", "labels", "label"),
-      apiname = c('api', 'apiname'),
-      csvname = c("csv", "csvname"),
-      acsname = c('acs', 'acsname'),
-      oldname = c("old", "oldnames", "oldname", 'original')
+      shortlabel = c("short", "shortname", "shortnames", "shortlabel", "shortlabels", "label", "labels"),
+      apiname = c('api', 'apiname', 'apinames'),
+      csvname = c("csv", "csvname", "csvnames"),
+      acsname = c('acs', 'acsname', 'acsnames'),
+      oldname = c("old", "oldname", "oldnames", 'original')
 
     )
   } else {

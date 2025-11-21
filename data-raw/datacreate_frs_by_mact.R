@@ -1,6 +1,6 @@
 # script to download and clean tables of facilities by MACT subpart
 
-# requires 1st updating 
+# requires 1st updating
 #   frs_by_programid
 
 # creates  frs_by_mact
@@ -11,7 +11,7 @@
 
 stop("THIS IS NOT WORKING YET/ANYMORE - THE CODE WAS OUT OF ORDER SO THE SCRIPT DOES NOT WORK -
      WAS IT REPLACED BY frs_update_datasets() ??")
-# check if rollback to main/earlier version would work- 
+# check if rollback to main/earlier version would work-
 # seems like it may have worked and then was edited to update those datasets using the already existing versions of some files
 # by using EJAM ::  xyzdataset  etc.
 
@@ -24,29 +24,29 @@ stop("THIS IS NOT WORKING YET/ANYMORE - THE CODE WAS OUT OF ORDER SO THE SCRIPT 
 ################################# #
 ## DOWNLOAD DATA ####
 #
-# One can download from ECHO all the 14,000 or so CAA Major Actives  
+# One can download from ECHO all the 14,000 or so CAA Major Actives
 # https://echo.epa.gov/tools/data-downloads
 # and then remove the ones without  "MACT" listed in the column called AIRPrograms
 # which are the one that have nothing in the column called  AIRMacts.
 #  AIRMacts  column is a csv list of codes like DDDDD, EEEE, FFFF, HHHHH, JJJJ, KK, N, UU, ZZZZ
 #  that apply to the given facility.
-# https://echo.epa.gov/tools/data-downloads/icis-air-download-summary 
+# https://echo.epa.gov/tools/data-downloads/icis-air-download-summary
 # ICIS-Air Datasets
 
 td = tempdir()
 zipname = "https://echo.epa.gov/files/echodownloads/ICIS-AIR_downloads.zip"
 download.file(
-  zipname, 
+  zipname,
   destfile = file.path(td, "ICIS-AIR_downloads.zip")) # about 60 MB
 unzip(       file.path(td, "ICIS-AIR_downloads.zip"), exdir = file.path(td, "icis"))
 dir(file.path(td, "icis"), pattern = "ICIS")
-# [1] "ICIS-AIR_FACILITIES.csv"        "ICIS-AIR_FCES_PCES.csv"         "ICIS-AIR_FORMAL_ACTIONS.csv"   
-# [4] "ICIS-AIR_INFORMAL_ACTIONS.csv"  "ICIS-AIR_POLLUTANTS.csv"        "ICIS-AIR_PROGRAM_SUBPARTS.csv" 
-# [7] "ICIS-AIR_PROGRAMS.csv"          "ICIS-AIR_STACK_TESTS.csv"       "ICIS-AIR_TITLEV_CERTS.csv"     
+# [1] "ICIS-AIR_FACILITIES.csv"        "ICIS-AIR_FCES_PCES.csv"         "ICIS-AIR_FORMAL_ACTIONS.csv"
+# [4] "ICIS-AIR_INFORMAL_ACTIONS.csv"  "ICIS-AIR_POLLUTANTS.csv"        "ICIS-AIR_PROGRAM_SUBPARTS.csv"
+# [7] "ICIS-AIR_PROGRAMS.csv"          "ICIS-AIR_STACK_TESTS.csv"       "ICIS-AIR_TITLEV_CERTS.csv"
 # [10] "ICIS-AIR_VIOLATION_HISTORY.csv"
 ################################# #
 
-## check operating vs closed ?  ignored here - frs datacreate handled that 
+## check operating vs closed ?  ignored here - frs datacreate handled that
 x = "ICIS-AIR_FACILITIES.csv"
 x = read.csv(file.path(td, "icis", x), stringsAsFactors = FALSE)
 cbind(count = table(x$AIR_OPERATING_STATUS_DESC), pct = round(100 * table(x$AIR_OPERATING_STATUS_DESC)/NROW(x),0))
@@ -67,13 +67,13 @@ y = "ICIS-AIR_PROGRAM_SUBPARTS.csv"
 y = read.csv(file.path(td, "icis", y), stringsAsFactors = FALSE)
 # names(y)
 # > table(y$PROGRAM_CODE == "CAAMACT")
-#  FALSE   TRUE 
+#  FALSE   TRUE
 # 113887  68375   5/2024
 y <- y[y$PROGRAM_CODE == "CAAMACT", ]
 y$subpart <- gsub("CAAMACT", "", y$AIR_PROGRAM_SUBPART_CODE)
 y <- y[, c("PGM_SYS_ID", "subpart", "AIR_PROGRAM_SUBPART_DESC")]
 ################################# #
-## (clean subpart codes) #### 
+## (clean subpart codes) ####
 #
 # unique(y$subpart)   ## e.g., FFFF, 6C, etc.
 # note that some are 6B or 6J not BBBBBB or JJJJJJ
@@ -85,7 +85,7 @@ expandit <- function(old) {
   for (i in 1:length(old)) {
     if (acount[i]) {
       old[i] <- paste(rep(substr(old[i] ,2, 2), as.numeric(  substr(old[i] ,1,1))), collapse = "")
-    } 
+    }
   }
   return(old)
 }
@@ -101,7 +101,7 @@ table(z == y$subpartclean)
 rm(z)
 # all true 5/2024
 ################################# #
-## clean titles  
+## clean titles
 # Extract just the title of the category, without all the duplicative text that field has
 
 y$title <-  gsub((".* Subpart .{1,8} - ([a-zA-Z]*)"), "\\1", y$AIR_PROGRAM_SUBPART_DESC)
@@ -127,8 +127,8 @@ rm(y)
 x = frs_by_mact[, .( n = .N, mact_table$dropdown_label[mact_table$subpart %in% subpart], haslatlon = sum(!is.na(lat)), pctok = round(100 * sum(!is.na(lat)) / .N, 0)), by = 'subpart']
 setorder(x, n)
 print(x, nrows = 138)
-plot(x$n / 1000, x$pctok, xlim = c(0, 10), ylab = "% with latlon", 
-     xlab = "Thousands of facilities (not showing 43k in RICE ZZZZ)", 
+plot(x$n / 1000, x$pctok, xlim = c(0, 10), ylab = "% with latlon",
+     xlab = "Thousands of facilities (not showing 43k in RICE ZZZZ)",
      main = "How many facilities in each MACT Subpart have location info?")
 bigpct = x$pctok > 50
 text(x$n[bigpct] / 1000, x$pctok[bigpct],
@@ -138,12 +138,12 @@ text(x$n[bigpct] / 1000, x$pctok[bigpct],
      )
 
 # ***   largest % of sites missing lat lon are in these subparts (excluding very small categories)
-print(x[n > 10,][pctok < 50, ][order(pctok), ][1:25, ] ) 
+print(x[n > 10,][pctok < 50, ][order(pctok), ][1:25, ] )
 
 # ***   largest numbers (not %) of sites with missing latlon are in these subparts
-x[, nolatlon := n - haslatlon] 
+x[, nolatlon := n - haslatlon]
 x[order(-nolatlon), ][1:25,]
-# 
+#
 #    subpart     n                                                                                          V2 haslatlon pctok nolatlon
 #     <char> <int>                                                                                      <char>     <int> <num>    <int>
 # 1:    ZZZZ 42819                 ZZZZ - Stationary Reciprocating Internal Combustion Engines (Rice) (42,556)     24981    58    17838
@@ -181,7 +181,7 @@ x[order(-nolatlon), ][1:25,]
 
 # CREATE "mact_table" from "frs_by_mact" for site counts by Subpart ####
 
-# a table of the unique types (MACT codes) and the title of each  
+# a table of the unique types (MACT codes) and the title of each
 
 types <- unique(frs_by_mact[, c("subpart", "title")])
 
@@ -191,16 +191,16 @@ types <- types[order(types$subpart), ]
 rownames(types) <- NULL
 names(types) <- c("subpart", "title", 'dropdown_label')
 dim(types)  # 136  3
-# rename it 
-mact_table <- types  
-mact_counts <- frs_by_mact[, .N, by = 'subpart'] 
+# rename it
+mact_table <- types
+mact_counts <- frs_by_mact[, .N, by = 'subpart']
 mact_table <- dplyr::left_join(mact_table, mact_counts)
 mact_table$dropdown_label <- paste0(mact_table$dropdown_label, ' (',prettyNum(mact_table$N, big.mark = ','), ')')
 
 rm(mact_counts, types)
 
-########################################################################### # 
-########################################################################### # 
+########################################################################### #
+########################################################################### #
 # ~ ####
 
 # CREATE "afs_mact" that helps make "frs_by_mact" (but that is used above??) ####
@@ -219,7 +219,7 @@ if (!dir.exists(file.path(td, "afs_downloads"))) {stop("temp subfolder not creat
 
 AIR_PROGRAM    <- readr::read_csv(file.path(td, "afs_downloads/AIR_PROGRAM.csv"))
 AFS_FACILITIES <- readr::read_csv(file.path(td, "afs_downloads/AFS_FACILITIES.csv"))
-# > class(AIR_PROGRAM) # [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame" 
+# > class(AIR_PROGRAM) # [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"
 
 AIR_PROGRAM$AFS_ID <- stringr::str_pad(AIR_PROGRAM$AFS_ID, width = 10, pad = "0")
 
@@ -246,27 +246,27 @@ AIR_PROGRAM_MACT_PLANT_ID$SECONDARY_SIC_CODE <- AIR_PROGRAM_MACT$SECONDARY_SIC_C
 AIR_PROGRAM_MACT_PLANT_ID$NAICS_CODE <- AIR_PROGRAM_MACT$NAICS_CODE[match(AIR_PROGRAM_MACT_PLANT_ID$PLANT_ID,AIR_PROGRAM_MACT$PLANT_ID)]
 
 # dim(AIR_PROGRAM_MACT_PLANT_ID)
-# [1] 46913    23 as of 5/2024 
-## this now contains >40k  additional facilities linked to EPA_PROGRAM 'AIRS/AFS' 
-##  (old list had only 19K with valid latlons) 
+# [1] 46913    23 as of 5/2024
+## this now contains >40k  additional facilities linked to EPA_PROGRAM 'AIRS/AFS'
+##  (old list had only 19K with valid latlons)
 
-afs_mact <- AIR_PROGRAM_MACT_PLANT_ID |> 
+afs_mact <- AIR_PROGRAM_MACT_PLANT_ID |>
   dplyr::select(programid = "AFS_ID", subpart = "AIR_PROGRAM_CODE_SUBPARTS") |>
   dplyr::rowwise() |>
-  ## (clean subpart codes) #### 
+  ## (clean subpart codes) ####
   ## some subparts written as "6C" instead of "CCCCCC", so converting these to all letters
   ## also see above the function expandit() that should do the same as this:
-  dplyr::mutate(subpart = 
+  dplyr::mutate(subpart =
                   ifelse(stringr::str_detect(.data$subpart, '[:digit:]'),
-                         paste0(rep(substr(.data$subpart, 2, 2), 
+                         paste0(rep(substr(.data$subpart, 2, 2),
                                     as.numeric(substr(.data$subpart,1,1))), collapse = ""),
                          .data$subpart)
   ) |>
-  dplyr::ungroup() |> 
+  dplyr::ungroup() |>
   ## add title column
-  dplyr::left_join(mact_table)    
+  dplyr::left_join(mact_table)
 
-# finished creating afs_mact 
+# finished creating afs_mact
 
 ####################################################### #
 
@@ -293,12 +293,12 @@ frs_by_mact = frs_by_mact |>
 
 # >>> ??? combine  afs_mact + frs_by_mact (aka y) tables ? but they overlap ! ####
 
-# "https://echo.epa.gov/files/echodownloads/ICIS-AIR_downloads.zip", "ICIS-AIR_PROGRAM_SUBPARTS.csv" 
+# "https://echo.epa.gov/files/echodownloads/ICIS-AIR_downloads.zip", "ICIS-AIR_PROGRAM_SUBPARTS.csv"
 #  was the source of y
 # dim(y)        # [1] 68375     4 as of 5/2024
 # y was used to create  frs_by_mact
 
-# "https://echo.epa.gov/files/echodownloads/afs_downloads.zip", AIR_PROGRAM.csv and AFS_FACILITIES.csv 
+# "https://echo.epa.gov/files/echodownloads/afs_downloads.zip", AIR_PROGRAM.csv and AFS_FACILITIES.csv
 #  was the source of afs_mact
 # dim(afs_mact) # [1] 46913     4 as of 5/2024
 
@@ -327,9 +327,9 @@ stop(" check this rbind !! ")
 frs_by_mact <- data.table::rbindlist(list(frs_by_mact, afs_mact))
 
 ## filter out missing latlons, now 55,411 valid records as of 6/2023
-frs_by_mact <- frs_by_mact %>% 
+frs_by_mact <- frs_by_mact %>%
   ## join by programid to get lat and lon columns
-  dplyr::left_join(frs_by_programid, by = c('programid' = 'pgm_sys_id')) 
+  dplyr::left_join(frs_by_programid, by = c('programid' = 'pgm_sys_id'))
 
 
 
@@ -376,12 +376,12 @@ stop("done")
 
 # save(frs_by_mact, file = "frs_by_mact.rda")
 # save(mact_table, "mact_table.rda")
- 
+
 ################################################################################################ #
 
 # Facility/Source Level Identifying Data (ICIS-AIR_FACILITIES.csv)
 #
-# PGM_SYS_ID   -   this is the key for linking between tables 
+# PGM_SYS_ID   -   this is the key for linking between tables
 # REGISTRY_ID
 # SIC_CODES	Char	4000
 # NAICS_CODES	Char	4000
@@ -406,7 +406,7 @@ stop("done")
 ################################################################################################ #
 
 if (1 == 0) {
-  
+
 # also tried to use web services but without success
 
 
@@ -427,28 +427,28 @@ if (1 == 0) {
 
 
 # AIRStatus = Operating
-# 
+#
 # FacLat	FacLong
 # 31.671177	-98.996513
-# 
-# AIRNsps	 
-# NSPS Part 60 - Subpart Dc - SMALL INDUS-COMMER-INSTITUTL STEAM GENERATING UNITS, NSPS Part 60 - Subpart JJJJ - STATIONARY SPARK IGNITION INTERNAL COMBUSTION ENGINES, NSPS Part 60 - Subpart RR - PRESSR-SENST TAPE, LABEL SURFACE COATING OPERATIONS	
+#
+# AIRNsps
+# NSPS Part 60 - Subpart Dc - SMALL INDUS-COMMER-INSTITUTL STEAM GENERATING UNITS, NSPS Part 60 - Subpart JJJJ - STATIONARY SPARK IGNITION INTERNAL COMBUSTION ENGINES, NSPS Part 60 - Subpart RR - PRESSR-SENST TAPE, LABEL SURFACE COATING OPERATIONS
 
 stop("stopped here")
- 
-subpart = 'FFFF'
 
-x <- get_facility_info_via_ECHO(
-  qcolumns = c(2,8,22,23,25,26), url_not_query = T, otherparameters = "&registry_id=110015778176")
-
-x <- httr::GET(x)  # seems to get stuck for a VERY long wait
-
-# one query worked this way but others do not: - this all needs to be rewritten or dropped.
-x <- jsonlite::fromJSON(rawToChar(x$content))$Results$ClusterOutput$ClusterData[,1:8]
+# subpart = 'FFFF'
+#
+# x <- get_facility_info_via_ECHO( # removed this function
+#   qcolumns = c(2,8,22,23,25,26), url_not_query = T, otherparameters = "&registry_id=110015778176")
+#
+# x <- httr::GET(x)  # seems to get stuck for a VERY long wait
+#
+# # one query worked this way but others do not: - this all needs to be rewritten or dropped.
+# x <- jsonlite::fromJSON(rawToChar(x$content))$Results$ClusterOutput$ClusterData[,1:8]
 
 
 #   that does not include a field called AIRMacts
-# 
+#
 # https://echodata.epa.gov/echo/air_rest_services.metadata
 # get_facilities, get_qid, get_map, and get_downoad
 # Use get_facilities to validate passed query parameters, obtain summary statistics and to obtain a query_id (QID). QIDs are time sensitive and will be valid for approximately 30 minutes.
@@ -457,11 +457,11 @@ x <- jsonlite::fromJSON(rawToChar(x$content))$Results$ClusterOutput$ClusterData[
 
 # # FRS query on registry ID
 # https://ofmpub.epa.gov/frs_public2/frs_rest_services.get_facility_wbd?registry_id=110015778176
-# 
+#
 # # FRS API query example - within 3 miles of 1 point, find all FRS sites (of certain type)
 # # URL for searching SEMS (Superfund) facilities within a 3 mile radius of latitude 38.8/longitude -77.01.
 # https://ofmpub.epa.gov/frs_public2/frs_rest_services.get_facilities?latitude83=38.8&longitude83=-77.01&search_radius=3&pgm_sys_acrnm=SEMS&output=JSON
-# 
+#
 # # FRS QUERY PAGE FOR USERS TO MANUALLY ENTER NAICS TO SEARCH FOR AND GET LIST OF SITES/LAT/LON,WHATEVER
 # https://frs-public.epa.gov/ords/frs_public2/ez_frs_column.list?table_name=D_EF_FAC.V_PUB_FRS_NAICS_EZ
 

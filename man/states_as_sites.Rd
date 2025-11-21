@@ -11,10 +11,10 @@ states_as_sites(fips)
 fips_state_from_state_abbrev(c("DE", "RI"))}
 }
 \value{
-provides table similar to the output of getblocksnearby(),
-data.table with one row per blockgroup in these states, or
+provides table similar to the output of \code{\link[=getblocksnearby]{getblocksnearby()}},
+\href{https://r-datatable.com}{data.table} with one row per blockgroup in these states, or
 all pairs of states fips - bgid, and ejam_uniq_id (1 through N) assigned to each state
-but missing blockid and distance so not ready for doaggregate().
+but missing blockid and distance so not ready for \code{\link[=doaggregate]{doaggregate()}}.
 }
 \description{
 FIPS - Analyze US States as if they were sites, to get summary indicators summary

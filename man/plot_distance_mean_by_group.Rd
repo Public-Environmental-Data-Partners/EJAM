@@ -40,7 +40,7 @@ distance_by_group(
 )
 }
 \arguments{
-\item{results_bybg_people}{data.table from \code{doaggregate()$results_bybg_people}}
+\item{results_bybg_people}{table in \href{https://r-datatable.com}{data.table} format from \code{doaggregate()$results_bybg_people}}
 
 \item{demogvarname}{vector of column names like "pctlowinc" etc.}
 

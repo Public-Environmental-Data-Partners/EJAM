@@ -74,7 +74,7 @@ ratio.to.us.d.bysite <- ratio.to.us.d.bysite %>%
 # NOTE NOW ratio.to.us.d.bysite IS A tibble, not data.frame, and is in LONG format now. !!!
 
 # ridgeline Plot - need to adjust xlim so max is about a ratio of 3.0 (or less if none are >=3x)
-ggplot2::ggplot(ratio.to.us.d.bysite, ggplot2::aes(x = `value`, y = `indicator`, fill = ..x..)) + # Please use `after_stat(x)` instead. Warning: The dot-dot notation (`..x..`) was deprecated in ggplot2 3.4.0.
+ggplot2::ggplot(ratio.to.us.d.bysite, ggplot2::aes(x = `value`, y = `indicator`, fill = ggplot2::after_stat(x))) +
   ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   ggplot2::xlim(0, 5) +
   ggplot2::scale_fill_viridis_c(name = "Ratio to US Overall Value", option = "C") +
@@ -82,8 +82,8 @@ ggplot2::ggplot(ratio.to.us.d.bysite, ggplot2::aes(x = `value`, y = `indicator`,
   ggplot2::theme_bw() +
   ggplot2::theme(
     legend.position = "none",
-    panel.spacing = unit(0.1, "lines"),
-    strip.text.x = element_text(size = 8)
+    panel.spacing = ggplot2::unit(0.1, "lines"),
+    strip.text.x = ggplot2::element_text(size = 8)
   )
 }
 

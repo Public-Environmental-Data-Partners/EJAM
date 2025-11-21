@@ -59,7 +59,7 @@ This function can handle 2 kinds of inputs right now:
 \item a vector of scores and vector of corresponding zones (States), for only 1 indicator (e.g., pctlowinc)
 }
 
-This could be recoded to be more efficient - could use data.table.
+This could be recoded to be more efficient - could use \href{https://r-datatable.com}{data.table} package.
 
 The data.frame lookup table must have a field called "PCTILE" that has quantiles/percentiles
 and other column(s) with values that fall at those percentiles.

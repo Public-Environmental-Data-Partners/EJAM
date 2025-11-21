@@ -162,7 +162,7 @@ datacreate_names_of_indicators <- function(redohelp = FALSE) {
   names_these_state_avg <- metadata_add(names_these_state_avg)
   names_these_ratio_to_avg <- metadata_add(names_these_ratio_to_avg)
   names_these_ratio_to_state_avg <- metadata_add(names_these_ratio_to_state_avg)
-  # pctile and friendly not used here
+  # pctile  not used here
 
   use_data(names_these, overwrite = TRUE)
   use_data(names_these_avg, overwrite = TRUE)

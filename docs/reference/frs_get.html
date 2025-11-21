@@ -118,9 +118,9 @@ representing the vintage, such as the date the frs was downloaded, obtained.</p>
 <p>Uses <code><a href="frs_download.html">frs_download()</a></code>, <code><a href="frs_unzip.html">frs_unzip()</a></code>, <code><a href="frs_read.html">frs_read()</a></code>, <code><a href="frs_clean.html">frs_clean()</a></code></p>
 <p><strong>See examples for how package maintainer might use this.</strong></p>
 <p>See source code of this function for more notes.
-For a developer updating the frs datasets in this package,
+For a developer updating the <a href="frs.html">frs</a> datasets in this package,
 see <code><a href="frs_update_datasets.html">frs_update_datasets()</a></code></p>
-<p>frs_get() invisibly returns the table of data, as a data.table.
+<p><code>frs_get()</code> invisibly returns the table of data, as a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format
 It will download, unzip, read, clean, and set metadata for the data.</p>
 <p>This function gets the whole thing in one file from</p>
 <p>NATIONAL_SINGLE.CSV from
@@ -221,24 +221,6 @@ for a description of other related files available from EPA's ECHO.</p></li>
 <code><a href="frs_drop_inactive.html">frs_drop_inactive()</a></code> <code><a href="frs_make_programid_lookup.html">frs_make_programid_lookup()</a></code> <code><a href="frs_make_naics_lookup.html">frs_make_naics_lookup()</a></code></p></div>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
-<span>  <span class="co"># These steps in the examples are all done by frs_update_datasets()</span></span>
-<span>  <span class="co">#  (a function not exported by the package)</span></span>
-<span>  <span class="co"># Note these take a long time to run, for downloads and processing.</span></span>
-<span>  <span class="va">frs</span> <span class="op">&lt;-</span> <span class="fu">frs_get</span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="co"># keep only if an active site, or unclear whether active. Remove clearly inactive ones.</span></span>
-<span>  <span class="va">closedidlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="frs_inactive_ids.html">frs_inactive_ids</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">frs</span> <span class="op">&lt;-</span> <span class="fu"><a href="frs_drop_inactive.html">frs_drop_inactive</a></span><span class="op">(</span><span class="va">frs</span>, closedid <span class="op">=</span> <span class="va">closedidlist</span><span class="op">)</span></span>
-<span>  <span class="va">frs_by_programid</span> <span class="op">&lt;-</span> <span class="fu"><a href="frs_make_programid_lookup.html">frs_make_programid_lookup</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">frs</span><span class="op">)</span> <span class="co"># another super slow step</span></span>
-<span>  <span class="va">frs_by_naics</span>     <span class="op">&lt;-</span> <span class="fu"><a href="frs_make_naics_lookup.html">frs_make_naics_lookup</a></span><span class="op">(</span>    x <span class="op">=</span> <span class="va">frs</span><span class="op">)</span> <span class="co">#  NAs introduced by coercion</span></span>
-<span>  <span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_data.html" class="external-link">use_data</a></span><span class="op">(</span><span class="va">frs</span>,              overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_data.html" class="external-link">use_data</a></span><span class="op">(</span><span class="va">frs_by_programid</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_data.html" class="external-link">use_data</a></span><span class="op">(</span><span class="va">frs_by_naics</span>,     overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co"># }</span></span>
-<span></span></code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

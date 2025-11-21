@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -93,7 +94,7 @@ and to st_crs(x)$units otherwise)</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>same format as <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_buffer()</a></code> returns</p>
+    <p>a simple feature <a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf::sf</a> class spatial data.frame, same format as <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_buffer()</a></code> returns</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -108,11 +109,10 @@ and to st_crs(x)$units otherwise)</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># Within 3 miles of the county borders</span></span>
 <span><span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="shapes_counties_from_countyfips.html">shapes_counties_from_countyfips</a></span><span class="op">(</span><span class="st">"10001"</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="shapes_from_fips.html">shapes_from_fips</a></span><span class="op">(</span><span class="st">"10001"</span><span class="op">)</span></span>
 <span><span class="va">xtra</span> <span class="op">=</span> <span class="fu">shape_buffered_from_shapefile</span><span class="op">(</span><span class="va">x</span>, radius.miles <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="map_shapes_leaflet.html">map_shapes_leaflet</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu"><a href="map_shapes_leaflet_proxy.html">map_shapes_leaflet_proxy</a></span><span class="op">(</span><span class="va">xtra</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span>
-<span></span>
+<span><span class="fu"><a href="map_shapes_leaflet.html">map_shapes_leaflet</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="map_shapes_leaflet_proxy.html">map_shapes_leaflet_proxy</a></span><span class="op">(</span><span class="va">xtra</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -120,11 +120,11 @@ and to st_crs(x)$units otherwise)</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

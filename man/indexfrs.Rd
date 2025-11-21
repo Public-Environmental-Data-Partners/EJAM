@@ -8,7 +8,7 @@ indexfrs(frspts = NULL, indexname = "frs_index", envir = globalenv())
 }
 \arguments{
 \item{frspts}{optional, default is the frs table from the EJAM package,
-but could be a subset of that data.table with columns name lat and lon, one row
+but could be a subset of that \href{https://r-datatable.com}{data.table} with columns name lat and lon, one row
 per location (point), and any other columns are ignored.
 If frspts not specified and indexname exists already, just returns that index without rebuilding it.
 If frspts is specified, such as just frs from one industry or one state,

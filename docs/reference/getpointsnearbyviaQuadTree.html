@@ -142,13 +142,13 @@ which might be zero. adjusted distance uses a lower limit, min_distance</p></dd>
 
 
 <dt id="arg-quadtree">quadtree<a class="anchor" aria-label="anchor" href="#arg-quadtree"></a></dt>
-<dd><p>(a pointer to the large quadtree object)
-created using indexpoints() which uses the SearchTree package.
+<dd><p>(actually a pointer to a large quadtree object)
+created using <code><a href="indexpoints.html">indexpoints()</a></code> which uses the SearchTree package.
 Helps find the "topoints"</p></dd>
 
 
 <dt id="arg-quaddatatable">quaddatatable<a class="anchor" aria-label="anchor" href="#arg-quaddatatable"></a></dt>
-<dd><p>data.table like quaddata passed to function</p><ul><li><p>the data.table used to create quadtree, such as blockpoints or frs.
+<dd><p>table in <a href="https://r-datatable.com" class="external-link">data.table</a> format like <a href="quaddata.html">quaddata</a> passed to function</p><ul><li><p>the data.table used to create quadtree, such as <a href="blockpoints.html">blockpoints</a> or <a href="frs.html">frs</a>.
 Helps find the "topoints"</p></li>
 </ul></dd>
 
@@ -158,15 +158,19 @@ Helps find the "topoints"</p></li>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>see details</p>
+    </div>
+    <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The explanation below is assuming frompoints are "sites" such as facilities and
-topoints are Census blocks, but they can be reversed as long as the quaddata index
+topoints are Census blocks, but they can be reversed as long as the index
 passed is an index of the topoints.</p>
 <p>For each point, this function uses the specified search radius and finds the distance to
 every topoint within the circle defined by the radius.
 Each topoint is defined by its latitude and longitude.</p>
 <p>Results are the sites2points table that would be used by doaggregate(),
-with distance in miles as one output column of data.table.</p>
+with distance in miles as one output column of table in <a href="https://r-datatable.com" class="external-link">data.table</a> format</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

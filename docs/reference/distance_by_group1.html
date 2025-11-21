@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -124,19 +125,15 @@ using the shorter distance, so the distribution of distances does not double-cou
 <span> <span class="co"># plot cumulative share of group by distance vs overall population</span></span>
 <span>  <span class="fu"><a href="distance_by_group_plot.html">distance_by_group_plot</a></span><span class="op">(</span><span class="va">y</span><span class="op">$</span><span class="va">results_bybg_people</span>,</span>
 <span>     demogvarname <span class="op">=</span> <span class="st">'pctlowinc'</span> <span class="op">)</span></span>
-<span></span>
-<span> <span class="co"># plot cum. shares for two groups</span></span>
-<span> <span class="co"># about 14% of black and 12% of asian residents have a site within 1 mile.</span></span>
-<span> <span class="co"># 29% vs 21% have a site within 1.5 miles.</span></span>
-<span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">xyz</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/findInterval.html" class="external-link">findInterval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1.5</span><span class="op">)</span>,  <span class="va">xyz</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span>, <span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span></span>
+<span> <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span> <span class="co"># plot is too busy for all groups at once so this is a way to tap through them 1 by 1</span></span>
 <span> <span class="va">these</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_d</span>, <span class="va">names_d_subgroups</span><span class="op">)</span></span>
 <span> <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">these</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/readline.html" class="external-link">readline</a></span><span class="op">(</span><span class="st">"press any key to see the next plot"</span><span class="op">)</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="distance_by_group_plot.html">distance_by_group_plot</a></span><span class="op">(</span><span class="va">y</span><span class="op">$</span><span class="va">results_bybg_people</span>, demogvarname <span class="op">=</span> <span class="va">these</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span> <span class="op">)</span></span>
 <span> <span class="op">}</span></span>
-<span></span>
+<span><span class="op">}</span><span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -144,11 +141,11 @@ using the shorter distance, so the distribution of distances does not double-cou
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

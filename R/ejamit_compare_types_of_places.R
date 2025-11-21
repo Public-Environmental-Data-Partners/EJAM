@@ -21,9 +21,6 @@
 #' @param ...  see [ejamit()]
 #'
 #' @return similar to ejamit output but results_overall has one row per unique typeofsite
-#'
-#' @export
-#'
 #' @examples
 #'   out <- ejamit_compare_types_of_places(testpoints_10[1:4, ],
 #'     typeofsite = c("A", "B", "B", "C"))
@@ -71,7 +68,8 @@
 #'       main = "By EPA Region", ylim = c(0, 2))
 #'    abline(h = 1)
 #'
-#'    # Analyze by State (slow)
+#'    # Analyze by State (slow! e.g., may take 2-3 minutes
+#'    # for 1,000 sites state by state)
 #'
 #'    out_bystate <- ejamit_compare_types_of_places(pts, typeofsite = pts$ST)
 #'
@@ -80,6 +78,8 @@
 #'      main = "Sites by State")
 #'
 #'   }
+#'
+#' @export
 #'
 ejamit_compare_types_of_places <- function(sitepoints, typeofsite = NULL,
                                            shapefile = NULL, fips = NULL,

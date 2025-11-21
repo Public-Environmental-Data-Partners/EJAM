@@ -6,7 +6,7 @@
 #' @seealso [url_frs_facility()]
 #'
 #' @param regid vector of one or more EPA Facility Registry Service IDs like 110010052520
-#' @return data.table drawn from [frs] dataset, with columns
+#' @return table in [data.table](https://r-datatable.com) format drawn from [frs] dataset, with columns
 #'   "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 #'
 #' @examples

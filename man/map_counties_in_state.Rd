@@ -16,7 +16,7 @@ map_counties_in_state(
 
 ST = "ME"  or  ST = c("de", "RI"), or
 
-\code{ST = fips2state_abbrev(fips_state_from_statename(c("Rhode Island", "district of columbia")))}
+\code{ST = fips2stateabbrev(fips_state_from_statename(c("Rhode Island", "district of columbia")))}
 
 or e.g., all counties in EPA Region 1:
 

@@ -46,7 +46,7 @@ ejamit(
 )
 }
 \arguments{
-\item{sitepoints}{data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
+\item{sitepoints}{data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
 
 \item{radius}{in miles, defining circular buffer around a site point (assumes zero in fips or shapefile cases)}
 
@@ -157,13 +157,14 @@ dim(testoutput_ejamit_10pts_1miles$results_summarized$cols)
 dim(testoutput_ejamit_10pts_1miles$results_summarized$keyindicators)
 }\if{html}{\out{</div>}}
 \itemize{
-\item \strong{results_overall}  a data.table with one row that provides the summary across all sites, the aggregated results for all unique residents.
-\item \strong{results_bysite}   results for individual sites (buffers) - a data.table of results,
+\item \strong{results_overall}  a table in \href{https://r-datatable.com}{data.table} format,
+with one row that provides the summary across all sites, the aggregated results for all unique residents.
+\item \strong{results_bysite}   results for individual sites (buffers) - a table in \href{https://r-datatable.com}{data.table} format, of results,
 one row per ejam_uniq_id (i.e., each site analyzed), one column per indicator
 \item \strong{results_bybg_people}  results for each blockgroup, to allow for
 showing the distribution of each
 indicator across everyone, including the distribution within a
-single residential population group, for example. This table is essential
+single residential population group, for example. This table in \href{https://r-datatable.com}{data.table} format is essential
 for analyzing the distribution of an indicator across all the unique residents analyzed.
 Not all columns from results_bysite are here, however.
 One row is one blockgroup that was either partly or entirely counted as
@@ -197,11 +198,12 @@ See examples in vignettes/ articles at https://ejanalysis.github.io/EJAM
  # All in one step, using functions not shiny app:
  out <- ejamit(testpoints_100_dt, 2)
 
- \donttest{
+ \dontrun{
  # Do not specify sitepoints and it will prompt you for a file,
  # if in RStudio in interactive mode!
+ if (interactive()) {
  out <- ejamit(radius = 3)
-
+ }
   # Specify facilities or sites as points for test data,
   # use 1000 test facility points from the R package
   testsites <- testpoints_1000

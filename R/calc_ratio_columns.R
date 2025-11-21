@@ -6,7 +6,7 @@
 
 #' Calculate ratios to US and State average for each indicator in each place
 #'
-#' @param mytable data.table with 1 row per place, 1 column per raw data indicator values
+#' @param mytable table in [data.table](https://r-datatable.com) format with 1 row per place, 1 column per raw data indicator values
 #' @param varnames column names of mytable that contain the raw indicator values (numerators of ratios)
 #' @param varnames_avg column names of mytable that contain the US averages (denominators of ratios to US avg)
 #' @param varnames_state_avg column names of mytable that contain the State averages (denominators of ratios to State avg)

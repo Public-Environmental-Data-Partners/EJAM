@@ -42,7 +42,7 @@ pkgdown_update(
 Package-maintainer utility - Rebuilds website of package help docs and vignettes (articles) using pkgdown
 }
 \examples{
-  # pkgdown_update(doask = TRUE)
+  # EJAM:::pkgdown_update(doask = TRUE)
 
 }
 \keyword{internal}

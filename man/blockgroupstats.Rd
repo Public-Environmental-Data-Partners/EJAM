@@ -25,7 +25,7 @@ The source of data for each indicator was documented by EJSCREEN, as archived on
 
 More about blockgroupstats
 \itemize{
-\item Version 2.32.6 of EJAM used EPA environmental indicators along with population indicators derived
+\item During 2025, EJAM used EPA environmental indicators along with population indicators derived
 from 2018-2022 ACS data. Each year this should be re-created as for the latest version.
 \item See \code{attributes(blockgroupstats)} to confirm vintage of each dataset
 \item Geographic scope includes States, DC, and Puerto Rico (PR), but not any Island Areas (VI, GU, AS, etc.)

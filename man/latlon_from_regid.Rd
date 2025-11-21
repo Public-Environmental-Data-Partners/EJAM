@@ -12,7 +12,7 @@ latlon_from_regid(regid = NULL)
 \item{regid}{vector of one or more EPA Facility Registry Service IDs like 110010052520}
 }
 \value{
-data.table drawn from \link{frs} dataset, with columns
+table in \href{https://r-datatable.com}{data.table} format drawn from \link{frs} dataset, with columns
 "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 }
 \description{

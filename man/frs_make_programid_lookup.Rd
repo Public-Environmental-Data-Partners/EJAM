@@ -7,10 +7,10 @@
 frs_make_programid_lookup(x)
 }
 \arguments{
-\item{x}{data.table frs from \code{\link[=frs_get]{frs_get()}}}
+\item{x}{\link{frs} table in \href{https://r-datatable.com}{data.table} format from \code{\link[=frs_get]{frs_get()}}}
 }
 \value{
-data.table with columns lat, lon, REGISTRY_ID, program, pgm_sys_id
+table in \href{https://r-datatable.com}{data.table} format with columns lat, lon, REGISTRY_ID, program, pgm_sys_id
 }
 \description{
 Reformat frs datatable to look up facilities by PGM_SYS_ACRNMS

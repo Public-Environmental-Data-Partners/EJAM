@@ -17,7 +17,7 @@ logical vector, TRUE means valid
 validate industry NAICS codes
 }
 \examples{
-  naics_is.valid(c(22, "022", " 22", 111, "4239", 423860))
-  # table(naics_is.valid(frs_by_naics$NAICS)) / NROW(frs_by_naics)
+  EJAM:::naics_is.valid(c(22, "022", " 22", 111, "4239", 423860))
+  # table(EJAM:::naics_is.valid(frs_by_naics$NAICS)) / NROW(frs_by_naics)
 
 }

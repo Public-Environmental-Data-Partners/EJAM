@@ -25,5 +25,6 @@ Ignores and drops files with other extensions.
 Convert filepath(s) into one complete set (if possible) of a single basename and extensions .shp, .shx, .dbf, .prj
 }
 \seealso{
-\code{\link[=shapefile_filepaths_valid]{shapefile_filepaths_valid()}} \code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
+\keyword{internal}

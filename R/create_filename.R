@@ -30,7 +30,7 @@ time_plus_x_seconds = function(seconds = 60, start_time = Sys.time()) {
 #'
 #' @examples
 #' # specify title only
-#' create_filename(title = 'Summary of Analysis', ext=".txt")
+#' EJAM:::create_filename(title = 'Summary of Analysis', ext=".txt")
 #'
 #' # test / see how it works for various combinations of input parameters
 #' parameters_table = expand.grid(
@@ -43,7 +43,7 @@ time_plus_x_seconds = function(seconds = 60, start_time = Sys.time()) {
 #' )
 #' cbind(output_filename =
 #'   cbind(
-#'     purrr::pmap(parameters_table, create_filename)
+#'     purrr::pmap(parameters_table, EJAM:::create_filename)
 #'   ),
 #'   parameters_table
 #' )

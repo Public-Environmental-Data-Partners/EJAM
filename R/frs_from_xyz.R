@@ -55,7 +55,7 @@ frs_from_regid <- function(regid = NULL) {
 #' Use EPA Program ID to see FRS Facility Registry Service data on those EPA-regulated sites
 #'
 #' @inheritParams latlon_from_programid
-#' @return relevant rows of the data.table called frs, which has column names that are
+#' @return relevant rows of the table in [data.table](https://r-datatable.com) format called [frs], which has column names that are
 #'    "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 #' @examples
 #'  test <- data.frame(programname = c('STATE','FIS','FIS'),
@@ -80,7 +80,7 @@ frs_from_programid <- function(programname, programid) {
 #' @description Get data.table based on given FRS Program System CATEGORY.
 #'   Find all FRS sites in a program like RCRAINFO, TRIS, or others.
 #' @param program vector of one or more EPA Program names used by FRS
-#' @return relevant rows of the data.table called frs, which has column names that are
+#' @return relevant rows of the table in [data.table](https://r-datatable.com) format called [frs], which has column names that are
 #'   "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 #' @details Also see [EPA documentation describing each program code](https://www.epa.gov/frs/frs-data-sources) aka data source.
 #'
@@ -109,7 +109,7 @@ frs_from_program <- function(program) {
 #' @param naics_code_or_name passed to [naics_from_any()] as the query
 #' @param childrenForNAICS passed to [naics_from_any()] as the children param of that function
 #' @param ... passed to [naics_from_any()]
-#' @return relevant rows of the data.table called frs, which has column names that are
+#' @return relevant rows of the table in [data.table](https://r-datatable.com) format called [frs], which has column names that are
 #'   "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 #'
 #' @seealso [latlon_from_naics()] [latlon_from_sic()] [frs_from_sic()] [regid_from_naics()] [naics_from_any()]
@@ -124,7 +124,7 @@ frs_from_program <- function(program) {
 #'   frs_from_naics("uranium")
 #'   mapfast(frs_from_naics(naics_from_any("nuclear")$code))
 #'   naics_from_any("silver")
-#'   naics_from_name("silver")
+#'   EJAM:::naics_from_name("silver")
 #'   naics_from_any(212222 )
 #'   frs_from_naics(21222)
 #'   regid_from_naics(21222)
@@ -155,7 +155,7 @@ frs_from_naics <- function(naics_code_or_name, childrenForNAICS = TRUE, ...) {
 #' @param ignore.case logical, search is not case sensitive by default (unlike [grepl()] default)
 #' @param fixed see [grepl()], if set to TRUE it looks for only exact matches
 #'
-#' @return relevant rows of the data.table called frs, which has column names that are
+#' @return relevant rows of the table in [data.table](https://r-datatable.com) format called [frs], which has column names that are
 #'   "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 #'
 #' @examples \donttest{

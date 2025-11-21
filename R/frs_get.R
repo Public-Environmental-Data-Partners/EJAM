@@ -6,10 +6,10 @@
 #'  **See examples for how package maintainer might use this.**
 #'
 #'  See source code of this function for more notes.
-#'  For a developer updating the frs datasets in this package,
+#'  For a developer updating the [frs] datasets in this package,
 #'  see [frs_update_datasets()]
 #'
-#'  frs_get() invisibly returns the table of data, as a data.table.
+#'  [frs_get()] invisibly returns the table of data, as a table in [data.table](https://r-datatable.com) format
 #'  It will download, unzip, read, clean, and set metadata for the data.
 #'
 #'  This function gets the whole thing in one file from
@@ -121,20 +121,8 @@
 #'   representing the vintage, such as the date the frs was downloaded, obtained.
 #' @seealso  [frs_update_datasets()] [frs_read()] [frs_clean()] frs_by_naics [frs_active_ids()]
 #'   [frs_drop_inactive()] [frs_make_programid_lookup()] [frs_make_naics_lookup()]
-#' @examples \donttest{
-#'   # These steps in the examples are all done by frs_update_datasets()
-#'   #  (a function not exported by the package)
-#'   # Note these take a long time to run, for downloads and processing.
-#'   frs <- frs_get()
-#'   # keep only if an active site, or unclear whether active. Remove clearly inactive ones.
-#'   closedidlist <- frs_inactive_ids()
-#'   frs <- frs_drop_inactive(frs, closedid = closedidlist)
-#'   frs_by_programid <- frs_make_programid_lookup(x = frs) # another super slow step
-#'   frs_by_naics     <- frs_make_naics_lookup(    x = frs) #  NAs introduced by coercion
-#'   usethis::use_data(frs,              overwrite = TRUE)
-#'   usethis::use_data(frs_by_programid, overwrite = TRUE)
-#'   usethis::use_data(frs_by_naics,     overwrite = TRUE)
-#' }
+#'
+#' @keywords internal
 #'
 frs_get <- function(only_essential_cols=TRUE, folder=NULL, downloaded_and_unzipped_already=FALSE,
                     zfile = 'national_single.zip', zipbaseurl = 'https://ordsext.epa.gov/FLA/www3/state_files/',

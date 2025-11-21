@@ -1,7 +1,7 @@
 
 #' helper function to change elements of namesnow from an oldtype to a newtype of names
 #'
-#' @description helps convert between original, friendly, and long versions of variable names
+#' @description helps convert between original variable names and plain-English short or long versions of variable names
 #' @details YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like "apiname" or "rname",
 #'   UNLIKE IN fixnames() or fixcolnames() where you specify a type like "long" or "api"
 #'   Using lookup table mapping_for_names, finds each namesnow
@@ -10,16 +10,12 @@
 #' @param namesnow vector of strings, such as from colnames(x)
 #' @param mapping_for_names data.frame passed to [fixnames()] to do the work
 #'   with colnames that are referred to by oldtype and newtype
-#' @param oldtype string with name of a column in data.frame mapping_for_names,
-#'   and that column has old column names that overlap with those in namesnow,
-#'   like "ejscreen_csv" aka "csvname2.2" or
-#'   like "ejscreen_api" aka "apiname" or
-#'   like "rname"
-#' @param newtype string with name of a column in data.frame mapping_for_names,
-#'   like "rname" or
-#'   like  "longname" or "shortlabel"
-#'   and that column has old column names that overlap with those in namesnow
-#' @seealso varinfo() from EJAM pkg, and [fixnames_to_type()] [fixcolnames()] [fixnames()]
+#' @param oldtype designation of the type of variables in namesnow:
+#'   "long" or "shortlabel" or "original", or "csv" or "r" (aka "rname") or "api"
+#'   or "longname" or "shortname" etc. (colnames of map_headernames,
+#'   or aliases per helper [fixmapheadernamescolname()])
+#' @param newtype the type to rename to (or column to query for metadata) -- see similar oldtype parameter
+#' @seealso [varinfo()]   [fixcolnames()] [fixnames()]
 #' @return Vector or new column names same length as input
 #'
 #' @keywords internal

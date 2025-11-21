@@ -97,7 +97,7 @@
 #' @param dobuild_site should leave this TRUE
 #'
 #' @examples
-#'   # pkgdown_update(doask = TRUE)
+#'   # EJAM:::pkgdown_update(doask = TRUE)
 #'
 #' @returns NULL
 #'

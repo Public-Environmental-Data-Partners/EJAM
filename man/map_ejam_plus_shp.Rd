@@ -32,16 +32,4 @@ helper - map the merge of ejamit(shapefile = x) output and the shapefile x
 \details{
 used by server, \code{\link[=ejam2map]{ejam2map()}}, and \code{\link[=mapfast]{mapfast()}}
 }
-\examples{
-\dontrun{
-shp1 <- shapefile_from_any(file.path(
-  testdatafolder(), "shapes/portland_shp.zip"))
-ejam2map(ejamit(shapefile = shp1), shp = shp1)
-shp2 <- testshapes_2
-ejam2map(ejamit(shapefile = shp2), shp = shp2)
-ejam2map(ejamit(shapefile = shp2), shp = shp2)
-
-}
-
-}
 \keyword{internal}

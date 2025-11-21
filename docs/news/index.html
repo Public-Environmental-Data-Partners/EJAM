@@ -67,12 +67,21 @@
 <li>Fixed bug where size of circular buffer at each point on map in a report did not reflect actual radius.</li>
 <li>Fixed limitation affecting API where a request to find all blockgroups in a city did not work.</li>
 <li>Fixed bug where <code><a href="../reference/ejamapp.html">ejamapp()</a></code> settings/parameters isPublic and default_show_advanced_settings were ignored and advanced tab was being shown even if isPublic=TRUE and default_show_advanced_settings=FALSE.</li>
+<li>Fixed examples in documentation of all functions.</li>
+<li>Fixed bug in <code><a href="../reference/plot_barplot_ratios.html">plot_barplot_ratios()</a></code> that could affect <code><a href="../reference/ejam2barplot.html">ejam2barplot()</a></code>
+</li>
+<li>Fixed bug in <code><a href="../reference/popshare_p_lives_at_what_pct.html">popshare_p_lives_at_what_pct()</a></code>, which reports info in notes tab of excel download</li>
+<li>Fixed bug in utility <code>EJAM:::find_in_files()</code>
+</li>
+<li>Fixed bug affecting geocoding in <code><a href="../reference/name2fips.html">names2fips()</a></code> based on fips_place_from_placename()</li>
+<li>Fixed bug in <code><a href="../reference/fixcolnames.html">fixcolnames()</a></code> that was only renaming the first instance of any duplicated inputs</li>
 <li>Fixed various smaller issues like edge cases or typos in comments or messages.</li>
 </ul></li>
 <li><p>Added (strong) recommendation that you obtain a Census API key, in the <a href="https://ejanalysis.github.io/EJAM/articles/installing.html">guide to installing the package</a>. Also added warnings when envt var CENSUS_API_KEY not found before trying to use <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a> / <a href="https://cran.r-project.org/web/packages/tidycensus/index.html" class="external-link">tidycensus on CRAN</a> or <a href="https://cran.r-project.org/web/packages/tigris/index.html" class="external-link">tigris package</a> downloads of ACS Info or Census unit boundaries, e.g., in <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> and elsewhere.</p></li>
 <li><p>Specified R version 4.3 as the minimum required per the DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the <a href="https://ropensci.org/r-universe/" class="external-link">R universe platform</a> and maybe eventually <a href="https://cran.r-project.org" class="external-link">CRAN</a> are other options.</p></li>
 <li><p>Removed dependency on a few packages rarely needed.</p></li>
 <li><p>Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit_<em>, ejscreenapi<strong>, ejscreen_vs</strong>, ejscreenREST<strong>, testoutput</strong></em>, etc.</p></li>
+<li><p>Stopped exporting several shapefile_from_XYZ helper functions since shapefile_from_any() can be used.</p></li>
 <li>
 <p>Hosting:</p>
 <ul><li>Added Dockerfile used to deploy the shiny app to a server.</li>
@@ -475,11 +484,11 @@
 <li>
 <code><a href="../reference/ejam2report.html">ejam2report()</a></code> gets new params, and in <code><a href="../reference/build_community_report.html">build_community_report()</a></code> added report_title = NULL, logo_path = NULL, logo_html = NULL.</li>
 <li>
-<code><a href="../reference/ejam2barplot.html">plot_barplot_ratios()</a></code> gets new ylab and caption params</li>
+<code><a href="../reference/plot_barplot_ratios.html">plot_barplot_ratios()</a></code> gets new ylab and caption params</li>
 <li>added warning in <code><a href="../reference/url_county_health.html">url_county_health()</a></code> if default year seems outdated</li>
 <li>unexported draft <code><a href="../reference/read_and_clean_points.html">read_and_clean_points()</a></code>
 </li>
-<li>unexported draft <code><a href="../reference/ejam2quantiles.html">ejam2quantiles()</a></code>
+<li>unexported draft <code>ejam2quantiles()</code>
 </li>
 <li>removed reference to obsolete testids_registry_id, replaced by <code><a href="../reference/testinput_regid.html">?testinput_regid</a></code>
 </li>

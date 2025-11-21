@@ -109,17 +109,17 @@ Or a vector of query terms in which case this returns one column per query term.
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"spanish"</span><span class="op">)</span></span>
-<span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"lowinc"</span><span class="op">)</span></span>
-<span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"pop"</span><span class="op">)</span></span>
-<span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"POV"</span>, ignore.case <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"POV"</span>, ignore.case <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"spanish"</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"lowinc"</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"pop"</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"POV"</span>, ignore.case <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">varin_map_headernames</span><span class="op">(</span><span class="st">"POV"</span>, ignore.case <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">varin_map_headernames</span><span class="op">(</span> <span class="st">"traffic.score"</span>, exact <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">varin_map_headernames</span><span class="op">(</span> <span class="st">"traffic.score"</span>, exact <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">varin_map_headernames</span><span class="op">(</span> <span class="st">"traffic"</span> <span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">varin_map_headernames</span><span class="op">(</span> <span class="st">"traffic"</span> <span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"traffic.score"</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="st">"traffic.score"</span>,</span>
 <span>  info <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"oldname"</span>,<span class="st">"apiname"</span>, <span class="st">"acsname"</span> ,<span class="st">"csvname"</span>,</span>
 <span>  <span class="st">"basevarname"</span>, <span class="st">'shortlabel'</span>, <span class="st">'longname'</span>, <span class="st">'varlist'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span></code></pre></div>

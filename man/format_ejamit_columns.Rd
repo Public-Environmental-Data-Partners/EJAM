@@ -7,7 +7,7 @@
 format_ejamit_columns(df, nms = c())
 }
 \arguments{
-\item{df}{data table of ejamit results,}
+\item{df}{table in \href{https://r-datatable.com}{data.table} format of \code{\link[=ejamit]{ejamit()}} results,}
 
 \item{nms, }{name(s) of columns referring to EJAM indicators, such as "Demog.Index'}
 }

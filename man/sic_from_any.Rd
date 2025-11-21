@@ -27,7 +27,7 @@ sic_from_any(
 \item{website_url}{whether to return the URL of the webpage with info on the NAICS (web query uses synonyms so gets more hits)}
 }
 \value{
-a subset of the \link{sictable} data.table (not just the codes column)
+a subset of the \link{sictable} table in \href{https://r-datatable.com}{data.table} format (not just the codes column)
 }
 \description{
 Find industry names and codes by searching for queried code(s) or text

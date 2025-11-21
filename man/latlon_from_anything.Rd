@@ -55,11 +55,11 @@ which in turn uses \code{\link[=latlon_infer]{latlon_infer()}} \code{\link[=latl
  latlon_from_anything(pts)
  pts = data.table(Lat = testpoints_10$lat, Long = testpoints_10$lon)
  latlon_from_anything(pts)
- \donttest{
+ \dontrun{
  if (interactive()) {
    pts <- latlon_from_anything()
  }}
- \donttest{
+ \dontrun{
  pts = system.file("testdata/latlon/testpoints_10.xlsx", package = "EJAM")
  latlon_from_anything(pts)
  }

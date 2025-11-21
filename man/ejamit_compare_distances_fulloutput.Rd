@@ -29,7 +29,7 @@ ejamit_compare_distances_fulloutput(
 }
 \value{
 list you can think of as "out_bydistance"
-where each element is the full output of ejamit() for 1 radius
+where each element is the full output of \code{\link[=ejamit]{ejamit()}} for 1 radius
 }
 \description{
 Compare ejamit() full results for more than one radius
