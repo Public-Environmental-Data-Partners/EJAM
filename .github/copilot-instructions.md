@@ -222,6 +222,10 @@ source("app.R")  # This will launch the app
 - GitHub workflow changes
 - Configuration files (DESCRIPTION, golem-config.yml, etc.)
 
+**Avoid commenting on:**
+- Very minor issues, such as nitpicking
+- code formatting issues
+
 ## Package Version Management
 
 Version is tracked in multiple files and must be updated consistently:
