@@ -2,23 +2,10 @@
 
 ## Repository Overview
 
-EJAM (Environmental Justice Analysis Multisite tool) is an R package with an integrated Shiny web application. It allows users to quickly summarize demographic and environmental indicators for residents in or near hundreds or thousands of areas or sites simultaneously. The package provides tools for proximity analysis, environmental justice assessment, and data visualization.
+EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment. Large repository: ~737MB, 621 R files, 618 man pages, 115MB datasets.
 
-**Key Technologies:**
-- **Language:** R (requires R >= 4.3.0)
-- **Type:** R Package with Golem-based Shiny Web Application
-- **Primary Frameworks:** Shiny, Golem, data.table, sf (spatial data), arrow (data storage)
-- **Size:** Large repository (~737MB, 3100+ files, 621 R files, 618 man pages)
-- **Data:** Large datasets (~115MB in data/ directory) stored as .rda files
-
-**Repository Structure:**
-- `R/` - 621 R source files containing functions and Shiny modules
-- `data/` - 115MB of pre-compiled datasets (.rda format) including blockgroupstats (76MB)
-- `inst/` - Installation files including global defaults, Plumber API, and report templates
-- `man/` - 618 roxygen2-generated documentation files (.Rd format)
-- `tests/` - Unit tests (testthat) and Shiny app functionality tests (shinytest2)
-- `vignettes/` - Comprehensive documentation articles
-- `.github/workflows/` - 6 GitHub Actions workflows for CI/CD
+**Tech Stack:** R (>= 4.3.0), Golem Shiny framework, data.table, sf (spatial), arrow
+**Key Directories:** `R/` (source), `data/` (.rda files), `inst/` (configs), `tests/` (testthat + shinytest2), `man/` (auto-generated), `.github/workflows/` (6 CI workflows)
 
 ## Critical Build Requirements
 
@@ -197,89 +184,28 @@ source("app.R")  # This will launch the app
 
 ## Common Issues and Workarounds
 
-### Issue: Package attachment during .onAttach() fails
-**Symptoms:** Errors about global_defaults_package.R not found during `library(EJAM)`
-**Solution:** Reinstall package from source. This happens when new functions are referenced in global_defaults_package.R before package is fully built.
+### Common Failures and Solutions:
 
-### Issue: Tests fail because of old installed version
-**Symptoms:** Tests don't reflect recent code changes
-**Solution:** Always run `remotes::install_local(".", force = TRUE)` before running tests. Tests use the INSTALLED version, not source code.
+1. **Package attachment fails (.onAttach errors):** Reinstall from source when new functions are referenced in global_defaults_package.R.
+2. **Tests don't reflect code changes:** Tests use INSTALLED version. Always `remotes::install_local(".", force = TRUE)` before testing.
+3. **shinytest2 timeouts:** App init takes 2+ minutes. Use `load_timeout=2e+06` in tests.
+4. **"Cannot find file" in .onAttach():** Ensure `inst/global_defaults_package.R` exists when using `devtools::load_all()`.
+5. **Slow builds/tests:** In `R/aaa_onAttach.R`, set `asap_download/asap_index/asap_bg <- FALSE` when iterating.
+6. **Ubuntu install fails:** Install ALL system libraries above. Missing one causes cryptic errors.
+7. **macOS jpeg errors:** Set environment variables: `PATH, LDFLAGS, CPPFLAGS, PKG_CONFIG_PATH` for `/opt/homebrew/opt/jpeg`.
 
-### Issue: shinytest2 tests timeout
-**Symptoms:** Tests hang or timeout during app interaction
-**Solution:** Increase timeout values in test files. App initialization can take 2+ minutes due to data loading. Current default: `load_timeout=2e+06`.
+## Key Files
 
-### Issue: "Cannot find file" errors in .onAttach()
-**Symptoms:** Package loads but complains about missing files during startup
-**Solution:** Check that `inst/global_defaults_package.R` exists. If using `devtools::load_all()`, this file must be in `inst/` directory.
+**Root:** `DESCRIPTION` (metadata), `NAMESPACE` (auto-gen), `app.R` (deployment entry), `Dockerfile`, `.Rbuildignore`
+**R/:** `app_ui.R`/`app_server.R` (main app, 136KB server), `aaa_onAttach.R` (init), `MODULE_*` (Shiny modules), `*_FUNCTIONS` (grouped functions)
+**inst/:** `global_defaults_package.R` & `global_defaults_shiny.R` (settings), `golem-config.yml`, `plumber/` (API), `report/` (templates)
+**tests/:** `testthat.R` (runner), `app-functionality.R` (shinytest2 helpers), `testthat/test-*.R`, `_snaps/` (snapshots)
 
-### Issue: Large data files cause slow tests/builds
-**Symptoms:** Package build or test runs take very long
-**Solution:** In `R/aaa_onAttach.R`, set flags: `asap_download <- FALSE`, `asap_index <- FALSE`, `asap_bg <- FALSE` when iterating on code.
+## Architecture
 
-### Issue: Missing system dependencies on Ubuntu
-**Symptoms:** Installation fails with compiler errors about missing libraries
-**Solution:** Install ALL system libraries listed in "System Dependencies" section above. Missing even one can cause cryptic errors.
-
-### Issue: macOS jpeg library not found
-**Symptoms:** Installation fails with jpeg-related errors on macOS
-**Solution:** Set environment variables after installing jpeg:
-```bash
-export PATH="/opt/homebrew/opt/jpeg/bin:$PATH"
-export LDFLAGS="-L/opt/homebrew/opt/jpeg/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/jpeg/include"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/jpeg/lib/pkgconfig"
-```
-
-## Key Files and Their Purposes
-
-### Root Directory Files:
-- `DESCRIPTION` - Package metadata, dependencies, version
-- `NAMESPACE` - Auto-generated by roxygen2 (600+ exports)
-- `app.R` - Entry point for deployed Shiny app
-- `Dockerfile` - Container definition for deployment
-- `.Rbuildignore` - Excludes docs/, pkgdown/, .github/, data-raw/ from package build
-
-### R/ Directory Key Files:
-- `EJAM-package.R` - Package-level documentation
-- `app_ui.R` / `app_server.R` - Main Shiny app UI and server logic (136KB server!)
-- `app_run_EJAMejscreenapi.R` - Alternative app entry point for EJSCREEN API version
-- `aaa_onAttach.R` - Package initialization (downloads data, builds indexes)
-- Files prefixed with `MODULE_` - Shiny modules for modular UI components
-- Files with `_FUNCTIONS` suffix - Grouped related functions (FIPS, NAICS, proximity, etc.)
-
-### inst/ Directory:
-- `inst/global_defaults_package.R` - Package-level default settings
-- `inst/global_defaults_shiny.R` - Shiny app default settings (90KB!)
-- `inst/golem-config.yml` - Golem framework configuration
-- `inst/plumber/` - API endpoint definitions (Plumber)
-- `inst/report/` - HTML report templates
-
-### tests/ Directory:
-- `tests/testthat.R` - Main test runner (installs package before running tests)
-- `tests/app-functionality.R` - Helper functions for shinytest2
-- `tests/testthat/test-*.R` - Individual unit test files
-- `tests/testthat/_snaps/` - Snapshot files for shinytest2
-
-## Architecture Notes
-
-**Golem Framework:** This package uses the Golem framework for Shiny app development. Golem conventions:
-- `app_ui()` and `app_server()` are the main app components
-- `run_app()` or `ejamapp()` launches the app
-- Configuration in `inst/golem-config.yml`
-- Options passed via `golem::get_golem_options()`
-
-**Data Loading Strategy:**
-- Large datasets are lazy-loaded from data/ directory
-- Block-level data can be downloaded on-demand from external repository (ejanalysis/ejamdata)
-- `dataload_dynamic()` handles dynamic data loading
-- `indexblocks()` creates spatial indexes for fast proximity queries
-
-**Naming Conventions:**
-- Files with `aaa_` prefix load first (e.g., `aaa_onAttach.R`)
-- MODULE_ prefix indicates Shiny modules
-- _FUNCTIONS suffix indicates grouped functions by domain
-- .Rd files in man/ are auto-generated by roxygen2 - DO NOT EDIT MANUALLY
+**Golem Framework:** Uses `app_ui()`/`app_server()`, launched via `ejamapp()`. Config in `inst/golem-config.yml`.
+**Data:** Lazy-loaded from data/. Block data downloaded on-demand from ejanalysis/ejamdata. `dataload_dynamic()` + `indexblocks()` for spatial indexes.
+**Naming:** `aaa_` prefix = load first, `MODULE_` = Shiny modules, `_FUNCTIONS` = grouped functions. Don't edit .Rd files (auto-generated).
 
 ## Code Review Notes
 
