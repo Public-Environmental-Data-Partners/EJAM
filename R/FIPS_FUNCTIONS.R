@@ -641,6 +641,7 @@ is.island <- function(ST=NULL, statename=NULL, fips=NULL) {
 #' name2fips(c("delaware", "NY"))
 #' name2fips(c("Magnolia town, DE", "Delaware City city, DE"))
 #' name2fips(c('denver',  "new york" ), exact = F)
+#' name2fips('denver,co')
 #'
 #' @export
 #'
@@ -690,7 +691,7 @@ name2fips = function(x, exact = FALSE, usegrep = FALSE, geocoding = FALSE, detai
   # if (any(substr(fips,1,2) %in% c("60" "66" "69" "74" "78"))) {
   #
   # }
-  if (details) {
+  if (details & (!all(is.na(fips)))) {
     return(allinfo)
   } else {
     return(fips)
@@ -932,7 +933,7 @@ fips_place_from_placename = function(place_st, geocoding = FALSE, exact = FALSE,
   ######################################################################################## #
 
   if (geocoding) {
-    if (!exists("geocoding")) {
+    if (!exists("geocode")) {
       warning("Need to load the AOI package for geocoding to work. Using geocoding=FALSE instead, here.")
     } else {
       # geocoding fails sometimes when CDP is part of the name (but it is unlikely query would use that here)
