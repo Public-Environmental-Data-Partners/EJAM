@@ -216,7 +216,7 @@ source("app.R")  # This will launch the app
 - Changes to docs/ folder (auto-generated pkgdown site)
 
 **Focus review on:**
-- R/ source files
+- R/ source files, including the .R files in the R folder but also the .R files in the inst folder
 - Test files
 - Vignettes if documentation changes
 - GitHub workflow changes
