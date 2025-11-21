@@ -57,7 +57,7 @@ plot_boxplot_ratios <- function(x, selected_dvar_colname=varlist2names('names_d'
     maxvar <- names(which.max(sapply(x, max)))
     selected_dvar_colname  <- maxvar
   }
-  # now just use semi-long aka friendly varnames for all the rest of the function
+  # now just use semi-long plain English label-appropriate varnames for all the rest of the function
   names(x)              <- fixnames_to_type(names(x),                oldtype = "rname", newtype = "shortlabel")
   selected_dvar_colname <- fixnames_to_type((selected_dvar_colname), oldtype = "rname", newtype = "shortlabel")
   if (missing(selected_dvar_nicename)) {selected_dvar_nicename <- selected_dvar_colname}

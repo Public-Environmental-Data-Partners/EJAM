@@ -99,7 +99,7 @@ ejam2areafeatures <- function(ejamitout) {
   ejamitout$results_summarized$flagged_areas
 }
 ################## #
-# same as ejam2areafeatures - just a more consistent but less friendly name, used by other internal functions
+# same as ejam2areafeatures - just a more consistent but less easy-to-type/recall name, used by other internal functions
 
 flagged_areas_from_ejam <- function(ejamitout) {
   ejamitout$results_summarized$flagged_areas

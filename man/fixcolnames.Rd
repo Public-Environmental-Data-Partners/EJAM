@@ -9,11 +9,12 @@ fixcolnames(namesnow, oldtype = "csvname", newtype = "r", mapping_for_names)
 \arguments{
 \item{namesnow}{vector of colnames to be renamed}
 
-\item{oldtype}{"longname" or "shortname", or "csv" or "r" or "api", etc.
-or a colname of map_headernames, used if one of those known types was not specified.}
+\item{oldtype}{designation of the type of variables in namesnow:
+"long" or "shortlabel" or "original", or "csv" or "r" (aka "rname") or "api"
+or "longname" or "shortname" etc. (colnames of map_headernames,
+or aliases per helper \code{\link[=fixmapheadernamescolname]{fixmapheadernamescolname()}})}
 
-\item{newtype}{"longname" or "shortname", or "csv" or "r" or "api", etc.
-or a colname of map_headernames, used if one of those known types was not specified.}
+\item{newtype}{the type to rename to (or column to query for metadata) -- see similar oldtype parameter}
 
 \item{mapping_for_names}{default is a dataset already in the package.}
 }
