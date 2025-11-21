@@ -84,7 +84,7 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
 #' @inheritParams ejam2excel
 #'
 #' @examples \donttest{
-#'   EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles)
+#'   EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles, fname = tempfile(fileext = ".xlsx"))
 #'   }
 #' @return returns a workbook object for use by openxlsx::saveWorkbook(wb_out, pathname)
 #'   or returns just the full path/file name of where it was saved if save_now = TRUE

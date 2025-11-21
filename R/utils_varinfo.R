@@ -55,6 +55,7 @@
 #'
 #' @examples
 #' varinfo("traffic.score", "decimals")
+#' \dontrun{
 #' varinfo(names_d, "long")
 #' myvars <- c(names_d, names_d_subgroups, names_e)
 #' myinfo <- "percentage"
@@ -83,6 +84,7 @@
 #'
 #' names(map_headernames)
 #' t(varinfo(names_d[1]))
+#' }
 #'
 #' @export
 #' @keywords internal

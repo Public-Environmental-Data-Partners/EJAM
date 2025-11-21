@@ -66,6 +66,7 @@ and the various related data objects like map_headernames and namez
 }
 \examples{
 varinfo("traffic.score", "decimals")
+\dontrun{
 varinfo(names_d, "long")
 myvars <- c(names_d, names_d_subgroups, names_e)
 myinfo <- "percentage"
@@ -94,6 +95,7 @@ cbind(
 
 names(map_headernames)
 t(varinfo(names_d[1]))
+}
 
 }
 \seealso{
