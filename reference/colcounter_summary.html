@@ -15,7 +15,7 @@ at or above the benchmark(s)"><meta property="og:image" content="https://ejanaly
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,7 @@ at or above the benchmark(s)"><meta property="og:image" content="https://ejanaly
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -132,18 +133,18 @@ If TRUE, specify one threshold to use for each column.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">pdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>a<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">80</span>,<span class="fl">4</span><span class="op">)</span>,b<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">93</span>,<span class="fl">4</span><span class="op">)</span>, col3<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">49</span>,<span class="fl">98</span>,<span class="fl">100</span>,<span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="co">### pdata &lt;- EJAM::blockgroupstats[ , names_e_pctile]</span></span>
 <span> <span class="va">pcuts</span> <span class="op">&lt;-</span>  <span class="fl">5</span> <span class="op">*</span> <span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span></span>
-<span><span class="fu">colcounter_summary</span><span class="op">(</span>        <span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
-<span><span class="fu"><a href="colcounter_summary_pct.html">colcounter_summary_pct</a></span><span class="op">(</span>    <span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
-<span><span class="fu"><a href="colcounter_summary_cum.html">colcounter_summary_cum</a></span><span class="op">(</span>    <span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
-<span><span class="fu"><a href="colcounter_summary_cum_pct.html">colcounter_summary_cum_pct</a></span><span class="op">(</span><span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
-<span><span class="fu"><a href="colcounter_summary_cum_pct.html">colcounter_summary_cum_pct</a></span><span class="op">(</span><span class="va">pdata</span>, <span class="fl">5</span> <span class="op">*</span> <span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">colcounter_summary</span><span class="op">(</span>        <span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="colcounter_summary_pct.html">colcounter_summary_pct</a></span><span class="op">(</span>    <span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="colcounter_summary_cum.html">colcounter_summary_cum</a></span><span class="op">(</span>    <span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="colcounter_summary_cum_pct.html">colcounter_summary_cum_pct</a></span><span class="op">(</span><span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="colcounter_summary_cum_pct.html">colcounter_summary_cum_pct</a></span><span class="op">(</span><span class="va">pdata</span>, <span class="fl">5</span> <span class="op">*</span> <span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">a3</span> <span class="op">&lt;-</span> <span class="fu"><a href="colcounter_summary_all.html">colcounter_summary_all</a></span><span class="op">(</span>    <span class="va">pdata</span>, <span class="va">pcuts</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">x80</span> <span class="op">&lt;-</span> <span class="fu"><a href="colcounter.html">colcounter</a></span><span class="op">(</span><span class="va">pdata</span>, threshold <span class="op">=</span> <span class="fl">80</span>, or.tied <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="va">x95</span> <span class="op">&lt;-</span> <span class="fu"><a href="colcounter.html">colcounter</a></span><span class="op">(</span><span class="va">pdata</span>, threshold <span class="op">=</span> <span class="fl">95</span>, or.tied <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x95</span><span class="op">)</span></span>
-<span><span class="fu"><a href="tablefixed.html">tablefixed</a></span><span class="op">(</span><span class="va">x95</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">pdata</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>at80<span class="op">=</span><span class="fu"><a href="tablefixed.html">tablefixed</a></span><span class="op">(</span><span class="va">x80</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">pdata</span><span class="op">)</span><span class="op">)</span>, at95<span class="op">=</span><span class="fu"><a href="tablefixed.html">tablefixed</a></span><span class="op">(</span><span class="va">x95</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">pdata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="tablefixed.html">tablefixed</a></span><span class="op">(</span><span class="va">x95</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">pdata</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>at80<span class="op">=</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="tablefixed.html">tablefixed</a></span><span class="op">(</span><span class="va">x80</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">pdata</span><span class="op">)</span><span class="op">)</span>, at95<span class="op">=</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="tablefixed.html">tablefixed</a></span><span class="op">(</span><span class="va">x95</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">pdata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -151,11 +152,11 @@ If TRUE, specify one threshold to use for each column.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

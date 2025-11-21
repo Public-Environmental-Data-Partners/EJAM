@@ -9,7 +9,7 @@ Find all EPA Facility Registry Service (FRS) sites with this exact SIC code (not
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@ Find all EPA Facility Registry Service (FRS) sites with this exact SIC code (not
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -77,7 +78,7 @@ Find all EPA Facility Registry Service (FRS) sites with this exact SIC code (not
 
 <dl><dt id="arg-sic">sic<a class="anchor" aria-label="anchor" href="#arg-sic"></a></dt>
 <dd><p>a vector of SIC codes, or
-a data.table with column named code, as with output of <code><a href="sic_from_any.html">sic_from_any()</a></code></p></dd>
+a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with column named code, as with output of <code><a href="sic_from_any.html">sic_from_any()</a></code></p></dd>
 
 
 <dt id="arg-id-only">id_only<a class="anchor" aria-label="anchor" href="#arg-id-only"></a></dt>
@@ -87,7 +88,7 @@ values back instead of a data.frame with lat,lon,SIC columns too.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.table (not just data.frame) with columns called
+    <p>A table in <a href="https://r-datatable.com" class="external-link">data.table</a> format (not just data.frame) with columns called
 lat, lon, REGISTRY_ID, SIC (unless the id_only parameter is set to TRUE)</p>
     </div>
     <div class="section level2">
@@ -97,7 +98,7 @@ where you can find facilities based on NAICS or SIC.</p>
 <p>NOTE: many FRS sites lack SIC code!</p>
 <p>Also, this function does not find the sites
 identified by FRS data as being in a child SIC (subcategory of your exact query)!</p>
-<p>Relies on  frs_by_sic (a data.table)</p>
+<p>Relies on  <a href="frs_by_sic.html">frs_by_sic</a></p>
 <p>See info about SIC industry codes at <a href="https://www.naics.com/search" class="external-link">https://www.naics.com/search</a></p>
     </div>
 
@@ -115,11 +116,11 @@ identified by FRS data as being in a child SIC (subcategory of your exact query)
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

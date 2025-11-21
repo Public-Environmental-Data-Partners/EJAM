@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -73,7 +74,7 @@
 
 
 <dl><dt id="arg-dat">dat<a class="anchor" aria-label="anchor" href="#arg-dat"></a></dt>
-<dd><p>data.frame or data.table of numbers</p></dd>
+<dd><p>data.frame or table in <a href="https://r-datatable.com" class="external-link">data.table</a> format of numbers</p></dd>
 
 
 <dt id="arg-digits">digits<a class="anchor" aria-label="anchor" href="#arg-digits"></a></dt>
@@ -96,11 +97,11 @@ map_headernames dataset of metadata on EJAM / EJSCREEN indicators.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_10pts_1miles</span></span>
 <span><span class="va">mytable</span> <span class="op">&lt;-</span> <span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="va">..names_these</span><span class="op">]</span></span>
-<span><span class="fu"><a href="table_signif_round_x100.html">table_signif_round_x100</a></span><span class="op">(</span><span class="va">mytable</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="table_signif_round_x100.html">table_signif_round_x100</a></span><span class="op">(</span><span class="va">mytable</span><span class="op">)</span></span>
 <span><span class="co"># same as this:</span></span>
-<span><span class="fu">table_signif</span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="table_round.html">table_round</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="table_x100.html">table_x100</a></span><span class="op">(</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">table_signif</span><span class="op">(</span></span>
+<span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="table_round.html">table_round</a></span><span class="op">(</span></span>
+<span>    <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="table_x100.html">table_x100</a></span><span class="op">(</span></span>
 <span>      <span class="va">mytable</span>, <span class="va">names_pct_as_fraction_ejamit</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -113,11 +114,11 @@ map_headernames dataset of metadata on EJAM / EJSCREEN indicators.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

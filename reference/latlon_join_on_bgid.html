@@ -9,7 +9,7 @@ with new lat,lon columns"><meta property="og:image" content="https://ejanalysis.
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@ with new lat,lon columns"><meta property="og:image" content="https://ejanalysis.
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -76,7 +77,7 @@ with new lat,lon columns</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>data.table with column called bgid
+<dd><p>table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with column called bgid
 (as used in bgid2fips or blockgroupstats)</p></dd>
 
 </dl></div>
@@ -89,14 +90,14 @@ with new lat,lon columns</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># quick map of blockgroups in 1 state, shown as blockgroup centroids</span></span>
 <span><span class="va">myst</span> <span class="op">&lt;-</span> <span class="st">"NY"</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">bgpts</span><span class="op">[</span><span class="fu"><a href="fips2stateabbrev.html">fips2state_abbrev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">bgpts</span><span class="op">[</span><span class="fu"><a href="fips2stateabbrev.html">fips2stateabbrev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">dat</span>, radius <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># same but popups have all the indicators from EJSCREEN</span></span>
 <span><span class="va">myst</span> <span class="op">&lt;-</span> <span class="st">"NY"</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu">copy</span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">[</span><span class="va">ST</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">[</span><span class="va">ST</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># add latlon cols by reference:</span></span>
-<span><span class="fu">latlon_join_on_bgid</span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">latlon_join_on_bgid</span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
 <span><span class="co"># specify useful labels for the map popups</span></span>
 <span><span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">dat</span>, radius <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>        labels <span class="op">=</span> <span class="fu"><a href="fixcolnames.html">fixcolnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>, <span class="st">'r'</span>, <span class="st">'shortlabel'</span><span class="op">)</span><span class="op">)</span></span>
@@ -111,11 +112,11 @@ with new lat,lon columns</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

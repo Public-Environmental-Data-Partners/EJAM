@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -77,7 +78,7 @@
 
 
 <dt id="arg-asdt">asdt<a class="anchor" aria-label="anchor" href="#arg-asdt"></a></dt>
-<dd><p>set to TRUE if you want it to return a data.table with colnames bgid, blockid,
+<dd><p>set to TRUE if you want it to return a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with colnames bgid, blockid,
 one row per input blockid, so it may have duplicates in the bgid column.
 set to FALSE if you want it to return a vector of bgid values (integer class)</p></dd>
 
@@ -93,8 +94,8 @@ set to FALSE if you want it to return a vector of bgid values (integer class)</p
 <span><span class="va">rad</span> <span class="op">=</span> <span class="fl">0.658</span></span>
 <span><span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat<span class="op">=</span><span class="fl">39.4347105</span>, lon<span class="op">=</span><span class="op">-</span><span class="fl">74.7203421</span><span class="op">)</span></span>
 <span><span class="va">s2b</span> <span class="op">=</span> <span class="fu"><a href="getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span>sitepoints<span class="op">=</span><span class="va">pts</span>, radius <span class="op">=</span> <span class="va">rad</span><span class="op">)</span></span>
-<span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span><span class="op">)</span> <span class="co"># vector of unique ids</span></span>
-<span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span>, asdt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># data.table</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span><span class="op">)</span> <span class="co"># vector of unique ids</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span>, asdt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># data.table</span></span>
 <span></span>
 <span> <span class="co"># plotblocksnearby(pts, radius = rad, overlay_blockgroups = T)</span></span>
 <span></span></code></pre></div>
@@ -104,11 +105,11 @@ set to FALSE if you want it to return a vector of bgid values (integer class)</p
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>
