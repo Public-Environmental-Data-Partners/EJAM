@@ -9,7 +9,7 @@ trilateration – Use lat,lon of nearby block points and distances to estimate o
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@ trilateration – Use lat,lon of nearby block points and distances to estimate o
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -81,7 +82,7 @@ trilateration – Use lat,lon of nearby block points and distances to estimate o
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>data.table with columns ejam_uniq_id, lat, lon, one row per site</p>
+    <p>table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with columns ejam_uniq_id, lat, lon, one row per site</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -98,8 +99,8 @@ which needs to figure out what state each site is in to use the right state perc
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">pts</span> <span class="op">=</span> <span class="va">testpoints_10</span></span>
-<span> <span class="co">#x = latlon_from_s2b(getblocksnearby(pts, quiet = T))</span></span>
-<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">latlon_from_s2b</span><span class="op">(</span><span class="va">testoutput_getblocksnearby_10pts_1miles</span><span class="op">)</span></span>
+<span> <span class="co">#x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = T))</span></span>
+<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">latlon_from_s2b</span><span class="op">(</span><span class="va">testoutput_getblocksnearby_10pts_1miles</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="va">x</span>, <span class="va">pts</span>,</span>
 <span>   latratio <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">lat</span><span class="op">/</span><span class="va">pts</span><span class="op">$</span><span class="va">lat</span>, lonratio <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">lon</span><span class="op">/</span><span class="va">pts</span><span class="op">$</span><span class="va">lon</span><span class="op">)</span></span>
 <span></span></code></pre></div>
@@ -109,11 +110,11 @@ which needs to figure out what state each site is in to use the right state perc
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

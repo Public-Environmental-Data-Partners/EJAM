@@ -125,7 +125,6 @@
 <span><span class="fu">statestats_query</span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">names_e</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">statestats_query</span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">names_d_subgroups</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">statestats_query</span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">longlist</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## in USA overall, see mean and key percentiles</span></span>
 <span><span class="co"># for all demog and envt indicators</span></span>
@@ -137,6 +136,7 @@
 <span></span>
 <span><span class="co"># long list of variables:</span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="names_all_r.html">names_all_r</a></span>,  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="usastats.html">usastats</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">x</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">"REGION"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="usastats_means.html">usastats_means</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">usastats</span><span class="op">[</span><span class="op">!</span><span class="op">(</span><span class="va">usastats</span><span class="op">$</span><span class="va">PCTILE</span> <span class="op">&lt;</span> <span class="fl">50</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PCTILE"</span>, <span class="va">names_d</span><span class="op">)</span><span class="op">]</span></span>

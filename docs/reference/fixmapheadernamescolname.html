@@ -9,7 +9,7 @@ used by varinfo() and fixcolnames()"><meta property="og:image" content="https://
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@ used by varinfo() and fixcolnames()"><meta property="og:image" content="https://
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -70,10 +71,10 @@ used by varinfo() and fixcolnames()</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fixmapheadernamescolname</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  alias_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rname <span class="op">=</span> <span class="st">"r"</span>, longname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"long"</span>, <span class="st">"longnames"</span>, <span class="st">"full"</span>,</span>
-<span>    <span class="st">"description"</span><span class="op">)</span>, shortlabel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"short"</span>, <span class="st">"shortname"</span>, <span class="st">"shortnames"</span>, <span class="st">"labels"</span>,</span>
-<span>    <span class="st">"label"</span><span class="op">)</span>, acsname <span class="op">=</span> <span class="st">"acs"</span>, apiname <span class="op">=</span> <span class="st">"api"</span>, csvname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"csv"</span><span class="op">)</span>, oldname <span class="op">=</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"original"</span>, <span class="st">"old"</span>, <span class="st">"oldnames"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  alias_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"rnames"</span><span class="op">)</span>, longname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"long"</span>, <span class="st">"longnames"</span>, <span class="st">"full"</span>,</span>
+<span>    <span class="st">"description"</span><span class="op">)</span>, shortlabel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"short"</span>, <span class="st">"shortname"</span>, <span class="st">"shortnames"</span>, <span class="st">"shortlabels"</span>,</span>
+<span>    <span class="st">"labels"</span>, <span class="st">"label"</span><span class="op">)</span>, acsname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acsnames"</span><span class="op">)</span>, apiname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"api"</span>, <span class="st">"apinames"</span><span class="op">)</span>,</span>
+<span>    csvname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"csv"</span>, <span class="st">"csvnames"</span><span class="op">)</span>, oldname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"original"</span>, <span class="st">"old"</span>, <span class="st">"oldnames"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -82,7 +83,7 @@ used by varinfo() and fixcolnames()</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>character vector of colnames of map_headernames, or aliases like "long"</p></dd>
+<dd><p>character vector of colnames of map_headernames, or aliases like "long" (ignores case)</p></dd>
 
 
 <dt id="arg-alias-list">alias_list<a class="anchor" aria-label="anchor" href="#arg-alias-list"></a></dt>
@@ -96,13 +97,12 @@ are the names of vectors of alternative names</p></dd>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="fixnames_aliases.html">fixnames_aliases()</a></code></p>
-<p><code><a href="varinfo.html">varinfo()</a></code> <code><a href="fixnames_aliases.html">fixnames_aliases()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="fixnames_aliases.html">fixnames_aliases()</a></code> <code><a href="fixcolnames.html">fixcolnames()</a></code> <code><a href="varinfo.html">varinfo()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="fu">fixmapheadernamescolname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'long'</span>, <span class="st">'csv'</span>, <span class="st">'api'</span>, <span class="st">'r'</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">fixmapheadernamescolname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'long'</span>, <span class="st">'csv'</span>, <span class="st">'api'</span>, <span class="st">'r'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -110,11 +110,11 @@ are the names of vectors of alternative names</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

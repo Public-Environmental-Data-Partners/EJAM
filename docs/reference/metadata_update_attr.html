@@ -73,7 +73,8 @@ updates EJAM/data/*.rda (BUT NOT ARROW &amp; NOT TXT FILES)</p>
 <span>  x <span class="op">=</span> <span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">$</span><span class="va">Item</span>,</span>
 <span>  attr_name <span class="op">=</span> <span class="st">"ejam_package_version"</span>,</span>
 <span>  newvalue <span class="op">=</span> <span class="fu">desc</span><span class="fu">::</span><span class="fu"><a href="https://desc.r-lib.org/reference/desc_get.html" class="external-link">desc_get</a></span><span class="op">(</span><span class="st">"Version"</span><span class="op">)</span>,</span>
-<span>  exclude_atomic_vectors <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  exclude_atomic_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  only_update_if_had_been_set <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,6 +97,11 @@ updates EJAM/data/*.rda (BUT NOT ARROW &amp; NOT TXT FILES)</p>
 <dt id="arg-exclude-atomic-vectors">exclude_atomic_vectors<a class="anchor" aria-label="anchor" href="#arg-exclude-atomic-vectors"></a></dt>
 <dd><p>if TRUE, avoids updating attributes on atomic vectors like names_e,
 since it is distracting when printing them to console</p></dd>
+
+
+<dt id="arg-only-update-if-had-been-set">only_update_if_had_been_set<a class="anchor" aria-label="anchor" href="#arg-only-update-if-had-been-set"></a></dt>
+<dd><p>set to TRUE to only update this attribute for data objects where
+that object already had a value set for this attribute, to update only but not create/add attribute.</p></dd>
 
 </dl></div>
     <div class="section level2">

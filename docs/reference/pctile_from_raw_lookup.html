@@ -128,7 +128,7 @@ For example, it could be "NY" for New York State, "USA" for national percentiles
     <p>For handling a whole table of raw indicators, see <code><a href="calc_pctile_columns.html">calc_pctile_columns()</a></code></p>
 <p>This function can handle 2 kinds of inputs right now:</p><ul><li><p>a vector of scores and vector of corresponding indicator names, in only 1 zone (e.g. 1 State)</p></li>
 <li><p>a vector of scores and vector of corresponding zones (States), for only 1 indicator (e.g., pctlowinc)</p></li>
-</ul><p>This could be recoded to be more efficient - could use data.table.</p>
+</ul><p>This could be recoded to be more efficient - could use <a href="https://r-datatable.com" class="external-link">data.table</a> package.</p>
 <p>The data.frame lookup table must have a field called "PCTILE" that has quantiles/percentiles
 and other column(s) with values that fall at those percentiles.
 <a href="usastats.html">usastats</a> and <a href="statestats.html">statestats</a> are such lookup tables.

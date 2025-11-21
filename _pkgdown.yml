@@ -651,3 +651,5 @@ reference:
   - names_these_ratio_to_state_avg
   - names_these_state_avg
   - names_wts
+  - formulas_ejscreen_acs_disability
+  - formulas_ejscreen_demog_index
