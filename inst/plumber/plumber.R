@@ -154,10 +154,12 @@ ejamit_interface <- function(area, method, buffer = 0, scale = "blockgroup", end
 #* Log some information about the incoming request
 #* @filter logger
 function(req, res) {
+  if (!interactive()) { # do not save log if interactive() to avoid saving file when running a unit test?
   cat(as.character(Sys.time()), "-",
     req$REQUEST_METHOD, req$PATH_INFO, "-",
     req$HTTP_USER_AGENT, "@", req$REMOTE_ADDR, "\n", append = TRUE,
     file = "log_api_usage.txt")
+  }
   plumber::forward()
 }
 
