@@ -12,12 +12,19 @@ formulas_d
 }
 \description{
 These formulas can describe how each indicator is calculated from
-other variables like counts or how it is aggregated as a weighted mean, etc.
+raw data or intermediate variables, like population counts from Census ACS
+(or potentially formulas for how it is aggregated as a weighted mean, etc.)
 }
 \details{
 Created for EJAM by datacreate_formulas.R script
 
-Can be used by \code{\link[=calc_ejam]{calc_ejam()}} for aggregation or to create a derived custom
-indicator for all US blockgroups based on counts obtained from the ACS.)
+See also \link{formulas_all} and \link{formulas_ejscreen_acs}
+
+Can be used by \code{\link[=calc_ejam]{calc_ejam()}} or \code{\link[=acs_bybg]{acs_bybg()}} for
+\enumerate{
+\item aggregation over blockgroups at a site or
+\item to create a derived custom indicator for all US blockgroups
+based on counts obtained from the ACS.)
+}
 }
 \keyword{datasets}

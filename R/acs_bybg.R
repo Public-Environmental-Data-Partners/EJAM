@@ -25,35 +25,35 @@
 #' ```
 #' x <- tidycensus::load_variables(2022, "acs5")
 #'
-#' acstabs <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025",
-#'              "B18101") # disability at tract resolution only
-#' acstabs2 <- paste0(acstabs, "_")
+#' tables = c(
+#'   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
+#'   "B01001", # sex and age / basic population counts
+#'   "B03002", # race with hispanic ethnicity
+#'   "B02001", # race without hispanic ethnicity
+#'   "B15002", # education
+#'   "B23025", # unemployed
+#'   "C17002", # low income, poor, etc.
+#'   "B19301", # per capita income
+#'   "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
+#'   "B28003", # no broadband
+#'   "B27010", # no health insurance
+#'   "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
+#'   "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
+#'   ####### TRACT ONLY:
+#'   #   used by EJSCREEN but only available at tract resolution:
+#'   "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
+#'   "B18101" # disability -- at tract resolution only ########### #
+#' )
+#' acstabs2 <- paste0(tables, "_")
 #' mytables <- data.table::rbindlist(lapply(acstabs2, function(z) {
 #'   x[substr(x$name,1,7) %in% z, ][1, ]
 #'   }))
 #' print(mytables)
 #'
-#'  #        name            label                                                            concept   geography
-#'  #      <char>           <char>                                                             <char>      <char>
-#'  # 1: B01001_001 Estimate!!Total:                                                         Sex by Age block group
-#'  # 2: B03002_001 Estimate!!Total:                                  Hispanic or Latino Origin by Race block group
-#'  # 3: B15002_001 Estimate!!Total: Sex by Educational Attainment for the Population 25 Years and Over block group
-#'  # 4: C16002_001 Estimate!!Total:    Household Language by Household Limited English Speaking Status block group
-#'  # 5: C17002_001 Estimate!!Total:             Ratio of Income to Poverty Level in the Past 12 Months block group
-#'  # 6: B25034_001 Estimate!!Total:                                               Year Structure Built block group
-#'  # 7: B23025_001 Estimate!!Total:             Employment Status for the Population 16 Years and Over block group
-#'  # 8: B18101_001 Estimate!!Total:                                    Sex by Age by Disability Status       tract
-#'
-#'   # see details of the variables
-#'
-#' x[substr(x$name,1,7) %in% "B01001_", ] |> print(n=50)
-#' x[substr(x$name,1,7) %in% "B03002_", ] |> print(n=50)
-#' x[substr(x$name,1,7) %in% "B15002_", ] |> print(n=50)
-#' x[substr(x$name,1,7) %in% "C16002_", ] |> print(n=50)
-#' x[substr(x$name,1,7) %in% "C17002_", ] |> print(n=50)
-#' x[substr(x$name,1,7) %in% "B25034_", ] |> print(n=50)
-#' x[substr(x$name,1,7) %in% "B23025_", ] |> print(n=50)
-#' x[substr(x$name,1,7) %in% "B18101_", ] |> print(n=50)
+#'   # see details of ALL the variables in these tables
+#' # for (i in 1:NROW(mytables)) {
+#' #    x[substr(x$name,1,7) %in% substr(mytables[i,]$name,1,7), ] |> print(n=50)
+#' # }
 #'
 #'  # disability is by tract only:
 #'
@@ -64,13 +64,10 @@
 #' @param variables Vector of variables - see get_acs from tidycensus package
 #' @param table  see get_acs from tidycensus package.
 #'
-#'   EJSCREEN-relevant key tables at blockgroup resolution include these:
-#'   acstabs <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025")
-#'   and at tract resolution:   "B18101"
+#'   EJSCREEN-relevant key tables are listed in the details section here.
 #'
-#' @param cache_table  see get_acs from tidycensus package
-#' @param year e.g., 2022  see get_acs from tidycensus package, and
-#'   the helper function in the EJAM package called [acsendyear()]
+#' @param year e.g., 2022, 2023, or 2024
+#' @param cache_table  see [tidycensus::get_acs()]
 #' @param output   see get_acs from tidycensus package
 #' @param state Default is 2-character abbreviations, vector of all US States, DC, and PR.
 #' @param county   see get_acs from tidycensus package
@@ -133,8 +130,27 @@
 #' ## ACS tables and variables most relevant to EJSCREEN
 #'
 #' acsinfo <- tidycensus::load_variables(2022, "acs5")
-#' ejscreentables <- c("B01001", "B03002", "B15002", "C16002", "C17002", "B25034", "B23025",
-#'              "B18101") # disability at tract resolution only
+#' ejscreentables <- c("B01001", # sex and age / basic population counts
+#'             "B03002", # race with hispanic ethnicity
+#'             "B02001", # race without hispanic ethnicity
+#'             "B15002", # education
+#'
+#'             "C16002", # language/ lingiso
+#'             "B16004", # language category and English not at all
+#'
+#'             "C17002", # low income, poor, etc.
+#'             "B25034", # pre1960, for lead paint indicator
+#'             "B23025", # unemployed
+#'
+#'             "B25032", # owned units vs rented units # ***
+#'             "B25003", # owned vs rented             # ***
+#'
+#'             "B28003", # no broadband
+#'             "B27010" ,  # no health insurance
+#'
+#'           "B18101" # disability -- at tract resolution only ########### #
+#' )
+#'
 #' acstabs2 <- paste0(ejscreentables, "_")
 #' acsinfo$table = gsub("_.*", "", acsinfo$name)
 #' myacsinfo <- acsinfo[acsinfo$table %in% ejscreentables, ]
@@ -168,9 +184,9 @@
 #'
 acs_bybg <- function(
     variables = c(pop = "B01001_001"),
-    table = NULL,
-    cache_table = FALSE,
+    table = NULL, # can only specify one table per call, but can specify a vector of variables from multiple tables
     year = NULL,
+    cache_table = FALSE,
     output = "wide",
     state = stateinfo$ST, # has DC, PR, but not "AS" "GU" "MP" "UM" "VI" # state.abb from datasets pkg would lack DC and PR # stateinfo2 would add "US"
     county = NULL,
@@ -188,7 +204,8 @@ acs_bybg <- function(
 )  {
 
   if (missing(year) || is.null(year)) {
-    year <- acsendyear()
+    year <- acsendyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
+                       guess_census_has_published = TRUE)
   }
   year <- as.numeric(year)
 
@@ -202,8 +219,8 @@ acs_bybg <- function(
   #   stop('requires the tidycensus package be installed and attached')
   #   } else {
   if (!is.null(table) && !is.null(variables)) {
-    warning( "Specify variables or a table to retrieve; they cannot be combined. Using table and ignoring variables.")
-    variables = NULL
+    warning( "Specify either variables or table parameter; they cannot be combined. Using variables and ignoring table parameter")
+    table = NULL
   }
   # x <- load_variables(year, survey) # slow and requires tidycensus package
   # print(x[grepl("b01001_", x$name, ignore.case = T) & grepl("Female", x$label) & grepl("group", x$geography), ], n = 25)
@@ -214,7 +231,7 @@ acs_bybg <- function(
     ## probably will stop/error if we try this and no key exists. NULL probably tries to use default key assuming one is set
     bgs <- tidycensus::get_acs(geography = geography,   # requires tidycensus package - refer to it like this
                                variables = variables,
-                               table = table,
+                               table = table, # Only one table may be requested per call.
                                cache_table = cache_table,
                                year = year,
                                output = output,
