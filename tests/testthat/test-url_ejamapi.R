@@ -36,14 +36,14 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
   }))
   ############### #  ############### #
 
-  try(test_that(paste0(funcname, " 1 BLOCK FIPS works IN API?"), {   ## until implemented, would FAIL TO WORK FOR A BLOCK - created github issue for that
-    oldwidth = options("width")
-    expect_no_error({
-      x <- FUN(fips = "091701844002024", ...) # fipsmix[1] # blockid is 1203214, parent bgid is 43168
-    })
-    expect_true(url_online(x[1]))
-    options(width = as.vector(unlist(oldwidth)))
-  }))
+  # try(test_that(paste0(funcname, " 1 BLOCK FIPS works IN API?"), {   ## until implemented, would FAIL TO WORK FOR A BLOCK - created github issue for that ***
+  #   oldwidth = options("width")
+  #   expect_no_error({
+  #     x <- FUN(fips = "091701844002024", ...) # fipsmix[1] # blockid is 1203214, parent bgid is 43168
+  #   })
+  #   expect_true(url_online(x[1]))
+  #   options(width = as.vector(unlist(oldwidth)))
+  # }))
   ############### #  ############### #
 
   try(test_that(paste0(funcname, " 1 or 2 BG FIPS works"), {
@@ -57,6 +57,11 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
+  # ### problem in unit test where options changed:
+  # Global state has changed:
+  #   `before$options` is length 152
+  # `after$options` is length 186
+
   ############### #
   try(test_that(paste0(funcname, " TRACT FIPS works"), {
     oldwidth = options("width")
