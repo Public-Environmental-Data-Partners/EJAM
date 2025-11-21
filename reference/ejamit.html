@@ -119,7 +119,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 
 
 <dl><dt id="arg-sitepoints">sitepoints<a class="anchor" aria-label="anchor" href="#arg-sitepoints"></a></dt>
-<dd><p>data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers</p></dd>
+<dd><p>data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers</p></dd>
 
 
 <dt id="arg-radius">radius<a class="anchor" aria-label="anchor" href="#arg-radius"></a></dt>
@@ -300,13 +300,14 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">dim</span>(testoutput_ejamit_10pts_1miles<span class="sc">$</span>results_summarized<span class="sc">$</span>keystats)</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">dim</span>(testoutput_ejamit_10pts_1miles<span class="sc">$</span>results_summarized<span class="sc">$</span>rows)</span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">dim</span>(testoutput_ejamit_10pts_1miles<span class="sc">$</span>results_summarized<span class="sc">$</span>cols)</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">dim</span>(testoutput_ejamit_10pts_1miles<span class="sc">$</span>results_summarized<span class="sc">$</span>keyindicators)</span></code></pre><p></p></div><ul><li><p><strong>results_overall</strong>  a data.table with one row that provides the summary across all sites, the aggregated results for all unique residents.</p></li>
-<li><p><strong>results_bysite</strong>   results for individual sites (buffers) - a data.table of results,
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">dim</span>(testoutput_ejamit_10pts_1miles<span class="sc">$</span>results_summarized<span class="sc">$</span>keyindicators)</span></code></pre><p></p></div><ul><li><p><strong>results_overall</strong>  a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format,
+with one row that provides the summary across all sites, the aggregated results for all unique residents.</p></li>
+<li><p><strong>results_bysite</strong>   results for individual sites (buffers) - a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format, of results,
 one row per ejam_uniq_id (i.e., each site analyzed), one column per indicator</p></li>
 <li><p><strong>results_bybg_people</strong>  results for each blockgroup, to allow for
 showing the distribution of each
 indicator across everyone, including the distribution within a
-single residential population group, for example. This table is essential
+single residential population group, for example. This table in <a href="https://r-datatable.com" class="external-link">data.table</a> format is essential
 for analyzing the distribution of an indicator across all the unique residents analyzed.
 Not all columns from results_bysite are here, however.
 One row is one blockgroup that was either partly or entirely counted as
@@ -341,11 +342,12 @@ one blockgroup since it may be near two analyzed sites, for example.</p></li>
 <span> <span class="co"># All in one step, using functions not shiny app:</span></span>
 <span> <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ejamit</span><span class="op">(</span><span class="va">testpoints_100_dt</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
-<span> <span class="co"># \donttest{</span></span>
+<span> <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span> <span class="co"># Do not specify sitepoints and it will prompt you for a file,</span></span>
 <span> <span class="co"># if in RStudio in interactive mode!</span></span>
+<span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span> <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ejamit</span><span class="op">(</span>radius <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span></span>
+<span> <span class="op">}</span></span>
 <span>  <span class="co"># Specify facilities or sites as points for test data,</span></span>
 <span>  <span class="co"># use 1000 test facility points from the R package</span></span>
 <span>  <span class="va">testsites</span> <span class="op">&lt;-</span> <span class="va">testpoints_1000</span></span>
@@ -404,7 +406,7 @@ one blockgroup since it may be near two analyzed sites, for example.</p></li>
 <span>  <span class="co">#  get summaries of all indicators based on table of distances</span></span>
 <span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="doaggregate.html">doaggregate</a></span><span class="op">(</span><span class="va">s2b</span>, <span class="va">testsites</span><span class="op">)</span> <span class="co"># this works now and is simpler</span></span>
 <span></span>
-<span><span class="co"># }</span></span></code></pre></div>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

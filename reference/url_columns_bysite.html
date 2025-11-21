@@ -88,7 +88,7 @@
 
 
 <dl><dt id="arg-sitepoints">sitepoints<a class="anchor" aria-label="anchor" href="#arg-sitepoints"></a></dt>
-<dd><p>data.frame or data.table with lat and lon columns
+<dd><p>data.frame or table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with lat and lon columns
 (and should have ejam_uniq_id column or assume 1 output row per input row, same order)</p></dd>
 
 
@@ -153,10 +153,7 @@ If set FALSE, faster since avoids checking but some links might not work and not
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>list of data.frames to append to the list of data.frames created by
-<code><a href="ejamit.html">ejamit()</a></code> or <code><a href="doaggregate.html">doaggregate()</a></code>,</p>
-<p><code>list(results_bysite = results_bysite, </code>
-<code>    results_overall = results_overall,</code>
-<code>      newcolnames=newcolnames)</code></p>
+<code><a href="ejamit.html">ejamit()</a></code> or <code><a href="doaggregate.html">doaggregate()</a></code></p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -169,19 +166,19 @@ If set FALSE, faster since avoids checking but some links might not work and not
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">=</span>  <span class="fu">url_columns_bysite</span><span class="op">(</span><span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">=</span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">url_columns_bysite</span><span class="op">(</span><span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">x</span> <span class="op">=</span>  <span class="fu">url_columns_bysite</span><span class="op">(</span></span>
+<span><span class="va">x</span> <span class="op">=</span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">url_columns_bysite</span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, lon<span class="op">=</span><span class="fl">101</span><span class="op">:</span><span class="fl">102</span><span class="op">)</span>, radius <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  INFO_FOR_SITE2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="st">"site2"</span><span class="op">)</span>,</span>
 <span>  Place1info <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"North"</span>, <span class="st">""</span><span class="op">)</span>,</span>
 <span>  keylist_bysite <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>newkey_all_sites <span class="op">=</span> <span class="st">"YES"</span>,</span>
 <span>                        site_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NRO"</span>, <span class="st">"CRS"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="fu">unlinkify</span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">unlinkify</span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="va">x</span><span class="op">[</span>, <span class="st">"EJAM Report"</span><span class="op">]</span></span>
-<span><span class="fu">unlinkify</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">unlinkify</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

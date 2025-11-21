@@ -78,7 +78,7 @@
 
 
 <dt id="arg-asdt">asdt<a class="anchor" aria-label="anchor" href="#arg-asdt"></a></dt>
-<dd><p>set to TRUE if you want it to return a data.table with colnames bgid, blockid,
+<dd><p>set to TRUE if you want it to return a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with colnames bgid, blockid,
 one row per input blockid, so it may have duplicates in the bgid column.
 set to FALSE if you want it to return a vector of bgid values (integer class)</p></dd>
 
@@ -94,8 +94,8 @@ set to FALSE if you want it to return a vector of bgid values (integer class)</p
 <span><span class="va">rad</span> <span class="op">=</span> <span class="fl">0.658</span></span>
 <span><span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat<span class="op">=</span><span class="fl">39.4347105</span>, lon<span class="op">=</span><span class="op">-</span><span class="fl">74.7203421</span><span class="op">)</span></span>
 <span><span class="va">s2b</span> <span class="op">=</span> <span class="fu"><a href="getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span>sitepoints<span class="op">=</span><span class="va">pts</span>, radius <span class="op">=</span> <span class="va">rad</span><span class="op">)</span></span>
-<span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span><span class="op">)</span> <span class="co"># vector of unique ids</span></span>
-<span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span>, asdt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># data.table</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span><span class="op">)</span> <span class="co"># vector of unique ids</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">bgid_from_blockid</span><span class="op">(</span><span class="va">s2b</span><span class="op">$</span><span class="va">blockid</span>, asdt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># data.table</span></span>
 <span></span>
 <span> <span class="co"># plotblocksnearby(pts, radius = rad, overlay_blockgroups = T)</span></span>
 <span></span></code></pre></div>

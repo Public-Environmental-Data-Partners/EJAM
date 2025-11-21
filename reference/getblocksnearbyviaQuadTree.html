@@ -95,7 +95,7 @@ This does the work actually supporting getblocksnearby()</p>
 
 
 <dl><dt id="arg-sitepoints">sitepoints<a class="anchor" aria-label="anchor" href="#arg-sitepoints"></a></dt>
-<dd><p>data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers</p></dd>
+<dd><p>table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with columns lat, lon giving point locations of sites or facilities around which are circular buffers</p></dd>
 
 
 <dt id="arg-radius">radius<a class="anchor" aria-label="anchor" href="#arg-radius"></a></dt>
@@ -160,11 +160,15 @@ It can be automatically created when the package is attached via the .onAttach()
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>see details</p>
+    </div>
+    <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For each point, it uses the specified search radius and finds the distance to
 every block within the circle defined by the radius.
 Each block is defined by its Census-provided internal point, by latitude and longitude.</p>
-<p>Results are the sites2blocks table that would be used by doaggregate(),
+<p>Results are the sites2blocks table in <a href="https://r-datatable.com" class="external-link">data.table</a> format that would be used by <code><a href="doaggregate.html">doaggregate()</a></code>,
 with distance in miles as one output column of data.table.
 Adjusts distance to avg resident in block when it is very small relative to block size,
 the same way EJSCREEN adjusts distances in creating proximity scores.</p>

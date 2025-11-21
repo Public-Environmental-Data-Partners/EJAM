@@ -130,7 +130,7 @@
         <dd>Show EJAM results as a map of points</dd>
       </dl><dl><dt>
 
-          <code><a href="ejam2barplot.html">ejam2barplot()</a></code> <code><a href="ejam2barplot.html">plot_barplot_ratios_ez()</a></code> <code><a href="ejam2barplot.html">plot_barplot_ratios()</a></code>
+          <code><a href="ejam2barplot.html">ejam2barplot()</a></code>
 
         </dt>
         <dd>Barplot of ratios of residential population (or other) scores to averages - simpler syntax</dd>
@@ -644,58 +644,16 @@
         <dd>Read shapefile from any file or folder (trying to infer the format)</dd>
       </dl><dl><dt>
 
-          <code><a href="shapefile_from_folder.html">shapefile_from_folder()</a></code>
+          <code><a href="shapefile_from_sitepoints.html">shapefile_from_sitepoints()</a></code>
 
         </dt>
-        <dd>Read shapefile from a folder</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile_from_filepaths.html">shapefile_from_filepaths()</a></code>
-
-        </dt>
-        <dd>Read shapefile from disk based on the filenames given</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile_from_zip.html">shapefile_from_zip()</a></code>
-
-        </dt>
-        <dd>read zipped .zip that may contain a geodatabase file or .shp file etc.</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile_from_gdb.html">shapefile_from_gdb()</a></code>
-
-        </dt>
-        <dd>read .gdb geodatabase file via sf::st_read()</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile_from_gdbzip.html">shapefile_from_gdbzip()</a></code>
-
-        </dt>
-        <dd>read .zip that contains geodatabase file via unzip and st_read</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile_filepaths_from_folder.html">shapefile_filepaths_from_folder()</a></code>
-
-        </dt>
-        <dd>Get list of valid filenames comprising shapefile including paths</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile_filepaths_valid.html">shapefile_filepaths_valid()</a></code>
-
-        </dt>
-        <dd>Confirm files have ALL the extensions .shp, .shx, .dbf, and .prj</dd>
+        <dd>Convert table of lat,lon points/sites into spatial data.frame / shapefile</dd>
       </dl><dl><dt>
 
           <code><a href="shapefile_clean.html">shapefile_clean()</a></code>
 
         </dt>
         <dd>Drop invalid rows, warn if all invalid, add unique ID, transform (CRS)</dd>
-      </dl><dl><dt>
-
-          <code><a href="shapefile_from_sitepoints.html">shapefile_from_sitepoints()</a></code>
-
-        </dt>
-        <dd>Convert table of lat,lon points/sites into spatial data.frame / shapefile</dd>
       </dl><dl><dt>
 
           <code><a href="shape_buffered_from_shapefile.html">shape_buffered_from_shapefile()</a></code>
@@ -1541,7 +1499,7 @@
           <code><a href="popup_from_any.html">popup_from_any()</a></code>
 
         </dt>
-        <dd>Map popups - Simple map popup from a data.table or data.frame, one point per row</dd>
+        <dd>Map popups - Simple map popup from a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format or data.frame, one point per row</dd>
       </dl></div><div class="section level2">
 
       <h3 id="plots-mean-of-each-indicator-comparing-populations-groups-comparing-environmental-factors-etc-">Plots: Mean of each indicator (comparing populations/groups, comparing environmental factors, etc.)<a class="anchor" aria-label="anchor" href="#plots-mean-of-each-indicator-comparing-populations-groups-comparing-environmental-factors-etc-"></a></h3>
@@ -1555,7 +1513,7 @@
 
       <dl><dt>
 
-          <code><a href="ejam2barplot.html">ejam2barplot()</a></code> <code><a href="ejam2barplot.html">plot_barplot_ratios_ez()</a></code> <code><a href="ejam2barplot.html">plot_barplot_ratios()</a></code>
+          <code><a href="ejam2barplot.html">ejam2barplot()</a></code>
 
         </dt>
         <dd>Barplot of ratios of residential population (or other) scores to averages - simpler syntax</dd>
@@ -1619,7 +1577,7 @@
 
       <dl><dt>
 
-          <code><a href="ejam2barplot.html">ejam2barplot()</a></code> <code><a href="ejam2barplot.html">plot_barplot_ratios_ez()</a></code> <code><a href="ejam2barplot.html">plot_barplot_ratios()</a></code>
+          <code><a href="ejam2barplot.html">ejam2barplot()</a></code>
 
         </dt>
         <dd>Barplot of ratios of residential population (or other) scores to averages - simpler syntax</dd>
@@ -1629,6 +1587,18 @@
 
         </dt>
         <dd>barplot of summary stats on special areas and features at the sites</dd>
+      </dl><dl><dt>
+
+          <code><a href="plot_barplot_ratios_ez.html">plot_barplot_ratios_ez()</a></code>
+
+        </dt>
+        <dd>Helper - Barplot of ratios of indicators (at a site or all sites overall) to US or State average</dd>
+      </dl><dl><dt>
+
+          <code><a href="plot_barplot_ratios.html">plot_barplot_ratios()</a></code>
+
+        </dt>
+        <dd>helper - Barplot of ratios of residential population percentages (or other scores) to averages (or other references)</dd>
       </dl></div><div class="section level2">
 
       <h3 id="plots-distribution-of-one-indicator-across-residents-or-sites-comparing-populations-groups-comparing-environmental-factors-etc-">Plots: Distribution of one indicator across residents or sites (comparing populations/groups, comparing environmental factors, etc.)<a class="anchor" aria-label="anchor" href="#plots-distribution-of-one-indicator-across-residents-or-sites-comparing-populations-groups-comparing-environmental-factors-etc-"></a></h3>

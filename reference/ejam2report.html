@@ -9,7 +9,7 @@ EJSCREEN Community Report)"><meta property="og:image" content="https://ejanalysi
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@ EJSCREEN Community Report)"><meta property="og:image" content="https://ejanalysi
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -105,8 +106,8 @@ EJSCREEN Community Report)</p>
 
 
 <dl><dt id="arg-ejamitout">ejamitout<a class="anchor" aria-label="anchor" href="#arg-ejamitout"></a></dt>
-<dd><p>output as from <code><a href="ejamit.html">ejamit()</a></code>, list with a data.table called <code>results_bysite</code>
-if sitenumber parameter is used, or a data.table called <code>results_overall</code> otherwise</p></dd>
+<dd><p>output as from <code><a href="ejamit.html">ejamit()</a></code>, list with a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format called <code>results_bysite</code>
+if sitenumber parameter is used, or a table in <a href="https://r-datatable.com" class="external-link">data.table</a> format called <code>results_overall</code> otherwise</p></dd>
 
 
 <dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
@@ -207,12 +208,12 @@ You can customize the report somewhat by using parameters like extratable_list_o
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_10pts_1miles</span></span>
 <span></span>
 <span><span class="fu">ejam2report</span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
-<span><span class="fu"><a href="table_gt_from_ejamit_overall.html">table_gt_from_ejamit_overall</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span></span>
-<span><span class="fu"><a href="table_tall_from_overall.html">table_tall_from_overall</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">ejam2report</span><span class="op">(</span><span class="va">out</span>, sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="table_gt_from_ejamit_1site.html">table_gt_from_ejamit_1site</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu"><a href="ejam2table_tall.html">ejam2table_tall</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">ejam2report</span><span class="op">(</span><span class="va">out</span>, sitenumber <span class="op">=</span> <span class="fl">1</span>, launch_browser <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="table_gt_from_ejamit_overall.html">table_gt_from_ejamit_overall</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="table_gt_from_ejamit_1site.html">table_gt_from_ejamit_1site</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -220,11 +221,11 @@ You can customize the report somewhat by using parameters like extratable_list_o
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>

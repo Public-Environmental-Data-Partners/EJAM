@@ -24,6 +24,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/articles/whatis.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/zipcodes.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/authors.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/copilot-instructions.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/index.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/news/index.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/EJAM.html</loc></url>
@@ -179,6 +180,8 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/formulas_all.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/formulas_d.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/formulas_ejscreen_acs.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/formulas_ejscreen_acs_disability.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/formulas_ejscreen_demog_index.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_active_ids.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/frs_by_mact.html</loc></url>
@@ -417,6 +420,8 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_functions_and_data.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/pkg_functions_that_use.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/pkgdown_update.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_ratios.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_ratios_ez.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_sitegroups.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_sites.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_boxplot_pctiles.html</loc></url>

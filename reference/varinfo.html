@@ -9,7 +9,7 @@ variable used in EJAM."><meta property="og:image" content="https://ejanalysis.gi
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.002</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@ variable used in EJAM."><meta property="og:image" content="https://ejanalysis.gi
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
+    <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
@@ -135,6 +136,7 @@ several of which are not exported:</p><ul><li><p><code>varinfo()</code></p></li>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">varinfo</span><span class="op">(</span><span class="st">"traffic.score"</span>, <span class="st">"decimals"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span><span class="fu">varinfo</span><span class="op">(</span><span class="va">names_d</span>, <span class="st">"long"</span><span class="op">)</span></span>
 <span><span class="va">myvars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_d</span>, <span class="va">names_d_subgroups</span>, <span class="va">names_e</span><span class="op">)</span></span>
 <span><span class="va">myinfo</span> <span class="op">&lt;-</span> <span class="st">"percentage"</span></span>
@@ -142,7 +144,7 @@ several of which are not exported:</p><ul><li><p><code>varinfo()</code></p></li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu">varinfo</span><span class="op">(</span><span class="va">names_all_r</span>, <span class="st">"pctile."</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">myinfo</span> <span class="op">&lt;-</span> <span class="st">"long"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu">varinfo</span><span class="op">(</span><span class="va">myvars</span>, <span class="va">myinfo</span><span class="op">)</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="table_rounding_info.html">table_rounding_info</a></span><span class="op">(</span><span class="va">names_e</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="table_rounding_info.html">table_rounding_info</a></span><span class="op">(</span><span class="va">names_e</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">varinfo</span><span class="op">(</span></span>
 <span> var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_these</span>, <span class="va">names_d_pctile</span><span class="op">)</span>,</span>
@@ -150,19 +152,20 @@ several of which are not exported:</p><ul><li><p><code>varinfo()</code></p></li>
 <span> <span class="st">"topic_root_term"</span>, <span class="st">"varcategory"</span>, <span class="st">"vartype"</span>, <span class="st">"percentage"</span>, <span class="st">"pctile."</span>, <span class="st">"calculation_type"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">varinfo</span><span class="op">(</span><span class="va">names_all_r</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"varcategory"</span>, <span class="st">"varlist"</span>, <span class="st">"in_api"</span>, <span class="st">"in_bgcsv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">varinfo</span><span class="op">(</span><span class="va">names_all_r</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"varcategory"</span>, <span class="st">"varlist"</span>, <span class="st">"in_api"</span>, <span class="st">"in_csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
-<span>  <span class="va">namez</span><span class="op">$</span><span class="va">d</span>, </span>
-<span>  <span class="va">names_d</span>, </span>
-<span>  <span class="fu">varinfo</span><span class="op">(</span><span class="va">names_d</span>, <span class="st">"varlist"</span><span class="op">)</span>, </span>
-<span>  usavg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">avg.in.us</span><span class="op">[</span><span class="va">names_d</span><span class="op">]</span><span class="op">)</span>, </span>
-<span>  usavg_varname <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="fixcolnames2related.html">fixcolnames2related</a></span><span class="op">(</span><span class="va">names_d</span>, <span class="st">"usavg"</span><span class="op">)</span>, </span>
+<span>  <span class="va">namez</span><span class="op">$</span><span class="va">d</span>,</span>
+<span>  <span class="va">names_d</span>,</span>
+<span>  <span class="fu">varinfo</span><span class="op">(</span><span class="va">names_d</span>, <span class="st">"varlist"</span><span class="op">)</span>,</span>
+<span>  usavg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">avg.in.us</span><span class="op">[</span><span class="va">names_d</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  usavg_varname <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="fixcolnames2related.html">fixcolnames2related</a></span><span class="op">(</span><span class="va">names_d</span>, <span class="st">"usavg"</span><span class="op">)</span>,</span>
 <span>  categ <span class="op">=</span> <span class="fu"><a href="varname2varcategory_ejam.html">varname2varcategory_ejam</a></span><span class="op">(</span><span class="va">names_d</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">map_headernames</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">varinfo</span><span class="op">(</span><span class="va">names_d</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -170,11 +173,11 @@ several of which are not exported:</p><ul><li><p><code>varinfo()</code></p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2025</p>
+  <p>November 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.002</p>
+  <p>EJAM Version 2.32.6.003</p>
 </div>
 
     </footer></div>
