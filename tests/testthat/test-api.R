@@ -1,11 +1,11 @@
 # A script to check Plumber endpoints
 # library(httr)
 
-testthat::skip("skip API tests until ready")
+# testthat::skip("skip API tests until ready")
 
 # start the API in background - takes a few seconds to be ready
 api_run()
-pause(5)
+pause(10)
 test_that("/echo endpoint", {
   endpt <- "echo?msg=heyo"
   host <- "127.0.0.1"
