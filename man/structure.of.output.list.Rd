@@ -23,10 +23,10 @@ data.table, data.frame, or vector, and rows/cols/length info
 Utility to print summary info about the output of ejamit() or doaggregate()
 }
 \examples{
-  structure.of.output.list(testpoints_10)
-  structure.of.output.list(testoutput_getblocksnearby_10pts_1miles)
-  structure.of.output.list(testoutput_doaggregate_10pts_1miles)
-  structure.of.output.list(testoutput_ejamit_10pts_1miles)
+  EJAM:::structure.of.output.list(testpoints_10)
+  EJAM:::structure.of.output.list(testoutput_getblocksnearby_10pts_1miles)
+  EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+  EJAM:::structure.of.output.list(testoutput_ejamit_10pts_1miles)
 
 }
 \keyword{internal}

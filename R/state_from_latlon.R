@@ -11,7 +11,7 @@
 # state_from_fips_bybg()    # confusing name
 
 
-# fips2state_abbrev() *** # this is the one to use for a single state per FIPS
+# fips2state_abbrev() *** # now fips2stateabbrev() this is the one to use for a single state per FIPS
 
 # fips_state_from_state_abbrev()
 # fips2state_fips()
@@ -123,18 +123,18 @@ state_from_latlon <- function(lat, lon) {
 
 #' given data.table with blockid column, get state abbreviation of each (function might not be used)
 #'
-#' @param dt_with_blockid (or any data.table with either blockid or bgid column)
+#' @param dt_with_blockid (or any table in [data.table](https://r-datatable.com) format with either blockid or bgid column)
 #' @return vector of ST info like AK, CA, DE, etc.
 #'
 #' @examples
 #' x = sample(blockpoints$blockid, 3)
-#' state_from_blockid_table(blockpoints[blockid %in% x, ])[]
+#' EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ])[]
 #' mapfast(blockpoints[blockid %in% x, ])
 #'
-#' table(state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
-#' # unique(state_from_latlon(testpoints_10)$ST) # slow
+#' table(EJAM:::state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
+#' # unique(EJAM:::state_from_latlon(testpoints_10)$ST) # slow
 #'
-#' all.equal(state_from_blockid(x), state_from_blockid_table(blockpoints[blockid %in% x, ]))
+#' all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
 #'
 #' @keywords internal
 #'
@@ -168,10 +168,10 @@ state_from_blockid_table <- function(dt_with_blockid) {
 #' @return vector of ST info like AK, CA, DE, etc.
 #' @examples
 #' x = sample(blockpoints$blockid, 3)
-#' state_from_blockid(x)[]
+#' EJAM:::state_from_blockid(x)[]
 #' mapfast(blockpoints[blockid %in% x, ])
 #'
-#' all.equal(state_from_blockid(x), state_from_blockid_table(blockpoints[blockid %in% x, ]))
+#' all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
 #'
 #' @keywords internal
 #'
@@ -187,21 +187,21 @@ state_from_blockid <- function(blockid) {
 #'
 #' Get the State abbreviations of ALL blockgroups WITHIN the input FIPS
 #'
-#' @details Unlike [fips2state_abbrev()], this returns a vector of 2-letter State abbreviations that is
+#' @details Unlike [fips2stateabbrev()], this returns a vector of 2-letter State abbreviations that is
 #'   one per blockgroup that matches the input FIPS,
 #'   not necessarily a vector as long as the input vector of FIPS codes!,
 #'   and not just a short list of unique states!
 #' @param fips Census FIPS codes vector, numeric or char, 2-digit, 5-digit, etc. OK
 #' @param uniqueonly If set to TRUE, returns only unique results.
 #'   This parameter is here mostly to remind user that default is not uniques only.
-#' @seealso [fips2state_abbrev()] to get just one state per FIPS
+#' @seealso [fips2stateabbrev()] to get just one state per FIPS
 #' @return vector of 2-character state abbreviations like CA,CA,CA,MD,MD,TX
 #'
 #' @export
 #'
 state_from_fips_bybg <- function(fips, uniqueonly=FALSE) {
 
-  message("This function provides the states of ALL blockgroups within the FIPS, not just one state per fips. see also fips2state_abbrev() ")
+  message("This function provides the states of ALL blockgroups within the FIPS, not just one state per fips. see also fips2stateabbrev() ")
   fips <- fips_bgs_in_fips(fips) # returns all the blockgroups fips codes that match, such as all bg in the state or county
   x <- stateinfo$ST[match(substr(fips,1,2), stateinfo$FIPS.ST)]
   if (uniqueonly) {return(unique(x))} else {return(x)}

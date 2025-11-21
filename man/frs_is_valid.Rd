@@ -7,7 +7,7 @@
 frs_is_valid(frs_upload)
 }
 \arguments{
-\item{frs_upload}{upload frs registry IDs table converted to data frame (or data.table gets handled too)
+\item{frs_upload}{upload frs registry IDs table converted to data frame (or table in \href{https://r-datatable.com}{data.table} format gets handled too)
 with those ids in a column whose name is among allowed aliases that get tried here:
 the colname with the FRS regids must be one of REGISTRY_ID, RegistryID, regid, siteid,
 checked in that order of preference.}

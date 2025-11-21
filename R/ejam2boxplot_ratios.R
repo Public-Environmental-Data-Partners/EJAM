@@ -112,7 +112,7 @@ ejam2boxplot_ratios <- function(ejamitout, radius, varnames = c(names_d, names_d
     # ) +
 
     #  show average SITE's ratio to US,  for each boxplot column  ?
-    stat_summary(fun.y = mean, geom = "point",
+    ggplot2::stat_summary(fun.y = mean, geom = "point",
                  shape = 20, size = 5, color = "gray", fill = "gray") +
 
     ## wrap indicator labels on x axis

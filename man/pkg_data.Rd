@@ -37,14 +37,14 @@ Also see functions like pkg_functions_and_data() and pkg_functions_xyz
  data(package = "EJAM")$results[, 'Item']
 
  # not actually sorted within each pkg by default
- pkg_data()
+ EJAM:::pkg_data()
  # not actually sorted by default
- pkg_data("EJAM")$Item
- ##pkg_data("MASS", simple=T)
+ EJAM:::pkg_data("EJAM")$Item
+ ##EJAM:::pkg_data("MASS", simple=T)
 
  # sorted by size if simple=F
- ##pkg_data("datasets", simple=F)
- x <- pkg_data(simple = F)
+ ##EJAM:::pkg_data("datasets", simple=F)
+ x <- EJAM:::pkg_data(simple = F)
  # sorted by size already, to see largest ones among all these pkgs:
  tail(x[, 1:3], 20)
 

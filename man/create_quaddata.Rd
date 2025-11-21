@@ -7,20 +7,20 @@
 create_quaddata(pts, idcolname = NULL, xyzcolnames = c("x2", "z2", "y2"))
 }
 \arguments{
-\item{pts}{a data.frame or data.table with columns name lat and lon, one row
+\item{pts}{a data.frame or \href{https://r-datatable.com}{data.table} with columns name lat and lon, one row
 per location (point), and any other columns are ignored.}
 
 \item{idcolname}{if NULL (default), a pointid column is created as a
 unique id 1:NROW(). If creating the index of blocks, idcolname is "blockid"
 If set to "id" it just uses that even if not unique id.
-indexpoints() does not directly refer to this column but index
+\code{\link[=indexpoints]{indexpoints()}} does not directly refer to this column but index
 probably incorporates it.}
 
 \item{xyzcolnames}{For creating quaddata and then localtree index of blocks,
 this must be set to c("BLOCK_X", "BLOCK_Z", "BLOCK_Y") ??}
 }
 \value{
-returns a data.table one row per point, columns with names that are
+returns a \href{https://r-datatable.com}{data.table} one row per point, columns with names that are
 c(xyzcolnames, idcolname)
 }
 \description{

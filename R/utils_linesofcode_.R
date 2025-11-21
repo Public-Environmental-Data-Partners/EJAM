@@ -12,18 +12,18 @@
 #' @param ... passed to [dir()]
 #' @return vector of paths
 #' @examples
-#'  #  dir2()
+#'  #  EJAM:::dir2()
 #'  \dontrun{
-#' dir2()
-#' dir2("*.zip", recursive = T)
-#' dir2("*.y*",  recursive = T)
+#' EJAM:::dir2()
+#' EJAM:::dir2("*.zip", recursive = T)
+#' EJAM:::dir2("*.y*",  recursive = T)
 #'
 #' # if recursive=T, left-aligned view of paths is shown
-#' dir2("*datacreate*.*", recursive = T)
+#' EJAM:::dir2("*datacreate*.*", recursive = T)
 #' # for right-aligned view:
-#' data.frame(hit=dir2("*address*.*", recursive = T))
+#' data.frame(hit= EJAM:::dir2("*address*.*", recursive = T))
 #'
-#' dir2("*.csv*", path = testdatafolder(installed = FALSE), recursive = T)
+#' EJAM:::dir2("*.csv*", path = testdatafolder(installed = FALSE), recursive = T)
 #' }
 #'
 #' @keywords internal

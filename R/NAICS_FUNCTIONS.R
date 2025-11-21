@@ -28,7 +28,7 @@
 #'   frs_from_naics("textile mills", children = FALSE)
 #'   frs_from_naics("textile mills", children = TRUE)
 #'
-#'   \donttest{
+#'   \dontrun{
 #'   naics_from_any(naics_categories(3))[order(name),.(name,code)][1:10,]
 #'   naics_from_any(naics_categories(3))[order(code),.(code,name)][1:10,]
 #'   naics_from_code(211)
@@ -209,8 +209,8 @@ naics_validation <- function(naics_enter, naics_select) {
 #' @seealso [naics_from_code()] [NAICS]
 #' @examples
 #'   naics2children(211)
-#'   naics_from_code(211)
-#'   naics_from_code(211, children = TRUE)
+#'   EJAM:::naics_from_code(211)
+#'   EJAM:::naics_from_code(211, children = TRUE)
 #'   NAICS[211][1:3] # wrong
 #'   NAICS[NAICS == 211]
 #'   NAICS["211 - Oil and Gas Extraction"]
@@ -317,6 +317,7 @@ naics_from_code <- function(mycodes, children = FALSE) {
 #' @seealso [naics_findwebscrape()] [naics_subcodes_from_code()] [naics_from_code()]  [naics_from_name()]  [naics_from_any()]
 #' @examples
 #'  data.table::fintersect(naics_from_any( "manufac"), naics_from_any("chem"))
+#'   EJAM:::naics_from_name("silver")
 #' @return a subset of the [naicstable] data.table (not just the codes column)
 #'
 #' @keywords internal

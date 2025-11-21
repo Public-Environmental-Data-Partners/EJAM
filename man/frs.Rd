@@ -4,7 +4,8 @@
 \alias{frs}
 \title{frs (DATA) EPA Facility Registry Service table of regulated sites}
 \description{
-This is a data.table snapshot version of the EPA FRS.
+This is a table in \href{https://r-datatable.com}{data.table} format,
+a snapshot version of the EPA FRS.
 You can look up sites by REGISTRY_ID in \link{frs}, and get their location, etc.
 }
 \details{

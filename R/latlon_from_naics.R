@@ -35,7 +35,7 @@
 #'   within that overall category.
 #'
 #' @param ... passed to [naics_from_any()]
-#' @return A data.table (not just data.frame) with columns called
+#' @return A table in [data.table](https://r-datatable.com) format (not just data.frame) with columns called
 #'   lat, lon, REGISTRY_ID, NAICS, naics_found, naics_query (unless id_only parameter set TRUE).
 #'   naics_query is the input parameter that was used (that had been provided to this function as naics).
 #'   naics_found and NAICS are identical (redundant), and are the code found that
@@ -58,10 +58,10 @@
 #'   # mapfast(frs_from_naics(336611)) # simple map
 #'
 #'   # get name from one code
-#'   naics_from_code(336)$name
+#'   EJAM:::naics_from_code(336)$name
 #'   # get the name from each code
 #'   mycode = c(33611, 336111, 336112)
-#'   naics_from_code(mycode)$name
+#'   EJAM:::naics_from_code(mycode)$name
 #'   # see counts of facilities by code (parent) and subcategories (children)
 #'   naics_counts[NAICS %in% mycode, ]
 #'   # see parent codes that contain each code

@@ -32,6 +32,6 @@ Which variables have strongest trend with distance based on slope of linear fit
 Used by \code{\link[=ejamit_compare_distances2plot]{ejamit_compare_distances2plot()}} which is used by \code{\link[=ejamit_compare_distances]{ejamit_compare_distances()}}
 }
 \examples{
-distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
+EJAM:::distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
 }
 \keyword{internal}

@@ -48,7 +48,7 @@
 #'   [out_bydistance2results_bydistance()] [out_bydistance2results_bydistance_bysite()] [out_bydistance2results_bysite_bydistance()]
 
 #' @return list you can think of as "out_bydistance"
-#'   where each element is the full output of ejamit() for 1 radius
+#'   where each element is the full output of [ejamit()] for 1 radius
 #'
 #' @export
 #'
@@ -153,7 +153,7 @@ out_bydistance2results_bydistance <- function(out_bydistance) {
 #'   pts <- testpoints_10
 #'
 #'   bydist <- ejamit_compare_distances(pts, radii = radii)
-#'   ejamit_compare_distances2plot(bydist, myvars = c(
+#'   EJAM:::ejamit_compare_distances2plot(bydist, myvars = c(
 #'     "ratio.to.avg.pctlowinc", "ratio.to.avg.pcthisp", "ratio.to.avg.pctnhba"))
 #'
 #'   names(bydist) <- fixcolnames(names(bydist), "r", "shortlabel")
@@ -162,7 +162,7 @@ out_bydistance2results_bydistance <- function(out_bydistance) {
 #' @seealso [ejam2barplot_distances()] [plot_distance_by_pctd()], [distance_by_group()],
 #'   and [ejamit_compare_distances_fulloutput()]
 #'
-#' @return data.table you can call results_bydistance,
+#' @return table in [data.table](https://r-datatable.com) format you can call results_bydistance,
 #'   like ejamit()$results_overall but with one row per radius
 #'
 #' @export
@@ -271,7 +271,7 @@ ejamit_compare_distances <- function(sitepoints, radii = c(1,2,3),
 #' @param myvars optional, vector of some colnames of results_bydistance
 #' @param radii optional vector - taken from results_bydistance$radius.miles
 #' @param n optional number of indicators to list. n=3 would mean show the top 3.
-#' @examples distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
+#' @examples EJAM:::distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
 #' @return vector of text names of indicators
 #'
 #' @keywords internal

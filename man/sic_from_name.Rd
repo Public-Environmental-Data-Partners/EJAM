@@ -16,7 +16,7 @@ sic_from_name(mynames, children = FALSE, ignore.case = TRUE, fixed = FALSE)
 \item{fixed}{should it be an exact match? see \code{\link[=grepl]{grepl()}}}
 }
 \value{
-a subset of the \link{sictable} data.table (not just the codes column)
+a subset of the \link{sictable} table in \href{https://r-datatable.com}{data.table} format (not just the codes column)
 }
 \description{
 query by parts of words, etc. in the industry name.

@@ -16,5 +16,6 @@ string vector of filenames including full paths
 Get list of valid filenames comprising shapefile including paths
 }
 \seealso{
-\code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
+\keyword{internal}

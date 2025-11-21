@@ -33,7 +33,7 @@
 #'   "RCRAINFO" is the programname and "XJW000000174" is the programid
 #'   if the full record was  RCRAINFO:XJW000000174
 #'
-#' @return data.table with lat  lon  REGISTRY_ID  program   pgm_sys_id
+#' @return table in [data.table](https://r-datatable.com) format with lat  lon  REGISTRY_ID  program   pgm_sys_id
 #' @examples
 #'  ids = c("00603DSCFPRD459", "00603MCRNTRD11K", "00605VNMRBMONTA" )
 #'  latlon_from_programid("TRIS", ids)

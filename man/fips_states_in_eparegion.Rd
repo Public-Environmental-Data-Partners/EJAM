@@ -19,5 +19,5 @@ FIPS - Get state fips for all States in EPA Region(s)
 \examples{
   fips_states_in_eparegion(2)
   fips_states_in_eparegion(6)
-  fips2state_abbrev(fips_states_in_eparegion(6))
+  fips2stateabbrev(fips_states_in_eparegion(6))
 }

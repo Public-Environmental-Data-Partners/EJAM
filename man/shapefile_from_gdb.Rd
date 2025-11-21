@@ -14,16 +14,20 @@ shapefile_from_gdb(fname, layer = NULL, ...)
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
 }
 \value{
-like output of \code{\link[sf:st_read]{sf::st_read()}} but with ejam_uniq_id column 1:NROW()
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame like output of \code{\link[sf:st_read]{sf::st_read()}} but with ejam_uniq_id column 1:NROW()
 }
 \description{
 read .gdb geodatabase file via sf::st_read()
 }
 \examples{
   # npl <- sf::st_read("~/../Desktop/NPL/NPL_Boundaries.gdb")
-  # npl <- shapefile_from_gdb("~/../Desktop/NPL/NPL_Boundaries.gdb",
+  # npl <- EJAM:::shapefile_from_gdb("~/../Desktop/NPL/NPL_Boundaries.gdb",
   #   layer = "SITE_BOUNDARIES_SF")
-  # npl <- shapefile_from_gdbzip("~/../Desktop/NPL/NPL_Boundaries.zip")
+  # npl <- EJAM:::shapefile_from_gdbzip("~/../Desktop/NPL/NPL_Boundaries.zip")
   # mapview::mapview(npl[x$STATE_CODE == "CA", ])
 
 }
+\seealso{
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
+}
+\keyword{internal}

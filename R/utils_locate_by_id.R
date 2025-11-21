@@ -36,11 +36,11 @@
 #'
 #' @return vector of URLs as strings, same length as id parameter
 #' @examples
-#' url_by_id(testinput_regid)
+#' EJAM:::url_by_id(testinput_regid)
 #' \donttest{
-#' browseURL(url_by_id(testinput_regid)[1])
+#' browseURL(EJAM:::url_by_id(testinput_regid)[1])
 #'
-#' urlx = url_by_id(testinput_regid[1])
+#' urlx = EJAM:::url_by_id(testinput_regid[1])
 #' x = xml2::read_xml(urlx)
 #' x = xml2::as_list(x)
 #' cbind( unlist(x$Results$FRSFacility))
@@ -122,7 +122,7 @@ url_by_id <- function(idx, type='frs', ...) {
 #'   # ids <- c('ILR000128264','600039382','TXR1592DZ','TSCA8851',
 #'   #    'CT0000000900908716', 'CEDRI10043548',  'CO0000000812305826')
 #'   # ids <- c('ILR000128264','600039382')
-#'   locate_by_id(ids, type = 'program')   # stopped working   ***********
+#'   EJAM:::locate_by_id(ids, type = 'program')   # stopped working   ***********
 #' }
 #'
 #' @keywords internal

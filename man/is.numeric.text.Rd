@@ -30,7 +30,7 @@ number can be stored as text like
 ".3" or "3."
 even "." ?
 even "-" ?
-NOT "-  2" and not "3-1" and not "2.32.6"
+NOT "-  2" and not "3-1" and not "2.0.6"
 }
 \seealso{
 \code{\link[=is.numericish]{is.numericish()}}

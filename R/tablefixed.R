@@ -1,5 +1,5 @@
 #' Table of counts of integer values zero through maxbin
-#' 
+#'
 #' @description Like tabulate or table, sort of, but includes zero unlike tabulate,
 #'   and lets you ensure results include every integer 0 through maxbin,
 #'   so you can, for example, easily combine tables of counts where some
@@ -18,6 +18,7 @@
 #' @param maxbin highest integer among x, or number of bins
 #' @seealso colcounter_summary()
 #' @return summary table
+#'
 #' @export
 #'
 tablefixed <- function(x, maxbin=NULL) {
@@ -29,11 +30,11 @@ tablefixed <- function(x, maxbin=NULL) {
     return(NULL)
   }
   mycounts <- tabulate(x, nbins = maxvalue_or_1)
-  
+
   zerocount <- sum(x == 0, na.rm = T)
   abovemaxcounts <- rep(0, maxbin - max(1, x, na.rm = T))
   x <- c(zerocount, mycounts, abovemaxcounts)
-  
+
   names(x) <- 0:(maxbin)
   return(x)
 }

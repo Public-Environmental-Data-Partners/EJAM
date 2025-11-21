@@ -16,5 +16,6 @@ logical, indicating if all 4 extensions are found among the filepaths
 Confirm files have ALL the extensions .shp, .shx, .dbf, and .prj
 }
 \seealso{
-\code{\link[=shapefile_filepaths_validize]{shapefile_filepaths_validize()}} \code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }
+\keyword{internal}

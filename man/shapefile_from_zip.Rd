@@ -11,7 +11,7 @@ shapefile_from_zip(path, cleanit = TRUE, crs = 4269, layer = NULL, ...)
 
 \item{cleanit}{optional, whether to use \code{\link[=shapefile_clean]{shapefile_clean()}}}
 
-\item{crs}{passed to \code{\link[=shapefile_from_filepaths]{shapefile_from_filepaths()}} etc. and
+\item{crs}{passed to helper functions and
 default is crs = 4269 or Geodetic CRS NAD83}
 
 \item{layer}{optional layer name passed to \code{\link[sf:st_read]{sf::st_read()}}}
@@ -19,8 +19,12 @@ default is crs = 4269 or Geodetic CRS NAD83}
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
 }
 \value{
-like output of \code{\link[sf:st_read]{sf::st_read()}}
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame like output of \code{\link[sf:st_read]{sf::st_read()}}
 }
 \description{
 read zipped .zip that may contain a geodatabase file or .shp file etc.
 }
+\seealso{
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
+}
+\keyword{internal}

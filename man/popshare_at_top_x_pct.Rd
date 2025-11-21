@@ -30,3 +30,6 @@ What fraction of total population is accounted for by the top X percent of place
  popshare_at_top_n(           x$pop, n = c(1, 5, 10))
 
 }
+\seealso{
+\code{\link[=popshare_at_top_x_pct]{popshare_at_top_x_pct()}} \code{\link[=popshare_at_top_n]{popshare_at_top_n()}} \code{\link[=popshare_p_lives_at_what_n]{popshare_p_lives_at_what_n()}} \code{\link[=popshare_p_lives_at_what_pct]{popshare_p_lives_at_what_pct()}}
+}

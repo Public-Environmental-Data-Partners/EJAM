@@ -22,14 +22,14 @@ ejam2table_tall <- function(ejamitout, sitenumber) {
 #'
 #' Take a quick look at results in the RStudio console
 #'
-#' @param results_overall data.table of 1 row, from output of ejamit() or doaggregate()
+#' @param results_overall table in [data.table](https://r-datatable.com) format of 1 row, from output of `ejamit()` or doaggregate()
 #' @param longnames vector of names of variables in results_overall,
-#'   from output of ejamit() or doaggregate()
+#'   from output of [ejamit()] or doaggregate()
 #'
 #' @return data.frame with one indicator per row
 #' @examples
-#'  table_tall_from_overall(testoutput_ejamit_10pts_1miles$results_overall)
-#'  table_tall_from_overall(x$results_bysite[1, ])
+#'  EJAM:::table_tall_from_overall(testoutput_ejamit_10pts_1miles$results_overall)
+#'  EJAM:::table_tall_from_overall(testoutput_ejamit_10pts_1miles$results_bysite[1, ])
 #'
 #' @keywords internal
 #'

@@ -19,11 +19,11 @@ vector of 2-character state abbreviations like CA,CA,CA,MD,MD,TX
 Get the State abbreviations of ALL blockgroups WITHIN the input FIPS
 }
 \details{
-Unlike \code{\link[=fips2state_abbrev]{fips2state_abbrev()}}, this returns a vector of 2-letter State abbreviations that is
+Unlike \code{\link[=fips2stateabbrev]{fips2stateabbrev()}}, this returns a vector of 2-letter State abbreviations that is
 one per blockgroup that matches the input FIPS,
 not necessarily a vector as long as the input vector of FIPS codes!,
 and not just a short list of unique states!
 }
 \seealso{
-\code{\link[=fips2state_abbrev]{fips2state_abbrev()}} to get just one state per FIPS
+\code{\link[=fips2stateabbrev]{fips2stateabbrev()}} to get just one state per FIPS
 }

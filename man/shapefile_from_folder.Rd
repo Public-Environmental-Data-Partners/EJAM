@@ -11,34 +11,34 @@ shapefile_from_folder(folder = NULL, cleanit = TRUE, crs = 4269, ...)
 
 \item{cleanit}{set to FALSE if you want to skip validation and dropping invalid rows}
 
-\item{crs}{passed to shapefile_from_filepaths() default is crs = 4269 or Geodetic CRS NAD83}
+\item{crs}{passed to helper functions, default is crs = 4269 or Geodetic CRS NAD83}
 
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
 }
 \value{
-a shapefile object using sf::st_read()
+a simple feature \link[sf:sf]{sf::sf} class spatial data.frame using \code{\link[sf:st_read]{sf::st_read()}}
 }
 \description{
 Read shapefile from a folder
 }
 \examples{
-\donttest{
-  testfolder <- system.file("testdata/shapes/Portland_neighborhoods", package = "EJAM")
-  testshape <- shapefile_from_folder(testfolder)
-
-  testpaths <- shapefile_filepaths_from_folder(testfolder)
-  testshape <- shapefile_from_filepaths(testpaths)
-
-  ## if interactive(), R user can point to right folder or select the right set of files:
-  # testshape <- shapefile_from_filepaths()
-  # testshape <- shapefile_from_folder()
-
+  testfolder <- system.file("testdata/shapes/portland_folder_shp", package = "EJAM")
+  testshape <- EJAM:::shapefile_from_folder(testfolder)
+  testpaths <- EJAM:::shapefile_filepaths_from_folder(testfolder)
+  testshape <- EJAM:::shapefile_from_filepaths(testpaths)
+  \dontrun{
+  if (interactive()) {
+  ##  R user can navigate to and select a folder that has .shp and related files:
+  testshape <- try({EJAM:::shapefile_from_folder()})
+  ##  R user can select just the .shp file:
+  # testshape <- shapefile_from_any()
+  }
+  }
   x <- get_blockpoints_in_shape(testshape)
   leaflet::leaflet(x$polys) \%>\% leaflet::addTiles() \%>\% leaflet::addPolygons(color = "blue")
-  DT::datatable(out$results_bysite)
+  DT::datatable(x$pts)
 
-  }
 }
 \seealso{
-\code{\link[=shapefile_from_folder]{shapefile_from_folder()}}
+\code{\link[=shapefile_from_any]{shapefile_from_any()}}
 }

@@ -9,7 +9,7 @@ getblocks_summarize_blocks_per_site(x, varname = "ejam_uniq_id")
 \arguments{
 \item{x}{The output of \code{\link[=getblocksnearby]{getblocksnearby()}} like \link{testoutput_getblocksnearby_1000pts_1miles}}
 
-\item{varname}{colname of variable in data.table x that is the one to summarize by}
+\item{varname}{colname of variable in x, a table in \href{https://r-datatable.com}{data.table} format, that is the one to summarize by}
 }
 \value{
 invisibly, a list of stats, and plot

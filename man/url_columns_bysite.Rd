@@ -21,7 +21,7 @@ url_columns_bysite(
 )
 }
 \arguments{
-\item{sitepoints}{data.frame or data.table with lat and lon columns
+\item{sitepoints}{data.frame or table in \href{https://r-datatable.com}{data.table} format with lat and lon columns
 (and should have ejam_uniq_id column or assume 1 output row per input row, same order)}
 
 \item{lat, lon}{if sitepoints NULL/missing, vectors of latitudes and longitudes
@@ -62,11 +62,7 @@ If set FALSE, faster since avoids checking but some links might not work and not
 }
 \value{
 list of data.frames to append to the list of data.frames created by
-\code{\link[=ejamit]{ejamit()}} or \code{\link[=doaggregate]{doaggregate()}},
-
-\verb{list(results_bysite = results_bysite, }
-\verb{    results_overall = results_overall,}
-\verb{      newcolnames=newcolnames)}
+\code{\link[=ejamit]{ejamit()}} or \code{\link[=doaggregate]{doaggregate()}}
 }
 \description{
 URL functions - Compile URLs in columns, for EJAM
@@ -75,19 +71,19 @@ URL functions - Compile URLs in columns, for EJAM
 used in \code{\link[=table_xls_format]{table_xls_format()}}, and server, to create hyperlinks to reports or webpages, one per site
 }
 \examples{
-x =  url_columns_bysite(testpoints_10[1:2,], radius = 1)
+x =  EJAM:::url_columns_bysite(testpoints_10[1:2,], radius = 1)
 
-x =  url_columns_bysite(
+x =  EJAM:::url_columns_bysite(
   data.frame(lat=1:2, lon=101:102), radius = 1,
   INFO_FOR_SITE2 = c(NA, "site2"),
   Place1info = c("North", ""),
   keylist_bysite = list(newkey_all_sites = "YES",
                         site_name = c("NRO", "CRS"))
   )
-unlinkify(x[[2]])
+EJAM:::unlinkify(x[[2]])
 x = x[[1]]
 x = x[, "EJAM Report"]
-unlinkify(x)
+EJAM:::unlinkify(x)
 
 }
 \seealso{

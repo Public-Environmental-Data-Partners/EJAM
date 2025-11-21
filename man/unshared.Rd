@@ -10,7 +10,7 @@ unshared(x, y)
 setdiff2 aka unshared just shows which elements are in one and only one of the sets x and y
 }
 \examples{
-unshared(1:4, 3:8)
+EJAM:::unshared(1:4, 3:8)
 
 }
 \keyword{internal}

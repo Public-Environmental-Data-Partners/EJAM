@@ -16,7 +16,7 @@ mapfast(
 \arguments{
 \item{mydf}{Typically something like the output of ejamit()$results_bysite, but
 can also be the full output of \code{\link[=ejamit]{ejamit()}} in which case this uses just the $results_bysite table,
-and in general mydf can be a data.frame or data.table that has a set of
+and in general mydf can be a data.frame or table in \href{https://r-datatable.com}{data.table} format that has a set of
 points or polygons or Census FIPS codes.
 \enumerate{
 \item point data defined by columns named lat and lon, or columns that \code{\link[=latlon_infer]{latlon_infer()}} can infer to be that,
@@ -28,7 +28,7 @@ or cities/towns/Census Designated Places (7 digits including any leading zeroes)
 e.g., as from \code{names2fips('DE')} or \code{ejamit(fips='01')$results_bysite}.
 }}
 
-\item{radius}{in miles, converted to meters and passed to leaflet::addCircles() if appropriate.
+\item{radius}{in miles, converted to meters and passed to \code{\link[leaflet:map-layers]{leaflet::addCircles()}} if appropriate.
 If not provided, function tries to find it in mydf (in case that is output of ejamit() for example)}
 
 \item{column_names}{If "ej" then nice popup made based on just key EJSCREEN
@@ -46,7 +46,7 @@ Normally the map would be shown in the default RStudio viewer pane.}
 \item{color}{color of circles or polygons}
 }
 \value{
-plots a leaflet map with popups with all the columns from mydf,
+plots a map via the leaflet package, with popups with all the columns from mydf,
 and returns html widget
 }
 \description{

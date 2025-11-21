@@ -14,7 +14,7 @@ frs_from_sitename(sitenames, ignore.case = TRUE, fixed = FALSE)
 \item{fixed}{see \code{\link[=grepl]{grepl()}}, if set to TRUE it looks for only exact matches}
 }
 \value{
-relevant rows of the data.table called frs, which has column names that are
+relevant rows of the table in \href{https://r-datatable.com}{data.table} format called \link{frs}, which has column names that are
 "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 }
 \description{

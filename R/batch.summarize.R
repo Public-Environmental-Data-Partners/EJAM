@@ -34,7 +34,7 @@
 #'   with one row per site and one column per indicator.
 #'   Ignored if ejamitout is provided.
 #'
-#' @param popstats A data.frame or data.table like `ejamit()`$results_bysite,
+#' @param popstats A data.frame or [data.table](https://r-datatable.com) like `ejamit()`$results_bybg_people,
 #'   with one row per blockgroup at least partly in/at one or more of the sites,
 #'   and one column per indicator. It provides blockgroup indicators, including
 #'   total counts even for the blockgroups that are not entirely in/at a site.
@@ -42,7 +42,7 @@
 #'   unique individuals (regardless of how many sites a resident is at).
 #'   Ignored if ejamitout is provided.
 #'
-#' @param overall A data.frame or data.table like `ejamit()`$results_bysite,
+#' @param overall A data.frame or [data.table](https://r-datatable.com) like `ejamit()`$results_bysite,
 #'   with one column per indicator, and just one data row that has the overall
 #'   average, sum, or other summary stat for the indicator across all sites.
 #'   Ignored if ejamitout is provided.

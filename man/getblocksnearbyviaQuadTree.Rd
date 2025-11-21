@@ -19,7 +19,7 @@ getblocksnearbyviaQuadTree(
 )
 }
 \arguments{
-\item{sitepoints}{data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
+\item{sitepoints}{table in \href{https://r-datatable.com}{data.table} format with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
 
 \item{radius}{in miles, defining circular buffer around a site point}
 
@@ -63,6 +63,9 @@ It can be automatically created when the package is attached via the .onAttach()
 
 \item{updateProgress, }{optional function to update Shiny progress bar}
 }
+\value{
+see details
+}
 \description{
 This is what \code{\link[=getblocksnearby]{getblocksnearby()}} uses to do the work.
 Given a set of points and a specified radius in miles,
@@ -74,7 +77,7 @@ For each point, it uses the specified search radius and finds the distance to
 every block within the circle defined by the radius.
 Each block is defined by its Census-provided internal point, by latitude and longitude.
 
-Results are the sites2blocks table that would be used by doaggregate(),
+Results are the sites2blocks table in \href{https://r-datatable.com}{data.table} format that would be used by \code{\link[=doaggregate]{doaggregate()}},
 with distance in miles as one output column of data.table.
 Adjusts distance to avg resident in block when it is very small relative to block size,
 the same way EJSCREEN adjusts distances in creating proximity scores.

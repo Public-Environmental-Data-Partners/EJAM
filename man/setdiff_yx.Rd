@@ -11,7 +11,7 @@ utility just like setdiff except for y,x instead of x,y
 }
 \examples{
   setdiff(   1:4, 3:8)
-  setdiff_yx(1:4, 3:8) # makes it easy to check both without
+  EJAM:::setdiff_yx(1:4, 3:8) # makes it easy to check both without
 
 }
 \keyword{internal}

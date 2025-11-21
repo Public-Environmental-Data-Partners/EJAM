@@ -203,13 +203,15 @@ find_in_files <- function(pattern, path = "./tests/testthat", filename_pattern =
       }
       cat("\n------------------------------------------------------------------------- \n")
       cat("------------------------------------------------------------------------- \n")
-    }
-    if (value) {
-      print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
-    } else {
-      print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
+
+      if (value) {
+        print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
+      } else {
+        print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
+      }
     }
   }
+  if (length(found) == 0) {found <- NULL}
   invisible(found)
 }
 ################################ #
@@ -281,9 +283,9 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #' @param vectoronly set to TRUE to just get a character vector of object names instead of the data.frame table output
 #' @seealso [ls()] [getNamespace()] [getNamespaceExports()] [loadedNamespaces()]
 #'
-#' @return data.table with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
+#' @return table in [data.table](https://r-datatable.com) format with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
 #'   unless vectoronly = TRUE in which case it returns a character vector
-#' @examples  # pkg_functions_and_data("datasets")
+#' @examples  # EJAM:::pkg_functions_and_data("datasets")
 #'
 #' @keywords internal
 #'
@@ -421,14 +423,14 @@ pkg_functions_and_data <- function(pkg = "EJAM",
 #'  data(package = "EJAM")$results[, 'Item']
 #'
 #'  # not actually sorted within each pkg by default
-#'  pkg_data()
+#'  EJAM:::pkg_data()
 #'  # not actually sorted by default
-#'  pkg_data("EJAM")$Item
-#'  ##pkg_data("MASS", simple=T)
+#'  EJAM:::pkg_data("EJAM")$Item
+#'  ##EJAM:::pkg_data("MASS", simple=T)
 #'
 #'  # sorted by size if simple=F
-#'  ##pkg_data("datasets", simple=F)
-#'  x <- pkg_data(simple = F)
+#'  ##EJAM:::pkg_data("datasets", simple=F)
+#'  x <- EJAM:::pkg_data(simple = F)
 #'  # sorted by size already, to see largest ones among all these pkgs:
 #'  tail(x[, 1:3], 20)
 #'

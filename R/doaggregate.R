@@ -32,12 +32,12 @@
 #'
 #'   This function requires the following datasets:
 #'
-#'    - [blockwts]: data.table with these columns: blockid , bgid, blockwt
+#'    - [blockwts]: table in [data.table](https://r-datatable.com) format with these columns: blockid , bgid, blockwt
 #'
-#'    - [quaddata] data.table used to create localtree, a quad tree index of block points
+#'    - [quaddata] table in [data.table](https://r-datatable.com) format used to create localtree, a quad tree index of block points
 #'      (and localtree that is created when package is loaded)
 #'
-#'    - [blockgroupstats] - A data.table (such as EJSCREEN residential population and environmental data by blockgroup)
+#'    - [blockgroupstats] - A table in [data.table](https://r-datatable.com) format (such as EJSCREEN residential population and environmental data by blockgroup)
 #'
 #' @details  # **Identification of nearby residents -- methodology:** ####################################################################
 #'
@@ -80,7 +80,7 @@
 #' the Decennial census blocks can provide, such as a dasymetric map approach.
 #'
 #'
-#' @param sites2blocks data.table of distances in miles between all sites (facilities) and
+#' @param sites2blocks table in [data.table](https://r-datatable.com) format, of distances in miles between all sites (facilities) and
 #'   nearby Census block internal points, with columns ejam_uniq_id, blockid, distance,
 #'   created by getblocksnearby  function.
 #'   See [testoutput_getblocksnearby_10pts_1miles] dataset in package, as input to this function
@@ -131,18 +131,18 @@
 #' @seealso [ejamit]   [getblocksnearby()]
 #'
 #' @examples
-#' structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+#' EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
 #'
 #' @return list with named elements:
 #'
-#'   * **`results_overall`**   one row data.table, like results_bysite, but just one row with
+#'   * **`results_overall`**   one row table in [data.table](https://r-datatable.com) format, like results_bysite, but just one row with
 #'     aggregated results for all unique residents.
 #'
-#'   * **`results_bysite`**   results for individual sites (buffers) - a data.table of results,
+#'   * **`results_bysite`**   results for individual sites (buffers) - a table in [data.table](https://r-datatable.com) format, of results,
 #'     one row per ejam_uniq_id, one column per indicator
 #'
 #'   * **results_bybg_people**  results for each blockgroup, to allow for showing the distribution of each
-#'      indicator across everyone within each residential population group.
+#'      indicator across everyone within each residential population group. table in [data.table](https://r-datatable.com) format.
 #'
 #'   * **longnames**  descriptive long names for the indicators in the above outputs
 #'

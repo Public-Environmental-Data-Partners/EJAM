@@ -8,7 +8,7 @@ Indicator of proximity of residents in each US blockgroup to a custom set of fac
 proxistat_via_getblocks(pts, countradius = 5, maxradius = 31)
 }
 \arguments{
-\item{pts}{data.table with lat lon column names}
+\item{pts}{\href{https://r-datatable.com}{data.table} with lat lon column names}
 
 \item{countradius}{distance within in which nearby sites are counted to create proximity score.
 In miles, and default is 5 km (5000 / meters_per_mile = 3.106856 miles)
@@ -23,7 +23,7 @@ so 1000 km is 1000 / 1.609344 = 621.3712 miles.
 However, the exact min value implies 1337.288 kilometers, or 830.9523 miles?}
 }
 \value{
-data.table of blockgroups, with proximityscore, bgfips, lat, lon, etc.
+\href{https://r-datatable.com}{data.table} of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 }
 \description{
 DRAFT - Create a custom proximity score for every blockgroup, representing count and proximity of specified points

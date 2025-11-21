@@ -14,7 +14,7 @@ frs_from_naics(naics_code_or_name, childrenForNAICS = TRUE, ...)
 \item{...}{passed to \code{\link[=naics_from_any]{naics_from_any()}}}
 }
 \value{
-relevant rows of the data.table called frs, which has column names that are
+relevant rows of the table in \href{https://r-datatable.com}{data.table} format called \link{frs}, which has column names that are
 "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 }
 \description{
@@ -31,7 +31,7 @@ also provide search by NAICS or SIC, and by MACT subpart.
   frs_from_naics("uranium")
   mapfast(frs_from_naics(naics_from_any("nuclear")$code))
   naics_from_any("silver")
-  naics_from_name("silver")
+  EJAM:::naics_from_name("silver")
   naics_from_any(212222 )
   frs_from_naics(21222)
   regid_from_naics(21222)

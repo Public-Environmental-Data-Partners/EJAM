@@ -436,7 +436,7 @@ if (exists("frs") & exists("frs_from_naics")) {
 You can upload polygons in a shapefile, and use EJAM to analyze them. See the
 Shiny app.
 
-See shapefile_from_any() and other [shapefile-related functions](../reference/index.html#specify-places-by-shapefile):
+See `shapefile_from_any()` and other [shapefile-related functions](../reference/index.html#specify-places-by-shapefile):
 
 ```{r notrun_shapefile_functionlist, eval=FALSE, echo=TRUE}
 shapefile_from_any()
@@ -445,7 +445,7 @@ shapefile_from_sitepoints()
 shape_buffered_from_shapefile()
 shape_buffered_from_shapefile_points()
 
-shp1 <- shapefile_from_gdbzip(system.file("testdata/shapes/portland.gdb.zip", package = "EJAM"))
+shp1 <- shapefile_from_any(system.file("testdata/shapes/portland.gdb.zip", package = "EJAM"))
 
 ```
 
