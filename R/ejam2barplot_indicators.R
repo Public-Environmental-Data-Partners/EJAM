@@ -112,7 +112,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
                                                'Average site',
                                                'Average person at these sites'))
 
-    ## merge with shoarter labels/ names and plot
+    ## merge with shorter labels/ names and plot
     p_out <- barplot_input %>%
       dplyr::left_join( data.frame(indicator = mybarvars, indicator_label = gsub(' \\(.*', '', mybarvars.friendly))) %>%
       ggplot2::ggplot() +
