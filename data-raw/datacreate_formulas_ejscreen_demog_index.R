@@ -17,7 +17,7 @@
 # percent low income,
 # percent limited English speaking,
 # percent less than high school education,
-# pctdisabiilty
+# pctdisability
 # pct low life expectancy.
 # Z-score is a statistical measurement that tells how far a value is from the mean of a group of values.
 # Negative values are smaller than the mean, and positive values are greater than the mean. Using μ for
