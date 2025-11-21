@@ -303,7 +303,7 @@ change.fieldnames <- function(
 #' @param x Required. output of batch processor that runs EJSCREEN report once per site.
 #' @param namesfile Optional but must specify either namesfile, or both oldcolnames and newcolnames.
 #'   A csv filename, of file that maps fieldnames from those in raw output of batch processor
-#'   to more useful and clearn names that make more sense.
+#'   to more useful and clear names that make more sense.
 #'   If function is called with the special value namesfile='keepnames' then
 #'   the names are unchanged from those in x.
 #' @param oldcolnames Optional. The names to be found in x, ignored if namesfile specified.
