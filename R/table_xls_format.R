@@ -209,7 +209,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
     if (length(narrowcolnames) == 0) {narrowcolnames <- NULL}
   }
 
-  ## replace missing column headers with friendly names? doubt they are ever missing some
+  ## replace missing column headers with better names? doubt they are ever missing some
   headers_overall  <- names(overall)
   headers_eachsite <- names(eachsite)
 

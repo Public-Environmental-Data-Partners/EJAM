@@ -7,14 +7,14 @@ used by varinfo() and fixcolnames()}
 \usage{
 fixmapheadernamescolname(
   x,
-  alias_list = list(rname = "r", longname = c("long", "longnames", "full",
-    "description"), shortlabel = c("short", "shortname", "shortnames", "labels",
-    "label"), acsname = "acs", apiname = "api", csvname = c("csv"), oldname =
-    c("original", "old", "oldnames"))
+  alias_list = list(rname = c("r", "rnames"), longname = c("long", "longnames", "full",
+    "description"), shortlabel = c("short", "shortname", "shortnames", "shortlabels",
+    "labels", "label"), acsname = c("acs", "acsnames"), apiname = c("api", "apinames"),
+    csvname = c("csv", "csvnames"), oldname = c("original", "old", "oldnames"))
 )
 }
 \arguments{
-\item{x}{character vector of colnames of map_headernames, or aliases like "long"}
+\item{x}{character vector of colnames of map_headernames, or aliases like "long" (ignores case)}
 
 \item{alias_list}{optional named list where canonical names (colnames in map_headernames)
 are the names of vectors of alternative names}
@@ -29,10 +29,9 @@ used by varinfo() and fixcolnames()
 \examples{
   EJAM:::fixmapheadernamescolname(c('long', 'csv', 'api', 'r'))
 
+
 }
 \seealso{
-\code{\link[=fixnames_aliases]{fixnames_aliases()}}
-
-\code{\link[=varinfo]{varinfo()}} \code{\link[=fixnames_aliases]{fixnames_aliases()}}
+\code{\link[=fixnames_aliases]{fixnames_aliases()}} \code{\link[=fixcolnames]{fixcolnames()}} \code{\link[=varinfo]{varinfo()}}
 }
 \keyword{internal}

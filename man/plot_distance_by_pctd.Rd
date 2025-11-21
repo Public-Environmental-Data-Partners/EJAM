@@ -32,7 +32,7 @@ aggregated across blocks and blockgroups as a weighted mean}
 \item{scorewts_colname}{colname in blockgroupstats -- like "pop" -- for the weight
 to use in aggregating the scores referred to by score_colname}
 
-\item{score_label}{optional friendly label for the variable}
+\item{score_label}{optional plain-English/alternative label for the variable}
 
 \item{radius}{optional radius to use as maximum analyzed or shown --
 if s2b was provided, this caps what is used and only shorter radii get shown

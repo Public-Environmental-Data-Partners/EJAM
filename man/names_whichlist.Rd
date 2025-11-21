@@ -25,7 +25,7 @@ names_whichlist(
 
 \item{ignore.case.grep}{passed to grep as ignore.case param}
 
-\item{keylists}{if true, only report for the key lists not friendly, all, these, need types.}
+\item{keylists}{if true, only report for the key lists not state_pctile types.}
 
 \item{exactonly}{to limit output to rows with exact matches}
 }
@@ -42,11 +42,12 @@ namez$d_subgroups_state_pctile which is a vector of terms like
 }
 \examples{
    x <- EJAM:::names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
-   subset(x, !grepl("friendly", x$whichlist))
 
-   subset(x,  grepl("friendly", x$whichlist))
-   subset(namez, names(namez) != "all_r" & names(namez) \%in\%
-      subset(x, x$grepmatch == "yes" & !grepl("friendly", x$whichlist))$whichlist  )
+   subset(x,  grepl("all", x$whichlist))
+   subset(x,  grepl("state_p", x$whichlist))
+   z=subset(namez, names(namez) != "all_r" & names(namez) \%in\%
+      subset(x, x$grepmatch == "yes")$whichlist  )
+   lapply(z, as.vector) # avoids showing attributes if they were set and are distracting here
    grep("\\\\.eo$", namez$ej, value = T)
 
 }

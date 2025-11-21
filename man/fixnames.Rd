@@ -9,9 +9,9 @@ fixnames(namesnow, oldtype = "api", newtype = "r", mapping_for_names)
 \arguments{
 \item{namesnow}{vector of colnames (but can be a data.frame or data.table too)}
 
-\item{oldtype}{friendly or long or original, or csv or r or api}
+\item{oldtype}{designation of the type of variables in namesnow: "long" or "original", or "csv" or "r" or "api" (colnames of map_headernames, or aliases per helper \code{\link[=fixmapheadernamescolname]{fixmapheadernamescolname()}})}
 
-\item{newtype}{friendly or long or original, or csv or r or api}
+\item{newtype}{the type to rename to -- see similar oldtype parameter}
 
 \item{mapping_for_names}{data.frame passed to \code{\link[=fixnames]{fixnames()}} to do the work.}
 }

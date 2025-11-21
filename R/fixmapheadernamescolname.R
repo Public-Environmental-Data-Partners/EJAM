@@ -1,33 +1,28 @@
 
 #' utility to convert aliases to proper colnames of map_headernames
 #' used by varinfo() and fixcolnames()
-#' @param x character vector of colnames of map_headernames, or aliases like "long"
+#' @param x character vector of colnames of map_headernames, or aliases like "long" (ignores case)
 #' @param alias_list optional named list where canonical names (colnames in map_headernames)
 #'   are the names of vectors of alternative names
 #' @return vector where aliases are replaced with actual colnames and unmatched ones left as-is
-#' @seealso [fixnames_aliases()]
+#' @seealso [fixnames_aliases()] [fixcolnames()] [varinfo()]
 #' @examples
 #'   EJAM:::fixmapheadernamescolname(c('long', 'csv', 'api', 'r'))
-#'
-#' @seealso [varinfo()] [fixnames_aliases()]
 #'
 #' @keywords internal
 #'
 fixmapheadernamescolname <- function(x,
                                      alias_list = list(
-                                       rname = "r",
+                                       rname = c("r", "rnames"), #  "friendly" was PHASED OUT as an alias - was CONFUSING TO USE friendly for long elsewhere but rname here
                                        longname = c("long", "longnames", "full", "description"),
-                                       shortlabel = c("short", "shortname", "shortnames", "labels", "label"),
-                                       acsname = 'acs',
-                                       apiname = 'api',
-                                       csvname = c("csv"),  # *** changed after v 2.2
-                                       # csvname2.2 = "csvname2.2",         # *** changed after v 2.2
-                                       # SHOULD PHASE OUT "friendly" - CONFUSING TO USE friendly for long elsewhere but  rname here
+                                       shortlabel = c("short", "shortname", "shortnames", "shortlabels", "labels", "label"),
+                                       acsname = c('acs', 'acsnames'),
+                                       apiname = c('api', "apinames"),
+                                       csvname = c("csv", "csvnames"),
                                        oldname = c("original", "old", "oldnames")
                                      )) {
 
-  # long is potentially a problem!
-  # be careful as we already interpret "long" as "lon" (longitude) elsewhere
+  # By default, fixnames_aliases() would convert "long" to "lon" for longitudes in a column. but here we are just finding an alias for a colname of map_headernames, so "long" is converted to "longname", which is what we want.
 
   x <- fixnames_aliases(x,
                         na_if_no_match = FALSE, ignore.case = TRUE,
