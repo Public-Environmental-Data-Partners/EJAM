@@ -186,7 +186,7 @@ source("app.R")  # This will launch the app
 
 ### Common Failures and Solutions:
 
-1. **Package attachment fails (.onAttach errors):** Reinstall from source when new functions are referenced in global_defaults_package.R.
+1. **Package attachment fails (.onAttach errors):** Reinstall from source: `remotes::install_local(".", force = TRUE)` when new functions are referenced in global_defaults_package.R.
 2. **Tests don't reflect code changes:** Tests use INSTALLED version. Always `remotes::install_local(".", force = TRUE)` before testing.
 3. **shinytest2 timeouts:** App init takes 2+ minutes. Use `load_timeout=2e+06` in tests.
 4. **"Cannot find file" in .onAttach():** Ensure `inst/global_defaults_package.R` exists when using `devtools::load_all()`.
@@ -204,7 +204,7 @@ source("app.R")  # This will launch the app
 ## Architecture
 
 **Golem Framework:** Uses `app_ui()`/`app_server()`, launched via `ejamapp()`. Config in `inst/golem-config.yml`.
-**Data:** Lazy-loaded from data/. Block data downloaded on-demand from ejanalysis/ejamdata. `dataload_dynamic()` + `indexblocks()` for spatial indexes.
+**Data:** Lazy-loaded from data/. Census block data downloaded on-demand from ejanalysis/ejamdata. `dataload_dynamic()` + `indexblocks()` for spatial indexes.
 **Naming:** `aaa_` prefix = load first, `MODULE_` = Shiny modules, `_FUNCTIONS` = grouped functions. Don't edit .Rd files (auto-generated).
 
 ## Code Review Notes
