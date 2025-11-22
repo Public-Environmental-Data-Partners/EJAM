@@ -933,16 +933,14 @@ nearby)</li>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_100pts_1miles</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"  "</span>, <span class="fu"><a href="../reference/popshare_p_lives_at_what_pct.html">popshare_p_lives_at_what_pct</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">pop</span>, p <span class="op">=</span> <span class="fl">0.50</span>, astext <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in accounts_for_at_least_p[i] &lt;- pct_of_pop &gt;= p[i]: number of items to</span></span>
-<span><span class="co">#&gt; replace is not a multiple of replacement length</span></span>
-<span><span class="co">#&gt; Warning in min(pct_of_sites[accounts_for_at_least_p[i]]): no non-missing</span></span>
-<span><span class="co">#&gt; arguments to min; returning Inf</span></span>
-<span><span class="co">#&gt; Warning in min(pct_of_pop[accounts_for_at_least_p[i]]): no non-missing</span></span>
-<span><span class="co">#&gt; arguments to min; returning Inf</span></span>
-<span><span class="co">#&gt; The most-populated Inf% of the places can account for at least 50% of the total population of all sites as a whole.</span></span>
-<span><span class="co">#&gt; The most-populated Inf% of the places can account for exactly Inf% of the total population of all sites as a whole. </span></span>
+<span><span class="co">#&gt; Warning in popshare_p_lives_at_what_pct(out$results_bysite$pop, p = 0.5, : some</span></span>
+<span><span class="co">#&gt; pop were NA, likely due to very small area being analyzed, so those will be</span></span>
+<span><span class="co">#&gt; treated as zero population for reporting on share of population vs share of</span></span>
+<span><span class="co">#&gt; sites</span></span>
+<span><span class="co">#&gt; The most-populated 13% of the 100 places can account for at least 50% of the total population of all sites as a whole.</span></span>
+<span><span class="co">#&gt; The most-populated 13% of the 100 places can account for exactly 50% of the total population of all sites as a whole. </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;    The most-populated Inf% of the places can account for at least 50% of the total population of all sites as a whole.</span></span>
+<span><span class="co">#&gt;    The most-populated 13% of the 100 places can account for at least 50% of the total population of all sites as a whole.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"  "</span>, <span class="fu"><a href="../reference/popshare_at_top_n.html">popshare_at_top_n</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">pop</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>, astext <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"\n\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    1, 5, 10 places account for 10%, 28%, 43% of the total population</span></span></code></pre></div>
 <p>Find all blocks nearby each site</p>
