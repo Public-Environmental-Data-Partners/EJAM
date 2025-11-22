@@ -10,6 +10,7 @@ articles:
   dev-future-plans: dev-future-plans.html
   dev-run-shinytests: dev-run-shinytests.html
   dev-run-unit-tests: dev-run-unit-tests.html
+  dev-speed: dev-speed.html
   dev-update-datasets: dev-update-datasets.html
   dev-update-documentation: dev-update-documentation.html
   dev-update-package: dev-update-package.html
@@ -20,7 +21,7 @@ articles:
   webapp: webapp.html
   whatis: whatis.html
   zipcodes: zipcodes.html
-last_built: 2025-10-22T03:19Z
+last_built: 2025-11-22T02:08Z
 urls:
   reference: https://ejanalysis.github.io/EJAM/reference
   article: https://ejanalysis.github.io/EJAM/articles
