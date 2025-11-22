@@ -223,6 +223,9 @@ pkgdown_update = function(
   # if doyamlcheck, _pkgdown.yml check ####
 
   if (doyamlcheck) {
+    # first just check if any .Rd files should get deleted as obsolete
+    pkg_clean_stale_rd(dry_run = TRUE, verbose=TRUE)
+
     #cat('Using load_all() 1st, before using dataset_pkgdown_yaml_check() ... \n')
     #devtools::load_all(quiet = T, helpers = F, export_all = T)
     #    dataset_pkgdown_yaml_check() will not work without the unexported dataset_pkgdown_yaml_check() available

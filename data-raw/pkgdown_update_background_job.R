@@ -1,6 +1,15 @@
 if (basename(getwd()) != "EJAM") {stop("must start in root of source folder")}
-source("./data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R")
 
 library(EJAM)
-EJAM:::pkgdown_update(doask = F)
+# source("./data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R")
+info = capture.output({
+  EJAM:::pkgdown_update(doask = F,
+                        doclean_man = F, doclean_docs = TRUE,
+                        dodocument = TRUE, doinstall = F, doloadall_not_library = T,
+                        doyamlcheck = T,
+                        dotests = F, testinteractively = F
+  )
+})
+print(info)
+rmost(notremove = "info")
 beepr::beep()
