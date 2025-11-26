@@ -23,8 +23,16 @@
 #'
 #'  More about blockgroupstats
 #'
-#'   - During 2025, EJAM used EPA environmental indicators along with population indicators derived
-#'   from 2018-2022 ACS data. Each year this should be re-created as for the latest version.
+#'   - Each year this should be re-created as for the latest version.
+#'
+#'   - In early 2026, EJAM used EPA environmental indicators along with population indicators derived
+#'   from 2020-2024 ACS data.
+#'
+#'   - At the end of 2025, EJAM made available EPA environmental indicators along with population indicators derived
+#'   from 2019-2023 ACS data.
+#'
+#'   - Starting in August 2024 and through 2025, EJAM used EPA environmental indicators along with population indicators derived
+#'   from 2018-2022 ACS data.
 #'
 #'   - See `attributes(blockgroupstats)` to confirm vintage of each dataset
 #'

@@ -11,7 +11,7 @@ if (FALSE) {
   ## see the list of relevant tables
   # ######################### ## ######################### ## ######################### #
 
-  ## from  ACSdownload::ejscreen_acs_tables
+  ## from  as.vector(ACSdownload::ejscreen_acs_tables)
 
   ejscreen_acs_tables <- c(
 
@@ -1146,7 +1146,7 @@ x[x$table %in% "C16002",] |> print(n=40)
 x[!duplicated(x$table), ] # to see list of 1 table per row
 
 # ######################### #
-# url_acs_table_info <- function(tables = ejscreen_acs_tables, yr = acsdefaultendyearhere, fiveorone=5) {
+# url_acs_table_info <- function(tables = ejscreen_acs_tables, yr = acsendyear(guess_always = T, guess_census_has_published = T), fiveorone=5) {
 #   paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", yr, ".", tables)
 # }
 # url_acs_table_info()  # but see ACSdownload::url_acs_table()

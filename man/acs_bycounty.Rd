@@ -11,7 +11,7 @@ acs_bycounty(myvars = "B03002_001", myst = "DE", yr = 2022)
 
 \item{myst}{abbreviation of one state, like "DE"}
 
-\item{yr}{like 2022, end of 5 year ACS 2018-2022}
+\item{yr}{like 2023, end of 5 year ACS 2019-2023}
 }
 \value{
 tibble table from output of acs_bycounty() i.e., output of get_acs()
@@ -32,4 +32,5 @@ download ACS 5year data from Census API, at County resolution
   # plot_bycounty(z, myvarnames = "Percent NonHispanic White Alone (i.e., Not People of Color)",
   #               labeltype = scales::label_percent()) # requires scales package
 }
+
 }

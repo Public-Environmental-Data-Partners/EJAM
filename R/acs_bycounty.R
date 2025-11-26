@@ -17,15 +17,15 @@
 #'
 #' @param myvars  optional .extracted from x, one or more ACS5 variables like "B03002_001"
 #' @param myst abbreviation of one state, like "DE"
-#' @param yr like 2022, end of 5 year ACS 2018-2022
+#' @param yr like `r acsendyear(guess_census_has_published = TRUE)`, end of 5 year ACS `r suppressMessages({acs_yr_range(acsendyear(guess_census_has_published = TRUE, guess_always = T))})`
 #'
 #' @return tibble table from output of acs_bycounty() i.e., output of get_acs()
 #'   from tidycensus pkg
 #' @examples
 #' ## also see examples for acs_bybg()
 #' \donttest{
-#'   x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = 2022) # nhwa
-#'   denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = 2022) # pop
+#'   x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acsendyear(guess_always = T, guess_census_has_published = T)) # nhwa
+#'   denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acsendyear(guess_always = T, guess_census_has_published = T)) # pop
 #'   z = x
 #'   z$estimate = x$estimate / denom$estimate
 #'   z$moe = 0  # x$moe / denom$estimate # need to calculate using census guidance if at all
@@ -33,9 +33,10 @@
 #'   # plot_bycounty(z, myvarnames = "Percent NonHispanic White Alone (i.e., Not People of Color)",
 #'   #               labeltype = scales::label_percent()) # requires scales package
 #' }
+#'
 #' @export
 #'
-acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = 2022) {
+acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = acsendyear()) {
 
   if (missing(yr)) {message("Using default yr of ", yr)}
   ## This right now only works if all extra packages have been attached by hand or added to DESCRIPTION Imports
@@ -84,7 +85,7 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = 2022) {
 #' @export
 #'
 plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate = NULL,
-                          labeltype = NULL, acsinfo = NULL, yr = 2022) {
+                          labeltype = NULL, acsinfo = NULL, yr = acsendyear()) {
 
   # if (exists("get_acs") & exists("str_remove") & exists("label_number_auto")) {  # now in Imports of DESCRIPTION file
     # see acs_bycounty() notes
@@ -139,7 +140,7 @@ plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate 
 ################################# ################################## #
 
 
-# yr <- 2022
+# yr <- acsendyear(guess_always = T, guess_census_has_published = T))
 # myvars <- "B03002_003" # c(income = "B19013_001") # works wrong if named vector now
 # myst <- "UT"
 # labeltype <- scales::label_currency() # requires scales package

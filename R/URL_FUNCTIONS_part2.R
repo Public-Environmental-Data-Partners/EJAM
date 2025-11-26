@@ -955,7 +955,7 @@ url_naics.com <- function(query = "",
 #' url_github_preview(file = myfile)
 #'
 #' # from a specific release on GH (but map does not render using this tool)
-#' url_github_preview(ver = "v2.32.5", fold = "inst/testdata/examples_of_output", file = myfile)
+#' url_github_preview(ver = "v2.4.0", fold = "inst/testdata/examples_of_output", file = myfile)
 #'
 #' # local installed version
 #' browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
@@ -970,7 +970,7 @@ url_naics.com <- function(query = "",
 url_github_preview = function(ghurl = NULL,
                               repo = "https://github.com/ejanalysis/EJAM",
                               blob = "blob",
-                              ver = "main", # or "v2.32.5"
+                              ver = "main", # or "v2.4.0"
                               fold = "inst/testdata/examples_of_output", # or "docs/reference"
                               file = "testoutput_ejam2report_10pts_1miles.html",
                               launch_browser = TRUE
@@ -979,7 +979,7 @@ url_github_preview = function(ghurl = NULL,
   if (is.null(ghurl)) {
     # repo = "https://github.com/ejanalysis/EJAM"
     # blob = "blob"
-    # ver = "main" # or "v2.32.5"
+    # ver = "main" # or "v2.4.0"
     # fold = "inst/testdata/examples_of_output" # or "docs/reference"
     # file = "testoutput_ejam2report_10pts_1miles.html"
 

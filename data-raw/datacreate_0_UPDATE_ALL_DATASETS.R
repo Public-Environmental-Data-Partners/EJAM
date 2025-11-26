@@ -456,9 +456,13 @@ loadall()
 
 ######################################### #
 
-
+# see newer datacreate_blockgroupstats.R   for what might be v2.4.0, ACS 2019-2023 IN EJAM FEB 2026?
+# see newer datacreate_blockgroupstats.R   for what might be v2.5.0, ACS 2020-2024 IN EJAM FEB 2026?
 
 ######################################### #
+
+## OLDER SCRIPTS, FROM THE DATASET BASED ON EPA-PROVIDED ACS AND ENVT DATA:
+
 ### datacreate_blockgroupstats2.32.R (also starts making usastats,statestats!!) ####
 ### ACS22 via datacreate_blockgroupstats2.32_add_d_acs22columns ####
 # rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats2.32.R")

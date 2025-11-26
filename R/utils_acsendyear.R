@@ -144,7 +144,9 @@ if (guess_census_has_published) {
 
     yr <- substr( guess_as_of - 365 * lag_yrs_endyr_to_ejscreen, 1, 4)
     # regardless of typical lags, all of 2025 will have used the 2022 acs since no update to 2023 was done in mid or even late 2025, at least as of November 2025.
-    if (guess_as_of <= "2025-12-31" && guess_as_of >= "2025-01-01") {yr <- "2022"}
+    if (guess_as_of >= "2025-01-01" && guess_as_of  < "2025-12-31") {yr <- "2022"}
+    if (                               guess_as_of == "2025-12-31") {yr <- "2023"} # just for 1 day / not really used but ACS made available
+    if (guess_as_of >= "2026-01-01" && guess_as_of <= "2027-12-31") {yr <- "2024"}
     # we could even validate that yr by checking the website. see ACSdownload:::validate.end.year(2023) ***
     message(paste0("It is a guess that ACS data may already be incorporated into this package for the 5-year survey period of ",
                    yr, " ", acs_yr_range(yr, parens = TRUE), " but not later periods"))

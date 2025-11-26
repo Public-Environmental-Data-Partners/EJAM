@@ -1,3 +1,11 @@
+# EJAM 2.4.0 (December 2025)
+
+- v2.32.*, used throughout 2025, used ACS 2018-2022 (even though newer ACS data were available from Census Bureau).
+- v2.4.0, this release, is just to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.
+- v2.5.0 will provide 2020-2024 ACS and will be released in early 2026.
+- Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
+
+
 # EJAM 2.32.6.003 (November 2025)
 
 - Bug fixes:

@@ -23,8 +23,8 @@
 #'
 #' NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 #' ```
-#' x <- tidycensus::load_variables(2022, "acs5")
-#'
+#' x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
+#'   ## from  as.vector(ACSdownload::ejscreen_acs_tables)
 #' tables = c(
 #'   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
 #'   "B01001", # sex and age / basic population counts
@@ -129,7 +129,9 @@
 #'
 #' ## ACS tables and variables most relevant to EJSCREEN
 #'
-#' acsinfo <- tidycensus::load_variables(2022, "acs5")
+#' acsinfo <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
+#'
+#'   ## see  as.vector(ACSdownload::ejscreen_acs_tables)
 #' ejscreentables <- c("B01001", # sex and age / basic population counts
 #'             "B03002", # race with hispanic ethnicity
 #'             "B02001", # race without hispanic ethnicity
@@ -271,7 +273,7 @@ acs_bybg <- function(
 # library(data.table)
 # library(tidycensus) # NEED API KEY, FOR LARGE QUERIES AT LEAST
 #
-# x <- tidycensus::load_variables(2022, "acs5")
+# x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
 # # print(x[grepl("b01001_", x$name, ignore.case = T) & grepl("Female", x$label) & grepl("group", x$geography), ], n = 25)
 # allstates <- list()
 #

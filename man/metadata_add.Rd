@@ -12,7 +12,8 @@ metadata_add(
 )
 }
 \arguments{
-\item{x}{dataset (or any object) whose metadata (stored as attributes) you want to update or create
+\item{x}{dataset (or any object, unquoted, i.e., not its name but the object itself)
+whose metadata (stored as attributes) you want to update or create
 EJAM, EJSCREEN, and other dataset versions and release dates are tracked in DESCRIPTION}
 
 \item{metadata}{optional - when omitted, it checks metadata_mapping using get_metadata_mapping().

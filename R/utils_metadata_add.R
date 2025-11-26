@@ -3,14 +3,14 @@
 #'
 #' @param x R object
 #'
-#' @return attributes of x, excluding row.names
+#' @return attributes of x, excluding "row.names" and "names"
 #'
 #' @export
 #' @keywords internal
 #'
 attributes2 = function(x) {
   att = attributes(x)
-  return(att[names(att) != "row.names"])
+  return(att[names(att) != "row.names" & names(att) != "names"])
 }
 #################################################### #
 
@@ -44,21 +44,21 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
   cat("newvalue is: \n")
   print(newvalue)
   if (only_update_if_had_been_set) {
-  x_attr_present <- as.vector(unlist(sapply(x, function(z)  if (!is.null(attr(get(z), attr_name))) {z} )))
-  x <- x_attr_present
-}
+    x_attr_present <- as.vector(unlist(sapply(x, function(z)  if (!is.null(attr(get(z), attr_name))) {z} )))
+    x <- x_attr_present
+  }
   for (i in 1:length(x))  {
     if (exclude_atomic_vectors && is.atomic(get(x[i])) && is.vector(get(x[i]))) {
       # ignore this object
     } else {
-    src = paste0("attr(", x[i], ", '", attr_name, "') <- newvalue")
-    # e.g.,   attr(avg.in.us, "ejam_package_version") <- desc::desc_get("Version")
-    print(src)
-    eval(parse(text = src))
-    src = paste0("usethis::use_data(", x[i], ", overwrite = TRUE)")
-    print(src)
-    eval(parse(text = src))
-  }
+      src = paste0("attr(", x[i], ", '", attr_name, "') <- newvalue")
+      # e.g.,   attr(avg.in.us, "ejam_package_version") <- desc::desc_get("Version")
+      print(src)
+      eval(parse(text = src))
+      src = paste0("usethis::use_data(", x[i], ", overwrite = TRUE)")
+      print(src)
+      eval(parse(text = src))
+    }
   }
   cat("datasets have been updated\n")
   return(NULL)
@@ -74,19 +74,50 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 
 #' update ALL metadata attributes for JUST 1 pkg dataset AND save in EJAM/data/
 #' @details used in data-raw/datacreate_*.R functions while updating/making datasets
-#' @param objectname text/character string of object name (ie quoted)
-#' @returns just for side effects
+#' @param objectname text/character string of object name (ie quoted), not the unquoted object itself
+#' @param metadata passed to [metadata_add()]. optional - when omitted, it checks metadata_mapping using get_metadata_mapping().
+#'   Can provide a list of key=value attributes to add
+#' @param update_date_saved_in_package passed to [metadata_add()]. can set to FALSE to avoid changing this attribute
+#' @param update_ejam_package_version passed to [metadata_add()]. can set to FALSE to avoid changing this attribute
+#'
+#' @returns just for side effects (unlike [metadata_add()] which returns the updated object)
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @keywords internal
 #'
-metadata_add_and_use_this <- function(objectname) {
+metadata_add_and_use_this <- function(objectname, metadata = NULL,
+                                      update_date_saved_in_package = TRUE,
+                                      update_ejam_package_version = TRUE) {
   if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
-  text_to_do <- paste0("", objectname, " = metadata_add(", objectname, ")")
-  eval(parse(text = text_to_do))
+  if (missing(objectname)) {stop("must specify objectname")}
+  if (!is.character(objectname)) {stop("objectname must be a character string")}
+  if (length(objectname) != 1) {stop("objectname must be a single character string")}
+  if (!exists(objectname)) {stop("cannot find ", objectname)}
+
+  stop("need to fix metadata_add_and_use_this() -- it is not assigning metadata as attributes yet")
+
+  # maybe better way instead of eval(parse(text = ))  is this:
+  # assign(objectname,
+  #        metadata_add(get(objectname),
+  #                     metadata = metadata,
+  #                     update_date_saved_in_package = update_date_saved_in_package,
+  #                     update_ejam_package_version = update_ejam_package_version),
+  #        envir = globalenv()) ## need to fix if using this method
+  cat("added metadata\n")
+
+  text_to_do <- paste0("", objectname, " = metadata_add(", objectname,
+                       ", metadata = ", deparse1(substitute(metadata)),
+                       ", update_date_saved_in_package = ", update_date_saved_in_package,
+                       ", update_ejam_package_version = ", update_ejam_package_version,
+                       ")")
+  eval(parse(text = text_to_do), envir = globalenv())
+
+  # usethis::use_data(get(objectname), overwrite = TRUE) # need to fix it if going  to do this way
 
   text_to_do <- paste0("usethis::use_data(", objectname, ", overwrite=TRUE)")
-  eval(parse(text = text_to_do))
+  eval(parse(text = text_to_do), envir = globalenv())
+  cat("did", text_to_do, "\n")
+  return( attributes2(objectname) )
 }
 #################################################### #
 
@@ -108,12 +139,13 @@ metadata_add_and_use_this <- function(objectname) {
 #'   Note that by adding attributes, this function changes a vector
 #'   so that is.vector() will no longer be true!
 #'
-#' @param x dataset (or any object) whose metadata (stored as attributes) you want to update or create
+#' @param x dataset (or any object, unquoted, i.e., not its name but the object itself)
+#'  whose metadata (stored as attributes) you want to update or create
 #'  EJAM, EJSCREEN, and other dataset versions and release dates are tracked in DESCRIPTION
-#' @param update_date_saved_in_package can set to FALSE to avoid changing this attribute
-#' @param update_ejam_package_version  can set to FALSE to avoid changing this attribute
 #' @param metadata optional - when omitted, it checks metadata_mapping using get_metadata_mapping().
 #'   Can provide a list of key=value attributes to add
+#' @param update_date_saved_in_package can set to FALSE to avoid changing this attribute
+#' @param update_ejam_package_version  can set to FALSE to avoid changing this attribute
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @return returns x but with new or altered attributes
@@ -132,11 +164,11 @@ metadata_add <- function(x, metadata=NULL,
   # source("R/metadata_mapping.R")  # this already would get loaded via devtools::load_all() or library(EJAM)
   # rstudioapi::documentOpen("./R/metadata_mapping.R")
   if (is.null(metadata)) {
-    metadata <- get_metadata_mapping(deparse(substitute(x)))
+    metadata <- get_metadata_mapping(deparse1(substitute(x))) # deparse1() make it return the
   }
   if (is.null(metadata)) {
-    txt <- paste0(paste0(names(metadata), "=", unlist(metadata)), collapse = ", ")
-    message("metadata not specified, so used defaults from source code of this function: ", txt, "\n")
+
+    message("metadata not specified, so used defaults from source code of this function. \n")
     # print(cbind(attributes = metadata))
     metadata <- get_metadata_mapping("default")
   }
@@ -149,10 +181,13 @@ metadata_add <- function(x, metadata=NULL,
   if (update_ejam_package_version) {
     metadata$ejam_package_version <- as.vector(desc::desc_get("Version"))
   }
+  cat("Setting attributes for ", deparse1(substitute(x)), '\n'  )
   for (i in seq_along(metadata)) {
     attr(x, which = names(metadata)[i]) <- metadata[[i]]
   }
 
+cat("key attributes now: \n\n" )
+print(attributes2(x))
   invisible(x)
 }
 #################################################### #
@@ -180,8 +215,8 @@ metadata_check_print = function(...) {
   ## see which data objects have outdated or missing metadata about ejam_package_version, etc.
 
   if (all("has_metadata" %in% names(x), "date_saved_in_package" %in% names(x), "ejam_package_version" %in% names(x)  )) {
-  y <- x[(x$has_metadata %in% FALSE) | is.na(x$date_saved_in_package)  |  is.na(x$ejam_package_version) | !(x$ejam_package_version %in% desc::desc_get("Version")), ]
-  y <- y[order( is.na(y$date_saved_in_package), y$ejam_package_version, y$has_metadata), ]
+    y <- x[(x$has_metadata %in% FALSE) | is.na(x$date_saved_in_package)  |  is.na(x$ejam_package_version) | !(x$ejam_package_version %in% desc::desc_get("Version")), ]
+    y <- y[order( is.na(y$date_saved_in_package), y$ejam_package_version, y$has_metadata), ]
   } else {
     if ("ejam_package_version" %in% names(x)) {
       cat("Not latest ejam_package_version \n\n")
@@ -199,9 +234,9 @@ metadata_check_print = function(...) {
   cat("but omit atomic vectors since adding attributes to those makes them nonvectors and messier to print \n")
   print(y[ y$is.atomic != "TRUE", intersect(c('item', 'is.atomic', 'ejam_package_version', 'date_saved_in_package', 'has_metadata'), names(y))])
   cat("\n\n")
-cat("atomic: \n\n")
-print(y$item[y$is.atomic == "TRUE"])
-cat("\n\n")
+  cat("atomic: \n\n")
+  print(y$item[y$is.atomic == "TRUE"])
+  cat("\n\n")
   # --------------------------------------------------------------------------------- -
   ## how many lack ejscreen_version info (maybe not always relevant)
   print(table(How.many.have.ejscreen_info = x$ejscreen_version, useNA = "always"))
@@ -209,10 +244,10 @@ cat("\n\n")
   # --------------------------------------------------------------------------------- -
   ## see ACS version info and date saved
   if ("acs_version" %in% names(x)) {
-  print(table(How.many.have.acs_version = x$acs_version, useNA = 'always'))
-  z = x[is.na(x$acs_version), intersect(c('item', 'date_saved_in_package', 'acs_version' ), names(x))]
-  cat("\n\n see where is ACS version info missing, and date saved \n\n")
-  print(z[order(z$item), ])
+    print(table(How.many.have.acs_version = x$acs_version, useNA = 'always'))
+    z = x[is.na(x$acs_version), intersect(c('item', 'date_saved_in_package', 'acs_version' ), names(x))]
+    cat("\n\n see where is ACS version info missing, and date saved \n\n")
+    print(z[order(z$item), ])
   }
   ## probably should have acs_version:  usastats, testoutput_*
   invisible(x)
@@ -268,7 +303,7 @@ metadata_check <- function(packages = EJAM::ejampackages,
                            grepdatasets = FALSE,
                            loadifnotloaded = TRUE) {
 
-if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
+  if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   # > dput(default_metadata)
   # list(
   #   ejam_package_version = c(Version = "2.32.0"),
@@ -388,7 +423,7 @@ if (!("package:EJAM" %in% search())) {stop("must first use library() or require(
     ############################################### #
 
     # if (length(which) == 1) {    # this case was not working yet
-if (FALSE) {
+    if (FALSE) {
       results <- cbind(sapply(rdafiles, FUN = get1attribute, which, dates_as_text = TRUE))
       colnames(results) <- which
 
@@ -409,7 +444,7 @@ if (FALSE) {
       }
 
       # if (length(which) == 1) {
-        if (FALSE) {
+      if (FALSE) {
         results <- cbind(sapply(rdafiles, FUN = get1attribute, which, dates_as_text = TRUE))
         colnames(results) <- which
 

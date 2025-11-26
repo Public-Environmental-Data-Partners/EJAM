@@ -4,13 +4,25 @@
 \alias{metadata_add_and_use_this}
 \title{update ALL metadata attributes for JUST 1 pkg dataset AND save in EJAM/data/}
 \usage{
-metadata_add_and_use_this(objectname)
+metadata_add_and_use_this(
+  objectname,
+  metadata = NULL,
+  update_date_saved_in_package = TRUE,
+  update_ejam_package_version = TRUE
+)
 }
 \arguments{
-\item{objectname}{text/character string of object name (ie quoted)}
+\item{objectname}{text/character string of object name (ie quoted), not the unquoted object itself}
+
+\item{metadata}{passed to \code{\link[=metadata_add]{metadata_add()}}. optional - when omitted, it checks metadata_mapping using get_metadata_mapping().
+Can provide a list of key=value attributes to add}
+
+\item{update_date_saved_in_package}{passed to \code{\link[=metadata_add]{metadata_add()}}. can set to FALSE to avoid changing this attribute}
+
+\item{update_ejam_package_version}{passed to \code{\link[=metadata_add]{metadata_add()}}. can set to FALSE to avoid changing this attribute}
 }
 \value{
-just for side effects
+just for side effects (unlike \code{\link[=metadata_add]{metadata_add()}} which returns the updated object)
 }
 \description{
 update ALL metadata attributes for JUST 1 pkg dataset AND save in EJAM/data/

@@ -76,7 +76,7 @@ see \href{https://walker-data.com/tidycensus/}{tidycensus package help}  envt va
 
 NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{x <- tidycensus::load_variables(2022, "acs5")
+\if{html}{\out{<div class="sourceCode">}}\preformatted{x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
 
 tables = c(
   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
@@ -161,7 +161,7 @@ mapfast(newvars[1:10,], column_names = colnames(newvars),
 
 ## ACS tables and variables most relevant to EJSCREEN
 
-acsinfo <- tidycensus::load_variables(2022, "acs5")
+acsinfo <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
 ejscreentables <- c("B01001", # sex and age / basic population counts
             "B03002", # race with hispanic ethnicity
             "B02001", # race without hispanic ethnicity
