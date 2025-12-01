@@ -29,15 +29,17 @@ default_metadata <- list(
   census_version        = description_file$get("VersionCensus")
 )
 
-# > dput(default_metadata)
+# > dput(default_metadata)  # FOR EXAMPLE:
 # list(
-#   ejam_package_version = c(Version = "2.4.0"),
-#   ejscreen_version     = c(VersionEJSCREEN = "2.4"),
-#   ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2025-2026"),
-#   acs_releasedate      = c(ReleaseDateACS = "2024-12-12"),
-#   acs_version          = c(VersionACS = "2019-2023"),
+#   ejam_package_version = c(Version = "2.4.0"),        # or "2.5.0"
+#   ejscreen_version     = c(VersionEJSCREEN = "2.4"),  # or "2.5"
+#   ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2025-2026"), # or "2026"
+#   acs_releasedate      = c(ReleaseDateACS = "2024-12-12"), #  "2026-01-29" is date for delayed release of ACS 2020-2024 data.
+#   acs_version          = c(VersionACS = "2019-2023"),      # or "2020-2024"
 #   census_version       = c(VersionCensus = "2020")
 # )
+##    ## "https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html"
+##    ## "https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html"
 #################################################### #
 
 # metadata_mapping ####
@@ -54,8 +56,8 @@ metadata_mapping <- list(
     census_version = description_file$get("VersionCensus")
   ),
 
-  # datacreate_blockgroupstats2.32.R
-  # rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats2.32.R")
+  # datacreate_blockgroupstats....
+  # rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats_acs.R")
   blockgroupstats =	default_metadata,
 
   # datacreate_usastats2.32.R  and others
@@ -73,7 +75,10 @@ metadata_mapping <- list(
     ejscreen_releasedate  = description_file$get("ReleaseDateEJSCREEN")
   ),
 
-  # datacreate_formulas.R
+  # datacreate_tables_ejscreen_acs.R etc.
+  tables_ejscreen_acs = default_metadata,
+  formulas_ejscreen_demog_index = default_metadata,
+  formulas_ejscreen_acs_disability = default_metadata,
   formulas_all = default_metadata,
   formulas_d   = default_metadata,
 
