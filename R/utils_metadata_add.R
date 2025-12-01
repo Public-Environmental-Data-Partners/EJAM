@@ -16,7 +16,8 @@ attributes2 = function(x) {
 
 #' helper func to update 1 metadata attribute (e.g. "ejam_package_version") in all pkg datasets
 #' updates EJAM/data/*.rda (BUT NOT ARROW & NOT TXT FILES)
-#' @param x vector of 1+ quoted names of data object(s), like "testpoints_10"
+#' @param x if missing, defaults to all items found in EJAM pkg;
+#' otherwise, a vector of 1+ quoted names of data object(s), like "testpoints_10"
 #'
 #' @param attr_name e.g. "ejam_package_version"
 #' @param newvalue the new value of that attribute
@@ -28,11 +29,12 @@ attributes2 = function(x) {
 #'
 #' @keywords internal
 #'
-metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
+metadata_update_attr <- function(x,
                                  attr_name = "ejam_package_version", newvalue = desc::desc_get("Version"),
                                  exclude_atomic_vectors = TRUE,
                                  only_update_if_had_been_set = FALSE) {
 
+  if (missing(x)) {x <- pkg_data("EJAM")$Item}
   # x param is vector of names of data objects to update in the source package
   fnamesimplied = tolower(paste0(x, ".rda"))
   fnamesfound = tolower(dir("./data"))

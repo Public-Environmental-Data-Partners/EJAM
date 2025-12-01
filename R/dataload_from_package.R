@@ -15,14 +15,8 @@
 #' @param envir the environment into which they should be loaded
 #' @return Nothing
 #' @seealso [pkg_data()] [dataload_dynamic()] [dataload_from_local()] [indexblocks()] [.onAttach()]
-#' @examples
-#'   x <- EJAM:::pkg_data("EJAM")
-#'   subset(x, x$size >= 0.1) # at least 100 KB
-#'   grep("names_", x$Item, value = T, ignore.case = T, invert = T) # most were like names_d, etc.
-#'   ls()
-#'   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
-#'   ls()
-#'   rm(avg.in.us, x)
+#'
+#' @inherit pkg_functions_and_data examples
 #'
 #' @keywords internal
 #'

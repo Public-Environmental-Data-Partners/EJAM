@@ -6,7 +6,7 @@
 updates EJAM/data/*.rda (BUT NOT ARROW & NOT TXT FILES)}
 \usage{
 metadata_update_attr(
-  x = pkg_data("EJAM")$Item,
+  x,
   attr_name = "ejam_package_version",
   newvalue = desc::desc_get("Version"),
   exclude_atomic_vectors = TRUE,
@@ -14,7 +14,8 @@ metadata_update_attr(
 )
 }
 \arguments{
-\item{x}{vector of 1+ quoted names of data object(s), like "testpoints_10"}
+\item{x}{if missing, defaults to all items found in EJAM pkg;
+otherwise, a vector of 1+ quoted names of data object(s), like "testpoints_10"}
 
 \item{attr_name}{e.g. "ejam_package_version"}
 

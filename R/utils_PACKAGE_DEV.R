@@ -278,14 +278,74 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #' @param pkg name of package as character like "EJAM"
 #' @param alphasort_table default is FALSE, to show internal first as a group, then exported funcs, then datasets
 #' @param internal_included default TRUE includes internal (unexported) objects in the list
-#' @param exportedfuncs_included default TRUE includes exported functions (non-datasets, actually) in the list
-#' @param data_included default TRUE includes datasets in the list, as would be seen via data(package=pkg)
+#' @param exportedfuncs_included default TRUE includes exported functions (non-datasets, actually) in the list (unless functions_included=F)
+#' @param data_included default TRUE includes datasets in the output, as would be seen via data(package=pkg)
+#' @param functions_included default TRUE includes functions in the output
 #' @param vectoronly set to TRUE to just get a character vector of object names instead of the data.frame table output
 #' @seealso [ls()] [getNamespace()] [getNamespaceExports()] [loadedNamespaces()]
 #'
 #' @return table in [data.table](https://r-datatable.com) format with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
 #'   unless vectoronly = TRUE in which case it returns a character vector
-#' @examples  # EJAM:::pkg_functions_and_data("datasets")
+#'
+#' @examples
+#'  # some ways to to see what datasets are in the EJAM package:
+#'
+#'   yo <- EJAM:::pkg_functions_and_data(functions_included = F, vectoronly = T)
+#'   x  <- EJAM:::pkg_data("EJAM", simple = F)
+#'   setequal(x$Item, yo)
+#'
+#'  # Plot showing that just a couple of large datasets
+#'  # account for most of the total:
+#'
+#'   biggest = x$Item[which.max(x$sizen)]
+#'   bigp = round(100 * x$sizen[which.max(x$sizen)] / sum(x$sizen), 0)
+#'   plot(cumsum(  sort(x$sizen,decreasing = T )) / sum(x$sizen),
+#'        ylim=c(0,1), ylab="Share of total size", xlab="datasets sorted large to small", type = 'b',
+#'             main= paste0(biggest, " alone is ", bigp,"% of total"))
+#'             abline(v=0);abline(h=0);abline(h=1);abline(v=length(x$sizen))
+#'
+#'   subset(x, x$size >= 0.1) # at least 100 KB
+#'   xo <- x$Item
+#'   grep("names_", xo, value = T, ignore.case = T, invert = T) # most were like names_d, etc.
+#'   ls()
+#'   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
+#'   ls()
+#'
+#'
+#'  # another way to see just a vector of the data object names
+#'  data(package = "EJAM")$results[, 'Item']
+#'
+#'  # not actually sorted within each pkg by default
+#'  head(EJAM:::pkg_data())
+#'  # not actually sorted by default
+#'  head(EJAM:::pkg_data("EJAM")$Item)
+#'  ## EJAM:::pkg_data("MASS", simple=T)
+#'
+#'  # sorted by size if simple=F
+#'  ## EJAM:::pkg_data("datasets", simple=F)
+#'  x <- EJAM:::pkg_data(simple = F)
+#'  # sorted by size already, to see largest ones among all these pkgs:
+#'  tail(x[, 1:3], 20)
+#'
+#'  # sorted alphabetically within each pkg
+#'  head(
+#'    x[order(x$Package, x$Item), 1:2]
+#'  )
+#'  # sorted alphabetically across all the pkgs
+#'  head(
+#'    x[order(x$Item), 1:2]
+#'  )
+#'
+#' # datasets as lazyloaded objects vs. files installed with package
+#'
+#' topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
+#'
+#' # datasets / R objects
+#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
+#'
+#' # files
+#' cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+#'
 #'
 #' @keywords internal
 #'
@@ -293,6 +353,7 @@ pkg_functions_and_data <- function(pkg = "EJAM",
                                    alphasort_table = FALSE,
                                    internal_included = TRUE,
                                    exportedfuncs_included = TRUE,
+                                   functions_included = TRUE,
                                    data_included = TRUE,
                                    vectoronly = FALSE) {
 
@@ -350,8 +411,12 @@ pkg_functions_and_data <- function(pkg = "EJAM",
     data = ifelse(omni %in% dataonly(pkg), 1, 0)
   )
   if (!data_included) {
-    y <- y[y$data == 0, ]
+    y <- y[y$data != 1, , drop = FALSE]
   }
+  if (!functions_included) { # to supposedly drop funcs, actually drop non-data, or keep only data
+    y <- y[y$data == 1, , drop = FALSE]
+  }
+
   if (!internal_included) {
     y <- y[!(y$exported == 0), ]
   }
@@ -418,36 +483,8 @@ pkg_functions_and_data <- function(pkg = "EJAM",
 #'    `data(package = "EJAM")$results[, c("Package", 'Item')]`
 #' @return If simple = TRUE, data.frame with colnames Package and Item.
 #'   If simple = FALSE, data.frame with colnames Package, Item, size, Title.Short
-#' @examples
-#'  # see just a vector of the data object names
-#'  data(package = "EJAM")$results[, 'Item']
 #'
-#'  # not actually sorted within each pkg by default
-#'  EJAM:::pkg_data()
-#'  # not actually sorted by default
-#'  EJAM:::pkg_data("EJAM")$Item
-#'  ##EJAM:::pkg_data("MASS", simple=T)
-#'
-#'  # sorted by size if simple=F
-#'  ##EJAM:::pkg_data("datasets", simple=F)
-#'  x <- EJAM:::pkg_data(simple = F)
-#'  # sorted by size already, to see largest ones among all these pkgs:
-#'  tail(x[, 1:3], 20)
-#'
-#'  # sorted alphabetically within each pkg
-#'  x[order(x$Package, x$Item), 1:2]
-#'  # sorted alphabetically across all the pkgs
-#'  x[order(x$Item), 1:2]
-#'
-#' # datasets as lazyloaded objects vs. files installed with package
-#'
-#' topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
-#'
-#' # datasets / R objects
-#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
-#'
-#' # files
-#' cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+#' @inherit pkg_functions_and_data examples
 #'
 #' @keywords internal
 #'

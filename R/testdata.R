@@ -12,6 +12,7 @@
 #'   without seeing all the info in console and without browsing to the folder
 #' @param folder_only set TRUE to get only directories, no files
 #' @return path to local testdata folder comes with the EJAM package
+#' @seealso [pkg_functions_and_data()]
 #' @examples
 #' testdata('shape', quiet = TRUE)
 #' testdata('shape', quiet = T, folder_only=T)
