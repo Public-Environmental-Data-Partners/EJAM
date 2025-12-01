@@ -4,7 +4,7 @@
 \alias{acs_bycounty}
 \title{download ACS 5year data from Census API, at County resolution}
 \usage{
-acs_bycounty(myvars = "B03002_001", myst = "DE", yr = 2022)
+acs_bycounty(myvars = "B03002_001", myst = "DE", yr = acsendyear())
 }
 \arguments{
 \item{myvars}{optional .extracted from x, one or more ACS5 variables like "B03002_001"}
@@ -23,8 +23,8 @@ download ACS 5year data from Census API, at County resolution
 \examples{
 ## also see examples for acs_bybg()
 \donttest{
-  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = 2022) # nhwa
-  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = 2022) # pop
+  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acsendyear(guess_always = T, guess_census_has_published = T)) # nhwa
+  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acsendyear(guess_always = T, guess_census_has_published = T)) # pop
   z = x
   z$estimate = x$estimate / denom$estimate
   z$moe = 0  # x$moe / denom$estimate # need to calculate using census guidance if at all

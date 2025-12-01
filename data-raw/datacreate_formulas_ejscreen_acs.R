@@ -11,33 +11,32 @@ if (FALSE) {
   ## see the list of relevant tables
   # ######################### ## ######################### ## ######################### #
 
-  ## from  as.vector(ACSdownload::ejscreen_acs_tables)
 
-  ejscreen_acs_tables <- c(
-
-    "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
-
-    "B01001", # sex and age / basic population counts
-    "B03002", # race with breakdown by hispanic ethnicity
-    "B02001", # race without breakdown by hispanic ethnicity
-    "B15002", # education (less than high school)
-    "B23025", # unemployed
-    "C17002", # low income, poor, etc.
-    "B19301", # per capita income
-    "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
-    "B28003", # no broadband
-    "B27010", # no health insurance
-    "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
-    "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
-    ####### TRACT ONLY:
-    #   Note some tables used by EJSCREEN are only available at tract resolution, namely
-    #   C16001 for detailed specific languages as % of residents, and B18101 for % with disability
-    "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
-    "B18101" # disability -- at tract resolution only ########### #
-  )
+  # ejscreen_acs_tables <- c(
+  #
+  #   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
+  #
+  #   "B01001", # sex and age / basic population counts
+  #   "B03002", # race with breakdown by hispanic ethnicity
+  #   "B02001", # race without breakdown by hispanic ethnicity
+  #   "B15002", # education (less than high school)
+  #   "B23025", # unemployed
+  #   "C17002", # low income, poor, etc.
+  #   "B19301", # per capita income
+  #   "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
+  #   "B28003", # no broadband
+  #   "B27010", # no health insurance
+  #   "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
+  #   "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
+  #   ####### TRACT ONLY:
+  #   #   Note some tables used by EJSCREEN are only available at tract resolution, namely
+  #   #   C16001 for detailed specific languages as % of residents, and B18101 for % with disability
+  #   "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
+  #   "B18101" # disability -- at tract resolution only ########### #
+  # )
   ## ######################### #
 
-  tables <- ejscreen_acs_tables
+  tables <- tables_ejscreen_acs
   ## ######################### #
 
   ## from    tidycensus::load_variables(year = 2023, dataset = "acs5")
@@ -1181,10 +1180,11 @@ message("SAVING FORMULAS, AND CAN USE IN CREATING INITIAL blockgroupstats table 
 # formulas_ejscreen_acs  saved for use in package
 
 EJAM:::metadata_add_and_use_this("formulas_ejscreen_acs")
+
 EJAM:::dataset_documenter("formulas_ejscreen_acs",
                           description = "Formulas and metadata about Census ACS variables and how to calculate indicators from those raw Census variables, such as creating pctunder5 starting from ACS table B01001 variables.",
                           details = "[Formulas as documented by EPA were archived here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)",
-                          seealso = "`acs_bybg()` and `ACSdownload::get_acs_new()` ")
+                          seealso = "[acs_bybg()] [tables_ejscreen_acs] [ACSdownload::get_acs_new()]")
 
 
 ############################################################## #

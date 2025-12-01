@@ -17,6 +17,6 @@ Formulas and metadata about Census ACS variables and how to calculate indicators
 \href{https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf}{Formulas as documented by EPA were archived here}
 }
 \seealso{
-\code{acs_bybg()} and \code{ACSdownload::get_acs_new()}
+\code{\link[=acs_bybg]{acs_bybg()}} \link{tables_ejscreen_acs} \code{\link[ACSdownload:get_acs_new]{ACSdownload::get_acs_new()}}
 }
 \keyword{datasets}

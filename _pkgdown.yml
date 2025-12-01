@@ -253,6 +253,7 @@ reference:
   - bgpts
   - bg_cenpop2020
   - acs_bybg
+  - acsendyear
   - avg.in.us
   - usastats
   - stateinfo
@@ -260,6 +261,12 @@ reference:
   - statestats
   - modelDoaggregate
   - modelEjamit
+- subtitle: "Using ACS Data to Calculate New Indicators"
+  contents:
+  - tables_ejscreen_acs
+  - formulas_ejscreen_acs
+  - calc_ejam
+  - calc_byformula
 - title: "Calculating and Aggregating"
   desc: >
     Tools that Calculate and Aggregate Indicators
@@ -455,7 +462,6 @@ reference:
   - testoutput_doaggregate_10pts_1miles
   - testoutput_doaggregate_100pts_1miles
   - testoutput_doaggregate_1000pts_1miles
-  - acsendyear
   - app_run_EJAM
   - app_server
   - app_ui
@@ -496,10 +502,11 @@ reference:
   - custom_ejamit
   - custom_doaggregate
   - custom
-  - formula_varname
-  - formulas_all
+  - tables_ejscreen_acs
   - formulas_ejscreen_acs
+  - formulas_all
   - formulas_d
+  - formula_varname
   - batch.clean
   - rowMaxs2
   - colMins2

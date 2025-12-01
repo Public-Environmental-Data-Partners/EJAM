@@ -5,7 +5,7 @@
 \alias{usastats}
 \title{usastats (DATA) data.frame of 100 percentiles and means}
 \format{
-An object of class \code{data.frame} with 102 rows and 67 columns.
+An object of class \code{data.frame} with 101 rows and 111 columns.
 }
 \usage{
 usastats
@@ -19,9 +19,7 @@ Each column is one indicator (or specifies the percentile).
 This should be similar to the lookup tables in the gdb on the FTP site of EJSCREEN,
 except it also has data for additional population subgroups.
 
-For details on how the table was made, see source package files
-EJAM/data-raw/datacreate_usastats2.32_add_dsubgroups.R and
-EJAM/data-raw/datacreate_usastats2.32.R
+For details on how the table was made, see source package files in data-raw folder.
 
 See also \link{statestats}
 }

@@ -940,6 +940,11 @@ url_naics.com <- function(query = "",
 #' utility to view rendered .html file stored in a github repo
 #'
 #' @param ghurl URL of HTML file in a github repository
+#' @param repo e.g., "https://github.com/ejanalysis/EJAM"
+#' @param blob should leave as default "blob"
+#' @param ver e.g., "main" or "`r paste0("v", desc::desc_get("Version"))`"
+#' @param fold folder, e.g., "docs/reference"
+#' @param file filename including .html extension
 #' @param launch_browser set FALSE to get URL but not launch a browser
 #'
 #' @returns URL
@@ -955,7 +960,7 @@ url_naics.com <- function(query = "",
 #' url_github_preview(file = myfile)
 #'
 #' # from a specific release on GH (but map does not render using this tool)
-#' url_github_preview(ver = "v2.4.0", fold = "inst/testdata/examples_of_output", file = myfile)
+#' url_github_preview(ver = "`r paste0("v", desc::desc_get("Version"))`", fold = "inst/testdata/examples_of_output", file = myfile)
 #'
 #' # local installed version
 #' browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
@@ -970,7 +975,7 @@ url_naics.com <- function(query = "",
 url_github_preview = function(ghurl = NULL,
                               repo = "https://github.com/ejanalysis/EJAM",
                               blob = "blob",
-                              ver = "main", # or "v2.4.0"
+                              ver = "main",
                               fold = "inst/testdata/examples_of_output", # or "docs/reference"
                               file = "testoutput_ejam2report_10pts_1miles.html",
                               launch_browser = TRUE

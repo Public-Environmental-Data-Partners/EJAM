@@ -12,7 +12,7 @@ calc_blockgroupstats_acs <- function(yr = acsendyear(guess_always = T, guess_cen
 
   # define formulas for EJSCREEN ACS indicators
   formulas_ejscreen_acs <- EJAM::formulas_ejscreen_acs
-  tables_acs <-  as.vector(ACSdownload::ejscreen_acs_tables)
+  tables_acs <- as.vector(tables_ejscreen_acs)  # as.vector(ACSdownload::ejscreen_acs_tables)
 
 # - get new ACS data for most indicators using
 bg <- ACSdownload::get_acs_new(
@@ -23,7 +23,7 @@ bg <- ACSdownload::get_acs_new(
     # c("B25034", "B01001", "B03002", "B02001", "B15002", "B23025",
              # "C17002", "B19301", "B25032", "B28003", "B27010", "C16002", "B16004",
              # "C16001", "B18101")
-) # ejscreen_acs_tables) # most variables
+) # tables_ejscreen_acs) # most variables
 
 #   clarify how language variables work at tract level applied to bg table - similar to how disability was done?
 tracts_acs <-  ACSdownload::get_acs_new(
@@ -48,9 +48,13 @@ source("./data-raw/datacreate_blockgroup_demog_index.R")
 # - check/update metadata about ACS release, EJAM / EJSCREEN version numbers,
 return(blockgroupstats_acs)
 }
-###################################### #
+################################################# ################################################### #
 
 # use function to create new version of just the ACS variables
+
+yr_desc <- as.vector(gsub("(^20..-)(20..)$", "\\2", desc::desc_get("VersionACS")))
+yr_guess <- EJAM:::acsendyear(guess_census_has_published = TRUE)
+if (!all.equal(yr_desc, yr_guess)) {stop("Need to confirm the ACS year to use for blockgroupstats_acs update")}
 
 blockgroupstats_acs <- calc_blockgroupstats_acs(yr = 2023)
 

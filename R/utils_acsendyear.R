@@ -1,5 +1,6 @@
 
-######################
+##################### #
+# utility to show ACS 5-year survey as range of years like "2020-2024"
 acs_yr_range <- function(end.year, parens = FALSE) {
   txt <- paste0(as.character(as.numeric(end.year) - 4), "-", end.year)
   if (parens) {
@@ -7,7 +8,7 @@ acs_yr_range <- function(end.year, parens = FALSE) {
   }
   return(txt)
 }
-######################
+##################### #
 
 
 #' check which ACS 5-year survey is available, per EJAM metadata or guessed via published or typical schedules
@@ -27,30 +28,39 @@ acs_yr_range <- function(end.year, parens = FALSE) {
 #' @param lag_yrs_endyr_to_census_publishes years to assume lag between end of endyear and when Census Bureau releases ACS dataset for 5yr summary file
 #' @param lag_yrs_endyr_to_ejscreen years to assume lag between end of endyear and when ejscreen gets updated with ACS data
 #' @details
-#' - The 2020-2024 data should be released by Census Bureau 12/11/2025.
+#'  Census Bureau yearly release schedules for ACS data:
 #'
-#' - The 2019-2023 data were published by Census Bureau 12/12/2024, but were not yet in EJSCREEN as of late 2025.
+#'  - The [2020-2024 ACS data](https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html) normally would be released by Census Bureau 12/11/2025, but release was delayed until January 2026.
 #'
-#' - The 2018-2022 data were published by Census Bureau 12/7/2023, in EJSCREEN mid/late 2024.
+#'  - The [2019-2023 ACS data](https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html) were published by Census Bureau 12/12/2024.
 #'
-#'  See schedules such as <https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html>
+#'  - The [2018-2022 ACS data](https://www.census.gov/programs-surveys/acs/news/data-releases/2022/release-schedule.html) were published by Census Bureau 12/7/2023.
+#'
+#'
+#'  EJSCREEN has incorporated ACS data in new releases of EJSCREEN on a more complicated schedule since 2024. See [ejanalysis.com/status](https://ejanalysis.com/status)
+#'
+#'  - The 2020-2024 ACS data may be in non-EPA versions of EJAM / EJSCREEN starting in early 2026.
+#'
+#'  - The 2019-2023 ACS data were never used in EJSCREEN / EJAM, because in 2025 EPA stopped updating the tool and data.
+#'
+#'  - The 2018-2022 ACS data were used in EJSCREEN / EJAM starting in mid/late 2024.
 #'
 #' @returns a single year like "2022", meaning ACS5 survey data covering 2018-2022,
 #'   released by Census Bureau 12/2023, updated in EJSCREEN in mid/late 2024.
 #'
-#' @keywords internal
+#' @export
 #'
 acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_census_has_published = FALSE,
                        lag_yrs_endyr_to_census_publishes = 0.9452055, # 1- 20/365
                        lag_yrs_endyr_to_ejscreen = 1.6
-                       ) {
+) {
 
-if (guess_census_has_published) {
-  if (!guess_always) {
-    guess_always <- TRUE
-    warning("guess_census_has_published=TRUE and guess_always=FALSE, so guess_always is being ignored")
+  if (guess_census_has_published) {
+    if (!guess_always) {
+      guess_always <- TRUE
+      message("guess_census_has_published=TRUE and guess_always=FALSE, so guess_always=FALSE is being ignored")
+    }
   }
-}
 
   # lag_yrs_endyr_to_census_publishes = 1
   ## end year (December) + 1 year (December) has been date ACS published by Census.
@@ -94,7 +104,6 @@ if (guess_census_has_published) {
   # acsendyear(as.Date("2026-12-31"), guess_always = TRUE)
   # acsendyear(as.Date("2027-01-01"), guess_always = TRUE)
   #
-  #
   # acsendyear(as.Date("2099-01-01"), guess_always = TRUE)
 
   if (!guess_always) {
@@ -108,7 +117,11 @@ if (guess_census_has_published) {
     }
   }
 
-  if (guess_always || length(yr) == 0 || is.null(yr)) {
+  if (!(guess_always || length(yr) == 0 || is.null(yr))) {
+
+    return(yr)
+
+  } else {
 
     # if guess_always, do not try metadata approach at all, just
     #     try to use guess_as_of
@@ -132,11 +145,15 @@ if (guess_census_has_published) {
 
     likely_already_published_yr <- substr(  guess_as_of - 365 * lag_yrs_endyr_to_census_publishes, 1, 4)
     # based on published schedules and actual release at end of 2024, we know the 2019-2023 data are the ACS data available during almost all of 2025:
-    if (guess_as_of <= "2025-12-11" && guess_as_of >= "2024-12-13") {likely_already_published_yr <- "2023"}
-    if (guess_as_of <= "2026-12-12" && guess_as_of >= "2025-12-12") {likely_already_published_yr <- "2024"}
+
+    if (guess_as_of >= "2023-12-07") {likely_already_published_yr <- "2022"}  #  https://www.census.gov/programs-surveys/acs/news/data-releases/2022/release-schedule.html
+    if (guess_as_of >= "2024-12-12") {likely_already_published_yr <- "2023"}  #  "https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html"
+    if (guess_as_of >= "2026-01-29") {likely_already_published_yr <- "2024"}  # delayed. See "https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html"
+    #  if (guess_as_of >= "2026-12-12") {likely_already_published_yr <- "2025"}  # See https://www.census.gov/programs-surveys/acs/news/data-releases.html
+
     # we could even validate that guess by checking the website. see ACSdownload:::validate.end.year(2023) ***
     message(paste0("As of ", guess_as_of,", it is likely that ACS data was already released (in December ", as.numeric(likely_already_published_yr) + 1,") for the 5-year survey period whose last year is ",
-            likely_already_published_yr, " ", acs_yr_range(likely_already_published_yr, parens = TRUE), " but not later periods"))
+                   likely_already_published_yr, " ", acs_yr_range(likely_already_published_yr, parens = TRUE), " but not later periods"))
 
     if (guess_census_has_published) {
       return(likely_already_published_yr)
@@ -144,13 +161,16 @@ if (guess_census_has_published) {
 
     yr <- substr( guess_as_of - 365 * lag_yrs_endyr_to_ejscreen, 1, 4)
     # regardless of typical lags, all of 2025 will have used the 2022 acs since no update to 2023 was done in mid or even late 2025, at least as of November 2025.
-    if (guess_as_of >= "2025-01-01" && guess_as_of  < "2025-12-31") {yr <- "2022"}
-    if (                               guess_as_of == "2025-12-31") {yr <- "2023"} # just for 1 day / not really used but ACS made available
-    if (guess_as_of >= "2026-01-01" && guess_as_of <= "2027-12-31") {yr <- "2024"}
+
+    if (guess_as_of >= "2024-08-01") {yr <- "2022"}
+    # if (guess_as_of == "2025-12-31") {yr <- "2023"} #  not really used but that version of ACS could be made available by EJAM around end of 2025
+    if (guess_as_of >= "2026-03-01") {yr <- "2024"}    ## ASSUMES RELEASE OF EJAM/EJSCREEN v.2.5.0 circa 3/1/26, not long after 1/29/26 ACS release. ***
+
     # we could even validate that yr by checking the website. see ACSdownload:::validate.end.year(2023) ***
     message(paste0("It is a guess that ACS data may already be incorporated into this package for the 5-year survey period of ",
                    yr, " ", acs_yr_range(yr, parens = TRUE), " but not later periods"))
+
+    return(yr)
   }
 
-  return(yr)
 }

@@ -24,7 +24,7 @@
 #' NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 #' ```
 #' x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
-#'   ## from  as.vector(ACSdownload::ejscreen_acs_tables)
+#'   ## tables_ejscreen_acs or    as.vector(ACSdownload::ejscreen_acs_tables)
 #' tables = c(
 #'   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
 #'   "B01001", # sex and age / basic population counts

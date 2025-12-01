@@ -17,6 +17,16 @@ url_github_preview(
 \arguments{
 \item{ghurl}{URL of HTML file in a github repository}
 
+\item{repo}{e.g., "https://github.com/ejanalysis/EJAM"}
+
+\item{blob}{should leave as default "blob"}
+
+\item{ver}{e.g., "main" or "v2.4.0"}
+
+\item{fold}{folder, e.g., "docs/reference"}
+
+\item{file}{filename including .html extension}
+
 \item{launch_browser}{set FALSE to get URL but not launch a browser}
 }
 \value{
@@ -37,7 +47,7 @@ myfile = "testoutput_ejam2report_100pts_1miles.html"
 url_github_preview(file = myfile)
 
 # from a specific release on GH (but map does not render using this tool)
-url_github_preview(ver = "v2.32.5", fold = "inst/testdata/examples_of_output", file = myfile)
+url_github_preview(ver = "`r paste0("v", desc::desc_get("Version"))`", fold = "inst/testdata/examples_of_output", file = myfile)
 
 # local installed version
 browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )

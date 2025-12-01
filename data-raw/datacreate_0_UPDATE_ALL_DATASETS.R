@@ -456,7 +456,7 @@ loadall()
 
 ######################################### #
 
-# see newer datacreate_blockgroupstats.R   for what might be v2.4.0, ACS 2019-2023 IN EJAM FEB 2026?
+# see newer datacreate_blockgroupstats.R   for what might be v2.4.0, ACS 2019-2023 IN EJAM 12/2025 or 1/2026?
 # see newer datacreate_blockgroupstats.R   for what might be v2.5.0, ACS 2020-2024 IN EJAM FEB 2026?
 
 ######################################### #
