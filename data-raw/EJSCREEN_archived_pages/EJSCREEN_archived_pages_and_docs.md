@@ -21,7 +21,7 @@
 -   Data Sources (2024 through 2025)
     -   [Overview of Socioeconomic indicators (short list, just key metrics)](https://web.archive.org/web/20250102180705/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen){target="_blank"}
     -   [Overview of Environmental indicators (short list, just key metrics)](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
-    -   [Full list of indicators, with definitions](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
+    -   **[Full list of indicators, with definitions](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen_sources_plaintext.html){target="_blank"}**. Also [at archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
     -   [EJSCREEN Change Log (newest indicators, etc.)](https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log){target="_blank"}
     -   [Year and source of each environmental indicator](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
     -   [Old API-provided indicator list](https://web.archive.org/web/20250131005731/https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html){target="_blank"}
