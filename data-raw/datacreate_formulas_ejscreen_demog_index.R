@@ -49,7 +49,7 @@ formulas_ejscreen_demog_index <- data.frame(
     "Demog.Index.State      = (z.pctlowinc + z.pctmin) / 2", # # ??
     "Demog.Index.Supp.State = (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5" # ???
   ),
-  longname_old = NA,
+  # longname_old = NA,
   longname = NA
 )
 formulas_ejscreen_demog_index$rname = EJAM:::formula_varname(formulas_ejscreen_demog_index$formula)
@@ -57,10 +57,14 @@ formulas_ejscreen_demog_index$longname <- fixcolnames(formulas_ejscreen_demog_in
 
 ########################################################## #
 
-EJAM:::metadata_add_and_use_this("formulas_ejscreen_demog_index")
+# EJAM:::metadata_add_and_use_this("formulas_ejscreen_demog_index")
+formulas_ejscreen_demog_index <- EJAM:::metadata_add(formulas_ejscreen_demog_index)
+usethis::use_data(formulas_ejscreen_demog_index, overwrite = T)
+
 EJAM:::dataset_documenter(
   "formulas_ejscreen_demog_index",
-  title = "formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update"
+  title = "formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update",
+  seealso = "[formulas_ejscreen_acs] [formulas_ejscreen_acs_disability]"
 )
 
 ########################################################## ########################################################### #

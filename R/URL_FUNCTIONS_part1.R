@@ -10,6 +10,42 @@
 
 ################################################### #################################################### #
 
+#' get URL(s) of Census Bureau pages showing ACS 5-year tables examples
+#'
+#' @param tables vector of one or more ACS table names like "B01001"
+#' @param fips optional vector of one or more FIPS codes (e.g., FIPS of tracts or blockgroups)
+#' @param yr year of ACS data (end year of 5-year period)
+#' @param fiveorone must be 5 or 1
+#' @examples url_acs_table_info()
+#' @seealso [tables_ejscreen_acs]
+#' @returns vector of URLs
+#'
+#' @export
+#'
+url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fiveorone=5) {
+
+  # url_acs_table_info()  # and see ACSdownload::url_acs_table()
+
+  if (missing(yr)) {yr <- acsendyear()}
+  if (is.null(fips) || any(nchar(fips) == 0)) {
+    # just general info on the table(s)
+    urls <- paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", yr, ".", tables)
+
+  } else {
+    ######################################## #
+    ftype <-  fipstype(fips)
+
+    ######################################## #
+    sumlevel <- ftype
+    sumlevel[ftype %in% "blockgroup"] <- 150
+    sumlevel[ftype %in% "tract"] <- 140
+
+    urls <- paste0("https://data.census.gov/table?q=", tables,"&g=", sumlevel,"0000US", fips,"&y=", yr)
+  }
+  return(urls)
+}
+################################################### #################################################### #
+
 #' utility - check if URL available, such as if an API is online or offline
 #' @param url the URL to check
 #' @returns TRUE or FALSE (but NA if no internet connection seems to be available at all)

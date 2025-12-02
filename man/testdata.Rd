@@ -49,4 +49,7 @@ cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
 cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
 
 }
+\seealso{
+\code{\link[=pkg_functions_and_data]{pkg_functions_and_data()}}
+}
 \keyword{internal}

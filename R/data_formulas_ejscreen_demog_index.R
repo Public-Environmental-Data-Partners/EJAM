@@ -5,4 +5,5 @@
 #' @name formulas_ejscreen_demog_index
 #' @docType data
 #' @title formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update
+#' @seealso [formulas_ejscreen_acs] [formulas_ejscreen_acs_disability]
 'formulas_ejscreen_demog_index'

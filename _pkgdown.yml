@@ -252,8 +252,6 @@ reference:
   - bgej
   - bgpts
   - bg_cenpop2020
-  - acs_bybg
-  - acsendyear
   - avg.in.us
   - usastats
   - stateinfo
@@ -263,8 +261,11 @@ reference:
   - modelEjamit
 - subtitle: "Using ACS Data to Calculate New Indicators"
   contents:
+  - url_acs_table_info
+  - acsendyear
   - tables_ejscreen_acs
   - formulas_ejscreen_acs
+  - acs_bybg
   - calc_ejam
   - calc_byformula
 - title: "Calculating and Aggregating"
@@ -502,8 +503,6 @@ reference:
   - custom_ejamit
   - custom_doaggregate
   - custom
-  - tables_ejscreen_acs
-  - formulas_ejscreen_acs
   - formulas_all
   - formulas_d
   - formula_varname
