@@ -1,5 +1,7 @@
 Text copied from https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions
 
+Also see links to [EJSCREEN archived documentation](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.html){target="_blank"}.
+
 # EJScreen Map Descriptions
 
 The below provides basic descriptions for the data included in the mapping layers available through EJScreen. EJScreen data are updated periodically. To see which years of data are in the current version, see [Overview of Environmental Indicators in EJScreen](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen) or check the metadata.
