@@ -11,7 +11,7 @@
 
 #### EJSCREEN User Guides (.pdf docs)
 
--   [EJSCREEN Overall User Guide](https://github.com/ejanalysis/EJAM/blob/main/inst/app/www/EJSCREEN-USER-GUIDE-2025-02.pdf){target="_blank"} (EJSCREEN walkthrough), also archived [at archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
+-   [EJSCREEN Overall User Guide](https://github.com/ejanalysis/EJAM/blob/development/data-raw/user-guides/EJSCREEN-USER-GUIDE-2025-02.pdf){target="_blank"} (EJSCREEN walkthrough), also archived [at archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
 -   [EJSCREEN Multisite Tool User Guide](https://github.com/ejanalysis/EJAM/blob/main/inst/app/www/user-guide-2025-02.pdf){target="_blank"} (aka EJAM walkthrough)
 
 ## Documentation of Sources and Methods
