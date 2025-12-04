@@ -514,34 +514,44 @@ app_ui <- function(request) {
                                includeCSS(app_sys('report/community_report/main.css')),
                                #includeCSS('inst/report/community_report/communityreport.css'),
                                #includeCSS('inst/report/community_report/main.css'),
-                               ############################## #
-                               ###               > TABLES       ####
-                               uiOutput('comm_report_html'),
+
+
+                               uiOutput('comm_report_html_by_template'),
                                br(),
-                               ############################## #
-                               ###                > MAP    ####
-                               #### quick_view_map (results, in summary report) ### #
-                               shinycssloaders::withSpinner(
-                                 leaflet::leafletOutput('quick_view_map')#, width = '1170px', height = '627px')
-                               ),
-                               br(),
-                               ############################## #
-                               ###                > BARPLOT    ####
-                               fluidRow(
-                                 column(
-                                   12, align = 'center',
-                                   br(),br(),
-                                   shinycssloaders::withSpinner(
-                                     plotOutput(outputId = 'view1_summary_plot', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
-                                   )
-                                 )
-                               ),
-                               ############################## #
-                               ###              > FOOTER  (version, date)    ####
-                               div(
-                                 style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
-                                 uiOutput("report_version_date")
-                               ),
+
+
+
+                               # ############################## #
+                               # ###               > TABLES       ####
+                               # uiOutput('comm_report_html'),
+                               # br(),
+                               # ############################## #
+                               # ###                > MAP    ####
+                               # #### quick_view_map (results, in summary report) ### #
+                               # shinycssloaders::withSpinner(
+                               #   leaflet::leafletOutput('quick_view_map')#, width = '1170px', height = '627px')
+                               # ),
+                               # br(),
+                               # ############################## #
+                               # ###                > BARPLOT    ####
+                               # fluidRow(
+                               #   column(
+                               #     12, align = 'center',
+                               #     br(),br(),
+                               #     shinycssloaders::withSpinner(
+                               #       plotOutput(outputId = 'view1_summary_plot', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
+                               #     )
+                               #   )
+                               # ),
+                               # ############################## #
+                               # ###              > FOOTER  (version, date)    ####
+                               # div(
+                               #   style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
+                               #   uiOutput("report_version_date")
+                               # ),
+
+
+
                                br(),
                                tags$div(
                                  shiny::downloadButton(
