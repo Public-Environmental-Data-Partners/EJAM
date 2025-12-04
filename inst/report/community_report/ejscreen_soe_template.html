@@ -17,10 +17,10 @@
  <%@ Page Language="VB" AutoEventWireup="false" CodeFile="EJscreen_SOE_report.aspx.vb" Inherits="EJscreen_SOE_report"  ValidateRequest="false" %>
 -->
 <!DOCTYPE html>
-<html lang="en-US" title="EJScreen Community Report">
+<html lang="en-US" title="{{REPORT_TITLE}}">
 <head>
   {{ headContent() }}
-    <title>EJScreen Community Report</title>
+    <title>{{REPORT_TITLE}}</title>
 <!-- JS libraries -->
 
     <!-- Apex Charts -->
@@ -1366,7 +1366,7 @@ function doBuffer(geometry) {
                 max-height: 115px;
                 margin: 0;
                 ">
-                        XX
+                        {{LOCATIONSTR}}
                     </h2>
                 </th>
                 <td style="
@@ -1375,7 +1375,7 @@ function doBuffer(geometry) {
                 font-size: 22px;
                 line-height: 29px;
                 text-align: center;">
-                    <span class="LOCATIONSTR">XX</span><br />
+                    <span class="LOCATIONSTR">{{LOCATIONSTR}}</span><br />
                     Population: <span id="TOTALPOP">{{TOTALPOP}}</span><br />
                     Area in square miles: <span id="inputAreaMiles">{{inputAreaMiles}}</span>
                 </td>
@@ -1494,7 +1494,7 @@ function doBuffer(geometry) {
                         <td style="width: 25%">
                             <div id="low_income_radial_gauge" style="margin-top: -15px"></div>
                             Low income:<br /><span id="P_LOWINC">{{P_LOWINC}}</span> percent
-                            <!-- XX -->
+                            <!--   -->
                         </td>
 
                         <td style="width: 25%">
@@ -1886,7 +1886,7 @@ function doBuffer(geometry) {
                         <p class="fine-print">
                             Notes: Numbers may not sum to totals due to rounding. Hispanic
                             population can be of any race. Source: U.S. Census Bureau, American
-                            Community Survey (ACS) XXXX 2018-2022. Life expectancy data comes from
+                            Community Survey (ACS) 2018-2022. Life expectancy data comes from
                             the Centers for Disease Control.
                         </p>
                         </div>
@@ -1902,9 +1902,9 @@ function doBuffer(geometry) {
         padding: 0 10px;
         margin: 10px 0 10px 25px;
         ">
-            <span style="font-size: 14px">Report for <span class="LOCATIONSTR">xxx mile Ring Centered at xx, xx</span></span>
+            <span style="font-size: 14px">Report for <span class="LOCATIONSTR">{{radius.miles}} mile Ring Centered at {{lat}},{{lon}}</span></span>
             <br>
-            <span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">DATE GOES HERE</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.003</span></span>
+            <span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">{{REPORTDATE}}</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.6.003</span></span>
             </div>
         <!-- -------------------------------- PAGE 2 ----------------------------------- -->
         <div class="print-page">
@@ -1981,9 +1981,9 @@ function doBuffer(geometry) {
             <p class="fine-print">
                 These percentiles provide perspective on how the selected block group or
                 buffer area compares to the entire state or nation.<br>
-                <div style="margin-top: 5px; font-size: 14px">Report for <span class="LOCATIONSTR">XX</span></div>
+                <div style="margin-top: 5px; font-size: 14px">Report for <span class="LOCATIONSTR">{{LOCATIONSTR}}</span></div>
                 <br/>
-				<span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">DATE GOES HERE</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.003</span></span>
+				<span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">{{REPORTDATE}}</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.6.003</span></span>
             </p>
             </div> -->
             <div style=" height: 100px;
@@ -1993,9 +1993,9 @@ function doBuffer(geometry) {
         padding: 0 10px;
         margin: 10px 0 10px 50px;
         ">
-            <span style="font-size: 14px">Report for <span class="LOCATIONSTR">xx mile Ring Centered at xx,-xx</span></span>
+            <span style="font-size: 14px">Report for <span class="LOCATIONSTR">{{radius.miles}} mile Ring Centered at {{lat}},{{lon}}</span></span>
             <br>
-            <span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">DATE GOES HERE</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.003</span></span>
+            <span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">{{REPORTDATE}}</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.6.003</span></span>
             </div>
         </div>
 
@@ -2142,16 +2142,16 @@ function doBuffer(geometry) {
             <tr>
                 <td headers="data-indicators-table-selected-variables">Demographic Index USA</td>
                 <td headers="data-indicators-table-value"><span id="RAW_D_DEMOGIDX2">{{RAW_D_DEMOGIDX2}}%</span></td>
-                <td headers="data-indicators-table-state-average"><span id="S_D_DEMOGIDX2">N/A</span></td>
-                <td headers="data-indicators-table-percentile-in-state"><span id="S_D_DEMOGIDX2_PER">N/A</span></td>
+                <td headers="data-indicators-table-state-average"><span id="S_D_DEMOGIDX2">{{S_D_DEMOGIDX2}}</span></td>
+                <td headers="data-indicators-table-percentile-in-state"><span id="S_D_DEMOGIDX2_PER">{{S_D_DEMOGIDX2_PER}}</span></td>
                 <td headers="data-indicators-table-usa average"><span id="N_D_DEMOGIDX2">{{N_D_DEMOGIDX2}}%</span></td>
                 <td headers="data-indicators-table-percentile-in-usa"><span id="N_D_DEMOGIDX2_PER">{{N_D_DEMOGIDX2_PER}}</span></td>
             </tr>
             <tr>
                 <td headers="data-indicators-table-selected-variables">Supplemental Demographic Index USA</td>
                 <td headers="data-indicators-table-value"><span id="RAW_D_DEMOGIDX5">{{RAW_D_DEMOGIDX5}}%</span></td>
-                <td headers="data-indicators-table-state-average"><span id="S_D_DEMOGIDX5">N/A</span></td>
-                <td headers="data-indicators-table-percentile-in-state"><span id="S_D_DEMOGIDX5_PER">N/A</span></td>
+                <td headers="data-indicators-table-state-average"><span id="S_D_DEMOGIDX5">{{S_D_DEMOGIDX5}}</span></td>
+                <td headers="data-indicators-table-percentile-in-state"><span id="S_D_DEMOGIDX5_PER">{{S_D_DEMOGIDX5_PER}}</span></td>
                 <td headers="data-indicators-table-usa average"><span id="N_D_DEMOGIDX5">{{N_D_DEMOGIDX5}}%</span></td>
                 <td headers="data-indicators-table-percentile-in-usa"><span id="N_D_DEMOGIDX5_PER">{{N_D_DEMOGIDX5_PER}}</span></td>
             </tr>
@@ -2160,16 +2160,16 @@ function doBuffer(geometry) {
                     <td headers="data-indicators-table-value"><span id="RAW_D_DEMOGIDX2ST">{{RAW_D_DEMOGIDX2ST}}%</span></td>
                     <td headers="data-indicators-table-state-average"><span id="S_D_DEMOGIDX2ST">{{S_D_DEMOGIDX2ST}}%</span></td>
                     <td headers="data-indicators-table-percentile-in-state"><span id="S_D_DEMOGIDX2ST_PER">{{S_D_DEMOGIDX2ST_PER}}</span></td>
-                    <td headers="data-indicators-table-usa average"><span id="N_D_DEMOGIDX2ST">N/A</span></td>
-                    <td headers="data-indicators-table-percentile-in-usa"><span id="N_D_DEMOGIDX2ST_PER">N/A</span></td>
+                    <td headers="data-indicators-table-usa average"><span id="N_D_DEMOGIDX2ST">{{N_D_DEMOGIDX2ST}}%</span></td>
+                    <td headers="data-indicators-table-percentile-in-usa"><span id="N_D_DEMOGIDX2ST_PER">{{N_D_DEMOGIDX2ST_PER}}</span></td>
              </tr>
              <tr>
                     <td headers="data-indicators-table-selected-variables">Supplemental Demographic Index State</td>
                     <td headers="data-indicators-table-value"><span id="RAW_D_DEMOGIDX5ST">{{RAW_D_DEMOGIDX5ST}}%</span></td>
                     <td headers="data-indicators-table-state-average"><span id="S_D_DEMOGIDX5ST">{{S_D_DEMOGIDX5ST}}%</span></td>
                     <td headers="data-indicators-table-percentile-in-state"><span id="S_D_DEMOGIDX5ST_PER">{{S_D_DEMOGIDX5ST_PER}}</span></td>
-                    <td headers="data-indicators-table-usa average"><span id="N_D_DEMOGIDX5ST">N/A</span></td>
-                    <td headers="data-indicators-table-percentile-in-usa"><span id="N_D_DEMOGIDX5ST_PER">N/A</span></td>
+                    <td headers="data-indicators-table-usa average"><span id="N_D_DEMOGIDX5ST">{{N_D_DEMOGIDX5ST}}%</span></td>
+                    <td headers="data-indicators-table-percentile-in-usa"><span id="N_D_DEMOGIDX5ST_PER">{{N_D_DEMOGIDX5ST_PER}}</span></td>
              </tr>
             <tr>
                 <td headers="data-indicators-table-selected-variables">People of Color</td>
@@ -2350,9 +2350,9 @@ function doBuffer(geometry) {
         padding: 0 10px;
         margin: 10px 0 10px 50px;
         ">
-            <span style="font-size: 14px">Report for <span class="LOCATIONSTR">XX</span></span>
+            <span style="font-size: 14px">Report for <span class="LOCATIONSTR">{{LOCATIONSTR}}</span></span>
             <br/>
-<span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">DATE GOES HERE</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.003</span></span>
+<span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">{{REPORTDATE}}</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.6.003</span></span>
 </div>
         </div>
 
@@ -2386,45 +2386,45 @@ function doBuffer(geometry) {
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Low Life Expectancy</td>
-                <td style="text-align: center;" id="RAW_HI_LIFEEXPPCT">XX</td>
-                <td id="S_HI_LIFEEXPPCT_AVG">XX</td>
-                <td id="S_HI_LIFEEXPPCT_PCTILE">XX</td>
-                <td id="N_HI_LIFEEXPPCT_AVG">XX</td>
-                <td id="N_HI_LIFEEXPPCT_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_HI_LIFEEXPPCT">{{RAW_HI_LIFEEXPPCT}}</td>
+                <td id="S_HI_LIFEEXPPCT_AVG">{{S_HI_LIFEEXPPCT_AVG}}</td>
+                <td id="S_HI_LIFEEXPPCT_PCTILE">{{S_HI_LIFEEXPPCT_PCTILE}}</td>
+                <td id="N_HI_LIFEEXPPCT_AVG">{{N_HI_LIFEEXPPCT_AVG}}</td>
+                <td id="N_HI_LIFEEXPPCT_PCTILE">{{N_HI_LIFEEXPPCT_PCTILE}}</td>
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Heart Disease</td>
-                <td style="text-align: center;" id="RAW_HI_HEARTDISEASE">XX</td>
-                <td id="S_HI_HEARTDISEASE_AVG">XX</td>
-                <td id="S_HI_HEARTDISEASE_PCTILE">XX</td>
-                <td id="N_HI_HEARTDISEASE_AVG">XX</td>
-                <td id="N_HI_HEARTDISEASE_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_HI_HEARTDISEASE">{{RAW_HI_HEARTDISEASE}}</td>
+                <td id="S_HI_HEARTDISEASE_AVG">{{S_HI_HEARTDISEASE_AVG}}</td>
+                <td id="S_HI_HEARTDISEASE_PCTILE">{{S_HI_HEARTDISEASE_PCTILE}}</td>
+                <td id="N_HI_HEARTDISEASE_AVG">{{N_HI_HEARTDISEASE_AVG}}</td>
+                <td id="N_HI_HEARTDISEASE_PCTILE">{{N_HI_HEARTDISEASE_PCTILE}}</td>
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Asthma</td>
-                <td style="text-align: center;" id="RAW_HI_ASTHMA">XX</td>
-                <td id="S_HI_ASTHMA_AVG">XX</td>
-                <td id="S_HI_ASTHMA_PCTILE">XX</td>
-                <td id="N_HI_ASTHMA_AVG">XX</td>
-                <td id="N_HI_ASTHMA_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_HI_ASTHMA">{{RAW_HI_ASTHMA}}</td>
+                <td id="S_HI_ASTHMA_AVG">{{S_HI_ASTHMA_AVG}}</td>
+                <td id="S_HI_ASTHMA_PCTILE">{{S_HI_ASTHMA_PCTILE}}</td>
+                <td id="N_HI_ASTHMA_AVG">{{N_HI_ASTHMA_AVG}}</td>
+                <td id="N_HI_ASTHMA_PCTILE">{{N_HI_ASTHMA_PCTILE}}</td>
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Cancer</td>
-                <td style="text-align: center;" id="RAW_HI_CANCER">XX</td>
-                <td id="S_HI_CANCER_AVG">XX</td>
-                <td id="S_HI_CANCER_PCTILE">XX</td>
-                <td id="N_HI_CANCER_AVG">XX</td>
-                <td id="N_HI_CANCER_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_HI_CANCER">{{RAW_HI_CANCER}}</td>
+                <td id="S_HI_CANCER_AVG">{{S_HI_CANCER_AVG}}</td>
+                <td id="S_HI_CANCER_PCTILE">{{S_HI_CANCER_PCTILE}}</td>
+                <td id="N_HI_CANCER_AVG">{{N_HI_CANCER_AVG}}</td>
+                <td id="N_HI_CANCER_PCTILE">{{N_HI_CANCER_PCTILE}}</td>
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">
                     Persons with Disabilities
                 </td>
-                <td style="text-align: center;" id="RAW_HI_DISABILITYPCT">XX</td>
-                <td id="S_HI_DISABILITYPCT_AVG">XX</td>
-                <td id="S_HI_DISABILITYPCT_PCTILE">XX</td>
-                <td id="N_HI_DISABILITYPCT_AVG">XX</td>
-                <td id="N_HI_DISABILITYPCT_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_HI_DISABILITYPCT">{{RAW_HI_DISABILITYPCT}}</td>
+                <td id="S_HI_DISABILITYPCT_AVG">{{S_HI_DISABILITYPCT_AVG}}</td>
+                <td id="S_HI_DISABILITYPCT_PCTILE">{{S_HI_DISABILITYPCT_PCTILE}}</td>
+                <td id="N_HI_DISABILITYPCT_AVG">{{N_HI_DISABILITYPCT_AVG}}</td>
+                <td id="N_HI_DISABILITYPCT_PCTILE">{{N_HI_DISABILITYPCT_PCTILE}}</td>
             </tr>
         </table>
 
@@ -2444,27 +2444,23 @@ function doBuffer(geometry) {
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Flood Risk</td>
-                <td style="text-align: center;" id="RAW_CI_FLOOD">XX</td>
-                <td id="S_CI_FLOOD_AVG">XX</td>
-                <td id="S_CI_FLOOD_PCTILE">XX</td>
-                <td id="N_CI_FLOOD_AVG">XX</td>
-                <td id="N_CI_FLOOD_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_CI_FLOOD">{{RAW_CI_FLOOD}}</td>
+                <td id="S_CI_FLOOD_AVG">{{S_CI_FLOOD_AVG}}</td>
+                <td id="S_CI_FLOOD_PCTILE">{{S_CI_FLOOD_PCTILE}}</td>
+                <td id="N_CI_FLOOD_AVG">{{N_CI_FLOOD_AVG}}</td>
+                <td id="N_CI_FLOOD_PCTILE">{{N_CI_FLOOD_PCTILE}}</td>
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Wildfire Risk </td>
-                <td style="text-align: center;" id="RAW_CI_FIRE">XX</td>
-                <td id="S_CI_FIRE_AVG">XX</td>
-                <td id="S_CI_FIRE_PCTILE">XX</td>
-                <td id="N_CI_FIRE_AVG">XX</td>
-                <td id="N_CI_FIRE_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_CI_FIRE">{{RAW_CI_FIRE}}</td>
+                <td id="S_CI_FIRE_AVG">{{S_CI_FIRE_AVG}}</td>
+                <td id="S_CI_FIRE_PCTILE">{{S_CI_FIRE_PCTILE}}</td>
+                <td id="N_CI_FIRE_AVG">{{N_CI_FIRE_AVG}}</td>
+                <td id="N_CI_FIRE_PCTILE">{{N_CI_FIRE_PCTILE}}</td>
             </tr>
             <!-- <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Extreme Heat</td>
-                <td style="text-align: center;" id="RAW_CI_HEAT">XX</td>
-                <td id="S_CI_HEAT_AVG">XX</td>
-                <td id="S_CI_HEAT_PCTILE">XX</td>
-                <td id="N_CI_HEAT_AVG">XX</td>
-                <td id="N_CI_HEAT_PCTILE">XX</td>
+
             </tr> -->
         </table>
 
@@ -2484,23 +2480,23 @@ function doBuffer(geometry) {
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Broadband Internet</td>
-                <td style="text-align: center;" id="RAW_CG_LIMITEDBBPCT">XX</td>
-                <td id="S_CG_LIMITEDBBPCT_AVG">XX</td>
-                <td id="S_CG_LIMITEDBBPCT_PCTILE">XX</td>
-                <td id="N_CG_LIMITEDBBPCT_AVG">XX</td>
-                <td id="N_CG_LIMITEDBBPCT_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_CG_LIMITEDBBPCT">{{RAW_CG_LIMITEDBBPCT}}</td>
+                <td id="S_CG_LIMITEDBBPCT_AVG">{{S_CG_LIMITEDBBPCT_AVG}}</td>
+                <td id="S_CG_LIMITEDBBPCT_PCTILE">{{S_CG_LIMITEDBBPCT_PCTILE}}</td>
+                <td id="N_CG_LIMITEDBBPCT_AVG">{{N_CG_LIMITEDBBPCT_AVG}}</td>
+                <td id="N_CG_LIMITEDBBPCT_PCTILE">{{N_CG_LIMITEDBBPCT_PCTILE}}</td>
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Lack of Health Insurance</td>
-                <td style="text-align: center;" id="RAW_CG_NOHINCPCT">XX</td>
-                <td id="S_CG_NOHINCPCT_AVG">XX</td>
-                <td id="S_CG_NOHINCPCT_PCTILE">XX</td>
-                <td id="N_CG_NOHINCPCT_AVG">XX</td>
-                <td id="N_CG_NOHINCPCT_PCTILE">XX</td>
+                <td style="text-align: center;" id="RAW_CG_NOHINCPCT">{{RAW_CG_NOHINCPCT}}</td>
+                <td id="S_CG_NOHINCPCT_AVG">{{S_CG_NOHINCPCT_AVG}}</td>
+                <td id="S_CG_NOHINCPCT_PCTILE">{{S_CG_NOHINCPCT_PCTILE}}</td>
+                <td id="N_CG_NOHINCPCT_AVG">{{N_CG_NOHINCPCT_AVG}}</td>
+                <td id="N_CG_NOHINCPCT_PCTILE">{{N_CG_NOHINCPCT_PCTILE}}</td>
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Housing Burden</td>
-                <td style="text-align: center;" id="YESNO_HOUSEBURDEN">XX</td>
+                <td style="text-align: center;" id="YESNO_HOUSEBURDEN">{{YESNO_HOUSEBURDEN}}</td>
                 <td>N/A</td>
                 <td>N/A</td>
                 <td>N/A</td>
@@ -2508,7 +2504,7 @@ function doBuffer(geometry) {
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Transportation Access Burden</td>
-                <td style="text-align: center;" id="YESNO_TRANSDIS">XX</td>
+                <td style="text-align: center;" id="YESNO_TRANSDIS">{{YESNO_TRANSDIS}}</td>
                 <td>N/A</td>
                 <td>N/A</td>
                 <td>N/A</td>
@@ -2516,7 +2512,7 @@ function doBuffer(geometry) {
             </tr>
             <tr>
                 <th scope="row" style="font-weight: normal; text-align: left; font-size: 16px; padding-left: 5px;">Food Desert</td>
-                <td style="text-align: center;" id="YESNO_FOODDESERT">XX</td>
+                <td style="text-align: center;" id="YESNO_FOODDESERT">{{YESNO_FOODDESERT}}</td>
                 <td>N/A</td>
                 <td>N/A</td>
                 <td>N/A</td>
@@ -2528,9 +2524,9 @@ function doBuffer(geometry) {
             padding: 0 10px;
             margin: 10px 0 10px 50px;">
             <!--<span class="fine-print">Footnotes</span><br><br>-->
-            <span style="font-size: 14px; font-style: italic;">Report for <span class="LOCATIONSTR">XX</span></span>
+            <span style="font-size: 14px; font-style: italic;">Report for <span class="LOCATIONSTR">{{LOCATIONSTR}}</span></span>
             <br/>
-<span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">DATE GOES HERE</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.003</span></span>
+<span style="font-size: 14px; font-style: italic;">Report produced <span class="REPORTDATE">{{REPORTDATE}}</span> using EJScreen/EJAM <span class="REPORTVERSION">Version 2.32.6.003</span></span>
 </div>
 
             <div id="footer4">
