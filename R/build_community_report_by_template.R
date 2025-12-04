@@ -165,7 +165,7 @@ build_community_report_by_template <- function(output_df = testoutput_ejamit_10p
   output_df_rounded <- as.data.frame(output_df)
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded)) # adds comma to and makes character the pop column
   if (missing(locationstr)) {
-    warning('locationstr parameter missing')
+    # warning('locationstr parameter missing')
     locationstr <- ""
   }
   if (missing(totalpop)) {
@@ -286,11 +286,11 @@ build_community_report_by_template <- function(output_df = testoutput_ejamit_10p
   paramlist$REPORTDATE <- Sys.Date()
   paramlist$TOTALPOP <- totalpop
   paramlist$LOCATIONSTR <- locationstr
-  paramlist$REPORT_TITLE  <- analysis_title # "EJScreen Community Report"
+  # paramlist$REPORT_TITLE  <- analysis_title # "EJScreen Community Report"
   paramlist$`headContent()` <- NULL
   ################### #####  ################### #### #
   # check / report what is missing in that renaming
-  template_needs_but_not_among_params = setdiff(template_names_found, names(paramlist) )
+  template_needs_but_not_among_params = setdiff(template_names_found, c(names(paramlist), "headContent()" ))
   params_cannot_rename_to_template_term = setdiff(names(paramlist) , template_names_found)
   cat("\n template_needs_but_not_among_params: \n\n", paste0(template_needs_but_not_among_params, collapse = ", "), "\n")
   cat("\n params_cannot_rename_to_template_term: \n\n", paste0(params_cannot_rename_to_template_term, collapse = ", "), "\n")
@@ -299,7 +299,8 @@ build_community_report_by_template <- function(output_df = testoutput_ejamit_10p
   for (nm in template_needs_but_not_among_params) {
     paramlist[[nm]] <- NA
   }
-
+  # drop the ones not used by template?
+  paramlist = paramlist[names(paramlist) %in% template_names_found]
   ################### #####  ################### #### #
 
   ## pass all the indicators as params here

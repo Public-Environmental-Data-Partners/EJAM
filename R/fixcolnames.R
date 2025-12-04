@@ -51,7 +51,7 @@
 #'
 #' @seealso [varinfo()]
 #'
-#' @return Vector or new column names same length as input
+#' @returns Vector or new column names same length as input
 #' @examples  # see package tests
 #'
 #'  names_d
@@ -147,7 +147,7 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
 #' @param namesnow same as in [fixcolnames()]
 #' @param oldtypes vector of oldtype values, where one is like oldtype param in [fixcolnames()]
 #' @param newtype  same as in [fixcolnames()]
-#' @inherit fixcolnames returns
+#' @returns Vector or new column names same length as input
 #'
 #' @export
 #'
