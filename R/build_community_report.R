@@ -161,7 +161,7 @@ build_community_report <- function(output_df,
   }
   if (missing(totalpop)) {
     if ("pop" %in% names(output_df_rounded)) {
-      totalpop <- prettyNum(round(output_df_rounded$pop, 0), big.mark = ',')
+      totalpop <- output_df_rounded$pop # prettyNum(round(output_df_rounded$pop, 0), big.mark = ',') # already rounded and got comma via format_ejamit_columns() above
     } else {
       warning('totalpop parameter or output_df_rounded$pop is required')
       totalpop <- "NA"
