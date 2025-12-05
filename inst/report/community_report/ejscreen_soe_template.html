@@ -19,9 +19,10 @@
 -->
 <!DOCTYPE html>
 <html lang="en-US" title="EJSCREEN Report">
+
 <head>
   {{ headContent() }}
-    <title>EJSCREEN Report</title>
+    <title>EJSCREEN Report</title>    <!--  {{REPORT_TITLE}}  -->
 <!-- JS libraries -->
 
     <!-- Apex Charts -->
@@ -31,14 +32,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!-- fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;600"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;600" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
 
     <!-- make responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- styles -->
 
     <style>
         root {
@@ -379,12 +380,19 @@
         }
     </style>
 
-    <!-- start report logic -->
+<!-- js libs -->
+
     <script src="https://js.arcgis.com/4.11/"></script>
 	    <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
     <script src="javascript/reportdata.js"></script>
     <script src="javascript/config.js"></script>
 	    <!--<script type="text/javascript" src="javascript/tagmanager.js"></script>-->
+
+<!-- start report logic
+  statHash, ejmainHash, ejextraHash  data objects
+  requires esri/Map, etc.
+-->
+
     <script>
 
         addEventListener("beforeprint", (event) => {
@@ -406,24 +414,25 @@
         require([
             "esri/config",
             "esri/request",
-			"esri/views/MapView",
-			"esri/Map",
-			"esri/widgets/ScaleBar",
-			"esri/geometry/geometryEngine",
-			"esri/geometry/support/webMercatorUtils",
-			"esri/Graphic",
-			"esri/geometry/Point",
-			"esri/geometry/Polyline",
-			"esri/geometry/Polygon",
-			 "esri/tasks/QueryTask",
- "esri/tasks/support/Query",
- "esri/geometry/SpatialReference",
+            "esri/views/MapView",
+            "esri/Map",
+						"esri/widgets/ScaleBar",
+						"esri/geometry/geometryEngine",
+						"esri/geometry/support/webMercatorUtils",
+						"esri/Graphic",
+						"esri/geometry/Point",
+						"esri/geometry/Polyline",
+						"esri/geometry/Polygon",
+			 			"esri/tasks/QueryTask",
+						"esri/tasks/support/Query",
+						"esri/geometry/SpatialReference",
             "dojo/domReady!"
         ],
 
-            function (esriConfig, esriRequest,MapView,Map,ScaleBar,geometryEngine,webMercatorUtils, Graphic,Point,Polyline, Polygon,QueryTask,Query,SpatialReference) {
+function (esriConfig, esriRequest, MapView, Map, ScaleBar, geometryEngine, webMercatorUtils, Graphic,Point,Polyline,Polygon,QueryTask,Query,SpatialReference) {
+
 			//symbols
-			 var pointsym = { // symbol used for points
+			var pointsym = { // symbol used for points
             type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
             style: "cross",
             color: "rgba(255, 0, 255, 1.0)",
@@ -439,7 +448,7 @@
           width: "2",
           style: "solid"
           };
-    var polysym = { // symbol used for polygons
+      var polysym = { // symbol used for polygons
             type: "simple-fill", // autocasts as new SimpleMarkerSymbol()
             color: "rgba(0, 255, 0, 0.0)",
             style: "solid",
@@ -448,23 +457,23 @@
               width: 1
             }
           };
+		  //end symbols
 
-		//end symbols
+      var useStaticData = true;  // {{useStaticData}}; // was false, but could set true for testing
 
-                var useStaticData = false;
-				var soeurldemog = ejscreendemogservice + "/exts/EJScreen_DemogReports/Get2021DemogACS";
+			var soeurldemog = ejscreendemogservice + "/exts/EJScreen_DemogReports/Get2021DemogACS";
 
-                //begin geom input
+      //begin geom input
 
-                var headerstr = "";
-                var locationstr = "";
-                var intype = "";
-                var radius = "";
-                var bunit = "";
-                var coords = "";
-				var areaid = "";
+        var headerstr = "";
+        var locationstr = "";
+        var intype = "";
+        var radius = "";
+        var bunit = "";
+        var coords = "";
+			  var areaid = "";
 
-                var hasBuffer = true;
+				var hasBuffer = true;
 
 				  if (useStaticData) {
                     intype = "point";
@@ -520,28 +529,24 @@
                 // }
 
 
-		//start map, don't import image
+		//start map, don't import image ----------------------------------------------
 
-	var basemap = "gray";
-
+	  var basemap = "gray";
     /*if (radius == 0) {
         hasBuffer = false;
     }*/
-
-
-
-		 var map = new Map({
+		var map = new Map({
             basemap: basemap
         });
-
     var mview = new MapView({
         map: map,
         container: "map",
-        center: [-122.45, 37.75], // longitude, latitude
+         center: [-122.45, 37.75],
+      //  center: [{{default_longitude}}, {{default_latitude}}], // if passed in paramlist
         zoom: 13
     });
 
-	// var scaleBar = new ScaleBar({
+	  // var scaleBar = new ScaleBar({
         // view: mview,
         // style: "ruler",
         // unit: "dual" // The scale bar displays both metric and non-metric units.
@@ -658,7 +663,7 @@
         }
     }
 
-function doBuffer(geometry) {
+    function doBuffer(geometry) {
     var buffer;
     if (typeof radius === 'undefined' || radius <= 0) {
         // Display original geometry as graphic
@@ -687,9 +692,7 @@ function doBuffer(geometry) {
     mview.extent = buffer[0].extent.expand(2);
 }
 
-
-
- function doBuffer1(geometry) {
+    function doBuffer1(geometry) {
         var buffer;
             if (radius > 0) {
                 if(bunitcode==="9035" || bunitcode==="9036"){
@@ -712,10 +715,7 @@ function doBuffer(geometry) {
 
     }
 
-
-		//end map
-
-
+		//end map ----------------------------------------------
 
                 var namestr = "";
                 if (isKnownGeo(intype)) {
@@ -895,7 +895,8 @@ function doBuffer(geometry) {
         else if (areaid.length > 4) drawID(areaid, intype);
     });
 
-        function drawID(aid, alevel) {
+ function drawID(aid, alevel) {
+
         var lindex = typelookup[alevel].layer;
         var bgurl = typelookup[alevel].url + "/" + lindex;
         var idfield = typelookup[alevel].idfield;
@@ -928,7 +929,6 @@ function doBuffer(geometry) {
 
        // });
     }
-
 
 
                 var pname = location.pathname;
@@ -967,26 +967,21 @@ function doBuffer(geometry) {
 
                         if (useStaticData) {
                             processResultDemog(demogResultStatic);
-
                         } else {
                             processResultDemog(response);
                         }
 
                         if (useStaticData) {
                             processResultEJMain(ejResultStatic);
-
                         } else {
                             processResultEJMain(response);
                         }
 
-
                         if (useStaticData) {
                             processResultEJExtra(ejextraresultstatic);
-
                         } else {
                             processResultEJExtra(response);
                         }
-
 
                     },
                     error: function (err) {;
@@ -994,11 +989,9 @@ function doBuffer(geometry) {
                     }
                 });
 
+<!-- *** Define  processResultDemog(response), processResultEJMain(), processResultEJExtra()  -->
 
-
-
-
-
+function processResultDemog(response) {
 
                 function processResultDemog(response) {
                     resultDEMOG = response;
@@ -1053,7 +1046,6 @@ function doBuffer(geometry) {
                             }
                         });
 
-
                         //update coords and area and name info
                         //  document.getElementById("inputAreaMiles").innerHTML = Number(resultDEMOG.inputAreaMiles);
 
@@ -1069,8 +1061,6 @@ function doBuffer(geometry) {
                         });
 
                         var tStamp = longEnUSFormatter.format(new Date());
-
-
 
                         //update report data and version
                         //var pDate = new Date();
@@ -1106,12 +1096,14 @@ function doBuffer(geometry) {
                         document.getElementById("TOTALPOP").innerHTML = Number(document.getElementById("TOTALPOP").innerHTML).toLocaleString("en-US");
                         document.getElementById("HSHOLDS").innerHTML = Number(document.getElementById("HSHOLDS").innerHTML).toLocaleString("en-US");
 
+//  <!--  the .aspx  did language, gauges, chart functions here  -->
+
                         doLangSpokenTable();
                         doGauges();
                         doAgeChart();
                         doLingIsoChart();
-						//RW remove,currently do not need opener when using API report, only main report that passes in image. API uses ESRI map.
 
+						//RW remove,currently do not need opener when using API report, only main report that passes in image. API uses ESRI map.
                         //if (opener) {
                         //    if (opener.document.getElementById("mapimageurl")) {
                         //        var mimgurl = opener.document.getElementById("mapimageurl").innerHTML;
@@ -1121,13 +1113,14 @@ function doBuffer(geometry) {
                         //    }
                         //}
 
-
                         //apply tagged leader lines to leader line tables (done in v20)
                         // $(".chapter").after("<span style='font-family: Oswald, Arial, sans-serif; position: absolute; padding-left: .25ch; text-align: right; overflow: hidden;'> . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </span>")
                     }
                 }
-                function processResultEJMain(response) {
 
+//  <!-- processResultEJMain(response)  will use doEJMainChart(), doEJSuppChart()   -->
+
+                function processResultEJMain(response) {
 
                     //alert if error
                     if (response.data.main.message) {
@@ -1137,11 +1130,12 @@ function doBuffer(geometry) {
                         //return false;
 
                     } else {
-                        ejmainHash = response.data.main;
+                        // ejmainHash = response.data.main;
                         doEJMainChart();
                         doEJSuppChart();
 
-                        //update each element whos id is in the ej return with its value. Updates indicator tables.
+                        //update each element whose id is in the ej return with its value. Updates indicator tables.
+
                         Object.entries(ejmainHash).forEach(entry => {
                             //return;
                             const [key, value] = entry;
@@ -1164,8 +1158,6 @@ function doBuffer(geometry) {
                         document.getElementById("N_E_RSEI_AIR_PER").innerHTML = Number(document.getElementById("N_E_RSEI_AIR_PER").innerHTML).toLocaleString("en-US");
                     }
                 }
-
-
 
                 function processResultEJExtra(response) {
 
@@ -1206,7 +1198,7 @@ function doBuffer(geometry) {
                 }
             });
 
-         function updateElementsWithContent(selector, content) {
+function updateElementsWithContent(selector, content) {
             const elements = document.querySelectorAll(selector);
             if (elements.length > 0) {
                 elements.forEach(element => {
@@ -1215,7 +1207,8 @@ function doBuffer(geometry) {
             }
          }
 
-        function doLangSpokenTable() {
+<!-- define  doLangSpokenTable -----------------------------   -->
+function doLangSpokenTable() {
             //remove zero-valued rows from the table titled "LANGUAGES SPOKEN AT HOME"
             var row_ids = [
                 "english-row", "spanish-row", "french-row", "german-row",
@@ -1231,34 +1224,34 @@ function doBuffer(geometry) {
                 "P_OTHER", "P_NON_ENGLISH"
             ]
 
-            var dataPresent = false;
-            for (var i = 0; i < row_ids.length; i++) {
-                if (!Number(document.getElementById(value_ids[i]).innerHTML))
-                    document.getElementById(row_ids[i]).remove()
-                else
-                    dataPresent = true;
-            }
+         //   var dataPresent = false;
+         //   for (var i = 0; i < row_ids.length; i++) {
+        //        if (!Number(document.getElementById(value_ids[i]).innerHTML))
+        //            document.getElementById(row_ids[i]).remove()
+        //        else
+        //            dataPresent = true;
+        //    }
 
             if (!dataPresent) {
                 document.getElementById("language-table").innerHTML += "<tr><td style='text-align: center; padding: 50px 0;' colspan=2><b>No language data available.</b></td><tr>";
             }
-
         }
 
-
-
-        function doLingIsoChart() {
+<!-- define  doLingIsoChart -----------------------------   -->
+function doLingIsoChart() {
             //do LINGISO linear graphs by adjusting div width based on
-            document.getElementById("speak_spanish_linear_gauge").style.width = "P_HLI_SPANISH_LI" + "%";
+            document.getElementById("speak_spanish_linear_gauge").style.width = {{P_HLI_SPANISH_LI}} + "%";
             document.getElementById("speak_other_indio_european_linear_gauge").style.width = {{P_HLI_IE_LI}} + "%";
             document.getElementById("speak_asian_pacific_islander_linear_gauge").style.width = {{P_HLI_API_LI}} + "%";
             document.getElementById("speak_other_languages_linear_gauge").style.width = {{P_HLI_OTHER_LI}} + "%";
         }
-    </script>
+
+</script>
+
     <!--end report logic-->
 
-
 </head>
+
 <body>
 
     <div style="position: fixed; right: 20px; top: 20px; margin-bottom: -50px; z-index: 1000;
@@ -1387,6 +1380,9 @@ function doBuffer(geometry) {
             <!--<div id="mapdiv" tabindex="2"><img id="mapimg" alt="Dynamic map initially showing the user-selected area" src="images/ejreport/Location_map_2.png" width="100%"></img></div>-->
 			<!--<div id="map" class="w3-image"></div>-->
 			<div id="map" style="width: 100%; height:455px;"></div>
+
+			<!-- LANGUAGE TABLE   ----------------------------------------------   -->
+
             <div style="
                 height: 46px;
                 width: 100%;
@@ -2561,13 +2557,20 @@ function doBuffer(geometry) {
     </div>
 </body>
 
-<!-- community information radial gauges -->
-<script>
-    function doGauges() {
+
+<!--  ----------------------------- ----------------------------------------------------------    -->
+<!--  ----------------------------- ----------------------------------------------------------    -->
+
+<!-- WE JUST CREATE THE GAUGES ETC BELOW, in this .html template, NOT via the larger functions originally used in the .aspx file -->
+
+<!-- Define  doGauges(), doAgeChart(), doEJMainChart(), doEJSuppChart() -->
+
+<script>  function doGauges()      {
+
         //low income
         var options = {
-           // series: [{{P_LOWINC}}],
-            series: [67],
+             series: [{{P_LOWINC}}],
+            //series: [67],
             chart: {
                 type: "radialBar",
                 offsetY: -20,
@@ -2628,7 +2631,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#low_income_radial_gauge"),
             options
@@ -2637,8 +2639,8 @@ function doBuffer(geometry) {
 
         //people of color
         var options = {
-           // series: [{{PCT_MINORITY}}],
-           series: [33],
+           series: [{{PCT_MINORITY}}],
+          // series: [33],
             chart: {
                 type: "radialBar",
                 offsetY: -20,
@@ -2700,7 +2702,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#people_of_color_radial_gauge"),
             options
@@ -2709,8 +2710,8 @@ function doBuffer(geometry) {
 
         //less than high school
         var options = {
-      //      series: [{{P_EDU_LTHS}}],
-                       series: [33],
+            series: [{{P_EDU_LTHS}}],
+          //             series: [33],
 
             chart: {
                 type: "radialBar",
@@ -2773,7 +2774,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#less_than_hs_radial_gauge"),
             options
@@ -2782,8 +2782,8 @@ function doBuffer(geometry) {
 
         //limited english households
         var options = {
-         //   series: [{{P_LIMITED_ENG_HH}}],
-                    series: [33],
+            series: [{{P_LIMITED_ENG_HH}}],
+           //         series: [33],
 
             chart: {
                 type: "radialBar",
@@ -2846,7 +2846,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#limited_english_households_radial_gauge"),
             options
@@ -2855,8 +2854,8 @@ function doBuffer(geometry) {
 
         //unemployment
         var options = {
-          //  series: [{{P_EMP_STAT_UNEMPLOYED}}],
-                     series: [33],
+             series: [{{P_EMP_STAT_UNEMPLOYED}}],
+            //         series: [33],
   chart: {
                 type: "radialBar",
                 offsetY: -20,
@@ -2918,7 +2917,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#unemployment_radial_gauge"),
             options
@@ -2927,8 +2925,8 @@ function doBuffer(geometry) {
 
         //persons with disabilities
         var options = {
-//            series: [{{P_DISABILITY}}],
-                       series: [33],
+          series: [{{P_DISABILITY}}],
+      //                 series: [33],
 
             chart: {
                 type: "radialBar",
@@ -2991,7 +2989,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#persons_with_disabilities_radial_gauge"),
             options
@@ -3000,8 +2997,8 @@ function doBuffer(geometry) {
 
         //male
         var options = {
-      //      series: [{{P_MALES}}],
-                   series: [33],
+            series: [{{P_MALES}}],
+       //            series: [33],
     chart: {
                 type: "radialBar",
                 offsetY: -20,
@@ -3063,7 +3060,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#male_radial_gauge"),
             options
@@ -3072,8 +3068,8 @@ function doBuffer(geometry) {
 
         //female
         var options = {
-         //   series: [{{P_FEMALES}}],
-                   series: [33],
+            series: [{{P_FEMALES}}],
+          //         series: [33],
     chart: {
                 type: "radialBar",
                 offsetY: -20,
@@ -3135,7 +3131,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#female_radial_gauge"),
             options
@@ -3144,8 +3139,8 @@ function doBuffer(geometry) {
 
         //owner occupied
         var options = {
-          //  series: [{{P_OWN_OCCUPIED}}],
-                      series: [33],
+            series: [{{P_OWN_OCCUPIED}}],
+           //           series: [33],
  chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3216,8 +3211,8 @@ function doBuffer(geometry) {
 
         //white percent
         var options = {
-        //    series: [{{P_NHWHITE}}],
-                   series: [33],
+            series: [{{P_NHWHITE}}],
+        //           series: [33],
     chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3279,7 +3274,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#white_percent_radial_gauge"),
             options
@@ -3288,8 +3282,8 @@ function doBuffer(geometry) {
 
         //black percent
         var options = {
-      //      series: [{{P_NHBLACK}}],
-                 series: [33],
+             series: [{{P_NHBLACK}}],
+        //         series: [33],
       chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3350,8 +3344,7 @@ function doBuffer(geometry) {
                     }
                 },
             }
-        };
-
+        }
         var chart = new ApexCharts(
             document.querySelector("#black_percent_radial_gauge"),
             options
@@ -3360,8 +3353,8 @@ function doBuffer(geometry) {
 
         //american indian percent
         var options = {
-        //    series: [{{P_NHAMERIND}}],
-                   series: [33],
+            series: [{{P_NHAMERIND}}],
+         //          series: [33],
     chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3423,8 +3416,7 @@ function doBuffer(geometry) {
                 },
             }
         };
-
-		 var chart = new ApexCharts(
+		    var chart = new ApexCharts(
             document.querySelector("#american_indian_percent_radial_gauge"),
             options
         );
@@ -3432,8 +3424,8 @@ function doBuffer(geometry) {
 
         //asian percent
         var options = {
-    //        series: [{{P_NHASIAN}}],
-               series: [33],
+            series: [{{P_NHASIAN}}],
+     //          series: [33],
         chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3495,19 +3487,16 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#asian_percent_radial_gauge"),
             options
         );
         chart.render();
 
-
-
         //hawaiian / pacific islander percent
         var options = {
-       //     series: [{{P_NHHAWPAC}}],
-                   series: [33],
+            series: [{{P_NHHAWPAC}}],
+          //         series: [33],
     chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3569,7 +3558,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#hawaiian_percent_radial_gauge"),
             options
@@ -3578,8 +3566,8 @@ function doBuffer(geometry) {
 
         //other race percent
         var options = {
-     //       series: [{{P_NHOTHER_RACE}}],
-                 series: [0],
+             series: [{{P_NHOTHER_RACE}}],
+         //        series: [0],
       chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3641,7 +3629,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#other_race_percent_radial_gauge"),
             options
@@ -3650,8 +3637,8 @@ function doBuffer(geometry) {
 
         //multiple races percent
         var options = {
-        //    series: [{{P_NHTWOMORE}}],
-               series: [0],
+            series: [{{P_NHTWOMORE}}],
+         //      series: [0],
                chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3713,7 +3700,6 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#multiple_races_percent_radial_gauge"),
             options
@@ -3722,8 +3708,8 @@ function doBuffer(geometry) {
 
         //hispanic percent
         var options = {
-       //     series: [{{P_HISP}}],
-               series: [30],
+             series: [{{P_HISP}}],
+        //       series: [30],
                chart: {
                 type: "radialBar",
                 offsetY: -10,
@@ -3785,24 +3771,13 @@ function doBuffer(geometry) {
                 },
             }
         };
-
         var chart = new ApexCharts(
             document.querySelector("#hispanic_percent_radial_gauge"),
             options
         );
         chart.render();
-    }
-</script>
-
-    <!-- JUST CREATE THE GAUGES NOW, NOT VIA FUNCTIONS originally used -->
-
-<script>
-  doGauges();
-</script>
-
-
-<script>
-    function doAgeChart() {
+    }  </script>
+<script>  function doAgeChart()    {
 
         //do LINGISO linear graphs by adjusting div width based on
         document.getElementById("ages_1_to_4_linear_gauge").style.width = {{P_AGE_LT5}} + "%";
@@ -3902,48 +3877,45 @@ function doBuffer(geometry) {
     //         options
     //     );
     //     chart.render();
-    }
-</script>
-
-<script>
-    function doEJMainChart() {
+    }  </script>
+<script>  function doEJMainChart() {
         //Generate the EJ Index bar chart
         var options = {
             series: [
                 {
                     name: "State Percentile",
                     data: [
-                        Number(ejmainHash["S_P2_PM25"]),
-                        Number(ejmainHash["S_P2_O3"]),
-                        Number(ejmainHash["S_P2_NO2"]),
-                        Number(ejmainHash["S_P2_DIESEL"]),
-                        Number(ejmainHash["S_P2_RSEI_AIR"]),
-                        Number(ejmainHash["S_P2_TRAFFIC"]),
-                        Number(ejmainHash["S_P2_LEAD"]),
-                        Number(ejmainHash["S_P2_NPL"]),
-                        Number(ejmainHash["S_P2_RMP"]),
-                        Number(ejmainHash["S_P2_TSDF"]),
-                        Number(ejmainHash["S_P2_UST"]),
-                        Number(ejmainHash["S_P2_NPDES"]),
-                        Number(ejmainHash["S_P2_DWATER"]),
+                        Number([{{S_P2_PM25}}]),
+                        Number([{{S_P2_O3}}]),
+                        Number([{{S_P2_NO2}}]),
+                        Number([{{S_P2_DIESEL}}]),
+                        Number([{{S_P2_RSEI_AIR}}]),
+                        Number([{{S_P2_TRAFFIC}}]),
+                        Number([{{S_P2_LEAD}}]),
+                        Number([{{S_P2_NPL}}]),
+                        Number([{{S_P2_RMP}}]),
+                        Number([{{S_P2_TSDF}}]),
+                        Number([{{S_P2_UST}}]),
+                        Number([{{S_P2_NPDES}}]),
+                        Number([{{S_P2_DWATER}}]),
                     ],
                 },
                 {
                     name: "National Percentile",
                     data: [
-                        Number(ejmainHash["N_P2_PM25"]),
-                        Number(ejmainHash["N_P2_O3"]),
-                        Number(ejmainHash["N_P2_NO2"]),
-                        Number(ejmainHash["N_P2_DIESEL"]),
-                        Number(ejmainHash["N_P2_RSEI_AIR"]),
-                        Number(ejmainHash["N_P2_TRAFFIC"]),
-                        Number(ejmainHash["N_P2_LEAD"]),
-                        Number(ejmainHash["N_P2_NPL"]),
-                        Number(ejmainHash["N_P2_RMP"]),
-                        Number(ejmainHash["N_P2_TSDF"]),
-                        Number(ejmainHash["N_P2_UST"]),
-                        Number(ejmainHash["N_P2_NPDES"]),
-                        Number(ejmainHash["N_P2_DWATER"]),
+                        Number([{{N_P2_PM25}}]),
+                        Number([{{N_P2_O3}}]),
+                        Number([{{N_P2_NO2}}]),
+                        Number([{{N_P2_DIESEL}}]),
+                        Number([{{N_P2_RSEI_AIR}}]),
+                        Number([{{N_P2_TRAFFIC}}]),
+                        Number([{{N_P2_LEAD}}]),
+                        Number([{{N_P2_NPL}}]),
+                        Number([{{N_P2_RMP}}]),
+                        Number([{{N_P2_TSDF}}]),
+                        Number([{{N_P2_UST}}]),
+                        Number([{{N_P2_NPDES}}]),
+                        Number([{{N_P2_DWATER}}]),
                     ],
                 },
             ],
@@ -4078,48 +4050,45 @@ function doBuffer(geometry) {
         );
         chart.render();
 
-    }
-</script>
-
-<script>
-    function doEJSuppChart() {
+    }  </script>
+<script>  function doEJSuppChart() {
         //Generate the Supplemental Index bar chart
         var options = {
             series: [
                 {
                     name: "State Percentile",
                     data: [
-                        Number(ejmainHash["S_P5_PM25"]),
-                        Number(ejmainHash["S_P5_O3"]),
-                        Number(ejmainHash["S_P5_NO2"]),
-                        Number(ejmainHash["S_P5_DIESEL"]),
-                        Number(ejmainHash["S_P5_RSEI_AIR"]),
-                        Number(ejmainHash["S_P5_TRAFFIC"]),
-                        Number(ejmainHash["S_P5_LEAD"]),
-                        Number(ejmainHash["S_P5_NPL"]),
-                        Number(ejmainHash["S_P5_RMP"]),
-                        Number(ejmainHash["S_P5_TSDF"]),
-                        Number(ejmainHash["S_P5_UST"]),
-                        Number(ejmainHash["S_P5_NPDES"]),
-                        Number(ejmainHash["S_P5_DWATER"]),
+                        Number([{{S_P5_PM25}}]),
+                        Number([{{S_P5_O3}}]),
+                        Number([{{S_P5_NO2}}]),
+                        Number([{{S_P5_DIESEL}}]),
+                        Number([{{S_P5_RSEI_AIR}}]),
+                        Number([{{S_P5_TRAFFIC}}]),
+                        Number([{{S_P5_LEAD}}]),
+                        Number([{{S_P5_NPL}}]),
+                        Number([{{S_P5_RMP}}]),
+                        Number([{{S_P5_TSDF}}]),
+                        Number([{{S_P5_UST}}]),
+                        Number([{{S_P5_NPDES}}]),
+                        Number([{{S_P5_DWATER}}]),
                     ],
                 },
                 {
                     name: "National Percentile",
                     data: [
-                        Number(ejmainHash["N_P5_PM25"]),
-                        Number(ejmainHash["N_P5_O3"]),
-                        Number(ejmainHash["N_P5_NO2"]),
-                        Number(ejmainHash["N_P5_DIESEL"]),
-                        Number(ejmainHash["N_P5_RSEI_AIR"]),
-                        Number(ejmainHash["N_P5_TRAFFIC"]),
-                        Number(ejmainHash["N_P5_LEAD"]),
-                        Number(ejmainHash["N_P5_NPL"]),
-                        Number(ejmainHash["N_P5_RMP"]),
-                        Number(ejmainHash["N_P5_TSDF"]),
-                        Number(ejmainHash["N_P5_UST"]),
-                        Number(ejmainHash["N_P5_NPDES"]),
-                        Number(ejmainHash["N_P5_DWATER"]),
+                        Number([{{N_P5_PM25}}]),
+                        Number([{{N_P5_O3}}]),
+                        Number([{{N_P5_NO2}}]),
+                        Number([{{N_P5_DIESEL}}]),
+                        Number([{{N_P5_RSEI_AIR}}]),
+                        Number([{{N_P5_TRAFFIC}}]),
+                        Number([{{N_P5_LEAD}}]),
+                        Number([{{N_P5_NPL}}]),
+                        Number([{{N_P5_RMP}}]),
+                        Number([{{N_P5_TSDF}}]),
+                        Number([{{N_P5_UST}}]),
+                        Number([{{N_P5_NPDES}}]),
+                        Number([{{N_P5_DWATER}}]),
                     ],
                 },
             ],
@@ -4250,6 +4219,16 @@ function doBuffer(geometry) {
             options
         );
         chart.render();
-    }
-</script>
+    }  </script>
+
+<!-- Execute  doGauges(), doAgeChart(), doEJMainChart(), doEJSuppChart() -->
+
+<script>  doGauges();      </script>
+<script>  doAgeChart();    </script>
+<script>  doEJMainChart(); </script>
+<script>  doEJSuppChart(); </script>
+
+<!--  ----------------------------- ----------------------------------------------------------    -->
+<!--  ----------------------------- ----------------------------------------------------------    -->
+
 </html>
