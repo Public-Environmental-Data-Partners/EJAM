@@ -250,13 +250,29 @@ app_server <- function(input, output, session) {
     }
   })
 
-  # update ss_select_NAICS input options ###
+  # update default of initial NAICS input options (since using server side and it starts as NULL to load faster) ###
+  observe({
+    updateSelectizeInput(session = session, inputId = 'default_naics',
+                         ## use named list version, grouped by first two code numbers
+                         choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs),
+                         selected = EJAM:::global_or_param("default_naics"),
+                         server = TRUE)
+  })
+  observe({
+    # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
+    level_of_detail_based_on_default_naics <- ifelse(nchar(input$default_naics) > 3, 'detailed', EJAM:::global_or_param("default_naics_digits_shown"))
+    updateRadioButtons(session = session, inputId = 'naics_digits_shown',
+                       selected = level_of_detail_based_on_default_naics
+    )
+  })
+
+  # update ss_select_NAICS input options (since using server side and it starts as NULL to load faster) ###
   observeEvent(eventExpr = {
+    # input$default_naics
     input$add_naics_subcategories
     input$naics_digits_shown
   },
   handlerExpr = {
-    #req(input$add_naics_subcategories)
 
     ## switch labels based on subcategory radio button
 
@@ -266,8 +282,9 @@ app_server <- function(input, output, session) {
       naics_choices <- setNames(naics_counts_filtered()$NAICS, naics_counts_filtered()$label_no_subs)
     }
 
-    vals <- ifelse(is.null(input$ss_select_naics), input$default_naics, input$ss_select_naics)
-    # update ss_select_NAICS input options ###
+    trydefault =  ifelse(is.null(input$default_naics), EJAM:::global_or_param("default_naics"), input$default_naics)
+    vals <- ifelse(is.null(input$ss_select_naics), trydefault, input$ss_select_naics)
+    ### update ss_select_NAICS input options ###
     updateSelectizeInput(session = session, inputId = 'ss_select_naics',
                          ## use named list version, grouped by first two code numbers
                          choices = naics_choices, # need to keep formatting
