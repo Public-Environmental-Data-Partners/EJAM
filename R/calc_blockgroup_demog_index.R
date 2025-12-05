@@ -5,6 +5,14 @@
 # to calculate and add columns for the Demog.Index (and related supplemental/State versions)
 ########################################################### #
 
+#' utility to calculate annually for EJSCREEN the updated Demographic Indexes per blockgroup from ACS data
+#'
+#' @param yr endyear of ACS 5-year survey to use, inferred if omitted
+#'
+#' @returns data.table, one row per blockgroup, columns bgfips, etc.
+#'
+#' @keywords internal
+#'
 calc_blockgroup_demog_index <- function(yr) {
 
 ## NATIONWIDE, USA

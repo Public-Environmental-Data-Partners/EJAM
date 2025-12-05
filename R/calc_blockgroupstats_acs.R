@@ -1,14 +1,13 @@
 ################################################# ################################################### #
 
-# to update blockgroupstats by 1st creating blockgroupstats_acs
-
-#' update blockgroupstats dataset yearly, by 1st creating blockgroupstats_acs
+#' utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs
 #'
 #' @param yr end year of 5-year ACS dataset, guesses if not specified
 #'
 #' @returns data.table, one row per blockgroup, columns bgfips, etc.
 #'
 #' @export
+#' @keywords internal
 #'
 calc_blockgroupstats_acs <- function(yr) {
 

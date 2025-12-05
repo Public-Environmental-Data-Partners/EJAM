@@ -6,6 +6,14 @@
 #  TAKES A WHILE TO DOWNLOAD THE CENSUS DATA FOR EVERY STATE !!
 ###################################################### #
 
+#' utility to calculate annually for EJSCREEN the updated percent with disability per blockgroup from ACS data available at only tract resolution
+#'
+#' @param yr endyear of ACS 5-year survey to use, inferred if omitted
+#'
+#' @returns data.table, one row per blockgroup, columns bgfips, etc.
+#'
+#' @keywords internal
+#'
 calc_blockgroup_pctdisability <- function(yr)  {
 
   # to get counts, first need tract counts and then apportion to blockgroup counts
@@ -127,8 +135,9 @@ calc_blockgroup_pctdisability <- function(yr)  {
   # 0.4899  0.9986  1.0000     Inf  1.0015     Inf   ## IF ROUNDED BEFORE RATIO, percentage calculation not replicated.   need to get ratio before rounding counts
 
   ##################################################################### #
-  ## note that it does include Puerto Rico:
-  table(fips2stateabbrev(   bg_disability$bgfips) )
+  print("## note that it does include Puerto Rico:")
+  print(  table(fips2stateabbrev(   bg_disability$bgfips) ))
+
   ##################################################################### #
   return(bg_disability)
 }
