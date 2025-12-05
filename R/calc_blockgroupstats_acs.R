@@ -2,6 +2,14 @@
 
 # to update blockgroupstats by 1st creating blockgroupstats_acs
 
+#' update blockgroupstats dataset yearly, by 1st creating blockgroupstats_acs
+#'
+#' @param yr end year of 5-year ACS dataset, guesses if not specified
+#'
+#' @returns data.table, one row per blockgroup, columns bgfips, etc.
+#'
+#' @export
+#'
 calc_blockgroupstats_acs <- function(yr) {
 
   # library(EJAM)
@@ -44,11 +52,11 @@ calc_blockgroupstats_acs <- function(yr) {
   blockgroupstats_acs <- calc_ejam(bg, formulas = formulas_ejscreen_acs)
 
 
-  ## THESE WILL REPLACE THE blockgroupstats dataset in the package:
+  ## THESE would REPLACE THE blockgroupstats dataset in the package:
 
   # - use  datacreate_blockgroup_pctdisability.R  to add disability columns to new blockgroupstats
   # source("./data-raw/datacreate_blockgroup_pctdisability.R")
-  calc_blockgroup_pctdisability
+  # calc_blockgroup_pctdisability()
 
   # - use  datacreate_blockgroup_demog_index.R to add demog index columns to blockgroupstats
   # source("./data-raw/datacreate_blockgroup_demog_index.R")
