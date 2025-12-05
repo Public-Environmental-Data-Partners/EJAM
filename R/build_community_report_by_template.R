@@ -202,7 +202,7 @@ build_community_report_by_template <- function(output_df = testoutput_ejamit_10p
   template_names_found <- varnames_from_template(template_path)
   paramlist = as.list(rep(9, length(template_names_found)))
   names(paramlist) <- template_names_found
-  ht = htmlTemplate(template_path, paramlist)
+  ht = shiny::htmlTemplate(template_path, ... = paramlist)
 
     }
   ################### #####  ################### #### #

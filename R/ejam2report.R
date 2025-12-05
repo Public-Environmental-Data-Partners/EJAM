@@ -280,7 +280,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     ## note build_community_report() is also used in community_report_template.Rmd and in server
 
-    community_html <- build_community_report(
+    community_html <- build_community_report_by_template(
 
       output_df = ejamout1,
       analysis_title = analysis_title,
