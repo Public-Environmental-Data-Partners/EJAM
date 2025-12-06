@@ -4,7 +4,12 @@
 \alias{calc_blockgroupstats_acs}
 \title{utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs}
 \usage{
-calc_blockgroupstats_acs(yr)
+calc_blockgroupstats_acs(
+  yr,
+  formulas = EJAM::formulas_ejscreen_acs$formula,
+  tables = as.vector(EJAM::tables_ejscreen_acs),
+  dropMOE = TRUE
+)
 }
 \arguments{
 \item{yr}{end year of 5-year ACS dataset, guesses if not specified}

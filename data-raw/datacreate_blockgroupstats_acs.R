@@ -15,17 +15,29 @@ rm(yr_desc, yr_guess)
 ################################################### #
 # download ACS data, calc most demographics ####
 
-blockgroupstats_acs <- calc_blockgroupstats_acs(yr = yr)
+blockgroupstats_acs <- calc_blockgroupstats_acs(yr = yr) # use defaults, otherwise
 
+save(blockgroupstats_acs, file = "~/Downloads/blockgroupstats_acs step 1.rda")
 ################################################### #
-# calc pctdisability (from tract data) ####
+# calc pctdisability and language details indicators (from tract data) ####
 
-bg_disability <- calc_blockgroup_pctdisability()
+# bg_disability <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "B18101") # gets disability  from tract data
+# bg_language   <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "C16001") # gets detailed language from tract data
+bg_from_tracts <- calc_blockgroupstats_from_tract_data(yr = yr, tables = c("B18101", "C16001"))
 
-# join into blockgroupstats_acs
-blockgroupstats_acs[bg_disability, disability     := disability,     on = "bgfips"]
-blockgroupstats_acs[bg_disability, disab_universe := disab_universe, on = "bgfips"]
-blockgroupstats_acs[bg_disability, pctdisability  := pctdisability,  on = "bgfips"]
+save(bg_from_tracts, file = "~/Downloads/bg_from_tracts.rda")
+
+# # join into blockgroupstats_acs
+# blockgroupstats_acs[bg_disability, disability     := disability,     on = "bgfips"]
+# blockgroupstats_acs[bg_disability, disab_universe := disab_universe, on = "bgfips"]
+# blockgroupstats_acs[bg_disability, pctdisability  := pctdisability,  on = "bgfips"]
+
+# e.g., pctlan_vietnamese, etc. etc.
+blockgroupstats_acs <- merge(blockgroupstats_acs, bg_from_tracts, on = "bgfips", all.x = TRUE)
+
+save(blockgroupstats_acs, file = "~/Downloads/blockgroupstats_acs step 2.rda")
+
+
 
 ################################################### #
 # calc Demog.Index ####
@@ -53,6 +65,14 @@ setDT(blockgroupstats_acs)
 setcolorder(blockgroupstats_acs, c("bgid", "bgfips", "statename", "ST", "countyname", "REGION",
                                    "pop",
                                    names_d), before = 1)
+
+
+
+save(blockgroupstats_acs, file = "~/Downloads/blockgroupstats_acs step 3.rda")
+
+
+stop('stop here')
+
 ############################################################## #
 
 # NON-Demographic columns ####

@@ -292,8 +292,8 @@ x <- EJAM:::test_ejam(
         "test-url_columns_bysite.R",
         "test-is.numericish.R",
         "test-create_filename.R",
-
-        "test-api.R"
+        "test-api.R",
+        "test-grepn.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",

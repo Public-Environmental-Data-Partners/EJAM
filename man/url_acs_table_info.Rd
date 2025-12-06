@@ -30,5 +30,5 @@ get URL(s) of Census Bureau pages showing ACS 5-year tables examples
 url_acs_table_info()
 }
 \seealso{
-\link{tables_ejscreen_acs}
+\link{tables_ejscreen_acs} \code{\link[=acs_table_info]{acs_table_info()}}
 }

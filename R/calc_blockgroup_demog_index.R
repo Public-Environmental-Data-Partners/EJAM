@@ -25,7 +25,7 @@ avg.pctmin        = mean(blockgroupstats$pctmin,         na.rm=TRUE)
 avg.pctlowinc     = mean(blockgroupstats$pctlowinc,      na.rm=TRUE)
 avg.pctlingiso    = mean(blockgroupstats$pctlingiso,     na.rm=TRUE)
 avg.pctlths       = mean(blockgroupstats$pctlths ,       na.rm=TRUE)
-avg.pctdisability = mean(blockgroupstats$pctdisability , na.rm=TRUE) # after calculated and added to blockgroupstats via datacreate_blockgroup_*, using calc_blockgroup_pctdisability()
+avg.pctdisability = mean(blockgroupstats$pctdisability , na.rm=TRUE) # after calculated and added to blockgroupstats
 
 sd.pctlowlifex   = sd(blockgroupstats$lowlifex,       na.rm=TRUE)
 sd.pctmin        = sd(blockgroupstats$pctmin,         na.rm=TRUE)
@@ -71,7 +71,7 @@ for (i in 1:length(states)) {
   avg.pctlowinc     = mean(bg_state$pctlowinc,      na.rm=TRUE)
   avg.pctlingiso    = mean(bg_state$pctlingiso,     na.rm=TRUE)
   avg.pctlths       = mean(bg_state$pctlths ,       na.rm=TRUE)
-  avg.pctdisability = mean(bg_state$pctdisability , na.rm=TRUE) # after calculated and added to blockgroupstats via datacreate_blockgroup_* using calc_blockgroup_pctdisability()
+  avg.pctdisability = mean(bg_state$pctdisability , na.rm=TRUE) # after calculated and added to blockgroupstats
 
   sd.pctlowlifex   = sd(bg_state$lowlifex,       na.rm=TRUE)
   sd.pctmin        = sd(bg_state$pctmin,         na.rm=TRUE)

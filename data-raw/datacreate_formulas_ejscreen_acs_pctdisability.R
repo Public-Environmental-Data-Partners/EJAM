@@ -63,7 +63,7 @@ class = "data.frame")
 
 EJAM:::dataset_documenter("formulas_ejscreen_acs_disability",
                           description = "formulas for calculating count and percent with disability, from ACS raw data",
-                          details = "Used for annual update of ACS-based indicators related to population with disabilities. See [calc_blockgroup_pctdisability()] and [calc_blockgroupstats_acs()]")
+                          details = "Used for annual update of ACS-based indicators related to population with disabilities. See [calc_blockgroupstats_from_tract()] and [calc_blockgroupstats_acs()]")
 
 # EJAM:::metadata_add_and_use_this("formulas_ejscreen_acs_disability")
 # formulas_ejscreen_acs_disability = EJAM:::metadata_add(formulas_ejscreen_acs_disability) # do not need

@@ -14,6 +14,6 @@ formulas_ejscreen_acs_disability
 formulas for calculating count and percent with disability, from ACS raw data
 }
 \details{
-Used for annual update of ACS-based indicators related to population with disabilities. See \code{\link[=calc_blockgroup_pctdisability]{calc_blockgroup_pctdisability()}} and \code{\link[=calc_blockgroupstats_acs]{calc_blockgroupstats_acs()}}
+Used for annual update of ACS-based indicators related to population with disabilities. See \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupstats_from_tract_data()}} and \code{\link[=calc_blockgroupstats_acs]{calc_blockgroupstats_acs()}}
 }
 \keyword{datasets}
