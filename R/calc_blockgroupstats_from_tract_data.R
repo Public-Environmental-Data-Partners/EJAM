@@ -106,18 +106,23 @@ calc_blockgroupstats_from_tract_data <- function(yr, tables = c("B18101", "C1600
   # > dput(formulas_ejscreen_acs[grepl("^lan_", formulas_ejscreen_acs$formula),]$rname)
 
   ## hard-coded for now:
+  lanvars = c("lan_eng_na", "lan_spanish", "lan_api", "lan_other", "lan_other_ie",
+              "lan_universe", "lan_english", "lan_french", "lan_german", "lan_rus_pol_slav",
+              "lan_other_ie", "lan_korean", "lan_chinese", "lan_vietnamese",
+              "lan_other_asian", "lan_tagalog", "lan_arabic", "lan_other_and_unspecified"
+  )
+  #  tract_lan_eng_na, tract_lan_spanish, tract_lan_api, tract_lan_other, tract_lan_other_ie,
+  # tract_lan_universe, tract_lan_english, tract_lan_french, tract_lan_german, tract_lan_rus_pol_slav,
+  # tract_lan_other_ie, tract_lan_korean, tract_lan_chinese, tract_lan_vietnamese,
+  # tract_lan_other_asian, tract_lan_tagalog, tract_lan_arabic, tract_lan_other_and_unspecified
+  #
+  lanvars_found = intersect(paste0("tract_", lanvars), names(tracts))
+  neededvars = c('bgfips', 'bgwt',
+                 'tract_disability', 'tract_disab_universe',
+                 lanvars_found
+  )
 
-  bg_from_tracts <- tracts[bgwts, .(bgfips, bgwt,
-
-                                    tract_disability, tract_disab_universe,
-
-                                    tract_lan_eng_na, tract_lan_spanish, tract_lan_api, tract_lan_other, tract_lan_other_ie,
-                                    tract_lan_universe, tract_lan_english, tract_lan_french, tract_lan_german, tract_lan_rus_pol_slav,
-                                    tract_lan_other_ie, tract_lan_korean, tract_lan_chinese, tract_lan_vietnamese,
-                                    tract_lan_other_asian, tract_lan_tagalog, tract_lan_arabic, tract_lan_other_and_unspecified
-
-  ),
-  on = "tractfips"]
+  bg_from_tracts <- tracts[bgwts, ..neededvars, on = "tractfips"]
 
 
   # - create blockgroup count in each bg, for each count variable, calculated from tractwide count times the bgwt
@@ -129,6 +134,12 @@ calc_blockgroupstats_from_tract_data <- function(yr, tables = c("B18101", "C1600
                  .SDcols = patterns("^tract_lan_")
   ]
   bg_from_tracts <- cbind(bg_from_tracts, lan_counts_bg)
+  ############################################################### #
+
+  ## CHANGE NAMES NOW FROM tract_ to normal bg names
+
+  names(bg_from_tracts) <- gsub("tract_", "", names(bg_from_tracts))
+
 
   # round to nearest person in each blockgroup only after calculating percent with disability
   ############################################################### #
@@ -136,25 +147,31 @@ calc_blockgroupstats_from_tract_data <- function(yr, tables = c("B18101", "C1600
   ## - finally take that bg_from_tracts table and
   ## apply formulas to it, to calculate bg scale percentages
   ## or just use the formula directly:
-  # bg_from_tracts[, pctdisability := ifelse(disab_universe == 0, 0, as.numeric(disability) / disab_universe)]
+
+  bg_from_tracts[, pctdisability := ifelse(disab_universe == 0, 0, as.numeric(disability) / disab_universe)]
+
+
+
+  ### *** creates duplicate names...
+
 
   bg_from_tracts <- calc_ejam(bg_from_tracts,
                               formulas = formulas[grepl("^pctlan_", formulas)],
              keep.old = c("bgfips",
-                            "disability",  "disab_universe",
+                            "disability",  "disab_universe",   "pctdisability",
                           grep("^lan_", names(bg_from_tracts) , value = TRUE)
-                          # "pctdisability"
-                          ),
-             keep.new = 'all')
+                          )
+             )
 
 
   ############################################################### #
   # drop extra columns now
 
-  bg_from_tracts$bgwt                 <- NULL
+  # bg_from_tracts$bgwt                 <- NULL
   # bg_from_tracts$tract_disab_universe <- NULL
   # bg_from_tracts$tract_disability     <- NULL
-  bg_from_tracts <- bg_from_tracts[, !grepl("^tracts_", names(bg_from_tracts)), with = FALSE]
+  # already gone:
+  # bg_from_tracts <- bg_from_tracts[, !grepl("^tracts_", names(bg_from_tracts)), with = FALSE]
 
 
   # as.data.frame(bg_from_tracts)[bg_from_tracts$bgfips == "010730144081", grepl("disa", names(bg_from_tracts))]

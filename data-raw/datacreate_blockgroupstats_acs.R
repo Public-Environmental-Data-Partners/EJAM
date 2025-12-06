@@ -12,6 +12,8 @@ if (!all.equal(yr_desc, yr_guess)) {stop("Need to confirm the ACS year to use fo
 yr <- yr_desc
 rm(yr_desc, yr_guess)
 
+  yr = 2022 # for testing
+
 ################################################### #
 # download ACS data, calc most demographics ####
 
@@ -23,6 +25,7 @@ save(blockgroupstats_acs, file = "~/Downloads/blockgroupstats_acs step 1.rda")
 
 # bg_disability <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "B18101") # gets disability  from tract data
 # bg_language   <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "C16001") # gets detailed language from tract data
+bgwts <- calc_bgwts_nationwide() # takes a minute to download each state Census 2020
 bg_from_tracts <- calc_blockgroupstats_from_tract_data(yr = yr, tables = c("B18101", "C16001"))
 
 save(bg_from_tracts, file = "~/Downloads/bg_from_tracts.rda")
@@ -47,7 +50,12 @@ blockgroup_demog_index <- calc_blockgroup_demog_index(yr = yr)
   # dry run of join
 btest <- merge(blockgroupstats_acs, blockgroup_demog_index, by = "bgfips")
 testfips = blockgroupstats_acs$bgfips[sample(1:NROW(blockgroupstats_acs), 1)] # "010010203001"
-blockgroupstats_acs[blockgroupstats_acs$bgfips == testfips, .(bgfips, Demog.Index, Demog.Index.Supp, Demog.Index.State, Demog.Index.Supp.State)]
+
+btest[btest$bgfips == testfips,
+                    .(bgfips,
+                      Demog.Index, Demog.Index.Supp,
+                      Demog.Index.State, Demog.Index.Supp.State)]
+
 blockgroup_demog_index[blockgroup_demog_index$bgfips == testfips, ]
 
 if (any(grepl("Demog.Index", colnames(blockgroupstats_acs)))) {
@@ -64,7 +72,7 @@ blockgroupstats_acs <- merge(blockgroupstats_acs, blockgroup_demog_index, by = "
 setDT(blockgroupstats_acs)
 setcolorder(blockgroupstats_acs, c("bgid", "bgfips", "statename", "ST", "countyname", "REGION",
                                    "pop",
-                                   names_d), before = 1)
+                                   names_d[names_d %in% names(blockgroupstats_acs)]), before = 1)
 
 
 
