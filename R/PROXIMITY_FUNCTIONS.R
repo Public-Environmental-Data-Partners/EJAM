@@ -81,7 +81,7 @@
 #   R/utils_calc_ejam.R   (left in that file)  has
 # calc_ejam()
 # calc_byformula()
-# formula_varname()
+# calc_varname_from_formula()
 
 # R/doaggregate_newscores.R had  doaggregate_newscores()
 
@@ -1517,7 +1517,7 @@ custom_doaggregate <- function(sites2blocks,
     #
     #
     #   if (is.null(custom_cols)) {
-    #     custom_cols = EJAM:::formula_varname(custom_formulas)
+    #     custom_cols = EJAM:::calc_varname_from_formula(custom_formulas)
     #   }
     #
     # results_bysite_custom  <-  bybg_bysite[ , calc_ejam( ..???? ), by = "ejam_uniq_id"]
@@ -1676,7 +1676,7 @@ doaggregate_newscores <- function(
 
   # assumed "pop" is the only count column, ie needing to be summed, unless params indicate otherwise
   # assume anything created by a formula in formulas list is a calculated column
-  if (is.null(calculatedcols)) calculatedcols <- formula_varname(formulas)
+  if (is.null(calculatedcols)) calculatedcols <- calc_varname_from_formula(formulas)
   # assume all other columns get aggregated as population weighted averages (except pop ST bgid etc.)
   if (is.null(popmeancols)) popmeancols <- setdiff(names(userstats), c("pop", calculatedcols, "bgid", "bgfips", "ST"))
 

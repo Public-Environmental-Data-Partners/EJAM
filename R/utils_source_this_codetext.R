@@ -10,7 +10,7 @@
 ######################################## #
 ## example showing how it works
 #
-# formula_varname(formulas_d)
+# calc_varname_from_formula(formulas_d)
 #
 ##  see calc_ejam()
 

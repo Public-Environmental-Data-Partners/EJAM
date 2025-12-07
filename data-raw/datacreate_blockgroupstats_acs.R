@@ -1,6 +1,7 @@
 
 # Script to create new version of just the ACS-based indicators (% demographics)
 
+mydir = '~/Downloads'
 library(data.table)
 
 ################################################### #
@@ -19,16 +20,17 @@ rm(yr_desc, yr_guess)
 
 blockgroupstats_acs <- calc_blockgroupstats_acs(yr = yr) # use defaults, otherwise
 
-save(blockgroupstats_acs, file = "~/Downloads/blockgroupstats_acs step 1.rda")
+save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 1.rda"))
 ################################################### #
 # calc pctdisability and language details indicators (from tract data) ####
 
 # bg_disability <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "B18101") # gets disability  from tract data
 # bg_language   <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "C16001") # gets detailed language from tract data
 bgwts <- calc_bgwts_nationwide() # takes a minute to download each state Census 2020
+save(bgwts, file = file.path(mydir, 'bgwts.rda'))
 bg_from_tracts <- calc_blockgroupstats_from_tract_data(yr = yr, tables = c("B18101", "C16001"))
 
-save(bg_from_tracts, file = "~/Downloads/bg_from_tracts.rda")
+save(bg_from_tracts, file = file.path(mydir, "bg_from_tracts.rda"))
 
 # # join into blockgroupstats_acs
 # blockgroupstats_acs[bg_disability, disability     := disability,     on = "bgfips"]
@@ -38,7 +40,7 @@ save(bg_from_tracts, file = "~/Downloads/bg_from_tracts.rda")
 # e.g., pctlan_vietnamese, etc. etc.
 blockgroupstats_acs <- merge(blockgroupstats_acs, bg_from_tracts, on = "bgfips", all.x = TRUE)
 
-save(blockgroupstats_acs, file = "~/Downloads/blockgroupstats_acs step 2.rda")
+save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 2.rda"))
 
 
 
@@ -76,7 +78,7 @@ setcolorder(blockgroupstats_acs, c("bgid", "bgfips", "statename", "ST", "countyn
 
 
 
-save(blockgroupstats_acs, file = "~/Downloads/blockgroupstats_acs step 3.rda")
+save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 3.rda"))
 
 
 stop('stop here')

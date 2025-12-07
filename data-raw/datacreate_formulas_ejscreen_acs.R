@@ -234,7 +234,7 @@
                 "bgid = EJAM::bgpts[match(fips, bgfips), bgid]",
                 "countyname = fips2countyname(fips, includestate = FALSE)",
                 "statename = fips2statename(fips)", "ST = fips2stateabbrev(fips)",
-                "REGION = EJAM:::fips_st2eparegion(ST)",
+                "REGION = EJAM:::fips_st2eparegion(fips_state_from_state_abbrev(ST))",
 
                 "under18 <- ageunder5m + age5to9m + age10to14m + age15to17m + ageunder5m + age5to9f + age10to14f + age15to17f",
                 "over17 <- pop - under18",
@@ -682,7 +682,13 @@
 
   #################################################################### #################################### #
 
-  ## save interim version
+  ## save
+
+  ## fixed like this
+#  formulas_ejscreen_acs$formula[formulas_ejscreen_acs$rname == "REGION"] <-
+#    "REGION = EJAM:::fips_st2eparegion(EJAM:::fips_state_from_state_abbrev(ST))"
+## updated:
+#    attr(formulas_ejscreen_acs, "date_saved_in_package") <- as.character(Sys.Date())
 
   usethis::use_data(formulas_ejscreen_acs, overwrite = TRUE)
 
@@ -760,6 +766,8 @@
   yr = acsendyear(guess_census_has_published = T)
   # yr = acsendyear()
 
+  x1 = acs_table_info(yr = yr)
+
   x = tidycensus::load_variables(yr, "acs5")
   # x = x[x$geography %in% "block group", ] # BUT THAT EXCLUDES C16001, B18101
   x = x[x$geography %in% c("tract", "block group"), ] # INCL C16001, B18101
@@ -768,7 +776,7 @@
   x = x[x$table %in% ejscreen_acs_tables, ]
   # x |> print(n=320)
   ## language variables:
-  # x[x$table %in% c("C16002","B16004", "C16001"), ] |> print(n=100)
+  # x[x$table %in% c("C16002","B16004", "C16001"), ] |> print(n=120)
   ############ #################################### #
 
   # C16001  tract only ####

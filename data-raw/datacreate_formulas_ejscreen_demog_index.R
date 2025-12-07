@@ -52,7 +52,7 @@ formulas_ejscreen_demog_index <- data.frame(
   # longname_old = NA,
   longname = NA
 )
-formulas_ejscreen_demog_index$rname = EJAM:::formula_varname(formulas_ejscreen_demog_index$formula)
+formulas_ejscreen_demog_index$rname = EJAM:::calc_varname_from_formula(formulas_ejscreen_demog_index$formula)
 formulas_ejscreen_demog_index$longname <- fixcolnames(formulas_ejscreen_demog_index$rname, 'rname', 'long')
 
 ########################################################## #

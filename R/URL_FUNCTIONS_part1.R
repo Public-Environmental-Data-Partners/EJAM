@@ -43,6 +43,7 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
     urls <- paste0("https://data.census.gov/table?q=", tables,"&g=", sumlevel,"0000US", fips,"&y=", yr)
   }
   x <- acs_table_info(yr = yr, tables = tables) # prints some info
+  cat("\n")
   return(urls)
 }
 ################################################### #################################################### #

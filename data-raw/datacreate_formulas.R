@@ -241,12 +241,12 @@ formulas_d <- unlist(strsplit(formulas_d, "\n"))
 # see which of the original so-called formulas_d were actually formulas for creating indicators based on raw counts or components
 # as opposed to many that were simply trying to aggregate via wtd mean or were just wrong
 
-formula_RHS1 = function(one_formula) {gsub(paste0("^", trimws(EJAM:::formula_varname(one_formula))), " ", one_formula)}
-formula_was_for_aggregation1 = function(one_formula) {grepl(EJAM:::formula_varname(one_formula), formula_RHS1(one_formula))}
+formula_RHS1 = function(one_formula) {gsub(paste0("^", trimws(EJAM:::calc_varname_from_formula(one_formula))), " ", one_formula)}
+formula_was_for_aggregation1 = function(one_formula) {grepl(EJAM:::calc_varname_from_formula(one_formula), formula_RHS1(one_formula))}
 formula_was_for_aggregation = function(formulas) {sapply(formulas, FUN = formula_was_for_aggregation1)}
 
 x = data.frame(agg = formula_was_for_aggregation(formulas_d))
-x$var = EJAM:::formula_varname(rownames(x))
+x$var = EJAM:::calc_varname_from_formula(rownames(x))
 x$varlist = EJAM:::varinfo(x$var)$varlist
 x$formula = rownames(x); rownames(x) <- NULL
 x = x[order(x$agg,x$varlist, x$var), ]
@@ -316,7 +316,7 @@ details = "Created for EJAM by datacreate_formulas.R script
 x$formula <- gsub("EJ.DISPARITY.pre1960", "EJ.DISPARITY.pctpre1960", x$formula)
 
 x = data.frame(agg = formula_was_for_aggregation(formulas_d))
-x$var = EJAM:::formula_varname(rownames(x))
+x$var = EJAM:::calc_varname_from_formula(rownames(x))
 x$varlist = EJAM:::varinfo(x$var)$varlist
 x$formula = rownames(x); rownames(x) <- NULL
 x = x[order(x$agg,x$varlist, x$var), ]

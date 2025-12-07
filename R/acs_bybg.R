@@ -17,33 +17,18 @@
 
 #' download ACS 5year data from Census API, at blockgroup resolution (slowly if for entire US)
 #' @details
+#' See newer ACSdownload::get_acs_new() as used in calc_blockgroupstats_acs() etc.,
+#' which will download ACS nationwide data by table
+#' instead of using acs_bybg(), which queryied API by State-by-State.
 #'
-#' Probably requires [getting and specifying an API key for Census Bureau](https://api.census.gov/data/key_signup.html) ! (at least if query is large).
+#' acs_bybg() probably requires [getting and specifying an API key for Census Bureau](https://api.census.gov/data/key_signup.html) ! (at least if query is large).
 #'   see [tidycensus package help](https://walker-data.com/tidycensus/)  envt var CENSUS_API_KEY
 #'
 #' NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 #' ```
 #' x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
-#'   ## tables_ejscreen_acs or    as.vector(ACSdownload::ejscreen_acs_tables)
-#' tables = c(
-#'   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
-#'   "B01001", # sex and age / basic population counts
-#'   "B03002", # race with hispanic ethnicity
-#'   "B02001", # race without hispanic ethnicity
-#'   "B15002", # education
-#'   "B23025", # unemployed
-#'   "C17002", # low income, poor, etc.
-#'   "B19301", # per capita income
-#'   "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
-#'   "B28003", # no broadband
-#'   "B27010", # no health insurance
-#'   "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
-#'   "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
-#'   ####### TRACT ONLY:
-#'   #   used by EJSCREEN but only available at tract resolution:
-#'   "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
-#'   "B18101" # disability -- at tract resolution only ########### #
-#' )
+#'   ## tables_ejscreen_acs
+#' tables = tables_ejscreen_acs
 #' acstabs2 <- paste0(tables, "_")
 #' mytables <- data.table::rbindlist(lapply(acstabs2, function(z) {
 #'   x[substr(x$name,1,7) %in% z, ][1, ]
@@ -130,28 +115,8 @@
 #' ## ACS tables and variables most relevant to EJSCREEN
 #'
 #' acsinfo <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
-#'
-#'   ## see  as.vector(ACSdownload::ejscreen_acs_tables)
-#' ejscreentables <- c("B01001", # sex and age / basic population counts
-#'             "B03002", # race with hispanic ethnicity
-#'             "B02001", # race without hispanic ethnicity
-#'             "B15002", # education
-#'
-#'             "C16002", # language/ lingiso
-#'             "B16004", # language category and English not at all
-#'
-#'             "C17002", # low income, poor, etc.
-#'             "B25034", # pre1960, for lead paint indicator
-#'             "B23025", # unemployed
-#'
-#'             "B25032", # owned units vs rented units # ***
-#'             "B25003", # owned vs rented             # ***
-#'
-#'             "B28003", # no broadband
-#'             "B27010" ,  # no health insurance
-#'
-#'           "B18101" # disability -- at tract resolution only ########### #
-#' )
+#' # or x = EJAM:::acs_table_info()
+#' ejscreentables <-  as.vector(tables_ejscreen_acs)
 #'
 #' acstabs2 <- paste0(ejscreentables, "_")
 #' acsinfo$table = gsub("_.*", "", acsinfo$name)
@@ -159,7 +124,7 @@
 #' mytables <- data.table::rbindlist(lapply(ejscreentables, function(z) {acsinfo[acsinfo$table %in% z, ][1,]}))
 #' ejscreen_tables <-  mytables$table # same as ejscreentables
 #'
-#' myvars <- myacsinfo$name # 184 variables among 8 tables
+#' myvars <- myacsinfo$name #
 #'
 #' if ("want to run example that takes a few minutes" == "yes") {
 #'   # VERY SLOWLY download data for all these tables

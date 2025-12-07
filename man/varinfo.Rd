@@ -59,7 +59,7 @@ several of which are not exported:
 \item EJAM names_whichlist()
 \item EJAM names_whichlist_multi()
 \item EJAM names_whichlist_multi_key()
-\item EJAM formula_varname()
+\item EJAM calc_varname_from_formula()
 }
 
 and the various related data objects like map_headernames and namez

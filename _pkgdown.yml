@@ -262,6 +262,7 @@ reference:
 - subtitle: "Using ACS Data to Calculate New Indicators"
   contents:
   - url_acs_table_info
+  - acs_table_info
   - acsendyear
   - tables_ejscreen_acs
   - formulas_ejscreen_acs
@@ -505,7 +506,7 @@ reference:
   - custom
   - formulas_all
   - formulas_d
-  - formula_varname
+  - calc_varname_from_formula
   - batch.clean
   - rowMaxs2
   - colMins2

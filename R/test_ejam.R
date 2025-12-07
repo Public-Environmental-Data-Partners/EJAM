@@ -285,6 +285,7 @@ x <- EJAM:::test_ejam(
       ),
       test_misc = c(
         "test-sites_from_input.R",
+        "test-calc_byformula.R", # create new ACS-based data, etc.
         "test-acs_bybg.R",
         "test-url_ejamapi.R",
         "test-URL_FUNCTIONS_part1.R",
