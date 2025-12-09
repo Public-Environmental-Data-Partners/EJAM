@@ -1,0 +1,45 @@
+---
+title: "Overview of Socioeconomic Indicators in EJScreen"
+description: "Overview of Socioeconomic Indicators in EJScreen"
+output:
+  rmarkdown::html_vignette
+---
+
+There are seven socioeconomic indicators featured in EJScreen. These indicators form the basis for both the demographic index and the supplemental demographic index:
+
+1.  **People of color:**
+
+-   The percent of individuals in a block group who list their racial status as a race other than white alone and/or list their ethnicity as Hispanic or Latino. That is, all people other than non-Hispanic white-alone individuals. The word "alone" in this case indicates that the person is of a single race, not multiracial.
+
+2.  **Low-income:**
+
+-   The percent of a [block group's](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/how-interpret-standard-report-ejscreen#census) population in households where the household income is less than or equal to twice the federal "poverty level."
+
+3.  **Unemployment rate:**
+
+-   The percent of a [block group's](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/how-interpret-standard-report-ejscreen#census) population that did not have a job at all during the reporting period, made at least one specific active effort to find a job during the prior 4 weeks, and were available for work (unless temporarily ill).
+
+4.  **Limited English speaking:**
+
+-   Percent of people in a block group living in limited English speaking households. A household in which all members age 14 years and over speak a non-English language and also speak English less than "very well" (have difficulty with English) is limited English speaking.
+
+5.  **Less than high school education:**
+
+-   Percent of people age 25 or older in a block group whose education is short of a high school diploma.
+
+6.  **Under age 5:**
+
+-   Percent of people in a block group under the age of 5.
+
+7.  **Over age 64:**
+
+-   Percent of people in a block group over the age of 64.
+
+EJScreen includes two indexes that are based on the above socioeconomic indicators:
+
+1.  **Demographic Index** is based on the average of two socioeconomic indicators; low-income and people of color.
+2.  **Supplemental Demographic Index** is based on the average of five socioeconomic indicators; low-income, unemployment, limited English, less than high school education, and low life expectancy (which is a health dataset).
+
+EJScreen uses socioeconomics factors as very general indicators of a community's potential susceptibility to the types of environmental factors included in this screening tool, as explained further in the EJScreen Technical Documentation (pdf) (770.34 KB). EJScreen has been designed in the context of EPA's EJ policies, including [EPA's Final Guidance on Considering Environmental Justice During the Development of an Action (U.S. EPA, 2010)](https://web.archive.org/web/20250123161322/https://www.epa.gov/environmentaljustice/technical-guidance-assessing-environmental-justice-regulatory-analysis). That guidance document explained EPA's focus on socioeconomics as an indicator of potential susceptibility to environmental pollution.
+
+Last updated on December 19, 2024

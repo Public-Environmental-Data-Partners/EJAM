@@ -16,11 +16,9 @@ It is a data.table with one row for every US Census blockgroup.
 \item The EJ Indexes (Summary Indexes) are stored in a separate table, \link{bgej}
 }
 
-The source of data for each indicator was documented by EJSCREEN, as archived on these pages:
+The source of data for each indicator was documented by EJSCREEN, as linked in this document:
 \itemize{
-\item \href{https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log}{EJSCREEN Change Log - newest indicators, etc.}{target="_blank"}
-\item \href{https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen_sources_plaintext.md}{Full list of indicators, with definitions}{target="_blank"}. Full webpage is also available \href{https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions}{as archived}{target="_blank"}.
-\item \href{https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen}{Year and source of each environmental indicator}{target="_blank"}
+\item \href{https://ejanalysis.github.io/EJAM/articles/ejscreen.html}{EJSCREEN documentation article}
 }
 
 More about blockgroupstats

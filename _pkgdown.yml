@@ -3,6 +3,7 @@ template:
   bootstrap: 5
   params:
   noindex: true
+  assets: pkgdown/assets/files
 deploy:
   install_metadata: true
 navbar:
@@ -28,6 +29,11 @@ home:
   sidebar:
     structure: [dev, citation, license, community]
 articles:
+- title: EJSCREEN Documentation
+  desc: EJSCREEN Indicators and Reports
+  navbar: EJSCREEN Indicators and Reports
+  contents:
+  - '`ejscreen`'
 - title: The EJAM Web App
   desc: Overview for EJAM Users
   navbar: Overview for EJAM Users
@@ -440,6 +446,7 @@ reference:
   - url_county_equityatlas
   - url_state_equityatlas
   - url_naics.com
+  - url_ejscreentechdoc
 - title: "Utilities handling variable names"
   desc: "Utilities to handle variable names, indicator metadata, formulas, etc."
   contents:

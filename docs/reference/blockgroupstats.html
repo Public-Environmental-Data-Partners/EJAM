@@ -9,7 +9,7 @@ It is a data.table with one row for every US Census blockgroup."><meta property=
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,9 @@ It is a data.table with one row for every US Census blockgroup."><meta property=
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -75,11 +78,14 @@ It is a data.table with one row for every US Census blockgroup.</p>
 <li><p>Demographics such as percentages are calculated from Census Bureau data from the American Community Survey
 5-year summary file, as documented by EJSCREEN.</p></li>
 <li><p>The EJ Indexes (Summary Indexes) are stored in a separate table, <a href="bgej.html">bgej</a></p></li>
-</ul><p>The source of data for each indicator was documented by EJSCREEN, as archived on these pages:</p><ul><li><p><a href="https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log" class="external-link">EJSCREEN Change Log - newest indicators, etc.</a></p></li>
-<li><p><a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions" class="external-link">Full list of indicators, with definitions</a></p></li>
-<li><p><a href="https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen" class="external-link">Year and source of each environmental indicator</a></p></li>
-</ul><p>More about blockgroupstats</p><ul><li><p>During 2025, EJAM used EPA environmental indicators along with population indicators derived
-from 2018-2022 ACS data. Each year this should be re-created as for the latest version.</p></li>
+</ul><p>The source of data for each indicator was documented by EJSCREEN, as linked in this document:</p><ul><li><p><a href="https://ejanalysis.github.io/EJAM/articles/ejscreen.html">EJSCREEN documentation article</a></p></li>
+</ul><p>More about blockgroupstats</p><ul><li><p>Each year this should be re-created as for the latest version.</p></li>
+<li><p>In early 2026, EJAM used EPA environmental indicators along with population indicators derived
+from 2020-2024 ACS data.</p></li>
+<li><p>At the end of 2025, EJAM made available EPA environmental indicators along with population indicators derived
+from 2019-2023 ACS data.</p></li>
+<li><p>Starting in August 2024 and through 2025, EJAM used EPA environmental indicators along with population indicators derived
+from 2018-2022 ACS data.</p></li>
 <li><p>See <code>attributes(blockgroupstats)</code> to confirm vintage of each dataset</p></li>
 <li><p>Geographic scope includes States, DC, and Puerto Rico (PR), but not any Island Areas (VI, GU, AS, etc.)</p></li>
 <li><p>Column names include <code>bgfips</code>, <code>bgid</code> (for join to <a href="blockwts.html">blockwts</a> by/on <code>bgid</code>),
@@ -107,11 +113,11 @@ The column called "area" is not used and not documented.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>December 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.4.0</p>
 </div>
 
     </footer></div>

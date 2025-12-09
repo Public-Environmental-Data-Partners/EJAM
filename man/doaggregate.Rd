@@ -153,7 +153,8 @@ This function requires the following datasets:
 \section{\strong{Identification of nearby residents -- methodology:}}{
 EJAM uses the same approach as EJSCREEN does to identify the count and residential population of nearby residents,
 so EJSCREEN technical documentation should be consulted on the approach,
-at \href{https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads}{EJSCREEN Technical Info}.
+at \href{http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html}{EJSCREEN Technical Info}
+or \href{https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads}{as archived}.
 EJAM implements that approach using faster code and data formats, but it
 still uses the same high-resolution approach as described in EJSCREEN documentation
 and summarized below.

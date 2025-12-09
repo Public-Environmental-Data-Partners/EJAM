@@ -1,0 +1,41 @@
+---
+title: "EJScreen Indicators Overview – Diesel Particulate Matter"
+description: "EJScreen Indicators Overview – Diesel Particulate Matter"
+output:
+  rmarkdown::html_vignette
+---
+
+```{r developernote, eval=FALSE, echo= FALSE, include = FALSE}
+#  Developer note: 
+#    - **See ?pkgdown::build_site** and script in EJAM/data-raw/- EJAM uses the pkgdown R package to build help and articles/ vignettes as web pages
+```
+
+```{r notes, eval=FALSE, echo=FALSE}
+<!-- ejscreen-indicators-overview-diesel-particulate-matter -->
+```
+
+## What is the diesel particulate matter indicator?
+
+The “diesel particulate matter (PM) indicator” measures how much diesel PM (a mixture of particles from diesel exhaust) people might be exposed to. EJScreen presents diesel PM concentrations using percentile rank, ranging from 0 (lowest) to 100 (highest) with higher scores representing higher concentrations.
+
+## Why is diesel PM important?
+
+- Diesel engines power cars, trucks, offroad equipment (e.g., construction and mining machines), locomotives, marine vessels, and stationary generators. Particulate matter from diesel engine emissions is composed of sooty elemental carbon, sulfur compounds, and other trace materials. Diesel particulate matter is listed as a mobile-source air toxic due to the health effects linked to exposure from vehicles.
+- Research indicates that diesel exhaust is [carcinogenic to humans](https://www.iarc.who.int/wp-content/uploads/2018/07/pr213_E.pdf)  _[(archived copy)](https://web.archive.org/web/20250121194841/https://www.iarc.who.int/wp-content/uploads/2018/07/pr213_E.pdf)_ and associated with an increased risk of lung cancer.
+- More than [72 million people](https://web.archive.org/web/20250122221913/https://www.epa.gov/mobile-source-pollution/environmental-justice-and-transportation#hd-phase3) live near major truck routes in the United States and are more likely to be people of color or low-income.
+
+## How does EJScreen create the diesel particulate matter indicator?
+
+- The diesel PM concentration is measured in units of micrograms per cubic meter(μg/m3).
+- Diesel PM concentrations are provided by the EPA’s Office of Air Quality Planning and Standards. The source data are from the [EPA Air Toxics Screening Assessment](https://www.epa.gov/AirToxScreen).
+- For technical details on the calculations and source data, visit the [EJScreen Technical Documentation](`r EJAM::url_ejscreentechdoc()`). [or the archived tech info page](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html).
+
+## Moving Forward – What You Can Do
+
+- Stay informed on the latest relevant information and resources on the [EPA Mobile Source Pollution site](https://www.epa.gov/mobile-source-pollution).
+
+- [Learn about the human health and environmental effects of diesel exhaust](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera/document-page-learn-about-impacts-diesel-exhaust-and-diesel-emissions-reduction-act-dera).
+
+- Visit the EPA’s [AirToxScreen](https://www.epa.gov/AirToxScreen) to learn which air toxics may be of concern to you, to better understand the risks from air toxics exposures, and how to open a dialogue with your local air agency about air quality in your area.
+
+- See what the EPA and others are doing to [reduce diesel emissions through new technologies and regulations](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera/learn-about-impacts-diesel-exhaust-and-diesel-emissions-reduction-act-dera). Also learn about the [Diesel Emissions Reduction Act (DERA)](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera) and [Clean Heavy-Duty Vehicles Program (CHDV)](https://web.archive.org/web/20250121194841/https://www.epa.gov/clean-heavy-duty-vehicles-program) funding opportunities that may be relevant to your state or local authorities, as well as [Ports Initiative](https://web.archive.org/web/20250121194841/https://www.epa.gov/ports-initiative) resources to support stakeholders in reducing port-related diesel emissions.
