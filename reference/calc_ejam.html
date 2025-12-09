@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -56,7 +59,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>DRAFT utility to use formulas provided as text, to calculate indicators</h1>
-      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/R/utils_calc_ejam.R" class="external-link"><code>R/utils_calc_ejam.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/R/calc_ejam.R" class="external-link"><code>R/calc_ejam.R</code></a></small>
       <div class="d-none name"><code>calc_ejam.Rd</code></div>
     </div>
 
@@ -108,7 +111,7 @@
 
 <ul><li><p><code><a href="custom_doaggregate.html">custom_doaggregate()</a></code> may use <code>calc_ejam()</code></p></li>
 <li><p><code>calc_ejam()</code> uses <code><a href="calc_byformula.html">calc_byformula()</a></code></p></li>
-<li><p><code><a href="calc_byformula.html">calc_byformula()</a></code> uses <code><a href="formula_varname.html">formula_varname()</a></code> and maybe source_this_codetext()</p></li>
+<li><p><code><a href="calc_byformula.html">calc_byformula()</a></code> uses <code><a href="calc_varname_from_formula.html">calc_varname_from_formula()</a></code> and maybe source_this_codetext()</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -149,7 +152,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">newdf</span>, <span class="va">max</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span>,</span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">newdf</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">names_pct_as_fraction_blockgroupstats</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="formula_varname.html">formula_varname</a></span><span class="op">(</span><span class="va">formulas_d</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="calc_varname_from_formula.html">calc_varname_from_formula</a></span><span class="op">(</span><span class="va">formulas_d</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">bgdf</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
@@ -159,11 +162,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>December 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.4.0</p>
 </div>
 
     </footer></div>

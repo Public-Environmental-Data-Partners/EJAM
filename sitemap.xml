@@ -16,6 +16,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/articles/dev-update-documentation.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/dev-update-package.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/distances.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/articles/ejscreen.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/index.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/installing.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/naics.html</loc></url>
@@ -32,6 +33,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/SIC.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/acs_bybg.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/acs_bycounty.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/acs_table_info.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/acsendyear.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table_goodnames.html</loc></url>
@@ -57,13 +59,18 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/build_barplot_report.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/build_community_report.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_avg_columns.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/calc_bgej.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_bgwts_bysite.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_bgwts_overall.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/calc_blockgroup_demog_index.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/calc_blockgroupstats_acs.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/calc_blockgroupstats_from_tract_data.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_byformula.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_counties_from_bg.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_ejam.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_ratio_columns.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/calc_varname_from_formula.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calctype.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calcweight.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/censusplaces.html</loc></url>
@@ -540,6 +547,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/table_xls_format.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/table_xls_from_ejam.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/tablefixed.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/tables_ejscreen_acs.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/test_ejam.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/testdata.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/testdatafolder.html</loc></url>
@@ -583,6 +591,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/testpoints_overlap3.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/testshapes_2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/unshared.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/url_acs_table_info.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_by_id.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_columns_bysite.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_county_equityatlas.html</loc></url>

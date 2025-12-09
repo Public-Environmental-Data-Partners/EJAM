@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -71,6 +74,7 @@
 <span>  alphasort_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  internal_included <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  exportedfuncs_included <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  functions_included <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  data_included <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  vectoronly <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -93,11 +97,15 @@
 
 
 <dt id="arg-exportedfuncs-included">exportedfuncs_included<a class="anchor" aria-label="anchor" href="#arg-exportedfuncs-included"></a></dt>
-<dd><p>default TRUE includes exported functions (non-datasets, actually) in the list</p></dd>
+<dd><p>default TRUE includes exported functions (non-datasets, actually) in the list (unless functions_included=F)</p></dd>
+
+
+<dt id="arg-functions-included">functions_included<a class="anchor" aria-label="anchor" href="#arg-functions-included"></a></dt>
+<dd><p>default TRUE includes functions in the output</p></dd>
 
 
 <dt id="arg-data-included">data_included<a class="anchor" aria-label="anchor" href="#arg-data-included"></a></dt>
-<dd><p>default TRUE includes datasets in the list, as would be seen via data(package=pkg)</p></dd>
+<dd><p>default TRUE includes datasets in the output, as would be seen via data(package=pkg)</p></dd>
 
 
 <dt id="arg-vectoronly">vectoronly<a class="anchor" aria-label="anchor" href="#arg-vectoronly"></a></dt>
@@ -123,7 +131,64 @@ unless vectoronly = TRUE in which case it returns a character vector</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># EJAM:::pkg_functions_and_data("datasets")</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># some ways to to see what datasets are in the EJAM package:</span></span>
+<span></span>
+<span>  <span class="va">yo</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_functions_and_data</span><span class="op">(</span>functions_included <span class="op">=</span> <span class="cn">F</span>, vectoronly <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>  <span class="va">x</span>  <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="st">"EJAM"</span>, simple <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setequal</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Item</span>, <span class="va">yo</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co"># Plot showing that just a couple of large datasets</span></span>
+<span> <span class="co"># account for most of the total:</span></span>
+<span></span>
+<span>  <span class="va">biggest</span> <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">bigp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span>  <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span>,decreasing <span class="op">=</span> <span class="cn">T</span> <span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span>,</span>
+<span>       ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, ylab<span class="op">=</span><span class="st">"Share of total size"</span>, xlab<span class="op">=</span><span class="st">"datasets sorted large to small"</span>, type <span class="op">=</span> <span class="st">'b'</span>,</span>
+<span>            main<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">biggest</span>, <span class="st">" alone is "</span>, <span class="va">bigp</span>,<span class="st">"% of total"</span><span class="op">)</span><span class="op">)</span></span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fl">0</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h<span class="op">=</span><span class="fl">0</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h<span class="op">=</span><span class="fl">1</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span><span class="op">$</span><span class="va">size</span> <span class="op">&gt;=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="co"># at least 100 KB</span></span>
+<span>  <span class="va">xo</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">Item</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"names_"</span>, <span class="va">xo</span>, value <span class="op">=</span> <span class="cn">T</span>, ignore.case <span class="op">=</span> <span class="cn">T</span>, invert <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="co"># most were like names_d, etc.</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"avg.in.us"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span> <span class="co"># lazy load an object into memory and make it visible to user</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span> <span class="co"># another way to see just a vector of the data object names</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"EJAM"</span><span class="op">)</span><span class="op">$</span><span class="va">results</span><span class="op">[</span>, <span class="st">'Item'</span><span class="op">]</span></span>
+<span></span>
+<span> <span class="co"># not actually sorted within each pkg by default</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="co"># not actually sorted by default</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span></span>
+<span> <span class="co">## EJAM:::pkg_data("MASS", simple=T)</span></span>
+<span></span>
+<span> <span class="co"># sorted by size if simple=F</span></span>
+<span> <span class="co">## EJAM:::pkg_data("datasets", simple=F)</span></span>
+<span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span>simple <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span> <span class="co"># sorted by size already, to see largest ones among all these pkgs:</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co"># sorted alphabetically within each pkg</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
+<span>   <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Package</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span> <span class="op">)</span></span>
+<span> <span class="co"># sorted alphabetically across all the pkgs</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
+<span>   <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># datasets as lazyloaded objects vs. files installed with package</span></span>
+<span></span>
+<span><span class="va">topic</span> <span class="op">=</span> <span class="st">"fips"</span>  <span class="co"># or "shape" or "latlon" or "naics" or "address" etc.</span></span>
+<span></span>
+<span><span class="co"># datasets / R objects</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>data.in.package  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="va">topic</span>, <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">Item</span>, value <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># files</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>files.in.package <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="va">topic</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -131,11 +196,11 @@ unless vectoronly = TRUE in which case it returns a character vector</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>December 2025</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.4.0</p>
 </div>
 
     </footer></div>
