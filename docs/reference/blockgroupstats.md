@@ -16,18 +16,10 @@ US Census blockgroup.
   [bgej](https://ejanalysis.github.io/EJAM/reference/bgej.md)
 
 The source of data for each indicator was documented by EJSCREEN, as
-archived on these pages:
+linked in this document:
 
-- [EJSCREEN Change Log - newest indicators,
-  etc.](https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log)target="\_blank"
-
-- [Full list of indicators, with
-  definitions](https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen_sources_plaintext.md)target="\_blank".
-  Full webpage is also available [as
-  archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions)target="\_blank".
-
-- [Year and source of each environmental
-  indicator](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)target="\_blank"
+- [EJSCREEN documentation
+  article](https://ejanalysis.github.io/EJAM/articles/ejscreen.html)
 
 More about blockgroupstats
 

@@ -936,6 +936,8 @@ and Report Percentiles or Means
 - [`url_naics.com()`](https://ejanalysis.github.io/EJAM/reference/url_naics.com.md)
   : URL functions - url_naics.com - Get URL for page with info about
   industry sectors by text query term
+- [`url_ejscreentechdoc()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreentechdoc.md)
+  : utility to get URL of .pdf of EJSCREEN Technical Documentation
 
 ## Utilities handling variable names
 

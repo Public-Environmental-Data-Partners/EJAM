@@ -64,12 +64,20 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.4.0" id="ejam-240-december-2025">EJAM 2.4.0 (December 2025)<a class="anchor" aria-label="anchor" href="#ejam-240-december-2025"></a></h2>
-<ul><li>v2.32.*, used throughout 2025, used ACS 2018-2022 (even though newer ACS data were available from Census Bureau).</li>
+<div class="section level3">
+<h3 id="updated-demographic-data-from-acs-2-4-0">Updated Demographic Data from ACS<a class="anchor" aria-label="anchor" href="#updated-demographic-data-from-acs-2-4-0"></a></h3>
+<ul><li>v2.32.*, used throughout 2025, used American Community Survey (ACS) 2018-2022 (even though newer ACS 5-year survey data were available from Census Bureau).</li>
 <li>v2.4.0, this release, is just to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.</li>
 <li>v2.5.0 will provide 2020-2024 ACS and will be released in early 2026.</li>
 <li>Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.</li>
-<li>Functions created to update ACS-based demographic dataset each year: calc_bgej(), calc_blockgroupstats_acs(), calc_blockgroupstats_from_tract_data(), calc_bgwts_nationwide(), etc.</li>
+<li>Added functions that can update ACS-based demographic dataset each year: <code><a href="../reference/calc_bgej.html">calc_bgej()</a></code>, <code><a href="../reference/calc_blockgroupstats_acs.html">calc_blockgroupstats_acs()</a></code>, <code><a href="../reference/calc_blockgroupstats_from_tract_data.html">calc_blockgroupstats_from_tract_data()</a></code>, <code>calc_bgwts_nationwide()</code>, etc.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="ejscreen-documentation-2-4-0">EJSCREEN Documentation<a class="anchor" aria-label="anchor" href="#ejscreen-documentation-2-4-0"></a></h3>
+<ul><li>Added <a href="https://ejanalysis.github.io/EJAM/articles/ejscreen.html">EJSCREEN documentation article</a> at <a href="https://github.com/ejanalysis/EJAM/blob/development/vignettes/ejscreen.Rmd" class="external-link uri">https://github.com/ejanalysis/EJAM/blob/development/vignettes/ejscreen.Rmd</a> with links to pages and documents in the form of .Rmd/.html pages that are faster-loading copies of selected info from pages documenting EJSCREEN.</li>
+<li>Added new function <code><a href="../reference/url_ejscreentechdoc.html">url_ejscreentechdoc()</a></code> that provides URL of a copy of the Technical Documentation.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.6.003" id="ejam-2326003-november-2025">EJAM 2.32.6.003 (November 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326003-november-2025"></a></h2>
 <ul><li>
