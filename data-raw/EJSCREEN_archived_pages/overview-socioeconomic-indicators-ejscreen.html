@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Overview of Socioeconomic Indicators in EJScreen</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Overview of Socioeconomic Indicators in
+EJScreen</h1>
+
+
+
+<p>There are seven socioeconomic indicators featured in EJScreen. These
+indicators form the basis for both the demographic index and the
+supplemental demographic index:</p>
+<ol style="list-style-type: decimal">
+<li><strong>People of color:</strong></li>
+</ol>
+<ul>
+<li>The percent of individuals in a block group who list their racial
+status as a race other than white alone and/or list their ethnicity as
+Hispanic or Latino. That is, all people other than non-Hispanic
+white-alone individuals. The word “alone” in this case indicates that
+the person is of a single race, not multiracial.</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Low-income:</strong></li>
+</ol>
+<ul>
+<li>The percent of a <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/how-interpret-standard-report-ejscreen#census">block
+group’s</a> population in households where the household income is less
+than or equal to twice the federal “poverty level.”</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Unemployment rate:</strong></li>
+</ol>
+<ul>
+<li>The percent of a <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/how-interpret-standard-report-ejscreen#census">block
+group’s</a> population that did not have a job at all during the
+reporting period, made at least one specific active effort to find a job
+during the prior 4 weeks, and were available for work (unless
+temporarily ill).</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Limited English speaking:</strong></li>
+</ol>
+<ul>
+<li>Percent of people in a block group living in limited English
+speaking households. A household in which all members age 14 years and
+over speak a non-English language and also speak English less than “very
+well” (have difficulty with English) is limited English speaking.</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>Less than high school education:</strong></li>
+</ol>
+<ul>
+<li>Percent of people age 25 or older in a block group whose education
+is short of a high school diploma.</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li><strong>Under age 5:</strong></li>
+</ol>
+<ul>
+<li>Percent of people in a block group under the age of 5.</li>
+</ul>
+<ol start="7" style="list-style-type: decimal">
+<li><strong>Over age 64:</strong></li>
+</ol>
+<ul>
+<li>Percent of people in a block group over the age of 64.</li>
+</ul>
+<p>EJScreen includes two indexes that are based on the above
+socioeconomic indicators:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Demographic Index</strong> is based on the average of two
+socioeconomic indicators; low-income and people of color.</li>
+<li><strong>Supplemental Demographic Index</strong> is based on the
+average of five socioeconomic indicators; low-income, unemployment,
+limited English, less than high school education, and low life
+expectancy (which is a health dataset).</li>
+</ol>
+<p>EJScreen uses socioeconomics factors as very general indicators of a
+community’s potential susceptibility to the types of environmental
+factors included in this screening tool, as explained further in the
+EJScreen Technical Documentation (pdf) (770.34 KB). EJScreen has been
+designed in the context of EPA’s EJ policies, including <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/environmentaljustice/technical-guidance-assessing-environmental-justice-regulatory-analysis">EPA’s
+Final Guidance on Considering Environmental Justice During the
+Development of an Action (U.S. EPA, 2010)</a>. That guidance document
+explained EPA’s focus on socioeconomics as an indicator of potential
+susceptibility to environmental pollution.</p>
+<p>Last updated on December 19, 2024</p>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
