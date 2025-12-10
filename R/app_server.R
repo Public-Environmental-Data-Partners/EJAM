@@ -251,16 +251,16 @@ app_server <- function(input, output, session) {
   })
 
   # update default of initial NAICS input options (since using server side and it starts as NULL to load faster) ###
-  observe({
+  observeEvent(session$clientData, {
     updateSelectizeInput(session = session, inputId = 'default_naics',
                          ## use named list version, grouped by first two code numbers
                          choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs),
                          selected = EJAM:::global_or_param("default_naics"),
                          server = TRUE)
-  })
+  }, once = TRUE)
   observe({
     # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
-    level_of_detail_based_on_default_naics <- ifelse(nchar(input$default_naics) > 3, 'detailed', EJAM:::global_or_param("default_naics_digits_shown"))
+    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else EJAM:::global_or_param("default_naics_digits_shown")
     updateRadioButtons(session = session, inputId = 'naics_digits_shown',
                        selected = level_of_detail_based_on_default_naics
     )
@@ -282,8 +282,8 @@ app_server <- function(input, output, session) {
       naics_choices <- setNames(naics_counts_filtered()$NAICS, naics_counts_filtered()$label_no_subs)
     }
 
-    trydefault =  ifelse(is.null(input$default_naics), EJAM:::global_or_param("default_naics"), input$default_naics)
-    vals <- ifelse(is.null(input$ss_select_naics), trydefault, input$ss_select_naics)
+    trydefault <- if (is.null(input$default_naics)) EJAM:::global_or_param("default_naics") else input$default_naics
+    vals <- if (is.null(input$ss_select_naics)) trydefault else input$ss_select_naics
     ### update ss_select_NAICS input options ###
     updateSelectizeInput(session = session, inputId = 'ss_select_naics',
                          ## use named list version, grouped by first two code numbers
