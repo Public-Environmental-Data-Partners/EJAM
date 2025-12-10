@@ -98,7 +98,8 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
                                 mycolorsavailable = c("gray","yellow","orange","red"),
                                 main = "Residential Populations at the Analyzed Locations Compared to US Overall",
                                 ylab = "Ratio vs. Average",
-                                caption = "NH = \"non-Hispanic\"\nNHA = \"non-Hispanic alone, aka single race\"") {
+                                caption = 'NH = "Non-Hispanic"\nNHA = "Non-Hispanic Alone" (alone = single race)'
+                                ) {
 
   if (is.null(main) || "" %in% main) {main <- "Residential Populations at the Analyzed Locations Compared to US Overall"}
   ########################################################## #
