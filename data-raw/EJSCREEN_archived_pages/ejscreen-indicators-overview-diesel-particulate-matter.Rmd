@@ -1,8 +1,7 @@
 ---
 title: "EJScreen Indicators Overview – Diesel Particulate Matter"
 description: "EJScreen Indicators Overview – Diesel Particulate Matter"
-output:
-  rmarkdown::html_vignette
+output: html_document
 ---
 
 ```{r developernote, eval=FALSE, echo= FALSE, include = FALSE}
@@ -39,3 +38,10 @@ The “diesel particulate matter (PM) indicator” measures how much diesel PM (
 - Visit the EPA’s [AirToxScreen](https://www.epa.gov/AirToxScreen) to learn which air toxics may be of concern to you, to better understand the risks from air toxics exposures, and how to open a dialogue with your local air agency about air quality in your area.
 
 - See what the EPA and others are doing to [reduce diesel emissions through new technologies and regulations](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera/learn-about-impacts-diesel-exhaust-and-diesel-emissions-reduction-act-dera). Also learn about the [Diesel Emissions Reduction Act (DERA)](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera) and [Clean Heavy-Duty Vehicles Program (CHDV)](https://web.archive.org/web/20250121194841/https://www.epa.gov/clean-heavy-duty-vehicles-program) funding opportunities that may be relevant to your state or local authorities, as well as [Ports Initiative](https://web.archive.org/web/20250121194841/https://www.epa.gov/ports-initiative) resources to support stakeholders in reducing port-related diesel emissions.
+
+--------------------
+ _About this page:_
+
+- _This page is a simplified version of the original saved by archive.org._
+- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+

@@ -1,29 +1,14 @@
 ---
 title: "EJScreen Indicators and Map Descriptions"
 description: "EJScreen Indicators and Map Descriptions"
-output:
-  rmarkdown::html_vignette:
-  toc: true
-vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators and Map Descriptions}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-editor_options:
-  markdown:
-    wrap: 80
+output: html_document
 ---
-
-_About this page:_ 
-
-- _This page is a simplified version of the [archived version](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions)._
-- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
-
-
 
 The below provides basic descriptions for the data included in the mapping
 layers available through EJScreen. EJScreen data are updated periodically. To
 see which years of data are in the current version, see the 13 indicators in the
-archived [Overview of Environmental Indicators in EJScreen](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html) or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
+archived [Overview of Environmental Indicators in EJScreen](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html)
+or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
 or check the metadata.
 
 -   [Environmental Burden Indicators]
@@ -52,8 +37,8 @@ Source: [EPA’s Office of Air and Radiation](https://www.epa.gov/aboutepa/about
 
 For more details on the PM2.5 indicator, including why it is important and what
 you can do moving forward, please visit the 
-[EJScreen Indicator Overview for PM2.5](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicator-overviews-particulate-matter-25-pm25.html) 
-or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-particulate-matter-25-pm25).
+[EJScreen Indicator Overview for PM2.5](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.html) 
+or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25).
 
 #### Ozone
 
@@ -68,7 +53,8 @@ Source: EPA’s [Office of Air and Radiation](https://www.epa.gov/aboutepa/about
 
 For more details on the ozone indicator, including why it is important and what
 you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Ozone](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.html) or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-ozone).
+[EJScreen Indicator Overview for Ozone](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.html) 
+or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-ozone).
 
 #### Nitrogen Dioxide (NO2)
 
@@ -78,11 +64,11 @@ billion. EJScreen presents surface level NO2 concentrations using percentile
 rank, ranging from 0 (lowest) to 100 (highest). This indicator does not
 designate compliance with the national ambient air quality standard for NO2.
 Source: [Goddard Earth Sciences Data and Information Services Center](https://disc.gsfc.nasa.gov/datasets/SFC_NITROGEN_DIOXIDE_CONC_1/summary?keywords=TROPOMI%20NO2).
-[archived](https://web.archive.org/web/20250123161322/https://disc.gsfc.nasa.gov/datasets/SFC_NITROGEN_DIOXIDE_CONC_1/summary?keywords=TROPOMI%20NO2)
+[as archived](https://web.archive.org/web/20250123161322/https://disc.gsfc.nasa.gov/datasets/SFC_NITROGEN_DIOXIDE_CONC_1/summary?keywords=TROPOMI%20NO2)
 
 For more details on the NO2 indicator, including why it is important and what
 you can do moving forward, please visit the 
-[EJScreen Indicator Overview for NO2](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-nitrogen-dioxide-no2).
+[EJScreen Indicator Overview for NO2](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-nitrogen-dioxide-no2).
 
 #### Diesel Particulate Matter
 
@@ -93,7 +79,9 @@ using percentile rank, ranging from 0 (lowest) to 100 (highest). Source: EPA’s
 [Air Toxics Screening Assessment](https://www.epa.gov/AirToxScreen).
 
 For more details on the diesel PM indicator, including why it is important and
-what you can do moving forward, please visit the [EJScreen Indicator Overview for Diesel PM](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.html).
+what you can do moving forward, please visit the 
+[EJScreen Indicator Overview for Diesel PM](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.html)
+or [as archived](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-diesel-particulate-matter).
 
 #### Toxic Releases to Air
 
@@ -107,7 +95,7 @@ Source: EPA’s [RSEI Geographic Microdata](https://web.archive.org/web/20250123
 
 For more details on the toxic releases to air indicator, including why it is
 important and what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Toxic Releases to Air](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-toxic-releases-air).
+[EJScreen Indicator Overview for Toxic Releases to Air](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-toxic-releases-air).
 
 #### Traffic Proximity and Volume
 
@@ -119,7 +107,7 @@ Source: [U.S. Department of Transportation National Transportation Atlas Databas
 
 For more details on the traffic proximity indicator, including why it is
 important and what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Traffic Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-traffic-proximity-and-volume).
+[EJScreen Indicator Overview for Traffic Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-traffic-proximity-and-volume).
 
 #### Lead Paint
 
@@ -131,7 +119,7 @@ Source: [Census Bureau's American Community Survey 5-year summary estimates](htt
 
 For more details on the lead paint indicator, including why it is important and
 what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Lead Paint](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-lead-paint).
+[EJScreen Indicator Overview for Lead Paint](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-lead-paint).
 
 #### Superfund Proximity
 
@@ -145,7 +133,7 @@ Source: EPA’s [CERCLIS database](https://cumulis.epa.gov/supercpad/cursites/sr
 
 For more details on the Superfund proximity indicator, including why it is
 important and what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Superfund Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-superfund-proximity).
+[EJScreen Indicator Overview for Superfund Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-superfund-proximity).
 
 #### Risk Management Program (RMP) Facility Proximity
 
@@ -155,11 +143,12 @@ people might live to an active facility with a required Risk Management Plan
 total count of RMP facilities within 5 km (or nearest within 10 km), divided by
 distance. EJScreen presents RMP facility proximity using percentile rank,
 ranging from 0 (lowest) to 100 (highest). 
-Source: [EPA’s RMP database](https://web.archive.org/web/20250119022643/https://www.epa.gov/rmp/risk-management-program-rmp-rule-overview) [as archived](https://www.epa.gov/rmp/risk-management-program-rmp-rule-overview).
+Source: [EPA’s RMP database](https://web.archive.org/web/20250119022643/https://www.epa.gov/rmp/risk-management-program-rmp-rule-overview) 
+[as archived](https://www.epa.gov/rmp/risk-management-program-rmp-rule-overview).
 
 For more details on the RMP facility proximity indicator, including why it is
 important and what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for RMP Facility Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-risk-management-program-rmp-facility-proximity).
+[EJScreen Indicator Overview for RMP Facility Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity).
 
 #### Hazardous Waste Proximity
 
@@ -173,7 +162,7 @@ Source: [EPA’s RCRAInfo database](https://enviro.epa.gov/envirofacts/rcrainfo/
 
 For more details on the hazardous waste indicator, including why it is important
 and what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Hazardous Waste Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-hazardous-waste-proximity).
+[EJScreen Indicator Overview for Hazardous Waste Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-hazardous-waste-proximity).
 
 #### Underground Storage Tanks (UST)
 
@@ -186,7 +175,7 @@ Source: [EPA’s UST Finder tool](https://www.epa.gov/ust/ust-finder).
 
 For more details on the UST indicator, including why it is important and what
 you can do moving forward, please visit the 
-[EJScreen Indicator Overview for UST](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-underground-storage-tanks-ust).
+[EJScreen Indicator Overview for UST](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-underground-storage-tanks-ust).
 
 #### Wastewater Discharge (Stream Proximity and Toxic Concentration)
 
@@ -200,22 +189,23 @@ Source: EPA’s [RSEI modeled toxic concentrations to stream reach segments](htt
 
 For more details on the wastewater discharge indicator, including why it is
 important and what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Wastewater Discharge](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-wastewater-discharge).
+[EJScreen Indicator Overview for Wastewater Discharge](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-wastewater-discharge).
 
 #### Drinking Water Non-Compliance
 
 The environmental burden indicator for drinking water non-compliance highlights
 populations served by community water systems that have challenges complying
 with [Safe Drinking Water Act](https://www.epa.gov/sdwa) requirements. Points are calculated using a
-modified version of EPA’s [Enforcement Targeting Tool](https://web.archive.org/web/20250123161322/https://www.epa.gov/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool) criteria, which accounts
-for violation severity and age. EJScreen presents drinking water non-compliance
+modified version of EPA’s 
+[Enforcement Targeting Tool](https://web.archive.org/web/20250123161322/https://www.epa.gov/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool) 
+criteria, which accounts for violation severity and age. EJScreen presents drinking water non-compliance
 using percentile rank, ranging from 0 (lowest) to 100 (highest). 
 Source: EPA’s [Safe Drinking Water Information System](https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200) & 
 [Drinking Water Enforcement Response Policy and Enforcement Targeting Tool](https://www.epa.gov/sites/default/files/2015-09/documents/drinking-water-erp-2009.pdf).
 
 For more details on the drinking water non-compliance indicator, including why
 it is important and what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Drinking Water Non-Compliance](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicator-overviews-drinking-water-non-compliance).
+[EJScreen Indicator Overview for Drinking Water Non-Compliance](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-drinking-water-non-compliance).
 
 ## Socioeconomic Indicators
 
@@ -981,15 +971,16 @@ and Economic Research’s (BBER) colonias geospatial database.
 #### Justice 40
 
 This layer built by Esri assesses and identifies communities that are
-disadvantaged according to [Justice40 Initiative criteria](https://web.archive.org/web/20250123161322/https://screeningtool.geoplatform.gov/en/methodology). Details of the
-assessment are provided in the popup for every census tract in the United States
+disadvantaged according to [Justice40 Initiative criteria](https://web.archive.org/web/20250123161322/https://screeningtool.geoplatform.gov/en/methodology). 
+Details of the assessment are provided in the popup for every census tract in the United States
 and its territories American Samoa, Guam, the Northern Mariana Islands, Puerto
 Rico, and the U.S. Virgin Islands. This map uses 2010 census tracts from Version
 0.1 of the [source data](https://web.archive.org/web/20250123161322/https://screeningtool.geoplatform.gov/en/methodology) downloaded November 22, 2022.
 
 #### EPA IRA Disadvantaged Communities
 
-The EPA [Inflation Reduction Act (IRA)](https://web.archive.org/web/20250123161322/https://www.epa.gov/inflation-reduction-act) Disadvantaged Communities map combines
+The EPA [Inflation Reduction Act (IRA)](https://web.archive.org/web/20250123161322/https://www.epa.gov/inflation-reduction-act) 
+Disadvantaged Communities map combines
 multiple datasets that individually can be used to determine whether a community
 is disadvantaged for the purposes of implementing programs under the IRA. All
 data sets are assigned values at the Census block group level. The criteria and
@@ -1102,5 +1093,9 @@ select specific indicators of interest. Threshold maps are available for both
 the EJ indexes and the new supplemental indexes and are available for comparison
 at the national and state level.
 
+--------------------
+ _About this page:_
 
-**About this page**: This page was adapted from [an archived copy](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions) that captured the version that had been last updated on December 19, 2024.
+- _This page is a simplified version of the original saved by archive.org. It was adapted from [an archived copy](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions) that captured the version that had been last updated on December 19, 2024._
+- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+

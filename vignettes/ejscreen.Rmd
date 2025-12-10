@@ -13,24 +13,9 @@ editor_options:
     wrap: 80
 ---
 
-```{r developernote, eval=FALSE, echo= FALSE, include = FALSE}
-#  *>>>>>>>>>> Developer note: vignettes need to be tested/edited/rebuilt regularly <<<<<<<<<<<*
-#    - **See ?pkgdown::build_site** and script in EJAM/data-raw/- EJAM uses the pkgdown R package to build help and articles/ vignettes as web pages
-```
-
-```{r SETUP_default_eval_or_not, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-knitr::opts_chunk$set(eval = FALSE)
-# https://r-pkgs.org/vignettes.html
-```
-
 ```{r note, eval=FALSE, echo=FALSE}
 # Some of this info was previously at
 # http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.html
-
 ```
 
 EJSCREEN originally provided extensive documentation and help through the
@@ -57,61 +42,69 @@ EJAM-related repositories.
 
     -   [EJSCREEN Overall User
         Guide](https://github.com/ejanalysis/EJAM/blob/development/data-raw/user-guides/EJSCREEN-USER-GUIDE-2025-02.pdf){target="_blank"}
-        (aka EJSCREEN walkthrough). Also [at archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
+        (aka EJSCREEN walkthrough). Also [at
+        archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
 
     -   [EJSCREEN Multisite Tool User
-        Guide](https://ejam.policyinnovation.info/www/user-guide-2025-02.pdf){target="_blank"} (aka EJAM walkthrough). Also [at archive.org](https://github.com/ejanalysis/EJAM/blob/main/inst/app/www/user-guide-2025-02.pdf){target="_blank"}
+        Guide](https://ejam.policyinnovation.info/www/user-guide-2025-02.pdf){target="_blank"}
+        (aka EJAM walkthrough). Also [at
+        archive.org](https://github.com/ejanalysis/EJAM/blob/main/inst/app/www/user-guide-2025-02.pdf){target="_blank"}
 
 ## Documentation of Data Sources and Technical Methods
 
 -   Changes in 2025
 
-    -   EJSCREEN / EJAM [developments in 2025](https://ejanalysis.org/status){target="_blank"}
+    -   EJSCREEN / EJAM [developments in
+        2025](https://ejanalysis.org/status){target="_blank"}
 
 -   Data Sources (2024 through 2025)
 
-    -   [**Full list of indicators, with definitions**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.html){target="_blank"}.
-        Also [at archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
+    -   [**Full list of indicators, with
+        definitions**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.html){target="_blank"}.
+        Also [at
+        archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
 
-    -   [**Key environmental indicators with year and source of each**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html){target="_blank"}.
         Also [at archive.org](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
+        each**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html){target="_blank"}.
+        Also [at
+        archive.org](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
 
-    -   [Key socioeconomic indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/overview-socioeconomic-indicators-ejscreen.html){target="_blank"}.
+    -   [Key socioeconomic
+        indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.html){target="_blank"}.
         Also [at
         archive.org](https://web.archive.org/web/20250102180705/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen){target="_blank"}
 
     -   [EJSCREEN Change Log (newest indicators,
         etc.)](https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log){target="_blank"}
 
-    -   [Old API-provided list of indicators](https://web.archive.org/web/20250131005731/https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html){target="_blank"}
+    -   [Old API-provided list of
+        indicators](https://web.archive.org/web/20250131005731/https://ejscreen.epa.gov/mapper/ejsoefielddesc1.html){target="_blank"}
 
     -   Raw Data Downloads -- EJSCREEN datasets as used by EJAM
 
-        -   Datasets stored within the EJAM repository (.rda files):
+        -   Datasets stored in the EJAM repository (.rda files):
             [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-){target="_blank"}
-            and [access to data
+            and [Data
             files](https://github.com/ejanalysis/EJAM/tree/main/data){target="_blank"}
         -   Datasets stored in the ejamdata repo (large .arrow files):
             [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-){target="_blank"}
-            and [access to data
+            and [Data
             files](https://github.com/ejanalysis/ejamdata/tree/main/data){target="_blank"}
 
 -   Methods (development of indicators, calculations for community reports,
     etc.)
 
     -   [**EJSCREEN Technical Doc. (as saved for
-        EJAM)**](`r EJAM::url_ejscreentechdoc()`){target="_blank"}:
-        Detailed documentation of EJSCREEN methods (2024) - EJScreen Technical
-        Documentation for Version 2.3 from 7/31/2024, pdf-format manual (also
-        archived [at
-        archive.org](https://web.archive.org/web/20250929044644/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf){target="_blank"})
+        EJAM)**](%60r%20EJAM::url_ejscreentechdoc()%60){target="_blank"}:
+        Detailed documentation of EJSCREEN methods (2024) for Version 2.3 (7/31/2024), .pdf manual (also 
+        [at archive.org](https://web.archive.org/web/20250929044644/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf){target="_blank"})
 
     ```{r notes, eval=FALSE, echo=FALSE, include=FALSE}
     # (`r EJAM::url_ejscreentechdoc()`)
     # (https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf)
     ```
 
-    -   Detailed documentation of EJAM software that generates EJSCREEN reports
+    -   Documentation of EJAM software that generates EJSCREEN reports
         (from 2025 on):
         [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs){target="_blank"}
 
@@ -131,27 +124,28 @@ in all programs, policies and activities.
 
 [Launch the EJScreen Tool](https://ejanalysis.com/ejscreenapp){target="_blank"}
 
-+----------------------------+------------------------+------------------------+
-| **Tool Basics and Uses**   | **Learn to Use         | **Technical            |
-|                            | EJScreen**             | Information and Data   |
-|                            |                        | Downloads**            |
-+----------------------------+------------------------+------------------------+
-| Explore these helpful      | Explore these          | Download data and find |
-| resources to gain a solid  | introductory videos,   | detailed information   |
-| understanding of           | guides, and training   | about the technical    |
-| EJScreen's concepts and    | sessions.              | aspects of EJScreen.   |
-| uses                       |                        |                        |
-|                            | [Learn about the       | [Dive into the         |
-| [Explore the concepts and  | tool                   | details                |
-| uses](https:               | ](https://web.archive. | ](https://web.archive. |
-| //web.archive.org/web/2025 | org/web/20250121194750 | org/web/20250121194640 |
-| 0121194840/https://www.epa | /https://www.epa.gov/e | /https://www.epa.gov/e |
-| .gov/ejscreen/tool-basics- | jscreen/learn-use-ejsc | jscreen/technical-info |
-| and-uses){target="_blank"} | reen){target="_blank"} | rmation-and-data-downl |
-|                            |                        | oads){target="_blank"} |
-+----------------------------+------------------------+------------------------+
+```{r echo = FALSE, results = 'asis'}
+links_table <- cbind(
+    aaa = c(
+        "**Tool Basics and Uses**",
+        "Explore these helpful resources to gain a solid understanding of EJScreen’s concepts and uses.",
+        "[Explore concepts and uses](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/tool-basics-and-uses)"
+    ),
+    bbb = c(
+        "**Learn to Use EJScreen**",
+        "Explore these introductory videos, guides, and training sessions.",
+        "[Learn about the tool](https://web.archive.org/web/20250121194750/https://www.epa.gov/ejscreen/learn-use-ejscreen)"
+    ),
+    ccc = c(
+        "**Technical Information and Data Downloads**",
+        "Download data and find detailed information about the technical aspects of EJScreen.",
+        "[Dive into details](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html)"
+    )
+)
+library(knitr)
+kable(links_table,  col.names = NULL, label = NA)
+```
 
---------------------------------------------------------------------------------
 
 # *Original EJScreen Website Outline*
 
@@ -167,9 +161,9 @@ in all programs, policies and activities.
         -   [EJ and Supplemental
             Indexes](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen){target="_blank"}
         -   [Environmental
-            Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/overview-environmental-indicators-ejscreen.html){target="_blank"}
+            Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html){target="_blank"}
         -   [Socioeconomic
-            Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/overview-socioeconomic-indicators-ejscreen.html){target="_blank"}
+            Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.html){target="_blank"}
         -   [How was EJScreen
             Developed?](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/how-was-ejscreen-developed){target="_blank"}
         -   [Limitations and
@@ -181,7 +175,9 @@ in all programs, policies and activities.
             EJScreen?](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/how-does-epa-use-ejscreen){target="_blank"}
     -   **EJScreen Resources**
         -   [EJScreen Map
-            Descriptions](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
+            Descriptions](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.html){target="_blank"}
+            [archived
+            version](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
         -   [Frequent Questions about
             EJScreen](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/frequent-questions-about-ejscreen){target="_blank"}
         -   [Other EJ Related Mapping
@@ -199,7 +195,9 @@ in all programs, policies and activities.
     -   [Threshold
         Maps](https://web.archive.org/web/20250121194750/https://www.epa.gov/ejscreen/threshold-maps-ejscreen){target="_blank"}
 -   [**Technical Information and Data
-    Downloads**](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/technical-information-and-data-downloads){target="_blank"}
+    Downloads**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html){target="_blank"}
+    or [as
+    archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/technical-information-and-data-downloads){target="_blank"}
     -   [Download EJScreen
         Data](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/download-ejscreen-data){target="_blank"}
     -   [EJScreen
@@ -207,7 +205,7 @@ in all programs, policies and activities.
     -   [Updates and
         Changes](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-updates-and-changes){target="_blank"}
     -   [**EJSCREEN Technical Doc. (as saved for
-        EJAM)**](`r EJAM::url_ejscreentechdoc()`){target="_blank"}:
+        EJAM)**](%60r%20EJAM::url_ejscreentechdoc()%60){target="_blank"}:
         Detailed documentation of EJSCREEN methods (2024) - EJScreen Technical
         Documentation for Version 2.3 from 7/31/2024, pdf-format manual (also
         archived [at

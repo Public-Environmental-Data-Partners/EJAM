@@ -1,8 +1,7 @@
 ---
 title: "Overview of Socioeconomic Indicators in EJScreen"
 description: "Overview of Socioeconomic Indicators in EJScreen"
-output:
-  rmarkdown::html_vignette
+output: html_document
 ---
 
 There are seven socioeconomic indicators featured in EJScreen. These indicators form the basis for both the demographic index and the supplemental demographic index:
@@ -43,3 +42,10 @@ EJScreen includes two indexes that are based on the above socioeconomic indicato
 EJScreen uses socioeconomics factors as very general indicators of a community's potential susceptibility to the types of environmental factors included in this screening tool, as explained further in the EJScreen Technical Documentation (pdf) (770.34 KB). EJScreen has been designed in the context of EPA's EJ policies, including [EPA's Final Guidance on Considering Environmental Justice During the Development of an Action (U.S. EPA, 2010)](https://web.archive.org/web/20250123161322/https://www.epa.gov/environmentaljustice/technical-guidance-assessing-environmental-justice-regulatory-analysis). That guidance document explained EPA's focus on socioeconomics as an indicator of potential susceptibility to environmental pollution.
 
 Last updated on December 19, 2024
+
+--------------------
+ _About this page:_
+
+- _This page is a simplified version of the original saved by archive.org._
+- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+

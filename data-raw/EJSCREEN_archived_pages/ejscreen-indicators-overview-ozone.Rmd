@@ -1,8 +1,7 @@
 ---
 title: "EJScreen Indicators Overview – Ozone"
 description: "EJScreen Indicators Overview – Ozone"
-output:
-  rmarkdown::html_vignette
+output: html_document
 ---
 
 ## What is the ozone indicator?
@@ -40,3 +39,10 @@ The “ozone indicator” measures how much ground-level ozone people might be e
   - Everyone can take steps to lessen air pollution and keep the air clean. It is also important to take certain precautions to safeguard your health. [Visit AirNow for tips on what you can do](https://www.airnow.gov/education/what-you-can-do/).
 
 - [See what the EPA and others are doing to reduce ozone pollution](https://www.epa.gov/ground-level-ozone-pollution/ground-level-ozone-basics#regulations). The EPA has national and regional rules that reduce pollutant emissions that form ground-level ozone and help state and local governments meet national air quality standards. [Learn about how ozone pollution is controlled and how air quality standards help](https://www.epa.gov/ozone-designations).
+
+--------------------
+ _About this page:_
+
+- _This page is a simplified version of the original saved by archive.org._
+- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+ 
