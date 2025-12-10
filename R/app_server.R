@@ -283,7 +283,7 @@ app_server <- function(input, output, session) {
     }
 
     trydefault =  ifelse(is.null(input$default_naics), EJAM:::global_or_param("default_naics"), input$default_naics)
-    vals <- ifelse(is.null(input$ss_select_naics), trydefault, input$ss_select_naics)
+    vals <- if (is.null(input$ss_select_naics)) trydefault else input$ss_select_naics
     ### update ss_select_NAICS input options ###
     updateSelectizeInput(session = session, inputId = 'ss_select_naics',
                          ## use named list version, grouped by first two code numbers
