@@ -268,7 +268,7 @@ app_server <- function(input, output, session) {
 
   # update ss_select_NAICS input options (since using server side and it starts as NULL to load faster) ###
   observeEvent(eventExpr = {
-    # input$default_naics
+    #
     input$add_naics_subcategories
     input$naics_digits_shown
   },
