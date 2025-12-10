@@ -251,13 +251,13 @@ app_server <- function(input, output, session) {
   })
 
   # update default of initial NAICS input options (since using server side and it starts as NULL to load faster) ###
-  observe({
+  observeEvent(session$clientData, {
     updateSelectizeInput(session = session, inputId = 'default_naics',
                          ## use named list version, grouped by first two code numbers
                          choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs),
                          selected = EJAM:::global_or_param("default_naics"),
                          server = TRUE)
-  })
+  }, once = TRUE)
   observe({
     # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
     level_of_detail_based_on_default_naics <- ifelse(nchar(input$default_naics) > 3, 'detailed', EJAM:::global_or_param("default_naics_digits_shown"))
