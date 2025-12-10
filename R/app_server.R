@@ -260,7 +260,7 @@ app_server <- function(input, output, session) {
   }, once = TRUE)
   observe({
     # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
-    level_of_detail_based_on_default_naics <- ifelse(nchar(input$default_naics) > 3, 'detailed', EJAM:::global_or_param("default_naics_digits_shown"))
+    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else EJAM:::global_or_param("default_naics_digits_shown")
     updateRadioButtons(session = session, inputId = 'naics_digits_shown',
                        selected = level_of_detail_based_on_default_naics
     )
