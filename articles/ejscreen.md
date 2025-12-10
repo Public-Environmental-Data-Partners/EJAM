@@ -52,7 +52,7 @@ initiative of the Internet Archive) and by EJAM-related repositories.
     archive.org](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
 
   - [Key socioeconomic
-    indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/overview-socioeconomic-indicators-ejscreen.md).
+    indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.md).
     Also [at
     archive.org](https://web.archive.org/web/20250102180705/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen)
 
@@ -64,28 +64,25 @@ initiative of the Internet Archive) and by EJAM-related repositories.
 
   - Raw Data Downloads – EJSCREEN datasets as used by EJAM
 
-    - Datasets stored within the EJAM repository (.rda files):
+    - Datasets stored in the EJAM repository (.rda files):
       [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
-      and [access to data
+      and [Data
       files](https://github.com/ejanalysis/EJAM/tree/main/data)
     - Datasets stored in the ejamdata repo (large .arrow files):
       [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
-      and [access to data
+      and [Data
       files](https://github.com/ejanalysis/ejamdata/tree/main/data)
 
 - Methods (development of indicators, calculations for community
   reports, etc.)
 
-  - [**EJSCREEN Technical Doc. (as saved for
-    EJAM)**](https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf):
-    Detailed documentation of EJSCREEN methods (2024) - EJScreen
-    Technical Documentation for Version 2.3 from 7/31/2024, pdf-format
-    manual (also archived [at
+  - [**EJSCREEN Technical Doc. (as saved for EJAM)**](NA): Detailed
+    documentation of EJSCREEN methods (2024) for Version 2.3
+    (7/31/2024), .pdf manual (also [at
     archive.org](https://web.archive.org/web/20250929044644/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf))
 
-  - Detailed documentation of EJAM software that generates EJSCREEN
-    reports (from 2025 on):
-    [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs)
+  - Documentation of EJAM software that generates EJSCREEN reports (from
+    2025 on): [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs)
 
 ------------------------------------------------------------------------
 
@@ -103,9 +100,11 @@ environmental justice in all programs, policies and activities.
 
 [Launch the EJScreen Tool](https://ejanalysis.com/ejscreenapp)
 
-[TABLE]
-
-------------------------------------------------------------------------
+|  |  |  |
+|:---|:---|:---|
+| **Tool Basics and Uses** | **Learn to Use EJScreen** | **Technical Information and Data Downloads** |
+| Explore these helpful resources to gain a solid understanding of EJScreen’s concepts and uses. | Explore these introductory videos, guides, and training sessions. | Download data and find detailed information about the technical aspects of EJScreen. |
+| [Explore concepts and uses](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/tool-basics-and-uses) | [Learn about the tool](https://web.archive.org/web/20250121194750/https://www.epa.gov/ejscreen/learn-use-ejscreen) | [Dive into details](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.md) |
 
 ## *Original EJScreen Website Outline*
 
@@ -120,9 +119,9 @@ environmental justice in all programs, policies and activities.
     - [EJ and Supplemental
       Indexes](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
     - [Environmental
-      Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/overview-environmental-indicators-ejscreen.md)
+      Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.md)
     - [Socioeconomic
-      Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/overview-socioeconomic-indicators-ejscreen.md)
+      Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.md)
     - [How was EJScreen
       Developed?](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/how-was-ejscreen-developed)
     - [Limitations and
@@ -134,7 +133,9 @@ environmental justice in all programs, policies and activities.
       EJScreen?](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/how-does-epa-use-ejscreen)
   - **EJScreen Resources**
     - [EJScreen Map
-      Descriptions](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ejscreen-map-descriptions)
+      Descriptions](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.md)
+      [archived
+      version](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ejscreen-map-descriptions)
     - [Frequent Questions about
       EJScreen](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/frequent-questions-about-ejscreen)
     - [Other EJ Related Mapping
@@ -152,18 +153,19 @@ environmental justice in all programs, policies and activities.
   - [Threshold
     Maps](https://web.archive.org/web/20250121194750/https://www.epa.gov/ejscreen/threshold-maps-ejscreen)
 - [**Technical Information and Data
-  Downloads**](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/technical-information-and-data-downloads)
+  Downloads**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.md)
+  or [as
+  archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/technical-information-and-data-downloads)
   - [Download EJScreen
     Data](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/download-ejscreen-data)
   - [EJScreen
     API](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-api)
   - [Updates and
     Changes](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-updates-and-changes)
-  - [**EJSCREEN Technical Doc. (as saved for
-    EJAM)**](https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf):
-    Detailed documentation of EJSCREEN methods (2024) - EJScreen
-    Technical Documentation for Version 2.3 from 7/31/2024, pdf-format
-    manual (also archived [at
+  - [**EJSCREEN Technical Doc. (as saved for EJAM)**](NA): Detailed
+    documentation of EJSCREEN methods (2024) - EJScreen Technical
+    Documentation for Version 2.3 from 7/31/2024, pdf-format manual
+    (also archived [at
     archive.org](https://web.archive.org/web/20250929044644/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf))
 - [Contact Us About EJScreen (note: this is
   obsolete)](https://web.archive.org/web/20250121194732/https://www.epa.gov/ejscreen/forms/contact-us-about-ejscreen)
