@@ -64,7 +64,7 @@ EJAM-related repositories.
         Also [at
         archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
 
-        Also [at archive.org](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
+    -   [**Key environmental indicators with year and source of
         each**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html){target="_blank"}.
         Also [at
         archive.org](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
