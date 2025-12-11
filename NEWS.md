@@ -1,6 +1,3 @@
-# Development version
-
-
 # EJAM 2.4.0 (December 2025)
 
 ## Updated Demographic Data from ACS

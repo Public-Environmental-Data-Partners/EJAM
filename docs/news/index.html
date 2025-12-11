@@ -77,6 +77,11 @@
 <ul><li>Added <a href="https://ejanalysis.github.io/EJAM/articles/ejscreen.html">EJSCREEN documentation article</a> at <a href="https://github.com/ejanalysis/EJAM/blob/development/vignettes/ejscreen.Rmd" class="external-link uri">https://github.com/ejanalysis/EJAM/blob/development/vignettes/ejscreen.Rmd</a> with links to pages and documents in the form of .Rmd/.html pages that are faster-loading copies of selected info from pages documenting EJSCREEN.</li>
 <li>Added new function <code><a href="../reference/url_ejscreentechdoc.html">url_ejscreentechdoc()</a></code> that provides URL of a copy of the Technical Documentation.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-4-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-4-0"></a></h3>
+<ul><li>Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in <code><a href="../reference/fixcolnames.html">fixcolnames()</a></code> and had been introduced 3 weeks earlier while a separate issue was being fixed.</li>
+<li>Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.6.003" id="ejam-2326003-november-2025">EJAM 2.32.6.003 (November 2025)<a class="anchor" aria-label="anchor" href="#ejam-2326003-november-2025"></a></h2>
