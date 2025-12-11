@@ -1,3 +1,11 @@
+# Development version
+
+- Bug fixes: 
+  - Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in `fixcolnames()` and had been introduced 3 weeks earlier while a separate issue was being fixed.
+  - Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended. 
+  - Other changes in preparation for next release.
+
+
 # EJAM 2.32.6.003 (November 2025)
 
 - Bug fixes:

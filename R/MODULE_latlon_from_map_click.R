@@ -106,6 +106,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
                                 layerId = "mycircle"
             ) %>%
             leaflet::addPopups(lng = input$mymap_click$lng, lat = input$mymap_click$lat,
+                               # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
                                popup = paste0("lat,lon: ", input$mymap_click$lat, ", ", input$mymap_click$lng))
         })
       })
@@ -124,6 +125,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
                                 layerId = "mycircle",
                                 highlightOptions = leaflet::highlightOptions(fillOpacity = 0.5, bringToFront = TRUE) ) %>%# this just makes it shaded when mouse hovers above the circle
             leaflet::addPopups(lng = input$mymap_click$lng, lat = input$mymap_click$lat,
+                               # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
                                popup = paste0("lat,lon: ", input$mymap_click$lat, ", ", input$mymap_click$lng))
         })
       })

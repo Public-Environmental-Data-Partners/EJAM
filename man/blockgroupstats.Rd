@@ -18,9 +18,9 @@ It is a data.table with one row for every US Census blockgroup.
 
 The source of data for each indicator was documented by EJSCREEN, as archived on these pages:
 \itemize{
-\item \href{https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log}{EJSCREEN Change Log - newest indicators, etc.}
-\item \href{https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions}{Full list of indicators, with definitions}
-\item \href{https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen}{Year and source of each environmental indicator}
+\item \href{https://web.archive.org/web/20250124090116/https://www.epa.gov/ejscreen/ejscreen-change-log}{EJSCREEN Change Log - newest indicators, etc.}{target="_blank"}
+\item \href{https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions}{Full list of indicators, with definitions as archived}{target="_blank"}.
+\item \href{https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen}{Year and source of each environmental indicator}{target="_blank"}
 }
 
 More about blockgroupstats
