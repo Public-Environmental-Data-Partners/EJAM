@@ -1,3 +1,6 @@
+# Development version
+
+
 # EJAM 2.4.0 (December 2025)
 
 ## Updated Demographic Data from ACS
@@ -12,6 +15,12 @@
 
 - Added [EJSCREEN documentation article](https://ejanalysis.github.io/EJAM/articles/ejscreen.html) at https://github.com/ejanalysis/EJAM/blob/development/vignettes/ejscreen.Rmd with links to pages and documents in the form of .Rmd/.html pages that are faster-loading copies of selected info from pages documenting EJSCREEN.
 - Added new function `url_ejscreentechdoc()` that provides URL of a copy of the Technical Documentation.
+
+## Bug fixes
+
+- Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in `fixcolnames()` and had been introduced 3 weeks earlier while a separate issue was being fixed.
+- Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended. 
+
 
 # EJAM 2.32.6.003 (November 2025)
 
