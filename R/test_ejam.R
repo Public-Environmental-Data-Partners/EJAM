@@ -448,52 +448,52 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       timebyfile <- data.table(
         structure(list(
           file =
-            c("test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R",
-              "test-URL_FUNCTIONS_part2.R", "test-acs_bybg.R", "test-create_filename.R",
+            c("test-ejamit_compare_distances.R", "test-ejamit.R",
+              "test-ejam2barplot_sites.R", "test-ejam2excel.R", "test-ejam2histogram.R",
+              "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
+              "test-ejamit_sitetype_from_output.R", "test-url_ejamapi.R", "test-api.R",
+              "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R", "test-acs_bybg.R",
+              "test-calc_byformula.R", "test-create_filename.R", "test-grepn.R",
               "test-is.numericish.R", "test-sites_from_input.R", "test-url_columns_bysite.R",
-              "test-get_blockpoints_in_shape.R", "test-proxistat.R", "test-bgid_from_blockid.R",
+              "test-doaggregate.R", "test-pctile_from_raw_lookup.R", "test-area_sqmi.R",
+              "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
+              "test-calc_ratio_columns.R", "test-utils_flagged_FUNCTIONS.R",
+              "test-MAP_FUNCTIONS.R", "test-ejam2map.R", "test-get_blockpoints_in_shape.R",
+              "test-proxistat.R", "test-bgid_from_blockid.R", "test-distances.all.R",
               "test-getblocks_summarize_blocks_per_site.R", "test-getblocksnearby.R",
               "test-getblocksnearby_from_fips.R", "test-getblocksnearbyviaQuadTree.R",
               "test-radius_inferred.R", "test-report_residents_within_xyz.R",
-              "test-utils_indexpoints.R", "test-doaggregate.R", "test-area_sqmi.R",
-              "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
-              "test-calc_ratio_columns.R", "test-pctile_from_raw_lookup.R",
-              "test-utils_flagged_FUNCTIONS.R", "test-ejam2excel.R", "test-ejam2barplot_sites.R",
-              "test-ejam2histogram.R", "test-ejamit.R", "test-ejamit_compare_distances.R",
-              "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
-              "test-ejamit_sitetype_from_output.R", "test-FIPS_FUNCTIONS.R",
-              "test-fips2countyfips.R", "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R",
-              "test-fips_bgs_in_fips.R", "test-is.numeric.text.R", "test-latlon_from_fips.R",
-              "test-state_from_fips_bybg.R", "test-state_from_latlon.R", "test-latlon_from_anything.R",
-              "test-address_xyz.R", "test-latlon_as.numeric.R", "test-latlon_df_clean.R",
-              "test-latlon_from_address.R", "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
+              "test-utils_indexpoints.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
+              "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R",
+              "test-is.numeric.text.R", "test-latlon_from_fips.R", "test-state_from_fips_bybg.R",
+              "test-state_from_latlon.R", "test-latlon_from_anything.R", "test-address_xyz.R",
+              "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_address.R",
+              "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
               "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
               "test-fixcolnames.R", "test-fixcolnames_infer.R", "test-fixnames.R",
               "test-fixnames_to_type.R", "test-utils_metadata_add.R", "test-varinfo.R",
               "test-frs_from_naics.R", "test-frs_from_programid.R", "test-frs_from_regid.R",
               "test-frs_from_sic.R", "test-frs_is_valid.R", "test-regid_from_input.R",
               "test-regid_from_naics.R", "test-golem_utils_server.R", "test-golem_utils_ui.R",
-              "test-MAP_FUNCTIONS.R", "test-ejam2map.R", "test-mod_save_report.R",
-              "test-mod_specify_sites.R", "test-mod_view_results.R", "test-naics2children.R",
-              "test-naics_categories.R", "test-naics_findwebscrape.R", "test-naics_from_any.R",
-              "test-naics_from_code.R", "test-naics_from_name.R", "test-naics_subcodes_from_code.R",
-              "test-naics_validation.R", "test-ejam2shapefile.R", "test-latlon_from_shapefile.R",
-              "test-shape2geojson.R", "test-shape2zip.R", "test-shapefile_xyz.R",
-              "test-shapes_from_fips.R", "test-test1.R", "test-test2.R"),
+              "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
+              "test-naics2children.R", "test-naics_categories.R", "test-naics_findwebscrape.R",
+              "test-naics_from_any.R", "test-naics_from_code.R", "test-naics_from_name.R",
+              "test-naics_subcodes_from_code.R", "test-naics_validation.R",
+              "test-ejam2shapefile.R", "test-latlon_from_shapefile.R", "test-shape2geojson.R",
+              "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
+              "test-test1.R", "test-test2.R"),
           seconds_byfile =
-            c(177,
-              0, 34, 2, 0, 0, 0, 7, 2, 0, 0, 1, 10, 87, 3, 5, 0, 0, 47, 3,
-              19, 0, 5, 7, 0, 15, 20, 20, 1, 77, 70, 9, 0, 10, 23, 0, 6, 4,
-              5, 0, 7, 0, 11, 1, 4, 0, 1, 4, 0, 0, 1, 1, 6, 0, 0, 0, 0, 1,
-              0, 6, 1, 1, 1, 1, 0, 3, 0, 0, 30, 13, 0, 0, 0, 0, 0, 3, 1, 0,
-              0, 0, 0, 1, 0, 0, 0, 2, 10, 0, 0)),
-          row.names = c(NA, -89L), class = "data.frame")
+            c(23, 25, 6,
+              51, 0, 3, 0, 2, 275, 18, 0, 22, 1, 2, 0, 0, 0, 0, 4, 16, 0, 1,
+              6, 0, 2, 1, 5, 12, 5, 1, 0, 0, 0, 0, 3, 30, 1, 1, 0, 0, 10, 0,
+              3, 4, 1, 0, 4, 0, 3, 1, 5, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+              0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0,
+              0, 0, 0, 0, 0, 1, 7, 0, 0)),
+          row.names = c(NA, -93L), class = "data.frame")
       )
       ############################ #      ############################ #      ############################ #
       addthesenotrun = data.table(
         file = c(
-          'test-api.R',
-
           'test-latlon-functionality.R',
           'test-shp-gdb-zip-functionality.R',
           'test-shp-json-functionality.R',
@@ -504,24 +504,25 @@ and all filenames listed there actually exist as in that folder called `test`.\n
           'test-ui_and_server.R'
         ),
         seconds_byfile = c(
-          20,
           120,157,156,160,163,134,115,3
         )
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
       timebyfile <- rbind(timebyfile, addthesenotrun)
 
-
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
       timebyfile$seconds_byfile <- round(timebyfile$seconds_byfile, 0)
 
       # sort like testlist is sorted
-      sorted = as.vector(unlist(testlist))
-       timebyfile = timebyfile[(match(sorted, file)), ] #
+      sorted = as.vector(unlist(testlist)) # 101
+      sorted = sorted[sorted %in% timebyfile$file] # if some are in full test list but not in timing list, don't try to sort by them
+ ## e.g.  lacked timing info at one point:  "test-distances.all.R"  "test-calc_byformula.R" "test-grepn.R"
+
+       timebyfile = timebyfile[(match(sorted, file)), ] # 98
 
       testgroup_from_fname <- function(fname) {names(testlist)[as.vector(sapply(testlist, function(z) fname %in% z))]}
-      timebyfile$testgroup <-  as.vector( sapply(timebyfile$file, testgroup_from_fname) )
+      timebyfile$testgroup <-  as.vector(unlist( sapply(timebyfile$file, testgroup_from_fname) ))
 
       # timebyfile
       #                                          file seconds_byfile        testgroup
@@ -726,8 +727,15 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     if (y_runsome) {
       run_these <- unlist(strsplit(gsub(" ", "", run_these), ","))
       run_these = paste0("test_", run_these)
+      if (any(!(run_these %in% names(testlist)))) {
+        cat("These requested values of run_these are not recognized as valid test groups: \n")
+        cat(gsub("^test_", "", paste0(setdiff(run_these, names(testlist)), collapse = ", ")), "\n")
+        cat("valid groups are the following: \n")
+        cat(paste0(gsub("^test_", "", names(testlist)), collapse = ", "), '\n')
+      }
       #    test_file("./tests/testthat/test-MAP_FUNCTIONS.R" )
       partial_testlist <-  testlist[names(testlist) %in% run_these]
+      if (NROW(partial_testlist) == 0) {stop("none of requested groups are valid names \n")}
     }
 
     if (y_runall) {

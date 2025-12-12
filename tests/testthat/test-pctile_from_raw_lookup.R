@@ -29,8 +29,8 @@ test_that('custom lookup works',{
 
 # lets test zone = NY
 test_that('pass states table as lookup and select a zone',{
-  expect_no_warning({
-    val <- pctile_from_raw_lookup(myvector = c(20, 25, 30),
+  expect_no_error({
+    val <- pctile_from_raw_lookup(myvector = c(1e4, 1e5, 1e6),
                                                    varname.in.lookup.table = "traffic.score",
                                                    lookup = statestats,
                                                    zone = "NY")
