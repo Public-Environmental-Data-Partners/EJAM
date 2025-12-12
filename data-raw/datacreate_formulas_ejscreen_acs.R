@@ -95,78 +95,101 @@
 
   formulas_ejscreen_acs <- structure(list(
 
-    rname = c("pop", "ageunder5m", "age5to9m", "age10to14m",
+    rname = c("pop",
+              "ageunder5m", "age5to9m", "age10to14m",
               "age15to17m", "age65to66m", "age6769m", "age7074m", "age7579m",
               "age8084m", "age85upm", "ageunder5f", "age5to9f", "age10to14f",
               "age15to17f", "age65to66f", "age6769f", "age7074f", "age7579f",
-              "age8084f", "age85upf", "hisp", "pop3002", "nonhisp", "nhwa",
-              "nhba", "nhaiana", "nhaa", "nhnhpia", "nhotheralone", "nhmulti",
-              "povknownratio", "pov50", "pov99", "pov124", "pov149", "pov184",
-              "pov199", "pov2plus", "age25up", "m0", "m4", "m6", "m8", "m9",
-              "m10", "m11", "m12", "f0", "f4", "f6", "f8", "f9", "f10", "f11",
-              "f12", "lingisospanish", "lingisoeuro", "lingisoasian", "lingisoother",
-              "hhlds", "builtunits", "built1950to1959", "built1940to1949",
-              "builtpre1940", "unemployedbase", "unemployed", "under5", "pctunder5",
-              "over64", "pctover64", "nonmins", "pcthisp", "pctnhwa", "pctnhba",
-              "pctnhaiana", "pctnhaa", "pctnhnhpia", "pctnhotheralone", "pctnhmulti",
-              "mins", "pctmin", "num1pov", "num15pov", "num2pov", "num2pov.alt",
+              "age8084f", "age85upf",
+
+              "hisp", "pop3002", "nonhisp", "nhwa", "nhba", "nhaiana", "nhaa", "nhnhpia", "nhotheralone", "nhmulti",
+              "povknownratio", "pov50", "pov99", "pov124", "pov149", "pov184", "pov199", "pov2plus",
+              "age25up",
+              "m0", "m4", "m6", "m8", "m9", "m10", "m11", "m12",
+              "f0", "f4", "f6", "f8", "f9", "f10", "f11", "f12",
+
+              "lingisospanish", "lingisoeuro", "lingisoasian", "lingisoother",
+
+              "hhlds", "builtunits", "built1950to1959", "built1940to1949", "builtpre1940",
+              "unemployedbase", "unemployed",
+              "under5", "pctunder5",
+              "over64", "pctover64",
+
+              "nonmins", "pcthisp", "pctnhwa", "pctnhba", "pctnhaiana", "pctnhaa", "pctnhnhpia", "pctnhotheralone", "pctnhmulti", "mins", "pctmin",
+
+              "num1pov", "num15pov", "num2pov", "num2pov.alt",
               "pct1pov", "pct15pov", "pct2pov", "pct2pov.alt", "lowinc", "pctlowinc",
-              "lths", "pctlths", "lingiso", "pctlingiso", "pre1960", "pctpre1960",
-              "pctunemployed", "pctover17", "pctunder18", "pctfire", "pctfire30",
-              "pctflood", "pctflood30", "pctfemale", "pctmale", "pctownedunits",
-              "pctnobroadband", "pctnohealthinsurance", "pctpoor", "pctlan_api",
-              "pctlan_arabic", "pctlan_english", "pctlan_french", "pctlan_ie",
+
+              "lths", "pctlths",
+              "lingiso", "pctlingiso",
+              "pre1960", "pctpre1960",
+              "pctunemployed", "pctover17", "pctunder18",
+              "pctfire", "pctfire30", "pctflood", "pctflood30",
+              "pctfemale", "pctmale",
+              "pctownedunits", "pctnobroadband", "pctnohealthinsurance",
+              "pctpoor",
+              #### ##### ##### ##### ##### ##### ##### ##### ##### #              #### ##### ##### ##### ##### ##### ##### ##### ##### #
+
+              "pctlan_api", "pctlan_arabic", "pctlan_english", "pctlan_french", "pctlan_ie",
               "pctlan_nonenglish", "pctlan_other", "pctlan_other_asian", "pctlan_other_ie",
               "pctlan_rus_pol_slav", "pctlan_spanish", "pctlan_vietnamese",
-              "pctapi_li", "pctie_li", "pctother_li", "pctspanish_li", "pctaa",
-              "pctaiana", "pctba", "pctmulti", "pctnhpia", "pctotheralone",
-              "pctwa", "EJ.DISPARITY.pctpre1960.eo", "state.EJ.DISPARITY.pctpre1960.eo",
-              "EJ.DISPARITY.pctpre1960.supp", "state.EJ.DISPARITY.pctpre1960.supp",
+
+              "pctapi_li", "pctie_li", "pctother_li", "pctspanish_li",
+
+              #### ##### ##### ##### ##### ##### ##### ##### ##### #
+              "pctaa", "pctaiana", "pctba", "pctmulti", "pctnhpia", "pctotheralone", "pctwa",
+
+              "EJ.DISPARITY.pctpre1960.eo", "state.EJ.DISPARITY.pctpre1960.eo", "EJ.DISPARITY.pctpre1960.supp", "state.EJ.DISPARITY.pctpre1960.supp",
+
               "pctdisability", "bgid", "countyname", "statename", "ST", "REGION",
               "under18", "over17", "female", "male", "ownedhhlds", "occupiedhhlds",
               "pctownedhhlds", "ownedunits", "occupiedunits", "nobroadband",
               "nohealthinsurance", "poor", "wa", "ba", "aa", "aiana", "nhpia",
-              "otheralone", "multi", "percapincome", "lan_eng_na", "lan_spanish",
-              "lan_api", "lan_other", "lan_other_ie", "lan_universe", "lan_english",
-              "pctlan_english", "lan_french", "pctlan_french", "lan_german",
-              "pctlan_german", "lan_rus_pol_slav", "pctlan_rus_pol_slav", "lan_other_ie",
-              "pctlan_other_ie", "lan_korean", "pctlan_korean", "lan_chinese",
-              "pctlan_chinese", "lan_vietnamese", "pctlan_vietnamese", "lan_other_asian",
-              "pctlan_other_asian", "lan_tagalog", "pctlan_tagalog", "lan_arabic",
-              "pctlan_arabic", "lan_other_and_unspecified", "pctlan_other_and_unspecified"
+              "otheralone", "multi", "percapincome",
+              #### ##### ##### ##### ##### ##### ##### ##### ##### #              #### ##### ##### ##### ##### ##### ##### ##### ##### #
+
+              "lan_eng_na", "lan_spanish", "lan_api", "lan_other", "lan_other_ie", "lan_universe",
+
+              "lan_english",  "pctlan_english",
+              "lan_french", "pctlan_french",
+              "lan_german", "pctlan_german",
+              "lan_rus_pol_slav", "pctlan_rus_pol_slav",
+              "lan_other_ie", "pctlan_other_ie",
+              "lan_korean", "pctlan_korean",
+              "lan_chinese", "pctlan_chinese",
+              "lan_vietnamese", "pctlan_vietnamese",
+              "lan_other_asian", "pctlan_other_asian",
+              "lan_tagalog", "pctlan_tagalog",
+              "lan_arabic", "pctlan_arabic",
+              "lan_other_and_unspecified", "pctlan_other_and_unspecified"
+
+              #### ##### ##### ##### ##### ##### ##### ##### ##### #
     ),
     formula = c("pop = B01001_001",
-                "ageunder5m = B01001_003",
-                "age5to9m = B01001_004", "age10to14m = B01001_005", "age15to17m = B01001_006",
-                "age65to66m = B01001_020", "age6769m = B01001_021", "age7074m = B01001_022",
-                "age7579m = B01001_023", "age8084m = B01001_024", "age85upm = B01001_025",
-                "ageunder5f = B01001_027", "age5to9f = B01001_028", "age10to14f = B01001_029",
-                "age15to17f = B01001_030", "age65to66f = B01001_044", "age6769f = B01001_045",
-                "age7074f = B01001_046", "age7579f = B01001_047", "age8084f = B01001_048",
-                "age85upf = B01001_049",
-                "hisp = B03002_012", "pop3002 = B03002_001",
-                "nonhisp = B03002_002", "nhwa = B03002_003", "nhba = B03002_004",
-                "nhaiana = B03002_005", "nhaa = B03002_006", "nhnhpia = B03002_007",
-                "nhotheralone = B03002_008", "nhmulti = B03002_009",
-                "povknownratio = C17002_001",
-                "pov50 = C17002_002", "pov99 = C17002_003", "pov124 = C17002_004", "pov149 = C17002_005", "pov184 = C17002_006", "pov199 = C17002_007", "pov2plus = C17002_008",
-                "age25up = B15002_001", "m0 = B15002_003", "m4 = B15002_004", "m6 = B15002_005", "m8 = B15002_006", "m9 = B15002_007",
-                "m10 = B15002_008", "m11 = B15002_009", "m12 = B15002_010",
+                "ageunder5m = B01001_003", "age5to9m = B01001_004", "age10to14m = B01001_005", "age15to17m = B01001_006", "age65to66m = B01001_020", "age6769m = B01001_021", "age7074m = B01001_022", "age7579m = B01001_023", "age8084m = B01001_024", "age85upm = B01001_025",
+                "ageunder5f = B01001_027", "age5to9f = B01001_028", "age10to14f = B01001_029", "age15to17f = B01001_030", "age65to66f = B01001_044", "age6769f = B01001_045", "age7074f = B01001_046", "age7579f = B01001_047", "age8084f = B01001_048", "age85upf = B01001_049",
+
+                "hisp = B03002_012", "pop3002 = B03002_001", "nonhisp = B03002_002", "nhwa = B03002_003", "nhba = B03002_004", "nhaiana = B03002_005", "nhaa = B03002_006", "nhnhpia = B03002_007", "nhotheralone = B03002_008", "nhmulti = B03002_009",
+                "povknownratio = C17002_001", "pov50 = C17002_002", "pov99 = C17002_003", "pov124 = C17002_004", "pov149 = C17002_005", "pov184 = C17002_006", "pov199 = C17002_007", "pov2plus = C17002_008",
+                "age25up = B15002_001",
+                "m0 = B15002_003", "m4 = B15002_004", "m6 = B15002_005", "m8 = B15002_006", "m9 = B15002_007", "m10 = B15002_008", "m11 = B15002_009", "m12 = B15002_010",
                 "f0 = B15002_020", "f4 = B15002_021", "f6 = B15002_022", "f8 = B15002_023", "f9 = B15002_024", "f10 = B15002_025", "f11 = B15002_026", "f12 = B15002_027",
+
                 "lingisospanish = C16002_004", "lingisoeuro = C16002_007", "lingisoasian = C16002_010", "lingisoother = C16002_013",
-                "hhlds = B16002_001",
-                "builtunits = B25034_001",
-                "built1950to1959 = B25034_008", "built1940to1949 = B25034_009", "builtpre1940 = B25034_010",
+
+                "hhlds = B16002_001", "builtunits = B25034_001", "built1950to1959 = B25034_008", "built1940to1949 = B25034_009", "builtpre1940 = B25034_010",
                 "unemployedbase = B23025_003", "unemployed = B23025_005",
                 "under5 <- ageunder5m + ageunder5f", "pctunder5 <- ifelse( pop==0, 0, under5 / pop)",
-                "over64 <- age65to66m + age6769m + age7074m + age7579m + age8084m + age85upm +   age65to66f + age6769f + age7074f + age7579f + age8084f + age85upf",
-                "pctover64 <- ifelse( pop==0, 0, over64 / pop)", "nonmins <- nhwa",
+                "over64 <- age65to66m + age6769m + age7074m + age7579m + age8084m + age85upm +   age65to66f + age6769f + age7074f + age7579f + age8084f + age85upf", "pctover64 <- ifelse( pop==0, 0, over64 / pop)",
+
+                "nonmins <- nhwa",
                 "pcthisp <- ifelse(pop==0, 0, as.numeric(hisp ) / pop)", "pctnhwa <- ifelse(pop==0, 0, as.numeric(nhwa ) / pop)",
                 "pctnhba <- ifelse(pop==0, 0, as.numeric(nhba ) / pop)", "pctnhaiana <- ifelse(pop==0, 0, as.numeric(nhaiana ) / pop)",
                 "pctnhaa <- ifelse(pop==0, 0, as.numeric(nhaa ) / pop)", "pctnhnhpia <- ifelse(pop==0, 0, as.numeric(nhnhpia ) / pop)",
                 "pctnhotheralone <- ifelse(pop==0, 0, as.numeric(nhotheralone ) / pop)",
                 "pctnhmulti <- ifelse(pop==0, 0, as.numeric(nhmulti ) / pop)",
                 "mins <- pop - nhwa", "pctmin <- ifelse(pop==0, 0, as.numeric(mins ) / pop)",
+
                 "num1pov <- pov50 + pov99",
                 "num15pov <- num1pov + pov124 + pov149",
                 "num2pov <- num1pov + pov124 + pov149 + pov184 + pov199",
@@ -177,6 +200,7 @@
                 "pct2pov.alt <- ifelse( povknownratio==0, 0, num2pov.alt / povknownratio)",
                 "lowinc = povknownratio - pov2plus",
                 "pctlowinc = ifelse( povknownratio==0, 0, lowinc / povknownratio)",
+
                 "lths <- m0 + m4 + m6 + m8 + m9 + m10 + m11 + m12 +   f0 + f4 + f6 + f8 + f9 + f10 + f11 + f12",
                 "pctlths <- ifelse(age25up==0, 0, as.numeric(lths ) / age25up)",
                 "lingiso <- lingisospanish + lingisoeuro + lingisoasian + lingisoother",
@@ -196,6 +220,9 @@
                 "pctnobroadband      <- ifelse(hhlds == 0, 0, as.numeric(nobroadband) / hhlds)",
                 "pctnohealthinsurance      <- ifelse(hhlds == 0, 0, as.numeric(nohealthinsurance) / hhlds)",
                 "pctpoor      <- ifelse(hhlds == 0, 0, as.numeric(poor) / hhlds)",
+                #### ##### ##### ##### ##### ##### ##### ##### ##### #              #### ##### ##### ##### ##### ##### ##### ##### ##### #
+
+
                 "pctlan_api      <- ifelse(lan_universe == 0, 0, as.numeric(lan_api) / lan_universe)",
                 "pctlan_arabic      <- ifelse(lan_universe == 0, 0, as.numeric(lan_arabic) / lan_universe)",
                 "pctlan_english      <- ifelse(lan_universe == 0, 0, as.numeric(lan_english) / lan_universe)",
@@ -208,10 +235,13 @@
                 "pctlan_rus_pol_slav      <- ifelse(lan_universe == 0, 0, as.numeric(lan_rus_pol_slav) / lan_universe)",
                 "pctlan_spanish      <- ifelse(lan_universe == 0, 0, as.numeric(lan_spanish) / lan_universe)",
                 "pctlan_vietnamese      <- ifelse(lan_universe == 0, 0, as.numeric(lan_vietnamese) / lan_universe)",
+
                 "pctapi_li      <- ifelse(lingiso == 0, 0, as.numeric(api_li) / lingiso)",
                 "pctie_li      <- ifelse(lingiso == 0, 0, as.numeric(ie_li) / lingiso)",
                 "pctother_li      <- ifelse(lingiso == 0, 0, as.numeric(other_li) / lingiso)",
                 "pctspanish_li      <- ifelse(lingiso == 0, 0, as.numeric(spanish_li) / lingiso)",
+
+                ####---------------------------------------- #
                 "pctaa      <- ifelse(pop == 0, 0, as.numeric(aa) / pop)",
                 "pctaiana      <- ifelse(pop == 0, 0, as.numeric(aiana) / pop)",
                 "pctba      <- ifelse(pop == 0, 0, as.numeric(ba) / pop)",
@@ -242,6 +272,8 @@
                 "poor = pov50 + pov99",
                 "wa = B02001_002", "ba = B02001_003", "aa = B02001_005", "aiana = B02001_004", "nhpia = B02001_006", "otheralone = B02001_007", "multi = B02001_008",
                 "percapincome = B19301_001",
+                #### ##### ##### ##### ##### ##### ##### ##### ##### #              #### ##### ##### ##### ##### ##### ##### ##### ##### #
+
 
                 "lan_eng_na = B16004_008 + B16004_013 + B16004_018 + B16004_023 + B16004_030 + B16004_035 + B16004_040 + B16004_045 + B16004_052 + B16004_057 + B16004_062 + B16004_067",
                 "lan_spanish  = B16004_004 + B16004_026 + B16004_048",
@@ -262,36 +294,43 @@
                 "lan_tagalog = C16001_027", "pctlan_tagalog <- ifelse(lan_universe == 0, 0, as.numeric(lan_tagalog) / lan_universe)",
                 "lan_arabic = C16001_033", "pctlan_arabic <- ifelse(lan_universe == 0, 0, as.numeric(lan_arabic) / lan_universe)",
                 "lan_other_and_unspecified = C16001_036", "pctlan_other_and_unspecified <- ifelse(lan_universe == 0, 0, as.numeric(lan_other_and_unspecified) / lan_universe)"
+                ####---------------------------------------- #
     ),
     longname_old = c("Total population",
                      "Count of males age Under 5 years", "Count of males age 5 to 9 years", "Count of males age 10 to 14 years",
-                     "Count of males age 15 to 17 years", "Count of males age 65 and 66 years",
-                     "Count of males age 67 to 69 years", "Count of males age 70 to 74 years",
-                     "Count of males age 75 to 79 years", "Count of males age 80 to 84 years",
-                     "Count of males age 85 years and over", "Count of females age Under 5 years",
-                     "Count of females age 5 to 9 years", "Count of females age 10 to 14 years",
-                     "Count of females age 15 to 17 years", "Count of females age 65 and 66 years",
-                     "Count of females age 67 to 69 years", "Count of females age 70 to 74 years",
-                     "Count of females age 75 to 79 years", "Count of females age 80 to 84 years",
-                     "Count of females age 85 years and over", "Count of Hispanic or Latino (of any race)",
+                     "Count of males age 15 to 17 years", "Count of males age 65 and 66 years","Count of males age 67 to 69 years", "Count of males age 70 to 74 years",
+                     "Count of males age 75 to 79 years", "Count of males age 80 to 84 years","Count of males age 85 years and over", "Count of females age Under 5 years",
+                     "Count of females age 5 to 9 years", "Count of females age 10 to 14 years","Count of females age 15 to 17 years", "Count of females age 65 and 66 years",
+                     "Count of females age 67 to 69 years", "Count of females age 70 to 74 years","Count of females age 75 to 79 years", "Count of females age 80 to 84 years",
+                     "Count of females age 85 years and over",
+
+                     "Count of Hispanic or Latino (of any race)",
                      "Count of Total Population", "Count of Not Hispanic or Latino",
                      "Count of White alone (including Hispanic/Latino)", "Count of Black or African American alone",
                      "Count of American Indian and Alaska Native alone", "Count of Asian alone",
                      "Count of Native Hawaiian and Other Pacific Islander alone",
                      "Count of people who are Some other race alone", "Count of people who are Two or more races",
+
                      "Population for whom poverty status is determined", "Population with income under 50% of poverty level",
                      "Population with income 50%-100% of poverty level", "Population with income 100%-124% of poverty level",
                      "Population with income 125%-149% of poverty level", "Population with income 150%-184% of poverty level",
                      "Population with income 185%-199% of poverty level", "Population with income at least twice the poverty level",
+
                      "Population 25 years and over",
                      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+
+
+                     #### ##### ##### ##### ##### ##### ##### ##### ##### #              #### ##### ##### ##### ##### ##### ##### ##### ##### #
+
                      "Spanish - Limited English speaking household",
                      "Other Indo-European languages - Limited English speaking household",
                      "Asian and Pacific Island languages - Limited English speaking household",
                      "Other languages - Limited English speaking household", "Households (for linguistic isolation)",
+                     ####---------------------------------------- #
                      "Housing units (for % built pre-1960)", "Built 1950 to 1959", "Built 1940 to 1949", "Built 1939 or earlier",
                      "Count of denominator for % unemployed", "Count of people unemployed",
                      "count of individuals under age 5", "% under age 5", "count of individuals over age 64", "% over age 64",
+
                      "Count not people of color (aka non-minority) i.e. not Hispanic or Latino White alone",
                      "Percent Hispanic or Latino", "(percent Not Hispanic or Latino White alone)",
                      "(percent Not Hispanic or Latino Black or African American alone)",
@@ -301,19 +340,17 @@
                      "(percent Not Hispanic or Latino Some other race alone)",
                      "(percent Not Hispanic or Latino Two or more races)",
                      "count of people of color (aka minority)", "% people of color (aka minority)",
+
                      "Population with income below poverty level",
                      "Population with income below 150% of poverty level",
-
                      "Count of low-income individuals (i.e., with income below 2 times poverty level)",
                      "Count of low-income individuals (i.e., with income below 2 times poverty level)",
-
                      "Percent of Population with income below poverty level", "Percent of Population with income below 150% of poverty level",
-
                      "% low-income (i.e., with income below 2 times poverty level)",
                      "% low-income (i.e., with income below 2 times poverty level)",
-
                      "Count of low-income individuals (i.e., with income below 2 times poverty level)",
                      "% low-income (i.e., with income below 2 times poverty level)",
+
                      "count of individuals age 25 or over with less than high school degree",
                      "% less than high school", "Count of Limited English speaking households",
                      "% of households that are limited English speaking", "count of housing units built before 1960",
@@ -327,8 +364,7 @@
                      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
 
     longname = c("Total Population",
-                 "Count of males age Under 5 years",
-                 "Count of males age 5 to 9 years", "Count of males age 10 to 14 years",
+                 "Count of males age Under 5 years", "Count of males age 5 to 9 years", "Count of males age 10 to 14 years",
                  "Count of males age 15 to 17 years", "Count of males age 65 and 66 years",
                  "Count of males age 67 to 69 years", "Count of males age 70 to 74 years",
                  "Count of males age 75 to 79 years", "Count of males age 80 to 84 years",
@@ -336,24 +372,32 @@
                  "Count of females age 5 to 9 years", "Count of females age 10 to 14 years",
                  "Count of females age 15 to 17 years", "Count of females age 65 and 66 years",
                  "Count of females age 67 to 69 years", "Count of females age 70 to 74 years",
-                 "Count of females age 75 to 79 years", "Count of females age 80 to 84 years",
-                 "Count of females age 85 years and over", "Count of Hispanic or Latino",
-                 "Count of Total Population", "Count of Not Hispanic or Latino",
+                 "Count of females age 75 to 79 years", "Count of females age 80 to 84 years", "Count of females age 85 years and over",
+
+                 "Count of Hispanic or Latino", "Count of Total Population",  "Count of Not Hispanic or Latino",
                  "Count of White (non-Hispanic, single race)", "Count of Black or African American (non-Hispanic, single race)",
                  "Count of American Indian and Alaska Native (non-Hispanic, single race)",
                  "Count of Asian (non-Hispanic, single race)", "Count of Native Hawaiian and Other Pacific Islander (non-Hispanic, single race)",
                  "Count of Other race (non-Hispanic, single race)", "Count of Two or more races (non-Hispanic)",
+
                  "Count of Population for whom Poverty Status is Determined",
                  "Population with income under 50% of poverty level", "Population with income 50%-100% of poverty level",
                  "Population with income 100%-124% of poverty level", "Population with income 125%-149% of poverty level",
                  "Population with income 150%-184% of poverty level", "Population with income 185%-199% of poverty level",
                  "Population with income at least twice the poverty level",
-                 "Count of Population Age 25 up", "m0", "m4", "m6", "m8",
-                 "m9", "m10", "m11", "m12", "f0", "f4", "f6", "f8", "f9",
-                 "f10", "f11", "f12", "Spanish - Limited English speaking household",
+                 "Count of Population Age 25 up",
+                 "m0", "m4", "m6", "m8", "m9", "m10", "m11", "m12",
+                 "f0", "f4", "f6", "f8", "f9", "f10", "f11", "f12",
+                 #### ##### ##### ##### ##### ##### ##### ##### ##### #              #### ##### ##### ##### ##### ##### ##### ##### ##### #
+
+                 "Spanish - Limited English speaking household",
                  "Other Indo-European languages - Limited English speaking household",
                  "Asian and Pacific Island languages - Limited English speaking household",
-                 "Other languages - Limited English speaking household", "Count of Households",
+                 "Other languages - Limited English speaking household",
+                 "Count of Households",
+
+                 ####---------------------------------------- #
+
                  "Built housing units count (denominator for % pre 1960)",
                  "Built 1950 to 1959", "Built 1940 to 1949", "Built 1939 or earlier",
                  "Universe for % unemployed (denominator, count)", "Unemployed resident count",
@@ -379,6 +423,8 @@
                  "Estimated Flood Risk in 30 Years", "% Females", "% Males",
                  "% Owner Occupied households", "% Households without Broadband Internet",
                  "% Households without Health Insurance", "% of Households below Poverty Level",
+                 ####---------------------------------------- #
+
                  "% speaking Asian and Pacific Island languages at home",
                  "% speaking Arabic at home", "% speaking English at home",
                  "% speaking French at home", "% speaking Other Indo-European at home",
@@ -390,10 +436,13 @@
                  "% speaking Other Indo-European languages (as % of limited English households)",
                  "% speaking Other languages (as % of limited English households)",
                  "% speaking Spanish (as % of limited English households)",
+
+                 ####---------------------------------------- #
                  "% Asian (single race, includes Hispanic)", "% American Indian and Alaska Native (single race, includes Hispanic)",
                  "% Black or African American (single race, includes Hispanic)",
                  "% Two or more races (includes Hispanic)", "% Native Hawaiian and Other Pacific Islander (single race, includes Hispanic)",
                  "% Other race (single race, includes Hispanic)", "% White (single race, includes Hispanic)",
+
                  "US type of raw score for Lead Paint Summary Index", "State type of raw score for Lead Paint Summary Index",
                  "US type of raw score for Lead Paint Supplemental Summary Index",
                  "State type of raw score for Lead Paint Supplemental Summary Index",
@@ -402,12 +451,18 @@
                  "Population Over Age 17", "Female Population", "Male Population",
                  "ownedhhlds", "occupiedhhlds", "pctownedhhlds", "Count of Owner Occupied Housing Units",
                  "Occupied Housing Units", "nobroadband", "nohealthinsurance",
-                 "Households below Poverty Level", "Count of White (single race, includes Hispanic)",
+                 "Households below Poverty Level",
+
+                 "Count of White (single race, includes Hispanic)",
                  "Count of Black or African American (single race, includes Hispanic)",
                  "Count of Asian (single race, includes Hispanic)", "Count of American Indian and Alaska Native (single race, includes Hispanic)",
                  "Count of Native Hawaiian and Other Pacific Islander (single race, includes Hispanic)",
                  "Count of Other race (single race, includes Hispanic)", "Count of Two or more races (includes Hispanic)",
-                 "Per Capita Income", "Number speaking English Not at All",
+
+                 "Per Capita Income",
+                 ####---------------------------------------- #
+
+                 "Number speaking English Not at All",
                  "Number speaking Spanish at Home", "Number speaking Asian-Pacific Island language at Home",
                  "Number speaking Other and Unspecified languages at home",
                  "lan_other_ie", "Number of Persons for whom Language Ability is Determined--age 5 and above.",
@@ -419,6 +474,8 @@
                  "% speaking Vietnamese at home", "lan_other_asian", "% speaking Other Asian and Pacific Island languages at home",
                  "lan_tagalog", "pctlan_tagalog", "lan_arabic", "% speaking Arabic at home",
                  "lan_other_and_unspecified", "pctlan_other_and_unspecified"
+
+                 ####---------------------------------------- #
     ),
     varlist = c("names_d_other_count", NA, NA, NA, NA, NA,
                 NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
@@ -440,12 +497,16 @@
                 "names_age", "names_climate", "names_climate", "names_climate",
                 "names_climate", "names_community", "names_community", "names_community",
                 "names_criticalservice", "names_criticalservice", "names_d_extra",
+
                 "names_d_language", "names_d_language", "names_d_language",
                 "names_d_language", "names_d_language", "names_d_language",
                 "names_d_language", "names_d_language", "names_d_language",
                 "names_d_language", "names_d_language", "names_d_language",
+
                 "names_d_languageli", "names_d_languageli", "names_d_languageli",
-                "names_d_languageli", "names_d_subgroups_alone", "names_d_subgroups_alone",
+                "names_d_languageli",
+
+                "names_d_subgroups_alone", "names_d_subgroups_alone",
                 "names_d_subgroups_alone", "names_d_subgroups_alone", "names_d_subgroups_alone",
                 "names_d_subgroups_alone", "names_d_subgroups_alone", "names_ej",
                 "names_ej_state", "names_ej_supp", "names_ej_supp_state",
@@ -456,7 +517,9 @@
                 "names_d_subgroups_alone_count", "names_d_subgroups_alone_count",
                 "names_d_subgroups_alone_count", "names_d_subgroups_alone_count",
                 "names_d_subgroups_alone_count", "names_d_subgroups_alone_count",
-                "names_community", "names_d_language_count", "names_d_language_count",
+                "names_community",
+
+                "names_d_language_count", "names_d_language_count",
                 "names_d_language_count", "names_d_language_count", NA, "names_d_language_count",
                 NA, "names_d_language", NA, "names_d_language", NA, NA, NA,
                 "names_d_language", NA, "names_d_language", NA, NA, NA, NA,
@@ -474,6 +537,11 @@
 
   row.names = c(NA, -194L),
   class = "data.frame")
+
+  ## fix duplicates from above
+
+  formulas_ejscreen_acs[formulas_ejscreen_acs$rname %in% formulas_ejscreen_acs$rname[(duplicated(formulas_ejscreen_acs$rname))],]
+
 
 
 
