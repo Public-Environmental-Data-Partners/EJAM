@@ -297,7 +297,7 @@ test_that(
 ######################################## #
 
 test_that(
-  "out_bydistance2results_bydistance() etc get same numbers as before",
+  "out_bydistance2results_bydistance() still returns same #s as before",
   {
     suppressWarnings({
       junk <- capture_output({

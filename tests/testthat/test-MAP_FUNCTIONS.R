@@ -340,6 +340,10 @@ test_that("shapes_blockgroups_from_bgfips() works", {
 })
 ############################################## #
 test_that("mapfast_gg() works", {
+  if (!pkg_available('maps')) {
+    warning("maps package is needed for unit test of mapfast_gg()")
+    skip("maps package is needed for unit test of mapfast_gg()")
+    }
   expect_no_error({
     x = mapfast_gg(testpoints_10)
     x
