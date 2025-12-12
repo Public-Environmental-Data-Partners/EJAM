@@ -111,18 +111,19 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
   oldnames <- mapping_for_names[, fromcolname]
   newnames <- mapping_for_names[, tocolname]
 
+  names_as_submitted = namesnow
   # rename only the ones that are in the oldnames list, i.e., renameable
   namesnow[namesnow %in% oldnames] <- newnames[match(namesnow[namesnow %in% oldnames], oldnames)]
 
   # old way failed to rename duplicates among the namesnow inputs, only 1st match via match()
 
   ###################### #   ###################### #   ###################### #
-  ### HANDLE SPECIAL CASE WHERE fixcolnames() is USED TO QUERY METADATA/TRAITS/INFO ABOUT A VARIABLE
+  ### CONSIDER SPECIAL CASE WHERE fixcolnames() is USED TO QUERY METADATA/TRAITS/INFO ABOUT A VARIABLE
   ### RATHER THAN AN EFFORT TO RENAME THE VARIABLE:
   # If they asked for renaming to a name type like "long", "r", etc.,
-  #  then for the cases where namesnow is not found in mapping_for_names, we just return the name unfixed/unchanged.
-  # BUT, if they asked to "rename to" (actually query) some other column such as "varlist" or "vartype",
-  #  then for the cases where namesnow is not found in mapping_for_name, we should return empty string
+  #  then for the cases where names_as_submitted is not found in columns of mapping_for_names, we just return the name unfixed/unchanged.
+  # BUT, if they asked to "rename to" (actually query) some other column such as "decimals" or "varlist" or "vartype",
+  #  then for the cases where SOME of the namesnow is not found in mapping_for_name, we should return empty string
   #  (rather than returning the name unchanged, since it is confusing to ask for varlist and get back the input term).
 
   nametypes <- sort(c(
@@ -131,8 +132,13 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
     # synonyms for those
     as.vector(unlist(eval(formals(fixmapheadernamescolname)$alias_list)))
   ))
-  if (!(newtype %in% nametypes)) {
-    namesnow[!(namesnow %in% oldnames)] <- ''
+  if (!(newtype %in% nametypes)) { # e.g., they asked for "decimals" or "varlist"
+    namesnow[!(names_as_submitted %in% oldnames)] <- ''
+    ## which ensures this:
+    # >  fixcolnames(c("pm", "xyz"), 'r', 'decimals')
+    # [1] "2" ""
+    # >  fixcolnames(c("pm", "xyz"), 'r', 'csv')
+    # [1] "PM25" "xyz"
   }
   ###################### #   ###################### #   ###################### #
   namesnow[namesnow %in% ""] <- names_as_provided[namesnow %in% ""]
@@ -160,3 +166,26 @@ fixcolnames_anyoldtype <- function(namesnow, oldtypes = c('longname', 'apiname',
   return(x)
 }
 ###################### #   ###################### #   ###################### #
+
+# >  fixcolnames(c("pm", "xyz"), 'r', 'decimals')
+# [1] "2" ""
+# >  fixcolnames(c("pm", "xyz"), 'r', 'csv')
+# [1] "PM25" "xyz"
+# >  fixcolnames(c("pm", "xyz"), 'api', 'csv')
+# [1] "pm"  "xyz"
+# >
+#   >  fixcolnames(c("pm", "xyz"), 'r', 'zzzzzz')
+# [1] "pm"  "xyz"
+# Warning message:
+#   In fixcolnames(c("pm", "xyz"), "r", "zzzzzz") :
+#   returning unchanged names because mapping_for_names has no column called  zzzzzz
+# >  fixcolnames(c("pm", "xyz"), 'zzzzzzzz', 'csv')
+# [1] "pm"  "xyz"
+# Warning message:
+#   In fixcolnames(c("pm", "xyz"), "zzzzzzzz", "csv") :
+#   returning unchanged names because mapping_for_names has no column called  zzzzzzzz
+# >  fixcolnames(c("pm", "xyz"), 'zzzzzzzz', 'yyyyy')
+# [1] "pm"  "xyz"
+# Warning message:
+#   In fixcolnames(c("pm", "xyz"), "zzzzzzzz", "yyyyy") :
+#   returning unchanged names because mapping_for_names has no column called  yyyyy

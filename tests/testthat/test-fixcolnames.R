@@ -3,6 +3,24 @@
 
 cat('\n testing fixcolnames() \n')
 
+############### #
+
+test_that('fixcolnames returns empty when cannot look up xyz in decimals col,  etc', {
+  expect_true(all.equal(
+    fixcolnames(c("pm", "xyz"), 'r', 'decimals'),
+    c("2", "")
+  ))
+})
+############### #
+
+test_that('fixcolnames returns unchanged when cannot find xyz to rename it as long, etc.', {
+
+  expect_true( all.equal(
+    fixcolnames(c("pm", "xyz"), 'r', 'csv'),
+    c("PM25", "xyz" )
+  ))
+})
+############### #
 
 test_that(desc = 'fixcolnames handles dupes in input', {
   test.original <- c(

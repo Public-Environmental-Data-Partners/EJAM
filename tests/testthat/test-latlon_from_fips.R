@@ -177,6 +177,7 @@ test_that("latlon_from_fips works on county and state", {
 #
 #
 #     cat("fips = ",fips[i], "\n")
+### # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
 #     print(paste0("lat,lon", x$lat, ", ", x$lon, "\n"))
 #
 #     # get fips from s2b$bgid

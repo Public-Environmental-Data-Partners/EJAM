@@ -1117,7 +1117,7 @@ app_ui <- function(request) {
                  selectizeInput(
                    inputId = "default_naics",
                    label = h6("NAICS industry code to start with"),
-                   choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
+                   choices = NULL,# NULL loads faster; will update server side, in app_server  # setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
                    selected = EJAM:::global_or_param("default_naics"),
                    width = 400,
                    multiple = TRUE,

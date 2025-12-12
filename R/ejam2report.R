@@ -234,6 +234,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## and could also add here ?
     # addlatlon = TRUE
     # if (addlatlon && sitetype == "latlon" && nsites == 1) {
+    ### # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
     #   locationstr <- paste0(locationstr, ' Centered at ', ejamout1$lat, ', ', ejamout1$lon)
     # }
     ##################### #

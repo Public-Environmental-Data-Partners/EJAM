@@ -73,26 +73,33 @@ latlon_from_vectorofcsvpairs <- function(x) {
 #'   into one vector of comma-separated pairs like latitude,longitude
 #' @param lat vector of latitudes
 #' @param lon vector of longitudes
+#' @param sep optional separator, like "," (default), or ", " (with a space) or "|"
 #'
 #' @return vector of comma-separated pairs (see example)
 #'
 #' @examples
-#'    lat_example = c(30.01,30.26,30.51)
-#'    lon_example = c(-90.61,-90.95,-91.23)
-#'    latloncsv_example = c("30.01,-90.61", "30.26,-90.95", "30.51,-91.23")
-#'    all.equal(latloncsv_example,
-#'              latlon2csv(lat = lat_example, lon = lon_example)
-#'    )
+#' lat_example = c(41,42,43)
+#' lon_example = c(-100,-90,-80)
+#' latloncsv_example = c("41,-100", "42,-90", "43,-80")
+#' all.equal(latloncsv_example,
+#'           latlon2csv(lat = lat_example, lon = lon_example)
+#' )
+#' latlon2csv(lat = lat_example, lon = lon_example)
+#'
+#' # Note slight changes can occur in lat,lon values if just using
+#' # paste(lat,lon,sep=',) instead of format() as noted in ?as.character()
+#' testpoints_10[1, c("lat","lon")]
+#' latlon2csv(lat = testpoints_10$lat[1], lon = testpoints_10$lon[1])
 #'
 #' @keywords internal
 #' @export
 #'
-latlon2csv <- function(lat, lon) {
+latlon2csv <- function(lat, lon, sep=",") {
 
   ## combines a list of latitudes and list of longitudes
   ## into a vector of comma-separated values for latitude and longitude
-
-  latloncsv <- paste(lat, lon, sep = ',')
+  # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
+  latloncsv <- paste(lat, lon, sep = sep)
   return(latloncsv)
 }
 ##################################################### #
@@ -128,7 +135,7 @@ latloncsv2nexus <- function(latloncsv) {
     stop('some lat or lon are NA')}
   if (any(!latlon_is.valid(lat = latitudes, lon = longitudes))) {
     stop('some lat or lon do not seem to be valid numbers')}
-
+  # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
   nexusformat  <- paste(latloncsv, collapse = ';')
   return(nexusformat)
 }

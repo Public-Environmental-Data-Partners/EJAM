@@ -405,6 +405,7 @@ popup_from_ejscreen <- function(out,
   if ('area_sqmi' %in% names(out)) {pops_sqmi      <- paste0('Area: ',   out$area_sqmi, ' square miles', '<br>')} else {pops_sqmi <- ''}
 
   if (!(all(is.na(out$lon)))) {
+    # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
     pops_latlon <- paste0('long, lat: ',  out$lon, ', ', out$lat,             '<br>')
   } else {
     pops_latlon <- ''

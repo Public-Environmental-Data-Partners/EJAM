@@ -17,7 +17,7 @@ if (!exists('blockwts')) {
 # DOES IT STILL RETURN WHAT IT USED TO, OR HAS FUNCTION CHANGED SO THAT OUTPUTS NO LONGER MATCH ARCHIVED OUTPUTS? ####
 ################# #
 
-test_that("still same exact results_overall as previously saved", {
+test_that("still returns same results_overall as saved", {
 
   # # data created/saved was this:
   # out_data_doagg <- doaggregate(out_data_getblocks, sites2states_or_latlon = testpoints_data, radius = myrad, include_ejindexes = TRUE) # not the default but want to test this way

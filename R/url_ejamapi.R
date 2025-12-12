@@ -377,6 +377,7 @@ url_ejamapi = function(
           # x <- latlon_from_anything(sitepoints, interactiveprompt = F) # do we want this actually ?? see notes in sites_from_input() and related
           lat <- x$lat
           lon <- x$lon
+          # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
           lat <- paste0(lat, collapse = ",")
           lon <- paste0(lon, collapse = ",")
         }

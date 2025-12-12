@@ -1,0 +1,60 @@
+---
+title: "EJScreen Indicators Overview – Particulate Matter 2.5 (PM2.5)"
+description: "EJScreen Indicators Overview – Particulate Matter 2.5 (PM2.5)"
+output: html_document
+---
+
+## What is the PM2.5 indicator?
+
+The “PM2.5 indicator” measures the potential exposure to inhalable particles 2.5 microns or smaller (about 30 times smaller than the width of human hair). EJScreen presents PM2.5 concentrations using percentile rank, ranging from 0 (lowest) to 100 (highest) with higher scores representing higher concentrations. This indicator does not designate compliance with the national ambient air quality standard for PM2.5.
+
+## Why is PM2.5 important?
+
+-   Particulate matter (PM) contains microscopic solids or liquid droplets that
+    are so small they can be inhaled and cause serious health problems.
+    Particles 10 microns in diameter or smaller (PM10) can get deep into your
+    lungs and some may even get into your bloodstream. Particles 2.5 microns in
+    diameter or smaller (PM2.5) pose the greatest risk to health.
+-   Studies have linked PM exposure to a range of health impacts, including
+    premature death in people with heart or lung disease, asthma attacks, heart
+    attacks, irregular heartbeat, decreased lung function, and increased
+    respiratory symptoms, such as irritation of the airways, coughing or
+    difficulty breathing. Children, older adults, people with pre-existing heart
+    or lung diseases, people of color populations, and low socioeconomic status
+    (SES) populations are at increased risk from PM exposure.
+-   Fine particles (PM2.5) also contribute to reduced visibility (haze) in parts
+    of the United States.
+
+## How does EJScreen create the PM2.5 indicator?
+
+-   The PM2.5 indicator is measured in terms of annual average concentration in
+    micrograms per cubic meter (μg/m3).
+-   The PM2.5 indicator data was provided by the EPA Office of Air Quality
+    Planning and Standards using a fusion of monitor data and Community
+    Multiscale Air Quality (CMAQ) air quality modeling. For more information
+    about the methods used, see [EPA Report EPA-454/S-15-001](https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P100OORX.PDF).
+-   For technical details on the calculations and source data, visit the
+    [EJSCREEN Technical Documentation](`r EJAM::url_ejscreentechdoc()`)
+    or [archived EJSCREEN Technical Documentation page](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/technical-information-and-data-downloads) or [archived EJSCREEN Technical Documentation pdf](https://web.archive.org/web/20250121194640/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)
+
+## Moving forward – What you can do
+
+- Stay informed on the latest relevant information and resources on the [EPA Particulate Matter Pollution site](https://www.epa.gov/pm-pollution) or [as archived](https://web.archive.org/web/20250123084723/https://www.epa.gov/pm-pollution).
+- [Learn about the health and environmental effects associated with PM2.5](https://www.epa.gov/pm-pollution/health-and-environmental-effects-particulate-matter-pm).
+- Reduce your PM exposure:
+
+  - EPA’s [Air Quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/), on [AirNow](http://www.airnow.gov/), tells you how clean or polluted your outdoor air is, as well as actions to protect your health and reduce exposure. The AQI provides current and forecasted AQI values. Go to [Using the AQI](https://www.airnow.gov/aqi/aqi-basics/using-air-quality-index/) to learn how to use current and forecasted air quality to plan your day.
+
+  - The [Air Quality Flag Program](https://www.airnow.gov/air-quality-flag-program/) can help air agencies, schools, and other community organizations notify their citizens of harmful air quality conditions and provides guidance on how to adjust physical activities to help reduce exposure to air pollution, while still keeping people active.
+
+  - Everyone can take steps to lessen air pollution and keep the air clean. It is also important to take certain precautions to safeguard your health. [Visit AirNow for tips on what you can do](https://www.airnow.gov/education/what-you-can-do/).
+
+- See what the EPA and others are doing to reduce particulate matter pollution. The EPA has national and regional rules that reduce pollutant emissions that form PM and help state and local governments meet national air quality standards. Learn about how air quality standards help reduce PM.
+
+--------------------
+ _About this page:_
+
+- _This page is a simplified version of the original saved by archive.org. It was adapted from [an archived copy](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25) that captured the version that had been last updated on July 30, 2024._
+- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+ 
+
