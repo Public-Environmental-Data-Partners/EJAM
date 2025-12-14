@@ -21,6 +21,9 @@ EJSCREEN Community Report)"><meta property="og:image" content="https://ejanalysi
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -72,7 +75,7 @@ EJSCREEN Community Report)</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ejam2report</span><span class="op">(</span></span>
 <span>  ejamitout <span class="op">=</span> <span class="va">testoutput_ejamit_10pts_1miles</span>,</span>
 <span>  sitenumber <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  analysis_title <span class="op">=</span> <span class="st">"Summary of Analysis"</span>,</span>
+<span>  analysis_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  submitted_upload_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"latlon"</span>, <span class="st">"SHP"</span>, <span class="st">"FIPS"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  shp <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_html <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -97,7 +100,12 @@ EJSCREEN Community Report)</p>
 <span>  extratable_hide_missing_rows_for <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">extratable_list_of_sections</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  report_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  logo_path <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"report_logo"</span><span class="op">)</span>,</span>
-<span>  logo_html <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  logo_html <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  footer_version_number <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  footer_date <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  footer_text <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  footer_html <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  addlatlon <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -182,12 +190,20 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.</p></
 
 <dt id="arg-logo-path">logo_path<a class="anchor" aria-label="anchor" href="#arg-logo-path"></a></dt>
 <dd><p>optional relative path to a logo for the upper right of the overall header.
-Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp()</p></dd>
+Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in <code><a href="ejamapp.html">ejamapp()</a></code></p></dd>
 
 
 <dt id="arg-logo-html">logo_html<a class="anchor" aria-label="anchor" href="#arg-logo-html"></a></dt>
 <dd><p>optional HTML for img of logo for the upper right of the overall header.
 If specified, it overrides logo_path. If omitted, gets created based on logo_path.</p></dd>
+
+
+<dt id="arg-footer-version-number-footer-date-footer-text-footer-html">footer_version_number, footer_date, footer_text, footer_html<a class="anchor" aria-label="anchor" href="#arg-footer-version-number-footer-date-footer-text-footer-html"></a></dt>
+<dd><p>to customize the report footer - see <code><a href="generate_report_footer.html">generate_report_footer()</a></code></p></dd>
+
+
+<dt id="arg-addlatlon">addlatlon<a class="anchor" aria-label="anchor" href="#arg-addlatlon"></a></dt>
+<dd><p>optional, whether to include lat,lon coordinates in header (for latlon sitetype)</p></dd>
 
 </dl></div>
     <div class="section level2">

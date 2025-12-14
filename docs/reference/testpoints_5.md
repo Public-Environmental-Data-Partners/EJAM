@@ -1,0 +1,25 @@
+# test points data.frame with columns sitenumber, lat, lon
+
+Examples of what could be inputs to functions that need points specified
+by lat lon
+
+## Usage
+
+``` r
+testpoints_5
+```
+
+## Format
+
+An object of class `data.frame` with 5 rows and 4 columns.
+
+## Details
+
+Just for convenience, these are installed with the package, and are the
+equivalent of results of reading the .xlsx test data files.
+
+## See also
+
+testpoints_5
+[testpoints_50](https://ejanalysis.github.io/EJAM/reference/testpoints_50.md)
+[testpoints_500](https://ejanalysis.github.io/EJAM/reference/testpoints_500.md)
