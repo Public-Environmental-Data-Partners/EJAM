@@ -196,7 +196,7 @@ REMOVED UNTIL FIXED  -->
 
 ## Table of Results in RStudio console
 
-As an alternative to the pdf report created by `ejam2report()`, this gives you a
+As an alternative to the report provided by `ejam2report()`, this gives you a
 quick, simple list of results for all the indicators:
 
 ```{r ejam2table_tall, eval=FALSE}

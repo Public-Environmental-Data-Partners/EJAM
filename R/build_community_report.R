@@ -73,7 +73,8 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #'  It uses functions in community_report_helper_funs.R, etc.
 #'
 #' @param output_df single row of results table from doaggregate - either results_overall or one row of bysite
-#' @param analysis_title title to use in header of report
+#' @param analysis_title optional, title to use in header of report,
+#'   default shows name of place if FIPS code report on 1 site.
 #' @param totalpop total population included in location(s) analyzed
 #' @param locationstr description of the location(s) analyzed
 #'
@@ -94,7 +95,9 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #'
 #' @param in_shiny whether the function is being called in or outside of shiny - affects location of header
 #' @param filename path to file to save HTML content to; if null, returns as string (used in Shiny app)
-#' @param report_title generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
+#' @param report_title generic name of this type of report, to be shown at top,
+#'   like "Multisite Summary" or "EJSCREEN Community Report"
+#'
 #' @param logo_path optional relative path to a logo for the upper right of the overall header.
 #'   Ignored if logo_html is specified and not NULL, otherwise uses default or param set in [ejamapp()],
 #'  except NULL means default logo, "" means omit logo entirely.
@@ -107,7 +110,9 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #' @export
 #'
 build_community_report <- function(output_df,
-                                   analysis_title = "Report", totalpop, locationstr,
+                                   analysis_title = NULL, #"Report",
+                                   totalpop,
+                                   locationstr,
                                    include_ejindexes = FALSE,
                                    show_ratios_in_report = FALSE,
                                    extratable_show_ratios_in_report = FALSE,
@@ -144,6 +149,17 @@ build_community_report <- function(output_df,
                                    logo_html = NULL
 ) {
 
+  if (is.null(report_title)) {
+    # Report TITLE if 1-site vs multisite
+    if (is.na(output_df$ejam_uniq_id)) {
+      report_title <- EJAM:::global_or_param("report_title_multisite")
+    } else {
+      report_title <- EJAM:::global_or_param("report_title")
+      }
+  }
+  if (is.null(analysis_title)) {
+    analysis_title <- global_or_param("default_standard_analysis_title")
+  }
   ## check that analysis was run with EJ columns; if not, don't add them
   if (include_ejindexes) {
     ejcols <- c(names_ej,      names_ej_state,
@@ -232,6 +248,10 @@ build_community_report <- function(output_df,
     ),
     collapse = ''
   )
+  ############################################################# #
+
+#   > map, barplot, footer are elsewhere < ####
+
   ############################################################# #
   if (is.null(filename)) {
     return(HTML(full_page))

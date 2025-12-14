@@ -22,6 +22,10 @@ params:
   report_title: NULL
   logo_path: NULL
   logo_html: NULL
+  footer_version_number: NULL
+  footer_date: NULL
+  footer_text: NULL
+  footer_html: NULL
 ---
 
 ```{r, echo=FALSE}
@@ -75,27 +79,12 @@ params$summary_plot
 
 ```{r footer_with_version_and_date}
 
-library(desc)
-library(golem)
+# To make footer blank (no text), pass "" for footer_text or footer_html.
+EJAM:::generate_report_footer(
+  footer_version_number = params$footer_version_number,
+  footer_date = params$footer_date,
+  footer_text = params$footer_text,
+  footer_html = params$footer_html
+)
 
-desc <- tryCatch(desc::desc(package = 'EJAM'), error = function(e) {e})
-if (inherits(desc, 'try-error')) {
-  desc <- tryCatch(desc::desc(file = app_sys('DESCRIPTION')), error = function(e) {e})
-  if (inherits(desc, 'try-error')) {stop('cannot find DESCRIPTION file for EJAM package')}
-}
-
-version <- ifelse('error' %in% class(desc), '', desc$get("Version"))
-## nolonger will trim version number shown in report to Major.Minor
-# version <- substr(version, start = 1, stop = gregexpr('\\.',version)[[1]][2] - 1)
-
-current_date <- ifelse(
-  isTRUE(getOption("shiny.testmode")),
-  "[SHINYTEST DATE]", # so the snapshot of the report is consistent, not diff date each time tested
-  format(Sys.Date(), "%B %d, %Y"))
-
-HTML('
-  <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
-    <p style="margin-bottom: 0;">Version ', version, '| Report created on ', current_date, '</p>
-  </div>
-  ')
 ```

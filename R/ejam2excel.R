@@ -22,7 +22,7 @@
 #' @param buffer_desc description of location to use in labels, like "Selected Locations"
 #' @param in.analysis_title optional title as character string
 #' @param react.v1_summary_plot optional - a plot object
-#' @param radius_or_buffer_description optional text phrase describing places analyzed
+#' @param radius_or_buffer_description optional text phrase describing places analyzed, like in report headers
 #'
 #' @param reports info about which columns to treat as URLs that should be hyperlinks -
 #'   see [url_columns_bysite()]
@@ -67,7 +67,7 @@ ejam2excel <- function(ejamitout,
                        react.v1_summary_plot = NULL,
                        radius_or_buffer_in_miles = NULL,  #  input$radius_now
                        buffer_desc = NULL, # "Selected Locations",
-                       radius_or_buffer_description = 'Miles radius of circular buffer (or distance used if buffering around polygons)',
+                       radius_or_buffer_description = NULL, # e.g.,  'Miles radius of circular buffer (or distance used if buffering around polygons)',
                        # radius_or_buffer_description =   "Distance from each site (radius of each circular buffer around a point)",
 
                        reports = EJAM:::global_or_param("default_reports"), # has hyperlink colnames and text to use

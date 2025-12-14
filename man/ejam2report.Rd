@@ -7,7 +7,7 @@
 ejam2report(
   ejamitout = testoutput_ejamit_10pts_1miles,
   sitenumber = NULL,
-  analysis_title = "Summary of Analysis",
+  analysis_title = NULL,
   submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
   shp = NULL,
   return_html = FALSE,
@@ -32,7 +32,12 @@ ejam2report(
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
   report_title = NULL,
   logo_path = EJAM:::global_or_param("report_logo"),
-  logo_html = NULL
+  logo_html = NULL,
+  footer_version_number = NULL,
+  footer_date = NULL,
+  footer_text = NULL,
+  footer_html = NULL,
+  addlatlon = TRUE
 )
 }
 \arguments{
@@ -80,10 +85,14 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.}
 \item{report_title}{optional generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}
 
 \item{logo_path}{optional relative path to a logo for the upper right of the overall header.
-Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp()}
+Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in \code{\link[=ejamapp]{ejamapp()}}}
 
 \item{logo_html}{optional HTML for img of logo for the upper right of the overall header.
 If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
+
+\item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}}
+
+\item{addlatlon}{optional, whether to include lat,lon coordinates in header (for latlon sitetype)}
 }
 \value{
 URL of temp file or object depending on return_html,

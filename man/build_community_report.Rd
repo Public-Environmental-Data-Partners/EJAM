@@ -6,7 +6,7 @@
 \usage{
 build_community_report(
   output_df,
-  analysis_title = "Report",
+  analysis_title = NULL,
   totalpop,
   locationstr,
   include_ejindexes = FALSE,
@@ -36,7 +36,8 @@ build_community_report(
 \arguments{
 \item{output_df}{single row of results table from doaggregate - either results_overall or one row of bysite}
 
-\item{analysis_title}{title to use in header of report}
+\item{analysis_title}{optional, title to use in header of report,
+default shows name of place if FIPS code report on 1 site.}
 
 \item{totalpop}{total population included in location(s) analyzed}
 
@@ -66,7 +67,8 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.'}
 
 \item{filename}{path to file to save HTML content to; if null, returns as string (used in Shiny app)}
 
-\item{report_title}{generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}
+\item{report_title}{generic name of this type of report, to be shown at top,
+like "Multisite Summary" or "EJSCREEN Community Report"}
 
 \item{logo_path}{optional relative path to a logo for the upper right of the overall header.
 Ignored if logo_html is specified and not NULL, otherwise uses default or param set in \code{\link[=ejamapp]{ejamapp()}},

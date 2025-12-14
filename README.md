@@ -27,13 +27,13 @@ same time.
 See [ejanalysis.org/status](https://ejanalysis.org/status) for more
 information.
 
-*As of mid-June 2025, content related to what had been the USEPA-hosted
-open source R package EJAM will be archived (and/or unpublished)*
+*In 2025, content related to what had been the USEPA-hosted open source
+R package EJAM was archived.*
 
 *Ongoing development since mid-2025 is not associated with EPA*, and
-that development including any open source contributions, will take
+that development including any open source contributions, has taken
 place in a separate repository, called
-[ejanalysis/EJAM](https://github.com/ejanalysis/EJAM), which a non-EPA,
+[ejanalysis/EJAM](https://github.com/ejanalysis/EJAM), a non-EPA,
 detached fork.
 
 ### code repositories and open source contributions

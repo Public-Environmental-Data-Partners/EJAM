@@ -40,10 +40,11 @@
 #'
 #' @param report_title optional generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
 #' @param logo_path optional relative path to a logo for the upper right of the overall header.
-#'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp()
+#'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in [ejamapp()]
 #' @param logo_html optional HTML for img of logo for the upper right of the overall header.
 #'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
-#'
+#' @param footer_version_number,footer_date,footer_text,footer_html to customize the report footer - see [generate_report_footer()]
+#' @param addlatlon optional, whether to include lat,lon coordinates in header (for latlon sitetype)
 #' @return URL of temp file or object depending on return_html,
 #'    and has side effect of launching browser to view it depending on return_html
 #'
@@ -63,7 +64,7 @@
 #'
 ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         sitenumber = NULL,
-                        analysis_title = 'Summary of Analysis',
+                        analysis_title = NULL,
                         submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
                         shp = NULL,
                         return_html = FALSE,
@@ -99,28 +100,23 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
                         report_title = NULL, # EJAM:::global_or_param("report_title"),
                         logo_path = EJAM:::global_or_param("report_logo"),
-                        logo_html = NULL # defined downstream
+                        logo_html = NULL, # defined downstream
                         ## Rmd_name and Rmd_folder could be made params to pass to report_setup_temp_files()
+                        footer_version_number = NULL,
+                        footer_date = NULL,
+                        footer_text = NULL,
+                        footer_html = NULL,
+                        addlatlon = TRUE
 ) {
 
-  # title and logo ####
-  if (is.null(report_title)) {
-    report_title <- EJAM:::global_or_param("report_title")
-  }
+  # analysis title default and report_title default depend on if this is 1-site or multisite
+
+  # LOGO ####
   if (is.null(logo_path)) {
     logo_path <- EJAM:::global_or_param("report_logo")
   }
   if (!interactive()) {launch_browser <- FALSE} # but that means other functions cannot override this while not interactive.
-
-  # file extension ####
-  # adjust this once .pdf option is implemented/working
-  fileextension <- paste0(".", gsub("^\\.", "", fileextension)) # add leading dot if not present
-  fileextensions_implemented <- c(".html", ".pdf")
-  if (!(fileextension %in% fileextensions_implemented)) {
-    warning("fileextension must be one of", fileextensions_implemented)
-    fileextension <- ".html"
-  }
-
+  # SITE TYPE (shp or fips or latlon) ? ####
   if (missing(submitted_upload_method)) {
     # as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
     # create_filename() did use that version in server.
@@ -141,23 +137,35 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
   }
   ################################################## #  ################################################## #
-  # overall vs 1-site ####
+  # REPORT TYPE (MULTISITE or 1-SITE REPORT) ? ####
 
+  ## > sitenumber & nsites ####
   sitenumber <- as.numeric(sitenumber)
   if (all(is.na(sitenumber)) || is.null(sitenumber) || length(sitenumber) == 0 ||
-      all(sitenumber %in% "") || all(sitenumber %in% 0) || all(sitenumber < 0)) {
+      all(sitenumber %in% "") || all(sitenumber %in% 0) || all(sitenumber < 0) ||
+      sitenumber > NROW(ejamitout$results_bysite) # could provide error msg for this case
+  ) {
     sitenumber <- 0
   }
-  ### > nsites ####
-  nsites <- NROW(ejamitout$results_bysite[ejamitout$results_bysite$valid %in% TRUE, ]) # might differ from ejamout1$sitecount_unique
 
-  ## OVERALL ###################################################
+  nsites <- NROW(ejamitout$results_bysite[ejamitout$results_bysite$valid %in% TRUE, ]) # might differ from ejamout1$sitecount_unique
 
   if (sitenumber %in% 0 && nsites == 1) {
     sitenumber <- 1
   }
 
-   if (sitenumber %in% 0) {
+  ## Multi-site report (Overall summary) ###################################################
+
+  if (sitenumber %in% 0) {
+
+    # Report TITLE if multisite ####
+    if (is.null(report_title)) {
+      report_title <- EJAM:::global_or_param("report_title_multisite")
+    }
+    ## Analysis TITLE if multisite
+    if (is.null(analysis_title)) {
+      analysis_title <- global_or_param("default_standard_analysis_title")
+    }
 
     ejamout1 <- ejamitout$results_overall # one row
     ejamout1$valid <- TRUE
@@ -175,15 +183,27 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
   } else {
 
-    ## ONE SITE (or summary but just 1 site) ###################################################
+    ## Single-site report (or summary but just 1 site) ###################################################
 
+    # Report TITLE if 1-site ####
+    if (is.null(report_title)) {
+      report_title <- EJAM:::global_or_param("report_title")
+    }
+    ## Analysis TITLE if 1-site
+    if (is.null(analysis_title)) {
+      if (ejamitout$sitetype %in% 'fips') {
+        analysis_title <- fips2name(ejamitout$results_bysite$ejam_uniq_id[sitenumber])
+      } else {
+        analysis_title <- global_or_param("default_standard_analysis_title")
+      }
+    }
     ejamout1 <- ejamitout$results_bysite[sitenumber, ]
     rad <- ejamout1$radius.miles
 
-    ### > nsites ####
+    ### > nsites
     nsites <- 1
 
-    ### > name of 1 location ####
+    ### > name of 1 location for filename ####
     selected_location_name_react <- ejamout1$statename
 
     ### > fips bounds ####
@@ -206,49 +226,52 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     #############################################################################  #
 
-    # Render via build_community_report() ####
-    #
+    # HEADER  ####
+
     # as adapted from app_server
 
-    # nsites
+    ## > population count  ####
     popstr <- prettyNum(round(ejamout1$pop, table_rounding_info("pop")), big.mark = ',')
 
+    ## > sitetype ####
     sitetype <- ejamitout$sitetype  # sitetype <- tolower(submitted_upload_method) # did not work here
-
     if (sitetype == "shp" && is.null(shp)) {
       # this should not happen unless ejam2report() got called for shp analysis results but user did not provide the bounds
       warning("Cannot map polygons based on just output of ejamit() -- The sf class shapefile / spatial data.frame that was used should be provided as the shp parameter to ejam2report()")
     }
 
-    area_in_square_miles <- ejamout1$area_sqmi
-
-    residents_within_xyz <- report_residents_within_xyz(
-      sitetype = sitetype,
-      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
-      nsites = nsites,  # but should note these are only the ones where $results_bysite$valid %in% TRUE
-      area_in_square_miles = area_in_square_miles,
-      sitenumber = sitenumber,
-      ejam_uniq_id = ejamout1$ejam_uniq_id
+    if (sitetype %in% "fips" && !is.null(sitenumber) && sitenumber > 0) {
+      analysis_title <- fips2name(ejamitout$results_bysite[sitenumber, ejam_uniq_id])
+    }
+    ## > report_residents_within_xyz_from_ejamit()
+    residents_within_xyz <- report_residents_within_xyz_from_ejamit(
+      ejamitout = ejamitout,
+      sitenumber = sitenumber
+      ## this newer function uses the whole list not just ejamout1 to create the header
     )
-    locationstr <- residents_within_xyz
-    ## and could also add here ?
-    # addlatlon = TRUE
-    # if (addlatlon && sitetype == "latlon" && nsites == 1) {
-    ### # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
-    #   locationstr <- paste0(locationstr, ' Centered at ', ejamout1$lat, ', ', ejamout1$lon)
-    # }
-    ##################### #
+    ####################################################### #
 
-    # > copy .Rmd (template), .png (logo), .css from Rmd_folder to a temp dir subfolder for rendering
-    # report_setup_temp_files() copies files to where they need to be for rendering ####
+    # FILES ####
+
+    ## copy .Rmd (template), .png (logo), .css from Rmd_folder to a temp dir subfolder for rendering
+    ## > report_setup_temp_files() copies template, logo, .css files to where needed for rendering ####
     ## returns path to .Rmd template copied to a temp folder, but
     ## tempReport is not used - report_setup_temp_files() is used for side efx
     tempReport <- report_setup_temp_files()
-      # Rmd_name = 'community_report_template.Rmd', # default, for summary report
-      # # Rmd_name = 'barplot_report_template.Rmd' # for single site barplot report
-      # Rmd_folder = 'report/community_report/'
+    # Rmd_name = 'community_report_template.Rmd', # default, for summary report
+    # # Rmd_name = 'barplot_report_template.Rmd' # for single site barplot report
+    # Rmd_folder = 'report/community_report/'
 
+    ## > file extension ####
+    # adjust this once .pdf option is implemented/working
+    fileextension <- paste0(".", gsub("^\\.", "", fileextension)) # add leading dot if not present
+    fileextensions_implemented <- c(".html", ".pdf")
+    if (!(fileextension %in% fileextensions_implemented)) {
+      warning("fileextension must be one of", fileextensions_implemented)
+      fileextension <- ".html"
+    }
 
+    ## > filename ####
     # use create_filename() here like server does:
     if (!is.null(selected_location_name_react)) {
       location_suffix <- paste0(" - ", selected_location_name_react) # the statename, if just 1 site not overall results
@@ -277,8 +300,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
     ####################################################### #
 
-    # build_community_report() does most of this work ####
+    # ASSEMBLE REPORT  ####
 
+    ## TABLES, LOGO, HEADER  ####
+    ### build_community_report() ####
     ## note build_community_report() is also used in community_report_template.Rmd and in server
 
     community_html <- build_community_report(
@@ -286,7 +311,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       output_df = ejamout1,
       analysis_title = analysis_title,
       totalpop = popstr,
-      locationstr = locationstr,
+      locationstr = residents_within_xyz,
       include_ejindexes = include_ejindexes,
 
       show_ratios_in_report = show_ratios_in_report,
@@ -312,8 +337,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     rmd_template <- system.file("report/community_report/combine_after_build_community_report.Rmd", package = "EJAM")
 
-    #Barplot from community report
+    ## BARPLOT  ####
+
     plot <- plot_barplot_ratios_ez(ejamitout) + ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2))
+
+    ## MAP ####
 
     # This presumes shp was provided in SHP cases
     if (is.null(sitenumber) || length(sitenumber) == 0 || sitenumber %in% 0) {
@@ -333,19 +361,22 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         map <- mapfastej(ejamout1, radius = rad)
       }
     }
-    if (is.null(map)) {
-      report_params <- list(
-        community_html = community_html,
-        plot = plot
 
-      )
-    } else {
-      report_params <- list(
-        community_html = community_html,
-        plot = plot,
-        map = map
-      )
+    report_params <- list(
+      community_html = community_html,
+      plot = plot
+    )
+    if (!is.null(map)) {
+      report_params$map = map
     }
+    report_params <- c(report_params,
+                       # NULL means use defaults
+                       footer_version_number = footer_version_number,
+                       footer_date = footer_date,
+                       footer_text = footer_text,
+                       footer_html = footer_html
+    )
+    ## render to .html temporary file and then read it and return that HTML as a single text object
     # >>>>>>> issue303AddMapAndBarPlot
     if (return_html) {
       rendered_path <- rmarkdown::render(
@@ -360,7 +391,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       return(paste(readLines(rendered_path, warn = FALSE), collapse = "\n"))
 
     } else {
-
+      ## render to a .html (or maybe pdf) file and return the path to that file
       rmarkdown::render(
         input = rmd_template,
         output_format = ifelse(fileextension == ".pdf", "pdf_document", "html_document"), # add pdf option here

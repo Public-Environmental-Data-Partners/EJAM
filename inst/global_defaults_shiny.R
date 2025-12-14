@@ -429,7 +429,7 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
     # report_logo = "", report_html = "",
     ## but to  use the logo, should be left as-set in global_defaults_package.R
 
-    default_standard_analysis_title = 'Summary of Analysis', # Default title to show on each short report
+    # default_standard_analysis_title is now in global_defaults_package.R. # Default title to show on each short report
     default_plotkind_1pager = "bar",  #    Bar = "bar", Box = "box", Ridgeline = "ridgeline"
 
     default_extratable_title = '', # above the table, not in the upper left cell

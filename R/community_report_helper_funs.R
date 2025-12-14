@@ -581,6 +581,67 @@ generate_report_footnotes <- function(
   return(HTML(footnotes))
 }
 ################################################################################## #
+
+# 5. footer ####
+
+#' helper - make date/version footer for summary report
+#' @details  used by app_server.R and .Rmd report templates.
+#'   Passing a parameter as NULL is the same as omitting it/not specifying it.
+#'   To make footer blank (no text), pass "" for footer_text or footer_html.
+#'
+#' @param version_number optional, default is read from the package, e.g., "2.32.6.003"
+#' @param date_created optional, default is today, e.g., "December 12, 2025"
+#' @param footer_text optional, e.g., "Report created by EJAM version (version_number) on (date_created)".
+#'   If specified, it overrides date and version parameters.
+#' @param footer_html optional full HTML for footer.
+#'   If specified, it overrides all other parameters.
+#'
+#'   For example,
+#'   ```
+#'   footer_html = shiny::HTML(paste0('
+#'     <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
+#'       <p style="margin-bottom: 0;">', 'Report created by EJAM version 2.32.6.003 on December 12, 2025', '</p>
+#'     </div>
+#'   '))
+#'   ```
+#'
+#' @keywords internal
+#'
+generate_report_footer <- function(footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL) {
+
+  if (missing(footer_version_number) || is.null(footer_version_number)) {
+    footer_version_number <- as.vector(global_or_param("app_version")) # e.g., "2.32.6.003"
+  }
+
+  if (isTRUE(getOption("shiny.testmode"))) {
+    footer_date <- "[SHINYTEST DATE]" # so the snapshot of the report is consistent, not diff date each time tested
+  } else {
+    if (missing(footer_date) || is.null(footer_date)) {
+      footer_date <- format(Sys.Date(), "%B %d, %Y")
+    }
+  }
+
+  if (missing(footer_text) || is.null(footer_text)) {
+    footer_text <- paste0('Report created by EJAM version ', footer_version_number, ' on ', footer_date)
+  }
+
+  if (missing(footer_html) || is.null(footer_html)) {
+    footer_html <- HTML(paste0('
+  <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
+    <p style="margin-bottom: 0;">', footer_text, '</p>
+  </div>
+  '))
+    ## that should be same as
+    # shiny::div(style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
+    #            shiny::p(style = "margin-bottom: 0", footer_text))
+  }
+
+  return(footer_html)
+}
+################################################################################## #
+
+
+################################################################################## #
 # ~ ####
 # 1. Headers ####
 
@@ -908,7 +969,7 @@ sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place") {
 #'
 report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 
-  if (is.null(radius)) {return("")}
+  if (is.null(radius) || is.na(radius)) {return("")}
 
   #  but if you provide custom text without ending with "of " then it will look odd
   # See  https://cli.r-lib.org/articles/pluralization.html
@@ -926,6 +987,140 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
     xmilesof <- paste0(radius, unitsingular, " of ")
   }
   return(xmilesof)
+}
+################################################################### #
+
+
+#' utility to create text for use in report about residents within X miles of Y
+#'
+#' @param ejamitout list that is output of [ejamit()]
+#' @param sitenumber optional, which site number to report on for a 1-site report instead of the overall summary of all sites
+#' @param ... See [report_residents_within_xyz()] for details of optional
+#'   parameters that can be specified -- they get passed from here to that function.
+#'   For example, if it is a 1-site report as via sitenumber=2,
+#'    and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
+#'   instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).
+#'
+#' @returns text string
+#'
+#' @export
+#' @keywords internal
+#'
+report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL, ...) {
+
+  out <- ejamitout
+  if (!missing(...)) {params = list(...)} else {params = NULL}
+
+  stopifnot("results_bysite" %in% names(ejamitout))
+  if (!is.null(sitenumber) && sitenumber %in% 0) {sitenumber <- NULL} # because ejam2report() allows 0 to mean summary report
+  stopifnot(!is.na(sitenumber), (is.null(sitenumber) | is.atomic(sitenumber)), length(sitenumber) < 2)
+  stopifnot(is.numeric(sitenumber) | is.null(sitenumber))
+  if (!is.null(sitenumber)) {
+    if (sitenumber < 1 || sitenumber > NROW(out$results_bysite)) {
+      message("sitenumber was < 1 or > number of rows in results_bysite, so ignoring sitenumber parameter")
+      sitenumber <- NULL
+    }
+  }
+  if (!is.null(sitenumber)) {
+    if (!is.null(params) && "ejam_uniq_id" %in% names(params)) {
+      # ejam_uniq_id already provided explicitly
+      ejam_uniq_id = params$ejam_uniq_id
+    } else {
+      ejam_uniq_id <- out$results_bysite[sitenumber, ejam_uniq_id]
+    }
+  } else {
+    ejam_uniq_id <- NULL
+  }
+  if ("nsites" %in% names(params)) {
+    # already provided explicitly
+    nsites = params$nsites
+  } else {
+    if (!is.null(sitenumber)) {
+      nsites = 1
+    } else {
+      nsites <- NROW(out$results_bysite[out$results_bysite$valid == T, ])
+    }
+  }
+
+  # check if some params already specified and should not infer them
+
+  if ("text1" %in% names(params)) {
+    # already provided explicitly
+    text1 = params$text1
+  } else {
+    text1 = 'Residents within '
+  }
+  if ("sitetype" %in% names(params)) {
+    # already provided explicitly
+    sitetype = params$sitetype
+  } else {
+    sitetype <- out$sitetype
+  }
+  if ("radius" %in% names(params)) {
+    # already provided explicitly
+    radius = params$radius
+  } else {
+    radius <- out$results_overall$radius.miles # should work even if sitenumber specified just 1 site, since all have same radius
+  }
+  if ("area_in_square_miles" %in% names(params)) {
+    # already provided explicitly
+    area_in_square_miles = params$area_in_square_miles
+  } else {
+    if (is.null(sitenumber)) {
+      area_in_square_miles <- out$results_overall$area_sqmi
+    } else {
+      area_in_square_miles <- out$results_bysite$area_sqmi[sitenumber]
+    }
+  }
+  if ("linefeed" %in% names(params)) {
+    # already provided explicitly
+    linefeed = params$linefeed
+  } else {
+    linefeed <- "<br>"
+  }
+  if ("addlatlon" %in% names(params)) {
+    # already provided explicitly
+    addlatlon = params$addlatlon
+  } else {
+    addlatlon <- TRUE
+  }
+  if (addlatlon) {
+    if (!(sitetype %in% "latlon") || is.null(sitenumber)) {
+      addlatlon <- FALSE
+    }
+  }
+
+  if (addlatlon) {
+    if ("lat" %in% names(params)) {
+      # already provided explicitly
+      lat = params$lat
+    } else {
+      lat <- out$results_bysite$lat[sitenumber]
+    }
+    if ("lon" %in% names(params)) {
+      # already provided explicitly
+      lon = params$lon
+    } else {
+      lon <- out$results_bysite$lon[sitenumber]
+    }
+  } else {
+    lat = NULL
+    lon = NULL
+  }
+
+  report_residents_within_xyz(
+    text1 = text1,
+    radius = radius,
+    unitsingular = 'mile',
+    area_in_square_miles = area_in_square_miles,
+    nsites = nsites,
+    sitenumber = sitenumber,  # only relevant for 1-site report
+    ejam_uniq_id = ejam_uniq_id,
+    sitetype = sitetype,
+    # sitetype_nullna = " place", #  use the default always
+    linefeed = linefeed,
+    addlatlon = addlatlon, lat = lat, lon = lon
+  )
 }
 ################################################################### #
 
@@ -951,6 +1146,20 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 #' @param sitetype_nullna optional, to use if sitetype is NULL --
 #'   should be a singular word preceded by a space, like " location"
 #' @param area_in_square_miles number if available, area in square miles, added as a second line
+#' @param linefeed optional, to use `"\n"` or `". "` instead of default `"<br>"`, for example
+#' @param addlatlon optional, defines whether coordinates are noted in header for latlon sitetype
+#' @examples
+#'  out <- testoutput_ejamit_100pts_1miles
+#'  x <- EJAM:::report_residents_within_xyz(
+#'    sitetype = out$sitetype,
+#'    radius = out$results_overall$radius.miles,
+#'    nsites = NROW(out$results_bysite[out$results_bysite$valid == T, ]),
+#'    area_in_square_miles = out$results_overall$area_sqmi,
+#'    # sitenumber = 6,  # only relevant for 1-site report
+#'    # ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id], # only relevant for 1-site report
+#'    linefeed = ". ",
+#'    lat = out$results_bysite$lat, lon = out$results_bysite$lon
+#'  )
 #'
 #' @seealso [report_xmilesof()] [buffer_desc_from_sitetype()]
 #'
@@ -974,21 +1183,22 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                           'naics', 'sic', 'mact',
                                           'epa_program_sel'
                                         )[1],
-                                        sitetype_nullna = " place"
-
+                                        sitetype_nullna = " place",
+                                        linefeed = "<br>",
+                                        addlatlon = TRUE, lat = NULL, lon = NULL
 ) {
 
   # round radius only if it is a number, since this func can handle a phrase like radius = "seven kilometers from"
   if (is.null(radius)) {
     xmilesof <- report_xmilesof(unitsingular = unitsingular)
   } else {
-  if (length(radius) > 1) {stop("radius must be a single value")}
-  if (is.na(radius) || radius == "") {radius <- NULL}
-  if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
-  if (is.numeric(radius)) {
-    digits <- table_rounding_info("radius.miles")
-    radius <- round(radius, digits)
-  }
+    if (length(radius) > 1) {stop("radius must be a single value")}
+    if (is.na(radius) || radius == "") {radius <- NULL}
+    if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
+    if (is.numeric(radius)) {
+      digits <- table_rounding_info("radius.miles")
+      radius <- round(radius, digits)
+    }
     xmilesof <- report_xmilesof(radius = radius, unitsingular = unitsingular)
   }
   # handle the unlikely case of needing to avoid it saying "Residents within this specified point " when radius is somehow bad/missing for latlon case
@@ -1001,27 +1211,41 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
 
   if (is.null(nsites)) {nsites <- ''}
   nsites[is.na(nsites)] <- ""
-  sitenumber <- ''
-  if (nsites == 1) {
+  # if (is.null(sitenumber)) {sitenumber <- ''}
 
-    if (is.null(sitenumber)) {
-      siteidtext <- ''
-    } else {
+  if (nsites == 1) {
+    siteidtext <- '' # unless changed below
+
+    # if (!is.null(sitenumber) && !is.null(ejam_uniq_id)) {
+    #   warning("Both sitenumber and ejam_uniq_id were provided; only one should be provided for a single-site report. Using ejam_uniq_id.")
+    # sitenumber <- NULL
+    #   }
+
+    if (!is.null(sitenumber)) {
       if (length(sitenumber) > 1) {
         siteidtext = ''
       } else {
-        siteidtext = paste0("Site ", sitenumber)
+        if (is.numeric(sitenumber)) {
+          siteidtext = paste0("Site ", sitenumber)
+        } else {
+          siteidtext = sitenumber
+        }
       }
     }
 
-    if (is.null(ejam_uniq_id)) {
-      siteidtext <- ''
-    } else {
+    if (!is.null(ejam_uniq_id)) {
       if (length(ejam_uniq_id) > 1) {siteidtext = ''} else {
+        ## APPEND THIS TO "SITE N" FROM ABOVE IF sitenumber was provided
         if (!is.na(sitetype) && sitetype == 'fips') {
-          siteidtext <- paste0("FIPS ", ejam_uniq_id, "")
+          siteidtext <- paste0(siteidtext, ", ",
+                               # fips2name(ejam_uniq_id), ", ",  # name of FIPS unit, but that is now in analysis_title
+                               paste0("FIPS ", ejam_uniq_id, ""))
         } else {
-          siteidtext = paste0("ejam_uniq_id ", ejam_uniq_id)
+          if (is.numeric(ejam_uniq_id)) {
+            siteidtext = paste0(siteidtext, ", ", paste0("ejam_uniq_id ", ejam_uniq_id))
+          } else {
+            siteidtext = paste0(siteidtext, ", ", ejam_uniq_id) ## in case they provided custom text
+          }
         }
       }
     }
@@ -1032,12 +1256,15 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   if (siteidtext == "") {
     siteidtext_in_parens <- ""
   } else {
-    siteidtext_in_parens <- paste0("(", siteidtext, ")")
+    siteidtext_in_parens <- paste0(linefeed,
+                                   "(", siteidtext, ")")
   }
   # see https://cli.r-lib.org/articles/pluralization.html
   anyofthe <- ifelse(is.na(nsites), "any of the", "any of the ")
   anyoftheplaces <- ifelse(nsites == 1,
-                           paste0('this', location_type, " ", siteidtext_in_parens, ""),
+                           paste0('this', location_type,
+                                  " ",
+                                  siteidtext_in_parens, ""),
                            paste0(anyofthe, nsites, location_type, "s") # "(in aggregate)"
   )
 
@@ -1046,7 +1273,15 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                  anyoftheplaces)
 
   ################################################### #
+  ## > add lat, lon ####
 
+  if (addlatlon && sitetype %in% "latlon" && nsites == 1) {
+    residents_within_xyz <- paste0(
+      residents_within_xyz,
+      ' centered at ',
+      latlon2csv(lat = lat, lon = lon, sep = ", ")
+    )
+  }
 
   ################################################### #
 
@@ -1061,7 +1296,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
       'Area in Square Miles: ', area_in_square_miles
     )
     residents_within_xyz <- paste0(
-      residents_within_xyz, '<br>',  # note this HTML makes it not suitable for use in excel notes tab, e.g.
+      residents_within_xyz, linefeed, # '<br>',  # note HTML makes it not suitable for use in excel notes tab, e.g.
       sqmiletxt
     )
   }
