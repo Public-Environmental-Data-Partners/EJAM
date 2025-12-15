@@ -64,13 +64,15 @@
 #'
 ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         sitenumber = NULL,
+                        logo_path = EJAM:::global_or_param("report_logo"),
+                        logo_html = NULL, # defined downstream
+                        report_title = NULL, # EJAM:::global_or_param("report_title"),
                         analysis_title = NULL,
+                        addlatlon = TRUE,
+
                         submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
                         shp = NULL,
-                        return_html = FALSE,
-                        fileextension = c("html", "pdf")[1],
-                        filename = NULL,
-                        launch_browser = TRUE,
+
                         show_ratios_in_report = TRUE,
                         extratable_show_ratios_in_report = TRUE,
                         extratable_title = '', #'Additional Information',
@@ -98,15 +100,17 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         ),
                         ## all the indicators that are in extratable_list_of_sections:
                         extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
-                        report_title = NULL, # EJAM:::global_or_param("report_title"),
-                        logo_path = EJAM:::global_or_param("report_logo"),
-                        logo_html = NULL, # defined downstream
-                        ## Rmd_name and Rmd_folder could be made params to pass to report_setup_temp_files()
+
                         footer_version_number = NULL,
                         footer_date = NULL,
                         footer_text = NULL,
                         footer_html = NULL,
-                        addlatlon = TRUE
+                        ## Rmd_name and Rmd_folder could be made params to pass to report_setup_temp_files()
+                        fileextension = c("html", "pdf")[1],
+                        filename = NULL,
+                        return_html = FALSE,
+                        launch_browser = TRUE
+
 ) {
 
   # analysis title default and report_title default depend on if this is 1-site or multisite
@@ -308,26 +312,24 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     community_html <- build_community_report(
 
-      output_df = ejamout1,
+      logo_path      = logo_path,
+      logo_html      = logo_html,
+      report_title   = report_title,
       analysis_title = analysis_title,
-      totalpop = popstr,
-      locationstr = residents_within_xyz,
-      include_ejindexes = include_ejindexes,
+      totalpop       = popstr,
+      locationstr    = residents_within_xyz,
 
+      output_df      = ejamout1,
+      include_ejindexes     = include_ejindexes,
       show_ratios_in_report = show_ratios_in_report,
-
-      extratable_title = extratable_title,
-      extratable_title_top_row = extratable_title_top_row,
-      extratable_list_of_sections = extratable_list_of_sections,
+      extratable_title                 = extratable_title,
+      extratable_title_top_row         = extratable_title_top_row,
+      extratable_list_of_sections      = extratable_list_of_sections,
       extratable_show_ratios_in_report = extratable_show_ratios_in_report,
       extratable_hide_missing_rows_for = extratable_hide_missing_rows_for,
 
       in_shiny = FALSE,
-      filename = temp_comm_report_or_null, # passing NULL should make it return the html object
-
-      report_title = report_title,
-      logo_path = logo_path,
-      logo_html = logo_html
+      filename = temp_comm_report_or_null  # passing NULL should make it return the html object
     )
 
     ## seems like using cat() was a simpler approach tried initially: ***

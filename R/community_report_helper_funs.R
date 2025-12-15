@@ -650,10 +650,10 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
 #' Build HTML header for community report
 #' @seealso used by [build_community_report()]
 #' @param analysis_title, title to use in header of report
-#' @param totalpop, total population included in location(s) analyzed
-#' @param locationstr, description of the location(s) analyzed
-#' @param in_shiny, whether the function is being called in or outside of shiny - affects location of header
 #' @param report_title generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
+#' @param totalpop, total population included in location(s) analyzed
+#' @param locationstr, description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()
+#' @param in_shiny, whether the function is being called in or outside of shiny - affects location of header
 #' @param logo_path optional relative path to a logo for the upper right of the overall header.
 #'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp(),
 #'   but NULL means default and "" means omit logo entirely.
@@ -663,32 +663,14 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
 #' @keywords internal
 #'
 generate_html_header <- function(analysis_title,
-                                 totalpop, locationstr,
-                                 in_shiny = FALSE,
                                  report_title = NULL,
+                                 locationstr, # e.g., report_residents_within_xyz_from_ejamit()
+                                 totalpop,
                                  logo_path = NULL,
-                                 logo_html = NULL
+                                 logo_html = NULL,
+                                 in_shiny = FALSE
 ) {
 
-  # if (is.null(logo_path) || !file.exists(logo_path)) {
-  #
-  #   if (!in_shiny) {
-  #     logo_path <- EJAM:::global_or_param("report_logo")
-  #     cat("TRYING TO USE logo_path = ", logo_path, "\n")
-  #
-  #   } else {
-  #     ## should map to installed pkgs library /EJAM/report/community_report using resource path defined in shiny app_ui.R
-  #
-  #     logo_path <- EJAM:::global_or_param("report_logo")
-  #     if (!file.exists(logo_path)) { # might not need anymore
-  #       logo_path <- 'community_report/ejamhex4.png'; cat("logo not found via report_logo, trying hardcoded path\n")
-  #       if (!file.exists(logo_path)) { # might not need anymore
-  #         system.file('report/community_report/ejamhex4.png', package = "EJAM"); cat("logo still not found, trying another path \n")
-  #       }
-  #     }
-  #     cat("TRYING TO USE logo_path = ", logo_path, "\n")
-  #   }
-  # }
   ########## #
   # helper function picking report logo info -- helps to decide which parameter to use or when to use defaults or warn
   report_logo_html_from_inputs = function(logo_path, logo_html) {
@@ -754,8 +736,6 @@ generate_html_header <- function(analysis_title,
     # catchall
     return(default_logo_html)
   }
-
-
   logo_html <- report_logo_html_from_inputs(logo_path = logo_path, logo_html = logo_html)
 
   ########## #
@@ -1001,7 +981,7 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 #'    and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
 #'   instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).
 #'
-#' @returns text string
+#' @returns text string such as "Residents within 1 mile of any of the 99 specified points<br>Area in Square Miles: 311.02"
 #'
 #' @export
 #' @keywords internal
@@ -1078,6 +1058,12 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
   } else {
     linefeed <- "<br>"
   }
+  if ("show_fips_name" %in% names(params)) {
+    # already provided explicitly
+    show_fips_name = params$show_fips_name
+  } else {
+    show_fips_name <- FALSE
+  }
   if ("addlatlon" %in% names(params)) {
     # already provided explicitly
     addlatlon = params$addlatlon
@@ -1119,7 +1105,8 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
     sitetype = sitetype,
     # sitetype_nullna = " place", #  use the default always
     linefeed = linefeed,
-    addlatlon = addlatlon, lat = lat, lon = lon
+    addlatlon = addlatlon, lat = lat, lon = lon,
+    show_fips_name = show_fips_name
   )
 }
 ################################################################### #
@@ -1148,6 +1135,9 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
 #' @param area_in_square_miles number if available, area in square miles, added as a second line
 #' @param linefeed optional, to use `"\n"` or `". "` instead of default `"<br>"`, for example
 #' @param addlatlon optional, defines whether coordinates are noted in header for latlon sitetype
+#' @param show_fips_name optional, if it was a FIPS-based analysis, this defines
+#'   whether to also show name of FIPS Census unit (e.g., name of city or county).
+#'   Normally this is already in the analysis title, so not needed in this additional part of the report header.
 #' @examples
 #'  out <- testoutput_ejamit_100pts_1miles
 #'  x <- EJAM:::report_residents_within_xyz(
@@ -1185,7 +1175,8 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                         )[1],
                                         sitetype_nullna = " place",
                                         linefeed = "<br>",
-                                        addlatlon = TRUE, lat = NULL, lon = NULL
+                                        addlatlon = TRUE, lat = NULL, lon = NULL,
+                                        show_fips_name = FALSE
 ) {
 
   # round radius only if it is a number, since this func can handle a phrase like radius = "seven kilometers from"
@@ -1216,11 +1207,6 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   if (nsites == 1) {
     siteidtext <- '' # unless changed below
 
-    # if (!is.null(sitenumber) && !is.null(ejam_uniq_id)) {
-    #   warning("Both sitenumber and ejam_uniq_id were provided; only one should be provided for a single-site report. Using ejam_uniq_id.")
-    # sitenumber <- NULL
-    #   }
-
     if (!is.null(sitenumber)) {
       if (length(sitenumber) > 1) {
         siteidtext = ''
@@ -1236,10 +1222,20 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     if (!is.null(ejam_uniq_id)) {
       if (length(ejam_uniq_id) > 1) {siteidtext = ''} else {
         ## APPEND THIS TO "SITE N" FROM ABOVE IF sitenumber was provided
-        if (!is.na(sitetype) && sitetype == 'fips') {
+        if (sitetype %in% 'fips') {
+          if (is.numeric(ejam_uniq_id)) {
+            if (show_fips_name) {
+              fipsname <- paste0(fips2name(ejam_uniq_id), ", ")
+            } else {
+              fipsname <- ""
+            }
           siteidtext <- paste0(siteidtext, ", ",
-                               # fips2name(ejam_uniq_id), ", ",  # name of FIPS unit, but that is now in analysis_title
-                               paste0("FIPS ", ejam_uniq_id, ""))
+                               fipsname,  # optional name of FIPS unit, but that is now in analysis_title
+                               paste0("FIPS ", ejam_uniq_id))
+          } else {
+            siteidtext <- paste0(siteidtext, ", ",
+                                 ejam_uniq_id)
+          }
         } else {
           if (is.numeric(ejam_uniq_id)) {
             siteidtext = paste0(siteidtext, ", ", paste0("ejam_uniq_id ", ejam_uniq_id))

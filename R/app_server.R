@@ -2093,7 +2093,6 @@ app_server <- function(input, output, session) {
     ## format and return total population
     round(data_processed()$results_overall$pop, table_rounding_info("pop") )
   })
-  popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
 
   ## Title of Analysis  - UI box  ####
 
@@ -2119,29 +2118,31 @@ app_server <- function(input, output, session) {
 ### now using report_residents_within_xyz_from_ejamit() not report_residents_within_xyz()
 
     residents_within_xyz <- report_residents_within_xyz_from_ejamit(
-      ejamitout = data_processed() ## this newer function uses the whole list not just ejamout1 to create the header
+      ejamitout = data_processed() ## this function uses the whole list not just ejamout1 to create the header
     )
+    popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
 
     pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
 
-    full_page <- build_community_report(in_shiny = TRUE,
+    full_page <- build_community_report(
 
-                                        output_df = data_processed()$results_overall,
-                                        analysis_title =  sanitized_analysis_title(),
-                                        totalpop = popstr,
-                                        locationstr = residents_within_xyz,
-                                        include_ejindexes = isTRUE(as.logical(input$include_ejindexes)),
-                                        show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
-                                        extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
-                                        extratable_title = input$extratable_title, # above the table, not in the upper left cell
-                                        extratable_title_top_row = input$extratable_title_top_row,
-                                        extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-                                        extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      logo_path      = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
+      logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+      report_title   = EJAM:::global_or_param("report_title_multisite"),
+      analysis_title = sanitized_analysis_title(),
+      locationstr    = residents_within_xyz,
+      totalpop       = popstr,
 
-                                        filename = NULL,
-                                        report_title = EJAM:::global_or_param("report_title_multisite"),
-                                        logo_path = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
-                                        logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+      output_df      = data_processed()$results_overall,
+      include_ejindexes                = isTRUE(as.logical(input$include_ejindexes)),
+      show_ratios_in_report            = isTRUE(as.logical(input$show_ratios_in_report)),
+      extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
+      extratable_title                 = input$extratable_title, # above the table, not in the upper left cell
+      extratable_title_top_row         = input$extratable_title_top_row,
+      extratable_list_of_sections      = EJAM:::global_or_param("default_extratable_list_of_sections"),
+      extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      in_shiny = TRUE,
+      filename = NULL
     )
 
     ## return generated HTML

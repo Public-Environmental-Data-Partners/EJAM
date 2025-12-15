@@ -11,12 +11,16 @@ params:
   include_ejindexes: TRUE
   in_shiny: FALSE
   filename: NULL
-  map: NA
-  summary_plot: NA
-  summary_plot_state: NA
+  map: NULL
+  summary_plot: NULL
+  summary_plot_state: NULL
   report_title: NULL
   logo_path: NULL
   logo_html: NULL
+  footer_version_number: NULL
+  footer_date: NULL
+  footer_text: NULL
+  footer_html: NULL
 ---
 
 ```{r, echo=FALSE}
@@ -28,20 +32,22 @@ if (!exists("blockgroupstats")) {library(EJAM)} # to use installed version only 
 # library(EJAM) # for development purposes, might be better to allow it to use the loaded version from load_all() if that is already available, rather than always/only using the installed version here ***
 
 build_barplot_report(
-  # output_df = params$output_df,
+  
+  logo_path      = params$logo_path,
+  logo_html      = params$logo_html,
+  report_title   = params$report_title,
   analysis_title = params$analysis_title,
-  totalpop = params$totalpop,
-  locationstr = params$locationstr,
+  locationstr    = params$locationstr,
+  totalpop       = params$totalpop,
+  
   # include_ejindexes = params$include_ejindexes,
-  in_shiny = params$in_shiny,
-  filename = params$filename,
-  report_title = params$report_title,
-  logo_path = params$logo_path,
-  logo_html = params$logo_html
+  in_shiny       = params$in_shiny,
+  filename       = params$filename
 )
 ```
 
 ```{r map, fig.align='center'}
+## skip the map
 
 # params$map
 
@@ -68,8 +74,12 @@ params$summary_plot_state
 ```
 
 ```{r footer_with_version_and_date}
-
-EJAM:::generate_report_footer()
+# To make footer blank (no text), pass "" for footer_text or footer_html.
+EJAM:::generate_report_footer(
+  footer_version_number = params$footer_version_number,
+  footer_date = params$footer_date,
+  footer_text = params$footer_text,
+  footer_html = params$footer_html
+)
 
 ```
-

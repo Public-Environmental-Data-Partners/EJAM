@@ -283,20 +283,29 @@ rm(checkit)
 ########################################################################### #
 if (FALSE) {
 
+library(EJAM)
+
+x = function(out){
+  print(report_residents_within_xyz_from_ejamit(out))
+  print(report_residents_within_xyz_from_ejamit(out, linefeed = ". "))
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 1))
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 2))
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 2, addlatlon=F))
+  print(report_residents_within_xyz_from_ejamit(out,                 ejam_uniq_id=999)) # ignored since multisite report
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 2, ejam_uniq_id=999))
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 2, ejam_uniq_id = "Jones Mill Site"))
+  print(report_residents_within_xyz_from_ejamit(out, nsites = "approx. 500", linefeed = ". "))
+  print(report_residents_within_xyz_from_ejamit(out, text1 = "REPORT ON SITES WITHIN ", linefeed = ". "))
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 2, show_fips_name = TRUE))
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 2, show_fips_name = TRUE, ejam_uniq_id = "THIS PLACE"))
+  print(report_residents_within_xyz_from_ejamit(out, sitenumber = 2, show_fips_name = TRUE, ejam_uniq_id = 999))
+}
+x(testoutput_ejamit_100pts_1miles)
+x(testoutput_ejamit_fips_cities)
+
 
 out = testoutput_ejamit_100pts_1miles
 # out = testoutput_ejamit_fips_cities
-
-report_residents_within_xyz_from_ejamit(out)
-report_residents_within_xyz_from_ejamit(out, linefeed = ". ")
-report_residents_within_xyz_from_ejamit(out, sitenumber = 1)
-report_residents_within_xyz_from_ejamit(out, sitenumber = 2)
-report_residents_within_xyz_from_ejamit(out, sitenumber = 2, addlatlon=F)
-report_residents_within_xyz_from_ejamit(out,                 ejam_uniq_id=999) # ignored since multisite report
-report_residents_within_xyz_from_ejamit(out, sitenumber = 2, ejam_uniq_id=999)
-report_residents_within_xyz_from_ejamit(out, sitenumber = 2, ejam_uniq_id = "Jones Mill Site")
-report_residents_within_xyz_from_ejamit(out, nsites = "approx. 500", linefeed = ". ")
-report_residents_within_xyz_from_ejamit(out, text1 = "REPORT ON SITES WITHIN ", linefeed = ". ")
 
 ejam2report(out, sitenumber = 6)
 # report_residents_within_xyz_from_ejamit(out, sitenumber = "THIS ONE SITE")  # error - must be numeric
@@ -304,9 +313,14 @@ ejam2report(out, sitenumber = "asdfasd;flkjaf") # warnings about latlon invalid 
 
 ## shows how report title and analysis title depend on if 1-site or multisite and if FIPS or not:
 ejam2report(testoutput_ejamit_10pts_1miles )
-ejam2report(testoutput_ejamit_10pts_1miles, sitenumber = 1)
+ejam2report(testoutput_ejamit_10pts_1miles, sitenumber = 2)
 ejam2report(testoutput_ejamit_fips_cities )
-ejam2report(testoutput_ejamit_fips_cities, sitenumber = 1)
+ejam2report(testoutput_ejamit_fips_cities, sitenumber = 2)
+
+
+ejamapp(sitepoints = testpoints_10, radius = 3.14, analysis_title = "Custom Analysis")
+
+ejamapp(fips = testinput_fips_counties)
 
 
 }
