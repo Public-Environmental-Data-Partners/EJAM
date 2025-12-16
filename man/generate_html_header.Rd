@@ -6,24 +6,22 @@
 \usage{
 generate_html_header(
   analysis_title,
-  totalpop,
-  locationstr,
-  in_shiny = FALSE,
   report_title = NULL,
+  locationstr,
+  totalpop,
   logo_path = NULL,
-  logo_html = NULL
+  logo_html = NULL,
+  in_shiny = FALSE
 )
 }
 \arguments{
 \item{analysis_title, }{title to use in header of report}
 
-\item{totalpop, }{total population included in location(s) analyzed}
-
-\item{locationstr, }{description of the location(s) analyzed}
-
-\item{in_shiny, }{whether the function is being called in or outside of shiny - affects location of header}
-
 \item{report_title}{generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}
+
+\item{locationstr, }{description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()}
+
+\item{totalpop, }{total population included in location(s) analyzed}
 
 \item{logo_path}{optional relative path to a logo for the upper right of the overall header.
 Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp(),
@@ -31,6 +29,8 @@ but NULL means default and "" means omit logo entirely.}
 
 \item{logo_html}{optional HTML for img of logo for the upper right of the overall header.
 If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
+
+\item{in_shiny, }{whether the function is being called in or outside of shiny - affects location of header}
 }
 \description{
 Build HTML header for community report

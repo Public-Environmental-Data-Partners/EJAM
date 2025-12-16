@@ -18,7 +18,7 @@ and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
 instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).}
 }
 \value{
-text string
+text string such as "Residents within 1 mile of any of the 99 specified points\if{html}{\out{<br>}}Area in Square Miles: 311.02"
 }
 \description{
 utility to create text for use in report about residents within X miles of Y

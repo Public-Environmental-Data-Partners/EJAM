@@ -19,7 +19,8 @@ report_residents_within_xyz(
   linefeed = "<br>",
   addlatlon = TRUE,
   lat = NULL,
-  lon = NULL
+  lon = NULL,
+  show_fips_name = FALSE
 )
 }
 \arguments{
@@ -55,6 +56,10 @@ should be a singular word preceded by a space, like " location"}
 \item{linefeed}{optional, to use \code{"\\n"} or \code{". "} instead of default \code{"<br>"}, for example}
 
 \item{addlatlon}{optional, defines whether coordinates are noted in header for latlon sitetype}
+
+\item{show_fips_name}{optional, if it was a FIPS-based analysis, this defines
+whether to also show name of FIPS Census unit (e.g., name of city or county).
+Normally this is already in the analysis title, so not needed in this additional part of the report header.}
 }
 \description{
 Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
