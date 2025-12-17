@@ -166,7 +166,7 @@ build_community_report <- function(
     analysis_title <- EJAM:::global_or_param("default_standard_analysis_title")
   }
   ## check that analysis was run with EJ columns; if not, don't add them
-  if (include_ejindexes) {
+  if (isTRUE(include_ejindexes)) {
     ejcols <- c(names_ej,      names_ej_state,
                 names_ej_supp, names_ej_supp_state)
     if (!(all(ejcols %in% names(output_df)))) {
@@ -178,12 +178,12 @@ build_community_report <- function(
   output_df_rounded <-   as.data.frame(output_df)
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
 
-  if (missing(totalpop)) {
+  if (missing(totalpop) || is.null(totalpop)) {
     if ("pop" %in% names(output_df_rounded)) {
       totalpop <- prettyNum(round(output_df_rounded$pop, 0), big.mark = ',')
     } else {
       warning('totalpop parameter or output_df_rounded$pop is required')
-      totalpop <- "NA"
+      totalpop <- "NA" # text works here rather than NA
     }
   }
 
@@ -192,6 +192,8 @@ build_community_report <- function(
     ############################################################# #
 
     # 1. Report / analysis overall header ####
+
+    # any values for these parameters below must be specified here (above) since defaults for the helper ?generate_html_header() below are mostly just ""
 
     generate_html_header(analysis_title = analysis_title,
                          report_title   = report_title,
