@@ -542,7 +542,7 @@ fill_tbl_full_subgroups <- function(output_df,
 
 # 5. footnote ####
 
-#' helper - make footnote for summary report
+#' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
 #' @param diesel_caveat
 #'
@@ -649,12 +649,15 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
 
 #' Build HTML header for community report
 #' @seealso used by [build_community_report()]
-#' @param analysis_title, title to use in header of report
-#' @param report_title generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
-#' @param totalpop, total population included in location(s) analyzed
-#' @param locationstr, description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()
-#' @param in_shiny, whether the function is being called in or outside of shiny - affects location of header
-#' @param logo_path optional relative path to a logo for the upper right of the overall header.
+#' @details
+#' Useful defaults are provided by build_community_report()
+#'
+#' @param analysis_title optional, title to use in header of report
+#' @param report_title optional, generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
+#' @param totalpop optional, total population included in location(s) analyzed
+#' @param locationstr optional, description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()
+#' @param in_shiny optional, whether the function is being called in or outside of shiny - affects location of header
+#' @param logo_path optional, relative path to a logo for the upper right of the overall header.
 #'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp(),
 #'   but NULL means default and "" means omit logo entirely.
 #' @param logo_html optional HTML for img of logo for the upper right of the overall header.
@@ -662,16 +665,16 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
 #'
 #' @keywords internal
 #'
-generate_html_header <- function(analysis_title,
+generate_html_header <- function(analysis_title = NULL, # defaults of NULL here are handled below
                                  report_title = NULL,
-                                 locationstr, # e.g., report_residents_within_xyz_from_ejamit()
-                                 totalpop,
+                                 locationstr = NULL, #  # e.g., report_residents_within_xyz_from_ejamit()
+                                 totalpop = NULL, # if "NA" it can say "Population: NA" (meaning Not Available) instead of just empty space after "Population:"
                                  logo_path = NULL,
                                  logo_html = NULL,
                                  in_shiny = FALSE
 ) {
 
-  ########## #
+  ########## #  ########## #  ########## #  ########## #
   # helper function picking report logo info -- helps to decide which parameter to use or when to use defaults or warn
   report_logo_html_from_inputs = function(logo_path, logo_html) {
 
@@ -736,18 +739,37 @@ generate_html_header <- function(analysis_title,
     # catchall
     return(default_logo_html)
   }
+  ########## #  ########## #  ########## #  ########## #
   logo_html <- report_logo_html_from_inputs(logo_path = logo_path, logo_html = logo_html)
-
-  ########## #
+  if (is.null(logo_html) || all(is.na(logo_html)) || length(logo_html) == 0) {
+    logo_html <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
   if (is.null(report_title)) {
-    if (shiny::isRunning()) {
+    if (shiny::isRunning() || isTRUE(in_shiny)) {
       report_title <- EJAM:::global_or_param("report_title")
     } else {
-      report_title <- EJAM:::global_or_param("report_title") # was # report_title <- global_defaults_package$report_title
+      report_title <- EJAM:::global_or_param("report_title")
     }
   }
-
-  if (in_shiny) {
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(report_title) || all(is.na(report_title)) || length(report_title) == 0) {
+    report_title <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(analysis_title) || all(is.na(analysis_title)) || length(analysis_title) == 0) {
+    analysis_title <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(locationstr) || all(is.na(locationstr)) || length(locationstr) == 0) {
+    locationstr <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(totalpop) || all(is.na(totalpop)) || length(totalpop) == 0) {
+    totalpop <- ""
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (shiny::isRunning() || isTRUE(in_shiny)) {
     shift_hsb <- 630
     shift_hpb <- 600
     shift_hbd <- 550
@@ -756,7 +778,7 @@ generate_html_header <- function(analysis_title,
     shift_hpb <- 40
     shift_hbd <- 0
   }
-
+  ########## #  ########## #  ########## #  ########## #
   paste0(
     '
   <link href=\"https://fonts.googleapis.com/css2?family=Heebo:wght@500;600\" rel=\"stylesheet\">
@@ -884,7 +906,7 @@ generate_extra_header <- function(title = 'Additional Information') {
 #'
 #' @keywords internal
 #'
-sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place") {
+sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place", census_unit_type = "Census unit") {
 
   if (is.null(sitetype)) {sitetype <- sitetype_nullna}
   sitetype[is.na(sitetype)] <- sitetype_nullna
@@ -897,7 +919,11 @@ sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place") {
     location_type <- " specified point"
 
   } else if (sitetype %in% c('fips', 'fips_place')) {
-    location_type <- " specified Census unit"
+    if (is.null(census_unit_type) ||
+        (!missing(census_unit_type) && !(census_unit_type %in% c("state", "county", "tract", "city", "blockgroup", "block")))) {
+      census_unit_type <- "Census unit"
+    }
+    location_type <- paste0(" specified ", census_unit_type)
 
   } else if (sitetype == 'shp') {
     location_type <- " specified polygon"
@@ -940,6 +966,19 @@ sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place") {
 }
 ################################################################### #
 
+pluralize = function(word) {
+
+  # Very basic - does not handle all-caps words, or phrases, etc.
+  # also see https://cli.r-lib.org/articles/pluralization.html
+  specials <- data.frame(singular = c('County', 'Facility', 'City',
+                                      'county', 'facility', 'city'),
+                         plural = c('Counties', 'Facilities', 'Cities',
+                                    'counties', 'facilities', 'cities'))
+  word[!(word %in% specials$singular)] <- paste0(word[!(word %in% specials$singular)], "s")
+  word[  word %in% specials$singular ] <- specials$plural[match(word[word %in% specials$singular], specials$singular)]
+  return(word)
+}
+################################################################### #
 
 #' helper for [report_residents_within_xyz()]
 #' @param radius distance from site
@@ -1198,7 +1237,18 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
       text1 <- "Residents at "
     }
   }
-  location_type <- sitetype2text(sitetype, sitetype_nullna = sitetype_nullna)
+
+  if (sitetype %in% "fips" && (nsites %in% 1)) {
+    census_unit_type <- fipstype(ejam_uniq_id)[1] # should be just 1 actually
+  } else {
+    if (!is.null(sitenumber) && sitenumber > 0) {
+      census_unit_type <- "Census unit"
+      # actually no ejam_uniq_id values are passed here so we cannot find the type this way
+      # census_unit_type <- fipstype(ejam_uniq_id[sitenumber])
+    } else {
+      census_unit_type <- "Census unit" # ignored in this case
+    }}
+  location_type <- sitetype2text(sitetype, sitetype_nullna = sitetype_nullna, census_unit_type = census_unit_type)
 
   if (is.null(nsites)) {nsites <- ''}
   nsites[is.na(nsites)] <- ""
@@ -1223,15 +1273,17 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
       if (length(ejam_uniq_id) > 1) {siteidtext = ''} else {
         ## APPEND THIS TO "SITE N" FROM ABOVE IF sitenumber was provided
         if (sitetype %in% 'fips') {
-          if (is.numeric(ejam_uniq_id)) {
+          # if (is.numeric(ejam_uniq_id)) {
+          seems_like_fips = suppressWarnings(!is.na(as.numeric(ejam_uniq_id)))
+          if (seems_like_fips) {
             if (show_fips_name) {
               fipsname <- paste0(fips2name(ejam_uniq_id), ", ")
             } else {
               fipsname <- ""
             }
-          siteidtext <- paste0(siteidtext, ", ",
-                               fipsname,  # optional name of FIPS unit, but that is now in analysis_title
-                               paste0("FIPS ", ejam_uniq_id))
+            siteidtext <- paste0(siteidtext, ", ",
+                                 fipsname,  # optional name of FIPS unit, but that is now in analysis_title
+                                 paste0("FIPS ", ejam_uniq_id))
           } else {
             siteidtext <- paste0(siteidtext, ", ",
                                  ejam_uniq_id)
@@ -1255,13 +1307,13 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     siteidtext_in_parens <- paste0(linefeed,
                                    "(", siteidtext, ")")
   }
-  # see https://cli.r-lib.org/articles/pluralization.html
+
   anyofthe <- ifelse(is.na(nsites), "any of the", "any of the ")
   anyoftheplaces <- ifelse(nsites == 1,
                            paste0('this', location_type,
                                   " ",
                                   siteidtext_in_parens, ""),
-                           paste0(anyofthe, nsites, location_type, "s") # "(in aggregate)"
+                           paste0(anyofthe, nsites, pluralize(location_type)) # "(in aggregate)"
   )
 
   residents_within_xyz <- paste0(text1,
