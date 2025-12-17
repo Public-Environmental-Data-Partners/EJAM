@@ -10,10 +10,24 @@
 #'
 #' @param ejamitout output as from [ejamit()], list with a table in [data.table](https://r-datatable.com) format called `results_bysite`
 #'   if sitenumber parameter is used, or a table in [data.table](https://r-datatable.com) format called `results_overall` otherwise
-#' @param sitenumber If a number is provided, the report is about
-#'   `ejamitout$results_bysite[sitenumber, ]` and if no number is provided (param is NULL or "")
-#'   then the report is about `ejamitout$results_overall`
-#' @param analysis_title optional title of analysis
+#' @param sitenumber If a valid number is provided, the report is a "1-site" report, about
+#'   `ejamitout$results_bysite[sitenumber, ]`. If no valid number is provided (e.g., param is omitted, 0, NULL, "", etc.)
+#'   then the report is a "Multisite" report, about `ejamitout$results_overall`.
+#'   But note that it is treated / titled like a 1-site report if only
+#'   one site was analyzed (or only one had valid results).
+#'
+#' @param analysis_title optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")
+#'
+#' @param report_title optional generic name of this type of report, to be shown at top,
+#'   like "EJSCREEN Multisite Report" or "EJSCREEN Community Report".
+#'   Default is EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+#'   depending on number of sites analyzed and the sitenumber parameter.
+#'
+#' @param logo_path optional relative path to a logo for the upper right of the overall header.
+#'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in [ejamapp()]
+#' @param logo_html optional HTML for img of logo for the upper right of the overall header.
+#'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
+#'
 #' @param submitted_upload_method something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)
 #' @param shp provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 #'   they are not in ejamitout
@@ -38,11 +52,6 @@
 #'   leave out rows in table where raw value is NA,
 #'   as with many of names_d_language, in extra table of demog. subgroups, etc.
 #'
-#' @param report_title optional generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
-#' @param logo_path optional relative path to a logo for the upper right of the overall header.
-#'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in [ejamapp()]
-#' @param logo_html optional HTML for img of logo for the upper right of the overall header.
-#'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
 #' @param footer_version_number,footer_date,footer_text,footer_html to customize the report footer - see [generate_report_footer()]
 #' @param addlatlon optional, whether to include lat,lon coordinates in header (for latlon sitetype)
 #' @return URL of temp file or object depending on return_html,
@@ -66,8 +75,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         sitenumber = NULL,
                         logo_path = EJAM:::global_or_param("report_logo"),
                         logo_html = NULL, # defined downstream
-                        report_title = NULL, # EJAM:::global_or_param("report_title"),
-                        analysis_title = NULL,
+                        report_title = NULL, # EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+                        analysis_title = NULL, # EJAM:::global_or_param("default_standard_analysis_title")
                         addlatlon = TRUE,
 
                         submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
@@ -143,17 +152,22 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   ################################################## #  ################################################## #
   # REPORT TYPE (MULTISITE or 1-SITE REPORT) ? ####
 
+  # Assume multisite report, unless only 1 site was analyzed (e.g., if called from the EJAM API) or a valid sitenumber >1 was provided
+
   ## > sitenumber & nsites ####
   sitenumber <- as.numeric(sitenumber)
-  if (all(is.na(sitenumber)) || is.null(sitenumber) || length(sitenumber) == 0 ||
+  if (all(is.na(sitenumber)) || is.null(sitenumber) ||
+      # length(sitenumber) == 0 ||
+      length(sitenumber) != 1 ||
       all(sitenumber %in% "") || all(sitenumber %in% 0) || all(sitenumber < 0) ||
-      sitenumber > NROW(ejamitout$results_bysite) # could provide error msg for this case
+      !(all(sitenumber %in% 1:NROW(ejamitout$results_bysite))) # ensures integer could provide error msg for this case
   ) {
-    sitenumber <- 0
+    sitenumber <- 0  # in case sitenumber was invalid
   }
-
+  # How many sites were actually analyzed, in the (valid) results provided?
   nsites <- NROW(ejamitout$results_bysite[ejamitout$results_bysite$valid %in% TRUE, ]) # might differ from ejamout1$sitecount_unique
-
+  # Treat it like a 1-site report if only 1 valid site was analyzed.
+  #   And then if sitenumber omitted, or sitenumber=1, or sitenumber provided was invalid, just use that 1 site.
   if (sitenumber %in% 0 && nsites == 1) {
     sitenumber <- 1
   }
@@ -168,7 +182,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
     ## Analysis TITLE if multisite
     if (is.null(analysis_title)) {
-      analysis_title <- global_or_param("default_standard_analysis_title")
+      analysis_title <- EJAM:::global_or_param("default_standard_analysis_title")
     }
 
     ejamout1 <- ejamitout$results_overall # one row
