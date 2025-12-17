@@ -44,9 +44,11 @@ ejam2report(
 \item{ejamitout}{output as from \code{\link[=ejamit]{ejamit()}}, list with a table in \href{https://r-datatable.com}{data.table} format called \code{results_bysite}
 if sitenumber parameter is used, or a table in \href{https://r-datatable.com}{data.table} format called \code{results_overall} otherwise}
 
-\item{sitenumber}{If a number is provided, the report is about
-\code{ejamitout$results_bysite[sitenumber, ]} and if no number is provided (param is NULL or "")
-then the report is about \code{ejamitout$results_overall}}
+\item{sitenumber}{If a valid number is provided, the report is a "1-site" report, about
+\code{ejamitout$results_bysite[sitenumber, ]}. If no valid number is provided (e.g., param is omitted, 0, NULL, "", etc.)
+then the report is a "Multisite" report, about \code{ejamitout$results_overall}.
+But note that it is treated / titled like a 1-site report if only
+one site was analyzed (or only one had valid results).}
 
 \item{logo_path}{optional relative path to a logo for the upper right of the overall header.
 Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in \code{\link[=ejamapp]{ejamapp()}}}
@@ -54,9 +56,12 @@ Ignored if logo_html is specified and not NULL, but otherwise uses default or pa
 \item{logo_html}{optional HTML for img of logo for the upper right of the overall header.
 If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
 
-\item{report_title}{optional generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}
+\item{report_title}{optional generic name of this type of report, to be shown at top,
+like "EJSCREEN Multisite Report" or "EJSCREEN Community Report".
+Default is EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+depending on number of sites analyzed and the sitenumber parameter.}
 
-\item{analysis_title}{optional title of analysis}
+\item{analysis_title}{optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")}
 
 \item{addlatlon}{optional, whether to include lat,lon coordinates in header (for latlon sitetype)}
 

@@ -515,7 +515,7 @@ app_ui <- function(request) {
                                #includeCSS('inst/report/community_report/communityreport.css'),
                                #includeCSS('inst/report/community_report/main.css'),
                                ############################## #
-                               ###               > TABLES       ####
+                               ###               > HEADER AND TABLES       ####
                                uiOutput('comm_report_html'),
                                br(),
                                ############################## #
