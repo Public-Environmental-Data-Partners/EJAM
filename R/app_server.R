@@ -362,8 +362,8 @@ app_server <- function(input, output, session) {
                  showModal( shiny::modalDialog(title = 'Selected location data', size = 'l', easyClose = TRUE,
                                                helpText('View or download data corresponding to your upload/selections.'),
                                                ## use download buttons for speed and handling larger data
-                                               downloadButton('download_preview_data_csv', label = 'CSV', class = 'usa-button'),
-                                               downloadButton('download_preview_data_xl', label = 'Excel', class = 'usa-button'),
+                                               downloadButton('download_sites_before_analysis_csv', label = 'CSV', class = 'usa-button'),
+                                               downloadButton('download_sites_before_analysis_xl', label = 'Excel', class = 'usa-button'),
                                                br(),br(),
                                                DT::DTOutput('print_test2_dt', width = '100%')))
                })
@@ -1484,17 +1484,17 @@ app_server <- function(input, output, session) {
                     escape = FALSE) # escape = FALSE may add security issue but makes links clickable in table
     })
   ######################################  #
-
+  ### DOWNLOAD sites - downloadHandler() ####
   ## use external download buttons for preview data
   ## this allows loading the table on the server-side which improves speed and avoids
   ## crashes with larger datasets
-  output$download_preview_data_xl <- downloadHandler(
+  output$download_sites_before_analysis_xl <- downloadHandler(
     filename = 'epa_raw_data_download.xlsx',
     content = function(file) {
       writexl::write_xlsx(data_preview(), file)
     }
   )
-  output$download_preview_data_csv <- downloadHandler(
+  output$download_sites_before_analysis_csv <- downloadHandler(
     filename = 'epa_raw_data_download.csv',
     content = function(file) {
       ## shapefile is not of type data.table
@@ -2442,9 +2442,9 @@ app_server <- function(input, output, session) {
 
   ### ejam2report() in Overall downloadHandler() ####
 
-  # report_fname <- reactiveVal() # never used now?
 
-  output$community_download_all <- downloadHandler(
+
+  output$download_report_multisite <- downloadHandler(
 
     filename = function() {
       create_filename(
@@ -2498,7 +2498,7 @@ app_server <- function(input, output, session) {
 
   # consider using API here to generate single-site reports?  ***
 
-  output$community_download_individual <- downloadHandler(
+  output$download_report_single_site <- downloadHandler(
 
     filename = function() {
       location_suffix <- if (!is.null(selected_location_name())) {
@@ -2581,7 +2581,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           title = "Download Ready",
           "Your report is ready. Click the button below to download.",
           footer = tagList(
-            downloadButton("community_download_individual", "Download Report"),
+            downloadButton("download_report_single_site", "Download Report"),
             modalButton("Close")
           ),
           easyClose = TRUE,
@@ -2646,7 +2646,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
               format(Sys.Date(), '%B %d, %Y'))))
   })
 
-  output$download_results_table <- downloadHandler(
+  output$download_results_spreadsheet <- downloadHandler(
     filename = function() {
       create_filename(file_desc = 'results table',
                       title =  sanitized_analysis_title(),
@@ -2933,7 +2933,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
     #############################################################################  #
     ## *downloadHandler() ####
 
-    output$rg_download <- downloadHandler(
+    output$download_report_long <- downloadHandler(
       filename = function() {
         create_filename(file_desc = 'full report',
                         title = sanitized_analysis_title(),

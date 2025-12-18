@@ -543,9 +543,11 @@ app_ui <- function(request) {
                                  uiOutput("report_version_date")
                                ),
                                br(),
+                               ############################## #
+                               ###              > DOWNLOAD BUTTON    ####
                                tags$div(
                                  shiny::downloadButton(
-                                   outputId = 'community_download_all',
+                                   outputId = 'download_report_multisite',
                                    label = 'Download Community Report', class = 'usa-button'), style = 'text-align: center;'
                                )
                              ),  # end report tab
@@ -586,7 +588,7 @@ app_ui <- function(request) {
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
-                                                              downloadButton('download_results_table', 'Download Results Table', class = 'usa-button')
+                                                              downloadButton('download_results_spreadsheet', 'Download Results Table', class = 'usa-button')
                                                        )
                                                      ),
                                                      br(), ## vertical space
@@ -717,7 +719,7 @@ app_ui <- function(request) {
                                             ),
                                             column(6,
                                                    ## output: button to download static report
-                                                   shiny::downloadButton(outputId = 'rg_download',
+                                                   shiny::downloadButton(outputId = 'download_report_long',
                                                                          label = 'Download report',
                                                                          class = 'usa-button')
                                             )

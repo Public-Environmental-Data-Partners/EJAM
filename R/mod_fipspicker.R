@@ -209,7 +209,7 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
       ##  Show table of selected locations
       mainPanel(
         conditionalPanel(condition = "showtable == 'TRUE'",
-                         shiny::downloadButton(outputId = ns("download")),
+                         shiny::downloadButton(outputId = ns("download_fips_table")),
                          tableOutput(outputId = ns("fips_table"))
         )
       )
@@ -1106,13 +1106,13 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
 
       observe({
         if (NROW(displaytable()) > 0) {
-          shinyjs::show(("download")) # show the download button
+          shinyjs::show(("download_fips_table")) # show the download button
         } else {
-          shinyjs::hide(("download")) # hide the download button
+          shinyjs::hide(("download_fips_table")) # hide the download button
         }
       })
 
-      output$download <- downloadHandler(
+      output$download_fips_table <- downloadHandler(
         filename = function() {
           if (testing_this_module) { print(NROW(displaytable()))}
           isolate({
