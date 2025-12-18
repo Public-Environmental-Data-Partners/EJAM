@@ -321,21 +321,11 @@ fips_lead_zero <- function(fips, quiet = TRUE) {
   #	TRY TO CLEAN UP vector of FIPS AND INFER GEOGRAPHIC SCALE
 
   first_two_digits_invalid_as_is = function(x) {
+    # inefficient to do each time but small enough that it doesn't matter:
     valid_as_first_two_digits = stateinfo2$FIPS.ST[!is.na(stateinfo2$FIPS.ST)]
     !(substr(x,1,2) %in% valid_as_first_two_digits)
   }
-  prefixing_zero_would_imply_invalid_state = function(x) {
-    valid_as_first_two_digits = stateinfo2$FIPS.ST[!is.na(stateinfo2$FIPS.ST)]
-    valid_0x = valid_as_first_two_digits[substr(valid_as_first_two_digits,1,1) == "0"]
-    !(paste0("0", substr(x,1,1)) %in% valid_0x)
-
-    # > dput(valid_0x)
-    # c(   "01", "02",    "04", "05", "06",    "08", "09")
-    # cannot prefix 0 to  0, 3, or 7, since "00", 03, 07 never start a FIPS we might use.
-    # pre0ok(
-    #    c('0234',"1234", '22345','33456','4', '55678' , '6666', 7777, '8345',999))
-  }
-  pre0ok <- prefixing_zero_would_imply_invalid_state(fips)
+  # cannot prefix 0 to  0, 3, or 7, since "00", 03, 07 never start a FIPS we might use.
 
   # Using keepNA=F here simplifies selecting which elements are n characters long while not selecting the ones that are NA.
   # For fips that show up as missing values (i.e., NA, i.e., NA_character_),
