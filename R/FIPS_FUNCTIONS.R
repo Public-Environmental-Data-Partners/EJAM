@@ -320,6 +320,13 @@ fips_lead_zero <- function(fips, quiet = TRUE) {
 
   #	TRY TO CLEAN UP vector of FIPS AND INFER GEOGRAPHIC SCALE
 
+  first_two_digits_invalid_as_is = function(x) {
+    # inefficient to do each time but small enough that it doesn't matter:
+    valid_as_first_two_digits = stateinfo2$FIPS.ST[!is.na(stateinfo2$FIPS.ST)]
+    !(substr(x,1,2) %in% valid_as_first_two_digits)
+  }
+  # cannot prefix 0 to  0, 3, or 7, since "00", 03, 07 never start a FIPS we might use.
+
   # Using keepNA=F here simplifies selecting which elements are n characters long while not selecting the ones that are NA.
   # For fips that show up as missing values (i.e., NA, i.e., NA_character_),
   #  if keepNA = FALSE nchar() returns 2 (since 2 is the number of printing characters in NA)
@@ -363,14 +370,24 @@ fips_lead_zero <- function(fips, quiet = TRUE) {
     ## would want to do this ONLY for the fips that are NOT a valid tract fips:
     # fips[nchar(fips, keepNA = FALSE) == 11]	<- paste0("0", fips[nchar(fips, keepNA = FALSE) == 11])
     valid_tract = fips[lens == 11] %in% tfips
+    # note that only confirms it is valid for the set of FIPS used in ejscreen/ejam, such as 2022 geographies/fips for the dataset used in 2025 by ejscreen/ejam.
+    # while CEJST had been using 2010 geos/fips, so many tract fips there do not show up as "valid" in the above sense.
+
+    # Just adding a zero to 11-digit non-tract fips would not necessarily make it a VALID blockgroup fips,
+    # especially if first char was already zero as in case of Census 2010 tract fips used in CEJST dataset like "01001020500"
+    # So we should at least avoid adding a clearly nonsensical leading zero in case of it *already* having a leading zero,
+    # even though we do not otherwise validate whether adding a leading zero makes it invalid.
+
     fips[lens == 11][!valid_tract]	<- paste0("0", fips[lens == 11][!valid_tract])
+
+    # test_invalid_11_2010= "01001020500"
+    # test_invalid_11     = "01234567891" # lead zero might get added and then it is called a blockgroup though invalid
 
     # test_tract_missing0 =   4013116500
     # test_tract_good     = "04013116500"
     # test_bg_good        = "040131165002"
     # test_bg_missing0    =   40131165002
 
-    # test_invalid_11 = "01234567891" # lead zero gets added and then it is called a blockgroup though invalid
 
     ## NOTES:
     ## to get ALL fips, including changed ones in CT not just the ones in blockgroupstats
@@ -446,6 +463,8 @@ if (!quiet) {
     warning(howmanyna, " fips had invalid number of characters (digits) or were NA values")
   }
 }
+  fips[first_two_digits_invalid_as_is(fips)] <- NA
+
   return(fips)
 }
 ####################################################### #
