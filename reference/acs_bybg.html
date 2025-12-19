@@ -105,7 +105,8 @@
 
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
-<dd><p>e.g., 2022, 2023, or 2024</p></dd>
+<dd><p>optional, e.g., 2024 means ACS5 data covering 2020-2024.
+Tries to use the most recent available if not specified.</p></dd>
 
 
 <dt id="arg-cache-table">cache_table<a class="anchor" aria-label="anchor" href="#arg-cache-table"></a></dt>
@@ -157,7 +158,9 @@
 
 
 <dt id="arg-geography">geography<a class="anchor" aria-label="anchor" href="#arg-geography"></a></dt>
-<dd><p>"block group" (note this needs the space between words)</p></dd>
+<dd><p>"block group"
+(but it also will recognize you meant "block group" or "tract"
+if you omit the space or capitalize by accident)</p></dd>
 
 
 <dt id="arg-dropname">dropname<a class="anchor" aria-label="anchor" href="#arg-dropname"></a></dt>
@@ -260,7 +263,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span></span>
 <span><span class="va">myvars</span> <span class="op">&lt;-</span> <span class="va">myacsinfo</span><span class="op">$</span><span class="va">name</span> <span class="co">#</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="st">"want to run example that takes a few minutes"</span> <span class="op">==</span> <span class="st">"yes"</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="st">"want to run example that takes &gt;15 minutes"</span> <span class="op">==</span> <span class="st">"yes"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># VERY SLOWLY download data for all these tables</span></span>
 <span>  <span class="co"># in ALL STATES and DC and PR but not Island Areas</span></span>
 <span>  <span class="va">mystates</span> <span class="op">&lt;-</span> <span class="va">stateinfo2</span><span class="op">[</span><span class="va">stateinfo2</span><span class="op">$</span><span class="va">is.usa.plus.pr</span>, <span class="op">]</span><span class="op">$</span><span class="va">ST</span></span>

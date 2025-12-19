@@ -216,6 +216,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_env_demog_header.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_extra_header.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_html_header.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/generate_report_footer.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/generate_report_footnotes.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/get_global_defaults_or_user_options.html</loc></url>
@@ -463,6 +464,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/regid_from_naics.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/regids_valid.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz_from_ejamit.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/report_setup_temp_files.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/report_xmilesof.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/rmost.html</loc></url>
