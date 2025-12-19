@@ -1805,9 +1805,23 @@ app_server <- function(input, output, session) {
   # ______ RUN ANALYSIS ________####
   #. ####
 
+  download_ready_for_report_header_and_tables <- reactiveVal(FALSE)
+  download_ready_for_report_map <- reactiveVal(FALSE)
+  download_ready_for_report_plot <- reactiveVal(FALSE)
+  # download_ready_for_report_footer_version_date <- reactiveVal(FALSE) # quick, assume ready
+
   ## data_processed()  reactive holds results of ejamit()
 
   observeEvent(input$bt_get_results, {  # (button is pressed)
+
+    # disable download buttons until finished analysis
+    shinyjs::disable(id = 'download_report_multisite')
+    shinyjs::disable(id = 'download_results_spreadsheet')
+    download_ready_for_report_header_and_tables(FALSE)
+    download_ready_for_report_map(FALSE)
+    download_ready_for_report_plot(FALSE)
+    # download_ready_for_report_footer_version_date(FALSE) # quick, assume ready
+
     submitted_upload_method(current_upload_method())
     submitted_radius_val(current_slider_val[[submitted_upload_method()]])
 
@@ -2112,7 +2126,6 @@ app_server <- function(input, output, session) {
   output$comm_report_html <- renderUI({
     req(data_processed())
 
-
     ## *** consider replacing this with ejam2report(),
     ## but doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
 
@@ -2154,10 +2167,12 @@ app_server <- function(input, output, session) {
                                         logo_path = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
                                         logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
     )
+    # note this component of report is ready
+    download_ready_for_report_header_and_tables(TRUE)
 
-    ## return generated HTML
+    ## return generated HTML of logo/header plus tables of results overall
     full_page
-    # footer is added later in UI, in this case
+    # Map, plot, and footer are added later, in UI, in this case
   })
   # end of comm_report_html sent to UI
   #############################################################################  #
@@ -2240,7 +2255,13 @@ app_server <- function(input, output, session) {
       }
     }
   }) # end of report_map
-  ############################################ #
+
+  observe({
+    req(report_map())
+    # note this component of report is ready (although renderLeaflet() and leafletProxy() might take time?)
+    download_ready_for_report_map(TRUE)
+  })
+  ############## #
   ### output$quick_view_map of report_map() html ### #
 
   output$quick_view_map <- leaflet::renderLeaflet({
@@ -2404,7 +2425,11 @@ app_server <- function(input, output, session) {
     } # box
     ################## #
   })
-
+  observe({
+    req(v1_summary_plot())
+    # note this component of report is ready (although renderPlot() might take time?)
+    download_ready_for_report_plot(TRUE)
+  })
   ## output: show box/barplot of indicator ratios in html Summary Report #
   output$view1_summary_plot <- renderPlot({
     v1_summary_plot()
@@ -2425,6 +2450,19 @@ app_server <- function(input, output, session) {
     }
   })
 
+  ############################################ #
+  # wait until all components of report are ready for download
+  # before enabling download button
+  observe({
+    if (
+      download_ready_for_report_header_and_tables() &&
+      download_ready_for_report_map() &&
+      download_ready_for_report_plot()
+      # && download_ready_for_report_footer_version_date() # quick, assume ready
+    ) {
+      shinyjs::enable(id = 'download_report_multisite')
+    }
+  })
   ####################################################### #
   if (isTRUE(getOption("shiny.testmode"))) {
     htmlwidgets::setWidgetIdSeed(12345) # ensures consistent element IDs across runs
@@ -2438,11 +2476,7 @@ app_server <- function(input, output, session) {
   ##############################################  #
   # REPORT Overall - for DOWNLOAD ####
 
-
-
   ### ejam2report() in Overall downloadHandler() ####
-
-
 
   output$download_report_multisite <- downloadHandler(
 
@@ -2483,6 +2517,8 @@ app_server <- function(input, output, session) {
         logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
         logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
       )
+
+
     }
   )
   #############################################################################  #
@@ -2496,7 +2532,7 @@ app_server <- function(input, output, session) {
   ### ejam2report() in 1-site downloadHandler() ####
   # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
 
-  # consider using API here to generate single-site reports?  ***
+  # Default is to use API here to get single-site reports, not render them here  ***
 
   output$download_report_single_site <- downloadHandler(
 
@@ -2595,7 +2631,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
   output$interactive_table <- DT::renderDT(server = TRUE, expr = {
     req(data_processed())
     # This also creates the UI buttons for a 1-site report in each row
-    create_interactive_table(out = data_processed(),
+    x = create_interactive_table(out = data_processed(),
 
                              # reports param here controls which URL/report columns to show in this table
                              #  (among those already created in data_processed() via ejamit() etc.)
@@ -2607,6 +2643,9 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
                              columns_used = input$bysite_webtable_colnames
                              ## if NULL, uses all available from data_processed()
     )
+    # enable download button only after DT::renderDT
+    shinyjs::enable(id = 'download_results_spreadsheet')
+    x
   })
   #############################################################################  #
   ### advanced tab UI for picking columns to show in table of sites  ####
@@ -2635,7 +2674,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
   # *** CONSIDER USING FUNCTION THAT CAN DO THIS AT ?table_xls_from_ejam() or ejam2excel()
 
-  output$report_version_date <- renderUI({
+  output$report_footer_version_date <- renderUI({
     message(paste0("shinytestmode = ", getOption("shiny.testmode")))
     p(style = "margin-bottom: 0",
       paste("Version", EJAM:::global_or_param("app_version"),

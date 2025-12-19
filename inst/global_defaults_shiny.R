@@ -348,7 +348,7 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
 
     ## ------------------------ by-site interactive web table ####
 
-    sitereport_download_buttons_show = FALSE,
+    sitereport_download_buttons_show = FALSE, # whether to use server code and buttons to click in table of sites to get 1-site report (as opposed to a hyperlink that gets it via API)
     sitereport_download_buttons_colname = "Download EJAM Report",
 
     default_bysite_webtable_colnames = c('ejam_uniq_id',

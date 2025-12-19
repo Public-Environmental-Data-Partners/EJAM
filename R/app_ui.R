@@ -540,7 +540,7 @@ app_ui <- function(request) {
                                ###              > FOOTER  (version, date)    ####
                                div(
                                  style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
-                                 uiOutput("report_version_date")
+                                 uiOutput("report_footer_version_date")
                                ),
                                br(),
                                ############################## #
