@@ -12,6 +12,18 @@
 #'
 #' - Will try to use the same input parameters as [ejamit()] does.
 #'
+#' - The 12/2025 API used ejam2report() with these parameter settings:
+#'   - `sitenumber = 1`
+#'   - `report_title="EJSCREEN Community Report"`
+#'
+#'   So it was not yet accepting parameters used by `ejamit()` and `ejam2report()` such as
+#'   - sitenumber=0 (for a multisite report)
+#'   - logo_path
+#'   - report_title
+#'   - analysis_title
+#'   - thresholds & threshnames
+#'   - radius_donut_lower_edge
+#'
 #' @param sitepoints see [ejamit()]
 #' @param lat,lon can be provided as vectors of coordinates instead of providing sitepoints table
 #' @param radius  see [ejamit()], default is 0 if fips or shapefile specified

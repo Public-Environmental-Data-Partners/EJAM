@@ -4,53 +4,54 @@ output:
   html_document:
     css: ["communityreport.css"]
 params:
-  community_html: NA
+  community_html: NULL
   map: NULL
-  plot: NA
-  footer: NULL
+  plot: NULL
+  footer_version_number: NULL
+  footer_date: NULL
+  footer_text: NULL
+  footer_html: NULL
 ---
 
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+# remember params can be defined using r code too: https://r4ds.had.co.nz/r-markdown.html#parameters
+## like, 
+## params:
+##    rundate: !r  lubridate::ymd_hms("2015-01-01 12:30:00")
 ```
 
+
 ```{r report_html, results='asis'}
-shiny::HTML(params$community_html)
+
+#   Header (logo, report title, analysis title)
+# + Tables of data
+
+shiny::HTML(params$community_html)   # from build_community_report()
 ```
 
 ```{r map_section, echo=FALSE}
+#
 if (!(is.null(params$map) || anyNA(params$map) || length(params$map) == 0)) {
+  #
   params$map
 }
 ```
 
 ```{r plot, fig.align='center', out.width='100%'}
+#
 params$plot
 ```
 
 ```{r footer, fig.align='center', out.width='100%'}
-if (is.null(params$footer)) {
-  footer <- (
-    shiny::div(
-      style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; 
-  text-align: right; margin: 10px 0;", 
-  
-  shiny::p(style = "margin-bottom: 0",
-           paste("Version", EJAM:::global_or_param("app_version"),
-                 "| Report created on",
-                 ifelse(
-                   isTRUE(getOption("shiny.testmode")),
-                   "[SHINYTEST DATE]", # so the snapshot of the report is consistent, not diff date each time tested
-                   format(Sys.Date(), "%B %d, %Y")
-                 )
-           )
-  )
-    ) 
-  )
-} else {
-  footer <- params$footer
-}
-
-footer
+# To make footer blank (no text), pass "" for footer_text or footer_html.
+#
+EJAM:::generate_report_footer(
+  footer_version_number = params$footer_version_number,
+  footer_date = params$footer_date,
+  footer_text = params$footer_text,
+  footer_html = params$footer_html
+)
 
 ```

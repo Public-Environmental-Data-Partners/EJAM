@@ -81,6 +81,21 @@ https://github.com/edgi-govdata-archiving/EJAM-API
 \item Another option in the future might be to construct a URL that is a link to the live EJAM
 app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
 \item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
+\item The 12/2025 API used ejam2report() with these parameter settings:
+\itemize{
+\item \code{sitenumber = 1}
+\item \code{report_title="EJSCREEN Community Report"}
+}
+
+So it was not yet accepting parameters used by \code{ejamit()} and \code{ejam2report()} such as
+\itemize{
+\item sitenumber=0 (for a multisite report)
+\item logo_path
+\item report_title
+\item analysis_title
+\item thresholds & threshnames
+\item radius_donut_lower_edge
+}
 }
 }
 \examples{

@@ -430,7 +430,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
     'Number of Locations Analyzed' = NROW(eachsite),
     'Locations analyzed' = buffer_desc,
     "Distance in miles" = radius_or_buffer_in_miles,
-    "Distance type" = radius_or_buffer_description,
+    "Distance type" = radius_or_buffer_description, ## or more info, as from report_residents_within_xyz_from_ejamit()
     "Population at x% of sites" =  popshare_p_lives_at_what_pct(eachsite$pop, p = 0.50, astext = TRUE),
     "Population at N sites" = popshare_at_top_n(eachsite$pop, c(1, 5, 10), astext = TRUE),
     "Note on site-specific estimates" = ejscreen_ejam_caveat,

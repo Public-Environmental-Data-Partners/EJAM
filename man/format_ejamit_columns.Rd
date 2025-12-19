@@ -25,3 +25,6 @@ Applies rounding, sigfig, and percentage info to display columns of ejamit using
   format_ejamit_columns(x$results_overall, names_d)
 
 }
+\seealso{
+Note: *** overlaps with/could replace with \code{\link[=table_signif_round_x100]{table_signif_round_x100()}}
+}

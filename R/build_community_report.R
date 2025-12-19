@@ -61,7 +61,7 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 
 #' Generate Single-site or Multi-site Summary Report (e.g., .html)
 #'
-#' Creates a short summary report with tables, map, and plot of indicators
+#' Just assembles the report, given the header info, tables, map, and plot
 #'
 #' @details This is used by the shiny app server. For use in RStudio,
 #' see [ejam2report()] (which relies on this).
@@ -73,7 +73,16 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #'  It uses functions in community_report_helper_funs.R, etc.
 #'
 #' @param output_df single row of results table from doaggregate - either results_overall or one row of bysite
-#' @param analysis_title title to use in header of report
+#'
+#' @param logo_path optional relative path to a logo for the upper right of the overall header.
+#'   Ignored if logo_html is specified and not NULL, otherwise uses default or param set in [ejamapp()],
+#'  except NULL means default logo, "" means omit logo entirely.
+#' @param logo_html optional HTML for img of logo for the upper right of the overall header.
+#'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
+#' @param report_title generic name of the report type, to be shown in the header,
+#'   like "EJSCREEN Multisite Summary" or "EJSCREEN Community Report"
+#' @param analysis_title optional, title to use in header of report,
+#'   default shows name of place if FIPS code report on 1 site.
 #' @param totalpop total population included in location(s) analyzed
 #' @param locationstr description of the location(s) analyzed
 #'
@@ -94,77 +103,87 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #'
 #' @param in_shiny whether the function is being called in or outside of shiny - affects location of header
 #' @param filename path to file to save HTML content to; if null, returns as string (used in Shiny app)
-#' @param report_title generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
-#' @param logo_path optional relative path to a logo for the upper right of the overall header.
-#'   Ignored if logo_html is specified and not NULL, otherwise uses default or param set in [ejamapp()],
-#'  except NULL means default logo, "" means omit logo entirely.
-#' @param logo_html optional HTML for img of logo for the upper right of the overall header.
-#'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
+#'
+#' @param ... other parameters optional, passed to report_residents_within_xyz() via generate_html_header()
 #'
 #' @seealso [ejam2report()]
 #'
 #' @keywords internal
 #' @export
 #'
-build_community_report <- function(output_df,
-                                   analysis_title = "Report", totalpop, locationstr,
-                                   include_ejindexes = FALSE,
-                                   show_ratios_in_report = FALSE,
-                                   extratable_show_ratios_in_report = FALSE,
-                                   extratable_title = '',   # 'Additional Information', # above the table
-                                   extratable_title_top_row = 'ADDITIONAL INFORMATION', # inside the table, top left cell
-                                   extratable_list_of_sections = list(
-                                     # see ejam2report defaults and see global_defaults_*.R
-                                     `Breakdown by Population Group` = names_d_subgroups,
-                                     `Language Spoken at Home` = names_d_language,
-                                     `Language in Limited English Speaking Households` = names_d_languageli,
-                                     `Breakdown by Sex` = c('pctmale','pctfemale'),
-                                     `Health` = names_health,
-                                     `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
-                                     `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
-                                     `Poverty` = names_d_extra,
-                                     `Features and Location Information` = c(
-                                       names_e_other,
-                                       names_sitesinarea,
-                                       names_featuresinarea,
-                                       names_flag
-                                     ),
-                                     `Climate` = names_climate,
-                                     `Critical Services` = names_criticalservice,
-                                     `Other` = names_d_other_count
-                                     # , `Count above threshold` = names_countabove # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
-                                   ),
-                                   ## all the indicators that are in extratable_list_of_sections:
-                                   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
+build_community_report <- function(
 
-                                   in_shiny = FALSE,
-                                   filename = NULL,
-                                   report_title = NULL,
-                                   logo_path = NULL, # NULL means default logo, "" means omit logo
-                                   logo_html = NULL
+    logo_path      = NULL, # NULL means default logo, "" means omit logo
+    logo_html      = NULL, # if missing, derived from logo_path
+    report_title   = NULL, # if missing, EJAM:::global_or_param("report_title") or _multisite
+    analysis_title = NULL, # if missing, EJAM:::global_or_param("default_standard_analysis_title")
+    locationstr    = "",
+    totalpop,      # if missing, prettyNum(round(output_df_rounded$pop, 0), big.mark = ',')
+
+    output_df,
+    include_ejindexes                = FALSE,
+    show_ratios_in_report            = FALSE,
+    extratable_show_ratios_in_report = FALSE,
+    extratable_title            = '',   # 'Additional Information', # above the table
+    extratable_title_top_row    = 'ADDITIONAL INFORMATION', # inside the table, top left cell
+    extratable_list_of_sections = list(
+      # see ejam2report defaults and see global_defaults_*.R; EJAM:::global_or_param("default_extratable_list_of_sections")
+      `Breakdown by Population Group` = names_d_subgroups,
+      `Language Spoken at Home` = names_d_language,
+      `Language in Limited English Speaking Households` = names_d_languageli,
+      `Breakdown by Sex` = c('pctmale','pctfemale'),
+      `Health` = names_health,
+      `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
+      `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
+      `Poverty` = names_d_extra,
+      `Features and Location Information` = c(
+        names_e_other,
+        names_sitesinarea,
+        names_featuresinarea,
+        names_flag
+      ),
+      `Climate` = names_climate,
+      `Critical Services` = names_criticalservice,
+      `Other` = names_d_other_count
+      # , `Count above threshold` = names_countabove # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
+    ),
+    ## all the indicators that are in extratable_list_of_sections:
+    extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
+
+    in_shiny = FALSE,
+    filename = NULL
 ) {
 
+  if (is.null(report_title)) {
+    # Report TITLE if 1-site vs multisite - try to guess if it was multisite or not, if report_title not already specified, but it should always already be here via server or ejam2report()
+    if (is.na(output_df$ejam_uniq_id)) {
+      report_title <- EJAM:::global_or_param("report_title_multisite")
+    } else {
+      report_title <- EJAM:::global_or_param("report_title")
+      }
+  }
+  if (is.null(analysis_title)) {
+    analysis_title <- EJAM:::global_or_param("default_standard_analysis_title")
+  }
   ## check that analysis was run with EJ columns; if not, don't add them
-  if (include_ejindexes) {
+  if (isTRUE(include_ejindexes)) {
     ejcols <- c(names_ej,      names_ej_state,
                 names_ej_supp, names_ej_supp_state)
     if (!(all(ejcols %in% names(output_df)))) {
       include_ejindexes <- FALSE
     }
   }
-
+  # This should already be done by server or ejam2report().
+  # If done here, probably should switch to table_signif_round_x100() not format_ejamit_columns() ***
   output_df_rounded <-   as.data.frame(output_df)
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
-  if (missing(locationstr)) {
-    warning('locationstr parameter missing')
-    locationstr <- ""
-  }
-  if (missing(totalpop)) {
+
+  if (missing(totalpop) || is.null(totalpop)) {
     if ("pop" %in% names(output_df_rounded)) {
       totalpop <- prettyNum(round(output_df_rounded$pop, 0), big.mark = ',')
     } else {
       warning('totalpop parameter or output_df_rounded$pop is required')
-      totalpop <- "NA"
+      totalpop <- "NA" # text works here rather than NA
     }
   }
 
@@ -174,12 +193,15 @@ build_community_report <- function(output_df,
 
     # 1. Report / analysis overall header ####
 
+    # any values for these parameters below must be specified here (above) since defaults for the helper ?generate_html_header() below are mostly just ""
+
     generate_html_header(analysis_title = analysis_title,
-                         totalpop = totalpop, locationstr = locationstr,
-                         in_shiny = in_shiny,
-                         report_title = report_title,
-                         logo_path = logo_path,
-                         logo_html = logo_html
+                         report_title   = report_title,
+                         locationstr    = locationstr,
+                         totalpop       = totalpop,
+                         logo_path      = logo_path,
+                         logo_html      = logo_html,
+                         in_shiny       = in_shiny
     ),
 
     ############################################################# #
@@ -188,7 +210,7 @@ build_community_report <- function(output_df,
 
     generate_env_demog_header(),
 
-    fill_tbl_full(output_df = output_df_rounded,
+    fill_tbl_full(output_df             = output_df_rounded,
                   show_ratios_in_report = show_ratios_in_report
     ),
     collapse = ''
@@ -232,6 +254,10 @@ build_community_report <- function(output_df,
     ),
     collapse = ''
   )
+  ############################################################# #
+
+#   > map, barplot, footer are elsewhere < ####
+
   ############################################################# #
   if (is.null(filename)) {
     return(HTML(full_page))

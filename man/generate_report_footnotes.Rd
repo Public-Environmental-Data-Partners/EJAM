@@ -2,7 +2,7 @@
 % Please edit documentation in R/community_report_helper_funs.R
 \name{generate_report_footnotes}
 \alias{generate_report_footnotes}
-\title{helper - make footnote for summary report}
+\title{helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes}
 \usage{
 generate_report_footnotes(
   diesel_caveat =
@@ -16,7 +16,7 @@ generate_report_footnotes(
 \item{diesel_caveat}{}
 }
 \description{
-helper - make footnote for summary report
+helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 }
 \seealso{
 used by \code{\link[=build_community_report]{build_community_report()}}
