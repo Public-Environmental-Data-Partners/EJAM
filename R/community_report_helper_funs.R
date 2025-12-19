@@ -666,7 +666,7 @@ generate_html_header <- function(analysis_title,
       # warn if html not seem to match path or a valid path?
       path_from_html <- gsub(".*img src=.(.*). alt.*", "\\1", logo_html)
       if (!file.exists(path_from_html)) {
-        warning("logo_html seems to point to -- but cannot find -- ", path_from_html, ", but will try using logo_html as provided")
+        message("logo_html seems to point to -- but from current folder, cannot find -- ", path_from_html, ", but will try using logo_html as provided")
       }
       return(logo_html)
     }
@@ -675,15 +675,15 @@ generate_html_header <- function(analysis_title,
       #  warn if html not seem ok ?
       path_from_html <- gsub(".*img src=.(.*). alt.*", "\\1", logo_html)
       if (!file.exists(path_from_html)) {
-        warning("logo_html seems to point to -- but cannot find -- ", path_from_html, ", but will try using logo_html as provided")
+        message("logo_html seems to point to -- but from current folder, cannot find -- ", path_from_html, ", but will try using logo_html as provided")
       }
       return(logo_html)
     }
 
     # if logo_path PROVIDED as not null and not empty, and logo_html NULL or "", (warn?) try to use path to make html (and ignore given html)
     if (notempty(logo_path) && !notempty(logo_html)) {
-      if (!file.exists(logo_path)) {
-        warning("cannot find ", logo_path, " but will try to use it for the logo on report")
+      if (!file.exists(file.path(  logo_path))) {
+        message("cannot find ", logo_path, " from current folder, but may be available for render as a relative path and will try to use it for the logo on report")
         # return("") # to be safe could omit logo if seems like file not available
       }
       logo_html <- paste0('<img src=\"', logo_path, '\" alt=\"logo\" width=\"220\" height=\"70\">')
@@ -693,7 +693,6 @@ generate_html_header <- function(analysis_title,
     # catchall
     return(default_logo_html)
   }
-
 
   logo_html <- report_logo_html_from_inputs(logo_path = logo_path, logo_html = logo_html)
 
