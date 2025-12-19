@@ -362,8 +362,8 @@ app_server <- function(input, output, session) {
                  showModal( shiny::modalDialog(title = 'Selected location data', size = 'l', easyClose = TRUE,
                                                helpText('View or download data corresponding to your upload/selections.'),
                                                ## use download buttons for speed and handling larger data
-                                               downloadButton('download_preview_data_csv', label = 'CSV', class = 'usa-button'),
-                                               downloadButton('download_preview_data_xl', label = 'Excel', class = 'usa-button'),
+                                               downloadButton('download_sites_before_analysis_csv', label = 'CSV', class = 'usa-button'),
+                                               downloadButton('download_sites_before_analysis_xl', label = 'Excel', class = 'usa-button'),
                                                br(),br(),
                                                DT::DTOutput('print_test2_dt', width = '100%')))
                })
@@ -630,8 +630,7 @@ app_server <- function(input, output, session) {
         shiny::validate(errmsg)
 
       } else {
-
-        cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
+        if (input$testing) {cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")}
         ## if column names are found in lat/long alias comparison, process
         if (any(tolower(colnames(sitepoints)) %in% lat_alias) & any(tolower(colnames(sitepoints)) %in% lon_alias)) {
           sitepoints[, ejam_uniq_id := .I]
@@ -672,7 +671,7 @@ app_server <- function(input, output, session) {
     ## if acceptable file type, read in; if not, send warning text
     read_frs <- as.data.table(read_csv_or_xl(fname = input_file_path))
     # returns a data.frame
-    cat("ROW COUNT IN FILE THAT SHOULD provide FRS REGISTRY_ID: ", NROW(read_frs), "\n")
+    if (input$testing) {cat("ROW COUNT IN FILE THAT SHOULD provide FRS REGISTRY_ID: ", NROW(read_frs), "\n")}
 
     if (frs_is_valid(read_frs)) {
 
@@ -1484,17 +1483,17 @@ app_server <- function(input, output, session) {
                     escape = FALSE) # escape = FALSE may add security issue but makes links clickable in table
     })
   ######################################  #
-
+  ### DOWNLOAD sites - downloadHandler() ####
   ## use external download buttons for preview data
   ## this allows loading the table on the server-side which improves speed and avoids
   ## crashes with larger datasets
-  output$download_preview_data_xl <- downloadHandler(
+  output$download_sites_before_analysis_xl <- downloadHandler(
     filename = 'epa_raw_data_download.xlsx',
     content = function(file) {
       writexl::write_xlsx(data_preview(), file)
     }
   )
-  output$download_preview_data_csv <- downloadHandler(
+  output$download_sites_before_analysis_csv <- downloadHandler(
     filename = 'epa_raw_data_download.csv',
     content = function(file) {
       ## shapefile is not of type data.table
@@ -1805,9 +1804,23 @@ app_server <- function(input, output, session) {
   # ______ RUN ANALYSIS ________####
   #. ####
 
+  download_ready_for_report_header_and_tables <- reactiveVal(FALSE)
+  download_ready_for_report_map <- reactiveVal(FALSE)
+  download_ready_for_report_plot <- reactiveVal(FALSE)
+  # download_ready_for_report_footer_version_date <- reactiveVal(FALSE) # quick, assume ready
+
   ## data_processed()  reactive holds results of ejamit()
 
   observeEvent(input$bt_get_results, {  # (button is pressed)
+
+    # disable download buttons until finished analysis
+    shinyjs::disable(id = 'download_report_multisite')
+    shinyjs::disable(id = 'download_results_spreadsheet')
+    download_ready_for_report_header_and_tables(FALSE)
+    download_ready_for_report_map(FALSE)
+    download_ready_for_report_plot(FALSE)
+    # download_ready_for_report_footer_version_date(FALSE) # quick, assume ready
+
     submitted_upload_method(current_upload_method())
     submitted_radius_val(current_slider_val[[submitted_upload_method()]])
 
@@ -2144,10 +2157,12 @@ app_server <- function(input, output, session) {
       in_shiny = TRUE,
       filename = NULL
     )
+    # note this component of report is ready
+    download_ready_for_report_header_and_tables(TRUE)
 
-    ## return generated HTML
+    ## return generated HTML of logo/header plus tables of results overall
     full_page
-    # footer is added later in UI, in this case
+    # Map, plot, and footer are added later, in UI, in this case
   })
   # end of comm_report_html sent to UI
   #############################################################################  #
@@ -2230,7 +2245,13 @@ app_server <- function(input, output, session) {
       }
     }
   }) # end of report_map
-  ############################################ #
+
+  observe({
+    req(report_map())
+    # note this component of report is ready (although renderLeaflet() and leafletProxy() might take time?)
+    download_ready_for_report_map(TRUE)
+  })
+  ############## #
   ### output$quick_view_map of report_map() html ### #
 
   output$quick_view_map <- leaflet::renderLeaflet({
@@ -2394,7 +2415,11 @@ app_server <- function(input, output, session) {
     } # box
     ################## #
   })
-
+  observe({
+    req(v1_summary_plot())
+    # note this component of report is ready (although renderPlot() might take time?)
+    download_ready_for_report_plot(TRUE)
+  })
   ## output: show box/barplot of indicator ratios in html Summary Report #
   output$view1_summary_plot <- renderPlot({
     v1_summary_plot()
@@ -2414,16 +2439,35 @@ app_server <- function(input, output, session) {
       })
     }
   })
+
+  ############################################ #
+  # wait until all components of report are ready for download
+  # before enabling download button
+  observe({
+    if (
+      download_ready_for_report_header_and_tables() &&
+      download_ready_for_report_map() &&
+      download_ready_for_report_plot()
+      # && download_ready_for_report_footer_version_date() # quick, assume ready
+    ) {
+      shinyjs::enable(id = 'download_report_multisite')
+    }
+  })
+  ####################################################### #
+
+
   #############################################################################  #
   ## * FOOTER ####
   ############################################ #
-  output$report_version_date <- renderUI({
+  output$report_footer_version_date <- renderUI({
     # message(paste0("shinytestmode = ", getOption("shiny.testmode")))
     generate_report_footer(
       footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL # NULL means use defaults
     )
   })
   #############################################################################  #
+
+
   if (isTRUE(getOption("shiny.testmode"))) {
     htmlwidgets::setWidgetIdSeed(12345) # ensures consistent element IDs across runs
     set.seed(12345)
@@ -2436,12 +2480,9 @@ app_server <- function(input, output, session) {
   ##############################################  #
   # REPORT Overall - for DOWNLOAD ####
 
-
   ### ejam2report() in Overall downloadHandler() ####
 
-  # report_fname <- reactiveVal() # never used now?
-
-  output$community_download_all <- downloadHandler(
+  output$download_report_multisite <- downloadHandler(
 
     filename = function() {
       create_filename(
@@ -2480,6 +2521,8 @@ app_server <- function(input, output, session) {
         logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
         logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
       )
+
+
     }
   )
   #############################################################################  #
@@ -2493,9 +2536,9 @@ app_server <- function(input, output, session) {
   ### ejam2report() in 1-site downloadHandler() ####
   # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
 
-  # consider using API here to generate single-site reports?  ***
+  # Default is to use API here to get single-site reports, not render them here  ***
 
-  output$community_download_individual <- downloadHandler(
+  output$download_report_single_site <- downloadHandler(
 
     filename = function() {
       location_suffix <- if (!is.null(selected_location_name())) {
@@ -2578,7 +2621,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           title = "Download Ready",
           "Your report is ready. Click the button below to download.",
           footer = tagList(
-            downloadButton("community_download_individual", "Download Report"),
+            downloadButton("download_report_single_site", "Download Report"),
             modalButton("Close")
           ),
           easyClose = TRUE,
@@ -2592,7 +2635,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
   output$interactive_table <- DT::renderDT(server = TRUE, expr = {
     req(data_processed())
     # This also creates the UI buttons for a 1-site report in each row
-    create_interactive_table(out = data_processed(),
+    x = create_interactive_table(out = data_processed(),
 
                              # reports param here controls which URL/report columns to show in this table
                              #  (among those already created in data_processed() via ejamit() etc.)
@@ -2604,6 +2647,9 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
                              columns_used = input$bysite_webtable_colnames
                              ## if NULL, uses all available from data_processed()
     )
+    # enable download button only after DT::renderDT
+    shinyjs::enable(id = 'download_results_spreadsheet')
+    x
   })
   #############################################################################  #
   ### advanced tab UI for picking columns to show in table of sites  ####
@@ -2632,7 +2678,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
   # *** CONSIDER USING FUNCTION THAT CAN DO THIS AT ?table_xls_from_ejam() or ejam2excel()
 
-  output$download_results_table <- downloadHandler(
+  output$download_results_spreadsheet <- downloadHandler(
     filename = function() {
       create_filename(file_desc = 'results table',
                       title =  sanitized_analysis_title(),
@@ -2919,7 +2965,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
     #############################################################################  #
     ## *downloadHandler() ####
 
-    output$rg_download <- downloadHandler(
+    output$download_report_long <- downloadHandler(
       filename = function() {
         create_filename(file_desc = 'full report',
                         title = sanitized_analysis_title(),

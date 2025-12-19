@@ -441,12 +441,12 @@ main_shinytest <- function(test_category) {
     app$wait_for_idle(timeout = 20000)
 
     # the main purpose of this download is to get the underlying dataframe
-    # output_df, from the community_download function in app_server.R
+    # output_df, from the report download in app_server.R
     # this is because the actual downloaded report is large (>5MB)
     # so, instead, the downloaded file will be saved to the tempdir()
-    # and within that community_download function, we call exportTestvalues() to save output_df
-    app$get_download("community_download_all")
-    customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("community_download_all")) # this should grab just the underlying df behind the export
+    # and within that download code, we call exportTestvalues() to save output_df
+    app$get_download("download_report_multisite")
+    customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
 
     shinytestLogMessage("going to details tab")
 
@@ -461,12 +461,12 @@ main_shinytest <- function(test_category) {
 
     shinytestLogMessage("downloading results table from details tab")
     app$wait_for_idle(timeout = 50000)
-    # app$expect_download("download_results_table")
+    # app$expect_download("download_results_spreadsheet")
 
-    # this downloads the xlsx report, based on the download_results_table output in app_server.R
+    # this downloads the xlsx report, based on the download_results_spreadsheet output in app_server.R
     # since shinytest2 can't compare binary files, this custom download creates a hashed version
     # and saves the hash to be compared in future test runs
-    custom_binary_download("download_results_table") # this should download the results_table xlsx file
+    custom_binary_download("download_results_spreadsheet") # this should download the results_table xlsx file
     # save_log("EJAM_app_test_log_pre_results_download.txt")
 
     # DETAILS > PLOT AVERAGE SCORES
