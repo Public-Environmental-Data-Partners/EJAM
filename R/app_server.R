@@ -630,8 +630,7 @@ app_server <- function(input, output, session) {
         shiny::validate(errmsg)
 
       } else {
-
-        cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
+        if (input$testing) {cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")}
         ## if column names are found in lat/long alias comparison, process
         if (any(tolower(colnames(sitepoints)) %in% lat_alias) & any(tolower(colnames(sitepoints)) %in% lon_alias)) {
           sitepoints[, ejam_uniq_id := .I]
@@ -672,7 +671,7 @@ app_server <- function(input, output, session) {
     ## if acceptable file type, read in; if not, send warning text
     read_frs <- as.data.table(read_csv_or_xl(fname = input_file_path))
     # returns a data.frame
-    cat("ROW COUNT IN FILE THAT SHOULD provide FRS REGISTRY_ID: ", NROW(read_frs), "\n")
+    if (input$testing) {cat("ROW COUNT IN FILE THAT SHOULD provide FRS REGISTRY_ID: ", NROW(read_frs), "\n")}
 
     if (frs_is_valid(read_frs)) {
 
