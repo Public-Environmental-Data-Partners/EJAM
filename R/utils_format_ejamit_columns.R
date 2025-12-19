@@ -1,7 +1,7 @@
 #' Format ejamit results for use in tables, charts, etc.
 #'
 #' Applies rounding, sigfig, and percentage info to display columns of ejamit using map_headernames
-#'
+#' @seealso Note: *** overlaps with/could replace with [table_signif_round_x100()]
 #' @param df table in [data.table](https://r-datatable.com) format of [ejamit()] results,
 #' @param nms, name(s) of columns referring to EJAM indicators, such as "Demog.Index'
 #' @return a named vector with formatted values, corresponding to valid column names provided

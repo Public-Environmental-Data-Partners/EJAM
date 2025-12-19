@@ -2127,45 +2127,36 @@ app_server <- function(input, output, session) {
     req(data_processed())
 
     ## *** consider replacing this with ejam2report(),
-    ## but doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
+    ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
 
+### now using report_residents_within_xyz_from_ejamit() not report_residents_within_xyz()
 
-    rad <- data_processed()$results_overall$radius.miles # input radius can be changed by user and would alter the report text but should just show what was run not what slider currently says
-    nsites <- NROW(data_processed()$results_bysite[data_processed()$results_bysite$valid == T, ])
+    residents_within_xyz <- report_residents_within_xyz_from_ejamit(
+      ejamitout = data_processed() ## this function uses the whole list not just ejamout1 to create the header
+    )
     popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
 
-    sitetype <- tolower(submitted_upload_method()) #
-
-    area_in_square_miles <- data_processed()$results_overall$area_sqmi
-
-    residents_within_xyz <- report_residents_within_xyz(
-      sitetype = sitetype,
-      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
-      nsites = nsites,
-      area_in_square_miles = area_in_square_miles
-      # sitenumber not relevant for overall report
-      # ejam_uniq_id not relevant for overall report
-    )
     pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
 
-    full_page <- build_community_report(in_shiny = TRUE,
+    full_page <- build_community_report(
 
-                                        output_df = data_processed()$results_overall,
-                                        analysis_title =  sanitized_analysis_title(),
-                                        totalpop = popstr,
-                                        locationstr = residents_within_xyz,
-                                        include_ejindexes = isTRUE(as.logical(input$include_ejindexes)),
-                                        show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
-                                        extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
-                                        extratable_title = input$extratable_title, # above the table, not in the upper left cell
-                                        extratable_title_top_row = input$extratable_title_top_row,
-                                        extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-                                        extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      logo_path      = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
+      logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+      report_title   = EJAM:::global_or_param("report_title_multisite"),
+      analysis_title = sanitized_analysis_title(),
+      locationstr    = residents_within_xyz,
+      totalpop       = popstr,
 
-                                        filename = NULL,
-                                        report_title = EJAM:::global_or_param("report_title"),
-                                        logo_path = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
-                                        logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+      output_df      = data_processed()$results_overall,
+      include_ejindexes                = isTRUE(as.logical(input$include_ejindexes)),
+      show_ratios_in_report            = isTRUE(as.logical(input$show_ratios_in_report)),
+      extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
+      extratable_title                 = input$extratable_title, # above the table, not in the upper left cell
+      extratable_title_top_row         = input$extratable_title_top_row,
+      extratable_list_of_sections      = EJAM:::global_or_param("default_extratable_list_of_sections"),
+      extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      in_shiny = TRUE,
+      filename = NULL
     )
     # note this component of report is ready
     download_ready_for_report_header_and_tables(TRUE)
@@ -2464,6 +2455,20 @@ app_server <- function(input, output, session) {
     }
   })
   ####################################################### #
+
+
+  #############################################################################  #
+  ## * FOOTER ####
+  ############################################ #
+  output$report_footer_version_date <- renderUI({
+    # message(paste0("shinytestmode = ", getOption("shiny.testmode")))
+    generate_report_footer(
+      footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL # NULL means use defaults
+    )
+  })
+  #############################################################################  #
+
+
   if (isTRUE(getOption("shiny.testmode"))) {
     htmlwidgets::setWidgetIdSeed(12345) # ensures consistent element IDs across runs
     set.seed(12345)
@@ -2673,17 +2678,6 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
   # SPREADSHEET downloadHandler() ####
 
   # *** CONSIDER USING FUNCTION THAT CAN DO THIS AT ?table_xls_from_ejam() or ejam2excel()
-
-  output$report_footer_version_date <- renderUI({
-    message(paste0("shinytestmode = ", getOption("shiny.testmode")))
-    p(style = "margin-bottom: 0",
-      paste("Version", EJAM:::global_or_param("app_version"),
-            "| Report created on",
-            ifelse(
-              isTRUE(getOption("shiny.testmode")),
-              "[SHINYTEST DATE]", # so the snapshot of the report is consistent, not diff date each time tested
-              format(Sys.Date(), '%B %d, %Y'))))
-  })
 
   output$download_results_spreadsheet <- downloadHandler(
     filename = function() {

@@ -15,7 +15,12 @@ report_residents_within_xyz(
   ejam_uniq_id = NULL,
   sitetype = c(NA, "latlon", "fips", "shp", "frs", "epa_program_up", "echo", "naics",
     "sic", "mact", "epa_program_sel")[1],
-  sitetype_nullna = " place"
+  sitetype_nullna = " place",
+  linefeed = "<br>",
+  addlatlon = TRUE,
+  lat = NULL,
+  lon = NULL,
+  show_fips_name = FALSE
 )
 }
 \arguments{
@@ -47,10 +52,32 @@ works better than ending with "... facility" since that would print as "facility
 
 \item{sitetype_nullna}{optional, to use if sitetype is NULL --
 should be a singular word preceded by a space, like " location"}
+
+\item{linefeed}{optional, to use \code{"\\n"} or \code{". "} instead of default \code{"<br>"}, for example}
+
+\item{addlatlon}{optional, defines whether coordinates are noted in header for latlon sitetype}
+
+\item{show_fips_name}{optional, if it was a FIPS-based analysis, this defines
+whether to also show name of FIPS Census unit (e.g., name of city or county).
+Normally this is already in the analysis title, so not needed in this additional part of the report header.}
 }
 \description{
 Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
 Help app_server create locationstr for \code{\link[=build_community_report]{build_community_report()}}
+}
+\examples{
+ out <- testoutput_ejamit_100pts_1miles
+ x <- EJAM:::report_residents_within_xyz(
+   sitetype = out$sitetype,
+   radius = out$results_overall$radius.miles,
+   nsites = NROW(out$results_bysite[out$results_bysite$valid == T, ]),
+   area_in_square_miles = out$results_overall$area_sqmi,
+   # sitenumber = 6,  # only relevant for 1-site report
+   # ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id], # only relevant for 1-site report
+   linefeed = ". ",
+   lat = out$results_bysite$lat, lon = out$results_bysite$lon
+ )
+
 }
 \seealso{
 \code{\link[=report_xmilesof]{report_xmilesof()}} \code{\link[=buffer_desc_from_sitetype]{buffer_desc_from_sitetype()}}

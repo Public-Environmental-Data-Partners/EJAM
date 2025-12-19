@@ -55,7 +55,7 @@ prompts RStudio user interactively asking where to save the downloaded file}
 
 \item{buffer_desc}{description of location to use in labels, like "Selected Locations"}
 
-\item{radius_or_buffer_description}{optional text phrase describing places analyzed}
+\item{radius_or_buffer_description}{optional text phrase describing places analyzed, like in report headers}
 
 \item{reports}{info about which columns to treat as URLs that should be hyperlinks -
 see \code{\link[=url_columns_bysite]{url_columns_bysite()}}}
