@@ -7,13 +7,13 @@
 ejam2report(
   ejamitout = testoutput_ejamit_10pts_1miles,
   sitenumber = NULL,
-  analysis_title = "Summary of Analysis",
+  logo_path = EJAM:::global_or_param("report_logo"),
+  logo_html = NULL,
+  report_title = NULL,
+  analysis_title = NULL,
+  addlatlon = TRUE,
   submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
   shp = NULL,
-  return_html = FALSE,
-  fileextension = c("html", "pdf")[1],
-  filename = NULL,
-  launch_browser = TRUE,
   show_ratios_in_report = TRUE,
   extratable_show_ratios_in_report = TRUE,
   extratable_title = "",
@@ -30,34 +30,45 @@ ejam2report(
     Climate = names_climate, `Critical Services` = names_criticalservice, Other =
     names_d_other_count),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
-  report_title = NULL,
-  logo_path = EJAM:::global_or_param("report_logo"),
-  logo_html = NULL
+  footer_version_number = NULL,
+  footer_date = NULL,
+  footer_text = NULL,
+  footer_html = NULL,
+  fileextension = c("html", "pdf")[1],
+  filename = NULL,
+  return_html = FALSE,
+  launch_browser = TRUE
 )
 }
 \arguments{
 \item{ejamitout}{output as from \code{\link[=ejamit]{ejamit()}}, list with a table in \href{https://r-datatable.com}{data.table} format called \code{results_bysite}
 if sitenumber parameter is used, or a table in \href{https://r-datatable.com}{data.table} format called \code{results_overall} otherwise}
 
-\item{sitenumber}{If a number is provided, the report is about
-\code{ejamitout$results_bysite[sitenumber, ]} and if no number is provided (param is NULL or "")
-then the report is about \code{ejamitout$results_overall}}
+\item{sitenumber}{If a valid number is provided, the report is a "1-site" report, about
+\code{ejamitout$results_bysite[sitenumber, ]}. If no valid number is provided (e.g., param is omitted, 0, NULL, "", etc.)
+then the report is a "Multisite" report, about \code{ejamitout$results_overall}.
+But note that it is treated / titled like a 1-site report if only
+one site was analyzed (or only one had valid results).}
 
-\item{analysis_title}{optional title of analysis}
+\item{logo_path}{optional relative path to a logo for the upper right of the overall header.
+Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in \code{\link[=ejamapp]{ejamapp()}}}
+
+\item{logo_html}{optional HTML for img of logo for the upper right of the overall header.
+If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
+
+\item{report_title}{optional generic name of this type of report, to be shown at top,
+like "EJSCREEN Multisite Report" or "EJSCREEN Community Report".
+Default is EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+depending on number of sites analyzed and the sitenumber parameter.}
+
+\item{analysis_title}{optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")}
+
+\item{addlatlon}{optional, whether to include lat,lon coordinates in header (for latlon sitetype)}
 
 \item{submitted_upload_method}{something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)}
 
 \item{shp}{provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 they are not in ejamitout}
-
-\item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
-
-\item{fileextension}{html or .html or pdf or .pdf (assuming pdf option has been implemented).
-Creating PDF output from R Markdown requires that LaTeX be installed.}
-
-\item{filename}{optional path and name for report file, used by web app}
-
-\item{launch_browser}{set TRUE to have it launch browser and show report.}
 
 \item{show_ratios_in_report}{logical, whether to add columns with ratios to US and State overall values, in main table of envt/demog. info.}
 
@@ -77,13 +88,16 @@ to show in that section, in extra table of demog. subgroups, etc.}
 leave out rows in table where raw value is NA,
 as with many of names_d_language, in extra table of demog. subgroups, etc.}
 
-\item{report_title}{optional generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}
+\item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}}
 
-\item{logo_path}{optional relative path to a logo for the upper right of the overall header.
-Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp()}
+\item{fileextension}{html or .html or pdf or .pdf (assuming pdf option has been implemented).
+Creating PDF output from R Markdown requires that LaTeX be installed.}
 
-\item{logo_html}{optional HTML for img of logo for the upper right of the overall header.
-If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
+\item{filename}{optional path and name for report file, used by web app}
+
+\item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
+
+\item{launch_browser}{set TRUE to have it launch browser and show report.}
 }
 \value{
 URL of temp file or object depending on return_html,

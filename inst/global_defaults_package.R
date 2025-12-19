@@ -42,9 +42,9 @@ global_defaults_package$app_title = as.vector(desc::desc_get("Title", file = sys
 # REPORT TITLE ####
 
 # report_title is used in header of summary /community report page.
-# "Summary Report"  or  "EJAM Multisite Report" is not right in case it is a single site (or barplots version via build_barplot_report.R)
 
-global_defaults_package$report_title = "EJAM Summary Report"
+global_defaults_package$report_title_multisite = "EJSCREEN Multisite Summary"
+global_defaults_package$report_title           = "EJSCREEN Community Report"
 
 ############################### #
 
@@ -100,6 +100,8 @@ report_logo <- system.file('report/community_report/ejamhex4.png', package = "EJ
 
 global_defaults_package <- c(
   global_defaults_package,
+
+  default_standard_analysis_title = 'Summary of Analysis', # Default title to show on each short report
 
   report_logo = report_logo,
   report_logo_file = basename(report_logo),

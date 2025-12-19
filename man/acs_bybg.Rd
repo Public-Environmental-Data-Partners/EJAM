@@ -32,7 +32,8 @@ acs_bybg(
 
 EJSCREEN-relevant key tables are listed in the details section here.}
 
-\item{year}{e.g., 2022, 2023, or 2024}
+\item{year}{optional, e.g., 2024 means ACS5 data covering 2020-2024.
+Tries to use the most recent available if not specified.}
 
 \item{cache_table}{see \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}}}
 
@@ -58,7 +59,9 @@ EJSCREEN-relevant key tables are listed in the details section here.}
 
 \item{show_call}{see get_acs from tidycensus package}
 
-\item{geography}{"block group" (note this needs the space between words)}
+\item{geography}{"block group"
+(but it also will recognize you meant "block group" or "tract"
+if you omit the space or capitalize by accident)}
 
 \item{dropname}{whether to drop the column called NAME}
 
@@ -159,7 +162,7 @@ ejscreen_tables <-  mytables$table # same as ejscreentables
 
 myvars <- myacsinfo$name #
 
-if ("want to run example that takes a few minutes" == "yes") {
+if ("want to run example that takes >15 minutes" == "yes") {
   # VERY SLOWLY download data for all these tables
   # in ALL STATES and DC and PR but not Island Areas
   mystates <- stateinfo2[stateinfo2$is.usa.plus.pr, ]$ST

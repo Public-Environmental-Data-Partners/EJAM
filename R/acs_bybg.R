@@ -51,7 +51,8 @@
 #'
 #'   EJSCREEN-relevant key tables are listed in the details section here.
 #'
-#' @param year e.g., 2022, 2023, or 2024
+#' @param year optional, e.g., 2024 means ACS5 data covering 2020-2024.
+#'   Tries to use the most recent available if not specified.
 #' @param cache_table  see [tidycensus::get_acs()]
 #' @param output   see get_acs from tidycensus package
 #' @param state Default is 2-character abbreviations, vector of all US States, DC, and PR.
@@ -64,7 +65,9 @@
 #' @param moe_level   see get_acs from tidycensus package
 #' @param survey   see get_acs from tidycensus package
 #' @param show_call   see get_acs from tidycensus package
-#' @param geography "block group" (note this needs the space between words)
+#' @param geography "block group"
+#'   (but it also will recognize you meant "block group" or "tract"
+#'    if you omit the space or capitalize by accident)
 #' @param dropname whether to drop the column called NAME
 #' @param ...   see get_acs from tidycensus package
 #'
@@ -126,7 +129,7 @@
 #'
 #' myvars <- myacsinfo$name #
 #'
-#' if ("want to run example that takes a few minutes" == "yes") {
+#' if ("want to run example that takes >15 minutes" == "yes") {
 #'   # VERY SLOWLY download data for all these tables
 #'   # in ALL STATES and DC and PR but not Island Areas
 #'   mystates <- stateinfo2[stateinfo2$is.usa.plus.pr, ]$ST
@@ -170,11 +173,29 @@ acs_bybg <- function(
     ...
 )  {
 
+  stopifnot(length(geography) == 1)
+  if (tolower(geography) %in% c("blockgroup", "blockgroups", "block groups")) {geography <- "block group"}
+  if (tolower(geography) %in% c("tract", "tracts")) {geography <- "tract"}
   if (missing(year) || is.null(year)) {
     year <- acsendyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
                        guess_census_has_published = TRUE)
+    yr_was_inferred = TRUE
+  } else {
+    yr_was_inferred = FALSE
   }
   year <- as.numeric(year)
+  default_available = formals(tidycensus::get_acs)$year
+  if (year > default_available) {
+    yr_source = ifelse(yr_was_inferred, "assumed/guessed to be available", "requested")
+    msg = paste0("Data for the year ", year, " does not seem to be supported yet by tidycensus package, since the default year in tidycensus::get_acs() is only ", default_available, " which is not as recent as the ", year, " data that was ", yr_source, ".")
+    if (!yr_was_inferred) {
+      stop(msg)
+    } else {
+      warning(msg)
+      message("Using data for the year ", default_available, " instead of the guessed year of ", year, ".")
+      year <- default_available
+    }
+  }
 
   # NEED API KEY POSSIBLY, FOR LARGE QUERIES AT LEAST
 
@@ -265,3 +286,25 @@ acs_bybg <- function(
 # save(pctfemale_18_to_49, file = "pctfemale_18_to_49.rda")
 ##################################################################### #
 
+
+# #### COMPARE acs_bybg() TO USING
+if (FALSE) {
+
+
+  options( timeout= 60*3)
+
+    x = list()
+    for (i in 1:length(ejscreentables)) {
+      print(system.time({
+      x[[i]] =  try( ACSdownload::get_acs_new(tables = ejscreentables[i], yr = 2022, return_list_not_merged = FALSE))
+      }))
+      assign(paste0("x",i), x[[i]])
+      assign('y', x[[i]])
+      save(y, file = paste0('~/Downloads/', paste0("x",i),'.rda'))
+      cat("did ", i, '\n')
+    }
+
+
+
+
+}

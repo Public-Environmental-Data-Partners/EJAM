@@ -36,7 +36,7 @@ EPA is no longer actively developing EJAM as of mid-2025, but had previously con
 
 ### API
 
-To provide further flexibility and help avoid duplication of effort, an EJAM API is needed. This would allow links within the EJAM tables and map popups to link to a report on each site, for example, which was available via the EJSCREEN API until it was taken offline. An API also could provide access to services such as fast identification of nearby blocks or other points, summarization (aggregation over blocks or blockgroups), or data. See draft work in the plumber folder of the EJAM source package.
+In 2025, the original EJSCREEN API was taken offline by EPA. A non-EPA effort replaced it with a new API ("EJAM API") that provides some of the original features. The new API as of 2025 allowed EJSCREEN to provide a Community Report on a single location, and allows the multisite tool/EJAM to show links within the EJAM tables and map popups to link to a report on each site, for example. Some parallel work on an API was also drafted in the plumber folder of the EJAM source package. A future, expanded API could provide better handling of polygons (ability to request a report on a large/complex polygon), ability to obtain a multisite report not just a 1-site report, reports in pdf format not just html, and access to services such as fast identification of nearby blocks or other points, summarization (aggregation over blocks or blockgroups), or data.
 
 ### Counts of nearby points of interest
 

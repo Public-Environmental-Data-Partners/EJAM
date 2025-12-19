@@ -32,8 +32,10 @@ popshare_at_top_x_pct = function(pop, x = 0.20, astext = FALSE, dig = 0) {
   if (astext) {
     return(msg)
   } else {
+    if (interactive() && !shiny::isRunning()) {
     cat(msg)
     cat("\n\n")
+    }
     return(share)
   }
 }
@@ -76,8 +78,10 @@ popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
   if (astext) {
     return(msg)
   } else {
+    if (interactive() && !shiny::isRunning()) {
     cat(msg)
     cat("\n\n")
+    }
     return(share)
   }
 }
@@ -183,9 +187,9 @@ popshare_p_lives_at_what_pct <- function(pop, p, astext = FALSE, dig = 0, atleas
   msg_exact  <- paste0("The most-populated ", sitesharetext, " of the ", length(pop)," places can account for exactly ",
                        pct_of_pop_for_siteshare_text,
                        " of the total population of all sites as a whole.")
-
-  cat(paste0( msg, "\n", msg_exact), "\n\n")
-
+  if (interactive() && !shiny::isRunning()) {
+    cat(paste0( msg, "\n", msg_exact), "\n\n")
+    }
   if (astext) {
     if (atleast_not_exact) {
       return(msg)

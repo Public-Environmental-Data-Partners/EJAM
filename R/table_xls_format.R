@@ -267,7 +267,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
       # None provided so try to create one anyway?
       # example: plot_barplot_ratios( unlist( testoutput_ejamit_1000pts_1miles$results_overall[ , c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ]))
       if (all(c(names_d_ratio_to_avg , names_d_subgroups_ratio_to_avg) %in% names(overall))) {
-        # cat('plotting ratios to avg by group\n')
+        if (testing) {cat('plotting ratios to avg by group\n')}
         if (data.table::is.data.table(overall)) {
           summary_plot <- try(
             plot_barplot_ratios(unlist( overall[ , c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ]),
@@ -296,7 +296,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
       }
     } else {
       # add summary_plot ggplot object  to 'plot' sheet of Excel download
-      cat('adding summary_plot (ggplot output) that was provided\n')
+      if (testing) {cat('adding summary_plot (ggplot output) that was provided\n')}
       mytempdir <- tempdir() # did not work on server?
       openxlsx::addWorksheet(wb, sheetName = "plot_ratios",  gridLines = FALSE)
       ggplot2::ggsave(filename = paste0(mytempdir, '/', 'summary_plot.png'), plot = summary_plot,
@@ -309,7 +309,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
   ### *plot_distance_by_group ####
   if (ok2plot) {
     if (!is.null(bybg) && plot_distance_by_group) {
-      cat('plotting mean distance by group\n')
+      if (testing) {cat('plotting mean distance by group\n')}
       fname <- try(
         suppressWarnings(
           plot_distance_mean_by_group(bybg,
@@ -341,7 +341,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
   if (mapadd) {
     mytempdir <- tempdir()
     mypath <- file.path(mytempdir, "temp.html")
-    cat("drawing map\n")
+    if (testing) {cat("drawing map\n")}
     ## add map from Shiny app if applicable
     if (!is.null(report_map)) {
       htmlwidgets::saveWidget(report_map, mypath, selfcontained = FALSE)
@@ -430,7 +430,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
     'Number of Locations Analyzed' = NROW(eachsite),
     'Locations analyzed' = buffer_desc,
     "Distance in miles" = radius_or_buffer_in_miles,
-    "Distance type" = radius_or_buffer_description,
+    "Distance type" = radius_or_buffer_description, ## or more info, as from report_residents_within_xyz_from_ejamit()
     "Population at x% of sites" =  popshare_p_lives_at_what_pct(eachsite$pop, p = 0.50, astext = TRUE),
     "Population at N sites" = popshare_at_top_n(eachsite$pop, c(1, 5, 10), astext = TRUE),
     "Note on site-specific estimates" = ejscreen_ejam_caveat,
@@ -945,7 +945,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
           openxlsx::saveWorkbook(wb, file = saveas, overwrite = TRUE),
           silent = TRUE
         )
-        cat('Saving as ', saveas, '\n')
+        if (testing) {cat('Saving as ', saveas, '\n')}
       } else {
         warning(saveas, ' does not appear to be a path and filename ending in .xls or .xlsx')
       }
