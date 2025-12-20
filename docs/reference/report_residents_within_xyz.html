@@ -21,6 +21,9 @@ Help app_server create locationstr for build_community_report()"><meta property=
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -79,7 +82,11 @@ Help app_server create locationstr for <code><a href="build_community_report.htm
 <span>  ejam_uniq_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sitetype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="st">"latlon"</span>, <span class="st">"fips"</span>, <span class="st">"shp"</span>, <span class="st">"frs"</span>, <span class="st">"epa_program_up"</span>, <span class="st">"echo"</span>, <span class="st">"naics"</span>,</span>
 <span>    <span class="st">"sic"</span>, <span class="st">"mact"</span>, <span class="st">"epa_program_sel"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>  sitetype_nullna <span class="op">=</span> <span class="st">" place"</span></span>
+<span>  sitetype_nullna <span class="op">=</span> <span class="st">" place"</span>,</span>
+<span>  linefeed <span class="op">=</span> <span class="st">"&lt;br&gt;"</span>,</span>
+<span>  addlatlon <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  lat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lon <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -133,12 +140,35 @@ works better than ending with "... facility" since that would print as "facility
 <dd><p>optional, to use if sitetype is NULL –
 should be a singular word preceded by a space, like " location"</p></dd>
 
+
+<dt id="arg-linefeed">linefeed<a class="anchor" aria-label="anchor" href="#arg-linefeed"></a></dt>
+<dd><p>optional, to use <code>"\n"</code> or <code>". "</code> instead of default <code>"&lt;br&gt;"</code>, for example</p></dd>
+
+
+<dt id="arg-addlatlon">addlatlon<a class="anchor" aria-label="anchor" href="#arg-addlatlon"></a></dt>
+<dd><p>optional, defines whether coordinates are noted in header for latlon sitetype</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="report_xmilesof.html">report_xmilesof()</a></code> <code><a href="buffer_desc_from_sitetype.html">buffer_desc_from_sitetype()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_100pts_1miles</span></span>
+<span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">report_residents_within_xyz</span><span class="op">(</span></span>
+<span>   sitetype <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">sitetype</span>,</span>
+<span>   radius <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">$</span><span class="va">radius.miles</span>,</span>
+<span>   nsites <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NROW</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">valid</span> <span class="op">==</span> <span class="cn">T</span>, <span class="op">]</span><span class="op">)</span>,</span>
+<span>   area_in_square_miles <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">$</span><span class="va">area_sqmi</span>,</span>
+<span>   <span class="co"># sitenumber = 6,  # only relevant for 1-site report</span></span>
+<span>   <span class="co"># ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id], # only relevant for 1-site report</span></span>
+<span>   linefeed <span class="op">=</span> <span class="st">". "</span>,</span>
+<span>   lat <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">lat</span>, lon <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">lon</span></span>
+<span> <span class="op">)</span></span>
+<span></span></code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

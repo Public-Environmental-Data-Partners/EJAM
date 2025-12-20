@@ -19,6 +19,6 @@ text string, phrase to use in excel notes tab
 helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____
 }
 \seealso{
-\code{\link[=report_residents_within_xyz]{report_residents_within_xyz()}}
+\code{\link[=report_residents_within_xyz_from_ejamit]{report_residents_within_xyz_from_ejamit()}} and \code{\link[=report_residents_within_xyz]{report_residents_within_xyz()}}
 }
 \keyword{internal}

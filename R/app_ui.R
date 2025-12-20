@@ -44,6 +44,15 @@ app_ui <- function(request) {
 
       ## title, favicon, etc. ####
 
+      ## local user date/timezone ####
+      # JavaScript to detect timezone and send to Shiny
+      # allowing correct local date in report footer (in case the server is in some other time zone)
+      tags$script('
+            $(document).on("shiny:sessioninitialized", function(event) {
+            var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            Shiny.setInputValue("client_tz", tz);
+            });
+                      '),
       ############################################################# #
 
       # TABS:   ####
@@ -515,15 +524,9 @@ app_ui <- function(request) {
                                #includeCSS('inst/report/community_report/communityreport.css'),
                                #includeCSS('inst/report/community_report/main.css'),
 
-
-                               uiOutput('comm_report_html_by_template'),
-                               br(),
-
-
-
-                               # ############################## #
-                               # ###               > TABLES       ####
-                               # uiOutput('comm_report_html'),
+                               ############################## #
+                               ###               > HEADER AND TABLES       ####
+                               uiOutput('comm_report_html_by_template'),   # uiOutput('comm_report_html'),
                                # br(),
                                # ############################## #
                                # ###                > MAP    ####
@@ -545,18 +548,13 @@ app_ui <- function(request) {
                                # ),
                                # ############################## #
                                # ###              > FOOTER  (version, date)    ####
-                               # div(
-                               #   style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
-                               #   uiOutput("report_version_date")
-                               # ),
-
-
-
-                               br(),
+                               #
+                               # uiOutput("report_footer_version_date"),  # now via generate_report_footer() which wraps it in div
+                               # br(),
+                               ############################## #
+                               ###              > DOWNLOAD BUTTON    ####
                                tags$div(
-                                 shiny::downloadButton(
-                                   outputId = 'community_download_all',
-                                   label = 'Download Community Report', class = 'usa-button'), style = 'text-align: center;'
+                                 downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -596,7 +594,7 @@ app_ui <- function(request) {
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
-                                                              downloadButton('download_results_table', 'Download Results Table', class = 'usa-button')
+                                                              downloadButton('download_results_spreadsheet', label = 'Download Results Table', class = 'usa-button')
                                                        )
                                                      ),
                                                      br(), ## vertical space
@@ -727,9 +725,7 @@ app_ui <- function(request) {
                                             ),
                                             column(6,
                                                    ## output: button to download static report
-                                                   shiny::downloadButton(outputId = 'rg_download',
-                                                                         label = 'Download report',
-                                                                         class = 'usa-button')
+                                                   downloadButton('download_report_long', label = 'Download report', class = 'usa-button')
                                             )
                                           ), ######################################################### #
 

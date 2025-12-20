@@ -3,8 +3,18 @@
 - Bug fixes: 
   - Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in `fixcolnames()` and had been introduced 3 weeks earlier while a separate issue was being fixed.
   - Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended. 
-  - Other changes in preparation for next release.
-
+- Edited report footer, and allow custom report footer via `ejam2report()`
+- Revisions to Community Report and Multisite Report header and footer
+  - Report Title revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
+  - Analysis Title (on reports) revised also
+  - Report Footer revised (new params in ejam2report() now define footer in community report, via new generate_report_footer() helper)
+- Multisite report is now rendered as html file automatically as soon as results are ready (and if analysis title is changed afterwards),
+  so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as 
+  the server now does not have to re-render report for use in spreadsheet.
+- Multisite report and spreadsheet download buttons disabled until each is ready.
+- Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
+  might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
+- Other changes in preparation for next release
 
 # EJAM 2.32.6.003 (November 2025)
 

@@ -267,8 +267,8 @@ if (try_this_module_here) {
 #
 #       # actionButton(inputId = 'latlon_from_map_click_submit_button', label = 'Done selecting point', class = 'usa-button usa-button--outline'),
 #       ## use download buttons for speed and handling larger data
-#       # downloadButton('download_preview_data_csv', label = 'CSV',   class = 'usa-button'),
-#       # downloadButton('download_preview_data_xl',  label = 'Excel', class = 'usa-button'),
+#       # downloadButton('download_sites_before_analysis_csv', label = 'CSV',   class = 'usa-button'),
+#       # downloadButton('download_sites_before_analysis_xl',  label = 'Excel', class = 'usa-button'),
 #
 #       # verbatimTextOutput("test_textout"),
 #       br()

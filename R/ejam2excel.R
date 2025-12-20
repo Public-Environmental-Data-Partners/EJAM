@@ -20,9 +20,10 @@
 #' @param in.testing optional logical
 #' @param radius_or_buffer_in_miles optional radius in miles
 #' @param buffer_desc description of location to use in labels, like "Selected Locations"
-#' @param in.analysis_title optional title as character string
+#' @param in.analysis_title optional title as character string, used only in 'Notes' sheet
+#'   (and to create a default filename if fname not specified). Not used in the copy of the report.
 #' @param react.v1_summary_plot optional - a plot object
-#' @param radius_or_buffer_description optional text phrase describing places analyzed
+#' @param radius_or_buffer_description optional text phrase describing places analyzed, like in report headers
 #'
 #' @param reports info about which columns to treat as URLs that should be hyperlinks -
 #'   see [url_columns_bysite()]
@@ -56,29 +57,38 @@
 #' @export
 #'
 ejam2excel <- function(ejamitout,
+
                        fname = NULL, # full path and name, or just name of .xlsx file
                        save_now = TRUE,
                        overwrite = TRUE,
                        launchexcel = FALSE,
                        interactive_console = TRUE,
-                       ok2plot = TRUE,
                        in.testing = FALSE,
+
                        in.analysis_title =  "EJAM analysis",
-                       react.v1_summary_plot = NULL,
-                       radius_or_buffer_in_miles = NULL,  #  input$radius_now
-                       buffer_desc = NULL, # "Selected Locations",
-                       radius_or_buffer_description = 'Miles radius of circular buffer (or distance used if buffering around polygons)',
-                       # radius_or_buffer_description =   "Distance from each site (radius of each circular buffer around a point)",
-
-                       reports = EJAM:::global_or_param("default_reports"), # has hyperlink colnames and text to use
-
                        site_method = "",
 
+                       radius_or_buffer_in_miles = NULL,  #  input$radius_now
+                       buffer_desc = NULL, # "Selected Locations",
+                       radius_or_buffer_description = NULL, # e.g.,  'Miles radius of circular buffer (or distance used if buffering around polygons)',
+                       # radius_or_buffer_description =   "Distance from each site (radius of each circular buffer around a point)",
+
+                       # columns with URLs/links to 1-site reports, etc.
+                       reports = EJAM:::global_or_param("default_reports"), # defines which hyperlink colnames and text to use
+
+                       # barplot
+                       ok2plot = TRUE,
+                       react.v1_summary_plot = NULL,
+
+                       # map
                        mapadd = FALSE, # if report is added, map is redundant
                        report_map = NULL,
+                       # polygons
+                       shp = NULL,
+
+                       # html summary report to paste into a tab as static snapshot image
                        community_reportadd = TRUE,
                        community_html = NULL,
-                       shp = NULL,
                        ...
 ) {
 

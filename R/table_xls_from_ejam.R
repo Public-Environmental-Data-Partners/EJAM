@@ -7,7 +7,7 @@
 #' @param site_method string used in filename for saved report and to describe locations
 #'   site_method can be SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, or MACT
 #'
-#' @seealso [report_residents_within_xyz()]
+#' @seealso [report_residents_within_xyz_from_ejamit()] and [report_residents_within_xyz()]
 #'
 #' @returns text string, phrase to use in excel notes tab
 #'
@@ -101,7 +101,7 @@ table_xls_from_ejam <- function(ejamitout,
                                 react.v1_summary_plot = NULL,
                                 radius_or_buffer_in_miles = NULL,  #  input$radius_now
                                 buffer_desc = "Selected Locations",
-                                radius_or_buffer_description = NULL, # 'Miles radius of circular buffer (or distance used if buffering around polygons)',
+                                radius_or_buffer_description = NULL, # like header of reports, or # e.g., 'Miles radius of circular buffer (or distance used if buffering around polygons)',
                                 # radius_or_buffer_description =   "Distance from each site (radius of each circular buffer around a point)",
 
                                 # hyperlink_colnames = EJAM:::global_or_param("default_hyperlink_colnames"),
@@ -193,9 +193,12 @@ table_xls_from_ejam <- function(ejamitout,
 
   ## for the notes tab of spreadsheet
   if (missing(radius_or_buffer_description) || is.null(radius_or_buffer_description)) {
-    radius_or_buffer_description <- report_residents_within_xyz(radius = radius_or_buffer_in_miles, # gets rounded in this function (if it can be interpreted as a number)
-                                                                nsites = npts,
-                                                                sitetype = sitetype)
+
+    radius_or_buffer_description <- report_residents_within_xyz_from_ejamit(ejamitout = ejamitout, linefeed = ". ")
+
+    # radius_or_buffer_description <- report_residents_within_xyz(radius = radius_or_buffer_in_miles, # gets rounded in this function (if it can be interpreted as a number)
+    #                                                             nsites = npts,
+    #                                                             sitetype = sitetype)
   }
 
   # changed the way the filename path was generated

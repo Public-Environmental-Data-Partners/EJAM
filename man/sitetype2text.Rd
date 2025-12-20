@@ -4,7 +4,11 @@
 \alias{sitetype2text}
 \title{helper to convert sitetype code ("latlon") to text describing it (" specified point")}
 \usage{
-sitetype2text(sitetype = NULL, sitetype_nullna = " place")
+sitetype2text(
+  sitetype = NULL,
+  sitetype_nullna = " place",
+  census_unit_type = "Census unit"
+)
 }
 \arguments{
 \item{sitetype}{character string, like (if lowercase)

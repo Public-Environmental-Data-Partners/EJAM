@@ -28,6 +28,11 @@ home:
   sidebar:
     structure: [dev, citation, license, community]
 articles:
+- title: EJSCREEN Documentation
+  desc: EJSCREEN Indicators and Reports
+  navbar: EJSCREEN Indicators and Reports
+  contents:
+  - '`ejscreen`'
 - title: The EJAM Web App
   desc: Overview for EJAM Users
   navbar: Overview for EJAM Users
