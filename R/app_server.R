@@ -2090,11 +2090,19 @@ app_server <- function(input, output, session) {
   # ______ SEE RESULTS _________ ####
   #. ####
 
-  date_in_user_timezone <- reactive(
+  date_in_user_timezone <- reactive({
+    # default to LA timezone if client timezone  missing/bad
+    default_tz = "America/Los_Angeles"
+    client_tz <- input$client_tz
+    if (!is.null(client_tz) && nzchar(client_tz) && client_tz %in% OlsonNames()) {
+      tz <- client_tz
+    } else {
+      tz <- default_tz
+    }
     format(
-      lubridate::with_tz(Sys.time(), tzone = input$client_tz),
+      lubridate::with_tz(Sys.time(), tzone = tz),
       "%B %d, %Y")
-  )
+  })
   # #############################################################################  #
 
   # ______ SUMMARY RESULTS, results_overall _________ ####
@@ -2500,11 +2508,11 @@ app_server <- function(input, output, session) {
 
       filename <- create_filename(
         file_desc = 'community report',
-        title =  sanitized_analysis_title(),
+        title =  analysis_title,
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
       filename_fullpath <- file.path(tempdir(), filename)
 
@@ -2537,8 +2545,8 @@ app_server <- function(input, output, session) {
       )
     })
     if (input$testing) {
-    cat(paste0('in reactive creating report file, filename created as param is: \n"', filename, '"\n'))
-    cat(paste0('in reactive creating report file, report_path created by ejam2report() is: \n"', report_path, '"\n'))
+      cat(paste0('in reactive creating report file, filename created as param is: \n"', filename, '"\n'))
+      cat(paste0('in reactive creating report file, report_path created by ejam2report() is: \n"', report_path, '"\n'))
     }
     report_path
   })
@@ -2553,7 +2561,7 @@ app_server <- function(input, output, session) {
       basename(downloadable_file_report_multisite())
     },
     content = function(file) {
-      file.copy(from = downloadable_file_report_multisite(), to = file, overwrite = T)
+      file.copy(from = downloadable_file_report_multisite(), to = file, overwrite = TRUE)
     }
   )
   #############################################################################  #
@@ -2583,7 +2591,7 @@ app_server <- function(input, output, session) {
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
     },
     content = function(file) {
@@ -2612,13 +2620,13 @@ app_server <- function(input, output, session) {
 
         # Call ejam2report() with the sitenumber based on which site's button was clicked
         sitenumber <- as.numeric(gsub('button_','', cur_button()))
-cat("Clicked on site #", sitenumber, "for a 1-site report\n")
+        if (input$testing) {cat("Clicked on site #", sitenumber, "for a 1-site report\n")}
         # Get the name of the selected location
         location_name <- data_processed()$results_bysite[sitenumber, "statename"]
         selected_location_name(location_name)
 
         # Store a temporary file name/path in the reactive value
-        temp_file <- tempfile(fileext = ifelse(input$format1pager == 'pdf', '.pdf', '.html'))
+        temp_file <- tempfile(fileext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'))
         temp_file_path(temp_file)
 
         # if shapefile was used for analysis, provide it to ejam2report()
@@ -2630,7 +2638,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
         ejam2report(
 
-          fileextension = '.html',
+          fileextension = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'),
           filename = temp_file,
           ejamitout = data_processed(),
           sitenumber = sitenumber,
@@ -2644,7 +2652,9 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           extratable_title = input$extratable_title,
           extratable_title_top_row = input$extratable_title_top_row,
           extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for
+          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
+          logo_path =  EJAM:::global_or_param("report_logo"),
+          footer_date = date_in_user_timezone()
         )
 
         # modal pops up so user can trigger the download
@@ -2742,7 +2752,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
       ## ejam2report() ####
       # builds report to put in an excel tab
 
-      html_content <- isolate({
+      report_header_and_tables_html_file_path <- isolate({
 
         downloadable_file_report_multisite() # already was created and saved in tempfile here
 
@@ -2754,8 +2764,10 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
         ejamitout = data_processed(),
         fname = fname,
+        # PLOT
         ok2plot = input$ok2plot,
         react.v1_summary_plot = v1_summary_plot(),
+
         launchexcel = FALSE,
         radius_or_buffer_in_miles = sanitized_radius_now(),
         radius_or_buffer_description = NULL, # radius_or_buffer_description, # the function will figure it out
@@ -2769,8 +2781,10 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
         mapadd = FALSE, # redundant if getting report as a tab since report has map snapshot
         report_map = NULL,
+
+        # multisite report to be saved as snapshot in a tab
         community_reportadd = TRUE,
-        community_html = html_content,
+        community_html = report_header_and_tables_html_file_path,
 
         site_method = submitted_upload_method(),
         #show_ratios_in_excel = input$calculate_ratios,
