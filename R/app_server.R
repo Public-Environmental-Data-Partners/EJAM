@@ -2090,11 +2090,24 @@ app_server <- function(input, output, session) {
   # ______ SEE RESULTS _________ ####
   #. ####
 
+  date_in_user_timezone <- reactive({
+    # default to LA timezone if client timezone  missing/bad
+    default_tz = "America/Los_Angeles"
+    client_tz <- input$client_tz
+    if (!is.null(client_tz) && nzchar(client_tz) && client_tz %in% OlsonNames()) {
+      tz <- client_tz
+    } else {
+      tz <- default_tz
+    }
+    format(
+      lubridate::with_tz(Sys.time(), tzone = tz),
+      "%B %d, %Y")
+  })
   # #############################################################################  #
 
   # ______ SUMMARY RESULTS, results_overall _________ ####
   #. ####
-  # REPORT Overall - for BROWSER ####
+  # REPORT Overall/Multisite Summary - for BROWSER ####
 
   # *** The code here builds the html report shown in the shiny app but also see separate code used to download it.
 
@@ -2455,18 +2468,18 @@ app_server <- function(input, output, session) {
   })
   ####################################################### #
 
-
   #############################################################################  #
   ## * FOOTER ####
   ############################################ #
   output$report_footer_version_date <- renderUI({
     # message(paste0("shinytestmode = ", getOption("shiny.testmode")))
     generate_report_footer(
-      footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL # NULL means use defaults
+      footer_version_number = NULL,
+      footer_date = date_in_user_timezone(),
+      footer_text = NULL, footer_html = NULL # NULL means use defaults
     )
   })
   #############################################################################  #
-
 
   if (isTRUE(getOption("shiny.testmode"))) {
     htmlwidgets::setWidgetIdSeed(12345) # ensures consistent element IDs across runs
@@ -2477,40 +2490,45 @@ app_server <- function(input, output, session) {
   #. ####
   #############################################################################  #
 
-  ##############################################  #
-  # REPORT Overall - for DOWNLOAD ####
+  downloadable_file_report_multisite <- reactive({
 
-  ### ejam2report() in Overall downloadHandler() ####
+    req(data_processed())
 
-  output$download_report_multisite <- downloadHandler(
+    # As soon as new results become available as updated data_processed(),
+    # this reactive re-runs, using snapshot of data run at that time
+    # so rendering is triggered by new results immediately, not by a download button,
+    # so HTML file is ready sooner for user when they click download button.
+    # And isolate() is used to avoid re-rendering if uploaded data or upload method menu changes,
+    # so changing anything but the title after running the results
+    # will not re-render this report
 
-    filename = function() {
-      create_filename(
+    analysis_title <- sanitized_analysis_title()
+
+    isolate({
+
+      filename <- create_filename(
         file_desc = 'community report',
-        title =  sanitized_analysis_title(),
+        title =  analysis_title,
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
-    },
-    content = function(file) {
-
-      # report_fname(file) # never used now?
+      filename_fullpath <- file.path(tempdir(), filename)
 
       if (submitted_upload_method() == 'SHP') {
         shp_for_report <- data_uploaded()
       } else {
         shp_for_report <- NULL
       }
-      ejam2report(
+      report_path <- ejam2report(
         fileextension = '.html',
-        filename = file,
+        filename = filename_fullpath,
         ejamitout = data_processed(),
         return_html = FALSE,
         submitted_upload_method = submitted_upload_method(),
         shp = shp_for_report,
-        analysis_title =  sanitized_analysis_title(),
+        analysis_title =  analysis_title,
         launch_browser = FALSE,
         show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
         extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
@@ -2519,10 +2537,31 @@ app_server <- function(input, output, session) {
         extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
         extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
         logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
-        logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+        logo_html = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+        footer_version_number = NULL,
+        footer_date = date_in_user_timezone(),
+        footer_text = NULL,
+        footer_html = NULL # NULL means use defaults
       )
+    })
+    if (input$testing) {
+      cat(paste0('in reactive creating report file, filename created as param is: \n"', filename, '"\n'))
+      cat(paste0('in reactive creating report file, report_path created by ejam2report() is: \n"', report_path, '"\n'))
+    }
+    report_path
+  })
+  ##############################################  #
+  # REPORT Overall/Multisite Summary - for DOWNLOAD ####
 
+  ### ejam2report() in Overall downloadHandler() ####
 
+  output$download_report_multisite <- downloadHandler(
+
+    filename = function() {
+      basename(downloadable_file_report_multisite())
+    },
+    content = function(file) {
+      file.copy(from = downloadable_file_report_multisite(), to = file, overwrite = TRUE)
     }
   )
   #############################################################################  #
@@ -2552,7 +2591,7 @@ app_server <- function(input, output, session) {
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
     },
     content = function(file) {
@@ -2581,13 +2620,13 @@ app_server <- function(input, output, session) {
 
         # Call ejam2report() with the sitenumber based on which site's button was clicked
         sitenumber <- as.numeric(gsub('button_','', cur_button()))
-cat("Clicked on site #", sitenumber, "for a 1-site report\n")
+        if (input$testing) {cat("Clicked on site #", sitenumber, "for a 1-site report\n")}
         # Get the name of the selected location
         location_name <- data_processed()$results_bysite[sitenumber, "statename"]
         selected_location_name(location_name)
 
         # Store a temporary file name/path in the reactive value
-        temp_file <- tempfile(fileext = ifelse(input$format1pager == 'pdf', '.pdf', '.html'))
+        temp_file <- tempfile(fileext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'))
         temp_file_path(temp_file)
 
         # if shapefile was used for analysis, provide it to ejam2report()
@@ -2599,7 +2638,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
         ejam2report(
 
-          fileextension = '.html',
+          fileextension = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'),
           filename = temp_file,
           ejamitout = data_processed(),
           sitenumber = sitenumber,
@@ -2613,7 +2652,9 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           extratable_title = input$extratable_title,
           extratable_title_top_row = input$extratable_title_top_row,
           extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for
+          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
+          logo_path =  EJAM:::global_or_param("report_logo"),
+          footer_date = date_in_user_timezone()
         )
 
         # modal pops up so user can trigger the download
@@ -2621,7 +2662,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           title = "Download Ready",
           "Your report is ready. Click the button below to download.",
           footer = tagList(
-            downloadButton("download_report_single_site", "Download Report"),
+            downloadButton('download_report_single_site', label = 'Download Report'),
             modalButton("Close")
           ),
           easyClose = TRUE,
@@ -2711,37 +2752,10 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
       ## ejam2report() ####
       # builds report to put in an excel tab
 
-      html_content <- isolate({
+      report_header_and_tables_html_file_path <- isolate({
 
-        temp_file <- tempfile(fileext = '.html')
+        downloadable_file_report_multisite() # already was created and saved in tempfile here
 
-        if (submitted_upload_method() == 'SHP') {
-          shp_for_report <- data_uploaded()
-        } else {
-          shp_for_report <- NULL
-        }
-
-        # *** ejam2report() or this server code should be made to handle FIPS upload and FIPS dropdown
-        # & use obtained FIPS polygons + analysis results as shp
-        ## note the mapping code in server already does that, creating report_map()
-
-        ejam2report(
-
-          fileextension = '.html',
-          filename = temp_file,
-          ejamitout = data_processed(),
-          return_html = FALSE,
-          submitted_upload_method = submitted_upload_method(),
-          shp = shp_for_report,
-          analysis_title =  sanitized_analysis_title(),
-          launch_browser = FALSE,
-          show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
-          extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
-          extratable_title = input$extratable_title,
-          extratable_title_top_row = input$extratable_title_top_row,
-          extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for
-        )
       })
 
       ## ejam2excel() ####
@@ -2750,8 +2764,10 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
         ejamitout = data_processed(),
         fname = fname,
+        # PLOT
         ok2plot = input$ok2plot,
         react.v1_summary_plot = v1_summary_plot(),
+
         launchexcel = FALSE,
         radius_or_buffer_in_miles = sanitized_radius_now(),
         radius_or_buffer_description = NULL, # radius_or_buffer_description, # the function will figure it out
@@ -2765,8 +2781,10 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
         mapadd = FALSE, # redundant if getting report as a tab since report has map snapshot
         report_map = NULL,
+
+        # multisite report to be saved as snapshot in a tab
         community_reportadd = TRUE,
-        community_html = html_content,
+        community_html = report_header_and_tables_html_file_path,
 
         site_method = submitted_upload_method(),
         #show_ratios_in_excel = input$calculate_ratios,

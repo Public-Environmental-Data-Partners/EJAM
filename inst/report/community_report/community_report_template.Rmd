@@ -35,6 +35,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ## like, 
 ## params:
 ##    rundate: !r  lubridate::ymd_hms("2015-01-01 12:30:00")
+## client side ideally should provide footer_date to ensure user's timezone is used to determine today's date
 ```
 
 
@@ -84,7 +85,7 @@ params$summary_plot
 #
 EJAM:::generate_report_footer(
   footer_version_number = params$footer_version_number,
-  footer_date = params$footer_date,
+  footer_date = params$footer_date, # should provide footer_date to ensure user's timezone is used to determine today's date
   footer_text = params$footer_text,
   footer_html = params$footer_html
 )
