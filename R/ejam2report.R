@@ -377,7 +377,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         map <- mapfastej(ejamout1, radius = rad)
       }
     }
-
+    # RENDER as HTML FILE ####
     report_params <- list(
       community_html = community_html,
       plot = plot
@@ -392,7 +392,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                        footer_text = footer_text,
                        footer_html = footer_html
     )
-    ## render to .html temporary file and then read it and return that HTML as a single text object
+    ## render & return the HTML text by reading the file ####
     # >>>>>>> issue303AddMapAndBarPlot
     if (return_html) {
       rendered_path <- rmarkdown::render(
@@ -407,7 +407,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       return(paste(readLines(rendered_path, warn = FALSE), collapse = "\n"))
 
     } else {
-      ## render to a .html (or maybe pdf) file and return the path to that file
+      ## render & return filepath ####
       rmarkdown::render(
         input = rmd_template,
         output_format = ifelse(fileextension == ".pdf", "pdf_document", "html_document"), # add pdf option here
@@ -416,7 +416,9 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         envir = new.env(parent = globalenv()),
         quiet = TRUE
       )
+      suppressWarnings({
       output_file <- normalizePath(output_file) # allows it to work on MacOS, e.g.
+      })
       if (interactive() && !shiny::isRunning()) {
         cat("file saved at", output_file, '\n')
         cat("To open that folder from R, you could copy/paste this into the RStudio console:\n")
