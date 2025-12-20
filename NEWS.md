@@ -8,6 +8,9 @@
   - Report Title revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
   - Analysis Title (on reports) revised also
   - Report Footer revised (new params in ejam2report() now define footer in community report, via new generate_report_footer() helper)
+- Disabled download buttons until multisite report ready and spreadsheet ready, respectively
+- Multisite report ready for download as html file is rendered now as soon as results are ready (and if analysis title is changed afterwards),
+  so it may be available more quickly if a user decides to download it.
 - Other changes in preparation for next release
 
 # EJAM 2.32.6.003 (November 2025)
