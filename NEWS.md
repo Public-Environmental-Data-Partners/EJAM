@@ -22,8 +22,13 @@
   - Report Title revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
   - Analysis Title (on reports) revised also
   - Report Footer revised (new params in ejam2report() now define footer in community report, via new generate_report_footer() helper)
-  
-- Other changes in preparation for next release
+
+- Multisite report is now rendered as html file automatically as soon as results are ready (and if analysis title is changed afterwards),
+  so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as 
+  the server now does not have to re-render report for use in spreadsheet. 
+  Also, multisite report and spreadsheet download buttons disabled until each is ready.
+- Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
+  might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
 
 
 # EJAM 2.32.6.003 (November 2025)

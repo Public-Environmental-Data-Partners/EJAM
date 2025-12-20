@@ -12,6 +12,11 @@ generate_report_footer(
 )
 }
 \arguments{
+\item{footer_version_number}{optional, default is read from the package, e.g., "2.32.6.003"}
+
+\item{footer_date}{optional, default is today, e.g., "December 12, 2025"
+If footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be}
+
 \item{footer_text}{optional, e.g., "Report created by EJAM version (version_number) on (date_created)".
 If specified, it overrides date and version parameters.}
 
@@ -26,10 +31,6 @@ For example,
   </div>
 '))
 }\if{html}{\out{</div>}}}
-
-\item{version_number}{optional, default is read from the package, e.g., "2.32.6.003"}
-
-\item{date_created}{optional, default is today, e.g., "December 12, 2025"}
 }
 \description{
 helper - make date/version footer for summary report

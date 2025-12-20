@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ## like, 
 ## params:
 ##    rundate: !r  lubridate::ymd_hms("2015-01-01 12:30:00")
+## client side ideally should provide footer_date to ensure user's timezone is used to determine today's date
 ```
 
 

@@ -88,7 +88,8 @@ to show in that section, in extra table of demog. subgroups, etc.}
 leave out rows in table where raw value is NA,
 as with many of names_d_language, in extra table of demog. subgroups, etc.}
 
-\item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}}
+\item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}
+Should provide footer_date to ensure user's timezone is used to determine today's date.}
 
 \item{fileextension}{html or .html or pdf or .pdf (assuming pdf option has been implemented).
 Creating PDF output from R Markdown requires that LaTeX be installed.}
