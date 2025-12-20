@@ -2090,6 +2090,11 @@ app_server <- function(input, output, session) {
   # ______ SEE RESULTS _________ ####
   #. ####
 
+  date_in_user_timezone <- reactive(
+    format(
+      lubridate::with_tz(Sys.time(), tzone = input$client_tz),
+      "%B %d, %Y")
+  )
   # #############################################################################  #
 
   # ______ SUMMARY RESULTS, results_overall _________ ####
@@ -2461,7 +2466,9 @@ app_server <- function(input, output, session) {
   output$report_footer_version_date <- renderUI({
     # message(paste0("shinytestmode = ", getOption("shiny.testmode")))
     generate_report_footer(
-      footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL # NULL means use defaults
+      footer_version_number = NULL,
+      footer_date = date_in_user_timezone(),
+      footer_text = NULL, footer_html = NULL # NULL means use defaults
     )
   })
   #############################################################################  #
@@ -2522,7 +2529,11 @@ app_server <- function(input, output, session) {
         extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
         extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
         logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
-        logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+        logo_html = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+        footer_version_number = NULL,
+        footer_date = date_in_user_timezone(),
+        footer_text = NULL,
+        footer_html = NULL # NULL means use defaults
       )
     })
     if (input$testing) {

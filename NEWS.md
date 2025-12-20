@@ -11,6 +11,8 @@
 - Disabled download buttons until multisite report ready and spreadsheet ready, respectively
 - Multisite report ready for download as html file is rendered now as soon as results are ready (and if analysis title is changed afterwards),
   so it may be available more quickly if a user decides to download it.
+- Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
+  might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
 - Other changes in preparation for next release
 
 # EJAM 2.32.6.003 (November 2025)

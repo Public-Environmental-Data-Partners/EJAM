@@ -52,7 +52,9 @@
 #'   leave out rows in table where raw value is NA,
 #'   as with many of names_d_language, in extra table of demog. subgroups, etc.
 #'
-#' @param footer_version_number,footer_date,footer_text,footer_html to customize the report footer - see [generate_report_footer()]
+#' @param footer_version_number,footer_date,footer_text,footer_html
+#'   to customize the report footer - see [generate_report_footer()]
+#'   Should provide footer_date to ensure user's timezone is used to determine today's date.
 #' @param addlatlon optional, whether to include lat,lon coordinates in header (for latlon sitetype)
 #' @return URL of temp file or object depending on return_html,
 #'    and has side effect of launching browser to view it depending on return_html
@@ -111,7 +113,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
 
                         footer_version_number = NULL,
-                        footer_date = NULL,
+                        footer_date = NULL, # ideally should provide footer_date to ensure user's timezone is used to determine today's date
                         footer_text = NULL,
                         footer_html = NULL,
                         ## Rmd_name and Rmd_folder could be made params to pass to report_setup_temp_files()
@@ -377,7 +379,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         map <- mapfastej(ejamout1, radius = rad)
       }
     }
+    ## FOOTER/DATE/VERSION ####
+    # Those are created by .Rmd template based on footer_* parameters
+    ######################################## #
+
     # RENDER as HTML FILE ####
+
     report_params <- list(
       community_html = community_html,
       plot = plot
@@ -388,7 +395,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     report_params <- c(report_params,
                        # NULL means use defaults
                        footer_version_number = footer_version_number,
-                       footer_date = footer_date,
+                       footer_date = footer_date,  # ideally obtain local timezone of user to ensure correct date used
                        footer_text = footer_text,
                        footer_html = footer_html
     )
@@ -417,7 +424,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         quiet = TRUE
       )
       suppressWarnings({
-      output_file <- normalizePath(output_file) # allows it to work on MacOS, e.g.
+        output_file <- normalizePath(output_file) # allows it to work on MacOS, e.g.
       })
       if (interactive() && !shiny::isRunning()) {
         cat("file saved at", output_file, '\n')

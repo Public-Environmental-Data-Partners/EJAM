@@ -44,6 +44,15 @@ app_ui <- function(request) {
 
       ## title, favicon, etc. ####
 
+      ## local user date/timezone ####
+      # JavaScript to detect timezone and send to Shiny
+      # allowing correct local date in report footer (in case the server is in some other time zone)
+      tags$script('
+            $(document).on("shiny:sessioninitialized", function(event) {
+            var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            Shiny.setInputValue("client_tz", tz);
+            });
+                      '),
       ############################################################# #
 
       # TABS:   ####

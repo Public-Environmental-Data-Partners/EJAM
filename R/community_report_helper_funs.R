@@ -589,8 +589,9 @@ generate_report_footnotes <- function(
 #'   Passing a parameter as NULL is the same as omitting it/not specifying it.
 #'   To make footer blank (no text), pass "" for footer_text or footer_html.
 #'
-#' @param version_number optional, default is read from the package, e.g., "2.32.6.003"
-#' @param date_created optional, default is today, e.g., "December 12, 2025"
+#' @param footer_version_number optional, default is read from the package, e.g., "2.32.6.003"
+#' @param footer_date optional, default is today, e.g., "December 12, 2025"
+#'   If footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be
 #' @param footer_text optional, e.g., "Report created by EJAM version (version_number) on (date_created)".
 #'   If specified, it overrides date and version parameters.
 #' @param footer_html optional full HTML for footer.
@@ -617,6 +618,7 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
     footer_date <- "[SHINYTEST DATE]" # so the snapshot of the report is consistent, not diff date each time tested
   } else {
     if (missing(footer_date) || is.null(footer_date)) {
+      # if footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be
       footer_date <- format(Sys.Date(), "%B %d, %Y")
     }
   }
