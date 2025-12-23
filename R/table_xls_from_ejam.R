@@ -92,29 +92,55 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
 #' @keywords internal
 #'
 table_xls_from_ejam <- function(ejamitout,
+
                                 fname = NULL, # full path and name, or just name of .xlsx file
-                                save_now = TRUE, overwrite = TRUE, launchexcel = FALSE,
+                                save_now = TRUE,
+                                overwrite = TRUE,
+                                launchexcel = FALSE,
                                 interactive_console = TRUE,
-                                ok2plot = TRUE,
                                 in.testing = FALSE,
+                                updateProgress = NULL,
+
                                 in.analysis_title =  "EJAM analysis",
-                                react.v1_summary_plot = NULL,
-                                radius_or_buffer_in_miles = NULL,  #  input$radius_now
-                                buffer_desc = "Selected Locations",
-                                radius_or_buffer_description = NULL, # like header of reports, or # e.g., 'Miles radius of circular buffer (or distance used if buffering around polygons)',
-                                # radius_or_buffer_description =   "Distance from each site (radius of each circular buffer around a point)",
-
-                                # hyperlink_colnames = EJAM:::global_or_param("default_hyperlink_colnames"),
-                                reports = EJAM:::global_or_param("default_reports"),
-                                # could change to be an input$ in advanced tab possibly # "ECHO Report",#c("EJSCREEN Report", "EJSCREEN Map", "ECHO Report"),
-
                                 site_method = "",
 
+                                radius_or_buffer_in_miles = NULL,  #  input$radius_now
+                                radius_or_buffer_description = NULL, # like header of reports, or # e.g., 'Miles radius of circular buffer (or distance used if buffering around polygons)',
+                                #    "Distance from each site (radius of each circular buffer around a point)",
+                                buffer_desc = "Selected Locations",
+
+                                # specify columns with URLs/links to 1-site reports, etc.
+                                reports = EJAM:::global_or_param("default_reports"),
+
+                                # plot
+                                ok2plot = TRUE,
+                                react.v1_summary_plot = NULL,
+                                plot_distance_by_group = FALSE,
+                                plotlatest = FALSE,
+                                plotfilename = NULL,
+
+                                # map
                                 mapadd = FALSE,
                                 report_map = NULL,
+
+                                # polygons
+                                shp = NULL,
+
+                                # html summary report to paste into a tab as static snapshot image
                                 community_reportadd = TRUE,
                                 community_html = NULL,
-                                shp = NULL,
+
+                                # column formatting
+                                heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
+                                heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                                graycolnames = NULL, graycolor = 'gray',
+                                narrowcolnames = NULL, narrow6 = 6,
+
+                                # notes tab, etc.
+                                notes = NULL,
+                                custom_tab = NULL,         # but default in ejam2excel is  ejamitout$results_summarized$cols
+                                custom_tab_name = "other", # but default in ejam2excel is  "thresholds"
+                                ejscreen_ejam_caveat = NULL,
                                 ...
 ) {
 
@@ -201,7 +227,7 @@ table_xls_from_ejam <- function(ejamitout,
     #                                                             sitetype = sitetype)
   }
 
-  # changed the way the filename path was generated
+  # generate filename path
   default_pathname <- create_filename(file_desc = "results_table",
                                       title = in.analysis_title,
                                       buffer_dist = radius_or_buffer_in_miles,
@@ -224,44 +250,59 @@ table_xls_from_ejam <- function(ejamitout,
 
   wb_out <- table_xls_format(
 
-    # ### if we must provide data.frame only, not data.table, here, then we may need to convert them:
-    # overall   = as.data.frame(ejamitout$results_overall), # 1 row with overall results aggregated across sites
-    # eachsite  = as.data.frame(ejamitout$results_bysite), # 1 row per site
-    # longnames = as.data.frame(ejamitout$longnames), # 1 row, but full plain English column names
-
     overall   = ejamitout$results_overall, #  1 row with overall results aggregated across sites
-    eachsite  = ejamitout$results_bysite,  #  1 row per site
-    longnames = ejamitout$longnames,       #  1 row, but full plain English column names
-    bybg      = ejamitout$results_bybg_people, # not entirely sure should provide bybg tab? it is huge and only for expert users but enables a plot
     formatted = ejamitout$formatted,
-    sitetype = sitetype,
-    # shp is not needed since now report already is here and has map, and hyperlinks are already in eachsite table.
+    eachsite  = ejamitout$results_bysite,  #  1 row per site
+    bybg      = ejamitout$results_bybg_people, # not entirely sure should provide bybg tab? it is huge and only for expert users but enables a plot
+    longnames = ejamitout$longnames,       #  1 row, but full plain English column names
 
-    custom_tab = ejamitout$results_summarized$cols,
-    custom_tab_name = "thresholds",
+    # fname &
+    # save_now &
+    # overwrite are handled here by openxlsx::saveWorkbook()], not in table_xls_format() function's saveas and overwrite parameters etc.
+    #   saveas = pathname, # could do it this way but then need to condition it on save_now and cannot offer interactive picking of pathname in RStudio
+    launchexcel = launchexcel,
+    # interactive_console   # handled here not in table_xls_format()
+    testing = in.testing, # param name changes here
+    updateProgress = updateProgress,
 
-    # hyperlink_colnames = hyperlink_colnames,  # need to ensure these get formatted right to work as links in Excel
-     reports = reports,
+    analysis_title = in.analysis_title, # param name changes here
+    sitetype = sitetype, # param here is not quite the same as  site_method param of ejam2excel()
 
-    # heatmap_colnames=names(table_as_displayed)[pctile_colnums], # can use defaults
-    # heatmap_cuts=c(80, 90, 95), # can use defaults
-    # heatmap_colors=c('yellow', 'orange', 'red') # can use defaults
-    ## optional, shiny-specific arguments to go in 'Plot' and 'Notes' sheets
-
-    summary_plot   = react.v1_summary_plot, # NULL is fine
-    analysis_title = in.analysis_title,
-    ok2plot = ok2plot,
-    buffer_desc = buffer_desc,
     radius_or_buffer_in_miles    = radius_or_buffer_in_miles,
     radius_or_buffer_description = radius_or_buffer_description,
-    # saveas = pathname, # could do it this way but then need to condition it on save_now and cannot offer interactive picking of pathname in RStudio
-    testing = in.testing,
-    launchexcel = launchexcel,
+    buffer_desc = buffer_desc,
 
+    # specify columns with URLs/links to 1-site reports, etc.
+    reports = reports,
+
+    # plot
+    ok2plot = ok2plot,
+    summary_plot   = react.v1_summary_plot, # param name change # NULL is fine
+    plot_distance_by_group = plot_distance_by_group,
+    plotlatest = plotlatest,
+    plotfilename = plotfilename,
+
+    # map
     mapadd = mapadd,
     report_map = report_map,
+
+    # shp is not needed since now report already is here and has map, and hyperlinks are already in eachsite table.
+
+    # html summary report to paste into a tab as static snapshot image
     community_reportadd = community_reportadd,
     community_html = community_html,
+
+    # column formatting
+    heatmap_colnames = heatmap_colnames,   heatmap_cuts = heatmap_cuts,  heatmap_colors  = heatmap_colors, # percentiles
+    heatmap2_colnames = heatmap2_colnames, heatmap2_cuts = heatmap2_cuts, heatmap2_colors = heatmap2_colors, # ratios
+    graycolnames = graycolnames, graycolor = graycolor,
+    narrowcolnames = narrowcolnames, narrow6 = narrow6,
+
+    # notes tab, etc.
+    notes = notes,
+    custom_tab = custom_tab,
+    custom_tab_name = custom_tab_name,
+    ejscreen_ejam_caveat = ejscreen_ejam_caveat,
     ...
   )
 
