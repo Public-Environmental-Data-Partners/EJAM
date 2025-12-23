@@ -20,7 +20,7 @@
 #' @param in.testing optional logical
 #' @param updateProgress optional function used by shiny app to track progress of slow operation
 #'
-#' @param in.analysis_title optional title as character string, used only in 'Notes' sheet
+#' @param analysis_title optional title as character string, used only in 'Notes' sheet
 #'   (and to create a default filename if fname not specified). Not used in the copy of the report.
 #' @param site_method site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
 #'   optional site method parameter used to create a more specific title with create_filename.
@@ -36,7 +36,7 @@
 #'   see [url_columns_bysite()]
 #'
 #' @param ok2plot optional logical, passed to  [table_xls_format()], whether safe to try and plot or set FALSE if debugging plot problems
-#' @param react.v1_summary_plot optional - a plot object
+#' @param report_plot optional - a plot object
 #' @param plot_distance_by_group optional logical, whether to try to add a plot of mean distance by group.
 #'   This requires that bybg be provided as a parameter input to this function.
 #' @param plotlatest optional logical. If TRUE, the most recently displayed plot (prior to this function being called) will be inserted into a tab called plot2
@@ -98,7 +98,7 @@ ejam2excel <- function(ejamitout,
                        in.testing = FALSE,
                        updateProgress = NULL,
 
-                       in.analysis_title =  "EJAM analysis",
+                       analysis_title =  "EJAM analysis",
                        site_method = "",
 
                        radius_or_buffer_in_miles = NULL,  #  input$radius_now
@@ -111,7 +111,7 @@ ejam2excel <- function(ejamitout,
 
                        # plot
                        ok2plot = TRUE,
-                       react.v1_summary_plot = NULL,
+                       report_plot = NULL,
                        plot_distance_by_group = FALSE,
                        plotlatest = FALSE,
                        plotfilename = NULL,
@@ -164,7 +164,7 @@ ejam2excel <- function(ejamitout,
     in.testing = in.testing,
     updateProgress = updateProgress,
 
-    in.analysis_title = in.analysis_title,
+    analysis_title = analysis_title,
     site_method = site_method,
 
     radius_or_buffer_in_miles = radius_or_buffer_in_miles,
@@ -176,7 +176,7 @@ ejam2excel <- function(ejamitout,
 
     # plot
     ok2plot = ok2plot,
-    react.v1_summary_plot = react.v1_summary_plot,
+    report_plot = report_plot,
     plot_distance_by_group = plot_distance_by_group,
     plotlatest = plotlatest,
     plotfilename = plotfilename,

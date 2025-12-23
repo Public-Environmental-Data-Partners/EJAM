@@ -398,7 +398,7 @@ pkg_update_testpoints_testoutputs <- function(
         fname <- paste0("testoutput_ejam2excel_", n, "pts_", myrad, "miles")
         junk <- ejam2excel(
           get(out_varname_ejamit),
-          in.analysis_title = "Example of outputs of ejamit() being formatted and saved using ejam2excel()",
+          analysis_title = "Example of outputs of ejamit() being formatted and saved using ejam2excel()",
           radius_or_buffer_in_miles = myrad,
           # buffer_desc = paste0("Within ", myrad, " miles"),
           fname = paste0("./inst/testdata/examples_of_output/", fname, ".xlsx"),

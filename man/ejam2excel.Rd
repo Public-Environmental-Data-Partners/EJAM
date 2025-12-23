@@ -13,14 +13,14 @@ ejam2excel(
   interactive_console = TRUE,
   in.testing = FALSE,
   updateProgress = NULL,
-  in.analysis_title = "EJAM analysis",
+  analysis_title = "EJAM analysis",
   site_method = "",
   radius_or_buffer_in_miles = NULL,
   radius_or_buffer_description = NULL,
   buffer_desc = "Selected Locations",
   reports = EJAM:::global_or_param("default_reports"),
   ok2plot = TRUE,
-  react.v1_summary_plot = NULL,
+  report_plot = NULL,
   plot_distance_by_group = FALSE,
   plotlatest = FALSE,
   plotfilename = NULL,
@@ -65,7 +65,7 @@ prompts RStudio user interactively asking where to save the downloaded file}
 
 \item{updateProgress}{optional function used by shiny app to track progress of slow operation}
 
-\item{in.analysis_title}{optional title as character string, used only in 'Notes' sheet
+\item{analysis_title}{optional title as character string, used only in 'Notes' sheet
 (and to create a default filename if fname not specified). Not used in the copy of the report.}
 
 \item{site_method}{site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
@@ -85,7 +85,7 @@ see \code{\link[=url_columns_bysite]{url_columns_bysite()}}}
 
 \item{ok2plot}{optional logical, passed to  \code{\link[=table_xls_format]{table_xls_format()}}, whether safe to try and plot or set FALSE if debugging plot problems}
 
-\item{react.v1_summary_plot}{optional - a plot object}
+\item{report_plot}{optional - a plot object}
 
 \item{plot_distance_by_group}{optional logical, whether to try to add a plot of mean distance by group.
 This requires that bybg be provided as a parameter input to this function.}

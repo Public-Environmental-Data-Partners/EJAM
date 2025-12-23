@@ -101,7 +101,7 @@ table_xls_from_ejam <- function(ejamitout,
                                 in.testing = FALSE,
                                 updateProgress = NULL,
 
-                                in.analysis_title =  "EJAM analysis",
+                                analysis_title =  "EJAM analysis",
                                 site_method = "",
 
                                 radius_or_buffer_in_miles = NULL,  #  input$radius_now
@@ -114,7 +114,7 @@ table_xls_from_ejam <- function(ejamitout,
 
                                 # plot
                                 ok2plot = TRUE,
-                                react.v1_summary_plot = NULL,
+                                report_plot = NULL,
                                 plot_distance_by_group = FALSE,
                                 plotlatest = FALSE,
                                 plotfilename = NULL,
@@ -229,7 +229,7 @@ table_xls_from_ejam <- function(ejamitout,
 
   # generate filename path
   default_pathname <- create_filename(file_desc = "results_table",
-                                      title = in.analysis_title,
+                                      title = analysis_title,
                                       buffer_dist = radius_or_buffer_in_miles,
                                       site_method = site_method,
                                       with_datetime = TRUE,
@@ -265,7 +265,7 @@ table_xls_from_ejam <- function(ejamitout,
     testing = in.testing, # param name changes here
     updateProgress = updateProgress,
 
-    analysis_title = in.analysis_title, # param name changes here
+    analysis_title = analysis_title,
     sitetype = sitetype, # param here is not quite the same as  site_method param of ejam2excel()
 
     radius_or_buffer_in_miles    = radius_or_buffer_in_miles,
@@ -277,7 +277,7 @@ table_xls_from_ejam <- function(ejamitout,
 
     # plot
     ok2plot = ok2plot,
-    summary_plot   = react.v1_summary_plot, # param name change # NULL is fine
+    report_plot   = report_plot,  # NULL is fine
     plot_distance_by_group = plot_distance_by_group,
     plotlatest = plotlatest,
     plotfilename = plotfilename,

@@ -377,7 +377,7 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
     # formatted                    NULL       na
     # bybg                         NULL       na
     # plot_distance_by_group       FALSE      na
-    # summary_plot                 NULL       na
+    # report_plot                 NULL       na
     # plotlatest                   FALSE      na
     # plotfilename                 NULL       na
     # mapadd                       FALSE      ***

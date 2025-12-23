@@ -2324,9 +2324,9 @@ app_server <- function(input, output, session) {
   ############################################ #
 
   ###################  #
-  ### . v1_summary_plot_state ####
+  ### . report_plot_state ####
 
-  v1_summary_plot_state <- reactive({
+  report_plot_state <- reactive({
 
     req(data_processed())
     if (!is.null(cur_button())) {
@@ -2360,9 +2360,9 @@ app_server <- function(input, output, session) {
     }
   })
   ###################  #
-  ### . v1_summary_plot ####
+  ### . report_plot ####
 
-  v1_summary_plot <- reactive({
+  report_plot <- reactive({
 
     req(data_processed())
     # data_processed() needed for ridgeline or boxplot, and ratio.to.us.d() which is made from data_processed() is needed for boxplots,
@@ -2421,13 +2421,13 @@ app_server <- function(input, output, session) {
     ################## #
   })
   observe({
-    req(v1_summary_plot())
+    req(report_plot())
     # note this component of report is ready (although renderPlot() might take time?)
     download_ready_for_report_plot(TRUE)
   })
   ## output: show box/barplot of indicator ratios in html Summary Report #
-  output$view1_summary_plot <- renderPlot({
-    v1_summary_plot()
+  output$report_plot_output <- renderPlot({
+    report_plot()
   }, width = function() {
     ifelse(isTRUE(getOption("shiny.testmode")), 717, "auto")
   })
@@ -2437,8 +2437,8 @@ app_server <- function(input, output, session) {
     if (!is.null(cur_button())) {
       cur_button(NULL)
       # Trigger a re-render of the html summary report's barplot
-      output$view1_summary_plot <- renderPlot({
-        v1_summary_plot()
+      output$report_plot_output <- renderPlot({
+        report_plot()
       }, width = function() {
         ifelse(isTRUE(getOption("shiny.testmode")), 717, "auto")
       })
@@ -2767,7 +2767,7 @@ app_server <- function(input, output, session) {
         in.testing = input$testing,
         updateProgress = updateProgress_xl,
 
-        in.analysis_title = sanitized_analysis_title(),
+        analysis_title = sanitized_analysis_title(),
         site_method = submitted_upload_method(),
 
         radius_or_buffer_in_miles = sanitized_radius_now(),
@@ -2779,7 +2779,7 @@ app_server <- function(input, output, session) {
 
         # plot
         ok2plot = input$ok2plot,
-        react.v1_summary_plot = v1_summary_plot(),
+        report_plot = report_plot(),
 
         # map
         mapadd = FALSE, # redundant if getting report as a tab since report has map snapshot
@@ -3082,8 +3082,8 @@ app_server <- function(input, output, session) {
             demog_table = v1_demog_table(),
             # demog_table_placeholder_png = "demog_table_placeholder.png",
             # demog_table_placeholder_rda = "demog_table_placeholder.rda",
-            boxplot =     v1_summary_plot(), # actually a barplot
-            ## also note  v1_summary_plot_state()
+            boxplot =     report_plot(), # actually a barplot
+            ## also note  report_plot_state()
             # boxplot_placeholder_png =         "boxplot_placeholder.png",
             # barplot= NA
             # barplot_placeholder_png =         "barplot_placeholder.png",

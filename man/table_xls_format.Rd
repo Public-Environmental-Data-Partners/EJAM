@@ -23,7 +23,7 @@ table_xls_format(
   buffer_desc = "Selected Locations",
   reports = EJAM:::global_or_param("default_reports"),
   ok2plot = TRUE,
-  summary_plot = NULL,
+  report_plot = NULL,
   plot_distance_by_group = FALSE,
   plotlatest = FALSE,
   plotfilename = NULL,
@@ -86,7 +86,7 @@ see \link{url_columns_bysite}}
 
 \item{ok2plot}{can set to FALSE to prevent plots from being attempted, while debugging}
 
-\item{summary_plot}{optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table}
+\item{report_plot}{optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table}
 
 \item{plot_distance_by_group}{logical, whether to try to add a plot of mean distance by group.
 This requires that bybg be provided as a parameter input to this function.}

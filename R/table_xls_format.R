@@ -27,7 +27,7 @@
 #'   see [url_columns_bysite]
 #'
 #' @param ok2plot can set to FALSE to prevent plots from being attempted, while debugging
-#' @param summary_plot optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table
+#' @param report_plot optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table
 #' @param plot_distance_by_group logical, whether to try to add a plot of mean distance by group.
 #'   This requires that bybg be provided as a parameter input to this function.
 #' @param plotlatest optional logical. If TRUE, the most recently displayed plot (prior to this function being called) will be inserted into a tab called plot2
@@ -99,7 +99,7 @@ table_xls_format <- function(overall,
 
                              # plot
                              ok2plot = TRUE,
-                             summary_plot = NULL,
+                             report_plot = NULL,
                              plot_distance_by_group = FALSE,
                              plotlatest = FALSE,
                              plotfilename = NULL,
@@ -286,33 +286,33 @@ table_xls_format <- function(overall,
                            width = 9, height = 7)
     }
   }
-  ### *summary_plot (ratios) ####
+  ### *report_plot (ratios) ####
   if (ok2plot) {
-    if (is.null(summary_plot)) {
+    if (is.null(report_plot)) {
       # None provided so try to create one anyway?
       # example: plot_barplot_ratios( unlist( testoutput_ejamit_1000pts_1miles$results_overall[ , c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ]))
       if (all(c(names_d_ratio_to_avg , names_d_subgroups_ratio_to_avg) %in% names(overall))) {
         if (testing) {cat('plotting ratios to avg by group\n')}
         if (data.table::is.data.table(overall)) {
-          summary_plot <- try(
+          report_plot <- try(
             plot_barplot_ratios(unlist( overall[ , c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ]),
                                 shortlabels = fixcolnames(c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), oldtype = 'r', newtype = 'shortlabel')
             ),
             silent = TRUE
           )
         } else {
-          summary_plot <- try(
+          report_plot <- try(
             plot_barplot_ratios(unlist(as.data.frame(overall[ , c(names_d_ratio_to_avg , names_d_subgroups_ratio_to_avg) ])),
                                 shortlabels = fixcolnames(c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), oldtype = 'r', newtype = 'shortlabel')
             ),
             silent = TRUE
           )
         }
-        if (inherits(summary_plot, "try-error")) {
+        if (inherits(report_plot, "try-error")) {
           warning('cannot create plot_barplot_ratios() output')
           cat('cannot create plot_barplot_ratios() output\n')
         } else {
-          print(summary_plot)
+          print(report_plot)
           openxlsx::addWorksheet(wb, sheetName = "plot_ratios",  gridLines = FALSE)
           openxlsx::insertPlot(wb, "plot_ratios", width = 9, height = 7) # The current plot is saved to a temporary image file using dev.copy. This file is then written to the workbook using insertImage.
         }
@@ -320,14 +320,14 @@ table_xls_format <- function(overall,
         cat('cannot create plot_barplot_ratios() output because not all ratio columns are present - probably because calculate_ratios = FALSE \n')
       }
     } else {
-      # add summary_plot ggplot object  to 'plot' sheet of Excel download
-      if (testing) {cat('adding summary_plot (ggplot output) that was provided\n')}
+      # add report_plot ggplot object  to 'plot' sheet of Excel download
+      if (testing) {cat('adding report_plot (ggplot output) that was provided\n')}
       mytempdir <- tempdir() # did not work on server?
       openxlsx::addWorksheet(wb, sheetName = "plot_ratios",  gridLines = FALSE)
-      ggplot2::ggsave(filename = paste0(mytempdir, '/', 'summary_plot.png'), plot = summary_plot,
+      ggplot2::ggsave(filename = paste0(mytempdir, '/', 'report_plot.png'), plot = report_plot,
                       width = 9, height = 7, units = 'in')
       openxlsx::insertImage(wb, sheet = 'plot_ratios',
-                            file = paste0(mytempdir, '/', 'summary_plot.png'),
+                            file = paste0(mytempdir, '/', 'report_plot.png'),
                             width = 9, height = 7)
     }
   }
