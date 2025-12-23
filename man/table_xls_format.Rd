@@ -6,43 +6,44 @@
 \usage{
 table_xls_format(
   overall,
-  eachsite,
-  longnames = NULL,
   formatted = NULL,
+  eachsite,
   bybg = NULL,
-  sitetype = NULL,
-  plot_distance_by_group = FALSE,
-  summary_plot = NULL,
-  plotlatest = FALSE,
-  plotfilename = NULL,
-  ok2plot = TRUE,
-  mapadd = FALSE,
-  report_map = NULL,
-  community_reportadd = FALSE,
-  community_html = NULL,
+  longnames = NULL,
+  saveas = NULL,
+  overwrite = TRUE,
+  launchexcel = FALSE,
+  testing = FALSE,
+  updateProgress = NULL,
   analysis_title = "EJAM analysis",
+  sitetype = NULL,
   radius_or_buffer_in_miles = NULL,
   radius_or_buffer_description =
     "Miles radius of circular buffer (or distance used if buffering around polygons)",
   buffer_desc = "Selected Locations",
-  notes = NULL,
-  custom_tab = NULL,
-  custom_tab_name = "other",
+  reports = EJAM:::global_or_param("default_reports"),
+  ok2plot = TRUE,
+  report_plot = NULL,
+  plot_distance_by_group = FALSE,
+  plotlatest = FALSE,
+  plotfilename = NULL,
+  mapadd = FALSE,
+  report_map = NULL,
+  community_reportadd = FALSE,
+  community_html = NULL,
   heatmap_colnames = NULL,
   heatmap_cuts = c(80, 90, 95),
   heatmap_colors = c("yellow", "orange", "red"),
   heatmap2_colnames = NULL,
   heatmap2_cuts = c(1.009, 2, 3),
   heatmap2_colors = c("yellow", "orange", "red"),
-  reports = EJAM:::global_or_param("default_reports"),
   graycolnames = NULL,
-  narrowcolnames = NULL,
   graycolor = "gray",
+  narrowcolnames = NULL,
   narrow6 = 6,
-  testing = FALSE,
-  updateProgress = NULL,
-  launchexcel = FALSE,
-  saveas = NULL,
+  notes = NULL,
+  custom_tab = NULL,
+  custom_tab_name = "other",
   ejscreen_ejam_caveat = NULL,
   ...
 )
@@ -51,36 +52,28 @@ table_xls_format(
 \item{overall}{table to save in one tab, from ejamit()$results_overall, EJAM analysis of indicators overall (one row),
 but if entire output of ejamit() is passed as if it were overall, function figures out eachsite, etc.}
 
-\item{eachsite}{table to save in one tab, from ejamit()$results_bysite, EJAM analysis site by site (one row per site)}
-
-\item{longnames}{vector of indicator names to display in Excel table}
-
 \item{formatted}{optional table to save in one tab, from ejamit()$results_overall, EJAM analysis overall in different format}
+
+\item{eachsite}{table to save in one tab, from ejamit()$results_bysite, EJAM analysis site by site (one row per site)}
 
 \item{bybg}{Optional large table of details of each blockgroup that is only needed to analyze distances by group.}
 
-\item{sitetype}{normally would be like ejamit()$sitetype}
+\item{longnames}{vector of indicator names to display in Excel table}
 
-\item{plot_distance_by_group}{logical, whether to try to add a plot of mean distance by group.
-This requires that bybg be provided as a parameter input to this function.}
+\item{saveas}{If not NULL, and a valid path with filename.xlsx is provided,
+the workbook will be saved locally at that path and name unless overwrite=FALSE.}
 
-\item{summary_plot}{optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table}
+\item{overwrite}{optional whether to save even if existing file path already has a file}
 
-\item{plotlatest}{optional logical. If TRUE, the most recently displayed plot (prior to this function being called) will be inserted into a tab called plot2}
+\item{launchexcel}{Set to TRUE to have this function launch Excel immediately, showing the final workbook created here.}
 
-\item{plotfilename}{the full path including name of .png file to insert}
+\item{testing}{optional for testing only}
 
-\item{ok2plot}{can set to FALSE to prevent plots from being attempted, while debugging}
-
-\item{mapadd}{logical optional - try to include a map of the points}
-
-\item{report_map}{leaflet map object passed from Shiny app to display in 'Map' sheet}
-
-\item{community_reportadd}{logical provided by shiny app to specify whether to include community report image}
-
-\item{community_html}{HTML file of community report provided by shiny app to include in spreadsheet}
+\item{updateProgress}{optional Shiny progress bar to update during formatting}
 
 \item{analysis_title}{optional title passed from Shiny app to 'Notes' sheet}
+
+\item{sitetype}{normally would be like ejamit()$sitetype}
 
 \item{radius_or_buffer_in_miles}{If provided, miles buffer distance (from polygon or from point if circular buffers)}
 
@@ -88,11 +81,28 @@ This requires that bybg be provided as a parameter input to this function.}
 
 \item{buffer_desc}{optional description of buffer used in analysis, passed to 'Notes' sheet}
 
-\item{notes}{Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.}
+\item{reports}{info about which columns to treat as URLs that should be hyperlinks -
+see \link{url_columns_bysite}}
 
-\item{custom_tab}{optional table to put in an extra tab}
+\item{ok2plot}{can set to FALSE to prevent plots from being attempted, while debugging}
 
-\item{custom_tab_name}{optional name of optional custom_tab}
+\item{report_plot}{optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table}
+
+\item{plot_distance_by_group}{logical, whether to try to add a plot of mean distance by group.
+This requires that bybg be provided as a parameter input to this function.}
+
+\item{plotlatest}{optional logical. If TRUE, the most recently displayed plot (prior to this function being called) will be inserted into a tab called plot2}
+
+\item{plotfilename}{the full path including name of .png file to insert}
+
+\item{mapadd}{optional logical, whether to add a tab with a map of the sites.
+If report tab is added, though, standalone static map in excel tab is redundant.}
+
+\item{report_map}{leaflet map object passed from Shiny app to display in 'Map' sheet}
+
+\item{community_reportadd}{Logical, whether to add a tab with a static copy of the summary report (tables, map, barplot).}
+
+\item{community_html}{HTML file of community report provided by shiny app to include in spreadsheet}
 
 \item{heatmap_colnames}{optional vector of colnames to apply heatmap colors, defaults to percentiles}
 
@@ -108,29 +118,23 @@ second color is for those >=2d cutpoint but <3d, etc.}
 
 \item{heatmap2_colors}{like heatmap_colors but for ratios}
 
-\item{reports}{info about which columns to treat as URLs that should be hyperlinks -
-see \link{url_columns_bysite}}
-
 \item{graycolnames}{which columns to de-emphasize}
-
-\item{narrowcolnames}{which column numbers to make narrow}
 
 \item{graycolor}{color used to de-emphasize some columns}
 
+\item{narrowcolnames}{which column numbers to make narrow}
+
 \item{narrow6}{how narrow}
 
-\item{testing}{optional for testing only}
+\item{notes}{Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.}
 
-\item{updateProgress}{optional Shiny progress bar to update during formatting}
+\item{custom_tab}{optional table to put in an extra tab}
 
-\item{launchexcel}{Set to TRUE to have this function launch Excel immediately, showing the final workbook created here.}
-
-\item{saveas}{If not NULL, and a valid path with filename.xlsx is provided,
-the workbook will be saved locally at that path and name. Warning: it will overwrite an existing file.}
+\item{custom_tab_name}{optional name of optional custom_tab}
 
 \item{ejscreen_ejam_caveat}{optional text if you want to change this in the notes tab}
 
-\item{...}{other params passed along to \code{\link[openxlsx:writeData]{openxlsx::writeData()}}}
+\item{...}{unused}
 }
 \value{
 a workbook, ready to be saved in spreadsheet format, with tabs like "Overall" and "Each Site"

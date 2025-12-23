@@ -104,7 +104,6 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #' @param in_shiny whether the function is being called in or outside of shiny - affects location of header
 #' @param filename path to file to save HTML content to; if null, returns as string (used in Shiny app)
 #'
-#' @param ... other parameters optional, passed to report_residents_within_xyz() via generate_html_header()
 #'
 #' @seealso [ejam2report()]
 #'

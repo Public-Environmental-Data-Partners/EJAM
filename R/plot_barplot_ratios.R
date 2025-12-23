@@ -116,7 +116,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   #
   # **For BARPLOTS, see/ merge/consolidate:**
   #
-  # - output$view1_summary_plot <- renderPlot({v1_summary_plot()}) and v1_summary_plot <- reactive({ })
+  # - output$report_plot_output <- renderPlot({report_plot()}) and report_plot <- reactive({ })
   #   in EJAM server for Short Report if  bar type
   # - output$summ_display_bar <- renderPlot({  }) contains its own plot code not a reactive
   #   in EJAM server for tab showing barplots in Detailed Results
@@ -125,7 +125,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   #
   # **For BOXPLOTS, see:**
   #
-  # - v1_summary_plot <- reactive({ })     and output$view1_summary_plot <- renderPlot({v1_summary_plot()})
+  # - report_plot <- reactive({ })     and output$report_plot_output <- renderPlot({report_plot()})
   #    - in EJAM server for SHORT report if box type, and
   #    - in EJAM server for LONG report passed as a parameter
   # - plot_boxplot_ratios() is an older/obsolete related function

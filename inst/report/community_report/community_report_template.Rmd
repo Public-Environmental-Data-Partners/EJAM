@@ -21,7 +21,7 @@ params:
   in_shiny: FALSE
   filename: NULL
   map: NULL
-  summary_plot: NULL
+  report_plot: NULL
   footer_version_number: NULL
   footer_date: NULL
   footer_text: NULL
@@ -75,9 +75,9 @@ if (!(is.null(params$map) || anyNA(params$map) || length(params$map) == 0)) {
 }
 ```
 
-```{r summary_plot, out.width='90%', fig.align='center'}
+```{r report_plot, out.width='90%', fig.align='center'}
 #
-params$summary_plot
+params$report_plot
 ```
 
 ```{r footer_with_version_and_date}

@@ -2107,41 +2107,33 @@ app_server <- function(input, output, session) {
 
   # ______ SUMMARY RESULTS, results_overall _________ ####
   #. ####
-  # REPORT Overall/Multisite Summary - for BROWSER ####
+  # REPORT Multisite - VIEW in UI ####
 
   # *** The code here builds the html report shown in the shiny app but also see separate code used to download it.
 
-  ##  Pop Count rounded ####
+  ## * HEADER + TABLES ####
 
-  ### ( Total Population count ) ### #
+  ### . pop count rounded ####
   total_pop <- reactive({
     req(data_processed())
-    ## format and return total population
     round(data_processed()$results_overall$pop, table_rounding_info("pop") )
   })
 
-  ## Title of Analysis  - UI box  ####
-
+  ### . title of analysis  (from UI textbox)  ####
   # Unless user changes it here, use a standard title that has been determined by global_defaults_*.R but then optionally modified by advanced settings tab
-
   output$analysis_title_ui <- renderUI({
     shiny::textInput(inputId = 'analysis_title',
                      label = 'Name of Your Analysis',
                      value = sanitized_standard_analysis_title())
   })
-  #############################################################################  #
 
-  ## * TABLES - comm_report_html for UI   ####
-  #  note the UI is where the header and
-  ###  . build_community_report() for Browser ####
+  ### . build_community_report() makes header + tables ####
 
   output$comm_report_html <- renderUI({
     req(data_processed())
 
     ## *** consider replacing this with ejam2report(),
     ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
-
-### now using report_residents_within_xyz_from_ejamit() not report_residents_within_xyz()
 
     residents_within_xyz <- report_residents_within_xyz_from_ejamit(
       ejamitout = data_processed() ## this function uses the whole list not just ejamout1 to create the header
@@ -2179,7 +2171,7 @@ app_server <- function(input, output, session) {
   })
   # end of comm_report_html sent to UI
   #############################################################################  #
-  ## * MAP for REPORT ####
+  ## * MAP - for report ####
   ############################################ #
   ### report_map ### #
 
@@ -2332,9 +2324,9 @@ app_server <- function(input, output, session) {
   ############################################ #
 
   ###################  #
-  ### . v1_summary_plot_state ####
+  ### . report_plot_state ####
 
-  v1_summary_plot_state <- reactive({
+  report_plot_state <- reactive({
 
     req(data_processed())
     if (!is.null(cur_button())) {
@@ -2368,9 +2360,9 @@ app_server <- function(input, output, session) {
     }
   })
   ###################  #
-  ### . v1_summary_plot ####
+  ### . report_plot ####
 
-  v1_summary_plot <- reactive({
+  report_plot <- reactive({
 
     req(data_processed())
     # data_processed() needed for ridgeline or boxplot, and ratio.to.us.d() which is made from data_processed() is needed for boxplots,
@@ -2429,13 +2421,13 @@ app_server <- function(input, output, session) {
     ################## #
   })
   observe({
-    req(v1_summary_plot())
+    req(report_plot())
     # note this component of report is ready (although renderPlot() might take time?)
     download_ready_for_report_plot(TRUE)
   })
   ## output: show box/barplot of indicator ratios in html Summary Report #
-  output$view1_summary_plot <- renderPlot({
-    v1_summary_plot()
+  output$report_plot_output <- renderPlot({
+    report_plot()
   }, width = function() {
     ifelse(isTRUE(getOption("shiny.testmode")), 717, "auto")
   })
@@ -2445,8 +2437,8 @@ app_server <- function(input, output, session) {
     if (!is.null(cur_button())) {
       cur_button(NULL)
       # Trigger a re-render of the html summary report's barplot
-      output$view1_summary_plot <- renderPlot({
-        v1_summary_plot()
+      output$report_plot_output <- renderPlot({
+        report_plot()
       }, width = function() {
         ifelse(isTRUE(getOption("shiny.testmode")), 717, "auto")
       })
@@ -2489,6 +2481,9 @@ app_server <- function(input, output, session) {
 
   #. ####
   #############################################################################  #
+  # REPORT Multisite - CREATE FILE ####
+
+    ### ejam2report() ####
 
   downloadable_file_report_multisite <- reactive({
 
@@ -2551,9 +2546,9 @@ app_server <- function(input, output, session) {
     report_path
   })
   ##############################################  #
-  # REPORT Overall/Multisite Summary - for DOWNLOAD ####
+  # REPORT Multisite - DOWNLOAD FILE ####
 
-  ### ejam2report() in Overall downloadHandler() ####
+  ### downloadHandler() ####
 
   output$download_report_multisite <- downloadHandler(
 
@@ -2763,32 +2758,45 @@ app_server <- function(input, output, session) {
       wb_out <- ejam2excel(
 
         ejamitout = data_processed(),
-        fname = fname,
-        # PLOT
-        ok2plot = input$ok2plot,
-        react.v1_summary_plot = v1_summary_plot(),
 
+        fname = fname,
+        save_now = FALSE, # not the default of that function
+        # overwrite
         launchexcel = FALSE,
+        interactive_console = FALSE, # not the default of that function
+        in.testing = input$testing,
+        updateProgress = updateProgress_xl,
+
+        analysis_title = sanitized_analysis_title(),
+        site_method = submitted_upload_method(),
+
         radius_or_buffer_in_miles = sanitized_radius_now(),
         radius_or_buffer_description = NULL, # radius_or_buffer_description, # the function will figure it out
         buffer_desc = NULL, # "Selected Locations", # the function will figure it out
-        in.analysis_title = sanitized_analysis_title(),
-        save_now = FALSE,
-        interactive_console = FALSE,
-        in.testing = input$testing,
 
+        # specify columns with URLs/links to 1-site reports, etc.
         reports = EJAM:::global_or_param("default_reports"), # could use here just to limit which report URL columns get saved - if not already created in data_processed() this will not create them!
 
+        # plot
+        ok2plot = input$ok2plot,
+        report_plot = report_plot(),
+
+        # map
         mapadd = FALSE, # redundant if getting report as a tab since report has map snapshot
         report_map = NULL,
 
-        # multisite report to be saved as snapshot in a tab
+        # polygons
+        # shp =  ???
+
+        # html summary report to paste into a tab as static snapshot image
         community_reportadd = TRUE,
         community_html = report_header_and_tables_html_file_path,
 
-        site_method = submitted_upload_method(),
-        #show_ratios_in_excel = input$calculate_ratios,
-        updateProgress = updateProgress_xl
+        ## notes tab, etc. - use defaults:
+        notes = NULL
+        # custom_tab
+        # custom_tab_name
+        # ejscreen_ejam_caveat
       )
 
       progress_xl$close()
@@ -3074,8 +3082,8 @@ app_server <- function(input, output, session) {
             demog_table = v1_demog_table(),
             # demog_table_placeholder_png = "demog_table_placeholder.png",
             # demog_table_placeholder_rda = "demog_table_placeholder.rda",
-            boxplot =     v1_summary_plot(), # actually a barplot
-            ## also note  v1_summary_plot_state()
+            boxplot =     report_plot(), # actually a barplot
+            ## also note  report_plot_state()
             # boxplot_placeholder_png =         "boxplot_placeholder.png",
             # barplot= NA
             # barplot_placeholder_png =         "barplot_placeholder.png",

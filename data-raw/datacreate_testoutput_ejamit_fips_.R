@@ -33,7 +33,7 @@ EJAM:::dataset_documenter("testoutput_ejamit_fips_cities", description = "This i
 fname <- paste0("testoutput_ejamit_fips_counties" )  #  COUNTIES
 junk <- ejam2excel(
   (testoutput_ejamit_fips_counties),
-  in.analysis_title = "Example of outputs of ejamit(fips= testinput_fips_counties) for Counties being formatted and saved using ejam2excel()",
+  analysis_title = "Example of outputs of ejamit(fips= testinput_fips_counties) for Counties being formatted and saved using ejam2excel()",
   radius_or_buffer_in_miles = 0,
   # buffer_desc = paste0("Within ", myrad, " miles"),
   fname = paste0("./inst/testdata/examples_of_output/", fname, ".xlsx"),
@@ -51,7 +51,7 @@ junk <- ejam2excel(
   fname <- paste0("testoutput_ejam2excel_fips_cities" )  #  CITIES
   junk <- ejam2excel(
      (testoutput_ejamit_fips_cities),
-    in.analysis_title = "Example of outputs of ejamit(fips= testinput_fips_cities) being formatted and saved using ejam2excel()",
+     analysis_title = "Example of outputs of ejamit(fips= testinput_fips_cities) being formatted and saved using ejam2excel()",
     radius_or_buffer_in_miles = 0,
     # buffer_desc = paste0("Within ", myrad, " miles"),
     fname = paste0("./inst/testdata/examples_of_output/", fname, ".xlsx"),

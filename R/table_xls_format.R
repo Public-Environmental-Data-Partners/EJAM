@@ -4,31 +4,41 @@
 #'
 #' @param overall  table to save in one tab, from ejamit()$results_overall, EJAM analysis of indicators overall (one row),
 #'   but if entire output of ejamit() is passed as if it were overall, function figures out eachsite, etc.
-#' @param eachsite table to save in one tab, from ejamit()$results_bysite, EJAM analysis site by site (one row per site)
-#' @param longnames vector of indicator names to display in Excel table
 #' @param formatted optional table to save in one tab, from ejamit()$results_overall, EJAM analysis overall in different format
+#' @param eachsite table to save in one tab, from ejamit()$results_bysite, EJAM analysis site by site (one row per site)
 #' @param bybg Optional large table of details of each blockgroup that is only needed to analyze distances by group.
-#' @param sitetype normally would be like ejamit()$sitetype
+#' @param longnames vector of indicator names to display in Excel table
 #'
-#' @param plot_distance_by_group logical, whether to try to add a plot of mean distance by group.
-#'   This requires that bybg be provided as a parameter input to this function.
-#' @param summary_plot optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table
-#' @param plotlatest optional logical. If TRUE, the most recently displayed plot (prior to this function being called) will be inserted into a tab called plot2
-#' @param plotfilename the full path including name of .png file to insert
-#' @param ok2plot can set to FALSE to prevent plots from being attempted, while debugging
-#'
-#' @param mapadd logical optional - try to include a map of the points
-#' @param report_map leaflet map object passed from Shiny app to display in 'Map' sheet
-#' @param community_reportadd logical provided by shiny app to specify whether to include community report image
-#' @param community_html HTML file of community report provided by shiny app to include in spreadsheet
+#' @param saveas If not NULL, and a valid path with filename.xlsx is provided,
+#'    the workbook will be saved locally at that path and name unless overwrite=FALSE.
+#' @param overwrite optional whether to save even if existing file path already has a file
+#' @param launchexcel Set to TRUE to have this function launch Excel immediately, showing the final workbook created here.
+#' @param testing optional for testing only
+#' @param updateProgress optional Shiny progress bar to update during formatting
 #'
 #' @param analysis_title optional title passed from Shiny app to 'Notes' sheet
-#' @param buffer_desc optional description of buffer used in analysis, passed to 'Notes' sheet
+#' @param sitetype normally would be like ejamit()$sitetype
+#'
 #' @param radius_or_buffer_in_miles If provided, miles buffer distance (from polygon or from point if circular buffers)
 #' @param radius_or_buffer_description optional text saying if distance is radius or polygon buffer, passed to 'Notes' sheet
-#' @param notes Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.
-#' @param custom_tab optional table to put in an extra tab
-#' @param custom_tab_name optional name of optional custom_tab
+#' @param buffer_desc optional description of buffer used in analysis, passed to 'Notes' sheet
+#'
+#' @param reports info about which columns to treat as URLs that should be hyperlinks -
+#'   see [url_columns_bysite]
+#'
+#' @param ok2plot can set to FALSE to prevent plots from being attempted, while debugging
+#' @param report_plot optional plot object passed from EJAM shiny app to save in 'Plot' sheet of Excel table
+#' @param plot_distance_by_group logical, whether to try to add a plot of mean distance by group.
+#'   This requires that bybg be provided as a parameter input to this function.
+#' @param plotlatest optional logical. If TRUE, the most recently displayed plot (prior to this function being called) will be inserted into a tab called plot2
+#' @param plotfilename the full path including name of .png file to insert
+#'
+#' @param mapadd optional logical, whether to add a tab with a map of the sites.
+#'   If report tab is added, though, standalone static map in excel tab is redundant.
+#' @param report_map leaflet map object passed from Shiny app to display in 'Map' sheet
+#'
+#' @param community_reportadd Logical, whether to add a tab with a static copy of the summary report (tables, map, barplot).
+#' @param community_html HTML file of community report provided by shiny app to include in spreadsheet
 #'
 #' @param heatmap_colnames optional vector of colnames to apply heatmap colors, defaults to percentiles
 #' @param heatmap_cuts vector of values to separate heatmap colors, between 0-100 for percentiles
@@ -40,21 +50,16 @@
 #' @param heatmap2_cuts  like heatmap_cuts but for ratios by default
 #' @param heatmap2_colors like heatmap_colors but for ratios
 #'
-#' @param reports info about which columns to treat as URLs that should be hyperlinks -
-#'   see [url_columns_bysite]
-#'
 #' @param graycolnames which columns to de-emphasize
-#' @param narrowcolnames which column numbers to make narrow
 #' @param graycolor color used to de-emphasize some columns
+#' @param narrowcolnames which column numbers to make narrow
 #' @param narrow6 how narrow
-#' @param launchexcel Set to TRUE to have this function launch Excel immediately, showing the final workbook created here.
-#' @param saveas If not NULL, and a valid path with filename.xlsx is provided,
-#'    the workbook will be saved locally at that path and name. Warning: it will overwrite an existing file.
 #'
-#' @param testing optional for testing only
-#' @param updateProgress optional Shiny progress bar to update during formatting
+#' @param notes Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.
+#' @param custom_tab optional table to put in an extra tab
+#' @param custom_tab_name optional name of optional custom_tab
 #' @param ejscreen_ejam_caveat optional text if you want to change this in the notes tab
-#' @param ... other params passed along to [openxlsx::writeData()]
+#' @param ... unused
 #'
 #' @seealso [ejam2excel()] and related functions like [table_xls_from_ejam()]
 #' @return a workbook, ready to be saved in spreadsheet format, with tabs like "Overall" and "Each Site"
@@ -70,35 +75,56 @@
 #'
 #' @keywords internal
 #'
-table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, bybg=NULL,
-                             sitetype = NULL,
-                             plot_distance_by_group = FALSE,
-                             summary_plot = NULL,
-                             plotlatest = FALSE,
-                             plotfilename = NULL,
-                             ok2plot = TRUE,
+table_xls_format <- function(overall,
+                             formatted = NULL,
+                             eachsite,
+                             bybg = NULL,
+                             longnames = NULL,
 
-                             mapadd = FALSE,
-                             report_map = NULL,
-                             community_reportadd = FALSE,
-                             community_html = NULL,
+                             saveas = NULL,
+                             overwrite = TRUE,
+                             launchexcel = FALSE,
+                             testing = FALSE,
+                             updateProgress = NULL,
 
                              analysis_title = "EJAM analysis",
+                             sitetype = NULL,
+
                              radius_or_buffer_in_miles = NULL,
                              radius_or_buffer_description = 'Miles radius of circular buffer (or distance used if buffering around polygons)',
                              buffer_desc = "Selected Locations",
-                             notes = NULL,
-                             custom_tab = NULL, custom_tab_name = "other",
 
-                             heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
-                             heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
-
+                             # specify columns with URLs/links to 1-site reports, etc.
                              reports = EJAM:::global_or_param("default_reports"),
 
-                             graycolnames = NULL, narrowcolnames = NULL, graycolor = 'gray', narrow6 = 6,
+                             # plot
+                             ok2plot = TRUE,
+                             report_plot = NULL,
+                             plot_distance_by_group = FALSE,
+                             plotlatest = FALSE,
+                             plotfilename = NULL,
 
-                             testing = FALSE, updateProgress = NULL,
-                             launchexcel = FALSE, saveas = NULL,
+                             # map
+                             mapadd = FALSE,
+                             report_map = NULL,
+
+                             # polygons
+                             # shp is not needed since now report already is here and has map, and hyperlinks are already in eachsite table.
+
+                             # html summary report to paste into a tab as static snapshot image
+                             community_reportadd = FALSE,
+                             community_html = NULL,
+
+                             # column formatting
+                             heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
+                             heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                             graycolnames = NULL, graycolor = 'gray',
+                             narrowcolnames = NULL, narrow6 = 6,
+
+                             # notes tab, etc.
+                             notes = NULL,
+                             custom_tab = NULL,         # but default in ejam2excel is  ejamitout$results_summarized$cols
+                             custom_tab_name = "other", # but default in ejam2excel is  "thresholds"
                              ejscreen_ejam_caveat = NULL,
                              ...) {
 
@@ -202,7 +228,6 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
     }
   }
 
-
   if (!is.null(narrowcolnames) && !all(narrowcolnames %in% names(eachsite)))   {
     warning('all column names in narrowcolnames should be found in eachsite table')
     narrowcolnames <- intersect(narrowcolnames, names(eachsite))
@@ -261,33 +286,33 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
                            width = 9, height = 7)
     }
   }
-  ### *summary_plot (ratios) ####
+  ### *report_plot (ratios) ####
   if (ok2plot) {
-    if (is.null(summary_plot)) {
+    if (is.null(report_plot)) {
       # None provided so try to create one anyway?
       # example: plot_barplot_ratios( unlist( testoutput_ejamit_1000pts_1miles$results_overall[ , c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ]))
       if (all(c(names_d_ratio_to_avg , names_d_subgroups_ratio_to_avg) %in% names(overall))) {
         if (testing) {cat('plotting ratios to avg by group\n')}
         if (data.table::is.data.table(overall)) {
-          summary_plot <- try(
+          report_plot <- try(
             plot_barplot_ratios(unlist( overall[ , c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ]),
                                 shortlabels = fixcolnames(c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), oldtype = 'r', newtype = 'shortlabel')
             ),
             silent = TRUE
           )
         } else {
-          summary_plot <- try(
+          report_plot <- try(
             plot_barplot_ratios(unlist(as.data.frame(overall[ , c(names_d_ratio_to_avg , names_d_subgroups_ratio_to_avg) ])),
                                 shortlabels = fixcolnames(c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), oldtype = 'r', newtype = 'shortlabel')
             ),
             silent = TRUE
           )
         }
-        if (inherits(summary_plot, "try-error")) {
+        if (inherits(report_plot, "try-error")) {
           warning('cannot create plot_barplot_ratios() output')
           cat('cannot create plot_barplot_ratios() output\n')
         } else {
-          print(summary_plot)
+          print(report_plot)
           openxlsx::addWorksheet(wb, sheetName = "plot_ratios",  gridLines = FALSE)
           openxlsx::insertPlot(wb, "plot_ratios", width = 9, height = 7) # The current plot is saved to a temporary image file using dev.copy. This file is then written to the workbook using insertImage.
         }
@@ -295,14 +320,14 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
         cat('cannot create plot_barplot_ratios() output because not all ratio columns are present - probably because calculate_ratios = FALSE \n')
       }
     } else {
-      # add summary_plot ggplot object  to 'plot' sheet of Excel download
-      if (testing) {cat('adding summary_plot (ggplot output) that was provided\n')}
+      # add report_plot ggplot object  to 'plot' sheet of Excel download
+      if (testing) {cat('adding report_plot (ggplot output) that was provided\n')}
       mytempdir <- tempdir() # did not work on server?
       openxlsx::addWorksheet(wb, sheetName = "plot_ratios",  gridLines = FALSE)
-      ggplot2::ggsave(filename = paste0(mytempdir, '/', 'summary_plot.png'), plot = summary_plot,
+      ggplot2::ggsave(filename = paste0(mytempdir, '/', 'report_plot.png'), plot = report_plot,
                       width = 9, height = 7, units = 'in')
       openxlsx::insertImage(wb, sheet = 'plot_ratios',
-                            file = paste0(mytempdir, '/', 'summary_plot.png'),
+                            file = paste0(mytempdir, '/', 'report_plot.png'),
                             width = 9, height = 7)
     }
   }
@@ -451,14 +476,14 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
   # Row height for "Note on site-specific estimates"
   openxlsx::setRowHeights(wb, sheet = 'notes', rows = 8, heights = 91)
   openxlsx::setRowHeights(wb, sheet = 'notes', rows = 9, heights = 120)
-  openxlsx::setColWidths( wb, sheet = 'notes', cols = 1:4,            widths = "auto") # in general ok to auto-width, but...
+  openxlsx::setColWidths( wb, sheet = 'notes', cols = 1:4,            widths = "auto") # in general ok to auto-width, but
   openxlsx::setColWidths( wb, sheet = 'notes', cols = 2, widths = 70) # so the long caveat can wrap
   openxlsx::addStyle(     wb, sheet = 'notes', rows = 1:(usernoterows + NROW(notes_df)), cols = 2, style = openxlsx::createStyle(wrapText = TRUE), stack = TRUE) # so the long caveat wraps
   ######################################################################## #
 
   ## CUSTOM - custom_tab ####
 
-  if (!is.null(custom_tab)) {
+  if (!is.null(custom_tab) && !is.null(custom_tab_name)) {
     openxlsx::addWorksheet(wb, sheetName = custom_tab_name)
     openxlsx::writeData(   wb, sheet = custom_tab_name, x = custom_tab)
     openxlsx::setColWidths(wb, sheet = custom_tab_name, cols = 1:8, widths = 21.45) # so the header row text can wrap
@@ -477,8 +502,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
                       sheet = 'Overall', x = overall,
                       xy = c(1,1), colNames = TRUE,
                       withFilter = FALSE,
-                      keepNA = FALSE, # NA converted to blank or to #N/A
-                      ...
+                      keepNA = FALSE  # NA converted to blank or to #N/A
   )
   ######################################################################## #
   # CHANGE SO IT IS NOT data.table,
@@ -518,16 +542,14 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
                       sheet = 'Each Site', x = eachsite,
                       xy = c(1,1), colNames = TRUE,
                       withFilter = TRUE, # not sure if this gets undone when we later write more data to worksheet
-                      keepNA = FALSE,   # NA converted to blank or to #N/A
-                      ...
+                      keepNA = FALSE    # NA converted to blank or to #N/A
   )
 
   # openxlsx::writeData(wb,
   #                     sheet = 'longnames', x = cbind(longnames = longnames, rname = headers_eachsite ),
   #                     xy = c(1,1), colNames = TRUE,
   #                     withFilter = FALSE,
-  #                     keepNA = FALSE,
-  #                     ...
+  #                     keepNA = FALSE
   # )
   if (!is.null(formatted)) {
     openxlsx::writeData(wb,
@@ -737,7 +759,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
 
     for (i in 1:length(heatmap_colors)) {
       if (testing) {
-        cat('heatmap_colnames ', paste0(heatmap_colnames, collapse = ", ") , '\n ... at heatmap_colnums =   \n', paste0(heatmap_colnums, collapse = ", "),' --- for color ', heatmap_colors[i], '\n')
+        cat('heatmap_colnames ', paste0(heatmap_colnames, collapse = ", ") , '\n -- at heatmap_colnums =   \n', paste0(heatmap_colnums, collapse = ", "),' --- for color ', heatmap_colors[i], '\n')
         cat("\n\n")}
       style_cur <- openxlsx::createStyle( bgFill = heatmap_colors[i] )
 
@@ -769,7 +791,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
 
   for (i in 1:length(heatmap2_colors)) {
     if (testing) {
-      cat('heatmap2_colnames ', paste0(heatmap2_colnames, collapse = ", ") , '\n ... at heatmap2_colnums =   \n', paste0(heatmap2_colnums, collapse = ", "),' --- for color ', heatmap2_colors[i], '\n')
+      cat('heatmap2_colnames ', paste0(heatmap2_colnames, collapse = ", ") , '\n -- at heatmap2_colnums =   \n', paste0(heatmap2_colnums, collapse = ", "),' --- for color ', heatmap2_colors[i], '\n')
       cat("\n\n")}
     style_cur <- openxlsx::createStyle( bgFill = heatmap2_colors[i] )
 
@@ -925,7 +947,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
 
   # LAUNCH EXCEL before saving ####
 
-  if (launchexcel) { #   && !shiny::isRunning()   ?
+  if (isTRUE(launchexcel)) { #   && !shiny::isRunning()   ?
     openxlsx::openXL(wb)
   }
 
@@ -942,7 +964,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
       xext = gsub(".*\\.(x.*)","\\1", fname)
       if (xext %in% c("xls", "xlsx")) {
         attempt = try(
-          openxlsx::saveWorkbook(wb, file = saveas, overwrite = TRUE),
+          openxlsx::saveWorkbook(wb, file = saveas, overwrite = overwrite),
           silent = TRUE
         )
         if (testing) {cat('Saving as ', saveas, '\n')}
@@ -1000,108 +1022,112 @@ vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
   # for shading headers in Excel of results
   coloring <- matrix(
     c(
-      'ratio_other',                "lightblue",  #  '#FFD700', # "gold"
-      "usratio_other",                "lightblue",  #   '#FFD700', # "gold"
-      "stateratio_other",             "lightblue2",  #  '#FFA500', # "orange"
+      ############################## #
 
-      'ratio_Environmental',                "green2",  #  '#FFD700', # "gold"
-      "usratio_Environmental",                "green2",  #   '#FFD700', # "gold"
-      "stateratio_Environmental",             "green1",  #  '#FFA500', # "orange"
+      'ratio_other',              "lightblue",  #  '#FFD700', # "gold"
+      "usratio_other",            "lightblue",  #   '#FFD700', # "gold"
+      "stateratio_other",         "lightblue2",  #  '#FFA500', # "orange"
 
-      'ratio_Demographic',                "turquoise2",  #  '#FFD700', # "gold"
-      "usratio_Demographic",                "turquoise2",  #   '#FFD700', # "gold"
-      "stateratio_Demographic",             "turquoise1",  #  '#FFA500', # "orange"
+      'ratio_Environmental',      "green2",  #  '#FFD700', # "gold"
+      "usratio_Environmental",    "green2",  #   '#FFD700', # "gold"
+      "stateratio_Environmental", "green1",  #  '#FFA500', # "orange"
 
-      'ratio_Summary Index',                "mistyrose3",  #  '#FFD700', # "gold"
-      "usratio_Summary Index",                "mistyrose3",  #   '#FFD700', # "gold"
-      "stateratio_Summary Index",             "mistyrose2",  #  '#FFA500', # "orange"
+      'ratio_Demographic',        "turquoise2",  #  '#FFD700', # "gold"
+      "usratio_Demographic",      "turquoise2",  #   '#FFD700', # "gold"
+      "stateratio_Demographic",   "turquoise1",  #  '#FFA500', # "orange"
+
+      'ratio_Summary Index',      "mistyrose3",  #  '#FFD700', # "gold"
+      "usratio_Summary Index",    "mistyrose3",  #   '#FFD700', # "gold"
+      "stateratio_Summary Index", "mistyrose2",  #  '#FFA500', # "orange"
       # aka
-      'ratio_EJ Index',                "mistyrose3",  #  '#FFD700', # "gold"
-      "usratio_EJ Index",                "mistyrose3",  #   '#FFD700', # "gold"
-      "stateratio_EJ Index",             "mistyrose2",  #  '#FFA500', # "orange"
+      'ratio_EJ Index',           "mistyrose3",  #  '#FFD700', # "gold"
+      "usratio_EJ Index",         "mistyrose3",  #   '#FFD700', # "gold"
+      "stateratio_EJ Index",      "mistyrose2",  #  '#FFA500', # "orange"
+      ############################## #
 
+      'percentile_other',           'gray95', #
+      "uspctile_other",             'gray95', #
+      "statepctile_other",          "gray98"   , #
 
-      'percentile_other',              'gray95', #
-      "uspctile_other",                'gray95', #
-      "statepctile_other",            "gray98"   , #
+      'percentile_Environmental',   'palegreen2', #  "lightblue"
+      "uspctile_Environmental",     'palegreen2', #  "lightblue"
+      "statepctile_Environmental",  "palegreen1"   , #
 
-      'percentile_Environmental',              'palegreen2', #  "lightblue"
-      "uspctile_Environmental",                'palegreen2', #  "lightblue"
-      "statepctile_Environmental",            "palegreen1"   , #
+      'percentile_Demographic',     'skyblue2', #  "lightblue"
+      "uspctile_Demographic",       'skyblue2', #  "lightblue"
+      "statepctile_Demographic",    "skyblue1"   , #
 
-      'percentile_Demographic',              'skyblue2', #  "lightblue"
-      "uspctile_Demographic",               'skyblue2', #  "lightblue"
-      "statepctile_Demographic",            "skyblue1"   , #
-
-      ' percentile_Summary Index',              'mistyrose3', #  "lightblue"
-      "uspctile_Summary Index",                'mistyrose3', #  "lightblue"
-      "statepctile_Summary Index",            "mistyrose2"   , #
+      ' percentile_Summary Index',  'mistyrose3', #  "lightblue"
+      "uspctile_Summary Index",     'mistyrose3', #  "lightblue"
+      "statepctile_Summary Index",  "mistyrose2"   , #
       # aka
-      ' percentile_EJ Index',              'mistyrose3', #  "lightblue"
-      "uspctile_EJ Index",                'mistyrose3', #  "lightblue"
-      "statepctile_EJ Index",            "mistyrose2"   , #
+      ' percentile_EJ Index',       'mistyrose3', #  "lightblue"
+      "uspctile_EJ Index",          'mistyrose3', #  "lightblue"
+      "statepctile_EJ Index",       "mistyrose2"   , #
+      ############################## #
 
-      'raw data for indicator_other' , "gray95", # "gray90", # '#FFD700', # "orange"
-      "raw_other",                    "gray95", # "gray90", # # '#FFD700', # "orange"
-      "usraw_other",                   "gray95", # "gray90", #  '#FFD700', # "orange"
-      "stateraw_other",                "gray98", # '#FFA500', # "orange"
+      'raw data for indicator_other',         "gray95", # "gray90", # '#FFD700', # "orange"
+      "raw_other",                            "gray95", # "gray90", # # '#FFD700', # "orange"
+      "usraw_other",                          "gray95", # "gray90", #  '#FFD700', # "orange"
+      "stateraw_other",                       "gray98", # '#FFA500', # "orange"
 
-      'raw data for indicator_Environmental' , "palegreen3", # "gray90", # '#FFD700', # "orange"
+      'raw data for indicator_Environmental', "palegreen3", # "gray90", # '#FFD700', # "orange"
       "raw_Environmental",                    "palegreen3", # "gray90", # # '#FFD700', # "orange"
-      "usraw_Environmental",                   "palegreen3", # "gray90", #  '#FFD700', # "orange"
-      "stateraw_Environmental",                "palegreen2", # '#FFA500', # "orange"
+      "usraw_Environmental",                  "palegreen3", # "gray90", #  '#FFD700', # "orange"
+      "stateraw_Environmental",               "palegreen2", # '#FFA500', # "orange"
 
-      'raw data for indicator_Demographic' , "lightcyan2", # "gray90", # '#FFD700', # "orange"
-      "raw_Demographic",                    "lightcyan2", # "gray90", # # '#FFD700', # "orange"
-      "usraw_Demographic",                   "lightcyan2", # "gray90", #  '#FFD700', # "orange"
-      "stateraw_Demographic",                "lightcyan", # '#FFA500', # "orange"
+      'raw data for indicator_Demographic',   "lightcyan2", # "gray90", # '#FFD700', # "orange"
+      "raw_Demographic",                      "lightcyan2", # "gray90", # # '#FFD700', # "orange"
+      "usraw_Demographic",                    "lightcyan2", # "gray90", #  '#FFD700', # "orange"
+      "stateraw_Demographic",                 "lightcyan", # '#FFA500', # "orange"
 
-      'raw data for indicator_Summary Index' , "mistyrose4", # "gray90", # '#FFD700', # "orange"
+      'raw data for indicator_Summary Index', "mistyrose4", # "gray90", # '#FFD700', # "orange"
       "raw_Summary Index",                    "mistyrose4", # "gray90", # # '#FFD700', # "orange"
-      "usraw_Summary Index",                   "mistyrose4", # "gray90", #  '#FFD700', # "orange"
-      "stateraw_Summary Index",                "mistyrose3", # '#FFA500', # "orange"
+      "usraw_Summary Index",                  "mistyrose4", # "gray90", #  '#FFD700', # "orange"
+      "stateraw_Summary Index",               "mistyrose3", # '#FFA500', # "orange"
       # aka
-      'raw data for indicator_EJ Index' , "mistyrose4", # "gray90", # '#FFD700', # "orange"
-      "raw_EJ Index",                    "mistyrose4", # "gray90", # # '#FFD700', # "orange"
-      "usraw_EJ Index",                   "mistyrose4", # "gray90", #  '#FFD700', # "orange"
-      "stateraw_EJ Index",                "mistyrose3", # '#FFA500', # "orange"
+      'raw data for indicator_EJ Index',      "mistyrose4", # "gray90", # '#FFD700', # "orange"
+      "raw_EJ Index",                         "mistyrose4", # "gray90", # # '#FFD700', # "orange"
+      "usraw_EJ Index",                       "mistyrose4", # "gray90", #  '#FFD700', # "orange"
+      "stateraw_EJ Index",                    "mistyrose3", # '#FFA500', # "orange"
+      ############################## #
 
+      'average_other',             "grey70" , # '#90EE90', # "lightgreen"
+      "usavg_other",               "grey70" ,  #  '#90EE90', # "lightgreen"
+      "stateavg_other",            "gray80" ,
 
-      'average_other',                 "grey70" , # '#90EE90', # "lightgreen"
-      "usavg_other",                  "grey70" ,  #  '#90EE90', # "lightgreen"
-      "stateavg_other",              "gray80" ,
+      'average_Environmental',     "palegreen4" , # '#90EE90', # "lightgreen"
+      "usavg_Environmental",       "palegreen4" ,  #  '#90EE90', # "lightgreen"
+      "stateavg_Environmental",    "palegreen4" ,
 
-      'average_Environmental',                 "palegreen4" , # '#90EE90', # "lightgreen"
-      "usavg_Environmental",                  "palegreen4" ,  #  '#90EE90', # "lightgreen"
-      "stateavg_Environmental",              "palegreen4" ,
+      'average_Demographic',       "lightcyan3" , # '#90EE90', # "lightgreen"
+      "usavg_Demographic",         "lightcyan3" ,  #  '#90EE90', # "lightgreen"
+      "stateavg_Demographic",      "lightcyan2" ,
 
-      'average_Demographic',                 "lightcyan3" , # '#90EE90', # "lightgreen"
-      "usavg_Demographic",                  "lightcyan3" ,  #  '#90EE90', # "lightgreen"
-      "stateavg_Demographic",              "lightcyan2" ,
-
-      'average_Summary Index',                 "mistyrose4" , # '#90EE90', # "lightgreen"
-      "usavg_Summary Index",                  "mistyrose4" ,  #  '#90EE90', # "lightgreen"
-      "stateavg_Summary Index",              "mistyrose3" ,
+      'average_Summary Index',     "mistyrose4" , # '#90EE90', # "lightgreen"
+      "usavg_Summary Index",       "mistyrose4" ,  #  '#90EE90', # "lightgreen"
+      "stateavg_Summary Index",    "mistyrose3" ,
       # aka
-      'average_EJ Index',                 "mistyrose4" , # '#90EE90', # "lightgreen"
-      "usavg_EJ Index",                  "mistyrose4" ,  #  '#90EE90', # "lightgreen"
-      "stateavg_EJ Index",              "mistyrose3" ,
+      'average_EJ Index',          "mistyrose4" , # '#90EE90', # "lightgreen"
+      "usavg_EJ Index",            "mistyrose4" ,  #  '#90EE90', # "lightgreen"
+      "stateavg_EJ Index",         "mistyrose3" ,
+      ############################## #
 
-
-      'count demog_other',               "white",
+      'count demog_other',         "white",
       'misc_other',                "white",   # '#BEBEBE'  # "gray"
 
-      'count demog_Environmental',         'darkgreen',
-      'misc_Environmental',                "darkgreen",   # '#BEBEBE'  # "gray"
+      'count demog_Environmental', 'darkgreen',
+      'misc_Environmental',        "darkgreen",   # '#BEBEBE'  # "gray"
 
-      'count demog_Demographic',             "white",
-      'misc_Demographic',                "white",   # '#BEBEBE'  # "gray"
+      'count demog_Demographic',   "white",
+      'misc_Demographic',          "white",   # '#BEBEBE'  # "gray"
 
-      'count demog_Summary Index',             'lightcyan4', #
-      'misc_Summary Index',                "lightcyan4",
+      'count demog_Summary Index', 'lightcyan4', #
+      'misc_Summary Index',        "lightcyan4",
       # aka
-      'count demog_EJ Index',             'lightcyan4', #
-      'misc_EJ Index',                "lightcyan4"
+      'count demog_EJ Index',      'lightcyan4', #
+      'misc_EJ Index',             "lightcyan4"
+      ############################## #
 
     ),
     ncol = 2, byrow = TRUE

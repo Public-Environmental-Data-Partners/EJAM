@@ -169,8 +169,10 @@ test_that("ejam_uniq_id ok", {
   )
 
   expect_no_error({
+    suppressWarnings({
     x = checkit(test1_with_id)
-  })
+    })
+    })
 
   # > x
   #            sitetype             radius  nsites ejam_uniq_id                                                                                              text
