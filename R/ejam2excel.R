@@ -203,7 +203,7 @@ ejam2excel <- function(ejamitout,
     custom_tab = custom_tab,
     custom_tab_name = custom_tab_name,
     ejscreen_ejam_caveat = ejscreen_ejam_caveat,
-    ... = ...
+    ...
   )
   # tips on how to see the file are printed to console by helpers already
 
