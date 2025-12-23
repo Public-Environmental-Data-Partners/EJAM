@@ -1217,7 +1217,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                         sitetype_nullna = " place",
                                         linefeed = "<br>",
                                         addlatlon = TRUE, lat = NULL, lon = NULL,
-                                        show_fips_name = FALSE
+                                        show_fips_name = TRUE # FALSE if called from report_residents_within_xyz_from_ejamit() but TRUE here since not sure we have it in an analysis title
 ) {
 
   # round radius only if it is a number, since this func can handle a phrase like radius = "seven kilometers from"
@@ -1279,7 +1279,12 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
           seems_like_fips = suppressWarnings(!is.na(as.numeric(ejam_uniq_id)))
           if (seems_like_fips) {
             if (show_fips_name) {
-              fipsname <- paste0(fips2name(ejam_uniq_id), ", ")
+              placename = fips2name(ejam_uniq_id)
+              if (is.null(placename) || is.na(placename) || nchar(placename) < 2) {
+                fipsname = ""
+                } else {
+              fipsname <- paste0(placename, ", ")
+                }
             } else {
               fipsname <- ""
             }
