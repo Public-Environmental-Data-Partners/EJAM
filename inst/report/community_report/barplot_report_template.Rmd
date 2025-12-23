@@ -12,8 +12,8 @@ params:
   in_shiny: FALSE
   filename: NULL
   map: NULL
-  summary_plot: NULL
-  summary_plot_state: NULL
+  report_plot: NULL
+  report_plot_state: NULL
   report_title: NULL
   logo_path: NULL
   logo_html: NULL
@@ -57,9 +57,9 @@ build_barplot_report(
 HTML('<br>')
 ```
 
-```{r summary_plot, out.width='90%', fig.align='center'}
+```{r report_plot, out.width='90%', fig.align='center'}
 
-params$summary_plot
+params$report_plot
 
 ```
 
@@ -67,9 +67,9 @@ params$summary_plot
 HTML('<br>')
 ```
 
-```{r summary_plot_state, out.width='90%', fig.align='center'}
+```{r report_plot_state, out.width='90%', fig.align='center'}
 
-params$summary_plot_state
+params$report_plot_state
 
 ```
 
