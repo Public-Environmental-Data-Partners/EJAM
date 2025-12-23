@@ -108,7 +108,7 @@ table_xls_format <- function(overall, eachsite, longnames=NULL, formatted=NULL, 
   }
 
   if (is.null(ejscreen_ejam_caveat)) {
-    ejscreen_ejam_caveat <- "Some numbers as shown on pre-2025 EPA EJSCREEN reports using ACS 2018-2022 in some cases were very slightly different than estimates in 2025 EJSCREEN reports (as calculations were transitioned from EPA to non-EPA software based on EJAM). All numbers shown in both types of reports are estimates, and any differences are well within the range of uncertainty inherent in the American Community Survey data as used in EJSCREEN. Slight differences are inherent in very quickly calculating results for multiple locations."
+    ejscreen_ejam_caveat <- "Numbers shown in EJSCREEN reports are estimates, and there is uncertainty inherent in the data sources and methods, such as the American Community Survey data as used in EJSCREEN to estimate statistics for residents in a certain area."
   }
 
   if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  && isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &&
