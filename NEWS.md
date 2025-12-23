@@ -12,10 +12,13 @@
   so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as 
   the server now does not have to re-render report for use in spreadsheet.
 - Multisite report and spreadsheet download buttons disabled until each is ready.
+- Spreadsheet file is now created automatically when results are done, so it will be available immmediately if/when a user decides to download it. 
 - Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
   might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
 - Renamed `ejam2excel()` parameters (in.analysis_title changed to analysis_title) to be consistent with `ejam2report()` parameter, or to simplify (react.v1_summary_plot changed to report_plot).
 - Other changes in preparation for next release
+
+- `ejamapp()` has new parameter aliases: "pts" is short for "sitepoints", "shp" is short for "shapefile", "analysis_title" or "default_analysis_title" will set analysis title in report header, and "report_title" or "default_report_title" will set overall title in topmost part of report header.
 
 # EJAM 2.32.6.003 (November 2025)
 

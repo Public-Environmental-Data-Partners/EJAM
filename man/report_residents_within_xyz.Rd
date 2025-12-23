@@ -20,7 +20,7 @@ report_residents_within_xyz(
   addlatlon = TRUE,
   lat = NULL,
   lon = NULL,
-  show_fips_name = FALSE
+  show_fips_name = TRUE
 )
 }
 \arguments{
