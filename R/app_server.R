@@ -320,7 +320,7 @@ app_server <- function(input, output, session) {
   #   }
   # })
 
-  # keep track of currently used method of site selection
+  # keep track of currently used method of site selection (also see submitted_upload_method reactive)
   current_upload_method <- reactive({
     req(input$testing)
     if (input$testing) {
@@ -332,16 +332,16 @@ app_server <- function(input, output, session) {
       as.character(input$ss_choose_method),
       'dropdown' = switch(input$ss_choose_method_drop,
                           NAICS =          "NAICS",     # 'NAICS (industry name or code)'
-                          EPA_PROGRAM =    "EPA_PROGRAM_sel",
+                          EPA_PROGRAM =    "EPA_PROGRAM_sel", #  NOTE "EPA_PROGRAM_up" AND "EPA_PROGRAM_sel" both are converted to just "EPA_PROGRAM"
                           SIC =            "SIC" ,
                           MACT =           "MACT",
-                          FIPS_PLACE =           "FIPS_PLACE"  # FROM fips picker
+                          FIPS_PLACE =           "FIPS_PLACE"  # FROM fips picker. NOTE "FIPS_PLACE" and "FIPS" are kept distinct
       ),
       'upload'   = switch(input$ss_choose_method_upload,
                           SHP =              "SHP",
                           latlon =           "latlon",    # 'Location (lat/lon)',
                           #latlontypedin =   "latlontypedin",
-                          EPA_PROGRAM =      "EPA_PROGRAM_up",
+                          EPA_PROGRAM =      "EPA_PROGRAM_up", #  NOTE "EPA_PROGRAM_up" AND "EPA_PROGRAM_sel" both are converted to just "EPA_PROGRAM"
                           FRS =              "FRS",       # 'FRS (facility ID)',
                           #ECHO =            "ECHO",      # 'ECHO Search Tools',
                           FIPS =             "FIPS")
@@ -1117,7 +1117,7 @@ app_server <- function(input, output, session) {
     data_fips_place(fips_vec)
 
   })  %>% shiny::bindEvent(input$fipspicker_done_button)
-  # END OF FIPS_PLACES fipspicker
+  # END OF FIPS_PLACE fipspicker
   ################################################################################### #
 
 
@@ -1291,8 +1291,10 @@ app_server <- function(input, output, session) {
       #} else if (current_upload_method() == 'ECHO'           ) {data_up_echo()        # enable if implemented/ready ***
     } else if (current_upload_method() == 'FRS'            ) {data_up_frs()
 
-    } else if (current_upload_method() == 'EPA_PROGRAM_sel') {data_up_epa_program_sel()
-    } else if (current_upload_method() == 'EPA_PROGRAM_up' ) {data_up_epa_program_up()
+    } else if (current_upload_method() == 'EPA_PROGRAM_sel') {data_up_epa_program_sel() # maybe not possible since stored there as 'EPA_PROGRAM'
+    } else if (current_upload_method() == 'EPA_PROGRAM_up' ) {data_up_epa_program_up() # maybe not possible since stored there as 'EPA_PROGRAM'
+    } else if (current_upload_method() == 'EPA_PROGRAM' ) {data_up_epa_program_up() # probably the only relevant one of these 3
+
     } else if (current_upload_method() == 'NAICS'          ) {data_up_naics()
     } else if (current_upload_method() == 'SIC'            ) {data_up_sic()
     } else if (current_upload_method() == 'MACT'           ) {data_up_mact()
@@ -1383,7 +1385,7 @@ app_server <- function(input, output, session) {
   ## initialize reactive for count of uploaded places
   #
   ## ideally recode to be flexible and depend on  default_choices_for_type_of_site_category, default_choices_for_type_of_site_upload
-  ## BUT EPA_PROGRAM_up and EPA_PROGRAM_sel were used due to overlap! and FIPS will overlap now too
+  ## BUT EPA_PROGRAM_up and EPA_PROGRAM_sel were used due to overlap! and note FIPS vs FIPS_PLACE
   # intersect(as.vector(default_choices_for_type_of_site_category), as.vector(default_choices_for_type_of_site_upload))
   ## otherwise this could work:
   # an_map_text_pts <-  reactiveValues()
@@ -1595,7 +1597,7 @@ app_server <- function(input, output, session) {
       'NAICS',
       'SIC',
       'MACT'
-      # note   FIPS and SHP types handled separately
+      # note   FIPS, FIPS_PLACE, and SHP types handled separately
     )
     for (this in these) {
       current_slider_val[[this]] <- sanitized_miles
@@ -1605,7 +1607,7 @@ app_server <- function(input, output, session) {
   # set/update based on advanced tab set by global_defaults_*.R and then might be changed by a user
 
   observe({
-    these <- c("FIPS", "FIPS_PLACE", "SHP") # but disabled for FIPS
+    these <- c("FIPS", "FIPS_PLACE", "SHP") # but disabled for FIPS etc
     for (this in these) {current_slider_val[[this]] <- input$radius_default_shapefile}
   }) %>% bindEvent(input$radius_default_shapefile)
 
