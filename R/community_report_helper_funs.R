@@ -1134,6 +1134,24 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
     lat = NULL
     lon = NULL
   }
+  # determine census unit type (e.g., "county" ) if sitetype is fips
+  if (sitetype %in% 'fips') {
+    if (is.null(ejam_uniq_id)) {
+      # results_overall being reported on, not 1 site
+      ft <- unique(fipstype(out$results_bysite$ejam_uniq_id))
+      if (length(ft) == 1 && !all(is.na(ft))) {
+        # ft is ok
+      } else {
+        ft <- "Census unit" # seems like a mix of types
+      }
+    } else {
+      # 1 site with known fips
+      ft <- fipstype(ejam_uniq_id)[1] # already subsetted to 1 site via sitenumber above but used [1] just to be sure
+    }
+    census_unit_type <- ft
+  } else {
+    census_unit_type <- NULL
+  }
 
   report_residents_within_xyz(
     text1 = text1,
@@ -1144,6 +1162,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
     sitenumber = sitenumber,  # only relevant for 1-site report
     ejam_uniq_id = ejam_uniq_id,
     sitetype = sitetype,
+    census_unit_type <- census_unit_type,
     # sitetype_nullna = " place", #  use the default always
     linefeed = linefeed,
     addlatlon = addlatlon, lat = lat, lon = lon,
@@ -1171,6 +1190,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
 #'   some singular custom text like "Georgia location" or "place"
 #'   but should be something that can be made plural by just adding "s" so ending with "site"
 #'   works better than ending with "... facility" since that would print as "facilitys" here.
+#' @param census_unit_type optional phrase like "Counties" if relevant (if sitetype is "fips")
 #' @param sitetype_nullna optional, to use if sitetype is NULL --
 #'   should be a singular word preceded by a space, like " location"
 #' @param area_in_square_miles number if available, area in square miles, added as a second line
@@ -1214,6 +1234,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                           'naics', 'sic', 'mact',
                                           'epa_program_sel'
                                         )[1],
+                                        census_unit_type = "Census unit",
                                         sitetype_nullna = " place",
                                         linefeed = "<br>",
                                         addlatlon = TRUE, lat = NULL, lon = NULL,
@@ -1241,14 +1262,18 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   }
 
   if (sitetype %in% "fips" && (nsites %in% 1)) {
+    if (is.null(census_unit_type)) {
     census_unit_type <- fipstype(ejam_uniq_id)[1] # should be just 1 actually
+    }
   } else {
     if (!is.null(sitenumber) && sitenumber > 0) {
+      if (!is.null(census_unit_type)) {
       census_unit_type <- "Census unit"
-      # actually no ejam_uniq_id values are passed here so we cannot find the type this way
-      # census_unit_type <- fipstype(ejam_uniq_id[sitenumber])
+      }
     } else {
+      if (is.null(census_unit_type)) {
       census_unit_type <- "Census unit" # ignored in this case
+      }
     }}
   location_type <- sitetype2text(sitetype, sitetype_nullna = sitetype_nullna, census_unit_type = census_unit_type)
 
