@@ -12,7 +12,7 @@ ejam2report(
   report_title = NULL,
   analysis_title = NULL,
   addlatlon = TRUE,
-  submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
+  site_method = c("latlon", "SHP", "FIPS")[1],
   shp = NULL,
   show_ratios_in_report = TRUE,
   extratable_show_ratios_in_report = TRUE,
@@ -65,7 +65,7 @@ depending on number of sites analyzed and the sitenumber parameter.}
 
 \item{addlatlon}{optional, whether to include lat,lon coordinates in header (for latlon sitetype)}
 
-\item{submitted_upload_method}{something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)}
+\item{site_method}{something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)}
 
 \item{shp}{provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 they are not in ejamitout}

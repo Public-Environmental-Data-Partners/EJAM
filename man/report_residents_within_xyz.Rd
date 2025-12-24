@@ -13,8 +13,8 @@ report_residents_within_xyz(
   nsites = 1,
   sitenumber = NULL,
   ejam_uniq_id = NULL,
-  sitetype = c(NA, "latlon", "fips", "shp", "frs", "epa_program_up", "echo", "naics",
-    "sic", "mact", "epa_program_sel")[1],
+  sitetype = c(NA, "latlon", "fips", "shp")[1],
+  site_method = sitetype,
   census_unit_type = "Census unit",
   sitetype_nullna = " place",
   linefeed = "<br>",
@@ -50,6 +50,8 @@ Ignored if radius is not a number.}
 some singular custom text like "Georgia location" or "place"
 but should be something that can be made plural by just adding "s" so ending with "site"
 works better than ending with "... facility" since that would print as "facilitys" here.}
+
+\item{site_method}{optional detailed info about how sites were selected (see server submitted_upload_method() reactive)}
 
 \item{census_unit_type}{optional phrase like "Counties" if relevant (if sitetype is "fips")}
 

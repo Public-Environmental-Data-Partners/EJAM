@@ -2,27 +2,37 @@
 % Please edit documentation in R/community_report_helper_funs.R
 \name{sitetype2text}
 \alias{sitetype2text}
-\title{helper to convert sitetype code ("latlon") to text describing it (" specified point")}
+\title{helper to convert sitetype code ("latlon") to singular or plural text describing it (" specified point")}
 \usage{
 sitetype2text(
   sitetype = NULL,
+  site_method = sitetype,
   sitetype_nullna = " place",
-  census_unit_type = "Census unit"
+  census_unit_type = "Census unit",
+  nsites = 1
 )
 }
 \arguments{
-\item{sitetype}{character string, like (if lowercase)
-latlon, shp, fips, fips_place, frs, echo,
-naics, sic, mact, epa_program_sel, epa_program_up as used in server
-or some of which come from ejamit()$sitetype like latlon, fips, or shp}
+\item{sitetype}{character string,
+latlon, shp, fips -- like come from ejamit()$sitetype,
+or fips_place, frs, echo, naics, sic, mact, epa_program_sel, epa_program_up
+-- like (once made lowercase) used in server submitted_upload_method() or current_upload_method() reactive.}
+
+\item{site_method}{site selection method (optional), e.g.,
+fips_place, frs, echo, naics, sic, mact, epa_program_sel, epa_program_up
+-- like (once made lowercase) server submitted_upload_method() or current_upload_method() reactive.}
 
 \item{sitetype_nullna}{optional, to use if sitetype is NULL --
 should be a singular word preceded by a space, like " location"}
+
+\item{census_unit_type}{e.g., "county"}
+
+\item{nsites}{number of sites total, to determine whether to pluralize e.g., "county" into "counties"}
 }
 \value{
 text string, phrase to use in report header (or excel notes tab, etc.)
 }
 \description{
-helper to convert sitetype code ("latlon") to text describing it (" specified point")
+helper to convert sitetype code ("latlon") to singular or plural text describing it (" specified point")
 }
 \keyword{internal}

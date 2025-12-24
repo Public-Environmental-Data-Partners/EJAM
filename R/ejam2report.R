@@ -28,7 +28,7 @@
 #' @param logo_html optional HTML for img of logo for the upper right of the overall header.
 #'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
 #'
-#' @param submitted_upload_method something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)
+#' @param site_method something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)
 #' @param shp provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 #'   they are not in ejamitout
 #' @param launch_browser set TRUE to have it launch browser and show report.
@@ -81,7 +81,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         analysis_title = NULL, # EJAM:::global_or_param("default_standard_analysis_title")
                         addlatlon = TRUE,
 
-                        submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
+                        site_method = c("latlon", "SHP", "FIPS")[1],
                         shp = NULL,
 
                         show_ratios_in_report = TRUE,
@@ -143,7 +143,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   )
 
   # SITE TYPE (shp or fips or latlon) ? ####
-  if (missing(submitted_upload_method)) {
+  # submitted_upload_method() reactive had more detail than the sitetype variable, and is useful for providing report header info
+  if (missing(site_method)) {
     # as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
     # create_filename() did use that version in server.
     # but here we just want to know if it is sitetype shp, fips, or latlon.
@@ -151,13 +152,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       ejamitout$sitetype <- ejamit_sitetype_from_output(ejamitout)
     }
     if (ejamitout$sitetype == 'shp') {
-      submitted_upload_method <- 'SHP'
+      site_method <- 'SHP'
     } else {
       if (ejamitout$sitetype == 'fips') {
-        submitted_upload_method <- 'FIPS'
+        site_method <- 'FIPS'
       } else {
         if (ejamitout$sitetype == 'latlon') {
-          submitted_upload_method <- 'latlon'
+          site_method <- 'latlon'
         }
       }
     }
@@ -207,7 +208,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     selected_location_name_react <- NULL
 
     ## > fips bounds ####
-    if (submitted_upload_method %in% "FIPS" && is.null(shp)) {
+    if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
       if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
       # radius would have to be used here to add any buffer ! ***
@@ -238,7 +239,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     selected_location_name_react <- ejamout1$statename
 
     ### > fips bounds ####
-    if (submitted_upload_method %in% "FIPS" && is.null(shp)) {
+    if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
       if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
       # radius would have to be used here to add any buffer ! ***
@@ -265,8 +266,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     popstr <- prettyNum(round(ejamout1$pop, table_rounding_info("pop")), big.mark = ',')
 
     ## > sitetype ####
-    sitetype <- ejamitout$sitetype  # sitetype <- tolower(submitted_upload_method) # did not work here
-    if (sitetype == "shp" && is.null(shp)) {
+    sitetype <- ejamitout$sitetype  # sitetype <- tolower(site_method) # did not work here
+    if (sitetype %in% "shp" && is.null(shp)) {
       # this should not happen unless ejam2report() got called for shp analysis results but user did not provide the bounds
       warning("Cannot map polygons based on just output of ejamit() -- The sf class shapefile / spatial data.frame that was used should be provided as the shp parameter to ejam2report()")
     }
@@ -277,7 +278,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > report_residents_within_xyz_from_ejamit()
     residents_within_xyz <- report_residents_within_xyz_from_ejamit(
       ejamitout = ejamitout,
-      sitenumber = sitenumber
+      sitenumber = sitenumber,
+      site_method = site_method
       ## this newer function uses the whole list not just ejamout1 to create the header
     )
     ####################################################### #
@@ -314,7 +316,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         file_desc = paste0('community report', location_suffix),
         title =  analysis_title,
         buffer_dist = rad,
-        site_method = submitted_upload_method, # can be latlon, shp, SHP, fips, FIPS, MACT, etc. (just used as-is in filename)
+        site_method = site_method, # can be latlon, shp, SHP, fips, FIPS, MACT, etc. (just used as-is in filename)
         with_datetime = FALSE,
         ext = fileextension # in server,  ifelse(input$format1pager == 'pdf', '.pdf', '.html')
       )

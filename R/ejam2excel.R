@@ -22,7 +22,8 @@
 #'
 #' @param analysis_title optional title as character string, used only in 'Notes' sheet
 #'   (and to create a default filename if fname not specified). Not used in the copy of the report.
-#' @param site_method site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
+#' @param site_method site selection method as recorded in server reactive submitted_upload_method(),
+#'   such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
 #'   optional site method parameter used to create a more specific title with create_filename.
 #'   Note `ejamitout$sitetype` is not quite the same as the `site_method` parameter used in building reports.
 #'   sitetype can be latlon, fips, or shp

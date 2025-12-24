@@ -4,12 +4,19 @@
 \alias{report_residents_within_xyz_from_ejamit}
 \title{utility to create text for use in report about residents within X miles of Y}
 \usage{
-report_residents_within_xyz_from_ejamit(ejamitout, sitenumber = NULL, ...)
+report_residents_within_xyz_from_ejamit(
+  ejamitout,
+  sitenumber = NULL,
+  site_method = NULL,
+  ...
+)
 }
 \arguments{
 \item{ejamitout}{list that is output of \code{\link[=ejamit]{ejamit()}}}
 
 \item{sitenumber}{optional, which site number to report on for a 1-site report instead of the overall summary of all sites}
+
+\item{site_method}{detailed sitetype info used in server, like if it was latlon chosen via MACT, NAICS, or SIC, etc.}
 
 \item{...}{See \code{\link[=report_residents_within_xyz]{report_residents_within_xyz()}} for details of optional
 parameters that can be specified -- they get passed from here to that function.

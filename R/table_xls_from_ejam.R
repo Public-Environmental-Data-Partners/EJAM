@@ -201,7 +201,7 @@ table_xls_from_ejam <- function(ejamitout,
       launch_browser = FALSE,
       shp = shp, # that will try to download if shp is null and type is fips or shp
       fileextension = ".html",
-      submitted_upload_method = site_method
+      site_method = site_method
 
 ### may need to pass more params here to build report just like server would have?
 ### ***

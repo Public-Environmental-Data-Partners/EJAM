@@ -2134,20 +2134,25 @@ app_server <- function(input, output, session) {
 
     ## *** consider replacing this with ejam2report(),
     ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
+    isolate({
+      residents_within_xyz <- report_residents_within_xyz_from_ejamit(
+        ejamitout = data_processed(), ## this function uses the whole list not just ejamout1 to create the header
+        site_method = submitted_upload_method()
+        # isolate() done, so change in site_method (e.g., polygon to lat lon) will not trigger re-render if Start not clicked,
+        # BUT, changing title does trigger re-render with old data and new title,
+        # and if upload method got changed too, without Start Analysis button hit again,
+        # it will re-render with new but incorrect method in header (?) ***
+      )
+      popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
 
-    residents_within_xyz <- report_residents_within_xyz_from_ejamit(
-      ejamitout = data_processed() ## this function uses the whole list not just ejamout1 to create the header
-    )
-    popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
-
-    pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
-
+      pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
+    })
     full_page <- build_community_report(
 
       logo_path      = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
       logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
       report_title   = EJAM:::global_or_param("report_title_multisite"),
-      analysis_title = sanitized_analysis_title(),
+      analysis_title = sanitized_analysis_title(), # changing it will trigger re-render here
       locationstr    = residents_within_xyz,
       totalpop       = popstr,
 
@@ -2521,7 +2526,7 @@ app_server <- function(input, output, session) {
         filename = filename_fullpath,
         ejamitout = data_processed(),
         return_html = FALSE,
-        submitted_upload_method = submitted_upload_method(),
+        site_method = submitted_upload_method(),
         shp = shp_for_report,
         analysis_title =  analysis_title,
         launch_browser = FALSE,
@@ -2637,7 +2642,7 @@ app_server <- function(input, output, session) {
           ejamitout = data_processed(),
           sitenumber = sitenumber,
           return_html = FALSE,
-          submitted_upload_method = submitted_upload_method(),
+          site_method = submitted_upload_method(),
           shp = shp_for_report, # NULL or data_uploaded()
           analysis_title =  sanitized_analysis_title(),
           launch_browser = FALSE,
