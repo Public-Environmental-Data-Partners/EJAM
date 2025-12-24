@@ -131,6 +131,17 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     logo_path <- EJAM:::global_or_param("report_logo")
   }
   if (!interactive()) {launch_browser <- FALSE} # but that means other functions cannot override this while not interactive.
+
+  ## For convenience, like being able to recreate report from just output of API data endpoint that only provides the results_overall table, say,
+  ## we could possibly allow ejamitout param to be provided as just ejamit()$results_overall,
+  # and if so do for the is.null(sitenumber) | sitenumber %in% 0 case, ejamitout$results_overall <- ejamitout; ejamitout$results_bysite <- ???
+  # but then also loosen these checks:
+  # Check input valid
+  stopifnot("ejamitout must be a list as from ejamit()" = is.list(ejamitout),
+            "ejamitout must be a list that has ejamitout$results_bysite data.frame/table" = "results_bysite" %in% names(ejamitout),
+            "ejamitout must be a list that has ejamitout$results_overall data.frame/table" = "results_overall" %in% names(ejamitout)
+  )
+
   # SITE TYPE (shp or fips or latlon) ? ####
   if (missing(submitted_upload_method)) {
     # as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
