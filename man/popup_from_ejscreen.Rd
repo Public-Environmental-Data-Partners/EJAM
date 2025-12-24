@@ -7,7 +7,8 @@
 popup_from_ejscreen(
   out,
   linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header),
-  verbose = FALSE
+  verbose = FALSE,
+  site_method = NULL
 )
 }
 \arguments{
@@ -17,6 +18,23 @@ The table of raw data in data.frame form, with results of EJ analysis.}
 \item{linkcolnames}{Vector of column names in the table that have links to URLs like reports about single sites}
 
 \item{verbose}{TRUE or FALSE, can see more details reported when function is used.}
+
+\item{site_method}{optional word or phrase about the sites or how they were selected.
+
+The \code{site_method} parameter can be used as-is by \code{create_filename()} to be part of the saved file name.
+It can also be used by the shiny app to add informational text in the header of a report,
+via \code{ejam2report()} and related helper functions like \code{report_residents_within_xyz()}
+or via \code{ejam2excel()} and related helper functions.
+
+The \code{site_method} parameter provides more detailed info about how sites were specified in the web app,
+beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
+\itemize{
+\item sitetype can be "latlon", "fips", or "shp"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+}
+
+The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
+which is much like the one called current_upload_method().}
 }
 \value{
 HTML ready to be used for map popups

@@ -1,12 +1,7 @@
 
 #' View HTML Report on EJAM Results (Overall or at 1 Site)
 #'
-#' @description Get URL for and view in browser a summary report (similar to used to be called the
-#' EJSCREEN Community Report)
-#'
-#' @details This relies on [build_community_report()] as used in web app
-#'   for viewing report on 1 site from a list of sites (or overall).
-#'   You can customize the report somewhat by using parameters like extratable_list_of_sections
+#' @description Get the html text or the path to the html file with a multisite summary or community report
 #'
 #' @param ejamitout output as from [ejamit()], list with a table in [data.table](https://r-datatable.com) format called `results_bysite`
 #'   if sitenumber parameter is used, or a table in [data.table](https://r-datatable.com) format called `results_overall` otherwise
@@ -28,7 +23,23 @@
 #' @param logo_html optional HTML for img of logo for the upper right of the overall header.
 #'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
 #'
-#' @param site_method something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)
+#' @param site_method optional word or phrase about the sites or how they were selected.
+#'
+#'   The `site_method` parameter can be used as-is by `create_filename()` to be part of the saved file name.
+#'   It can also be used by the shiny app to add informational text in the header of a report,
+#'   via `ejam2report()` and related helper functions like `report_residents_within_xyz()`
+#'   or via `ejam2excel()` and related helper functions.
+#'
+#'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
+#'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
+#'
+#'   - sitetype can be "latlon", "fips", or "shp"
+#'
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'
+#'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
+#'   which is much like the one called current_upload_method().
+#'
 #' @param shp provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 #'   they are not in ejamitout
 #' @param launch_browser set TRUE to have it launch browser and show report.
@@ -55,7 +66,7 @@
 #' @param footer_version_number,footer_date,footer_text,footer_html
 #'   to customize the report footer - see [generate_report_footer()]
 #'   Should provide footer_date to ensure user's timezone is used to determine today's date.
-#' @param addlatlon optional, whether to include lat,lon coordinates in header (for latlon sitetype)
+#' @param addlatlon optional, whether to include lat,lon coordinates in header (for "latlon" sitetype)
 #' @return URL of temp file or object depending on return_html,
 #'    and has side effect of launching browser to view it depending on return_html
 #'
@@ -81,7 +92,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         analysis_title = NULL, # EJAM:::global_or_param("default_standard_analysis_title")
                         addlatlon = TRUE,
 
-                        site_method = c("latlon", "SHP", "FIPS")[1],
+                        site_method = NULL, # c("latlon", "SHP", "FIPS")[1],
                         shp = NULL,
 
                         show_ratios_in_report = TRUE,
@@ -121,15 +132,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         filename = NULL,
                         return_html = FALSE,
                         launch_browser = TRUE
-
 ) {
 
   # analysis title default and report_title default depend on if this is 1-site or multisite
 
-  # LOGO ####
-  if (is.null(logo_path)) {
-    logo_path <- EJAM:::global_or_param("report_logo")
-  }
   if (!interactive()) {launch_browser <- FALSE} # but that means other functions cannot override this while not interactive.
 
   ## For convenience, like being able to recreate report from just output of API data endpoint that only provides the results_overall table, say,
@@ -142,22 +148,28 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
             "ejamitout must be a list that has ejamitout$results_overall data.frame/table" = "results_overall" %in% names(ejamitout)
   )
 
-  # SITE TYPE (shp or fips or latlon) ? ####
-  # submitted_upload_method() reactive had more detail than the sitetype variable, and is useful for providing report header info
-  if (missing(site_method)) {
-    # as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
-    # create_filename() did use that version in server.
-    # but here we just want to know if it is sitetype shp, fips, or latlon.
-    if (!("sitetype" %in% names(ejamitout))) {
-      ejamitout$sitetype <- ejamit_sitetype_from_output(ejamitout)
-    }
-    if (ejamitout$sitetype == 'shp') {
+  # SITE TYPE ####
+
+  ## > sitetype shp/fips/latlon ####
+  ## > site_method default  ####
+  # 1st, check if "sitetype" is shp, fips, or latlon
+  if (!("sitetype" %in% names(ejamitout))) {
+    ejamitout$sitetype <- ejamit_sitetype_from_output(ejamitout)
+  }
+  sitetype <- ejamitout$sitetype
+
+  # 2d, get more detailed info about how site was specified, from "site_method" parameter,
+  # which server stores as the submitted_upload_method() reactive
+  # and as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
+  # which is useful for providing report header info
+  if (missing(site_method) || is.null(site_method) || site_method %in% "") {
+    if (sitetype %in% 'shp') {
       site_method <- 'SHP'
     } else {
-      if (ejamitout$sitetype == 'fips') {
+      if (sitetype %in% 'fips') {
         site_method <- 'FIPS'
       } else {
-        if (ejamitout$sitetype == 'latlon') {
+        if (sitetype %in% 'latlon') {
           site_method <- 'latlon'
         }
       }
@@ -186,15 +198,15 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     sitenumber <- 1
   }
 
-  ## Multi-site report (Overall summary) ###################################################
+  # Multi-site  (results_overall) ###################################################
 
+  ## > report_title if multisite ####
   if (sitenumber %in% 0) {
 
-    # Report TITLE if multisite ####
     if (is.null(report_title)) {
       report_title <- EJAM:::global_or_param("report_title_multisite")
     }
-    ## Analysis TITLE if multisite
+    ## > analysis_title if multisite ####
     if (is.null(analysis_title)) {
       analysis_title <- EJAM:::global_or_param("default_standard_analysis_title")
     }
@@ -204,10 +216,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # but shp is all rows, remember, and popup can still be like for site by site
     rad <- ejamout1$radius.miles
 
-    ## > no name of location, just overall ####
+    ## > filename needs no location name ####
     selected_location_name_react <- NULL
 
-    ## > fips bounds ####
+    ## > fips polygons ####
     if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
       if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
@@ -215,15 +227,15 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
   } else {
 
-    ## Single-site report (or summary but just 1 site) ###################################################
+    # Single-site  (results_bysite, or _overall but just 1 site) ###################################################
 
-    # Report TITLE if 1-site ####
+    ## > report_title if 1-site ####
     if (is.null(report_title)) {
       report_title <- EJAM:::global_or_param("report_title")
     }
-    ## Analysis TITLE if 1-site
+    ## > analysis_title if 1-site ####
     if (is.null(analysis_title)) {
-      if (ejamitout$sitetype %in% 'fips') {
+      if (sitetype %in% 'fips') {
         analysis_title <- fips2name(ejamitout$results_bysite$ejam_uniq_id[sitenumber])
       } else {
         analysis_title <- global_or_param("default_standard_analysis_title")
@@ -232,13 +244,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ejamout1 <- ejamitout$results_bysite[sitenumber, ]
     rad <- ejamout1$radius.miles
 
-    ### > nsites
+    ## > nsites
     nsites <- 1
 
-    ### > name of 1 location for filename ####
+    ## > filename will include name of location ####
     selected_location_name_react <- ejamout1$statename
 
-    ### > fips bounds ####
+    ## > fips polygons ####
     if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
       if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
@@ -260,27 +272,27 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     # HEADER  ####
 
-    # as adapted from app_server
+    ## > logo_path ####
+    if (is.null(logo_path)) {
+      logo_path <- EJAM:::global_or_param("report_logo")
+    }
 
-    ## > population count  ####
+    ## > population count formatted ####
     popstr <- prettyNum(round(ejamout1$pop, table_rounding_info("pop")), big.mark = ',')
 
-    ## > sitetype ####
-    sitetype <- ejamitout$sitetype  # sitetype <- tolower(site_method) # did not work here
+    ## > fips2name() ####
+    if (sitetype %in% "fips" && !is.null(sitenumber) && sitenumber > 0) {
+      analysis_title <- fips2name(ejamitout$results_bysite[sitenumber, ejam_uniq_id])
+    }
     if (sitetype %in% "shp" && is.null(shp)) {
       # this should not happen unless ejam2report() got called for shp analysis results but user did not provide the bounds
       warning("Cannot map polygons based on just output of ejamit() -- The sf class shapefile / spatial data.frame that was used should be provided as the shp parameter to ejam2report()")
-    }
-
-    if (sitetype %in% "fips" && !is.null(sitenumber) && sitenumber > 0) {
-      analysis_title <- fips2name(ejamitout$results_bysite[sitenumber, ejam_uniq_id])
     }
     ## > report_residents_within_xyz_from_ejamit()
     residents_within_xyz <- report_residents_within_xyz_from_ejamit(
       ejamitout = ejamitout,
       sitenumber = sitenumber,
       site_method = site_method
-      ## this newer function uses the whole list not just ejamout1 to create the header
     )
     ####################################################### #
 
@@ -295,7 +307,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # # Rmd_name = 'barplot_report_template.Rmd' # for single site barplot report
     # Rmd_folder = 'report/community_report/'
 
-    ## > file extension ####
+    ## > fileextension ####
     # adjust this once .pdf option is implemented/working
     fileextension <- paste0(".", gsub("^\\.", "", fileextension)) # add leading dot if not present
     fileextensions_implemented <- c(".html", ".pdf")
@@ -336,7 +348,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # ASSEMBLE REPORT  ####
 
     ## TABLES, LOGO, HEADER  ####
-    ### build_community_report() ####
+    ### > build_community_report() ####
     ## note build_community_report() is also used in community_report_template.Rmd and in server
 
     community_html <- build_community_report(

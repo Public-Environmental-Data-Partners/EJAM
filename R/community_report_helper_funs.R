@@ -896,15 +896,142 @@ generate_extra_header <- function(title = 'Additional Information') {
 ## within X miles of ####
 
 
+##################################################################################### #
+
+#' helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____
+#'
+#' @param sitetype character string, one of "shp", "latlon", "fips"
+#'
+#' @param site_method string used in filename for saved report and to describe locations
+#'   site_method can be SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, or MACT
+#' @param site_method optional word or phrase about the sites or how they were selected.
+#'
+#'   The `site_method` parameter
+#'   can be used by the shiny app to add informational text in the header of a report.
+#'
+#'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
+#'   beyond what `sitetype` provides, e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`
+#'
+#'   - sitetype can be "latlon", "fips", or "shp"
+#'
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'
+#'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
+#'   which is much like the one called current_upload_method().
+#'
+#' @seealso [report_residents_within_xyz_from_ejamit()] and [report_residents_within_xyz()]
+#'   for a newer approach to this.
+#'
+#' @returns text string, phrase to use in excel notes tab
+#'
+#' @keywords internal
+#'
+buffer_desc_from_sitetype <- function(sitetype, site_method) {
+
+  ### *** report_residents_within_xyz() and sitetype2text()
+  ### should be reconciled/merged with
+  ### site_method2text() and buffer_desc_from_sitetype()
+
+  if (missing(sitetype) || is.null(sitetype)) {
+    buffer_desc <- "Selected Locations"
+  } else {
+    if (sitetype == "shp") {
+      buffer_desc <- "Polygons defined by shapefile"
+    } else {
+      if (sitetype == 'latlon') {
+        buffer_desc <- "Locations defined by latitude, longitude and radius"
+      } else {
+        if (sitetype == "fips") {
+          buffer_desc <- 'Census Units defined by FIPS code'
+        } else {
+          buffer_desc <- "Selected locations"
+        }}}}
+  if (buffer_desc == "") {
+    based_on_txt <- site_method2text(site_method)
+    if (based_on_txt %in% "")
+      buffer_desc <- paste0(buffer_desc, ", based on ", site_method2text(site_method))
+  }
+  return(buffer_desc)
+}
+##################################################################################### #
+
+# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
+# cbind(eg, site_method2text(eg))
+
+# used by buffer_desc_from_sitetype()
+
+### *** report_residents_within_xyz() and sitetype2text()
+### should be reconciled/merged with
+### site_method2text() and buffer_desc_from_sitetype()
+
+site_method2text =  function(site_method) {
+
+  site_method2text1 <- function(site_method) {
+
+    if (missing(site_method) || is.null(site_method)) {
+      return("")
+    }
+    site_method <- tolower(site_method)
+
+    if (site_method %in% tolower("SHP")) {
+      return("shapefile")
+    }
+    if (site_method %in% tolower("latlon")) {
+      return("coordinates")
+    }
+    if (site_method %in% tolower("FIPS")) {
+      return("FIPS codes")
+    }
+    if (site_method %in% tolower("FIPS_PLACE")) {
+      return("names of places")
+    }
+    if (site_method %in% tolower("NAICS")) {
+      return("EPA-regulated facilities by NAICS code (industry type)")
+    }
+    if (site_method %in% tolower("FRS")) {
+      return("EPA-regulated facilities by Registry ID")
+    }
+    if (site_method %in% tolower("EPA_PROGRAM")) {
+      return("EPA-regulated Facilities by EPA program")
+    }
+    if (site_method %in% "SIC") {
+      return("EPA-regulated facilities by SIC code (industry type)")
+    }
+    if (site_method %in% "MACT") {
+      return("EPA-regulated facilities by MACT category (air toxics emissions source type)")
+    }
+    return("")
+  }
+
+  as.vector(sapply(site_method, site_method2text1))
+}
+##################################################################################### #
+
 #' helper to convert sitetype code ("latlon") to singular or plural text describing it (" specified point")
 #'
 #' @param sitetype character string,
 #'   latlon, shp, fips -- like come from ejamit()$sitetype,
-#'   or fips_place, frs, echo, naics, sic, mact, epa_program_sel, epa_program_up
+#'   but could also provide the site_method info like
+#'   latlon, shp, fips, fips_place, frs, echo, naics, sic, mact, epa_program
 #'   -- like (once made lowercase) used in server submitted_upload_method() or current_upload_method() reactive.
-#' @param site_method site selection method (optional), e.g.,
-#'   fips_place, frs, echo, naics, sic, mact, epa_program_sel, epa_program_up
-#'   -- like (once made lowercase) server submitted_upload_method() or current_upload_method() reactive.
+#'
+#' @param site_method optional word or phrase about the sites or how they were selected.
+#'
+#'   The `site_method` parameter can be used as-is by `create_filename()` to be part of the saved file name.
+#'   It can also be used by the shiny app to add informational text in the header of a report,
+#'   via `ejam2report()` and related helper functions like `report_residents_within_xyz()`
+#'   or via `ejam2excel()` and related helper functions.
+#'
+#'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
+#'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
+#'
+#'   - sitetype can be "latlon", "fips", or "shp"
+#'
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'
+#'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
+#'   which is much like the one called current_upload_method().
+#'
 #' @param sitetype_nullna optional, to use if sitetype is NULL --
 #'   should be a singular word preceded by a space, like " location"
 #' @param census_unit_type e.g., "county"
@@ -914,6 +1041,10 @@ generate_extra_header <- function(title = 'Additional Information') {
 #' @keywords internal
 #'
 sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_nullna = " place", census_unit_type = "Census unit", nsites = 1) {
+
+  ### *** report_residents_within_xyz() and sitetype2text()
+  ### should be reconciled/merged with
+  ### site_method2text() and buffer_desc_from_sitetype()
 
   if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
   if (is.null(site_method)) {site_method <- sitetype_nullna}
@@ -997,7 +1128,9 @@ pluralize <- function(word) {
   return(word)
 }
 ################################################################### #
-pluralize_maybe = function(word, n = 1) {
+
+pluralize_maybe <- function(word, n = 1) {
+
   if (length(n) > 1) {stop('length of n parameter must be 1 -- function is not vectorized over n, just over word parameter')}
   if (n > 1) {
     return(pluralize(word))

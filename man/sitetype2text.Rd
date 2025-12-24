@@ -15,12 +15,26 @@ sitetype2text(
 \arguments{
 \item{sitetype}{character string,
 latlon, shp, fips -- like come from ejamit()$sitetype,
-or fips_place, frs, echo, naics, sic, mact, epa_program_sel, epa_program_up
+but could also provide the site_method info like
+latlon, shp, fips, fips_place, frs, echo, naics, sic, mact, epa_program
 -- like (once made lowercase) used in server submitted_upload_method() or current_upload_method() reactive.}
 
-\item{site_method}{site selection method (optional), e.g.,
-fips_place, frs, echo, naics, sic, mact, epa_program_sel, epa_program_up
--- like (once made lowercase) server submitted_upload_method() or current_upload_method() reactive.}
+\item{site_method}{optional word or phrase about the sites or how they were selected.
+
+The \code{site_method} parameter can be used as-is by \code{create_filename()} to be part of the saved file name.
+It can also be used by the shiny app to add informational text in the header of a report,
+via \code{ejam2report()} and related helper functions like \code{report_residents_within_xyz()}
+or via \code{ejam2excel()} and related helper functions.
+
+The \code{site_method} parameter provides more detailed info about how sites were specified in the web app,
+beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
+\itemize{
+\item sitetype can be "latlon", "fips", or "shp"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+}
+
+The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
+which is much like the one called current_upload_method().}
 
 \item{sitetype_nullna}{optional, to use if sitetype is NULL --
 should be a singular word preceded by a space, like " location"}

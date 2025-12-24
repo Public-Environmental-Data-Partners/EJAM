@@ -12,7 +12,7 @@ ejam2report(
   report_title = NULL,
   analysis_title = NULL,
   addlatlon = TRUE,
-  site_method = c("latlon", "SHP", "FIPS")[1],
+  site_method = NULL,
   shp = NULL,
   show_ratios_in_report = TRUE,
   extratable_show_ratios_in_report = TRUE,
@@ -63,9 +63,24 @@ depending on number of sites analyzed and the sitenumber parameter.}
 
 \item{analysis_title}{optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")}
 
-\item{addlatlon}{optional, whether to include lat,lon coordinates in header (for latlon sitetype)}
+\item{addlatlon}{optional, whether to include lat,lon coordinates in header (for "latlon" sitetype)}
 
-\item{site_method}{something like "latlon", "SHP", "FIPS", etc. (just used as-is as part of the filename)}
+\item{site_method}{optional word or phrase about the sites or how they were selected.
+
+The \code{site_method} parameter can be used as-is by \code{create_filename()} to be part of the saved file name.
+It can also be used by the shiny app to add informational text in the header of a report,
+via \code{ejam2report()} and related helper functions like \code{report_residents_within_xyz()}
+or via \code{ejam2excel()} and related helper functions.
+
+The \code{site_method} parameter provides more detailed info about how sites were specified in the web app,
+beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
+\itemize{
+\item sitetype can be "latlon", "fips", or "shp"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+}
+
+The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
+which is much like the one called current_upload_method().}
 
 \item{shp}{provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 they are not in ejamitout}
@@ -105,13 +120,7 @@ URL of temp file or object depending on return_html,
 and has side effect of launching browser to view it depending on return_html
 }
 \description{
-Get URL for and view in browser a summary report (similar to used to be called the
-EJSCREEN Community Report)
-}
-\details{
-This relies on \code{\link[=build_community_report]{build_community_report()}} as used in web app
-for viewing report on 1 site from a list of sites (or overall).
-You can customize the report somewhat by using parameters like extratable_list_of_sections
+Get the html text or the path to the html file with a multisite summary or community report
 }
 \examples{
 #out <- ejamit(testpoints_10, radius = 3, include_ejindexes = T)

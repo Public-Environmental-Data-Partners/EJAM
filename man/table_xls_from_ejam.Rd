@@ -68,12 +68,22 @@ prompts RStudio user interactively asking where to save the downloaded file}
 \item{analysis_title}{optional title as character string, used only in 'Notes' sheet
 (and to create a default filename if fname not specified). Not used in the copy of the report.}
 
-\item{site_method}{site selection method as recorded in server reactive submitted_upload_method(),
-such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
-optional site method parameter used to create a more specific title with create_filename.
-Note \code{ejamitout$sitetype} is not quite the same as the \code{site_method} parameter used in building reports.
-sitetype can be latlon, fips, or shp
-site_method can be one of these: SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT}
+\item{site_method}{optional word or phrase about the sites or how they were selected.
+
+The \code{site_method} parameter can be used as-is by \code{create_filename()} to be part of the saved file name.
+It can also be used by the shiny app to add informational text in the header of a report,
+via \code{ejam2report()} and related helper functions like \code{report_residents_within_xyz()}
+or via \code{ejam2excel()} and related helper functions.
+
+The \code{site_method} parameter provides more detailed info about how sites were specified in the web app,
+beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
+\itemize{
+\item sitetype can be "latlon", "fips", or "shp"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+}
+
+The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
+which is much like the one called current_upload_method().}
 
 \item{radius_or_buffer_in_miles}{optional radius in miles}
 
