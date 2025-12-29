@@ -1479,9 +1479,11 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
           }
         } else {
           if (is.numeric(ejam_uniq_id)) {
-            siteidtext = paste0(siteidtext, ", ", paste0("ejam_uniq_id ", ejam_uniq_id))
+            siteidtext = paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
+                                paste0("ejam_uniq_id ", ejam_uniq_id))
           } else {
-            siteidtext = paste0(siteidtext, ", ", ejam_uniq_id) ## in case they provided custom text
+            siteidtext = paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
+                                ejam_uniq_id) ## in case they provided custom text
           }
         }
       }
@@ -1515,10 +1517,15 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   ## > add lat, lon ####
 
   if (addlatlon && sitetype %in% "latlon" && nsites == 1) {
+    if (!is.null(lat) & !is.null(lon)) {
+    latlon_txt <- latlon2csv(lat = lat, lon = lon, sep = ", ")
+    } else {
+      latlon_txt <- "specified point"
+    }
     residents_within_xyz <- paste0(
       residents_within_xyz,
       ' centered at ',
-      latlon2csv(lat = lat, lon = lon, sep = ", ")
+      latlon_txt
     )
   }
 
