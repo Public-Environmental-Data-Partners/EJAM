@@ -16,7 +16,7 @@ report_residents_within_xyz(
   sitetype = c(NA, "latlon", "fips", "shp")[1],
   site_method = sitetype,
   census_unit_type = "Census unit",
-  sitetype_nullna = " place",
+  sitetype_nullna = "place",
   linefeed = "<br>",
   addlatlon = TRUE,
   lat = NULL,

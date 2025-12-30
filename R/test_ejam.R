@@ -246,7 +246,10 @@ x <- EJAM:::test_ejam(
         "test-getblocksnearby.R",
         "test-getblocksnearby_from_fips.R",
         "test-getblocksnearbyviaQuadTree.R",
-        "test-report_residents_within_xyz.R",  ## actually this is for reports, excel, popups, etc.
+
+        "test-report_residents_within_xyz.R",  ## this is for report header text, excel, popups, etc.
+        "test-sitetype2text.R",                ## this is for report header text
+
         "test-proxistat.R",
         "test-utils_indexpoints.R",
         "test-get_blockpoints_in_shape.R",

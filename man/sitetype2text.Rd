@@ -2,12 +2,12 @@
 % Please edit documentation in R/community_report_helper_funs.R
 \name{sitetype2text}
 \alias{sitetype2text}
-\title{helper to convert sitetype code ("latlon") to singular or plural text describing it (" specified point")}
+\title{helper to convert sitetype code ("latlon") to singular or plural text describing it ("specified point")}
 \usage{
 sitetype2text(
   sitetype = NULL,
   site_method = sitetype,
-  sitetype_nullna = " place",
+  sitetype_nullna = "place",
   census_unit_type = "Census unit",
   nsites = 1
 )
@@ -37,7 +37,7 @@ The shiny app server provides \code{site_method} from the reactive called submit
 which is much like the one called current_upload_method().}
 
 \item{sitetype_nullna}{optional, to use if sitetype is NULL --
-should be a singular word preceded by a space, like " location"}
+should be a singular word, like "location"}
 
 \item{census_unit_type}{e.g., "county"}
 
@@ -47,6 +47,6 @@ should be a singular word preceded by a space, like " location"}
 text string, phrase to use in report header (or excel notes tab, etc.)
 }
 \description{
-helper to convert sitetype code ("latlon") to singular or plural text describing it (" specified point")
+helper to convert sitetype code ("latlon") to singular or plural text describing it ("specified point")
 }
 \keyword{internal}

@@ -46,7 +46,7 @@
 
 checkit <- function(mytest) {
 
-  params <- rbindlist(mytest)
+  params <- rbindlist(mytest, fill = TRUE)
   if (NCOL(params) == 3) {
 
     names(params) <- c('sitetype', 'radius', 'nsites'
@@ -66,6 +66,8 @@ checkit <- function(mytest) {
     )
 
   }
+  ## could have written test to just pass params as ... to be more flexible but this works ok as a test
+
   if (NCOL(params) == 4) {
 
     names(params) <- c('sitetype', 'radius', 'nsites'
@@ -85,6 +87,28 @@ checkit <- function(mytest) {
     )
 
   }
+  ## could have written test to just pass params as ... to be more flexible but this works ok as a test
+
+  if (NCOL(params) == 6) {
+
+    names(params) <- c('sitetype', 'radius', 'nsites'
+                       , 'ejam_uniq_id'
+                       , 'lat', 'lon'
+    )
+    x = data.frame(params,
+                   text = sapply(mytest, function(z) {
+
+                     report_residents_within_xyz(
+
+                       sitetype = z[[1]],
+                       radius = z[[2]], # gets rounded in this function (if it can be interpreted as a number)
+                       nsites = z[[3]]
+                       , ejam_uniq_id = z[[4]]
+                       , lat = z[[5]], lon = z[[6]]
+                     )
+                   })
+    )
+  }
   x
 }
 ############################## #   ############################## #
@@ -93,12 +117,12 @@ test_that("report_residents_within_xyz normal cases", {
 
   test1 <- list(
 
-    # list('latlon', 0, 1), # cannot occur - zero radius with latlon type
-    # list('latlon', 0, 100), # cannot occur - zero radius with latlon type
-    list('latlon', 3, 1),
-    list('latlon', 3, 100),
+    ### list('latlon', 0, 1), # cannot occur - zero radius with latlon type
+    ### list('latlon', 0, 100), # cannot occur - zero radius with latlon type
+    list('latlon', 3, 100, 35, -90), # latlon are PROVIDED
+    list('latlon', 3, 1, NULL, NULL), ## latlon are MISSING BUT EXPECTED
 
-    list('fips', 0, 1),
+    list('fips', 0, 1, 35, -90),  ## latlon are NOT EXPECTED but PROVIDED
     list('fips', 0, 100),
     # list('fips', 3, 1), # cannot occur - nonzero radius with fips type
     # list('fips', 3, 100), # cannot occur - nonzero radius with fips type
