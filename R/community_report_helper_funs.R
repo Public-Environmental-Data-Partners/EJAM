@@ -1007,7 +1007,7 @@ site_method2text =  function(site_method) {
 }
 ##################################################################################### #
 
-#' helper to convert sitetype code ("latlon") to singular or plural text describing it (" specified point")
+#' helper to convert sitetype code ("latlon") to singular or plural text describing it ("specified point")
 #'
 #' @param sitetype character string,
 #'   latlon, shp, fips -- like come from ejamit()$sitetype,
@@ -1033,21 +1033,21 @@ site_method2text =  function(site_method) {
 #'   which is much like the one called current_upload_method().
 #'
 #' @param sitetype_nullna optional, to use if sitetype is NULL --
-#'   should be a singular word preceded by a space, like " location"
+#'   should be a singular word, like "location"
 #' @param census_unit_type e.g., "county"
 #' @param nsites number of sites total, to determine whether to pluralize e.g., "county" into "counties"
 #' @returns text string, phrase to use in report header (or excel notes tab, etc.)
 #'
 #' @keywords internal
 #'
-sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_nullna = " place", census_unit_type = "Census unit", nsites = 1) {
+sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_nullna = "place", census_unit_type = "Census unit", nsites = 1) {
 
   ### *** report_residents_within_xyz() and sitetype2text()
   ### should be reconciled/merged with
   ### site_method2text() and buffer_desc_from_sitetype()
 
   if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
-  if (is.null(site_method)) {site_method <- sitetype_nullna}
+  if (is.null(site_method)) {site_method <- sitetype}
 
   sitetype[   is.na(sitetype)]    <- sitetype_nullna
   site_method[is.na(site_method)] <- sitetype_nullna
@@ -1064,39 +1064,39 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
         (!missing(census_unit_type) && !(census_unit_type %in% c("state", "county", "tract", "city", "blockgroup", "block")))) {
       census_unit_type <- "Census unit"
     }
-    location_type <- paste0(" specified ",            pluralize_maybe(census_unit_type, nsites))
+    location_type <- paste0("specified ",            pluralize_maybe(census_unit_type, nsites))
   }
   if (sitetype %in% 'latlon') {
-    location_type <- paste0(" specified ",            pluralize_maybe("point",    nsites))
+    location_type <- paste0("specified ",            pluralize_maybe("point",    nsites))
   }
   if (sitetype %in% 'shp') {
-    location_type <- paste0(" specified ",            pluralize_maybe("polygon",  nsites)) # " specified polygon"
+    location_type <- paste0("specified ",            pluralize_maybe("polygon",  nsites)) # "specified polygon"
   }
   # uploaded each site (detailed site_method) ---------------------------------- -
   # # These detailed designations will override simple ones above, if available (as in server/shiny app)
 
   if (site_method %in% 'frs') {
-    location_type <- paste0(" FRS ID-specified ",     pluralize_maybe("site",     nsites)) # " FRS ID-specified site"
+    location_type <- paste0("FRS ID-specified ",     pluralize_maybe("site",     nsites)) # "FRS ID-specified site"
 
   } else if (site_method %in% 'epa_program_up') {
-    location_type <- paste0(" EPA Program ID-based ", pluralize_maybe("site",     nsites)) # " EPA Program ID-based site"
+    location_type <- paste0("EPA Program ID-based ", pluralize_maybe("site",     nsites)) # "EPA Program ID-based site"
 
   } else if (site_method %in% 'echo') {
-    location_type <- paste0(" regulated ",            pluralize_maybe("facility", nsites)) # " regulated facility"
+    location_type <- paste0("regulated ",            pluralize_maybe("facility", nsites)) # "regulated facility"
 
     # selected pulldown category (detailed site_method) ---------------------------------- -
 
   } else if (site_method %in% 'naics') {
-    location_type <- paste0(" NAICS industry-specific ", pluralize_maybe("site", nsites)) # " NAICS industry-specific site"
+    location_type <- paste0("NAICS industry-specific ", pluralize_maybe("site", nsites)) # "NAICS industry-specific site"
 
   } else if (site_method %in% 'sic') {
-    location_type <- paste0(" SIC industry-specific ",   pluralize_maybe("site", nsites)) # " SIC industry-specific site"
+    location_type <- paste0("SIC industry-specific ",   pluralize_maybe("site", nsites)) # "SIC industry-specific site"
 
   } else if (site_method %in% 'mact') {
-    location_type <- paste0(" MACT category ",           pluralize_maybe("site", nsites)) # " MACT category site"
+    location_type <- paste0("MACT category ",           pluralize_maybe("site", nsites)) # "MACT category site"
 
-  } else if (site_method %in% 'epa_program_sel') {
-    location_type <- paste0(" EPA program-specific ",    pluralize_maybe("site", nsites)) # " EPA program-specific site"
+  } else if (site_method %in% c('epa_program_sel', 'epa_program')) { # the epa-program methods may get limited to just 'epa_program' in this context
+    location_type <- paste0("EPA program-specific ",    pluralize_maybe("site", nsites)) # "EPA program-specific site"
 
     # misc / unknown ---------------------------------- -
 
@@ -1108,21 +1108,20 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   if (is.null(location_type)) {
     # an unknown site_method was provided, so location_type not yet assigned - still NULL
     location_type <- sitetype
-    # make sure it/each has a leading space
-    if (substr(location_type, 1, 1) != " ") {location_type <- paste0(" ", location_type)}
   }
   return(location_type)
 }
+## see test-sitetype2text.R for examples
 ################################################################### #
 
 pluralize <- function(word) {
 
-  # Very basic - does not handle all-caps words, or phrases, etc.
+  # Very basic - does not handle all-caps words, or phrases, nonstandard plural words not listed here, etc.
   # also see https://cli.r-lib.org/articles/pluralization.html
-  specials <- data.frame(singular = c('County', 'Facility', 'City',
-                                      'county', 'facility', 'city'),
-                         plural = c('Counties', 'Facilities', 'Cities',
-                                    'counties', 'facilities', 'cities'))
+  specials <- data.frame(singular = c('County', 'Facility', 'City', 'Industry', 'Municipality',
+                                      'county', 'facility', 'city', 'industry', 'municipality'),
+                         plural = c('Counties', 'Facilities', 'Cities', 'Industries', 'Municipalities',
+                                    'counties', 'facilities', 'cities', 'industries', 'municipalities'))
   word[!(word %in% specials$singular)] <- paste0(word[!(word %in% specials$singular)], "s")
   word[  word %in% specials$singular ] <- specials$plural[match(word[word %in% specials$singular], specials$singular)]
   return(word)
@@ -1388,7 +1387,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                         ### e.g., 'frs', 'epa_program_up', 'echo',
                                         ### 'naics', 'sic', 'mact', 'epa_program_sel'
                                         census_unit_type = "Census unit",
-                                        sitetype_nullna = " place",
+                                        sitetype_nullna = "place",
                                         linefeed = "<br>",
                                         addlatlon = TRUE, lat = NULL, lon = NULL,
                                         show_fips_name = TRUE # FALSE if called from report_residents_within_xyz_from_ejamit() but TRUE here since not sure we have it in an analysis title
@@ -1427,8 +1426,8 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
       }
     }
   }
-  # error check, PLURALIZE if needed, and make it a phrase e.g., say  paste0(" specified ", census_unit_type)
-  location_type <- sitetype2text(sitetype,
+  # error check, PLURALIZE if needed, and make it a phrase e.g., say  paste0("specified ", census_unit_type)
+  location_type <- sitetype2text(sitetype = sitetype,
                                  site_method = site_method,
                                  sitetype_nullna = sitetype_nullna,
                                  census_unit_type = census_unit_type,
@@ -1464,9 +1463,9 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
               placename = fips2name(ejam_uniq_id)
               if (is.null(placename) || is.na(placename) || nchar(placename) < 2) {
                 fipsname = ""
-                } else {
-              fipsname <- paste0(placename, ", ")
-                }
+              } else {
+                fipsname <- paste0(placename, ", ")
+              }
             } else {
               fipsname <- ""
             }
@@ -1499,14 +1498,11 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                    "(", siteidtext, ")")
   }
 
-  anyofthe <- ifelse(is.na(nsites), "any of the", "any of the ")
-  anyoftheplaces <- ifelse(nsites == 1,
-                           paste0('this', location_type,
-                                  " ",
-                                  siteidtext_in_parens, ""),
-                           paste0(anyofthe, nsites,
-                                  location_type  # already handled pluralization above if necessary
-                                  ) # "(in aggregate)"
+  anyofthe <- "any of the"
+  anyoftheplaces <- ifelse(
+    nsites %in% 1,
+    paste0('this', ' ', location_type, siteidtext_in_parens, ''),
+    paste0(anyofthe, ' ', nsites, ' ', location_type)  # already handled pluralization above if necessary
   )
 
   residents_within_xyz <- paste0(text1,
@@ -1518,7 +1514,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
 
   if (addlatlon && sitetype %in% "latlon" && nsites == 1) {
     if (!is.null(lat) & !is.null(lon)) {
-    latlon_txt <- latlon2csv(lat = lat, lon = lon, sep = ", ")
+      latlon_txt <- latlon2csv(lat = lat, lon = lon, sep = ", ")
     } else {
       latlon_txt <- "specified point"
     }
@@ -1528,7 +1524,6 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
       latlon_txt
     )
   }
-
   ################################################### #
 
   ## append square miles info only if it was provided explicitly.
