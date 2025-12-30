@@ -299,14 +299,17 @@ url_ejamapi = function(
         sitenumber <- "" # now omit this from the URL used in API
       }
       if (!is.null(sitenumber) && -1 %in% sitenumber) {
-        # "each" site's URL: provide vector of urls, 1 site in each, and do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
+        # "each" site's URL: provide vector of urls, 1 site in each,
+        # and either do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
+        # or use sitenumber 1:n for a vector of URLs? that would be useful in the table of API links for map popups, if it could tell the API what to say about the site# in the report header without trying to pick that row from a table of results...
+        # e.g., but problematic when API passes it to ejam2report() which tries to use sitenumber to pick 1 site from a table of multisite results
         geotxt <- shape2geojson(
           sf::st_simplify(shapefile, dTolerance = dTolerance), # SIMPLIFY POLYGONS to fit as url-encoded text
           combine_in_one_string = FALSE) # 1-site reports as a vector
         if (any(bad)) {
         geotxt[bad] <- NA
         }
-        sitenumber <- NULL # now omit this from the URL used in API
+        sitenumber <- NULL # now omit this from the URL used in API ?
       }
 
       url_of_report <- paste0(
@@ -351,8 +354,9 @@ url_ejamapi = function(
           fips <- fips[sitenumber]  # 1-site report
           sitenumber <- "" # now omit this from the URL used in API
         }
-        if (1 %in% sitenumber) {
-          # "each" site's URL: provide vector of urls, 1 site in each, and do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
+        if (-1 %in% sitenumber) {
+          # "each" site's URL: provide vector of urls, 1 site in each,
+          # and maybe do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
           # 1-site reports as a vector
           sitenumber <- "" # now omit this from the URL used in API
         }
