@@ -60,8 +60,8 @@ popup_from_ejscreen <- function(out,
 
   if ("results_bysite" %in% names(out)) {
     # looks like not just 1 table was provided
-    out <- out$results_bysite
     sitetype <- out$sitetype
+    out <- out$results_bysite
   } else {
     sitetype <- sitetype_from_dt(out)
   }
@@ -421,33 +421,43 @@ popup_from_ejscreen <- function(out,
   if ('sitenumber'   %in% names(out)) {pops_sitenumber   <- paste0('sitenumber: ',   out$sitenumber,   '<br>')} else {pops_sitenumber   <- ''}
   if ('sitename'     %in% names(out)) {pops_sitename     <- paste0('sitename: ',     out$sitename,     '<br>')} else {pops_sitename     <- ''}
 
+  if (sitetype %in% "fips") {
+    suppressWarnings({
+  census_unit_type <- fipstype(out$ejam_uniq_id)
+    })
+    }
   if ('radius.miles' %in% names(out)) {pops_radmile <- paste0(
 
-    report_residents_within_xyz(radius = out$radius.miles[1], sitetype = sitetype),
+    ## maybe
+    # report_residents_within_xyz(radius = out$radius.miles[1], sitetype = sitetype, site_method = site_method),
 
-    # report_residents_within_xyz(
-    #   ## text1 = text1,
-    #   radius = out$radius.miles[1],
-    #   ## unitsingular = 'mile',
-    #   area_in_square_miles = area_in_square_miles,
-    #   nsites = nsites,
-    #   sitenumber = sitenumber,  # only relevant for 1-site report
-    #   ejam_uniq_id = ejam_uniq_id,
-    #   sitetype = sitetype,
-    #   site_method = site_method, # detailed sitetype like MACT/NAICS/etc.
-    #   census_unit_type <- census_unit_type, # detailed sitetype if fips
-    #   # sitetype_nullna = " place", #  use the default always
-    #   linefeed = ". ",
-    #   #addlatlon = addlatlon,
-    # lat = out$lat, lon = out$lon,
-    #   show_fips_name = show_fips_name
-    # ),
+    ## or maybe
+    # residents_within_xyz <- sapply(1:NROW(out), function(n) {
+    #   report_residents_within_xyz_from_ejamit(
+    #     ejamitout = list(results_bysite = out, sitetype = sitetype),
+    #     sitenumber = n,
+    #     site_method = site_method
+    #   )}),
 
-    # residents_within_xyz <- report_residents_within_xyz_from_ejamit(
-    #   ejamitout = out,
-    #   # sitenumber = sitenumber,
-    #   # site_method = site_method
-    # ),
+    ## or maybe
+    residents_within_xyz <- sapply(1:NROW(out), function(n) {
+      report_residents_within_xyz(
+        ## text1 = text1,
+        radius = out$radius.miles[n],
+        ## unitsingular = 'mile',
+        area_in_square_miles = 0, # to suppress it here since added separately below. # out$area_sqmi[n],
+        nsites = 1,
+        sitenumber = n,
+        ejam_uniq_id = out$ejam_uniq_id[n],
+        sitetype = sitetype,
+        site_method = site_method, # detailed sitetype like MACT/NAICS/etc. if relevant as from server
+        census_unit_type = census_unit_type[n], # # ?? detailed sitetype if fips
+        # sitetype_nullna = "place", #  use the default always
+      #  linefeed = ". ", # line break html is default
+        addlatlon = FALSE, # to suppress it here since added separately below.
+        lat = out$lat[n], lon = out$lon[n],
+        show_fips_name = TRUE
+      )}),
 
     '<br>')} else {pops_radmile <- ''}
     # pops_radmile      <- paste0('Area within ',   out$radius.miles, ' miles of site', '<br>')
