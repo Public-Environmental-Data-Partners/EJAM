@@ -1321,7 +1321,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
     ejam_uniq_id = ejam_uniq_id,
     sitetype = sitetype,
     site_method = site_method, # detailed sitetype like MACT/NAICS/etc.
-    census_unit_type <- census_unit_type, # detailed sitetype if fips
+    census_unit_type = census_unit_type, # detailed sitetype if fips
     # sitetype_nullna = " place", #  use the default always
     linefeed = linefeed,
     addlatlon = addlatlon, lat = lat, lon = lon,
