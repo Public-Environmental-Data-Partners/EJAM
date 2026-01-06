@@ -4,10 +4,12 @@
 \alias{fipstype}
 \title{FIPS - Identify what type of Census geography each FIPS code seems to be (block, county, etc.)}
 \usage{
-fipstype(fips)
+fipstype(fips, quiet = FALSE)
 }
 \arguments{
 \item{fips}{vector of one or more Census FIPS with or without leading zeroes, as strings or numeric}
+
+\item{quiet}{TRUE will prevent warning of fips that do not seem to be block, blockgroup, tract, city/CDP, county, or state FIPS}
 }
 \value{
 vector of types: "block", "blockgroup", "tract", "city", "county", or "state"

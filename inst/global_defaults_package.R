@@ -39,6 +39,7 @@ rm(app_version,
 
 # global_defaults_package$app_title = as.vector(desc::desc_get("Title"))
 global_defaults_package$app_title = as.vector(desc::desc_get("Title", file = system.file("DESCRIPTION", package = "EJAM")))
+
 # REPORT TITLE ####
 
 # report_title is used in header of summary /community report page.
@@ -101,7 +102,7 @@ report_logo <- system.file('report/community_report/ejamhex4.png', package = "EJ
 global_defaults_package <- c(
   global_defaults_package,
 
-  default_standard_analysis_title = 'Summary of Analysis', # Default title to show on each short report
+  default_standard_analysis_title = 'Summary of Analysis', # Default title to show on each short report, user-editable in UI text box
 
   report_logo = report_logo,
   report_logo_file = basename(report_logo),
@@ -118,15 +119,12 @@ global_defaults_package <- c(
 rm(report_logo, app_logo)
 ############################### #
 
-# API AVAILABILITY ####
+# NEW API's AVAILABILITY ####
 
 # e.g., to add URL links to single-site reports in popups, excel table, etc.
-
-global_defaults_package <- c(
-  global_defaults_package,
-
-  ejamapi_is_down = FALSE # could check here?
-)
+# > dirname(formals(url_ejamapi)$baseurl)
+# [1] "https://ejamapi-84652557241.us-central1.run.app"
+global_defaults_package$ejamapi_is_down = FALSE # could check here (but that slows pkg loading)
 ############################### #
 
 # LINKS / URLs to show in bysite tables columns ####

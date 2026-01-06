@@ -4,7 +4,7 @@
 \alias{fips2name}
 \title{FIPS - Get county or state names from county or state FIPS codes}
 \usage{
-fips2name(fips, ...)
+fips2name(fips, quiet = FALSE, ...)
 }
 \arguments{
 \item{fips}{vector of US Census FIPS codes for

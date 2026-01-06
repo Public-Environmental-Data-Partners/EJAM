@@ -2,27 +2,51 @@
 % Please edit documentation in R/community_report_helper_funs.R
 \name{sitetype2text}
 \alias{sitetype2text}
-\title{helper to convert sitetype code ("latlon") to text describing it (" specified point")}
+\title{helper to convert sitetype code ("latlon") to singular or plural text describing it ("specified point")}
 \usage{
 sitetype2text(
   sitetype = NULL,
-  sitetype_nullna = " place",
-  census_unit_type = "Census unit"
+  site_method = sitetype,
+  sitetype_nullna = "place",
+  census_unit_type = "Census unit",
+  nsites = 1
 )
 }
 \arguments{
-\item{sitetype}{character string, like (if lowercase)
-latlon, shp, fips, fips_place, frs, echo,
-naics, sic, mact, epa_program_sel, epa_program_up as used in server
-or some of which come from ejamit()$sitetype like latlon, fips, or shp}
+\item{sitetype}{character string,
+latlon, shp, fips -- like come from ejamit()$sitetype,
+but could also provide the site_method info like
+latlon, shp, fips, fips_place, frs, echo, naics, sic, mact, epa_program
+-- like (once made lowercase) used in server submitted_upload_method() or current_upload_method() reactive.}
+
+\item{site_method}{optional word or phrase about the sites or how they were selected.
+
+The \code{site_method} parameter can be used as-is by \code{create_filename()} to be part of the saved file name.
+It can also be used by the shiny app to add informational text in the header of a report,
+via \code{ejam2report()} and related helper functions like \code{report_residents_within_xyz()}
+or via \code{ejam2excel()} and related helper functions.
+
+The \code{site_method} parameter provides more detailed info about how sites were specified in the web app,
+beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
+\itemize{
+\item sitetype can be "latlon", "fips", or "shp"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+}
+
+The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
+which is much like the one called current_upload_method().}
 
 \item{sitetype_nullna}{optional, to use if sitetype is NULL --
-should be a singular word preceded by a space, like " location"}
+should be a singular word, like "location"}
+
+\item{census_unit_type}{e.g., "county"}
+
+\item{nsites}{number of sites total, to determine whether to pluralize e.g., "county" into "counties"}
 }
 \value{
 text string, phrase to use in report header (or excel notes tab, etc.)
 }
 \description{
-helper to convert sitetype code ("latlon") to text describing it (" specified point")
+helper to convert sitetype code ("latlon") to singular or plural text describing it ("specified point")
 }
 \keyword{internal}

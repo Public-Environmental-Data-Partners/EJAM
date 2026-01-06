@@ -21,6 +21,23 @@
 #' @param linkcolnames Vector of column names in the table that have links to URLs like reports about single sites
 #' @param verbose TRUE or FALSE, can see more details reported when function is used.
 #'
+#' @param site_method optional word or phrase about the sites or how they were selected.
+#'
+#'   The `site_method` parameter can be used as-is by `create_filename()` to be part of the saved file name.
+#'   It can also be used by the shiny app to add informational text in the header of a report,
+#'   via `ejam2report()` and related helper functions like `report_residents_within_xyz()`
+#'   or via `ejam2excel()` and related helper functions.
+#'
+#'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
+#'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
+#'
+#'   - sitetype can be "latlon", "fips", or "shp"
+#'
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'
+#'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
+#'   which is much like the one called current_upload_method().
+#'
 #' @return HTML ready to be used for map popups
 #'
 #' @keywords internal
@@ -28,7 +45,8 @@
 #'
 popup_from_ejscreen <- function(out,
                                 linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header),
-                                verbose = FALSE) {
+                                verbose = FALSE,
+                                site_method = NULL) {
   # ornull = function(n) {
   #   x <- try(EJAM:::global_or_param("default_reports")[[n]]$header)
   #   if (inherits(x, "try-error")) {return(NULL)} else {return(x)}
@@ -42,8 +60,8 @@ popup_from_ejscreen <- function(out,
 
   if ("results_bysite" %in% names(out)) {
     # looks like not just 1 table was provided
-    out <- out$results_bysite
     sitetype <- out$sitetype
+    out <- out$results_bysite
   } else {
     sitetype <- sitetype_from_dt(out)
   }
@@ -99,6 +117,7 @@ popup_from_ejscreen <- function(out,
   # ie their lengths differ. the code is not robust to that.  ***
 
   ############################################ #
+  # Functions ####
   # define functions to write map popup text with given indicator names
   ############################################ #
   ### Now  table_signif_round_x100() not ejscreensignifarray.api() for the rounding and sig figs and x100 scaling.
@@ -352,8 +371,9 @@ popup_from_ejscreen <- function(out,
   }
   pops_links <- make_pops_links(out, linkcolnames)
 
-  #  title for each Section of pop info #####
+  # title for each Section of pop info #####
 
+  ## > LINKS to Reports ####
   if (length(pops_links) > 0) {
     pops_links <- paste0(
       '<b>', 'Reports: ',              '</b>',               '<br>',
@@ -362,7 +382,7 @@ popup_from_ejscreen <- function(out,
   } else {
     pops_links <- ''
   }
-
+  ## > INDICATORS (Demog/ Env/ EJ)   ####
   if (length(poptext.d) > 0) {
     pops_d <- paste0(
       '<b>', 'Residential Population Indicators: ', '</b>',                 '<br>',
@@ -390,8 +410,8 @@ popup_from_ejscreen <- function(out,
   } else {
     pops_ej <- ''
   }
-
-  #  title for each ID or Geo info on the Site  ####
+  ############################################################################# #
+  ## > ID/GEO INFO ON EACH SITE  ####
 
   if ('ejam_uniq_id' %in% names(out)) {pops_ejam_uniq_id <- paste0('Site ID (ejam_uniq_id): ', out$ejam_uniq_id, '<br>')} else {pops_ejam_uniq_id <- ''}
   if ('id'           %in% names(out)) {pops_id           <- paste0('id: ',           out$id,           '<br>')} else {pops_id           <- ''}
@@ -400,8 +420,48 @@ popup_from_ejscreen <- function(out,
   if ('siteid'       %in% names(out)) {pops_siteid       <- paste0('siteid: ',       out$siteid,       '<br>')} else {pops_siteid       <- ''}
   if ('sitenumber'   %in% names(out)) {pops_sitenumber   <- paste0('sitenumber: ',   out$sitenumber,   '<br>')} else {pops_sitenumber   <- ''}
   if ('sitename'     %in% names(out)) {pops_sitename     <- paste0('sitename: ',     out$sitename,     '<br>')} else {pops_sitename     <- ''}
-  if ('radius.miles' %in% names(out)) {pops_radmile <- paste0(report_residents_within_xyz(radius = out$radius.miles[1], sitetype = sitetype),     '<br>')} else {pops_radmile <- ''}
+
+  if (sitetype %in% "fips") {
+    suppressWarnings({
+  census_unit_type <- fipstype(out$ejam_uniq_id)
+    })
+    }
+  if ('radius.miles' %in% names(out)) {pops_radmile <- paste0(
+
+    ## maybe
+    # report_residents_within_xyz(radius = out$radius.miles[1], sitetype = sitetype, site_method = site_method),
+
+    ## or maybe
+    # residents_within_xyz <- sapply(1:NROW(out), function(n) {
+    #   report_residents_within_xyz_from_ejamit(
+    #     ejamitout = list(results_bysite = out, sitetype = sitetype),
+    #     sitenumber = n,
+    #     site_method = site_method
+    #   )}),
+
+    ## or maybe
+    residents_within_xyz <- sapply(1:NROW(out), function(n) {
+      report_residents_within_xyz(
+        ## text1 = text1,
+        radius = out$radius.miles[n],
+        ## unitsingular = 'mile',
+        area_in_square_miles = 0, # to suppress it here since added separately below. # out$area_sqmi[n],
+        nsites = 1,
+        sitenumber = n,
+        ejam_uniq_id = out$ejam_uniq_id[n],
+        sitetype = sitetype,
+        site_method = site_method, # detailed sitetype like MACT/NAICS/etc. if relevant as from server
+        census_unit_type = census_unit_type[n], # # ?? detailed sitetype if fips
+        # sitetype_nullna = "place", #  use the default always
+      #  linefeed = ". ", # line break html is default
+        addlatlon = FALSE, # to suppress it here since added separately below.
+        lat = out$lat[n], lon = out$lon[n],
+        show_fips_name = TRUE
+      )}),
+
+    '<br>')} else {pops_radmile <- ''}
     # pops_radmile      <- paste0('Area within ',   out$radius.miles, ' miles of site', '<br>')
+
   if ('area_sqmi' %in% names(out)) {pops_sqmi      <- paste0('Area: ',   out$area_sqmi, ' square miles', '<br>')} else {pops_sqmi <- ''}
 
   if (!(all(is.na(out$lon)))) {
@@ -410,7 +470,7 @@ popup_from_ejscreen <- function(out,
   } else {
     pops_latlon <- ''
   }
-
+  ############################################################################# #
 
   # ASSEMBLE ALL THE INDICATORS ####
   z <- paste0(
