@@ -1046,6 +1046,13 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   ### *** per issue #159 should be reconciled/merged with
   ### buffer_desc_from_sitetype() and its helper site_method2text()
 
+  if (length(nsites) != 1) {
+    warning("nsites can be >1 but must be a single number not a vector or empty")
+    nsites <- 99 # just makes it plural, e.g., "places"
+  }
+  if (is.null(nsites) || any(is.na(nsites))) {
+    nsites <- 99 # just makes it plural, e.g., "places"
+    }
   if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
   if (is.null(site_method)) {site_method <- sitetype}
 
@@ -1061,7 +1068,7 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
 
   if (sitetype %in% c('fips', 'fips_place') || (site_method %in% 'fips_place')) {
     if (is.null(census_unit_type) ||
-        (!missing(census_unit_type) && !(census_unit_type %in% c("state", "county", "tract", "city", "blockgroup", "block")))) {
+        (!missing(census_unit_type) && !(tolower(census_unit_type) %in% c("state", "county", "tract", "city", "blockgroup", "block")))) {
       census_unit_type <- "Census unit"
     }
     location_type <- paste0("specified ",            pluralize_maybe(census_unit_type, nsites))
@@ -1103,11 +1110,11 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   }
   if (site_method %in% sitetype_nullna) {
     # ok, use default filler
-    location_type <- sitetype_nullna
+    location_type <- pluralize_maybe(sitetype_nullna, nsites)
   }
   if (is.null(location_type)) {
     # an unknown site_method was provided, so location_type not yet assigned - still NULL
-    location_type <- sitetype
+    location_type <- pluralize_maybe(sitetype, nsites)
   }
   return(location_type)
 }
@@ -1296,7 +1303,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
   if (sitetype %in% 'fips') {
     if (is.null(ejam_uniq_id)) {
       # results_overall being reported on, not 1 site
-      ft <- unique(fipstype(out$results_bysite$ejam_uniq_id))
+      ft <- unique(fipstype(out$results_bysite$ejam_uniq_id, quiet = TRUE))
       if (length(ft) == 1 && !all(is.na(ft))) {
         # ft is ok
       } else {
@@ -1304,7 +1311,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
       }
     } else {
       # 1 site with known fips
-      ft <- fipstype(ejam_uniq_id)[1] # already subsetted to 1 site via sitenumber above but used [1] just to be sure
+      ft <- fipstype(ejam_uniq_id, quiet = TRUE)[1] # already subsetted to 1 site via sitenumber above but used [1] just to be sure
     }
     census_unit_type <- ft
   } else {
@@ -1398,7 +1405,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     xmilesof <- report_xmilesof(unitsingular = unitsingular)
   } else {
     if (length(radius) > 1) {stop("radius must be a single value")}
-    if (is.na(radius) || radius == "") {radius <- NULL}
+    if (is.na(radius) || radius == "") {warning("radius should not be NA or '' "); radius <- NULL}
     if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
     if (is.numeric(radius)) {
       digits <- table_rounding_info("radius.miles")
@@ -1406,6 +1413,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     }
     xmilesof <- report_xmilesof(radius = radius, unitsingular = unitsingular)
   }
+  if (any(is.na(sitetype)) && !missing(sitetype)) {warning("sitetype should not be NA")} # but do not warn if just NA because missing
   # handle the unlikely case of needing to avoid it saying "Residents within this specified point " when radius is somehow bad/missing for latlon case
   if (!is.na(sitetype) && sitetype == "latlon" && (is.null(radius) || !(radius > 0))) {
     if (text1 == "Residents within ") {
@@ -1414,10 +1422,11 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   }
 
   if (sitetype %in% "fips") {
-    if (nsites %in% 1) {
-      if (is.null(census_unit_type)) {
+    if (!is.null(ejam_uniq_id)) {
+      if (missing(census_unit_type) || is.null(census_unit_type)) {
         # figure out type like "county"
-        census_unit_type <- fipstype(ejam_uniq_id)[1] # should be just 1 actually
+        census_unit_type <- fipstype(ejam_uniq_id, quiet = TRUE)[1] # should be just 1 actually
+        if (is.na(census_unit_type)) {census_unit_type <- "Census unit"}
       }
     } else {
       # ejam_uniq_id is not provided in this case so we cannot figure out type if unspecified
@@ -1432,7 +1441,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                  sitetype_nullna = sitetype_nullna,
                                  census_unit_type = census_unit_type,
                                  nsites = nsites)
-
+  if (any(is.na(nsites))) {warning("nsites should not be NA")}
   if (is.null(nsites)) {nsites <- ''}
   nsites[is.na(nsites)] <- ""
   # if (is.null(sitenumber)) {sitenumber <- ''}
@@ -1460,7 +1469,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
           seems_like_fips = suppressWarnings(!is.na(as.numeric(ejam_uniq_id)))
           if (seems_like_fips) {
             if (show_fips_name) {
-              placename = fips2name(ejam_uniq_id)
+              placename = fips2name(ejam_uniq_id, quiet = TRUE)
               if (is.null(placename) || is.na(placename) || nchar(placename) < 2) {
                 fipsname = ""
               } else {
@@ -1469,11 +1478,11 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
             } else {
               fipsname <- ""
             }
-            siteidtext <- paste0(siteidtext, ", ",
+            siteidtext <- paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
                                  fipsname,  # optional name of FIPS unit, but that is now in analysis_title
                                  paste0("FIPS ", ejam_uniq_id))
           } else {
-            siteidtext <- paste0(siteidtext, ", ",
+            siteidtext <- paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
                                  ejam_uniq_id)
           }
         } else {
@@ -1499,10 +1508,15 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   }
 
   anyofthe <- "any of the"
+  if (nchar(nsites) == 0) {
+    ntxt <- ''
+  } else {
+      ntxt <- paste0(nsites, ' ')
+      }
   anyoftheplaces <- ifelse(
     nsites %in% 1,
     paste0('this', ' ', location_type, siteidtext_in_parens, ''),
-    paste0(anyofthe, ' ', nsites, ' ', location_type)  # already handled pluralization above if necessary
+    paste0(anyofthe, ' ', ntxt, location_type)  # already handled pluralization above if necessary
   )
 
   residents_within_xyz <- paste0(text1,
