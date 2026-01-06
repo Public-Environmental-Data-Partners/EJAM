@@ -13,8 +13,8 @@
 #   interactive_console = TRUE,
 #   ok2plot = TRUE,
 #   in.testing = FALSE,
-#   in.analysis_title = "EJAM analysis",
-#   react.v1_summary_plot = NULL,
+#   analysis_title = "EJAM analysis",
+#   report_plot = NULL,
 #   radius_or_buffer_in_miles = NULL,
 #   buffer_desc = NULL,
 #   radius_or_buffer_description = "Miles radius of circular buffer (or distance used if buffering around polygons)",
@@ -35,7 +35,7 @@ test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
       tfile = tempfile(fileext = ".xlsx")
     suppressWarnings({
       fname <- ejam2excel(testoutput_ejamit_10pts_1miles, interactive_console = FALSE,
-                          in.analysis_title = "test title", fname = tfile
+                          analysis_title = "test title", fname = tfile
                           )
     })
     })

@@ -179,7 +179,7 @@ testthat::test_that("bad fips - returns the VALID fips at least, ignoring sort, 
   #  ignoring sort
   expect_setequal(
     shp$FIPS[ fips_valid(shp$FIPS)],
-    inputfips[fips_valid(inputfips)]
+    inputfips[fips_valid(inputfips)] # "10"      "4273072" "10001"     "2966134" "2966134"
   )
 })
 ################ #
@@ -202,8 +202,8 @@ testthat::test_that("bad fips - returns the non-NA fips at least, ignoring sort,
     sum(duplicated(inputfips[!is.na(inputfips)]))
   )
   expect_setequal(
-    shp$FIPS[!is.na(shp$FIPS)  ],
-    inputfips[!is.na(inputfips)]
+    shp$FIPS[!is.na(shp$FIPS)  ],  # NA instead of  "99"
+    inputfips[!is.na(inputfips)]   # includes "99"
   )
 })
 ################ #
@@ -211,8 +211,9 @@ testthat::test_that("bad fips - returns the non-NA fips at least, ignoring sort,
 testthat::test_that("bad fips - returns the non-NA fips at least, SORTED, but not necessarily valid fips missing bounds", {
 
   expect_equal(
-    shp$FIPS[!is.na(shp$FIPS)  ],
-    inputfips[!is.na(inputfips)]
+    shp$FIPS[!is.na(shp$FIPS)  ]
+    ,  # no "99"
+    inputfips[!is.na(inputfips)]  # includes "99"
   )
 })
 ################ ################# #

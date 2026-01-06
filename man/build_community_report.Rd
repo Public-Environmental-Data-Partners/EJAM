@@ -76,8 +76,6 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.'}
 \item{in_shiny}{whether the function is being called in or outside of shiny - affects location of header}
 
 \item{filename}{path to file to save HTML content to; if null, returns as string (used in Shiny app)}
-
-\item{...}{other parameters optional, passed to report_residents_within_xyz() via generate_html_header()}
 }
 \description{
 Just assembles the report, given the header info, tables, map, and plot

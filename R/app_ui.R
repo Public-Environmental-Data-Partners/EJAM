@@ -527,30 +527,7 @@ app_ui <- function(request) {
                                ############################## #
                                ###               > HEADER AND TABLES       ####
                                uiOutput('comm_report_html_by_template'),   # uiOutput('comm_report_html'),
-                               # br(),
-                               # ############################## #
-                               # ###                > MAP    ####
-                               # #### quick_view_map (results, in summary report) ### #
-                               # shinycssloaders::withSpinner(
-                               #   leaflet::leafletOutput('quick_view_map')#, width = '1170px', height = '627px')
-                               # ),
-                               # br(),
-                               # ############################## #
-                               # ###                > BARPLOT    ####
-                               # fluidRow(
-                               #   column(
-                               #     12, align = 'center',
-                               #     br(),br(),
-                               #     shinycssloaders::withSpinner(
-                               #       plotOutput(outputId = 'view1_summary_plot', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
-                               #     )
-                               #   )
-                               # ),
-                               # ############################## #
-                               # ###              > FOOTER  (version, date)    ####
-                               #
-                               # uiOutput("report_footer_version_date"),  # now via generate_report_footer() which wraps it in div
-                               # br(),
+
                                ############################## #
                                ###              > DOWNLOAD BUTTON    ####
                                tags$div(
