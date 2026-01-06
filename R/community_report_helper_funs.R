@@ -928,9 +928,9 @@ generate_extra_header <- function(title = 'Additional Information') {
 #'
 buffer_desc_from_sitetype <- function(sitetype, site_method) {
 
-  ### *** report_residents_within_xyz() and sitetype2text()
-  ### should be reconciled/merged with
-  ### site_method2text() and buffer_desc_from_sitetype()
+  ### report_residents_within_xyz() and its helper sitetype2text()
+  ### *** per issue #159 should be reconciled/merged with
+  ### buffer_desc_from_sitetype() and its helper site_method2text()
 
   if (missing(sitetype) || is.null(sitetype)) {
     buffer_desc <- "Selected Locations"
@@ -960,11 +960,11 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
 
 # used by buffer_desc_from_sitetype()
 
-### *** report_residents_within_xyz() and sitetype2text()
-### should be reconciled/merged with
-### site_method2text() and buffer_desc_from_sitetype()
-
 site_method2text =  function(site_method) {
+
+  ### report_residents_within_xyz() and its helper sitetype2text()
+  ### *** per issue #159 should be reconciled/merged with
+  ### buffer_desc_from_sitetype() and its helper site_method2text()
 
   site_method2text1 <- function(site_method) {
 
@@ -1042,9 +1042,9 @@ site_method2text =  function(site_method) {
 #'
 sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_nullna = "place", census_unit_type = "Census unit", nsites = 1) {
 
-  ### *** report_residents_within_xyz() and sitetype2text()
-  ### should be reconciled/merged with
-  ### site_method2text() and buffer_desc_from_sitetype()
+  ### report_residents_within_xyz() and its helper sitetype2text()
+  ### *** per issue #159 should be reconciled/merged with
+  ### buffer_desc_from_sitetype() and its helper site_method2text()
 
   if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
   if (is.null(site_method)) {site_method <- sitetype}
