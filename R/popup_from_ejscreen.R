@@ -369,6 +369,12 @@ popup_from_ejscreen <- function(out,
     }
     return(pops_links)
   }
+  if (length(linkcolnames) == 0) {
+    # missing -- possibly because after defined in global env as pkg is loaded, then if you happen to use rm(list=ls()) that will remove them
+    warning('missing default_reports that is part of the package defaults needed - possibly because rm(list=ls()) was done in console -- recreating them now')
+    xdefaults <- get_global_defaults_or_user_options()
+    linkcolnames <- sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+  }
   pops_links <- make_pops_links(out, linkcolnames)
 
   # title for each Section of pop info #####

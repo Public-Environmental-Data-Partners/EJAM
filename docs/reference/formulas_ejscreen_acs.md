@@ -21,5 +21,4 @@ here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/file
 
 ## See also
 
-[`acs_bybg()`](https://ejanalysis.github.io/EJAM/reference/acs_bybg.md)
-and `ACSdownload::get_acs_new()`
+acs_bybg() and ACSdownload::get_acs_new()

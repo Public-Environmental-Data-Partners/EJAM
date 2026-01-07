@@ -1,13 +1,13 @@
-# plotblocksnearby - Map view of Census blocks (their centroids) near one or more sites Utility to quickly view one or more facility points on map with the blocks found nearby
+# plot_blocks_nearby - Map view of Census blocks (their centroids) near one or more sites Utility to quickly view one or more facility points on map with the blocks found nearby
 
-plotblocksnearby - Map view of Census blocks (their centroids) near one
-or more sites Utility to quickly view one or more facility points on map
-with the blocks found nearby
+plot_blocks_nearby - Map view of Census blocks (their centroids) near
+one or more sites Utility to quickly view one or more facility points on
+map with the blocks found nearby
 
 ## Usage
 
 ``` r
-plotblocksnearby(
+plot_blocks_nearby(
   sitepoints,
   radius = 3,
   sites2blocks,

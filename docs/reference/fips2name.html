@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -66,7 +69,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fips2name</span><span class="op">(</span><span class="va">fips</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fips2name</span><span class="op">(</span><span class="va">fips</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -83,8 +86,12 @@ Can be string or numeric, with or without leading zeroes.</p></li>
 </ul></dd>
 
 
+<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
+<dd><p>whether to silence warnings – also passed to <code><a href="fips_lead_zero.html">fips_lead_zero()</a></code> and <code><a href="fipstype.html">fipstype()</a></code></p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>passed to fips2countyname() to control whether it appends something like , NY or , New York
+<dd><p>passed to <code><a href="fips2countyname.html">fips2countyname()</a></code> to control whether it appends something like , NY or , New York
 after county name</p></dd>
 
 </dl></div>
@@ -135,11 +142,11 @@ such as the State or County that each fips is located within.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

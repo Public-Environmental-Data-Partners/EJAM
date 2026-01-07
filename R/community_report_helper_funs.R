@@ -589,8 +589,8 @@ generate_report_footnotes <- function(
 #'   Passing a parameter as NULL is the same as omitting it/not specifying it.
 #'   To make footer blank (no text), pass "" for footer_text or footer_html.
 #'
-#' @param footer_version_number optional, default is read from the package, e.g., "2.32.6.003"
-#' @param footer_date optional, default is today, e.g., "December 12, 2025"
+#' @param footer_version_number optional, default is read from the package, e.g., "2.32.7"
+#' @param footer_date optional, default is today, e.g., "January 1, 2026"
 #'   If footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be
 #' @param footer_text optional, e.g., "Report created by EJAM version (version_number) on (date_created)".
 #'   If specified, it overrides date and version parameters.
@@ -601,7 +601,7 @@ generate_report_footnotes <- function(
 #'   ```
 #'   footer_html = shiny::HTML(paste0('
 #'     <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
-#'       <p style="margin-bottom: 0;">', 'Report created by EJAM version 2.32.6.003 on December 12, 2025', '</p>
+#'       <p style="margin-bottom: 0;">', 'Report created by EJAM version 2.32.7 on January 1, 2026', '</p>
 #'     </div>
 #'   '))
 #'   ```
@@ -611,7 +611,7 @@ generate_report_footnotes <- function(
 generate_report_footer <- function(footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL) {
 
   if (missing(footer_version_number) || is.null(footer_version_number)) {
-    footer_version_number <- as.vector(global_or_param("app_version")) # e.g., "2.32.6.003"
+    footer_version_number <- as.vector(global_or_param("app_version")) # e.g., "2.32.7"
   }
 
   if (isTRUE(getOption("shiny.testmode"))) {

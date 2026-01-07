@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -122,7 +125,7 @@ or (https://mastering-shiny.org/action-bookmark.html)</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object that represents the app. Printing the object or
 passing it to <code><a href="https://rdrr.io/pkg/shiny/man/runApp.html" class="external-link">shiny::runApp()</a></code> will run the app, as would just typing
-<code>run_app()</code> or <code>ejamapp()</code> in the console.</p>
+<code><a href="run_app.html">run_app()</a></code> or <code>ejamapp()</code> in the console.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -162,29 +165,33 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span> <span class="co"># Note some of these settings/ parameters may get renamed to harmonize and simplify names.</span></span>
 <span></span>
 <span> <span class="co">## Provide input sites to app (skip the web app upload clicks),</span></span>
-<span> <span class="co">## using parameters called `sitepoints` and `shapefile` as in `ejamit()`</span></span>
+<span> <span class="co">## using parameters called `sitepoints` and `shapefile` as in [ejamit()]</span></span>
 <span></span>
 <span> <span class="co">#  data.frame with latitude, longitude</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, radius <span class="op">=</span> <span class="fl">3.1</span><span class="op">)</span></span>
 <span></span>
-<span> <span class="co">#  file with latitude, longitude</span></span>
-<span> <span class="fu">ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/latlon/testpoints_10.xlsx"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="co">#  file with latitude, longitude ("pts" is an alias for "sitepoints")</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>pts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/latlon/testpoints_10.xlsx"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co">#  spatial data.frame with polygons</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">testshapes_2</span><span class="op">)</span></span>
 <span></span>
-<span> <span class="co"># file with polygons</span></span>
-<span> <span class="fu">ejamapp</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/shapes/testinput_shapes_2.zip"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="co"># file with polygons ("shp" is an alias for "shapefile")</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>shp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/shapes/testinput_shapes_2.zip"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co"># a vector or file with fips codes</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_counties</span><span class="op">)</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_cities</span><span class="op">)</span></span>
 <span></span>
+<span> <span class="co"># all Counties in one State</span></span>
+<span><span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"RI"</span><span class="op">)</span>,</span>
+<span>        analysis_title <span class="op">=</span> <span class="st">"Rhode Island Counties"</span>,</span>
+<span>        report_title <span class="op">=</span> <span class="st">"Overall Summary Report"</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co">## Use preferred settings, for your set of analyses:</span></span>
 <span></span>
 <span><span class="fu">ejamapp</span><span class="op">(</span></span>
-<span>  default_standard_analysis_title <span class="op">=</span> <span class="st">"PREFERRED REPORT TITLE FOR THESE ANALYSES"</span>,</span>
+<span>  analysis_title <span class="op">=</span> <span class="st">"PREFERRED REPORT TITLE FOR THESE ANALYSES"</span>,</span>
 <span>  radius <span class="op">=</span> <span class="fl">3.1</span>, <span class="co"># PREFERRED RADIUS</span></span>
 <span>  default_max_miles <span class="op">=</span> <span class="fl">31</span>,      <span class="co"># to raise the radius cap</span></span>
 <span>  default_max_mb_upload <span class="op">=</span> <span class="fl">100</span>, <span class="co"># to raise the file upload size cap</span></span>
@@ -200,7 +207,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  <span class="co">##   defines the range of options</span></span>
 <span></span>
 <span><span class="fu">ejamapp</span><span class="op">(</span></span>
-<span>  default_standard_analysis_title<span class="op">=</span><span class="st">"Custom NAICS Analysis"</span>,</span>
+<span>  analysis_title<span class="op">=</span><span class="st">"Custom NAICS Analysis"</span>,</span>
 <span>  default_upload_dropdown<span class="op">=</span><span class="st">"dropdown"</span>,</span>
 <span>  default_selected_type_of_site_category<span class="op">=</span><span class="st">"NAICS"</span>,</span>
 <span>  default_naics_digits_shown<span class="op">=</span><span class="st">"detailed"</span>, <span class="co"># if default_naics is &gt;3 digits, this has to be "detailed" not "basic"</span></span>
@@ -303,11 +310,11 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

@@ -90,6 +90,7 @@ Suggests:
     leaflet.extras,
     mapview,
     miniUI,
+    plumber,
     remotes,
     rnaturalearth,
     rvest,

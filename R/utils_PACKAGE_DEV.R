@@ -1280,11 +1280,13 @@ pkgs_missing_from_desc_supposedly_needed
 pkgs_in_desc_supposedly_not_needed
 setdiff(pkgs_needed2, pkgs_needed) # found by renv but not by packrat
 
-# > setdiff(setdiff(pkgs_needed2, pkgs_needed), pkgs_in_desc_supposedly_not_needed)
-#  [1] 'base'               'census2020download' 'EJAM'               'githubr'            'graphics'           'grDevices'          'parallel'           'plumber'
-#  [9] 'roxygen2'           'rsconnect'          'stats'              'svglite'            'tools'              'utils'
-# > setdiff(pkgs_in_desc_supposedly_not_needed, setdiff(pkgs_needed2, pkgs_needed))
-# [1] 'datasets'      'fipio'         'rnaturalearth' 'tidygeocoder'
+ setdiff(setdiff(pkgs_needed2, pkgs_needed), pkgs_in_desc_supposedly_not_needed)
+### e.g.,
+#  [1] 'base' 'census2020download' 'EJAM' 'githubr' 'graphics' 'grDevices' 'parallel' 'plumber'
+#  [9] 'roxygen2' 'rsconnect' 'stats' 'svglite' 'tools' 'utils'
+setdiff(pkgs_in_desc_supposedly_not_needed, setdiff(pkgs_needed2, pkgs_needed))
+### e.g.,
+# [1] 'datasets' 'fipio' 'rnaturalearth' 'tidygeocoder'
 
 # but should confirm these truly reflect what is actually needed and not needed
 # for web app to work,

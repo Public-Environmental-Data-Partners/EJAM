@@ -38,7 +38,7 @@ but it is not coded to be able to check attributes without doing that.
 }
 \examples{
 x = EJAM:::metadata_check( which = "ejam_package_version")
-x[!x$ejam_package_version \%in\% "2.32.6", ]
+x[!x$ejam_package_version \%in\% "2.32.7", ]
 
   # tail(EJAM:::metadata_check( ))
   EJAM:::metadata_check(packages = NULL)

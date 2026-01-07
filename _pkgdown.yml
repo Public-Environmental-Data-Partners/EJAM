@@ -24,13 +24,13 @@ development:
   version_label: warning
 home:
   title: EJAM Environmental Justice Analysis Multisite tool
-  description: Webapp and tools summarizing residential population and environmental data for hundreds of places quickly and accurately
+  description: Webapp & tools summarizing residential population & environmental data for hundreds of places quickly & accurately
   sidebar:
     structure: [dev, citation, license, community]
 articles:
 - title: EJSCREEN Documentation
-  desc: EJSCREEN Indicators and Reports
-  navbar: EJSCREEN Indicators and Reports
+  desc: EJSCREEN Indicators & Reports
+  navbar: EJSCREEN Indicators & Reports
   contents:
   - '`ejscreen`'
 - title: The EJAM Web App
@@ -186,9 +186,9 @@ reference:
   - latlon_from_shapefile_centroids
 - title: "Specify Counties etc."
   desc: >
-    Tools to work with Census units and FIPS codes
+    Tools to work with Census units & FIPS codes
     - blockgroups, tracts, counties, states,
-    and EPA Regions
+    & EPA Regions
 - subtitle: "FIPS tools"
   contents:
   - name2fips
@@ -235,9 +235,9 @@ reference:
   - fips_st2eparegion
 - title: "Residents, Blocks, & Distances"
   desc: >
-    GIS tools calculating which blocks (and residents)
+    GIS tools calculating which blocks (& residents)
     are in or near each place (within given radius of point
-    or in FIPS or polygon), and their distances
+    or in FIPS or polygon), & their distances
   contents:
   - getblocksnearby
   - getblocksnearby_from_fips
@@ -265,10 +265,10 @@ reference:
   - statestats
   - modelDoaggregate
   - modelEjamit
-- title: "Calculations and Aggregation"
+- title: "Calculations & Aggregation"
   desc: >
-    Tools that Calculate and Aggregate Indicators
-    at each Place and Overall, and Report Percentiles or Means
+    Tools that Create or Aggregate Indicators
+    at each Place & Overall, & Report Percentiles or Means
   contents:
   - doaggregate
   - calc_ejam
@@ -303,7 +303,20 @@ reference:
   - distance_mean_by_group
   - distance_by_group
   - distance_trends
-- title: "Viewing Results"
+- title: "Viewing Results - Deep Dive"
+- subtitle: "Tables"
+  contents:
+  - ejam2report
+  - ejam2excel
+  - ejam2ratios
+  - ejam2areafeatures
+  - ejam2means
+  - ejam2tableviewer
+  - ejam2table_tall
+  - table_ratios_from_ejamit
+  - table_gt_from_ejamit
+  - table_gt_from_ejamit_1site
+  - table_gt_from_ejamit_overall
 - subtitle: "Maps of Points"
   contents:
   - ejam2map
@@ -353,7 +366,7 @@ reference:
 - subtitle: "Plots: Distance(s) for each population/group"
   contents:
   - ejam2barplot_distances
-- subtitle: "Plots: Indicator as a function of distance (comparing distances and indicators)"
+- subtitle: "Plots: Indicator as a function of distance (comparing distances & indicators)"
   contents:
   - ejam2barplot_distances
   - plot_distance_by_pctd
@@ -362,20 +375,7 @@ reference:
   - plot_distance_cdf_by_group
   - plot_demogshare_by_distance
   - plot_lorenz_distance_by_dcount
-- subtitle: "Tables"
-  contents:
-  - ejam2report
-  - ejam2excel
-  - ejam2ratios
-  - ejam2areafeatures
-  - ejam2means
-  - ejam2tableviewer
-  - ejam2table_tall
-  - table_ratios_from_ejamit
-  - table_gt_from_ejamit
-  - table_gt_from_ejamit_1site
-  - table_gt_from_ejamit_overall
-- title: "Examples of Inputs and Output Data"
+- title: "Examples of Input & Output Data"
 - subtitle: "Finding Examples of Inputs/Outputs"
   contents:
   - testdata
