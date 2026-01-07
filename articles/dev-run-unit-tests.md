@@ -28,11 +28,9 @@ files containing unit tests.
 
 Also see
 [`devtools::test_coverage()`](https://devtools.r-lib.org/reference/test.html)
-which is a shortcut for
-[`covr::package_coverage()`](http://covr.r-lib.org/reference/package_coverage.md)
-plus [`covr::report()`](http://covr.r-lib.org/reference/report.md). The
-[covr package](https://covr.r-lib.org/) also has a related RStudio
-addin.
+which is a shortcut for `covr::package_coverage()` plus
+`covr::report()`. The [covr package](https://covr.r-lib.org/) also has a
+related RStudio addin.
 
 ### Adding unit tests (for new functions or where unit tests not yet written)
 

@@ -164,10 +164,6 @@ See just the table
 x <- ejamit_compare_distances(pts, radii = radii, quiet = TRUE, plot = FALSE)
 ```
 
-    #> doaggregate is predicted to take 24 seconds 
-    #> doaggregate is predicted to take 24 seconds 
-    #> doaggregate is predicted to take 24 seconds 
-    #> doaggregate is predicted to take 24 seconds 
     #> 
     #>                                         1   2   3  10
     #> Ratio to State avg %Hispanic          0.4 0.8 1.1 1.0
@@ -274,8 +270,6 @@ Example of using plot_distance_by_pctd()
 ``` r
 
 out2 = ejamit_compare_distances(pts,radii = c(10,30))
-#> doaggregate is predicted to take 24 seconds 
-#> doaggregate is predicted to take 24 seconds 
 #> 
 #>                                        10  30
 #> Ratio to State avg %Hispanic          0.2 0.7
@@ -361,7 +355,7 @@ for (i in 1:NROW(pts)) {
 
 Block by block details are also easy to view in a map of all the nearby
 blocks, as shown in the section on
-[`plotblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/plotblocksnearby.md)
+[`plot_blocks_nearby()`](https://ejanalysis.github.io/EJAM/reference/plot_blocks_nearby.md)
 and details of blocks near one site.
 
 #### Cumulative Distribution plots of groups as *a continuous function of distance*
@@ -875,7 +869,7 @@ such as this:
     blockcount_near_site: 219
 
 ``` r
-x <- plotblocksnearby(testpoints_10[1, ], radius = 3, returnmap = F)
+x <- plot_blocks_nearby(testpoints_10[1, ], radius = 3, returnmap = F)
 #> Analyzing 1 points, radius of 3 miles around each.
 #> Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...
 #> Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: 
@@ -913,9 +907,6 @@ cat("  ", popshare_p_lives_at_what_pct(out$results_bysite$pop, p = 0.50, astext 
 #> pop were NA, likely due to very small area being analyzed, so those will be
 #> treated as zero population for reporting on share of population vs share of
 #> sites
-#> The most-populated 13% of the 100 places can account for at least 50% of the total population of all sites as a whole.
-#> The most-populated 13% of the 100 places can account for exactly 50% of the total population of all sites as a whole. 
-#> 
 #>    The most-populated 13% of the 100 places can account for at least 50% of the total population of all sites as a whole.
 cat("  ", popshare_at_top_n(out$results_bysite$pop, c(1, 5, 10), astext = TRUE), "\n\n")
 #>    1, 5, 10 places account for 10%, 28%, 43% of the total population
@@ -1034,7 +1025,6 @@ out <- ejamit(sitepoints = sitepoints,
               radius = radius, include_ejindexes = F)
 #> Finding blocks nearby.
 #> Aggregating at each site and overall.
-#> doaggregate is predicted to take 24 seconds
 #> Warning in batch.summarize(sitestats = out$results_bysite, popstats =
 #> out$results_bybg_people, : specified threshnames not all found in sitestats
 #> colnames or other problem with thresholds or threshgroups, so using defaults
@@ -1100,7 +1090,7 @@ leastdense <- s2b_stats$ejam_uniq_id[order(
     #> max distance before adjustment:  5.053461
 
 ``` r
-plotblocksnearby(sitepoints = sitepoints[densest, ])
+plot_blocks_nearby(sitepoints = sitepoints[densest, ])
 ```
 
     #> Analyzing 1 points, radius of 3 miles around each.
@@ -1110,7 +1100,7 @@ plotblocksnearby(sitepoints = sitepoints[densest, ])
     #> max distance before adjustment:  4.755771
 
 ``` r
-plotblocksnearby(sitepoints = sitepoints[ leastdense, ])
+plot_blocks_nearby(sitepoints = sitepoints[ leastdense, ])
 ```
 
 Within a 1 mile radius, the blocks found tend to be about 2/3 of a mile

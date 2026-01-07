@@ -89,7 +89,7 @@ out = ejamit(shapefile = z, radius = 0)
 ``` r
 ejam2report(out, 
             analysis_title = "Zip codes",
-            submitted_upload_method = 'SHP', 
+            site_method = 'SHP', 
             shp = z)
 ```
 

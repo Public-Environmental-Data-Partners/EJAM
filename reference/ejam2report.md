@@ -1,7 +1,7 @@
 # View HTML Report on EJAM Results (Overall or at 1 Site)
 
-Get URL for and view in browser a summary report (similar to used to be
-called the EJSCREEN Community Report)
+Get the html text or the path to the html file with a multisite summary
+or community report
 
 ## Usage
 
@@ -9,13 +9,13 @@ called the EJSCREEN Community Report)
 ejam2report(
   ejamitout = testoutput_ejamit_10pts_1miles,
   sitenumber = NULL,
+  logo_path = EJAM:::global_or_param("report_logo"),
+  logo_html = NULL,
+  report_title = NULL,
   analysis_title = NULL,
-  submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
+  addlatlon = TRUE,
+  site_method = NULL,
   shp = NULL,
-  return_html = FALSE,
-  fileextension = c("html", "pdf")[1],
-  filename = NULL,
-  launch_browser = TRUE,
   show_ratios_in_report = TRUE,
   extratable_show_ratios_in_report = TRUE,
   extratable_title = "",
@@ -32,14 +32,14 @@ ejam2report(
     Climate = names_climate, `Critical Services` = names_criticalservice, Other =
     names_d_other_count),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
-  report_title = NULL,
-  logo_path = EJAM:::global_or_param("report_logo"),
-  logo_html = NULL,
   footer_version_number = NULL,
   footer_date = NULL,
   footer_text = NULL,
   footer_html = NULL,
-  addlatlon = TRUE
+  fileextension = c("html", "pdf")[1],
+  filename = NULL,
+  return_html = FALSE,
+  launch_browser = TRUE
 )
 ```
 
@@ -56,43 +56,75 @@ ejam2report(
 
 - sitenumber:
 
-  If a number is provided, the report is about
-  `ejamitout$results_bysite[sitenumber, ]` and if no number is provided
-  (param is NULL or "") then the report is about
-  `ejamitout$results_overall`
+  If a valid number is provided, the report is a "1-site" report, about
+  `ejamitout$results_bysite[sitenumber, ]`. If no valid number is
+  provided (e.g., param is omitted, 0, NULL, "", etc.) then the report
+  is a "Multisite" report, about `ejamitout$results_overall`. But note
+  that it is treated / titled like a 1-site report if only one site was
+  analyzed (or only one had valid results).
+
+- logo_path:
+
+  optional relative path to a logo for the upper right of the overall
+  header. Ignored if logo_html is specified and not NULL, but otherwise
+  uses default or param set in
+  [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+
+- logo_html:
+
+  optional HTML for img of logo for the upper right of the overall
+  header. If specified, it overrides logo_path. If omitted, gets created
+  based on logo_path.
+
+- report_title:
+
+  optional generic name of this type of report, to be shown at top, like
+  "EJSCREEN Multisite Report" or "EJSCREEN Community Report". Default is
+  EJAM:::global_or_param("report_title") or
+  EJAM:::global_or_param("report_title_multisite") depending on number
+  of sites analyzed and the sitenumber parameter.
 
 - analysis_title:
 
-  optional title of analysis
+  optional title of analysis, default is
+  EJAM:::global_or_param("default_standard_analysis_title")
 
-- submitted_upload_method:
+- addlatlon:
 
-  something like "latlon", "SHP", "FIPS", etc. (just used as-is as part
-  of the filename)
+  optional, whether to include lat,lon coordinates in header (for
+  "latlon" sitetype)
+
+- site_method:
+
+  optional word or phrase about the sites or how they were selected.
+
+  The `site_method` parameter can be used as-is by
+  [`create_filename()`](https://ejanalysis.github.io/EJAM/reference/create_filename.md)
+  to be part of the saved file name. It can also be used by the shiny
+  app to add informational text in the header of a report, via
+  `ejam2report()` and related helper functions like
+  [`report_residents_within_xyz()`](https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.md)
+  or via
+  [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+  and related helper functions.
+
+  The `site_method` parameter provides more detailed info about how
+  sites were specified in the web app, beyond what `sitetype` provides
+  (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
+
+  - sitetype can be "latlon", "fips", or "shp"
+
+  - site_method can be one of these: "latlon", "SHP", "FIPS",
+    "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+
+  The shiny app server provides `site_method` from the reactive called
+  submitted_upload_method() which is much like the one called
+  current_upload_method().
 
 - shp:
 
   provide the sf spatial data.frame of polygons that were analyzed so
   you can map them since they are not in ejamitout
-
-- return_html:
-
-  set TRUE to have function return HTML object instead of URL of local
-  file
-
-- fileextension:
-
-  html or .html or pdf or .pdf (assuming pdf option has been
-  implemented). Creating PDF output from R Markdown requires that LaTeX
-  be installed.
-
-- filename:
-
-  optional path and name for report file, used by web app
-
-- launch_browser:
-
-  set TRUE to have it launch browser and show report.
 
 - show_ratios_in_report:
 
@@ -126,46 +158,36 @@ ejam2report(
   where raw value is NA, as with many of names_d_language, in extra
   table of demog. subgroups, etc.
 
-- report_title:
-
-  optional generic name of this type of report, to be shown at top, like
-  "EJAM Multisite Report"
-
-- logo_path:
-
-  optional relative path to a logo for the upper right of the overall
-  header. Ignored if logo_html is specified and not NULL, but otherwise
-  uses default or param set in
-  [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
-
-- logo_html:
-
-  optional HTML for img of logo for the upper right of the overall
-  header. If specified, it overrides logo_path. If omitted, gets created
-  based on logo_path.
-
 - footer_version_number, footer_date, footer_text, footer_html:
 
   to customize the report footer - see
   [`generate_report_footer()`](https://ejanalysis.github.io/EJAM/reference/generate_report_footer.md)
+  Should provide footer_date to ensure user's timezone is used to
+  determine today's date.
 
-- addlatlon:
+- fileextension:
 
-  optional, whether to include lat,lon coordinates in header (for latlon
-  sitetype)
+  html or .html or pdf or .pdf (assuming pdf option has been
+  implemented). Creating PDF output from R Markdown requires that LaTeX
+  be installed.
+
+- filename:
+
+  optional path and name for report file, used by web app
+
+- return_html:
+
+  set TRUE to have function return HTML object instead of URL of local
+  file
+
+- launch_browser:
+
+  set TRUE to have it launch browser and show report.
 
 ## Value
 
 URL of temp file or object depending on return_html, and has side effect
 of launching browser to view it depending on return_html
-
-## Details
-
-This relies on
-[`build_community_report()`](https://ejanalysis.github.io/EJAM/reference/build_community_report.md)
-as used in web app for viewing report on 1 site from a list of sites (or
-overall). You can customize the report somewhat by using parameters like
-extratable_list_of_sections
 
 ## Examples
 

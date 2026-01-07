@@ -26,6 +26,11 @@ format_ejamit_columns(df, nms = c())
 a named vector with formatted values, corresponding to valid column
 names provided
 
+## See also
+
+Note: \*\*\* overlaps with/could replace with
+[`table_signif_round_x100()`](https://ejanalysis.github.io/EJAM/reference/table_signif_round_x100.md)
+
 ## Examples
 
 ``` r

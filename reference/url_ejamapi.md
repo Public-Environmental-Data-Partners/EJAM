@@ -126,6 +126,30 @@ vector of character string URLs – see details on sitenumber parameter
   [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
   does.
 
+- The 12/2025 API used ejam2report() with these parameter settings:
+
+  - `sitenumber = 1`
+
+  - `report_title="EJSCREEN Community Report"`
+
+  So it was not yet accepting parameters used by
+  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  and
+  [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+  such as
+
+  - sitenumber=0 (for a multisite report)
+
+  - logo_path
+
+  - report_title
+
+  - analysis_title
+
+  - thresholds & threshnames
+
+  - radius_donut_lower_edge
+
 ## Examples
 
 ``` r

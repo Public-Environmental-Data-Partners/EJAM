@@ -7,43 +7,44 @@ Used by table_xls_from_ejam(), and see ejam2excel()
 ``` r
 table_xls_format(
   overall,
-  eachsite,
-  longnames = NULL,
   formatted = NULL,
+  eachsite,
   bybg = NULL,
-  sitetype = NULL,
-  plot_distance_by_group = FALSE,
-  summary_plot = NULL,
-  plotlatest = FALSE,
-  plotfilename = NULL,
-  ok2plot = TRUE,
-  mapadd = FALSE,
-  report_map = NULL,
-  community_reportadd = FALSE,
-  community_html = NULL,
+  longnames = NULL,
+  saveas = NULL,
+  overwrite = TRUE,
+  launchexcel = FALSE,
+  testing = FALSE,
+  updateProgress = NULL,
   analysis_title = "EJAM analysis",
+  sitetype = NULL,
   radius_or_buffer_in_miles = NULL,
   radius_or_buffer_description =
     "Miles radius of circular buffer (or distance used if buffering around polygons)",
   buffer_desc = "Selected Locations",
-  notes = NULL,
-  custom_tab = NULL,
-  custom_tab_name = "other",
+  reports = EJAM:::global_or_param("default_reports"),
+  ok2plot = TRUE,
+  report_plot = NULL,
+  plot_distance_by_group = FALSE,
+  plotlatest = FALSE,
+  plotfilename = NULL,
+  mapadd = FALSE,
+  report_map = NULL,
+  community_reportadd = FALSE,
+  community_html = NULL,
   heatmap_colnames = NULL,
   heatmap_cuts = c(80, 90, 95),
   heatmap_colors = c("yellow", "orange", "red"),
   heatmap2_colnames = NULL,
   heatmap2_cuts = c(1.009, 2, 3),
   heatmap2_colors = c("yellow", "orange", "red"),
-  reports = EJAM:::global_or_param("default_reports"),
   graycolnames = NULL,
-  narrowcolnames = NULL,
   graycolor = "gray",
+  narrowcolnames = NULL,
   narrow6 = 6,
-  testing = FALSE,
-  updateProgress = NULL,
-  launchexcel = FALSE,
-  saveas = NULL,
+  notes = NULL,
+  custom_tab = NULL,
+  custom_tab_name = "other",
   ejscreen_ejam_caveat = NULL,
   ...
 )
@@ -58,74 +59,55 @@ table_xls_format(
   ejamit() is passed as if it were overall, function figures out
   eachsite, etc.
 
-- eachsite:
-
-  table to save in one tab, from ejamit()\$results_bysite, EJAM analysis
-  site by site (one row per site)
-
-- longnames:
-
-  vector of indicator names to display in Excel table
-
 - formatted:
 
   optional table to save in one tab, from ejamit()\$results_overall,
   EJAM analysis overall in different format
+
+- eachsite:
+
+  table to save in one tab, from ejamit()\$results_bysite, EJAM analysis
+  site by site (one row per site)
 
 - bybg:
 
   Optional large table of details of each blockgroup that is only needed
   to analyze distances by group.
 
-- sitetype:
+- longnames:
 
-  normally would be like ejamit()\$sitetype
+  vector of indicator names to display in Excel table
 
-- plot_distance_by_group:
+- saveas:
 
-  logical, whether to try to add a plot of mean distance by group. This
-  requires that bybg be provided as a parameter input to this function.
+  If not NULL, and a valid path with filename.xlsx is provided, the
+  workbook will be saved locally at that path and name unless
+  overwrite=FALSE.
 
-- summary_plot:
+- overwrite:
 
-  optional plot object passed from EJAM shiny app to save in 'Plot'
-  sheet of Excel table
+  optional whether to save even if existing file path already has a file
 
-- plotlatest:
+- launchexcel:
 
-  optional logical. If TRUE, the most recently displayed plot (prior to
-  this function being called) will be inserted into a tab called plot2
+  Set to TRUE to have this function launch Excel immediately, showing
+  the final workbook created here.
 
-- plotfilename:
+- testing:
 
-  the full path including name of .png file to insert
+  optional for testing only
 
-- ok2plot:
+- updateProgress:
 
-  can set to FALSE to prevent plots from being attempted, while
-  debugging
-
-- mapadd:
-
-  logical optional - try to include a map of the points
-
-- report_map:
-
-  leaflet map object passed from Shiny app to display in 'Map' sheet
-
-- community_reportadd:
-
-  logical provided by shiny app to specify whether to include community
-  report image
-
-- community_html:
-
-  HTML file of community report provided by shiny app to include in
-  spreadsheet
+  optional Shiny progress bar to update during formatting
 
 - analysis_title:
 
   optional title passed from Shiny app to 'Notes' sheet
+
+- sitetype:
+
+  normally would be like ejamit()\$sitetype
 
 - radius_or_buffer_in_miles:
 
@@ -142,18 +124,55 @@ table_xls_format(
   optional description of buffer used in analysis, passed to 'Notes'
   sheet
 
-- notes:
+- reports:
 
-  Text of additional notes to put in the notes tab, optional vector of
-  character elements pasted in as one line each.
+  info about which columns to treat as URLs that should be hyperlinks -
+  see
+  [url_columns_bysite](https://ejanalysis.github.io/EJAM/reference/url_columns_bysite.md)
 
-- custom_tab:
+- ok2plot:
 
-  optional table to put in an extra tab
+  can set to FALSE to prevent plots from being attempted, while
+  debugging
 
-- custom_tab_name:
+- report_plot:
 
-  optional name of optional custom_tab
+  optional plot object passed from EJAM shiny app to save in 'Plot'
+  sheet of Excel table
+
+- plot_distance_by_group:
+
+  logical, whether to try to add a plot of mean distance by group. This
+  requires that bybg be provided as a parameter input to this function.
+
+- plotlatest:
+
+  optional logical. If TRUE, the most recently displayed plot (prior to
+  this function being called) will be inserted into a tab called plot2
+
+- plotfilename:
+
+  the full path including name of .png file to insert
+
+- mapadd:
+
+  optional logical, whether to add a tab with a map of the sites. If
+  report tab is added, though, standalone static map in excel tab is
+  redundant.
+
+- report_map:
+
+  leaflet map object passed from Shiny app to display in 'Map' sheet
+
+- community_reportadd:
+
+  Logical, whether to add a tab with a static copy of the summary report
+  (tables, map, barplot).
+
+- community_html:
+
+  HTML file of community report provided by shiny app to include in
+  spreadsheet
 
 - heatmap_colnames:
 
@@ -183,46 +202,34 @@ table_xls_format(
 
   like heatmap_colors but for ratios
 
-- reports:
-
-  info about which columns to treat as URLs that should be hyperlinks -
-  see
-  [url_columns_bysite](https://ejanalysis.github.io/EJAM/reference/url_columns_bysite.md)
-
 - graycolnames:
 
   which columns to de-emphasize
-
-- narrowcolnames:
-
-  which column numbers to make narrow
 
 - graycolor:
 
   color used to de-emphasize some columns
 
+- narrowcolnames:
+
+  which column numbers to make narrow
+
 - narrow6:
 
   how narrow
 
-- testing:
+- notes:
 
-  optional for testing only
+  Text of additional notes to put in the notes tab, optional vector of
+  character elements pasted in as one line each.
 
-- updateProgress:
+- custom_tab:
 
-  optional Shiny progress bar to update during formatting
+  optional table to put in an extra tab
 
-- launchexcel:
+- custom_tab_name:
 
-  Set to TRUE to have this function launch Excel immediately, showing
-  the final workbook created here.
-
-- saveas:
-
-  If not NULL, and a valid path with filename.xlsx is provided, the
-  workbook will be saved locally at that path and name. Warning: it will
-  overwrite an existing file.
+  optional name of optional custom_tab
 
 - ejscreen_ejam_caveat:
 
@@ -230,8 +237,7 @@ table_xls_format(
 
 - ...:
 
-  other params passed along to
-  [`openxlsx::writeData()`](https://rdrr.io/pkg/openxlsx/man/writeData.html)
+  unused
 
 ## Value
 

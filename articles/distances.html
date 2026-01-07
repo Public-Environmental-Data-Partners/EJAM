@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -84,7 +87,7 @@
 
 
 
-<link href="distances_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<link href="distances_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="distances_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="distances_files/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="distances_files/leaflet-1.3.1/leaflet.js"></script><link href="distances_files/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="distances_files/proj4-2.6.2/proj4.min.js"></script><script src="distances_files/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="distances_files/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
@@ -164,7 +167,7 @@ later section.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejam2barplot.html">ejam2barplot</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/barplot-1.png" alt="Example of ejam2barplot() showing percent Asian among residents within 5 km of these 100 sites is more than two times the US rate overall" width="768"><p class="caption">
+<img src="distances_files/figure-html/barplot-1.png" class="r-plt" alt="Example of ejam2barplot() showing percent Asian among residents within 5 km of these 100 sites is more than two times the US rate overall" width="768"><p class="caption">
 Example of ejam2barplot() showing percent Asian among residents within 5
 km of these 100 sites is more than two times the US rate overall
 </p>
@@ -181,7 +184,7 @@ within X mile radius vs Statewide?</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejam2barplot.html">ejam2barplot</a></span><span class="op">(</span><span class="va">out1</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/onesiteyy-1.png" alt="Example of ejam2barplot() showing percent non-Hispanic White Alone among residents within 5 km of this one site is about 1.6 times the US rate overall" width="672"><p class="caption">
+<img src="distances_files/figure-html/onesiteyy-1.png" class="r-plt" alt="Example of ejam2barplot() showing percent non-Hispanic White Alone among residents within 5 km of this one site is about 1.6 times the US rate overall" width="672"><p class="caption">
 Example of ejam2barplot() showing percent non-Hispanic White Alone among
 residents within 5 km of this one site is about 1.6 times the US rate
 overall
@@ -219,7 +222,7 @@ and 10.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejam2barplot_sites.html">ejam2barplot_sites</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"ratio.to.state.avg.pctlowinc"</span>, topn <span class="op">=</span> <span class="fl">10</span>, sortby <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/ejam2barplot_sites10-1.png" alt="Example of ejam2barplot_sites() showing to state average percent low income, one bar per site, where sites 5 and 6 have ratios above 2" width="672"><p class="caption">
+<img src="distances_files/figure-html/ejam2barplot_sites10-1.png" class="r-plt" alt="Example of ejam2barplot_sites() showing to state average percent low income, one bar per site, where sites 5 and 6 have ratios above 2" width="672"><p class="caption">
 Example of ejam2barplot_sites()
 </p>
 </div>
@@ -244,11 +247,7 @@ Example of ejam2barplot_sites()
 <p>See just the table</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit_compare_distances.html">ejamit_compare_distances</a></span><span class="op">(</span><span class="va">pts</span>, radii <span class="op">=</span> <span class="va">radii</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; </span></span>
+<pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                                         1   2   3  10</span></span>
 <span><span class="co">#&gt; Ratio to State avg %Hispanic          0.4 0.8 1.1 1.0</span></span>
 <span><span class="co">#&gt; Ratio to State avg %Black NHA         4.4 2.7 1.8 0.7</span></span>
@@ -266,7 +265,7 @@ Example of ejam2barplot_sites()
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Indicators that increase the most as you get closer:</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/ejam2barplot_distances-1.png" alt="Example of using ejam2barplot_distances() with distance on x axis and ratio to state average on y axis, with one line for each residential population group such as ratio to state average percent Hispanic, showing the indicator that increases the most as you get closer to site is Ratio to State avg % Hispanic" width="672"><p class="caption">
+<img src="distances_files/figure-html/ejam2barplot_distances-1.png" class="r-plt" alt="Example of using ejam2barplot_distances() with distance on x axis and ratio to state average on y axis, with one line for each residential population group such as ratio to state average percent Hispanic, showing the indicator that increases the most as you get closer to site is Ratio to State avg % Hispanic" width="672"><p class="caption">
 Example of using ejam2barplot_distances()
 </p>
 </div>
@@ -304,7 +303,7 @@ vary as <em>a continuous function of distance</em><a class="anchor" aria-label="
 <span>  score_colname <span class="op">=</span> <span class="st">"pctnhba"</span>,</span>
 <span>  sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/plot_distance_by_pctd-1.png" alt="Example of using plot_distance_by_pctd() showing distance on x axis, indicator value within x miles on y axis, for %Black nonhispanic alone as function of distance at site 1, with striking decrease in percent from almost 80% around 0 miles away down to about 20% at 3 or 6 miles away, and showing 20% is the approx US 80th percentile (and state values overall shown as horizontal lines lower than that in this case)" width="672"><p class="caption">
+<img src="distances_files/figure-html/plot_distance_by_pctd-1.png" class="r-plt" alt="Example of using plot_distance_by_pctd() showing distance on x axis, indicator value within x miles on y axis, for %Black nonhispanic alone as function of distance at site 1, with striking decrease in percent from almost 80% around 0 miles away down to about 20% at 3 or 6 miles away, and showing 20% is the approx US 80th percentile (and state values overall shown as horizontal lines lower than that in this case)" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
 </p>
 </div>
@@ -325,15 +324,13 @@ away from this specific point</p>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_by_pctd.html">plot_distance_by_pctd</a></span><span class="op">(</span><span class="va">pts</span>,</span>
 <span>                      sitenumber <span class="op">=</span> <span class="fl">1</span>, score_colname <span class="op">=</span> <span class="st">"pcthisp"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/plot_distance_by_pctd2-1.png" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
+<img src="distances_files/figure-html/plot_distance_by_pctd2-1.png" class="r-plt" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
 </p>
 </div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">out2</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit_compare_distances.html">ejamit_compare_distances</a></span><span class="op">(</span><span class="va">pts</span>,radii <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">30</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
-<span><span class="co">#&gt; doaggregate is predicted to take 24 seconds </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                                        10  30</span></span>
 <span><span class="co">#&gt; Ratio to State avg %Hispanic          0.2 0.7</span></span>
@@ -349,7 +346,7 @@ Example of using plot_distance_by_pctd()
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Indicators that increase the most as you get closer:</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/plot_distance_by_pctd2-2.png" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
+<img src="distances_files/figure-html/plot_distance_by_pctd2-2.png" class="r-plt" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
 </p>
 </div>
@@ -359,7 +356,7 @@ Example of using plot_distance_by_pctd()
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Indicators that increase the most as you get closer:</span></span></code></pre>
 <div class="figure">
-<img src="distances_files/figure-html/plot_distance_by_pctd2-3.png" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
+<img src="distances_files/figure-html/plot_distance_by_pctd2-3.png" class="r-plt" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
 </p>
 </div>
@@ -406,7 +403,8 @@ averages within any distance shown here.</p></li>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Block by block details are also easy to view in a map of all the
 nearby blocks, as shown in the section on
-<code><a href="../reference/plotblocksnearby.html">plotblocksnearby()</a></code> and details of blocks near one site.</p>
+<code><a href="../reference/plot_blocks_nearby.html">plot_blocks_nearby()</a></code> and details of blocks near one
+site.</p>
 </div>
 <div class="section level4">
 <h4 id="cumulative-distribution-plots-of-groups-as-a-continuous-function-of-distance">Cumulative Distribution plots of groups as <em>a continuous function
@@ -430,7 +428,7 @@ the non-low income residents or all residents.</p>
 <span>  <span class="va">out</span><span class="op">$</span><span class="va">results_bybg_people</span>,</span>
 <span>  demogvarname <span class="op">=</span> <span class="st">'pctlowinc'</span>, demoglabel <span class="op">=</span> <span class="st">'Low Income'</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/plot_distance_cdf_by_group1-1.png" alt="Example of using plot_distance_cdf_by_group()" width="672"><p class="caption">
+<img src="distances_files/figure-html/plot_distance_cdf_by_group1-1.png" class="r-plt" alt="Example of using plot_distance_cdf_by_group()" width="672"><p class="caption">
 Example of using plot_distance_cdf_by_group()
 </p>
 </div>
@@ -515,7 +513,7 @@ residential population group:</p>
 <span>                       demoglabel <span class="op">=</span> <span class="fu"><a href="../reference/fixcolnames.html">fixcolnames</a></span><span class="op">(</span><span class="va">names_d_subgroups</span>, <span class="st">"r"</span>, <span class="st">"shortlabel"</span><span class="op">)</span></span>
 <span>                       <span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/plot_distance_mean_by_group999-1.png" alt="Example of using plot_distance_mean_by_group() showing 8 race ethnic subgroups on x axis and average distance for those in group as ratio to distance for residents not in given group, with yellow bars for hispanic and hawaiian/PI nonhispanic yellow meaning they are closer than overall average resident and orange for American Indian nonhispanic alone meaning they are only 93% as far as everyone else, 0.64 vs 0.69 miles away" width="672"><p class="caption">
+<img src="distances_files/figure-html/plot_distance_mean_by_group999-1.png" class="r-plt" alt="Example of using plot_distance_mean_by_group() showing 8 race ethnic subgroups on x axis and average distance for those in group as ratio to distance for residents not in given group, with yellow bars for hispanic and hawaiian/PI nonhispanic yellow meaning they are closer than overall average resident and orange for American Indian nonhispanic alone meaning they are only 93% as far as everyone else, 0.64 vs 0.69 miles away" width="672"><p class="caption">
 Example of using plot_distance_mean_by_group()
 </p>
 </div>
@@ -863,7 +861,7 @@ sites and nearby blocks.</p>
 <span><span class="co">#&gt; 0 blocks (and their residents) have exactly 2 sites nearby </span></span>
 <span><span class="co">#&gt; 0 blocks (and their residents) have exactly 3 sites nearby</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/getblocks_diagnostics_simple-1.png" alt="Example of getblocks_diagnostics() to see tables and histogram barplot of how many blocks are within 3.1 miles of these 2 sites, showing in this case they have at least 30 each" width="672"><p class="caption">
+<img src="distances_files/figure-html/getblocks_diagnostics_simple-1.png" class="r-plt" alt="Example of getblocks_diagnostics() to see tables and histogram barplot of how many blocks are within 3.1 miles of these 2 sites, showing in this case they have at least 30 each" width="672"><p class="caption">
 Example of getblocks_diagnostics() to see tables and histogram barplot
 of how many blocks are within 3.1 miles of these 2 sites
 </p>
@@ -893,7 +891,7 @@ such as this:</p>
 <span><span class="va">ejam_uniq_id</span><span class="op">:</span> <span class="fl">1</span></span>
 <span><span class="va">blockcount_near_site</span><span class="op">:</span> <span class="fl">219</span></span></code></pre>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotblocksnearby.html">plotblocksnearby</a></span><span class="op">(</span><span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, radius <span class="op">=</span> <span class="fl">3</span>, returnmap <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_blocks_nearby.html">plot_blocks_nearby</a></span><span class="op">(</span><span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, radius <span class="op">=</span> <span class="fl">3</span>, returnmap <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
 <span><span class="co">#&gt; Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...</span></span>
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
@@ -937,9 +935,6 @@ nearby)</li>
 <span><span class="co">#&gt; pop were NA, likely due to very small area being analyzed, so those will be</span></span>
 <span><span class="co">#&gt; treated as zero population for reporting on share of population vs share of</span></span>
 <span><span class="co">#&gt; sites</span></span>
-<span><span class="co">#&gt; The most-populated 13% of the 100 places can account for at least 50% of the total population of all sites as a whole.</span></span>
-<span><span class="co">#&gt; The most-populated 13% of the 100 places can account for exactly 50% of the total population of all sites as a whole. </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;    The most-populated 13% of the 100 places can account for at least 50% of the total population of all sites as a whole.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"  "</span>, <span class="fu"><a href="../reference/popshare_at_top_n.html">popshare_at_top_n</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">pop</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>, astext <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"\n\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    1, 5, 10 places account for 10%, 28%, 43% of the total population</span></span></code></pre></div>
@@ -994,7 +989,7 @@ handful or even zero.</p>
 <h4 id="cdf-of-how-many-blocks-are-nearby-a-site">CDF of how many blocks are nearby a site<a class="anchor" aria-label="anchor" href="#cdf-of-how-many-blocks-are-nearby-a-site"></a>
 </h4>
 <div class="figure">
-<img src="distances_files/figure-html/plot_count_of_blocks_nearby-1.png" alt="scatterplot of 100 ranked sites with y axis showing count of blocks nearby rising from zero to almost 800 blocks at a given site, and around 150-200 at the average site" width="576"><p class="caption">
+<img src="distances_files/figure-html/plot_count_of_blocks_nearby-1.png" class="r-plt" alt="scatterplot of 100 ranked sites with y axis showing count of blocks nearby rising from zero to almost 800 blocks at a given site, and around 150-200 at the average site" width="576"><p class="caption">
 How many blocks are near each of these 100 facilities?
 </p>
 </div>
@@ -1010,7 +1005,7 @@ How many blocks are near each of these 100 facilities?
 <span>     main <span class="op">=</span> <span class="st">"A given site may have zero to hundreds of blocks nearby"</span>, </span>
 <span>     sub <span class="op">=</span> <span class="st">"A typical site in this example has about 100 blocks nearby"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="distances_files/figure-html/histoblocks-1.png" alt="histogram with count of sites on y axis and how many blocks on x axis up to 6,000 showing huge share of sites have fewer than 500 blocks within 3 miles, but some have over 5,000 blocks within 3 miles of a single site." width="672"><p class="caption">
+<img src="distances_files/figure-html/histoblocks-1.png" class="r-plt" alt="histogram with count of sites on y axis and how many blocks on x axis up to 6,000 showing huge share of sites have fewer than 500 blocks within 3 miles, but some have over 5,000 blocks within 3 miles of a single site." width="672"><p class="caption">
 Example of Histogram and table showing how many blocks are within 3
 miles of a site
 </p>
@@ -1045,7 +1040,6 @@ nearby<a class="anchor" aria-label="anchor" href="#map-all-sites-with-popup-at-e
 <span>              radius <span class="op">=</span> <span class="va">radius</span>, include_ejindexes <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Finding blocks nearby.</span></span>
 <span><span class="co">#&gt; Aggregating at each site and overall.</span></span>
-<span><span class="co">#&gt; doaggregate is predicted to take 24 seconds</span></span>
 <span><span class="co">#&gt; Warning in batch.summarize(sitestats = out$results_bysite, popstats =</span></span>
 <span><span class="co">#&gt; out$results_bybg_people, : specified threshnames not all found in sitestats</span></span>
 <span><span class="co">#&gt; colnames or other problem with thresholds or threshgroups, so using defaults</span></span>
@@ -1110,14 +1104,14 @@ dense urban area<a class="anchor" aria-label="anchor" href="#some-places-have-hu
 <span><span class="co">#&gt; min distance before adjustment:  0.03130003 </span></span>
 <span><span class="co">#&gt; max distance before adjustment:  5.053461</span></span></code></pre>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotblocksnearby.html">plotblocksnearby</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span><span class="op">[</span><span class="va">densest</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_blocks_nearby.html">plot_blocks_nearby</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span><span class="op">[</span><span class="va">densest</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
 <span><span class="co">#&gt; Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...</span></span>
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
 <span><span class="co">#&gt; min distance before adjustment:  1.059524 </span></span>
 <span><span class="co">#&gt; max distance before adjustment:  4.755771</span></span></code></pre>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotblocksnearby.html">plotblocksnearby</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span><span class="op">[</span> <span class="va">leastdense</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_blocks_nearby.html">plot_blocks_nearby</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span><span class="op">[</span> <span class="va">leastdense</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p>Within a 1 mile radius, the blocks found tend to be about 2/3 of a
 mile from the site at the center.</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
@@ -1135,11 +1129,11 @@ mile from the site at the center.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer>

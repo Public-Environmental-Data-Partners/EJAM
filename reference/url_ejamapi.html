@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -164,6 +167,15 @@ https://github.com/edgi-govdata-archiving/EJAM-API</p>
 <li><p>Another option in the future might be to construct a URL that is a link to the live EJAM
 app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.</p></li>
 <li><p>Will try to use the same input parameters as <code><a href="ejamit.html">ejamit()</a></code> does.</p></li>
+<li><p>The 12/2025 API used ejam2report() with these parameter settings:</p><ul><li><p><code>sitenumber = 1</code></p></li>
+<li><p><code>report_title="EJSCREEN Community Report"</code></p></li>
+</ul><p>So it was not yet accepting parameters used by <code><a href="ejamit.html">ejamit()</a></code> and <code><a href="ejam2report.html">ejam2report()</a></code> such as</p><ul><li><p>sitenumber=0 (for a multisite report)</p></li>
+<li><p>logo_path</p></li>
+<li><p>report_title</p></li>
+<li><p>analysis_title</p></li>
+<li><p>thresholds &amp; threshnames</p></li>
+<li><p>radius_donut_lower_edge</p></li>
+</ul></li>
 </ul></div>
 
     <div class="section level2">
@@ -206,11 +218,11 @@ app but has url-encoded parameters that are app settings, such as sitepoints, ra
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

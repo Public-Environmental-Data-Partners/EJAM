@@ -37,30 +37,27 @@ batch.summarize(
 
 - sitestats:
 
-  A data.frame or data.table like
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)\$results_bysite,
-  with one row per site and one column per indicator. Ignored if
-  ejamitout is provided.
+  A data.frame or data.table like ejamit()\$results_bysite, with one row
+  per site and one column per indicator. Ignored if ejamitout is
+  provided.
 
 - popstats:
 
   A data.frame or [data.table](https://r-datatable.com) like
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)\$results_bybg_people,
-  with one row per blockgroup at least partly in/at one or more of the
-  sites, and one column per indicator. It provides blockgroup
-  indicators, including total counts even for the blockgroups that are
-  not entirely in/at a site. This is used to get stats on the
-  distribution of each indicator across all unique individuals
-  (regardless of how many sites a resident is at). Ignored if ejamitout
-  is provided.
+  ejamit()\$results_bybg_people, with one row per blockgroup at least
+  partly in/at one or more of the sites, and one column per indicator.
+  It provides blockgroup indicators, including total counts even for the
+  blockgroups that are not entirely in/at a site. This is used to get
+  stats on the distribution of each indicator across all unique
+  individuals (regardless of how many sites a resident is at). Ignored
+  if ejamitout is provided.
 
 - overall:
 
   A data.frame or [data.table](https://r-datatable.com) like
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)\$results_bysite,
-  with one column per indicator, and just one data row that has the
-  overall average, sum, or other summary stat for the indicator across
-  all sites. Ignored if ejamitout is provided.
+  ejamit()\$results_bysite, with one column per indicator, and just one
+  data row that has the overall average, sum, or other summary stat for
+  the indicator across all sites. Ignored if ejamitout is provided.
 
 - wtscolname:
 
@@ -177,13 +174,16 @@ formulas to this code.
 
 Note it can provide population-weighted summary stats only for the
 indicators found in popstats, which is fewer than those in sitestats,
-since doaggregate() or ejamit() did not provide various extra indicators
-in the very large results_bybg_people table. The parameter sitestats but
-not popstats has the ratios and pctiles (and US/State averages) of
-indicators, plus "bgid" "bgwt" and "valid" "invalid_msg" So this
-function cannot show, e.g., the median analyzed person's ratio of local
-score to US average, and cannot say the Demog. Index US percentile was
-at least X% of people nationwide among the top 10% of people analyzed.
+since
+[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+or [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+did not provide various extra indicators in the very large
+results_bybg_people table. The parameter sitestats but not popstats has
+the ratios and pctiles (and US/State averages) of indicators, plus
+"bgid" "bgwt" and "valid" "invalid_msg" So this function cannot show,
+e.g., the median analyzed person's ratio of local score to US average,
+and cannot say the Demog. Index US percentile was at least X% of people
+nationwide among the top 10% of people analyzed.
 
 ## See also
 

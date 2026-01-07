@@ -186,7 +186,7 @@ which are similar but provide additional info.
 ## Details
 
 [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-and doaggregate() are the two key functions that run
+and `doaggregate()` are the two key functions that run
 [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md).
 `doaggregate()` takes a set of sites like facilities and the set of
 blocks that are near each, combines those with indicator scores for

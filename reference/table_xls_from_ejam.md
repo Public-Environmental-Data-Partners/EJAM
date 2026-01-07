@@ -13,20 +13,38 @@ table_xls_from_ejam(
   overwrite = TRUE,
   launchexcel = FALSE,
   interactive_console = TRUE,
-  ok2plot = TRUE,
   in.testing = FALSE,
-  in.analysis_title = "EJAM analysis",
-  react.v1_summary_plot = NULL,
-  radius_or_buffer_in_miles = NULL,
-  buffer_desc = "Selected Locations",
-  radius_or_buffer_description = NULL,
-  reports = EJAM:::global_or_param("default_reports"),
+  updateProgress = NULL,
+  analysis_title = "EJAM analysis",
   site_method = "",
+  radius_or_buffer_in_miles = NULL,
+  radius_or_buffer_description = NULL,
+  buffer_desc = "Selected Locations",
+  reports = EJAM:::global_or_param("default_reports"),
+  ok2plot = TRUE,
+  report_plot = NULL,
+  plot_distance_by_group = FALSE,
+  plotlatest = FALSE,
+  plotfilename = NULL,
   mapadd = FALSE,
   report_map = NULL,
+  shp = NULL,
   community_reportadd = TRUE,
   community_html = NULL,
-  shp = NULL,
+  heatmap_colnames = NULL,
+  heatmap_cuts = c(80, 90, 95),
+  heatmap_colors = c("yellow", "orange", "red"),
+  heatmap2_colnames = NULL,
+  heatmap2_cuts = c(1.009, 2, 3),
+  heatmap2_colors = c("yellow", "orange", "red"),
+  graycolnames = NULL,
+  graycolor = "gray",
+  narrowcolnames = NULL,
+  narrow6 = 6,
+  notes = NULL,
+  custom_tab = NULL,
+  custom_tab_name = "other",
+  ejscreen_ejam_caveat = NULL,
   ...
 )
 ```
@@ -66,36 +84,61 @@ table_xls_from_ejam(
   prompts RStudio user interactively asking where to save the downloaded
   file
 
-- ok2plot:
-
-  optional logical, passed to
-  [`table_xls_format()`](https://ejanalysis.github.io/EJAM/reference/table_xls_format.md),
-  whether safe to try and plot or set FALSE if debugging plot problems
-
 - in.testing:
 
   optional logical
 
-- in.analysis_title:
+- updateProgress:
 
-  optional title as character string
+  optional function used by shiny app to track progress of slow
+  operation
 
-- react.v1_summary_plot:
+- analysis_title:
 
-  optional - a plot object
+  optional title as character string, used only in 'Notes' sheet (and to
+  create a default filename if fname not specified). Not used in the
+  copy of the report.
+
+- site_method:
+
+  optional word or phrase about the sites or how they were selected.
+
+  The `site_method` parameter can be used as-is by
+  [`create_filename()`](https://ejanalysis.github.io/EJAM/reference/create_filename.md)
+  to be part of the saved file name. It can also be used by the shiny
+  app to add informational text in the header of a report, via
+  [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+  and related helper functions like
+  [`report_residents_within_xyz()`](https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.md)
+  or via
+  [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+  and related helper functions.
+
+  The `site_method` parameter provides more detailed info about how
+  sites were specified in the web app, beyond what `sitetype` provides
+  (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
+
+  - sitetype can be "latlon", "fips", or "shp"
+
+  - site_method can be one of these: "latlon", "SHP", "FIPS",
+    "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+
+  The shiny app server provides `site_method` from the reactive called
+  submitted_upload_method() which is much like the one called
+  current_upload_method().
 
 - radius_or_buffer_in_miles:
 
   optional radius in miles
 
-- buffer_desc:
-
-  description of location to use in labels, like "Selected Locations"
-
 - radius_or_buffer_description:
 
   optional text phrase describing places analyzed, like in report
   headers
+
+- buffer_desc:
+
+  description of location to use in labels, like "Selected Locations"
 
 - reports:
 
@@ -103,24 +146,46 @@ table_xls_from_ejam(
   see
   [`url_columns_bysite()`](https://ejanalysis.github.io/EJAM/reference/url_columns_bysite.md)
 
-- site_method:
+- ok2plot:
 
-  site selection method, such as SHP, latlon, FIPS, NAICS, FRS,
-  EPA_PROGRAM, SIC, MACT optional site method parameter used to create a
-  more specific title with create_filename. Note `ejamitout$sitetype` is
-  not quite the same as the `site_method` parameter used in building
-  reports. sitetype can be latlon, fips, or shp site_method can be one
-  of these: SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
+  optional logical, passed to
+  [`table_xls_format()`](https://ejanalysis.github.io/EJAM/reference/table_xls_format.md),
+  whether safe to try and plot or set FALSE if debugging plot problems
+
+- report_plot:
+
+  optional - a plot object
+
+- plot_distance_by_group:
+
+  optional logical, whether to try to add a plot of mean distance by
+  group. This requires that bybg be provided as a parameter input to
+  this function.
+
+- plotlatest:
+
+  optional logical. If TRUE, the most recently displayed plot (prior to
+  this function being called) will be inserted into a tab called plot2
+
+- plotfilename:
+
+  optional the full path including name of a .png file to insert
 
 - mapadd:
 
-  Logical, whether to add a tab with a map of the sites. If report tab
-  is added, though, standalone static map in excel tab is redundant.
+  optional logical, whether to add a tab with a map of the sites. If
+  report tab is added, though, standalone static map in excel tab is
+  redundant.
 
 - report_map:
 
-  the map to use if mapadd = TRUE (re-created if this is omitted/NULL
-  but mapadd is TRUE)
+  the leaflet map to display in 'Map' sheet if mapadd is TRUE
+  (re-created if this is omitted/NULL but mapadd is TRUE)
+
+- shp:
+
+  optional shapefile used to create map if not providing it via
+  report_map or community_html parameters
 
 - community_reportadd:
 
@@ -129,19 +194,75 @@ table_xls_from_ejam(
 
 - community_html:
 
-  the HTML of the summary/community report if available (re-created if
-  this is omitted/NULL but community_reportadd is TRUE)
+  the HTML file of the summary/community report if available (re-created
+  if this is omitted/NULL but community_reportadd is TRUE)
 
-- shp:
+- heatmap_colnames:
 
-  shapefile to create map if not providing it via report_map or
-  community_html parameters
+  optional vector of colnames to apply heatmap colors, defaults to
+  percentiles
+
+- heatmap_cuts:
+
+  vector of values to separate heatmap colors, between 0-100 for
+  percentiles
+
+- heatmap_colors:
+
+  vector of color names for heatmap bins, same length as heatmap_cuts,
+  where first color is for those \>= 1st cutpoint, but \<2d, second
+  color is for those \>=2d cutpoint but \<3d, etc.
+
+- heatmap2_colnames:
+
+  like heatmap_colnames but for ratios by default
+
+- heatmap2_cuts:
+
+  like heatmap_cuts but for ratios by default
+
+- heatmap2_colors:
+
+  like heatmap_colors but for ratios
+
+- graycolnames:
+
+  which columns to de-emphasize
+
+- graycolor:
+
+  color used to de-emphasize some columns
+
+- narrowcolnames:
+
+  which column numbers to make narrow
+
+- narrow6:
+
+  how narrow
+
+- notes:
+
+  Text of additional notes to put in the notes tab, optional vector of
+  character elements pasted in as one line each.
+
+- custom_tab:
+
+  optional table to put in an extra tab
+
+- custom_tab_name:
+
+  optional name of optional custom_tab
+
+- ejscreen_ejam_caveat:
+
+  optional text if you want to change this in the notes tab
 
 - ...:
 
   optional additional parameters passed to
   [`table_xls_format()`](https://ejanalysis.github.io/EJAM/reference/table_xls_format.md),
-  such as heatmap_colnames, heatmap_cuts, heatmap_colors, etc.
+  currently unused
 
 ## Value
 

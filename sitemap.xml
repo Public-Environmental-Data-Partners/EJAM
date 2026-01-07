@@ -37,6 +37,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table_goodnames.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/api_run.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/app_run_EJAM.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_server.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_ui.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/area_sqmi.html</loc></url>
@@ -421,6 +422,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_ratios_ez.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_sitegroups.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_barplot_sites.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/plot_blocks_nearby.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_boxplot_pctiles.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_boxplot_ratios.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_bycounty.html</loc></url>
@@ -433,7 +435,6 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_ridgeline_ratios_ez.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_st_v_us.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/plot_vs_us.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/plotblocksnearby.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/popshare_at_top_n.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/popshare_at_top_x_pct.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/popshare_p_lives_at_what_n.html</loc></url>
@@ -463,6 +464,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/report_xmilesof.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/rmost.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/rowMaxs2.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/run_app.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/setdiff2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/setdiff_yx.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/shape2geojson.html</loc></url>
