@@ -86,7 +86,7 @@ pkg_update_testpoints_testoutputs <- function(
       row.names = c(1L, 2L, 3L),
       class = "data.frame")
     # mapfast(pts,radius = 1)
-    # plotblocksnearby(pts,radius = 1)
+    # plot_blocks_nearby(pts,radius = 1)
 
     ############# #
     ### save ####
@@ -109,7 +109,7 @@ pkg_update_testpoints_testoutputs <- function(
 #'
 #'   mapfast(pts, radius = 1)
 #'
-#'   plotblocksnearby(pts, radius = 1)
+#'   plot_blocks_nearby(pts, radius = 1)
 #'  ```"
     )
     ############# #

@@ -268,7 +268,7 @@ for (ftype in ftypes) {
 test_that("map_blockgroups_over_blocks() works", {
   expect_no_error({
     junk = capture.output({
-      y <- plotblocksnearby(testpoints_10[5,],
+      y <- plot_blocks_nearby(testpoints_10[5,],
                             radius = 0.5,
                             returnmap = TRUE)
       x = map_blockgroups_over_blocks(y)

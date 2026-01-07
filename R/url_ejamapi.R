@@ -16,7 +16,7 @@
 #'   - `sitenumber = 1`
 #'   - `report_title="EJSCREEN Community Report"`
 #'
-#'   So it was not yet accepting parameters used by `ejamit()` and `ejam2report()` such as
+#'   So it was not yet accepting parameters used by [ejamit()] and [ejam2report()] such as
 #'   - sitenumber=0 (for a multisite report)
 #'   - logo_path
 #'   - report_title

@@ -582,7 +582,7 @@ generate_report_footnotes <- function(
 }
 ################################################################################## #
 
-# 5. footer ####
+# 6. footer ####
 
 #' helper - make date/version footer for summary report
 #' @details  used by app_server.R and .Rmd report templates.
@@ -895,15 +895,11 @@ generate_extra_header <- function(title = 'Additional Information') {
 
 ## within X miles of ####
 
-
-##################################################################################### #
-
-#' helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____
+#' Build text for report: Locations analyzed: e.g. (" specified point") based on sitetype ("latlon") and site_method
+#' @description Helps create text for excel report's notes sheet (via [ejam2excel()] helpers like [table_xls_format()])
 #'
 #' @param sitetype character string, one of "shp", "latlon", "fips"
 #'
-#' @param site_method string used in filename for saved report and to describe locations
-#'   site_method can be SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, or MACT
 #' @param site_method optional word or phrase about the sites or how they were selected.
 #'
 #'   The `site_method` parameter
@@ -921,6 +917,10 @@ generate_extra_header <- function(title = 'Additional Information') {
 #'
 #' @seealso [report_residents_within_xyz_from_ejamit()] and [report_residents_within_xyz()]
 #'   for a newer approach to this.
+#' @examples
+#' buffer_desc_from_sitetype("latlon", "NAICS")
+#' buffer_desc_from_sitetype("shp")
+#' buffer_desc_from_sitetype("fips")
 #'
 #' @returns text string, phrase to use in excel notes tab
 #'
@@ -1017,10 +1017,10 @@ site_method2text =  function(site_method) {
 #'
 #' @param site_method optional word or phrase about the sites or how they were selected.
 #'
-#'   The `site_method` parameter can be used as-is by `create_filename()` to be part of the saved file name.
+#'   The `site_method` parameter can be used as-is by [create_filename()] to be part of the saved file name.
 #'   It can also be used by the shiny app to add informational text in the header of a report,
-#'   via `ejam2report()` and related helper functions like `report_residents_within_xyz()`
-#'   or via `ejam2excel()` and related helper functions.
+#'   via [ejam2report()] and related helper functions like [report_residents_within_xyz()]
+#'   or via [ejam2excel()] and related helper functions.
 #'
 #'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
 #'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
@@ -1338,7 +1338,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
 ################################################################### #
 
 #' Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
-#' Help app_server create locationstr for [build_community_report()]
+#' @description Helps app_server create locationstr parameter passed to [build_community_report()]
 #' @param text1 text to start the phrase, like "Residents within "
 #' @param radius The distance from each place, normally in miles (which can be 0),
 #'   or custom text like "seven kilometers from" in which case

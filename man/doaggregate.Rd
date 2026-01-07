@@ -117,18 +117,18 @@ Also see outputs of \code{\link[=ejamit]{ejamit()}} which are similar but provid
 Used by ejamit() and the shiny app to summarize blockgroups scores at each site and overall.
 }
 \details{
-\code{\link[=getblocksnearby]{getblocksnearby()}} and doaggregate() are the two key functions that run \code{\link[=ejamit]{ejamit()}}.
-\code{doaggregate()} takes a set of sites like facilities and the
+\code{\link[=getblocksnearby]{getblocksnearby()}} and \code{\link[=doaggregate]{doaggregate()}} are the two key functions that run \code{\link[=ejamit]{ejamit()}}.
+\code{\link[=doaggregate]{doaggregate()}} takes a set of sites like facilities and the
 set of blocks that are near each,
 combines those with indicator scores for blockgroups, and
 aggregates the numbers within each place and across all overall.
 
 For all examples, see \code{\link[=getblocksnearbyviaQuadTree]{getblocksnearbyviaQuadTree()}}
 
-\code{doaggregate()} is the code run after \code{\link[=getblocksnearby]{getblocksnearby()}} (or a related function for
+\code{\link[=doaggregate]{doaggregate()}} is the code run after \code{\link[=getblocksnearby]{getblocksnearby()}} (or a related function for
 polygons or FIPS Census units) has identified which blocks are nearby.
 
-\code{doaggregate()} aggregates the blockgroup scores to create a summary of each indicator,
+\code{\link[=doaggregate]{doaggregate()}} aggregates the blockgroup scores to create a summary of each indicator,
 as a raw score and US percentile and State percentile,
 in each buffer (i.e., near each facility):
 \itemize{

@@ -1,24 +1,23 @@
 
-#' Set up EJAM (do slow initialization steps when package is attached)
-#'
-#' Download datasets, load to memory, index block locations
-#'
-#' @details This uses [dataload_dynamic()] and [indexblocks()]
-#'
-#' This function `.onAttach()` gets run when the package EJAM is attached,
-#' which happens when library(EJAM) or require(EJAM) is used.
-#' And if [devtools::load_all()] is used, which might mean it loads un-updated local copies
-#' rather than the updated source copies in EJAM/data/ but presumably load_all() then replaces those by reading all from /data/
-#'
-#' This code would not get run if a server ran app.R as a regular shiny app (because of _disable_autoload.R ?)
-#' and just used dataload or source to read the /R/*.R source files
-#' rather than loading and attaching the EJAM package. see app.R   ***
-#'
-#' @param libname na
-#' @param pkgname na
-#'
-#' @noRd
-#'
+#    NOTES:
+#
+# Sets up EJAM (do slow initialization steps when package is attached)
+#
+# Download datasets, load to memory, index block locations
+#
+# #   This uses dataload_dynamic() and indexblocks()
+#
+# This function .onAttach() gets run when the package EJAM is attached,
+# which happens when library(EJAM) or require(EJAM) is used.
+# And if devtools::load_all() is used, which might mean it loads un-updated local copies
+# rather than the updated source copies in EJAM/data/ but presumably load_all() then replaces those by reading all from /data/
+#
+# This code would not get run if a server ran app.R as a regular shiny app (because of _disable_autoload.R ?)
+# and just used dataload or source to read the /R/*.R source files
+# rather than loading and attaching the EJAM package. see app.R   ***
+#
+################  note .onAttach is already documented by base R
+
 .onAttach <- function(libname, pkgname) {
 
   # These instead could be set in the golem-config.yml file

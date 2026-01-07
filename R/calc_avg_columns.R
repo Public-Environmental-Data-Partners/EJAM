@@ -21,6 +21,7 @@
 #' @returns data.frame, one column per indicator or element of varnames vector,
 #'   one row per site or element of zones vector
 #'
+#' @keywords internal
 #' @export
 #'
 calc_avg_columns <- function(varnames = intersect(EJAM::names_all_r,  names(EJAM::usastats)),

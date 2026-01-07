@@ -7,21 +7,21 @@
 map_blockgroups_over_blocks(y)
 }
 \arguments{
-\item{y}{output of \code{\link[=plotblocksnearby]{plotblocksnearby()}} but with returnmap = TRUE}
+\item{y}{output of \code{\link[=plot_blocks_nearby]{plot_blocks_nearby()}} but with returnmap = TRUE}
 }
 \value{
 leaflet map widget
 }
 \description{
-Overlay blockgroups near 1 site, after plotblocksnearby(returnmap = TRUE)
+Overlay blockgroups near 1 site, after plot_blocks_nearby(returnmap = TRUE)
 }
 \examples{
- y <- plotblocksnearby(testpoints_10[5,],
+ y <- plot_blocks_nearby(testpoints_10[5,],
         radius = 3,
         returnmap = TRUE)
  map_blockgroups_over_blocks(y)
 
 }
 \seealso{
-\code{\link[=plotblocksnearby]{plotblocksnearby()}}  \code{\link[=map_shapes_mapview]{map_shapes_mapview()}}  \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}}  \code{\link[=map_shapes_plot]{map_shapes_plot()}}
+\code{\link[=plot_blocks_nearby]{plot_blocks_nearby()}}  \code{\link[=map_shapes_mapview]{map_shapes_mapview()}}  \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}}  \code{\link[=map_shapes_plot]{map_shapes_plot()}}
 }

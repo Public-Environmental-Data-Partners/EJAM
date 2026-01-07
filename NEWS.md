@@ -1,4 +1,4 @@
-# Development version
+# EJAM 2.32.7
 
 - Bug fixes: 
   - Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in `fixcolnames()` and had been introduced 3 weeks earlier while a separate issue was being fixed.

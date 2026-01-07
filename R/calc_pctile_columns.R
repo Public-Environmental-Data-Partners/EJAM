@@ -81,6 +81,7 @@
 #'
 #' ############################# ############################## #
 #'
+#' @keywords internal
 #' @export
 #'
 calc_pctile_columns <- function(mytable,

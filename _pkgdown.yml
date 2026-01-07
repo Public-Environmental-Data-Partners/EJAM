@@ -16,8 +16,8 @@ footer:
     left: [datefooter]
     right: [package, versionmsg]
   components:
-    datefooter: November 2025
-    versionmsg: Version 2.32.6.003
+    datefooter: January 2026
+    versionmsg: Version 2.32.7
 development:
   mode: release
   destination:
@@ -66,7 +66,7 @@ articles:
   - dev-future-plans
   - dev-speed
 reference:
-- title: "Key Functions for Starting an Analysis"
+- title: "Start an Analysis - Key Functions"
   desc: "Starting the Analysis"
   contents:
   - EJAM
@@ -74,7 +74,7 @@ reference:
   - ejamit
   - ejamit_compare_distances
   - ejamit_compare_types_of_places
-- title: "Key Functions for Viewing Results"
+- title: "View Results - Key Functions"
   desc: "Viewing the Results"
   contents:
   - ejam2excel
@@ -119,7 +119,7 @@ reference:
   - frs_from_sitename
   - frs
   - frs_by_programid
-- title: "Specify Facility Type"
+- title: "Specify Facilities by Type"
   desc: "NAICS, SIC, MACT, or EPA Program"
 - subtitle: "Choosing NAICS/SIC Industry Codes"
   contents:
@@ -233,7 +233,7 @@ reference:
 - subtitle: "Regions"
   contents:
   - fips_st2eparegion
-- title: "Finding Blocks, Distances, and Residents"
+- title: "Residents, Blocks, & Distances"
   desc: >
     GIS tools calculating which blocks (and residents)
     are in or near each place (within given radius of point
@@ -265,7 +265,7 @@ reference:
   - statestats
   - modelDoaggregate
   - modelEjamit
-- title: "Calculating and Aggregating"
+- title: "Calculations and Aggregation"
   desc: >
     Tools that Calculate and Aggregate Indicators
     at each Place and Overall, and Report Percentiles or Means
@@ -273,9 +273,6 @@ reference:
   - doaggregate
   - calc_ejam
   - calc_byformula
-  - calc_avg_columns
-  - calc_ratio_columns
-  - calc_pctile_columns
   - lookup_pctile
   - usastats_means
   - usastats_query
@@ -295,7 +292,6 @@ reference:
   - popshare_p_lives_at_what_n
   - popshare_p_lives_at_what_pct
   - distance_trends
-  - batch.summarize
 - subtitle: "Comparing Distances / Multiple Radius Values"
   contents:
   - ejamit_compare_distances
@@ -317,7 +313,7 @@ reference:
   - map2browser
   - map_google
   - mapfast_gg
-  - plotblocksnearby
+  - plot_blocks_nearby
 - subtitle: "Maps of Shapes (Polygons)"
   contents:
   - mapfastej_counties
@@ -379,7 +375,7 @@ reference:
   - table_gt_from_ejamit
   - table_gt_from_ejamit_1site
   - table_gt_from_ejamit_overall
-- title: "Test Data"
+- title: "Examples of Inputs and Output Data"
 - subtitle: "Finding Examples of Inputs/Outputs"
   contents:
   - testdata
@@ -424,7 +420,7 @@ reference:
   - testoutput_ejamit_shapes_2
   - testoutput_ejamit_fips_cities
   - testoutput_ejamit_fips_counties
-- title: "Utilities for finding URL or API info"
+- title: "Utilities providing URL or API info"
   contents:
   - url_ejamapi
   - url_ejscreenmap
@@ -445,6 +441,10 @@ reference:
   - map_headernames
 - title: internal
   contents:
+  - calc_avg_columns
+  - calc_ratio_columns
+  - calc_pctile_columns
+  - batch.summarize
   - plot_boxplot_ratios
   - high_pctiles_tied_with_min
   - pctile_from_raw_lookup

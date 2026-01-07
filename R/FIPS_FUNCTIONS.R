@@ -1970,7 +1970,8 @@ fips2ftypename <- function(fips, ftype = c('block', 'blockgroup', 'tract', 'city
 #' - Tracts (11)
 #' - Blockgroups (12)
 #'   Can be string or numeric, with or without leading zeroes.
-#' @param ... passed to fips2countyname() to control whether it appends something like , NY or , New York
+#' @param quiet whether to silence warnings -- also passed to [fips_lead_zero()] and [fipstype()]
+#' @param ... passed to [fips2countyname()] to control whether it appends something like , NY or , New York
 #'   after county name
 #' @return vector of state and/or county names,
 #'   where county names optionally have comma and 2-character abbreviation or full state name.

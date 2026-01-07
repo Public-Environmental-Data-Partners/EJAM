@@ -1,5 +1,5 @@
 
-#' plotblocksnearby - Map view of Census blocks (their centroids) near one or more sites
+#' plot_blocks_nearby - Map view of Census blocks (their centroids) near one or more sites
 #' Utility to quickly view one or more facility points on map with the blocks found nearby
 #'
 #' @details Uses [getblocksnearby()] if lat,lon points provided as sitepoints,
@@ -27,7 +27,7 @@
 #'
 #' @export
 #'
-plotblocksnearby <- function(sitepoints, radius=3, sites2blocks,
+plot_blocks_nearby <- function(sitepoints, radius=3, sites2blocks,
                              usemapfast=TRUE, returnmap=FALSE, overlay_blockgroups=FALSE,
                              maxradius = 31.07, avoidorphans = FALSE, ...) {
 
@@ -39,25 +39,25 @@ plotblocksnearby <- function(sitepoints, radius=3, sites2blocks,
     #  eg <- getblocks_output[ejam_uniq_id == 1,]
     #  eg2 <- getblocks_output[ejam_uniq_id %in% c(3,10),]
     #
-    #  z <-  plotblocksnearby(sitepoints = testpoints_10[1,],
+    #  z <-  plot_blocks_nearby(sitepoints = testpoints_10[1,],
     #    sites2blocks = eg, radius = 1)
     #  # see two sites if already had run getblocksnearby()
-    #  z2 <-  plotblocksnearby(sitepoints = testpoints_10[c(3,10),],
+    #  z2 <-  plot_blocks_nearby(sitepoints = testpoints_10[c(3,10),],
     #    sites2blocks = eg2, radius = 1)
     #
     #     \dontrun{
     #
     # # See two sites and all Census Blocks within 5 kilometers
-    #   plotblocksnearby(testpoints_10[c(3,10),], radius = convert_units(5, from = "km", towhat = "miles"))
+    #   plot_blocks_nearby(testpoints_10[c(3,10),], radius = convert_units(5, from = "km", towhat = "miles"))
     #
     # # See one randomly selected regulated facility from FRS
     # and all Census Blocks and Blockgroups within 2 miles:
-    #   plotblocksnearby(testpoints_n(1), 2, overlay_blockgroups=T)
+    #   plot_blocks_nearby(testpoints_n(1), 2, overlay_blockgroups=T)
     #
     # # See 100 sites and all blocks within 1 mile of each -
     # # Note you have to specify radius here or it uses default that may not match intent
     # # - and this is a bit slow
-    # plotblocksnearby(
+    # plot_blocks_nearby(
     #   testoutput_ejamit_100pts_1miles$results_bysite[,
     #       c("ejam_uniq_id", "lat", "lon"), with=FALSE],
     #  radius = 1)

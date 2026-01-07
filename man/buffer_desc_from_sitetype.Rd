@@ -2,7 +2,7 @@
 % Please edit documentation in R/community_report_helper_funs.R
 \name{buffer_desc_from_sitetype}
 \alias{buffer_desc_from_sitetype}
-\title{helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____}
+\title{Build text for report: Locations analyzed: e.g. (" specified point") based on sitetype ("latlon") and site_method}
 \usage{
 buffer_desc_from_sitetype(sitetype, site_method)
 }
@@ -28,7 +28,13 @@ which is much like the one called current_upload_method().}
 text string, phrase to use in excel notes tab
 }
 \description{
-helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____
+Helps create text for excel report's notes sheet (via \code{\link[=ejam2excel]{ejam2excel()}} helpers like \code{\link[=table_xls_format]{table_xls_format()}})
+}
+\examples{
+buffer_desc_from_sitetype("latlon", "NAICS")
+buffer_desc_from_sitetype("shp")
+buffer_desc_from_sitetype("fips")
+
 }
 \seealso{
 \code{\link[=report_residents_within_xyz_from_ejamit]{report_residents_within_xyz_from_ejamit()}} and \code{\link[=report_residents_within_xyz]{report_residents_within_xyz()}}

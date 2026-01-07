@@ -80,7 +80,7 @@
 #'  # Note some of these settings/ parameters may get renamed to harmonize and simplify names.
 #'
 #'  ## Provide input sites to app (skip the web app upload clicks),
-#'  ## using parameters called `sitepoints` and `shapefile` as in `ejamit()`
+#'  ## using parameters called `sitepoints` and `shapefile` as in [ejamit()]
 #'
 #'  #  data.frame with latitude, longitude
 #'  ejamapp(sitepoints = testpoints_10[1:2,], radius = 3.1)
@@ -223,7 +223,6 @@
 #'   passing it to [runApp()] will run the app, as would just typing
 #'   [run_app()] or [ejamapp()] in the console.
 #'
-#' @aliases app_run_EJAM run_app
 #'
 #' @export
 #'
@@ -321,6 +320,8 @@ ejamapp <- function(
 }
 ###################################### ###################################### #
 
+#' @inherit ejamapp
+#'
 #' @export
 #' @keywords internal
 #'
@@ -335,6 +336,8 @@ run_app <- function(
 }
 ###################################### ###################################### #
 
+#' @inherit ejamapp
+#'
 #' @export
 #' @keywords internal
 #'

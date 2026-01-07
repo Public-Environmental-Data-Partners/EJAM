@@ -2,8 +2,7 @@
 % Please edit documentation in R/community_report_helper_funs.R
 \name{report_residents_within_xyz}
 \alias{report_residents_within_xyz}
-\title{Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
-Help app_server create locationstr for \code{\link[=build_community_report]{build_community_report()}}}
+\title{Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)}
 \usage{
 report_residents_within_xyz(
   text1 = "Residents within ",
@@ -67,8 +66,7 @@ whether to also show name of FIPS Census unit (e.g., name of city or county).
 Normally this is already in the analysis title, so not needed in this additional part of the report header.}
 }
 \description{
-Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
-Help app_server create locationstr for \code{\link[=build_community_report]{build_community_report()}}
+Helps app_server create locationstr parameter passed to \code{\link[=build_community_report]{build_community_report()}}
 }
 \examples{
  out <- testoutput_ejamit_100pts_1miles
