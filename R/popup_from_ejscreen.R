@@ -23,10 +23,10 @@
 #'
 #' @param site_method optional word or phrase about the sites or how they were selected.
 #'
-#'   The `site_method` parameter can be used as-is by `create_filename()` to be part of the saved file name.
+#'   The `site_method` parameter can be used as-is by [create_filename()] to be part of the saved file name.
 #'   It can also be used by the shiny app to add informational text in the header of a report,
-#'   via `ejam2report()` and related helper functions like `report_residents_within_xyz()`
-#'   or via `ejam2excel()` and related helper functions.
+#'   via [ejam2report()] and related helper functions like [report_residents_within_xyz()]
+#'   or via [ejam2excel() and related helper functions.
 #'
 #'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
 #'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
@@ -368,6 +368,12 @@ popup_from_ejscreen <- function(out,
       )
     }
     return(pops_links)
+  }
+  if (length(linkcolnames) == 0) {
+    # missing -- possibly because after defined in global env as pkg is loaded, then if you happen to use rm(list=ls()) that will remove them
+    warning('missing default_reports that is part of the package defaults needed - possibly because rm(list=ls()) was done in console -- recreating them now')
+    xdefaults <- get_global_defaults_or_user_options()
+    linkcolnames <- sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
   }
   pops_links <- make_pops_links(out, linkcolnames)
 

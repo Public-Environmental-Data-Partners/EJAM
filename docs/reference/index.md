@@ -1,6 +1,6 @@
 # Package index
 
-## Key Functions for Starting an Analysis
+## Start an Analysis - Key Functions
 
 Starting the Analysis
 
@@ -18,7 +18,7 @@ Starting the Analysis
 - [`ejamit_compare_types_of_places()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_types_of_places.md)
   : Compare subsets (types) of places that are all from one list
 
-## Key Functions for Viewing Results
+## View Results - Key Functions
 
 Viewing the Results
 
@@ -124,7 +124,7 @@ Utilities for working with latitude/ longitude or address
   : frs_by_programid (DATA) data.table of Program System ID code(s) for
   each EPA-regulated site in the Facility Registry Service
 
-## Specify Facility Type
+## Specify Facilities by Type
 
 NAICS, SIC, MACT, or EPA Program
 
@@ -279,8 +279,8 @@ NAICS, SIC, MACT, or EPA Program
 
 ## Specify Counties etc.
 
-Tools to work with Census units and FIPS codes - blockgroups, tracts,
-counties, states, and EPA Regions
+Tools to work with Census units & FIPS codes - blockgroups, tracts,
+counties, states, & EPA Regions
 
 ### FIPS tools
 
@@ -388,10 +388,10 @@ counties, states, and EPA Regions
 - [`fips_st2eparegion()`](https://ejanalysis.github.io/EJAM/reference/fips_st2eparegion.md)
   : FIPS - Get EPA Region number (1-10) from state FIPS code
 
-## Finding Blocks, Distances, and Residents
+## Residents, Blocks, & Distances
 
-GIS tools calculating which blocks (and residents) are in or near each
-place (within given radius of point or in FIPS or polygon), and their
+GIS tools calculating which blocks (& residents) are in or near each
+place (within given radius of point or in FIPS or polygon), & their
 distances
 
 - [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
@@ -463,10 +463,10 @@ distances
 - [`modelEjamit`](https://ejanalysis.github.io/EJAM/reference/modelEjamit.md)
   : Regression model to predict runtime for ejamit
 
-## Calculating and Aggregating
+## Calculations & Aggregation
 
-Tools that Calculate and Aggregate Indicators at each Place and Overall,
-and Report Percentiles or Means
+Tools that Create or Aggregate Indicators at each Place & Overall, &
+Report Percentiles or Means
 
 - [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
   : Summarize environmental and residential population indicators at
@@ -477,15 +477,6 @@ and Report Percentiles or Means
 - [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
   : DRAFT utility to use formulas provided as text, to calculate
   indicators
-- [`calc_avg_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_avg_columns.md)
-  : helper that looks up US or State averages for a vector of variable
-  names (and optional vector of States)
-- [`calc_ratio_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_ratio_columns.md)
-  : Calculate ratios to US and State average for each indicator in each
-  place
-- [`calc_pctile_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.md)
-  : Convert raw indicator values to percentiles, for a table of
-  indicators and places
 - [`pctile_from_raw_lookup()`](https://ejanalysis.github.io/EJAM/reference/pctile_from_raw_lookup.md)
   [`lookup_pctile()`](https://ejanalysis.github.io/EJAM/reference/pctile_from_raw_lookup.md)
   : Find approx percentiles in lookup table for just 1 indicator or 1
@@ -540,8 +531,6 @@ and Report Percentiles or Means
   : Which indicators fall most as proximity does? (i.e., are higher if
   closer to site) Which variables have strongest trend with distance
   based on slope of linear fit
-- [`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md)
-  : Calculate more summary stats across all sites and all people
 
 ### Comparing Distances / Multiple Radius Values
 
@@ -572,7 +561,36 @@ and Report Percentiles or Means
   closer to site) Which variables have strongest trend with distance
   based on slope of linear fit
 
-## Viewing Results
+## Viewing Results - Deep Dive
+
+### Tables
+
+- [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+  : View HTML Report on EJAM Results (Overall or at 1 Site)
+- [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+  : Save EJAM results in a spreadsheet
+- [`ejam2ratios()`](https://ejanalysis.github.io/EJAM/reference/ejam2ratios.md)
+  : Quick view of summary stats by type of stat, but lacks rounding
+  specific to each type, etc.
+- [`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md)
+  : simple way to see the table of summary stats on special areas and
+  features like schools
+- [`ejam2means()`](https://ejanalysis.github.io/EJAM/reference/ejam2means.md)
+  : ejam2means - quick look at averages, via ejamit() results
+- [`ejam2tableviewer()`](https://ejanalysis.github.io/EJAM/reference/ejam2tableviewer.md)
+  : See ejamit()\$results_bysite in interactive table in RStudio viewer
+  pane
+- [`ejam2table_tall()`](https://ejanalysis.github.io/EJAM/reference/ejam2table_tall.md)
+  : Simple quick look at results of ejamit() in RStudio console
+- [`table_ratios_from_ejamit()`](https://ejanalysis.github.io/EJAM/reference/table_ratios_from_ejamit.md)
+  : Quick view of summary stats by type of stat, but lacks rounding
+  specific to each type, etc.
+- [`table_gt_from_ejamit()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit.md)
+  : Create a gt-format table of results from EJAM
+- [`table_gt_from_ejamit_1site()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit_1site.md)
+  : Create a formatted table of results for 1 site from EJAM
+- [`table_gt_from_ejamit_overall()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit_overall.md)
+  : Create a formatted table of results from EJAM overall summary stats
 
 ### Maps of Points
 
@@ -594,10 +612,10 @@ and Report Percentiles or Means
   : Map - Open Google Maps in browser
 - [`mapfast_gg()`](https://ejanalysis.github.io/EJAM/reference/mapfast_gg.md)
   : Map - points - ggplot2 map of points in the USA - very basic map
-- [`plotblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/plotblocksnearby.md)
-  : plotblocksnearby - Map view of Census blocks (their centroids) near
-  one or more sites Utility to quickly view one or more facility points
-  on map with the blocks found nearby
+- [`plot_blocks_nearby()`](https://ejanalysis.github.io/EJAM/reference/plot_blocks_nearby.md)
+  : plot_blocks_nearby - Map view of Census blocks (their centroids)
+  near one or more sites Utility to quickly view one or more facility
+  points on map with the blocks found nearby
 
 ### Maps of Shapes (Polygons)
 
@@ -694,7 +712,7 @@ and Report Percentiles or Means
   : Barplot comparing ejamit_compare_distances() results for more than
   one radius
 
-### Plots: Indicator as a function of distance (comparing distances and indicators)
+### Plots: Indicator as a function of distance (comparing distances & indicators)
 
 - [`ejam2barplot_distances()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot_distances.md)
   : Barplot comparing ejamit_compare_distances() results for more than
@@ -717,36 +735,7 @@ and Report Percentiles or Means
   : lorenz plot bybg_people (cumulative share of x vs cum share of y) -
   DRAFT/EXPERIMENTAL COUNT OF SITES (or PEOPLE?) BY BIN
 
-### Tables
-
-- [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
-  : View HTML Report on EJAM Results (Overall or at 1 Site)
-- [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
-  : Save EJAM results in a spreadsheet
-- [`ejam2ratios()`](https://ejanalysis.github.io/EJAM/reference/ejam2ratios.md)
-  : Quick view of summary stats by type of stat, but lacks rounding
-  specific to each type, etc.
-- [`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md)
-  : simple way to see the table of summary stats on special areas and
-  features like schools
-- [`ejam2means()`](https://ejanalysis.github.io/EJAM/reference/ejam2means.md)
-  : ejam2means - quick look at averages, via ejamit() results
-- [`ejam2tableviewer()`](https://ejanalysis.github.io/EJAM/reference/ejam2tableviewer.md)
-  : See ejamit()\$results_bysite in interactive table in RStudio viewer
-  pane
-- [`ejam2table_tall()`](https://ejanalysis.github.io/EJAM/reference/ejam2table_tall.md)
-  : Simple quick look at results of ejamit() in RStudio console
-- [`table_ratios_from_ejamit()`](https://ejanalysis.github.io/EJAM/reference/table_ratios_from_ejamit.md)
-  : Quick view of summary stats by type of stat, but lacks rounding
-  specific to each type, etc.
-- [`table_gt_from_ejamit()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit.md)
-  : Create a gt-format table of results from EJAM
-- [`table_gt_from_ejamit_1site()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit_1site.md)
-  : Create a formatted table of results for 1 site from EJAM
-- [`table_gt_from_ejamit_overall()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit_overall.md)
-  : Create a formatted table of results from EJAM overall summary stats
-
-## Test Data
+## Examples of Input & Output Data
 
 ### Finding Examples of Inputs/Outputs
 
@@ -834,7 +823,7 @@ and Report Percentiles or Means
 - [`testoutput_ejamit_fips_counties`](https://ejanalysis.github.io/EJAM/reference/testoutput_ejamit_fips_counties.md)
   : testoutput_ejamit_fips_counties dataset
 
-## Utilities for finding URL or API info
+## Utilities providing URL or API info
 
 - [`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
   : Get URL(s) of HTML summary reports for use with EJAM-API

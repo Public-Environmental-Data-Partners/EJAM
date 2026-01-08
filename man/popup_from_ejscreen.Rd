@@ -21,10 +21,10 @@ The table of raw data in data.frame form, with results of EJ analysis.}
 
 \item{site_method}{optional word or phrase about the sites or how they were selected.
 
-The \code{site_method} parameter can be used as-is by \code{create_filename()} to be part of the saved file name.
+The \code{site_method} parameter can be used as-is by \code{\link[=create_filename]{create_filename()}} to be part of the saved file name.
 It can also be used by the shiny app to add informational text in the header of a report,
-via \code{ejam2report()} and related helper functions like \code{report_residents_within_xyz()}
-or via \code{ejam2excel()} and related helper functions.
+via \code{\link[=ejam2report]{ejam2report()}} and related helper functions like \code{\link[=report_residents_within_xyz]{report_residents_within_xyz()}}
+or via [ejam2excel() and related helper functions.
 
 The \code{site_method} parameter provides more detailed info about how sites were specified in the web app,
 beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):

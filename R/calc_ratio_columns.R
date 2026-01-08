@@ -30,6 +30,7 @@
 #'   would be almost the same if compared to a population weighted average of all US blockgroups (i.e., the average US resident).
 #'
 #' @export
+#' @keywords internal
 #'
 calc_ratio_columns = function(mytable,
                             varnames = names_these,

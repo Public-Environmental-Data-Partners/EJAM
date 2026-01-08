@@ -137,7 +137,7 @@ suppressMessages({suppressWarnings({
 
 if (exists("ejamit") & exists("blockgroupstats") & exists("testpoints_10")) {
   if (!exists("ejamitoutnow")) {
-    cat("creating ejamitoutnow in setup.R\n")
+    message("creating ejamitoutnow in setup.R\n")
     suppressMessages(  suppressWarnings({  ejamitoutnow <- try(
       ejamit(testpoints_10, radius = 1,
              quiet = TRUE, silentinteractive = TRUE,
@@ -148,7 +148,7 @@ if (exists("ejamit") & exists("blockgroupstats") & exists("testpoints_10")) {
   # NOTE THE DEFAULT VALUES OF ejamit() !
 
 } else {
-  warning("missing ejamit() or blockgroupstats, so using pre-calculated results in tests")
+  message("missing ejamit() or blockgroupstats, so using pre-calculated results in tests")
   if (exists("testoutput_ejamit_10pts_1miles")) {
     ejamitoutnow <- testoutput_ejamit_10pts_1miles
   } else {

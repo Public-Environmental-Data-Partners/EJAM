@@ -245,7 +245,7 @@ for (i in 1:NROW(pts)) {
 ```
 
 Block by block details are also easy to view in a map of all the nearby blocks,
-as shown in the section on `plotblocksnearby()` and details of blocks near one
+as shown in the section on `plot_blocks_nearby()` and details of blocks near one
 site.
 
 ### Cumulative Distribution plots of groups as *a continuous function of distance*
@@ -591,8 +591,8 @@ ejam_uniq_id: 1
 blockcount_near_site: 219
 ```
 
-```{r plotblocksnearby2, fig.cap="Example of using plotblocksnearby() to see a map of the blockpoints near a site", eval=TRUE, echo=TRUE, fig.height=5, fig.width=5}
-x <- plotblocksnearby(testpoints_10[1, ], radius = 3, returnmap = F)
+```{r plot_blocks_nearby2, fig.cap="Example of using plot_blocks_nearby() to see a map of the blockpoints near a site", eval=TRUE, echo=TRUE, fig.height=5, fig.width=5}
+x <- plot_blocks_nearby(testpoints_10[1, ], radius = 3, returnmap = F)
 # Set returnmap= TRUE to actually return a leaflet map
 ```
 
@@ -753,22 +753,22 @@ leastdense <- s2b_stats$ejam_uniq_id[order(
     s2b_stats$blocks_within_1mile, decreasing = F)][1]
 ```
 
-```{r, doplotblocksnotshowoutput, fig.cap="Map very high density area with 4,596 blocks near the site, via plotblocksnearby()", eval=TRUE, echo=FALSE}
+```{r, doplotblocksnotshowoutput, fig.cap="Map very high density area with 4,596 blocks near the site, via plot_blocks_nearby()", eval=TRUE, echo=FALSE}
 # radius <- 3
 sitepoints <- testpoints_100
-plotblocksnearby(sitepoints = sitepoints[densest, ])
+plot_blocks_nearby(sitepoints = sitepoints[densest, ])
 ```
 
 ```{r showplotblockscommandnotdoit, eval=FALSE, echo=TRUE, include=TRUE}
-plotblocksnearby(sitepoints = sitepoints[densest, ])
+plot_blocks_nearby(sitepoints = sitepoints[densest, ])
 ```
 
-```{r, doplotblocksnotshowoutput_lowdensity, fig.cap="Map very low density area with 11 blocks near the site, via plotblocksnearby()", eval=TRUE, echo=FALSE}
-plotblocksnearby(sitepoints = sitepoints[ leastdense, ])
+```{r, doplotblocksnotshowoutput_lowdensity, fig.cap="Map very low density area with 11 blocks near the site, via plot_blocks_nearby()", eval=TRUE, echo=FALSE}
+plot_blocks_nearby(sitepoints = sitepoints[ leastdense, ])
 ```
 
 ```{r showplotblockscommandnotdoit_lowdensity, eval=FALSE, echo=TRUE, include=TRUE}
-plotblocksnearby(sitepoints = sitepoints[ leastdense, ])
+plot_blocks_nearby(sitepoints = sitepoints[ leastdense, ])
 ```
 
 Within a 1 mile radius, the blocks found tend to be about 2/3 of a mile from the

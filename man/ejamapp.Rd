@@ -2,8 +2,6 @@
 % Please edit documentation in R/ejamapp.R
 \name{ejamapp}
 \alias{ejamapp}
-\alias{app_run_EJAM}
-\alias{run_app}
 \title{Launch EJAM as Shiny web app (e.g. to run it locally in RStudio)}
 \usage{
 ejamapp(
@@ -103,7 +101,7 @@ i.e., via \code{\link[=require]{require()}} or \code{\link[=library]{library()}}
  # Note some of these settings/ parameters may get renamed to harmonize and simplify names.
 
  ## Provide input sites to app (skip the web app upload clicks),
- ## using parameters called `sitepoints` and `shapefile` as in `ejamit()`
+ ## using parameters called `sitepoints` and `shapefile` as in [ejamit()]
 
  #  data.frame with latitude, longitude
  ejamapp(sitepoints = testpoints_10[1:2,], radius = 3.1)

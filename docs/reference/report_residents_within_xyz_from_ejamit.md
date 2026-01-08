@@ -6,7 +6,12 @@ of Y
 ## Usage
 
 ``` r
-report_residents_within_xyz_from_ejamit(ejamitout, sitenumber = NULL, ...)
+report_residents_within_xyz_from_ejamit(
+  ejamitout,
+  sitenumber = NULL,
+  site_method = NULL,
+  ...
+)
 ```
 
 ## Arguments
@@ -21,6 +26,11 @@ report_residents_within_xyz_from_ejamit(ejamitout, sitenumber = NULL, ...)
   optional, which site number to report on for a 1-site report instead
   of the overall summary of all sites
 
+- site_method:
+
+  detailed sitetype info used in server, like if it was latlon chosen
+  via MACT, NAICS, or SIC, etc.
+
 - ...:
 
   See
@@ -33,4 +43,6 @@ report_residents_within_xyz_from_ejamit(ejamitout, sitenumber = NULL, ...)
 
 ## Value
 
-text string
+text string such as "Residents within 1 mile of any of the 99 specified
+points  
+Area in Square Miles: 311.02"

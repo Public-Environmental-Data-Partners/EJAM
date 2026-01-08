@@ -1,6 +1,7 @@
-# helper - make footnote for summary report
+# helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 
-helper - make footnote for summary report
+helper - make footnote for summary report, like caveat about diesel PM,
+accuracy, or other notes
 
 ## Usage
 

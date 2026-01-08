@@ -17,7 +17,9 @@ fips2name(fips, quiet = FALSE, ...)
 Can be string or numeric, with or without leading zeroes.
 }}
 
-\item{...}{passed to fips2countyname() to control whether it appends something like , NY or , New York
+\item{quiet}{whether to silence warnings -- also passed to \code{\link[=fips_lead_zero]{fips_lead_zero()}} and \code{\link[=fipstype]{fipstype()}}}
+
+\item{...}{passed to \code{\link[=fips2countyname]{fips2countyname()}} to control whether it appends something like , NY or , New York
 after county name}
 }
 \value{

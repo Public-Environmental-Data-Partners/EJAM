@@ -20,6 +20,6 @@ helper - copies template, css to tempdir for render of summary report
 helper - copies .Rmd (template), .css from Rmd_folder to a temp dir subfolder for rendering
 }
 \details{
-used by \code{ejam2report()} only now? was also copying  logo .png ? but not now?
+used by \code{\link[=ejam2report]{ejam2report()}} only now? was also copying  logo .png ? but not now?
 }
 \keyword{internal}

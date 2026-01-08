@@ -5,7 +5,7 @@
 
 #' @title Calculate more summary stats across all sites and all people
 #'
-#' @details This is the function that takes the `doaggregate()` results and
+#' @details This is the function that takes the [doaggregate()] results and
 #'   calculates even more summary statistics, notably to characterize
 #'   the distribution of indicator values across people and across sites,
 #'   as percentile of analyzed people and percentile of analyzed sites, etc.
@@ -13,7 +13,7 @@
 #'   It can be expanded to provide other summary stats by adding those other formulas to this code.
 #'
 #'   Note it can provide population-weighted summary stats only for the indicators found in popstats,
-#'   which is fewer than those in sitestats, since doaggregate() or ejamit() did not
+#'   which is fewer than those in sitestats, since [doaggregate()] or [ejamit()] did not
 #'   provide various extra indicators in the very large results_bybg_people table.
 #'   The parameter sitestats but not popstats has the ratios and pctiles (and US/State averages) of indicators,
 #'   plus "bgid" "bgwt" and "valid" "invalid_msg"
@@ -24,17 +24,17 @@
 #'
 #' @param ejamitout Not typically used. If it is provided,
 #'   then parameters sitestats, popstats, and overall are ignored.
-#'   A list that is the output of `ejamit()` -- the list of tables including
+#'   A list that is the output of [ejamit()] -- the list of tables including
 #'   results_bysite, results_bybg_people, results_overall.
 #'   ejamit() actually already does batch.summarize(), but this param might be
 #'   useful interactively if you want to redo just the batch.summarize() step
 #'   with new params like thresholds or probs.
 #'
-#' @param sitestats A data.frame or data.table like `ejamit()`$results_bysite,
+#' @param sitestats A data.frame or data.table like ejamit()$results_bysite,
 #'   with one row per site and one column per indicator.
 #'   Ignored if ejamitout is provided.
 #'
-#' @param popstats A data.frame or [data.table](https://r-datatable.com) like `ejamit()`$results_bybg_people,
+#' @param popstats A data.frame or [data.table](https://r-datatable.com) like ejamit()$results_bybg_people,
 #'   with one row per blockgroup at least partly in/at one or more of the sites,
 #'   and one column per indicator. It provides blockgroup indicators, including
 #'   total counts even for the blockgroups that are not entirely in/at a site.
@@ -42,7 +42,7 @@
 #'   unique individuals (regardless of how many sites a resident is at).
 #'   Ignored if ejamitout is provided.
 #'
-#' @param overall A data.frame or [data.table](https://r-datatable.com) like `ejamit()`$results_bysite,
+#' @param overall A data.frame or [data.table](https://r-datatable.com) like ejamit()$results_bysite,
 #'   with one column per indicator, and just one data row that has the overall
 #'   average, sum, or other summary stat for the indicator across all sites.
 #'   Ignored if ejamitout is provided.
@@ -67,12 +67,12 @@
 #' @return output is a list with two named elements, rows and cols, where each is a matrix of summary stats.
 #'
 #'   cols: Each element in a summary col summarizes 1 row (site) across all the RELEVANT cols of batch data
-#'     (e.g., all US Summary Index percentiles). This type of info is also saved in a tab of the output of `ejam2excel()`
+#'     (e.g., all US Summary Index percentiles). This type of info is also saved in a tab of the output of [ejam2excel()]
 #'
 #'   rows: Each element in a summary row summarizes 1 column (field) across all the rows of batch data.
 #'     A subset of this is $keyindicators
 #'
-#'   keystats: Key subset of the summary stats (for all indicators), for convenience. See `ejam2table_tall()` to view this.
+#'   keystats: Key subset of the summary stats (for all indicators), for convenience. See [ejam2table_tall()] to view this.
 #'
 #'   keyindicators: Key subset of the indicators from $row results
 #'     (for stats characterizing the distribution of each across people or sites,
@@ -83,7 +83,7 @@
 #'     [nonattainment for air standards](https://www.epa.gov/criteria-air-pollutants/process-determine-whether-areas-meet-naaqs-designations-process),
 #'     and who have at least one school / hospital / church in their blockgroup,
 #'     and with no broadband, and with no health insurance.
-#'     This can be viewed using `ejam2areafeatures()`
+#'     This can be viewed using [ejam2areafeatures()]
 #'
 #'  In the flagged_areas table, summary stats mean the following:
 #'
@@ -102,6 +102,7 @@
 #'   residents analyzed lack the critical service.
 #'
 #' @export
+#' @keywords internal
 #'
 batch.summarize <- function(ejamitout,
                             sitestats, popstats, overall, # if ejamitout is not provided

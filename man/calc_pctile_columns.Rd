@@ -106,3 +106,4 @@ t(pctiles)
 \seealso{
 \code{\link[=pctile_from_raw_lookup]{pctile_from_raw_lookup()}} \code{\link[=calc_avg_columns]{calc_avg_columns()}}
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 
 ### EJSCREEN Documentation
 
-EJSCREEN Indicators and Reports
+EJSCREEN Indicators & Reports
 
 - [EJSCREEN
   Documentation](https://ejanalysis.github.io/EJAM/articles/ejscreen.md):

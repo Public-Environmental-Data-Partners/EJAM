@@ -14,7 +14,7 @@
 #' EJAM:::bgid_from_blockid(s2b$blockid) # vector of unique ids
 #' EJAM:::bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
 #'
-#'  # plotblocksnearby(pts, radius = rad, overlay_blockgroups = T)
+#'  # plot_blocks_nearby(pts, radius = rad, overlay_blockgroups = T)
 #'
 #' @keywords internal
 #'

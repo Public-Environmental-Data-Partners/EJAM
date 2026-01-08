@@ -1,8 +1,9 @@
-# Development version
+# EJAM 2.32.7 (January 2026)
 
 - Bug fixes: 
   - Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in `fixcolnames()` and had been introduced 3 weeks earlier while a separate issue was being fixed.
-  - Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended. 
+  - Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended.
+  - Fixed various other/ misc small issues.
 - Revisions to Community Report and Multisite Report header and footer
   - Report footer edited, and can be customized now via `ejam2report()`
   - Report Title revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
@@ -16,8 +17,9 @@
 - Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
   might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
 - Renamed `ejam2excel()` parameters (in.analysis_title changed to analysis_title) to be consistent with `ejam2report()` parameter, or to simplify (react.v1_summary_plot changed to report_plot).
-- Other changes in preparation for next release
-
+- Other misc changes
+- Updated text in README
+- Updated text in the [Future Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html) and other vignettes/articles.
 - `ejamapp()` has new parameter aliases: "pts" is short for "sitepoints", "shp" is short for "shapefile", "analysis_title" or "default_analysis_title" will set analysis title in report header, and "report_title" or "default_report_title" will set overall title in topmost part of report header.
 
 # EJAM 2.32.6.003 (November 2025)

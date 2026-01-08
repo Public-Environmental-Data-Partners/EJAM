@@ -1,8 +1,6 @@
-# Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s) Help app_server create locationstr for [`build_community_report()`](https://ejanalysis.github.io/EJAM/reference/build_community_report.md)
+# Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
 
-Build text for report: Residents within( X miles of)( any of) the (N)
-point(s)/polygon(s)/Census unit(s) Help app_server create locationstr
-for
+Helps app_server create locationstr parameter passed to
 [`build_community_report()`](https://ejanalysis.github.io/EJAM/reference/build_community_report.md)
 
 ## Usage
@@ -16,13 +14,15 @@ report_residents_within_xyz(
   nsites = 1,
   sitenumber = NULL,
   ejam_uniq_id = NULL,
-  sitetype = c(NA, "latlon", "fips", "shp", "frs", "epa_program_up", "echo", "naics",
-    "sic", "mact", "epa_program_sel")[1],
-  sitetype_nullna = " place",
+  sitetype = c(NA, "latlon", "fips", "shp")[1],
+  site_method = sitetype,
+  census_unit_type = "Census unit",
+  sitetype_nullna = "place",
   linefeed = "<br>",
   addlatlon = TRUE,
   lat = NULL,
-  lon = NULL
+  lon = NULL,
+  show_fips_name = TRUE
 )
 ```
 
@@ -70,6 +70,15 @@ report_residents_within_xyz(
   plural by just adding "s" so ending with "site" works better than
   ending with "... facility" since that would print as "facilitys" here.
 
+- site_method:
+
+  optional detailed info about how sites were selected (see server
+  submitted_upload_method() reactive)
+
+- census_unit_type:
+
+  optional phrase like "Counties" if relevant (if sitetype is "fips")
+
 - sitetype_nullna:
 
   optional, to use if sitetype is NULL – should be a singular word
@@ -84,6 +93,13 @@ report_residents_within_xyz(
 
   optional, defines whether coordinates are noted in header for latlon
   sitetype
+
+- show_fips_name:
+
+  optional, if it was a FIPS-based analysis, this defines whether to
+  also show name of FIPS Census unit (e.g., name of city or county).
+  Normally this is already in the analysis title, so not needed in this
+  additional part of the report header.
 
 ## See also
 

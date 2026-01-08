@@ -25,10 +25,10 @@
 #'
 #' @param site_method optional word or phrase about the sites or how they were selected.
 #'
-#'   The `site_method` parameter can be used as-is by `create_filename()` to be part of the saved file name.
+#'   The `site_method` parameter can be used as-is by [create_filename()] to be part of the saved file name.
 #'   It can also be used by the shiny app to add informational text in the header of a report,
-#'   via `ejam2report()` and related helper functions like `report_residents_within_xyz()`
-#'   or via `ejam2excel()` and related helper functions.
+#'   via [ejam2report()] and related helper functions like [report_residents_within_xyz()]
+#'   or via [ejam2excel()] and related helper functions.
 #'
 #'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
 #'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):

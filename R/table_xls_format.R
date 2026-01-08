@@ -576,7 +576,7 @@ table_xls_format <- function(overall,
     updateProgress(message_main = boldtext, value = 0.6)
   }
 
-  if (!is.null(reports)) {
+  if (!is.null(reports)) { # e.g., could be NULL if user did rm(list=ls()) after loading pkg
     hyperlink_colnames <-  sapply(reports, function(x) x$header)
     hyperlink_text      <- sapply(reports, function(x) x$text)
 
