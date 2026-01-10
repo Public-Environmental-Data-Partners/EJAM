@@ -61,3 +61,4 @@ packrat/lib*/
 
 /shiny_bookmarks
 tests/testthat/_snaps/**/*.png
+inst/plumber/log_api_usage*.txt
