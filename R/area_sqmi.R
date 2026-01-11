@@ -155,7 +155,7 @@ area_sqmi_from_fips <- function(fips, download_city_fips_bounds = TRUE, download
       areas[!made_of_bgs] <- area_sqmi_from_shp(shp)
     } else {
       # just leave them as NA, since we cannot calculate area without downloading the boundaries,
-      # unless we find a database that stores that information perhaps (not avail in head(acs::fips.place) for example)
+      # unless we find a database that stores that information perhaps
     }
   }
 
