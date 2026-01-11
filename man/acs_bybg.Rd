@@ -83,7 +83,7 @@ see \href{https://walker-data.com/tidycensus/}{tidycensus package help}  envt va
 
 NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
+\if{html}{\out{<div class="sourceCode">}}\preformatted{x <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
   ## tables_ejscreen_acs
 tables = tables_ejscreen_acs
 acstabs2 <- paste0(tables, "_")
@@ -150,7 +150,7 @@ mapfast(newvars[1:10,], column_names = colnames(newvars),
 
 ## ACS tables and variables most relevant to EJSCREEN
 
-acsinfo <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
+acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
 # or x = EJAM:::acs_table_info()
 ejscreentables <-  as.vector(tables_ejscreen_acs)
 

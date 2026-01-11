@@ -11,7 +11,7 @@ plot_bycounty(
   mystate = NULL,
   labeltype = NULL,
   acsinfo = NULL,
-  yr = acsendyear()
+  yr = acs_endyear()
 )
 }
 \arguments{

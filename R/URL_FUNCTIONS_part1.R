@@ -26,7 +26,7 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
 
   # url_acs_table_info()  # and see ACSdownload::url_acs_table()
 
-  if (missing(yr)) {yr <- acsendyear()}
+  if (missing(yr)) {yr <- acs_endyear()}
   if (is.null(fips) || any(nchar(fips) == 0)) {
     # just general info on the table(s)
     urls <- paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", yr, ".", tables)

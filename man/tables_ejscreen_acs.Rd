@@ -19,7 +19,7 @@ See
 \if{html}{\out{<div class="sourceCode">}}\preformatted{yr = 2023
 urls = paste0('https://data.census.gov/table/ACSDT5Y', yr, '.', tables_ejscreen_acs)
 sapply(urls, browseURL)
-acsinfo <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), 'acs5')
+acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), 'acs5')
 }\if{html}{\out{</div>}}
 
 Notes:

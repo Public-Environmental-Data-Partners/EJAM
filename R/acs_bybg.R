@@ -26,7 +26,7 @@
 #'
 #' NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 #' ```
-#' x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
+#' x <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
 #'   ## tables_ejscreen_acs
 #' tables = tables_ejscreen_acs
 #' acstabs2 <- paste0(tables, "_")
@@ -117,7 +117,7 @@
 #'
 #' ## ACS tables and variables most relevant to EJSCREEN
 #'
-#' acsinfo <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
+#' acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
 #' # or x = EJAM:::acs_table_info()
 #' ejscreentables <-  as.vector(tables_ejscreen_acs)
 #'
@@ -177,7 +177,7 @@ acs_bybg <- function(
   if (tolower(geography) %in% c("blockgroup", "blockgroups", "block groups")) {geography <- "block group"}
   if (tolower(geography) %in% c("tract", "tracts")) {geography <- "tract"}
   if (missing(year) || is.null(year)) {
-    year <- acsendyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
+    year <- acs_endyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
                        guess_census_has_published = TRUE)
     yr_was_inferred = TRUE
   } else {
@@ -259,7 +259,7 @@ acs_bybg <- function(
 # library(data.table)
 # library(tidycensus) # NEED API KEY, FOR LARGE QUERIES AT LEAST
 #
-# x <- tidycensus::load_variables(acsendyear(guess_census_has_published = TRUE), "acs5")
+# x <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
 # # print(x[grepl("b01001_", x$name, ignore.case = T) & grepl("Female", x$label) & grepl("group", x$geography), ], n = 25)
 # allstates <- list()
 #

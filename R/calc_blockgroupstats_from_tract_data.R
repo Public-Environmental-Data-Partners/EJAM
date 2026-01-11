@@ -28,7 +28,7 @@ calc_blockgroupstats_from_tract_data <- function(yr, tables = c("B18101", "C1600
   }
 
   if (missing(yr)) {
-    yr = acsendyear(guess_census_has_published = TRUE, guess_always = T)
+    yr = acs_endyear(guess_census_has_published = TRUE, guess_always = T)
   }  # 2022, 2023, or 2024
   cat("end year to use: ", yr, '\n')
   ###################################################### #

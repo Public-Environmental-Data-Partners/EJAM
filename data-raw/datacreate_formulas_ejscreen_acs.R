@@ -546,7 +546,7 @@
 
 
   ##   tables search
-  # endyr = acsendyear(guess_census_has_published = T)
+  # endyr = acs_endyear(guess_census_has_published = T)
   # x <- tidycensus::load_variables(endyr, "acs5")
   # x[grepl("B28003", x$name) & "block group" == x$geography & !is.na(x$geography), ] |> print(n=10 )
   # # health insurance tables/variables
@@ -827,8 +827,8 @@
 
   ############ #################################### #
 
-  yr = acsendyear(guess_census_has_published = T)
-  # yr = acsendyear()
+  yr = acs_endyear(guess_census_has_published = T)
+  # yr = acs_endyear()
 
   x1 = acs_table_info(yr = yr)
 

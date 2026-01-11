@@ -14,7 +14,7 @@
 acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 
   if (missing(tables_acs)) {tables_acs <- as.vector(EJAM::tables_ejscreen_acs)}
-  if (missing(yr)) {yr <- EJAM::acsendyear(guess_census_has_published = T)}
+  if (missing(yr)) {yr <- EJAM::acs_endyear(guess_census_has_published = T)}
   x = tidycensus::load_variables(yr, dataset = dataset, cache = T)
   x$table = gsub("^(.*)_.*$", "\\1", x$name)
   x = x[x$table %in% tables_acs, ]
@@ -48,7 +48,7 @@ calc_blockgroupstats_acs <- function(yr, formulas = EJAM::formulas_ejscreen_acs$
   # library(EJAM); library(dplyr); library(data.table)
 
   if (missing(yr)) {
-    yr <- EJAM::acsendyear(guess_always = T, guess_census_has_published = T)
+    yr <- EJAM::acs_endyear(guess_always = T, guess_census_has_published = T)
   }
   ################################################### #
   ## BLOCK GROUP SURVEY DATA HANDLED DIFFERENTLY/ SEPARATELY FROM

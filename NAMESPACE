@@ -2,8 +2,8 @@
 
 export(acs_bybg)
 export(acs_bycounty)
+export(acs_endyear)
 export(acs_table_info)
-export(acsendyear)
 export(address_from_table)
 export(address_from_table_goodnames)
 export(api_run)
