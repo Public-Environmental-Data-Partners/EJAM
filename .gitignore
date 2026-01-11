@@ -65,3 +65,4 @@ tests/testthat/_snaps/**/*.png
 # .DS_Store files are created by macOS to store Finder metadata/settings
 .DS_Store
 **/.DS_Store
+inst/plumber/log_api_usage*.txt
