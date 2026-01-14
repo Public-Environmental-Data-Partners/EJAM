@@ -12,7 +12,7 @@
 
 #' utility - check if URL available, such as if an API is online or offline
 #' @param url the URL to check
-#' @returns TRUE or FALSE (but NA if no internet connection seems to be available at all)
+#' @return TRUE or FALSE (but NA if no internet connection seems to be available at all)
 #' @details
 #' Also see EJAM:::global_or_param("ejamapi_is_down")
 #'    as set in global_defaults_package.R

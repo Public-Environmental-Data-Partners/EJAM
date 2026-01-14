@@ -35,7 +35,7 @@ acs_yr_range <- function(end.year, parens = FALSE) {
 #'
 #'  See schedules such as <https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html>
 #'
-#' @returns a single year like "2022", meaning ACS5 survey data covering 2018-2022,
+#' @return a single year like "2022", meaning ACS5 survey data covering 2018-2022,
 #'   released by Census Bureau 12/2023, updated in EJSCREEN in mid/late 2024.
 #'
 #' @keywords internal

@@ -157,7 +157,7 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #' @param whole_line set it to FALSE to see only the matching fragments
 #'   vs entire line of text that has a match in it
 #' @param quiet whether to print results or just invisibly return
-#' @returns list of named vectors,
+#' @return list of named vectors,
 #'   where names are file paths with hits, elements are vectors of text with hits
 #' @examples
 #' EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE, quiet = F)

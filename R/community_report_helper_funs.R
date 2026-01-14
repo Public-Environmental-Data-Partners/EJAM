@@ -922,7 +922,7 @@ generate_extra_header <- function(title = 'Additional Information') {
 #' buffer_desc_from_sitetype("shp")
 #' buffer_desc_from_sitetype("fips")
 #'
-#' @returns text string, phrase to use in excel notes tab
+#' @return text string, phrase to use in excel notes tab
 #'
 #' @keywords internal
 #'
@@ -1036,7 +1036,7 @@ site_method2text =  function(site_method) {
 #'   should be a singular word, like "location"
 #' @param census_unit_type e.g., "county"
 #' @param nsites number of sites total, to determine whether to pluralize e.g., "county" into "counties"
-#' @returns text string, phrase to use in report header (or excel notes tab, etc.)
+#' @return text string, phrase to use in report header (or excel notes tab, etc.)
 #'
 #' @keywords internal
 #'
@@ -1187,7 +1187,7 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 #'    and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
 #'   instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).
 #'
-#' @returns text string such as "Residents within 1 mile of any of the 99 specified points<br>Area in Square Miles: 311.02"
+#' @return text string such as "Residents within 1 mile of any of the 99 specified points<br>Area in Square Miles: 311.02"
 #'
 #' @export
 #' @keywords internal

@@ -99,7 +99,7 @@
 #' @examples
 #'   # EJAM:::pkgdown_update(doask = TRUE)
 #'
-#' @returns NULL
+#' @return NULL
 #'
 #' @keywords internal
 #'

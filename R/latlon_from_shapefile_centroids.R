@@ -3,7 +3,7 @@
 #'
 #' @param shapefile spatial data.frame of polygons
 #' @seealso [latlon_from_fips()] [latlon_from_anything()]
-#' @returns data.frame with columns lat,lon
+#' @return data.frame with columns lat,lon
 #'
 #' @export
 #'

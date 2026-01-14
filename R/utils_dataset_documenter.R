@@ -11,7 +11,7 @@
 #' @details
 #' see [article on updating datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html)
 #'
-#' @returns name of .R file where documentation was written
+#' @return name of .R file where documentation was written
 #'
 #' @keywords internal
 #'

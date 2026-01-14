@@ -27,7 +27,7 @@
 #'  the column blockgroupstats$arealand. If FALSE, it more slowly downloads boundary shapefiles and then uses sf::sf_area to calculate areas. These two methods give roughly the same answer.
 #' @param includewater whether to add blockgroupstats$areawater not just $arealand. includewater only matters when download_noncity_fips_bounds = FALSE,
 #'   and only for state, county, tract, blockgroup FIPS, not "city" types of fips as identified by [fipstype()]
-#' @returns vector of numbers same length as length(radius.miles) or length(fips) or NROW(shp)
+#' @return vector of numbers same length as length(radius.miles) or length(fips) or NROW(shp)
 #'
 #' @export
 #' @keywords internal
