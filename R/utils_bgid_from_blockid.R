@@ -5,7 +5,7 @@
 #' @param asdt set to TRUE if you want it to return a table in [data.table](https://r-datatable.com) format with colnames bgid, blockid,
 #'   one row per input blockid, so it may have duplicates in the bgid column.
 #'   set to FALSE if you want it to return a vector of bgid values (integer class)
-#' @returns depends on asdt parameter value
+#' @return depends on asdt parameter value
 #' @examples
 #'
 #' rad = 0.658

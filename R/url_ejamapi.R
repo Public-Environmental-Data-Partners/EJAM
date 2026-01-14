@@ -65,7 +65,7 @@
 #' @param ... a named list of other query parameters passed to the API,
 #'   to allow for expansion of allowed parameters
 #'
-#' @returns vector of character string URLs -- see details on sitenumber parameter
+#' @return vector of character string URLs -- see details on sitenumber parameter
 #'
 #' @examples
 #'

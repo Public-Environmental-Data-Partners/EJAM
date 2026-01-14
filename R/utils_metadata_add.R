@@ -75,7 +75,7 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 #' update ALL metadata attributes for JUST 1 pkg dataset AND save in EJAM/data/
 #' @details used in data-raw/datacreate_*.R functions while updating/making datasets
 #' @param objectname text/character string of object name (ie quoted)
-#' @returns just for side effects
+#' @return just for side effects
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @keywords internal

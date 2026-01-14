@@ -943,7 +943,7 @@ url_naics.com <- function(query = "",
 #' @param ghurl URL of HTML file in a github repository
 #' @param launch_browser set FALSE to get URL but not launch a browser
 #'
-#' @returns URL
+#' @return URL
 #' @examples
 #' url_github_preview(fold = "docs", file = "index.html", launch_browser = F)
 #' url_github_preview(fold = "docs/reference", file = "ejam2excel.html", launch_browser = F)

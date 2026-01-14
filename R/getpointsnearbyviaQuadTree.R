@@ -49,7 +49,7 @@
 #'   the distance_unadjusted column will save the actual distance of site to the topoint,
 #'   which might be zero. adjusted distance uses a lower limit, min_distance
 #' @param updateProgress, optional function to update Shiny progress bar
-#' @returns see details
+#' @return see details
 #' @seealso  [getpointsnearby()]
 #' @import data.table
 #'

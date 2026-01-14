@@ -36,7 +36,7 @@ dataload_dynamic <- function(
     return_data_table = TRUE,
     onAttach = FALSE) {
 
-  message(paste0("Loading arrow datasets: ", paste(varnames, collapse = ", ")))
+  message(paste0("Loading specified arrow datasets: ", paste(varnames, collapse = ", ")))
 
   ####################################################### #
   # make sure varnames are specified correctly

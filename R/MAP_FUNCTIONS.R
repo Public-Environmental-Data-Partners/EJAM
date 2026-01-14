@@ -18,7 +18,7 @@
 #' @param circle_color optional
 #' @param launch_browser set TRUE to have it launch browser to show map.
 #'
-#' @returns map html widget
+#' @return map html widget
 #'
 #' @keywords internal
 #'

@@ -18,7 +18,7 @@
 #'
 #' It assume you want to name output columns like varnames but with hardcoded prefixes "avg." or "state.avg."
 #'
-#' @returns data.frame, one column per indicator or element of varnames vector,
+#' @return data.frame, one column per indicator or element of varnames vector,
 #'   one row per site or element of zones vector
 #'
 #' @keywords internal

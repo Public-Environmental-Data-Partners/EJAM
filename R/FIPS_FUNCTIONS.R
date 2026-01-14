@@ -1794,7 +1794,7 @@ fips2statefips <- function(fips) {
 #'  block, blockgroup, tract, city, county, state
 #'  but where it is a state this will return NA
 #'
-#' @returns vector of fips as long as input
+#' @return vector of fips as long as input
 #' @examples
 #' fips2countyfips(testinput_fips_blockgroups[1])
 #'
