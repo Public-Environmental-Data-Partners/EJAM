@@ -32,7 +32,8 @@ articles:
   desc: EJSCREEN Indicators & Reports
   navbar: EJSCREEN Indicators & Reports
   contents:
-  - '`ejscreen`'
+  - ejscreen
+  - ejscreen-map-descriptions
 - title: The EJAM Web App
   desc: Overview for EJAM Users
   navbar: Overview for EJAM Users

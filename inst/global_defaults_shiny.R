@@ -1052,10 +1052,9 @@ AIR,	IL000031012ACJ<br>
                 border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff";>
           <span id="homelinks">
 
-  <!--           <a href="https://www.epa.gov/ejscreen" alt="Go to EJSCREEN home page" title="Go to EJSCREEN home page" target="_blank">EJSCREEN Website</a> |   -->
-  <!--           <a href="https://ejscreen.epa.gov/mapper/" alt="Go to EJSCREEN mapper"    title="Go to EJSCREEN mapper" target="_blank">Mapper</a> |   -->
-              <a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen" alt="Go to glossary page" title="Go to EJSCREEN glossary page" target="_blank">Glossary</a> |
-            <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> |
+  <!--      <a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen" alt="Go to glossary page" title="Go to EJSCREEN glossary page" target="_blank">Glossary</a> | -->
+            <a href="https://ejanalysis.github.io/EJAM/articles/ejscreen.html" alt="See EJSCREEN help" title="EJSCREEN documentation pages" target="_blank">EJSCREEN/EJAM Help</a> |
+       <!--     <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> | -->
             <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a>
           </span>&nbsp;&nbsp;
         </td>
