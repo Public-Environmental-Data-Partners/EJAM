@@ -69,22 +69,39 @@ test_that("ejamit() still returns results_overall identical to what it used to r
           })
 ########################################################## #
 
-test_that("ejamit() still returns results_bysite identical to expected numbers it used to return
-          (saved as testoutput_ejamit_10pts_1miles$results_bysite)", {
-            suppressWarnings({
-              suppressMessages({
-                if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
-                # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
-                expect_equal(
-                  ejamitoutnow$results_bysite,
-                  testoutput_ejamit_10pts_1miles$results_bysite,
-                  ignore_attr = T
-                )
-                # all.equal(    ejamitoutnow$results_bysite,
-                #               testoutput_ejamit_10pts_1miles$results_bysite)
-              } )
-            })
-          })
+test_that("ejamit() still returns results_bysite identical to expected numbers it used to return (except EJAM Report column)", {
+  suppressWarnings({
+    suppressMessages({
+      if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
+      # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
+      expect_equal(
+        ## Compare all columns expect column 1, the url of the EJAM Report
+        ejamitoutnow$results_bysite[,-1],
+        testoutput_ejamit_10pts_1miles$results_bysite[,-1]
+        ,
+        ignore_attr = TRUE # intended to ignore attributes that are metadata like date saved to package, ACS version, etc. that are part of testoutput_ejamit_10pts_1miles
+      )
+      # all.equal(    ejamitoutnow$results_bysite,
+      #               testoutput_ejamit_10pts_1miles$results_bysite)
+    } )
+  })
+})
+################################### #
+test_that("ejamit() still returns results_bysite identical to expected EJAM Report column", {
+  suppressWarnings({
+    suppressMessages({
+      if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
+      # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
+      expect_equal(
+        ## Compare column 1, the EJAM Report URLs
+        as.vector(unlist(ejamitoutnow$results_bysite[,1])),
+        as.vector(unlist(testoutput_ejamit_10pts_1miles$results_bysite[,1]))
+      )
+      # all.equal(    ejamitoutnow$results_bysite,
+      #               testoutput_ejamit_10pts_1miles$results_bysite)
+    } )
+  })
+})
 ########################################################## #
 
 test_that("ejamit() returns same exact colnames() in both results_bysite and results_overall", {

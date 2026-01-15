@@ -1,1 +1,1 @@
-main_shinytest("FIPS")
+shinytest2_webapp_functionality("FIPS")

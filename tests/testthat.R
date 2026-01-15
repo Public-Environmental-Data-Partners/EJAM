@@ -1,7 +1,9 @@
 
+## THIS FILE LOADS EJAM AND GLOBAL DEFAULTS, AND THEN
+## RUNS THE SHINYTEST2 WEB APP UI FUNCTIONALITY UNIT TESTS
 
+################################# # ################################# #
 # see also setup.R
-
 
 # Where should you do additional test configuration?
 # Learn more about the roles of various files in:
@@ -9,7 +11,11 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 ################################# # ################################# #
-#
+
+# 1. EJAM gets loaded -OR- reinstalled from source and loaded ####
+
+################################# # ################################# #
+
 ## Installs the latest version of the app using your checked out branch's code
 ##  then library() used so now
 ##  it will test the just-installed version = latest source version.
@@ -36,9 +42,12 @@ if (install_now) {
 cat("\n\n      ------------------ NOW DOING library(EJAM) !!!!  -------------      \n\n")
 library(EJAM)
 
+################################# # ################################# #
 
+# 2. Get global defaults ####
 
 ################################# # ################################# #
+
 ## this also needs to load global_defaults_ info
 ## that is normally saved in golem_opts during app_run() like...
 global_defaults_or_user_options <- EJAM:::get_global_defaults_or_user_options(
@@ -58,12 +67,15 @@ global_defaults_or_user_options <- EJAM:::get_global_defaults_or_user_options(
 # ejam_app_version
 # default_extratable_hide_missing_rows_for
 ## assign each global default value to this envt :
-
+# see also EJAM:::get_global_defaults_or_user_options()
 for (i in seq_along(global_defaults_or_user_options)) {
   assign(names(global_defaults_or_user_options)[i], (global_defaults_or_user_options[[i]]))
 }
+
+
 ################################# # ################################# #
 
+# 3. Run web app UI functionality tests ####
 
 ################################# # ################################# #
 #
@@ -76,7 +88,8 @@ library(shinytest2)
 # unixtools::set.tempdir('~/tmp')
 
 # Get the main function that does the web app test commands:
-source("tests/app-functionality.R")
+if (!file.exists("tests/shinytest2_webapp_functionality.R")) {stop('cannot find "tests/shinytest2_webapp_functionality.R"')}
+source("tests/shinytest2_webapp_functionality.R")
 
 testthat::set_max_fails(200)
 
@@ -91,7 +104,7 @@ testthat::set_max_fails(200)
 
 # test_check("EJAM") # this runs all the tests
 
-# To run just the web app functionality unit tests:
+# run web app functionality unit tests
 
 shinytest2::test_app(".", filter = "-functionality")
 
@@ -113,3 +126,4 @@ shinytest2::test_app(".", filter = "-functionality")
 # testthat::snapshot_review(files="latlon-functionality/latlon-pctlowinc.json")
 # To accept the new snapshots
 # snapshot_accept()
+################################# #

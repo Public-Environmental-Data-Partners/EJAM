@@ -1,1 +1,1 @@
-main_shinytest("shp-gdb-zip")
+shinytest2_webapp_functionality("shp-gdb-zip")

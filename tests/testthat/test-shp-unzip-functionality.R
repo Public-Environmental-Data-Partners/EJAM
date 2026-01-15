@@ -1,1 +1,1 @@
-main_shinytest("shp-unzip")
+shinytest2_webapp_functionality("shp-unzip")
