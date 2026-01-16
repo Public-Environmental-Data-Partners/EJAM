@@ -212,7 +212,18 @@ cat("\n\n")
   print(table(How.many.have.acs_version = x$acs_version, useNA = 'always'))
   z = x[is.na(x$acs_version), intersect(c('item', 'date_saved_in_package', 'acs_version' ), names(x))]
   cat("\n\n see where is ACS version info missing, and date saved \n\n")
-  print(z[order(z$item), ])
+  z = z[order(z$item), ]
+
+  cat("where object name is names_xyz (vectors of variables or indicator names do not need metadata stored as attributes)\n\n")
+  these = z[grepl("^names_", z$item), ]
+  rownames(these) = NULL
+  print(these)
+
+  cat("\n\nwhere object name is NOT names_xyz\n\n")
+  these = z[!grepl("^names_", z$item), ]
+  rownames(these) = NULL
+  print(these)
+
   }
   ## probably should have acs_version:  usastats, testoutput_*
   invisible(x)

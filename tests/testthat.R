@@ -102,9 +102,9 @@ testthat::set_max_fails(200)
 # Passing ⁠R CMD check⁠ is essential if you want to submit your package to CRAN: you must not have any ERRORs or WARNINGs, and you want to ensure that there are as few NOTEs as possible. If you are not submitting to CRAN, at least ensure that there are no ERRORs or WARNINGs: these typically represent serious problems.
 # check() automatically builds a package before calling check_built(), as this is the recommended way to check packages. Note that this process runs in an independent R session, so nothing in your current workspace will affect the process. Under-the-hood, check() and check_built() rely on pkgbuild::build() and rcmdcheck::rcmdcheck().
 
-# test_check("EJAM") # this runs all the tests
+# test_check("EJAM") # this runs all the tests including web app functionality tests
 
-# run web app functionality unit tests
+# run just the web app functionality unit tests
 
 shinytest2::test_app(".", filter = "-functionality")
 
