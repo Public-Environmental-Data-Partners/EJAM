@@ -6,21 +6,21 @@
   - Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended.
   - Fixed various other/ misc small issues.
   
-- Revisions to Community Report and Multisite Report
+- Improved the Community Report, Multisite Report, Spreadsheet
 
-  - Report footer edited, and can be customized now via `ejam2report()`
-  - Report Title revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
+  - Report footer was edited, and can be customized now via `ejam2report()`
+  - Report Title was revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
   - Analysis Title (on reports) revised also
-  - Report Footer revised (new params in `ejam2report()` now define footer in community report, via new `generate_report_footer()` helper)
+  - Report Footer was revised (new params in `ejam2report()` now define footer in community report, via new `generate_report_footer()` helper)
   - Multisite report is now rendered as html file automatically as soon as results are ready (and if analysis title is changed afterwards),
   so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as 
   the server now does not have to re-render report for use in spreadsheet.
-  - Multisite report and spreadsheet download buttons disabled until each is ready.
+  - Multisite report and spreadsheet download buttons now disabled until each is ready.
   - Spreadsheet file is now created automatically when results are done, so it will be available immmediately if/when a user decides to download it. 
   - Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
   might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
   
-- Raised some limits on number of sites one can upload, map, analyze:
+- Raised some limits on number of sites one can upload, map, analyze
 
   - Number of uploaded points
     - cap was 5,0000 (or 10,000 via advanced tab)
@@ -44,7 +44,7 @@
     - cap was 50 MB (or 350 MB via advanced tab)
     - no change
 
-- Other 
+- Other changes:
 
   - Updated text in README
   - Updated text in the [Future Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html) and other vignettes/articles.
