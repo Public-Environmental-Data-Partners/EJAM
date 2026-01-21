@@ -50,6 +50,7 @@
   - Updated text in the [Future Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html) and other vignettes/articles.
   - Renamed `ejam2excel()` parameters (in.analysis_title changed to analysis_title) to be consistent with `ejam2report()` parameter, or to simplify (react.v1_summary_plot changed to report_plot).
   - `ejamapp()` has new parameter aliases: "pts" is short for "sitepoints", "shp" is short for "shapefile", "analysis_title" or "default_analysis_title" will set analysis title in report header, and "report_title" or "default_report_title" will set overall title in topmost part of report header.
+  - `url_ejscreentechdoc()` was added to easily get URL of EJSCREEN documentation pages and docs
 
 # EJAM 2.32.6.003 (November 2025)
 

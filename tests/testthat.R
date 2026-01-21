@@ -36,9 +36,14 @@ if (interactive()) {
 }
 
 if (install_now) {
-  remotes::install_local('.', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+  if (file.exists("DESCRIPTION")) {
+    remotes::install_local('.', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+  } else {
+    if (file.exists("../DESCRIPTION")) {
+      remotes::install_local('..', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+    }
+  }
 }
-
 cat("\n\n      ------------------ NOW DOING library(EJAM) !!!!  -------------      \n\n")
 library(EJAM)
 
