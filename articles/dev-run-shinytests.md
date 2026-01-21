@@ -5,8 +5,9 @@ This document covers the UI-related automated tests.
 ## Dev Environment
 
 If you are successfully running the app, you should have all the
-necessary packages. If you don’t, those packages should live in the
-`DESCRIPTION` file. Some dev-related packages to note:
+necessary packages, or at least those in Imports or Suggests of the
+`DESCRIPTION` file – the diffviewer package is not there, e.g. Some
+dev-related packages to note:
 
 - **[shinytest2](https://rstudio.github.io/shinytest2/)** -
   [shinytest2](https://rstudio.github.io/shinytest2/) is the key R
@@ -14,10 +15,14 @@ necessary packages. If you don’t, those packages should live in the
 - **[diffviewer](https://diffviewer.r-lib.org)** -
   [diffviewer](https://diffviewer.r-lib.org) helps visually compare 2
   files
-- **Pandoc** – Comes bundled with RStudio
-- **PhantomJS**? – Used to be needed for downloads (installed with
+- **Pandoc** and **knitr** – The Pandoc software comes bundled with
+  RStudio, and is a “swiss-army knife” for document conversion. There
+  also is a function called \[knitr::pandoc()\] that is a wrapper that
+  calls Pandoc to convert docs to HTML, PDF, etc.
+- **PhantomJS** maybe – This used to be needed for downloads (and was
+  installed with
   [`webshot::install_phantomjs()`](http://wch.github.io/webshot/reference/install_phantomjs.md)).
-  But note:
+  But note this newer info:
 
 NOTE FROM
 <https://rstudio.github.io/shinytest2/articles/z-migration.html>: -
@@ -59,13 +64,13 @@ from code updates, the test fails, indicating which files changed.
 
 ``` plaintext
 tests/
-  ├── testthat.R (modified for shinytest2)
-  ├── app-functionality.R
+  ├── testthat.R (modified to launch the shinytest2 web app functionality tests)
+  ├── shinytest2_webapp_functionality.R (function used to run the tests)
   └── testthat/
-      ├── setup-shinytest2.R
+      ├── setup-shinytest2.R (basic setup steps before all unit testing)
       ├── test-[DATA TYPE]-functionality.R (e.g. test-FIPS-functionality.R)
       └── _snaps/
-          ├── [OS, e.g. linux]-[R Version, e.g. 4.4]/
+          ├── [OS, e.g. linux]-[R Version, e.g. 4.5]/
           │   ├── FIPS-shiny-functionality/
           │   │   ├── .json, .png, .xlsx, .html files
           │   ├── shapefile-shiny-functionality/
@@ -88,9 +93,10 @@ tests/
   the `test-ui_and_server.R` file.
 - **`testthat/setup-shinytest2.R`** – Loads `global.R` and app scripts
   into the testing environment.
-- **`app-functionality.R`** – Contains generic function,
-  `main_shinytest()`, that defines app interactions for testing, running
-  tests for multiple data types (FIPS, shapefile, latlon, NAICS, etc.).
+- **`shinytest2_webapp_functionality.R`** – Contains generic function,
+  `shinytest2_webapp_functionality()`, that defines app interactions for
+  testing, running tests for multiple data types (FIPS, shapefile,
+  latlon, NAICS, etc.).
 - **`testthat/test-[DATA TYPE]-functionality.R`** – Simple call to the
   main app functionality function, specifying the data type to test
   with.
@@ -110,8 +116,9 @@ are some methods and tips for updating the shinytest script accordingly.
 
 ### Direct Updates
 
-Modify `app-functionality.R` to add new interactions with the app for
-the shinytest to test.
+Modify `shinytest2_webapp_functionality.R` to add new interactions with
+the app for the shinytest to test. Note there was a copy of that
+function in setup.R as well!
 
 ### Using `shinytest2::record_test()` to generate testing code
 
@@ -181,7 +188,7 @@ Optionally, can filter to review specific files or folders of snapshots.
 testthat::snapshot_accept()
 ```
 
-Optionally, can accept them interactively when reviewing
+Optionally, can accept them interactively when reviewing.
 
 ## Debugging Tests & GitHub Actions
 
@@ -191,9 +198,9 @@ Optionally, can accept them interactively when reviewing
 - Add [`print()`](https://rdrr.io/r/base/print.html),
   [`message()`](https://rdrr.io/r/base/message.html), or
   [`warning()`](https://rdrr.io/r/base/warning.html) statements in
-  `app-functionality.R`.
+  `shinytest2_webapp_functionality.R`.
 - Run, line-by line or in chunks, the main shinytest code in
-  `app-functionality.R` beginning with:
+  `shinytest2_webapp_functionality.R` beginning with:
 
 ``` r
   test_category <- "NAICS-functionality"
