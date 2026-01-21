@@ -69,7 +69,7 @@ test_that("ejamit() still returns results_overall identical to what it used to r
           })
 ########################################################## #
 
-test_that("ejamit() still returns results_bysite identical to expected numbers it used to return (except EJAM Report column)", {
+test_that("ejamit() still returns results_bysite identical to numbers it used to return (except EJAM Report column)", {
   suppressWarnings({
     suppressMessages({
       if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
@@ -87,7 +87,7 @@ test_that("ejamit() still returns results_bysite identical to expected numbers i
   })
 })
 ################################### #
-test_that("ejamit() still returns results_bysite identical to expected EJAM Report column", {
+test_that("ejamit() still returns results_bysite with expected EJAM Report column", {
   suppressWarnings({
     suppressMessages({
       if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
