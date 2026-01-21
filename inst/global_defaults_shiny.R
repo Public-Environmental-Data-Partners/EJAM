@@ -53,12 +53,12 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
     maxmax_mb_upload = 350, # MB
 
     # input$max_pts_upload
-    default_max_pts_upload  =   5 * 1000,
-    maxmax_pts_upload  =  10 * 1000, #   cap uploaded points
+    default_max_pts_upload  =   10 * 1000,
+    maxmax_pts_upload  =  35 * 1000, #   cap uploaded points
 
     # input$max_pts_select
-    default_max_pts_select  =   5 * 1000,
-    maxmax_pts_select  =  10 * 1000, #   cap selected points
+    default_max_pts_select  =   10 * 1000,
+    maxmax_pts_select  =  35 * 1000, #   cap selected points
 
     # input$max_pts_map uses these as its starting value and max allowed value
     default_max_pts_map   = 5 * 1000,
@@ -66,13 +66,13 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
 
     marker_cluster_cutoff  = 1 * 1000,  # max before showing points as clusters, for leaflet markerClusters
 
+    # input$max_pts_run uses these as its starting value and max allowed value
+    default_max_pts_run  = 10 * 1000, # initial cap but can adjust in advanced tab
+    maxmax_pts_run       = 35 * 1000, # absolute max you can analyze here, even with advanced tab
+
     # input$max_pts_showtable uses these as its starting value and max allowed value
     default_max_pts_showtable = 1000, # max to show in interactive viewer. It drops the rest.
     maxmax_pts_showtable  = 5 * 1000, # 10k is extremely slow. check server side vs client side
-
-    # input$max_pts_run uses these as its starting value and max allowed value
-    default_max_pts_run  = 10 * 1000, # initial cap but can adjust in advanced tab
-    maxmax_pts_run       = 15 * 1000, # absolute max you can analyze here, even with advanced tab
 
     # input$max_shapes_map uses these as its starting value and max allowed value
     default_max_shapes_map = 159, # TX has 254 counties, but no other state exceeds 159. EJAM::blockgroupstats[ , data.table::uniqueN(substr(bgfips, 1,5)), by = ST][order(V1), ]
@@ -1052,10 +1052,9 @@ AIR,	IL000031012ACJ<br>
                 border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff";>
           <span id="homelinks">
 
-  <!--           <a href="https://www.epa.gov/ejscreen" alt="Go to EJSCREEN home page" title="Go to EJSCREEN home page" target="_blank">EJSCREEN Website</a> |   -->
-  <!--           <a href="https://ejscreen.epa.gov/mapper/" alt="Go to EJSCREEN mapper"    title="Go to EJSCREEN mapper" target="_blank">Mapper</a> |   -->
-              <a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen" alt="Go to glossary page" title="Go to EJSCREEN glossary page" target="_blank">Glossary</a> |
-            <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> |
+  <!--      <a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen" alt="Go to glossary page" title="Go to EJSCREEN glossary page" target="_blank">Glossary</a> | -->
+            <a href="https://ejanalysis.github.io/EJAM/articles/ejscreen.html" alt="See EJSCREEN help" title="EJSCREEN documentation pages" target="_blank">EJSCREEN/EJAM Help</a> |
+       <!--     <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> | -->
             <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a>
           </span>&nbsp;&nbsp;
         </td>

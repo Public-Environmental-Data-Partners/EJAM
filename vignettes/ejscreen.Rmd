@@ -60,7 +60,7 @@ EJAM-related repositories.
 -   Data Sources (2024 through 2025)
 
     -   [**Full list of indicators, with
-        definitions**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.html){target="_blank"}.
+        definitions**](ejscreen-map-descriptions.html){target="_blank"}.
         Also [at
         archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
 
@@ -83,11 +83,11 @@ EJAM-related repositories.
     -   Raw Data Downloads -- EJSCREEN datasets as used by EJAM
 
         -   Datasets stored in the EJAM repository (.rda files):
-            [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-){target="_blank"}
+            [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-){target="_blank"}
             and [Data
             files](https://github.com/ejanalysis/EJAM/tree/main/data){target="_blank"}
         -   Datasets stored in the ejamdata repo (large .arrow files):
-            [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-){target="_blank"}
+            [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-){target="_blank"}
             and [Data
             files](https://github.com/ejanalysis/ejamdata/tree/main/data){target="_blank"}
 
@@ -175,7 +175,7 @@ kable(links_table,  col.names = NULL, label = NA)
             EJScreen?](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/how-does-epa-use-ejscreen){target="_blank"}
     -   **EJScreen Resources**
         -   [EJScreen Map
-            Descriptions](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.html){target="_blank"}
+            Descriptions](ejscreen-map-descriptions.html){target="_blank"}
             [archived
             version](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
         -   [Frequent Questions about

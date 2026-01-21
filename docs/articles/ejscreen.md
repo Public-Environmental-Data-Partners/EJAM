@@ -42,7 +42,7 @@ initiative of the Internet Archive) and by EJAM-related repositories.
 - Data Sources (2024 through 2025)
 
   - [**Full list of indicators, with
-    definitions**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.md).
+    definitions**](https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.md).
     Also [at
     archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions)
 
@@ -65,11 +65,11 @@ initiative of the Internet Archive) and by EJAM-related repositories.
   - Raw Data Downloads – EJSCREEN datasets as used by EJAM
 
     - Datasets stored in the EJAM repository (.rda files):
-      [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
+      [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
       and [Data
       files](https://github.com/ejanalysis/EJAM/tree/main/data)
     - Datasets stored in the ejamdata repo (large .arrow files):
-      [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
+      [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
       and [Data
       files](https://github.com/ejanalysis/ejamdata/tree/main/data)
 
@@ -133,7 +133,7 @@ environmental justice in all programs, policies and activities.
       EJScreen?](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/how-does-epa-use-ejscreen)
   - **EJScreen Resources**
     - [EJScreen Map
-      Descriptions](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-map-descriptions.md)
+      Descriptions](https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.md)
       [archived
       version](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ejscreen-map-descriptions)
     - [Frequent Questions about

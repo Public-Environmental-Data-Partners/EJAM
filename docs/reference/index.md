@@ -347,7 +347,7 @@ counties, states, & EPA Regions
   the given fips, from countyhealthrankings.org
 - [`url_county_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_county_equityatlas.md)
   : URL functions - Get URLs of useful report(s) on County containing
-  the given fips, from countyhealthrankings.org
+  the given fips from nationalequityatlas.org
 
 ### States
 
@@ -844,7 +844,7 @@ Report Percentiles or Means
   the given fips, from countyhealthrankings.org
 - [`url_county_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_county_equityatlas.md)
   : URL functions - Get URLs of useful report(s) on County containing
-  the given fips, from countyhealthrankings.org
+  the given fips from nationalequityatlas.org
 - [`url_state_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_state_equityatlas.md)
   : URL functions - Get URLs of useful report(s) on STATE containing the
   given fips, from equity atlas

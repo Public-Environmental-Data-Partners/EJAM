@@ -1,3 +1,6 @@
+
+# SETUP FOR UNIT TESTS ####
+
 ############################### #
 cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
 
@@ -8,9 +11,18 @@ cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!
 
 # When tests try to test the shiny app, the app should handle using global_defaults_*.R
 
+################################# # ################################# #
+## Note: to profile parts of the shiny app for performance, etc.
+## see shinytest2 package, and see profiler:
+# shiny::callModule(profvis_server, "profiler")
+## and also see  /EJAM/tests/testthat/test-ui_and_server.R
+## and see  https://shiny.posit.co/r/articles/improve/debugging/
+## etc.
+################################# # ################################# #
+
 ############################### #
 # keep track of global envt side effects ####
-# Keep track and alert us if any functions in tests have
+#  and alert us if any functions in tests have
 #  changed global options, a side effect we probably want functions to avoid
 
 set_state_inspector(function() {
@@ -23,89 +35,7 @@ EJAM:::offline_cat("\n\nNO INTERNET CONNECTION AVAILABLE - SOME TESTS MAY FAIL W
 # skip_if_offline()
 ################################# # ################################# #
 
-# helpers to check the output of ejam2map() etc.
-map2popups <- # popups_from_leaflet <-
-  function(mymap) {
-    popup_data_where = which(sapply((mymap$x$calls[[2]])$args, function(z) (is.atomic(z) & is.character(z))) )
-    ((mymap$x$calls[[2]])$args)[[popup_data_where]]
-  }
-map2popups_urls <- # popup_urls_from_popups <-
-  function(mymap) {
-    popups_html <- map2popups(mymap)
-    if (!all(
-      grepl(".*href=\"([^<|\"]*)\".*",    popups_html   )
-    )) {
-      stop("cannot find URLs in popups")
-    }
-    # </a><br>
-    gsub(".*href=\"([^<|\"]*)\".*", "\\1", popups_html )
-  }
-map2sitetype <- function(mymap) {
 
-  # mymap_latlon$x$calls[[2]]$method
-  # [1] "addCircles"
-  # >  mymap_shp$x$calls[[2]]$method
-  # [1] "addPolygons"
-
-  meth = mymap$x$calls[[2]]$method
-  if (meth == "addCircles") {
-    return("latlon")
-  } else {
-    return("shp")
-  }
-}
-map2latlon <-
-  # latlon_from_leaflet_map <-
-  function(mymap) {
-    sitetype = map2sitetype(mymap)
-
-    if (sitetype == "latlon") {
-      # points map case:
-      lat = ((mymap$x$calls[[2]])$args)[[1]]
-      lon = ((mymap$x$calls[[2]])$args)[[2]]
-      pts = data.frame(lat=lat, lon = lon)
-      # plot(pts)
-    } else {
-      # polygon map case:
-      pts = ( (((mymap$x$calls[[2]])$args)[[1]])[1][[1]][[1]][[1]])
-      names(pts) <- c("lon", "lat")
-      # plot(pts); polygon(pts)
-    }
-    return(pts)
-  }
-map2viewdata =   function(mymap) {
-  print(mymap)
-  mypops <- map2popups(mymap)
-  cat("1st popup html text: \n\n")
-  print(mypops[1])
-  htmltools::html_print(shiny::HTML(mypops[1]), viewer = browseURL)
-  cat("\n")
-  myurls <- map2popups_urls(mymap)
-  print(cbind(myurls))
-  cat("\n")
-  mypts  <- map2latlon(mymap)
-  print(head(mypts))
-  cat("\n")
-  plot(mypts)
-  if (map2sitetype(mymap) != "latlon"){
-    polygon(mypts)
-  }
-  return(myurls)
-}
-############# #
-if (FALSE) {
-
-  mymap_latlon <- ejam2map(testoutput_ejamit_10pts_1miles, launch_browser = F) # functions dont work on this format
-  mymap_shp <- ejam2map(testoutput_ejamit_fips_counties, launch_browser = F) # functions work on this
-
-  map2viewdata(mymap_shp)
-
-  map2viewdata(mymap_latlon)
-
-}
-############# #
-
-################################## #
 # GET DATA AND BUILD INDEX JUST IN CASE ####
 
 #Source and library calls
@@ -132,19 +62,24 @@ suppressMessages({suppressWarnings({
 # default_show_advanced_settings
 # html_header_fmt
 
-############################### #
-# Create ejamitoutnow here in setup.R, since some tests are using it. ####
+################################# # ################################# #
 
-if (exists("ejamit") & exists("blockgroupstats") & exists("testpoints_10")) {
+# Create ejamitoutnow ####
+# here in setup.R, since some tests are using it.
+# see datacreate_testpoints_testoutputs.R and datacreate_testoutput_ejamit_shapes_2.R and  datacreate_testoutput_ejamit_fips.R
+if (exists("ejamit") && exists("blockgroupstats") && exists("testpoints_10")) {
   if (!exists("ejamitoutnow")) {
     message("creating ejamitoutnow in setup.R\n")
-    suppressMessages(  suppressWarnings({  ejamitoutnow <- try(
-      ejamit(testpoints_10, radius = 1,
-             quiet = TRUE, silentinteractive = TRUE,
-             include_ejindexes = TRUE)
-    ) # include_ejindexes = FALSE was the default but we want to test with them included
+    suppressMessages(  suppressWarnings({
+      ejamitoutnow <- try(
+        ejamit(testpoints_10, radius = 1,
+               quiet = TRUE, silentinteractive = TRUE,
+               include_ejindexes = TRUE)
+      ) # include_ejindexes = FALSE was the default but we want to test with them included
     }))
   }
+  ################################################################################### #
+
   # NOTE THE DEFAULT VALUES OF ejamit() !
 
 } else {
@@ -156,8 +91,8 @@ if (exists("ejamit") & exists("blockgroupstats") & exists("testpoints_10")) {
   }
 }
 
-############################### #
-## Create some test cases we can use for inputs error checking: ####
+################################# # ################################# #
+# Create some test cases we can use for inputs error checking: ####
 
 bad_numbers <- list(
   num0len          = numeric(0L),  # these might be OK
@@ -192,7 +127,96 @@ bad_numbers <- list(
 #   )
 # x
 # rm(x)
-############################### #
+############################### ################################ #
+
+# helpers to check map functions ####
+
+# these 2 got used in some test files:
+
+map2popups <- # popups_from_leaflet <-
+  function(mymap) {
+    popup_data_where = which(sapply((mymap$x$calls[[2]])$args, function(z) (is.atomic(z) & is.character(z))) )
+    ((mymap$x$calls[[2]])$args)[[popup_data_where]]
+  }
+map2popups_urls <- # popup_urls_from_popups <-
+  function(mymap) {
+    popups_html <- map2popups(mymap)
+    if (!all(
+      grepl(".*href=\"([^<|\"]*)\".*",    popups_html   )
+    )) {
+      stop("cannot find URLs in popups")
+    }
+    # </a><br>
+    gsub(".*href=\"([^<|\"]*)\".*", "\\1", popups_html )
+  }
+############# #
+
+# these others were used only below:
+
+if (FALSE) {
+  map2sitetype <- function(mymap) {
+
+    # mymap_latlon$x$calls[[2]]$method
+    # [1] "addCircles"
+    # >  mymap_shp$x$calls[[2]]$method
+    # [1] "addPolygons"
+
+    meth = mymap$x$calls[[2]]$method
+    if (meth == "addCircles") {
+      return("latlon")
+    } else {
+      return("shp")
+    }
+  }
+  map2latlon <-
+    # latlon_from_leaflet_map <-
+    function(mymap) {
+      sitetype = map2sitetype(mymap)
+
+      if (sitetype == "latlon") {
+        # points map case:
+        lat = ((mymap$x$calls[[2]])$args)[[1]]
+        lon = ((mymap$x$calls[[2]])$args)[[2]]
+        pts = data.frame(lat=lat, lon = lon)
+        # plot(pts)
+      } else {
+        # polygon map case:
+        pts = ( (((mymap$x$calls[[2]])$args)[[1]])[1][[1]][[1]][[1]])
+        names(pts) <- c("lon", "lat")
+        # plot(pts); polygon(pts)
+      }
+      return(pts)
+    }
+  map2viewdata =   function(mymap) {
+    print(mymap)
+    mypops <- map2popups(mymap)
+    cat("1st popup html text: \n\n")
+    print(mypops[1])
+    htmltools::html_print(shiny::HTML(mypops[1]), viewer = browseURL)
+    cat("\n")
+    myurls <- map2popups_urls(mymap)
+    print(cbind(myurls))
+    cat("\n")
+    mypts  <- map2latlon(mymap)
+    print(head(mypts))
+    cat("\n")
+    plot(mypts)
+    if (map2sitetype(mymap) != "latlon"){
+      polygon(mypts)
+    }
+    return(myurls)
+  }
+
+
+  mymap_latlon <- ejam2map(testoutput_ejamit_10pts_1miles,  launch_browser = F)
+  mymap_shp    <- ejam2map(testoutput_ejamit_fips_counties, launch_browser = F)
+
+  map2viewdata(mymap_shp)
+
+  map2viewdata(mymap_latlon)
+
+}
+################################# # ################################# #
 
 # >>> cleanup after testing?? ####
 # # Run after all tests
@@ -203,26 +227,23 @@ bad_numbers <- list(
 # withr::defer(cleanup(), teardown_env())
 
 
+#  __________________________________ ####
+# ~ ####
+################################# # ################################# #
 
-#############################################################################  #
-## Notes: to profile parts of the shiny app for performance, etc.
-## see shinytest2 package, and see profiler:
-# shiny::callModule(profvis_server, "profiler")
-## and also see  /EJAM/tests/testthat/test-ui_and_server.R
-## and see  https://shiny.posit.co/r/articles/improve/debugging/
-## etc.
-############################### #
+#  shinytest2_webapp_functionality() will TEST WEB APP UI FUNCTIONALITY  ####
 
+# ~ ####
 # get function related to testing app functionality using shinytest2 package
 # presumes we are in source pkg root folder !!
-### *** note this below is just a copy paste of the contents of this file,
+### *** note this below is just a copy paste of the contents of the file shinytest2_webapp_functionality.R
 ## which was not easy to source from here, so be careful the copies are identical or clean up this approach)
 
-# source("./tests/app-functionality.R")
+# source("./tests/shinytest2_webapp_functionality.R")
 
 # This is for testing web app functionality
 
-main_shinytest <- function(test_category) {
+shinytest2_webapp_functionality <- function(test_category) {
 
   test_snap_dir <- glue::glue("{normalizePath(testthat::test_path())}/_snaps/{platform_variant()}/{test_category}-functionality/")
 
@@ -519,3 +540,5 @@ main_shinytest <- function(test_category) {
     shinytestLogMessage("finished test")
   })
 }
+
+################################# # ################################# #

@@ -68,8 +68,9 @@ ability to specify ACS variables and formulas to obtain and calculate
 new indicators on the fly. This could first be a set of functions
 available for use in R and could subsequently be made available for use
 through the web app interface. See preliminary work such as the
-following: `ACSdownload::get_acs_new()` as a way to obtain Census ACS
-demographics,
+following:
+[`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html)
+as a way to obtain Census ACS demographics,
 [`acs_bybg()`](https://ejanalysis.github.io/EJAM/reference/acs_bybg.md)
 examples of another way to obtain data and then using ACS raw data to
 calculate indicators,

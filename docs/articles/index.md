@@ -9,6 +9,11 @@ EJSCREEN Indicators & Reports
 
   EJSCREEN Documentation
 
+- [EJScreen Indicators and Map
+  Descriptions](https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.md):
+
+  EJScreen Indicators and Map Descriptions
+
 ### The EJAM Web App
 
 Overview for EJAM Users

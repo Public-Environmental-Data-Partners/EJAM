@@ -1,1 +1,1 @@
-main_shinytest("shp-zip")
+shinytest2_webapp_functionality("shp-zip")

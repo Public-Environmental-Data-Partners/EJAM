@@ -3,6 +3,7 @@
 ## EJAM 2.32.7 (January 2026)
 
 - Bug fixes:
+
   - Fixed a bug where the community report in version 2.32.6.003
     incorrectly showed results rounded to zero decimal places. The bug
     was in
@@ -16,50 +17,81 @@
     show a very slightly different point and population count, for
     example, for some sites, versus what was intended.
   - Fixed various other/ misc small issues.
-- Revisions to Community Report and Multisite Report header and footer
-  - Report footer edited, and can be customized now via
+
+- Improved the Community Report, Multisite Report, Spreadsheet
+
+  - Report footer was edited, and can be customized now via
     [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
-  - Report Title revised: FIPS place name shown in header, lat/lon
+  - Report Title was revised: FIPS place name shown in header, lat/lon
     coordinates shown in 1-site report header, 1-site vs multisite named
     differently, says “EJSCREEN”” not “EJAM” in header as new defaults.
   - Analysis Title (on reports) revised also
-  - Report Footer revised (new params in
+  - Report Footer was revised (new params in
     [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
     now define footer in community report, via new
     [`generate_report_footer()`](https://ejanalysis.github.io/EJAM/reference/generate_report_footer.md)
     helper)
-- Multisite report is now rendered as html file automatically as soon as
-  results are ready (and if analysis title is changed afterwards), so it
-  will be available immediately if/when a user decides to download it.
-  And spreadsheet download may be faster, as the server now does not
-  have to re-render report for use in spreadsheet.
-- Multisite report and spreadsheet download buttons disabled until each
-  is ready.
-- Spreadsheet file is now created automatically when results are done,
-  so it will be available immmediately if/when a user decides to
-  download it.
-- Client side user’s timezone is now used by shiny app to use the
-  correct date for report footer. Otherwise a report run late in the day
-  might incorrectly say it was created the next day if the app is
-  running on a server in a timezone east of the user, for example.
-- Renamed
-  [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
-  parameters (in.analysis_title changed to analysis_title) to be
-  consistent with
-  [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
-  parameter, or to simplify (react.v1_summary_plot changed to
-  report_plot).
-- Other misc changes
-- Updated text in README
-- Updated text in the [Future
-  Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html)
-  and other vignettes/articles.
-- [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
-  has new parameter aliases: “pts” is short for “sitepoints”, “shp” is
-  short for “shapefile”, “analysis_title” or “default_analysis_title”
-  will set analysis title in report header, and “report_title” or
-  “default_report_title” will set overall title in topmost part of
-  report header.
+  - Multisite report is now rendered as html file automatically as soon
+    as results are ready (and if analysis title is changed afterwards),
+    so it will be available immediately if/when a user decides to
+    download it. And spreadsheet download may be faster, as the server
+    now does not have to re-render report for use in spreadsheet.
+  - Multisite report and spreadsheet download buttons now disabled until
+    each is ready.
+  - Spreadsheet file is now created automatically when results are done,
+    so it will be available immmediately if/when a user decides to
+    download it.
+  - Client side user’s timezone is now used by shiny app to use the
+    correct date for report footer. Otherwise a report run late in the
+    day might incorrectly say it was created the next day if the app is
+    running on a server in a timezone east of the user, for example.
+
+- Raised some limits on number of sites one can upload, map, analyze
+
+  - Number of uploaded points
+    - cap was 5,0000 (or 10,000 via advanced tab)
+    - cap now 10,000 (or 35,000 via advanced tab) Now just omits 8111
+      Automotive Repair and Maintenance (58,132 sites) and a few overly
+      broad groups like “Manufacturing”
+  - Number of selected points based on NAICS, etc.
+    - cap was 5,0000 (or 10,000 via advanced tab)
+    - cap now 10,000 (or 35,000 via advanced tab)
+  - Number of points it will map
+    - cap was 5,0000 (or 15,000 via advanced tab)
+    - no change
+  - Number of polygons it will map
+    - cap was 159 (or 254 via advanced tab)
+    - no change e.g., TX has 254 counties, but no other state exceeds
+      159 counties
+  - Number of sites you can analyze
+    - cap was 10,000 (or 15,000 via advanced tab)
+    - cap now 10,000 (or 35,000 via advanced tab)
+  - Number of sites shown in table of all the sites one per row
+    - cap was 1,000 (or 5,000 via advanced tab)
+    - no change
+  - Size of uploaded file
+    - cap was 50 MB (or 350 MB via advanced tab)
+    - no change
+
+- Other changes:
+
+  - Updated text in README
+  - Updated text in the [Future
+    Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html)
+    and other vignettes/articles.
+  - Renamed
+    [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+    parameters (in.analysis_title changed to analysis_title) to be
+    consistent with
+    [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+    parameter, or to simplify (react.v1_summary_plot changed to
+    report_plot).
+  - [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+    has new parameter aliases: “pts” is short for “sitepoints”, “shp” is
+    short for “shapefile”, “analysis_title” or “default_analysis_title”
+    will set analysis title in report header, and “report_title” or
+    “default_report_title” will set overall title in topmost part of
+    report header.
 
 ## EJAM 2.32.6.003 (November 2025)
 

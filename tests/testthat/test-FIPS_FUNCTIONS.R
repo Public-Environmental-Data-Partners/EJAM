@@ -1491,16 +1491,16 @@ test_that("negative, decimal, space, non-digit returns NA", {
 #  meant to only add one zero at most, to create state-codes
 # now it will return NA if the fips <1 or >78 (largest possible 2digit number code)
 
-test_that('1 digit', {
+test_that('just 1 digit gets leading 0', {
   expect_no_warning({val <- fips_lead_zero("1", quiet = FALSE)})
   expect_equal(val, "01")
   expect_no_warning({val <- fips_lead_zero(1, quiet = FALSE)})
   expect_equal(val, "01")
 
   expect_no_warning({val <- fips_lead_zero("0", quiet = FALSE)}) # invalid but does not warn
-  expect_equal(val, NA ) # "00") # now returns NA in this case
+  expect_equal(val, NA_character_ ) # "00") # now returns NA in this case
   expect_no_warning({val <- fips_lead_zero(0, quiet = FALSE)})
-  expect_equal(val, NA) # now returns NA in this case
+  expect_equal(val, NA_character_) # now returns NA in this case
 })
 #################### # #################### #
 # test with 2 digits

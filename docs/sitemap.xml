@@ -16,6 +16,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/articles/dev-update-documentation.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/dev-update-package.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/distances.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/ejscreen.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/index.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/articles/installing.html</loc></url>
@@ -28,28 +29,45 @@
 <url><loc>https://ejanalysis.github.io/EJAM/copilot-instructions.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/index.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/news/index.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/EJAM 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/EJAM.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/NAICS 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/NAICS.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/SIC 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/SIC.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/acs_bybg 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/acs_bybg.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/acs_bycounty 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/acs_bycounty.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/acsendyear 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/acsendyear.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table_goodnames 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/address_from_table_goodnames.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/api_run 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/api_run.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/app_run_EJAM 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_run_EJAM.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/app_server 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_server.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/app_ui 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/app_ui.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/area_sqmi.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/ask_number 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/ask_number.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/attributes2 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/attributes2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/avg.in.us.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/batch.clean.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/batch.summarize 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/batch.summarize.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgej.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgid2fips.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgid_from_blockid.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/bgpts 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgpts.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/blockgroupstats.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/blockid2fips.html</loc></url>
@@ -64,6 +82,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_byformula.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_counties_from_bg.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_ejam.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calc_ratio_columns.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/calctype.html</loc></url>
@@ -74,8 +93,10 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/colMins2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter_summary.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter_summary_all 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter_summary_all.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum_pct 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum_pct.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/colcounter_summary_pct.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/convert_units.html</loc></url>

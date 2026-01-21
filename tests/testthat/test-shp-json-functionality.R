@@ -1,1 +1,1 @@
-main_shinytest("shp-json")
+shinytest2_webapp_functionality("shp-json")

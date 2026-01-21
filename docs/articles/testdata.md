@@ -280,4 +280,4 @@ Datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.md)
 for more information on these.
 
 Also see [reference documentation for each
-dataset](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-).
+dataset](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-).

@@ -1,1 +1,1 @@
-main_shinytest("NAICS")
+shinytest2_webapp_functionality("NAICS")

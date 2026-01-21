@@ -65,7 +65,7 @@ jobs:
         run: |
           library(shinytest2)
           library(EJAM)
-          source("tests/app-functionality.R")
+          source("tests/shinytest2_webapp_functionality.R")
           test_app(".", filter="FIPS-shiny-functionality")
         shell: Rscript {0}
 
@@ -73,7 +73,7 @@ jobs:
         run: |
           library(shinytest2)
           library(EJAM)
-          source("tests/app-functionality.R")
+          source("tests/shinytest2_webapp_functionality.R")
           test_app(".", filter="NAICS-shiny-functionality")
         shell: Rscript {0}
 

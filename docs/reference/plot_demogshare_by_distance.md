@@ -50,8 +50,7 @@ plot_demogshare_by_distance(
 
 - ...:
 
-  passed to
-  [`plot()`](https://r-spatial.github.io/sf/reference/plot.html)
+  passed to [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
 
 ## Value
 

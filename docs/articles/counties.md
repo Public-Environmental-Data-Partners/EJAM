@@ -8,7 +8,7 @@ particularly how many counties have a large number of block groups and
 residents.
 
 *Note there are also [guides to using EJAM in R for County/FIPS
-analysis](https://ejanalysis.github.io/EJAM/articles/analyzing.html#fips-codes)
+analysis](https://ejanalysis.github.io/EJAM/articles/articles/analyzing.html#fips-codes)
 and [reference documents on relevant R
 functions](https://ejanalysis.github.io/EJAM/reference/index.html#specify-counties-etc-)
 and [county-related test

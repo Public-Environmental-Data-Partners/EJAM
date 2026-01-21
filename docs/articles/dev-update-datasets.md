@@ -74,12 +74,12 @@ EJAM relies on datasets mostly stored in the package itself or in a
 separate, data-related repository:
 
 - Datasets stored within the EJAM package (.rda files):
-  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
+  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
   and [access to data
   files](https://github.com/ejanalysis/EJAM/tree/main/data)
 
 - Datasets used by EJAM but stored separately (large .arrow files):
-  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
+  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
   and [access to data
   files](https://github.com/ejanalysis/ejamdata/tree/main/data)
 
