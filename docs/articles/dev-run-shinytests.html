@@ -42,8 +42,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
     <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
@@ -104,8 +105,9 @@
 <h2 id="dev-environment">Dev Environment<a class="anchor" aria-label="anchor" href="#dev-environment"></a>
 </h2>
 <p>If you are successfully running the app, you should have all the
-necessary packages. If you don’t, those packages should live in the
-<code>DESCRIPTION</code> file. Some dev-related packages to note:</p>
+necessary packages, or at least those in Imports or Suggests of the
+<code>DESCRIPTION</code> file – the diffviewer package is not there,
+e.g. Some dev-related packages to note:</p>
 <ul>
 <li>
 <strong><a href="https://rstudio.github.io/shinytest2/" class="external-link">shinytest2</a></strong> - <a href="https://rstudio.github.io/shinytest2/" class="external-link">shinytest2</a> is the key R
@@ -114,11 +116,16 @@ package helping to test shiny web app functionality</li>
 <strong><a href="https://diffviewer.r-lib.org" class="external-link">diffviewer</a></strong> - <a href="https://diffviewer.r-lib.org" class="external-link">diffviewer</a> helps visually
 compare 2 files</li>
 <li>
-<strong>Pandoc</strong> – Comes bundled with RStudio</li>
+<strong>Pandoc</strong> and <strong>knitr</strong> – The Pandoc
+software comes bundled with RStudio, and is a “swiss-army knife” for
+document conversion. There also is a function called [knitr::pandoc()]
+that is a wrapper that calls Pandoc to convert docs to HTML, PDF,
+etc.</li>
 <li>
-<strong>PhantomJS</strong>? – Used to be needed for downloads
-(installed with <code><a href="http://wch.github.io/webshot/reference/install_phantomjs.html" class="external-link">webshot::install_phantomjs()</a></code>). But
-note:</li>
+<strong>PhantomJS</strong> maybe – This used to be needed for
+downloads (and was installed with
+<code><a href="http://wch.github.io/webshot/reference/install_phantomjs.html" class="external-link">webshot::install_phantomjs()</a></code>). But note this newer
+info:</li>
 </ul>
 <p>NOTE FROM <a href="https://rstudio.github.io/shinytest2/articles/z-migration.html" class="external-link uri">https://rstudio.github.io/shinytest2/articles/z-migration.html</a>:
 - <a href="https://rstudio.github.io/shinytest2/" class="external-link">shinytest2</a> is the successor to
@@ -160,13 +167,13 @@ cause test failures)</li>
 <h2 id="ejams-shinytest2-folder-structure">EJAM’s shinytest2 Folder Structure<a class="anchor" aria-label="anchor" href="#ejams-shinytest2-folder-structure"></a>
 </h2>
 <pre class="plaintext"><code>tests/
-  ├── testthat.R (modified for shinytest2)
-  ├── app-functionality.R
+  ├── testthat.R (modified to launch the shinytest2 web app functionality tests)
+  ├── shinytest2_webapp_functionality.R (function used to run the tests)
   └── testthat/
-      ├── setup-shinytest2.R
+      ├── setup-shinytest2.R (basic setup steps before all unit testing)
       ├── test-[DATA TYPE]-functionality.R (e.g. test-FIPS-functionality.R)
       └── _snaps/
-          ├── [OS, e.g. linux]-[R Version, e.g. 4.4]/
+          ├── [OS, e.g. linux]-[R Version, e.g. 4.5]/
           │   ├── FIPS-shiny-functionality/
           │   │   ├── .json, .png, .xlsx, .html files
           │   ├── shapefile-shiny-functionality/
@@ -192,10 +199,11 @@ file.</li>
 <strong><code>testthat/setup-shinytest2.R</code></strong> – Loads
 <code>global.R</code> and app scripts into the testing environment.</li>
 <li>
-<strong><code>app-functionality.R</code></strong> – Contains generic
-function, <code>main_shinytest()</code>, that defines app interactions
-for testing, running tests for multiple data types (FIPS, shapefile,
-latlon, NAICS, etc.).</li>
+<strong><code>shinytest2_webapp_functionality.R</code></strong> –
+Contains generic function,
+<code>shinytest2_webapp_functionality()</code>, that defines app
+interactions for testing, running tests for multiple data types (FIPS,
+shapefile, latlon, NAICS, etc.).</li>
 <li>
 <strong><code>testthat/test-[DATA TYPE]-functionality.R</code></strong>
 – Simple call to the main app functionality function, specifying the
@@ -230,8 +238,9 @@ accordingly.</p>
 <div class="section level3">
 <h3 id="direct-updates">Direct Updates<a class="anchor" aria-label="anchor" href="#direct-updates"></a>
 </h3>
-<p>Modify <code>app-functionality.R</code> to add new interactions with
-the app for the shinytest to test.</p>
+<p>Modify <code>shinytest2_webapp_functionality.R</code> to add new
+interactions with the app for the shinytest to test. Note there was a
+copy of that function in setup.R as well!</p>
 </div>
 <div class="section level3">
 <h3 id="using-shinytest2record_test-to-generate-testing-code">Using <code>shinytest2::record_test()</code> to generate testing
@@ -310,7 +319,7 @@ snapshots.</p>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">snapshot_accept</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Optionally, can accept them interactively when reviewing</p>
+<p>Optionally, can accept them interactively when reviewing.</p>
 </div>
 </div>
 <div class="section level2">
@@ -323,9 +332,9 @@ snapshots.</p>
 <li>Use <code>save_log()</code> to inspect logs.</li>
 <li>Add <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message()</a></code>, or
 <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning()</a></code> statements in
-<code>app-functionality.R</code>.</li>
+<code>shinytest2_webapp_functionality.R</code>.</li>
 <li>Run, line-by line or in chunks, the main shinytest code in
-<code>app-functionality.R</code> beginning with:</li>
+<code>shinytest2_webapp_functionality.R</code> beginning with:</li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="va">test_category</span> <span class="op">&lt;-</span> <span class="st">"NAICS-functionality"</span></span>
