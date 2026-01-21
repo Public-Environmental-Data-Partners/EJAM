@@ -433,6 +433,7 @@ reference:
   - url_county_equityatlas
   - url_state_equityatlas
   - url_naics.com
+  - url_ejscreentechdoc
 - title: "Utilities handling variable names"
   desc: "Utilities to handle variable names, indicator metadata, formulas, etc."
   contents:

@@ -1429,3 +1429,16 @@ url_github_preview = function(ghurl = NULL,
 
 }
 ######################################################################### #
+
+#' utility to get URL of .pdf of EJSCREEN Technical Documentation
+#'
+#' @returns URL string
+#'
+#' @export
+#'
+url_ejscreentechdoc = function() {
+
+  "https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf"
+
+  # could relocate it at some point to serve as normal pdf doc from a web server
+}

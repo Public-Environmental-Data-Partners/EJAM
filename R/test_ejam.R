@@ -77,6 +77,14 @@ test_ejam <- function(ask = TRUE,
                       mydir = NULL
 ) {
 
+  # prevent warning/error in R CMD check about supposedly undefined global variables in data.table code
+  utils::globalVariables(c(
+    "total", "passed",  "testgroup",
+    "flagged", "flagged_byfile", "flagged_bygroup",
+    "failed", "failed_byfile", "failed_bygroup",
+    "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
+    "untested_cant", "untested_skipped", "warned"
+  ))
   x <- offline_cat(); if (x) {stop("cannot use test_ejam() if offline")}
 
   if (ask) {
