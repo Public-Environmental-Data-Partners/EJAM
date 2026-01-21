@@ -192,7 +192,30 @@ Optionally, can accept them interactively when reviewing
   [`message()`](https://rdrr.io/r/base/message.html), or
   [`warning()`](https://rdrr.io/r/base/warning.html) statements in
   `app-functionality.R`.
-- Run, line-by line or in chunks, the main shinytest2 code 
+- Run, line-by line or in chunks, the main shinytest code in
+  `app-functionality.R` beginning with:
+
+``` r
+  test_category <- "NAICS-functionality"
+  test_snap_dir <- glue::glue("{normalizePath(testthat::test_path())}/_snaps/{platform_variant()}/{test_category}-functionality/")
+
+  outputs_to_remove <- c('an_leaf_map')
+    
+  app <- AppDriver$new(
+    variant = platform_variant(),
+    name = test_category, 
+    seed=12345, 
+    load_timeout=2e+06,
+    width = 1920,
+    screenshot_args = FALSE,
+    expect_values_screenshot_args = FALSE,
+    height = 1080,
+    options = list(
+      shiny.reactlog = TRUE, 
+      shiny.trace = TRUE
+    )
+  )
+```
 
 Then, after running lines or chunks, run `app$get_log()` to view the
 log.
