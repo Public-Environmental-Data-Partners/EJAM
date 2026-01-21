@@ -31,7 +31,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/news/index.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/EJAM 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/EJAM.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/NAICS 2.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/NAICS 3.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/NAICS.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/SIC 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/SIC.html</loc></url>
@@ -62,7 +62,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/batch.clean.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/batch.summarize 2.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/batch.summarize.html</loc></url>
-<url><loc>https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020 2.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020 3.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgej.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/bgid2fips.html</loc></url>
@@ -616,6 +616,7 @@
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_echo_facility.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_ejamapi.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.html</loc></url>
+<url><loc>https://ejanalysis.github.io/EJAM/reference/url_ejscreentechdoc.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_enviromapper.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_frs_facility.html</loc></url>
 <url><loc>https://ejanalysis.github.io/EJAM/reference/url_github_preview.html</loc></url>
