@@ -17,7 +17,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     if: ${{ !github.event.repository.private }}
-    name: test-shiny-web-app-functionality
+    name: test-webapp-functionality
 
     strategy:
       fail-fast: false
@@ -45,9 +45,6 @@ jobs:
           which pandoc
           pandoc --version
 
-
-
-
       - name: Install GitHub CLI
         run: sudo apt-get install gh
 
@@ -56,26 +53,61 @@ jobs:
           remotes::install_local(".",force=T)
         shell: Rscript {0}
 
-      - name: Install PhantomJS
+      - name: Load EJAM Package
         run: |
-          webshot::install_phantomjs()
+          require(EJAM)
         shell: Rscript {0}
 
-      - name: Run FIPS Test
+      - name: Load testthat and shinytest2 packages
         run: |
-          library(shinytest2)
-          library(EJAM)
-          source("tests/shinytest2_webapp_functionality.R")
-          test_app(".", filter="FIPS-shiny-functionality")
+          require(shinytest2)
+          require(testthat)
+          # require(golem) # might not be essential
         shell: Rscript {0}
 
-      - name: Run NAICS Test
+################## #
+
+      - name: FIPS UI test
         run: |
-          library(shinytest2)
-          library(EJAM)
-          source("tests/shinytest2_webapp_functionality.R")
-          test_app(".", filter="NAICS-shiny-functionality")
+          shinytest2::test_app(".", filter="FIPS-functionality")
         shell: Rscript {0}
+
+      - name: FRS UI test
+        run: |
+          shinytest2::test_app(".", filter="FRS-functionality")
+        shell: Rscript {0}
+
+      - name: latlon UI test
+        run: |
+          shinytest2::test_app(".", filter="latlon-functionality")
+        shell: Rscript {0}
+
+      - name: NAICS UI test
+        run: |
+          shinytest2::test_app(".", filter="NAICS-functionality")
+        shell: Rscript {0}
+
+      - name: shp-gdb-zip UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-gdb-zip-functionality")
+        shell: Rscript {0}
+
+      - name: shp-json UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-json-functionality")
+        shell: Rscript {0}
+
+      - name: shp-unzip UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-unzip-functionality")
+        shell: Rscript {0}
+
+      - name: shp-zip UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-zip-functionality")
+        shell: Rscript {0}
+
+################## #
 
       - name: Upload test results
         if: failure()

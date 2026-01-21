@@ -64,11 +64,11 @@ test_ejam <- function(ask = TRUE,
                       y_runall  = TRUE,
                       y_runsome = FALSE, # if T, need to also create partial_testlist
                       run_these = NULL,  ## or...
-                      # run_these = c("test_fips", "test_naics", "test_frs", "test_latlon", "test_maps",
-                      #   "test_shape", "test_getblocks", "test_fixcolnames", "test_doag",
-                      #   "test_ejamit", "test_misc",  "test_mod", "test_app",
-                      #   "test_test", "test_golem"),
-                      skip_these = c(  "app"),
+                      # run_these = c("fips", "naics", "frs", "latlon", "maps",
+                      #   "shape", "getblocks", "fixcolnames", "doag",
+                      #   "ejamit", "misc",  "mod", "webapp",
+                      #   "test", "golem"),
+                      skip_these = c(  "webapp"),
 
                       y_stopif = FALSE,
                       y_seeresults = TRUE,
@@ -110,10 +110,10 @@ x <- EJAM:::test_ejam(
   y_runall     = TRUE,
   y_runsome    = FALSE, # if T, need to also create partial_testlist
   run_these = NULL,  # or some of these:
-  # run_these = c("test_fips", "test_naics", "test_frs", "test_latlon", "test_maps",
-  #   "test_shape", "test_getblocks", "test_fixcolnames", "test_doag",
-  #   "test_ejamit", "test_misc", "test_mod", "test_app",
-  #   "test_test", "test_golem"),
+  # run_these = c("fips", "naics", "frs", "latlon", "maps",
+  #   "shape", "getblocks", "fixcolnames", "doag",
+  #   "ejamit", "misc", "mod", "webapp",
+  #   "test", "golem"),
 
   y_stopif     = FALSE, # stop as soon as problem is hit?
   y_seeresults = TRUE,
@@ -303,15 +303,16 @@ x <- EJAM:::test_ejam(
         "test-mod_specify_sites.R",
         "test-mod_view_results.R"
       ),
-      test_app = c( # not to be confused with shinytest2::test_app() !
-        "test-ui_and_server.R",
-        "test-FIPS-functionality.R",
-        "test-latlon-functionality.R",
-        "test-NAICS-functionality.R",
-        "test-shp-gdb-zip-functionality.R",
-        "test-shp-json-functionality.R",
-        "test-shp-unzip-functionality.R",
-        "test-shp-zip-functionality.R"
+      test_webapp = c(
+        "test-webapp-ui_and_server.R",
+        "test-webapp-FIPS-functionality.R",
+        "test-webapp-FRS-functionality.R",
+        "test-webapp-latlon-functionality.R",
+        "test-webapp-NAICS-functionality.R",
+        "test-webapp-shp-gdb-zip-functionality.R",
+        "test-webapp-shp-json-functionality.R",
+        "test-webapp-shp-unzip-functionality.R",
+        "test-webapp-shp-zip-functionality.R"
       ),
       test_test = c(
         # "test-test.R", #   fast way to check this script via  biglist <- EJAM:::test_ejam(ask = FALSE, y_runsome = T, run_these = 'test')
@@ -323,10 +324,6 @@ x <- EJAM:::test_ejam(
         "test-golem_utils_ui.R"      # not used
       )
     )
-    # c("test_fips", "test_naics", "test_frs", "test_latlon", "test_maps",
-    #   "test_shape", "test_getblocks", "test_fixcolnames", "test_doag",
-    #   "test_ejamit", "test_misc", "test_mod", "test_app",
-    #   "test_test", "test_golem")
 
     ########################################## #
     # groupnames <- names(testlist)
@@ -412,7 +409,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # 11        test_misc            misc         7
       #
       # 13         test_mod             mod         3
-      # 14         test_app             app         8
+      # 14         test_webapp       webapp         8
       # 15        test_test            test         2
       # 16       test_golem           golem         2
       # fnames = unlist(testlist)
@@ -497,17 +494,28 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ############################ #      ############################ #      ############################ #
       addthesenotrun = data.table(
         file = c(
-          'test-latlon-functionality.R',
-          'test-shp-gdb-zip-functionality.R',
-          'test-shp-json-functionality.R',
-          'test-shp-unzip-functionality.R',
-          'test-shp-zip-functionality.R',
-          'test-FIPS-functionality.R',
-          'test-NAICS-functionality.R',
-          'test-ui_and_server.R'
+          "test-webapp-ui_and_server.R",
+          "test-webapp-FIPS-functionality.R",
+          "test-webapp-FRS-functionality.R",
+          "test-webapp-latlon-functionality.R",
+          "test-webapp-NAICS-functionality.R",
+          "test-webapp-shp-gdb-zip-functionality.R",
+          "test-webapp-shp-json-functionality.R",
+          "test-webapp-shp-unzip-functionality.R",
+          "test-webapp-shp-zip-functionality.R"
+
+          # 'test-webapp-latlon-functionality.R',
+          # 'test-webapp-shp-gdb-zip-functionality.R',
+          # 'test-webapp-shp-json-functionality.R',
+          # 'test-webapp-shp-unzip-functionality.R',
+          # 'test-webapp-shp-zip-functionality.R',
+          # 'test-webapp-FIPS-functionality.R',
+          # 'test-webapp-NAICS-functionality.R',
+          # 'test-webapp-ui_and_server.R'
         ),
         seconds_byfile = c(
-          120,157,156,160,163,134,115,3
+          3, 134, 150, 120, 115, 157, 156, 160, 163
+          # 120,157,156,160,163,134,115,3
         )
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
@@ -573,7 +581,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # 13:        test_misc             156             2.6
       # 14:      test_ejamit             209             3.5
       # 15:   test_getblocks             328             5.5
-      # 16:         test_app            1008            16.8  # web app functionality
+      # 16:         test_webapp            1008            16.8  # web app functionality
 
       ########################### #  ########################################## #
 
@@ -672,7 +680,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
           run_these = rstudioapi::showPrompt(
             "WHICH TEST GROUPS TO RUN? Enter a comma-separated list like  maps,frs  (or Esc to specify none)",
             paste0(shortgroupnames, collapse = ",")
-            #e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,mod,app"
+            #e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,mod,webapp"
           )
         }
 
@@ -695,7 +703,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               default = ifelse(length(skip_these) > 0,
                                paste0(skip_these, collapse = ","),
                                "")
-              # e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,mod,app"
+              # e.g., "fips,naics,frs,latlon,maps,shape,getblocks,fixcolnames,doag,ejamit,mod,webapp"
             )
             if (is.na(skip_these)) {stop("canceled")}
           }}
