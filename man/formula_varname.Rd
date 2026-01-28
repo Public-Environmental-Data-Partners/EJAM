@@ -19,6 +19,12 @@ utility to check formulas and extract variable names they calculate values for
 \itemize{
 \item \code{\link[=custom_doaggregate]{custom_doaggregate()}} may use \code{\link[=calc_ejam]{calc_ejam()}}
 \item \code{\link[=calc_ejam]{calc_ejam()}} uses \code{\link[=calc_byformula]{calc_byformula()}}
+\item \code{\link[=calc_byformula]{calc_byformula()}} uses \code{\link[=calc_varname_from_formula]{calc_varname_from_formula()}} and maybe source_this_codetext()
+}
+
+\itemize{
+\item \code{\link[=custom_doaggregate]{custom_doaggregate()}} may use \code{\link[=calc_ejam]{calc_ejam()}}
+\item \code{\link[=calc_ejam]{calc_ejam()}} uses \code{\link[=calc_byformula]{calc_byformula()}}
 \item \code{\link[=calc_byformula]{calc_byformula()}} uses \code{\link[=formula_varname]{formula_varname()}} and maybe source_this_codetext()
 }
 }
