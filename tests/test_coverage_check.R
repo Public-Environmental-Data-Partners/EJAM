@@ -123,9 +123,9 @@ test_coverage_check <- function(loadagain = FALSE, quiet = TRUE) {
   func2searchfor = tdat$object[!is.na(tdat$object) & tdat$notes == "cant find testfile of exact name,"]
 
   for (i in seq_along(func2searchfor)) {
-    x = EJAM:::find_in_files(paste0(func2searchfor[i], ""), ignorecomments = TRUE)
+    x = EJAM:::find_in_files(pattern = paste0(func2searchfor[i], ""), path = "./tests/testthat", ignorecomments = TRUE, quiet = T)
     if (length(x) > 0) {
-      y = EJAM:::find_in_files(paste0("test_that.*", func2searchfor[i], ""), ignorecomments = TRUE)
+      y = EJAM:::find_in_files(pattern = paste0("test_that.*", func2searchfor[i], ""), path = "./tests/testthat", ignorecomments = TRUE, quiet = T)
       if (length(y) > 0) {
         tdat$notes[tdat$object %in% func2searchfor[i]] <- paste0("OK? no fname match, but test_that found in ", length(y), " testfile(s)")
       } else {

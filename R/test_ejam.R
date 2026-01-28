@@ -432,7 +432,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     ## note overly long test names ####
     # report on test names that seem too long to be useful
 
-    xx = EJAM:::find_in_files(pattern = "_that[^,]*,", ignorecomments = T, whole_line = FALSE, quiet = T)
+    xx = EJAM:::find_in_files(pattern = "_that[^,]*,", path = "./tests/testthat", ignorecomments = T, whole_line = FALSE, quiet = T)
     xx = lapply(xx, function(y) gsub("t_that\\(", "", y))
     z = (lapply(xx, function(y) cbind(y[nchar(y) > 80])))
     z = z[sapply(z, length) > 0]  ## use sapply for cleaner code
