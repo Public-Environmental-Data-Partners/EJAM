@@ -499,6 +499,11 @@ distances
 - [`acs_bybg()`](https://ejanalysis.github.io/EJAM/reference/acs_bybg.md)
   : download ACS 5year data from Census API, at blockgroup resolution
   (slowly if for entire US)
+- [`acs_table_info()`](https://ejanalysis.github.io/EJAM/reference/acs_table_info.md)
+  : utility to download and print some info about each variable in each
+  ACS 5yr table
+- [`tables_ejscreen_acs`](https://ejanalysis.github.io/EJAM/reference/tables_ejscreen_acs.md)
+  : tables_ejscreen_acs dataset
 - [`avg.in.us`](https://ejanalysis.github.io/EJAM/reference/avg.in.us.md)
   : avg.in.us (DATA) national averages of key indicators, for
   convenience

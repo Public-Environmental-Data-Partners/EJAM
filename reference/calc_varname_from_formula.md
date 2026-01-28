@@ -6,7 +6,7 @@ values for
 ## Usage
 
 ``` r
-formula_varname(myforms)
+calc_varname_from_formula(myforms)
 ```
 
 ## Arguments
@@ -15,6 +15,8 @@ formula_varname(myforms)
 
   see
   [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
+  and
+  [formulas_ejscreen_acs](https://ejanalysis.github.io/EJAM/reference/formulas_ejscreen_acs.md)\$formula
 
 ## Value
 
@@ -31,9 +33,7 @@ a vector as long as myforms input vector
   [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
 
 - [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
-  uses
-  [`calc_varname_from_formula()`](https://ejanalysis.github.io/EJAM/reference/calc_varname_from_formula.md)
-  and maybe source_this_codetext()
+  uses `calc_varname_from_formula()` and maybe source_this_codetext()
 
 &nbsp;
 
@@ -46,11 +46,16 @@ a vector as long as myforms input vector
   [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
 
 - [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
-  uses `formula_varname()` and maybe source_this_codetext()
+  uses
+  [`formula_varname()`](https://ejanalysis.github.io/EJAM/reference/formula_varname.md)
+  and maybe source_this_codetext()
 
 ## Examples
 
 ``` r
-EJAM:::formula_varname(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
-head(cbind(EJAM:::formula_varname(formulas_d), formulas_d))
+EJAM:::calc_varname_from_formula(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
+head(cbind(
+  EJAM:::calc_varname_from_formula(formulas_ejscreen_acs$formula),
+  formulas_ejscreen_acs$formula$formula)
+  )
 ```
