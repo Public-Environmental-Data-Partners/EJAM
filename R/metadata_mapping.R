@@ -62,7 +62,7 @@ metadata_mapping <- list(
   avg.in.us       =	default_metadata,
   statestats      = default_metadata,
   usastats        = default_metadata,
-  high_pctiles_tied_with_min =	default_metadata,
+  high_pctiles_tied_with_min =	default_metadata, ##  NO LONGER USING high_pctiles_tied_with_min ***
 
   # datacreate_bgpts.R
   bgpts =	default_metadata,
