@@ -40,7 +40,7 @@ acs_yr_range <- function(end.year, parens = FALSE) {
 #'
 #' @keywords internal
 #'
-acsendyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_census_has_published = FALSE,
+acs_endyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_census_has_published = FALSE,
                        lag_yrs_endyr_to_census_publishes = 0.9452055, # 1- 20/365
                        lag_yrs_endyr_to_ejscreen = 1.6
                        ) {
@@ -63,39 +63,39 @@ if (guess_census_has_published) {
   # e.g., 2018-2022 ACS was still used until at least mid-2025 and actually it was not updating EJSCREEN after that.
 
   ## tests
-  # acsendyear()
-  # acsendyear(guess_always = TRUE)
-  # acsendyear(Sys.Date(), guess_always = TRUE)
+  # acs_endyear()
+  # acs_endyear(guess_always = TRUE)
+  # acs_endyear(Sys.Date(), guess_always = TRUE)
   #
-  # acsendyear(as.Date("2021-01-01"))
-  # acsendyear(as.Date("2021-01-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2021-01-01"))
+  # acs_endyear(as.Date("2021-01-01"), guess_always = TRUE)
   #
-  # acsendyear("2021-01-01")
-  # acsendyear("2021-01-01", guess_always = TRUE)
+  # acs_endyear("2021-01-01")
+  # acs_endyear("2021-01-01", guess_always = TRUE)
   #
-  # acsendyear("2021")
-  # acsendyear("2021", guess_always = TRUE)
+  # acs_endyear("2021")
+  # acs_endyear("2021", guess_always = TRUE)
   #
-  # acsendyear(as.Date("2025-11-30"), guess_always = TRUE)
-  # acsendyear(as.Date("2025-12-31"), guess_always = TRUE)
+  # acs_endyear(as.Date("2025-11-30"), guess_always = TRUE)
+  # acs_endyear(as.Date("2025-12-31"), guess_always = TRUE)
   #
-  # acsendyear(as.Date("2026-01-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-02-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-03-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-04-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-05-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-06-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-07-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-08-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-09-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-10-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-11-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-12-01"), guess_always = TRUE)
-  # acsendyear(as.Date("2026-12-31"), guess_always = TRUE)
-  # acsendyear(as.Date("2027-01-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-01-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-02-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-03-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-04-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-05-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-06-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-07-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-08-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-09-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-10-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-11-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-12-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2026-12-31"), guess_always = TRUE)
+  # acs_endyear(as.Date("2027-01-01"), guess_always = TRUE)
   #
   #
-  # acsendyear(as.Date("2099-01-01"), guess_always = TRUE)
+  # acs_endyear(as.Date("2099-01-01"), guess_always = TRUE)
 
   if (!guess_always) {
     # if !guess_always, try metadata approach first, and then only if metadata approach fails,

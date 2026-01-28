@@ -259,6 +259,8 @@ reference:
   - bgpts
   - bg_cenpop2020
   - acs_bybg
+  - acs_table_info
+  - tables_ejscreen_acs
   - avg.in.us
   - usastats
   - stateinfo
@@ -462,7 +464,7 @@ reference:
   - testoutput_doaggregate_10pts_1miles
   - testoutput_doaggregate_100pts_1miles
   - testoutput_doaggregate_1000pts_1miles
-  - acsendyear
+  - acs_endyear
   - app_run_EJAM
   - app_server
   - app_ui

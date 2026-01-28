@@ -362,7 +362,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
                                             )[3]
 ) {
 
-  acsendyear_carto_tiger = acsendyear()
+  acs_endyear_carto_tiger = acs_endyear()
 
   # for a vector of  FIPS,
   # was using looped/batched arcgis API to obtain map boundaries of just those census units
@@ -435,7 +435,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
       state = mystates,
       # county =  substr(unique(fips), 3,5), # this function expects county fips to be only the county portion without the 2 state digits
       geometry = TRUE,
-      year = as.numeric(acsendyear_carto_tiger),
+      year = as.numeric(acs_endyear_carto_tiger),
       survey = 'acs5',
       # key = , # API key would go here, e.g. Sys.getenv("CENSUS_API_KEY")
       show_call = TRUE
@@ -455,10 +455,10 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
     ##  popvarname likely but not necessarily the same as pop from fips2pop() which is ACS 5yr from blockgroupstats
     ##  and pop gets added by shapefile_addcols() now via fips2pop()
     #
-    # popvarname = paste0("pop_est_acs5_", substr(acsendyear_carto_tiger, 3, 4))
+    # popvarname = paste0("pop_est_acs5_", substr(acs_endyear_carto_tiger, 3, 4))
     # popvarname = "pop_est" # simpler
     # names(shp) <- gsub("estimate", popvarname, names(shp))
-    # cat("Population estimate", popvarname, "is from B01001_001 in American Community Survey 5yr survey ending", acsendyear_carto_tiger, " \n")
+    # cat("Population estimate", popvarname, "is from B01001_001 in American Community Survey 5yr survey ending", acs_endyear_carto_tiger, " \n")
     # names(shp) <- gsub("moe", "pop_moe", names(shp))
 
     shp <- shp[ , c('NAME', 'FIPS', 'geometry')]
