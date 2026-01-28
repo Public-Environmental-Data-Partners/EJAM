@@ -38,7 +38,7 @@
 # fname_source <- "./inst/plumber/plumber.R"
 ###################################################### #
 # fname_source <- "./inst/plumber/rest_controller_ejam-api.R"
-# source("~/Documents/R PACKAGES/EJAM/inst/plumber/rest_controller_ejam-api.R")
+# source("~/R PACKAGES/EJAM/inst/plumber/rest_controller_ejam-api.R")
 ### source version
 # fname_source <- normalizePath("./inst/plumber/plumber.R")
 ### installed version unless used load_all() after library()
