@@ -99,7 +99,7 @@ with new lat,lon columns</p>
 <span></span>
 <span><span class="co"># same but popups have all the indicators from EJSCREEN</span></span>
 <span><span class="va">myst</span> <span class="op">&lt;-</span> <span class="st">"NY"</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">[</span><span class="va">ST</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">[</span><span class="va">ST</span> <span class="op">==</span> <span class="va">myst</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># add latlon cols by reference:</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">latlon_join_on_bgid</span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
 <span><span class="co"># specify useful labels for the map popups</span></span>
