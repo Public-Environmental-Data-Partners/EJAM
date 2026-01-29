@@ -8,7 +8,7 @@
 # get saved in the data folder when a user installs the package, but they are not part of the package itself per se.
 # seee https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html
 
-#tests/testthat/_snaps/
+tests/testthat/_snaps/
 tests/testthat/_snaps/**/*.png
 # Try ignoring the _snaps folders entirely, since they can
 # take >400 MB for the snapshots created during webapp testing via shinytest2 package
