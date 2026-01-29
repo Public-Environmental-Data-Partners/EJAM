@@ -84,7 +84,7 @@ If you're not sure how to code new UI interactions directly, run `shinytest2::re
 
 ### Using `shiny::exportTestValues(name = value)`
 
-Throughout the app code, `shiny::exportTestValues()` can be used to store values from reactive expressions or other items that are not inputs or outputs and therefore may not be included in the standard snapshots. Then, in the shinytests, you can specify `export=[name]` to include in the snapshot the export named "name" that you specified in the code, or `export=TRUE` to include all exports.
+Throughout the app code, `shiny::exportTestValues()` can be used to store values from reactive expressions or other _items that are not inputs or outputs_ and therefore may not be included in the standard snapshots. Then, in the shinytests, you can specify `export=[name]` to include in the snapshot the export named "name" that you specified in the code, or `export=TRUE` to include all exports.
 
 ## Running Tests Locally
 
@@ -94,7 +94,7 @@ The primary method for running the shinytests (other than doing so via GitHub Ac
 shinytest2::test_app(".", filter="-functionality")
 ```
 
-However, it is strongly recommended during development to run the entire `testthat.R` which runs `remotes::install_local()` to ensure your development code is the one tested. This is because shinytest2 automatically references the installed version of a package.
+However, it is strongly recommended during development to source() the entire `testthat.R` which runs `remotes::install_local()` to ensure your development code is the one tested. This is because shinytest2 automatically references the installed version of a package.
 
 
 ## GitHub Actions Integration
@@ -150,7 +150,7 @@ Generally, if you test locally and update snapshots accordingly, GHA should pass
 ## Current State of Tests
 
 -   If the shinytests are failing, it is likely because snapshots have not been updated locally and pushed after recent changes.
--   The version of R used for testing was 4.4.1 as of early 2025, and should reflect the version used in your development environment, to ensure consistency as much as possible.
+-   The versions of R and shiny and shinytest2 used for testing also should be noted as potentially affecting tests.
 
 ## Resources
 

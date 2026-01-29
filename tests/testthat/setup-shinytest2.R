@@ -1,8 +1,7 @@
-unlink("tests/shinytestlog.txt") # deletes this file if it exists
 
-# shinytest2::load_app_env()
-## That line was causing a problem
-## That function normally Executes all ./R files and global.R into the current environment. This is useful when wanting access to functions or values created in the ./R folder for testing purposes.
+cat("loading the function shinytest2_webapp_functionality() \n")
+cat("see also the article/vignette built from dev-run-shinytests.Rmd \n")
+unlink("tests/shinytestlog.txt") # deletes this file if it exists
 
 ## Function that tests web app UI functionality
 
@@ -36,6 +35,7 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     # Define helper functions  ####
 
+    ################## #
     customExpectValues <- function(inputs = NULL,
                                    outputs = outputs_to_keep,
                                    exports = NULL,
@@ -43,7 +43,6 @@ shinytest2_webapp_functionality <- function(test_category) {
       # remove an_leaf_map. It's too big. We can capture part of it with exportTestValues
       all_output_names <- names(app$get_values(output=TRUE)$output)
       outputs_to_keep <- setdiff(all_output_names, outputs_to_remove)
-
       app$wait_for_idle(timeout = 20000)
       app$expect_values(
         name = name,
@@ -52,16 +51,16 @@ shinytest2_webapp_functionality <- function(test_category) {
         export = if(is.null(exports)) TRUE else exports
       )
     }
-
+    ################## #
     shinytestLogMessage <- function(msg) {
       # prints the message directly to the console and to a txt file
       # in case the session crashes
-      logmsg <- paste0(test_category, ": ", msg, "\n")
+      logmsg <- paste0(test_category, ": ", Sys.time(), ": ", msg, "\n")
       cat(logmsg)
       # write(logmsg,file="shinytestlog.txt",append=TRUE)
     }
-
-    custom_binary_download <- function(outputId) {
+    ################## #
+    custom_binary_xlsx_download <- function(outputId) {
       old_path <- paste0(test_snap_dir,test_category,"-results-table.txt")
       new_path <- paste0(test_snap_dir,test_category,"-results-table.new.txt")
       file_exists <- file.exists(old_path)
@@ -71,7 +70,6 @@ shinytest2_webapp_functionality <- function(test_category) {
         shinytestLogMessage(conditionMessage(cond))
         # save_log("EJAM_app_test_post_download.txt")
       })
-
       hash_xlsx_all_sheets(
         download_filepath,
         ifelse(
@@ -80,41 +78,32 @@ shinytest2_webapp_functionality <- function(test_category) {
           old_path
         )
       )
-
-
-      if(file_exists) {
+      if (file_exists) {
         testthat::compare_file_text(old_path, new_path)
       }
     }
-
+    ################## #
     hash_xlsx_all_sheets <- function(file_path, outfile_path) {
       # Get sheet names
       # save_log("EJAM_app_hash_pre_first_readxl.txt")
-
       sheet_names <- readxl::excel_sheets(file_path)
-
       # save_log("EJAM_app_hash_post_first_readxl.txt")
-
       # Read and process each sheet
       sheet_hashes <- sapply(sheet_names, function(sheet) {
         data <- readxl::read_xlsx(file_path, sheet = sheet)
-
         # Convert data frame to CSV-like string (without metadata)
         csv_content <- paste(capture.output(write.csv(data, row.names = FALSE)), collapse = "\n")
-
         # Return the hash of this sheet's content
         digest::digest(csv_content, algo = "sha256")
       })
-
       # Combine all sheet hashes into a single hash
       combined_hash <- digest::digest(paste(sheet_hashes, collapse = ""), algo = "sha256")
-
       fileConn<-file(outfile_path)
       writeLines(combined_hash, fileConn)
       close(fileConn)
       # return(combined_hash)
     }
-
+    ################## #
     save_log <- function(fname) {
       logs <- app$get_logs()
       capture.output(
@@ -187,6 +176,7 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     ########################################################################### #
 
+
     # START ANALYSIS ####
 
     shinytestLogMessage("Click to run analysis"); print("Click to run analysis")
@@ -202,8 +192,8 @@ shinytest2_webapp_functionality <- function(test_category) {
     if (!(test_category %in% c("FIPS", "NAICS"))) {
 
       shinytestLogMessage("go back to Site Selection tab")
-      app$set_inputs(all_tabs = "Site Selection")
-      app$wait_for_idle(timeout = 200000)
+      app$set_inputs(all_tabs = "Site Selection", wait_ = FALSE)
+      app$wait_for_idle(timeout = 100000)
 
       shinytestLogMessage("change radius (to 1.5)")
       app$set_inputs(radius_now = 1.5, wait_=FALSE)
@@ -220,18 +210,23 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     # SEE RESULTS ####
 
-    ## SUMMARY REPORT DOWNLOAD ####
+    ## SUMMARY REPORT (html DOWNLOAD) ####
 
-    shinytestLogMessage("about to do community download")
-    app$wait_for_idle(timeout = 20000)
+    shinytestLogMessage("about to download community report")
+    app$wait_for_idle(timeout = 40000)
 
-    # the main purpose of this download is to get the underlying dataframe
-    # output_df, from the report download function in app_server.R
-    # this is because the actual downloaded report is large (>5MB)
-    # so, instead, the downloaded file will be saved to the tempdir()
-    # and within that function, we call exportTestvalues() to save output_df
-    app$get_download("download_report_multisite")
-    customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
+    ## This step was originally getting the underlying dataframe
+    ## output_df, from the report download function in app_server.R
+    ## because the actual downloaded report was large
+    ## so the downloaded file was saved to the tempdir()
+    ## and within that function, we called exportTestvalues() to save output_df
+    #
+      # app$get_download("download_report_multisite")
+      # customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
+
+    ## but maybe there is a better way to download the html report?
+      app$expect_download("download_report_multisite")
+    ########################################################################### #
 
     ## DETAILS tab ####
 
@@ -249,72 +244,78 @@ shinytest2_webapp_functionality <- function(test_category) {
     # this downloads the xlsx report, based on the download_results_spreadsheet output in app_server.R
     # since shinytest2 can't compare binary files, this custom download creates a hashed version
     # and saves the hash to be compared in future test runs
-    custom_binary_download("download_results_spreadsheet") # this should download the results_table xlsx file
+    custom_binary_xlsx_download("download_results_spreadsheet") # download xlsx file using the helper function
     # save_log("EJAM_app_test_log_pre_results_download.txt")
+    ########################################################################### #
 
     ### DETAILS > PLOT AVERAGE SCORES (BARPLOTS) ####
 
-    shinytestLogMessage("going to plot_average details subtab")
-    app$set_inputs(details_subtabs = "Plot Average Scores")
-    customExpectValues(name="plot_avg")
+    ## only test plots for latlon case - should be same as for other cases
+    if (!(test_category %in% c("latlon"))) {
 
-    shinytestLogMessage("Demographic summ_bar-ind")
-    app$set_inputs(summ_bar_ind = "Demographic")
-    customExpectValues(name="demo")
+      shinytestLogMessage("going to plot_average details subtab")
+      app$set_inputs(details_subtabs = "Plot Average Scores")
+      customExpectValues(name="plot_avg")
 
-    shinytestLogMessage("Environmental summ_bar_ind")
-    app$set_inputs(summ_bar_ind = "Environmental")
-    customExpectValues(name="environ")
+      shinytestLogMessage("Demographic summ_bar-ind")
+      app$set_inputs(summ_bar_ind = "Demographic")
+      customExpectValues(name="demo")
 
-    if(app$get_value(input="include_ejindexes") == "TRUE") {
-      shinytestLogMessage("EJ summ_bar-ind")
-      app$set_inputs(summ_bar_ind = "EJ")
-      customExpectValues(name="EJ-ind")
+      shinytestLogMessage("Environmental summ_bar_ind")
+      app$set_inputs(summ_bar_ind = "Environmental")
+      customExpectValues(name="environ")
 
-      shinytestLogMessage("EJ supplemental")
-      app$set_inputs(summ_bar_ind = "EJ Supplemental")
-      customExpectValues(name="EJ-Supp")
+      if(app$get_value(input="include_ejindexes") == "TRUE") {
+        shinytestLogMessage("EJ summ_bar-ind")
+        app$set_inputs(summ_bar_ind = "EJ", wait_ = FALSE)
+        # app$wait_for_idle(timeout = 10000)
+        customExpectValues(name="EJ-ind")
+
+        shinytestLogMessage("EJ supplemental")
+        app$set_inputs(summ_bar_ind = "EJ Supplemental", wait_ = FALSE)
+        # app$wait_for_idle(timeout = 10000)
+        customExpectValues(name="EJ-Supp")
+      }
+
+      ### DETAILS > PLOT FULL RANGE OF SCORES (HISTOGRAM) ####
+
+      shinytestLogMessage("going to plot_range details subtab")
+      app$set_inputs(details_subtabs = "Plot Full Range of Scores")
+      customExpectValues(name="plot_rng")
+
+      shinytestLogMessage("histogram of Sites")
+      app$set_inputs(summ_hist_distn = "Sites")
+      customExpectValues(name="hist-sites")
+
+      shinytestLogMessage("histogram of raw data")
+      app$set_inputs(summ_hist_data = "raw")
+      customExpectValues(name="hist-raw")
+
+      shinytestLogMessage("histogram with 15 bins, 20 bins")
+      app$set_inputs(summ_hist_bins = 15)
+      app$set_inputs(summ_hist_bins = 20)
+      customExpectValues(name="hist-bins20")
+
+      shinytestLogMessage("histogram of People")
+      app$set_inputs(summ_hist_distn = "People")
+      customExpectValues(name="hist-ppl")
+
+      shinytestLogMessage("histogram of percentiles across people")
+      app$set_inputs(summ_hist_data = "pctile")
+      customExpectValues(name="hist-pctile")
+
+      shinytestLogMessage("histogram of pctile Demog Index Supp")
+      app$set_inputs(summ_hist_ind = "pctile.Demog.Index.Supp") # or just Demog.Index.Supp ?
+      customExpectValues(name="hist-demo")
+
+      shinytestLogMessage("histogram of raw scores across people")
+      app$set_inputs(summ_hist_data = "raw")
+      customExpectValues(name="hist-raw2")
+
+      shinytestLogMessage("histogram of percent low income")
+      app$set_inputs(summ_hist_ind = "pctlowinc")
+      customExpectValues(name="hist-lowinc")
     }
-
-    ### DETAILS > PLOT FULL RANGE OF SCORES (HISTOGRAM) ####
-
-    shinytestLogMessage("going to plot_range details subtab")
-    app$set_inputs(details_subtabs = "Plot Full Range of Scores")
-    customExpectValues(name="plot_rng")
-
-    shinytestLogMessage("histogram of Sites")
-    app$set_inputs(summ_hist_distn = "Sites")
-    customExpectValues(name="hist-sites")
-
-    shinytestLogMessage("histogram of raw data")
-    app$set_inputs(summ_hist_data = "raw")
-    customExpectValues(name="hist-raw")
-
-    shinytestLogMessage("histogram with 15 bins, 20 bins")
-    app$set_inputs(summ_hist_bins = 15)
-    app$set_inputs(summ_hist_bins = 20)
-    customExpectValues(name="hist-bins20")
-
-    shinytestLogMessage("histogram of People")
-    app$set_inputs(summ_hist_distn = "People")
-    customExpectValues(name="hist-ppl")
-
-    shinytestLogMessage("histogram of percentiles across people")
-    app$set_inputs(summ_hist_data = "pctile")
-    customExpectValues(name="hist-pctile")
-
-    shinytestLogMessage("histogram of raw scores across people")
-    app$set_inputs(summ_hist_data = "raw")
-    customExpectValues(name="hist-raw2")
-
-    shinytestLogMessage("histogram of Demog Index Supp")
-    app$set_inputs(summ_hist_ind = "Demog.Index.Supp")
-    customExpectValues(name="hist-demo")
-
-    shinytestLogMessage("histogram of percent low income")
-    app$set_inputs(summ_hist_ind = "pctlowinc")
-    customExpectValues(name="hist-lowinc")
-
     shinytestLogMessage(paste0("finished test category: ", test_category))
   })
 }

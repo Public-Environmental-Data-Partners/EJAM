@@ -966,15 +966,24 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     #   suppressPackageStartupMessages({   library(EJAM)   })
     # })
   }
+  ## dataload_dynamic() ####
   cat("Downloading all large datasets that might be needed...\n")
   dataload_dynamic("all")
-  ##
+  ## ./tests/testthat/setup.R ####
   if (file.exists("./tests/testthat/setup.R")) {
     source("./tests/testthat/setup.R")
   } else {
     cat("Need to source the setup.R file first \n")
   }
-
+  ## ./tests/testthat/setup-shinytest2.R ####
+  if (any(as.vector(unlist(partial_testlist)) %in% testlist$test_webapp)) {
+    warning("note shinytest2 uses the installed version of a package by default to run tests, not the latest source version - see dev-run-shinytests article/vignette")
+  if (file.exists("./tests/testthat/setup-shinytest2.R")) {
+    source("./tests/testthat/setup-shinytest2.R")
+  } else {
+    cat("Need to source the setup-shinytest2.R file first \n")
+  }
+  }
   ########################### #  ########################################## #
 
   # was in setup.R and here but now obsolete: out_api
