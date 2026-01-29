@@ -157,7 +157,7 @@ which provides only blockgroup resolution information about distance.</p>
 <span></span>
 <span> <span class="co"># Example of area that has higher %Hispanic as you go</span></span>
 <span> <span class="co"># 10 to 30 miles away from this specific point</span></span>
-<span> <span class="va">pts</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">45.75464</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">94.36791</span><span class="op">)</span></span>
+<span> <span class="va">pts</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">45.75464</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">94.36791</span><span class="op">)</span></span>
 <span> <span class="fu">plot_distance_by_pctd</span><span class="op">(</span><span class="va">pts</span>,</span>
 <span>   sitenumber <span class="op">=</span> <span class="fl">1</span>, score_colname <span class="op">=</span> <span class="st">"pcthisp"</span><span class="op">)</span></span>
 <span> <span class="co"># browseURL(url_ejamapi(sitepoints = pts, radius = 10))</span></span>

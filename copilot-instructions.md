@@ -95,20 +95,19 @@ tests will reflect those changes.
 ``` r
 library(shinytest2)
 library(EJAM)
-source("tests/app-functionality.R")
 
 # Run all web app tests
 shinytest2::test_app(".", filter = "-functionality")
 
 # Run specific tests
-test_app(".", filter = "FIPS-shiny-functionality")
-test_app(".", filter = "NAICS-shiny-functionality")
+test_app(".", filter = "FIPS-functionality")
+test_app(".", filter = "NAICS-functionality")
 ```
 
 **Dependencies for shinytest2:**
 
 ``` r
-webshot::install_phantomjs()  # Required for screenshots
+# webshot::install_phantomjs()  # Required for screenshots
 ```
 
 ## Linting

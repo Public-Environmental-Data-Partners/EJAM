@@ -65,8 +65,8 @@ x$Item[!grepl("names_|^test", x$Item)]
     ## [29] "naicstable"                       "namez"                           
     ## [31] "sictable"                         "stateinfo"                       
     ## [33] "stateinfo2"                       "states_shapefile"                
-    ## [35] "statestats"                       "usastats"                        
-    ## [37] "x_anyother"
+    ## [35] "statestats"                       "tables_ejscreen_acs"             
+    ## [37] "usastats"                         "x_anyother"
 
 ### Where the datasets are stored
 

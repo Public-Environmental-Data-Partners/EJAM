@@ -29,7 +29,7 @@ details.
 ## Details
 
 Uses
-[`data.table::fread()`](https://rdatatable.gitlab.io/data.table/reference/fread.html)
+[`data.table::fread()`](https://rdrr.io/pkg/data.table/man/fread.html)
 
 More than 4 million rows of data.
 
