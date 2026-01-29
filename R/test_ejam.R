@@ -68,7 +68,7 @@ test_ejam <- function(ask = TRUE,
                       #   "shape", "getblocks", "fixcolnames", "doag",
                       #   "ejamit", "misc",  "mod", "webapp",
                       #   "test", "golem"),
-                      skip_these = c(  "webapp"),
+                      skip_these = NULL, # c(  "webapp"),
 
                       y_stopif = FALSE,
                       y_seeresults = TRUE,
@@ -461,28 +461,28 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       timebyfile <- data.table(
         structure(list(
           file =
-            c("test-URL_FUNCTIONS_part2.R", "test-url_ejamapi.R",
-              "test-acs_bybg.R", "test-url_columns_bysite.R", "test-URL_FUNCTIONS_part1.R",
+            c("test-URL_FUNCTIONS_part2.R", "test-url_columns_bysite.R",
+              "test-acs_bybg.R", "test-grepn.R", "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R",
               "test-api.R", "test-create_filename.R", "test-is.numericish.R",
-              "test-sites_from_input.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
-              "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R",
-              "test-is.numeric.text.R", "test-latlon_from_fips.R", "test-state_from_fips_bybg.R",
-              "test-state_from_latlon.R", "test-ejamit.R", "test-ejam2barplot_sites.R",
-              "test-ejam2excel.R", "test-ejam2histogram.R", "test-ejamit_compare_distances.R",
-              "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
-              "test-ejamit_sitetype_from_output.R", "test-report_residents_within_xyz.R",
+              "test-sites_from_input.R", "test-report_residents_within_xyz.R",
               "test-get_blockpoints_in_shape.R", "test-proxistat.R", "test-bgid_from_blockid.R",
               "test-distances.all.R", "test-getblocks_summarize_blocks_per_site.R",
               "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
               "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
               "test-sitetype2text.R", "test-utils_indexpoints.R", "test-MAP_FUNCTIONS.R",
-              "test-ejam2map.R", "test-doaggregate.R", "test-area_sqmi.R",
-              "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
-              "test-calc_ratio_columns.R", "test-pctile_from_raw_lookup.R",
-              "test-utils_flagged_FUNCTIONS.R", "test-latlon_from_anything.R",
-              "test-address_xyz.R", "test-latlon_as.numeric.R", "test-latlon_df_clean.R",
-              "test-latlon_from_address.R", "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
+              "test-ejam2map.R", "test-calc_byformula.R", "test-doaggregate.R",
+              "test-area_sqmi.R", "test-batch.summarize.R", "test-calc_avg_columns.R",
+              "test-calc_pctile_columns.R", "test-calc_ratio_columns.R", "test-pctile_from_raw_lookup.R",
+              "test-utils_flagged_FUNCTIONS.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
+              "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R",
+              "test-is.numeric.text.R", "test-latlon_from_fips.R", "test-state_from_fips_bybg.R",
+              "test-state_from_latlon.R", "test-latlon_from_anything.R", "test-address_xyz.R",
+              "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_address.R",
+              "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
               "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
+              "test-ejam2barplot_sites.R", "test-ejam2excel.R", "test-ejam2histogram.R",
+              "test-ejamit.R", "test-ejamit_compare_distances.R", "test-ejamit_compare_types_of_places.R",
+              "test-ejamit_sitetype_from_input.R", "test-ejamit_sitetype_from_output.R",
               "test-fixcolnames.R", "test-fixcolnames_infer.R", "test-fixnames.R",
               "test-fixnames_to_type.R", "test-utils_metadata_add.R", "test-varinfo.R",
               "test-frs_from_naics.R", "test-frs_from_programid.R", "test-frs_from_regid.R",
@@ -496,40 +496,23 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
               "test-test1.R", "test-test2.R"),
           seconds_byfile =
-            c(19, 155,
-              2, 4, 0, 20, 0, 0, 0, 10, 0, 4, 3, 2, 0, 3, 0, 3, 21, 6, 13,
-              0, 15, 3, 0, 3, 0, 1, 0, 0, 0, 0, 3, 30, 1, 2, 0, 0, 16, 6, 11,
-              1, 6, 0, 2, 1, 0, 5, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-              0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0,
-              0, 0, 0, 0, 0, 1, 5, 0, 0)),
-          row.names = c(NA, -92L), class = "data.frame")
+            c(21, 4, 2,
+              0, 193, 0, 20, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 28, 1, 1, 0, 0,
+              13, 5, 2, 11, 1, 5, 0, 1, 1, 0, 4, 10, 0, 6, 5, 1, 0, 5, 0, 3,
+              0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 5, 9, 0, 18, 15, 2, 0, 2, 0, 0,
+              0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0,
+              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0)),
+          row.names = c(NA, -94L), class = "data.frame")
       )
       ############################ #      ############################ #      ############################ #
       addthesenotrun = data.table(
-        file = c(
-          "test-webapp-ui_and_server.R",
-          "test-webapp-FIPS-functionality.R",
-          "test-webapp-FRS-functionality.R",
-          "test-webapp-latlon-functionality.R",
-          "test-webapp-NAICS-functionality.R",
-          "test-webapp-shp-gdb-zip-functionality.R",
-          "test-webapp-shp-json-functionality.R",
-          "test-webapp-shp-unzip-functionality.R",
-          "test-webapp-shp-zip-functionality.R"
-
-          # 'test-webapp-latlon-functionality.R',
-          # 'test-webapp-shp-gdb-zip-functionality.R',
-          # 'test-webapp-shp-json-functionality.R',
-          # 'test-webapp-shp-unzip-functionality.R',
-          # 'test-webapp-shp-zip-functionality.R',
-          # 'test-webapp-FIPS-functionality.R',
-          # 'test-webapp-NAICS-functionality.R',
-          # 'test-webapp-ui_and_server.R'
-        ),
-        seconds_byfile = c(
-          3, 134, 150, 120, 115, 157, 156, 160, 163
-          # 120,157,156,160,163,134,115,3
-        )
+        file = c("test-webapp-FRS-functionality.R", "test-webapp-FIPS-functionality.R",
+                 "test-webapp-ui_and_server.R",      "test-webapp-NAICS-functionality.R",
+                 "test-webapp-latlon-functionality.R", "test-webapp-shp-gdb-zip-functionality.R",
+                 "test-webapp-shp-json-functionality.R", "test-webapp-shp-unzip-functionality.R",
+                 "test-webapp-shp-zip-functionality.R"),
+        seconds_byfile =
+          c(30, 9, 1, 40, 34, 62, 62, 62, 61)
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
       timebyfile <- rbind(timebyfile, addthesenotrun)
