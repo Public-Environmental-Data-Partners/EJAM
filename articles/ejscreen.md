@@ -76,8 +76,9 @@ initiative of the Internet Archive) and by EJAM-related repositories.
 - Methods (development of indicators, calculations for community
   reports, etc.)
 
-  - [**EJSCREEN Technical Doc. (as saved for EJAM)**](NA): Detailed
-    documentation of EJSCREEN methods (2024) for Version 2.3
+  - [**EJSCREEN Technical Doc. (as saved for
+    EJAM)**](https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf):
+    Detailed documentation of EJSCREEN methods (2024) for Version 2.3
     (7/31/2024), .pdf manual (also [at
     archive.org](https://web.archive.org/web/20250929044644/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf))
 
@@ -162,10 +163,11 @@ environmental justice in all programs, policies and activities.
     API](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-api)
   - [Updates and
     Changes](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-updates-and-changes)
-  - [**EJSCREEN Technical Doc. (as saved for EJAM)**](NA): Detailed
-    documentation of EJSCREEN methods (2024) - EJScreen Technical
-    Documentation for Version 2.3 from 7/31/2024, pdf-format manual
-    (also archived [at
+  - [**EJSCREEN Technical Doc. (as saved for
+    EJAM)**](https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf):
+    Detailed documentation of EJSCREEN methods (2024) - EJScreen
+    Technical Documentation for Version 2.3 from 7/31/2024, pdf-format
+    manual (also archived [at
     archive.org](https://web.archive.org/web/20250929044644/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf))
 - [Contact Us About EJScreen (note: this is
   obsolete)](https://web.archive.org/web/20250121194732/https://www.epa.gov/ejscreen/forms/contact-us-about-ejscreen)

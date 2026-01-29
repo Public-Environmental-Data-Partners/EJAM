@@ -92,6 +92,8 @@
     will set analysis title in report header, and “report_title” or
     “default_report_title” will set overall title in topmost part of
     report header.
+  - [`url_ejscreentechdoc()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreentechdoc.md)
+    was added to easily get URL of EJSCREEN documentation pages and docs
 
 ## EJAM 2.32.6.003 (November 2025)
 

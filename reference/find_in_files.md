@@ -8,13 +8,14 @@ like source code files or unit tests
 ``` r
 find_in_files(
   pattern,
-  path = "./tests/testthat",
+  path = ".",
+  recursive = TRUE,
   filename_pattern = "\\.R$|\\.r$",
+  full.names = TRUE,
   ignorecomments = FALSE,
   ignore.case = TRUE,
-  value = TRUE,
   whole_line = TRUE,
-  quiet = TRUE
+  quiet = FALSE
 )
 ```
 
@@ -26,11 +27,22 @@ find_in_files(
 
 - path:
 
-  can change it to e.g., "./R"
+  can be e.g., "./R" or "./tests/testthat" or "."
+
+- recursive:
+
+  if TRUE, search includes subfolders (passed to
+  [`list.files()`](https://rdrr.io/r/base/list.files.html))
 
 - filename_pattern:
 
-  query regex on file names, default is R code files
+  default is R code files only! A regular expression that would limit
+  file names to search
+
+- full.names:
+
+  if TRUE, returns paths not just filenames (passed to
+  [`list.files()`](https://rdrr.io/r/base/list.files.html))
 
 - ignorecomments:
 
@@ -39,12 +51,6 @@ find_in_files(
 - ignore.case:
 
   as in grep
-
-- value:
-
-  logical as in [`grep()`](https://rdrr.io/r/base/grep.html) if TRUE
-  returns matching text; if FALSE, returns logical vectors like
-  [`grepl()`](https://rdrr.io/r/base/grep.html)
 
 - whole_line:
 
@@ -57,17 +63,23 @@ find_in_files(
 
 ## Value
 
-list of named vectors, where names are file paths with hits, elements
-are vectors of text with hits
+a list of named vectors, where names are file paths with hits, elements
+are vectors of text with hits.
+
+## Details
+
+Also see undocumented related functions
+EJAM:::found_in_N_files_T_times() and EJAM:::found_in_files() and
+EJAM:::grab_hits() and EJAM:::grepn()
 
 ## Examples
 
 ``` r
-EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE, quiet = F)
-EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE, quiet = F)
-EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE, quiet = F)
+EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
+EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
+EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
 
-EJAM:::find_in_files("latlon_from_.{18}", quiet = FALSE, whole_line = F)
-EJAM:::find_in_files("latlon_from_s.{9}", quiet = FALSE, whole_line = F)
-EJAM:::find_in_files("latlon_from_mact.{9}", quiet = FALSE, whole_line = F)
+EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
+EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
+EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
 ```

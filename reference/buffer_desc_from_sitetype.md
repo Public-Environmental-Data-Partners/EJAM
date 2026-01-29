@@ -51,7 +51,7 @@ for a newer approach to this.
 ## Examples
 
 ``` r
-buffer_desc_from_sitetype("latlon", "NAICS")
-buffer_desc_from_sitetype("shp")
-buffer_desc_from_sitetype("fips")
+EJAM:::buffer_desc_from_sitetype("latlon", "NAICS")
+EJAM:::buffer_desc_from_sitetype("shp")
+EJAM:::buffer_desc_from_sitetype("fips")
 ```
