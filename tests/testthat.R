@@ -93,8 +93,8 @@ library(shinytest2)
 # unixtools::set.tempdir('~/tmp')
 
 # Get the main function that does the web app test commands:
-if (!file.exists("tests/shinytest2_webapp_functionality.R")) {stop('cannot find "tests/shinytest2_webapp_functionality.R"')}
-source("tests/shinytest2_webapp_functionality.R")
+# the file setup-shinytest2.R should include the test scripts in the function it defines,
+ # shinytest2_webapp_functionality()
 
 testthat::set_max_fails(200)
 
@@ -127,8 +127,10 @@ shinytest2::test_app(".", filter = "-functionality")
 
 # When tests fail, run this to review diffs
 # snapshot_review()
+#
 # Run this to review specific files
 # testthat::snapshot_review(files="latlon-functionality/latlon-pctlowinc.json")
+#
 # To accept the new snapshots
 # snapshot_accept()
 ################################# #

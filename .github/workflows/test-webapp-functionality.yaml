@@ -1,0 +1,119 @@
+
+name: 'Test web app UI and functionality vs snapshots of expected behavior'
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# system libraries:
+#   libcurl -- needed to complete setup-renv
+#   libharfbuzz-dev libfribidi-dev -- needed for the textshaping package
+#   libudunits2-dev -- needed for package "units"
+#   libgdal-dev -- needed for gdal config to configure package terra
+# https://cran.r-project.org/web/packages/shinytest2/vignettes/use-ci.html
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.repository.private }}
+    name: test-webapp-functionality
+
+    strategy:
+      fail-fast: false
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            remotes
+
+      # this ensures latest Pandoc is installed+used
+      # setup-r-dependencies@v2 will try to install pandoc from Ubuntu repo, which might be older
+      - name: Install Latest Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      # Check which Pandoc version is being used and its path
+      - name: Verify Pandoc Version
+        run: |
+          which pandoc
+          pandoc --version
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
+      - name: Install EJAM Package
+        run: |
+          remotes::install_local(".",force=T)
+        shell: Rscript {0}
+
+      - name: Load EJAM Package
+        run: |
+          require(EJAM)
+        shell: Rscript {0}
+
+      - name: Load testthat and shinytest2 packages
+        run: |
+          require(shinytest2)
+          require(testthat)
+          # require(golem) # might not be essential
+        shell: Rscript {0}
+
+################## #
+
+      - name: FIPS UI test
+        run: |
+          shinytest2::test_app(".", filter="FIPS-functionality")
+        shell: Rscript {0}
+
+      - name: FRS UI test
+        run: |
+          shinytest2::test_app(".", filter="FRS-functionality")
+        shell: Rscript {0}
+
+      - name: latlon UI test
+        run: |
+          shinytest2::test_app(".", filter="latlon-functionality")
+        shell: Rscript {0}
+
+      - name: NAICS UI test
+        run: |
+          shinytest2::test_app(".", filter="NAICS-functionality")
+        shell: Rscript {0}
+
+      - name: shp-gdb-zip UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-gdb-zip-functionality")
+        shell: Rscript {0}
+
+      - name: shp-json UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-json-functionality")
+        shell: Rscript {0}
+
+      - name: shp-unzip UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-unzip-functionality")
+        shell: Rscript {0}
+
+      - name: shp-zip UI test
+        run: |
+          shinytest2::test_app(".", filter="shp-zip-functionality")
+        shell: Rscript {0}
+
+################## #
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-tests
+          path: |
+            tests
+            EJAM_app_test_log_pre_results_download.txt
