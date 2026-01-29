@@ -2,16 +2,17 @@
 
 ## Repository Overview
 
-EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment. Large repository: ~737MB, 621 R files, 618 man pages, 115MB datasets.
+EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment. 
+Large repository: Can be roughly ~737MB, 621 R files, 618 man pages, 115MB datasets. However, several very large .arrow data files are used by the package but not part of the bundle that gets downloaded to be installed.
 
-**Tech Stack:** R (>= 4.3.0), Golem Shiny framework, data.table, sf (spatial), arrow
-**Key Directories:** `R/` (source), `data/` (.rda files), `inst/` (configs), `tests/` (testthat + shinytest2), `man/` (auto-generated), `.github/workflows/` (6 CI workflows)
+**Tech Stack:** See the DESCRIPTION file for a list of dependencies, such as these: R (>= 4.3.0), Golem Shiny framework, data.table, sf (spatial), arrow
+**Key Directories:** `R/` (source), `data/` (.rda files), `inst/` (configs), `tests/` (testthat + shinytest2), `man/` (auto-generated), `.github/workflows/` (has CI workflows)
 
 ## Critical Build Requirements
 
 ### System Dependencies (Ubuntu/Debian)
 
-**ALWAYS install these system libraries before attempting package installation:**
+**On linux/Ubuntu/Debian, ALWAYS install these system libraries before attempting package installation:**
 
 ```bash
 sudo apt-get update
@@ -42,7 +43,9 @@ brew install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pk
 
 ### R Package Installation
 
-**Installation from GitHub (recommended):**
+See installation details in `vignettes/installing.Rmd`
+
+**Installation from GitHub:**
 ```r
 install.packages("remotes")
 remotes::install_github("ejanalysis/EJAM", dependencies = TRUE, force = TRUE)
@@ -75,7 +78,7 @@ EJAM:::test_ejam()
 - Special setup: `tests/testthat.R` installs package before running tests
 - Web app tests: Use shinytest2 (see below)
 
-**Important:** Unit tests use the INSTALLED version of the package, not local source. If you make changes, you MUST reinstall the package before tests will reflect those changes.
+**Important:** Unit tests started using devtools::test() may use the INSTALLED version of the package, not local source. If you make changes, you MUST reinstall the package before tests will reflect those changes.
 
 ### Shiny App Tests (shinytest2)
 
@@ -85,11 +88,11 @@ library(shinytest2)
 library(EJAM)
 
 # Run all web app tests
-shinytest2::test_app(".", filter = "-functionality")
+source("./tests/testthat.R")
 
-# Run specific tests
-test_app(".", filter = "FIPS-functionality")
-test_app(".", filter = "NAICS-functionality")
+# Run specific web app tests, for example:
+test_app(".", filter = "FIPS-functionality") # maybe with , check_setup = FALSE
+test_app(".", filter = "NAICS-functionality") 
 ```
 
 **Dependencies for shinytest2:**
@@ -113,14 +116,17 @@ lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
 
 ## Building Documentation
 
-**Update documentation (roxygen2):**
+**Update just the .Rd files of documentation (roxygen2):**
 ```r
 devtools::document()
 ```
 
-**Build pkgdown site:**
+**Build pkgdown site (which also updates the .Rd files of documentation):**
 ```r
-pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+EJAM:::pkgdown_update() # see documentation of this function for details
+
+## or:
+# pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
 ```
 
 **Important:** Documentation is automatically built and deployed to GitHub Pages on pushes to main branch.
@@ -132,18 +138,23 @@ pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
 library(EJAM)
 ejamapp()
 
-# Or with custom settings
+# Or with custom settings (as explained in `vignettes/dev-app-settings.Rmd`)
 ejamapp(isPublic = TRUE)
 ```
 
-**From app.R (for deployment):**
+**On a server once deployed:**
 ```r
-source("app.R")  # This will launch the app
+# one option is this:
+source("app.R")
+
+# another option is this:
+library(EJAM)
+ejamapp(isPublic=TRUE)
 ```
 
-**Important:** The app.R file is specifically designed for deployment to Posit Connect/Shiny Server.
-
 ## GitHub Actions / CI Workflows
+
+The notes below might need to be updated every time the github workflow actions have been updated via edits to the .yaml files in the .github/workflows folder.
 
 ### On Pull Requests to main:
 
@@ -181,15 +192,16 @@ source("app.R")  # This will launch the app
 6. **Test Installation - Limited** (`.github/workflows/test-ability-to-install-limited-cases.yaml`)
    - Quick smoke test: ubuntu-latest + R 4.5 + github install method only
 
+
 ## Common Issues and Workarounds
 
 ### Common Failures and Solutions:
 
 1. **Package attachment fails (.onAttach errors):** Reinstall from source: `remotes::install_local(".", force = TRUE)` when new functions are referenced in global_defaults_package.R.
-2. **Tests don't reflect code changes:** Tests use INSTALLED version. Always `remotes::install_local(".", force = TRUE)` before testing.
-3. **shinytest2 timeouts:** App init takes 2+ minutes. Use `load_timeout=2e+06` in tests.
+2. **Tests don't reflect code changes:** Tests use INSTALLED version. Always `remotes::install_local(".", force = TRUE)` before testing, or do unit testing via the utility function `test_ejam()` and see more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd
+3. **shinytest2 timeouts:** App init might take 2+ minutes. Use `load_timeout=2e+06` in tests.
 4. **"Cannot find file" in .onAttach():** Ensure `inst/global_defaults_package.R` exists when using `devtools::load_all()`.
-5. **Slow builds/tests:** In `R/aaa_onAttach.R`, set `asap_download/asap_index/asap_bg <- FALSE` when iterating.
+5. **Slow builds/tests:** In `R/aaa_onAttach.R`, set `asap_download <- asap_index <- asap_bg <- FALSE` when iterating.
 6. **Ubuntu install fails:** Install ALL system libraries above. Missing one causes cryptic errors.
 7. **macOS jpeg errors:** Set environment variables: `PATH, LDFLAGS, CPPFLAGS, PKG_CONFIG_PATH` for `/opt/homebrew/opt/jpeg`.
 
@@ -203,27 +215,37 @@ source("app.R")  # This will launch the app
 ## Architecture
 
 **Golem Framework:** Uses `app_ui()`/`app_server()`, launched via `ejamapp()`. Config in `inst/golem-config.yml`.
-**Data:** Lazy-loaded from data/. Census block data downloaded on-demand from ejanalysis/ejamdata. `dataload_dynamic()` + `indexblocks()` for spatial indexes.
-**Naming:** `aaa_` prefix = load first, `MODULE_` = Shiny modules, `_FUNCTIONS` = grouped functions. Don't edit .Rd files (auto-generated).
+**Data:** 
+  - Some is lazy-loaded from data/ 
+  - Some is saved in the data folder upon package installation because some large data files must be downloaded from ejanalysis/ejamdata. This is explained in the file vignettes/dev-update-datasets.Rmd
+  - Some is loaded via `dataload_dynamic()` and some is in .arrow format instead of .rda format.
+**Naming:** 
+  - Closely-related R functions are often grouped within a single .R file in the R folder, especially if the filename includes the phrase "_FUNCTIONS" such as in "PROXIMITY_FUNCTIONS.R"
+  - Closely-related R functions often share a common prefix such as "fips_" or "frs_" or "ejamit" or "ejam2" or "calc_" or "latlon" or "plot" or "table_" or "url_" or "shape" or "state_" or "popup_" or "get"
+  - Some utilities are in .R files that start with "utils_"
+  - All or almost all datasets should be documented in .R files that have a filename that starts with "data_"
+  - Many datasets were created for the package using scripts in the data-raw folder, usually with a file whose name starts with "datacreate_"
+  - Some other naming conventions are these: `aaa_` prefix = load first, `MODULE_` = Shiny modules, `_FUNCTIONS` = grouped functions. Don't edit .Rd files (auto-generated).
 
 ## Code Review Notes
 
 **When reviewing PRs, ignore:**
-- Changes to .Rd files (auto-generated documentation)
 - Changes to NAMESPACE (auto-generated by roxygen2)
-- Changes to man/ directory (auto-generated)
-- Changes to docs/ folder (auto-generated pkgdown site)
+- Changes to files in the man/ directory (auto-generated by roxygen2)
+- Changes to .Rd files (auto-generated documentation created by by roxygen2)
+- Changes to files in the docs/ folders (auto-generated pkgdown site)
+- Changes to files under the tests/testthat/_snaps/ folder (snapshots created by the shinytest2 package testing web app functionality)
 
 **Focus review on:**
 - R/ source files, including the .R files in the R folder but also the .R files in the inst folder
-- Test files
-- Vignettes if documentation changes
+- Test files in the folders under tests/
+- Vignettes that are .Rmd files in the vignettes/ folder
 - GitHub workflow changes
-- Configuration files (DESCRIPTION, golem-config.yml, etc.)
+- Configuration files (DESCRIPTION, golem-config.yml, global_defaults* , etc.)
 
 **Avoid commenting on:**
 - Very minor issues, such as nitpicking
-- code formatting issues
+- Minor code formatting issues
 
 ## Package Version Management
 
@@ -236,15 +258,17 @@ Version is tracked in multiple files and must be updated consistently:
 
 ## Additional Resources
 
-**Documentation:** https://ejanalysis.github.io/EJAM/
+**Documentation:** https://ejanalysis.github.io/EJAM/ However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
+  The more recent documentation is in roxygen2 tags within the .R files for a given branch, which are converted to .Rd files in the man folder (via document()), and eventually may be converted to .html files in the docs folder via pkgdown_update()
 **Code Repository:** https://github.com/ejanalysis/EJAM
 **Data Repository:** ejanalysis/ejamdata (referenced in DESCRIPTION)
 
 ## Trust These Instructions
 
-These instructions have been carefully validated. Only search for additional information if:
-1. These instructions are incomplete for your specific task
-2. You encounter an error not covered here
-3. You need details about a specific function's implementation
+These instructions have been carefully validated except where they explicitly mention the latest updates or need for updates. Only search for additional information if:
+1. These instructions are incomplete for your specific task - In that case, see additional resources mentioned above, or any of the .Rmd files in the vignettes folder.
+2. You encounter an error not covered here - In that case, first try to resolve it using documentation of relevant R packages, and if that still is not sufficient to have a clear answer, 
+  then look for mentions of the error or problem and solutions to the issue as posted in key resources starting with sources such as stackexchange, stackoverflow, R-specific discussion groups, support for posit or shiny or other specific software that is clearly relevant to the problem.
+3. You need details about a specific function's implementation - In that case, see additional resources noted above for more documentation of specific functions or datasets.
 
 For most development tasks, following these instructions should allow you to work efficiently without extensive exploration.
