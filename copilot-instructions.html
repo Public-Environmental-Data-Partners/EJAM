@@ -129,17 +129,16 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/shinytest2/" class="external-link">shinytest2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ejanalysis.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"tests/app-functionality.R"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run all web app tests</span></span>
 <span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"-functionality"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run specific tests</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"FIPS-shiny-functionality"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"NAICS-shiny-functionality"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"FIPS-functionality"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"NAICS-functionality"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Dependencies for shinytest2:</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">webshot</span><span class="fu">::</span><span class="fu"><a href="http://wch.github.io/webshot/reference/install_phantomjs.html" class="external-link">install_phantomjs</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Required for screenshots</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># webshot::install_phantomjs()  # Required for screenshots</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

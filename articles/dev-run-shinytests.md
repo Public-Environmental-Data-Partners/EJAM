@@ -5,19 +5,27 @@ This document covers the UI-related automated tests.
 ## Dev Environment
 
 If you are successfully running the app, you should have all the
-necessary packages. If you don’t, those packages should live in the
-`DESCRIPTION` file. Some dev-related packages to note:
+necessary packages, or at least those in Imports or Suggests of the
+`DESCRIPTION` file – the diffviewer package is not there, e.g. Some
+dev-related packages to note:
 
 - **[shinytest2](https://rstudio.github.io/shinytest2/)** -
   [shinytest2](https://rstudio.github.io/shinytest2/) is the key R
   package helping to test shiny web app functionality
+
 - **[diffviewer](https://diffviewer.r-lib.org)** -
   [diffviewer](https://diffviewer.r-lib.org) helps visually compare 2
   files
-- **Pandoc** – Comes bundled with RStudio
-- **PhantomJS**? – Used to be needed for downloads (installed with
+
+- **Pandoc** and **knitr** – The Pandoc software comes bundled with
+  RStudio, and is a “swiss-army knife” for document conversion. There
+  also is a function called \[knitr::pandoc()\] that is a wrapper that
+  calls Pandoc to convert docs to HTML, PDF, etc.
+
+- **PhantomJS** maybe – This used to be needed for downloads (and was
+  installed with
   [`webshot::install_phantomjs()`](http://wch.github.io/webshot/reference/install_phantomjs.md)).
-  But note:
+  But note this newer info:
 
 NOTE FROM
 <https://rstudio.github.io/shinytest2/articles/z-migration.html>: -
@@ -59,22 +67,17 @@ from code updates, the test fails, indicating which files changed.
 
 ``` plaintext
 tests/
-  ├── testthat.R (modified for shinytest2)
-  ├── app-functionality.R
+  ├── testthat.R (modified to launch the shinytest2 web app functionality tests)
   └── testthat/
       ├── setup-shinytest2.R
-      ├── test-[DATA TYPE]-functionality.R (e.g. test-FIPS-functionality.R)
+      ├── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)
       └── _snaps/
-          ├── [OS, e.g. linux]-[R Version, e.g. 4.4]/
+          ├── [OS, e.g. linux]-[R Version, e.g. 4.5]/
           │   ├── FIPS-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files
-          │   ├── shapefile-functionality/
           │   │   ├── .json, .png, .xlsx, .html files
           │   ├── latlon-functionality/
           │   │   ├── .json, .png, .xlsx, .html files
           │   ├── NAICS-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files
-          │   └── FRS-functionality/
           │   │   ├── .json, .png, .xlsx, .html files
 ```
 
@@ -87,13 +90,14 @@ tests/
   work for the shiny app testing to work correctly using the tests in
   the `test-ui_and_server.R` file.
 - **`testthat/setup-shinytest2.R`** – Loads `global.R` and app scripts
-  into the testing environment.
-- **`app-functionality.R`** – Contains generic function,
-  `main_shinytest()`, that defines app interactions for testing, running
-  tests for multiple data types (FIPS, shapefile, latlon, NAICS, etc.).
-- **`testthat/test-[DATA TYPE]-functionality.R`** – Simple call to the
-  main app functionality function, specifying the data type to test
-  with.
+  into the testing environment. Does basic setup including defining
+  shinytest2_webapp_functionality() which has a script of web app UI
+  interactions to test, using the app to upload or select, and analyze,
+  multiple data types (FIPS, shapefile, latlon, NAICS, etc.), and save
+  results like reports or spreadsheets.
+- **`testthat/test-webapp-[DATA TYPE]-functionality.R`** – Simple call
+  to the main app functionality function, specifying the data type to
+  test with.
 - **`testthat/_snaps/`** – Stores snapshots categorized by OS, R
   version, and data type.
   - **`.json` files** – Capture app snapshots.
@@ -110,12 +114,13 @@ are some methods and tips for updating the shinytest script accordingly.
 
 ### Direct Updates
 
-Modify `app-functionality.R` to add new interactions with the app for
-the shinytest to test.
+Modify `shinytest2_webapp_functionality()` in setup-shinytest2.R to add
+new interactions with the app for the shinytest to test. You would
+update that file by coding new UI interactions directly.
 
 ### Using `shinytest2::record_test()` to generate testing code
 
-If you’re not sure how to code interactions directly, run
+If you’re not sure how to code new UI interactions directly, run
 [`shinytest2::record_test()`](https://rstudio.github.io/shinytest2/reference/record_test.html)
 to test the app interactively and record your actions, which can then be
 copied into test scripts.
@@ -124,39 +129,41 @@ copied into test scripts.
 
 Throughout the app code,
 [`shiny::exportTestValues()`](https://rdrr.io/pkg/shiny/man/exportTestValues.html)
-can be used to store values from reactive expressions or other items
-that are not inputs or outputs and therefore may not be included in the
+can be used to store values from reactive expressions or other *items
+that are not inputs or outputs* and therefore may not be included in the
 standard snapshots. Then, in the shinytests, you can specify
 `export=[name]` to include in the snapshot the export named “name” that
 you specified in the code, or `export=TRUE` to include all exports.
 
 ## Running Tests Locally
 
-The primary method for running the shinytests is:
+The primary method for running the shinytests (other than doing so via
+GitHub Actions) is:
 
 ``` r
 shinytest2::test_app(".", filter="-functionality")
 ```
 
-However, it is strongly recommended during development to run the entire
-`testthat.R` which runs
+However, it is strongly recommended during development to source() the
+entire `testthat.R` which runs
 [`remotes::install_local()`](https://remotes.r-lib.org/reference/install_local.html)
 to ensure your development code is the one tested. This is because
 shinytest2 automatically references the installed version of a package.
 
 ## GitHub Actions Integration
 
-Using GitHub Actions (GHA) we can have GitHub run our shinytests prior
-to merging a Pull Request, to give us peace of mind that the app will
-still work with the merged code.
+Using GitHub Actions (GHA) we can have GitHub run our shiny web app UI
+tests prior to merging a Pull Request, to give us peace of mind that the
+app will still work with the merged code.
 
 ### Workflow
 
-- PRs to `development`, `main`, or `deploy-posit` trigger GHA workflows.
-- GHA sets up R, installs dependencies, runs tests, and compares
+- The GHA sets up R, installs dependencies, runs tests, and compares
   snapshots.
 - The workflow is stored in
-  `.github/workflows/test-shiny-web-app-functionality.yml`.
+  `.github/workflows/test-webapp-functionality.yml`.
+- PRs to a specified branch such as `development`, `main` can trigger
+  GHA workflows (as specified in the workflow yml file).
 
 ### Speed Optimization
 
@@ -165,9 +172,9 @@ still work with the merged code.
 - If snapshots fail, merge the base branch into the feature branch
   before updating snapshots.
 
-## Reviewing & Updating Snapshots
+## Reviewing & Updating Snapshots (Saved Results of Testing)
 
-### Reviewing
+### Reviewing Snapshots
 
 ``` r
 testthat::snapshot_review()
@@ -181,7 +188,7 @@ Optionally, can filter to review specific files or folders of snapshots.
 testthat::snapshot_accept()
 ```
 
-Optionally, can accept them interactively when reviewing
+Optionally, can accept them interactively when reviewing.
 
 ## Debugging Tests & GitHub Actions
 
@@ -191,8 +198,9 @@ Optionally, can accept them interactively when reviewing
 - Add [`print()`](https://rdrr.io/r/base/print.html),
   [`message()`](https://rdrr.io/r/base/message.html), or
   [`warning()`](https://rdrr.io/r/base/warning.html) statements in
-  `app-functionality.R`.
-- Run, line-by line or in chunks, the main shinytest2 code 
+  shinytest2_webapp_functionality().
+- Run, line-by line or in chunks, the main shinytest code in
+  shinytest2_webapp_functionality()
 
 Then, after running lines or chunks, run `app$get_log()` to view the
 log.
@@ -213,9 +221,8 @@ for debugging these issues:
 
 - If the shinytests are failing, it is likely because snapshots have not
   been updated locally and pushed after recent changes.
-- The version of R used for testing was 4.4.1 as of early 2025, and
-  should reflect the version used in your development environment, to
-  ensure consistency as much as possible.
+- The versions of R and shiny and shinytest2 used for testing also
+  should be noted as potentially affecting tests.
 
 ## Resources
 
