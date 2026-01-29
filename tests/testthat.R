@@ -111,7 +111,7 @@ testthat::set_max_fails(200)
 
 # run just the web app functionality unit tests
 
-shinytest2::test_app(".", filter = "-functionality")
+shinytest2::test_app(".", filter = "-functionality", check_setup = FALSE)
 
 # or
 # "-functionality" filter to only shiny tests because they're all named with '-functionality'
