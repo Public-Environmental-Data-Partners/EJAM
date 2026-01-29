@@ -113,7 +113,7 @@ warning('be sure you are ready to replace/update metadata and save in package')
 usethis::use_data(blockgroupstats_acs, overwrite = TRUE)
 # usethis::use_data(blockgroupstats, overwrite = TRUE)
 
-cat("Metadata was updated, and new object added to /data/ folder for use in packqge \n")
+cat("Metadata was updated, and new object added to /data/ folder for use in package \n")
 
 cat("update documentation now if relevant \n")
 #  EJAM:::dataset_documenter("blockgroupstats_acs")  # manually for now
