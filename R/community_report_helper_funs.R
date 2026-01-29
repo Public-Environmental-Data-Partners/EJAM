@@ -918,9 +918,9 @@ generate_extra_header <- function(title = 'Additional Information') {
 #' @seealso [report_residents_within_xyz_from_ejamit()] and [report_residents_within_xyz()]
 #'   for a newer approach to this.
 #' @examples
-#' buffer_desc_from_sitetype("latlon", "NAICS")
-#' buffer_desc_from_sitetype("shp")
-#' buffer_desc_from_sitetype("fips")
+#' EJAM:::buffer_desc_from_sitetype("latlon", "NAICS")
+#' EJAM:::buffer_desc_from_sitetype("shp")
+#' EJAM:::buffer_desc_from_sitetype("fips")
 #'
 #' @return text string, phrase to use in excel notes tab
 #'

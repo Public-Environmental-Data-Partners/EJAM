@@ -31,9 +31,9 @@ text string, phrase to use in excel notes tab
 Helps create text for excel report's notes sheet (via \code{\link[=ejam2excel]{ejam2excel()}} helpers like \code{\link[=table_xls_format]{table_xls_format()}})
 }
 \examples{
-buffer_desc_from_sitetype("latlon", "NAICS")
-buffer_desc_from_sitetype("shp")
-buffer_desc_from_sitetype("fips")
+EJAM:::buffer_desc_from_sitetype("latlon", "NAICS")
+EJAM:::buffer_desc_from_sitetype("shp")
+EJAM:::buffer_desc_from_sitetype("fips")
 
 }
 \seealso{

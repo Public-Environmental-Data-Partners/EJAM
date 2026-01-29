@@ -217,7 +217,6 @@ if (exists("frs_by_programid") && exists("frs")) {
   epa_programs_counts[order(-N), ][1:25, ]
 }
 #> frs_by_programid_arrow  is loading from local folder ...done.
-#> frs_arrow   is loading from local folder ...done.
 #>           program      N
 #>            <char>  <int>
 #>  1:      RCRAINFO 528499

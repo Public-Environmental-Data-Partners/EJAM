@@ -402,7 +402,7 @@ counties, states, & EPA Regions
   the given fips, from countyhealthrankings.org
 - [`url_county_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_county_equityatlas.md)
   : URL functions - Get URLs of useful report(s) on County containing
-  the given fips, from countyhealthrankings.org
+  the given fips from nationalequityatlas.org
 
 ### States
 
@@ -499,6 +499,11 @@ distances
 - [`acs_bybg()`](https://ejanalysis.github.io/EJAM/reference/acs_bybg.md)
   : download ACS 5year data from Census API, at blockgroup resolution
   (slowly if for entire US)
+- [`acs_table_info()`](https://ejanalysis.github.io/EJAM/reference/acs_table_info.md)
+  : utility to download and print some info about each variable in each
+  ACS 5yr table
+- [`tables_ejscreen_acs`](https://ejanalysis.github.io/EJAM/reference/tables_ejscreen_acs.md)
+  : tables_ejscreen_acs dataset
 - [`avg.in.us`](https://ejanalysis.github.io/EJAM/reference/avg.in.us.md)
   : avg.in.us (DATA) national averages of key indicators, for
   convenience
@@ -899,13 +904,15 @@ Report Percentiles or Means
   the given fips, from countyhealthrankings.org
 - [`url_county_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_county_equityatlas.md)
   : URL functions - Get URLs of useful report(s) on County containing
-  the given fips, from countyhealthrankings.org
+  the given fips from nationalequityatlas.org
 - [`url_state_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_state_equityatlas.md)
   : URL functions - Get URLs of useful report(s) on STATE containing the
   given fips, from equity atlas
 - [`url_naics.com()`](https://ejanalysis.github.io/EJAM/reference/url_naics.com.md)
   : URL functions - url_naics.com - Get URL for page with info about
   industry sectors by text query term
+- [`url_ejscreentechdoc()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreentechdoc.md)
+  : utility to get URL of .pdf of EJSCREEN Technical Documentation
 
 ## Utilities handling variable names
 

@@ -8,6 +8,40 @@
 
 ## see also   ?testdata()
 
+################################################################################### #
+##  ## in case you needed to just recreate/resave only these 3 testoutput files (and keep their existing metadata like date added to pkg etc.)
+#
+# ejamitoutnow  <- try( ejamit(
+#   testpoints_10,
+#   radius = 1, quiet = TRUE, silentinteractive = TRUE, include_ejindexes = TRUE)
+#   )
+# oldone <-  testoutput_ejamit_10pts_1miles
+#            testoutput_ejamit_10pts_1miles  <- ejamitoutnow
+# attributes(testoutput_ejamit_10pts_1miles) <- attributes(oldone)
+# usethis::use_data(
+#            testoutput_ejamit_10pts_1miles, overwrite = TRUE)
+# ################################### #
+# ejamitoutnow  <- try( ejamit(
+#   testpoints_100,
+#   radius = 1, quiet = TRUE, silentinteractive = TRUE, include_ejindexes = TRUE)
+# )
+# oldone <-  testoutput_ejamit_100pts_1miles
+#            testoutput_ejamit_100pts_1miles  <- ejamitoutnow
+# attributes(testoutput_ejamit_100pts_1miles) <- attributes(oldone)
+# usethis::use_data(
+#            testoutput_ejamit_100pts_1miles, overwrite = TRUE)
+# ################################### #
+# ejamitoutnow  <- try( ejamit(
+#   testpoints_1000,
+#   radius = 1, quiet = TRUE, silentinteractive = TRUE, include_ejindexes = TRUE)
+# )
+# oldone <-  testoutput_ejamit_1000pts_1miles
+# testoutput_ejamit_1000pts_1miles  <- ejamitoutnow
+# attributes(testoutput_ejamit_1000pts_1miles) <- attributes(oldone)
+# usethis::use_data(
+#   testoutput_ejamit_1000pts_1miles, overwrite = TRUE)
+################################################################################### #
+
 pkg_update_testpoints_testoutputs <- function(
 
   do_load_all = TRUE,

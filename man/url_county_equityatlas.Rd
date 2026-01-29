@@ -2,7 +2,7 @@
 % Please edit documentation in R/URL_FUNCTIONS_part2.R
 \name{url_county_equityatlas}
 \alias{url_county_equityatlas}
-\title{URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org}
+\title{URL functions - Get URLs of useful report(s) on County containing the given fips from nationalequityatlas.org}
 \usage{
 url_county_equityatlas(
   fips = NULL,
@@ -45,7 +45,7 @@ if FALSE, returns NA when given a State fips, otherwise return report on enclosi
 vector of URLs to reports on enclosing counties (or generic link if necessary, like when input was a state fips)
 }
 \description{
-URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org
+URL functions - Get URLs of useful report(s) on County containing the given fips from nationalequityatlas.org
 }
 \examples{
  url_county_equityatlas(fips_counties_from_state_abbrev("DE"))

@@ -95,7 +95,7 @@ EJAM-related repositories.
     etc.)
 
     -   [**EJSCREEN Technical Doc. (as saved for
-        EJAM)**](%60r%20EJAM::url_ejscreentechdoc()%60){target="_blank"}:
+        EJAM)**](`r EJAM::url_ejscreentechdoc()`){target="_blank"}:
         Detailed documentation of EJSCREEN methods (2024) for Version 2.3 (7/31/2024), .pdf manual (also 
         [at archive.org](https://web.archive.org/web/20250929044644/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf){target="_blank"})
 
@@ -205,7 +205,7 @@ kable(links_table,  col.names = NULL, label = NA)
     -   [Updates and
         Changes](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-updates-and-changes){target="_blank"}
     -   [**EJSCREEN Technical Doc. (as saved for
-        EJAM)**](%60r%20EJAM::url_ejscreentechdoc()%60){target="_blank"}:
+        EJAM)**](`r EJAM::url_ejscreentechdoc()`){target="_blank"}:
         Detailed documentation of EJSCREEN methods (2024) - EJScreen Technical
         Documentation for Version 2.3 from 7/31/2024, pdf-format manual (also
         archived [at

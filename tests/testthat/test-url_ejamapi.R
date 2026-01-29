@@ -127,10 +127,10 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     # expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
-  ############### #     MULTISITE OVERALL RESULTS REPORT - API MIGHT NOT IMPLEMENTED this YET:
+  ############### #     MULTISITE OVERALL RESULTS REPORT - API MIGHT NOT HAVE IMPLEMENTED this YET:
 
   try(test_that(paste0(funcname, " API handles 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL"), {
-
+skip_if(TRUE, "test fails until API can handle combo of 2 types of fips like county and state in 1 URL")
     oldwidth = options("width")
     expect_no_error({
       x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]

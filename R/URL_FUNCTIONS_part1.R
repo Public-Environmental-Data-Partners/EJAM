@@ -43,6 +43,7 @@ url_online <- function(url = "https://ejam.policyinnovation.info") {
     return(FALSE)
   }
   if (x$status_code != 200) {
+    cat("status code not 200, but note some sites (like http://www.nationalequityatlas.org/) may return 403 in response to this kind of check even though the site is browsable.\n")
     return(FALSE)
   } else {
     return(TRUE)

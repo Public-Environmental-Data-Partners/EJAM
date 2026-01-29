@@ -68,7 +68,7 @@ suppressMessages({suppressWarnings({
 
 # Create ejamitoutnow ####
 # here in setup.R, since some tests are using it.
-
+# see datacreate_testpoints_testoutputs.R and datacreate_testoutput_ejamit_shapes_2.R and  datacreate_testoutput_ejamit_fips.R
 if (exists("ejamit") && exists("blockgroupstats") && exists("testpoints_10")) {
   if (!exists("ejamitoutnow")) {
     message("creating ejamitoutnow in setup.R\n")
@@ -80,6 +80,8 @@ if (exists("ejamit") && exists("blockgroupstats") && exists("testpoints_10")) {
       ) # include_ejindexes = FALSE was the default but we want to test with them included
     }))
   }
+  ################################################################################### #
+
   # NOTE THE DEFAULT VALUES OF ejamit() !
 
 } else {
