@@ -159,6 +159,16 @@ ejamapp(
   default_selected_type_of_site_category = "FIPS_PLACE",
   fipspicker_fips_type2pick_default = "Cities or Places"
 )
+
+  ## Pick sities to show at launch
+
+  ejamapp(
+  default_upload_dropdown = "dropdown",
+  default_selected_type_of_site_category = "FIPS_PLACE",
+  fipspicker_fips_type2pick_default = "Cities or Places",
+  default_cities_picked = name2fips(c("akutan,ak", "syracuse city,ny") )
+  )
+
   #default_choices_for_type_of_site_category = c(
   #  'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
   #  'by Industry (NAICS) Code' = 'NAICS',
