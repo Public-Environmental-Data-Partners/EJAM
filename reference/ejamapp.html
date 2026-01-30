@@ -224,6 +224,16 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  default_selected_type_of_site_category <span class="op">=</span> <span class="st">"FIPS_PLACE"</span>,</span>
 <span>  fipspicker_fips_type2pick_default <span class="op">=</span> <span class="st">"Cities or Places"</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co">## Pick sities to show at launch</span></span>
+<span></span>
+<span>  <span class="fu">ejamapp</span><span class="op">(</span></span>
+<span>  default_upload_dropdown <span class="op">=</span> <span class="st">"dropdown"</span>,</span>
+<span>  default_selected_type_of_site_category <span class="op">=</span> <span class="st">"FIPS_PLACE"</span>,</span>
+<span>  fipspicker_fips_type2pick_default <span class="op">=</span> <span class="st">"Cities or Places"</span>,</span>
+<span>  default_cities_picked <span class="op">=</span> <span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"akutan,ak"</span>, <span class="st">"syracuse city,ny"</span><span class="op">)</span> <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
 <span>  <span class="co">#default_choices_for_type_of_site_category = c(</span></span>
 <span>  <span class="co">#  'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',</span></span>
 <span>  <span class="co">#  'by Industry (NAICS) Code' = 'NAICS',</span></span>
