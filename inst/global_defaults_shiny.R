@@ -670,7 +670,11 @@ aboutpage_texts <- list(
     h2( a(href = paste0(docs_url, "/", "articles/whatis.html"), "What is EJAM?",
           target = "_blank", rel = "noreferrer noopener") ),
 
-    p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting reports for hundreds or thousands of places, all at the same time."),
+    p('EJAM is what provides community reports for ',
+      a(href = "https://pedp-ejscreen.azurewebsites.net/index.html", "EJSCREEN",
+         target = "_blank", rel = "noreferrer noopener"),
+      ', and is also known as "EJSCREEN\'s multisite tool."'),
+    p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting EJSCREEN reports for hundreds or thousands of places, all at the same time."),
     p("This provides interactive results and a formatted, ready-to-share report with tables, graphics, and a map. The report can provide information about communities near any of the industrial facilities on a list, for example."),
 
     p(paste0('This version of the ', EJAM:::global_or_param("app_title"),

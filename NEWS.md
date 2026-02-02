@@ -48,6 +48,7 @@
 - Other changes:
 
   - Changed links in header at top right of the webpages, to link to "Share data feedback" and "Help improve the tool" forms just like CEJST has and EJSCREEN is adding. The "Contact Us" link to an email address was removed.
+  - Updated text in the "About" tab, to refer to and link to EJSCREEN, and to refer to EJAM in terms of EJSCREEN.
   - Updated text in README
   - Updated text in the [Future Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html) and other vignettes/articles.
   - Renamed `ejam2excel()` parameters (in.analysis_title changed to analysis_title) to be consistent with `ejam2report()` parameter, or to simplify (react.v1_summary_plot changed to report_plot).
