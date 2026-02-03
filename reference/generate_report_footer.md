@@ -21,9 +21,9 @@ generate_report_footer(
 
 - footer_date:
 
-  optional, default is today, e.g., "January 1, 2026" If footer_date not
-  specified, it is based on date right now in local user timezone, based
-  on wherever the server happens to be
+  optional, default is today, e.g., "February 14, 2026" If footer_date
+  not specified, it is based on date right now in local user timezone,
+  based on wherever the server happens to be
 
 - footer_text:
 
@@ -40,7 +40,7 @@ generate_report_footer(
 
       footer_html = shiny::HTML(paste0('
         <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
-          <p style="margin-bottom: 0;">', 'Report created by EJAM version 2.32.7 on January 1, 2026', '</p>
+          <p style="margin-bottom: 0;">', 'Report created by EJAM version 2.32.7 on February 14, 2026', '</p>
         </div>
       '))
 

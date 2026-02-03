@@ -166,7 +166,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span> <span class="co"># Note some of these settings/ parameters may get renamed to harmonize and simplify names.</span></span>
 <span></span>
 <span> <span class="co">## Provide input sites to app (skip the web app upload clicks),</span></span>
-<span> <span class="co">## using parameters called `sitepoints` and `shapefile` as in [ejamit()]</span></span>
+<span> <span class="co">## using parameters called `sitepoints` and `shapefile` and `fips` as in [ejamit()]</span></span>
 <span></span>
 <span> <span class="co">#  data.frame with latitude, longitude</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, radius <span class="op">=</span> <span class="fl">3.1</span><span class="op">)</span></span>
@@ -180,6 +180,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span> <span class="co"># file with polygons ("shp" is an alias for "shapefile")</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>shp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/shapes/testinput_shapes_2.zip"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span></span>
 <span> <span class="co"># a vector or file with fips codes</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_counties</span><span class="op">)</span></span>
 <span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_cities</span><span class="op">)</span></span>
@@ -188,6 +189,11 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span><span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"RI"</span><span class="op">)</span>,</span>
 <span>        analysis_title <span class="op">=</span> <span class="st">"Rhode Island Counties"</span>,</span>
 <span>        report_title <span class="op">=</span> <span class="st">"Overall Summary Report"</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co"># FIPS based on names, but note matching by name is imperfect</span></span>
+<span> <span class="co"># see [name2fips()] for details</span></span>
+<span><span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"akutan,ak"</span>, <span class="st">"syracuse city,ny"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span></span>
 <span> <span class="co">## Use preferred settings, for your set of analyses:</span></span>
 <span></span>
@@ -225,7 +231,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  fipspicker_fips_type2pick_default <span class="op">=</span> <span class="st">"Cities or Places"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="co">## Pick sities to show at launch</span></span>
+<span>  <span class="co">## Specific cities are preselected at launch</span></span>
 <span></span>
 <span>  <span class="fu">ejamapp</span><span class="op">(</span></span>
 <span>  default_upload_dropdown <span class="op">=</span> <span class="st">"dropdown"</span>,</span>
@@ -233,6 +239,10 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  fipspicker_fips_type2pick_default <span class="op">=</span> <span class="st">"Cities or Places"</span>,</span>
 <span>  default_cities_picked <span class="op">=</span> <span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"akutan,ak"</span>, <span class="st">"syracuse city,ny"</span><span class="op">)</span> <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
+<span> <span class="co">## compare to this which is easier to write,</span></span>
+<span> <span class="co">## but acts as if they were uploaded so</span></span>
+<span> <span class="co">## this does not show a dropdown menu where one could revise selections:</span></span>
+<span> <span class="fu">ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"akutan,ak"</span>, <span class="st">"syracuse city,ny"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co">#default_choices_for_type_of_site_category = c(</span></span>
 <span>  <span class="co">#  'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',</span></span>

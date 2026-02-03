@@ -150,7 +150,7 @@ The EPA released EJSCREEN version 2.32 in August 2024 and then in
 January 2025 took EJSCREEN off line, with no plans for further updates.
 The exact same data were used in EJAM version 2.32.0 and EJSCREEN
 version 2.32 released in late 2024. Non-EPA development of EJAM at least
-through version 2.32.7 in January 2026 was still using that same
+through version 2.32.7 in February 2026 was still using that same
 dataset.
 
 EJAM version 2.32.7 (released January 2026) is based on American
