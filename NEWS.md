@@ -52,6 +52,7 @@
   - Updated text in README
   - Updated text in the [Future Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html) and other vignettes/articles.
   - Renamed `ejam2excel()` parameters (in.analysis_title changed to analysis_title) to be consistent with `ejam2report()` parameter, or to simplify (react.v1_summary_plot changed to report_plot).
+  - `ejamapp()` now lets you specify the city/cities to analyze (to show as preselected upon launch), via default_cities_picked parameter
   - `ejamapp()` has new parameter aliases: "pts" is short for "sitepoints", "shp" is short for "shapefile", "analysis_title" or "default_analysis_title" will set analysis title in report header, and "report_title" or "default_report_title" will set overall title in topmost part of report header.
   - `url_ejscreentechdoc()` was added to easily get URL of EJSCREEN documentation pages and docs
 
