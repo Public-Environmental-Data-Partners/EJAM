@@ -1,6 +1,6 @@
 # Changelog
 
-## EJAM 2.32.7 (January 2026)
+## EJAM 2.32.7 (February 2026)
 
 - Bug fixes:
 
@@ -16,6 +16,8 @@
     linking to the API to get a single-site report, so a report would
     show a very slightly different point and population count, for
     example, for some sites, versus what was intended.
+  - Fixed bug in hosted app where uploads and downloads sometimes
+    failed.
   - Fixed various other/ misc small issues.
 
 - Improved the Community Report, Multisite Report, Spreadsheet
@@ -75,6 +77,12 @@
 
 - Other changes:
 
+  - Changed links in header at top right of the webpages, to link to
+    “Share data feedback” and “Help improve the tool” forms just like
+    CEJST has and EJSCREEN is adding. The “Contact Us” link to an email
+    address was removed.
+  - Updated text in the “About” tab, to refer to and link to EJSCREEN,
+    and to refer to EJAM in terms of EJSCREEN.
   - Updated text in README
   - Updated text in the [Future
     Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html)
@@ -86,6 +94,9 @@
     [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
     parameter, or to simplify (react.v1_summary_plot changed to
     report_plot).
+  - [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+    now lets you specify the city/cities to analyze (to show as
+    preselected upon launch), via default_cities_picked parameter
   - [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
     has new parameter aliases: “pts” is short for “sitepoints”, “shp” is
     short for “shapefile”, “analysis_title” or “default_analysis_title”

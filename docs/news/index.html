@@ -64,11 +64,12 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.32.7" id="ejam-2327-january-2026">EJAM 2.32.7 (January 2026)<a class="anchor" aria-label="anchor" href="#ejam-2327-january-2026"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.32.7" id="ejam-2327-february-2026">EJAM 2.32.7 (February 2026)<a class="anchor" aria-label="anchor" href="#ejam-2327-february-2026"></a></h2>
 <ul><li>
 <p>Bug fixes:</p>
 <ul><li>Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in <code><a href="../reference/fixcolnames.html">fixcolnames()</a></code> and had been introduced 3 weeks earlier while a separate issue was being fixed.</li>
 <li>Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended.</li>
+<li>Fixed bug in hosted app where uploads and downloads sometimes failed.</li>
 <li>Fixed various other/ misc small issues.</li>
 </ul></li>
 <li>
@@ -116,9 +117,13 @@
 </ul></li>
 <li>
 <p>Other changes:</p>
-<ul><li>Updated text in README</li>
+<ul><li>Changed links in header at top right of the webpages, to link to “Share data feedback” and “Help improve the tool” forms just like CEJST has and EJSCREEN is adding. The “Contact Us” link to an email address was removed.</li>
+<li>Updated text in the “About” tab, to refer to and link to EJSCREEN, and to refer to EJAM in terms of EJSCREEN.</li>
+<li>Updated text in README</li>
 <li>Updated text in the <a href="https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html">Future Plans</a> and other vignettes/articles.</li>
 <li>Renamed <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> parameters (in.analysis_title changed to analysis_title) to be consistent with <code><a href="../reference/ejam2report.html">ejam2report()</a></code> parameter, or to simplify (react.v1_summary_plot changed to report_plot).</li>
+<li>
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code> now lets you specify the city/cities to analyze (to show as preselected upon launch), via default_cities_picked parameter</li>
 <li>
 <code><a href="../reference/ejamapp.html">ejamapp()</a></code> has new parameter aliases: “pts” is short for “sitepoints”, “shp” is short for “shapefile”, “analysis_title” or “default_analysis_title” will set analysis title in report header, and “report_title” or “default_report_title” will set overall title in topmost part of report header.</li>
 <li>
