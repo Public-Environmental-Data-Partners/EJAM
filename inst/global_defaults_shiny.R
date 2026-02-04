@@ -1010,27 +1010,29 @@ AIR,	IL000031012ACJ<br>
      <div class="container-fluid" style="border-spacing: 0; margin: 0; padding-bottom: 0; border: 0;
      border-right-width: 0px; font-size:24px; ";>
 
-  <div id="ejamheader">
+  <div id="ejamheader" style="padding-right: 32px;">
 
     <table width="100%" style="margin-bottom: 0px; margin-top: 0px";><tbody>
-      <tr style="font-size:24px margin-bottom: 0px; margin-top: 0px";>
+      <tr style="font-size:24px margin-bottom: 0px; margin-top: 0px"; padding-right: 32px;>
 
         <td  valign="top" style=
           "border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff;
           margin-bottom: 0px; margin-top: 0px; margin-left: 0px; margin-right: 0px;
-          padding-bottom: 0px; padding-top: 0px; padding-left: 0px; padding-right: 0px">
+          line-height:34px;
+          padding-bottom: 0px; padding-top: 0px; padding-left: 30px">
 
 ',
                     ### >> app_logo_html ####
 
                     app_logo_HTML_global_or_param()  #  # built from app_logo unless set in call to ejamapp()
-                    ,'
-        </td>
-
-        <td valign="bottom" style="line-height:34px; padding: 0px;
-          border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff";
-          vertical-align: bottom;>
-
+                    ,
+        #             '
+        # </td>
+        #
+        # <td valign="bottom" align="left" style="line-height:34px; padding: 0px;
+        #   border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff";
+        #   vertical-align: bottom;>',
+          '
                 <span style="font-size: 15pt; font-weight:700; font-family:Arial";>',   # larger font for app title
 
                     ### >> app_title  ####
@@ -1060,30 +1062,24 @@ AIR,	IL000031012ACJ<br>
 <!--     <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> | -->
 
 <!--     https://ejanalysis.github.io/EJAM/articles/ejscreen.html would be a more direct link than https://ejanalysis.github.io/EJAM/articles/index.html -->
-
-<a href="https://ejanalysis.github.io/EJAM/articles/index.html" target="_blank" rel="noreferrer">
-  <button type="button">EJSCREEN/EJAM Help
-<!--    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="EJSCREEN/EJAM Help"> -->
-  </button>
-</a>
+<a href="https://ejanalysis.github.io/EJAM/articles/index.html" target="_blank" rel="noreferrer">EJSCREEN/EJAM Help</a>
 
 <!--     <a href="https://ejanalysis.github.io/EJAM/articles/index.html" alt="EJSCREEN help" title="EJSCREEN documentation pages" target="_blank">EJSCREEN/EJAM Help</a> | -->
-
 <!--     <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a> | -->
 
-<a href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/edit" target="_blank" rel="noreferrer">
-  <button type="button">Share data feedback
+<!-- <a href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/edit" target="_blank" rel="noreferrer"> -->
+<!--  <button type="button">Share data feedback -->
 <!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Share data feedback"> -->
-  </button>
-</a>
+<!--  </button> -->
+<!-- </a> -->
 
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform" target="_blank" rel="noreferrer">
-  <button type="button">Help improve the tool
+<!-- <a href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform" target="_blank" rel="noreferrer"> -->
+<!--    <button type="button">Help improve the tool -->
 <!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Help improve the tool"> -->
-  </button>
-</a>
+<!--    </button> -->
+<!--  </a> -->
 
-          </span>&nbsp;&nbsp;
+</span>&nbsp;&nbsp;
         </td>
  ',
                     '
@@ -1119,7 +1115,42 @@ AIR,	IL000031012ACJ<br>
           '
       </div>
 
-      <div class="l-page__footer">
+      <div class="l-page__footer" style="background-color: #FFFFFF; margin-right: 5px; margin-top:5px; margin-bottom:5px; padding-top:1px; padding-bottom:1px; padding-right: 32px;">
+
+
+<div class="cejst-btn-wrap" align="right">
+  <a
+    class="cejst-style-btn"
+    href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/edit"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Share data feedback
+    <img
+      class="cejst-launch-icon"
+      src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\' fill=\'%230050d8\'/%3E%3C/svg%3E"
+      alt=""
+      aria-hidden="true"
+    />
+  </a>
+
+
+  <a
+    class="cejst-style-btn"
+    href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Help improve the tool
+    <img
+      class="cejst-launch-icon"
+      src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\' fill=\'%230050d8\'/%3E%3C/svg%3E"
+      alt=""
+      aria-hidden="true"
+    />
+  </a>
+</div>
+
 
       </div>
 

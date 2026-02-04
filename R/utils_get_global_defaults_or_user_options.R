@@ -29,7 +29,7 @@ app_logo_HTML_global_or_param = function(app_logo_now = EJAM:::global_or_param("
       app_logo_html = paste0(
         ' <img id="titleLogo" src=',
         app_logo_now,
-        ' alt="logo" title="logo" style="margin: 0px; padding-bottom: 4px; padding-top: 4px; padding-left: 4px; padding-right: 4px; width: 40px; height: 40px">'
+        ' alt="logo" title="logo" align="center" style="margin: 0px; margin-right: 4px; padding-bottom: 4px; padding-top: 4px; padding-left: 4px; padding-right: 4px; width: 40px; height: 40px">'
       )
     )
   } else {
