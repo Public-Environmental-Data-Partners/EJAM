@@ -9,6 +9,7 @@
   
 - Improved the Community Report, Multisite Report, Spreadsheet
 
+  - New option of seeing original 2024 style Community Report, with different graphics and different contents. See `ejam2report()` and original_style_report parameter that can be passed to `ejamapp()` or set in global_defaults files.
   - Report footer was edited, and can be customized now via `ejam2report()`
   - Report Title was revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
   - Analysis Title (on reports) revised also

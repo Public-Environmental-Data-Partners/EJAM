@@ -2131,7 +2131,7 @@ app_server <- function(input, output, session) {
 
   ### . build_community_report() makes header + tables ####
 
-  output$comm_report_html_by_template <- renderUI({
+  output$comm_report_html <- renderUI({
       req(data_processed())
 
 
@@ -2156,8 +2156,13 @@ app_server <- function(input, output, session) {
         # ejam_uniq_id not relevant for overall report
       )
       pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
+      if (isTRUE(EJAM:::global_or_param("original_style_report"))) {
+        FUN <- build_community_report_by_template
+      } else {
+        FUN <- build_community_report
+      }
 
-      full_page <- build_community_report_by_template(in_shiny = TRUE,
+      full_page <- FUN(in_shiny = TRUE,
 
                                           output_df = data_processed()$results_overall,
                                           analysis_title =  sanitized_analysis_title(),
@@ -2595,7 +2600,8 @@ app_server <- function(input, output, session) {
         footer_version_number = NULL,
         footer_date = date_in_user_timezone(),
         footer_text = NULL,
-        footer_html = NULL # NULL means use defaults
+        footer_html = NULL, # NULL means use defaults
+        original_style_report = isTRUE(EJAM:::global_or_param("original_style_report"))
       )
     })
     if (input$testing) {
@@ -2707,7 +2713,8 @@ app_server <- function(input, output, session) {
           extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
           extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
           logo_path =  EJAM:::global_or_param("report_logo"),
-          footer_date = date_in_user_timezone()
+          footer_date = date_in_user_timezone(),
+          original_style_report = isTRUE(EJAM:::global_or_param("original_style_report"))
         )
 
         # modal pops up so user can trigger the download

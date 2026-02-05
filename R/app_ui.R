@@ -526,7 +526,9 @@ app_ui <- function(request) {
 
                                ############################## #
                                ###               > HEADER AND TABLES       ####
-                               uiOutput('comm_report_html_by_template'),   # uiOutput('comm_report_html'),
+                               ## other components needed if original_style_report = F
+                               uiOutput('comm_report_html'), # either by_template or not depends on parameter original_style_report
+                               ## other components needed if original_style_report = F
 
                                ############################## #
                                ###              > DOWNLOAD BUTTON    ####

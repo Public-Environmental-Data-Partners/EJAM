@@ -46,7 +46,10 @@ global_defaults_package$app_title = as.vector(desc::desc_get("Title", file = sys
 
 global_defaults_package$report_title_multisite = "EJSCREEN Multisite Summary"
 global_defaults_package$report_title           = "EJSCREEN Community Report"
+############################### #
 
+# REPORT STYLE/TYPE ####
+global_defaults_package$original_style_report = FALSE # See help for ejam2report()
 ############################### #
 
 # APP LOGO ####

@@ -67,6 +67,14 @@
 #'   to customize the report footer - see [generate_report_footer()]
 #'   Should provide footer_date to ensure user's timezone is used to determine today's date.
 #' @param addlatlon optional, whether to include lat,lon coordinates in header (for "latlon" sitetype)
+#'
+#' @param original_style_report optional, set to TRUE to use a template that makes
+#'   the community report look more like the original 2024 EPA EJSCREEN Community Report,
+#'   with graphics and layout more similar to that report.
+#'   However, this template does not yet include the map and newer style barplot of ratios.
+#'   It also does not show ratios of scores to US or State averages,
+#'   and has other differences.
+#'
 #' @return URL of temp file or object depending on return_html,
 #'    and has side effect of launching browser to view it depending on return_html
 #'
@@ -131,9 +139,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         fileextension = c("html", "pdf")[1],
                         filename = NULL,
                         return_html = FALSE,
-                        launch_browser = TRUE
+                        launch_browser = TRUE,
+                        original_style_report = NULL
 ) {
-
+  if (is.null(original_style_report)) {
+    original_style_report <- isTRUE(EJAM:::global_or_param("original_style_report"))
+  }
   # analysis title default and report_title default depend on if this is 1-site or multisite
 
   if (!interactive()) {launch_browser <- FALSE} # but that means other functions cannot override this while not interactive.
@@ -351,7 +362,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ### > build_community_report() ####
     ## note build_community_report() is also used in community_report_template.Rmd and in server
 
-    community_html <- build_community_report_by_template(
+    if (original_style_report) {
+      FUNC <- build_community_report_by_template
+    } else {
+      FUNC <- build_community_report
+    }
+    community_html <- FUNC(
 
       logo_path      = logo_path,
       logo_html      = logo_html,
@@ -372,7 +388,6 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       in_shiny = FALSE,
       filename = temp_comm_report_or_null  # passing NULL should make it return the html object
     )
-
     ## seems like using cat() was a simpler approach tried initially: ***
     ##  that would write just the basics of it to the temp location, not needing render()
     ##  but the render() approach also add the map and plot !!
