@@ -15,6 +15,7 @@ It is a data.table with one row for every US Census blockgroup.
 5-year summary file, as documented by EJSCREEN.
 \item The EJ Indexes (Summary Indexes) are stored in a separate table, \link{bgej}
 }
+
 The \href{https://ejanalysis.github.io/EJAM/articles/ejscreen.html}{source of data for each indicator was documented by EJSCREEN}{target="_blank"}.
 
 More about blockgroupstats
