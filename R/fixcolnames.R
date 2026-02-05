@@ -141,6 +141,7 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
     # [1] "PM25" "xyz"
   }
   ###################### #   ###################### #   ###################### #
+
   namesnow[namesnow %in% ""] <- names_as_provided[namesnow %in% ""]
   return(namesnow)
 }
