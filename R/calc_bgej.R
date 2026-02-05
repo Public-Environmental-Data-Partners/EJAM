@@ -23,7 +23,7 @@
 #' @param vnames_ST name of column in bgstats that has the 2-character State abbreviation to use in
 #'   finding envt percentiles in the [statestats] table used by [calc_pctile_columns()]
 #'
-#' @returns data.table like [bgej]
+#' @return data.table like [bgej]
 #'
 #' @export
 #' @keywords internal

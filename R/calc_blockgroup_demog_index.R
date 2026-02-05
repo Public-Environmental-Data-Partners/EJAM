@@ -9,7 +9,7 @@
 #'
 #' @param yr endyear of ACS 5-year survey to use, inferred if omitted
 #'
-#' @returns data.table, one row per blockgroup, columns bgfips, etc.
+#' @return data.table, one row per blockgroup, columns bgfips, etc.
 #'
 #' @keywords internal
 #'
