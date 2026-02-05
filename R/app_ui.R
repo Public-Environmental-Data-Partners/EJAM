@@ -535,7 +535,6 @@ conditionalPanel(condition = "!input.original_style_report",
                                ############################## #
                                ###                > MAP    ####
                                #### quick_view_map (results, in summary report) ### #
-                           ###  make this conditional on original_style_report = F, since the template already has a map in it, and this was being added later when not using the template
                             shinycssloaders::withSpinner(
                               leaflet::leafletOutput('quick_view_map')#, width = '1170px', height = '627px')
                             ),
