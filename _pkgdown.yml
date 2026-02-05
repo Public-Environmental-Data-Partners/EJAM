@@ -440,6 +440,7 @@ reference:
   desc: "Utilities to handle variable names, indicator metadata, formulas, etc."
   contents:
   - fixcolnames
+  - fixcolnames_anyoldtype
   - names_d
   - names_e
   - map_headernames
