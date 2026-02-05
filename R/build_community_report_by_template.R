@@ -287,13 +287,17 @@ build_community_report_by_template <- function(output_df = testoutput_ejamit_10p
   paramlist$TOTALPOP <- totalpop
   paramlist$LOCATIONSTR <- locationstr
   # paramlist$REPORT_TITLE  <- analysis_title # "EJScreen Community Report"
+  paramlist$REPORT_TITLE <- EJAM:::global_or_param("report_title")
+  paramlist$default_longitude <- -122.45
+  paramlist$default_latitude <-   37.75
   paramlist$`headContent()` <- NULL
   ################### #####  ################### #### #
-  # check / report what is missing in that renaming
+  # check / report what is missing in that renaming - not sure this is correct!
   template_needs_but_not_among_params = setdiff(template_names_found, c(names(paramlist), "headContent()" ))
   params_cannot_rename_to_template_term = setdiff(names(paramlist) , template_names_found)
   cat("\n template_needs_but_not_among_params: \n\n", paste0(template_needs_but_not_among_params, collapse = ", "), "\n")
-  cat("\n params_cannot_rename_to_template_term: \n\n", paste0(params_cannot_rename_to_template_term, collapse = ", "), "\n")
+  cat("\n params_cannot_rename_to_template_term (other than ratio-related): \n\n", paste0(setdiff(params_cannot_rename_to_template_term, grep("ratio", map_headernames$rname, value=TRUE)), collapse = ", "), "\n")
+  cat("\n params_cannot_rename_to_template_term (ratio-related only): \n\n", paste0(intersect(params_cannot_rename_to_template_term, grep("ratio", map_headernames$rname, value=TRUE)), collapse = ", "), "\n")
 
   # put in the missing params as NA values:
   for (nm in template_needs_but_not_among_params) {
