@@ -22,7 +22,8 @@
 
 <head>
   {{ headContent() }}
-    <title>EJSCREEN Report</title>    <!--  {{REPORT_TITLE}}  -->
+ <title>EJSCREEN Report</title>
+
 <!-- JS libraries -->
 
     <!-- Apex Charts -->
@@ -459,7 +460,7 @@ function (esriConfig, esriRequest, MapView, Map, ScaleBar, geometryEngine, webMe
           };
 		  //end symbols
 
-      var useStaticData = true;  // {{useStaticData}}; // was false, but could set true for testing
+      var useStaticData = false;  //   was false, but could set true for testing
 
 			var soeurldemog = ejscreendemogservice + "/exts/EJScreen_DemogReports/Get2021DemogACS";
 
@@ -541,8 +542,8 @@ function (esriConfig, esriRequest, MapView, Map, ScaleBar, geometryEngine, webMe
     var mview = new MapView({
         map: map,
         container: "map",
-         center: [-122.45, 37.75],
-      //  center: [{{default_longitude}}, {{default_latitude}}], // if passed in paramlist
+        center: [-122.45, 37.75],
+      //  center: [  default_longitude ,  default_latitude  ], // but wrap in double brackets if passed in paramlist
         zoom: 13
     });
 
