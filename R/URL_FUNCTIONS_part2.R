@@ -1432,7 +1432,7 @@ url_github_preview = function(ghurl = NULL,
 
 #' utility to get URL of .pdf of EJSCREEN Technical Documentation
 #'
-#' @returns URL string
+#' @return URL string
 #'
 #' @export
 #'

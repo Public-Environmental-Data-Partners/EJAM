@@ -15,7 +15,7 @@
 #'
 #' @param yr endyear of ACS 5-year survey to use, inferred if omitted
 #' @param tables "B18101" and "C16001", e.g., for disability and detailed language spoken
-#' @returns data.table, one row per blockgroup (not tract)
+#' @return data.table, one row per blockgroup (not tract)
 #'
 #' @export
 #' @keywords internal

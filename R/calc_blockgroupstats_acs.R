@@ -5,7 +5,7 @@
 #' @param yr end year of 5-year ACS dataset, guesses if not specified
 #' @param tables_acs optional, vector of table names like "B01001" or default, [tables_ejscreen_acs]
 #' @param dataset optional, tested for "acs5" but see [tidycensus::load_variables()]
-#' @returns invisibly returns data.table of all variables in specified tables,
+#' @return invisibly returns data.table of all variables in specified tables,
 #'   and also prints to console the first variable of each table
 #'
 #'
@@ -33,7 +33,7 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #'
 #' @param yr end year of 5-year ACS dataset, guesses if not specified
 #'
-#' @returns data.table, one row per blockgroup, columns bgfips, etc.
+#' @return data.table, one row per blockgroup, columns bgfips, etc.
 #'
 #' @export
 #' @keywords internal
