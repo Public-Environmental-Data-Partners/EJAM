@@ -108,7 +108,7 @@ There are recorded interactions used as tests of the web app, as explained in
 
 There is also a github workflow in the package that runs unit tests,
 automatically triggered by certain events, such as a pull request to the main or
-development branch. See `EJAM/.github/workflows/test-shiny-web-app-functionality.yml`
+development branch. See `EJAM/.github/workflows/test-webapp-functionality.yml`
 
 ### Other notes
 

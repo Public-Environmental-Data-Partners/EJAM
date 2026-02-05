@@ -22,11 +22,23 @@
 #'
 #' @param analysis_title optional title as character string, used only in 'Notes' sheet
 #'   (and to create a default filename if fname not specified). Not used in the copy of the report.
-#' @param site_method site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
-#'   optional site method parameter used to create a more specific title with create_filename.
-#'   Note `ejamitout$sitetype` is not quite the same as the `site_method` parameter used in building reports.
-#'   sitetype can be latlon, fips, or shp
-#'   site_method can be one of these: SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
+#'
+#' @param site_method optional word or phrase about the sites or how they were selected.
+#'
+#'   The `site_method` parameter can be used as-is by [create_filename()] to be part of the saved file name.
+#'   It can also be used by the shiny app to add informational text in the header of a report,
+#'   via [ejam2report()] and related helper functions like [report_residents_within_xyz()]
+#'   or via [ejam2excel()] and related helper functions.
+#'
+#'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
+#'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
+#'
+#'   - sitetype can be "latlon", "fips", or "shp"
+#'
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'
+#'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
+#'   which is much like the one called current_upload_method().
 #'
 #' @param radius_or_buffer_in_miles optional radius in miles
 #' @param radius_or_buffer_description optional text phrase describing places analyzed, like in report headers
@@ -99,7 +111,7 @@ ejam2excel <- function(ejamitout,
                        updateProgress = NULL,
 
                        analysis_title =  "EJAM analysis",
-                       site_method = "",
+                       site_method = NULL,
 
                        radius_or_buffer_in_miles = NULL,  #  input$radius_now
                        radius_or_buffer_description = NULL, # e.g.,  'Miles radius of circular buffer (or distance used if buffering around polygons)',
@@ -151,6 +163,8 @@ ejam2excel <- function(ejamitout,
   # if (community_reportadd && is.null(community_html)) {
   #   community_html <- ejam2report(ejamitout = ejamitout, )
   # }
+
+  # table_xls_from_ejam()  ####
 
   x <-  table_xls_from_ejam(
 

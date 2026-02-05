@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,10 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -122,8 +126,8 @@ since there is not a 1-to-1 relationship between functions like xyz() vs
 the EJAM/R/xyz.R files defining functions vs
 EJAM/tests/testthat/test-xyz.R files containing unit tests.</p>
 <p>Also see <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test_coverage()</a></code> which is a shortcut
-for <code><a href="http://covr.r-lib.org/reference/package_coverage.html" class="external-link">covr::package_coverage()</a></code> plus
-<code><a href="http://covr.r-lib.org/reference/report.html" class="external-link">covr::report()</a></code>. The <a href="https://covr.r-lib.org/" class="external-link">covr
+for <code>covr::package_coverage()</code> plus
+<code>covr::report()</code>. The <a href="https://covr.r-lib.org/" class="external-link">covr
 package</a> also has a related RStudio addin.</p>
 </div>
 <div class="section level3">
@@ -192,7 +196,7 @@ shinytest2</a>.</p>
 <p>There is also a github workflow in the package that runs unit tests,
 automatically triggered by certain events, such as a pull request to the
 main or development branch. See
-<code>EJAM/.github/workflows/test-shiny-web-app-functionality.yml</code></p>
+<code>EJAM/.github/workflows/test-webapp-functionality.yml</code></p>
 </div>
 <div class="section level3">
 <h3 id="other-notes">Other notes<a class="anchor" aria-label="anchor" href="#other-notes"></a>
@@ -212,11 +216,11 @@ available, those tests will be skipped or would fail.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer>

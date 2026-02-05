@@ -21,7 +21,7 @@ with 3 overlapping 1-mile radius circles. To view these points:
 
  mapfast(pts, radius = 1)  
    
- plotblocksnearby(pts, radius = 1)
+ plot_blocks_nearby(pts, radius = 1)
 }\if{html}{\out{</div>}}
 }
 \keyword{datasets}

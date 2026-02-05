@@ -1,7 +1,7 @@
 
 #' helper - copies template, css to tempdir for render of summary report
 #' helper - copies .Rmd (template), .css from Rmd_folder to a temp dir subfolder for rendering
-#' @details used by `ejam2report()` only now? was also copying  logo .png ? but not now?
+#' @details used by [ejam2report()] only now? was also copying  logo .png ? but not now?
 #' @param Rmd_name .Rmd filename the package uses
 #' @param Rmd_folder folder the package stores the template in
 #'

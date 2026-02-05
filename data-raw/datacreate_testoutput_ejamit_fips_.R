@@ -8,6 +8,7 @@
 
 testoutput_ejamit_fips_counties <- ejamit(fips = testinput_fips_counties)  #  COUNTIES
 EJAM:::metadata_add_and_use_this("testoutput_ejamit_fips_counties")
+# data(testoutput_ejamit_fips_counties) # may be need to see the just-updated attributes
 # testoutput_ejamit_fips_counties <- metadata_add(testoutput_ejamit_fips_counties)
 # usethis::use_data(testoutput_ejamit_fips_counties, overwrite = TRUE)
 EJAM:::dataset_documenter("testoutput_ejamit_fips_counties", description = "This is the output of ejamit(fips = testinput_fips_counties)",

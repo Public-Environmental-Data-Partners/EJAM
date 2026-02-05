@@ -2,12 +2,17 @@
 
 ### EJSCREEN Documentation
 
-EJSCREEN Indicators and Reports
+EJSCREEN Indicators & Reports
 
 - [EJSCREEN
   Documentation](https://ejanalysis.github.io/EJAM/articles/ejscreen.md):
 
   EJSCREEN Documentation
+
+- [EJScreen Indicators and Map
+  Descriptions](https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.md):
+
+  EJScreen Indicators and Map Descriptions
 
 ### The EJAM Web App
 

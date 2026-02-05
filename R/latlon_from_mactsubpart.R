@@ -19,7 +19,7 @@
 #'   of interest, such as "FFFF" - see for example,
 #'   <https://www.ecfr.gov/current/title-40/part-63/subpart-FFFF>
 #' @param include_if_no_latlon logical - many in the database lack lat lon values but have a MACT code
-#' @returns a table in [data.table](https://r-datatable.com) format with columns named
+#' @return a table in [data.table](https://r-datatable.com) format with columns named
 #'
 #'   programid, subpart, title, lat, lon, REGISTRY_ID, program
 #'

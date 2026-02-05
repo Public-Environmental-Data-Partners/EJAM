@@ -5,7 +5,7 @@ FIPS - Get county or state names from county or state FIPS codes
 ## Usage
 
 ``` r
-fips2name(fips, ...)
+fips2name(fips, quiet = FALSE, ...)
 ```
 
 ## Arguments
@@ -25,10 +25,19 @@ fips2name(fips, ...)
   - Blockgroups (12) Can be string or numeric, with or without leading
     zeroes.
 
+- quiet:
+
+  whether to silence warnings – also passed to
+  [`fips_lead_zero()`](https://ejanalysis.github.io/EJAM/reference/fips_lead_zero.md)
+  and
+  [`fipstype()`](https://ejanalysis.github.io/EJAM/reference/fipstype.md)
+
 - ...:
 
-  passed to fips2countyname() to control whether it appends something
-  like , NY or , New York after county name
+  passed to
+  [`fips2countyname()`](https://ejanalysis.github.io/EJAM/reference/fips2countyname.md)
+  to control whether it appends something like , NY or , New York after
+  county name
 
 ## Value
 

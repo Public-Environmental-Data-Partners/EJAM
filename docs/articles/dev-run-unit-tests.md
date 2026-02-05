@@ -28,11 +28,9 @@ files containing unit tests.
 
 Also see
 [`devtools::test_coverage()`](https://devtools.r-lib.org/reference/test.html)
-which is a shortcut for
-[`covr::package_coverage()`](http://covr.r-lib.org/reference/package_coverage.md)
-plus [`covr::report()`](http://covr.r-lib.org/reference/report.md). The
-[covr package](https://covr.r-lib.org/) also has a related RStudio
-addin.
+which is a shortcut for `covr::package_coverage()` plus
+`covr::report()`. The [covr package](https://covr.r-lib.org/) also has a
+related RStudio addin.
 
 ### Adding unit tests (for new functions or where unit tests not yet written)
 
@@ -100,7 +98,7 @@ shinytest2](https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.md).
 There is also a github workflow in the package that runs unit tests,
 automatically triggered by certain events, such as a pull request to the
 main or development branch. See
-`EJAM/.github/workflows/test-shiny-web-app-functionality.yml`
+`EJAM/.github/workflows/test-webapp-functionality.yml`
 
 ### Other notes
 

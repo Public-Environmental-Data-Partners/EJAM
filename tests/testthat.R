@@ -1,7 +1,9 @@
 
+## THIS FILE LOADS EJAM AND GLOBAL DEFAULTS, AND THEN
+## RUNS THE SHINYTEST2 WEB APP UI FUNCTIONALITY UNIT TESTS
 
+################################# # ################################# #
 # see also setup.R
-
 
 # Where should you do additional test configuration?
 # Learn more about the roles of various files in:
@@ -9,7 +11,11 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 ################################# # ################################# #
-#
+
+# 1. EJAM gets loaded -OR- reinstalled from source and loaded ####
+
+################################# # ################################# #
+
 ## Installs the latest version of the app using your checked out branch's code
 ##  then library() used so now
 ##  it will test the just-installed version = latest source version.
@@ -30,15 +36,23 @@ if (interactive()) {
 }
 
 if (install_now) {
-  remotes::install_local('.', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+  if (file.exists("DESCRIPTION")) {
+    remotes::install_local('.', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+  } else {
+    if (file.exists("../DESCRIPTION")) {
+      remotes::install_local('..', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+    }
+  }
 }
-
 cat("\n\n      ------------------ NOW DOING library(EJAM) !!!!  -------------      \n\n")
 library(EJAM)
 
+################################# # ################################# #
 
+# 2. Get global defaults ####
 
 ################################# # ################################# #
+
 ## this also needs to load global_defaults_ info
 ## that is normally saved in golem_opts during app_run() like...
 global_defaults_or_user_options <- EJAM:::get_global_defaults_or_user_options(
@@ -58,12 +72,15 @@ global_defaults_or_user_options <- EJAM:::get_global_defaults_or_user_options(
 # ejam_app_version
 # default_extratable_hide_missing_rows_for
 ## assign each global default value to this envt :
-
+# see also EJAM:::get_global_defaults_or_user_options()
 for (i in seq_along(global_defaults_or_user_options)) {
   assign(names(global_defaults_or_user_options)[i], (global_defaults_or_user_options[[i]]))
 }
+
+
 ################################# # ################################# #
 
+# 3. Run web app UI functionality tests ####
 
 ################################# # ################################# #
 #
@@ -76,7 +93,8 @@ library(shinytest2)
 # unixtools::set.tempdir('~/tmp')
 
 # Get the main function that does the web app test commands:
-source("tests/app-functionality.R")
+# the file setup-shinytest2.R should include the test scripts in the function it defines,
+ # shinytest2_webapp_functionality()
 
 testthat::set_max_fails(200)
 
@@ -89,11 +107,11 @@ testthat::set_max_fails(200)
 # Passing ⁠R CMD check⁠ is essential if you want to submit your package to CRAN: you must not have any ERRORs or WARNINGs, and you want to ensure that there are as few NOTEs as possible. If you are not submitting to CRAN, at least ensure that there are no ERRORs or WARNINGs: these typically represent serious problems.
 # check() automatically builds a package before calling check_built(), as this is the recommended way to check packages. Note that this process runs in an independent R session, so nothing in your current workspace will affect the process. Under-the-hood, check() and check_built() rely on pkgbuild::build() and rcmdcheck::rcmdcheck().
 
-# test_check("EJAM") # this runs all the tests
+# test_check("EJAM") # this runs all the tests including web app functionality tests
 
-# To run just the web app functionality unit tests:
+# run just the web app functionality unit tests
 
-shinytest2::test_app(".", filter = "-functionality")
+shinytest2::test_app(".", filter = "-functionality", check_setup = FALSE)
 
 # or
 # "-functionality" filter to only shiny tests because they're all named with '-functionality'
@@ -109,7 +127,10 @@ shinytest2::test_app(".", filter = "-functionality")
 
 # When tests fail, run this to review diffs
 # snapshot_review()
+#
 # Run this to review specific files
 # testthat::snapshot_review(files="latlon-functionality/latlon-pctlowinc.json")
+#
 # To accept the new snapshots
 # snapshot_accept()
+################################# #

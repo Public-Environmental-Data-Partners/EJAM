@@ -77,7 +77,9 @@ ejamapp(
 
 An object that represents the app. Printing the object or passing it to
 [`shiny::runApp()`](https://rdrr.io/pkg/shiny/man/runApp.html) will run
-the app, as would just typing `run_app()` or `ejamapp()` in the console.
+the app, as would just typing
+[`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md) or
+`ejamapp()` in the console.
 
 ## Details
 
@@ -128,29 +130,39 @@ if (FALSE) { # \dontrun{
  # Note some of these settings/ parameters may get renamed to harmonize and simplify names.
 
  ## Provide input sites to app (skip the web app upload clicks),
- ## using parameters called `sitepoints` and `shapefile` as in `ejamit()`
+ ## using parameters called `sitepoints` and `shapefile` and `fips` as in [ejamit()]
 
  #  data.frame with latitude, longitude
  ejamapp(sitepoints = testpoints_10[1:2,], radius = 3.1)
 
- #  file with latitude, longitude
- ejamapp(sitepoints = system.file("testdata/latlon/testpoints_10.xlsx", package="EJAM"))
+ #  file with latitude, longitude ("pts" is an alias for "sitepoints")
+ ejamapp(pts = system.file("testdata/latlon/testpoints_10.xlsx", package="EJAM"))
 
  #  spatial data.frame with polygons
  ejamapp(shapefile = testshapes_2)
 
- # file with polygons
- ejamapp(shapefile = system.file("testdata/shapes/testinput_shapes_2.zip", package="EJAM"))
+ # file with polygons ("shp" is an alias for "shapefile")
+ ejamapp(shp = system.file("testdata/shapes/testinput_shapes_2.zip", package="EJAM"))
+
 
  # a vector or file with fips codes
  ejamapp(fips = testinput_fips_counties)
  ejamapp(fips = testinput_fips_cities)
 
+ # all Counties in one State
+ejamapp(fips = fips_counties_from_state_abbrev("RI"),
+        analysis_title = "Rhode Island Counties",
+        report_title = "Overall Summary Report")
+
+ # FIPS based on names, but note matching by name is imperfect
+ # see [name2fips()] for details
+ejamapp(fips = name2fips(c("akutan,ak", "syracuse city,ny")))
+
 
  ## Use preferred settings, for your set of analyses:
 
 ejamapp(
-  default_standard_analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
+  analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
   radius = 3.1, # PREFERRED RADIUS
   default_max_miles = 31,      # to raise the radius cap
   default_max_mb_upload = 100, # to raise the file upload size cap
@@ -166,7 +178,7 @@ ejamapp(
   ##   defines the range of options
 
 ejamapp(
-  default_standard_analysis_title="Custom NAICS Analysis",
+  analysis_title="Custom NAICS Analysis",
   default_upload_dropdown="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
@@ -182,6 +194,20 @@ ejamapp(
   default_selected_type_of_site_category = "FIPS_PLACE",
   fipspicker_fips_type2pick_default = "Cities or Places"
 )
+
+  ## Specific cities are preselected at launch
+
+  ejamapp(
+  default_upload_dropdown = "dropdown",
+  default_selected_type_of_site_category = "FIPS_PLACE",
+  fipspicker_fips_type2pick_default = "Cities or Places",
+  default_cities_picked = name2fips(c("akutan,ak", "syracuse city,ny") )
+  )
+ ## compare to this which is easier to write,
+ ## but acts as if they were uploaded so
+ ## this does not show a dropdown menu where one could revise selections:
+ ejamapp(fips = name2fips(c("akutan,ak", "syracuse city,ny")))
+
   #default_choices_for_type_of_site_category = c(
   #  'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
   #  'by Industry (NAICS) Code' = 'NAICS',

@@ -19,7 +19,7 @@ test_ejam(
   y_runall = TRUE,
   y_runsome = FALSE,
   run_these = NULL,
-  skip_these = c("app"),
+  skip_these = NULL,
   y_stopif = FALSE,
   y_seeresults = TRUE,
   y_save = TRUE,

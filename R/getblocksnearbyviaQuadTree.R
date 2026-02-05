@@ -25,7 +25,7 @@
 #'   a way to quickly estimate what fraction of a blockgroup is
 #'   inside the circular buffer more accurately and more quickly than
 #'   areal apportionment of blockgroups would provide.
-#' @returns see details
+#' @return see details
 #' @param sitepoints table in [data.table](https://r-datatable.com) format with columns lat, lon giving point locations of sites or facilities around which are circular buffers
 #' @param radius in miles, defining circular buffer around a site point
 #' @param radius_donut_lower_edge radius of lower edge of ring if analyzing ring not full circle

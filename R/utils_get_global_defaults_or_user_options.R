@@ -29,7 +29,7 @@ app_logo_HTML_global_or_param = function(app_logo_now = EJAM:::global_or_param("
       app_logo_html = paste0(
         ' <img id="titleLogo" src=',
         app_logo_now,
-        ' alt="logo" title="logo" style="margin: 0px; padding-bottom: 4px; padding-top: 4px; padding-left: 4px; padding-right: 4px; width: 40px; height: 40px">'
+        ' alt="logo" title="logo" align="center" style="margin: 0px; margin-right: 4px; padding-bottom: 4px; padding-top: 4px; padding-left: 4px; padding-right: 4px; width: 40px; height: 40px">'
       )
     )
   } else {
@@ -44,7 +44,7 @@ app_logo_HTML_global_or_param = function(app_logo_now = EJAM:::global_or_param("
 #' @param user_specified_options named list of any optional arguments that were in the call to [ejamapp()]
 #' @param bookmarking_allowed same as [shiny::shinyApp] enableBookmarking param
 #'
-#' @returns a list of global defaults or user options that [ejamapp()]
+#' @return a list of global defaults or user options that [ejamapp()]
 #'   uses as the golem_opts parameter in [golem::with_golem_options()]
 #'   and that later can be retrieved by server or ui via [golem::get_golem_options()]
 #'   or via [global_or_param()] (which both do almost the same thing).

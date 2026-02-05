@@ -65,8 +65,8 @@ x$Item[!grepl("names_|^test", x$Item)]
     ## [29] "naicstable"                       "namez"                           
     ## [31] "sictable"                         "stateinfo"                       
     ## [33] "stateinfo2"                       "states_shapefile"                
-    ## [35] "statestats"                       "usastats"                        
-    ## [37] "x_anyother"
+    ## [35] "statestats"                       "tables_ejscreen_acs"             
+    ## [37] "usastats"                         "x_anyother"
 
 ### Where the datasets are stored
 
@@ -74,12 +74,12 @@ EJAM relies on datasets mostly stored in the package itself or in a
 separate, data-related repository:
 
 - Datasets stored within the EJAM package (.rda files):
-  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
+  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
   and [access to data
   files](https://github.com/ejanalysis/EJAM/tree/main/data)
 
 - Datasets used by EJAM but stored separately (large .arrow files):
-  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-)
+  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
   and [access to data
   files](https://github.com/ejanalysis/ejamdata/tree/main/data)
 
@@ -139,7 +139,7 @@ to be changed ANNUALLY or more often:
   frequent updates, ideally, since facilities open, close, relocate, or
   have their information corrected or otherwise updated. EPA’s FRS is
   the source for much of this information and the FRS is updated by EPA
-  frequently and is available via an API. Through at least v2.32.6, EJAM
+  frequently and is available via an API. Through at least v2.32.7, EJAM
   (and therefore the community reports in EJSCREEN) used a snapshot of
   the EPA FRS data rather than using an API to obtain the latest info on
   demand – that is something that could be changed in a future version.
@@ -278,7 +278,7 @@ is used by functions like
 and
 [`dataload_from_local()`](https://ejanalysis.github.io/EJAM/reference/dataload_from_local.md).
 
-As of EJAM version v2.32.6, there were 11 arrow files used by EJAM:
+As of EJAM version v2.32.7, there were 11 arrow files used by EJAM:
 
 ### Blockgroup and block-level arrow files
 

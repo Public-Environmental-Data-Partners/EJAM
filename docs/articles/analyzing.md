@@ -217,7 +217,6 @@ if (exists("frs_by_programid") && exists("frs")) {
   epa_programs_counts[order(-N), ][1:25, ]
 }
 #> frs_by_programid_arrow  is loading from local folder ...done.
-#> frs_arrow   is loading from local folder ...done.
 #>           program      N
 #>            <char>  <int>
 #>  1:      RCRAINFO 528499
@@ -351,7 +350,7 @@ Find facilities, by name of industry
 
 # See a data table of facilities in one industry
 dataload_dynamic("frs")
-#> Loading arrow datasets: frs
+#> Loading specified arrow datasets: frs
 #> looking for frs in memory...
 #> NULL
 # if (exists("frs")) {
@@ -558,7 +557,7 @@ A NAICS code can have many “children” or subcategories under it
 
 ``` r
 dataload_dynamic(c("frs", "frs_by_naics"))
-#> Loading arrow datasets: frs, frs_by_naics
+#> Loading specified arrow datasets: frs, frs_by_naics
 #> looking for frs, frs_by_naics in memory...
 #> NULL
 if (exists("frs") & exists("frs_from_naics")) {

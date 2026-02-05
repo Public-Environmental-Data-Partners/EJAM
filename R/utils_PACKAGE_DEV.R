@@ -111,7 +111,13 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 
 ## searching text in source files ####
 
-# helper for find_in_files()
+# Helper for EJAM:::find_in_files()
+#
+# Undocumented related functions:
+# EJAM:::found_in_files()
+# EJAM:::found_in_N_files_T_times()
+# EJAM:::grab_hits()
+# EJAM:::grepn()
 
 grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, value = TRUE) {
 
@@ -148,86 +154,140 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #' utility to do global search/find in full text of the files in a folder, like source code files or unit tests
 #'
 #' @param pattern regular expression to look for
-#' @param path can change it to e.g., "./R"
-#' @param filename_pattern query regex on file names, default is R code files
+#' @param path can be e.g., "./R" or "./tests/testthat" or "."
+#' @param recursive if TRUE, search includes subfolders (passed to `list.files()`)
+#' @param filename_pattern default is R code files only! A regular expression that would limit file names to search
+#' @param full.names if TRUE, returns paths not just filenames (passed to `list.files()`)
 #' @param ignorecomments omit hits from commented out lines
 #' @param ignore.case as in grep
-#' @param value logical as in [grep()] if TRUE returns matching text;
-#'    if FALSE, returns logical vectors like [grepl()]
 #' @param whole_line set it to FALSE to see only the matching fragments
 #'   vs entire line of text that has a match in it
 #' @param quiet whether to print results or just invisibly return
-#' @returns list of named vectors,
-#'   where names are file paths with hits, elements are vectors of text with hits
-#' @examples
-#' EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE, quiet = F)
-#' EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE, quiet = F)
-#' EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE, quiet = F)
+#' @return a list of named vectors,
+#'   where names are file paths with hits, elements are vectors of text with hits.
 #'
-#' EJAM:::find_in_files("latlon_from_.{18}", quiet = FALSE, whole_line = F)
-#' EJAM:::find_in_files("latlon_from_s.{9}", quiet = FALSE, whole_line = F)
-#' EJAM:::find_in_files("latlon_from_mact.{9}", quiet = FALSE, whole_line = F)
+#' @details
+#' Also see undocumented related functions
+#' EJAM:::found_in_N_files_T_times() and
+#' EJAM:::found_in_files() and
+#' EJAM:::grab_hits() and
+#' EJAM:::grepn()
+#'
+#' @examples
+#' EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
+#' EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
+#' EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
+#'
+#' EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
+#' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
+#' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
 #'
 #' @keywords internal
 #'
-find_in_files <- function(pattern, path = "./tests/testthat", filename_pattern = "\\.R$|\\.r$",
+find_in_files <- function(pattern,
+                          path = ".", # "./tests/testthat",
+                          recursive = TRUE,
+                          filename_pattern = "\\.R$|\\.r$",
+                          full.names = TRUE,
                           ignorecomments = FALSE,
                           ignore.case = TRUE,
-                          value = TRUE, whole_line = TRUE, quiet=TRUE) {
+                          whole_line = TRUE,
+                          quiet = FALSE) {
+
   if (!quiet) {
     cat("\nSearching in ", path, ' to find files containing ', pattern, '\n')
     # or e.g., find_in_files(pattern = "^#'.*[^<]http", path = "./R")
   }
-  x <- list.files(path = path, pattern = filename_pattern, recursive = TRUE, full.names = TRUE)
+  x <- list.files(path = path, pattern = filename_pattern, recursive = recursive, full.names = full.names)
   names(x) <- x
   if (ignorecomments) {
     pattern <- paste0("(^|[^#])", pattern) # ignore comments, so only match if not preceded by a #
   }
   found <- x |>
     purrr::map(
-      # ~grep(    pattern, readLines(.x, warn = FALSE), value = value, ignore.case = ignore.case)
-      ~grab_hits(pattern, readLines(.x, warn = FALSE), value = value, ignore.case = ignore.case,
+      ~grab_hits(pattern, readLines(.x, warn = FALSE), value = TRUE, ignore.case = ignore.case,
                  ignorecomments = ignorecomments)
     ) |>
     purrr::keep(~length(.x) > 0)
+  rownumbers_with_hits <- sapply(found, names)
+
   if (!whole_line) {
     # return just the matching part, not text before or after that on a given line of text
+    ## but does not quite work right if the line has quote marks inside it
     found <- lapply(found, function(z) as.vector(gsub(paste0(".*(", pattern, ").*"), "\\1",  z)))
+    #  now for each element in the list called "found" we have to fix names of its vector to be the line numbers again
+    for (i in seq_along(found)) {
+      names(found[[i]]) <- rownumbers_with_hits[[i]]
+      rownames(found[[i]]) <- NULL
+    }
+  } else {
+    for (i in seq_along(found)) {
+      rownames(found[[i]]) <- NULL
+    }
   }
+
   if (!quiet) {
     if (length(found) > 0) {
-      if (!whole_line) {
-        print(sapply(found, cbind))
-      } else {
-        print(sapply(found, function(y) cbind(linenumber = names(y), text = y)))
-      }
       cat("\n------------------------------------------------------------------------- \n")
-      cat("------------------------------------------------------------------------- \n")
-
-      if (value) {
-        print(cbind(hits_in_file = sort(sapply(found[sapply(found, NROW) > 0], NROW))))
-      } else {
-        print(cbind(hits_in_file = sort(sapply(found[sapply(found, sum) > 0], sum))) )
+      cat("Which line numbers contain a match to this pattern, within each file?\n")
+      cat(  "------------------------------------------------------------------------- \n\n")
+      printable <- sapply(found, function(y) {
+        prt <- cbind(linenumber = names(y), text = y)
+        rownames(prt) <- NULL
+        prt
+      })
+      for (i in seq_along(printable)) {
+        printable[[i]] <- as.data.frame(printable[[i]])
+        printable[[i]]$file <- names(found)[i]
+        printable[[i]]$filenumber <- i
       }
+
+      printable <- do.call(rbind, printable)
+      printable <- printable[, c("filenumber", "file", "linenumber", "text")]
+      rownames(printable) <- NULL
+      if (!whole_line) {
+        print(printable)
+      } else {
+        # looks better if whole lines all start in same vertical alignment
+        print(cbind(filenumber = printable$filenumber, file = printable$file, linenumber = printable$linenumber, text = printable$text))
+      }
+
+      cat("\n")
+      cat(  "------------------------------------------------------------------------- \n")
+      cat("How many times does the pattern appear in a given file?\n")
+      cat(  "------------------------------------------------------------------------- \n\n")
+      print(cbind(hits_in_file = sort(sapply(found, NROW), decreasing = TRUE), file_rank = 1:length(found)))
+      cat("\n------------------------------------------------------------------------- \n")
     }
   }
   if (length(found) == 0) {found <- NULL}
+
+  # sapply(x, function(z) cbind(linenumber=names(z), text = z))
+
   invisible(found)
 }
 ################################ #
 
 # search for vector of query terms, to see which ones are found in any of the files
-# ... passed to find_in_files() can be ignore.case, filename_pattern
+# ... passed to find_in_files() can be ignore.case, filename_pattern, etc.
 # ignorecomments = TRUE IS NOT DEFAULT IN find_in_files() but is here
+
+# Uses EJAM:::find_in_files()
+#
+# Undocumented related functions:
+# EJAM:::found_in_files()
+# EJAM:::found_in_N_files_T_times()
+# EJAM:::grab_hits()
+# EJAM:::grepn()
 
 found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
 
-  found = vector(length = length(pattern_vector))
+  found <- vector(length = length(pattern_vector))
   for (i in seq_along(pattern_vector)) {
-    hits = find_in_files(pattern_vector[i], path = path, ignorecomments=ignorecomments, ...)
+    hits <- find_in_files(pattern = pattern_vector[i], path = path, ignorecomments=ignorecomments, ...)
     found[i] <- length(hits) > 0
   }
-  foundones = pattern_vector[found]
+  foundones <- pattern_vector[found]
   print(foundones)
   return(found) # logical vector
 }
@@ -237,12 +297,20 @@ found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, 
 # actually how many lines of code does it appear in so counts as 1 each line where it appears even if it appears >1x in that line
 # ignorecomments = TRUE IS NOT DEFAULT IN find_in_files() but is here
 
+# Uses EJAM:::find_in_files()
+#
+# Undocumented related functions:
+# EJAM:::found_in_files()
+# EJAM:::found_in_N_files_T_times()
+# EJAM:::grab_hits()
+# EJAM:::grepn()
+
 found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
 
   nfiles <- vector(length = length(pattern_vector))
   nhits <- vector(length = length(pattern_vector))
   for (i in seq_along(pattern_vector)) {
-    hits <- find_in_files(pattern_vector[i], path = path, ignorecomments = ignorecomments, ...)
+    hits <- find_in_files(pattern = pattern_vector[i], path = path, ignorecomments = ignorecomments, ...)
     nfiles[i] <- length(hits)
     nhits[i] <- length(as.vector(unlist(hits)))
     # found[i] <- length(hits) > 0
@@ -260,7 +328,6 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 ################################ ################################# #
 # . ####
 ## package's functions & datasets####
-
 
 
 # get functions, datasets, filenames - exported & internal
@@ -853,7 +920,7 @@ pkg_functions_preceding_lines = function(path = "./R") {
   info_export <- vector()
 
   query = "^[^ #]* *<- *function"
-  files_defining_functions <- EJAM:::find_in_files(query, path = path, quiet = TRUE)
+  files_defining_functions <- EJAM:::find_in_files(pattern = query, path = path, quiet = TRUE)
   filenames = (names(files_defining_functions))
 
   for (thisfile in seq_along(files_defining_functions)) {
@@ -1280,11 +1347,13 @@ pkgs_missing_from_desc_supposedly_needed
 pkgs_in_desc_supposedly_not_needed
 setdiff(pkgs_needed2, pkgs_needed) # found by renv but not by packrat
 
-# > setdiff(setdiff(pkgs_needed2, pkgs_needed), pkgs_in_desc_supposedly_not_needed)
-#  [1] 'base'               'census2020download' 'EJAM'               'githubr'            'graphics'           'grDevices'          'parallel'           'plumber'
-#  [9] 'roxygen2'           'rsconnect'          'stats'              'svglite'            'tools'              'utils'
-# > setdiff(pkgs_in_desc_supposedly_not_needed, setdiff(pkgs_needed2, pkgs_needed))
-# [1] 'datasets'      'fipio'         'rnaturalearth' 'tidygeocoder'
+ setdiff(setdiff(pkgs_needed2, pkgs_needed), pkgs_in_desc_supposedly_not_needed)
+### e.g.,
+#  [1] 'base' 'census2020download' 'EJAM' 'githubr' 'graphics' 'grDevices' 'parallel' 'plumber'
+#  [9] 'roxygen2' 'rsconnect' 'stats' 'svglite' 'tools' 'utils'
+setdiff(pkgs_in_desc_supposedly_not_needed, setdiff(pkgs_needed2, pkgs_needed))
+### e.g.,
+# [1] 'datasets' 'fipio' 'rnaturalearth' 'tidygeocoder'
 
 # but should confirm these truly reflect what is actually needed and not needed
 # for web app to work,

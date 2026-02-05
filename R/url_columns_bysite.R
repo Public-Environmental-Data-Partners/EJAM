@@ -121,7 +121,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   if ("latlon" %in% sitetype) {rowcount <- NROW(sitepoints)}
 
   # reports <- EJAM:::global_or_param("default_reports") # list of reports, each a named lists of info like header, text, & FUN.
-  if (is.null(reports)) {
+  if (is.null(reports)) { # e.g., if user loads pkg but subsequently does rm(list=ls()) the global defaults are removed
     reports <-  list(
       list(header = "EJAM Report",     text = "Report",   FUN = url_ejamapi)      # EJAM summary report (HTML via API)
       , list(header = "EJSCREEN Map",  text =  "EJSCREEN", FUN = url_ejscreenmap) # EJSCREEN site, zoomed to the location

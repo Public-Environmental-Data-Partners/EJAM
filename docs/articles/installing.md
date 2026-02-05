@@ -115,7 +115,7 @@ If you *do have a PAT set up*, you can use
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
-#ref = "v2.32.6.003"   # a tag identifying a specific release
+#ref = "v2.32.7"   # a tag identifying a specific release
 #ref = "HEAD"          # main branch
 #ref = "development"   # development branch version
 
@@ -138,7 +138,7 @@ something like this:
 
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.6.003.zip" # or whatever the latest release is - update as needed
+zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
 remote_zip = paste0(
   "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
 remotes::install_url(url = remote_zip, 
@@ -151,7 +151,7 @@ saved file:*
 
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.6.003.zip" # or whatever the latest release is - update as needed
+zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
 remote_zip = paste0(
   "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
 local_zip = file.path(tempdir(), zipname)

@@ -5,16 +5,16 @@
 #' @param asdt set to TRUE if you want it to return a table in [data.table](https://r-datatable.com) format with colnames bgid, blockid,
 #'   one row per input blockid, so it may have duplicates in the bgid column.
 #'   set to FALSE if you want it to return a vector of bgid values (integer class)
-#' @returns depends on asdt parameter value
+#' @return depends on asdt parameter value
 #' @examples
 #'
 #' rad = 0.658
 #' pts = data.frame(lat=39.4347105, lon=-74.7203421)
 #' s2b = getblocksnearby(sitepoints=pts, radius = rad)
-#' EJAM:::bgid_from_blockid(s2b$blockid) # vector of unique ids
-#' EJAM:::bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
+#' # bgid_from_blockid(s2b$blockid) # vector of unique ids
+#' # bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
 #'
-#'  # plotblocksnearby(pts, radius = rad, overlay_blockgroups = T)
+#' # plot_blocks_nearby(pts, radius = rad, overlay_blockgroups = T)
 #'
 #' @keywords internal
 #'

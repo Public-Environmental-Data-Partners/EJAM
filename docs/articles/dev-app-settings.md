@@ -19,7 +19,7 @@ Many defaults are defined in files like `global_defaults_*.R`. They can
 be changed there, but also can be passed to
 [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
 aka
-[`run_app()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md) as
+[`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md) as
 parameters, to override those global default settings for the duration
 of the app. Using
 [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
@@ -423,14 +423,15 @@ cbind(global_defaults = gdefnames)
 #> [105,] "report_logo_dir"                              
 #> [106,] "report_logo_file"                             
 #> [107,] "report_title"                                 
-#> [108,] "sanitize_numeric"                             
-#> [109,] "sanitize_text"                                
-#> [110,] "shp_help_msg"                                 
-#> [111,] "sitereport_download_buttons_colname"          
-#> [112,] "sitereport_download_buttons_show"             
-#> [113,] "stepradius"                                   
-#> [114,] "tabshown_default"                             
-#> [115,] "use_shapefile_from_any"
+#> [108,] "report_title_multisite"                       
+#> [109,] "sanitize_numeric"                             
+#> [110,] "sanitize_text"                                
+#> [111,] "shp_help_msg"                                 
+#> [112,] "sitereport_download_buttons_colname"          
+#> [113,] "sitereport_download_buttons_show"             
+#> [114,] "stepradius"                                   
+#> [115,] "tabshown_default"                             
+#> [116,] "use_shapefile_from_any"
 ```
 
 #### \> function params - compiled full list

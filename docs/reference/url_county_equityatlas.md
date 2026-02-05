@@ -1,7 +1,7 @@
-# URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org
+# URL functions - Get URLs of useful report(s) on County containing the given fips from nationalequityatlas.org
 
 URL functions - Get URLs of useful report(s) on County containing the
-given fips, from countyhealthrankings.org
+given fips from nationalequityatlas.org
 
 ## Usage
 

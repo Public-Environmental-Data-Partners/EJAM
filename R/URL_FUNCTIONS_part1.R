@@ -12,7 +12,7 @@
 
 #' utility - check if URL available, such as if an API is online or offline
 #' @param url the URL to check
-#' @returns TRUE or FALSE (but NA if no internet connection seems to be available at all)
+#' @return TRUE or FALSE (but NA if no internet connection seems to be available at all)
 #' @details
 #' Also see EJAM:::global_or_param("ejamapi_is_down")
 #'    as set in global_defaults_package.R
@@ -43,6 +43,7 @@ url_online <- function(url = "https://ejam.policyinnovation.info") {
     return(FALSE)
   }
   if (x$status_code != 200) {
+    cat("status code not 200, but note some sites (like http://www.nationalequityatlas.org/) may return 403 in response to this kind of check even though the site is browsable.\n")
     return(FALSE)
   } else {
     return(TRUE)

@@ -324,7 +324,7 @@ function(lat = "", lon = "", shape = "", fips = "", buffer = 3, res) {
   }
 
   # Generate and return the HTML report.
-  ejam2report(out, sitenumber = 1, return_html = TRUE, launch_browser = FALSE, submitted_upload_method = method)
+  ejam2report(out, sitenumber = 1, return_html = TRUE, launch_browser = FALSE, site_method = method)
 }
 ####################################################### #
 
@@ -666,7 +666,7 @@ function(ejamitout = testoutput_ejamit_10pts_1miles, ..., attachment = "true", r
   # ejamitout = testoutput_ejamit_10pts_1miles,
   # sitenumber = NULL,
   # analysis_title = 'Summary of Analysis',
-  # submitted_upload_method = c("latlon", "SHP", "FIPS")[1],
+  # site_method = c("latlon", "SHP", "FIPS")[1],
   # shp = NULL,
   # return_html = FALSE,
   # fileextension = c("html", "pdf")[1],

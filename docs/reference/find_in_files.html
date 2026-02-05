@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -68,13 +72,14 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_in_files</span><span class="op">(</span></span>
 <span>  <span class="va">pattern</span>,</span>
-<span>  path <span class="op">=</span> <span class="st">"./tests/testthat"</span>,</span>
+<span>  path <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  filename_pattern <span class="op">=</span> <span class="st">"\\.R$|\\.r$"</span>,</span>
+<span>  full.names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ignorecomments <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ignore.case <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  value <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  whole_line <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,11 +92,19 @@
 
 
 <dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
-<dd><p>can change it to e.g., "./R"</p></dd>
+<dd><p>can be e.g., "./R" or "./tests/testthat" or "."</p></dd>
+
+
+<dt id="arg-recursive">recursive<a class="anchor" aria-label="anchor" href="#arg-recursive"></a></dt>
+<dd><p>if TRUE, search includes subfolders (passed to <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>)</p></dd>
 
 
 <dt id="arg-filename-pattern">filename_pattern<a class="anchor" aria-label="anchor" href="#arg-filename-pattern"></a></dt>
-<dd><p>query regex on file names, default is R code files</p></dd>
+<dd><p>default is R code files only! A regular expression that would limit file names to search</p></dd>
+
+
+<dt id="arg-full-names">full.names<a class="anchor" aria-label="anchor" href="#arg-full-names"></a></dt>
+<dd><p>if TRUE, returns paths not just filenames (passed to <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>)</p></dd>
 
 
 <dt id="arg-ignorecomments">ignorecomments<a class="anchor" aria-label="anchor" href="#arg-ignorecomments"></a></dt>
@@ -100,11 +113,6 @@
 
 <dt id="arg-ignore-case">ignore.case<a class="anchor" aria-label="anchor" href="#arg-ignore-case"></a></dt>
 <dd><p>as in grep</p></dd>
-
-
-<dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
-<dd><p>logical as in <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code> if TRUE returns matching text;
-if FALSE, returns logical vectors like <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl()</a></code></p></dd>
 
 
 <dt id="arg-whole-line">whole_line<a class="anchor" aria-label="anchor" href="#arg-whole-line"></a></dt>
@@ -118,19 +126,27 @@ vs entire line of text that has a match in it</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>list of named vectors,
-where names are file paths with hits, elements are vectors of text with hits</p>
+    <p>a list of named vectors,
+where names are file paths with hits, elements are vectors of text with hits.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Also see undocumented related functions
+EJAM:::found_in_N_files_T_times() and
+EJAM:::found_in_files() and
+EJAM:::grab_hits() and
+EJAM:::grepn()</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"[^_]logo_...."</span>,    path <span class="op">=</span> <span class="st">"./R"</span>, whole_line <span class="op">=</span> <span class="cn">FALSE</span>, quiet <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"report_logo....."</span>, path <span class="op">=</span> <span class="st">"./R"</span>, whole_line <span class="op">=</span> <span class="cn">FALSE</span>, quiet <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"app_logo......"</span>,   path <span class="op">=</span> <span class="st">"./R"</span>, whole_line <span class="op">=</span> <span class="cn">FALSE</span>, quiet <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"[^_]logo_...."</span>,    path <span class="op">=</span> <span class="st">"./R"</span>, whole_line <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"report_logo....."</span>, path <span class="op">=</span> <span class="st">"./R"</span>, whole_line <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"app_logo......"</span>,   path <span class="op">=</span> <span class="st">"./R"</span>, whole_line <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"latlon_from_.{18}"</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, whole_line <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"latlon_from_s.{9}"</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, whole_line <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"latlon_from_mact.{9}"</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, whole_line <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"latlon_from_.{18}"</span>,    whole_line <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"latlon_from_s.{9}"</span>,    whole_line <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">find_in_files</span><span class="op">(</span><span class="st">"latlon_from_mact.{9}"</span>, whole_line <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -138,11 +154,11 @@ where names are file paths with hits, elements are vectors of text with hits</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

@@ -57,8 +57,8 @@ for everything to work correctly:
   (e.g. to 2.32.7) (& tying it to EJSCREEN version numbers if relevant).
   Search in files globally too, as there still are places where the
   version number is not read from DESCRIPTION, like the files
-  \*\_pkgdown.yml\* and *golem-config.yml* and *CITATION.cff* where the
-  version must be updated too!
+  \*\_pkgdown.yml\* and *golem-config.yml* and *CITATION* and
+  *CITATION.cff* where the version must be updated too!
 
 - Update `NEWS.md` in development branch listing changes made. Use the
   numbering x.y.z (same numbering as was put in DESCRIPTION).

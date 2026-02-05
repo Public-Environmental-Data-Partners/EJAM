@@ -75,7 +75,7 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 #' update ALL metadata attributes for JUST 1 pkg dataset AND save in EJAM/data/
 #' @details used in data-raw/datacreate_*.R functions while updating/making datasets
 #' @param objectname text/character string of object name (ie quoted)
-#' @returns just for side effects
+#' @return just for side effects
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @keywords internal
@@ -163,7 +163,7 @@ metadata_add <- function(x, metadata=NULL,
 #' @return same as [metadata_check()], invisibly
 #' @examples
 #' # x = EJAM:::metadata_check( which = "ejam_package_version")
-#' # x[!x$ejam_package_version %in% "2.32.6", ]
+#' # x[!x$ejam_package_version %in% "2.32.7", ]
 #'
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
@@ -212,7 +212,18 @@ cat("\n\n")
   print(table(How.many.have.acs_version = x$acs_version, useNA = 'always'))
   z = x[is.na(x$acs_version), intersect(c('item', 'date_saved_in_package', 'acs_version' ), names(x))]
   cat("\n\n see where is ACS version info missing, and date saved \n\n")
-  print(z[order(z$item), ])
+  z = z[order(z$item), ]
+
+  cat("where object name is names_xyz (vectors of variables or indicator names do not need metadata stored as attributes)\n\n")
+  these = z[grepl("^names_", z$item), ]
+  rownames(these) = NULL
+  print(these)
+
+  cat("\n\nwhere object name is NOT names_xyz\n\n")
+  these = z[!grepl("^names_", z$item), ]
+  rownames(these) = NULL
+  print(these)
+
   }
   ## probably should have acs_version:  usastats, testoutput_*
   invisible(x)
@@ -242,7 +253,7 @@ cat("\n\n")
 #'   [pkg_functions_and_data()]
 #' @examples
 #' x = EJAM:::metadata_check( which = "ejam_package_version")
-#' x[!x$ejam_package_version %in% "2.32.6", ]
+#' x[!x$ejam_package_version %in% "2.32.7", ]
 #'
 #'   # tail(EJAM:::metadata_check( ))
 #'   EJAM:::metadata_check(packages = NULL)

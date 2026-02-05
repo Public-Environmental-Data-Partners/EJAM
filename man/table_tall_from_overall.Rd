@@ -7,7 +7,7 @@
 table_tall_from_overall(results_overall, longnames = NULL)
 }
 \arguments{
-\item{results_overall}{table in \href{https://r-datatable.com}{data.table} format of 1 row, from output of \code{ejamit()} or doaggregate()}
+\item{results_overall}{table in \href{https://r-datatable.com}{data.table} format of 1 row, from output of \code{\link[=ejamit]{ejamit()}} or \code{\link[=doaggregate]{doaggregate()}}}
 
 \item{longnames}{vector of names of variables in results_overall,
 from output of \code{\link[=ejamit]{ejamit()}} or doaggregate()}

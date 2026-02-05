@@ -12,7 +12,7 @@
 #'  for which at least one block centroid is inside the city polygon.
 #'  It is MUCH faster, but can sometimes leave out a blockgroup that only slightly overlaps the city.
 #'
-#' @returns vector of blockgroup fips codes
+#' @return vector of blockgroup fips codes
 #'
 #' @keywords internal
 #'

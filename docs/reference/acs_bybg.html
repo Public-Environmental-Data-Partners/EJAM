@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,8 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
     <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
@@ -230,7 +231,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span></span>
 <span><span class="co">## Format new data to match rows of blockgroupstats</span></span>
 <span></span>
-<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span></span>
 <span><span class="va">newvars</span> <span class="op">&lt;-</span> <span class="va">newvars</span><span class="op">[</span><span class="va">blockgroupstats</span><span class="op">[</span>,<span class="fu">.</span><span class="op">(</span><span class="va">bgfips</span>, <span class="va">ST</span><span class="op">)</span><span class="op">]</span>, ,  on <span class="op">=</span> <span class="st">"bgfips"</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">)</span></span>
@@ -243,7 +244,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span><span class="va">mystates</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DC"</span>, <span class="st">'RI'</span><span class="op">)</span></span>
 <span><span class="va">newvars</span> <span class="op">&lt;-</span> <span class="fu">acs_bybg</span><span class="op">(</span>variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B01001_001"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"B01001_0"</span>, <span class="fl">31</span><span class="op">:</span><span class="fl">39</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  state <span class="op">=</span> <span class="va">mystates</span><span class="op">)</span></span>
-<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
 <span><span class="va">newvars</span><span class="op">[</span>, <span class="va">ST</span> <span class="op">:=</span> <span class="fu"><a href="fips2stateabbrev.html">fips2stateabbrev</a></span><span class="op">(</span><span class="va">bgfips</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"E$"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -291,7 +292,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span><span class="va">acstabs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">ejscreentables</span>, <span class="st">"_"</span><span class="op">)</span></span>
 <span><span class="va">acsinfo</span><span class="op">$</span><span class="va">table</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"_.*"</span>, <span class="st">""</span>, <span class="va">acsinfo</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
 <span><span class="va">myacsinfo</span> <span class="op">&lt;-</span> <span class="va">acsinfo</span><span class="op">[</span><span class="va">acsinfo</span><span class="op">$</span><span class="va">table</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ejscreentables</span>, <span class="op">]</span></span>
-<span><span class="va">mytables</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">ejscreentables</span>, <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">{</span><span class="va">acsinfo</span><span class="op">[</span><span class="va">acsinfo</span><span class="op">$</span><span class="va">table</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">z</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mytables</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">ejscreentables</span>, <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">{</span><span class="va">acsinfo</span><span class="op">[</span><span class="va">acsinfo</span><span class="op">$</span><span class="va">table</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">z</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ejscreen_tables</span> <span class="op">&lt;-</span>  <span class="va">mytables</span><span class="op">$</span><span class="va">table</span> <span class="co"># same as ejscreentables</span></span>
 <span></span>
 <span><span class="va">myvars</span> <span class="op">&lt;-</span> <span class="va">myacsinfo</span><span class="op">$</span><span class="va">name</span> <span class="co"># 184 variables among 8 tables</span></span>
@@ -306,7 +307,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>    <span class="va">newvars</span> <span class="op">&lt;-</span> <span class="fu">acs_bybg</span><span class="op">(</span>variables <span class="op">=</span> <span class="va">myvars</span>, state <span class="op">=</span> <span class="va">mystates</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
-<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
+<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">newvars</span>, <span class="st">"GEOID"</span>, <span class="st">"bgfips"</span><span class="op">)</span></span>
 <span>  <span class="va">newvars</span><span class="op">[</span>, <span class="va">ST</span> <span class="op">:=</span> <span class="fu"><a href="fips2stateabbrev.html">fips2stateabbrev</a></span><span class="op">(</span><span class="va">bgfips</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"E$"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">newvars</span><span class="op">)</span> <span class="co">#  239781 rows (bgs),   370 columns (variable estimates and margin of error values)</span></span>
@@ -321,11 +322,11 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

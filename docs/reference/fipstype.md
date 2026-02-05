@@ -6,7 +6,7 @@ FIPS - Identify what type of Census geography each FIPS code seems to be
 ## Usage
 
 ``` r
-fipstype(fips)
+fipstype(fips, quiet = FALSE)
 ```
 
 ## Arguments
@@ -15,6 +15,11 @@ fipstype(fips)
 
   vector of one or more Census FIPS with or without leading zeroes, as
   strings or numeric
+
+- quiet:
+
+  TRUE will prevent warning of fips that do not seem to be block,
+  blockgroup, tract, city/CDP, county, or state FIPS
 
 ## Value
 

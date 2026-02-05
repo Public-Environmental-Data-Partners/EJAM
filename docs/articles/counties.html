@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,10 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -84,7 +88,7 @@
 
 
 
-<link href="counties_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<link href="counties_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="counties_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="counties_files/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="counties_files/leaflet-1.3.1/leaflet.js"></script><link href="counties_files/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="counties_files/proj4-2.6.2/proj4.min.js"></script><script src="counties_files/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="counties_files/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
@@ -107,8 +111,8 @@ are<a class="anchor" aria-label="anchor" href="#perspectives-on-us-counties-and-
 This vignette briefly explores the distribution of counties in the US,
 particularly how many counties have a large number of block groups and
 residents.</p>
-<p><em>Note there are also <a href="https://ejanalysis.github.io/EJAM/articles/analyzing.html#fips-codes">guides
-to using EJAM in R for County/FIPS analysis</a> and <a href="../reference/index.html#specify-counties-etc-">reference documents
+<p><em>Note there are also <a href="articles/analyzing.html#fips-codes">guides to using EJAM in R for
+County/FIPS analysis</a> and <a href="../reference/index.html#specify-counties-etc-">reference documents
 on relevant R functions</a> and <a href="../reference/index.html#examples-of-inputs-census-units-by-fips-">county-related
 test data</a>.</em></p>
 <p>The US has over 3,200 Counties but the 80/20 rule applies almost
@@ -120,9 +124,9 @@ Counties. About 150 counties account for most of the US residents.</p>
 <span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">blockgroupstats</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span>pop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span>, bgcount <span class="op">=</span> <span class="va">.N</span><span class="op">)</span>, </span>
 <span>     by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>countyfips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>,<span class="fl">1</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">bgcount</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="va">z</span><span class="op">[</span> , <span class="va">name</span> <span class="op">:=</span> <span class="fu"><a href="../reference/fips2name.html">fips2name</a></span><span class="op">(</span><span class="va">countyfips</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setcolorder.html" class="external-link">setcolorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"countyfips"</span>, after <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setcolorder.html" class="external-link">setcolorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"bgcount"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="op">-</span><span class="va">bgcount</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setcolorder.html" class="external-link">setcolorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"countyfips"</span>, after <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NCOL</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setcolorder.html" class="external-link">setcolorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"bgcount"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">z</span>, <span class="op">-</span><span class="va">bgcount</span><span class="op">)</span></span>
 <span><span class="co"># percent of residents and percent of counties</span></span>
 <span><span class="va">zz</span> <span class="op">&lt;-</span> <span class="va">z</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pop</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="va">zz</span><span class="op">$</span><span class="va">cumpop</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">zz</span><span class="op">$</span><span class="va">pop</span><span class="op">)</span></span>
@@ -155,13 +159,13 @@ and 100 thousand, but can be much less or much more fairly often.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span>side <span class="op">=</span> <span class="fl">1</span>, at <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
 <span>     labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="st">'1,000'</span>,<span class="st">'10 thousand'</span>, <span class="st">'100 thousand'</span>, </span>
 <span>                <span class="st">"1 million"</span>, <span class="st">"10 m"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="counties_files/figure-html/histopop-1.png" alt="histogram shows county population is usually between 10 thousand and 100 thousand, but can be much less or much more fairly often" width="672"></p>
+<p><img src="counties_files/figure-html/histopop-1.png" class="r-plt" alt="histogram shows county population is usually between 10 thousand and 100 thousand, but can be much less or much more fairly often" width="672"></p>
 <p>Scatterplot of population and # of blockgroups, by county</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z</span><span class="op">$</span><span class="va">bgcount</span>, <span class="va">z</span><span class="op">$</span><span class="va">pop</span>, </span>
 <span>     xlab <span class="op">=</span> <span class="st">"# of blockgroups in the county"</span>,</span>
 <span>     ylab <span class="op">=</span> <span class="st">"County population"</span>, log <span class="op">=</span>  <span class="st">'xy'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="counties_files/figure-html/scatterpopbg-1.png" alt="scatterplot shows high correlation between pop and blockgroup count" width="672"></p>
+<p><img src="counties_files/figure-html/scatterpopbg-1.png" class="r-plt" alt="scatterplot shows high correlation between pop and blockgroup count" width="672"></p>
 <p>Map of counties with more than 1,000 blockgroups each</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">shp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
@@ -222,7 +226,7 @@ but a few have over 1000 each</p>
 <span><span class="st">&amp; contain 22% of blockgroups"</span>, </span>
 <span>xlab <span class="op">=</span> <span class="st">"count of blockgroups"</span>, </span>
 <span>ylab <span class="op">=</span> <span class="st">"Relative Share of Counties"</span>, yaxt<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="counties_files/figure-html/histobgcount-1.png" alt="historgram shows most counties have fewer than 25 blockgroups, but a few have over 1000 each" width="672"></p>
+<p><img src="counties_files/figure-html/histobgcount-1.png" class="r-plt" alt="historgram shows most counties have fewer than 25 blockgroups, but a few have over 1000 each" width="672"></p>
 </div>
   </main>
 </div>
@@ -230,11 +234,11 @@ but a few have over 1000 each</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer>

@@ -1,5 +1,111 @@
 # Changelog
 
+## EJAM 2.32.7 (February 2026)
+
+- Bug fixes:
+
+  - Fixed a bug where the community report in version 2.32.6.003
+    incorrectly showed results rounded to zero decimal places. The bug
+    was in
+    [`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+    and had been introduced 3 weeks earlier while a separate issue was
+    being fixed.
+  - Fixed a bug where some latitude or longitude values could get
+    somewhat rounded off in the URL from
+    [`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
+    linking to the API to get a single-site report, so a report would
+    show a very slightly different point and population count, for
+    example, for some sites, versus what was intended.
+  - Fixed bug in hosted app where uploads and downloads sometimes
+    failed.
+  - Fixed various other/ misc small issues.
+
+- Improved the Community Report, Multisite Report, Spreadsheet
+
+  - Report footer was edited, and can be customized now via
+    [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+  - Report Title was revised: FIPS place name shown in header, lat/lon
+    coordinates shown in 1-site report header, 1-site vs multisite named
+    differently, says “EJSCREEN”” not “EJAM” in header as new defaults.
+  - Analysis Title (on reports) revised also
+  - Report Footer was revised (new params in
+    [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+    now define footer in community report, via new
+    [`generate_report_footer()`](https://ejanalysis.github.io/EJAM/reference/generate_report_footer.md)
+    helper)
+  - Multisite report is now rendered as html file automatically as soon
+    as results are ready (and if analysis title is changed afterwards),
+    so it will be available immediately if/when a user decides to
+    download it. And spreadsheet download may be faster, as the server
+    now does not have to re-render report for use in spreadsheet.
+  - Multisite report and spreadsheet download buttons now disabled until
+    each is ready.
+  - Spreadsheet file is now created automatically when results are done,
+    so it will be available immmediately if/when a user decides to
+    download it.
+  - Client side user’s timezone is now used by shiny app to use the
+    correct date for report footer. Otherwise a report run late in the
+    day might incorrectly say it was created the next day if the app is
+    running on a server in a timezone east of the user, for example.
+
+- Raised some limits on number of sites one can upload, map, analyze
+
+  - Number of uploaded points
+    - cap was 5,0000 (or 10,000 via advanced tab)
+    - cap now 10,000 (or 35,000 via advanced tab) Now just omits 8111
+      Automotive Repair and Maintenance (58,132 sites) and a few overly
+      broad groups like “Manufacturing”
+  - Number of selected points based on NAICS, etc.
+    - cap was 5,0000 (or 10,000 via advanced tab)
+    - cap now 10,000 (or 35,000 via advanced tab)
+  - Number of points it will map
+    - cap was 5,0000 (or 15,000 via advanced tab)
+    - no change
+  - Number of polygons it will map
+    - cap was 159 (or 254 via advanced tab)
+    - no change e.g., TX has 254 counties, but no other state exceeds
+      159 counties
+  - Number of sites you can analyze
+    - cap was 10,000 (or 15,000 via advanced tab)
+    - cap now 10,000 (or 35,000 via advanced tab)
+  - Number of sites shown in table of all the sites one per row
+    - cap was 1,000 (or 5,000 via advanced tab)
+    - no change
+  - Size of uploaded file
+    - cap was 50 MB (or 350 MB via advanced tab)
+    - no change
+
+- Other changes:
+
+  - Changed links in header at top right of the webpages, to link to
+    “Share data feedback” and “Help improve the tool” forms just like
+    CEJST has and EJSCREEN is adding. The “Contact Us” link to an email
+    address was removed.
+  - Updated text in the “About” tab, to refer to and link to EJSCREEN,
+    and to refer to EJAM in terms of EJSCREEN.
+  - Updated text in README
+  - Updated text in the [Future
+    Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html)
+    and other vignettes/articles.
+  - Renamed
+    [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+    parameters (in.analysis_title changed to analysis_title) to be
+    consistent with
+    [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+    parameter, or to simplify (react.v1_summary_plot changed to
+    report_plot).
+  - [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+    now lets you specify the city/cities to analyze (to show as
+    preselected upon launch), via default_cities_picked parameter
+  - [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+    has new parameter aliases: “pts” is short for “sitepoints”, “shp” is
+    short for “shapefile”, “analysis_title” or “default_analysis_title”
+    will set analysis title in report header, and “report_title” or
+    “default_report_title” will set overall title in topmost part of
+    report header.
+  - [`url_ejscreentechdoc()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreentechdoc.md)
+    was added to easily get URL of EJSCREEN documentation pages and docs
+
 ## EJAM 2.32.6.003 (November 2025)
 
 - Bug fixes:
@@ -393,7 +499,7 @@ It mainly does the following:
 - Added
   [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
   as the new name for what was
-  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md)
   – This launches EJAM as a local shiny app, in RStudio.
 - Added ability to set many options and defaults as parameters passed to
   [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md).
@@ -708,8 +814,8 @@ It mainly does the following:
   will no longer include, in its output, the lat lon columns from the
   input table of sitepoints. That was unintentional and potentially
   confusing and wasted space.
-- [`plotblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/plotblocksnearby.md)
-  rewritten to fix/improve map popups, etc., and a parameter was dropped
+- `plotblocksnearby()` rewritten to fix/improve map popups, etc., and a
+  parameter was dropped
 
 #### Package development/ technical
 
@@ -765,7 +871,7 @@ v2.32.4 release that was released on USEPA/EJAM-open.
   [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
 - corrected spelling in app and documentation
 - added better examples of params one can pass via
-  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md)
 
 ### RStudio users only
 
@@ -781,7 +887,7 @@ v2.32.4 release that was released on USEPA/EJAM-open.
   is done via many changes to
   [`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md).
 - added better examples of params one can pass via
-  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md)
 - documented
   [`get_global_defaults_or_user_options()`](https://ejanalysis.github.io/EJAM/reference/get_global_defaults_or_user_options.md)
   and
@@ -813,7 +919,7 @@ v2.32.4 release that was released on USEPA/EJAM-open.
   action. (See /tests/setup.R which now has a copy of what is also in
   app-functionality.R)
 - drafted revisions to ui and server to try to allow for more
-  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md)
   params or advanced tab or global_defaults_xyz to alter default method
   of upload vs dropdown, e.g., output ss_choose_method_ui,
   default_ss_choose_method, default_upload_dropdown. This included
@@ -929,11 +1035,11 @@ v2.32.4 release that was released on USEPA/EJAM-open.
   upload if no sites specified by parameters
 - Many options or starting values or settings for the shiny app (and in
   general) can now be set as parameters passed to the
-  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md)
   function, which overrides the defaults. extensive changes to global
   defaults vs user parameters allowed: replaced global.R; files renamed,
   put in 1 folder, etc. System for using user parameters passed to
-  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md),
+  [`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md),
   global defaults otherwise, many can be changed in advanced tab; some
   may be bookmarkable. The default values are now set for the shiny app
   and in general in files called `global_defaults_package.R`,

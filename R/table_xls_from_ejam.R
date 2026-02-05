@@ -1,82 +1,4 @@
 
-
-#' helper to pick text phrase to use in excel report notes tab, for Locations analyzed: _____
-#'
-#' @param sitetype character string, one of "shp", "latlon", "fips"
-#'
-#' @param site_method string used in filename for saved report and to describe locations
-#'   site_method can be SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, or MACT
-#'
-#' @seealso [report_residents_within_xyz_from_ejamit()] and [report_residents_within_xyz()]
-#'
-#' @returns text string, phrase to use in excel notes tab
-#'
-#' @keywords internal
-#'
-buffer_desc_from_sitetype <- function(sitetype, site_method) {
-
-  # see also the closely related functions report_residents_within_xyz() and sitetype2text()
-
-  ######### #
-
-  site_method2text <- function(site_method) {
-
-    if (missing(site_method) || is.null(site_method)) {
-      return("")
-    }
-    if (site_method == "SHP") {
-      return("shapefile")
-    }
-    if (site_method == "latlon") {
-      return("coordinates")
-    }
-    if (site_method == "FIPS") {
-      return("FIPS codes")
-    }
-    if (site_method == "FIPS_PLACES") {
-      return("names of places")
-    }
-    if (site_method == "NAICS") {
-      return("EPA-regulated facilities by NAICS code (industry type)")
-    }
-    if (site_method == "FRS") {
-      return("EPA-regulated facilities by Registry ID")
-    }
-    if (site_method == "EPA_PROGRAM") {
-      return("EPA-regulated Facilities by EPA program")
-    }
-    if (site_method == "SIC") {
-      return("EPA-regulated facilities by SIC code (industry type)")
-    }
-    if (site_method == "MACT") {
-      return("EPA-regulated facilities by MACT category (air toxics emissions source type)")
-    }
-    return("")
-  }
-  ######### #
-
-  if (missing(sitetype) || is.null(sitetype)) {
-    buffer_desc <- "Selected Locations"
-  } else {
-    if (sitetype == "shp") {
-      buffer_desc <- "Polygons defined by shapefile"
-    } else {
-      if (sitetype == 'latlon') {
-        buffer_desc <- "Locations defined by latitude, longitude and radius"
-      } else {
-        if (sitetype == "fips") {
-          buffer_desc <- 'Census Units defined by FIPS code'
-        } else {
-          buffer_desc <- "Selected locations"
-        }}}}
-  if (buffer_desc == "") {
-    buffer_desc <- paste0(buffer_desc, ", based on ", site_method2text(site_method))
-  }
-  return(buffer_desc)
-}
-##################################################################################### #
-
-
 #' Format the results of ejamit() for excel and optionally save .xlsx file
 #'
 #' Almost identical to [ejam2excel()]
@@ -143,13 +65,14 @@ table_xls_from_ejam <- function(ejamitout,
                                 ejscreen_ejam_caveat = NULL,
                                 ...
 ) {
-
+  # npts ####
   npts <- NROW(ejamitout$results_bysite)
-
+  # radius_or_buffer_in_miles ####
   if (missing(radius_or_buffer_in_miles) || is.null(radius_or_buffer_in_miles)) {
     radius_or_buffer_in_miles  <- ejamitout$results_overall$radius.miles
   }
 
+  # sitetype ####
   #   Note `ejamitout$sitetype` is not quite the same as the `site_method` parameter used in building reports.
   #   sitetype    can be shp, latlon, fips
   #   site_method can be SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, or MACT
@@ -158,19 +81,22 @@ table_xls_from_ejam <- function(ejamitout,
   } else {
     sitetype <- ejamitout$sitetype
   }
-  if (missing(site_method) || is.null(site_method)) {
+
+  # site_method ####
+  if (missing(site_method) || is.null(site_method) || site_method %in% "") {
     site_method <- sitetype
     if (site_method == 'shp' ) site_method <- 'SHP'
     if (site_method == 'fips') site_method <- 'FIPS'
   }
 
+  # ? what if shp missing, etc.? ####
   ## try to sort out what to say and do in these cases:
   ## when shp param is essential  (sitetype == "shp" AND want report or map) but shp missing/null,
   #  when shp param is irrelevant (sitetype == "latlon" OR need neither report nor map) but shp provided,
   #  when shp param is redundant (sitetype == "shp" AND want report or map BUT ALREADY PROVIDED report/map) but shp provided,
   ## when shp param is nonessential but useful (sitetype == "fips" AND want report or map) to avoid a redundant download of FIPS bounds
-#
-  ### TO BE CONTINUED?
+  #
+  ### TO BE CONTINUED? ***
   #
   # if (!is.null(shp) && !community_reportadd && !mapadd) {
   #   message("ignoring shp since mapadd and community_reportadd are both FALSE")
@@ -190,9 +116,11 @@ table_xls_from_ejam <- function(ejamitout,
   #   warning("cannot add map in summary report tab - requires either shp or report_map parameter if sitetype is shp")
   # }
   # shp_for_report <- shp
-  #
-# create report if requested but not provided (and that includes the map within the report)
 
+
+  # ejam2report() ####
+  #
+  # create report if requested but not provided (and that includes the map within the report)
   if (community_reportadd && is.null(community_html)) {
     # not provided so try to create it here, noting ejam2report() still requires shp to have FIPS or polygon map in report.
     community_html <- ejam2report(
@@ -201,23 +129,23 @@ table_xls_from_ejam <- function(ejamitout,
       launch_browser = FALSE,
       shp = shp, # that will try to download if shp is null and type is fips or shp
       fileextension = ".html",
-      submitted_upload_method = site_method
+      site_method = site_method
 
-### may need to pass more params here to build report just like server would have?
-### ***
-   # but the excel version of the summary report is just a snapshot image without working map popups,
-  # so we do not have to pass a "reports" parameter, for example that normally would build links to reports.
-
-
-      )
+      # ? may need to pass more params here to build report just like server would have? ### #
+      ### ***
+      # but the excel version of the summary report is just a snapshot image without working map popups,
+      # so we do not have to pass a "reports" parameter, for example that normally would build links to reports.
+    )
   }
+  # ? may need to pass more params here? ####
 
-  # for the notes tab of spreadsheet
+
+  # buffer_desc (for notes tab of spreadsheet) ####
   if (missing(buffer_desc) || is.null(buffer_desc)) {
     buffer_desc <- buffer_desc_from_sitetype(sitetype = sitetype, site_method = site_method)
   }
 
-  ## for the notes tab of spreadsheet
+  # radius_or_buffer_description (for notes tab of spreadsheet) #####
   if (missing(radius_or_buffer_description) || is.null(radius_or_buffer_description)) {
 
     radius_or_buffer_description <- report_residents_within_xyz_from_ejamit(ejamitout = ejamitout, linefeed = ". ")
@@ -227,7 +155,7 @@ table_xls_from_ejam <- function(ejamitout,
     #                                                             sitetype = sitetype)
   }
 
-  # generate filename path
+  # pathname <- fname ####
   default_pathname <- create_filename(file_desc = "results_table",
                                       title = analysis_title,
                                       buffer_dist = radius_or_buffer_in_miles,
@@ -241,11 +169,10 @@ table_xls_from_ejam <- function(ejamitout,
     fname_was_provided <- TRUE
     pathname <- fname
   }
-
-  # uses table_xls_format  ####
+  ######################################################### #
+  # ** table_xls_format() does the work ** ####
 
   # also see the defaults in ejamit() and in table_xls_format()
-
   # also see the params as used in app_server.R code
 
   wb_out <- table_xls_format(
@@ -305,7 +232,8 @@ table_xls_from_ejam <- function(ejamitout,
     ejscreen_ejam_caveat = ejscreen_ejam_caveat,
     ...
   )
-
+  ######################################################### #
+  # save_now ####
   if (save_now) {
     if (interactive_console && interactive()) {
       if (!fname_was_provided) {
@@ -328,16 +256,14 @@ table_xls_from_ejam <- function(ejamitout,
         }
       }
     }
-    # if (is.null(pathname) || pathname == "" || grepl("[<>:\"/\\?*]", pathname)) { #perform a more robust check of the pathname here.
-    if (is.null(pathname) || pathname == "" || !dir.exists(dirname(pathname))) { #perform a more robust check of the pathname here.
-
+    if (is.null(pathname) || pathname == "" || !dir.exists(dirname(pathname))) {
       cat('Invalid path/file,', pathname, ', so using default instead: ', default_pathname, '\n')
       pathname <- default_pathname
     }
-
     cat("Saving as ", pathname, "\n")
     ## save file and return for downloading - or do this within table_xls_format( , saveas=fname) ?
     openxlsx::saveWorkbook(wb_out, pathname, overwrite = overwrite)
+
     return(pathname)
   } else {
     invisible(wb_out)

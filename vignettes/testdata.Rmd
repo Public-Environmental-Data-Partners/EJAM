@@ -168,4 +168,4 @@ Note that the largest files used by the package are mostly the block-related dat
 
 Some datasets get downloaded by the package at installation or launch or as needed. See the article on [Updating EJAM Datasets](dev-update-datasets.html) for more information on these. 
 
-Also see [reference documentation for each dataset](../reference/index.html#datasets-with-indicators-etc-).
+Also see [reference documentation for each dataset](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-).

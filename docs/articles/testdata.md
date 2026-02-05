@@ -137,26 +137,26 @@ x <- x[order(x$Package, x$Item), !grepl("size", names(x))]
 x[grepl("^testp", x$Item), ]
 #>     Package                Item
 #> 115    EJAM       testpoints_10
-#> 130    EJAM      testpoints_100
-#> 132    EJAM   testpoints_100_dt
-#> 149    EJAM     testpoints_1000
-#> 162    EJAM    testpoints_10000
-#> 123    EJAM        testpoints_5
-#> 128    EJAM       testpoints_50
-#> 144    EJAM      testpoints_500
-#> 124    EJAM      testpoints_bad
-#> 118    EJAM testpoints_overlap3
+#> 131    EJAM      testpoints_100
+#> 133    EJAM   testpoints_100_dt
+#> 150    EJAM     testpoints_1000
+#> 163    EJAM    testpoints_10000
+#> 124    EJAM        testpoints_5
+#> 129    EJAM       testpoints_50
+#> 145    EJAM      testpoints_500
+#> 125    EJAM      testpoints_bad
+#> 119    EJAM testpoints_overlap3
 #>                                                        Title
 #> 115 test points data.frame with columns sitenumber, lat, lon
-#> 130 test points data.frame with columns sitenumber, lat, lon
-#> 132 test points data.frame with columns sitenumber, lat, lon
-#> 149 test points data.frame with columns sitenumber, lat, lon
-#> 162 test points data.frame with columns sitenumber, lat, lon
-#> 123 test points data.frame with columns sitenumber, lat, lon
-#> 128 test points data.frame with columns sitenumber, lat, lon
-#> 144 test points data.frame with columns sitenumber, lat, lon
-#> 124       test points data.frame with columns note, lat, lon
-#> 118       test points data.frame with columns note, lat, lon
+#> 131 test points data.frame with columns sitenumber, lat, lon
+#> 133 test points data.frame with columns sitenumber, lat, lon
+#> 150 test points data.frame with columns sitenumber, lat, lon
+#> 163 test points data.frame with columns sitenumber, lat, lon
+#> 124 test points data.frame with columns sitenumber, lat, lon
+#> 129 test points data.frame with columns sitenumber, lat, lon
+#> 145 test points data.frame with columns sitenumber, lat, lon
+#> 125       test points data.frame with columns note, lat, lon
+#> 119       test points data.frame with columns note, lat, lon
 ```
 
 **STREET ADDRESSES** for testing geocoding in
@@ -180,10 +180,10 @@ x[grepl("^test[^op_]", x$Item), ]
 #> 32     EJAM               testinput_address_2
 #> 101    EJAM               testinput_address_9
 #> 102    EJAM           testinput_address_parts
-#> 120    EJAM           testinput_address_table
-#> 129    EJAM         testinput_address_table_9
-#> 121    EJAM testinput_address_table_goodnames
-#> 122    EJAM  testinput_address_table_withfull
+#> 121    EJAM           testinput_address_table
+#> 130    EJAM         testinput_address_table_9
+#> 122    EJAM testinput_address_table_goodnames
+#> 123    EJAM  testinput_address_table_withfull
 #> 103    EJAM        testinput_fips_blockgroups
 #> 33     EJAM             testinput_fips_cities
 #> 34     EJAM           testinput_fips_counties
@@ -196,17 +196,17 @@ x[grepl("^test[^op_]", x$Item), ]
 #> 114    EJAM          testinput_program_sys_id
 #> 40     EJAM                   testinput_regid
 #> 41     EJAM             testinput_registry_id
-#> 135    EJAM                testinput_shapes_2
+#> 136    EJAM                testinput_shapes_2
 #> 42     EJAM                     testinput_sic
-#> 134    EJAM                      testshapes_2
+#> 135    EJAM                      testshapes_2
 #>                                                                       Title
 #> 32                            datasets for trying address-related functions
 #> 101                           datasets for trying address-related functions
 #> 102                           datasets for trying address-related functions
-#> 120                           datasets for trying address-related functions
-#> 129                           datasets for trying address-related functions
 #> 121                           datasets for trying address-related functions
+#> 130                           datasets for trying address-related functions
 #> 122                           datasets for trying address-related functions
+#> 123                           datasets for trying address-related functions
 #> 103                                      testinput_fips_blockgroups dataset
 #> 33                                            testinput_fips_cities dataset
 #> 34                                          testinput_fips_counties dataset
@@ -219,9 +219,9 @@ x[grepl("^test[^op_]", x$Item), ]
 #> 114 test data, EPA program names and program system ID numbers to try using
 #> 40                 test data, EPA Facility Registry ID numbers to try using
 #> 41                 test data, EPA Facility Registry ID numbers to try using
-#> 135                                              testinput_shapes_2 dataset
+#> 136                                              testinput_shapes_2 dataset
 #> 42                                                    testinput_sic dataset
-#> 134                                                    testshapes_2 dataset
+#> 135                                                    testshapes_2 dataset
 cat("\n\n")
 ```
 
@@ -239,31 +239,31 @@ etc.
 ``` r
 x[grepl("^testout", x$Item), ]
 #>     Package                                      Item
-#> 172    EJAM     testoutput_doaggregate_1000pts_1miles
-#> 165    EJAM      testoutput_doaggregate_100pts_1miles
-#> 156    EJAM       testoutput_doaggregate_10pts_1miles
-#> 173    EJAM          testoutput_ejamit_1000pts_1miles
-#> 166    EJAM           testoutput_ejamit_100pts_1miles
-#> 161    EJAM            testoutput_ejamit_10pts_1miles
-#> 163    EJAM             testoutput_ejamit_fips_cities
-#> 164    EJAM           testoutput_ejamit_fips_counties
-#> 155    EJAM                testoutput_ejamit_shapes_2
-#> 169    EJAM testoutput_getblocksnearby_1000pts_1miles
-#> 154    EJAM  testoutput_getblocksnearby_100pts_1miles
-#> 147    EJAM   testoutput_getblocksnearby_10pts_1miles
+#> 173    EJAM     testoutput_doaggregate_1000pts_1miles
+#> 166    EJAM      testoutput_doaggregate_100pts_1miles
+#> 157    EJAM       testoutput_doaggregate_10pts_1miles
+#> 174    EJAM          testoutput_ejamit_1000pts_1miles
+#> 167    EJAM           testoutput_ejamit_100pts_1miles
+#> 162    EJAM            testoutput_ejamit_10pts_1miles
+#> 164    EJAM             testoutput_ejamit_fips_cities
+#> 165    EJAM           testoutput_ejamit_fips_counties
+#> 156    EJAM                testoutput_ejamit_shapes_2
+#> 170    EJAM testoutput_getblocksnearby_1000pts_1miles
+#> 155    EJAM  testoutput_getblocksnearby_100pts_1miles
+#> 148    EJAM   testoutput_getblocksnearby_10pts_1miles
 #>                                                                  Title
-#> 172                                       test output of doaggregate()
-#> 165                                       test output of doaggregate()
-#> 156                                       test output of doaggregate()
-#> 173                                            test output of ejamit()
-#> 166                                            test output of ejamit()
-#> 161                                            test output of ejamit()
-#> 163                              testoutput_ejamit_fips_cities dataset
-#> 164                            testoutput_ejamit_fips_counties dataset
-#> 155                                 testoutput_ejamit_shapes_2 dataset
-#> 169 test output of getblocksnearby(), and is an input to doaggregate()
-#> 154 test output of getblocksnearby(), and is an input to doaggregate()
-#> 147 test output of getblocksnearby(), and is an input to doaggregate()
+#> 173                                       test output of doaggregate()
+#> 166                                       test output of doaggregate()
+#> 157                                       test output of doaggregate()
+#> 174                                            test output of ejamit()
+#> 167                                            test output of ejamit()
+#> 162                                            test output of ejamit()
+#> 164                              testoutput_ejamit_fips_cities dataset
+#> 165                            testoutput_ejamit_fips_counties dataset
+#> 156                                 testoutput_ejamit_shapes_2 dataset
+#> 170 test output of getblocksnearby(), and is an input to doaggregate()
+#> 155 test output of getblocksnearby(), and is an input to doaggregate()
+#> 148 test output of getblocksnearby(), and is an input to doaggregate()
 cat("\n\n")
 ```
 
@@ -280,4 +280,4 @@ Datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.md)
 for more information on these.
 
 Also see [reference documentation for each
-dataset](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-).
+dataset](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-).

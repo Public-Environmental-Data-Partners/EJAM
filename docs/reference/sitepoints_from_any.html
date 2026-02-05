@@ -9,7 +9,7 @@ Like latlon_from_anything() but this also adds a ejam_uniq_id column"><meta prop
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,8 +21,9 @@ Like latlon_from_anything() but this also adds a ejam_uniq_id column"><meta prop
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
     <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
@@ -127,7 +128,7 @@ Like latlon_from_anything() but this also adds a ejam_uniq_id column</p>
 <span> <span class="fu">sitepoints_from_any</span><span class="op">(</span><span class="va">pts</span><span class="op">)</span></span>
 <span> <span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Longitude <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lon</span>, Latitude <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lat</span><span class="op">)</span></span>
 <span> <span class="fu">sitepoints_from_any</span><span class="op">(</span><span class="va">pts</span><span class="op">)</span></span>
-<span> <span class="va">pts</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Lat <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lat</span>, Long <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lon</span><span class="op">)</span></span>
+<span> <span class="va">pts</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Lat <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lat</span>, Long <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lon</span><span class="op">)</span></span>
 <span> <span class="fu">sitepoints_from_any</span><span class="op">(</span><span class="va">pts</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="fu">sitepoints_from_anything</span><span class="op">(</span><span class="va">testpoints_bad</span>, set_invalid_to_na <span class="op">=</span> <span class="cn">F</span>, invalid_msg_table <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
@@ -147,11 +148,11 @@ Like latlon_from_anything() but this also adds a ejam_uniq_id column</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

@@ -33,7 +33,9 @@ knitr::opts_chunk$set(eval = FALSE, warning = FALSE)
 if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if pkg not yet attached
 
 dataload_dynamic('all') # varnames = all  currently means all defined by .arrow_ds_names
-
+ if (!exists("frs_arrow")) {
+    dataload_dynamic("frs", return_data_table = FALSE)
+  }
 indexblocks()
 ```
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,8 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators and Reports</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
     <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
@@ -62,7 +63,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="key-functions-for-starting-an-analysis">Key Functions for Starting an Analysis<a class="anchor" aria-label="anchor" href="#key-functions-for-starting-an-analysis"></a></h2>
+      <h2 id="start-an-analysis-key-functions">Start an Analysis - Key Functions<a class="anchor" aria-label="anchor" href="#start-an-analysis-key-functions"></a></h2>
 
       <div class="section-desc"><p>Starting the Analysis</p></div>
 
@@ -106,7 +107,7 @@
         </dt>
         <dd>Compare subsets (types) of places that are all from one list</dd>
       </dl></div><div class="section level2">
-      <h2 id="key-functions-for-viewing-results">Key Functions for Viewing Results<a class="anchor" aria-label="anchor" href="#key-functions-for-viewing-results"></a></h2>
+      <h2 id="view-results-key-functions">View Results - Key Functions<a class="anchor" aria-label="anchor" href="#view-results-key-functions"></a></h2>
 
       <div class="section-desc"><p>Viewing the Results</p></div>
 
@@ -378,7 +379,7 @@
         </dt>
         <dd>frs_by_programid (DATA) data.table of Program System ID code(s) for each EPA-regulated site in the Facility Registry Service</dd>
       </dl></div><div class="section level2">
-      <h2 id="specify-facility-type">Specify Facility Type<a class="anchor" aria-label="anchor" href="#specify-facility-type"></a></h2>
+      <h2 id="specify-facilities-by-type">Specify Facilities by Type<a class="anchor" aria-label="anchor" href="#specify-facilities-by-type"></a></h2>
 
       <div class="section-desc"><p>NAICS, SIC, MACT, or EPA Program</p></div>
 
@@ -789,7 +790,7 @@
       </dl></div><div class="section level2">
       <h2 id="specify-counties-etc-">Specify Counties etc.<a class="anchor" aria-label="anchor" href="#specify-counties-etc-"></a></h2>
 
-      <div class="section-desc"><p>Tools to work with Census units and FIPS codes - blockgroups, tracts, counties, states, and EPA Regions</p></div>
+      <div class="section-desc"><p>Tools to work with Census units &amp; FIPS codes - blockgroups, tracts, counties, states, &amp; EPA Regions</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -969,7 +970,7 @@
           <code><a href="url_county_equityatlas.html">url_county_equityatlas()</a></code>
 
         </dt>
-        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org</dd>
+        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips from nationalequityatlas.org</dd>
       </dl></div><div class="section level2">
 
       <h3 id="states">States<a class="anchor" aria-label="anchor" href="#states"></a></h3>
@@ -1080,9 +1081,9 @@
         </dt>
         <dd>FIPS - Get EPA Region number (1-10) from state FIPS code</dd>
       </dl></div><div class="section level2">
-      <h2 id="finding-blocks-distances-and-residents">Finding Blocks, Distances, and Residents<a class="anchor" aria-label="anchor" href="#finding-blocks-distances-and-residents"></a></h2>
+      <h2 id="residents-blocks-distances">Residents, Blocks, &amp; Distances<a class="anchor" aria-label="anchor" href="#residents-blocks-distances"></a></h2>
 
-      <div class="section-desc"><p>GIS tools calculating which blocks (and residents) are in or near each place (within given radius of point or in FIPS or polygon), and their distances</p></div>
+      <div class="section-desc"><p>GIS tools calculating which blocks (&amp; residents) are in or near each place (within given radius of point or in FIPS or polygon), &amp; their distances</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -1219,6 +1220,20 @@
 
         <dt>
 
+          <code><a href="acs_table_info.html">acs_table_info()</a></code>
+
+        </dt>
+        <dd>utility to download and print some info about each variable in each ACS 5yr table</dd>
+
+        <dt>
+
+          <code><a href="tables_ejscreen_acs.html">tables_ejscreen_acs</a></code>
+
+        </dt>
+        <dd>tables_ejscreen_acs dataset</dd>
+
+        <dt>
+
           <code><a href="avg.in.us.html">avg.in.us</a></code>
 
         </dt>
@@ -1266,9 +1281,9 @@
         </dt>
         <dd>Regression model to predict runtime for ejamit</dd>
       </dl></div><div class="section level2">
-      <h2 id="calculating-and-aggregating">Calculating and Aggregating<a class="anchor" aria-label="anchor" href="#calculating-and-aggregating"></a></h2>
+      <h2 id="calculations-aggregation">Calculations &amp; Aggregation<a class="anchor" aria-label="anchor" href="#calculations-aggregation"></a></h2>
 
-      <div class="section-desc"><p>Tools that Calculate and Aggregate Indicators at each Place and Overall, and Report Percentiles or Means</p></div>
+      <div class="section-desc"><p>Tools that Create or Aggregate Indicators at each Place &amp; Overall, &amp; Report Percentiles or Means</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -1295,27 +1310,6 @@
 
         </dt>
         <dd>DRAFT utility to use formulas provided as text, to calculate indicators</dd>
-
-        <dt>
-
-          <code><a href="calc_avg_columns.html">calc_avg_columns()</a></code>
-
-        </dt>
-        <dd>helper that looks up US or State averages for a vector of variable names (and optional vector of States)</dd>
-
-        <dt>
-
-          <code><a href="calc_ratio_columns.html">calc_ratio_columns()</a></code>
-
-        </dt>
-        <dd>Calculate ratios to US and State average for each indicator in each place</dd>
-
-        <dt>
-
-          <code><a href="calc_pctile_columns.html">calc_pctile_columns()</a></code>
-
-        </dt>
-        <dd>Convert raw indicator values to percentiles, for a table of indicators and places</dd>
 
         <dt>
 
@@ -1444,13 +1438,6 @@
 
         </dt>
         <dd>Which indicators fall most as proximity does? (i.e., are higher if closer to site) Which variables have strongest trend with distance based on slope of linear fit</dd>
-
-        <dt>
-
-          <code><a href="batch.summarize.html">batch.summarize()</a></code>
-
-        </dt>
-        <dd>Calculate more summary stats across all sites and all people</dd>
       </dl></div><div class="section level2">
 
       <h3 id="comparing-distances-multiple-radius-values">Comparing Distances / Multiple Radius Values<a class="anchor" aria-label="anchor" href="#comparing-distances-multiple-radius-values"></a></h3>
@@ -1510,11 +1497,97 @@
         </dt>
         <dd>Which indicators fall most as proximity does? (i.e., are higher if closer to site) Which variables have strongest trend with distance based on slope of linear fit</dd>
       </dl></div><div class="section level2">
-      <h2 id="viewing-results">Viewing Results<a class="anchor" aria-label="anchor" href="#viewing-results"></a></h2>
+      <h2 id="viewing-results-deep-dive">Viewing Results - Deep Dive<a class="anchor" aria-label="anchor" href="#viewing-results-deep-dive"></a></h2>
 
 
 
       <dl></dl></div><div class="section level2">
+
+      <h3 id="tables">Tables<a class="anchor" aria-label="anchor" href="#tables"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="ejam2report.html">ejam2report()</a></code>
+
+        </dt>
+        <dd>View HTML Report on EJAM Results (Overall or at 1 Site)</dd>
+
+        <dt>
+
+          <code><a href="ejam2excel.html">ejam2excel()</a></code>
+
+        </dt>
+        <dd>Save EJAM results in a spreadsheet</dd>
+
+        <dt>
+
+          <code><a href="ejam2ratios.html">ejam2ratios()</a></code>
+
+        </dt>
+        <dd>Quick view of summary stats by type of stat, but lacks rounding specific to each type, etc.</dd>
+
+        <dt>
+
+          <code><a href="ejam2areafeatures.html">ejam2areafeatures()</a></code>
+
+        </dt>
+        <dd>simple way to see the table of summary stats on special areas and features like schools</dd>
+
+        <dt>
+
+          <code><a href="ejam2means.html">ejam2means()</a></code>
+
+        </dt>
+        <dd>ejam2means - quick look at averages, via ejamit() results</dd>
+
+        <dt>
+
+          <code><a href="ejam2tableviewer.html">ejam2tableviewer()</a></code>
+
+        </dt>
+        <dd>See ejamit()$results_bysite in interactive table in RStudio viewer pane</dd>
+
+        <dt>
+
+          <code><a href="ejam2table_tall.html">ejam2table_tall()</a></code>
+
+        </dt>
+        <dd>Simple quick look at results of ejamit() in RStudio console</dd>
+
+        <dt>
+
+          <code><a href="table_ratios_from_ejamit.html">table_ratios_from_ejamit()</a></code>
+
+        </dt>
+        <dd>Quick view of summary stats by type of stat, but lacks rounding specific to each type, etc.</dd>
+
+        <dt>
+
+          <code><a href="table_gt_from_ejamit.html">table_gt_from_ejamit()</a></code>
+
+        </dt>
+        <dd>Create a gt-format table of results from EJAM</dd>
+
+        <dt>
+
+          <code><a href="table_gt_from_ejamit_1site.html">table_gt_from_ejamit_1site()</a></code>
+
+        </dt>
+        <dd>Create a formatted table of results for 1 site from EJAM</dd>
+
+        <dt>
+
+          <code><a href="table_gt_from_ejamit_overall.html">table_gt_from_ejamit_overall()</a></code>
+
+        </dt>
+        <dd>Create a formatted table of results from EJAM overall summary stats</dd>
+      </dl></div><div class="section level2">
 
       <h3 id="maps-of-points">Maps of Points<a class="anchor" aria-label="anchor" href="#maps-of-points"></a></h3>
 
@@ -1575,10 +1648,10 @@
 
         <dt>
 
-          <code><a href="plotblocksnearby.html">plotblocksnearby()</a></code>
+          <code><a href="plot_blocks_nearby.html">plot_blocks_nearby()</a></code>
 
         </dt>
-        <dd>plotblocksnearby - Map view of Census blocks (their centroids) near one or more sites Utility to quickly view one or more facility points on map with the blocks found nearby</dd>
+        <dd>plot_blocks_nearby - Map view of Census blocks (their centroids) near one or more sites Utility to quickly view one or more facility points on map with the blocks found nearby</dd>
       </dl></div><div class="section level2">
 
       <h3 id="maps-of-shapes-polygons-">Maps of Shapes (Polygons)<a class="anchor" aria-label="anchor" href="#maps-of-shapes-polygons-"></a></h3>
@@ -1819,7 +1892,7 @@
         <dd>Barplot comparing ejamit_compare_distances() results for more than one radius</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="plots-indicator-as-a-function-of-distance-comparing-distances-and-indicators-">Plots: Indicator as a function of distance (comparing distances and indicators)<a class="anchor" aria-label="anchor" href="#plots-indicator-as-a-function-of-distance-comparing-distances-and-indicators-"></a></h3>
+      <h3 id="plots-indicator-as-a-function-of-distance-comparing-distances-indicators-">Plots: Indicator as a function of distance (comparing distances &amp; indicators)<a class="anchor" aria-label="anchor" href="#plots-indicator-as-a-function-of-distance-comparing-distances-indicators-"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -1869,93 +1942,7 @@
         </dt>
         <dd>lorenz plot bybg_people (cumulative share of x vs cum share of y) - DRAFT/EXPERIMENTAL COUNT OF SITES (or PEOPLE?) BY BIN</dd>
       </dl></div><div class="section level2">
-
-      <h3 id="tables">Tables<a class="anchor" aria-label="anchor" href="#tables"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="ejam2report.html">ejam2report()</a></code>
-
-        </dt>
-        <dd>View HTML Report on EJAM Results (Overall or at 1 Site)</dd>
-
-        <dt>
-
-          <code><a href="ejam2excel.html">ejam2excel()</a></code>
-
-        </dt>
-        <dd>Save EJAM results in a spreadsheet</dd>
-
-        <dt>
-
-          <code><a href="ejam2ratios.html">ejam2ratios()</a></code>
-
-        </dt>
-        <dd>Quick view of summary stats by type of stat, but lacks rounding specific to each type, etc.</dd>
-
-        <dt>
-
-          <code><a href="ejam2areafeatures.html">ejam2areafeatures()</a></code>
-
-        </dt>
-        <dd>simple way to see the table of summary stats on special areas and features like schools</dd>
-
-        <dt>
-
-          <code><a href="ejam2means.html">ejam2means()</a></code>
-
-        </dt>
-        <dd>ejam2means - quick look at averages, via ejamit() results</dd>
-
-        <dt>
-
-          <code><a href="ejam2tableviewer.html">ejam2tableviewer()</a></code>
-
-        </dt>
-        <dd>See ejamit()$results_bysite in interactive table in RStudio viewer pane</dd>
-
-        <dt>
-
-          <code><a href="ejam2table_tall.html">ejam2table_tall()</a></code>
-
-        </dt>
-        <dd>Simple quick look at results of ejamit() in RStudio console</dd>
-
-        <dt>
-
-          <code><a href="table_ratios_from_ejamit.html">table_ratios_from_ejamit()</a></code>
-
-        </dt>
-        <dd>Quick view of summary stats by type of stat, but lacks rounding specific to each type, etc.</dd>
-
-        <dt>
-
-          <code><a href="table_gt_from_ejamit.html">table_gt_from_ejamit()</a></code>
-
-        </dt>
-        <dd>Create a gt-format table of results from EJAM</dd>
-
-        <dt>
-
-          <code><a href="table_gt_from_ejamit_1site.html">table_gt_from_ejamit_1site()</a></code>
-
-        </dt>
-        <dd>Create a formatted table of results for 1 site from EJAM</dd>
-
-        <dt>
-
-          <code><a href="table_gt_from_ejamit_overall.html">table_gt_from_ejamit_overall()</a></code>
-
-        </dt>
-        <dd>Create a formatted table of results from EJAM overall summary stats</dd>
-      </dl></div><div class="section level2">
-      <h2 id="test-data">Test Data<a class="anchor" aria-label="anchor" href="#test-data"></a></h2>
+      <h2 id="examples-of-input-output-data">Examples of Input &amp; Output Data<a class="anchor" aria-label="anchor" href="#examples-of-input-output-data"></a></h2>
 
 
 
@@ -2231,7 +2218,7 @@
         </dt>
         <dd>testoutput_ejamit_fips_counties dataset</dd>
       </dl></div><div class="section level2">
-      <h2 id="utilities-for-finding-url-or-api-info">Utilities for finding URL or API info<a class="anchor" aria-label="anchor" href="#utilities-for-finding-url-or-api-info"></a></h2>
+      <h2 id="utilities-providing-url-or-api-info">Utilities providing URL or API info<a class="anchor" aria-label="anchor" href="#utilities-providing-url-or-api-info"></a></h2>
 
 
 
@@ -2294,7 +2281,7 @@
           <code><a href="url_county_equityatlas.html">url_county_equityatlas()</a></code>
 
         </dt>
-        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips, from countyhealthrankings.org</dd>
+        <dd>URL functions - Get URLs of useful report(s) on County containing the given fips from nationalequityatlas.org</dd>
 
         <dt>
 
@@ -2309,6 +2296,13 @@
 
         </dt>
         <dd>URL functions - url_naics.com - Get URL for page with info about industry sectors by text query term</dd>
+
+        <dt>
+
+          <code><a href="url_ejscreentechdoc.html">url_ejscreentechdoc()</a></code>
+
+        </dt>
+        <dd>utility to get URL of .pdf of EJSCREEN Technical Documentation</dd>
       </dl></div><div class="section level2">
       <h2 id="utilities-handling-variable-names">Utilities handling variable names<a class="anchor" aria-label="anchor" href="#utilities-handling-variable-names"></a></h2>
 
@@ -2352,11 +2346,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

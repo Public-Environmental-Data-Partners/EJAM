@@ -87,7 +87,7 @@ app but has url-encoded parameters that are app settings, such as sitepoints, ra
 \item \code{report_title="EJSCREEN Community Report"}
 }
 
-So it was not yet accepting parameters used by \code{ejamit()} and \code{ejam2report()} such as
+So it was not yet accepting parameters used by \code{\link[=ejamit]{ejamit()}} and \code{\link[=ejam2report]{ejam2report()}} such as
 \itemize{
 \item sitenumber=0 (for a multisite report)
 \item logo_path

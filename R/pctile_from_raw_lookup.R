@@ -226,7 +226,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
 
     # findInterval ####
 
-    # 1.) Uses findInterval to bin each percentile vector value into unique percentile vectors; Results are a list of bin values rather than acutal percentiles
+    # 1.) Uses findInterval to bin each percentile vector value into unique percentile vectors; Results are a list of bin values rather than actual percentiles
     # 2.) Percentile indices are calculated based on the first nonduplicate values (indices are based on 1-100 percentile location)
     # 3.) Percentile indices are applied to the bin values vector in step 1 to assign the appropriate percentile value to vector selection
     unique_vlookup <- c(unique(myvector_lookup),Inf) #add Inf to coerce N-1 to N
@@ -264,11 +264,11 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
     # returns NA if belowmin is NA
     percentiles_reported[zone %in% z][is.na(belowmin)] <- NA
 
-
     #set percentile to zero if myvector_selection <= 0
     percentiles_reported[zone %in% z][myvector_selection <= 0] <- 0
     # set first nonzero percentile to second value
 
+    ##  NO LONGER USING high_pctiles_tied_with_min ***
     #percentiles_reported[zone %in% z][(myvector_selection > 0 & myvector_selection < unique_vlookup[1])] <- nondupvec[2]-1
     #percentiles_reported[zone %in% z][(myvector_selection > 0 & myvector_selection < unique_vlookup[2])] <- high_pctiles_tied_with_min[[z]][[varname.in.lookup.table]]#nondupvec[2]-1
   } # end of loop over zones ####
@@ -295,8 +295,8 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
   #  which will force it to report 0 percentile for that value that hasn't had the tiny amount added.
   # that seems like an awkward hack but would work.
   # We could alter the statestats table itself, and usastats. but,
-  # solution: created   high_pctiles_tied_with_min  dataset
-  # Rule for using it here:
+  # solution: created   high_pctiles_tied_with_min  dataset ... but obsolete now 2025/2026- no longer being used
+  # Rule for using it here had been:
   # if reported pctile per lookup function is <= these high_pctiles_tied_with_min,
   # then report instead zero as the percentile.
   #
