@@ -446,6 +446,8 @@ reference:
   - map_headernames
 - title: internal
   contents:
+  - varin_map_headernames
+  - varin_map_headernames_all
   - calc_avg_columns
   - calc_ratio_columns
   - calc_pctile_columns

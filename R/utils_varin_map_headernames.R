@@ -1,9 +1,19 @@
 
-#  utility to search for a variable name in map_headernames & see all variants of the name
-# or see that info for all variables in a specified varlist
-## examples  varin_map_headernames_all("lan_")
-
-
+#' utility to search for a variable name in map_headernames & see all variants of the name, or see that info for all variables in a specified varlist
+#'
+#' @param query optional, string or vector of strings to search for.
+#'   specify query or varlist not both.
+#' @param varlist optional, if provided, will return info for all variables in that varlist.
+#'   varlist can be something found in map_headernames$varlist, such as "names_d_language"
+#' @param simple optional, changes what info is shown
+#'
+#' @return data.table of info found in map_headernames
+#'
+#' @examples varin_map_headernames_all("lan_")
+#'
+#' @export
+#' @keywords internal
+#'
 varin_map_headernames_all <- function(query, varlist = NULL, simple=FALSE) {
 
   kinds = c('rname',
@@ -124,7 +134,7 @@ varin_map_headernames_all <- function(query, varlist = NULL, simple=FALSE) {
 #'   info = c("oldname","apiname", "acsname" ,"csvname",
 #'   "basevarname", 'shortlabel', 'longname', 'varlist')))
 #'
-#' @seealso [varinfo()]
+#' @seealso [varinfo()] [varin_map_headernames_all()]
 #'
 #' @export
 #' @keywords internal
