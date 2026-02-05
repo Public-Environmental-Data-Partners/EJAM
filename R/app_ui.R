@@ -527,9 +527,35 @@ app_ui <- function(request) {
                                ############################## #
                                ###               > HEADER AND TABLES       ####
                                uiOutput('comm_report_html'), # either by_template or not depends on parameter original_style_report
+                               br(),
+conditionalPanel(condition = "!input.original_style_report",
+                 # if not using original style template, then add these components that would have been in the template)
                                ## other components needed if original_style_report = F
                                # Map, plot, and footer were being added later, in UI, before original style template was used
-
+                               ############################## #
+                               ###                > MAP    ####
+                               #### quick_view_map (results, in summary report) ### #
+                           ###  make this conditional on original_style_report = F, since the template already has a map in it, and this was being added later when not using the template
+                            shinycssloaders::withSpinner(
+                              leaflet::leafletOutput('quick_view_map')#, width = '1170px', height = '627px')
+                            ),
+                            br(),
+                            ############################## #
+                            ###                > BARPLOT    ####
+                          fluidRow(
+                              column(
+                                12, align = 'center',
+                                br(),br(),
+                                shinycssloaders::withSpinner(
+                                  plotOutput(outputId = 'report_plot_output', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
+                                )
+                              )
+                          )
+                           ),
+                               ############################## #
+                               ###              > FOOTER  (version, date)    ####
+                               uiOutput("report_footer_version_date"),  # now via generate_report_footer() which wraps it in div
+                               br(),
                                ############################## #
                                ###              > DOWNLOAD BUTTON    ####
                                tags$div(
@@ -1237,6 +1263,8 @@ app_ui <- function(request) {
                  ######################################################## #
                  ### Short report options ####
                  h2("Short (summary) report"),
+
+                 shiny::checkboxInput("original_style_report", "Original 2024 style report?", value = EJAM:::global_or_param("original_style_report")),
 
                  shiny::textInput(inputId = "standard_analysis_title",
                                   label = "Default title to show on each short report",

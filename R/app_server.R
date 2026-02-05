@@ -2150,7 +2150,7 @@ app_server <- function(input, output, session) {
       pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
     })
 
-    if (isTRUE(EJAM:::global_or_param("original_style_report"))) {
+    if (isTRUE(input$original_style_report)) {
       FUN <- build_community_report_by_template
     } else {
       FUN <- build_community_report
@@ -2550,7 +2550,7 @@ app_server <- function(input, output, session) {
         footer_date = date_in_user_timezone(),
         footer_text = NULL,
         footer_html = NULL, # NULL means use defaults
-        original_style_report = isTRUE(EJAM:::global_or_param("original_style_report"))
+        original_style_report = isTRUE(input$original_style_report)
       )
     })
     if (input$testing) {
@@ -2663,7 +2663,7 @@ app_server <- function(input, output, session) {
           extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
           logo_path =  EJAM:::global_or_param("report_logo"),
           footer_date = date_in_user_timezone(),
-          original_style_report = isTRUE(EJAM:::global_or_param("original_style_report"))
+          original_style_report = isTRUE(input$original_style_report)
         )
 
         # modal pops up so user can trigger the download
