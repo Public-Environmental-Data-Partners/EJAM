@@ -526,9 +526,9 @@ app_ui <- function(request) {
 
                                ############################## #
                                ###               > HEADER AND TABLES       ####
-                               ## other components needed if original_style_report = F
                                uiOutput('comm_report_html'), # either by_template or not depends on parameter original_style_report
                                ## other components needed if original_style_report = F
+                               # Map, plot, and footer were being added later, in UI, before original style template was used
 
                                ############################## #
                                ###              > DOWNLOAD BUTTON    ####
