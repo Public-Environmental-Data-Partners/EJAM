@@ -47,6 +47,6 @@ t(EJAM:::varinfo("traffic.score",
 
 }
 \seealso{
-\code{\link[=varinfo]{varinfo()}}
+\code{\link[=varinfo]{varinfo()}} \code{\link[=varin_map_headernames_all]{varin_map_headernames_all()}}
 }
 \keyword{internal}
