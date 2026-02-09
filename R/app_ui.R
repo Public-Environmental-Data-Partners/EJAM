@@ -528,7 +528,7 @@ app_ui <- function(request) {
                                ###               > HEADER AND TABLES       ####
                                uiOutput('comm_report_html'), # either by_template or not depends on parameter original_style_report
                                br(),
-conditionalPanel(condition = "!input.original_style_report",
+conditionalPanel(condition = "input.original_style_report == 'FALSE'",
                  # if not using original style template, then add these components that would have been in the template)
                                ## other components needed if original_style_report = F
                                # Map, plot, and footer were being added later, in UI, before original style template was used
