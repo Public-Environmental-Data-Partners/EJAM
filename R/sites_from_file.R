@@ -6,7 +6,7 @@
 #'
 #' @param file a file name (with path) to look at
 #'
-#' @returns named list, with sitepoints, fips, shapefile as names
+#' @return named list, with sitepoints, fips, shapefile as names
 #' @seealso [sites_from_input()]
 #'
 #' @keywords internal

@@ -17,7 +17,7 @@
 #'
 #'  The source of data for each indicator was documented by EJSCREEN, as linked in this document:
 #'
-#'  - [EJSCREEN documentation article](https://ejanalysis.github.io/EJAM/articles/ejscreen.html)
+#'  - [EJSCREEN documentation article](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}.
 #'
 #'  More about blockgroupstats
 #'
@@ -62,9 +62,9 @@
 #'
 #'   - List of key datasets used by EJAM and details about annual updates: [technical article on updating datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html).
 #'
-#'   - Datasets stored within the EJAM package (.rda files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-) and [access to data files](https://github.com/ejanalysis/EJAM/tree/main/data)
+#'   - Datasets stored within the EJAM package (.rda files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and [access to data files](https://github.com/ejanalysis/EJAM/tree/main/data)
 #'
-#'   - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-etc-) and [access to data files](https://github.com/ejanalysis/ejamdata/tree/main/data)
+#'   - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and [access to data files](https://github.com/ejanalysis/ejamdata/tree/main/data)
 #'
 #'   - Also see [ejanalysis.com/status](https://ejanalysis.com/status)
 #'

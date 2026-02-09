@@ -12,6 +12,6 @@
 #'
 #'   mapfast(pts, radius = 1)  
 #'     
-#'   plotblocksnearby(pts, radius = 1)
+#'   plot_blocks_nearby(pts, radius = 1)
 #'  ```
 'testpoints_overlap3'

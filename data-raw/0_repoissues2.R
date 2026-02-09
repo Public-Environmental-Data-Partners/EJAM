@@ -23,7 +23,7 @@
 #' @param git_pat NULL means try to use the one already set up
 #' @param verbose how much to print
 #'
-#' @returns invisibly returns named list of 2 tibbles, issues_details (huge) and issues (fewer columns)
+#' @return invisibly returns named list of 2 tibbles, issues_details (huge) and issues (fewer columns)
 #'   where issues_details$labels is something like a list of lists of data.frames, for example.
 #' 
 #' @export

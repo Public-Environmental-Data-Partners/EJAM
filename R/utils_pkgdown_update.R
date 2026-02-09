@@ -99,7 +99,7 @@
 #' @examples
 #'   # EJAM:::pkgdown_update(doask = TRUE)
 #'
-#' @returns NULL
+#' @return NULL
 #'
 #' @keywords internal
 #'
@@ -281,6 +281,10 @@ pkgdown_update = function(
 
     cat('trying to do document() \n')
     document()
+    if (doclean_man) {
+      cat('doing document() again now, just in case, because if doclean_man=T, it deletes all files in the man folder, \nafter which the 1st time you try to document() it cannot resolve links to other topics not yet turned into .md files\n')
+      document()
+      }
   }
   #################### # #################### # #################### # #################### #
 

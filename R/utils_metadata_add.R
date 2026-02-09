@@ -82,7 +82,7 @@ metadata_update_attr <- function(x,
 #' @param update_date_saved_in_package passed to [metadata_add()]. can set to FALSE to avoid changing this attribute
 #' @param update_ejam_package_version passed to [metadata_add()]. can set to FALSE to avoid changing this attribute
 #'
-#' @returns just for side effects (unlike [metadata_add()] which returns the updated object)
+#' @return just for side effects (unlike [metadata_add()] which returns the updated object)
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
 #' @keywords internal
@@ -200,7 +200,7 @@ print(attributes2(x))
 #' @return same as [metadata_check()], invisibly
 #' @examples
 #' # x = EJAM:::metadata_check( which = "ejam_package_version")
-#' # x[!x$ejam_package_version %in% "2.32.6", ]
+#' # x[!x$ejam_package_version %in% "2.32.7", ]
 #'
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'
@@ -246,10 +246,21 @@ metadata_check_print = function(...) {
   # --------------------------------------------------------------------------------- -
   ## see ACS version info and date saved
   if ("acs_version" %in% names(x)) {
-    print(table(How.many.have.acs_version = x$acs_version, useNA = 'always'))
-    z = x[is.na(x$acs_version), intersect(c('item', 'date_saved_in_package', 'acs_version' ), names(x))]
-    cat("\n\n see where is ACS version info missing, and date saved \n\n")
-    print(z[order(z$item), ])
+  print(table(How.many.have.acs_version = x$acs_version, useNA = 'always'))
+  z = x[is.na(x$acs_version), intersect(c('item', 'date_saved_in_package', 'acs_version' ), names(x))]
+  cat("\n\n see where is ACS version info missing, and date saved \n\n")
+  z = z[order(z$item), ]
+
+  cat("where object name is names_xyz (vectors of variables or indicator names do not need metadata stored as attributes)\n\n")
+  these = z[grepl("^names_", z$item), ]
+  rownames(these) = NULL
+  print(these)
+
+  cat("\n\nwhere object name is NOT names_xyz\n\n")
+  these = z[!grepl("^names_", z$item), ]
+  rownames(these) = NULL
+  print(these)
+
   }
   ## probably should have acs_version:  usastats, testoutput_*
   invisible(x)
@@ -279,7 +290,7 @@ metadata_check_print = function(...) {
 #'   [pkg_functions_and_data()]
 #' @examples
 #' x = EJAM:::metadata_check( which = "ejam_package_version")
-#' x[!x$ejam_package_version %in% "2.32.6", ]
+#' x[!x$ejam_package_version %in% "2.32.7", ]
 #'
 #'   # tail(EJAM:::metadata_check( ))
 #'   EJAM:::metadata_check(packages = NULL)

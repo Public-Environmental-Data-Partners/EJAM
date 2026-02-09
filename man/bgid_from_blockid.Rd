@@ -24,10 +24,10 @@ utility - get table with bgid for each blockid, or just unique bgid values vecto
 rad = 0.658
 pts = data.frame(lat=39.4347105, lon=-74.7203421)
 s2b = getblocksnearby(sitepoints=pts, radius = rad)
-EJAM:::bgid_from_blockid(s2b$blockid) # vector of unique ids
-EJAM:::bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
+# bgid_from_blockid(s2b$blockid) # vector of unique ids
+# bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
 
- # plotblocksnearby(pts, radius = rad, overlay_blockgroups = T)
+# plot_blocks_nearby(pts, radius = rad, overlay_blockgroups = T)
 
 }
 \keyword{internal}

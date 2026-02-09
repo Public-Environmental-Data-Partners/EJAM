@@ -35,3 +35,4 @@ that came up in a given case (for one cutoff).
 \seealso{
 colcounter_summary()
 }
+\keyword{internal}

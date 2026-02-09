@@ -5,7 +5,7 @@
 #' Creates header and footer of 1 page report to include a barplot on results for one site (to supplement the EJSCREEN Community Report)
 #'
 #' @details For a related function for use in RStudio,
-#' see [ejam2report()] which relies on `build_community_report()`
+#' see [ejam2report()] which relies on [build_community_report()]
 #'
 #'
 #' @param analysis_title, title to use in header of report

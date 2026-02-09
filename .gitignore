@@ -1,3 +1,33 @@
+
+################################################################################### #
+# Trickier cases of items git should ignore
+
+/data/*.arrow
+# The large datasets stored as .arrow files take up roughly 1 GB of storage space.
+# They are downloaded from a separate repo (ejamdata) and
+# get saved in the data folder when a user installs the package, but they are not part of the package itself per se.
+# seee https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html
+
+tests/testthat/_snaps/
+tests/testthat/_snaps/**/*.png
+# Try ignoring the _snaps folders entirely, since they can
+# take >400 MB for the snapshots created during webapp testing via shinytest2 package
+# as explained in the "Testing EJAM App with shinytest2" vignette/article
+# at https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.html
+
+# /docs/
+# These are NOT ignored, currently, although perhaps that could be reconsidered.
+# The html etc. created by pkgdown for documentation of the package are in the /docs/ folders.
+# The whole docs folder is only about 12 MB, but has thousands of files (which to be fair can be distracting to have git track and to commit change to).
+# The repository was configured to deploy and publish the gh pages website from the docs folder,
+# in which case we presumably do not want to ignore changes in it, despite defaults in pkgdown package?
+# (The default is that use_pkgdown(): creates a pkgdown config file and adds relevant files or directories to .Rbuildignore and .gitignore to ignore the docs folder?)
+# However, maybe gh actions can create and deploy the site (from a docs folder on github.com?) without one having to run EJAM:::pkgdown_update() locally and committing the local docs folders.
+
+################################################################################### #
+# Standard or obvious items to ignore
+
+
 # History files
 .Rhistory
 .Rapp.history
@@ -23,12 +53,11 @@
 /.Rproj.user
 *.pper
 
-# produced vignettes - but be sure these actually should be ignored ****
+# Vignettes other than the type created by the pkgdown package.
+# The .Rmd files in the vignettes folder get turned into html articles in the docs folder via EJAM:::pkgdown_update(),
+# and we do not really need to build and install the traditional type of vignette R supports.
 vignettes/*.html
 vignettes/*.pdf
-
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
 
 # knitr and R markdown default cache directories
 *_cache/
@@ -38,31 +67,25 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
-# R Environment Variables
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# R Environment Variables to ignore, not part of the released package.
 .Renviron
 *.Rproj
 inst/doc
 packrat/lib*/
 *.dcf
 # such as EJAM/rsconnect/rstudio-connect.dmap-stage.aws.epa.gov/..../ejam.dcf  configuration file for deplying to RStudio Connect server
-
-/doc/
 /Meta/
 
-# large datasets stored as .arrow
-/data/*.arrow
-
-# pkgdown folders are here. I think if publishing from docs folder
-# we do not want to ignore changes in it, despite default in what
-# use_pkgdown(): creates a pkgdown config file and adds relevant files or directories to .Rbuildignore and .gitignore
-
-# docs
-
-
-/shiny_bookmarks
-tests/testthat/_snaps/**/*.png
 
 # .DS_Store files are created by macOS to store Finder metadata/settings
 .DS_Store
 **/.DS_Store
+
+# Ignore any bookmarks a developer might have created while using the app locally.
+/shiny_bookmarks
+
+# Ignore artifacts created while trying out plumber-based API locally
 inst/plumber/log_api_usage*.txt

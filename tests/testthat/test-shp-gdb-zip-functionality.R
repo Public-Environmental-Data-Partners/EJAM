@@ -1,1 +1,0 @@
-main_shinytest("shp-gdb-zip")

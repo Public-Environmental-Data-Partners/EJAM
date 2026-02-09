@@ -1491,20 +1491,20 @@ test_that("negative, decimal, space, non-digit returns NA", {
 #  meant to only add one zero at most, to create state-codes
 # now it will return NA if the fips <1 or >78 (largest possible 2digit number code)
 
-test_that('1 digit', {
+test_that('just 1 digit gets leading 0', {
   expect_no_warning({val <- fips_lead_zero("1", quiet = FALSE)})
   expect_equal(val, "01")
   expect_no_warning({val <- fips_lead_zero(1, quiet = FALSE)})
   expect_equal(val, "01")
 
   expect_no_warning({val <- fips_lead_zero("0", quiet = FALSE)}) # invalid but does not warn
-  expect_equal(val, NA ) # "00") # now returns NA in this case
+  expect_equal(val, NA_character_ ) # "00") # now returns NA in this case
   expect_no_warning({val <- fips_lead_zero(0, quiet = FALSE)})
-  expect_equal(val, NA) # now returns NA in this case
+  expect_equal(val, NA_character_) # now returns NA in this case
 })
 #################### # #################### #
 # test with 2 digits
-# it doesn't add any zeros since it infers this to be a state-code
+# it doesn't add any zeros (unless given 01 as number which is not really 2 digits) since it infers this to be a state-code
 test_that('2 digit', {
   suppressWarnings({
     expect_no_error({val <- fips_lead_zero("01")}) # leading zero
@@ -1518,7 +1518,7 @@ test_that('2 digit', {
     expect_no_warning({fips_lead_zero("00", quiet = FALSE)})  # DOES NOT FULLY VALIDATE SO DOES NOT KNOW 00 IS NOT ANY STATE'S FIPS
     expect_no_error({val <- fips_lead_zero("00")}) # zero string
   })
-  expect_equal(val, NA) # now returns NA in this case
+  expect_equal(val, NA_character_) # now returns NA in this case
 })
 #################### # #################### #
 # test with 3 digits

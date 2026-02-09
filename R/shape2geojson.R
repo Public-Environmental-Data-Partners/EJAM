@@ -6,7 +6,7 @@
 #' @param shp spatial data.frame to be written via [sf::st_write()]
 #' @param file optional file path and name, useful if txt=F
 #' @param txt optional logical, set to FALSE to just get the path to a temp .geojson file
-#' @returns if txt=T, returns geojson text string(s) for the input spatial data.frame
+#' @return if txt=T, returns geojson text string(s) for the input spatial data.frame
 #'   if txt=F, returns file path/name(s) of .geojson file(s).
 #' @param combine_in_one_string  set to TRUE to get back only 1 geojson txt string.
 #'   If FALSE, output is a vector of strings.

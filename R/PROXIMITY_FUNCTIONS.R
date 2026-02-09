@@ -704,7 +704,7 @@ if (1 == 0) {
     ),
     sitenum = c(49L, 174L, 626L, 646L, 824L),
     sitename = c("Example Site 49", "Example Site 174", "Example Site 626", "Example Site 646", "Example Site 824")),
-    date_saved_in_package = "2025-02-14",
+    date_saved_in_package = "2026-01-01",
     row.names = c(49L, 174L, 626L, 646L, 824L), class = "data.frame")
   delaware_testpoints$sitenum = 1:nrow(delaware_testpoints)
   delaware_testpoints$sitename = NULL

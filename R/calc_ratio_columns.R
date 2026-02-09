@@ -15,7 +15,7 @@
 #' @seealso [doaggregate()] [calc_avg_columns()] [calc_pctile_columns()]
 #' @param varnames_state_special handles special case of ratio to state avg for Demog.Index and Demog.Index.Supp needing
 #'  special numerator that is state-specific version of the index
-#' @returns data.frame with 1 row per row of mytable and set of columns for US ratios and set of columns for State ratios
+#' @return data.frame with 1 row per row of mytable and set of columns for US ratios and set of columns for State ratios
 #' @details
 #' For examples, see [calc_pctile_columns()]
 #'
@@ -30,6 +30,7 @@
 #'   would be almost the same if compared to a population weighted average of all US blockgroups (i.e., the average US resident).
 #'
 #' @export
+#' @keywords internal
 #'
 calc_ratio_columns = function(mytable,
                             varnames = names_these,

@@ -18,7 +18,7 @@
 #'   If mybarvars.stat is specified then mybarvars.sumstat should be also
 #'   to ensure they correspond! Done in shiny, not checked here.
 #'
-#' @returns ggplot object with facets for each indicator and 3 bars
+#' @return ggplot object with facets for each indicator and 3 bars
 #'
 #' @examples ejam2barplot_indicators(testoutput_ejamit_1000pts_1miles)
 #'

@@ -152,21 +152,21 @@ app_ui <- function(request) {
               # _________ wellPanel start ___----------------------------------------------------------------------
 
               wellPanel(
-                style = 'background-color: #e5f2f5; min-height: 500px',
+                style = 'background-color: #e5f2f5; min-height: 300px',
 
                 fluidRow(
                   column(
                     12,
                     #offset=3,
                     ################################################################# #
-                    br(),
-
-                    wellPanel(
-                      style = 'background-color: #e5f2f5; min-height: 500px',
-
-                      fluidRow(
-                        column(
-                          12,
+#                    br(),
+#
+#                    wellPanel(
+#                      style = 'background-color: #e5f2f5; min-height: 300px',
+#
+#                      fluidRow(
+#                        column(
+#                          12,
                           ################################################################# #
 
                           ################################################################# #
@@ -408,14 +408,14 @@ app_ui <- function(request) {
 
                           ),  # end FIPS_PLACE conditionalPanel
                           ################################################################# #
-                          br()
-
-                        ) # end column
-                      ) # end fluidRow
-                    ),
+#                          br()
+#
+#                        ) # end column
+#                      ) # end fluidRow
+#                    ), # end well panel
 
                     # . ##  ##
-                    br(), #br(),
+#                    br(), #br(),
 
                     ## input: Button to return to previous results  ####
                     shinyjs::hidden(

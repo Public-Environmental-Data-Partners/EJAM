@@ -1,7 +1,7 @@
 
 #' utility to check if internet connection is not available
 #'
-#' @returns logical (TRUE or FALSE), TRUE if offline, FALSE if can connect to r-project.org
+#' @return logical (TRUE or FALSE), TRUE if offline, FALSE if can connect to r-project.org
 #' @param url optional URL checked, using [curl::nslookup()]
 #' @seealso offline_warning() and offline_cat() utilities unexported undocumented,
 #'   either returns the same as offline() does, 

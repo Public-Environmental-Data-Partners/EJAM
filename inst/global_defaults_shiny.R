@@ -53,12 +53,12 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
     maxmax_mb_upload = 350, # MB
 
     # input$max_pts_upload
-    default_max_pts_upload  =   5 * 1000,
-    maxmax_pts_upload  =  10 * 1000, #   cap uploaded points
+    default_max_pts_upload  =   10 * 1000,
+    maxmax_pts_upload  =  35 * 1000, #   cap uploaded points
 
     # input$max_pts_select
-    default_max_pts_select  =   5 * 1000,
-    maxmax_pts_select  =  10 * 1000, #   cap selected points
+    default_max_pts_select  =   10 * 1000,
+    maxmax_pts_select  =  35 * 1000, #   cap selected points
 
     # input$max_pts_map uses these as its starting value and max allowed value
     default_max_pts_map   = 5 * 1000,
@@ -66,13 +66,13 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
 
     marker_cluster_cutoff  = 1 * 1000,  # max before showing points as clusters, for leaflet markerClusters
 
+    # input$max_pts_run uses these as its starting value and max allowed value
+    default_max_pts_run  = 10 * 1000, # initial cap but can adjust in advanced tab
+    maxmax_pts_run       = 35 * 1000, # absolute max you can analyze here, even with advanced tab
+
     # input$max_pts_showtable uses these as its starting value and max allowed value
     default_max_pts_showtable = 1000, # max to show in interactive viewer. It drops the rest.
     maxmax_pts_showtable  = 5 * 1000, # 10k is extremely slow. check server side vs client side
-
-    # input$max_pts_run uses these as its starting value and max allowed value
-    default_max_pts_run  = 10 * 1000, # initial cap but can adjust in advanced tab
-    maxmax_pts_run       = 15 * 1000, # absolute max you can analyze here, even with advanced tab
 
     # input$max_shapes_map uses these as its starting value and max allowed value
     default_max_shapes_map = 159, # TX has 254 counties, but no other state exceeds 159. EJAM::blockgroupstats[ , data.table::uniqueN(substr(bgfips, 1,5)), by = ST][order(V1), ]
@@ -670,7 +670,11 @@ aboutpage_texts <- list(
     h2( a(href = paste0(docs_url, "/", "articles/whatis.html"), "What is EJAM?",
           target = "_blank", rel = "noreferrer noopener") ),
 
-    p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting reports for hundreds or thousands of places, all at the same time."),
+    p('EJAM is what provides community reports for ',
+      a(href = "https://pedp-ejscreen.azurewebsites.net/index.html", "EJSCREEN",
+         target = "_blank", rel = "noreferrer noopener"),
+      ', and is also known as "EJSCREEN\'s multisite tool."'),
+    p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting EJSCREEN reports for hundreds or thousands of places, all at the same time."),
     p("This provides interactive results and a formatted, ready-to-share report with tables, graphics, and a map. The report can provide information about communities near any of the industrial facilities on a list, for example."),
 
     p(paste0('This version of the ', EJAM:::global_or_param("app_title"),
@@ -1006,27 +1010,29 @@ AIR,	IL000031012ACJ<br>
      <div class="container-fluid" style="border-spacing: 0; margin: 0; padding-bottom: 0; border: 0;
      border-right-width: 0px; font-size:24px; ";>
 
-  <div id="ejamheader">
+  <div id="ejamheader" style="padding-right: 32px;">
 
     <table width="100%" style="margin-bottom: 0px; margin-top: 0px";><tbody>
-      <tr style="font-size:24px margin-bottom: 0px; margin-top: 0px";>
+      <tr style="font-size:24px margin-bottom: 0px; margin-top: 0px"; padding-right: 32px;>
 
         <td  valign="top" style=
           "border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff;
           margin-bottom: 0px; margin-top: 0px; margin-left: 0px; margin-right: 0px;
-          padding-bottom: 0px; padding-top: 0px; padding-left: 0px; padding-right: 0px">
+          line-height:34px;
+          padding-bottom: 0px; padding-top: 0px; padding-left: 30px">
 
 ',
                     ### >> app_logo_html ####
 
                     app_logo_HTML_global_or_param()  #  # built from app_logo unless set in call to ejamapp()
-                    ,'
-        </td>
-
-        <td valign="bottom" style="line-height:34px; padding: 0px;
-          border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff";
-          vertical-align: bottom;>
-
+                    ,
+        #             '
+        # </td>
+        #
+        # <td valign="bottom" align="left" style="line-height:34px; padding: 0px;
+        #   border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff";
+        #   vertical-align: bottom;>',
+          '
                 <span style="font-size: 15pt; font-weight:700; font-family:Arial";>',   # larger font for app title
 
                     ### >> app_title  ####
@@ -1052,12 +1058,28 @@ AIR,	IL000031012ACJ<br>
                 border-bottom-color: #ffffff; border-top-color: #ffffff; border-left-color: #ffffff; border-right-color: #ffffff";>
           <span id="homelinks">
 
-  <!--           <a href="https://www.epa.gov/ejscreen" alt="Go to EJSCREEN home page" title="Go to EJSCREEN home page" target="_blank">EJSCREEN Website</a> |   -->
-  <!--           <a href="https://ejscreen.epa.gov/mapper/" alt="Go to EJSCREEN mapper"    title="Go to EJSCREEN mapper" target="_blank">Mapper</a> |   -->
-              <a href="http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/overview-socioeconomic-indicators-ejscreen.html" alt="Go to glossary page" title="Go to EJSCREEN glossary page" target="_blank">Glossary</a> |
-            <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> |
-            <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a>
-          </span>&nbsp;&nbsp;
+<!--      <a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen" alt="Go to glossary page" title="Go to EJSCREEN glossary page" target="_blank">Glossary</a> | -->
+<!--     <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> | -->
+
+<!--     https://ejanalysis.github.io/EJAM/articles/ejscreen.html would be a more direct link than https://ejanalysis.github.io/EJAM/articles/index.html -->
+<a href="https://ejanalysis.github.io/EJAM/articles/index.html" target="_blank" rel="noreferrer">EJSCREEN/EJAM Help</a>
+
+<!--     <a href="https://ejanalysis.github.io/EJAM/articles/index.html" alt="EJSCREEN help" title="EJSCREEN documentation pages" target="_blank">EJSCREEN/EJAM Help</a> | -->
+<!--     <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a> | -->
+
+<!-- <a href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/edit" target="_blank" rel="noreferrer"> -->
+<!--  <button type="button">Share data feedback -->
+<!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Share data feedback"> -->
+<!--  </button> -->
+<!-- </a> -->
+
+<!-- <a href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform" target="_blank" rel="noreferrer"> -->
+<!--    <button type="button">Help improve the tool -->
+<!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Help improve the tool"> -->
+<!--    </button> -->
+<!--  </a> -->
+
+</span>&nbsp;&nbsp;
         </td>
  ',
                     '
@@ -1093,7 +1115,42 @@ AIR,	IL000031012ACJ<br>
           '
       </div>
 
-      <div class="l-page__footer">
+      <div class="l-page__footer" style="background-color: #FFFFFF; margin-right: 5px; margin-top:5px; margin-bottom:5px; padding-top:1px; padding-bottom:1px; padding-right: 32px;">
+
+
+<div class="cejst-btn-wrap" align="right">
+  <a
+    class="cejst-style-btn"
+    href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/edit"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Share data feedback
+    <img
+      class="cejst-launch-icon"
+      src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\' fill=\'%230050d8\'/%3E%3C/svg%3E"
+      alt=""
+      aria-hidden="true"
+    />
+  </a>
+
+
+  <a
+    class="cejst-style-btn"
+    href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Help improve the tool
+    <img
+      class="cejst-launch-icon"
+      src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\' fill=\'%230050d8\'/%3E%3C/svg%3E"
+      alt=""
+      aria-hidden="true"
+    />
+  </a>
+</div>
+
 
       </div>
 

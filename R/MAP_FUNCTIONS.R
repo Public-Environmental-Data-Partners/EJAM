@@ -18,7 +18,7 @@
 #' @param circle_color optional
 #' @param launch_browser set TRUE to have it launch browser to show map.
 #'
-#' @returns map html widget
+#' @return map html widget
 #'
 #' @keywords internal
 #'
@@ -419,14 +419,14 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
 
 #' Map - Blockgroup polygons / boundaries near 1 site - Create leaflet map
 #'
-#' Overlay blockgroups near 1 site, after plotblocksnearby(returnmap = TRUE)
+#' Overlay blockgroups near 1 site, after plot_blocks_nearby(returnmap = TRUE)
 #'
-#' @param y  output of [plotblocksnearby()] but with returnmap = TRUE
+#' @param y  output of [plot_blocks_nearby()] but with returnmap = TRUE
 #'
 #' @return leaflet map widget
-#' @seealso [plotblocksnearby()]  [map_shapes_mapview()]  [map_shapes_leaflet()]  [map_shapes_plot()]
+#' @seealso [plot_blocks_nearby()]  [map_shapes_mapview()]  [map_shapes_leaflet()]  [map_shapes_plot()]
 #' @examples
-#'  y <- plotblocksnearby(testpoints_10[5,],
+#'  y <- plot_blocks_nearby(testpoints_10[5,],
 #'         radius = 3,
 #'         returnmap = TRUE)
 #'  map_blockgroups_over_blocks(y)
@@ -435,15 +435,15 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
 #'
 map_blockgroups_over_blocks <- function(y) {
 
-  # y is output of plotblocksnearby(returnmap = TRUE)
+  # y is output of plot_blocks_nearby(returnmap = TRUE)
   if ("leaflet" %in% class(y)) {
     # This is to extract bgids from the output of the leaflet htmlwidget map object y,
-    #   as from  y = plotblocksnearby(testpoints_10[1,], returnmap = TRUE)
+    #   as from  y = plot_blocks_nearby(testpoints_10[1,], returnmap = TRUE)
     bgids <-  unique(as.vector(sapply( y$x$calls[[2]]$args[[7]], function(z)   gsub(   ".*bgid: ([0-9]*)<.*", "\\1", z))))
   } else {
     # can we still work with y if it was created with returnmap = FALSE ?
     # bgids <- unique(y$bgid)
-    stop('y must be output of something like plotblocksnearby(testpoints_10[1,], returnmap = TRUE)')
+    stop('y must be output of something like plot_blocks_nearby(testpoints_10[1,], returnmap = TRUE)')
   }
 
   if (!exists("bgid2fips_arrow")) {

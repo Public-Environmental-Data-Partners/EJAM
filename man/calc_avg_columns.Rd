@@ -35,3 +35,4 @@ This could be used, e.g., in doaggregate() or similar to get means for indicator
 
 It assume you want to name output columns like varnames but with hardcoded prefixes "avg." or "state.avg."
 }
+\keyword{internal}

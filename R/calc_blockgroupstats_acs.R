@@ -5,7 +5,7 @@
 #' @param yr end year of 5-year ACS dataset, guesses if not specified
 #' @param tables_acs optional, vector of table names like "B01001" or default, [tables_ejscreen_acs]
 #' @param dataset optional, tested for "acs5" but see [tidycensus::load_variables()]
-#' @returns invisibly returns data.table of all variables in specified tables,
+#' @return invisibly returns data.table of all variables in specified tables,
 #'   and also prints to console the first variable of each table
 #' @seealso [url_acs_table_info()]
 #'
@@ -14,7 +14,7 @@
 acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 
   if (missing(tables_acs)) {tables_acs <- as.vector(EJAM::tables_ejscreen_acs)}
-  if (missing(yr)) {yr <- EJAM::acs_endyear(guess_census_has_published = T)}
+  if (missing(yr)) {yr <- acs_endyear(guess_census_has_published = T)}
   x = tidycensus::load_variables(yr, dataset = dataset, cache = T)
   x$table = gsub("^(.*)_.*$", "\\1", x$name)
   x = x[x$table %in% tables_acs, ]
@@ -33,7 +33,7 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #'
 #' @param yr end year of 5-year ACS dataset, guesses if not specified
 #'
-#' @returns data.table, one row per blockgroup, columns bgfips, etc.
+#' @return data.table, one row per blockgroup, columns bgfips, etc.
 #'
 #' @export
 #' @keywords internal
@@ -48,7 +48,7 @@ calc_blockgroupstats_acs <- function(yr, formulas = EJAM::formulas_ejscreen_acs$
   # library(EJAM); library(dplyr); library(data.table)
 
   if (missing(yr)) {
-    yr <- EJAM::acs_endyear(guess_always = T, guess_census_has_published = T)
+    yr <- acs_endyear(guess_always = T, guess_census_has_published = T)
   }
   ################################################### #
   ## BLOCK GROUP SURVEY DATA HANDLED DIFFERENTLY/ SEPARATELY FROM
