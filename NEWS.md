@@ -1,4 +1,4 @@
-# EJAM 2.4.0 (December 2025)
+# EJAM 2.4.0 (February 2026)
 
 ## Updated Demographic Data from ACS
 
@@ -8,28 +8,6 @@
 - Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
 - Added functions that can update ACS-based demographic dataset each year: `calc_bgej()`, `calc_blockgroupstats_acs()`, `calc_blockgroupstats_from_tract_data()`, `calc_bgwts_nationwide()`, etc.
 
-## EJSCREEN Documentation 
-
-- Added [EJSCREEN documentation article](https://ejanalysis.github.io/EJAM/articles/ejscreen.html) at https://github.com/ejanalysis/EJAM/blob/development/vignettes/ejscreen.Rmd with links to pages and documents in the form of .Rmd/.html pages that are faster-loading copies of selected info from pages documenting EJSCREEN.
-- Added new function `url_ejscreentechdoc()` that provides URL of a copy of the Technical Documentation.
-
-## Bug fixes
-
-- Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in `fixcolnames()` and had been introduced 3 weeks earlier while a separate issue was being fixed.
-- Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended. 
-- Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
-  might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
-
-## Community Report and Multisite Report
-  - Report footer edited, and can be customized now via `ejam2report()`
-  - Report Title revised: FIPS place name shown in header, lat/lon coordinates shown in 1-site report header, 1-site vs multisite named differently, says "EJSCREEN"" not "EJAM" in header as new defaults.
-  - Analysis Title (on reports) revised 
-  - Report Footer revised (new params in `ejam2report()` now define footer in community report, via new `generate_report_footer()` helper)
-  - Multisite report is now rendered as html file automatically as soon as results are ready (and if analysis title is changed afterwards),
-  so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as 
-  the server now does not have to re-render report for use in spreadsheet. 
-  Also, multisite report and spreadsheet download buttons disabled until each is ready.
-  - Renamed `ejam2excel()` parameters (in.analysis_title changed to analysis_title) to be consistent with `ejam2report()` parameter, or to simplify (react.v1_summary_plot changed to report_plot).
 
 
 # EJAM 2.32.6.003 (November 2025)

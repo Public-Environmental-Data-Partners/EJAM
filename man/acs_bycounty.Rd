@@ -11,7 +11,7 @@ acs_bycounty(myvars = "B03002_001", myst = "DE", yr = acs_endyear())
 
 \item{myst}{abbreviation of one state, like "DE"}
 
-\item{yr}{like 2023, end of 5 year ACS 2019-2023}
+\item{yr}{like 2024, end of 5 year ACS 2020-2024}
 }
 \value{
 tibble table from output of acs_bycounty() i.e., output of get_acs()
