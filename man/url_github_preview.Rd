@@ -47,7 +47,8 @@ myfile = "testoutput_ejam2report_100pts_1miles.html"
 url_github_preview(file = myfile)
 
 # from a specific release on GH (but map does not render using this tool)
-url_github_preview(ver = "`r paste0("v", desc::desc_get("Version"))`", fold = "inst/testdata/examples_of_output", file = myfile)
+vernum = paste0("v", desc::desc_get("Version", file = system.file("DESCRIPTION", package="EJAM")))
+url_github_preview(ver = vernum, fold = "inst/testdata/examples_of_output", file = myfile)
 
 # local installed version
 browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
