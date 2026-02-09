@@ -139,10 +139,11 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
     # [1] "2" ""
     # >  fixcolnames(c("pm", "xyz"), 'r', 'csv')
     # [1] "PM25" "xyz"
+  } else {
+  namesnow[namesnow %in% ""] <- names_as_provided[namesnow %in% ""]
   }
   ###################### #   ###################### #   ###################### #
 
-  namesnow[namesnow %in% ""] <- names_as_provided[namesnow %in% ""]
   return(namesnow)
 }
 ###################### #   ###################### #   ###################### #
