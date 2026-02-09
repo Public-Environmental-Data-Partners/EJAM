@@ -2918,8 +2918,11 @@ app_server <- function(input, output, session) {
 
   # other plot ideas
   # https://exts.ggplot2.tidyverse.org/gallery/
-  current_hist_ind <- reactive({
-    input$summ_hist_ind
+  current_hist_ind <- reactiveVal(names_d[3]) # initial value, like root_nms not nms?
+  observe({
+    # if the histogram indicator selection changes, update this reactive keeping track of current selection
+    req(input$summ_hist_ind)
+    current_hist_ind(input$summ_hist_ind)
   })
 
   output$summ_hist_ind_out <- renderUI({

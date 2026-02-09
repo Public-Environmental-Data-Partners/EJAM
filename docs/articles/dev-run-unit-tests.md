@@ -98,7 +98,7 @@ shinytest2](https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.md).
 There is also a github workflow in the package that runs unit tests,
 automatically triggered by certain events, such as a pull request to the
 main or development branch. See
-`EJAM/.github/workflows/test-shiny-web-app-functionality.yml`
+`EJAM/.github/workflows/test-webapp-functionality.yml`
 
 ### Other notes
 

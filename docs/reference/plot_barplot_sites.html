@@ -140,7 +140,7 @@ that provides the sort order</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># Quickly compare top few sites by population count nearby</span></span>
-<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">testoutput_ejamit_10pts_1miles</span><span class="op">)</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">testoutput_ejamit_10pts_1miles</span><span class="op">)</span></span>
 <span><span class="fu"><a href="ejam2barplot_sites.html">ejam2barplot_sites</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"pop"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Show all 10,</span></span>
@@ -151,7 +151,7 @@ that provides the sort order</p></dd>
 <span>  sortby <span class="op">=</span> <span class="op">-</span><span class="fl">1</span> <span class="op">*</span> <span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">ejam_uniq_id</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot a calculated variable</span></span>
-<span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">)</span></span>
+<span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">)</span></span>
 <span><span class="va">sites</span><span class="op">$</span><span class="va">log_traffic</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">traffic.score</span><span class="op">)</span></span>
 <span><span class="fu">plot_barplot_sites</span><span class="op">(</span><span class="va">sites</span>, <span class="st">"log_traffic"</span>, ylab <span class="op">=</span> <span class="st">"Traffic Score (log10 scale)"</span>, topn <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>

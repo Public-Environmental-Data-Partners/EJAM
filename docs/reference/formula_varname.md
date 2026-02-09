@@ -31,6 +31,21 @@ a vector as long as myforms input vector
   [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
 
 - [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
+  uses
+  [`calc_varname_from_formula()`](https://ejanalysis.github.io/EJAM/reference/calc_varname_from_formula.md)
+  and maybe source_this_codetext()
+
+&nbsp;
+
+- [`custom_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/custom_doaggregate.md)
+  may use
+  [`calc_ejam()`](https://ejanalysis.github.io/EJAM/reference/calc_ejam.md)
+
+- [`calc_ejam()`](https://ejanalysis.github.io/EJAM/reference/calc_ejam.md)
+  uses
+  [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
+
+- [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
   uses `formula_varname()` and maybe source_this_codetext()
 
 ## Examples

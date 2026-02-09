@@ -210,7 +210,7 @@ acs_bybg <- function(
   if (tolower(geography) %in% c("blockgroup", "blockgroups", "block groups")) {geography <- "block group"}
   if (tolower(geography) %in% c("tract", "tracts")) {geography <- "tract"}
   if (missing(year) || is.null(year)) {
-    year <- acsendyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
+    year <- acs_endyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
                        guess_census_has_published = TRUE)
     yr_was_inferred = TRUE
   } else {

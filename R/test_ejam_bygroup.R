@@ -9,14 +9,14 @@ test_ejam_1group <- function(fnames,
                              stop_on_failure = FALSE, timebyfile = NULL, timebygroup = NULL,
                              truncate_test_name_nchar = 60
 ) {
-  # prevent warning/error in R CMD check about supposedly undefined global variables in data.table code
-  utils::globalVariables(c(
-    "total", "passed",  "testgroup",
-    "flagged", "flagged_byfile", "flagged_bygroup",
-    "failed", "failed_byfile", "failed_bygroup",
-    "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
-    "untested_cant", "untested_skipped", "warned"
-  ))
+  ## prevent warning/error in R CMD check about supposedly undefined global variables in data.table code
+  # utils::globalVariables(c(
+  #   "total", "passed",  "testgroup",
+  #   "flagged", "flagged_byfile", "flagged_bygroup",
+  #   "failed", "failed_byfile", "failed_bygroup",
+  #   "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
+  #   "untested_cant", "untested_skipped", "warned"
+  # ))
   xtable <- list()
   for (i in 1:length(fnames)) {
     seconds_byfile <- 0
@@ -110,14 +110,14 @@ test_ejam_bygroup <- function(testlist,
                               reporter = "minimal", # this may be the only option that works now
                               timebyfile = NULL, timebygroup = NULL
 ) {
-  # prevent warning/error in R CMD check about supposedly undefined global variables in data.table code
-  utils::globalVariables(c(
-    "total", "passed",  "testgroup",
-    "flagged", "flagged_byfile", "flagged_bygroup",
-    "failed", "failed_byfile", "failed_bygroup",
-    "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
-    "untested_cant", "untested_skipped", "warned"
-  ))
+  ## prevent warning/error in R CMD check about supposedly undefined global variables in data.table code
+  # utils::globalVariables(c(
+  #   "total", "passed",  "testgroup",
+  #   "flagged", "flagged_byfile", "flagged_bygroup",
+  #   "failed", "failed_byfile", "failed_bygroup",
+  #   "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
+  #   "untested_cant", "untested_skipped", "warned"
+  # ))
   # probably cannot now, but used to be able to use  reporter=default_compact_reporter()
   try({suppressWarnings(suppressMessages({beepr_available <- require(beepr)}))}, silent = TRUE)
   xtable <- list()

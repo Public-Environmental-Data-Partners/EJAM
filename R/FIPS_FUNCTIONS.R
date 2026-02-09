@@ -668,6 +668,12 @@ is.island <- function(ST=NULL, statename=NULL, fips=NULL) {
 #' name2fips(c('denver',  "new york" ), exact = F)
 #' name2fips('denver,co')
 #'
+#' # Can see unexpected results depending on parameters if multiple matches exist:
+#' x1= name2fips("rochester,ny", exact = T)
+#' x2= name2fips("rochester,ny", exact = F)
+#' x3= name2fips("rochester,ny", usegrep = T)
+#' x1; x2; x3 # 3 different answers
+#'
 #' @export
 #'
 name2fips = function(x, exact = FALSE, usegrep = FALSE, geocoding = FALSE, details = FALSE) {
