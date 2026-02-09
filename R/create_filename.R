@@ -1,6 +1,6 @@
 
 ##################### #
-# lubridate:: could do this, but this works ok
+# lubridate:: could do this, but this works ok. Ignores timezone issues, though.
 # format date and time to use as part of a file name to save results in
 Sys.time_txt = function(time = Sys.time()) {
   format(time, '%Y-%m-%d %H.%M')

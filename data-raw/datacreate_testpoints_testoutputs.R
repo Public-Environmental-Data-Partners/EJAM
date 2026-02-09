@@ -8,6 +8,40 @@
 
 ## see also   ?testdata()
 
+################################################################################### #
+##  ## in case you needed to just recreate/resave only these 3 testoutput files (and keep their existing metadata like date added to pkg etc.)
+#
+# ejamitoutnow  <- try( ejamit(
+#   testpoints_10,
+#   radius = 1, quiet = TRUE, silentinteractive = TRUE, include_ejindexes = TRUE)
+#   )
+# oldone <-  testoutput_ejamit_10pts_1miles
+#            testoutput_ejamit_10pts_1miles  <- ejamitoutnow
+# attributes(testoutput_ejamit_10pts_1miles) <- attributes(oldone)
+# usethis::use_data(
+#            testoutput_ejamit_10pts_1miles, overwrite = TRUE)
+# ################################### #
+# ejamitoutnow  <- try( ejamit(
+#   testpoints_100,
+#   radius = 1, quiet = TRUE, silentinteractive = TRUE, include_ejindexes = TRUE)
+# )
+# oldone <-  testoutput_ejamit_100pts_1miles
+#            testoutput_ejamit_100pts_1miles  <- ejamitoutnow
+# attributes(testoutput_ejamit_100pts_1miles) <- attributes(oldone)
+# usethis::use_data(
+#            testoutput_ejamit_100pts_1miles, overwrite = TRUE)
+# ################################### #
+# ejamitoutnow  <- try( ejamit(
+#   testpoints_1000,
+#   radius = 1, quiet = TRUE, silentinteractive = TRUE, include_ejindexes = TRUE)
+# )
+# oldone <-  testoutput_ejamit_1000pts_1miles
+# testoutput_ejamit_1000pts_1miles  <- ejamitoutnow
+# attributes(testoutput_ejamit_1000pts_1miles) <- attributes(oldone)
+# usethis::use_data(
+#   testoutput_ejamit_1000pts_1miles, overwrite = TRUE)
+################################################################################### #
+
 pkg_update_testpoints_testoutputs <- function(
 
   do_load_all = TRUE,
@@ -86,7 +120,7 @@ pkg_update_testpoints_testoutputs <- function(
       row.names = c(1L, 2L, 3L),
       class = "data.frame")
     # mapfast(pts,radius = 1)
-    # plotblocksnearby(pts,radius = 1)
+    # plot_blocks_nearby(pts,radius = 1)
 
     ############# #
     ### save ####
@@ -109,7 +143,7 @@ pkg_update_testpoints_testoutputs <- function(
 #'
 #'   mapfast(pts, radius = 1)
 #'
-#'   plotblocksnearby(pts, radius = 1)
+#'   plot_blocks_nearby(pts, radius = 1)
 #'  ```"
     )
     ############# #
@@ -398,7 +432,7 @@ pkg_update_testpoints_testoutputs <- function(
         fname <- paste0("testoutput_ejam2excel_", n, "pts_", myrad, "miles")
         junk <- ejam2excel(
           get(out_varname_ejamit),
-          in.analysis_title = "Example of outputs of ejamit() being formatted and saved using ejam2excel()",
+          analysis_title = "Example of outputs of ejamit() being formatted and saved using ejam2excel()",
           radius_or_buffer_in_miles = myrad,
           # buffer_desc = paste0("Within ", myrad, " miles"),
           fname = paste0("./inst/testdata/examples_of_output/", fname, ".xlsx"),

@@ -37,7 +37,7 @@
 #' @param nbg number of candidate blockgroups to download for each site
 #' @param radius1 initial search radius for relevant block points
 #' @param quiet whether to print more while it downloads etc.
-#' @returns vector of blockgroup FIPS codes, same length as NROW(df)
+#' @return vector of blockgroup FIPS codes, same length as NROW(df)
 #'
 #' @examples
 #' \dontrun{

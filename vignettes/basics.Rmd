@@ -40,12 +40,12 @@ indexblocks()
 # A Brief Intro to Using EJAM in RStudio
 
 This document is about analysts or coders using the EJAM R package in RStudio.
-After you [install the EJAM R package](../articles/installing.html), this
+After you [install the EJAM R package](installing.html), this
 document explains how you can run an EJAM analysis and view results right away
 using R.
 
 This document is not about [using EJAM as a web
-application](../articles/webapp.html), but you can launch a local web app
+application](webapp.html), but you can launch a local web app
 after installing the EJAM R package.
 
 ## Load EJAM
@@ -196,7 +196,7 @@ REMOVED UNTIL FIXED  -->
 
 ## Table of Results in RStudio console
 
-As an alternative to the pdf report created by `ejam2report()`, this gives you a
+As an alternative to the report provided by `ejam2report()`, this gives you a
 quick, simple list of results for all the indicators:
 
 ```{r ejam2table_tall, eval=FALSE}

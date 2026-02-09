@@ -27,7 +27,7 @@
 #'  the column blockgroupstats$arealand. If FALSE, it more slowly downloads boundary shapefiles and then uses sf::sf_area to calculate areas. These two methods give roughly the same answer.
 #' @param includewater whether to add blockgroupstats$areawater not just $arealand. includewater only matters when download_noncity_fips_bounds = FALSE,
 #'   and only for state, county, tract, blockgroup FIPS, not "city" types of fips as identified by [fipstype()]
-#' @returns vector of numbers same length as length(radius.miles) or length(fips) or NROW(shp)
+#' @return vector of numbers same length as length(radius.miles) or length(fips) or NROW(shp)
 #'
 #' @export
 #' @keywords internal
@@ -155,7 +155,7 @@ area_sqmi_from_fips <- function(fips, download_city_fips_bounds = TRUE, download
       areas[!made_of_bgs] <- area_sqmi_from_shp(shp)
     } else {
       # just leave them as NA, since we cannot calculate area without downloading the boundaries,
-      # unless we find a database that stores that information perhaps (not avail in head(acs::fips.place) for example)
+      # unless we find a database that stores that information perhaps
     }
   }
 

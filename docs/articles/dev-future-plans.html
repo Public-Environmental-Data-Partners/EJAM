@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,10 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -97,64 +101,50 @@
     
     
 <div class="section level2">
-<h2 id="status-and-future-directions-as-of-2024-2025">Status and Future Directions as of 2024-2025<a class="anchor" aria-label="anchor" href="#status-and-future-directions-as-of-2024-2025"></a>
+<h2 id="status-and-future-directions">Status and Future Directions<a class="anchor" aria-label="anchor" href="#status-and-future-directions"></a>
 </h2>
-<p>Regarding status of the repository and plans for web app hosting and
-open source package development, etc., see the README file in the main
-EJAM code repository.</p>
+<p>This article highlights some key features or areas ripe for future
+enhancements. Additional specific feature requests or ideas are in
+github issues in the EJAM repository. Updates on the status of the
+repository, web app hosting, and open source package development are in
+the <a href="">README</a> or at <a href="https://ejanalysis.com/status" class="external-link">ejanalysis.com/status</a>.</p>
 <div class="section level3">
 <h3 id="possible-future-enhancements">Possible future enhancements<a class="anchor" aria-label="anchor" href="#possible-future-enhancements"></a>
 </h3>
-<p>EPA is no longer actively developing EJAM as of mid-2025, but had
-previously considered what worked and what was still needed in a
-multisite tool such as EJAM, including some of the ideas listed
-below.</p>
+<p>Although EPA stopped actively developing EJAM in 2025, it had already
+identified various options for future enhancements, including some of
+the ideas listed below. Subsequent non-EPA work on newer versions of
+EJAM has started to address some of these and is likely to continue to
+do so, in tandem with work on EJSCREEN itself. The open source EJAM R
+package is designed to be extensible, so that updated data, new kinds of
+indicators, new types of analyses, and new types of reports can be added
+over time by a community of contributors.</p>
 <div class="section level4">
 <h4 id="api">API<a class="anchor" aria-label="anchor" href="#api"></a>
 </h4>
-<p>To provide further flexibility and help avoid duplication of effort,
-an EJAM API is needed. This would allow links within the EJAM tables and
-map popups to link to a report on each site, for example, which was
-available via the EJSCREEN API until it was taken offline. An API also
-could provide access to services such as fast identification of nearby
-blocks or other points, summarization (aggregation over blocks or
-blockgroups), or data. See draft work in the plumber folder of the EJAM
-source package.</p>
-</div>
-<div class="section level4">
-<h4 id="counts-of-nearby-points-of-interest">Counts of nearby points of interest<a class="anchor" aria-label="anchor" href="#counts-of-nearby-points-of-interest"></a>
-</h4>
-<p>Features were drafted that will be able to report on the number of
-user-specified points of interest (e.g., schools) at each location. For
-example, it could report on how many parks or elementary schools are at
-each analyzed location. This would report on counts in an analysis of
-circular buffers (e.g., # of schools near each facility analyzed), but
-also for FIPS Census units (e.g., # of schools in each County) or
-polygons/shapefiles (e.g., # of schools in each high-risk zone). See
-<code><a href="../reference/countpoints_nearby.html">countpoints_nearby()</a></code>, and related early draft work in
-EJAM/R/PROXIMITY_FUNCTIONS.R</p>
-</div>
-<div class="section level4">
-<h4 id="facility-density-scores-for-all-epa-regulated-facilities">Facility Density Scores for all EPA-regulated Facilities<a class="anchor" aria-label="anchor" href="#facility-density-scores-for-all-epa-regulated-facilities"></a>
-</h4>
-<p>A facility density indicator may be explored and pre-calculated, that
-would summarize the proximity of all types of EPA-regulated facilities,
-or certain subcategories, for every community in the US or within one
-State of interest. This would be similar to the existing proximity
-indicators such as the RMP score in EJSCREEN, but cover a larger range
-of facilities. See early draft work in
-<code>EJAM/R/PROXIMITY_FUNCTIONS.R</code></p>
-</div>
-<div class="section level4">
-<h4 id="proximity-scores-for-user-specified-sites">Proximity Scores for User-Specified Sites<a class="anchor" aria-label="anchor" href="#proximity-scores-for-user-specified-sites"></a>
-</h4>
-<p>A feature is planned that will be able to quickly calculate a new
-proximity indicator for every blockgroup in the US, to represent counts
-of and distances to user-specified points such as facilities. This would
-be similar to the existing proximity indicators such as the RMP score in
-EJSCREEN, but would be calculated on the fly for any user-specified set
-of points. See early draft work in
-<code>EJAM/R/PROXIMITY_FUNCTIONS.R</code></p>
+<p>In 2025, when the original EJSCREEN API was taken offline by EPA, a
+non-EPA effort replaced it with a new API (“EJAM API”) that provides
+many of the original features. The new API became the tool through which
+EJSCREEN is able to provide a Community Report on a single location. It
+also allows the “EJSCREEN multisite tool” (aka EJAM’s web app) to show
+links within tables of results and map popups, to link to a report on
+each site, for example. Some parallel work on an API was also drafted in
+the plumber folder of the EJAM source package. A future, expanded API is
+likely to provide the following: - reports in pdf format (not just
+html), for better pagination when printing - better handling of polygons
+(ability to request a report on a large/complex polygon) - ability to
+obtain a multisite summary report (not just a 1-site report) (via the
+sitenumber parameter) - allowing the API to use most or all of the same
+parameters as the functions <code><a href="../reference/ejamit.html">ejamit()</a></code> and
+<code><a href="../reference/ejam2report.html">ejam2report()</a></code>, providing more features and flexibility in
+customizing reports. - data (an easy way to obtain subsets of data at
+the block or blockgroup level, for example, via an assets) -
+enhancements and/or fixes as noted in <a href="https://github.com/edgi-govdata-archiving/EJAM-API/issues" class="external-link">github
+issues for the EJAM-API repository</a> - access to services such as fast
+identification of nearby blocks or other points (via
+<code><a href="../reference/getblocksnearby.html">getblocksnearby()</a></code> <code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code>
+or <code><a href="../reference/get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>) - summarization (aggregation
+over blocks or blockgroups), maybe for user-provided indicators</p>
 </div>
 <div class="section level4">
 <h4 id="user-specified-indicators">User-specified Indicators<a class="anchor" aria-label="anchor" href="#user-specified-indicators"></a>
@@ -164,11 +154,68 @@ report on other residential population indicators (e.g., other Census
 ACS variables), to include user-selected EPA-hosted layers, or even
 user-provided data. In other words, an analysis would be able to include
 other layers on risks or concentrations (at blockgroup resolution), or
-user-provided scores for each blockgroup. See <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code>
-examples, <code><a href="../reference/calctype.html">calctype()</a></code>, <code><a href="../reference/doaggregate.html">doaggregate()</a></code> parameters
-like wtdmeancols, and early drafts of possible approaches
+user-provided scores for each blockgroup. This would first be available
+for use in R as one or more functions and would subsequently be made
+available as a set of features through the web app interface. That could
+separately include the ability to upload a user-provided blockgroup
+indicator for analysis in existing or distinct reports, and/or the
+ability to specify ACS variables and formulas to obtain and calculate
+new indicators on the fly. This could first be a set of functions
+available for use in R and could subsequently be made available for use
+through the web app interface. See preliminary work such as the
+following: <code><a href="https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html" class="external-link">ACSdownload::get_acs_new()</a></code> as a way to obtain
+Census ACS demographics, <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> examples of another way
+to obtain data and then using ACS raw data to calculate indicators,
+<code><a href="../reference/calctype.html">calctype()</a></code> for metadata on how a given indicator should get
+aggregated over blocks or blockgroups, <code><a href="../reference/doaggregate.html">doaggregate()</a></code>
+parameters like wtdmeancols, and exploratory early drafts of possible
+approaches to creating new indicators or aggregating them for a report,
 in<code><a href="../reference/calc_ejam.html">calc_ejam()</a></code>, <code><a href="../reference/custom_doaggregate.html">custom_doaggregate()</a></code>,
 <code><a href="../reference/doaggregate_newscores.html">doaggregate_newscores()</a></code>, etc.</p>
+</div>
+<div class="section level4">
+<h4 id="counts-of-nearby-points-of-interest">Counts of nearby points of interest<a class="anchor" aria-label="anchor" href="#counts-of-nearby-points-of-interest"></a>
+</h4>
+<p>Features were drafted that will be able to report on the number of
+user-specified points of interest (POI) at each location. These POI
+could be amenities (e.g., parks, grocery stores), sources of risk or
+disamenities (e.g., diesel emissions sources, landfills), or potentially
+vulnerable locations (e.g., elementary schools, daycare, hospitals,
+nursing homes). The tool would report on counts of POI, in an analysis
+of circular buffers (e.g., # of parks near each facility analyzed), but
+also for FIPS Census units (e.g., # of parks in each County) or
+polygons/shapefiles (e.g., # of parks in each high-risk zone). See
+<code><a href="../reference/countpoints_nearby.html">countpoints_nearby()</a></code>, and related early draft work in
+EJAM/R/PROXIMITY_FUNCTIONS.R. Note certain POI are already tallied in
+the reports, such as hospitals, schools, TRI sites, etc. and more
+information is available using <code><a href="../reference/ejam2areafeatures.html">ejam2areafeatures()</a></code>.</p>
+</div>
+<div class="section level4">
+<h4 id="facility-density-scores-for-all-epa-regulated-facilities">Facility Density Scores for all EPA-regulated Facilities<a class="anchor" aria-label="anchor" href="#facility-density-scores-for-all-epa-regulated-facilities"></a>
+</h4>
+<p>A facility density indicator may be explored and pre-calculated, that
+would summarize the proximity of all types of EPA-regulated facilities,
+or certain subcategories, for every community in the US or within one
+State of interest. This would be similar to the existing “proximity
+score” indicators such as the RMP score in EJSCREEN, but cover a larger
+range of facilities. See early draft work in
+<code>EJAM/R/PROXIMITY_FUNCTIONS.R</code>. This could first be a dataset
+available for use in R and could subsequently be made available for
+reporting through the web app interface.</p>
+</div>
+<div class="section level4">
+<h4 id="proximity-scores-for-user-specified-sites">Proximity Scores for User-Specified Sites<a class="anchor" aria-label="anchor" href="#proximity-scores-for-user-specified-sites"></a>
+</h4>
+<p>A feature is planned that will be able to quickly calculate a new
+proximity indicator for every blockgroup in the US, to represent counts
+of and distances to user-specified points such as facilities. This would
+be in addition to or instead of a pre-calculated facility density score,
+and similar to the existing proximity indicators such as the RMP score
+in EJSCREEN, but it would be calculated on demand, when needed, for any
+user-specified set of points. See early draft work in
+<code>EJAM/R/PROXIMITY_FUNCTIONS.R</code>. This could first be a
+function available for use in R and could subsequently be made available
+for use through the web app interface.</p>
 </div>
 <div class="section level4">
 <h4 id="written-long-report">Written Long Report<a class="anchor" aria-label="anchor" href="#written-long-report"></a>
@@ -190,7 +237,8 @@ in R/app_ui.R and R/app_server.R.</p>
 metrics are available across multiple locations with multiple
 residential population groups. Some simple tools may be able to help
 with initial filtering of results, to suggest what might be highlighted.
-These will be explored for the written report, particularly for ways to
+These could be used for a revised summary report, but especially will be
+explored for the long-form written report, particularly for ways to
 provide an Executive Summary. See early draft work in functions such as
 <code><a href="../reference/count_sites_with_n_high_scores.html">count_sites_with_n_high_scores()</a></code> and the
 report/written_report folder.</p>
@@ -230,11 +278,11 @@ blockgroups.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer>

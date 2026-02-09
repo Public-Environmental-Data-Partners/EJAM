@@ -14,10 +14,12 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
 
   if (is.null(FUN)) {FUN <- get(funcname)}
 
-  test_that("Site responds with 200", {
-    expect_true(url_online(FUN(sitepoints = testpoints_10[1,])))
-  })
-
+  if (!grepl("equityatlas", funcname)) {
+    # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+    test_that("Site responds with 200", {
+      expect_true(url_online(FUN(sitepoints = testpoints_10[1,])))
+    })
+  }
   # fipsmix = testinput_fips_mix
   fipsmix =  c(
     "091701844002024", # block
@@ -33,36 +35,54 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
   try(test_that(paste0(funcname, " sitepoints POINTS works"), {
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10[1,])})})
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10, radius = 1)})})
-    expect_true(url_online(x[1]))
+    if (!grepl("equityatlas", funcname)) {
+      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+      expect_true(url_online(x[1]))
+    }
   }))
   ############### #
   try(test_that(paste0(funcname, " BG FIPS works"), {
     expect_no_error({
-      x <- FUN(fips = testinput_fips_blockgroups[1] )
+      # expect_warning( # if this county is not available in nationalequityatlas.org
+      # fips2name("06037")
+      # [1] "Los Angeles County, CA"
+      x <- FUN(fips = "060371011101" ) # in "Los Angeles County, CA"
     })
     expect_no_error({
-      x <- FUN(fips = testinput_fips_blockgroups[1:2] )
+      x <- FUN(fips = c("060371011101", "060371011102") ) # in "Los Angeles County, CA"   # testinput_fips_blockgroups[1:2] )
     })
-    expect_true(url_online(x[1]))
+    if (!grepl("equityatlas", funcname)) {
+      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+      expect_true(url_online(x[1]))
+    }
   }))
   ############### #
   try(test_that(paste0(funcname, " mix of FIPS works"), {
     expect_no_error({
       x <- FUN(fips = fipsmix)
     })
-    expect_true(url_online(x[1]))
+    if (!grepl("equityatlas", funcname)) {
+      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+      expect_true(url_online(x[1]))
+    }
   }))
   ############### #
   try(test_that(paste0(funcname, " SHAPEFILE works"), {
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2[1, ])})})
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2, radius = 1)})})
-    expect_true(url_online(x[1]))
+    if (!grepl("equityatlas", funcname)) {
+      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+      expect_true(url_online(x[1]))
+    }
   }))
   ############### #
   try(test_that(paste0(funcname, " REGID works"), {
     expect_no_error({
       x <- FUN( regid = testinput_regid[1] )
-      expect_true(url_online(x[1]))
+      if (!grepl("equityatlas", funcname)) {
+        # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+        expect_true(url_online(x[1]))
+      }
     })
     expect_no_error({  ({
       x <- FUN(sitepoints = data.frame(lat = 35, lon = -100,
@@ -86,7 +106,7 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
     expect_equal(length(x), 6)
     expect_true(substr(x[1], 1, 5) == "https")
   }))
-    try(test_that(paste0(funcname, " 1 url per fips OR regid"), {
+  try(test_that(paste0(funcname, " 1 url per fips OR regid"), {
     expect_no_error({
       suppressWarnings({x <- FUN( # sitepoints = testpoints_10[1:6, ], radius = 1,
         fips = fipsmix[1:6],

@@ -11,12 +11,16 @@ params:
   include_ejindexes: TRUE
   in_shiny: FALSE
   filename: NULL
-  map: NA
-  summary_plot: NA
-  summary_plot_state: NA
+  map: NULL
+  report_plot: NULL
+  report_plot_state: NULL
   report_title: NULL
   logo_path: NULL
   logo_html: NULL
+  footer_version_number: NULL
+  footer_date: NULL
+  footer_text: NULL
+  footer_html: NULL
 ---
 
 ```{r, echo=FALSE}
@@ -28,20 +32,22 @@ if (!exists("blockgroupstats")) {library(EJAM)} # to use installed version only 
 # library(EJAM) # for development purposes, might be better to allow it to use the loaded version from load_all() if that is already available, rather than always/only using the installed version here ***
 
 build_barplot_report(
-  # output_df = params$output_df,
+  
+  logo_path      = params$logo_path,
+  logo_html      = params$logo_html,
+  report_title   = params$report_title,
   analysis_title = params$analysis_title,
-  totalpop = params$totalpop,
-  locationstr = params$locationstr,
+  locationstr    = params$locationstr,
+  totalpop       = params$totalpop,
+  
   # include_ejindexes = params$include_ejindexes,
-  in_shiny = params$in_shiny,
-  filename = params$filename,
-  report_title = params$report_title,
-  logo_path = params$logo_path,
-  logo_html = params$logo_html
+  in_shiny       = params$in_shiny,
+  filename       = params$filename
 )
 ```
 
 ```{r map, fig.align='center'}
+## skip the map
 
 # params$map
 
@@ -51,9 +57,9 @@ build_barplot_report(
 HTML('<br>')
 ```
 
-```{r summary_plot, out.width='90%', fig.align='center'}
+```{r report_plot, out.width='90%', fig.align='center'}
 
-params$summary_plot
+params$report_plot
 
 ```
 
@@ -61,34 +67,19 @@ params$summary_plot
 HTML('<br>')
 ```
 
-```{r summary_plot_state, out.width='90%', fig.align='center'}
+```{r report_plot_state, out.width='90%', fig.align='center'}
 
-params$summary_plot_state
+params$report_plot_state
 
 ```
 
 ```{r footer_with_version_and_date}
+# To make footer blank (no text), pass "" for footer_text or footer_html.
+EJAM:::generate_report_footer(
+  footer_version_number = params$footer_version_number,
+  footer_date = params$footer_date,
+  footer_text = params$footer_text,
+  footer_html = params$footer_html
+)
 
-library(desc)
-library(golem)
-
-# desc <- EJAM:::description_file # would be unexported but available to functions if EJAM pkg is attached. see global_defaults_*.R
-desc <- tryCatch(desc::desc(package = 'EJAM'), error = function(e){e})
-if (inherits(desc, 'try-error')) {desc <- desc::desc(file = app_sys('DESCRIPTION'))}
-if (inherits(desc, 'try-error')) {stop('cannot find DESCRIPTION file in working directory or in EJAM package')}
-version <- ifelse('error' %in% class(desc), '', desc$get("Version"))
-## trim version number shown in report to Major.Minor
-version <- substr(version, start = 1, stop = gregexpr('\\.',version)[[1]][2] - 1)
-
-current_date <- ifelse(
-  isTRUE(getOption("shiny.testmode")),
-  "[SHINYTEST DATE]", # so the snapshot of the report is consistent, not diff date each time tested
-  format(Sys.Date(), "%B %d, %Y"))
-
-HTML('
-  <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
-    <p style="margin-bottom: 0;">Version ', version, '| Report created on ', current_date, '</p>
-  </div>
-  ')
 ```
-

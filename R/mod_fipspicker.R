@@ -151,6 +151,11 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
 
   ns <- NS(id)
 
+  # accept user specified or global_defaults-specified vector of city FIPS codes to show initially
+  default_cities_picked <- EJAM:::global_or_param("default_cities_picked")
+  default_cities_picked <- as.numeric(default_cities_picked) # remove the leading zeroes since they are matched here without those but user probably passed it WITH leading zeroes as from  name2fips(c("akutan,ak", "brooklyn,ny"), usegrep = T)
+  default_cities_picked[is.na(default_cities_picked)] <- "" # convert NA back to "" as needed here, in case it was just "" which is the global_defaults setting of EJAM:::global_or_param("default_cities_picked")
+
   # .-------------- UI = fipspicker_ui -------------------  #
 
   pickers <- tagList(
@@ -190,7 +195,7 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
 
     checkboxInput(inputId = ns("all_cities_button"), "All Cities/Townships/Census Designated Places? [not enabled]", value = FALSE),
     selectizeInput(inputId = ns("cities_picked"), label = "Select Cities/Places",
-                   selected = EJAM:::global_or_param("default_cities_picked"),
+                   selected = default_cities_picked,
                    choices = NULL,       ## (40,000 PLACES !)# loads faster if NULL and then update it via server  . to cities_table$placename,
                    options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE),
                    multiple = T)
@@ -209,7 +214,7 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
       ##  Show table of selected locations
       mainPanel(
         conditionalPanel(condition = "showtable == 'TRUE'",
-                         shiny::downloadButton(outputId = ns("download")),
+                         shiny::downloadButton(outputId = ns("download_fips_table")),
                          tableOutput(outputId = ns("fips_table"))
         )
       )
@@ -266,6 +271,11 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
       # library(shiny); library(data.table)
 
       # DATA TABLES SETUP - Tables of places, counties, states, regions info ####
+
+      # accept user specified or global_defaults-specified vector of city FIPS codes to show initially
+      default_cities_picked <- EJAM:::global_or_param("default_cities_picked")
+      default_cities_picked <- as.numeric(default_cities_picked) # remove the leading zeroes since they are matched here without those but user probably passed it WITH leading zeroes as from  name2fips(c("akutan,ak", "brooklyn,ny"), usegrep = T)
+      default_cities_picked[is.na(default_cities_picked)] <- "" # convert NA back to "" as needed here, in case it was just "" which is the global_defaults setting of EJAM:::global_or_param("default_cities_picked")
 
       states_table <- stateinfo2[stateinfo2$ST != "US", c("statename", "FIPS.ST", "ST", "REGION", "is.usa.plus.pr",
                                                           "is.state", "is.contiguous.us", "is.island.areas")] # etc. etc.
@@ -466,7 +476,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         # and it is done in an observer below but does not have to be done here actually for reset button purposes
         updateSelectizeInput(session = session, inputId = ("cities_picked"), server = TRUE,
                              choices = all_cities_withcountyname_choices,
-                             selected = "",
+                             selected =  default_cities_picked,
                              options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE) )
         if (EJAM:::global_or_param("fipspicker_fips_type2pick_default") == "Cities or Places") {
           shinyjs::show(("cities_picked"))
@@ -551,7 +561,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
 
         updateCheckboxInput(session, inputId = ("all_cities_button"), value = "") # always no
         updateSelectizeInput(session, inputId = "cities_picked", choices = all_cities_withcountyname_choices,   ## MAYBE SLOW
-                             selected = "", server = TRUE)
+                             selected = default_cities_picked, server = TRUE)
         shinyjs::hide(("cities_picked"))
         ########################################## #
 
@@ -697,7 +707,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
           # choices/picks for these units start with none
           updateCheckboxInput(session, inputId = "all_cities_button", value = FALSE)
           updateSelectizeInput(session, inputId = "cities_picked", server = TRUE,
-                               choices = all_cities_withcountyname_choices, selected = "")
+                               choices = all_cities_withcountyname_choices, selected = default_cities_picked)
 
           # show/hide these units
           shinyjs::show(("cities_picked"))
@@ -1106,13 +1116,13 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
 
       observe({
         if (NROW(displaytable()) > 0) {
-          shinyjs::show(("download")) # show the download button
+          shinyjs::show(("download_fips_table")) # show the download button
         } else {
-          shinyjs::hide(("download")) # hide the download button
+          shinyjs::hide(("download_fips_table")) # hide the download button
         }
       })
 
-      output$download <- downloadHandler(
+      output$download_fips_table <- downloadHandler(
         filename = function() {
           if (testing_this_module) { print(NROW(displaytable()))}
           isolate({

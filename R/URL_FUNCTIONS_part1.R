@@ -12,7 +12,7 @@
 
 #' utility - check if URL available, such as if an API is online or offline
 #' @param url the URL to check
-#' @returns TRUE or FALSE (but NA if no internet connection seems to be available at all)
+#' @return TRUE or FALSE (but NA if no internet connection seems to be available at all)
 #' @details
 #' Also see EJAM:::global_or_param("ejamapi_is_down")
 #'    as set in global_defaults_package.R
@@ -43,6 +43,7 @@ url_online <- function(url = "https://ejam.policyinnovation.info") {
     return(FALSE)
   }
   if (x$status_code != 200) {
+    cat("status code not 200, but note some sites (like http://www.nationalequityatlas.org/) may return 403 in response to this kind of check even though the site is browsable.\n")
     return(FALSE)
   } else {
     return(TRUE)
@@ -271,6 +272,21 @@ urls_from_keylists <- function(..., keylist_bysite=NULL, keylist_4all=NULL,
     ## so how pass a parameter value of NULL ??
     keylist_bysite[sapply(keylist_bysite, is.null)] <- pass_null_as # actually it will turn into "" and then get dropped entirely by url_from_keylist() now
 
+    ## Retain all the precision of the latitude and longitude when converting to character for the URL-encoded API call:
+    old_option_digits = getOption('digits')
+    on.exit({options(digits = old_option_digits)})
+    options(digits = 15)
+    ## This is essential when using apply() on a data.frame below, since that apply() uses as.matrix()
+    ## which converts latlon info in a way that is affected by the "digits" option it seems
+    ##   options(digits = 15)
+    ##   as.matrix(testpoints_10[1, 1:2])
+    ## #    lat        lon
+    ## # 1 "37.64122" "-122.41065"  ## retained exact number
+    ##  options(digits = 7)
+    ##  as.matrix(testpoints_10[1, 1:2]) # or print(as.matrix(testpoints_10[1, 1:2]), digits = 15) is no different since it is now character not numeric
+    ## #    lat        lon
+    ## # 1 "37.64122" "-122.4107"
+
     keylist_bysite <- paste0(
       # "&",
       apply(as.data.frame(keylist_bysite) , 1,
@@ -279,6 +295,8 @@ urls_from_keylists <- function(..., keylist_bysite=NULL, keylist_4all=NULL,
               url_from_keylist(keylist = as.list(z), baseurl = "", encode = encode) # should drop empties
             }
       ))
+
+    options(digits = old_option_digits)
   }
 
   forallpart <- url_from_keylist(keylist = keylist_4all, baseurl = "", encode = encode, ifna = "") # should drop empties
@@ -448,6 +466,7 @@ collapse_keylist <- function(klist, encode=TRUE) {
 #
 #       geometry = paste0('{"spatialReference":{"wkid":', 0, '},','"x":', -100, ',"y":', 34, '}'),
 #       ## cannot flexibly create one parameter based on other  parameters:
+## Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
 #       # paste0('{"spatialReference":{"wkid":',wkid, '},','"x":', lon, ',"y":', lat, '}'),
 #
 #       radius = 3.1,
@@ -464,4 +483,5 @@ collapse_keylist <- function(klist, encode=TRUE) {
 ########################################################### #
 #
 # ### how old api-related function  used to do it
+## # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
 # geometry <- paste0('{"spatialReference":{"wkid":',wkid, '},','"x":', lon, ',"y":', lat, '}')

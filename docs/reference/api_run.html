@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -110,7 +114,7 @@
 <span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_dry_run.html" class="external-link">req_dry_run</a></span><span class="op">(</span><span class="va">reqx</span><span class="op">)</span></span>
 <span> <span class="va">outx</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="va">reqx</span><span class="op">)</span></span>
 <span></span>
-<span> <span class="va">s2b</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="va">outx</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="va">s2b</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="va">outx</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="va">s2b</span></span>
 <span></span>
 <span> <span class="va">urlx</span> <span class="op">&lt;-</span> <span class="st">"http://ejamapi-84652557241.us-central1.run.app/report?lat=33&amp;lon=-99&amp;radius=2"</span></span>
@@ -129,11 +133,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

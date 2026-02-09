@@ -42,6 +42,6 @@ Creates header and footer of 1 page report to include a barplot on results for o
 }
 \details{
 For a related function for use in RStudio,
-see \code{\link[=ejam2report]{ejam2report()}} which relies on \code{build_community_report()}
+see \code{\link[=ejam2report]{ejam2report()}} which relies on \code{\link[=build_community_report]{build_community_report()}}
 }
 \keyword{internal}

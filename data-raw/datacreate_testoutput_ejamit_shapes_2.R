@@ -15,7 +15,7 @@ fname <- paste0("testoutput_ejam2excel_shapes" )
 junk <- ejam2excel(
   testoutput_ejamit_shapes_2,
   shp = testinput_shapes_2,
-  in.analysis_title = "Example of outputs of ejamit(shapefile= ) being formatted and saved using ejam2excel()",
+  analysis_title = "Example of outputs of ejamit(shapefile= ) being formatted and saved using ejam2excel()",
   radius_or_buffer_in_miles = 0,
   # buffer_desc = paste0("Within ", myrad, " miles"),
   fname = paste0("./inst/testdata/examples_of_output/", fname, ".xlsx"),

@@ -17,7 +17,7 @@
 #' @param lookup optional, in case custom indicators are used
 #' @param quiet passed to [pctile_from_raw_lookup()]
 #'
-#' @returns  data.frame of percentiles for a table of indicators and places
+#' @return  data.frame of percentiles for a table of indicators and places
 #'  one indicator per column, one place per row
 #' @seealso [pctile_from_raw_lookup()] [calc_avg_columns()]
 #'
@@ -81,6 +81,7 @@
 #'
 #' ############################# ############################## #
 #'
+#' @keywords internal
 #' @export
 #'
 calc_pctile_columns <- function(mytable,

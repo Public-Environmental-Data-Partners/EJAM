@@ -44,6 +44,15 @@ app_ui <- function(request) {
 
       ## title, favicon, etc. ####
 
+      ## local user date/timezone ####
+      # JavaScript to detect timezone and send to Shiny
+      # allowing correct local date in report footer (in case the server is in some other time zone)
+      tags$script('
+            $(document).on("shiny:sessioninitialized", function(event) {
+            var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            Shiny.setInputValue("client_tz", tz);
+            });
+                      '),
       ############################################################# #
 
       # TABS:   ####
@@ -143,21 +152,21 @@ app_ui <- function(request) {
               # _________ wellPanel start ___----------------------------------------------------------------------
 
               wellPanel(
-                style = 'background-color: #e5f2f5; min-height: 500px',
+                style = 'background-color: #e5f2f5; min-height: 300px',
 
                 fluidRow(
                   column(
                     12,
                     #offset=3,
                     ################################################################# #
-                    br(),
-
-                    wellPanel(
-                      style = 'background-color: #e5f2f5; min-height: 500px',
-
-                      fluidRow(
-                        column(
-                          12,
+#                    br(),
+#
+#                    wellPanel(
+#                      style = 'background-color: #e5f2f5; min-height: 300px',
+#
+#                      fluidRow(
+#                        column(
+#                          12,
                           ################################################################# #
 
                           ################################################################# #
@@ -399,14 +408,14 @@ app_ui <- function(request) {
 
                           ),  # end FIPS_PLACE conditionalPanel
                           ################################################################# #
-                          br()
-
-                        ) # end column
-                      ) # end fluidRow
-                    ),
+#                          br()
+#
+#                        ) # end column
+#                      ) # end fluidRow
+#                    ), # end well panel
 
                     # . ##  ##
-                    br(), #br(),
+#                    br(), #br(),
 
                     ## input: Button to return to previous results  ####
                     shinyjs::hidden(
@@ -515,7 +524,7 @@ app_ui <- function(request) {
                                #includeCSS('inst/report/community_report/communityreport.css'),
                                #includeCSS('inst/report/community_report/main.css'),
                                ############################## #
-                               ###               > TABLES       ####
+                               ###               > HEADER AND TABLES       ####
                                uiOutput('comm_report_html'),
                                br(),
                                ############################## #
@@ -532,21 +541,19 @@ app_ui <- function(request) {
                                    12, align = 'center',
                                    br(),br(),
                                    shinycssloaders::withSpinner(
-                                     plotOutput(outputId = 'view1_summary_plot', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
+                                     plotOutput(outputId = 'report_plot_output', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
                                    )
                                  )
                                ),
                                ############################## #
                                ###              > FOOTER  (version, date)    ####
-                               div(
-                                 style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
-                                 uiOutput("report_version_date")
-                               ),
+
+                               uiOutput("report_footer_version_date"),  # now via generate_report_footer() which wraps it in div
                                br(),
+                               ############################## #
+                               ###              > DOWNLOAD BUTTON    ####
                                tags$div(
-                                 shiny::downloadButton(
-                                   outputId = 'community_download_all',
-                                   label = 'Download Community Report', class = 'usa-button'), style = 'text-align: center;'
+                                 downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -586,7 +593,7 @@ app_ui <- function(request) {
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
-                                                              downloadButton('download_results_table', 'Download Results Table', class = 'usa-button')
+                                                              downloadButton('download_results_spreadsheet', label = 'Download Results Table', class = 'usa-button')
                                                        )
                                                      ),
                                                      br(), ## vertical space
@@ -717,9 +724,7 @@ app_ui <- function(request) {
                                             ),
                                             column(6,
                                                    ## output: button to download static report
-                                                   shiny::downloadButton(outputId = 'rg_download',
-                                                                         label = 'Download report',
-                                                                         class = 'usa-button')
+                                                   downloadButton('download_report_long', label = 'Download report', class = 'usa-button')
                                             )
                                           ), ######################################################### #
 
@@ -1107,7 +1112,7 @@ app_ui <- function(request) {
                  selectizeInput(
                    inputId = "default_naics",
                    label = h6("NAICS industry code to start with"),
-                   choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
+                   choices = NULL,# NULL loads faster; will update server side, in app_server  # setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
                    selected = EJAM:::global_or_param("default_naics"),
                    width = 400,
                    multiple = TRUE,

@@ -542,7 +542,7 @@ fill_tbl_full_subgroups <- function(output_df,
 
 # 5. footnote ####
 
-#' helper - make footnote for summary report
+#' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
 #' @param diesel_caveat
 #'
@@ -581,6 +581,69 @@ generate_report_footnotes <- function(
   return(HTML(footnotes))
 }
 ################################################################################## #
+
+# 6. footer ####
+
+#' helper - make date/version footer for summary report
+#' @details  used by app_server.R and .Rmd report templates.
+#'   Passing a parameter as NULL is the same as omitting it/not specifying it.
+#'   To make footer blank (no text), pass "" for footer_text or footer_html.
+#'
+#' @param footer_version_number optional, default is read from the package, e.g., "2.32.7"
+#' @param footer_date optional, default is today, e.g., "February 14, 2026"
+#'   If footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be
+#' @param footer_text optional, e.g., "Report created by EJAM version (version_number) on (date_created)".
+#'   If specified, it overrides date and version parameters.
+#' @param footer_html optional full HTML for footer.
+#'   If specified, it overrides all other parameters.
+#'
+#'   For example,
+#'   ```
+#'   footer_html = shiny::HTML(paste0('
+#'     <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
+#'       <p style="margin-bottom: 0;">', 'Report created by EJAM version 2.32.7 on February 14, 2026', '</p>
+#'     </div>
+#'   '))
+#'   ```
+#'
+#' @keywords internal
+#'
+generate_report_footer <- function(footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL) {
+
+  if (missing(footer_version_number) || is.null(footer_version_number)) {
+    footer_version_number <- as.vector(global_or_param("app_version")) # e.g., "2.32.7"
+  }
+
+  if (isTRUE(getOption("shiny.testmode"))) {
+    footer_date <- "[SHINYTEST DATE]" # so the snapshot of the report is consistent, not diff date each time tested
+  } else {
+    if (missing(footer_date) || is.null(footer_date)) {
+      # if footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be
+      footer_date <- format(Sys.Date(), "%B %d, %Y")
+    }
+  }
+
+  if (missing(footer_text) || is.null(footer_text)) {
+    footer_text <- paste0('Report created by EJAM version ', footer_version_number, ' on ', footer_date)
+  }
+
+  if (missing(footer_html) || is.null(footer_html)) {
+    footer_html <- HTML(paste0('
+  <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
+    <p style="margin-bottom: 0;">', footer_text, '</p>
+  </div>
+  '))
+    ## that should be same as
+    # shiny::div(style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
+    #            shiny::p(style = "margin-bottom: 0", footer_text))
+  }
+
+  return(footer_html)
+}
+################################################################################## #
+
+
+################################################################################## #
 # ~ ####
 # 1. Headers ####
 
@@ -588,12 +651,15 @@ generate_report_footnotes <- function(
 
 #' Build HTML header for community report
 #' @seealso used by [build_community_report()]
-#' @param analysis_title, title to use in header of report
-#' @param totalpop, total population included in location(s) analyzed
-#' @param locationstr, description of the location(s) analyzed
-#' @param in_shiny, whether the function is being called in or outside of shiny - affects location of header
-#' @param report_title generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
-#' @param logo_path optional relative path to a logo for the upper right of the overall header.
+#' @details
+#' Useful defaults are provided by build_community_report()
+#'
+#' @param analysis_title optional, title to use in header of report
+#' @param report_title optional, generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
+#' @param totalpop optional, total population included in location(s) analyzed
+#' @param locationstr optional, description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()
+#' @param in_shiny optional, whether the function is being called in or outside of shiny - affects location of header
+#' @param logo_path optional, relative path to a logo for the upper right of the overall header.
 #'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp(),
 #'   but NULL means default and "" means omit logo entirely.
 #' @param logo_html optional HTML for img of logo for the upper right of the overall header.
@@ -601,34 +667,16 @@ generate_report_footnotes <- function(
 #'
 #' @keywords internal
 #'
-generate_html_header <- function(analysis_title,
-                                 totalpop, locationstr,
-                                 in_shiny = FALSE,
+generate_html_header <- function(analysis_title = NULL, # defaults of NULL here are handled below
                                  report_title = NULL,
+                                 locationstr = NULL, #  # e.g., report_residents_within_xyz_from_ejamit()
+                                 totalpop = NULL, # if "NA" it can say "Population: NA" (meaning Not Available) instead of just empty space after "Population:"
                                  logo_path = NULL,
-                                 logo_html = NULL
+                                 logo_html = NULL,
+                                 in_shiny = FALSE
 ) {
 
-  # if (is.null(logo_path) || !file.exists(logo_path)) {
-  #
-  #   if (!in_shiny) {
-  #     logo_path <- EJAM:::global_or_param("report_logo")
-  #     cat("TRYING TO USE logo_path = ", logo_path, "\n")
-  #
-  #   } else {
-  #     ## should map to installed pkgs library /EJAM/report/community_report using resource path defined in shiny app_ui.R
-  #
-  #     logo_path <- EJAM:::global_or_param("report_logo")
-  #     if (!file.exists(logo_path)) { # might not need anymore
-  #       logo_path <- 'community_report/ejamhex4.png'; cat("logo not found via report_logo, trying hardcoded path\n")
-  #       if (!file.exists(logo_path)) { # might not need anymore
-  #         system.file('report/community_report/ejamhex4.png', package = "EJAM"); cat("logo still not found, trying another path \n")
-  #       }
-  #     }
-  #     cat("TRYING TO USE logo_path = ", logo_path, "\n")
-  #   }
-  # }
-  ########## #
+  ########## #  ########## #  ########## #  ########## #
   # helper function picking report logo info -- helps to decide which parameter to use or when to use defaults or warn
   report_logo_html_from_inputs = function(logo_path, logo_html) {
 
@@ -666,7 +714,7 @@ generate_html_header <- function(analysis_title,
       # warn if html not seem to match path or a valid path?
       path_from_html <- gsub(".*img src=.(.*). alt.*", "\\1", logo_html)
       if (!file.exists(path_from_html)) {
-        warning("logo_html seems to point to -- but cannot find -- ", path_from_html, ", but will try using logo_html as provided")
+        message("logo_html seems to point to -- but from current folder, cannot find -- ", path_from_html, ", but will try using logo_html as provided")
       }
       return(logo_html)
     }
@@ -675,15 +723,15 @@ generate_html_header <- function(analysis_title,
       #  warn if html not seem ok ?
       path_from_html <- gsub(".*img src=.(.*). alt.*", "\\1", logo_html)
       if (!file.exists(path_from_html)) {
-        warning("logo_html seems to point to -- but cannot find -- ", path_from_html, ", but will try using logo_html as provided")
+        message("logo_html seems to point to -- but from current folder, cannot find -- ", path_from_html, ", but will try using logo_html as provided")
       }
       return(logo_html)
     }
 
     # if logo_path PROVIDED as not null and not empty, and logo_html NULL or "", (warn?) try to use path to make html (and ignore given html)
     if (notempty(logo_path) && !notempty(logo_html)) {
-      if (!file.exists(logo_path)) {
-        warning("cannot find ", logo_path, " but will try to use it for the logo on report")
+      if (!file.exists(file.path(  logo_path))) {
+        message("cannot find ", logo_path, " from current folder, but may be available for render as a relative path and will try to use it for the logo on report")
         # return("") # to be safe could omit logo if seems like file not available
       }
       logo_html <- paste0('<img src=\"', logo_path, '\" alt=\"logo\" width=\"220\" height=\"70\">')
@@ -694,19 +742,36 @@ generate_html_header <- function(analysis_title,
     return(default_logo_html)
   }
 
-
   logo_html <- report_logo_html_from_inputs(logo_path = logo_path, logo_html = logo_html)
-
-  ########## #
+  if (is.null(logo_html) || all(is.na(logo_html)) || length(logo_html) == 0) {
+    logo_html <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
   if (is.null(report_title)) {
-    if (shiny::isRunning()) {
+    if (shiny::isRunning() || isTRUE(in_shiny)) {
       report_title <- EJAM:::global_or_param("report_title")
     } else {
-      report_title <- EJAM:::global_or_param("report_title") # was # report_title <- global_defaults_package$report_title
+      report_title <- EJAM:::global_or_param("report_title")
     }
   }
-
-  if (in_shiny) {
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(report_title) || all(is.na(report_title)) || length(report_title) == 0) {
+    report_title <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(analysis_title) || all(is.na(analysis_title)) || length(analysis_title) == 0) {
+    analysis_title <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(locationstr) || all(is.na(locationstr)) || length(locationstr) == 0) {
+    locationstr <- "" # just in case still wasn't valid/available
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (is.null(totalpop) || all(is.na(totalpop)) || length(totalpop) == 0) {
+    totalpop <- ""
+  }
+  ########## #  ########## #  ########## #  ########## #
+  if (shiny::isRunning() || isTRUE(in_shiny)) {
     shift_hsb <- 630
     shift_hpb <- 600
     shift_hbd <- 550
@@ -715,7 +780,7 @@ generate_html_header <- function(analysis_title,
     shift_hpb <- 40
     shift_hbd <- 0
   }
-
+  ########## #  ########## #  ########## #  ########## #
   paste0(
     '
   <link href=\"https://fonts.googleapis.com/css2?family=Heebo:wght@500;600\" rel=\"stylesheet\">
@@ -830,75 +895,256 @@ generate_extra_header <- function(title = 'Additional Information') {
 
 ## within X miles of ####
 
-
-#' helper to convert sitetype code ("latlon") to text describing it (" specified point")
+#' Build text for report: Locations analyzed: e.g. (" specified point") based on sitetype ("latlon") and site_method
+#' @description Helps create text for excel report's notes sheet (via [ejam2excel()] helpers like [table_xls_format()])
 #'
-#' @param sitetype character string, like (if lowercase)
-#'   latlon, shp, fips, fips_place, frs, echo,
-#'   naics, sic, mact, epa_program_sel, epa_program_up as used in server
-#'   or some of which come from ejamit()$sitetype like latlon, fips, or shp
-#' @param sitetype_nullna optional, to use if sitetype is NULL --
-#'   should be a singular word preceded by a space, like " location"
-#' @returns text string, phrase to use in report header (or excel notes tab, etc.)
+#' @param sitetype character string, one of "shp", "latlon", "fips"
+#'
+#' @param site_method optional word or phrase about the sites or how they were selected.
+#'
+#'   The `site_method` parameter
+#'   can be used by the shiny app to add informational text in the header of a report.
+#'
+#'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
+#'   beyond what `sitetype` provides, e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`
+#'
+#'   - sitetype can be "latlon", "fips", or "shp"
+#'
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'
+#'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
+#'   which is much like the one called current_upload_method().
+#'
+#' @seealso [report_residents_within_xyz_from_ejamit()] and [report_residents_within_xyz()]
+#'   for a newer approach to this.
+#' @examples
+#' EJAM:::buffer_desc_from_sitetype("latlon", "NAICS")
+#' EJAM:::buffer_desc_from_sitetype("shp")
+#' EJAM:::buffer_desc_from_sitetype("fips")
+#'
+#' @return text string, phrase to use in excel notes tab
 #'
 #' @keywords internal
 #'
-sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place") {
+buffer_desc_from_sitetype <- function(sitetype, site_method) {
 
-  if (is.null(sitetype)) {sitetype <- sitetype_nullna}
-  sitetype[is.na(sitetype)] <- sitetype_nullna
+  ### report_residents_within_xyz() and its helper sitetype2text()
+  ### *** per issue #159 should be reconciled/merged with
+  ### buffer_desc_from_sitetype() and its helper site_method2text()
 
-  sitetype <- tolower(sitetype)
+  if (missing(sitetype) || is.null(sitetype)) {
+    buffer_desc <- "Selected Locations"
+  } else {
+    if (sitetype == "shp") {
+      buffer_desc <- "Polygons defined by shapefile"
+    } else {
+      if (sitetype == 'latlon') {
+        buffer_desc <- "Locations defined by latitude, longitude and radius"
+      } else {
+        if (sitetype == "fips") {
+          buffer_desc <- 'Census Units defined by FIPS code'
+        } else {
+          buffer_desc <- "Selected locations"
+        }}}}
+  if (buffer_desc == "") {
+    based_on_txt <- site_method2text(site_method)
+    if (based_on_txt %in% "")
+      buffer_desc <- paste0(buffer_desc, ", based on ", site_method2text(site_method))
+  }
+  return(buffer_desc)
+}
+##################################################################################### #
 
-  # uploaded each site ---------------------------------- -
+# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
+# cbind(eg, site_method2text(eg))
 
-  if (sitetype == 'latlon') {
-    location_type <- " specified point"
+# used by buffer_desc_from_sitetype()
 
-  } else if (sitetype %in% c('fips', 'fips_place')) {
-    location_type <- " specified Census unit"
+site_method2text =  function(site_method) {
 
-  } else if (sitetype == 'shp') {
-    location_type <- " specified polygon"
+  ### report_residents_within_xyz() and its helper sitetype2text()
+  ### *** per issue #159 should be reconciled/merged with
+  ### buffer_desc_from_sitetype() and its helper site_method2text()
 
-  } else if (sitetype == 'frs') {
-    location_type <- " FRS ID-specified site"
+  site_method2text1 <- function(site_method) {
 
-  } else if (sitetype == 'epa_program_up') {
-    location_type <- " EPA Program ID-based site"
+    if (missing(site_method) || is.null(site_method)) {
+      return("")
+    }
+    site_method <- tolower(site_method)
 
-  } else if (sitetype == 'echo') {
-    location_type <- " regulated facility"
+    if (site_method %in% tolower("SHP")) {
+      return("shapefile")
+    }
+    if (site_method %in% tolower("latlon")) {
+      return("coordinates")
+    }
+    if (site_method %in% tolower("FIPS")) {
+      return("FIPS codes")
+    }
+    if (site_method %in% tolower("FIPS_PLACE")) {
+      return("names of places")
+    }
+    if (site_method %in% tolower("NAICS")) {
+      return("EPA-regulated facilities by NAICS code (industry type)")
+    }
+    if (site_method %in% tolower("FRS")) {
+      return("EPA-regulated facilities by Registry ID")
+    }
+    if (site_method %in% tolower("EPA_PROGRAM")) {
+      return("EPA-regulated Facilities by EPA program")
+    }
+    if (site_method %in% "SIC") {
+      return("EPA-regulated facilities by SIC code (industry type)")
+    }
+    if (site_method %in% "MACT") {
+      return("EPA-regulated facilities by MACT category (air toxics emissions source type)")
+    }
+    return("")
+  }
 
-    # selected pulldown category ---------------------------------- -
+  as.vector(sapply(site_method, site_method2text1))
+}
+##################################################################################### #
 
-  } else if (sitetype == 'naics') {
-    location_type <- " NAICS industry-specific site"
+#' helper to convert sitetype code ("latlon") to singular or plural text describing it ("specified point")
+#'
+#' @param sitetype character string,
+#'   latlon, shp, fips -- like come from ejamit()$sitetype,
+#'   but could also provide the site_method info like
+#'   latlon, shp, fips, fips_place, frs, echo, naics, sic, mact, epa_program
+#'   -- like (once made lowercase) used in server submitted_upload_method() or current_upload_method() reactive.
+#'
+#' @param site_method optional word or phrase about the sites or how they were selected.
+#'
+#'   The `site_method` parameter can be used as-is by [create_filename()] to be part of the saved file name.
+#'   It can also be used by the shiny app to add informational text in the header of a report,
+#'   via [ejam2report()] and related helper functions like [report_residents_within_xyz()]
+#'   or via [ejam2excel()] and related helper functions.
+#'
+#'   The `site_method` parameter provides more detailed info about how sites were specified in the web app,
+#'   beyond what `sitetype` provides (e.g., from `ejamit()$sitetype` or `ejamitout$sitetype`):
+#'
+#'   - sitetype can be "latlon", "fips", or "shp"
+#'
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'
+#'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
+#'   which is much like the one called current_upload_method().
+#'
+#' @param sitetype_nullna optional, to use if sitetype is NULL --
+#'   should be a singular word, like "location"
+#' @param census_unit_type e.g., "county"
+#' @param nsites number of sites total, to determine whether to pluralize e.g., "county" into "counties"
+#' @return text string, phrase to use in report header (or excel notes tab, etc.)
+#'
+#' @keywords internal
+#'
+sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_nullna = "place", census_unit_type = "Census unit", nsites = 1) {
 
-  } else if (sitetype == 'sic') {
-    location_type <- " SIC industry-specific site"
+  ### report_residents_within_xyz() and its helper sitetype2text()
+  ### *** per issue #159 should be reconciled/merged with
+  ### buffer_desc_from_sitetype() and its helper site_method2text()
 
-  } else if (sitetype == 'mact') {
-    location_type <- " MACT category site"
+  if (length(nsites) != 1) {
+    warning("nsites can be >1 but must be a single number not a vector or empty")
+    nsites <- 99 # just makes it plural, e.g., "places"
+  }
+  if (is.null(nsites) || any(is.na(nsites))) {
+    nsites <- 99 # just makes it plural, e.g., "places"
+    }
+  if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
+  if (is.null(site_method)) {site_method <- sitetype}
 
-  } else if (sitetype == 'epa_program_sel') {
-    location_type <- " EPA program-specific site"
+  sitetype[   is.na(sitetype)]    <- sitetype_nullna
+  site_method[is.na(site_method)] <- sitetype_nullna
+
+  sitetype    <- tolower(sitetype)
+  site_method <- tolower(site_method)
+
+  location_type <- NULL # until assigned
+
+  # uploaded each site (general sitetype) ---------------------------------- -
+
+  if (sitetype %in% c('fips', 'fips_place') || (site_method %in% 'fips_place')) {
+    if (is.null(census_unit_type) ||
+        (!missing(census_unit_type) && !(tolower(census_unit_type) %in% c("state", "county", "tract", "city", "blockgroup", "block")))) {
+      census_unit_type <- "Census unit"
+    }
+    location_type <- paste0("specified ",            pluralize_maybe(census_unit_type, nsites))
+  }
+  if (sitetype %in% 'latlon') {
+    location_type <- paste0("specified ",            pluralize_maybe("point",    nsites))
+  }
+  if (sitetype %in% 'shp') {
+    location_type <- paste0("specified ",            pluralize_maybe("polygon",  nsites)) # "specified polygon"
+  }
+  # uploaded each site (detailed site_method) ---------------------------------- -
+  # # These detailed designations will override simple ones above, if available (as in server/shiny app)
+
+  if (site_method %in% 'frs') {
+    location_type <- paste0("FRS ID-specified ",     pluralize_maybe("site",     nsites)) # "FRS ID-specified site"
+
+  } else if (site_method %in% 'epa_program_up') {
+    location_type <- paste0("EPA Program ID-based ", pluralize_maybe("site",     nsites)) # "EPA Program ID-based site"
+
+  } else if (site_method %in% 'echo') {
+    location_type <- paste0("regulated ",            pluralize_maybe("facility", nsites)) # "regulated facility"
+
+    # selected pulldown category (detailed site_method) ---------------------------------- -
+
+  } else if (site_method %in% 'naics') {
+    location_type <- paste0("NAICS industry-specific ", pluralize_maybe("site", nsites)) # "NAICS industry-specific site"
+
+  } else if (site_method %in% 'sic') {
+    location_type <- paste0("SIC industry-specific ",   pluralize_maybe("site", nsites)) # "SIC industry-specific site"
+
+  } else if (site_method %in% 'mact') {
+    location_type <- paste0("MACT category ",           pluralize_maybe("site", nsites)) # "MACT category site"
+
+  } else if (site_method %in% c('epa_program_sel', 'epa_program')) { # the epa-program methods may get limited to just 'epa_program' in this context
+    location_type <- paste0("EPA program-specific ",    pluralize_maybe("site", nsites)) # "EPA program-specific site"
 
     # misc / unknown ---------------------------------- -
 
-  } else if (sitetype == sitetype_nullna) {
+  }
+  if (site_method %in% sitetype_nullna) {
     # ok, use default filler
-    location_type <- sitetype
-  } else {
-    # an unknown sitetype was provided
-    location_type <- sitetype
-    # make sure it/each has a leading space
-    if (substr(location_type, 1, 1) != " ") {location_type <- paste0(" ", location_type)}
+    location_type <- pluralize_maybe(sitetype_nullna, nsites)
+  }
+  if (is.null(location_type)) {
+    # an unknown site_method was provided, so location_type not yet assigned - still NULL
+    location_type <- pluralize_maybe(sitetype, nsites)
   }
   return(location_type)
 }
+## see test-sitetype2text.R for examples
 ################################################################### #
 
+pluralize <- function(word) {
+
+  # Very basic - does not handle all-caps words, or phrases, nonstandard plural words not listed here, etc.
+  # also see https://cli.r-lib.org/articles/pluralization.html
+  specials <- data.frame(singular = c('County', 'Facility', 'City', 'Industry', 'Municipality',
+                                      'county', 'facility', 'city', 'industry', 'municipality'),
+                         plural = c('Counties', 'Facilities', 'Cities', 'Industries', 'Municipalities',
+                                    'counties', 'facilities', 'cities', 'industries', 'municipalities'))
+  word[!(word %in% specials$singular)] <- paste0(word[!(word %in% specials$singular)], "s")
+  word[  word %in% specials$singular ] <- specials$plural[match(word[word %in% specials$singular], specials$singular)]
+  return(word)
+}
+################################################################### #
+
+pluralize_maybe <- function(word, n = 1) {
+
+  if (length(n) > 1) {stop('length of n parameter must be 1 -- function is not vectorized over n, just over word parameter')}
+  if (n > 1) {
+    return(pluralize(word))
+  } else {
+    return(word)
+  }
+}
+################################################################### #
 
 #' helper for [report_residents_within_xyz()]
 #' @param radius distance from site
@@ -908,7 +1154,7 @@ sitetype2text <- function(sitetype = NULL, sitetype_nullna = " place") {
 #'
 report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 
-  if (is.null(radius)) {return("")}
+  if (is.null(radius) || is.na(radius)) {return("")}
 
   #  but if you provide custom text without ending with "of " then it will look odd
   # See  https://cli.r-lib.org/articles/pluralization.html
@@ -929,8 +1175,170 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 }
 ################################################################### #
 
+
+#' utility to create text for use in report about residents within X miles of Y
+#'
+#' @param ejamitout list that is output of [ejamit()]
+#' @param sitenumber optional, which site number to report on for a 1-site report instead of the overall summary of all sites
+#' @param site_method detailed sitetype info used in server, like if it was latlon chosen via MACT, NAICS, or SIC, etc.
+#' @param ... See [report_residents_within_xyz()] for details of optional
+#'   parameters that can be specified -- they get passed from here to that function.
+#'   For example, if it is a 1-site report as via sitenumber=2,
+#'    and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
+#'   instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).
+#'
+#' @return text string such as "Residents within 1 mile of any of the 99 specified points<br>Area in Square Miles: 311.02"
+#'
+#' @export
+#' @keywords internal
+#'
+report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL, site_method = NULL, ...) {
+
+  out <- ejamitout
+  if (!missing(...)) {params = list(...)} else {params = NULL}
+
+  stopifnot("results_bysite" %in% names(ejamitout))
+  if (!is.null(sitenumber) && sitenumber %in% 0) {sitenumber <- NULL} # because ejam2report() allows 0 to mean summary report
+  stopifnot(!is.na(sitenumber), (is.null(sitenumber) | is.atomic(sitenumber)), length(sitenumber) < 2)
+  stopifnot(is.numeric(sitenumber) | is.null(sitenumber))
+  if (!is.null(sitenumber)) {
+    if (sitenumber < 1 || sitenumber > NROW(out$results_bysite)) {
+      message("sitenumber was < 1 or > number of rows in results_bysite, so ignoring sitenumber parameter")
+      sitenumber <- NULL
+    }
+  }
+  if (!is.null(sitenumber)) {
+    if (!is.null(params) && "ejam_uniq_id" %in% names(params)) {
+      # ejam_uniq_id already provided explicitly
+      ejam_uniq_id = params$ejam_uniq_id
+    } else {
+      ejam_uniq_id <- out$results_bysite[sitenumber, ejam_uniq_id]
+    }
+  } else {
+    ejam_uniq_id <- NULL
+  }
+  if ("nsites" %in% names(params)) {
+    # already provided explicitly
+    nsites = params$nsites
+  } else {
+    if (!is.null(sitenumber)) {
+      nsites = 1
+    } else {
+      nsites <- NROW(out$results_bysite[out$results_bysite$valid == T, ])
+    }
+  }
+
+  # check if some params already specified and should not infer them
+
+  if ("text1" %in% names(params)) {
+    # already provided explicitly
+    text1 = params$text1
+  } else {
+    text1 = 'Residents within '
+  }
+  if ("sitetype" %in% names(params)) {
+    # already provided explicitly
+    sitetype = params$sitetype
+  } else {
+    sitetype <- out$sitetype
+  }
+  if ("radius" %in% names(params)) {
+    # already provided explicitly
+    radius = params$radius
+  } else {
+    radius <- out$results_overall$radius.miles # should work even if sitenumber specified just 1 site, since all have same radius
+  }
+  if ("area_in_square_miles" %in% names(params)) {
+    # already provided explicitly
+    area_in_square_miles = params$area_in_square_miles
+  } else {
+    if (is.null(sitenumber)) {
+      area_in_square_miles <- out$results_overall$area_sqmi
+    } else {
+      area_in_square_miles <- out$results_bysite$area_sqmi[sitenumber]
+    }
+  }
+  if ("linefeed" %in% names(params)) {
+    # already provided explicitly
+    linefeed = params$linefeed
+  } else {
+    linefeed <- "<br>"
+  }
+  if ("show_fips_name" %in% names(params)) {
+    # already provided explicitly
+    show_fips_name = params$show_fips_name
+  } else {
+    show_fips_name <- FALSE
+  }
+  if ("addlatlon" %in% names(params)) {
+    # already provided explicitly
+    addlatlon = params$addlatlon
+  } else {
+    addlatlon <- TRUE
+  }
+  if (addlatlon) {
+    if (!(sitetype %in% "latlon") || is.null(sitenumber)) {
+      addlatlon <- FALSE
+    }
+  }
+
+  if (addlatlon) {
+    if ("lat" %in% names(params)) {
+      # already provided explicitly
+      lat = params$lat
+    } else {
+      lat <- out$results_bysite$lat[sitenumber]
+    }
+    if ("lon" %in% names(params)) {
+      # already provided explicitly
+      lon = params$lon
+    } else {
+      lon <- out$results_bysite$lon[sitenumber]
+    }
+  } else {
+    lat = NULL
+    lon = NULL
+  }
+  # determine census unit type (e.g., "county" ) if sitetype is fips
+  if (sitetype %in% 'fips') {
+    if (is.null(ejam_uniq_id)) {
+      # results_overall being reported on, not 1 site
+      ft <- unique(fipstype(out$results_bysite$ejam_uniq_id, quiet = TRUE))
+      if (length(ft) == 1 && !all(is.na(ft))) {
+        # ft is ok
+      } else {
+        ft <- "Census unit" # seems like a mix of types
+      }
+    } else {
+      # 1 site with known fips
+      ft <- fipstype(ejam_uniq_id, quiet = TRUE)[1] # already subsetted to 1 site via sitenumber above but used [1] just to be sure
+    }
+    census_unit_type <- ft
+  } else {
+    census_unit_type <- NULL
+  }
+
+  report_residents_within_xyz(
+    text1 = text1,
+    radius = radius,
+    unitsingular = 'mile',
+    area_in_square_miles = area_in_square_miles,
+    nsites = nsites,
+    sitenumber = sitenumber,  # only relevant for 1-site report
+    ejam_uniq_id = ejam_uniq_id,
+    sitetype = sitetype,
+    site_method = site_method, # detailed sitetype like MACT/NAICS/etc.
+    census_unit_type = census_unit_type, # detailed sitetype if fips
+    # sitetype_nullna = " place", #  use the default always
+    linefeed = linefeed,
+    addlatlon = addlatlon, lat = lat, lon = lon,
+    show_fips_name = show_fips_name
+  )
+}
+################################################################### #
+
 #' Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
-#' Help app_server create locationstr for [build_community_report()]
+#' @description Helps app_server create locationstr parameter passed to [build_community_report()]
 #' @param text1 text to start the phrase, like "Residents within "
 #' @param radius The distance from each place, normally in miles (which can be 0),
 #'   or custom text like "seven kilometers from" in which case
@@ -948,9 +1356,28 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 #'   some singular custom text like "Georgia location" or "place"
 #'   but should be something that can be made plural by just adding "s" so ending with "site"
 #'   works better than ending with "... facility" since that would print as "facilitys" here.
+#' @param site_method optional detailed info about how sites were selected (see server submitted_upload_method() reactive)
+#' @param census_unit_type optional phrase like "Counties" if relevant (if sitetype is "fips")
 #' @param sitetype_nullna optional, to use if sitetype is NULL --
 #'   should be a singular word preceded by a space, like " location"
 #' @param area_in_square_miles number if available, area in square miles, added as a second line
+#' @param linefeed optional, to use `"\n"` or `". "` instead of default `"<br>"`, for example
+#' @param addlatlon optional, defines whether coordinates are noted in header for latlon sitetype
+#' @param show_fips_name optional, if it was a FIPS-based analysis, this defines
+#'   whether to also show name of FIPS Census unit (e.g., name of city or county).
+#'   Normally this is already in the analysis title, so not needed in this additional part of the report header.
+#' @examples
+#'  out <- testoutput_ejamit_100pts_1miles
+#'  x <- EJAM:::report_residents_within_xyz(
+#'    sitetype = out$sitetype,
+#'    radius = out$results_overall$radius.miles,
+#'    nsites = NROW(out$results_bysite[out$results_bysite$valid == T, ]),
+#'    area_in_square_miles = out$results_overall$area_sqmi,
+#'    # sitenumber = 6,  # only relevant for 1-site report
+#'    # ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id], # only relevant for 1-site report
+#'    linefeed = ". ",
+#'    lat = out$results_bysite$lat, lon = out$results_bysite$lon
+#'  )
 #'
 #' @seealso [report_xmilesof()] [buffer_desc_from_sitetype()]
 #'
@@ -962,66 +1389,110 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                         nsites = 1,
                                         sitenumber = NULL,
                                         ejam_uniq_id = NULL,
-                                        sitetype = c(
-                                          NA, # now default is "place(s)" not "specified point(s)"
-                                          # uploaded each site
-                                          'latlon', 'fips', 'shp',
-
-                                          'frs', 'epa_program_up',
-                                          'echo',
-
-                                          # selected pulldown category
-                                          'naics', 'sic', 'mact',
-                                          'epa_program_sel'
-                                        )[1],
-                                        sitetype_nullna = " place"
-
+                                        sitetype = c(NA, 'latlon', 'fips', 'shp')[1],
+                                        site_method = sitetype,
+                                        ### e.g., 'frs', 'epa_program_up', 'echo',
+                                        ### 'naics', 'sic', 'mact', 'epa_program_sel'
+                                        census_unit_type = "Census unit",
+                                        sitetype_nullna = "place",
+                                        linefeed = "<br>",
+                                        addlatlon = TRUE, lat = NULL, lon = NULL,
+                                        show_fips_name = TRUE # FALSE if called from report_residents_within_xyz_from_ejamit() but TRUE here since not sure we have it in an analysis title
 ) {
 
   # round radius only if it is a number, since this func can handle a phrase like radius = "seven kilometers from"
   if (is.null(radius)) {
     xmilesof <- report_xmilesof(unitsingular = unitsingular)
   } else {
-  if (length(radius) > 1) {stop("radius must be a single value")}
-  if (is.na(radius) || radius == "") {radius <- NULL}
-  if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
-  if (is.numeric(radius)) {
-    digits <- table_rounding_info("radius.miles")
-    radius <- round(radius, digits)
-  }
+    if (length(radius) > 1) {stop("radius must be a single value")}
+    if (is.na(radius) || radius == "") {warning("radius should not be NA or '' "); radius <- NULL}
+    if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
+    if (is.numeric(radius)) {
+      digits <- table_rounding_info("radius.miles")
+      radius <- round(radius, digits)
+    }
     xmilesof <- report_xmilesof(radius = radius, unitsingular = unitsingular)
   }
+  if (any(is.na(sitetype)) && !missing(sitetype)) {warning("sitetype should not be NA")} # but do not warn if just NA because missing
   # handle the unlikely case of needing to avoid it saying "Residents within this specified point " when radius is somehow bad/missing for latlon case
   if (!is.na(sitetype) && sitetype == "latlon" && (is.null(radius) || !(radius > 0))) {
     if (text1 == "Residents within ") {
       text1 <- "Residents at "
     }
   }
-  location_type <- sitetype2text(sitetype, sitetype_nullna = sitetype_nullna)
 
+  if (sitetype %in% "fips") {
+    if (!is.null(ejam_uniq_id)) {
+      if (missing(census_unit_type) || is.null(census_unit_type)) {
+        # figure out type like "county"
+        census_unit_type <- fipstype(ejam_uniq_id, quiet = TRUE)[1] # should be just 1 actually
+        if (is.na(census_unit_type)) {census_unit_type <- "Census unit"}
+      }
+    } else {
+      # ejam_uniq_id is not provided in this case so we cannot figure out type if unspecified
+      if (is.null(census_unit_type)) {
+        census_unit_type <- "Census unit" # should never arise but to be safe left here
+      }
+    }
+  }
+  # error check, PLURALIZE if needed, and make it a phrase e.g., say  paste0("specified ", census_unit_type)
+  location_type <- sitetype2text(sitetype = sitetype,
+                                 site_method = site_method,
+                                 sitetype_nullna = sitetype_nullna,
+                                 census_unit_type = census_unit_type,
+                                 nsites = nsites)
+  if (any(is.na(nsites))) {warning("nsites should not be NA")}
   if (is.null(nsites)) {nsites <- ''}
   nsites[is.na(nsites)] <- ""
-  sitenumber <- ''
-  if (nsites == 1) {
+  # if (is.null(sitenumber)) {sitenumber <- ''}
 
-    if (is.null(sitenumber)) {
-      siteidtext <- ''
-    } else {
+  if (nsites == 1) {
+    siteidtext <- '' # unless changed below
+
+    if (!is.null(sitenumber)) {
       if (length(sitenumber) > 1) {
         siteidtext = ''
       } else {
-        siteidtext = paste0("Site ", sitenumber)
+        if (is.numeric(sitenumber)) {
+          siteidtext = paste0("Site ", sitenumber)
+        } else {
+          siteidtext = sitenumber
+        }
       }
     }
 
-    if (is.null(ejam_uniq_id)) {
-      siteidtext <- ''
-    } else {
+    if (!is.null(ejam_uniq_id)) {
       if (length(ejam_uniq_id) > 1) {siteidtext = ''} else {
-        if (!is.na(sitetype) && sitetype == 'fips') {
-          siteidtext <- paste0("FIPS ", ejam_uniq_id, "")
+        ## APPEND THIS TO "SITE N" FROM ABOVE IF sitenumber was provided
+        if (sitetype %in% 'fips') {
+          # if (is.numeric(ejam_uniq_id)) {
+          seems_like_fips = suppressWarnings(!is.na(as.numeric(ejam_uniq_id)))
+          if (seems_like_fips) {
+            if (show_fips_name) {
+              placename = fips2name(ejam_uniq_id, quiet = TRUE)
+              if (is.null(placename) || is.na(placename) || nchar(placename) < 2) {
+                fipsname = ""
+              } else {
+                fipsname <- paste0(placename, ", ")
+              }
+            } else {
+              fipsname <- ""
+            }
+            siteidtext <- paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
+                                 fipsname,  # optional name of FIPS unit, but that is now in analysis_title
+                                 paste0("FIPS ", ejam_uniq_id))
+          } else {
+            siteidtext <- paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
+                                 ejam_uniq_id)
+          }
         } else {
-          siteidtext = paste0("ejam_uniq_id ", ejam_uniq_id)
+          if (is.numeric(ejam_uniq_id)) {
+            siteidtext = paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
+                                paste0("ejam_uniq_id ", ejam_uniq_id))
+          } else {
+            siteidtext = paste0(siteidtext, ifelse(nchar(siteidtext) > 0, ", ", ""),
+                                ejam_uniq_id) ## in case they provided custom text
+          }
         }
       }
     }
@@ -1032,13 +1503,20 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   if (siteidtext == "") {
     siteidtext_in_parens <- ""
   } else {
-    siteidtext_in_parens <- paste0("(", siteidtext, ")")
+    siteidtext_in_parens <- paste0(linefeed,
+                                   "(", siteidtext, ")")
   }
-  # see https://cli.r-lib.org/articles/pluralization.html
-  anyofthe <- ifelse(is.na(nsites), "any of the", "any of the ")
-  anyoftheplaces <- ifelse(nsites == 1,
-                           paste0('this', location_type, " ", siteidtext_in_parens, ""),
-                           paste0(anyofthe, nsites, location_type, "s") # "(in aggregate)"
+
+  anyofthe <- "any of the"
+  if (nchar(nsites) == 0) {
+    ntxt <- ''
+  } else {
+      ntxt <- paste0(nsites, ' ')
+      }
+  anyoftheplaces <- ifelse(
+    nsites %in% 1,
+    paste0('this', ' ', location_type, siteidtext_in_parens, ''),
+    paste0(anyofthe, ' ', ntxt, location_type)  # already handled pluralization above if necessary
   )
 
   residents_within_xyz <- paste0(text1,
@@ -1046,8 +1524,20 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
                                  anyoftheplaces)
 
   ################################################### #
+  ## > add lat, lon ####
 
-
+  if (addlatlon && sitetype %in% "latlon" && nsites == 1) {
+    if (!is.null(lat) & !is.null(lon)) {
+      latlon_txt <- latlon2csv(lat = lat, lon = lon, sep = ", ")
+    } else {
+      latlon_txt <- "specified point"
+    }
+    residents_within_xyz <- paste0(
+      residents_within_xyz,
+      ' centered at ',
+      latlon_txt
+    )
+  }
   ################################################### #
 
   ## append square miles info only if it was provided explicitly.
@@ -1061,7 +1551,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
       'Area in Square Miles: ', area_in_square_miles
     )
     residents_within_xyz <- paste0(
-      residents_within_xyz, '<br>',  # note this HTML makes it not suitable for use in excel notes tab, e.g.
+      residents_within_xyz, linefeed, # '<br>',  # note HTML makes it not suitable for use in excel notes tab, e.g.
       sqmiletxt
     )
   }

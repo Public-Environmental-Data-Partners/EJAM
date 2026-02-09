@@ -109,9 +109,9 @@ fipstype_from_nchar <- function(n, warnif11 = FALSE) {
   # > x[substr(x,1,1) == 0]
   # [1] "01" "02" "04" "05" "06" "08" "09"
   # unclear_digit_if_1st_of_11 = c( 1,2,  4,5,6,  8,9 )  # an 11-character string starting in 3, 7, or 0 cannot be a bg, so could only be a tract (if valid).
-if (warnif11) {
-  if (any(11 %in% n)) {message("Note FIPS of 11 digits is probably a tract, but might be a blockgroup fips with a missing leading zero.")}
-}
+  if (warnif11) {
+    if (any(11 %in% n)) {message("Note FIPS of 11 digits is probably a tract, but might be a blockgroup fips with a missing leading zero.")}
+  }
   n2f <- data.frame(
     n = 1:15,
     ftype = c(
@@ -232,7 +232,7 @@ fipstype2nchar = function(ftype) {
 #'
 #'
 #' @param fips vector of one or more Census FIPS with or without leading zeroes, as strings or numeric
-#'
+#' @param quiet TRUE will prevent warning of fips that do not seem to be block, blockgroup, tract, city/CDP, county, or state FIPS
 #' @return vector of types: "block", "blockgroup", "tract", "city", "county", or "state"
 #'
 #' @examples
@@ -255,7 +255,7 @@ fipstype2nchar = function(ftype) {
 #'
 #' @export
 #'
-fipstype <- function(fips) {
+fipstype <- function(fips, quiet=FALSE) {
 
   # ftype <- fipstype_from_nchar(nchar(suppressWarnings((fips))))
   ## **** fipstype_from_nchar() would NEED WORK STILL, BEFORE replacing code below,
@@ -264,8 +264,13 @@ fipstype <- function(fips) {
   if (length(fips) == 0 || !is.vector(fips) || !is.atomic(fips)) {return(NULL)}
   ftype <- rep(NA, length(fips))
 
-  fips <- fips_lead_zero(fips = fips) # cleans them so each is NA or a valid nchar() string
-
+  if (quiet) {
+    suppressWarnings({
+      fips <- fips_lead_zero(fips = fips) # cleans them so each is NA or a valid nchar() string
+    })
+  } else {
+    fips <- fips_lead_zero(fips = fips) # cleans them so each is NA or a valid nchar() string
+  }
   n <- nchar(fips, keepNA = FALSE)
   # Using keepNA=F here simplifies selecting which elements are n characters long while not selecting the ones that are NA.
   # For fips that show up as missing values (i.e., NA, i.e., NA_character_),
@@ -282,10 +287,11 @@ fipstype <- function(fips) {
   ftype[n ==  5] <- "county"
 
   ftype[!is.na(fips) & nchar(fips) ==  2] <- "state" # This avoids the NA values and then gets the actual nchar() of the fips that were not NA.
-
-  if (anyNA(ftype)) {
-    howmanyna <- sum(is.na(ftype))
-    warning("NA returned for ", howmanyna," fips that do not seem to be block, blockgroup, tract, city/CDP, county, or state FIPS (lengths with leading zeroes should be 15,12,11,7,5,2 respectively")
+  if (!quiet) {
+    if (anyNA(ftype)) {
+      howmanyna <- sum(is.na(ftype))
+      warning("NA returned for ", howmanyna," fips that do not seem to be block, blockgroup, tract, city/CDP, county, or state FIPS (lengths with leading zeroes should be 15,12,11,7,5,2 respectively")
+    }
   }
   return(ftype)
 }
@@ -319,6 +325,13 @@ fips_lead_zero <- function(fips, quiet = TRUE) {
   # if (anyNA(fips)) {warning('some fips cannot be interpreted as numbers (e.g., are text or NA or logical')}
 
   #	TRY TO CLEAN UP vector of FIPS AND INFER GEOGRAPHIC SCALE
+
+  first_two_digits_invalid_as_is = function(x) {
+    # inefficient to do each time but small enough that it doesn't matter:
+    valid_as_first_two_digits = stateinfo2$FIPS.ST[!is.na(stateinfo2$FIPS.ST)]
+    !(substr(x,1,2) %in% valid_as_first_two_digits)
+  }
+  # cannot prefix 0 to  0, 3, or 7, since "00", 03, 07 never start a FIPS we might use.
 
   # Using keepNA=F here simplifies selecting which elements are n characters long while not selecting the ones that are NA.
   # For fips that show up as missing values (i.e., NA, i.e., NA_character_),
@@ -363,14 +376,24 @@ fips_lead_zero <- function(fips, quiet = TRUE) {
     ## would want to do this ONLY for the fips that are NOT a valid tract fips:
     # fips[nchar(fips, keepNA = FALSE) == 11]	<- paste0("0", fips[nchar(fips, keepNA = FALSE) == 11])
     valid_tract = fips[lens == 11] %in% tfips
+    # note that only confirms it is valid for the set of FIPS used in ejscreen/ejam, such as 2022 geographies/fips for the dataset used in 2025 by ejscreen/ejam.
+    # while CEJST had been using 2010 geos/fips, so many tract fips there do not show up as "valid" in the above sense.
+
+    # Just adding a zero to 11-digit non-tract fips would not necessarily make it a VALID blockgroup fips,
+    # especially if first char was already zero as in case of Census 2010 tract fips used in CEJST dataset like "01001020500"
+    # So we should at least avoid adding a clearly nonsensical leading zero in case of it *already* having a leading zero,
+    # even though we do not otherwise validate whether adding a leading zero makes it invalid.
+
     fips[lens == 11][!valid_tract]	<- paste0("0", fips[lens == 11][!valid_tract])
+
+    # test_invalid_11_2010= "01001020500"
+    # test_invalid_11     = "01234567891" # lead zero might get added and then it is called a blockgroup though invalid
 
     # test_tract_missing0 =   4013116500
     # test_tract_good     = "04013116500"
     # test_bg_good        = "040131165002"
     # test_bg_missing0    =   40131165002
 
-    # test_invalid_11 = "01234567891" # lead zero gets added and then it is called a blockgroup though invalid
 
     ## NOTES:
     ## to get ALL fips, including changed ones in CT not just the ones in blockgroupstats
@@ -440,12 +463,14 @@ fips_lead_zero <- function(fips, quiet = TRUE) {
   suppressWarnings({fips[is.na(as.numeric(fips))] <- NA})
 
   # MAYBE should remove or set to NA when State or County code is invalid? another function can check for that.
-if (!quiet) {
-  if (anyNA(fips)) {
-    howmanyna = sum(is.na(fips))
-    warning(howmanyna, " fips had invalid number of characters (digits) or were NA values")
+  if (!quiet) {
+    if (anyNA(fips)) {
+      howmanyna = sum(is.na(fips))
+      warning(howmanyna, " fips had invalid number of characters (digits) or were NA values")
+    }
   }
-}
+  fips[first_two_digits_invalid_as_is(fips)] <- NA
+
   return(fips)
 }
 ####################################################### #
@@ -643,6 +668,12 @@ is.island <- function(ST=NULL, statename=NULL, fips=NULL) {
 #' name2fips(c('denver',  "new york" ), exact = F)
 #' name2fips('denver,co')
 #'
+#' # Can see unexpected results depending on parameters if multiple matches exist:
+#' x1= name2fips("rochester,ny", exact = T)
+#' x2= name2fips("rochester,ny", exact = F)
+#' x3= name2fips("rochester,ny", usegrep = T)
+#' x1; x2; x3 # 3 different answers
+#'
 #' @export
 #'
 name2fips = function(x, exact = FALSE, usegrep = FALSE, geocoding = FALSE, details = FALSE) {
@@ -754,7 +785,7 @@ fips_from_table <- function(fips_table, addleadzeroes=TRUE, in_shiny=FALSE) {
   )
   if (any((colnames(fips_table)) %in% (fips_alias))) {
     firstmatch <-  intersect(fips_alias, colnames(fips_table))[1] # uses preferred order but must keep it case sensitive
-      # fails to use preferred order: # colnames(fips_table)[match(TRUE, tolower(colnames(fips_table)) %in% tolower(fips_alias))]
+    # fails to use preferred order: # colnames(fips_table)[match(TRUE, tolower(colnames(fips_table)) %in% tolower(fips_alias))]
 
     if (addleadzeroes) {
       fips_vec <- fips_lead_zero(as.character(fips_table[[firstmatch]]))
@@ -1769,7 +1800,7 @@ fips2statefips <- function(fips) {
 #'  block, blockgroup, tract, city, county, state
 #'  but where it is a state this will return NA
 #'
-#' @returns vector of fips as long as input
+#' @return vector of fips as long as input
 #' @examples
 #' fips2countyfips(testinput_fips_blockgroups[1])
 #'
@@ -1861,7 +1892,7 @@ fips2countyname <- function(fips, includestate = c("ST", "Statename", "")[1]) {
     blockgroupstats$countyname[match(
       cfips[!is.na(ftype) & ftype %in% "county"],
       substr(blockgroupstats$bgfips, 1, 5)
-      )]
+    )]
 
   if (isTRUE(includestate)) {includestate <- "Statename"}
   if (includestate == "Statename") {addon <- fips2statename(cfips)} else {
@@ -1911,9 +1942,9 @@ fips2tractname <- function(fips, ftype = 'tract', prefix = "tract ") {
 
 # GENERIC DRAFT that would  prefix fips
 
-  fips2ftypename <- function(fips, ftype = c('block', 'blockgroup', 'tract', 'city', 'county', 'state')[6], prefix = paste0(" ", ftype)) {
+fips2ftypename <- function(fips, ftype = c('block', 'blockgroup', 'tract', 'city', 'county', 'state')[6], prefix = paste0(" ", ftype)) {
 
-    stopifnot(length(ftype) == 1)
+  stopifnot(length(ftype) == 1)
 
   fips <- fips_lead_zero(fips)
   ftype_wanted = ftype
@@ -1945,7 +1976,8 @@ fips2tractname <- function(fips, ftype = 'tract', prefix = "tract ") {
 #' - Tracts (11)
 #' - Blockgroups (12)
 #'   Can be string or numeric, with or without leading zeroes.
-#' @param ... passed to fips2countyname() to control whether it appends something like , NY or , New York
+#' @param quiet whether to silence warnings -- also passed to [fips_lead_zero()] and [fipstype()]
+#' @param ... passed to [fips2countyname()] to control whether it appends something like , NY or , New York
 #'   after county name
 #' @return vector of state and/or county names,
 #'   where county names optionally have comma and 2-character abbreviation or full state name.
@@ -1976,12 +2008,12 @@ fips2tractname <- function(fips, ftype = 'tract', prefix = "tract ") {
 #'
 #' @export
 #'
-fips2name <- function(fips, ...) {
+fips2name <- function(fips, quiet = FALSE, ...) {
 
   suppressWarnings({
     #   # more general than fips2countyname() or fips2statename() ... does either/both
-    fips <- fips_lead_zero(fips)
-    ftype <- fipstype(fips)
+    fips <- fips_lead_zero(fips, quiet = quiet)
+    ftype <- fipstype(fips, quiet = quiet)
     nafips <- is.na(fips)
 
     out <- rep(NA, length(fips))
@@ -2012,9 +2044,11 @@ fips2name <- function(fips, ...) {
       out[!nafips & fblock] <-  fips2blockname(fips = fips[!nafips & fblock]) # fips[!nafips & fblock] # just return the block fips code at least
     }
   })
-  if (anyNA(out)) {
-    howmanyna = sum(is.na(out))
-    warning("NA returned for ", howmanyna," values that failed to match")
+  if (!quiet) {
+    if (anyNA(out)) {
+      howmanyna = sum(is.na(out))
+      warning("NA returned for ", howmanyna," values that failed to match")
+    }
   }
   return(out)
 }

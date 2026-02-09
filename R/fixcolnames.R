@@ -86,6 +86,7 @@
 #'
 fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_names) {
 
+  names_as_provided <- namesnow
   if (missing(mapping_for_names)) {
     if (exists('map_headernames')) {
       mapping_for_names <- map_headernames
@@ -138,12 +139,35 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
     # [1] "2" ""
     # >  fixcolnames(c("pm", "xyz"), 'r', 'csv')
     # [1] "PM25" "xyz"
+  } else {
+  namesnow[namesnow %in% ""] <- names_as_provided[namesnow %in% ""]
   }
   ###################### #   ###################### #   ###################### #
 
   return(namesnow)
 }
+###################### #   ###################### #   ###################### #
 
+#' helper function to rename variables that are colnames of data.frame
+#'
+#' like fixcolnames() but can try multiple values as oldtypes
+#'
+#' @param namesnow same as in [fixcolnames()]
+#' @param oldtypes vector of oldtype values, where one is like oldtype param in [fixcolnames()]
+#' @param newtype  same as in [fixcolnames()]
+#' @return Vector or new column names same length as input
+#'
+#' @export
+#'
+fixcolnames_anyoldtype <- function(namesnow, oldtypes = c('longname', 'apiname', 'api_synonym', 'csvname', 'acsname', 'oldname'), newtype = "r") {
+
+  x <- namesnow
+  for (old in oldtypes) {
+    x <- fixcolnames(x, oldtype = old, newtype = newtype)
+  }
+  return(x)
+}
+###################### #   ###################### #   ###################### #
 
 # >  fixcolnames(c("pm", "xyz"), 'r', 'decimals')
 # [1] "2" ""
@@ -167,4 +191,3 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
 # Warning message:
 #   In fixcolnames(c("pm", "xyz"), "zzzzzzzz", "yyyyy") :
 #   returning unchanged names because mapping_for_names has no column called  yyyyy
-

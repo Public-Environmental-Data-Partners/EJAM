@@ -86,12 +86,7 @@ if (FALSE) {
 }
 ########################################################################################## #
 
-# Formulas as documented by EPA archived at
-# https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf
-# and more links recorded at
-# https://github.com/ejanalysis/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.md
-# and list of indicators at
-# https://github.com/ejanalysis/EJAM/blob/formulas_ejscreen_acs/data-raw/EJSCREEN_archived_pages/ejscreen_sources_plaintext.md
+
 ########################################################################################## #
 # started from partially done table, that had some formulas but not all:
 {

@@ -250,13 +250,29 @@ app_server <- function(input, output, session) {
     }
   })
 
-  # update ss_select_NAICS input options ###
+  # update default of initial NAICS input options (since using server side and it starts as NULL to load faster) ###
+  observeEvent(session$clientData, {
+    updateSelectizeInput(session = session, inputId = 'default_naics',
+                         ## use named list version, grouped by first two code numbers
+                         choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs),
+                         selected = EJAM:::global_or_param("default_naics"),
+                         server = TRUE)
+  }, once = TRUE)
+  observe({
+    # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
+    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else EJAM:::global_or_param("default_naics_digits_shown")
+    updateRadioButtons(session = session, inputId = 'naics_digits_shown',
+                       selected = level_of_detail_based_on_default_naics
+    )
+  })
+
+  # update ss_select_NAICS input options (since using server side and it starts as NULL to load faster) ###
   observeEvent(eventExpr = {
+    #
     input$add_naics_subcategories
     input$naics_digits_shown
   },
   handlerExpr = {
-    #req(input$add_naics_subcategories)
 
     ## switch labels based on subcategory radio button
 
@@ -266,8 +282,9 @@ app_server <- function(input, output, session) {
       naics_choices <- setNames(naics_counts_filtered()$NAICS, naics_counts_filtered()$label_no_subs)
     }
 
-    vals <- ifelse(is.null(input$ss_select_naics), input$default_naics, input$ss_select_naics)
-    # update ss_select_NAICS input options ###
+    trydefault <- if (is.null(input$default_naics)) EJAM:::global_or_param("default_naics") else input$default_naics
+    vals <- if (is.null(input$ss_select_naics)) trydefault else input$ss_select_naics
+    ### update ss_select_NAICS input options ###
     updateSelectizeInput(session = session, inputId = 'ss_select_naics',
                          ## use named list version, grouped by first two code numbers
                          choices = naics_choices, # need to keep formatting
@@ -303,7 +320,7 @@ app_server <- function(input, output, session) {
   #   }
   # })
 
-  # keep track of currently used method of site selection
+  # keep track of currently used method of site selection (also see submitted_upload_method reactive)
   current_upload_method <- reactive({
     req(input$testing)
     if (input$testing) {
@@ -315,16 +332,16 @@ app_server <- function(input, output, session) {
       as.character(input$ss_choose_method),
       'dropdown' = switch(input$ss_choose_method_drop,
                           NAICS =          "NAICS",     # 'NAICS (industry name or code)'
-                          EPA_PROGRAM =    "EPA_PROGRAM_sel",
+                          EPA_PROGRAM =    "EPA_PROGRAM_sel", #  NOTE "EPA_PROGRAM_up" AND "EPA_PROGRAM_sel" both are converted to just "EPA_PROGRAM"
                           SIC =            "SIC" ,
                           MACT =           "MACT",
-                          FIPS_PLACE =           "FIPS_PLACE"  # FROM fips picker
+                          FIPS_PLACE =           "FIPS_PLACE"  # FROM fips picker. NOTE "FIPS_PLACE" and "FIPS" are kept distinct
       ),
       'upload'   = switch(input$ss_choose_method_upload,
                           SHP =              "SHP",
                           latlon =           "latlon",    # 'Location (lat/lon)',
                           #latlontypedin =   "latlontypedin",
-                          EPA_PROGRAM =      "EPA_PROGRAM_up",
+                          EPA_PROGRAM =      "EPA_PROGRAM_up", #  NOTE "EPA_PROGRAM_up" AND "EPA_PROGRAM_sel" both are converted to just "EPA_PROGRAM"
                           FRS =              "FRS",       # 'FRS (facility ID)',
                           #ECHO =            "ECHO",      # 'ECHO Search Tools',
                           FIPS =             "FIPS")
@@ -345,8 +362,8 @@ app_server <- function(input, output, session) {
                  showModal( shiny::modalDialog(title = 'Selected location data', size = 'l', easyClose = TRUE,
                                                helpText('View or download data corresponding to your upload/selections.'),
                                                ## use download buttons for speed and handling larger data
-                                               downloadButton('download_preview_data_csv', label = 'CSV', class = 'usa-button'),
-                                               downloadButton('download_preview_data_xl', label = 'Excel', class = 'usa-button'),
+                                               downloadButton('download_sites_before_analysis_csv', label = 'CSV', class = 'usa-button'),
+                                               downloadButton('download_sites_before_analysis_xl', label = 'Excel', class = 'usa-button'),
                                                br(),br(),
                                                DT::DTOutput('print_test2_dt', width = '100%')))
                })
@@ -613,8 +630,7 @@ app_server <- function(input, output, session) {
         shiny::validate(errmsg)
 
       } else {
-
-        cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
+        if (input$testing) {cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")}
         ## if column names are found in lat/long alias comparison, process
         if (any(tolower(colnames(sitepoints)) %in% lat_alias) & any(tolower(colnames(sitepoints)) %in% lon_alias)) {
           sitepoints[, ejam_uniq_id := .I]
@@ -655,7 +671,7 @@ app_server <- function(input, output, session) {
     ## if acceptable file type, read in; if not, send warning text
     read_frs <- as.data.table(read_csv_or_xl(fname = input_file_path))
     # returns a data.frame
-    cat("ROW COUNT IN FILE THAT SHOULD provide FRS REGISTRY_ID: ", NROW(read_frs), "\n")
+    if (input$testing) {cat("ROW COUNT IN FILE THAT SHOULD provide FRS REGISTRY_ID: ", NROW(read_frs), "\n")}
 
     if (frs_is_valid(read_frs)) {
 
@@ -1101,7 +1117,7 @@ app_server <- function(input, output, session) {
     data_fips_place(fips_vec)
 
   })  %>% shiny::bindEvent(input$fipspicker_done_button)
-  # END OF FIPS_PLACES fipspicker
+  # END OF FIPS_PLACE fipspicker
   ################################################################################### #
 
 
@@ -1141,68 +1157,68 @@ app_server <- function(input, output, session) {
 
     if (!is.null(input$ss_upload_fips) || !is.null(xfips)) {
 
-    placetype <- 'FIPS'
-    ########################################## #
+      placetype <- 'FIPS'
+      ########################################## #
 
-    # fips_clean_shiny_input <- function(fips_dt, placetype) {
+      # fips_clean_shiny_input <- function(fips_dt, placetype) {
 
-    cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n")
-    fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
-    ftypeUpload <- fipstype(fips_vec)
-    typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
+      cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n")
+      fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
+      ftypeUpload <- fipstype(fips_vec)
+      typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
 
-    if (is.null(fips_vec)) {
-      # fips_alias <- c('FIPS','fips','fips_code','fipscode','Fips','statefips','countyfips', 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST', 'FIPS.COUNTY', 'FIPS.TRACT')
-      # see fips_from_table(), fixnames_aliases(), and fixcolnames_infer()
-      errmsg    = paste0('No FIPS column found. Please use "FIPS" or a synonym.')
-      invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-      an_map_text_pts[[placetype]] <- NULL
-      disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
-    } else if (length(intersect(ftypeUpload, typesUpload)) > 1) {
-      errmsg    = paste0('This dataset contains more than one type of FIPS code. Analysis can only be ran on datasets with one type of FIPS codes.')
-      invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-      an_map_text_pts[[placetype]] <- NULL
-      disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
-    } else {
-      disable_buttons[['FIPS']] <- FALSE
-      cat("COUNT OF FIPS via fips_from_table(): ", length(fips_vec), '\n')
-      # now let ejamit() do the rest for the FIPS case
-      # fips_vec # ??? this line was here but should have no effect?
-    }
+      if (is.null(fips_vec)) {
+        # fips_alias <- c('FIPS','fips','fips_code','fipscode','Fips','statefips','countyfips', 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST', 'FIPS.COUNTY', 'FIPS.TRACT')
+        # see fips_from_table(), fixnames_aliases(), and fixcolnames_infer()
+        errmsg    = paste0('No FIPS column found. Please use "FIPS" or a synonym.')
+        invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
+        an_map_text_pts[[placetype]] <- NULL
+        disable_buttons[[placetype]] <- TRUE
+        shiny::validate(errmsg)
+      } else if (length(intersect(ftypeUpload, typesUpload)) > 1) {
+        errmsg    = paste0('This dataset contains more than one type of FIPS code. Analysis can only be ran on datasets with one type of FIPS codes.')
+        invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
+        an_map_text_pts[[placetype]] <- NULL
+        disable_buttons[[placetype]] <- TRUE
+        shiny::validate(errmsg)
+      } else {
+        disable_buttons[['FIPS']] <- FALSE
+        cat("COUNT OF FIPS via fips_from_table(): ", length(fips_vec), '\n')
+        # now let ejamit() do the rest for the FIPS case
+        # fips_vec # ??? this line was here but should have no effect?
+      }
 
-    fips_vec <- fips_lead_zero(fips_vec)
-    fips_is_valid <- fips_valid(fips_vec)
+      fips_vec <- fips_lead_zero(fips_vec)
+      fips_is_valid <- fips_valid(fips_vec)
 
-    if (sum(fips_is_valid) > 0) {
-      numna <- sum(!fips_is_valid)
-      num_notna <- length(fips_vec) - sum(!fips_is_valid)
-      #num_valid_pts_uploaded[['FIPS']] <- num_notna
-      invalid_alert[[placetype]] <- numna # this updates the value of the reactive invalid_alert()
-      cat("Number of FIPS codes:  "); cat(length(fips_vec), 'total,', num_notna, 'valid,', numna, ' invalid \n')
-      # (fips_vec)
-    } else {
-      errmsg    = 'No valid FIPS codes found in this file.'
-      invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-      an_map_text_pts[[placetype]] <- NULL
-      disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
-      fips_vec <- NULL  # ??? ***
-    }
-    # return(fips)
-    # } ## for now, use copy of code, not use it as a function
-    ########################################## #
+      if (sum(fips_is_valid) > 0) {
+        numna <- sum(!fips_is_valid)
+        num_notna <- length(fips_vec) - sum(!fips_is_valid)
+        #num_valid_pts_uploaded[['FIPS']] <- num_notna
+        invalid_alert[[placetype]] <- numna # this updates the value of the reactive invalid_alert()
+        cat("Number of FIPS codes:  "); cat(length(fips_vec), 'total,', num_notna, 'valid,', numna, ' invalid \n')
+        # (fips_vec)
+      } else {
+        errmsg    = 'No valid FIPS codes found in this file.'
+        invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
+        an_map_text_pts[[placetype]] <- NULL
+        disable_buttons[[placetype]] <- TRUE
+        shiny::validate(errmsg)
+        fips_vec <- NULL  # ??? ***
+      }
+      # return(fips)
+      # } ## for now, use copy of code, not use it as a function
+      ########################################## #
 
-    # fips_vec <- fips_clean_shiny_input(fips_dt = fips_dt, placetype = placetype)
-    #
-    ## to do this via function would require handling the reactive values correctly and the shiny::validate(errmsg) too
-    ## so instead of via function, for now copied same code as used by data_up_fips()
-    ## reactiveVal() objects in calling envt whose values may be updated here: invalid_alert, an_map_text_pts, disable_buttons,
-    ## and it sometimes does shiny::validate(errmsg)
+      # fips_vec <- fips_clean_shiny_input(fips_dt = fips_dt, placetype = placetype)
+      #
+      ## to do this via function would require handling the reactive values correctly and the shiny::validate(errmsg) too
+      ## so instead of via function, for now copied same code as used by data_up_fips()
+      ## reactiveVal() objects in calling envt whose values may be updated here: invalid_alert, an_map_text_pts, disable_buttons,
+      ## and it sometimes does shiny::validate(errmsg)
 
-    fips_vec
-    ## update the reactive object data_up_fips() with this new vector of fips
+      fips_vec
+      ## update the reactive object data_up_fips() with this new vector of fips
     }
   }) # END OF FIPS UPLOAD
   ################################################################################### #
@@ -1275,8 +1291,10 @@ app_server <- function(input, output, session) {
       #} else if (current_upload_method() == 'ECHO'           ) {data_up_echo()        # enable if implemented/ready ***
     } else if (current_upload_method() == 'FRS'            ) {data_up_frs()
 
-    } else if (current_upload_method() == 'EPA_PROGRAM_sel') {data_up_epa_program_sel()
-    } else if (current_upload_method() == 'EPA_PROGRAM_up' ) {data_up_epa_program_up()
+    } else if (current_upload_method() == 'EPA_PROGRAM_sel') {data_up_epa_program_sel() # maybe not possible since stored there as 'EPA_PROGRAM'
+    } else if (current_upload_method() == 'EPA_PROGRAM_up' ) {data_up_epa_program_up() # maybe not possible since stored there as 'EPA_PROGRAM'
+    } else if (current_upload_method() == 'EPA_PROGRAM' ) {data_up_epa_program_up() # probably the only relevant one of these 3
+
     } else if (current_upload_method() == 'NAICS'          ) {data_up_naics()
     } else if (current_upload_method() == 'SIC'            ) {data_up_sic()
     } else if (current_upload_method() == 'MACT'           ) {data_up_mact()
@@ -1367,7 +1385,7 @@ app_server <- function(input, output, session) {
   ## initialize reactive for count of uploaded places
   #
   ## ideally recode to be flexible and depend on  default_choices_for_type_of_site_category, default_choices_for_type_of_site_upload
-  ## BUT EPA_PROGRAM_up and EPA_PROGRAM_sel were used due to overlap! and FIPS will overlap now too
+  ## BUT EPA_PROGRAM_up and EPA_PROGRAM_sel were used due to overlap! and note FIPS vs FIPS_PLACE
   # intersect(as.vector(default_choices_for_type_of_site_category), as.vector(default_choices_for_type_of_site_upload))
   ## otherwise this could work:
   # an_map_text_pts <-  reactiveValues()
@@ -1467,17 +1485,17 @@ app_server <- function(input, output, session) {
                     escape = FALSE) # escape = FALSE may add security issue but makes links clickable in table
     })
   ######################################  #
-
+  ### DOWNLOAD sites - downloadHandler() ####
   ## use external download buttons for preview data
   ## this allows loading the table on the server-side which improves speed and avoids
   ## crashes with larger datasets
-  output$download_preview_data_xl <- downloadHandler(
+  output$download_sites_before_analysis_xl <- downloadHandler(
     filename = 'epa_raw_data_download.xlsx',
     content = function(file) {
       writexl::write_xlsx(data_preview(), file)
     }
   )
-  output$download_preview_data_csv <- downloadHandler(
+  output$download_sites_before_analysis_csv <- downloadHandler(
     filename = 'epa_raw_data_download.csv',
     content = function(file) {
       ## shapefile is not of type data.table
@@ -1579,7 +1597,7 @@ app_server <- function(input, output, session) {
       'NAICS',
       'SIC',
       'MACT'
-      # note   FIPS and SHP types handled separately
+      # note   FIPS, FIPS_PLACE, and SHP types handled separately
     )
     for (this in these) {
       current_slider_val[[this]] <- sanitized_miles
@@ -1589,7 +1607,7 @@ app_server <- function(input, output, session) {
   # set/update based on advanced tab set by global_defaults_*.R and then might be changed by a user
 
   observe({
-    these <- c("FIPS", "FIPS_PLACE", "SHP") # but disabled for FIPS
+    these <- c("FIPS", "FIPS_PLACE", "SHP") # but disabled for FIPS etc
     for (this in these) {current_slider_val[[this]] <- input$radius_default_shapefile}
   }) %>% bindEvent(input$radius_default_shapefile)
 
@@ -1788,9 +1806,23 @@ app_server <- function(input, output, session) {
   # ______ RUN ANALYSIS ________####
   #. ####
 
+  download_ready_for_report_header_and_tables <- reactiveVal(FALSE)
+  download_ready_for_report_map <- reactiveVal(FALSE)
+  download_ready_for_report_plot <- reactiveVal(FALSE)
+  # download_ready_for_report_footer_version_date <- reactiveVal(FALSE) # quick, assume ready
+
   ## data_processed()  reactive holds results of ejamit()
 
   observeEvent(input$bt_get_results, {  # (button is pressed)
+
+    # disable download buttons until finished analysis
+    shinyjs::disable(id = 'download_report_multisite')
+    shinyjs::disable(id = 'download_results_spreadsheet')
+    download_ready_for_report_header_and_tables(FALSE)
+    download_ready_for_report_map(FALSE)
+    download_ready_for_report_plot(FALSE)
+    # download_ready_for_report_footer_version_date(FALSE) # quick, assume ready
+
     submitted_upload_method(current_upload_method())
     submitted_radius_val(current_slider_val[[submitted_upload_method()]])
 
@@ -2060,91 +2092,93 @@ app_server <- function(input, output, session) {
   # ______ SEE RESULTS _________ ####
   #. ####
 
+  date_in_user_timezone <- reactive({
+    # default to LA timezone if client timezone  missing/bad
+    default_tz = "America/Los_Angeles"
+    client_tz <- input$client_tz
+    if (!is.null(client_tz) && nzchar(client_tz) && client_tz %in% OlsonNames()) {
+      tz <- client_tz
+    } else {
+      tz <- default_tz
+    }
+    format(
+      lubridate::with_tz(Sys.time(), tzone = tz),
+      "%B %d, %Y")
+  })
   # #############################################################################  #
 
   # ______ SUMMARY RESULTS, results_overall _________ ####
   #. ####
-  # REPORT Overall - for BROWSER ####
+  # REPORT Multisite - VIEW in UI ####
 
   # *** The code here builds the html report shown in the shiny app but also see separate code used to download it.
 
-  ##  Pop Count rounded ####
+  ## * HEADER + TABLES ####
 
-  ### ( Total Population count ) ### #
+  ### . pop count rounded ####
   total_pop <- reactive({
     req(data_processed())
-    ## format and return total population
     round(data_processed()$results_overall$pop, table_rounding_info("pop") )
   })
 
-  ## Title of Analysis  - UI box  ####
-
+  ### . title of analysis  (from UI textbox)  ####
   # Unless user changes it here, use a standard title that has been determined by global_defaults_*.R but then optionally modified by advanced settings tab
-
   output$analysis_title_ui <- renderUI({
     shiny::textInput(inputId = 'analysis_title',
                      label = 'Name of Your Analysis',
                      value = sanitized_standard_analysis_title())
   })
-  #############################################################################  #
 
-  ## * TABLES - comm_report_html for UI   ####
-  #  note the UI is where the header and
-  ###  . build_community_report() for Browser ####
+  ### . build_community_report() makes header + tables ####
 
   output$comm_report_html <- renderUI({
     req(data_processed())
 
-
     ## *** consider replacing this with ejam2report(),
-    ## but doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
+    ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
+    isolate({
+      residents_within_xyz <- report_residents_within_xyz_from_ejamit(
+        ejamitout = data_processed(), ## this function uses the whole list not just ejamout1 to create the header
+        site_method = submitted_upload_method()
+        # isolate() done, so change in site_method (e.g., polygon to lat lon) will not trigger re-render if Start not clicked,
+        # BUT, changing title does trigger re-render with old data and new title,
+        # and if upload method got changed too, without Start Analysis button hit again,
+        # it will re-render with new but incorrect method in header (?) ***
+      )
+      popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
 
+      pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
+    })
+    full_page <- build_community_report(
 
-    rad <- data_processed()$results_overall$radius.miles # input radius can be changed by user and would alter the report text but should just show what was run not what slider currently says
-    nsites <- NROW(data_processed()$results_bysite[data_processed()$results_bysite$valid == T, ])
-    popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
+      logo_path      = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
+      logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+      report_title   = EJAM:::global_or_param("report_title_multisite"),
+      analysis_title = sanitized_analysis_title(), # changing it will trigger re-render here
+      locationstr    = residents_within_xyz,
+      totalpop       = popstr,
 
-    sitetype <- tolower(submitted_upload_method()) #
-
-    area_in_square_miles <- data_processed()$results_overall$area_sqmi
-
-    residents_within_xyz <- report_residents_within_xyz(
-      sitetype = sitetype,
-      radius = rad, # gets rounded in this function (if it can be interpreted as a number)
-      nsites = nsites,
-      area_in_square_miles = area_in_square_miles
-      # sitenumber not relevant for overall report
-      # ejam_uniq_id not relevant for overall report
+      output_df      = data_processed()$results_overall,
+      include_ejindexes                = isTRUE(as.logical(input$include_ejindexes)),
+      show_ratios_in_report            = isTRUE(as.logical(input$show_ratios_in_report)),
+      extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
+      extratable_title                 = input$extratable_title, # above the table, not in the upper left cell
+      extratable_title_top_row         = input$extratable_title_top_row,
+      extratable_list_of_sections      = EJAM:::global_or_param("default_extratable_list_of_sections"),
+      extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      in_shiny = TRUE,
+      filename = NULL
     )
-    pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
+    # note this component of report is ready
+    download_ready_for_report_header_and_tables(TRUE)
 
-    full_page <- build_community_report(in_shiny = TRUE,
-
-                                        output_df = data_processed()$results_overall,
-                                        analysis_title =  sanitized_analysis_title(),
-                                        totalpop = popstr,
-                                        locationstr = residents_within_xyz,
-                                        include_ejindexes = isTRUE(as.logical(input$include_ejindexes)),
-                                        show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
-                                        extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
-                                        extratable_title = input$extratable_title, # above the table, not in the upper left cell
-                                        extratable_title_top_row = input$extratable_title_top_row,
-                                        extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-                                        extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
-
-                                        filename = NULL,
-                                        report_title = EJAM:::global_or_param("report_title"),
-                                        logo_path = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
-                                        logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
-    )
-
-    ## return generated HTML
+    ## return generated HTML of logo/header plus tables of results overall
     full_page
-    # footer is added later in UI, in this case
+    # Map, plot, and footer are added later, in UI, in this case
   })
   # end of comm_report_html sent to UI
   #############################################################################  #
-  ## * MAP for REPORT ####
+  ## * MAP - for report ####
   ############################################ #
   ### report_map ### #
 
@@ -2223,7 +2257,13 @@ app_server <- function(input, output, session) {
       }
     }
   }) # end of report_map
-  ############################################ #
+
+  observe({
+    req(report_map())
+    # note this component of report is ready (although renderLeaflet() and leafletProxy() might take time?)
+    download_ready_for_report_map(TRUE)
+  })
+  ############## #
   ### output$quick_view_map of report_map() html ### #
 
   output$quick_view_map <- leaflet::renderLeaflet({
@@ -2291,9 +2331,9 @@ app_server <- function(input, output, session) {
   ############################################ #
 
   ###################  #
-  ### . v1_summary_plot_state ####
+  ### . report_plot_state ####
 
-  v1_summary_plot_state <- reactive({
+  report_plot_state <- reactive({
 
     req(data_processed())
     if (!is.null(cur_button())) {
@@ -2327,9 +2367,9 @@ app_server <- function(input, output, session) {
     }
   })
   ###################  #
-  ### . v1_summary_plot ####
+  ### . report_plot ####
 
-  v1_summary_plot <- reactive({
+  report_plot <- reactive({
 
     req(data_processed())
     # data_processed() needed for ridgeline or boxplot, and ratio.to.us.d() which is made from data_processed() is needed for boxplots,
@@ -2387,10 +2427,14 @@ app_server <- function(input, output, session) {
     } # box
     ################## #
   })
-
+  observe({
+    req(report_plot())
+    # note this component of report is ready (although renderPlot() might take time?)
+    download_ready_for_report_plot(TRUE)
+  })
   ## output: show box/barplot of indicator ratios in html Summary Report #
-  output$view1_summary_plot <- renderPlot({
-    v1_summary_plot()
+  output$report_plot_output <- renderPlot({
+    report_plot()
   }, width = function() {
     ifelse(isTRUE(getOption("shiny.testmode")), 717, "auto")
   })
@@ -2400,15 +2444,42 @@ app_server <- function(input, output, session) {
     if (!is.null(cur_button())) {
       cur_button(NULL)
       # Trigger a re-render of the html summary report's barplot
-      output$view1_summary_plot <- renderPlot({
-        v1_summary_plot()
+      output$report_plot_output <- renderPlot({
+        report_plot()
       }, width = function() {
         ifelse(isTRUE(getOption("shiny.testmode")), 717, "auto")
       })
     }
   })
 
+  ############################################ #
+  # wait until all components of report are ready for download
+  # before enabling download button
+  observe({
+    if (
+      download_ready_for_report_header_and_tables() &&
+      download_ready_for_report_map() &&
+      download_ready_for_report_plot()
+      # && download_ready_for_report_footer_version_date() # quick, assume ready
+    ) {
+      shinyjs::enable(id = 'download_report_multisite')
+    }
+  })
   ####################################################### #
+
+  #############################################################################  #
+  ## * FOOTER ####
+  ############################################ #
+  output$report_footer_version_date <- renderUI({
+    # message(paste0("shinytestmode = ", getOption("shiny.testmode")))
+    generate_report_footer(
+      footer_version_number = NULL,
+      footer_date = date_in_user_timezone(),
+      footer_text = NULL, footer_html = NULL # NULL means use defaults
+    )
+  })
+  #############################################################################  #
+
   if (isTRUE(getOption("shiny.testmode"))) {
     htmlwidgets::setWidgetIdSeed(12345) # ensures consistent element IDs across runs
     set.seed(12345)
@@ -2417,45 +2488,49 @@ app_server <- function(input, output, session) {
 
   #. ####
   #############################################################################  #
+  # REPORT Multisite - CREATE FILE ####
 
-  ##############################################  #
-  # REPORT Overall - for DOWNLOAD ####
+  ### ejam2report() makes downloadable_file_report_multisite ####
 
+  downloadable_file_report_multisite <- reactive({
 
+    req(data_processed())
 
-  ### ejam2report() in Overall downloadHandler() ####
+    # As soon as new results become available as updated data_processed(),
+    # this reactive re-runs, using snapshot of data run at that time
+    # so rendering is triggered by new results immediately, not by a download button,
+    # so the file is ready sooner for user when they click download button.
+    # And isolate() is used to avoid re-rendering if uploaded data or upload method menu changes,
+    # so changing anything but the title after running the results
+    # will not re-create this file
 
-  # report_fname <- reactiveVal() # never used now?
+    analysis_title <- sanitized_analysis_title()
 
-  output$community_download_all <- downloadHandler(
+    isolate({
 
-    filename = function() {
-      create_filename(
+      filename <- create_filename(
         file_desc = 'community report',
-        title =  sanitized_analysis_title(),
+        title =  analysis_title,
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
-    },
-    content = function(file) {
-
-      # report_fname(file) # never used now?
+      filename_fullpath <- file.path(tempdir(), filename)
 
       if (submitted_upload_method() == 'SHP') {
         shp_for_report <- data_uploaded()
       } else {
         shp_for_report <- NULL
       }
-      ejam2report(
+      report_path <- ejam2report(
         fileextension = '.html',
-        filename = file,
+        filename = filename_fullpath,
         ejamitout = data_processed(),
         return_html = FALSE,
-        submitted_upload_method = submitted_upload_method(),
+        site_method = submitted_upload_method(),
         shp = shp_for_report,
-        analysis_title =  sanitized_analysis_title(),
+        analysis_title =  analysis_title,
         launch_browser = FALSE,
         show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
         extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
@@ -2464,8 +2539,30 @@ app_server <- function(input, output, session) {
         extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
         extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
         logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
-        logo_html = NULL # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+        logo_html = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+        footer_version_number = NULL,
+        footer_date = date_in_user_timezone(),
+        footer_text = NULL,
+        footer_html = NULL # NULL means use defaults
       )
+    })
+    if (input$testing) {
+      cat(paste0('in reactive creating report file, filename created as param is: \n"', filename, '"\n'))
+      cat(paste0('in reactive creating report file, report_path created by ejam2report() is: \n"', report_path, '"\n'))
+    }
+    report_path
+  })
+  ##############################################  #
+  # REPORT Multisite - DOWNLOAD FILE ####
+
+  ### downloadHandler() ####
+
+  output$download_report_multisite <- downloadHandler(
+    filename = function() {
+      basename(downloadable_file_report_multisite())
+    },
+    content = function(file) {
+      file.copy(from = downloadable_file_report_multisite(), to = file, overwrite = TRUE)
     }
   )
   #############################################################################  #
@@ -2479,9 +2576,9 @@ app_server <- function(input, output, session) {
   ### ejam2report() in 1-site downloadHandler() ####
   # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
 
-  # consider using API here to generate single-site reports?  ***
+  # Default is to use API here to get single-site reports, not render them here  ***
 
-  output$community_download_individual <- downloadHandler(
+  output$download_report_single_site <- downloadHandler(
 
     filename = function() {
       location_suffix <- if (!is.null(selected_location_name())) {
@@ -2495,7 +2592,7 @@ app_server <- function(input, output, session) {
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
     },
     content = function(file) {
@@ -2524,13 +2621,13 @@ app_server <- function(input, output, session) {
 
         # Call ejam2report() with the sitenumber based on which site's button was clicked
         sitenumber <- as.numeric(gsub('button_','', cur_button()))
-cat("Clicked on site #", sitenumber, "for a 1-site report\n")
+        if (input$testing) {cat("Clicked on site #", sitenumber, "for a 1-site report\n")}
         # Get the name of the selected location
         location_name <- data_processed()$results_bysite[sitenumber, "statename"]
         selected_location_name(location_name)
 
         # Store a temporary file name/path in the reactive value
-        temp_file <- tempfile(fileext = ifelse(input$format1pager == 'pdf', '.pdf', '.html'))
+        temp_file <- tempfile(fileext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'))
         temp_file_path(temp_file)
 
         # if shapefile was used for analysis, provide it to ejam2report()
@@ -2542,12 +2639,12 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
         ejam2report(
 
-          fileextension = '.html',
+          fileextension = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'),
           filename = temp_file,
           ejamitout = data_processed(),
           sitenumber = sitenumber,
           return_html = FALSE,
-          submitted_upload_method = submitted_upload_method(),
+          site_method = submitted_upload_method(),
           shp = shp_for_report, # NULL or data_uploaded()
           analysis_title =  sanitized_analysis_title(),
           launch_browser = FALSE,
@@ -2556,7 +2653,9 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           extratable_title = input$extratable_title,
           extratable_title_top_row = input$extratable_title_top_row,
           extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for
+          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
+          logo_path =  EJAM:::global_or_param("report_logo"),
+          footer_date = date_in_user_timezone()
         )
 
         # modal pops up so user can trigger the download
@@ -2564,7 +2663,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
           title = "Download Ready",
           "Your report is ready. Click the button below to download.",
           footer = tagList(
-            downloadButton("community_download_individual", "Download Report"),
+            downloadButton('download_report_single_site', label = 'Download Report'),
             modalButton("Close")
           ),
           easyClose = TRUE,
@@ -2578,18 +2677,21 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
   output$interactive_table <- DT::renderDT(server = TRUE, expr = {
     req(data_processed())
     # This also creates the UI buttons for a 1-site report in each row
-    create_interactive_table(out = data_processed(),
+    x = create_interactive_table(out = data_processed(),
 
-                             # reports param here controls which URL/report columns to show in this table
-                             #  (among those already created in data_processed() via ejamit() etc.)
-                             #  could change to be an input$ in advanced tab possibly:
-                             reports = EJAM:::global_or_param("default_reports"),
-                             sitereport_download_buttons_show = isTRUE(input$sitereport_download_buttons_show),
-                             sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
+                                 # reports param here controls which URL/report columns to show in this table
+                                 #  (among those already created in data_processed() via ejamit() etc.)
+                                 #  could change to be an input$ in advanced tab possibly:
+                                 reports = EJAM:::global_or_param("default_reports"),
+                                 sitereport_download_buttons_show = isTRUE(input$sitereport_download_buttons_show),
+                                 sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
-                             columns_used = input$bysite_webtable_colnames
-                             ## if NULL, uses all available from data_processed()
+                                 columns_used = input$bysite_webtable_colnames
+                                 ## if NULL, uses all available from data_processed()
     )
+    # enable download button only after DT::renderDT
+    shinyjs::enable(id = 'download_results_spreadsheet')
+    x
   })
   #############################################################################  #
   ### advanced tab UI for picking columns to show in table of sites  ####
@@ -2614,31 +2716,96 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
   #. ####
   #_____ALL RESULTS AS EXCEL DOWNLOAD ____ ####
   #. ####
-  # SPREADSHEET downloadHandler() ####
 
-  # *** CONSIDER USING FUNCTION THAT CAN DO THIS AT ?table_xls_from_ejam() or ejam2excel()
+  # SPREADSHEET - CREATE FILE ####
 
-  output$report_version_date <- renderUI({
-    message(paste0("shinytestmode = ", getOption("shiny.testmode")))
-    p(style = "margin-bottom: 0",
-      paste("Version", EJAM:::global_or_param("app_version"),
-            "| Report created on",
-            ifelse(
-              isTRUE(getOption("shiny.testmode")),
-              "[SHINYTEST DATE]", # so the snapshot of the report is consistent, not diff date each time tested
-              format(Sys.Date(), '%B %d, %Y'))))
+  ## ejam2excel() makes downloadable_file_excel ####
+
+  downloadable_file_excel <- reactive({
+
+    req(downloadable_file_report_multisite())
+
+    # As soon as new results become available as
+    #     an updated downloadable_file_report_multisite()
+    #     which happens after ananlysis creates an updated version of data_processed(),
+    # this reactive re-runs, using snapshot of data run at that time
+    # so rendering is triggered by new results immediately, not by a download button,
+    # so the file is ready sooner for user when they click download button.
+    # And isolate() is used to avoid re-rendering if uploaded data or upload method menu changes,
+    # so changing anything but the title after running the results
+    # will not re-create this file
+
+    analysis_title <- sanitized_analysis_title()
+
+    isolate({
+
+      filename <- create_filename(
+        file_desc = 'results table',
+        title =  analysis_title,
+        buffer_dist = submitted_radius_val(),
+        site_method = submitted_upload_method(),
+        with_datetime = TRUE,
+        ext = '.xlsx')
+
+      filename_fullpath <- file.path(tempdir(), filename)
+
+      excel_path <- ejam2excel(
+
+        ejamitout = data_processed(),
+
+        fname = filename_fullpath,
+        save_now = TRUE,             # ***
+        # overwrite
+        launchexcel = FALSE,
+        interactive_console = FALSE, # not the default of that function
+        in.testing = input$testing,
+        # updateProgress = updateProgress_xl,    # excel assembly is triggered now by report being finished, not by a button, so does not make sense to show progress - it is sort of in the background
+
+        analysis_title = analysis_title,
+        site_method = submitted_upload_method(),
+
+        radius_or_buffer_in_miles = sanitized_radius_now(),
+        radius_or_buffer_description = NULL, # radius_or_buffer_description, # the function will figure it out
+        buffer_desc = NULL, # "Selected Locations", # the function will figure it out
+
+        # specify columns with URLs/links to 1-site reports, etc.
+        reports = EJAM:::global_or_param("default_reports"), # could use here just to limit which report URL columns get saved - if not already created in data_processed() this will not create them!
+
+        # plot
+        ok2plot = input$ok2plot,
+        report_plot = report_plot(),
+
+        # map
+        mapadd = FALSE, # redundant if getting report as a tab since report has map snapshot
+        report_map = NULL,
+
+        # polygons
+        # shp =  ???
+
+        # html summary report to paste into a tab as static snapshot image
+        community_reportadd = TRUE,
+        community_html = downloadable_file_report_multisite(),
+
+        ## notes tab, etc. - use defaults:
+        notes = NULL
+        # custom_tab
+        # custom_tab_name
+        # ejscreen_ejam_caveat
+      )
+
+      excel_path
+    })
   })
+  #############################################################################  #
+  # SPREADSHEET - DOWNLOAD FILE ####
 
-  output$download_results_table <- downloadHandler(
+  ## downloadHandler() ####
+
+  output$download_results_spreadsheet <- downloadHandler(
     filename = function() {
-      create_filename(file_desc = 'results table',
-                      title =  sanitized_analysis_title(),
-                      buffer_dist = submitted_radius_val(),
-                      site_method = submitted_upload_method(),
-                      with_datetime = TRUE,
-                      ext = '.xlsx')
+      basename(downloadable_file_excel())
     },
-    content = function(fname) {
+    content = function(file) {
 
       showModal(
         modalDialog(title = 'Downloading',
@@ -2646,11 +2813,11 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
                     easyClose = FALSE)
       )
       if (input$testing) {
-        cat('starting download code  \n')
+        cat('starting download  \n')
       }
       progress_xl <- shiny::Progress$new(min = 0, max = 1)
       progress_xl$set(value = 0, message = 'Downloading', detail = 'Starting')
-      updateProgress_xl <- function(value = NULL, message_detail=NULL, message_main = 'Preparing') {
+      updateProgress_xl <- function(value = NULL, message_detail=NULL, message_main = 'Copying file') {
         if (is.null(value)) { # - If value is NULL, it will move the progress bar 1/5 of the remaining distance.
           value <- progress_xl$getValue()
           value <- value + (progress_xl$getMax() - value) / 5
@@ -2659,80 +2826,18 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
         progress_xl$set(value = value, message = message_main, detail = message_detail)
       }
 
-      ## ejam2report() ####
-      # builds report to put in an excel tab
-
-      html_content <- isolate({
-
-        temp_file <- tempfile(fileext = '.html')
-
-        if (submitted_upload_method() == 'SHP') {
-          shp_for_report <- data_uploaded()
-        } else {
-          shp_for_report <- NULL
-        }
-
-        # *** ejam2report() or this server code should be made to handle FIPS upload and FIPS dropdown
-        # & use obtained FIPS polygons + analysis results as shp
-        ## note the mapping code in server already does that, creating report_map()
-
-        ejam2report(
-
-          fileextension = '.html',
-          filename = temp_file,
-          ejamitout = data_processed(),
-          return_html = FALSE,
-          submitted_upload_method = submitted_upload_method(),
-          shp = shp_for_report,
-          analysis_title =  sanitized_analysis_title(),
-          launch_browser = FALSE,
-          show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
-          extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
-          extratable_title = input$extratable_title,
-          extratable_title_top_row = input$extratable_title_top_row,
-          extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for
-        )
-      })
-
-      ## ejam2excel() ####
-
-      wb_out <- ejam2excel(
-
-        ejamitout = data_processed(),
-        fname = fname,
-        ok2plot = input$ok2plot,
-        react.v1_summary_plot = v1_summary_plot(),
-        launchexcel = FALSE,
-        radius_or_buffer_in_miles = sanitized_radius_now(),
-        radius_or_buffer_description = NULL, # radius_or_buffer_description, # the function will figure it out
-        buffer_desc = NULL, # "Selected Locations", # the function will figure it out
-        in.analysis_title = sanitized_analysis_title(),
-        save_now = FALSE,
-        interactive_console = FALSE,
-        in.testing = input$testing,
-
-        reports = EJAM:::global_or_param("default_reports"), # could use here just to limit which report URL columns get saved - if not already created in data_processed() this will not create them!
-
-        mapadd = FALSE, # redundant if getting report as a tab since report has map snapshot
-        report_map = NULL,
-        community_reportadd = TRUE,
-        community_html = html_content,
-
-        site_method = submitted_upload_method(),
-        #show_ratios_in_excel = input$calculate_ratios,
-        updateProgress = updateProgress_xl
-      )
+      file.copy(from = downloadable_file_excel(), to = file, overwrite = TRUE)
 
       progress_xl$close()
       removeModal()
-      ## save file and return for downloading
-      openxlsx::saveWorkbook(wb_out, fname)
 
     } # end excel download contents
+
   ) # end download handler
   #############################################################################  #
-  #. ## ##
+  #. ####
+  #_____ALL RESULTS AS PLOTS in UI ____ ####
+
   ## *BARPLOTS interactive   ####
   #. ## ##
   # see ?ejam2barplot() in EJAM pkg
@@ -2813,8 +2918,11 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
 
   # other plot ideas
   # https://exts.ggplot2.tidyverse.org/gallery/
-  current_hist_ind <- reactive({
-    input$summ_hist_ind
+  current_hist_ind <- reactiveVal(names_d[3]) # initial value, like root_nms not nms?
+  observe({
+    # if the histogram indicator selection changes, update this reactive keeping track of current selection
+    req(input$summ_hist_ind)
+    current_hist_ind(input$summ_hist_ind)
   })
 
   output$summ_hist_ind_out <- renderUI({
@@ -2916,7 +3024,7 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
     #############################################################################  #
     ## *downloadHandler() ####
 
-    output$rg_download <- downloadHandler(
+    output$download_report_long <- downloadHandler(
       filename = function() {
         create_filename(file_desc = 'full report',
                         title = sanitized_analysis_title(),
@@ -3007,8 +3115,8 @@ cat("Clicked on site #", sitenumber, "for a 1-site report\n")
             demog_table = v1_demog_table(),
             # demog_table_placeholder_png = "demog_table_placeholder.png",
             # demog_table_placeholder_rda = "demog_table_placeholder.rda",
-            boxplot =     v1_summary_plot(), # actually a barplot
-            ## also note  v1_summary_plot_state()
+            boxplot =     report_plot(), # actually a barplot
+            ## also note  report_plot_state()
             # boxplot_placeholder_png =         "boxplot_placeholder.png",
             # barplot= NA
             # barplot_placeholder_png =         "barplot_placeholder.png",

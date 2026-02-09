@@ -34,7 +34,7 @@
 #' @param vname a global default or user param - do a global find in files
 #'   of source code for this function to see how / where it is used.
 #'
-#' @returns value of the param, or NULL if not found
+#' @return value of the param, or NULL if not found
 #'
 #' @keywords internal
 #'

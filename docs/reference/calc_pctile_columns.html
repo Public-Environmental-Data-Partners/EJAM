@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -163,7 +167,7 @@ one indicator per column, one place per row</p>
 <span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="calc_avg_columns.html">calc_avg_columns</a></span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">names_these</span>, zones <span class="op">=</span> <span class="st">"USA"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="calc_avg_columns.html">calc_avg_columns</a></span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">names_these</span>, zones <span class="op">=</span> <span class="va">testbgs</span><span class="op">$</span><span class="va">ST</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">avgs</span><span class="op">)</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">avgs</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">avgs</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">avgs</span>, <span class="va">avgs0</span><span class="op">)</span></span>
 <span><span class="va">testbgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">testbgs</span>, <span class="va">avgs</span><span class="op">)</span> <span class="co"># need these averages to calculate the ratios</span></span>
@@ -171,7 +175,7 @@ one indicator per column, one place per row</p>
 <span><span class="co">#   ----------------- RATIOS TO AVERAGES -----------------</span></span>
 <span></span>
 <span><span class="va">ratios</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="calc_ratio_columns.html">calc_ratio_columns</a></span><span class="op">(</span><span class="va">testbgs</span><span class="op">)</span>  <span class="co"># needs raw and avg cols be in 1 dt</span></span>
-<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">ratios</span><span class="op">)</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">ratios</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">ratios</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">ratios</span>, <span class="va">ratios0</span><span class="op">)</span></span>
 <span></span>
@@ -181,7 +185,7 @@ one indicator per column, one place per row</p>
 <span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">calc_pctile_columns</span><span class="op">(</span><span class="va">testbgs</span>, varnames <span class="op">=</span> <span class="va">names_these</span>, zones <span class="op">=</span> <span class="st">"USA"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">calc_pctile_columns</span><span class="op">(</span><span class="va">testbgs</span>, varnames <span class="op">=</span> <span class="va">names_these</span>, zones <span class="op">=</span> <span class="va">testbgs</span><span class="op">$</span><span class="va">ST</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">pctiles</span><span class="op">)</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">pctiles</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">pctiles</span>, <span class="va">pctiles0</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">pctiles</span><span class="op">)</span></span>
 <span></span>
@@ -193,11 +197,11 @@ one indicator per column, one place per row</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

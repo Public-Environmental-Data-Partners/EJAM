@@ -182,7 +182,7 @@
 #'   testsites <- testpoints_10[2,]
 #'   s2b <- getblocksnearby(testsites, radius = 3.1)
 #'   getblocks_diagnostics(s2b)
-#'   plotblocksnearby(s2b)
+#'   plot_blocks_nearby(s2b)
 #'
 #'   # if doing just 2d step of ejamit()
 #'   #  get summaries of all indicators based on table of distances
@@ -620,8 +620,9 @@ ejamit <- function(sitepoints = NULL,
     if (!silentinteractive) {cat('Aggregating at each site and overall.\n')}
     doaggregate_runtime_prediction <- predict_doaggregate_runtime(nrow(mysites2blocks))
     predicted_time <- doaggregate_runtime_prediction[, "fit"]
-
-    cat(paste("doaggregate is predicted to take", round(predicted_time, 0), "seconds \n"))
+    if (interactive()) {
+      cat(paste("doaggregate is predicted to take", round(predicted_time, 0), "seconds \n"))
+      }
     out <- suppressWarnings(
 
       doaggregate(

@@ -52,3 +52,4 @@ would be almost the same if compared to a population weighted average of all US 
 \seealso{
 \code{\link[=doaggregate]{doaggregate()}} \code{\link[=calc_avg_columns]{calc_avg_columns()}} \code{\link[=calc_pctile_columns]{calc_pctile_columns()}}
 }
+\keyword{internal}

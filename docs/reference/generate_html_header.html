@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -67,13 +71,13 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_html_header</span><span class="op">(</span></span>
-<span>  <span class="va">analysis_title</span>,</span>
-<span>  <span class="va">totalpop</span>,</span>
-<span>  <span class="va">locationstr</span>,</span>
-<span>  in_shiny <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  analysis_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  report_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  locationstr <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  totalpop <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  logo_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  logo_html <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  logo_html <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  in_shiny <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -81,28 +85,24 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-analysis-title-">analysis_title, <a class="anchor" aria-label="anchor" href="#arg-analysis-title-"></a></dt>
-<dd><p>title to use in header of report</p></dd>
-
-
-<dt id="arg-totalpop-">totalpop, <a class="anchor" aria-label="anchor" href="#arg-totalpop-"></a></dt>
-<dd><p>total population included in location(s) analyzed</p></dd>
-
-
-<dt id="arg-locationstr-">locationstr, <a class="anchor" aria-label="anchor" href="#arg-locationstr-"></a></dt>
-<dd><p>description of the location(s) analyzed</p></dd>
-
-
-<dt id="arg-in-shiny-">in_shiny, <a class="anchor" aria-label="anchor" href="#arg-in-shiny-"></a></dt>
-<dd><p>whether the function is being called in or outside of shiny - affects location of header</p></dd>
+<dl><dt id="arg-analysis-title">analysis_title<a class="anchor" aria-label="anchor" href="#arg-analysis-title"></a></dt>
+<dd><p>optional, title to use in header of report</p></dd>
 
 
 <dt id="arg-report-title">report_title<a class="anchor" aria-label="anchor" href="#arg-report-title"></a></dt>
-<dd><p>generic name of this type of report, to be shown at top, like "EJAM Multisite Report"</p></dd>
+<dd><p>optional, generic name of this type of report, to be shown at top, like "EJAM Multisite Report"</p></dd>
+
+
+<dt id="arg-locationstr">locationstr<a class="anchor" aria-label="anchor" href="#arg-locationstr"></a></dt>
+<dd><p>optional, description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()</p></dd>
+
+
+<dt id="arg-totalpop">totalpop<a class="anchor" aria-label="anchor" href="#arg-totalpop"></a></dt>
+<dd><p>optional, total population included in location(s) analyzed</p></dd>
 
 
 <dt id="arg-logo-path">logo_path<a class="anchor" aria-label="anchor" href="#arg-logo-path"></a></dt>
-<dd><p>optional relative path to a logo for the upper right of the overall header.
+<dd><p>optional, relative path to a logo for the upper right of the overall header.
 Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp(),
 but NULL means default and "" means omit logo entirely.</p></dd>
 
@@ -111,7 +111,15 @@ but NULL means default and "" means omit logo entirely.</p></dd>
 <dd><p>optional HTML for img of logo for the upper right of the overall header.
 If specified, it overrides logo_path. If omitted, gets created based on logo_path.</p></dd>
 
+
+<dt id="arg-in-shiny">in_shiny<a class="anchor" aria-label="anchor" href="#arg-in-shiny"></a></dt>
+<dd><p>optional, whether the function is being called in or outside of shiny - affects location of header</p></dd>
+
 </dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Useful defaults are provided by build_community_report()</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>used by <code><a href="build_community_report.html">build_community_report()</a></code></p></div>
@@ -122,11 +130,11 @@ If specified, it overrides logo_path. If omitted, gets created based on logo_pat
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

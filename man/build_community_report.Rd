@@ -5,10 +5,13 @@
 \title{Generate Single-site or Multi-site Summary Report (e.g., .html)}
 \usage{
 build_community_report(
-  output_df,
-  analysis_title = "Report",
+  logo_path = NULL,
+  logo_html = NULL,
+  report_title = NULL,
+  analysis_title = NULL,
+  locationstr = "",
   totalpop,
-  locationstr,
+  output_df,
   include_ejindexes = FALSE,
   show_ratios_in_report = FALSE,
   extratable_show_ratios_in_report = FALSE,
@@ -27,20 +30,28 @@ build_community_report(
     names_d_other_count),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
   in_shiny = FALSE,
-  filename = NULL,
-  report_title = NULL,
-  logo_path = NULL,
-  logo_html = NULL
+  filename = NULL
 )
 }
 \arguments{
-\item{output_df}{single row of results table from doaggregate - either results_overall or one row of bysite}
+\item{logo_path}{optional relative path to a logo for the upper right of the overall header.
+Ignored if logo_html is specified and not NULL, otherwise uses default or param set in \code{\link[=ejamapp]{ejamapp()}},
+except NULL means default logo, "" means omit logo entirely.}
 
-\item{analysis_title}{title to use in header of report}
+\item{logo_html}{optional HTML for img of logo for the upper right of the overall header.
+If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
+
+\item{report_title}{generic name of the report type, to be shown in the header,
+like "EJSCREEN Multisite Summary" or "EJSCREEN Community Report"}
+
+\item{analysis_title}{optional, title to use in header of report,
+default shows name of place if FIPS code report on 1 site.}
+
+\item{locationstr}{description of the location(s) analyzed}
 
 \item{totalpop}{total population included in location(s) analyzed}
 
-\item{locationstr}{description of the location(s) analyzed}
+\item{output_df}{single row of results table from doaggregate - either results_overall or one row of bysite}
 
 \item{include_ejindexes}{whether to build tables for summary indexes and supp. summary indexes}
 
@@ -65,18 +76,9 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.'}
 \item{in_shiny}{whether the function is being called in or outside of shiny - affects location of header}
 
 \item{filename}{path to file to save HTML content to; if null, returns as string (used in Shiny app)}
-
-\item{report_title}{generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}
-
-\item{logo_path}{optional relative path to a logo for the upper right of the overall header.
-Ignored if logo_html is specified and not NULL, otherwise uses default or param set in \code{\link[=ejamapp]{ejamapp()}},
-except NULL means default logo, "" means omit logo entirely.}
-
-\item{logo_html}{optional HTML for img of logo for the upper right of the overall header.
-If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
 }
 \description{
-Creates a short summary report with tables, map, and plot of indicators
+Just assembles the report, given the header info, tables, map, and plot
 }
 \details{
 This is used by the shiny app server. For use in RStudio,

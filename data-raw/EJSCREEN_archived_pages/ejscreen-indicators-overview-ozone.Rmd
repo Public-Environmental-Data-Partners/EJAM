@@ -1,0 +1,48 @@
+---
+title: "EJScreen Indicators Overview – Ozone"
+description: "EJScreen Indicators Overview – Ozone"
+output: html_document
+---
+
+## What is the ozone indicator?
+
+The “ozone indicator” measures how much ground-level ozone people might be exposed to. EJScreen presents ground-level ozone concentrations using percentile rank, ranging from 0 (lowest) to 100 (highest) with higher scores representing higher concentrations. This indicator does not designate compliance with the national ambient air quality standard for ozone.
+
+## Why is ozone important?
+
+- Ozone (O3) is a highly reactive gas composed of three oxygen atoms. It is both a natural and a man-made product that occurs in the Earth's upper atmosphere (the stratosphere) and lower atmosphere (the troposphere). Tropospheric - or ground-level ozone (what we breathe) - is formed primarily from photochemical reactions between two major classes of air pollutants, volatile organic compounds (VOC) and nitrogen oxides (NOx). These reactions traditionally depend on the presence of heat and sunlight, resulting in higher ambient ozone concentrations in summer months.
+
+- Depending on the level of exposure, ozone can aggravate lung diseases such as asthma, emphysema, and chronic bronchitis; cause coughing and a sore or scratchy throat, pain when taking a deep breath, and airway inflammation; and make the lungs more susceptible to infection. The groups of people that are most affected by elevated ozone exposures are people with asthma, children, older adults, and people who are active outdoors, especially outdoor workers. Children are at greatest risk because their lungs are still developing, they are more likely to be active outdoors when ozone levels are high and are more likely to have asthma.
+
+- Elevated exposures to ozone can also affect vegetation and ecosystems, including crops, forests, parks, wildlife refuges, and wilderness areas.
+
+## How does EJScreen create the ozone indicator?
+
+- The ozone indicator reflects the average of the highest levels of ozone recorded during the top ten days of the year. Ozone concentrations were measured as daily maximum eight-hour averages.
+
+- The ozone indicator data was provided by the EPA Office of Air Quality Planning and Standards using a fusion of monitor data and Community Multiscale Air Quality (CMAQ) air quality modeling. For more information about the methods used, see [EPA Report EPA-454/S-15-001](https://web.archive.org/web/20250121194841/https://cfpub.epa.gov/ols/catalog/catalog_full_record.cfm?&FIELD4=CALLNUM&INPUT4=454%2FS%2D15%2D001&LIBCODE=&COLL=&SORT_TYPE=YRDESC&item_count=1).
+
+- For technical details on the calculations and source data, visit the [EJScreen Technical Documentation](`r EJAM::url_ejscreentechdoc()`){target="_blank"}.
+
+## Moving Forward – What You Can Do
+
+- Stay informed on the latest relevant information and resources on the [EPA Ground-level Ozone Pollution](https://www.epa.gov/ground-level-ozone-pollution) site.
+
+- [Learn about the health effects of ozone pollution](https://www.epa.gov/ground-level-ozone-pollution/health-effects-ozone-pollution).
+
+- Reduce your ground-level ozone exposure:
+
+  - EPA’s [Air Quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/), on [AirNow](http://www.airnow.gov/), tells you how clean or polluted your outdoor air is, as well as actions to protect your health and reduce exposure. The AQI provides current and forecasted AQI values. Go to [Using the AQI](https://www.airnow.gov/aqi/aqi-basics/using-air-quality-index/) to learn how to use current and forecasted air quality to plan your day.
+
+  - The [Air Quality Flag Program](https://www.airnow.gov/air-quality-flag-program/) can help air agencies, schools, and other community organizations notify their citizens of harmful air quality conditions and provides guidance on how to adjust physical activities to help reduce exposure to air pollution, while still keeping people active.
+
+  - Everyone can take steps to lessen air pollution and keep the air clean. It is also important to take certain precautions to safeguard your health. [Visit AirNow for tips on what you can do](https://www.airnow.gov/education/what-you-can-do/).
+
+- [See what the EPA and others are doing to reduce ozone pollution](https://www.epa.gov/ground-level-ozone-pollution/ground-level-ozone-basics#regulations). The EPA has national and regional rules that reduce pollutant emissions that form ground-level ozone and help state and local governments meet national air quality standards. [Learn about how ozone pollution is controlled and how air quality standards help](https://www.epa.gov/ozone-designations).
+
+--------------------
+ _About this page:_
+
+- _This page is a simplified version of the original saved by archive.org._
+- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+ 

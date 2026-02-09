@@ -11,21 +11,38 @@ ejam2excel(
   overwrite = TRUE,
   launchexcel = FALSE,
   interactive_console = TRUE,
-  ok2plot = TRUE,
   in.testing = FALSE,
-  in.analysis_title = "EJAM analysis",
-  react.v1_summary_plot = NULL,
+  updateProgress = NULL,
+  analysis_title = "EJAM analysis",
+  site_method = NULL,
   radius_or_buffer_in_miles = NULL,
-  buffer_desc = NULL,
-  radius_or_buffer_description =
-    "Miles radius of circular buffer (or distance used if buffering around polygons)",
+  radius_or_buffer_description = NULL,
+  buffer_desc = "Selected Locations",
   reports = EJAM:::global_or_param("default_reports"),
-  site_method = "",
+  ok2plot = TRUE,
+  report_plot = NULL,
+  plot_distance_by_group = FALSE,
+  plotlatest = FALSE,
+  plotfilename = NULL,
   mapadd = FALSE,
   report_map = NULL,
+  shp = NULL,
   community_reportadd = TRUE,
   community_html = NULL,
-  shp = NULL,
+  heatmap_colnames = NULL,
+  heatmap_cuts = c(80, 90, 95),
+  heatmap_colors = c("yellow", "orange", "red"),
+  heatmap2_colnames = NULL,
+  heatmap2_cuts = c(1.009, 2, 3),
+  heatmap2_colors = c("yellow", "orange", "red"),
+  graycolnames = NULL,
+  graycolor = "gray",
+  narrowcolnames = NULL,
+  narrow6 = 6,
+  notes = NULL,
+  custom_tab = ejamitout$results_summarized$cols,
+  custom_tab_name = "thresholds",
+  ejscreen_ejam_caveat = NULL,
   ...
 )
 }
@@ -44,41 +61,92 @@ that can later be written to .xlsx file using \code{\link[openxlsx:saveWorkbook]
 \item{interactive_console}{optional - should set to FALSE when used in code or server. If TRUE,
 prompts RStudio user interactively asking where to save the downloaded file}
 
-\item{ok2plot}{optional logical, passed to  \code{\link[=table_xls_format]{table_xls_format()}}, whether safe to try and plot or set FALSE if debugging plot problems}
-
 \item{in.testing}{optional logical}
 
-\item{in.analysis_title}{optional title as character string}
+\item{updateProgress}{optional function used by shiny app to track progress of slow operation}
 
-\item{react.v1_summary_plot}{optional - a plot object}
+\item{analysis_title}{optional title as character string, used only in 'Notes' sheet
+(and to create a default filename if fname not specified). Not used in the copy of the report.}
+
+\item{site_method}{optional word or phrase about the sites or how they were selected.
+
+The \code{site_method} parameter can be used as-is by \code{\link[=create_filename]{create_filename()}} to be part of the saved file name.
+It can also be used by the shiny app to add informational text in the header of a report,
+via \code{\link[=ejam2report]{ejam2report()}} and related helper functions like \code{\link[=report_residents_within_xyz]{report_residents_within_xyz()}}
+or via \code{\link[=ejam2excel]{ejam2excel()}} and related helper functions.
+
+The \code{site_method} parameter provides more detailed info about how sites were specified in the web app,
+beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
+\itemize{
+\item sitetype can be "latlon", "fips", or "shp"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+}
+
+The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
+which is much like the one called current_upload_method().}
 
 \item{radius_or_buffer_in_miles}{optional radius in miles}
 
-\item{buffer_desc}{description of location to use in labels, like "Selected Locations"}
+\item{radius_or_buffer_description}{optional text phrase describing places analyzed, like in report headers}
 
-\item{radius_or_buffer_description}{optional text phrase describing places analyzed}
+\item{buffer_desc}{description of location to use in labels, like "Selected Locations"}
 
 \item{reports}{info about which columns to treat as URLs that should be hyperlinks -
 see \code{\link[=url_columns_bysite]{url_columns_bysite()}}}
 
-\item{site_method}{site selection method, such as SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT
-optional site method parameter used to create a more specific title with create_filename.
-Note \code{ejamitout$sitetype} is not quite the same as the \code{site_method} parameter used in building reports.
-sitetype can be latlon, fips, or shp
-site_method can be one of these: SHP, latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT}
+\item{ok2plot}{optional logical, passed to  \code{\link[=table_xls_format]{table_xls_format()}}, whether safe to try and plot or set FALSE if debugging plot problems}
 
-\item{mapadd}{Logical, whether to add a tab with a map of the sites. If report tab is added, though, standalone static map in excel tab is redundant.}
+\item{report_plot}{optional - a plot object}
 
-\item{report_map}{the map to use if mapadd = TRUE (re-created if this is omitted/NULL but mapadd is TRUE)}
+\item{plot_distance_by_group}{optional logical, whether to try to add a plot of mean distance by group.
+This requires that bybg be provided as a parameter input to this function.}
+
+\item{plotlatest}{optional logical. If TRUE, the most recently displayed plot (prior to this function being called) will be inserted into a tab called plot2}
+
+\item{plotfilename}{optional the full path including name of a .png file to insert}
+
+\item{mapadd}{optional logical, whether to add a tab with a map of the sites.
+If report tab is added, though, standalone static map in excel tab is redundant.}
+
+\item{report_map}{the leaflet map to display in 'Map' sheet if mapadd is TRUE (re-created if this is omitted/NULL but mapadd is TRUE)}
+
+\item{shp}{optional shapefile used to create map if not providing it via report_map or community_html parameters}
 
 \item{community_reportadd}{Logical, whether to add a tab with a static copy of the summary report (tables, map, barplot).}
 
-\item{community_html}{the HTML of the summary/community report if available (re-created if this is omitted/NULL but community_reportadd is TRUE)}
+\item{community_html}{the HTML file of the summary/community report if available (re-created if this is omitted/NULL but community_reportadd is TRUE)}
 
-\item{shp}{shapefile to create map if not providing it via report_map or community_html parameters}
+\item{heatmap_colnames}{optional vector of colnames to apply heatmap colors, defaults to percentiles}
 
-\item{...}{optional additional parameters passed to \code{\link[=table_xls_format]{table_xls_format()}}, such as
-heatmap_colnames, heatmap_cuts, heatmap_colors, etc.}
+\item{heatmap_cuts}{vector of values to separate heatmap colors, between 0-100 for percentiles}
+
+\item{heatmap_colors}{vector of color names for heatmap bins, same length as
+heatmap_cuts, where first color is for those >= 1st cutpoint, but <2d,
+second color is for those >=2d cutpoint but <3d, etc.}
+
+\item{heatmap2_colnames}{like heatmap_colnames but for ratios by default}
+
+\item{heatmap2_cuts}{like heatmap_cuts but for ratios by default}
+
+\item{heatmap2_colors}{like heatmap_colors but for ratios}
+
+\item{graycolnames}{which columns to de-emphasize}
+
+\item{graycolor}{color used to de-emphasize some columns}
+
+\item{narrowcolnames}{which column numbers to make narrow}
+
+\item{narrow6}{how narrow}
+
+\item{notes}{Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.}
+
+\item{custom_tab}{optional table to put in an extra tab}
+
+\item{custom_tab_name}{optional name of optional custom_tab}
+
+\item{ejscreen_ejam_caveat}{optional text if you want to change this in the notes tab}
+
+\item{...}{optional additional parameters passed to \code{\link[=table_xls_format]{table_xls_format()}}, currently unused}
 }
 \value{
 returns a workbook object for use by openxlsx::saveWorkbook(wb_out, pathname)

@@ -78,6 +78,7 @@ plot_distance_by_pctd <- function(s2b = NULL, sitenumber = 1, #  NULL,
     } else {
       warning('s2b not provided, so showing random example data only')
       pts = suppressWarnings(testpoints_n(1))
+      # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
       cat(paste0("site: ", pts$lat, ", ", pts$lon, "\n"))
       s2b <- getblocksnearby(pts, radius = radius, quiet = T)
       sitenumber <- 1
@@ -92,6 +93,7 @@ plot_distance_by_pctd <- function(s2b = NULL, sitenumber = 1, #  NULL,
       } else {
         warning("s2b must be results of getblocksnearby() or else a table of points with lat,lon columns and 1 row per point")
         pts = suppressWarnings(testpoints_n(1))
+        # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
         cat(paste0("site: ", pts$lat, ", ", pts$lon, "\n"))
         s2b <- getblocksnearby(pts, radius = radius, quiet = T)
         sitenumber <- 1
@@ -100,6 +102,7 @@ plot_distance_by_pctd <- function(s2b = NULL, sitenumber = 1, #  NULL,
       warning("s2b must be results of getblocksnearby() or else a table of points with lat,lon columns and 1 row per point")
       warning('s2b not provided, so showing sample data only')
       pts = suppressWarnings(testpoints_n(1))
+      # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
       cat(paste0("site: ", pts$lat, ", ", pts$lon, "\n"))
       s2b <- getblocksnearby(pts, radius = radius, quiet = T)
       sitenumber <- 1

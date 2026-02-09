@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -99,13 +103,13 @@ with new params like thresholds or probs.</p></dd>
 
 
 <dt id="arg-sitestats">sitestats<a class="anchor" aria-label="anchor" href="#arg-sitestats"></a></dt>
-<dd><p>A data.frame or data.table like <code><a href="ejamit.html">ejamit()</a></code>$results_bysite,
+<dd><p>A data.frame or data.table like ejamit()$results_bysite,
 with one row per site and one column per indicator.
 Ignored if ejamitout is provided.</p></dd>
 
 
 <dt id="arg-popstats">popstats<a class="anchor" aria-label="anchor" href="#arg-popstats"></a></dt>
-<dd><p>A data.frame or <a href="https://r-datatable.com" class="external-link">data.table</a> like <code><a href="ejamit.html">ejamit()</a></code>$results_bybg_people,
+<dd><p>A data.frame or <a href="https://r-datatable.com" class="external-link">data.table</a> like ejamit()$results_bybg_people,
 with one row per blockgroup at least partly in/at one or more of the sites,
 and one column per indicator. It provides blockgroup indicators, including
 total counts even for the blockgroups that are not entirely in/at a site.
@@ -115,7 +119,7 @@ Ignored if ejamitout is provided.</p></dd>
 
 
 <dt id="arg-overall">overall<a class="anchor" aria-label="anchor" href="#arg-overall"></a></dt>
-<dd><p>A data.frame or <a href="https://r-datatable.com" class="external-link">data.table</a> like <code><a href="ejamit.html">ejamit()</a></code>$results_bysite,
+<dd><p>A data.frame or <a href="https://r-datatable.com" class="external-link">data.table</a> like ejamit()$results_bysite,
 with one column per indicator, and just one data row that has the overall
 average, sum, or other summary stat for the indicator across all sites.
 Ignored if ejamitout is provided.</p></dd>
@@ -202,7 +206,7 @@ the distribution of indicator values across people and across sites,
 as percentile of analyzed people and percentile of analyzed sites, etc.</p>
 <p>It can be expanded to provide other summary stats by adding those other formulas to this code.</p>
 <p>Note it can provide population-weighted summary stats only for the indicators found in popstats,
-which is fewer than those in sitestats, since doaggregate() or ejamit() did not
+which is fewer than those in sitestats, since <code><a href="doaggregate.html">doaggregate()</a></code> or <code><a href="ejamit.html">ejamit()</a></code> did not
 provide various extra indicators in the very large results_bybg_people table.
 The parameter sitestats but not popstats has the ratios and pctiles (and US/State averages) of indicators,
 plus "bgid" "bgwt" and "valid" "invalid_msg"
@@ -221,11 +225,11 @@ nationwide among the top 10% of people analyzed.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

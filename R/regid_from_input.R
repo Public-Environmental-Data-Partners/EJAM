@@ -5,7 +5,7 @@
 #' @param regid optional vector of EPA FRS registry IDs
 #' @param sitepoints optional data.frame with a column named regid or REGISTRY_ID
 #'
-#' @returns NULL or vector of ids
+#' @return NULL or vector of ids
 #'
 #' @keywords internal
 #'

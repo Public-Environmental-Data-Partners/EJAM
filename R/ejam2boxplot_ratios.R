@@ -13,7 +13,7 @@
 #' @param main can specify a main title to use instead of default
 #' @param maxratio largest ratio to plot in case of outliers, so plot looks better
 #'
-#' @returns ggplot object
+#' @return ggplot object
 #'
 #' @examples ejam2boxplot_ratios(testoutput_ejamit_1000pts_1miles, radius=1)
 #'

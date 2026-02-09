@@ -268,7 +268,7 @@ for (ftype in ftypes) {
 test_that("map_blockgroups_over_blocks() works", {
   expect_no_error({
     junk = capture.output({
-      y <- plotblocksnearby(testpoints_10[5,],
+      y <- plot_blocks_nearby(testpoints_10[5,],
                             radius = 0.5,
                             returnmap = TRUE)
       x = map_blockgroups_over_blocks(y)
@@ -340,6 +340,10 @@ test_that("shapes_blockgroups_from_bgfips() works", {
 })
 ############################################## #
 test_that("mapfast_gg() works", {
+  if (!pkg_available('maps')) {
+    warning("maps package is needed for unit test of mapfast_gg()")
+    skip("maps package is needed for unit test of mapfast_gg()")
+    }
   expect_no_error({
     x = mapfast_gg(testpoints_10)
     x

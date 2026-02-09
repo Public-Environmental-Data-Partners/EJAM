@@ -1,0 +1,20 @@
+---
+title: "Technical Information and Data Downloads"
+description: "Technical Information and Data Downloads"
+output: html_document
+---
+
+This page contains detailed information about the technical aspects of EJScreen, the most recent updates, and how to download full EJScreen datasets.
+You may also explore information about the detailed aspects of the tool in the **[EJScreen Technical Documentation (pdf)](`r EJAM::url_ejscreentechdoc()`)** (770.34 KB) [as archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf). This document provides details on the data and methods used to create the indicators and indexes in EJScreen.
+
+- [Download EJScreen Data (pre-2025), as archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/download-ejscreen-data) but for newer data see [EJAM repository and datasets](https://ejanalysis.org/ejam-code)
+- [EJScreen API (pre-2025), as archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-api) but [for a newer API see work by PEDP and EDGI](https://screening-tools.com)
+- [Updates and Changes (pre-2025), as archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/ejscreen-updates-and-changes)
+- **[EJScreen Technical Documentation (pdf)](`r EJAM::url_ejscreentechdoc()`)** (770.34 KB) [as archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf).
+
+--------------------
+ _About this page:_
+
+- _This page is a simplified version of the original saved by archive.org. That [archived version](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/technical-information-and-data-downloads) was last updated July 8, 2024._
+- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+

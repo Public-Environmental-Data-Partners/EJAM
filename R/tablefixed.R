@@ -19,7 +19,7 @@
 #' @seealso colcounter_summary()
 #' @return summary table
 #'
-#' @export
+#' @keywords internal
 #'
 tablefixed <- function(x, maxbin=NULL) {
   # returns a table of counts of integer values zero through maxbin

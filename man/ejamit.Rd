@@ -256,7 +256,7 @@ See examples in vignettes/ articles at https://ejanalysis.github.io/EJAM
   testsites <- testpoints_10[2,]
   s2b <- getblocksnearby(testsites, radius = 3.1)
   getblocks_diagnostics(s2b)
-  plotblocksnearby(s2b)
+  plot_blocks_nearby(s2b)
 
   # if doing just 2d step of ejamit()
   #  get summaries of all indicators based on table of distances

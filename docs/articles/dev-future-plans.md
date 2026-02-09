@@ -1,0 +1,176 @@
+# Future Plans and Ideas for EJAM
+
+## Status and Future Directions
+
+This article highlights some key features or areas ripe for future
+enhancements. Additional specific feature requests or ideas are in
+github issues in the EJAM repository. Updates on the status of the
+repository, web app hosting, and open source package development are in
+the [README](https://ejanalysis.github.io/EJAM/articles/) or at
+[ejanalysis.com/status](https://ejanalysis.com/status).
+
+### Possible future enhancements
+
+Although EPA stopped actively developing EJAM in 2025, it had already
+identified various options for future enhancements, including some of
+the ideas listed below. Subsequent non-EPA work on newer versions of
+EJAM has started to address some of these and is likely to continue to
+do so, in tandem with work on EJSCREEN itself. The open source EJAM R
+package is designed to be extensible, so that updated data, new kinds of
+indicators, new types of analyses, and new types of reports can be added
+over time by a community of contributors.
+
+#### API
+
+In 2025, when the original EJSCREEN API was taken offline by EPA, a
+non-EPA effort replaced it with a new API (“EJAM API”) that provides
+many of the original features. The new API became the tool through which
+EJSCREEN is able to provide a Community Report on a single location. It
+also allows the “EJSCREEN multisite tool” (aka EJAM’s web app) to show
+links within tables of results and map popups, to link to a report on
+each site, for example. Some parallel work on an API was also drafted in
+the plumber folder of the EJAM source package. A future, expanded API is
+likely to provide the following: - reports in pdf format (not just
+html), for better pagination when printing - better handling of polygons
+(ability to request a report on a large/complex polygon) - ability to
+obtain a multisite summary report (not just a 1-site report) (via the
+sitenumber parameter) - allowing the API to use most or all of the same
+parameters as the functions
+[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) and
+[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md),
+providing more features and flexibility in customizing reports. - data
+(an easy way to obtain subsets of data at the block or blockgroup level,
+for example, via an assets) - enhancements and/or fixes as noted in
+[github issues for the EJAM-API
+repository](https://github.com/edgi-govdata-archiving/EJAM-API/issues) -
+access to services such as fast identification of nearby blocks or other
+points (via
+[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+or
+[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)) -
+summarization (aggregation over blocks or blockgroups), maybe for
+user-provided indicators
+
+#### User-specified Indicators
+
+EJAM in the future will also be able to analyze, aggregate, and report
+on other residential population indicators (e.g., other Census ACS
+variables), to include user-selected EPA-hosted layers, or even
+user-provided data. In other words, an analysis would be able to include
+other layers on risks or concentrations (at blockgroup resolution), or
+user-provided scores for each blockgroup. This would first be available
+for use in R as one or more functions and would subsequently be made
+available as a set of features through the web app interface. That could
+separately include the ability to upload a user-provided blockgroup
+indicator for analysis in existing or distinct reports, and/or the
+ability to specify ACS variables and formulas to obtain and calculate
+new indicators on the fly. This could first be a set of functions
+available for use in R and could subsequently be made available for use
+through the web app interface. See preliminary work such as the
+following:
+[`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html)
+as a way to obtain Census ACS demographics,
+[`acs_bybg()`](https://ejanalysis.github.io/EJAM/reference/acs_bybg.md)
+examples of another way to obtain data and then using ACS raw data to
+calculate indicators,
+[`calctype()`](https://ejanalysis.github.io/EJAM/reference/calctype.md)
+for metadata on how a given indicator should get aggregated over blocks
+or blockgroups,
+[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+parameters like wtdmeancols, and exploratory early drafts of possible
+approaches to creating new indicators or aggregating them for a report,
+in[`calc_ejam()`](https://ejanalysis.github.io/EJAM/reference/calc_ejam.md),
+[`custom_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/custom_doaggregate.md),
+[`doaggregate_newscores()`](https://ejanalysis.github.io/EJAM/reference/doaggregate_newscores.md),
+etc.
+
+#### Counts of nearby points of interest
+
+Features were drafted that will be able to report on the number of
+user-specified points of interest (POI) at each location. These POI
+could be amenities (e.g., parks, grocery stores), sources of risk or
+disamenities (e.g., diesel emissions sources, landfills), or potentially
+vulnerable locations (e.g., elementary schools, daycare, hospitals,
+nursing homes). The tool would report on counts of POI, in an analysis
+of circular buffers (e.g., \# of parks near each facility analyzed), but
+also for FIPS Census units (e.g., \# of parks in each County) or
+polygons/shapefiles (e.g., \# of parks in each high-risk zone). See
+[`countpoints_nearby()`](https://ejanalysis.github.io/EJAM/reference/countpoints_nearby.md),
+and related early draft work in EJAM/R/PROXIMITY_FUNCTIONS.R. Note
+certain POI are already tallied in the reports, such as hospitals,
+schools, TRI sites, etc. and more information is available using
+[`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md).
+
+#### Facility Density Scores for all EPA-regulated Facilities
+
+A facility density indicator may be explored and pre-calculated, that
+would summarize the proximity of all types of EPA-regulated facilities,
+or certain subcategories, for every community in the US or within one
+State of interest. This would be similar to the existing “proximity
+score” indicators such as the RMP score in EJSCREEN, but cover a larger
+range of facilities. See early draft work in
+`EJAM/R/PROXIMITY_FUNCTIONS.R`. This could first be a dataset available
+for use in R and could subsequently be made available for reporting
+through the web app interface.
+
+#### Proximity Scores for User-Specified Sites
+
+A feature is planned that will be able to quickly calculate a new
+proximity indicator for every blockgroup in the US, to represent counts
+of and distances to user-specified points such as facilities. This would
+be in addition to or instead of a pre-calculated facility density score,
+and similar to the existing proximity indicators such as the RMP score
+in EJSCREEN, but it would be calculated on demand, when needed, for any
+user-specified set of points. See early draft work in
+`EJAM/R/PROXIMITY_FUNCTIONS.R`. This could first be a function available
+for use in R and could subsequently be made available for use through
+the web app interface.
+
+#### Written Long Report
+
+EJAM is designed in a way that will allow a future update to provide a
+default, standard written report (e.g., such as a 10-page report). EJAM
+will provide a written report with text, graphics, and maps, ready for a
+user to print, download, share, and use. Because the report is a Word
+document, one can further edit it offline as needed. Users also can
+choose to use just selected tables or graphics or data files (such as
+for individual sites and summary statistics). See early draft work in
+`system.file("report/written_report", package = "EJAM")` and in
+R/app_ui.R and R/app_server.R.
+
+#### Methods for Identifying and Focusing on Key Findings
+
+Communicating key findings is challenging when such a large number of
+metrics are available across multiple locations with multiple
+residential population groups. Some simple tools may be able to help
+with initial filtering of results, to suggest what might be highlighted.
+These could be used for a revised summary report, but especially will be
+explored for the long-form written report, particularly for ways to
+provide an Executive Summary. See early draft work in functions such as
+[`count_sites_with_n_high_scores()`](https://ejanalysis.github.io/EJAM/reference/count_sites_with_n_high_scores.md)
+and the report/written_report folder.
+
+#### Visualization Tools
+
+A variety of plots and maps will be explored as ways to communicate the
+rich data results calculated by EJAM. For example, EJAM R functions can
+calculate and display detailed estimates of the range of residential
+distances to facilities within each residential population subgroup -
+this type of visualization could be incorporated into the web app if
+there appears to be interest in it. Another possibility is that plots,
+maps, and tables could be made to interact in sync with each other,
+where that supports useful data exploration. See examples of plots in
+the vignettes, for example, and [the many plot_xyz functions and mapping
+functions](https://ejanalysis.github.io/EJAM/reference/index.html#viewing-results).
+
+#### Spatial Resolution
+
+EJAM is designed with growth in mind, assuming that the specific
+indicators of interest will expand or change over time. It is even
+possible that multiple resolutions of data will need to be analyzed,
+such as block, blockgroup, and tract data for different indicators. A
+subsequent refinement might even use a high-resolution raster grid of
+population estimates rather than the Census Block counts currently used
+for buffering and weighting blockgroup scores for partially included
+blockgroups.

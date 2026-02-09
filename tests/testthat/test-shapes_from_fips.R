@@ -169,7 +169,7 @@ testthat::test_that("bad fips - returns the VALID, nonempty polygon fips at leas
 })
 ################ ################# #
 
-testthat::test_that("bad fips - returns the VALID fips at least, ignoring sort, even if some bounds unavailable", {
+testthat::test_that("bad fips - returns the (VALID) fips at least, ignoring sort, even if some bounds unavailable", {
 
   expect_equal(
     sum(duplicated(shp$FIPS[ fips_valid(shp$FIPS)])),
@@ -179,12 +179,12 @@ testthat::test_that("bad fips - returns the VALID fips at least, ignoring sort, 
   #  ignoring sort
   expect_setequal(
     shp$FIPS[ fips_valid(shp$FIPS)],
-    inputfips[fips_valid(inputfips)]
+    inputfips[fips_valid(inputfips)] # "10"      "4273072" "10001"     "2966134" "2966134"
   )
 })
 ################ #
 
-testthat::test_that("bad fips - returns the VALID fips at least, SORTED, even if some bounds unavailable", {
+testthat::test_that("bad fips - returns the (VALID) fips at least, SORTED, even if some bounds unavailable", {
 
   # same fips returned as input, for the valid, nonNA ones at least,
   #  original sort order
@@ -195,33 +195,46 @@ testthat::test_that("bad fips - returns the VALID fips at least, SORTED, even if
 })
 ################ ################# #
 
-testthat::test_that("bad fips - returns the non-NA fips at least, ignoring sort, but not necessarily valid fips missing bounds", {
+testthat::test_that("bad fips - returns the non-NA (VALID) fips at least, ignoring sort, but not necessarily valid fips missing bounds", {
 
   expect_equal(
     sum(duplicated(shp$FIPS[!is.na(shp$FIPS)  ])),
     sum(duplicated(inputfips[!is.na(inputfips)]))
   )
+  # expect_setequal(
+  #   shp$FIPS[!is.na(shp$FIPS)  ],  # NA instead of  "99" so this test would fail
+  #   inputfips[!is.na(inputfips)]   # includes "99"
+  # )
   expect_setequal(
-    shp$FIPS[!is.na(shp$FIPS)  ],
-    inputfips[!is.na(inputfips)]
+    shp$FIPS[!is.na(fips_lead_zero(  shp$FIPS))  ],  # NA instead of  "99" once fips_lead_zero is done
+    inputfips[!is.na(fips_lead_zero( inputfips))]   # NA instead of "99" once fips_lead_zero is done
+  )
+  expect_setequal(
+    shp$FIPS[fips_valid(shp$FIPS)  ],  # removes "99" and NA values
+    inputfips[fips_valid(inputfips)]   # removes "99" and NA values
   )
 })
 ################ #
 
-testthat::test_that("bad fips - returns the non-NA fips at least, SORTED, but not necessarily valid fips missing bounds", {
+testthat::test_that("bad fips - returns non-NA (VALID) input fips at least, SORTED, but maybe not valid fips missing bounds", {
 
   expect_equal(
-    shp$FIPS[!is.na(shp$FIPS)  ],
-    inputfips[!is.na(inputfips)]
+    shp$FIPS[fips_valid(shp$FIPS)  ]
+    ,  # fips_valid() drops the   "99" and NA values
+    inputfips[fips_valid(inputfips)]
   )
 })
 ################ ################# #
 
-testthat::test_that("bad fips - returns ALL input fips, ignoring sort", {
+testthat::test_that("bad fips - returns ALL (VALID) input fips, ignoring sort", {
 
+  # expect_equal(
+  #   sum(duplicated(shp$FIPS)),   #### would fail since the original "99" is NA within shp$FIPS, and is counted as another duplicate
+  #   sum(duplicated(inputfips))
+  # )
   expect_equal(
-    sum(duplicated(shp$FIPS)),   #### ??
-    sum(duplicated(inputfips))
+    sum(duplicated(shp$FIPS[fips_valid(shp$FIPS)])),
+    sum(duplicated(inputfips[fips_valid(inputfips)]))
   )
 
   # same length vectors in/out?
@@ -230,20 +243,29 @@ testthat::test_that("bad fips - returns ALL input fips, ignoring sort", {
     length(inputfips)
   )
 
+  # # does it include NA in output for the fips that is NA ? ***
+  # expect_setequal(
+  #   shp$FIPS,  # 99 was turned into NA
+  #   inputfips  # has 99
+  # )
   # does it include NA in output for the fips that is NA ? ***
   expect_setequal(
-    shp$FIPS,
-    inputfips
+    shp$FIPS[fips_valid(shp$FIPS)],
+    inputfips[fips_valid(inputfips)]
   )
 })
 ################ #
 
-testthat::test_that("bad fips - returns ALL input fips, SORTED", {
+testthat::test_that("bad fips - returns ALL (VALID) input fips, SORTED", {
 
   # does it include NA in output for the fips that is NA ? ***
+  # expect_equal(
+  #   shp$FIPS,
+  #   inputfips
+  # )
   expect_equal(
-    shp$FIPS,
-    inputfips
+    shp$FIPS[fips_valid(shp$FIPS)],
+    inputfips[fips_valid(inputfips)]
   )
 })
 ################ ################# #
@@ -271,7 +293,7 @@ testthat::test_that("shapes_from_fips misc cases", {
 
     shp = shapes_from_fips(c('10001', '99999'))
     expect_true({
-      NROW(shp) == 2 & all.equal(shp$FIPS , c("10001", "99999") )
+      NROW(shp) == 2 & all.equal(shp$FIPS , c("10001", NA)) # "99999") ) # right now, invalid FIPS get turned to NA
       })  # some ok some not - county
 
       shp <- shapes_from_fips(c('2513205','1239999'))

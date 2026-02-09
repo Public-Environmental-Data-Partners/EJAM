@@ -18,7 +18,7 @@ regids_seem_ok = function(regid, minok = 110000300000, maxok = 110072000000) {
 #'
 #' @param regid vector of IDs like testinput_regid
 #'
-#' @returns logical vector same length as input
+#' @return logical vector same length as input
 #'
 #' @export
 #'

@@ -9,7 +9,7 @@ inverse of fips2name(), 1-to-1 map statename, ST, countyname to FIPS of each"><m
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.6.003</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,10 @@ inverse of fips2name(), 1-to-1 map statename, ST, countyname to FIPS of each"><m
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
@@ -127,6 +131,12 @@ in 2 different counties of same state.</p>
 <span><span class="fu">name2fips</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Magnolia town, DE"</span>, <span class="st">"Delaware City city, DE"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">name2fips</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'denver'</span>,  <span class="st">"new york"</span> <span class="op">)</span>, exact <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span><span class="fu">name2fips</span><span class="op">(</span><span class="st">'denver,co'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Can see unexpected results depending on parameters if multiple matches exist:</span></span>
+<span><span class="va">x1</span><span class="op">=</span> <span class="fu">name2fips</span><span class="op">(</span><span class="st">"rochester,ny"</span>, exact <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">x2</span><span class="op">=</span> <span class="fu">name2fips</span><span class="op">(</span><span class="st">"rochester,ny"</span>, exact <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="va">x3</span><span class="op">=</span> <span class="fu">name2fips</span><span class="op">(</span><span class="st">"rochester,ny"</span>, usegrep <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">x1</span>; <span class="va">x2</span>; <span class="va">x3</span> <span class="co"># 3 different answers</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -134,11 +144,11 @@ in 2 different counties of same state.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>November 2025</p>
+  <p>January 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.6.003</p>
+  <p>EJAM Version 2.32.7</p>
 </div>
 
     </footer></div>

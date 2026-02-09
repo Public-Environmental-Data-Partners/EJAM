@@ -7,8 +7,8 @@
 
 do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
 
-  ## e.g.,
-  #   funcname <- "url_ejamapi"; FUN <- NULL
+  ## e.g., to try just some of these manually
+  #   funcname <- "url_ejamapi"; FUN <- NULL; if (is.null(FUN)) {FUN <- get(funcname)}
 
   if (is.null(FUN)) {FUN <- get(funcname)}
 
@@ -108,7 +108,11 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), ...) #
     })
-    expect_equal(length(x), 2)
+    if (exists("specified_sitenumber") && specified_sitenumber) {
+      expect_equal(length(x), 1) #
+    } else {
+    expect_equal(length(x), 2) # not true if sitenumber = 2
+      }
     expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
@@ -123,15 +127,20 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     # expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
-  ############### #     MULTISITE OVERALL RESULTS REPORT - API MIGHT NOT IMPLEMENTED this YET:
+  ############### #     MULTISITE OVERALL RESULTS REPORT - API MIGHT NOT HAVE IMPLEMENTED this YET:
 
-  try(test_that(paste0(funcname, " 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL if sitenumber=0 (API HANDLES IT?)"), {
+  try(test_that(paste0(funcname, " API handles 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL"), {
+skip_if(TRUE, "test fails until API can handle combo of 2 types of fips like county and state in 1 URL")
     oldwidth = options("width")
     expect_no_error({
       x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
     })
     # expect_equal(length(x), 1)
-    expect_true(url_online(x[1])) # (API HANDLES IT?)
+    attempt = try( url_online(x[1]) , silent = TRUE)
+    if (inherits(attempt, "try-error")) {
+      cat("This test fails until API can handle combo of 2 types of areas like county and state in 1 URL\n")
+    }
+    expect_true(attempt) # (can API HANDLE IT?)
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #  ############### #
@@ -194,11 +203,12 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
 }
 ############## ############### ############### ############### ############### #
 ############## ############### ############### ############### ############### #
-
+specified_sitenumber = FALSE
 do_url_tests("url_ejamapi", url_ejamapi)
 
+specified_sitenumber = TRUE
 do_url_tests("url_ejamapi", url_ejamapi, sitenumber = 2)
-
+rm(specified_sitenumber)
 
 # sitenumber (overall vs 1-site) ####
 
