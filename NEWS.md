@@ -1,3 +1,10 @@
+# EJAM 2.5.0 (February 2026)
+
+## Updated Demographic Data from ACS
+
+- v2.5.0 provides 2020-2024 ACS
+
+
 # EJAM 2.4.0 (February 2026)
 
 ## Updated Demographic Data from ACS

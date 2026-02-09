@@ -31,14 +31,15 @@ tables_ejscreen_acs <- c(
 ## ######################### #
 
 # version = paste0("v", desc::desc_get("Version"))
-yr =
+yr = acs_endyear(guess_always = T)
+cat("SHOULD CONFIRM YEAR TO USE IS ", yr, "\n")
 
 EJAM:::dataset_documenter("tables_ejscreen_acs", seealso = "[formulas_ejscreen_acs]",
 
                           details = paste0("See
 #'
 #'  ```
-#'  yr = 2023
+#'  yr = ", yr, "
 #'  urls = paste0('https://data.census.gov/table/ACSDT5Y', yr, '.', tables_ejscreen_acs)
 #'  sapply(urls, browseURL)
 #'  acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), 'acs5')
@@ -57,11 +58,11 @@ EJAM:::dataset_documenter("tables_ejscreen_acs", seealso = "[formulas_ejscreen_a
 #'  - B25032  owned units vs rented units (occupied housing units, same universe as B25003)
 #'  - B28003  no broadband
 #'  - B27010  no health insurance
-#'  - C16002  (language category and) % of households limited English speaking (lingiso) <https://data.census.gov/table/ACSDT5Y2023.C16002>
-#'  - B16004  (language category and) % of residents (not hhlds) speak no English at all <https://data.census.gov/table/ACSDT5Y2023.B16004>
+#'  - C16002  (language category and) % of households limited English speaking (lingiso) <https://data.census.gov/table/ACSDT5Y",yr,".C16002>
+#'  - B16004  (language category and) % of residents (not hhlds) speak no English at all <https://data.census.gov/table/ACSDT5Y",yr,".B16004>
 #'
 #'  TRACT ONLY, but also used by EJSCREEN:
-#'  - C16001   languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc. <https://data.census.gov/table/ACSDT5Y2023.C16001>
+#'  - C16001   languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc. <https://data.census.gov/table/ACSDT5Y",yr,".C16001>
 #'  - B18101   disability")
 )
 

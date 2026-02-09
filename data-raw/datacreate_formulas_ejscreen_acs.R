@@ -30,12 +30,12 @@
     #   "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
     #   "B28003", # no broadband
     #   "B27010", # no health insurance
-    #   "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
-    #   "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
+    #   "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2024.C16002"
+    #   "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2024.B16004"
     #   ####### TRACT ONLY:
     #   #   Note some tables used by EJSCREEN are only available at tract resolution, namely
     #   #   C16001 for detailed specific languages as % of residents, and B18101 for % with disability
-    #   "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
+    #   "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2024.C16001"
     #   "B18101" # disability -- at tract resolution only ########### #
     # )
     ## ######################### #
@@ -43,7 +43,7 @@
     tables <- tables_ejscreen_acs
     ## ######################### #
 
-    ## from    tidycensus::load_variables(year = 2023, dataset = "acs5")
+    ## from    tidycensus::load_variables(year = 2024, dataset = "acs5")
     #         name        label       concept                                                                                        table
 
     # 9 B25034_001 Estimate!!Total:   Year Structure Built                                                                           B25034
@@ -54,7 +54,7 @@
     # 4 B15002_001 Estimate!!Total:   Sex by Educational Attainment for the Population 25 Years and Over                             B15002
     # 7 B23025_001 Estimate!!Total:   Employment Status for the Population 16 Years and Over                                         B23025
     #13 C17002_001 Estimate!!Total:   Ratio of Income to Poverty Level in the Past 12 Months                                         C17002
-    # 6 B19301_001 Estimate!!Per capita income in the past 12 months (in 2023 inflation-adjusted dollars) Per Capita Income in the Past 12 Months (in 2023 Inflation-Adjusted Dollars)  B19301
+    # 6 B19301_001 Estimate!!Per capita income in the past 12 months (in 2024 inflation-adjusted dollars) Per Capita Income in the Past 12 Months (in 2024 Inflation-Adjusted Dollars)  B19301
     # 8 B25032_001 Estimate!!Total:   Tenure by Units in Structure                                                                   B25032
     #11 B28003_001 Estimate!!Total:   Presence of a Computer and Type of Internet Subscription in Household                          B28003
     #10 B27010_001 Estimate!!Total:   Types of Health Insurance Coverage by Age                                                      B27010
@@ -83,8 +83,8 @@
     ## to list just blockgroup and tract tables:
     # v22 = v22[v22$geography %in% c("tract", "block group"), ]
     # unique(v22$table) # almost 1,000 tables if bg and tract scales kept
-    ## confirmed all tables listed as ejscreen relevant are in fact found in this list of all acs5 tables
-    # cbind(tables, acs2022 = tables %in% v22$table, acs2023 = tables %in% v23$table)
+    ## confirm all tables listed as ejscreen relevant are in fact found in this list of all acs5 tables
+    # cbind(tables, acs2022 = tables %in% v22$table, acs2024 = tables %in% v24$table)
 
   }
   ########################################################################################## #
@@ -527,13 +527,13 @@
                 "names_d_language", NA, NA)
   ),
 
-  ejam_package_version = "2.4.0",
-  ejscreen_version = c(VersionEJSCREEN = "2.4"),
-  ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2025-2026"),
-  acs_releasedate = c(ReleaseDateACS = "2024-12-12"),
-  acs_version = c(VersionACS = "2019-2023"),
+  ejam_package_version = "2.5.0",
+  ejscreen_version = c(VersionEJSCREEN = "2.5"),
+  ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2026"),
+  acs_releasedate = c(ReleaseDateACS = "2026-01"),
+  acs_version = c(VersionACS = "2010-2024"),
   census_version = c(VersionCensus = "2020"),
-  date_saved_in_package = "2025-12-01",
+  date_saved_in_package = Sys.Date(),
 
   row.names = c(NA, -194L),
   class = "data.frame")
@@ -769,10 +769,10 @@
   ## compare random blockgroup - data from census vs from EJAM/EJSCREEN dataset
   if (FALSE) {
     fips = blockgroupstats$bgfips[sample(1:NROW(blockgroupstats), 1)]
-    browseURL(paste0("https://data.census.gov/table?q=B01001&g=1500000US", fips, "&y=2022"))
-    browseURL(paste0("https://data.census.gov/table?q=B16004&g=1500000US", fips,"&y=2022")) # browseURL(paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", 2022, ".", "B16004")
-    browseURL(paste0("https://data.census.gov/table?q=c16002&g=1500000US", fips,"&y=2022"))
-    browseURL(paste0("https://data.census.gov/table?q=c16001&g=1400000US", substr(fips, 1, 11),"&y=2022")) # TRACT
+    browseURL(paste0("https://data.census.gov/table?q=B01001&g=1500000US", fips, "&y=2024"))
+    browseURL(paste0("https://data.census.gov/table?q=B16004&g=1500000US", fips,"&y=2024")) # browseURL(paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", 2022, ".", "B16004")
+    browseURL(paste0("https://data.census.gov/table?q=c16002&g=1500000US", fips,"&y=2024"))
+    browseURL(paste0("https://data.census.gov/table?q=c16001&g=1400000US", substr(fips, 1, 11),"&y=2024")) # TRACT
     cbind(t(bg[bg$bgfips == fips, varnames]), varinfo(varnames)$varlist) # BLOCKGROUP
     cbind(t(bg[substr(bg$bgfips, 1, 11) %in% substr(fips, 1, 11), varnames]), varinfo(varnames)$varlist) # TRACT
   }
@@ -848,7 +848,7 @@
   x[x$table %in% c( "C16001") & grepl(':$', x$label) & grepl("", x$label), ] |> print(n=100)
 
   # C16001 is at tract resolution only ###########
-  #   https://data.census.gov/table/ACSDT5Y2023.C16001
+  #   https://data.census.gov/table/ACSDT5Y2024.C16001
   # Universe: Population 5 years and over
   # name       label                                                         concept                                                     table
   # <chr>      <chr>                                                         <chr>                                                       <chr>
@@ -871,7 +871,7 @@
 
   x[x$table %in% "C16002",] |> print(n=40)   ## by block group
 
-  # https://data.census.gov/table/ACSDT5Y2023.C16002 # Universe: Households
+  # https://data.census.gov/table/ACSDT5Y2024.C16002 # Universe: Households
   #https://data.census.gov/table?q=C16002:+Household+Language+by+Household+Limited+English+Speaking+Status&g=1500000US040050003001
   # https://data.census.gov/table?q=C16002:+Household+Language+by+Household+Limited+English+Speaking+Status&g=1500000US040131042124
 
@@ -920,21 +920,21 @@
 
 
   # ######################### #
-  # [1] "https://data.census.gov/table/ACSDT5Y2023.B25034"
-  # [2] "https://data.census.gov/table/ACSDT5Y2023.B01001"
-  # [3] "https://data.census.gov/table/ACSDT5Y2023.B03002"
-  # [4] "https://data.census.gov/table/ACSDT5Y2023.B02001"
-  # [5] "https://data.census.gov/table/ACSDT5Y2023.B15002"
-  # [6] "https://data.census.gov/table/ACSDT5Y2023.B23025"
-  # [7] "https://data.census.gov/table/ACSDT5Y2023.C17002"
-  # [8] "https://data.census.gov/table/ACSDT5Y2023.B19301"
-  # [9] "https://data.census.gov/table/ACSDT5Y2023.B25032"
-  # [10] "https://data.census.gov/table/ACSDT5Y2023.B28003"
-  # [11] "https://data.census.gov/table/ACSDT5Y2023.B27010"
-  # [12] "https://data.census.gov/table/ACSDT5Y2023.C16002"
-  # [13] "https://data.census.gov/table/ACSDT5Y2023.B16004"
-  # [14] "https://data.census.gov/table/ACSDT5Y2023.C16001" # by tract
-  # [15] "https://data.census.gov/table/ACSDT5Y2023.B18101" # by tract
+  # [1] "https://data.census.gov/table/ACSDT5Y2024.B25034"
+  # [2] "https://data.census.gov/table/ACSDT5Y2024.B01001"
+  # [3] "https://data.census.gov/table/ACSDT5Y2024.B03002"
+  # [4] "https://data.census.gov/table/ACSDT5Y2024.B02001"
+  # [5] "https://data.census.gov/table/ACSDT5Y2024.B15002"
+  # [6] "https://data.census.gov/table/ACSDT5Y2024.B23025"
+  # [7] "https://data.census.gov/table/ACSDT5Y2024.C17002"
+  # [8] "https://data.census.gov/table/ACSDT5Y2024.B19301"
+  # [9] "https://data.census.gov/table/ACSDT5Y2024.B25032"
+  # [10] "https://data.census.gov/table/ACSDT5Y2024.B28003"
+  # [11] "https://data.census.gov/table/ACSDT5Y2024.B27010"
+  # [12] "https://data.census.gov/table/ACSDT5Y2024.C16002"
+  # [13] "https://data.census.gov/table/ACSDT5Y2024.B16004"
+  # [14] "https://data.census.gov/table/ACSDT5Y2024.C16001" # by tract
+  # [15] "https://data.census.gov/table/ACSDT5Y2024.B18101" # by tract
 
 
 ############################################################## #

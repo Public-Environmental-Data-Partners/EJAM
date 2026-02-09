@@ -8,7 +8,7 @@
 
 datacreate_blockgroup_pctdisability <- function(yr = acs_endyear(guess_census_has_published = TRUE) )  {
 
-  # yr = EJAM:::acs_endyear(guess_census_has_published = TRUE) # 2022, 2023, or 2024
+  # yr = EJAM:::acs_endyear(guess_census_has_published = TRUE) # e.g., 2022, 2023, or 2024
   cat("end year to use: ", yr, '\n')
   ###################################################### #
   # - download tract level acs for B18101

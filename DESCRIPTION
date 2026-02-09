@@ -20,8 +20,8 @@ Maintainer: Mark A. Corrales <ejam@ejanalysis.com>
 ejam_data_repo: ejanalysis/ejamdata
 VersionEJSCREEN: 2.4
 ReleaseDateEJSCREEN: 2025-2026
-VersionACS: 2019-2023
-ReleaseDateACS: 2024-12-12
+VersionACS: 2020-2024
+ReleaseDateACS: 2026-01-29
 VersionCensus: 2020
 Depends:
     R (>= 4.3.0)

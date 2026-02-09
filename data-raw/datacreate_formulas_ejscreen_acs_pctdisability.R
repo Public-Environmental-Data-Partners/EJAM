@@ -33,13 +33,7 @@ formulas_ejscreen_acs_disability <- structure(list(
                "Civilian noninstitutionalized population (denominator for % disability)")
 ),
 
-# ejam_package_version = "2.32.6.003",
-# ejscreen_version = c(VersionEJSCREEN = "2.32"),
-# ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2024-08-12"),
-# acs_releasedate = c(ReleaseDateACS = "2023-12-07"),
-# acs_version = c(VersionACS = "2018-2022"),
-# census_version = c(VersionCensus = "2020"),
-# date_saved_in_package = "2025-11-15",
+
 
 row.names = c(135L, 1L, 2L),
 class = "data.frame")

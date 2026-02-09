@@ -35,7 +35,7 @@ default_metadata <- list(
 #   ejscreen_version     = c(VersionEJSCREEN = "2.4"),  # or "2.5"
 #   ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2025-2026"), # or "2026"
 #   acs_releasedate      = c(ReleaseDateACS = "2024-12-12"), #  "2026-01-29" is date for delayed release of ACS 2020-2024 data.
-#   acs_version          = c(VersionACS = "2019-2023"),      # or "2020-2024"
+#   acs_version          = c(VersionACS = "2020-2024"),
 #   census_version       = c(VersionCensus = "2020")
 # )
 ##    ## "https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html"

@@ -608,7 +608,7 @@ url_county_health <- function(fips = NULL, year = 2025,
     })
     countyname <- trimws(gsub(" county", "", countyname))
     countyname <- gsub(" ", "-", countyname)
-    # https://www.countyhealthrankings.org/health-data/maryland/montgomery?year=2023
+    # https://www.countyhealthrankings.org/health-data/maryland/montgomery?year=
     urlx <- paste0(baseurl, statename, "/", countyname, "?year=", year)
     urlx[is.na(fips) | is.na(countyname)] <- NA
     return(urlx)
