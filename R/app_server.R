@@ -447,6 +447,7 @@ app_server <- function(input, output, session) {
     if ("sf" %in% class(shp)) {
       disable_buttons[['SHP']] <- FALSE # Start button enabled
     }
+    cat("COUNT OF SITES BY SHAPEFILE: ", NROW(shp), "\n")
     shp
 
   }) # END OF SHAPEFILE UPLOAD
@@ -518,7 +519,7 @@ app_server <- function(input, output, session) {
   #     if (any(tolower(colnames(ext)) %in% lat_alias) & any(tolower(colnames(ext)) %in% lon_alias)) {
   #       sitepoints <- ext %>%
   #         EJAM::latlon_df_clean() #%>%   # This does latlon_infer() and latlon_as.numeric() and latlon_is.valid()
-  #       cat("COUNT OF VALID LAT/LON POINTS IN TYPED IN DATA: ", NROW(sitepoints),"\n")
+  # cat("COUNT OF SITES BY LATLON TYPED IN after latlon_df_clean -- VALID LAT/LON POINTS IN TYPED IN DATA: ", NROW(sitepoints),"\n")
   #       sitepoints
   #       # returns it here, as the last thing in the reactive
   #     } else {
@@ -567,7 +568,7 @@ app_server <- function(input, output, session) {
           latlon_df_clean() #%>%   # This does latlon_infer() and latlon_as.numeric() and latlon_is.valid()
         sitepoints$invalid_msg <- NA
         sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-        if (input$testing) {cat("ROW COUNT after latlon_df_clean(): ", NROW(sitepoints), "\n")}
+        cat("COUNT OF SITES BY LATLON via ejamapp() after latlon_df_clean(): ", NROW(sitepoints), "\n")
         return(sitepoints)
       } else {
         if (input_testing) {cat("No coordinate columns found.\n")}
@@ -639,7 +640,7 @@ app_server <- function(input, output, session) {
             latlon_df_clean(invalid_msg_table = TRUE) #%>%   # This does latlon_infer() and latlon_as.numeric() and latlon_is.valid()
           sitepoints$invalid_msg <- NA
           sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-          cat("ROW COUNT after latlon_df_clean(): ", NROW(sitepoints), "\n")
+          cat("COUNT OF SITES BY LATLON UPLOADED after latlon_df_clean(): ", NROW(sitepoints), "\n")
           disable_buttons[['latlon']] <- FALSE
           #print(sum(sitepoints$valid))
           invalid_alert[['latlon']] <- sum(!sitepoints$valid)
@@ -712,7 +713,7 @@ app_server <- function(input, output, session) {
 
     }
     ## return merged dataset
-    cat("SITE COUNT VIA FRS frs_is_valid() looking for REGISTRY_ID: ", NROW(sitepoints), "\n")
+    cat("COUNT OF SITES BY FRS frs_is_valid() looking for REGISTRY_ID: ", NROW(sitepoints), "\n")
     disable_buttons[[placetype]] <- FALSE
     invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
     sitepoints
@@ -736,12 +737,12 @@ app_server <- function(input, output, session) {
       inputnaics = {}
 
       # if not empty, assume its pulled using naics_from_any() or older naics_find() above
-      if (length(inputnaics) == 0 | rlang::is_empty(inputnaics)) {
+      if (length(inputnaics) == 0 || rlang::is_empty(inputnaics)) {
         #construct regex expression and finds sites that align with user-selected naics codes
         inputnaics <- naics_user_picked_from_list
         inputnaics <- unique(inputnaics[inputnaics != ""])
-
-        print(inputnaics)
+        cat("selected NAICS:  ")
+        cat(paste0(inputnaics, collapse = ", "), "\n")
 
         #merge user-selected NAICS with FRS facility location information
         # sitepoints <- frs_by_naics[NAICS %like% inputnaics ,  ]
@@ -755,7 +756,8 @@ app_server <- function(input, output, session) {
         sitepoints[, ejam_uniq_id := .I]
         data.table::setcolorder(sitepoints, 'ejam_uniq_id')
         # print(sitepoints)
-        if (rlang::is_empty(sitepoints) | nrow(sitepoints) == 0) {
+
+        if (rlang::is_empty(sitepoints) || nrow(sitepoints) == 0) {
 
           errmsg    = 'No valid locations found under this NAICS code.'
 
@@ -799,13 +801,13 @@ app_server <- function(input, output, session) {
       shiny::validate(errmsg)
 
     }
-    cat("SITE COUNT VIA NAICS from frs_from_naics: ", NROW(sitepoints), "\n")
+    cat("COUNT OF SITES BY NAICS SELECTED, from frs_from_naics: ", NROW(sitepoints), "\n")
     ## assign final value to data_up_naics reactive variable
     sitepoints <- sitepoints %>% latlon_df_clean(invalid_msg_table = T)
     sitepoints$invalid_msg <- NA
     sitepoints$invalid_msg[is.na(sitepoints$NAICS)] <- 'bad NAICS Code'
     sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-    cat("SITE COUNT VIA NAICS after latlon_df_clean: ", NROW(sitepoints), "\n")
+    cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean: ", NROW(sitepoints), "\n")
     disable_buttons[[placetype]] <- FALSE
     invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
     sitepoints
@@ -847,9 +849,12 @@ app_server <- function(input, output, session) {
     if (('REGISTRY_ID' %in% colnames(read_pgm)) & (class(read_pgm$REGISTRY_ID) != "character")) {
       read_pgm$REGISTRY_ID = as.character(read_pgm$REGISTRY_ID)
     }
-
     ## add check for program and pgm_sys_id
-
+    cnames <- intersect(colnames(read_pgm), c('program','pgm_sys_id'))
+    if (length(cnames) > 0) {
+      cat("uploaded program and pgm_sys_id:  \n")
+      print(unique(read_pgm[, ..cnames]))
+    }
     ## look for program in list from unique(frs_by_programid$program)
 
     if (!exists("frs_by_programid")) dataload_dynamic("frs_by_programid")
@@ -881,7 +886,7 @@ app_server <- function(input, output, session) {
     pgm_out$invalid_msg[is.na(pgm_out$lon) | is.na(pgm_out$lat)] <- 'bad lat/lon coordinates'
 
     ## return output dataset
-    cat("SITE COUNT VIA PROGRAM ID: ", NROW(pgm_out), "\n")
+    cat("COUNT OF SITES BY PROGRAM ID: ", NROW(pgm_out), "\n")
     disable_buttons[[placetype]] <- FALSE
     invalid_alert[[placetype]] <- pgm_out[valid == F, .N]
     pgm_out
@@ -899,6 +904,8 @@ app_server <- function(input, output, session) {
     placetype = 'EPA_PROGRAM_sel'
     ## filter frs_by_programid to currently selected program
     pgm_out <- frs_by_programid[ program == input$ss_select_program]
+    cat("selected program category:  ")
+    cat(paste0(unique(input$ss_select_program), collapse = ", "), "\n")
 
     if (nrow(pgm_out) > 0) {
 
@@ -927,7 +934,7 @@ app_server <- function(input, output, session) {
       pgm_out$invalid_msg[is.na(pgm_out$lon) | is.na(pgm_out$lat)] <- 'bad lat/lon coordinates'
       #}
       ## return output dataset
-      cat("SITE COUNT VIA PROGRAM ID: ", NROW(pgm_out), "\n")
+      cat("COUNT OF SITES BY PROGRAM ID: ", NROW(pgm_out), "\n")
       disable_buttons[[placetype]] <- FALSE
       invalid_alert[[placetype]] <- pgm_out[valid == F, .N]
       pgm_out
@@ -1011,18 +1018,18 @@ app_server <- function(input, output, session) {
         sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
         #invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
         showNotification('Points submitted successfully!', duration = 1)
+        cat("COUNT OF SITES BY SIC: ", NROW(sitepoints), "\n")
+        cat("COUNT OF SITES BY SIC with lat lon values: ", NROW(sitepoints[isTRUE(valid), ]), "\n")
       }
     } else {
-
       errmsg    = 'Invalid SIC Input'
 
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
       disable_buttons[[placetype]] <- TRUE
       shiny::validate(errmsg)
-
     }
-    cat("SITE COUNT VIA SIC: ", NROW(sitepoints), "\n")
+
     ## assign final value to data_up_sic reactive variable
     disable_buttons[['SIC']] <- FALSE
     invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
@@ -1081,7 +1088,7 @@ app_server <- function(input, output, session) {
       shiny::validate(errmsg)
     } else {
       disable_buttons[[placetype]] <- FALSE
-      cat("COUNT OF FIPS via fips_from_table(): ", length(fips_vec), '\n')
+      #cat("COUNT OF FIPS via fips_from_table(): ", length(fips_vec), '\n')
       # now let ejamit() do the rest for the FIPS case
       # fips_vec # ??? this line was here but should have no effect?
     }
@@ -1093,7 +1100,7 @@ app_server <- function(input, output, session) {
       numna <- sum(!fips_is_valid)
       num_notna <- length(fips_vec) - sum(!fips_is_valid)
       invalid_alert[[placetype]] <- numna # this updates the value of the reactive invalid_alert()
-      cat("Number of FIPS codes:  "); cat(length(fips_vec), 'total,', num_notna, 'valid,', numna, ' invalid \n')
+      cat("COUNT OF SITES BY FIPS SELECTED (Number of FIPS codes):  "); cat(length(fips_vec), 'total,', num_notna, 'valid,', numna, ' invalid \n')
       # (fips_vec)
     } else {
       errmsg    = 'No valid FIPS codes found in this file.'
@@ -1183,7 +1190,7 @@ app_server <- function(input, output, session) {
         shiny::validate(errmsg)
       } else {
         disable_buttons[['FIPS']] <- FALSE
-        cat("COUNT OF FIPS via fips_from_table(): ", length(fips_vec), '\n')
+        #cat("COUNT OF FIPS via fips_from_table(): ", length(fips_vec), '\n')
         # now let ejamit() do the rest for the FIPS case
         # fips_vec # ??? this line was here but should have no effect?
       }
@@ -1196,7 +1203,7 @@ app_server <- function(input, output, session) {
         num_notna <- length(fips_vec) - sum(!fips_is_valid)
         #num_valid_pts_uploaded[['FIPS']] <- num_notna
         invalid_alert[[placetype]] <- numna # this updates the value of the reactive invalid_alert()
-        cat("Number of FIPS codes:  "); cat(length(fips_vec), 'total,', num_notna, 'valid,', numna, ' invalid \n')
+        cat("COUNT OF SITES BY FIPS UPLOADED (Number of FIPS codes):  "); cat(length(fips_vec), 'total,', num_notna, 'valid,', numna, ' invalid \n')
         # (fips_vec)
       } else {
         errmsg    = 'No valid FIPS codes found in this file.'
@@ -1231,14 +1238,15 @@ app_server <- function(input, output, session) {
     req(isTruthy(input$ss_select_mact))
     placetype = 'MACT'
     if (!exists("frs_by_mact")) dataload_dynamic("frs_by_mact")
-
+    cat("selected MACT:  ")
+    cat(paste0(input$ss_select_mact, collapse = ", "), "\n") # but only one MACT is allowed at a time unlike for NAICS
     ## filter frs_by_mact to currently selected subpart
-    mact_out <- frs_by_mact[subpart == input$ss_select_mact]
-    cat("COUNT OF FACILITIES BY MACT: ", NROW(mact_out), "\n")
-    ## remove any facilities with invalid latlons before returning
+    mact_out <- frs_by_mact[subpart %in% input$ss_select_mact]
+    cat("COUNT OF SITES BY MACT: ", NROW(mact_out), "\n")
+    ## remove any facilities with invalid latlons before returning?
     #mact_out <- mact_out[!is.na(lat) & !is.na(lon),]
-    cat("COUNT OF FACILITIES BY MACT with lat lon values: ", NROW(mact_out), "\n")
-    if (all(is.na(mact_out$lat)) & all(is.na(mact_out$lon))) {
+    cat("COUNT OF SITES BY MACT with lat lon values: ", NROW(mact_out[!is.na(lat) & !is.na(lon),]), "\n")
+    if (is.null(mact_out) || NROW(mact_out) == 0 || all(is.na(mact_out$lat)) & all(is.na(mact_out$lon))) {
 
       errmsg    = 'No valid locations found under this MACT subpart'
 
