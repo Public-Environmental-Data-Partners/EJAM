@@ -1,3 +1,9 @@
+# Development
+
+- MACT, NAICS, or SIC initially selected at launch of app now can be specified as parameters mact, naics, sic in ejamapp(), or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab.
+- More consistent info about selected categories of sites now printed to console (and server log, depending on how app is hosted)
+
+
 # EJAM 2.32.7 (February 2026)
 
 - Bug fixes: 

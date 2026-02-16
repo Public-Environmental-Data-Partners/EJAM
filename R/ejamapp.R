@@ -109,9 +109,10 @@
 #' ejamapp(fips = name2fips(c("akutan,ak", "syracuse city,ny")))
 #'
 #'
-#'  ## Use preferred settings, for your set of analyses:
+#'  ## More options for settings:
 #'
 #' ejamapp(
+#'   default_show_advanced_settings=TRUE, # to make advanced tab visible at start
 #'   analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
 #'   radius = 3.1, # PREFERRED RADIUS
 #'   default_max_miles = 31,      # to raise the radius cap
@@ -129,13 +130,16 @@
 #'
 #' ejamapp(
 #'   analysis_title="Custom NAICS Analysis",
-#'   default_upload_dropdown="dropdown",
-#'   default_selected_type_of_site_category="NAICS",
-#'   default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
-#'   default_naics="562211",
-#'   radius=3.1,
-#'   default_show_advanced_settings=TRUE # to make advanced tab visible at start
+#'   naics="562211", # or default_naics="562211"
 #' )
+#'
+#'   ## SIC as the default:
+#'  sic_from_any(3585)
+#'  ejamapp(sic="3585")
+#'
+#'   ## MACT as the default:
+#'  mact_table$dropdown_label
+#'  ejamapp(mact="OOOO")
 #'
 #'   ## Cities dropdown list as default shown at launch:
 #'
@@ -266,8 +270,12 @@ ejamapp <- function(
 
   if ("fips" %in% names(dots)) {
     # dots$fips will be used
-    dots$default_upload_dropdown <- "upload"
-    dots$default_selected_type_of_site_upload <- "FIPS"
+    if (!('default_upload_dropdown' %in% names(dots))) {
+      dots$default_upload_dropdown <- "upload"
+    }
+    if (!('default_selected_type_of_site_upload' %in% names(dots))) {
+      dots$default_selected_type_of_site_upload <- "FIPS"
+    }
   }
 
   if ("shp" %in% names(dots) && !("shapefile" %in% names(dots))) {
@@ -291,6 +299,23 @@ ejamapp <- function(
   if ("sitepoints" %in% names(dots)) {
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "latlon"
+  }
+
+  if ("naics" %in% names(dots)) {dots$default_naics <- dots$naics}
+  if ("default_naics" %in% names(dots)) {
+    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_selected_type_of_site_category <- "NAICS"
+    dots$default_naics_digits_shown <- "detailed"  # if default_naics is >3 digits, this has to be "detailed" not "basic"
+  }
+  if ("sic" %in% names(dots)) {dots$default_sic <- dots$sic}
+  if ("default_sic" %in% names(dots)) {
+    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_selected_type_of_site_category <- "SIC"
+  }
+  if ("mact" %in% names(dots)) {dots$default_mact <- dots$mact}
+  if ("default_mact" %in% names(dots)) {
+    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_selected_type_of_site_category <- "MACT"
   }
 
   if ("default_radius" %in% names(dots)) {

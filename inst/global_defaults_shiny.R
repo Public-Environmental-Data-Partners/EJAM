@@ -118,6 +118,8 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
   default_naics = "313", # 313 is about 900 textile mills and subcategories of that #  initial value of ss_select_naics
   default_naics_digits_shown = "basic", # if default_naics is >3 digits, this has to be "detailed" not "basic"
   default_add_naics_subcategories = TRUE,
+  # SIC
+  default_sic = "2015", # poultry
 
   # EPA Programs (to limit NAICS/ facilities query)
   # used by inputId 'ss_limit_fac1' and 'ss_limit_fac2'
@@ -125,6 +127,8 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
   # cbind(epa_programs)
   # sort(unique(frs_by_programid$program)) # similar  # EJAM :: frs_by_programid
 
+  # MACT
+  default_mact = "AA",
   ##################################################################################### #
 
   ## ------------------------ fipspicker module ####

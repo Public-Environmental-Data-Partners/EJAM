@@ -313,7 +313,7 @@ app_ui <- function(request) {
                               ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
                               # choices = NULL,  # gets updated when buttons used
                               choices = NULL, # setNames(naics_counts[nchar(naics_counts$NAICS) == 3, ]$NAICS, naics_counts[nchar(naics_counts$NAICS) == 3, ]$label_w_subs), # start with limited options ? ***
-                              selected = EJAM:::global_or_param("default_naics"),
+                              selected = input$default_naics, #  EJAM:::global_or_param("default_naics"),
                               width = 400,
                               multiple = TRUE,
                               ## add X to remove selected options from list
@@ -359,7 +359,7 @@ app_ui <- function(request) {
                                            # choose from named numeric vector on server-side
                                            ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
                                            choices = NULL,
-                                           selected = NULL,
+                                           selected = input$default_sic,
                                            width = 400,
                                            multiple = TRUE,
                                            ## add X to remove selected options from list
@@ -373,12 +373,12 @@ app_ui <- function(request) {
 
                           conditionalPanel(
                             condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'MACT'",
-                            ## input: choose MACT subpart from dropdown list
+                            ## input: choose 1 MACT subpart from dropdown list
                             selectInput(inputId = 'ss_select_mact',
                                         label = 'Choose a MACT subpart',
                                         choices = setNames(mact_table$subpart,
                                                            mact_table$dropdown_label),
-                                        selected = 'AA'
+                                        selected = input$default_mact #  global_or_param("default_mact") # 'AA' e.g.
                             )
                           ),  # end MACT conditionalPanel
                           ################################################################# #
@@ -1105,7 +1105,18 @@ app_ui <- function(request) {
 
                  # maybe   default_selected_type_of_site_category can be handled like default_ss_choose_method
 
-
+                 ### MACT codes
+                 #
+                 selectizeInput(
+                   inputId = "default_mact",
+                   label = h6("MACT category code to start with"),
+                   choices = NULL,# NULL loads faster; will update server side, in app_server
+                   selected = EJAM:::global_or_param("default_mact"),
+                   width = 400,
+                   multiple = TRUE,
+                   ## add X to remove selected options from list
+                   options = list('plugins' = list('remove_button'))
+                 ),
 
                  ### NAICS codes
                  # naics_from_any("hazard")
@@ -1119,7 +1130,18 @@ app_ui <- function(request) {
                    ## add X to remove selected options from list
                    options = list('plugins' = list('remove_button'))
                  ),
-
+                 ### SIC codes
+                 #
+                 selectizeInput(
+                   inputId = "default_sic",
+                   label = h6("SIC industry code to start with"),
+                   choices = NULL, # NULL loads faster; will update server side, in app_server
+                   selected = EJAM:::global_or_param("default_sic"),
+                   width = 400,
+                   multiple = TRUE,
+                   ## add X to remove selected options from list
+                   options = list('plugins' = list('remove_button'))
+                 ),
                  ######################################################## ######################################################### #
                  ### *RADIUS* options ####
                  h3("Radius options"),
