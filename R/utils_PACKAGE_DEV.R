@@ -163,8 +163,6 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #' @param whole_line set it to FALSE to see only the matching fragments
 #'   vs entire line of text that has a match in it
 #' @param quiet whether to print results or just invisibly return
-#' @return a list of named vectors,
-#'   where names are file paths with hits, elements are vectors of text with hits.
 #'
 #' @details
 #' Also see undocumented related functions
@@ -182,6 +180,10 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
 #' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
 #'
+#'
+#' @return a list of named vectors,
+#'   where names are file paths with hits, elements are vectors of text with hits.
+#'
 #' @keywords internal
 #'
 find_in_files <- function(pattern,
@@ -193,6 +195,17 @@ find_in_files <- function(pattern,
                           ignore.case = TRUE,
                           whole_line = TRUE,
                           quiet = FALSE) {
+
+  ## test cases for where just 1 file has hits or first file has just 1 hit, etc.
+  #
+  # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_', whole_line = T)
+  # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_', whole_line = F)
+  #
+  # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_a', whole_line = T)
+  # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_a', whole_line = F)
+  #
+  # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_m', whole_line = T)
+  # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_m', whole_line = F)
 
   if (!quiet) {
     cat("\nSearching in ", path, ' to find files containing ', pattern, '\n')
@@ -209,17 +222,23 @@ find_in_files <- function(pattern,
                  ignorecomments = ignorecomments)
     ) |>
     purrr::keep(~length(.x) > 0)
-  rownumbers_with_hits <- sapply(found, names)
+  # rownumbers_with_hits <- sapply(found, names)
 
   if (!whole_line) {
     # return just the matching part, not text before or after that on a given line of text
     ## but does not quite work right if the line has quote marks inside it
-    found <- lapply(found, function(z) as.vector(gsub(paste0(".*(", pattern, ").*"), "\\1",  z)))
-    #  now for each element in the list called "found" we have to fix names of its vector to be the line numbers again
-    for (i in seq_along(found)) {
-      names(found[[i]]) <- rownumbers_with_hits[[i]]
-      rownames(found[[i]]) <- NULL
-    }
+    found <- lapply(found, function(z) {
+      oldnames <- names(z)
+      thisfile <- as.vector(gsub(paste0(".*(", pattern, ").*"), "\\1",  z))
+      #  now for each element in the list called "found" we have to fix names of its vector to be the line numbers again
+      names(thisfile) <- oldnames
+      rownames(thisfile) <- NULL
+      thisfile
+    })
+    # for (i in seq_along(found)) {
+    #   names(found[[i]]) <- rownumbers_with_hits[[i]]
+    #   rownames(found[[i]]) <- NULL
+    # }
   } else {
     for (i in seq_along(found)) {
       rownames(found[[i]]) <- NULL
@@ -231,7 +250,15 @@ find_in_files <- function(pattern,
       cat("\n------------------------------------------------------------------------- \n")
       cat("Which line numbers contain a match to this pattern, within each file?\n")
       cat(  "------------------------------------------------------------------------- \n\n")
-      printable <- sapply(found, function(y) {
+
+      # add dummy data to help retain format expected
+      if (length(found[[1]]) < 2) {
+        found[[1]] = c(found[[1]], `0` = "dummy entry to ensure data.table format even if only 1 hit per file" )
+      }
+      if (length(found) == 1) {
+        found <- c(found,  list(dummydata000 = c(`0` = "dummy entry", `01` = "dummy entry")))
+      }
+      printable <- lapply(found, function(y) {
         prt <- cbind(linenumber = names(y), text = y)
         rownames(prt) <- NULL
         prt
@@ -241,6 +268,11 @@ find_in_files <- function(pattern,
         printable[[i]]$file <- names(found)[i]
         printable[[i]]$filenumber <- i
       }
+      # get rid of dummy data
+      printable[[1]] <- printable[[1]][printable[[1]]$linenumber != 0, ]
+      printable$dummydata000 <- NULL
+      found[[1]] <- found[[1]][ !("0" == names(found[[1]]))]
+      found <- found[!("dummydata000" == names(found))]
 
       printable <- do.call(rbind, printable)
       printable <- printable[, c("filenumber", "file", "linenumber", "text")]
@@ -257,6 +289,9 @@ find_in_files <- function(pattern,
       cat("How many times does the pattern appear in a given file?\n")
       cat(  "------------------------------------------------------------------------- \n\n")
       print(cbind(hits_in_file = sort(sapply(found, NROW), decreasing = TRUE), file_rank = 1:length(found)))
+      cat("\n")
+      cat("# of files: ", length(found), "\n")
+      cat("# of hits: ", sum(sapply(found, NROW), na.rm = TRUE), "\n")
       cat("\n------------------------------------------------------------------------- \n")
     }
   }
@@ -378,7 +413,13 @@ pkg_functions_and_data <- function(pkg = "EJAM",
   }
   dataonly <- function(pkg) {pkg_data(pkg = pkg, simple = TRUE)$Item}
 
-  exported_plus_internal_withdata <- function(pkg) {sort(union(dataonly(pkg), ls(getNamespace(pkg), all.names = TRUE)))} # all.names filters those starting with "."
+  exported_plus_internal_withdata <- function(pkg) {
+    funcs <- ls(getNamespace(pkg), all.names = TRUE)
+    funcs <- funcs[sapply(funcs, function(fname) {is.function(get(fname))})] # removes things in namespace like  ".__NAMESPACE__." that are not functions
+    sort(union(dataonly(pkg),
+               funcs
+               ))
+    } # all.names filters those starting with "."
   exported_only_withdata          <- function(pkg) {ls(paste0("package:", pkg))}
   # same as ls(envir = as.environment(x = paste0("package:", pkg)))
   # same as  getNamespaceExports() except sorted
@@ -740,7 +781,8 @@ pkg_functions_and_sourcefiles2 <- function(funcnames, pkg = "EJAM", full.names =
 
 # NOTE THIS IS SLOW SINCE by default IT LOADS THE PACKAGE (AND PARSES ALL ROXYGEN TAGS)
 
-## compare this to   pkg_functions_by_roxygen_tag()
+## compare this to   pkg_functions_by_roxygen_tag() & others
+# see also pkg_functions_preceding_lines()
 
 pkg_functions_with_keywords_internal_tag <- function(
 
@@ -839,6 +881,7 @@ pkg_functions_with_keywords_internal_tag <- function(
   results$fname_is_data_name  <- !is.na(results$name)  & paste0("data_", results$name)  == filename.no.ext
   results$fname_is_name1 <- !is.na(results$name1) & results$name1 == filename.no.ext
 
+  results <- results[order(results$func), ]
   return(results)
   # return(list(blocks = blocks, results = results) ) # for troubleshooting
 }
@@ -846,13 +889,18 @@ pkg_functions_with_keywords_internal_tag <- function(
 
 ################################ #
 
+# see also pkg_functions_preceding_lines() to check multiple tags
+# nlines_to_search defines how many rows above  the func definition line should be checked
 
 pkg_functions_by_roxygen_tag <- function(
-    tagpattern = "#' @export",
-    path="./R"
+
+  tagpattern = "#' @export", # or, e.g.,  "#' @return"  etc.
+  filename_pattern = "\\.R$|\\.r$",  # or, e.g.,  "frs_"
+  path="./R",
+  nlines_to_search = 50
 ) {
 
-  x = find_in_files(tagpattern, path = path)
+  x = find_in_files(tagpattern, path = path, filename_pattern = filename_pattern)
   n = length(x)
   fname = vector(length = n); rownums = list()
   funcname <- NULL
@@ -865,7 +913,7 @@ pkg_functions_by_roxygen_tag <- function(
     for (ii in 1:length(taglinenumbers)) {
       nextfuncname <-
         grep(pattern = "^([^# ]*) .*function\\(",
-             x = txt[   taglinenumbers[ii]:(4 + taglinenumbers[ii]) ],
+             x = txt[   taglinenumbers[ii]:(nlines_to_search + taglinenumbers[ii]) ],
              value = TRUE)
       nextfuncname <- gsub("^([^ #]*) .*function\\(.*", "\\1", nextfuncname)
       if (is.null(nextfuncname)
@@ -881,34 +929,43 @@ pkg_functions_by_roxygen_tag <- function(
       funcname <- c(funcname, nextfuncname)
     }
   }
+  funcname <- sort(funcname)
+  cat("# of files: ", n, "\n")
+  cat("# of functions: ", length(funcname), "\n")
   return(funcname)
 }
 ################################ #
 
-## Roughly  how many internal global functions are loaded with no @keywords internal tag?
 ## This just counts source code lines where a function definition seems to start on
 ## a line with no leading spaces or # signs (not a commented line)
 ## so it probably avoids functions defined within other functions
-##
+
 pkg_functions_found_in_files <- function(
 
-  pattern = "^([^# ]*) .*function\\(",
-  pattern_gsub =  "^([^# ]*) .*function\\(.*",
+  # find any line with function definition (ignore if any spaces or # precede func name, since those are usually function within a function, or comments or roxygen tags/examples, etc.)
+  pattern        = "^([^ #]+) *(<-|=) *function\\(",
+  pattern_gsub   = "^([^ #]+) *(<-|=) *function\\(.*", # save func name in parens here, while matching the entire line
   path= "./R") {
 
   z = find_in_files( pattern = pattern, path = path)
   z = as.vector(unlist(z))
-  z = gsub(pattern_gsub,  "\\1", z)
+  z = gsub(pattern_gsub,  "\\1", z) # replace entire line with just the function name
   z = z[!(z %in% "")]
+  z = sort(z)
   return(z)
 }
 ################################ #
 
-## view a few lines of code just above a function definition,
+## view lines of roxygen tags just above a function definition,
 ## to see if it has any roxygen comments at all
 ## or says #' @keywords internal  or whatever
+# see also pkg_functions_by_roxygen_tag()
+# see also pkg_functions_with_keywords_internal_tag()
 
-pkg_functions_preceding_lines = function(path = "./R") {
+pkg_functions_preceding_lines = function(path = "./R",
+                                         nlines_to_search = 200,
+                                         # Will now look at only contiguous lines starting with #' going only upwards until it hits a line that is NOT starting with #'
+                                         quiet = TRUE) {
 
   n <- 0
   info_roxy_nobreak <- vector()
@@ -918,8 +975,11 @@ pkg_functions_preceding_lines = function(path = "./R") {
   info_internal <- vector()
   info_nord <- vector()
   info_export <- vector()
-
-  query = "^[^ #]* *<- *function"
+  info_return <- vector()
+  # find any line with function definition
+  # (ignore if any spaces or # precede func name, since those are usually function within a function, or comments or roxygen tags/examples, etc.)
+  # find function definition lines, seeking "xyz=function(" or "xyz  <-  function(" etc. ignoring commented out or roxygen tag lines
+  query = "^[^ #]+ *(<-|=) *function\\("
   files_defining_functions <- EJAM:::find_in_files(pattern = query, path = path, quiet = TRUE)
   filenames = (names(files_defining_functions))
 
@@ -931,46 +991,66 @@ pkg_functions_preceding_lines = function(path = "./R") {
 
     for (thisfunction in 1:length(funcnames)) {
       n = n + 1
-      priorlinenums = (linenums[thisfunction] - (5:0))
+      priorlinenums <- (linenums[thisfunction] - (nlines_to_search:0))
       priorlinenums[priorlinenums < 1] <- 1
       priorlinenums <- unique(priorlinenums)
+      # Remove preceding rows that are unrelated to this one function
+      # by searching up from func definition to 1st row encountered that is not roxygen tags
+      lastunrelatedline <-  which(!grepl("^ *#'", rev( textrows[priorlinenums[1:(length(priorlinenums) - 1)]])))[1]
+      if (length(lastunrelatedline) != 0) {
+        lastunrelatedline <- length(priorlinenums) - lastunrelatedline
+        priorlinenums <- priorlinenums[(1+lastunrelatedline):length(priorlinenums)]
+      }
 
-      text2show = textrows[priorlinenums]
+      # text2show is what to search within (while creating table of info_return)
+      # but is also what to show in console. might want to show only a few lines but still search in all/many prior rows, though.
+      text2show <- textrows[priorlinenums]
       # show just the function name not that whole line
       funcname <- gsub(" .*", "", text2show[length(text2show)])
       # text2show[length(text2show)] <- paste0(funcname, " <- ")
       # drop func definition line itself
       text2show <- text2show[1:(length(text2show) - 1)]
       # drop all but blank and #' roxygen lines, for display purposes
-      text2show <- text2show[nchar(text2show) == 0 | grepl("^#' [^ ]", text2show)]
+      text2show <- text2show[nchar(text2show) == 0 | grepl("^ *#' [^ ]", text2show)]
       text2show[nchar(text2show) == 0] <- "     [just a blank line is here]"
       text2show <- unique(text2show)
 
+      # display key lines to console
+      if (!quiet) {
+        cat("------------------ File: ", as.vector(basename(filenames[thisfile])),
+            "--------- Func: ", paste0(funcname, "() "), "\n")
+        cat(text2show, sep = "\n")
+        cat("\n")
+      }
+      # summarize counts for a table of results
+
       priorlinetext = textrows[max(priorlinenums)]
-      info_roxy_nobreak[n] <- substr(priorlinetext,1,2) == "#'" # only in the last row
+      info_roxy_nobreak[n] <- substr(priorlinetext,1,2) == "#'" # only in the last row (?)
       info_roxy[n] <- any(grepl("#'", text2show)) # any of last few rows
       info_func[n] <- funcname
       info_internal[n] <- any(grepl("@keywords internal", text2show))
       info_nord[n]     <- any(grepl("@noRd", text2show))
       info_export[n]   <- any(grepl("@export", text2show))
-
-      cat("------------------ File: ", as.vector(basename(filenames[thisfile])),
-          "--------- Func: ", paste0(funcname, "() "), "\n")
-
-      cat(text2show, sep = "\n")
-      # cat("\n")
+      info_return[n]   <- any(grepl("@return", text2show))
     }
   }
-  return(
-    data.frame(
-      func = info_func,
-      roxy_nobreak = info_roxy_nobreak,
-      roxy = info_roxy,
-      export = info_export,
-      internal = info_internal,
-      nord = info_nord
-    )
+  info_table <- data.frame(
+    func = info_func,
+    roxy_nobreak = info_roxy_nobreak,
+    roxy = info_roxy,
+    export = info_export,
+    internal = info_internal,
+    nord = info_nord,
+    return = info_return
   )
+  info_table <- info_table[order(info_table$func), ]
+  # show counts of functions with/without a given tag, and overall counts
+  print(summary(info_table))
+  cat("\n")
+  cat("# of files: ", length(unique(files_defining_functions)), "\n")
+  cat("# of functions: ", length(info_func), "\n")
+  cat("\n")
+  return(info_table)
 }
 ################################ ################################# #
 # . ####
@@ -1210,13 +1290,13 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
 #'   ignore_comments is used only if pkg = a folder that contains .R files
 #'
 #'    Note it will fail to ignore comments in .R files that are at the end of the line of actual code like  print(1) # that prints 1
+#' @param internal_included whether to also check internal functions - tries to identify those using `pkg_functions_and_data()`
 #'
 #' @return vector of names of functions or paths to .R files
 #'
 #' @keywords internal
 #'
-pkg_functions_that_use <- function(text = "stop\\(", pkg = "EJAM", ignore_comments = TRUE) {
-
+pkg_functions_that_use <- function(text = "stop\\(", pkg = "EJAM", ignore_comments = TRUE, internal_included = TRUE) {
 
   if (grepl("\\(", text) && !grepl("\\\\\\(", text)) {warning('to look for uses of stop(), for example, use two slashes before the open parens, etc. as when using grepl()')}
 
@@ -1249,7 +1329,15 @@ pkg_functions_that_use <- function(text = "stop\\(", pkg = "EJAM", ignore_commen
   } else {
     # it is an installed package
     if (!ignore_comments) {warning('always ignores commented lines when checking exported functions of an installed package')}
-    for (this in getNamespaceExports(pkg)) {
+
+    if (!internal_included) {
+      funcnames <- getNamespaceExports(pkg)
+
+    } else {
+      funcnames <- pkg_functions_and_data(pkg = pkg, data_included = FALSE, vectoronly = TRUE, internal_included = TRUE)
+    }
+
+    for (this in funcnames) {
 
       text_lines_of_function_body <- as.character(functionBody(get(this)))
       # or is that the same as just  as.character(body(this))  ??

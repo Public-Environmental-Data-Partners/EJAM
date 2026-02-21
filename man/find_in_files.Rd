@@ -59,5 +59,6 @@ EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
 EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
 EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
 
+
 }
 \keyword{internal}
