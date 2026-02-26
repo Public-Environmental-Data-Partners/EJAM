@@ -1,3 +1,5 @@
+- fixed ejam2shapefile() where it had problems if closely related filename had previously been used
+
 # EJAM 2.32.7 (February 2026)
 
 - Bug fixes: 
