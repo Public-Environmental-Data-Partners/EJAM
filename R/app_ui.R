@@ -118,7 +118,7 @@ app_ui <- function(request) {
                                choiceValues = c('dropdown',
                                                 'upload'),
                                selected = EJAM:::global_or_param("default_upload_dropdown")),
-                               # selected = input$default_ss_choose_method), # which has a default of EJAM:::global_or_param("default_upload_dropdown")
+                  # selected = input$default_ss_choose_method), # which has a default of EJAM:::global_or_param("default_upload_dropdown")
                   # selected = 'upload'),   # if hard-coded default selection.
                   # uiOutput(outputId = 'ss_choose_method_ui'), # flexible default selection, if handled in server code.
 
@@ -159,263 +159,262 @@ app_ui <- function(request) {
                     12,
                     #offset=3,
                     ################################################################# #
-#                    br(),
-#
-#                    wellPanel(
-#                      style = 'background-color: #e5f2f5; min-height: 300px',
-#
-#                      fluidRow(
-#                        column(
-#                          12,
-                          ################################################################# #
+                    #                    br(),
+                    #
+                    #                    wellPanel(
+                    #                      style = 'background-color: #e5f2f5; min-height: 300px',
+                    #
+                    #                      fluidRow(
+                    #                        column(
+                    #                          12,
+                    ################################################################# #
 
-                          ################################################################# #
+                    ################################################################# #
 
-                          # uploads ----------- ####
+                    # uploads ----------- ####
 
-                          ## _Latitude Longitude* Uploads  (conditional panel)  ------------------------------------- - ####
+                    ## _Latitude Longitude* Uploads  (conditional panel)  ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'latlon'",
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'latlon'",
 
-                            ## input: Upload list of facility lat/longs
+                      ## input: Upload list of facility lat/longs
 
-                            fileInput(inputId = 'ss_upload_latlon',
-                                      label = 'Upload a file with lat-long coordinates',
-                                      multiple = FALSE,
-                                      accept = c('.xls', '.xlsx', '.csv'
-                                                 # "text/csv", "text/comma-separated-values,text/plain") # *** Text files were causing an error
-                                      )
-                            ),
+                      fileInput(inputId = 'ss_upload_latlon',
+                                label = 'Upload a file with lat-long coordinates',
+                                multiple = FALSE,
+                                accept = c('.xls', '.xlsx', '.csv'
+                                           # "text/csv", "text/comma-separated-values,text/plain") # *** Text files were causing an error
+                                )
+                      ),
 
-                            ### include error msg here?? ***
-                            # textOutput("error_message"),
-                            # tags$style(HTML("#error_message { color: red; }")),
-                            actionButton(inputId = 'latlon_help', label = 'More Info', class = 'usa-button usa-button--outline'), # HTML(latlon_help_msg)
-                            br()
-                          ), # end latlong conditionalPanel
-                          ################################################################# #
+                      ### include error msg here?? ***
+                      # textOutput("error_message"),
+                      # tags$style(HTML("#error_message { color: red; }")),
+                      actionButton(inputId = 'latlon_help', label = 'More Info', class = 'usa-button usa-button--outline'), # HTML(latlon_help_msg)
+                      br()
+                    ), # end latlong conditionalPanel
+                    ################################################################# #
 
-                          ################################################################# #
+                    ################################################################# #
 
-                          ## _Shapefile* Uploads (conditional panel)  ------------------------------------- - ####
+                    ## _Shapefile* Uploads (conditional panel)  ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'SHP'",
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'SHP'",
 
-                            # *** for a way to check file size < max_mb_upload_react() before attempting actual upload, see
-                            # https://stackoverflow.com/questions/74367545/r-shiny-get-file-size-without-uploading?rq=3
-                            # and then could use output$max_mb_upload_react_txt, validate(), etc.
+                      # *** for a way to check file size < max_mb_upload_react() before attempting actual upload, see
+                      # https://stackoverflow.com/questions/74367545/r-shiny-get-file-size-without-uploading?rq=3
+                      # and then could use output$max_mb_upload_react_txt, validate(), etc.
 
-                            fileInput(
-                              inputId = 'ss_upload_shp',
-                              label = 'Upload a shapefile',
-                              accept = EJAM:::global_or_param("default_shp_oktypes_1"), # c("zip", "gdb", "geojson", "json", "kml", "shp", "shx", "dbf", "prj"), # maybe also sbn, sbx
-                              ## see source code of shapefile_from_any()
-                              multiple = TRUE
-                            ),
-                            textOutput("error_message"),
-                            tags$style(HTML("#error_message { color: red; }")),
-                            actionButton(inputId = 'shp_help', label = 'More Info', class = 'usa-button usa-button--outline')
-                          ), # end Shapefile conditionalPanel
-                          ################################################################# #
+                      fileInput(
+                        inputId = 'ss_upload_shp',
+                        label = 'Upload a shapefile',
+                        accept = EJAM:::global_or_param("default_shp_oktypes_1"), # c("zip", "gdb", "geojson", "json", "kml", "shp", "shx", "dbf", "prj"), # maybe also sbn, sbx
+                        ## see source code of shapefile_from_any()
+                        multiple = TRUE
+                      ),
+                      textOutput("error_message"),
+                      tags$style(HTML("#error_message { color: red; }")),
+                      actionButton(inputId = 'shp_help', label = 'More Info', class = 'usa-button usa-button--outline')
+                    ), # end Shapefile conditionalPanel
+                    ################################################################# #
 
-                          # *CATEGORIES OF SITES*  input: choose among facility dropdown options, conditional panel
+                    # *CATEGORIES OF SITES*  input: choose among facility dropdown options, conditional panel
 
-                          # uploads:
+                    # uploads:
 
-                          ## _FIPS - upload conditional panel ------------------------------------- - ####
+                    ## _FIPS - upload conditional panel ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'FIPS'",
-                            ## input: Upload list of facility lat/longs
-                            fileInput(inputId = 'ss_upload_fips',
-                                      label = 'Upload a list of FIPS codes',
-                                      multiple = FALSE,
-                                      accept = c('.xls', '.xlsx', ".csv"
-                                                 # "text/csv", "text/comma-separated-values,text/plain") # *** Text files were causing an error
-                                      )
-                            ),
-                            ### include error msg here?? ***
-                            # textOutput("error_message"),
-                            # tags$style(HTML("#error_message { color: red; }")),
-                            actionButton(inputId = 'fips_help', label = 'More Info', class = 'usa-button usa-button--outline')
-                          ), # end FIPS conditionalPanel
-                          ################################################################# #
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'FIPS'",
+                      ## input: Upload list of facility lat/longs
+                      fileInput(inputId = 'ss_upload_fips',
+                                label = 'Upload a list of FIPS codes',
+                                multiple = FALSE,
+                                accept = c('.xls', '.xlsx', ".csv"
+                                           # "text/csv", "text/comma-separated-values,text/plain") # *** Text files were causing an error
+                                )
+                      ),
+                      ### include error msg here?? ***
+                      # textOutput("error_message"),
+                      # tags$style(HTML("#error_message { color: red; }")),
+                      actionButton(inputId = 'fips_help', label = 'More Info', class = 'usa-button usa-button--outline')
+                    ), # end FIPS conditionalPanel
+                    ################################################################# #
 
-                          ## _FRS regid - upload  conditional panel ------------------------------------- - ####
+                    ## _FRS regid - upload  conditional panel ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'FRS'",
-                            ## input: Upload list of FRS identifiers
-                            fileInput(inputId = 'ss_upload_frs',
-                                      label = 'Upload a file with FRS identifiers',
-                                      accept = c('.xls', '.xlsx', ".csv"
-                                                 # "text/csv", "text/comma-separated-values,text/plain") # *** Text files were causing an error
-                                      )
-                            ),
-                            ### include error msg here?? ***
-                            # textOutput("error_message"),
-                            # tags$style(HTML("#error_message { color: red; }")),
-                            actionButton(inputId = 'frs_help', label = 'More Info', class = 'usa-button usa-button--outline')
-                          ), # end FRS conditionalPanel
-                          ################################################################# #
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'FRS'",
+                      ## input: Upload list of FRS identifiers
+                      fileInput(inputId = 'ss_upload_frs',
+                                label = 'Upload a file with FRS identifiers',
+                                accept = c('.xls', '.xlsx', ".csv"
+                                           # "text/csv", "text/comma-separated-values,text/plain") # *** Text files were causing an error
+                                )
+                      ),
+                      ### include error msg here?? ***
+                      # textOutput("error_message"),
+                      # tags$style(HTML("#error_message { color: red; }")),
+                      actionButton(inputId = 'frs_help', label = 'More Info', class = 'usa-button usa-button--outline')
+                    ), # end FRS conditionalPanel
+                    ################################################################# #
 
-                          ## _EPA program ID - upload conditional panel ------------------------------------- - ####
+                    ## _EPA program ID - upload conditional panel ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'EPA_PROGRAM'",
-                            ## input: upload an EPA program ID file
-                            fileInput(inputId = 'ss_upload_program',
-                                      label = 'Upload a file with program IDs'),
-                            ### include error msg here?? ***
-                            # textOutput("error_message"),
-                            # tags$style(HTML("#error_message { color: red; }")),
-                            actionButton(inputId = 'epa_program_help', label = 'More Info', class = 'usa-button usa-button--outline')
-                          ), #end EPA program upload conditional panel
-                          ################################################################# #
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'EPA_PROGRAM'",
+                      ## input: upload an EPA program ID file
+                      fileInput(inputId = 'ss_upload_program',
+                                label = 'Upload a file with program IDs'),
+                      ### include error msg here?? ***
+                      # textOutput("error_message"),
+                      # tags$style(HTML("#error_message { color: red; }")),
+                      actionButton(inputId = 'epa_program_help', label = 'More Info', class = 'usa-button usa-button--outline')
+                    ), #end EPA program upload conditional panel
+                    ################################################################# #
 
-                          # dropdowns -------- ####
+                    # dropdowns -------- ####
 
-                          ################################################################# #
+                    ################################################################# #
 
-                          ## _EPA program - dropdown  conditional panel ------------------------------------- - ####
+                    ## _EPA program - dropdown  conditional panel ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'EPA_PROGRAM'",
-                            ## input: select an EPA program from list ------------------------------------- - ------------------------------------- -
-                            selectizeInput(inputId = 'ss_select_program', label = 'Pick an EPA program',
-                                           ## named vector in global_defaults_*.R - values are acronyms,
-                                           ## names include # of rows corresponding to that program
-                                           choices = epa_programs,
-                                           selected = EJAM:::global_or_param("default_epa_program_selected"),
-                                           ## add X to remove selected options from list
-                                           options = list('plugins' = list('remove_button'))),
-                            br(),
-                            span('More info about ', a('these EPA programs', href = 'https://www.epa.gov/frs/frs-data-sources', target = '_blank', rel = 'noreferrer noopener')),
-                            br(),
-                            span('Search for regulated facilities in ', a('EPA Envirofacts', href = 'https://enviro.epa.gov/envirofacts/multisystem/search', target = '_blank', rel = 'noreferrer noopener')),
-                            br(),
-                            span('Search for regulated facilities in ', a('EPA ECHO data', href = 'https://echo.epa.gov/', target = '_blank', rel = 'noreferrer noopener')),
-                            br()
-                          ), # end conditional panel EPA programs
-                          ################################################################# #
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'EPA_PROGRAM'",
+                      ## input: select an EPA program from list ------------------------------------- - ------------------------------------- -
+                      selectizeInput(inputId = 'ss_select_program', label = 'Pick an EPA program',
+                                     ## named vector in global_defaults_*.R - values are acronyms,
+                                     ## names include # of rows corresponding to that program
+                                     choices = epa_programs,
+                                     selected = EJAM:::global_or_param("default_epa_program_selected"),
+                                     ## add X to remove selected options from list
+                                     options = list('plugins' = list('remove_button'))),
+                      br(),
+                      span('More info about ', a('these EPA programs', href = 'https://www.epa.gov/frs/frs-data-sources', target = '_blank', rel = 'noreferrer noopener')),
+                      br(),
+                      span('Search for regulated facilities in ', a('EPA Envirofacts', href = 'https://enviro.epa.gov/envirofacts/multisystem/search', target = '_blank', rel = 'noreferrer noopener')),
+                      br(),
+                      span('Search for regulated facilities in ', a('EPA ECHO data', href = 'https://echo.epa.gov/', target = '_blank', rel = 'noreferrer noopener')),
+                      br()
+                    ), # end conditional panel EPA programs
+                    ################################################################# #
 
-                          ## _NAICS - dropdown conditional panel -------------------------------------  -####
+                    ## _NAICS - dropdown conditional panel -------------------------------------  -####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'NAICS'",
-                            ## input: Upload list of NAICS identifiers
-                            selectizeInput(
-                              inputId = "ss_select_naics",
-                              label = h6("Select industry of interest"),
-                              # choose from named numeric vector on server-side
-                              ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
-                              # choices = NULL,  # gets updated when buttons used
-                              choices = NULL, # setNames(naics_counts[nchar(naics_counts$NAICS) == 3, ]$NAICS, naics_counts[nchar(naics_counts$NAICS) == 3, ]$label_w_subs), # start with limited options ? ***
-                              selected = input$default_naics, #  EJAM:::global_or_param("default_naics"),
-                              width = 400,
-                              multiple = TRUE,
-                              ## add X to remove selected options from list
-                              options = list('plugins' = list('remove_button'))
-                            ),#, # xxx
-                            br() ## vertical space
-                          ), # end NAICS conditionalPanel overall
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'NAICS'",
+                      ## input: Upload list of NAICS identifiers
+                      selectizeInput(
+                        inputId = "ss_select_naics",
+                        label = h6("Select industry of interest"),
+                        # choose from named numeric vector on server-side
+                        ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
+                        # choices = NULL,  # gets updated when buttons used
+                        choices = NULL, # will be updated in server to setNames(naics_counts[nchar(naics_counts$NAICS) == 3, ]$NAICS, naics_counts[nchar(naics_counts$NAICS) == 3, ]$label_w_subs), # start with limited options ? ***
+                        selected = NULL, # will be updated in server to input$default_naics  which starts as EJAM:::global_or_param("default_naics"),
+                        width = 400,
+                        multiple = TRUE,
+                        ## add X to remove selected options from list
+                        options = list('plugins' = list('remove_button'))
+                      ),
+                      br() ## vertical space
+                    ), # end NAICS conditionalPanel overall
 
-                          ## _NAICS details conditionalPanel
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'NAICS'",
-                            div(style = 'border: 1px solid #005ea2; padding: 10px; background-color: white',
+                    ## _NAICS details conditionalPanel
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'NAICS'",
+                      div(style = 'border: 1px solid #005ea2; padding: 10px; background-color: white',
 
-                                radioButtons(inputId = 'naics_digits_shown', "See all subcategories of NAICS?",
-                                             inline = TRUE,
-                                             choiceNames = c("Basic list", "Detailed list"),
-                                             choiceValues = c('basic', 'detailed'),
-                                             selected = EJAM:::global_or_param("default_naics_digits_shown")), # "basic"
-                                radioButtons(inputId = 'add_naics_subcategories', "Add all subcategories of NAICS?",
-                                             inline = TRUE,
-                                             choiceNames = c("Yes","No"),
-                                             choiceValues = c(TRUE,FALSE),
-                                             selected = EJAM:::global_or_param("default_add_naics_subcategories"))
-                            ),
+                          radioButtons(inputId = 'naics_digits_shown', "See all subcategories of NAICS?",
+                                       inline = TRUE,
+                                       choiceNames = c("Basic list", "Detailed list"),
+                                       choiceValues = c('basic', 'detailed'),
+                                       selected = EJAM:::global_or_param("default_naics_digits_shown")), # "basic"
+                          radioButtons(inputId = 'add_naics_subcategories', "Add all subcategories of NAICS?",
+                                       inline = TRUE,
+                                       choiceNames = c("Yes","No"),
+                                       choiceValues = c(TRUE,FALSE),
+                                       selected = EJAM:::global_or_param("default_add_naics_subcategories"))
+                      ),
 
-                            br(),
-                            tags$ul(
-                              # tags$li('Required columns: program, pgm_sys_id'),
-                              tags$li(tags$a(href = 'https://www.naics.com/search', target = '_blank',
-                                             'More about NAICS codes from naics.com'))
-                            )
-                          ), # end conditional panel
-                          ################################################################# #
+                      br(),
+                      tags$ul(
+                        # tags$li('Required columns: program, pgm_sys_id'),
+                        tags$li(tags$a(href = 'https://www.naics.com/search', target = '_blank',
+                                       'More about NAICS codes from naics.com'))
+                      )
+                    ), # end conditional panel
+                    ################################################################# #
 
-                          ## _SIC - dropdown conditional panel ------------------------------------- - ####
+                    ## _SIC - dropdown conditional panel ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'SIC'",
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'SIC'",
 
-                            ## input: Select SIC from list
-                            selectizeInput(inputId = "ss_select_sic",
-                                           label = h6("Select industry of interest"),
-                                           # choose from named numeric vector on server-side
-                                           ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
-                                           choices = NULL,
-                                           selected = input$default_sic,
-                                           width = 400,
-                                           multiple = TRUE,
-                                           ## add X to remove selected options from list
-                                           options = list('plugins' = list('remove_button'))
-                            ),
-                            br() ## vertical space
-                          ), # end SIC conditionalPanel
-                          ################################################################# #
+                      ## input: Select SIC from list
+                      selectizeInput(inputId = "ss_select_sic",
+                                     label = h6("Select industry of interest"),
+                                     # choose from named numeric vector on server-side
+                                     ## number is
+                                     choices = NULL, # will be updated in server to SIC a named vector of >1,000 categories like "7240 - Barber shops"
+                                     selected = NULL, # will be updated in server to input$default_sic
+                                     width = 400,
+                                     multiple = TRUE,
+                                     ## add X to remove selected options from list
+                                     options = list('plugins' = list('remove_button'))
+                      ),
+                      br() ## vertical space
+                    ), # end SIC conditionalPanel
+                    ################################################################# #
 
-                          ## _MACT - dropdown conditionalPanel ------------------------------------- - ####
+                    ## _MACT - dropdown conditionalPanel ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'MACT'",
-                            ## input: choose 1 MACT subpart from dropdown list
-                            selectInput(inputId = 'ss_select_mact',
-                                        label = 'Choose a MACT subpart',
-                                        choices = setNames(mact_table$subpart,
-                                                           mact_table$dropdown_label),
-                                        selected = input$default_mact #  global_or_param("default_mact") # 'AA' e.g.
-                            )
-                          ),  # end MACT conditionalPanel
-                          ################################################################# #
-                          ################################################################# #
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'MACT'",
+                      ## input: choose 1 MACT subpart from dropdown list
+                      selectInput(inputId = 'ss_select_mact',
+                                  label = 'Choose a MACT subpart',
+                                  choices = NULL, # setNames(mact_table$subpart, mact_table$dropdown_label),
+                                  selected = NULL # will update in server to input$default_mact #  global_or_param("default_mact") # 'AA' e.g.
+                      )
+                    ),  # end MACT conditionalPanel
+                    ################################################################# #
+                    ################################################################# #
 
-                          ## _FIPS_PLACE - dropdown conditionalPanel ------------------------------------- - ####
+                    ## _FIPS_PLACE - dropdown conditionalPanel ------------------------------------- - ####
 
-                          conditionalPanel(
-                            condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'FIPS_PLACE'",
-                            ## input: choose Places
-                            h4("Pick places to analyze by typing in the name of a place or selecting from the dropdown."),
-                            # modalDialog(
-                            # tagList(
-                            fipspicker_module_ui(id = "pickermoduleid"),
-                            shiny::actionButton(inputId = "fipspicker_done_button", label = "Done")
-                            # )
-                            # )
-                            # data_fips_place() is defined in server based on selections of FIPS places,
-                            #  so it does not use something like  input$ss_upload_fips or input$ss_select_fips_place !
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'FIPS_PLACE'",
+                      ## input: choose Places
+                      h4("Pick places to analyze by typing in the name of a place or selecting from the dropdown."),
+                      # modalDialog(
+                      # tagList(
+                      fipspicker_module_ui(id = "pickermoduleid"),
+                      shiny::actionButton(inputId = "fipspicker_done_button", label = "Done")
+                      # )
+                      # )
+                      # data_fips_place() is defined in server based on selections of FIPS places,
+                      #  so it does not use something like  input$ss_upload_fips or input$ss_select_fips_place !
 
-                            # selectInput(inputId = 'ss_select_fips_place',
-                            #             label = 'Choose Census Places',
-                            #             choices = setNames(mact_table$subpart,
-                            #                                mact_table$dropdown_label),
-                            #             selected = 'AA'
-                            # )
+                      # selectInput(inputId = 'ss_select_fips_place',
+                      #             label = 'Choose Census Places',
+                      #             choices = setNames(mact_table$subpart,
+                      #                                mact_table$dropdown_label),
+                      #             selected = 'AA'
+                      # )
 
-                          ),  # end FIPS_PLACE conditionalPanel
-                          ################################################################# #
-#                          br()
-#
-#                        ) # end column
-#                      ) # end fluidRow
-#                    ), # end well panel
+                    ),  # end FIPS_PLACE conditionalPanel
+                    ################################################################# #
+                    #                          br()
+                    #
+                    #                        ) # end column
+                    #                      ) # end fluidRow
+                    #                    ), # end well panel
 
                     # . ##  ##
-#                    br(), #br(),
+                    #                    br(), #br(),
 
                     ## input: Button to return to previous results  ####
                     shinyjs::hidden(
@@ -1033,7 +1032,7 @@ app_ui <- function(request) {
                  conditionalPanel(condition = 'input.bookmarking_allowed_input == true', {
                    fluidRow(
                      column(3,
-                   bookmarkButton()   # https://mastering-shiny.org/action-bookmark.html
+                            bookmarkButton()   # https://mastering-shiny.org/action-bookmark.html
                      ))
                  }),
                  shiny::checkboxInput("bookmarking_allowed_input", "Allow bookmarking?",
@@ -1110,12 +1109,19 @@ app_ui <- function(request) {
                  selectizeInput(
                    inputId = "default_mact",
                    label = h6("MACT category code to start with"),
-                   choices = NULL,# NULL loads faster; will update server side, in app_server
-                   selected = EJAM:::global_or_param("default_mact"),
+                   choices = setNames(mact_table$subpart,
+                                      mact_table$dropdown_label), # only 136 choices, so can load at start, unlike NAICS and SIC which are much longer lists that slow down loading if loaded at start
+                   selected = ifelse({
+                     # basic validation of MACT specified as param in ejamapp() or as default in global_defaults*.R
+                     x <- EJAM:::global_or_param("default_mact")
+                     (!is.null(x) && all(x %in% mact_table$subpart))
+                   },
+                   x,
+                   NULL),
                    width = 400,
-                   multiple = TRUE,
+                   multiple = FALSE
                    ## add X to remove selected options from list
-                   options = list('plugins' = list('remove_button'))
+                   ## options = list('plugins' = list('remove_button'))
                  ),
 
                  ### NAICS codes
@@ -1123,8 +1129,8 @@ app_ui <- function(request) {
                  selectizeInput(
                    inputId = "default_naics",
                    label = h6("NAICS industry code to start with"),
-                   choices = NULL,# NULL loads faster; will update server side, in app_server  # setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
-                   selected = EJAM:::global_or_param("default_naics"),
+                   choices = NULL, # >2,000 codes. NULL loads faster; will update server side, in app_server  # setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
+                   selected = NULL, # will be updated in server to EJAM:::global_or_param("default_naics"),
                    width = 400,
                    multiple = TRUE,
                    ## add X to remove selected options from list
@@ -1135,8 +1141,8 @@ app_ui <- function(request) {
                  selectizeInput(
                    inputId = "default_sic",
                    label = h6("SIC industry code to start with"),
-                   choices = NULL, # NULL loads faster; will update server side, in app_server
-                   selected = EJAM:::global_or_param("default_sic"),
+                   choices = NULL, # >1,000 codes. NULL loads faster; will update server side, in app_server # SIC
+                   selected = NULL, # will be updated in server to EJAM:::global_or_param("default_sic"),
                    width = 400,
                    multiple = TRUE,
                    ## add X to remove selected options from list

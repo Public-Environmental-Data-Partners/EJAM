@@ -252,7 +252,7 @@ app_server <- function(input, output, session) {
 
   # update default of initial NAICS input options (since using server side and it starts as NULL to load faster) ###
   observeEvent(session$clientData, {
-    updateSelectizeInput(session = session, inputId = 'default_naics',
+    updateSelectizeInput(session = session, inputId = 'default_naics', # in advanced tab
                          ## use named list version, grouped by first two code numbers
                          choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs),
                          selected = EJAM:::global_or_param("default_naics"),
@@ -285,7 +285,7 @@ app_server <- function(input, output, session) {
     trydefault <- if (is.null(input$default_naics)) EJAM:::global_or_param("default_naics") else input$default_naics
     vals <- if (is.null(input$ss_select_naics)) trydefault else input$ss_select_naics
     ### update ss_select_NAICS input options ###
-    updateSelectizeInput(session = session, inputId = 'ss_select_naics',
+    updateSelectizeInput(session = session, inputId = 'ss_select_naics', # in site selection tab
                          ## use named list version, grouped by first two code numbers
                          choices = naics_choices, # need to keep formatting
                          selected = vals,
@@ -293,9 +293,32 @@ app_server <- function(input, output, session) {
   })
 
   # update ss_select_SIC input options ###
-  updateSelectizeInput(session = session, inputId = 'ss_select_sic',
-                       choices = SIC, # named list of codes
-                       server = TRUE)
+  observe({
+    updateSelectizeInput(session = session, inputId = 'default_sic', # in advanced tab
+                         choices = SIC, # named list of >1,000 codes, like "5983 - Fuel oil dealers (620 sites)" is the name and "5983" is the value
+                         selected = EJAM:::global_or_param("default_sic"),
+                         server = TRUE)
+  })
+  observe({
+    updateSelectizeInput(session = session, inputId = 'ss_select_sic', # in site selection tab
+                         choices = SIC, # named list of >1,000 codes, like "5983 - Fuel oil dealers (620 sites)" is the name and "5983" is the value
+                         selected = input$default_sic,
+                         server = TRUE)
+  })
+
+  # update MACT input options ###
+  # observe({ ### already done in app_ui.R since not many choices so it loads faster than naics or sic
+  #   updateSelectizeInput(session = session, inputId = 'default_mact', # in advanced tab
+  #                        # choices =
+  #                        selected = EJAM:::global_or_param("default_mact"),
+  #                        server = TRUE)
+  # })
+  observe({ # NOTE IT USES select not selectize here
+    updateSelectInput(session = session, inputId = 'ss_select_mact', # in site selection tab
+                         choices = setNames(mact_table$subpart, mact_table$dropdown_label),
+                         selected = input$default_mact
+                      )
+  })
   #############################################################################  #
 
   # SELECT Facility Type vs UPLOAD Latlon/ id/ fips/ shape (radio button) ####
@@ -961,11 +984,11 @@ app_server <- function(input, output, session) {
     add_sic_subcategories <- FALSE #input$add_naics_subcategories
     # q: IS IT BETTER TO USE THIS IN naics_from_any() OR IN frs_from_naics() BELOW ?? ***
 
-    # naics_validation function to check for non empty SIC inputs
+    # naics_validation function works here, to check for non empty SIC inputs
     if (naics_validation('', input$ss_select_sic)) {
       inputsic = {}
       # if not empty, assume its pulled using naics_from_any() or older naics_find() above
-      if (length(inputsic) == 0 | rlang::is_empty(inputsic)) {
+      if (length(inputsic) == 0 || rlang::is_empty(inputsic)) {
         #construct regex expression and finds sites that align with user-selected SIC codes
         inputsic <- input$ss_select_sic #c(sic_wib_split, input$ss_select_sic)
         inputsic <- unique(inputsic[inputsic != ""])
@@ -987,6 +1010,7 @@ app_server <- function(input, output, session) {
         if (rlang::is_empty(sitepoints) | nrow(sitepoints) == 0) {
 
           errmsg    = 'No valid locations found under this SIC code.'
+          cat("No valid locations found under this SIC code.\n")
 
           invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
           an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
@@ -1246,7 +1270,7 @@ app_server <- function(input, output, session) {
     ## remove any facilities with invalid latlons before returning?
     #mact_out <- mact_out[!is.na(lat) & !is.na(lon),]
     cat("COUNT OF SITES BY MACT with lat lon values: ", NROW(mact_out[!is.na(lat) & !is.na(lon),]), "\n")
-    if (is.null(mact_out) || NROW(mact_out) == 0 || all(is.na(mact_out$lat)) & all(is.na(mact_out$lon))) {
+    if (is.null(mact_out) || NROW(mact_out) == 0 || all(is.na(mact_out$lat)) || all(is.na(mact_out$lon))) {
 
       errmsg    = 'No valid locations found under this MACT subpart'
 
@@ -1651,8 +1675,8 @@ app_server <- function(input, output, session) {
     #
     #
     #
-
-    if (current_upload_method() == "SHP") {
+    req(current_upload_method())
+    if ("SHP" %in% current_upload_method()) {
       ## ---------------------------------------------- __MAP SHAPES uploaded ####
 
       canmap <- TRUE
@@ -1727,25 +1751,26 @@ app_server <- function(input, output, session) {
 
     } else {
       ## ---------------------------------------------- __MAP LAT LON points uploaded ####
-      d_upload <- data_uploaded()
+
       max_pts <- input$max_pts_map # was the fixed max_pts_map
-
-      if (nrow(data_uploaded()) > max_pts) { # would have already been stopped probably
-        ## Max allowed points was exceeded!
-        if (nrow(data_uploaded) > input$max_pts_run) {
-          validate(paste0('Too many points (> ', prettyNum(max_pts, big.mark = ','),
-                          ') uploaded for map to be displayed'))
+      valid = !is.na(data_uploaded()$lon) & !is.na(data_uploaded()$lat)
+      if (NROW(data_uploaded()[isTRUE(valid), ]) > max_pts) { # would have already been stopped probably
+       ## Max allowed points was exceeded!
+        if (NROW(data_uploaded()[isTRUE(valid), ]) > input$max_pts_run) {
+          validate(paste0('Too many valid points (> ', prettyNum(input$max_pts_run, big.mark = ','),
+                          ') uploaded for analysis'))
+          cat("too many valid points to analyze?\n")
         } else {
-          validate(paste0('Too many points (> ', prettyNum(max_pts, big.mark = ','),
+          validate(paste0('Too many valid points (> ', prettyNum(max_pts, big.mark = ','),
                           ') uploaded to map all, so only showing a random sample, but you can still run the analysis on all.'))
-
+          cat("too many valid points to map? but it will still map (all or some?) just in groups?\n")
           # show just a subset up to max_pts allowed ***
           sampling_of_rows <- sample(1:nrow(data_uploaded()[!is.na(data_uploaded()$lat) &
                                                               !is.na(data_uploaded()$lon),]), max_pts)
           data_tomap <- data_uploaded()[!is.na(data_uploaded()$lat) &
                                           !is.na(data_uploaded()$lon),][sampling_of_rows, ]
           ## If more than one valid point...
-          if (nrow(data_tomap) > 1) {
+          if (NROW(data_tomap) > 1) {
             leaflet::leaflet() %>%
               leaflet::addTiles() %>%
               leaflet::fitBounds(lng1 = min(data_tomap$lon, na.rm = T),
@@ -2282,16 +2307,16 @@ app_server <- function(input, output, session) {
   ### leafletProxy()  "an_leaf_map"  ### #
 
   observe({
+    req(orig_leaf_map())
     ## This statement needed to ensure site selection map stops if too many points uploaded
-    req(isTruthy(orig_leaf_map()))
+    #req(isTruthy(orig_leaf_map()))
     # clear shapes from map so buffers don't show twice
     leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>% leaflet::clearShapes()
     rad_buff <- sanitized_radius_now()
 
     # SHP map ------------------------------ #
 
-    if (current_upload_method() == "SHP") {
-
+    if ("SHP" %in% current_upload_method()) {
       if (!is.na(rad_buff) && rad_buff > 0) {
         shp_valid <- data_uploaded()[data_uploaded()$valid == T, ] # *** remove this if shapefile_clean() will do it
         d_uploads <- sf::st_buffer(shp_valid, # was "ESRI:102005" but want 4269
