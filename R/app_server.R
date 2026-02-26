@@ -1757,9 +1757,9 @@ app_server <- function(input, output, session) {
       if (NROW(data_uploaded()[isTRUE(valid), ]) > max_pts) { # would have already been stopped probably
        ## Max allowed points was exceeded!
         if (NROW(data_uploaded()[isTRUE(valid), ]) > input$max_pts_run) {
+          cat("too many valid points to analyze?\n")
           validate(paste0('Too many valid points (> ', prettyNum(input$max_pts_run, big.mark = ','),
                           ') uploaded for analysis'))
-          cat("too many valid points to analyze?\n")
         } else {
           validate(paste0('Too many valid points (> ', prettyNum(max_pts, big.mark = ','),
                           ') uploaded to map all, so only showing a random sample, but you can still run the analysis on all.'))
