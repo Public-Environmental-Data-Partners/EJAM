@@ -993,7 +993,7 @@ app_server <- function(input, output, session) {
         inputsic <- input$ss_select_sic #c(sic_wib_split, input$ss_select_sic)
         inputsic <- unique(inputsic[inputsic != ""])
         cat("selected SIC:  ")
-        print(inputsic)
+        cat(paste0(inputsic, collapse = ", "), "\n")
         #merge user-selected NAICS with FRS facility location information
         #sitepoints <- frs_by_sic[SIC %like% inputsic ,  ]
 
