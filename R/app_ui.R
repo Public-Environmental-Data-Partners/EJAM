@@ -1111,13 +1111,15 @@ app_ui <- function(request) {
                    label = h6("MACT category code to start with"),
                    choices = setNames(mact_table$subpart,
                                       mact_table$dropdown_label), # only 136 choices, so can load at start, unlike NAICS and SIC which are much longer lists that slow down loading if loaded at start
-                   selected = ifelse({
+                   selected = {
                      # basic validation of MACT specified as param in ejamapp() or as default in global_defaults*.R
                      x <- EJAM:::global_or_param("default_mact")
-                     (!is.null(x) && all(x %in% mact_table$subpart))
+                     if (!is.null(x) && all(x %in% mact_table$subpart)) {
+                       x
+                     } else {
+                       NULL
+                     }
                    },
-                   x,
-                   NULL),
                    width = 400,
                    multiple = FALSE
                    ## add X to remove selected options from list
