@@ -23,7 +23,7 @@ test_that('naics_is.valid() correctly reports some NAICS as not valid', {
 test_that('naics_is.valid() correctly reports NULL as not valid', {
   expect_equal(
     naics_is.valid(NULL),
-    TRUE
+    FALSE
   )
 })
 ################################################## #
