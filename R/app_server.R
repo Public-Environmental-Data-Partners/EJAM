@@ -800,7 +800,6 @@ app_server <- function(input, output, session) {
             an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
             disable_buttons[[placetype]] <- TRUE
             shiny::validate(errmsg)
-
           }
       } else {
         sitepoints <- frs_from_naics(inputnaics, childrenForNAICS = add_naics_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,NAICS)] # xxx
@@ -1020,13 +1019,12 @@ app_server <- function(input, output, session) {
         }  else if (NROW(sitepoints) > input$max_pts_select) {
 
           errmsg    = paste0('Max allowed selection of points is ', as.character(input$max_pts_select))
+          cat("ROW COUNT TOO HIGH from selected SIC code(s): ", NROW(sitepoints), "\n")
 
           invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
           an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
           disable_buttons[[placetype]] <- TRUE
           shiny::validate(errmsg)
-
-          cat("ROW COUNT TOO HIGH from selected SIC code(s): ", NROW(sitepoints), "\n")
         }
       } else {
 
