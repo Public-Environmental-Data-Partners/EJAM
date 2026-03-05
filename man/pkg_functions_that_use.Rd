@@ -7,7 +7,8 @@
 pkg_functions_that_use(
   text = "stop\\\\(",
   pkg = "EJAM",
-  ignore_comments = TRUE
+  ignore_comments = TRUE,
+  internal_included = TRUE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ ignore_comments is ignored and treated as if it were TRUE when pkg = some instal
 ignore_comments is used only if pkg = a folder that contains .R files
 
 Note it will fail to ignore comments in .R files that are at the end of the line of actual code like  print(1) # that prints 1}
+
+\item{internal_included}{whether to also check internal functions - tries to identify those using \code{pkg_functions_and_data()}}
 }
 \value{
 vector of names of functions or paths to .R files
