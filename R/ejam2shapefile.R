@@ -272,8 +272,9 @@ To include specific columns provides those as a character vector of varnames.")
       zipfullpath <- file.path(normalizePath(folder), zipname)
       # get shp-related filenames in temp dir
       fname_noext <- tools::file_path_sans_ext(file)
-      fnames <- dir(tds, pattern = paste0("^", fname_noext, "\\.")) # must match exactly other than the extension
-      fnames <- fnames[!grepl("zip$", fnames)] # but make sure no zip file is among those
+      fnames <- dir(tds)
+      fnames <- fnames[startsWith(fnames, paste0(fname_noext, "."))] # must match exactly other than the extension
+      fnames <- fnames[!grepl("\\.zip$", fnames)] # but make sure no zip file is among those
       # delete any old version of zip
       if (file.exists(zipfullpath)) {file.remove(zipfullpath)}
       # write zip to folder, using shp files in temp dir
