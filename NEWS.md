@@ -4,7 +4,7 @@
 - More consistent info about selected categories of sites now printed to console (and server log, depending on how app is hosted)
 - Fixed some edge cases related to invalid mact codes, too many points selected, etc.
 - Documented package dev-related utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
- 
+
 # EJAM 2.32.7 (February 2026)
 
 - Bug fixes: 
