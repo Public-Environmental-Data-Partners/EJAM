@@ -752,33 +752,22 @@ app_server <- function(input, output, session) {
     placetype = 'NAICS'
     naics_user_picked_from_list <- input$ss_select_naics
     add_naics_subcategories <- input$add_naics_subcategories
-    # q: IS IT BETTER TO USE THIS IN naics_from_any() OR IN frs_from_naics() BELOW ??
 
-    # naics_validation function to check for non empty NAICS inputs
-    if (naics_validation(naics_enter = '', naics_select = input$ss_select_naics)) {
-      #if (naics_validation(input$ss_enter_naics,input$ss_select_naics)) {
-      inputnaics = {}
+    # check for non empty NAICS inputs
+    #  naics_is.valid() could be used here too but if picked from valid list all should be valid (unlike if using uploaded info)
+    if (!is.null(naics_user_picked_from_list) && length(naics_user_picked_from_list) > 0) {
 
-      # if not empty, assume its pulled using naics_from_any() or older naics_find() above
-      if (length(inputnaics) == 0 || rlang::is_empty(inputnaics)) {
-        #construct regex expression and finds sites that align with user-selected naics codes
         inputnaics <- naics_user_picked_from_list
         inputnaics <- unique(inputnaics[inputnaics != ""])
         cat("selected NAICS:  ")
         cat(paste0(inputnaics, collapse = ", "), "\n")
 
-        #merge user-selected NAICS with FRS facility location information
-        # sitepoints <- frs_by_naics[NAICS %like% inputnaics ,  ]
-
         #   2. GET FACILITY LAT/LON INFO FROM NAICS CODES
 
-        sitepoints <- frs_from_naics(inputnaics, childrenForNAICS = add_naics_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,NAICS)] # xxx
-
+        sitepoints <- frs_from_naics(inputnaics, childrenForNAICS = add_naics_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,NAICS)]
         ## this part could be replaced each time it happens, by the function sitepoints_from_any
-
         sitepoints[, ejam_uniq_id := .I]
         data.table::setcolorder(sitepoints, 'ejam_uniq_id')
-        # print(sitepoints)
 
         if (rlang::is_empty(sitepoints) || nrow(sitepoints) == 0) {
 
@@ -801,18 +790,6 @@ app_server <- function(input, output, session) {
             disable_buttons[[placetype]] <- TRUE
             shiny::validate(errmsg)
           }
-      } else {
-        sitepoints <- frs_from_naics(inputnaics, childrenForNAICS = add_naics_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,NAICS)] # xxx
-
-        # consider using sitepoints_from_any()
-        sitepoints[, ejam_uniq_id := .I]
-        data.table::setcolorder(sitepoints, 'ejam_uniq_id')
-        sitepoints$invalid_msg <- NA
-        sitepoints$invalid[is.na(sitepoints$NAICS)] <- 'bad NAICS Code'
-        sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-        # print(sitepoints)
-        showNotification('Points submitted successfully!', duration = 1)
-      }
     } else {
 
       errmsg    = 'Invalid NAICS Input'
@@ -821,21 +798,19 @@ app_server <- function(input, output, session) {
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
       disable_buttons[[placetype]] <- TRUE
       shiny::validate(errmsg)
-
     }
+
     cat("COUNT OF SITES BY NAICS SELECTED, from frs_from_naics: ", NROW(sitepoints), "\n")
-    ## assign final value to data_up_naics reactive variable
     sitepoints <- sitepoints %>% latlon_df_clean(invalid_msg_table = T)
     sitepoints$invalid_msg <- NA
     sitepoints$invalid_msg[is.na(sitepoints$NAICS)] <- 'bad NAICS Code'
     sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-    cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean: ", NROW(sitepoints), "\n")
-    cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean with valid lat/lon: ", sum(!is.na(sitepoints$lon) & !is.na(sitepoints$lat), na.rm = T), "\n")
+    cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean with valid lat/lon: ",
+        sum(!is.na(sitepoints$lon) & !is.na(sitepoints$lat), na.rm = T), "\n")
     disable_buttons[[placetype]] <- FALSE
     invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
     sitepoints
   })
-
   #############################################################################  #
   ## reactive: latlon by EPA Program IDs (from file upload) ####
 
@@ -979,27 +954,22 @@ app_server <- function(input, output, session) {
 
     ## check if anything has been selected or entered
     req(isTruthy(input$ss_select_sic))
-    #req(shiny::isTruthy(input$ss_enter_sic) || shiny::isTruthy(input$ss_select_sic))
+
     placetype = 'SIC'
     add_sic_subcategories <- FALSE #input$add_naics_subcategories
-    # q: IS IT BETTER TO USE THIS IN naics_from_any() OR IN frs_from_naics() BELOW ?? ***
 
-    # naics_validation function works here, to check for non empty SIC inputs
-    if (naics_validation('', input$ss_select_sic)) {
-      inputsic = {}
-      # if not empty, assume its pulled using naics_from_any() or older naics_find() above
-      if (length(inputsic) == 0 || rlang::is_empty(inputsic)) {
-        #construct regex expression and finds sites that align with user-selected SIC codes
-        inputsic <- input$ss_select_sic #c(sic_wib_split, input$ss_select_sic)
+    # check SIC inputs
+    if (!is.null(input$ss_select_sic) && length(input$ss_select_sic) > 0) {
+
+        inputsic <- input$ss_select_sic
         inputsic <- unique(inputsic[inputsic != ""])
         cat("selected SIC:  ")
         cat(paste0(inputsic, collapse = ", "), "\n")
-        #merge user-selected NAICS with FRS facility location information
-        #sitepoints <- frs_by_sic[SIC %like% inputsic ,  ]
 
         #   2. GET FACILITY LAT/LON INFO FROM SIC CODES
 
         sitepoints <- frs_from_sic(inputsic, children = add_sic_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,SIC)] # xxx
+        ## this part could be replaced each time it happens, by the function sitepoints_from_any
         sitepoints[, `:=`(ejam_uniq_id = .I,
                           valid = !is.na(lon) & !is.na(lat))]
         data.table::setcolorder(sitepoints, 'ejam_uniq_id')
@@ -1027,23 +997,22 @@ app_server <- function(input, output, session) {
           disable_buttons[[placetype]] <- TRUE
           shiny::validate(errmsg)
         }
-      } else {
 
-        sitepoints <- frs_from_sic(inputsic, children = add_sic_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,SIC)] # xxx
+      # } else {
 
-        ## this part could be replaced each time it happens, by the function sitepoints_from_any
+        # sitepoints <- frs_from_sic(inputsic, children = add_sic_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,SIC)] # xxx
+        #
+        # ## this part could be replaced each time it happens, by the function sitepoints_from_any
+        #
+        # sitepoints[, `:=`(ejam_uniq_id = .I,
+        #                   valid = !is.na(lon) & !is.na(lat))]
+        # data.table::setcolorder(sitepoints, 'ejam_uniq_id')
+        # sitepoints$invalid_msg <- NA
+        # sitepoints$invalid_msg[is.na(sitepoints$SIC)] <- 'bad SIC Code'
+        # sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
+        # #invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
 
-        sitepoints[, `:=`(ejam_uniq_id = .I,
-                          valid = !is.na(lon) & !is.na(lat))]
-        data.table::setcolorder(sitepoints, 'ejam_uniq_id')
-        sitepoints$invalid_msg <- NA
-        sitepoints$invalid_msg[is.na(sitepoints$SIC)] <- 'bad SIC Code'
-        sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-        #invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
-        showNotification('Points submitted successfully!', duration = 1)
-        cat("COUNT OF SITES BY SIC: ", NROW(sitepoints), "\n")
-        cat("COUNT OF SITES BY SIC with lat lon values: ", sum(sitepoints$valid, na.rm = T), "\n")
-      }
+      # }
     } else {
       errmsg    = 'Invalid SIC Input'
 
@@ -1052,7 +1021,9 @@ app_server <- function(input, output, session) {
       disable_buttons[[placetype]] <- TRUE
       shiny::validate(errmsg)
     }
-
+    showNotification('Points submitted successfully!', duration = 1)
+    cat("COUNT OF SITES BY SIC: ", NROW(sitepoints), "\n")
+    cat("COUNT OF SITES BY SIC with lat lon values: ", sum(sitepoints$valid, na.rm = T), "\n")
     ## assign final value to data_up_sic reactive variable
     disable_buttons[['SIC']] <- FALSE
     invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
