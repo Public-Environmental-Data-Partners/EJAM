@@ -830,6 +830,7 @@ app_server <- function(input, output, session) {
     sitepoints$invalid_msg[is.na(sitepoints$NAICS)] <- 'bad NAICS Code'
     sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
     cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean: ", NROW(sitepoints), "\n")
+    cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean with valid lat/lon: ", sum(!is.na(sitepoints$lon) & !is.na(sitepoints$lat), na.rm = T), "\n")
     disable_buttons[[placetype]] <- FALSE
     invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
     sitepoints
@@ -1006,7 +1007,7 @@ app_server <- function(input, output, session) {
         sitepoints$invalid_msg[is.na(sitepoints$SIC)] <- 'bad SIC Code'
         sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
 
-        if (rlang::is_empty(sitepoints) | nrow(sitepoints) == 0) {
+        if (rlang::is_empty(sitepoints) || nrow(sitepoints) == 0) {
 
           errmsg    = 'No valid locations found under this SIC code.'
           cat("No valid locations found under this SIC code.\n")
@@ -1041,7 +1042,7 @@ app_server <- function(input, output, session) {
         #invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
         showNotification('Points submitted successfully!', duration = 1)
         cat("COUNT OF SITES BY SIC: ", NROW(sitepoints), "\n")
-        cat("COUNT OF SITES BY SIC with lat lon values: ", NROW(sitepoints[isTRUE(valid), ]), "\n")
+        cat("COUNT OF SITES BY SIC with lat lon values: ", sum(sitepoints$valid, na.rm = T), "\n")
       }
     } else {
       errmsg    = 'Invalid SIC Input'
@@ -1267,7 +1268,7 @@ app_server <- function(input, output, session) {
     cat("COUNT OF SITES BY MACT: ", NROW(mact_out), "\n")
     ## remove any facilities with invalid latlons before returning?
     #mact_out <- mact_out[!is.na(lat) & !is.na(lon),]
-    cat("COUNT OF SITES BY MACT with lat lon values: ", NROW(mact_out[!is.na(lat) & !is.na(lon),]), "\n")
+    cat("COUNT OF SITES BY MACT with valid lat lon values: ", NROW(mact_out[!is.na(lat) & !is.na(lon),]), "\n")
     if (is.null(mact_out) || NROW(mact_out) == 0 || all(is.na(mact_out$lat)) || all(is.na(mact_out$lon))) {
 
       errmsg    = 'No valid locations found under this MACT subpart'
