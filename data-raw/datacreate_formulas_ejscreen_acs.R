@@ -527,6 +527,8 @@
                 "names_d_language", NA, NA)
   ),
 
+  ## note this is just saved / archived script that had been used to create the first version of this object that stores formulas,
+  ## so the dates here do not need to be updated anymore as this is no longer used during yearly updates.
   ejam_package_version = "2.5.0",
   ejscreen_version = c(VersionEJSCREEN = "2.5"),
   ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2026"),
