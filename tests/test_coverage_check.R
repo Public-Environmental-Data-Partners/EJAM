@@ -123,13 +123,13 @@ test_coverage_check <- function(loadagain = FALSE, quiet = TRUE) {
   func2searchfor = tdat$object[!is.na(tdat$object) & tdat$notes == "cant find testfile of exact name,"]
 
   for (i in seq_along(func2searchfor)) {
-    x = EJAM:::find_in_files(pattern = paste0(func2searchfor[i], ""), path = "./tests/testthat", ignorecomments = TRUE, quiet = T)
+    x = EJAM:::find_in_files(pattern = paste0(func2searchfor[i], "\\("), path = "./tests/testthat", ignorecomments = TRUE, quiet = T)
     if (length(x) > 0) {
       y = EJAM:::find_in_files(pattern = paste0("test_that.*", func2searchfor[i], ""), path = "./tests/testthat", ignorecomments = TRUE, quiet = T)
       if (length(y) > 0) {
         tdat$notes[tdat$object %in% func2searchfor[i]] <- paste0("OK? no fname match, but test_that found in ", length(y), " testfile(s)")
       } else {
-      tdat$notes[tdat$object %in% func2searchfor[i]] <- paste0("no fname match, but name found in uncommented lines of ", length(x), " testfile(s)")
+        tdat$notes[tdat$object %in% func2searchfor[i]] <- paste0("no fname match, but name found in uncommented lines of ", length(x), " testfile(s)")
       }
     } else {
       funcs_not_in_txt_of_testfiles_at_all = c(funcs_not_in_txt_of_testfiles_at_all, func2searchfor[i])
@@ -176,9 +176,9 @@ test_coverage_check <- function(loadagain = FALSE, quiet = TRUE) {
   cat("   CERTAINLY NO TESTS \n\n")
 
   zz = x[order(x$object), ]
-zz[substr(zz$notes,1,8) == "NO TESTS", c("object", "notes")] |> print(n = 500)
+  zz[substr(zz$notes,1,8) == "NO TESTS", c("object", "notes")] |> print(n = 500)
 
-cat('
+  cat('
       -----------------------------------------------\n\n')
 
 
@@ -188,9 +188,10 @@ cat('
 
   junk = capture.output({
     suppressWarnings({
-      y = EJAM:::pkg_functions_and_sourcefiles('EJAM', internal_included = TRUE, exportedfuncs_included = T, data_included = F, vectoronly = T,
+      y = EJAM:::pkg_functions_and_sourcefiles('EJAM', internal_included = TRUE, exportedfuncs_included = T, data_included = F,
                                                loadagain = loadagain, quiet = quiet)
     })})
+  y = y$object
   # print(setdiff(y, gsub("tests/testthat/test-|.R$", "", tdat$testfile)))
   cat('\n')
   cat("Number of exported functions from the package (note the # is much higher if you have used load_all()...): ",
@@ -206,6 +207,7 @@ cat('
   #  cat(paste0(funcs_not_in_txt_of_testfiles_at_all, collapse = ", "), "\n\n")
   (dput(sort(funcs_not_in_txt_of_testfiles_at_all)))
   cat("\n\n")
+
   junk = capture.output({
     freq = EJAM:::found_in_N_files_T_times(funcs_not_in_txt_of_testfiles_at_all, path = "./R", ignorecomments = TRUE)
   })
