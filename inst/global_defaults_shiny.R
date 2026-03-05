@@ -1067,18 +1067,6 @@ AIR,	IL000031012ACJ<br>
 <!--     <a href="https://ejanalysis.github.io/EJAM/articles/index.html" alt="EJSCREEN help" title="EJSCREEN documentation pages" target="_blank">EJSCREEN/EJAM Help</a> | -->
 <!--     <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a> | -->
 
-<!-- <a href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/viewform" target="_blank" rel="noreferrer"> -->
-<!--  <button type="button">Share data feedback -->
-<!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Share data feedback"> -->
-<!--  </button> -->
-<!-- </a> -->
-
-<!-- <a href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform" target="_blank" rel="noreferrer"> -->
-<!--    <button type="button">Help improve the tool -->
-<!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Help improve the tool"> -->
-<!--    </button> -->
-<!--  </a> -->
-
 </span>&nbsp;&nbsp;
         </td>
  ',
@@ -1137,7 +1125,7 @@ AIR,	IL000031012ACJ<br>
 
   <a
     class="cejst-style-btn"
-    href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform"
+    href="https://docs.google.com/forms/d/e/1FAIpQLSeQI4Dh3P2mR5crbYsx46Kcn9yaPxhIcIG3qAYNI5xfTojbVA/viewform?usp=dialog"
     target="_blank"
     rel="noopener noreferrer"
   >
