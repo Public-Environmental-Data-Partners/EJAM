@@ -44,7 +44,7 @@ where names are file paths with hits, elements are vectors of text with hits.
 utility to do global search/find in full text of the files in a folder, like source code files or unit tests
 }
 \details{
-Also see undocumented related functions
+Also see (mostly undocumented) related functions
 EJAM:::found_in_N_files_T_times() and
 EJAM:::found_in_files() and
 EJAM:::grab_hits() and

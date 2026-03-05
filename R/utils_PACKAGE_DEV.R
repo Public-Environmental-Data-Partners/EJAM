@@ -113,8 +113,8 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 
 # Helper for EJAM:::find_in_files()
 #
+# Related: EJAM:::found_in_files()
 # Undocumented related functions:
-# EJAM:::found_in_files()
 # EJAM:::found_in_N_files_T_times()
 # EJAM:::grab_hits()
 # EJAM:::grepn()
@@ -165,7 +165,7 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #' @param quiet whether to print results or just invisibly return
 #'
 #' @details
-#' Also see undocumented related functions
+#' Also see (mostly undocumented) related functions
 #' EJAM:::found_in_N_files_T_times() and
 #' EJAM:::found_in_files() and
 #' EJAM:::grab_hits() and
@@ -303,19 +303,31 @@ find_in_files <- function(pattern,
 }
 ################################ #
 
-# search for vector of query terms, to see which ones are found in any of the files
-# ... passed to find_in_files() can be ignore.case, filename_pattern, etc.
-# ignorecomments = TRUE IS NOT DEFAULT IN find_in_files() but is here
 
-# Uses EJAM:::find_in_files()
-#
-# Undocumented related functions:
-# EJAM:::found_in_files()
-# EJAM:::found_in_N_files_T_times()
-# EJAM:::grab_hits()
-# EJAM:::grepn()
-
+#' search for vector of query terms, to see which ones are found in any of the files
+#'
+#' @param pattern_vector in a loop, each element is passed to `find_in_files()`
+#' @param path optional path like "./R"
+#' @param ignorecomments if TRUE, ignore matches in lines that are just comments not actual source code
+#' and note TRUE IS NOT DEFAULT IN find_in_files() but is here
+#' @param ... passed to `find_in_files()` can be ignore.case, filename_pattern, etc.
+#' @examples
+#'   found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+#' @details
+#' Uses EJAM:::find_in_files()
+#'
+#' @return data.frame
+#'
+#' @keywords internal
+#' @export
+#'
 found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
+
+  # Undocumented related functions:
+  #
+  # EJAM:::found_in_N_files_T_times()
+  # EJAM:::grab_hits()
+  # EJAM:::grepn()
 
   found <- vector(length = length(pattern_vector))
   for (i in seq_along(pattern_vector)) {
@@ -334,11 +346,13 @@ found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, 
 
 # Uses EJAM:::find_in_files()
 #
-# Undocumented related functions:
+# Related:
 # EJAM:::found_in_files()
+# Undocumented related functions:
 # EJAM:::found_in_N_files_T_times()
+# EJAM:::grepn()  - seek 1 query pattern in each of vector of strings
+# EJAM:::found_in_N_files_T_times() - seek vector of query patterns, in each of vector of files
 # EJAM:::grab_hits()
-# EJAM:::grepn()
 
 found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
 
@@ -689,54 +703,60 @@ pkg_data <- function(pkg = 'EJAM', len=30, sortbysize=TRUE, simple = TRUE) {
 # #   like askradius <- ask_number where ask_number = function() {}
 # #
 pkg_functions_and_sourcefiles <- function(pkg = "EJAM",
-                                          alphasort_table = FALSE, # or use TRUE here?
+                                          funcs = NULL, # default is all
+                                          alphasort_table = TRUE,
                                           internal_included = TRUE,
                                           exportedfuncs_included = TRUE,
-                                          data_included = FALSE, # or use FALSE here?
-                                          vectoronly = FALSE,
-                                          loadagain = TRUE, quiet = FALSE) {
+                                          data_included = FALSE,
+                                          loadagain = TRUE, # needed to find internal functions if load_all() wasnt just done
+                                          quiet = FALSE,
+                                          full.names = FALSE) {
 
+  vectoronly = FALSE
   info <- pkg_functions_and_data(pkg = pkg, internal_included = internal_included, exportedfuncs_included = exportedfuncs_included,
                                  data_included = data_included, alphasort_table = alphasort_table, vectoronly = vectoronly)
-  if (vectoronly) {
-    funcnames <- info
-  } else {
-    funcnames <- info$object
+  funcnames <- info$object
+
+  if (!is.null(funcs)) { # report on just a subset of specified functions
+    if (!all(funcs %in% funcnames)) {warning("not all specified funcs were found")}
+    funcnames <- intersect(funcnames, funcs)
+
   }
+  # does not work:
+  ## funcnames <- paste0(pkg, ":::", funcnames) # to be able to find them if load_all() not done
+
   if (basename(getwd()) != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
-  x <- pkg_functions_with_keywords_internal_tag(loadagain = loadagain, quiet = quiet) # DOES load_all() again if loadagain==TRUE
-  fnames <- x$func
-  fnames <- x$file[match(funcnames, fnames)] # match to ensure same order as info$object, but check how extra or missing ones are handled
-  if (vectoronly) {
-    return(fnames)
+  if (loadagain) {
+    devtools::load_all()
+    envt <- globalenv()
   } else {
-    return(data.frame(file = fnames, info))
+    envt <- as.environment(paste0("package:", pkg)) # will only find filename of exported ones if load_all() was not already done
   }
-}
-##################################################################################### #
+  if (length(funcnames) == 0) {stop("no function names found")}
+  ## Get the filename of source code .R file containing each function.
+  filenames <- vector(length = length(funcnames))
 
-# rough notes on draft quick look for file names???
-
-pkg_functions_and_sourcefiles2 <- function(funcnames, pkg = "EJAM", full.names = TRUE) {
-
-  # get R/*.R FILENAME that defines each function
-  if (missing(funcnames)) {fnames <- pkg_functions_and_sourcefiles(pkg = pkg)$object}
-
-  fnames <- paste0(pkg, ":::", vector(length = length(funcnames)))
   for (i in seq_along(funcnames)) {
-    funcname <- funcnames[i] # funcname <- "pkg_data"
-    cat(paste0(funcname, ", "))
-    # findInFiles::fifR(pattern = paste0("^ *", funcname, ".*function[(]"), output = "tibble")$file
-    found <- try({parse(text = funcname)}, silent = TRUE) # catch specials like  %||%
-    if (inherits(found, "try-error") || length(found) == 0) {
-      fnames[i] <- NA
+    func <- try(parse(text = paste0("`", funcnames[i], "`")), silent = TRUE) # handles e.g., "`%not_in%`"
+    if (inherits(func, "try-error") || length(func) == 0) {
+      filenames[i] <- NA
     } else {
-      found <- try({getSrcFilename(eval(found), full.names = full.names)}, silent = TRUE)
-      if (inherits(found, "try-error") || length(found) == 0) {fnames[i] <- NA} else {fnames[i] <- found}
+      x <- try(utils::getSrcFilename(eval(func, envir = envt), full.names = full.names), silent = TRUE)
+      if (inherits(x, "try-error") || length(x) == 0 || length(x) > 1) {
+        filenames[i] <- NA
+      } else {
+        filenames[i] <- x
+      }
     }
   }
-  cat("\n")
-  return(fnames)
+  if (!quiet) {cat("\n")}
+    x <- data.frame(file = filenames, object = funcnames)
+    if (alphasort_table) {
+      x <- x[order(x$object), ]
+    } else {
+      x <- x[order(x$file, x$object), ]
+    }
+    return(x)
 }
 ##################################################################################### #
 
@@ -786,7 +806,11 @@ pkg_functions_and_sourcefiles2 <- function(funcnames, pkg = "EJAM", full.names =
 
 pkg_functions_with_keywords_internal_tag <- function(
 
-  package.dir = ".", loadagain = TRUE, quiet = FALSE) {
+  package.dir = ".",
+  loadagain = TRUE,
+  quiet = FALSE,
+  alphasort_table = TRUE # or can group by file if set FALSE
+  ) {
 
   # Does load_all() first if loadagain==TRUE so even unexported functions will seem exported, fyi
   #
@@ -816,15 +840,19 @@ pkg_functions_with_keywords_internal_tag <- function(
   results <- list()
   i <- 0
 
+  function_names_in_blocks <- sapply(blocks, function(x)  as.character(x$call)[2])
+
   for (block in blocks) {
 
     i <- i + 1
     # block <- blocks[[671]]
     # block <- blocks[[1]]
-
-    object_name <- roxygen2::block_get_tag_value(block, 'name')
+    object_name <- function_names_in_blocks[i]
+    ## if that is NA, it must be a data object, not a function?
+    ## if we wanted to collect the data object name:
+    #if (is.na(object_name)) {object_name <- roxygen2::block_get_tag_value(block, 'name')}
     if (is.null(object_name) || length(object_name) == 0 || any(is.na(object_name))) {
-      object_name <- NA
+      object_name <- NA # e.g., a data object not a function
       # cat("cannot find name in this block: \n")
       # cat("\n")
     }
@@ -850,7 +878,6 @@ pkg_functions_with_keywords_internal_tag <- function(
     tags <- roxygen2::block_get_tags(block, "keywords")
 
     if (length(tags) == 0) {
-      if (!quiet) {cat(' \n')}
       keywordval <- ""
     } else {
       if (length(tags) > 1) {
@@ -861,11 +888,12 @@ pkg_functions_with_keywords_internal_tag <- function(
       #    keyword <- roxygen2:::block_get_tag_value(block, 'keywords')  # or
       tag <- tags[[1]] # only expect one keywords tag per documented object ?
       keywordval <- tag$val
-
       # keywordinfo <- paste0("[", tag$file, ":", tag$line, "] ", tag$val)
       ## line is start of block, not the keywords tag itself
-      if (!quiet) {cat(keywordval, "\n")}
+      if (!quiet) {cat(keywordval)}
     }
+    if (!quiet && is.na(object_name)) {cat(" (seems to be a dataset not a function)")}
+    if (!quiet) {cat("\n")}
 
     results[[i]] <- data.frame(n = i, func = object_call, name = object_name,
                                file = basename(block$file), line = block$line, keywordval = keywordval)
@@ -881,7 +909,11 @@ pkg_functions_with_keywords_internal_tag <- function(
   results$fname_is_data_name  <- !is.na(results$name)  & paste0("data_", results$name)  == filename.no.ext
   results$fname_is_name1 <- !is.na(results$name1) & results$name1 == filename.no.ext
 
-  results <- results[order(results$func), ]
+  # NOW DROP DATA OBJECTS and sort
+  results <- results[!is.na(results$name), ]
+  if (alphasort_table) {
+    results <- results[order(results$name), ]
+  }
   return(results)
   # return(list(blocks = blocks, results = results) ) # for troubleshooting
 }
