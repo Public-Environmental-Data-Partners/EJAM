@@ -90,11 +90,19 @@ popup_from_any <- function(x, column_names = names(x), labels = column_names, n 
     warning("for map popups, column_names and labels must be same length. Using column_names as labels.")
   }
 
+  escaped_labels <- htmltools::htmlEscape(labels)
+
   ## create vector of popups with column labels, length=# of rows of data.table
   if (data.table::is.data.table(x)) {
-    popup_vec <- sapply(1:NROW(x), function(row_num) paste(labels, x[row_num  ], sep = ': ', collapse = '<br>'))
+    popup_vec <- sapply(1:NROW(x), function(row_num) {
+      vals <- htmltools::htmlEscape(as.character(unlist(x[row_num])))
+      paste(escaped_labels, vals, sep = ': ', collapse = '<br>')
+    })
   } else {
-    popup_vec <- sapply(1:NROW(x), function(row_num) paste(labels, x[row_num, ], sep = ': ', collapse = '<br>'))
+    popup_vec <- sapply(1:NROW(x), function(row_num) {
+      vals <- htmltools::htmlEscape(as.character(unlist(x[row_num, ])))
+      paste(escaped_labels, vals, sep = ': ', collapse = '<br>')
+    })
   }
 
   return(popup_vec)
