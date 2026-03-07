@@ -1724,9 +1724,9 @@ app_server <- function(input, output, session) {
 
       max_pts <- input$max_pts_map # was the fixed max_pts_map
       valid = !is.na(data_uploaded()$lon) & !is.na(data_uploaded()$lat)
-      if (NROW(data_uploaded()[isTRUE(valid), ]) > max_pts) { # would have already been stopped probably
+      if (NROW(data_uploaded()[valid, ]) > max_pts) { # would have already been stopped probably
        ## Max allowed points was exceeded!
-        if (NROW(data_uploaded()[isTRUE(valid), ]) > input$max_pts_run) {
+        if (NROW(data_uploaded()[valid, ]) > input$max_pts_run) {
           cat("too many valid points to analyze?\n")
           validate(paste0('Too many valid points (> ', prettyNum(input$max_pts_run, big.mark = ','),
                           ') uploaded for analysis'))
@@ -2686,7 +2686,7 @@ app_server <- function(input, output, session) {
                                  #  (among those already created in data_processed() via ejamit() etc.)
                                  #  could change to be an input$ in advanced tab possibly:
                                  reports = EJAM:::global_or_param("default_reports"),
-                                 sitereport_download_buttons_show = isTRUE(input$sitereport_download_buttons_show),
+                                 sitereport_download_buttons_show = isTRUE(as.logical(input$sitereport_download_buttons_show)),
                                  sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
                                  columns_used = input$bysite_webtable_colnames
