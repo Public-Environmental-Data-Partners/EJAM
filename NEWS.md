@@ -1,5 +1,6 @@
 # Development
 
+- Created get_ejscreen_facilities_nearby() and helpers to use API to find/count NPL, TSDF, TRI, etc. near each point
 - MACT, NAICS, or SIC initially selected at launch of app now can be specified as parameters mact, naics, sic in ejamapp(), or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab.
 - More consistent info about selected categories of sites now printed to console (and server log, depending on how app is hosted)
 - Fixed ejam2shapefile() where it had problems if closely related filename had previously been used
