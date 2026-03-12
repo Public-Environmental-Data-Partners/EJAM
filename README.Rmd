@@ -45,8 +45,7 @@ knitr::opts_chunk$set(
 
 code_reponame_with_owner <- EJAM:::repo_from_desc()           # "OWNER/REPONAME"
 code_reponame <- gsub(".*/", "", code_reponame_with_owner)    #       "REPONAME"
-code_reponame_url <- EJAM:::repo_from_desc(get_full_url = T)   
-# "https://github.com/OWNER/REPONAME"
+code_reponame_url <- EJAM:::repo_from_desc(get_full_url = T) # "https://github.com/OWNER/REPONAME"
 
 docs_reponame_with_owner <- EJAM:::repo_from_desc('github.io')# "OWNER/REPONAME"
 docs_reponame <- gsub(".*/", "", docs_reponame_with_owner)    #       "REPONAME"
@@ -85,7 +84,7 @@ See [ejanalysis.org/status](https://ejanalysis.org/status) for more information.
 
 *In 2025, content related to what had been the USEPA-hosted open source R package EJAM was archived.*
 
-*Ongoing development since then is not associated with EPA*, and that development including any open source contributions, has taken place in a separate repository, called [ejanalysis/EJAM](https://github.com/ejanalysis/EJAM), a non-EPA, detached fork.
+*Ongoing development since then is not associated with EPA*, and that development including any open source contributions, has taken place in a separate repository, called [`r code_reponame_with_owner`](`r code_reponame_url`), a non-EPA, detached fork.
 
 ### code repositories and open source contributions
 

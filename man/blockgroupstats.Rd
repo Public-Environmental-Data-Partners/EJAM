@@ -48,7 +48,7 @@ Other key datasets:
 \itemize{
 \item List of key datasets used by EJAM and details about annual updates: \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}.
 \item Datasets stored within the EJAM package (.rda files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/ejanalysis/EJAM/tree/main/data}{access to data files}
-\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/ejanalysis/ejamdata/tree/main/data}{access to data files}
-\item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
+\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation}
+and \link{access to data files}(`r phttps://ejanalysis.github.io/EJAM/tree/main/data - Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
 }
 }

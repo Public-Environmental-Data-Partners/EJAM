@@ -21,7 +21,7 @@
 # browseURL("https://ejanalysis.github.io/EJAM/articles/installing.html")
 
 # reponame = EJAM:::repo_from_desc() # works if currently is installed
-reponame = "ejanalysis/EJAM"
+reponame = EJAM:::repo_from_desc()
 
 ## If you want to uninstall the currently-installed version first:
 # remove.packages("EJAM", lib = "~/Rlibs")
