@@ -353,21 +353,21 @@ app_ui <- function(request) {
                           conditionalPanel(
                             condition = "input.ss_choose_method == 'dropdown' && input.ss_choose_method_drop == 'SIC'",
 
-                            ## input: Select SIC from list
-                            selectizeInput(inputId = "ss_select_sic",
-                                           label = h6("Select industry of interest"),
-                                           # choose from named numeric vector on server-side
-                                           ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
-                                           choices = NULL,
-                                           selected = NULL,
-                                           width = 400,
-                                           multiple = TRUE,
-                                           ## add X to remove selected options from list
-                                           options = list('plugins' = list('remove_button'))
-                            ),
-                            br() ## vertical space
-                          ), # end SIC conditionalPanel
-                          ################################################################# #
+                      ## input: Select SIC from list
+                      selectizeInput(inputId = "ss_select_sic",
+                                     label = h6("Select industry of interest"),
+                                     # choose from named numeric vector on server-side
+                                     #
+                                     choices = NULL, # will be updated in server to SIC a named vector of >1,000 categories like "7240 - Barber shops"
+                                     selected = NULL, # will be updated in server to input$default_sic
+                                     width = 400,
+                                     multiple = TRUE,
+                                     ## add X to remove selected options from list
+                                     options = list('plugins' = list('remove_button'))
+                      ),
+                      br() ## vertical space
+                    ), # end SIC conditionalPanel
+                    ################################################################# #
 
                           ## _MACT - dropdown conditionalPanel ------------------------------------- - ####
 
