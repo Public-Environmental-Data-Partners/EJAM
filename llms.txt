@@ -1,6 +1,6 @@
 # Environmental Justice Analysis Multisite tool
 
-# 
+#
 
 The Environmental Justice Analysis Multisite tool lets you easily and
 quickly see residential population and environmental information
@@ -21,9 +21,7 @@ R package EJAM was archived.*
 
 *Ongoing development since then is not associated with EPA*, and that
 development including any open source contributions, has taken place in
-a separate repository, called
-[ejanalysis/EJAM](https://github.com/ejanalysis/EJAM), a non-EPA,
-detached fork.
+a separate repository, a non-EPA, detached fork.
 
 ### code repositories and open source contributions
 
