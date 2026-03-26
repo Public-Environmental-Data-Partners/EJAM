@@ -19,8 +19,12 @@
 
 - MACT, NAICS, or SIC initially selected at launch of app now can be specified as parameters mact, naics, sic in ejamapp(), or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab.
 - More consistent info about selected categories of sites now printed to console (and server log, depending on how app is hosted)
+- Fixed ejam2shapefile() where it had problems if closely related filename had previously been used
 - Fixed some edge cases related to invalid mact codes, too many points selected, etc.
 - Documented package dev-related utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
+- Added utility `distance_epa_api()` that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.
+- Added utility `calc_formulas_from_varname()` that looks at formulas_ejscreen_acs and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
+
 
 
 # EJAM 2.32.7 (February 2026)

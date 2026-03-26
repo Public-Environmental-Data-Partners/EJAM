@@ -99,7 +99,7 @@ distances.all <- function(frompoints, topoints, units='miles',
   frompoints[from_na, ] <- c(0,0) # replace NA with 0 so that spatialpoints will not stop with error
   topoints[to_na, ]     <- c(0,0)
 
-    # DEFAULT IS METERS now !
+    # DEFAULT IS METERS now ! # crs of 4326 is GCS_WGS_1984 and note that differs from crs = 4269 or Geodetic CRS NAD83
     frompoints.sf = sf::st_as_sf(frompoints, coords = c('lon','lat'), crs = "epsg:4326")
     topoints.sf   = sf::st_as_sf(topoints,   coords = c('lon','lat'), crs = "epsg:4326")
     results.matrix <- sf::st_distance(frompoints.sf, topoints.sf ) # maybe try tolerance = 1  for 1 meter tolerance to possibly speed it up
