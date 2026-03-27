@@ -27,7 +27,7 @@ The “diesel particulate matter (PM) indicator” measures how much diesel PM (
 
 - The diesel PM concentration is measured in units of micrograms per cubic meter(μg/m3).
 - Diesel PM concentrations are provided by the EPA’s Office of Air Quality Planning and Standards. The source data are from the [EPA Air Toxics Screening Assessment](https://www.epa.gov/AirToxScreen).
-- For technical details on the calculations and source data, visit the [EJScreen Technical Documentation](`r EJAM::url_ejscreentechdoc()`). [or the archived tech info page](http://htmlpreview.github.io/?`r EJAM:::repo_from_desc(get_full_url = TRUE)`/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html).
+- For technical details on the calculations and source data, visit the [EJScreen Technical Documentation](`r EJAM::url_ejscreentechdoc()`). [or the archived tech info page](http://htmlpreview.github.io/?`r EJAM::url_package(get_full_url = TRUE)`/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html).
 
 ## Moving Forward – What You Can Do
 
@@ -43,5 +43,5 @@ The “diesel particulate matter (PM) indicator” measures how much diesel PM (
  _About this page:_
 
 - _This page is a simplified version of the original saved by archive.org._
-- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
+- _**[Fast-loading simplified versions of key webpages and reference documents](`r paste0(EJAM::url_package("docs"), "/articles/ejscreen.html")`){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
 

@@ -16,18 +16,17 @@ editor_options:
 
 ```{r, eval=TRUE, echo=FALSE, include=FALSE}
 
-code_reponame_with_owner <- EJAM:::repo_from_desc()           # "OWNER/REPONAME"
+code_reponame_with_owner <- EJAM::url_package()           # "OWNER/REPONAME"
 code_reponame <- gsub(".*/", "", code_reponame_with_owner)    #       "REPONAME"
-code_reponame_url <- EJAM:::repo_from_desc(get_full_url = T)   
+code_reponame_url <- EJAM::url_package(get_full_url = T)   
 # "https://github.com/OWNER/REPONAME"
 
-docs_reponame_with_owner <- EJAM:::repo_from_desc('github.io')# "OWNER/REPONAME"
-docs_reponame <- gsub(".*/", "", docs_reponame_with_owner)    #       "REPONAME"
-docs_reponame_url <- EJAM:::repo_from_desc('github.io', get_full_url = T) 
+# docs_reponame_with_owner <- EJAM::url_package('docs')# "OWNER/REPONAME"# does not make sense to have partial url for docs website
+# docs_reponame <- gsub(".*/", "", docs_reponame_with_owner)    #       "REPONAME"
+docs_reponame_url <- EJAM::url_package(type='docs', get_full_url = T) 
 # "https://OWNER.github.io/REPONAME"
 
-data_reponame_with_owner <- desc::desc(file = system.file(
-  "DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")     # "OWNER/REPONAME"
+data_reponame_with_owner <- EJAM::url_package(type='data', get_full_url = F) # "OWNER/REPONAME"
 data_reponame <- gsub(".*/", "", data_reponame_with_owner)    #       "REPONAME"
 data_reponame_url <- paste0("https://github.com/", data_reponame_with_owner) 
 # "https://github.com/OWNER/REPONAME"
@@ -83,7 +82,7 @@ But also note users may need to set up a personal access token (PAT) if they wan
 
 ```{r, echo=FALSE, eval=TRUE, include=FALSE}
 # helper to get the owner and name of the code repo and the documentation repo as specified in the DESCRIPTION file
-owner_repo <- EJAM:::repo_from_desc()      # had been "USEPA/EJAM-open"
+owner_repo <- EJAM::url_package()      # had been "USEPA/EJAM-open"
 repo <- gsub(".*/", "", owner_repo)        # had been       "EJAM-open"
 
 ```

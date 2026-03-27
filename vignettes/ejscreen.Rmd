@@ -13,9 +13,9 @@ editor_options:
     wrap: 80
 ---
 
-```{r note, eval=FALSE, echo=FALSE}
+```{r note, include=FALSE}
 # Some of this info was previously at
-# http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.html
+paste0("http://htmlpreview.github.io/?", EJAM::url_package(get_full_url = T), "/blob/development/data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.html")
 ```
 
 EJSCREEN originally provided extensive documentation and help through the
@@ -41,12 +41,12 @@ EJAM-related repositories.
 -   EJSCREEN User Guides (.pdf docs)
 
     -   [EJSCREEN Overall User
-        Guide](`r paste0(EJAM:::repo_from_desc(get_full_url = TRUE), "/blob/development/data-raw/user-guides/EJSCREEN-USER-GUIDE-2025-02.pdf")`){target="_blank"} (aka EJSCREEN walkthrough). Also [at
+        Guide](`r paste0(EJAM::url_package(get_full_url = TRUE), "/blob/development/data-raw/user-guides/EJSCREEN-USER-GUIDE-2025-02.pdf")`){target="_blank"} (aka EJSCREEN walkthrough). Also [at
         archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
 
     -   [EJSCREEN Multisite Tool User
         Guide](https://ejam.policyinnovation.info/www/user-guide-2025-02.pdf){target="_blank"}
-        (aka EJAM walkthrough). Also [saved in repo](`r EJAM:::repo_from_desc(get_full_url = TRUE)`/blob/main/inst/app/www/user-guide-2025-02.pdf){target="_blank"}
+        (aka EJAM walkthrough). Also [saved in repo](`r paste0(EJAM::url_package(get_full_url = TRUE), "/blob/main/inst/app/www/user-guide-2025-02.pdf")`){target="_blank"}
 
 ## Documentation of Data Sources and Technical Methods
 
@@ -63,12 +63,12 @@ EJAM-related repositories.
         archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
 
     -   [**Key environmental indicators with year and source of
-        each**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html){target="_blank"}.
+        each**](`r paste0("http://htmlpreview.github.io/?", EJAM::url_package(get_full_url = TRUE),  "/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html")`){target="_blank"}.
         Also [at
         archive.org](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
 
     -   [Key socioeconomic
-        indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.html){target="_blank"}.
+        indicators](`r paste0("http://htmlpreview.github.io/?", EJAM::url_package(get_full_url = TRUE),  "/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.html")`){target="_blank"}.
         Also [at
         archive.org](https://web.archive.org/web/20250102180705/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen){target="_blank"}
 
@@ -83,11 +83,11 @@ EJAM-related repositories.
         -   Datasets stored in the EJAM repository (.rda files):
             [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-){target="_blank"}
             and [Data
-            files](`r EJAM:::repo_from_desc(get_full_url = TRUE)`/tree/main/data){target="_blank"}
-        -   Datasets stored in the ejamdata repo (large .arrow files):
-            [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-){target="_blank"}
+            files](`r EJAM::url_package(get_full_url = TRUE)`/tree/main/data){target="_blank"}
+        -   Datasets used by EJAM but stored separately (large .arrow files):
+            [Documentation](../articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files){target="_blank"}
             and [Data
-            files](`r paste0(EJAM:::repo_from_desc(get_full_url = TRUE,  domain = "github.io"), "/tree/main/data")`){target="_blank"}
+            files](`r paste0(EJAM::url_package(type = "data", get_full_url = TRUE), "/tree/main/data")`){target="_blank"}
 
 -   Methods (development of indicators, calculations for community reports,
     etc.)
@@ -99,7 +99,7 @@ EJAM-related repositories.
 
     ```{r notes, eval=FALSE, echo=FALSE, include=FALSE}
     # (`r EJAM::url_ejscreentechdoc()`)
-    # (`r EJAM:::repo_from_desc(get_full_url = TRUE)`/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf)
+    # (`r EJAM::url_package(get_full_url = TRUE)`/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf)
     ```
 
     -   Documentation of EJAM software that generates EJSCREEN reports
@@ -123,6 +123,7 @@ in all programs, policies and activities.
 [Launch the EJScreen Tool](https://ejanalysis.com/ejscreenapp){target="_blank"}
 
 ```{r echo = FALSE, results = 'asis'}
+urlx = EJAM::url_package(get_full_url = T)
 links_table <- cbind(
     aaa = c(
         "**Tool Basics and Uses**",
@@ -137,7 +138,7 @@ links_table <- cbind(
     ccc = c(
         "**Technical Information and Data Downloads**",
         "Download data and find detailed information about the technical aspects of EJScreen.",
-        "[Dive into details](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html)"
+        paste0("[Dive into details](", "http://htmlpreview.github.io/?", urlx, "/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html)")
     )
 )
 library(knitr)
@@ -159,9 +160,9 @@ kable(links_table,  col.names = NULL, label = NA)
         -   [EJ and Supplemental
             Indexes](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen){target="_blank"}
         -   [Environmental
-            Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html){target="_blank"}
+            Indicators](`r paste0("http://htmlpreview.github.io/?", EJAM::url_package("code", get_full_url = TRUE), "/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html")`){target="_blank"}
         -   [Socioeconomic
-            Indicators](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.html){target="_blank"}
+            Indicators](`r paste0("http://htmlpreview.github.io/?", EJAM::url_package("code", get_full_url = TRUE), "/blob/development/data-raw/EJSCREEN_archived_pages/overview-socioeconomic-indicators-ejscreen.html")`){target="_blank"}
         -   [How was EJScreen
             Developed?](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/how-was-ejscreen-developed){target="_blank"}
         -   [Limitations and
@@ -193,7 +194,7 @@ kable(links_table,  col.names = NULL, label = NA)
     -   [Threshold
         Maps](https://web.archive.org/web/20250121194750/https://www.epa.gov/ejscreen/threshold-maps-ejscreen){target="_blank"}
 -   [**Technical Information and Data
-    Downloads**](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html){target="_blank"}
+    Downloads**](`r paste0("http://htmlpreview.github.io/?", EJAM::url_package("code", get_full_url = TRUE), "/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html")`){target="_blank"}
     or [as
     archived](https://web.archive.org/web/20250121194640/https://www.epa.gov/ejscreen/technical-information-and-data-downloads){target="_blank"}
     -   [Download EJScreen

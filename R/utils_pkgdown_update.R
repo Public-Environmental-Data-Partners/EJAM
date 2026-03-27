@@ -43,7 +43,7 @@
 
   # To specify which branch site gets published from:
   #    https://github.com/OWNERGOESHERE/REPONAME/settings/pages ( REPONAME may be EJAM )
-  #    to get likely URL from DESCRIPTION file:  EJAM:::repo_from_desc(get_full_url = T)
+  #    to get likely URL from DESCRIPTION file:  EJAM::url_package(get_full_url = T)
   # see https://pkgdown.r-lib.org/articles/pkgdown.html#configuration
   # see https://usethis.r-lib.org/reference/use_pkgdown.html
   ### also possibly of interest:
@@ -235,7 +235,7 @@ pkgdown_update = function(
     # `pkgdown::pkgdown_sitrep()` does, among other things,
     #   confirm the URL for publishing the pkgdown site listed in _pkgdown.yml
     #   matches what is in DESCRIPTION
-    #    at  EJAM:::repo_from_desc('github.io', get_full_url = TRUE)
+    #    at  EJAM::url_package('code', get_full_url = TRUE)
 
     if (doask && interactive()  && rstudioapi::isAvailable()) {
       cat('\n\n')

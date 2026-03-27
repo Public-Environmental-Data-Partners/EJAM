@@ -48,7 +48,8 @@ See installation details in `vignettes/installing.Rmd`
 **Installation from GitHub:**
 ```r
 install.packages("remotes")
-remotes::install_github("ejanalysis/EJAM", dependencies = TRUE, force = TRUE)
+# NOTE: replace "REPO_OWNER" with the actual github repo owner (see DESCRIPTION file)
+remotes::install_github("REPO_OWNER/EJAM", dependencies = TRUE, force = TRUE)
 ```
 
 **Installation from local source:**
@@ -217,7 +218,7 @@ The notes below might need to be updated every time the github workflow actions 
 **Golem Framework:** Uses `app_ui()`/`app_server()`, launched via `ejamapp()`. Config in `inst/golem-config.yml`.
 **Data:** 
   - Some is lazy-loaded from data/ 
-  - Some is saved in the data folder upon package installation because some large data files must be downloaded from ejanalysis/ejamdata. This is explained in the file vignettes/dev-update-datasets.Rmd
+  - Some is saved in the data folder upon package installation because some large data files must be downloaded from the ejamdata repository. This is explained in the file vignettes/dev-update-datasets.Rmd
   - Some is loaded via `dataload_dynamic()` and some is in .arrow format instead of .rda format.
 **Naming:** 
   - Closely-related R functions are often grouped within a single .R file in the R folder, especially if the filename includes the phrase "_FUNCTIONS" such as in "PROXIMITY_FUNCTIONS.R"
@@ -258,10 +259,10 @@ Version is tracked in multiple files and must be updated consistently:
 
 ## Additional Resources
 
-**Documentation:** https://ejanalysis.github.io/EJAM/ However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
+**Documentation:** See the DESCRIPTION file URL field for the github.io URL. Also can be obtained via   EJAM:::url_package(get_full_url = T) .  Also, https://ejanalysis.com/docs redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
   The more recent documentation is in roxygen2 tags within the .R files for a given branch, which are converted to .Rd files in the man folder (via document()), and eventually may be converted to .html files in the docs folder via pkgdown_update()
-**Code Repository:** https://github.com/ejanalysis/EJAM
-**Data Repository:** ejanalysis/ejamdata (referenced in DESCRIPTION)
+**Code Repository:** See the DESCRIPTION file URL field for the github.com URL. Also can be obtained via   EJAM:::url_package(get_full_url = T)
+**Data Repository:** See the DESCRIPTION file ejam_data_repo field for the github.com repository name. Also can be obtained via paste0("https://github.com/", desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo"))
 
 ## Trust These Instructions
 

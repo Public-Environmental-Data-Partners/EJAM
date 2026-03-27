@@ -16,7 +16,7 @@ It is a data.table with one row for every US Census blockgroup.
 \item The EJ Indexes (Summary Indexes) are stored in a separate table, \link{bgej}
 }
 
-The \href{https://ejanalysis.github.io/EJAM/articles/ejscreen.html}{source of data for each indicator was documented by EJSCREEN}{target="_blank"}.
+The \href{https://ejanalysis.github.io/EJAM/articles/ejscreen.html}{source of data for each indicator was documented by EJSCREEN}
 
 More about blockgroupstats
 \itemize{
@@ -26,7 +26,7 @@ from 2018-2022 ACS data. Each year this should be re-created as for the latest v
 \item Geographic scope includes States, DC, and Puerto Rico (PR), but not any Island Areas (VI, GU, AS, etc.)
 \item Column names include \code{bgfips}, \code{bgid} (for join to \link{blockwts} by/on \code{bgid}),
 \code{pop}, \code{pctlowinc}, etc.
-\item For metadata on each column, see \link{map_headernames}
+\item For metadata on each column, see \link{map_headernames} and \code{\link[=varinfo]{varinfo()}}
 \item To see definitions of the columns (indicators) and some basic info on each:
 }
 
@@ -41,14 +41,17 @@ x[1:20, ]
 
 The columns called arealand and areawater are in square meters,
 not square miles - to convert units:
-\code{convert_units(sum( blockgroupstats$arealand) , "sqm", "sqmi")}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{convert_units(sum( blockgroupstats$arealand) , "sqm", "sqmi")
+}\if{html}{\out{</div>}}
+
 The column called "area" is not used and not documented.
 
 Other key datasets:
 \itemize{
-\item List of key datasets used by EJAM and details about annual updates: \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}.
-\item Datasets stored within the EJAM package (.rda files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/ejanalysis/EJAM/tree/main/data}{access to data files}
-\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation}
-and \link{access to data files}(`r phttps://ejanalysis.github.io/EJAM/tree/main/data - Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
+\item List of key datasets used by EJAM and details about annual updates: \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}
+\item Datasets stored within the EJAM package (.rda files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/ejanalysis/EJAM/tree/main/data}{access to installed data files}
+\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files}{Documentation} and \href{https://github.com/ejanalysis/ejamdata/tree/main/data}{access to downloaded data files}
+\item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
 }
 }
