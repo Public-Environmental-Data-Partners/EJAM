@@ -103,16 +103,16 @@
 <p>This document outlines the general development process for updating
 EJAM (for a new release of the package) or relocating it to a different
 repository (repo name and/or github user name), or changing the full
-name of the tool. Also see the separate vignettes on <a href="dev-update-datasets.html">updating datasets</a> and <a href="dev-update-documentation.html">updating documentation</a>.</p>
+name of the tool (the web app). Also see the separate vignettes on <a href="dev-update-datasets.html">updating datasets</a> and <a href="dev-update-documentation.html">updating documentation</a>.</p>
 <div class="section level2">
 <h2 id="if-relevant-carefully-change-owners-and-names-of-github-repositories">If relevant, carefully change owners and names of github
 repositories<a class="anchor" aria-label="anchor" href="#if-relevant-carefully-change-owners-and-names-of-github-repositories"></a>
 </h2>
 <ul>
-<li><p>The full name/title of the web tool is used in several places and
-all of those should be reading the full name from where it is defined.
-The app title is stored in the DESCRIPTION file, and is available for
-vignettes, functions, etc. directly via
+<li><p>The full name/title of the web app / tool is used in several
+places and all of those should be reading the full name from where it is
+defined. The web app title is stored in the DESCRIPTION file, and is
+available for vignettes, functions, etc. directly via
 <code>as.vector(desc::desc_get("Title"))</code>. After the package is
 attached, the name as potentially modified via global_defaults_package.R
 or parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> is available as

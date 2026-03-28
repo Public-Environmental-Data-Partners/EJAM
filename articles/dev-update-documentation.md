@@ -205,7 +205,7 @@ updated by someone who is managing the package, as follows:
   `DESCRIPTION` file in the root folder of the source package. That repo
   URL can be read from there using the helper function
   `url_package()` as
-  `url_package('docs', get_full_url=T)`. Prior to mid-2025,
+  `url_package(type = "docs")`. Prior to mid-2025,
   documentation webpages had been on github pages at URLs related to the
   USEPA/EJAM and USEPA/EJAM-open repositories – but those pages might be
   archived and/or unpublished, and that source of documentation has
