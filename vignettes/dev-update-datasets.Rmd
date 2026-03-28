@@ -87,7 +87,7 @@ The information below focuses on the other type of data objects -- the set of la
 
 Several large `{data.table}` files are not installed as part of the R package in the typical /data/ folder that contains .rda files lazyloaded by the package. Instead, they are kept in a separate github repository that we refer to here as the data repository.
 
-*IMPORTANT:* The name of the *data* repository (as distinct from the *package code* repository) must be recorded/ updated in the EJAM package DESCRIPTION file, so that the package will know where to look for the data files if the datasets were moved to a new repository, for example. The current (either installed or loaded source version) of that repository is `r data_reponame_with_owner` (which can be checked via `url_package(type = "data", get_full_url = TRUE)`)
+*IMPORTANT:* The name of the *data* repository (as distinct from the *package code* repository) must be recorded/ updated in the EJAM package DESCRIPTION file, so that the package will know where to look for the data files if the datasets were moved to a new repository, for example. The current (either installed or loaded source version) of that repository is `r data_reponame_url` (which can be checked via `url_package(type = "data", get_full_url = TRUE)`)
 
 ### arrow package and arrow file format
 
