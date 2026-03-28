@@ -259,10 +259,10 @@ Version is tracked in multiple files and must be updated consistently:
 
 ## Additional Resources
 
-**Documentation:** See the DESCRIPTION file URL field for the github.io URL. Also can be obtained via   EJAM:::url_package(get_full_url = T) .  Also, https://ejanalysis.com/docs redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
+**Documentation:** See the DESCRIPTION file URL field for the github.io documentation URL. Also can be obtained via EJAM::url_package("docs", get_full_url = T) - Also, https://ejanalysis.com/docs redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
   The more recent documentation is in roxygen2 tags within the .R files for a given branch, which are converted to .Rd files in the man folder (via document()), and eventually may be converted to .html files in the docs folder via pkgdown_update()
-**Code Repository:** See the DESCRIPTION file URL field for the github.com URL. Also can be obtained via   EJAM:::url_package(get_full_url = T)
-**Data Repository:** See the DESCRIPTION file ejam_data_repo field for the github.com repository name. Also can be obtained via paste0("https://github.com/", desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo"))
+**Code Repository:** See the DESCRIPTION file URL field for the github.com R package code URL. Also can be obtained via EJAM::url_package("code", get_full_url = T)
+**Data Repository:** See the DESCRIPTION file ejam_data_repo field for the github.com datasets URL. Also can be obtained via EJAM::url_package("data", get_full_url = T)
 
 ## Trust These Instructions
 
