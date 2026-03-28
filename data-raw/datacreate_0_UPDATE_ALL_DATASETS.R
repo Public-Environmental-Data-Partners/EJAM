@@ -482,7 +482,7 @@ if (askquestions && interactive()) {
     ### WRITE  bgej  TO THE ejamdata REPOSITORY NOW   ####
     cat("WRITE  bgej  TO THE ejamdata REPOSITORY NOW
   THIS is done by copying the bgej.arrow file into the data folder of the ejamdata repository and pushing the changes.
-   See notes in ", paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html"), "
+   See notes in ", paste0(EJAM::url_package('docs'), "/articles/dev-update-datasets.html"), "
    and note any testoutput files and objects have to be recreated if numbers in bgej etc. changed...
 \n")
   }}
