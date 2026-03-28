@@ -44,7 +44,7 @@ latlon_is.possible.lon <- function(lon) {
   # > range(blockpoints[lon>0,lon])
   # [1] 172.5912 179.6212
 
-  !(x > -64 & x < 172) | !(x > 180 | x < -180)
+  !(lon > -64 & lon < 172) | !(lon > 180 | lon < -180)
 }
 
 #' Check lat lon coordinates to see if each is approx. in general area of USA excluding Island Areas
