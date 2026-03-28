@@ -16,7 +16,7 @@
 #'
 #' @details  # **What is EJAM and How to do Analysis with the EJAM R Package** ###################
 #'
-#' [EJAM package documentation](`r EJAM::url_package('docs', get_full_url=T)`) provides
+#' [EJAM package documentation](`r EJAM::url_package("docs")`) provides
 #' an overview of EJAM, a complete reference document on all functions, and
 #' articles (vignettes) introducing key functions and how to use them.
 #'

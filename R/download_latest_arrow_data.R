@@ -10,7 +10,7 @@
 #'   Relies on [piggyback::pb_releases()] to download data files from a specific release (version) of the package.
 #'
 #' @param varnames use defaults, or vector of names like "bgej" or use "all" to get all available
-#' @param repository repository owner/name such as `r EJAM::url_package('data', get_full_url = FALSE)` or "XYZ/ejamdata"
+#' @param repository repository owner/name such as `r EJAM::url_package(type = "data", get_full_url = FALSE)` or "XYZ/ejamdata"
 #'   (wherever the ejamdata repo is hosted, as specified in the DESCRIPTION file of this package)
 #' @param envir if needed to specify environment other than default, e.g., globalenv() or parent.frame()
 #'

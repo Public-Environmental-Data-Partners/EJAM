@@ -15,20 +15,17 @@ editor_options:
 
 ```{r, eval=TRUE, echo=FALSE, include=FALSE}
 
-code_reponame_with_owner <- EJAM::url_package()           # "OWNER/REPONAME"
+code_reponame_url        <- EJAM::url_package(type = "code", get_full_url = TRUE)  # "https://github.com/OWNER/REPONAME"
+code_reponame_with_owner <- EJAM::url_package(type = "code", get_full_url = FALSE) # "OWNER/REPONAME"
 code_reponame <- gsub(".*/", "", code_reponame_with_owner)    #       "REPONAME"
-code_reponame_url <- EJAM::url_package(get_full_url = T)   
-# "https://github.com/OWNER/REPONAME"
 
-# docs_reponame_with_owner <- EJAM::url_package('docs')# "OWNER/REPONAME" # does not make sense to have partial url for docs website
-# docs_reponame <- gsub(".*/", "", docs_reponame_with_owner)    #       "REPONAME"
-docs_reponame_url <- EJAM::url_package(type='docs', get_full_url = T) 
-# "https://OWNER.github.io/REPONAME"
-
-data_reponame_with_owner <- EJAM::url_package(type='data', get_full_url = F)    # "OWNER/REPONAME"
+data_reponame_url        <- EJAM::url_package(type = "data", get_full_url = TRUE)  # "https://github.com/OWNER/REPONAME"
+data_reponame_with_owner <- EJAM::url_package(type = "data", get_full_url = FALSE) # "OWNER/REPONAME"
 data_reponame <- gsub(".*/", "", data_reponame_with_owner)    #       "REPONAME"
-data_reponame_url <- paste0("https://github.com/", data_reponame_with_owner) 
-# "https://github.com/OWNER/REPONAME"
+
+docs_reponame_url        <- EJAM::url_package(type = "docs", get_full_url = TRUE)  # "https://OWNER.github.io/REPONAME"
+# only the full URL is useful in this case
+
 ```
 
 This document addresses how to update the documentation supporting the package.
@@ -204,7 +201,7 @@ who is managing the package, as follows:
 -   The name of the repo from which documentation is published at any given time needs to be recorded 
 as part of the URL parameter in the `DESCRIPTION` file in the root folder of the source package. 
 That repo URL can be read from there using the helper function `url_package()` 
-as `EJAM::url_package('docs')`, which currently returns (`r docs_reponame_url`). 
+as `EJAM::url_package("docs")`, which currently returns (`r docs_reponame_url`). 
 Prior to mid-2025, documentation webpages had been on github pages at 
 URLs related to the USEPA/EJAM and USEPA/EJAM-open repositories -- 
 but those pages might be archived and/or unpublished, 

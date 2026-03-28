@@ -115,7 +115,7 @@ testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_onl
 #' #   Compare versions of the HTML summary report:
 #'
 #' fname = "examples_of_output/testoutput_ejam2report_10pts_1miles.html"
-#' repo = EJAM:::desc
+#' repo = url_package("code", get_full_url = TRUE)
 #' \dontrun{
 #' # in latest main branch on GH (but map does not render using this tool)
 #' url_github_preview(file.path(repo, "blob/main/inst/testdata", fname))

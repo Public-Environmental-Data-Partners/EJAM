@@ -656,9 +656,9 @@ sanitize_functions <- list(
 ######################################## ######################################### #
 ## HTML for "About EJAM" tab ####
 
-docs_url            <- EJAM::url_package("docs",  get_full_url = TRUE)
-testdata_repo_url   <- EJAM::url_package("code", get_full_url = TRUE)
-testdata_owner_repo <- EJAM::url_package("code", get_full_url = FALSE)
+docs_url            <- EJAM::url_package(type = "docs", get_full_url = TRUE)
+testdata_repo_url   <- EJAM::url_package(type = "code", get_full_url = TRUE)
+testdata_owner_repo <- EJAM::url_package(type = "code", get_full_url = FALSE)
 testdata_repo <-  gsub(".*/", "", testdata_owner_repo)
 
 # aboutpage_texts is used by get_global_defaults_or_user_options()

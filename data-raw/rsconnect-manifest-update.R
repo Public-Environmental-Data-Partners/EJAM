@@ -17,7 +17,7 @@
 
 # as explained at
 #
-# browseURL(paste0(EJAM::url_package('docs', get_full_url=T), "/articles/installing.html"))
+# browseURL(paste0(EJAM::url_package(type = "docs"), "/articles/installing.html"))
 
 # reponame = EJAM::url_package() # works if currently is installed
 reponame = EJAM::url_package()
