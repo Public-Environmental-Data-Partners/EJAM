@@ -24,7 +24,7 @@ download_latest_arrow_data <- function(
 ) {
 
   if (missing(repository) || is.null(repository)) {
-    repository <- url_package(type="data", get_full_url = FALSE) # must be xyz/abc, not full URL #  as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo"))
+    repository <- url_package(type="data", get_full_url = FALSE) # must be xyz/abc, not full URL
   }
   installed_data_folder <- app_sys('data')
   filenames <- paste0(varnames, ".arrow")

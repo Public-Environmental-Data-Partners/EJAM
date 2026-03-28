@@ -10,7 +10,7 @@
 #'   - "docs" is for the documentation website
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
-#'   Ignored if type = "docs"
+#'   Ignored if type = "docs", where full URL is always returned.
 #'
 #' @param desc_or_alias must be "desc" or "alias" to use info from DESCRIPTION file
 #'   or the URL based on a redirect from the aliases at

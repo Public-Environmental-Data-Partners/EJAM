@@ -388,8 +388,10 @@ that categorize relevant EPA-regulated sites</a>
 <ol style="list-style-type: decimal">
 <li><p>The arrow files are stored in a separate, public, Git-LFS-enabled
 GitHub repo (henceforth ‘ejamdata’). The owner/reponame must be
-recorded/updated in the DESCRIPTION file field called ejam_data_repo –
-that info is used by the package.</p></li>
+recorded/updated in the DESCRIPTION file field called ejam_data_repo
+(which can be checked via
+<code>url_package(type = "data", get_full_url = TRUE)</code>) – that
+info is used by the package.</p></li>
 <li><p>Then, and any time the arrow datasets are updated, we update the
 ejamdata release version via the <code>.github/push_to_ejam.yaml</code>
 workflow in the ejamdata repo, thereby saving the arrow files with the
@@ -450,8 +452,7 @@ because the data are now stored in the <code>data</code> directory.</li>
 <li><p>The key arrow files are updated from within the EJAM code
 repository, as explained above.</p></li>
 <li><p>Those files were then being copied into a clone of the ejamdata
-repo before being pushed to the actual ejamdata repo on github (at
-ejanalysis/ejamdata)</p></li>
+repo before being pushed to the actual ejamdata repo on github (at <a href="https://github.com/ejanalysis/ejamdata" class="external-link uri">https://github.com/ejanalysis/ejamdata</a>)</p></li>
 <li><p>This triggers ejamdata’s <code>push_to_ejam.yaml</code> workflow
 that increments the latest release tag reflecting the new version and
 creates a new release</p></li>

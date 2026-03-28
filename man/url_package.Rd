@@ -21,7 +21,7 @@ url_package(
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.
-Ignored if type = "docs"}
+Ignored if type = "docs", where full URL is always returned.}
 
 \item{desc_or_alias}{must be "desc" or "alias" to use info from DESCRIPTION file
 or the URL based on a redirect from the aliases at
