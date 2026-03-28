@@ -235,7 +235,7 @@ pkgdown_update = function(
     # `pkgdown::pkgdown_sitrep()` does, among other things,
     #   confirm the URL for publishing the pkgdown site listed in _pkgdown.yml
     #   matches what is in DESCRIPTION
-    #    at  EJAM::url_package('code', get_full_url = TRUE)
+    #    per  EJAM::url_package('docs', get_full_url = TRUE)
 
     if (doask && interactive()  && rstudioapi::isAvailable()) {
       cat('\n\n')
