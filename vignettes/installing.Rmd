@@ -115,15 +115,17 @@ You may be able to install the package to just run the web app locally in RStudi
 
 If you *do have a PAT set up*, you can use `remotes::install_github()`. (For help on PAT setup, see the last section of this article).
 
+Replace OWNER/REPO below with "`r EJAM::url_package("code")`" including the quote marks
+
 ```{r install-gh, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
 #ref = "v2.32.7"   # a tag identifying a specific release
 #ref = "HEAD"          # main branch
 #ref = "development"   # development branch version
-repo_owner <- EJAM::url_package()
+
 remotes::install_github(
-  repo = repo_owner, ref = ref, 
+  repo = OWNER/REPO, ref = ref, 
   dependencies=T, upgrade="always", build=F)
 library(EJAM)
 ```
@@ -132,12 +134,14 @@ library(EJAM)
 
 If you *don't have a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens){.uri target="_blank" rel="noreferrer noopener"} (PAT) and don't want to set one up*, you could [check the github repository for the latest release](`r paste0("https://github.com/", EJAM::url_package(), "/releases/latest")`) and may be able to use `remotes::install_url()` something like this:
 
+Replace URL_OF_REPO below with "`r EJAM::url_package("code", get_full_url = TRUE)`" including the quote marks
+
 ```{r install-url, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
-repo_url <- EJAM::url_package("code", get_full_url = TRUE)
+
 remote_zip = paste0(
-  repo_url, "/archive/refs/tags/", zipname)
+  URL_OF_REPO, "/archive/refs/tags/", zipname)
 remotes::install_url(url = remote_zip, 
                      dependencies=T, upgrade='always', build=F)
 library(EJAM)
@@ -145,12 +149,14 @@ library(EJAM)
 
 _or download the .zip file as a separate step, and install from that saved file:_
 
+Replace URL_OF_REPO below with "`r EJAM::url_package("code", get_full_url = TRUE)`" including the quote marks
+
 ```{r install-local, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
-repo_url <- EJAM::url_package("code", get_full_url = TRUE)
+
 remote_zip = paste0(
-  repo_url, "/archive/refs/tags/", zipname)
+  URL_OF_REPO, "/archive/refs/tags/", zipname)
 local_zip = file.path(tempdir(), zipname)
 download.file(remote_zip, destfile = local_zip)
 remotes::install_local(path = local_zip, 
