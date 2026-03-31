@@ -27,7 +27,7 @@ url_ejamapi(
 
 \item{radius}{see \code{\link[=ejamit]{ejamit()}}, default is 0 if fips or shapefile specified}
 
-\item{fips}{see \code{\link[=ejamit]{ejamit()}} but this initial version only works for a blockgroup FIPS!}
+\item{fips}{see \code{\link[=ejamit]{ejamit()}}}
 
 \item{shapefile}{see \code{\link[=ejamit]{ejamit()}}, but each polygon is encoded as geojson string
 which might get too long for encoding in a URL for the API using GET}
@@ -40,7 +40,7 @@ which might get too long for encoding in a URL for the API using GET}
 
 \item{ifna}{URL shown for missing, NA, NULL, bad input values}
 
-\item{baseurl}{do not change unless endpoint actually changed}
+\item{baseurl}{do not change unless endpoint actually changed. See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
 
 \item{sitenumber}{\itemize{
 \item "each" (or -1) means return each site's URL
@@ -74,20 +74,19 @@ Get URL(s) of HTML summary reports for use with EJAM-API
 }
 \details{
 \itemize{
-\item Work in progress - initial draft relied on API from
+\item This is work in progress to some extent -- this and the API may be add features in later releases.
+\item Relies on API from
 https://github.com/edgi-govdata-archiving/EJAM-API
-
-(see parameter \code{baseurl} that used the /report endpoint)
-\item Another option in the future might be to construct a URL that is a link to the live EJAM
+\item Another option in the future might be to construct a URL that is a "deep link" to the live EJAM
 app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
 \item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
-\item The 12/2025 API used ejam2report() with these parameter settings:
+\item The API as of mid-2026 used \code{ejam2report()} with these parameter settings:
 \itemize{
 \item \code{sitenumber = 1}
 \item \code{report_title="EJSCREEN Community Report"}
 }
 
-So it was not yet accepting parameters used by \code{\link[=ejamit]{ejamit()}} and \code{\link[=ejam2report]{ejam2report()}} such as
+Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejamit()}} and \code{\link[=ejam2report]{ejam2report()}} such as
 \itemize{
 \item sitenumber=0 (for a multisite report)
 \item logo_path
@@ -131,4 +130,7 @@ So it was not yet accepting parameters used by \code{\link[=ejamit]{ejamit()}} a
 }
 
 
+}
+\seealso{
+\code{\link[=ejamapi]{ejamapi()}}
 }

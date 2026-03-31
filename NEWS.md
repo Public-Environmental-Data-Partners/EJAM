@@ -8,6 +8,7 @@
 - Added utility `distance_epa_api()` that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.
 - Added utility `calc_formulas_from_varname()` that looks at formulas_ejscreen_acs and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
 - ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
+- `ejamapi()` added, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites.
 
 
 # EJAM 2.32.7 (February 2026)
