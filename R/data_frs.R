@@ -11,7 +11,7 @@
 #'   The definitions of active/inactive here are not quite the
 #'   same as used in ECHO. See attributes(frs) to see date created, etc.
 #'
-#'   Also, EJSCREEN has [maps of EPA-regulated facilities of a few program types](https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities){target="_blank"}
+#'   Also, [EJSCREEN](https://ejanalysis.com/ejscreenapp) has maps of EPA-regulated [facilities](`r paste0(EJAM::url_package("docs"), "/articles/ejscreen-map-descriptions.html#epa-regulated-facilities")`) of a few program types
 #'   and for a table of acronym definitions
 #'   see https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx
 #'   and [epa_programs_defined]

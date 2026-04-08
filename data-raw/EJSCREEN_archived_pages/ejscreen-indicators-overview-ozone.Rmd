@@ -44,5 +44,4 @@ The “ozone indicator” measures how much ground-level ozone people might be e
  _About this page:_
 
 - _This page is a simplified version of the original saved by archive.org._
-- _**[Fast-loading simplified versions of key webpages and reference documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
- 
+- _**[Fast-loading simplified versions of key webpages and reference documents](`r paste0(EJAM::url_package("docs"), "/articles/ejscreen.html")`){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._

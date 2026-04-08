@@ -9,7 +9,7 @@
 #' repoissues2() collects a lot more info, in a different format (data.frame where some cells are R lists),
 #'   for open + closed issues.
 #' 
-#' repname = "OWNERNAME/REPONAME" # e.g., "USEPA/EJAM" # or "USEPA/EJAM-open" # or EJAM:::repo_from_desc()
+#' repname = "OWNERNAME/REPONAME" # e.g., "USEPA/EJAM" # or "USEPA/EJAM-open" # or EJAM::url_package()
 #' 
 #' x1 = repoissues(repname, savedetails = T, savebasics = T, folder = "~/../Downloads")
 #' 
@@ -29,7 +29,7 @@
 #' @export
 #' @keywords internal
 #'
-repoissues2 <- function(repo_name = EJAM:::repo_from_desc(), savedetails = FALSE, savebasics = FALSE, folder = ".", how_many = 1000, git_pat = NULL, verbose = TRUE) {
+repoissues2 <- function(repo_name = EJAM::url_package(), savedetails = FALSE, savebasics = FALSE, folder = ".", how_many = 1000, git_pat = NULL, verbose = TRUE) {
   
   library(dplyr)
   library(magrittr)

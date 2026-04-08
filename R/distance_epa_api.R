@@ -21,7 +21,7 @@
 #'
 #' @details
 #' [Documentation of API](https://geopub.epa.gov/arcgis/help/en/rest/services-reference/enterprise/distance/)
-#' @returns a single number, the distance
+#' @return a single number, the distance
 #' @seealso [distances.all()]
 #' @examples
 #' pts <- testpoints_10[c(3,10),]

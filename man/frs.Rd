@@ -15,7 +15,7 @@ frs_update_datasets() (which is not an exported function)
 The definitions of active/inactive here are not quite the
 same as used in ECHO. See attributes(frs) to see date created, etc.
 
-Also, EJSCREEN has \href{https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{maps of EPA-regulated facilities of a few program types}{target="_blank"}
+Also, \href{https://ejanalysis.com/ejscreenapp}{EJSCREEN} has maps of EPA-regulated \href{https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{facilities} of a few program types
 and for a table of acronym definitions
 see https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx
 and \link{epa_programs_defined}
