@@ -12,7 +12,7 @@
 #' calc_formulas_from_varname("pctlowinc")
 #' calc_formulas_from_varname(c("lingiso", "lowinc"))
 #'
-#' @returns data.frame with colnames "rname" and "formula",
+#' @return data.frame with colnames "rname" and "formula",
 #'   similar to those columns as found in [formulas_ejscreen_acs]
 #'
 #' @keywords internal

@@ -63,7 +63,7 @@ app_logo_HTML_global_or_param = function(app_logo_now = EJAM:::global_or_param("
 #' and consolidates them all as a list, to be available to server/ui.
 #'
 #' For more details, see the
-#' [article about defaults and custom settings](`r paste0(EJAM:::repo_from_desc('github.io', get_full_url=T), "/articles/")`).
+#' [article about defaults and custom settings](`r paste0(EJAM::url_package(type = "docs", get_full_url = TRUE), "/articles/")`).
 #'
 #' See other ideas for how to include global.R types of code/settings discussed [here](https://github.com/ThinkR-open/golem/issues/6)
 #'

@@ -313,7 +313,8 @@ x <- EJAM:::test_ejam(
         "test-acs_bybg.R",
         "test-is.numericish.R",
         "test-create_filename.R",
-        "test-grepn.R"
+        "test-grepn.R",
+        "test-url_package.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",

@@ -85,7 +85,7 @@
 #' EJAM::ejam2report(y2, sitenumber=2)
 #' EJAM::ejam2table_tall(y2, sitenumber=2)
 #'
-#' @returns data.frame if using data endpoint, list of html reports if using report endpoint,
+#' @return data.frame if using data endpoint, list of html reports if using report endpoint,
 #'   or if ejamit_format=TRUE and "data" is the endpoint, returns a named list somewhat like
 #'   output of `ejamit()` so it can work in some functions like `ejam2report()`.
 #'   If dry_run=TRUE, for the "data" endpoint, the request itself, via the httr2 package, is returned,

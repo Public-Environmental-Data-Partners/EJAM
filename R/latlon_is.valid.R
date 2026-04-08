@@ -24,7 +24,32 @@ latlon_is.available <- function(lat, lon) {
   !is.na(lat) & !is.na(lon)
 }
 ############################################### #
+#
 
+##     UNFINISHED WORK IN PROGRESS WAS GOING TO USE BOUNDING BOXES (via shape_from_2corners() etc.) OF ISLAND AREAS HI AK AND HANDLE PART OF AK WEST OF 180 DEGREE LINE:
+
+# latlon_is.possible.lat <- function(lat) {
+#   # range(blockpoints$lat)
+#   # [1] 17.88513 71.39840
+#   !(lat < 17.5 | lat > 71.5)
+# }
+# latlon_is.possible.lon <- function(lon) {
+#
+#   ## Alaska and Hawaii, without the islands that are longitude +172 to +180
+#   # mapfast(blockpoints[lon > -180 & lon < -125,], radius = 0.1)
+#
+#   ## most of US
+#   # > range(blockpoints[lon<=0,lon])
+#   # [1]  -179.10844  -65.20799
+#   possible_us <- (lon > -172 & lon < -64)
+#
+#   ## portion of Alaska:
+#   # > range(blockpoints[lon>0,lon])
+#   # [1] 172.5912 179.6212
+#
+#   !(lon > -64 & lon < 172) | !(lon > 180 | lon < -180)
+# }
+############################################### #
 
 #' Check lat lon coordinates to see if each is approx. in general area of USA excluding Island Areas
 #'
