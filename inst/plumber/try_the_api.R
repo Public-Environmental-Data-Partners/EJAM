@@ -48,7 +48,7 @@
 # test_url <- paste0("http://", test_host, ":", test_port)
 
 
-api_run()
+ejamapi_local()
 
 
 ####################################################### #

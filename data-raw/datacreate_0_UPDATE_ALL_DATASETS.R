@@ -456,6 +456,14 @@ loadall()
 
 ######################################### #
 
+## IMPORTANT:
+##
+## Although this file was called "...UPDATE_ALL_DATASETS...", it did NOT update the demographic or environmental indicator data.
+##
+## CODE BELOW WAS DESIGNED SIMPLY TO GET THE EJSCREEN BLOCKGROUP DATASET FROM EPA AND CONVERT IT TO WHAT EJAM USES.
+## IT DID NOT CREATE A NEW BLOCKGROUP DATASET FROM RAW CENSUS BUREAU ACS DOWNLOADS AND RAW ENVIRONMENTAL DATA,
+## SO IT DOES NOT PROVIDE A WAY TO UPDATE EJSCREEN.
+
 # see newer datacreate_blockgroupstats.R   for what might be v2.4.0, ACS 2019-2023 IN EJAM early 2026?
 # see newer datacreate_blockgroupstats.R   for what might be v2.5.0, ACS 2020-2024 IN EJAM early 2026?
 
