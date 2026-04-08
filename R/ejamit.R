@@ -5,7 +5,7 @@
 #' @description This is the main function in EJAM that runs the analysis.
 #'   It does essentially what the web app does, to analyze/summarize near a set of points,
 #'   or in a set of polygons from a shapefile, or in a list of Census Units like Counties.
-#' @details See examples in vignettes/ articles at `r EJAM:::repo_from_desc('github.io', get_full_url = T)`
+#' @details See examples in vignettes/ articles at `r EJAM::url_package(type = "docs", get_full_url = TRUE)`
 #'
 #' @param sitepoints data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers
 #' @param radius in miles, defining circular buffer around a site point (assumes zero in fips or shapefile cases)

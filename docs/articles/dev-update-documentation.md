@@ -203,10 +203,9 @@ updated by someone who is managing the package, as follows:
 - The name of the repo from which documentation is published at any
   given time needs to be recorded as part of the URL parameter in the
   `DESCRIPTION` file in the root folder of the source package. That repo
-  URL can be read from there using the unexported helper function
-  `repo_from_desc()` as
-  `EJAM:::repo_from_desc('github.io', get_full_url=T)`, which currently
-  returns (<https://ejanalysis.github.io/EJAM>). Prior to mid-2025,
+  URL can be read from there using the helper function
+  `url_package()` as
+  `url_package(type = "docs")`. Prior to mid-2025,
   documentation webpages had been on github pages at URLs related to the
   USEPA/EJAM and USEPA/EJAM-open repositories – but those pages might be
   archived and/or unpublished, and that source of documentation has

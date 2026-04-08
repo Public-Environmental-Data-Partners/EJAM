@@ -10,6 +10,8 @@
 # compare to
 # description_file <- desc::description$new(file = system.file("DESCRIPTION", package = "EJAM"))
 
+## Also, note url_package() relies on the DESCRIPTION file without using this global variable "description_file"
+
 description_file <- desc::description$new("DESCRIPTION")
 
 #################################################### #
@@ -30,14 +32,7 @@ default_metadata <- list(
 )
 
 # > dput(default_metadata)
-# list(
-#   ejam_package_version = c(Version = "2.32.0"),
-#   ejscreen_version     = c(VersionEJSCREEN = "2.32"),
-#   ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2024-08-12"),
-#   acs_releasedate      = c(ReleaseDateACS = "2023-12-07"),
-#   acs_version          = c(VersionACS = "2018-2022"),
-#   census_version       = c(VersionCensus = "2020")
-# )
+
 #################################################### #
 
 # metadata_mapping ####

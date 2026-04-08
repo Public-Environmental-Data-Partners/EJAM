@@ -291,10 +291,9 @@ function.</p></li>
 <li><p>The name of the repo from which documentation is published at any
 given time needs to be recorded as part of the URL parameter in the
 <code>DESCRIPTION</code> file in the root folder of the source package.
-That repo URL can be read from there using the unexported helper
-function <code>repo_from_desc()</code> as
-<code>EJAM:::repo_from_desc('github.io', get_full_url=T)</code>, which
-currently returns (<a href="https://ejanalysis.github.io/EJAM" class="uri">https://ejanalysis.github.io/EJAM</a>). Prior to mid-2025,
+That repo URL can be read from there using the helper function
+<code><a href="../reference/url_package.html">url_package()</a></code> as <code>EJAM::url_package("docs")</code>,
+which currently returns (<a href="https://ejanalysis.github.io/EJAM" class="uri">https://ejanalysis.github.io/EJAM</a>). Prior to mid-2025,
 documentation webpages had been on github pages at URLs related to the
 USEPA/EJAM and USEPA/EJAM-open repositories – but those pages might be
 archived and/or unpublished, and that source of documentation has become
@@ -309,7 +308,7 @@ obsolete.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>January 2026</p>
+  <p>February 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">

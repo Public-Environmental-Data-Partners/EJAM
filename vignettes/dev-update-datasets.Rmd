@@ -15,21 +15,17 @@ editor_options:
 
 ```{r, eval=TRUE, echo=FALSE, include=FALSE}
 
-code_reponame_with_owner <- EJAM:::repo_from_desc()           # "OWNER/REPONAME"
+code_reponame_url        <- EJAM::url_package(type = "code", get_full_url = TRUE)  # "https://github.com/OWNER/REPONAME"
+code_reponame_with_owner <- EJAM::url_package(type = "code", get_full_url = FALSE) # "OWNER/REPONAME"
 code_reponame <- gsub(".*/", "", code_reponame_with_owner)    #       "REPONAME"
-code_reponame_url <- EJAM:::repo_from_desc(get_full_url = T)   
-# "https://github.com/OWNER/REPONAME"
 
-docs_reponame_with_owner <- EJAM:::repo_from_desc('github.io')# "OWNER/REPONAME"
-docs_reponame <- gsub(".*/", "", docs_reponame_with_owner)    #       "REPONAME"
-docs_reponame_url <- EJAM:::repo_from_desc('github.io', get_full_url = T) 
-# "https://OWNER.github.io/REPONAME"
-
-data_reponame_with_owner <- desc::desc(file = system.file(
-  "DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")     # "OWNER/REPONAME"
+data_reponame_url        <- EJAM::url_package(type = "data", get_full_url = TRUE)  # "https://github.com/OWNER/REPONAME"
+data_reponame_with_owner <- EJAM::url_package(type = "data", get_full_url = FALSE) # "OWNER/REPONAME"
 data_reponame <- gsub(".*/", "", data_reponame_with_owner)    #       "REPONAME"
-data_reponame_url <- paste0("https://github.com/", data_reponame_with_owner) 
-# "https://github.com/OWNER/REPONAME"
+
+docs_reponame_url        <- EJAM::url_package(type = "docs", get_full_url = TRUE)  # "https://OWNER.github.io/REPONAME"
+# only the full URL is useful in this case
+
 ```
 
 The EJAM package and Shiny app make use of many data objects, including numerous datasets stored in the package's /data/ folder as well as several large tables stored in a separate repository specifically created for holding those large tables, which contain information on Census blockgroups, Census block internal points, Census block population weights, and EPA FRS facilities.
@@ -53,9 +49,11 @@ x$Item[!grepl("names_|^test", x$Item)]
 
 EJAM relies on datasets mostly stored in the package itself or in a separate, data-related repository:
 
-- Datasets stored within the EJAM package (.rda files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and [access to data files](https://github.com/ejanalysis/EJAM/tree/main/data)
+- Datasets stored within the EJAM package (.rda files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and 
+[access to package data files](`r paste0(code_reponame_url, "/tree/main/data")`)
 
-- Datasets used by EJAM but stored separately (large .arrow files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and [access to data files](https://github.com/ejanalysis/ejamdata/tree/main/data)
+- Datasets used by EJAM but stored separately (large .arrow files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and 
+[access to the large data files](`r paste0(data_reponame_url, "/tree/main/data")`)
 
 ### Key datasets
 
@@ -89,7 +87,7 @@ The information below focuses on the other type of data objects -- the set of la
 
 Several large `{data.table}` files are not installed as part of the R package in the typical /data/ folder that contains .rda files lazyloaded by the package. Instead, they are kept in a separate github repository that we refer to here as the data repository.
 
-*IMPORTANT:* The name of the *data* repository (as distinct from the *package code* repository) must be recorded/ updated in the EJAM package DESCRIPTION file, so that the package will know where to look for the data files if the datasets were moved to a new repository, for example. The current (either installed or loaded source version) of that repository is `r data_reponame_with_owner` (which can be checked via `desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")`)
+*IMPORTANT:* The name of the *data* repository (as distinct from the *package code* repository) must be recorded/ updated in the EJAM package DESCRIPTION file, so that the package will know where to look for the data files if the datasets were moved to a new repository, for example. The current (either installed or loaded source version) of that repository is `r data_reponame_url` (which can be checked via `url_package(type = "data", get_full_url = TRUE)`)
 
 ### arrow package and arrow file format
 
@@ -120,7 +118,7 @@ As of EJAM version v2.32.7, there were 11 arrow files used by EJAM:
 
 ## Development/Setup
 
-1.  The arrow files are stored in a separate, public, Git-LFS-enabled GitHub repo (henceforth 'ejamdata'). The owner/reponame must be recorded/updated in the DESCRIPTION file field called ejam_data_repo -- that info is used by the package.
+1.  The arrow files are stored in a separate, public, Git-LFS-enabled GitHub repo (henceforth 'ejamdata'). The owner/reponame must be recorded/updated in the DESCRIPTION file field called ejam_data_repo (which can be checked via `url_package(type = "data", get_full_url = TRUE)`) -- that info is used by the package.
 
 2.  Then, and any time the arrow datasets are updated, we update the ejamdata release version via the `.github/push_to_ejam.yaml` workflow in the ejamdata repo, thereby saving the arrow files with the release, to be downloaded automatically by EJAM
 
@@ -137,10 +135,6 @@ d.  If the versions are different, download the latest arrow from the latest eja
 download_latest_arrow_data()
 ```
 
-```{r, eval=TRUE, echo=FALSE, include=FALSE}
-repo <- EJAM:::repo_from_desc()
-```
-
 4.  We add a call to this function in the onAttach script (via the `dataload_dynamic()` function) so it runs and ensures the latest arrow files are downloaded when user loads EJAM.
 
 ## How it Works for the User
@@ -149,7 +143,7 @@ repo <- EJAM:::repo_from_desc()
 
 <!-- -->
 
-  -  `devtools::install_github("`r repo`")` (or as adjusted depending on the actual repository owner and name)
+  -  `devtools::install_github("`r code_reponame_with_owner`")` (or as adjusted depending on the actual repository owner and name)
 
 <!-- -->
 
@@ -171,7 +165,7 @@ repo <- EJAM:::repo_from_desc()
 
 1.  The key arrow files are updated from within the EJAM code repository, as explained above.
 
-2.  Those files were then being copied into a clone of the ejamdata repo before being pushed to the actual ejamdata repo on github (at `r as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo"))`)
+2.  Those files were then being copied into a clone of the ejamdata repo before being pushed to the actual ejamdata repo on github (at `r data_reponame_url`)
 
 3.  This triggers ejamdata's `push_to_ejam.yaml` workflow that increments the latest release tag reflecting the new version and creates a new release
 
