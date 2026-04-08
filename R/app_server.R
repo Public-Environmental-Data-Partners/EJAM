@@ -827,13 +827,14 @@ app_server <- function(input, output, session) {
     ## if acceptable file type, read in; if not, send warning text
 
     read_pgm <- as.data.table(read_csv_or_xl(fname = input_file_path))
+    names(read_pgm) <- tolower(names(read_pgm))
 
     # returns a data.frame
     cat("ROW COUNT IN file that should have program, pgm_sys_id: ", NROW(read_pgm), "\n")
     ## error if no columns provided
-    if (!any(c('program','pgm_sys_id') %in% tolower(colnames(read_pgm)))) {
+    if (!any(c('program','pgm_sys_id') %in% colnames(read_pgm))) {
 
-      errmsg    = 'Please add a file with at least these two columns: program, pgm_sys_id \n and possibly these columns as well: REGISTRY_ID,lat,lon'
+      errmsg    = 'Please add a file with at least these two columns: program, pgm_sys_id \n and possibly these columns as well: registry_id, lat, lon'
       # placetype = 'EPA_PROGRAM_up'
 
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
@@ -842,12 +843,12 @@ app_server <- function(input, output, session) {
       shiny::validate(errmsg)
     }
 
-    ## convert pgm_sys_id and REGISTRY_ID columns to character before joining
+    ## convert pgm_sys_id and registry_id columns to character before joining
     if (('pgm_sys_id' %in% colnames(read_pgm)) & (class(read_pgm$pgm_sys_id) != "character")) {
       read_pgm$pgm_sys_id = as.character(read_pgm$pgm_sys_id)
     }
-    if (('REGISTRY_ID' %in% colnames(read_pgm)) & (class(read_pgm$REGISTRY_ID) != "character")) {
-      read_pgm$REGISTRY_ID = as.character(read_pgm$REGISTRY_ID)
+    if (('registry_id' %in% colnames(read_pgm)) & (class(read_pgm$registry_id) != "character")) {
+      read_pgm$registry_id = as.character(read_pgm$registry_id)
     }
     ## add check for program and pgm_sys_id
     cnames <- intersect(colnames(read_pgm), c('program','pgm_sys_id'))
@@ -860,7 +861,7 @@ app_server <- function(input, output, session) {
     if (!exists("frs_by_programid")) dataload_dynamic("frs_by_programid")
 
     ## if any of these columns already exist, join by all of them
-    if (any(c('REGISTRY_ID','lat','lon') %in% colnames(read_pgm))) {
+    if (any(c('registry_id','lat','lon') %in% colnames(read_pgm))) {
       pgm_out <- dplyr::left_join(
         read_pgm, frs_by_programid#,
         #by = c("program", "pgm_sys_id")
