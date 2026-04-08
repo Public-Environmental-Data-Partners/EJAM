@@ -40,7 +40,7 @@
 #'  url_package("code", desc_or_alias="alias")
 #'  url_package("data", desc_or_alias="alias")
 #'
-#' @returns a single URL as a character string
+#' @returns a single URL or owner/repo as a character string
 #'
 #' @export
 #' @keywords internal
