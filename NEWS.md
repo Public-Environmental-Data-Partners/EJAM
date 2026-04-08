@@ -7,7 +7,9 @@
 - Documented package dev-related utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
 - Added utility `distance_epa_api()` that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.
 - Added utility `calc_formulas_from_varname()` that looks at formulas_ejscreen_acs and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
-
+- ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
+- `ejamapi()` added, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.
+- Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
 
 # EJAM 2.32.7 (February 2026)
 
@@ -93,7 +95,7 @@
   - Revised article (vignette) on hosting, to add posit vs docker info, and updated files supporting deployment of shiny app to Posit Connect Cloud (manifest.json, etc.).
   - Fixed dependency issue where package [geojsonsf](https://github.com/SymbolixAU/geojsonsf) used in draft API code (plumber.R) had a typo so deployment to posit would fail due to not finding a package of that name.
   - Edited apparently problematic file data_names_all.R and may add back the _disable_autoload.R file
-  - Added example of using `api_run()` to locally run API draft in background 
+  - Added example of using api_run() (later renamed as `ejamapi_local()`) to locally run API draft in background 
   - Revised github actions; Added a github action workflow to run R CMD check, via `rcmdcheck::rcmdcheck()` to find various problems in package.
 - Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://ejanalysis.github.io/EJAM/articles/dev-speed.html)
 - Improved `acs_bybg()` for creating new indicators based on Census Bureau ACS data
@@ -147,7 +149,7 @@ or could even be converted to a subset of a website)
 - `ejamit()` no longer will ask to confirm zero radius in shapefile case
 - Drafted changes in `getpointsnearbyviaQuadTree()` that will enable reports counting nearby user-provided points of interest, etc.
 - Drafted changes in `calc_ejam()` and related functions that will enable reports aggregating custom, user-provided indicators.
-- Drafted changes to draft API code to provide more endpoints, start work on POST vs just GET, added `api_run()` to run API in background locally while testing/in dev, etc.
+- Drafted changes to draft API code to provide more endpoints, start work on POST vs just GET, added api_run() (later renamed as `ejamapi_local()`) to run API in background locally while testing/in dev, etc.
 - Drafted sites_from_input() helper function called sites_only(), added as prelude to allowing lat,lon or sitepoints or fips or shapefile as inputs to more ejam2__ functions
 - Fixed code that can update the NAICS codes table.
 - Removed obsolete article about EPA EJSCREEN API that was taken down in early 2025.
