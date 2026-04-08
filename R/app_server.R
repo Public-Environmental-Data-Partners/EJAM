@@ -397,8 +397,9 @@ app_server <- function(input, output, session) {
         #   ###################################### #
         # if the file or object (spatial data.frame) was provided as shapefile param in ejamapp()
         if (input$testing) {cat("trying to read shapefile parameter\n")}
-        shp <- try( shapefile_from_any(xshp, cleanit = FALSE, silentinteractive=TRUE), silent = TRUE)
-        if (inherits(shp, "try-error")) {
+        shp <- try( shapefile_from_any(xshp, cleanit = FALSE, silentinteractive=TRUE), silent = !testing)
+        if (is.null(shp) || inherits(shp, "try-error")) {
+          cat("shapefile_from_any() cannot read specified shp parameter \n")
           req(FALSE, cancelOutput = TRUE)
         }
         ## if user provided ejamapp(shapefile=xyz) but did not set these also, they will not see their upload ready to run:
@@ -432,13 +433,14 @@ app_server <- function(input, output, session) {
     }
     #   ###################################### #
     # do the rest whether it was uploaded or came via ejamapp()
-
-    # if shp contains point features, present message in app
-    ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow
-    if (any(sf::st_geometry_type(shp) == "POINT")) {
-      shp <- NULL
-      disable_buttons[['SHP']] <- TRUE
-      shiny::validate("Shape file must be of polygon geometry.")
+    if (!is.null(shp)) {
+      # if shp contains point features, present message in app
+      ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow
+      if (any(sf::st_geometry_type(shp) == "POINT")) {
+        shp <- NULL
+        disable_buttons[['SHP']] <- TRUE
+        shiny::validate("Shape file must be of polygon geometry.")
+      }
     }
     if (!is.null(attr(shp, "validate_errmsg")))            {shiny::validate(validate_errmsg)}
     if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
@@ -2295,6 +2297,7 @@ app_server <- function(input, output, session) {
         dplyr::select(-any_of(c('valid', 'invalid_msg'))) %>%
         sf::st_zm() %>% sf::as_Spatial() # st_zm() was already done? ***
 
+# d_uploads is an object of class "SpatialPolygonsDataFrame" not "sf" and "data.frame" like data_uploaded() here is
       leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
         map_shapes_leaflet_proxy(shapes = d_uploads, popup = popup_from_df(d_uploads %>% sf::st_drop_geometry()))
 

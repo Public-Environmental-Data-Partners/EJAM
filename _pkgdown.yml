@@ -426,6 +426,7 @@ reference:
   - testoutput_ejamit_fips_counties
 - title: "Utilities providing URL or API info"
   contents:
+  - ejamapi
   - url_ejamapi
   - url_ejscreenmap
   - url_enviromapper
@@ -454,7 +455,7 @@ reference:
   - plot_boxplot_ratios
   - high_pctiles_tied_with_min
   - pctile_from_raw_lookup
-  - api_run
+  - ejamapi_local
   - state_from_sitetable
   - fips2state_abbrev
   - fips2state_fips

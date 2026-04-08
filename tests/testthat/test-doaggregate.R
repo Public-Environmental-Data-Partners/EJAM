@@ -590,7 +590,7 @@ test_that("warning if radius = 32 exactly and original analysis was LESS THAN 1/
   expect_true("results_overall" %in% names(y))
 })
 
-test_that("radius param to doag that is very small relative to radius seen from getblocks get reported and used to filter distances", {
+test_that("radius param to doagg << r from getblocks is used to filter dist", {
   junk = capture_output({
     suppressMessages({
       x <- doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = 0.25)$results_bysite$radius.miles[1]
@@ -602,7 +602,7 @@ test_that("radius param to doag that is very small relative to radius seen from 
   )
 })
 
-test_that("radius param to doag that is 1.5x as big as radius seen from getblocks gets reported anyway as radius instead of inferring!?!? - do we want that???", {
+test_that("radius param to doagg 1.5x rad from getblocks is used not inferred!?", {
   suppressWarnings(
     suppressMessages({
       junk = capture_output({
@@ -613,7 +613,7 @@ test_that("radius param to doag that is 1.5x as big as radius seen from getblock
   expect_false(isTRUE(all.equal(x, 1.5)))
 })
 
-test_that("radius param to doagg that is MUCH larger than seen from getblocks is ignored and doag uses inferred radius instead", {
+test_that("radius param to doagg >> r from getblocks is ignored, doag infers r", {
   suppressWarnings({
     suppressMessages({
       y <- doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = 1.6)$results_bysite$radius.miles[1]
@@ -634,14 +634,14 @@ test_that("radius param to doagg that is MUCH larger than seen from getblocks is
 
 #    may want to change this radius behavior ? ***
 
-test_that('confusingly, warning (but not error) if radius = character string that can be coerced to a single number - does not actually coerce it but uses max seen!', {
+test_that('confusingly, warn not err if radius is string like a number, does not coerce, uses max!', {
   expect_warning({
     x <- doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = "1")
   })
   expect_true(is.list(x))
 })
 
-test_that("radius param to doagg that is string/text like '0.25' is not interpreted as the number 0.25 but use radius inferred from output of getblocks", {
+test_that("radius param to doagg like '0.25' ignored, uses radius inferred from getblocks", {
   suppressWarnings(
     expect_equal(
       doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = "0.25")$results_bysite$radius.miles[1],
@@ -653,7 +653,7 @@ test_that("radius param to doagg that is string/text like '0.25' is not interpre
 ## to look at the test objects created earlier in setup.R,
 # nix <- sapply(1:length(bad_numbers), function(z) {cat( "\n\n\n------------------------\n\n  ", names(bad_numbers)[z], "\n\n\n" ); print( bad_numbers[z][[1]] )}); rm(nix)
 
-test_that(paste0("doaggregate radius with the input below should not warn or err!"), {
+test_that(paste0("radius param to doagg with input below should not warn or err!"), {
   cause_no_warn_no_err <- list(normalnumber = 1.3)
   cat('\n  Trying radius that is', names(cause_no_warn_no_err)[1], '- Testing to ensure it works... ')
   try({
@@ -666,7 +666,7 @@ test_that(paste0("doaggregate radius with the input below should not warn or err
   )
 })
 
-test_that(paste0("doaggregate radius like with the input below should warn!"), {
+test_that(paste0("radius param to doagg like with input below should warn!"), {
 
   cause_warn <- bad_numbers[c('TRUE1', 'text1', 'list1', "NA1", "NULL1")]
 
