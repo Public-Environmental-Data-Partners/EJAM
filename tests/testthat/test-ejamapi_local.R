@@ -1,10 +1,22 @@
-# A script to check Plumber endpoints
+
+# see ?ejamapi() and test-ejamapi.R for testing the wrapper that is an interface to
+#   the "report" and "data" endpoints, using GET and POST, for the live EJAM API that is hosted on a server.
+
+# see ?url_ejamapi() and test-url_ejamapi.R for testing the utility that provides a URL
+#   (that handles the "report" endpoint, and is designed to work in the live EJAM API that is hosted on a server).
+
+# see ?ejamapi_local() and test-ejamapi_local.R for testing the DRAFT-ONLY API defined in the EJAM package, run locally.
+
+
+# This is a script to check Plumber endpoints as defined (drafted) within this package.]
+# This does NOT test the actual API in use as of mid-2026.
+
 # library(httr)
 
 # testthat::skip("skip API tests until ready")
 
 # start the API in background - takes a few seconds to be ready
-api_run()
+ejamapi_local()
 pause(10)
 test_that("/echo endpoint", {
   endpt <- "echo?msg=heyo"

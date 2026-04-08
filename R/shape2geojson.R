@@ -3,6 +3,7 @@
 #' @details helper for [url_ejamapi()]
 #' Note it removes all spaces in the string.
 #'
+#'
 #' @param shp spatial data.frame to be written via [sf::st_write()]
 #' @param file optional file path and name, useful if txt=F
 #' @param txt optional logical, set to FALSE to just get the path to a temp .geojson file
@@ -16,7 +17,9 @@
 #'   Note that trying to use txt=T and combine_in_one_string = T for large polygons or many polygons
 #'   would create a very long string that might exceed URL length limits for GET requests,
 #'   if that is what you're using the text for.
-#' @seealso [shapefile_from_any()] which also can read text that is geojson format
+#' @seealso [geojsonsf::sf_geojson()] that should be able to do the same as shape2geojson().
+#'  Also, [geojsonsf::geojson_sf()] that does the inverse, converts geojson to sf.
+#'  Also see [shapefile_from_any()] that converts text in geojson format to sf.
 #' @examples
 #' shp =  testinput_shapes_2[2, c("geometry", "FIPS")]
 #' x = shape2geojson(shp)

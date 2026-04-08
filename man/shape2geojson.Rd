@@ -47,5 +47,7 @@ nchar(x)
 
 }
 \seealso{
-\code{\link[=shapefile_from_any]{shapefile_from_any()}} which also can read text that is geojson format
+\code{\link[geojsonsf:sf_geojson]{geojsonsf::sf_geojson()}} that should be able to do the same as shape2geojson().
+Also, \code{\link[geojsonsf:geojson_sf]{geojsonsf::geojson_sf()}} that does the inverse, converts geojson to sf.
+Also see \code{\link[=shapefile_from_any]{shapefile_from_any()}} that converts text in geojson format to sf.
 }

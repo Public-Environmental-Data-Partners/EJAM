@@ -8,7 +8,41 @@
 namez (DATA) list of lists of indicator names (complete list in 1 object)
 }
 \details{
-Not yet implemented/used in EJAM as of 7/2024
+Not yet used in EJAM
+
+This is a list of lists of indicator names, with the complete list in one object.
+Indicator names are used in various functions and analyses in EJAM, and are
+organized in groups called variable lists (e.g., "names_e" contains environmental indicator names).
+The info about which names are in which list is also stored in map_headernames columns "rname" and "varlist"
+as checked like this for example: varinfo(names_e, "varlist")
+
+namez is an alternative way of storing those names, and was drafted as another option that might get used.
+Instead of an approach where indicator names are stored in variable lists like "names_e", "names_d", etc.,
+namez is a list where one element contains what names_e contains, etc. For example,
+namez$e_state_pctile is a vector just like names_e_state_pctile, and contains the same indicator names:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{cbind(names_e_state_pctile, `namez$e_state_pctile` = namez$e_state_pctile)
+}\if{html}{\out{</div>}}
+
+You can see all the variable lists stored by namez this way:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{names(namez)
+}\if{html}{\out{</div>}}
+
+You can see them in the familiar format used by the variable lists this way:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{paste0("names_", names(namez))
+}\if{html}{\out{</div>}}
+
+You can see all the variable lists stored by map_headernames this way:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{unique(map_headernames$varlist)
+cbind(object_exists = sapply(unique(map_headernames$varlist), exists))
+}\if{html}{\out{</div>}}
+
+"names_all_r" also exists and is a name in namez even though there is no such designation used in map_headernames.
+
+"custom" versus "names_custom" may be used inconsistently in map_headernames$varlist, and was just a placeholder.
 }
 \seealso{
 \code{\link[=varinfo]{varinfo()}}  \link{map_headernames} \link{names_d} \link{names_e}
