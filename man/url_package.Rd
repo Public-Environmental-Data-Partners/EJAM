@@ -34,7 +34,7 @@ or the URL based on a redirect from the aliases at
 \item{domain}{obsolete parameter - do not use}
 }
 \value{
-a single URL as a character string
+a single URL or owner/repo as a character string
 }
 \description{
 Get URL, or just owner/reponame, for the package code, datasets, or documentation website
