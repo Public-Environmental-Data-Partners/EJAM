@@ -17,11 +17,10 @@
 
 # as explained at
 #
-# browseURL(paste0(EJAM:::repo_from_desc('github.io', get_full_url=T), "/articles/installing.html"))
-# browseURL("https://ejanalysis.github.io/EJAM/articles/installing.html")
+# browseURL(paste0(EJAM::url_package(type = "docs"), "/articles/installing.html"))
 
-# reponame = EJAM:::repo_from_desc() # works if currently is installed
-reponame = "ejanalysis/EJAM"
+# reponame = EJAM::url_package() # works if currently is installed
+reponame = EJAM::url_package()
 
 ## If you want to uninstall the currently-installed version first:
 # remove.packages("EJAM", lib = "~/Rlibs")
