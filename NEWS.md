@@ -24,6 +24,7 @@
 - Documented package dev-related utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
 - Added utility `distance_epa_api()` that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.
 - Added utility `calc_formulas_from_varname()` that looks at formulas_ejscreen_acs and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
+- Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
 - ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
 - `ejamapi()` added, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.
 - Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
@@ -438,7 +439,7 @@ Note the URLs, emails, and notes about repository locations/owners were edited t
 ## RStudio user-related or internal improvements
 
 -   Clarified/explained 2025 status of API and urls in CONTRIBUTING and README, etc.
--   Extensive additions of and improvements in articles/vignettes, including documentation of how to maintain repo, package, and datasets. Articles/vignettes avoid hardcoded repo urls, and use relative links within pkgdown site... unexported helper function `EJAM:::repo_from_desc()` added, avoids hardcoded repo url; download_latest_arrow_data avoids hardcoded repo url; links to testdata files on webapp UI avoid hardcoded repo url; simpler [What is EJAM](../articles/whatis.html) doc.
+-   Extensive additions of and improvements in articles/vignettes, including documentation of how to maintain repo, package, and datasets. Articles/vignettes avoid hardcoded repo urls, and use relative links within pkgdown site... helper function repo_from_desc() added -- but later renamed to url_package() -- avoids hardcoded repo url; download_latest_arrow_data avoids hardcoded repo url; links to testdata files on webapp UI avoid hardcoded repo url; simpler [What is EJAM](../articles/whatis.html) doc.
 -   `ejamit()` in interactive mode (RStudio) now lets you select any type of file to upload if no sites specified by parameters
 -   Many options or starting values or settings for the shiny app (and in general) can now be set as parameters passed to the `run_app()` function, which overrides the defaults. extensive changes to global defaults vs user parameters allowed: replaced global.R; files renamed, put in 1 folder, etc. System for using user parameters passed to `run_app()`, global defaults otherwise, many can be changed in advanced tab; some may be bookmarkable. The default values are now set for the shiny app and in general in files called `global_defaults_package.R`, `global_defaults_shiny_public.R`, and `global_defaults_shiny.R` (rather than in the old files global.R or manage-public-private.R).
 -   `acs_bybg()` examples added, on how to obtain and analyze new/custom indicators from the American Community Survey (ACS) data

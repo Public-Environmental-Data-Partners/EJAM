@@ -1411,7 +1411,7 @@ url_naics.com <- function(query = "",
 #' @export
 #'
 url_github_preview = function(ghurl = NULL,
-                              repo = "https://github.com/ejanalysis/EJAM",
+                              repo = EJAM::url_package("code", get_full_url = TRUE),
                               blob = "blob",
                               ver = "main",
                               fold = "inst/testdata/examples_of_output", # or "docs/reference"
@@ -1420,7 +1420,7 @@ url_github_preview = function(ghurl = NULL,
 ) {
 
   if (is.null(ghurl)) {
-    # repo = "https://github.com/ejanalysis/EJAM"
+    # repo = url_package("code", get_full_url = TRUE)
     # blob = "blob"
     # ver = "main" # or "v2.4.0"
     # fold = "inst/testdata/examples_of_output" # or "docs/reference"
@@ -1444,7 +1444,7 @@ url_github_preview = function(ghurl = NULL,
 #'
 url_ejscreentechdoc = function() {
 
-  "https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf"
+  paste0(url_package("code", get_full_url = TRUE), "/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf")
 
   # could relocate it at some point to serve as normal pdf doc from a web server
 }

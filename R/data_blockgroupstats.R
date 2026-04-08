@@ -15,9 +15,7 @@
 #'
 #'   - The EJ Indexes (Summary Indexes) are stored in a separate table, [bgej]
 #'
-#'  The source of data for each indicator was documented by EJSCREEN, as linked in this document:
-#'
-#'  - [EJSCREEN documentation article](https://ejanalysis.github.io/EJAM/articles/ejscreen.html){target="_blank"}.
+#'  The [source of data for each indicator was documented by EJSCREEN](`r paste0(EJAM::url_package(type = "docs", get_full_url = T), "/articles/ejscreen.html")`)
 #'
 #'  More about blockgroupstats
 #'
@@ -35,7 +33,7 @@
 #'   - Column names include `bgfips`, `bgid` (for join to [blockwts] by/on `bgid`),
 #'    `pop`, `pctlowinc`, etc.
 #'
-#'   - For metadata on each column, see [map_headernames]
+#'   - For metadata on each column, see [map_headernames] and [varinfo()]
 #'
 #'   - To see definitions of the columns (indicators) and some basic info on each:
 #'   ```
@@ -50,17 +48,21 @@
 #'
 #'  The columns called arealand and areawater are in square meters,
 #'  not square miles - to convert units:
-#'  `convert_units(sum( blockgroupstats$arealand) , "sqm", "sqmi")`
+#'
+#'   ```
+#'  convert_units(sum( blockgroupstats$arealand) , "sqm", "sqmi")
+#'   ```
+#'
 #'  The column called "area" is not used and not documented.
 #'
 #'
 #'   Other key datasets:
 #'
-#'   - List of key datasets used by EJAM and details about annual updates: [technical article on updating datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html).
+#'   - List of key datasets used by EJAM and details about annual updates: [technical article on updating datasets](`r paste0(EJAM::url_package(get_full_url = T, type = "docs"), "/articles/dev-update-datasets.html")`)
 #'
-#'   - Datasets stored within the EJAM package (.rda files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and [access to data files](https://github.com/ejanalysis/EJAM/tree/main/data)
+#'   - Datasets stored within the EJAM package (.rda files): [Documentation](`r paste0(EJAM::url_package(get_full_url = T, type = "docs"), "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and [access to installed data files](`r paste0(EJAM::url_package(get_full_url = T, type = "code"), "/tree/main/data")`)
 #'
-#'   - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and [access to data files](https://github.com/ejanalysis/ejamdata/tree/main/data)
+#'   - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](`r paste0(EJAM::url_package(get_full_url = T, type = "docs"), "/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files")`) and [access to downloaded data files](`r paste0(EJAM::url_package(get_full_url = T, type = "data"), "/tree/main/data")`)
 #'
 #'   - Also see [ejanalysis.com/status](https://ejanalysis.com/status)
 #'

@@ -94,7 +94,7 @@ pkg_update_testpoints_testoutputs <- function(
   ######################################################## ######################################################### #
   ## to See the test datasets and the sample files installed with each package:
   ## The Vignette on Advanced EJAM topics explains how to easily see lists of these:
-  # browseURL(paste0(EJAM:::repo_from_desc('github.io', get_full_url = T), "/articles/advanced_testdata.html"))
+  # browseURL(paste0(EJAM::url_package(type = "docs"), "/articles/advanced_testdata.html"))
   ######################################################## ######################################################### #
 
   # ensure access to logo file path ?

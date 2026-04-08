@@ -33,7 +33,7 @@
 #' @keywords internal
 #'
 #'
-repoissues <- function(repo = EJAM:::repo_from_desc(), savedetails = FALSE, savebasics = FALSE, folder = ".", printhigh = TRUE, print_data_structure_details = FALSE) {
+repoissues <- function(repo = EJAM::url_package(), savedetails = FALSE, savebasics = FALSE, folder = ".", printhigh = TRUE, print_data_structure_details = FALSE) {
   
 
   # check for necessary packages here without using a way that might make the pkg appear to depend on them.

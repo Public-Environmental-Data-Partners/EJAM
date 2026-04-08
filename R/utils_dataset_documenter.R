@@ -9,7 +9,7 @@
 #' @param saveinpackage if TRUE, puts quoted dataset name at end of file,
 #'  and otherwise puts NULL at end of file
 #' @details
-#' see [article on updating datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html)
+#' see [article on updating datasets](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html")`)
 #'
 #' @return name of .R file where documentation was written
 #'

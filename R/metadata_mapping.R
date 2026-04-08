@@ -10,6 +10,8 @@
 # compare to
 # description_file <- desc::description$new(file = system.file("DESCRIPTION", package = "EJAM"))
 
+## Also, note url_package() relies on the DESCRIPTION file without using this global variable "description_file"
+
 description_file <- desc::description$new("DESCRIPTION")
 
 #################################################### #
@@ -29,17 +31,11 @@ default_metadata <- list(
   census_version        = description_file$get("VersionCensus")
 )
 
-# > dput(default_metadata)  # FOR EXAMPLE:
-# list(
-#   ejam_package_version = c(Version = "2.4.0"),        # or "2.5.0"
-#   ejscreen_version     = c(VersionEJSCREEN = "2.4"),  # or "2.5"
-#   ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2025-2026"), # or "2026"
-#   acs_releasedate      = c(ReleaseDateACS = "2024-12-12"), #  "2026-01-29" is date for delayed release of ACS 2020-2024 data.
-#   acs_version          = c(VersionACS = "2020-2024"),
-#   census_version       = c(VersionCensus = "2020")
-# )
 ##    ## "https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html"
 ##    ## "https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html"
+
+# > dput(default_metadata)
+
 #################################################### #
 
 # metadata_mapping ####
