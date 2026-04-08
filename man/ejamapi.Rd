@@ -2,7 +2,8 @@
 % Please edit documentation in R/ejamapi.R
 \name{ejamapi}
 \alias{ejamapi}
-\title{helper for using the EJAM API, a wrapper function to make API calls}
+\title{helper for using the EJAM API, a wrapper function to make API calls for data or report
+Note this function would be most useful to an R user who does NOT have EJAM installed.}
 \usage{
 ejamapi(
   lat = NULL,
@@ -34,18 +35,18 @@ For the "data" endpoint, specify one or more points.}
 \item{sites, sitepoints}{Only one of these should be provided - they are synonymous.
 Coordinates of point(s) for analysis of residents nearby.
 sites or sitepoints, if provided, must be a data.frame with colnames "lat" and "lon", 1 row per point.
-Like the sitepoints param in \code{url_ejamapi()}}
+Like the sitepoints param in \code{\link[=url_ejamapi]{url_ejamapi()}}}
 
 \item{shape, shapefile}{Only one of these should be provided - they are synonymous.
 A GeoJSON string representing the area of interest,
-like shapefile param in \code{url_ejamapi()}}
+like shapefile param in \code{\link[=url_ejamapi]{url_ejamapi()}}}
 
 \item{fips}{A FIPS code for a specific US Census geography, like "050014801001",
 and must be consistent with the scale parameter}
 
 \item{buffer, radius}{Only one of these should be provided - they are synonymous.
 The buffer radius in miles,
-like radius param in \code{url_ejamapi()}}
+like radius param in \code{\link[=url_ejamapi]{url_ejamapi()}}}
 
 \item{geometries}{A boolean to indicate whether to include geometries in the output,
 relevant only for the "data" endpoint}
@@ -67,28 +68,44 @@ or all blockgroups in specified County fips.}
 \item{browse}{for endpoint="report", set TRUE to launch a browser to view the report
 (in addition to getting the html as output of the function)}
 
-\item{ejamit_format}{set TRUE to get output formatted more like output of \code{ejamit()},
-for convenience, so it can be used as input to \code{ejam2report()} for example,
+\item{ejamit_format}{set TRUE to get output formatted more like output of \code{\link[=ejamit]{ejamit()}},
+for convenience, so it can be used as input to \code{\link[=ejam2report]{ejam2report()}} for example,
 but importantly note (until the API supports summary analysis over multiple locations)
 the API does not return a summary overall across sites, so results_overall will
 be just a placeholder, for the first site, not an overall summary across all sites.}
 
 \item{dry_run}{set to TRUE to see preview info about what the API call would look like.}
 
-\item{...}{other parameters, passed to \code{httr2::req_body_json()} in the "data" case,
-and passed to \code{url_ejamapi()} in the "report" case}
+\item{...}{other parameters, passed to \code{\link[httr2:req_body]{httr2::req_body_json()}} in the "data" case,
+and passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case}
 }
 \value{
-data.frame if using data endpoint, html report if using report endpoint,
-or if ejamit_format=TRUE and data endpoint, a named list somewhat like
+data.frame if using data endpoint, list of html reports if using report endpoint,
+or if ejamit_format=TRUE and "data" is the endpoint, returns a named list somewhat like
 output of \code{ejamit()} so it can work in some functions like \code{ejam2report()}.
-NULL is returned if dry_run=TRUE.
+If dry_run=TRUE, for the "data" endpoint, the request itself, via the httr2 package, is returned,
+and for the "report" endpoint the URL is returned.
 }
 \description{
-helper for using the EJAM API, a wrapper function to make API calls
+helper for using the EJAM API, a wrapper function to make API calls for data or report
+Note this function would be most useful to an R user who does NOT have EJAM installed.
+}
+\details{
+Note this function would be most useful to an R user who does NOT have EJAM installed.
+Anyone who already has the EJAM package installed
+can more quickly and flexibly get reports directly locally via
+\code{\link[=ejamit]{ejamit()}} for the "data", and \code{\link[=ejam2report]{ejam2report()}} for the "report".
+The API call provides fewer features/options.
+
+This function requires the geojsonsf, httr2, jsonlite, htmltools, and rlang packages.
+
+For the "report" endpoint, it additionally currently requires the EJAM package
+just for the \code{\link[=url_ejamapi]{url_ejamapi()}} function that
+converts the parameters to a URL for the API
+as a GET request to obtain an HTML report.
 }
 \examples{
-# also see ?url_ejamapi()
+# also see ?EJAM::url_ejamapi()
 eg <- TRUE
 x1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
 x2 = ejamapi(lat = 45, lon = -118, endpoint = 'report', buffer = 3.1, dry_run=eg)
@@ -98,10 +115,16 @@ y1 = ejamapi(sites = data.frame(lat = c(44,45), lon = c(-117,-118)),
   buffer = 3.1, endpoint = 'data', dry_run=eg)
 y1[,3:14]
 
-y2 = ejamapi(sites=testpoints_10, buffer=3.1, endpoint="data",
+pts=data.frame(
+  lat = c(37.64122, 43.92249),
+  lon = c(-122.41065, -72.663705))
+y2 = ejamapi(sites=pts, buffer=3.1, endpoint="data",
   ejamit_format=T, dry_run=eg)
-ejam2report(y2, sitenumber=1)
-ejam2report(y2, sitenumber=2)
-ejam2table_tall(y2, sitenumber=2)
+EJAM::ejam2report(y2, sitenumber=1)
+EJAM::ejam2report(y2, sitenumber=2)
+EJAM::ejam2table_tall(y2, sitenumber=2)
 
+}
+\seealso{
+\code{\link[=url_ejamapi]{url_ejamapi()}}
 }

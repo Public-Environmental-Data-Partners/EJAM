@@ -13,7 +13,7 @@
 #'
 #' - Will try to use the same input parameters as [ejamit()] does.
 #'
-#' - The API as of mid-2026 used `ejam2report()` with these parameter settings:
+#' - The API as of mid-2026 used [ejam2report()] with these parameter settings:
 #'   - `sitenumber = 1`
 #'   - `report_title="EJSCREEN Community Report"`
 #'
@@ -51,9 +51,9 @@
 #'  Like with other url_xyz functions, the default is to output
 #'   a vector of URLs, one per site. The default value for sitenumber is
 #'   "each" or -1 which means we want one url for each site.
-#'   Note there is no comparable value of sitenumber in the ejam2report() or ejam2map() or similar functions,
+#'   Note there is no comparable value of sitenumber in the [ejam2report()] or [ejam2map()] or similar functions,
 #'   which never return a vector of reports, maps, etc. Getting a vector of 1 per site is useful mainly for
-#'   the url_xyz functions like url_ejamapi().
+#'   the url_xyz functions.
 #'
 #'   Like the sitenumber parameter in [ejam2report()],
 #'   a value of NULL or 0 or "" or "overall" in url_ejamapi() means

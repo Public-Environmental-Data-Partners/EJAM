@@ -300,15 +300,19 @@ x <- EJAM:::test_ejam(
         "test-ejam2histogram.R"
       ),
       test_misc = c(
-        "test-sites_from_input.R",
-        "test-acs_bybg.R",
+
         "test-url_ejamapi.R",
+        "test-ejamapi.R",
+        "test-ejamapi_local.R",
+
         "test-URL_FUNCTIONS_part1.R",
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
+
+        "test-sites_from_input.R",
+        "test-acs_bybg.R",
         "test-is.numericish.R",
         "test-create_filename.R",
-        "test-api.R",
         "test-grepn.R"
       ),
       test_mod = c(
@@ -462,8 +466,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         structure(list(
           file =
             c("test-URL_FUNCTIONS_part2.R", "test-url_columns_bysite.R",
-              "test-acs_bybg.R", "test-grepn.R", "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R",
-              "test-api.R", "test-create_filename.R", "test-is.numericish.R",
+              "test-acs_bybg.R", "test-grepn.R",
+              "test-ejamapi.R",
+              "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R",
+              "test-ejamapi_local.R", "test-create_filename.R", "test-is.numericish.R",
               "test-sites_from_input.R", "test-report_residents_within_xyz.R",
               "test-get_blockpoints_in_shape.R", "test-proxistat.R", "test-bgid_from_blockid.R",
               "test-distances.all.R", "test-getblocks_summarize_blocks_per_site.R",
@@ -496,8 +502,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
               "test-test1.R", "test-test2.R"),
           seconds_byfile =
-            c(21, 4, 2,
-              0, 193, 0, 20, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 28, 1, 1, 0, 0,
+            c(25, 4,
+              2, 0,
+              33,
+              193, 0, 20, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 28, 1, 1, 0, 0,
               13, 5, 2, 11, 1, 5, 0, 1, 1, 0, 4, 10, 0, 6, 5, 1, 0, 5, 0, 3,
               0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 5, 9, 0, 18, 15, 2, 0, 2, 0, 0,
               0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0,
@@ -982,8 +990,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
   }
   ########################### #  ########################################## #
 
-  # was in setup.R and here but now obsolete: out_api
-  ## out_api (obsolete) ####
+  #
+  #
   ########################### #  ########################################## #
 
   ## log file started ####
@@ -1226,9 +1234,14 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         failed_byfile = failed_byfile[1],
         failed_bygroup = failed_bygroup[1],
         testgroup = testgroup[1],
-        seconds_byfile_actual = seconds_byfile[1]
+        seconds_byfile_predicted = seconds_byfile_predicted[1],
+        seconds_byfile_actual = round(seconds_byfile[1], 1)
       ),
       by = "file"]
+
+      # byfile$seconds_byfile_predicted <- bytest_all$seconds_byfile_predicted[match(byfile$file, bytest_all$file)]
+      byfile$seconds_extra <- round(byfile$seconds_byfile_actual - byfile$seconds_byfile_predicted, 0)
+
       setorder(byfile, -failed_bygroup, -flagged_bygroup, testgroup, failed_byfile, -flagged_byfile, file)
       setcolorder(byfile, neworder = c("testgroup", "failed_bygroup", "flagged_bygroup", "file", "failed_byfile", "flagged_byfile"))
       byfile_key <- byfile[flagged_byfile > 0, ]

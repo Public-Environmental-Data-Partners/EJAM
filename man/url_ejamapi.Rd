@@ -51,9 +51,9 @@ which might get too long for encoding in a URL for the API using GET}
 Like with other url_xyz functions, the default is to output
 a vector of URLs, one per site. The default value for sitenumber is
 "each" or -1 which means we want one url for each site.
-Note there is no comparable value of sitenumber in the ejam2report() or ejam2map() or similar functions,
+Note there is no comparable value of sitenumber in the \code{\link[=ejam2report]{ejam2report()}} or \code{\link[=ejam2map]{ejam2map()}} or similar functions,
 which never return a vector of reports, maps, etc. Getting a vector of 1 per site is useful mainly for
-the url_xyz functions like url_ejamapi().
+the url_xyz functions.
 
 Like the sitenumber parameter in \code{\link[=ejam2report]{ejam2report()}},
 a value of NULL or 0 or "" or "overall" in url_ejamapi() means
@@ -80,7 +80,7 @@ https://github.com/edgi-govdata-archiving/EJAM-API
 \item Another option in the future might be to construct a URL that is a "deep link" to the live EJAM
 app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
 \item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
-\item The API as of mid-2026 used \code{ejam2report()} with these parameter settings:
+\item The API as of mid-2026 used \code{\link[=ejam2report]{ejam2report()}} with these parameter settings:
 \itemize{
 \item \code{sitenumber = 1}
 \item \code{report_title="EJSCREEN Community Report"}

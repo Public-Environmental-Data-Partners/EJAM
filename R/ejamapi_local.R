@@ -1,5 +1,5 @@
 ############################# #
-# api_run() will run the API in the background as a separate R process
+# ejamapi_local() will run the API in the background as a separate R process
 
 # https://callr.r-lib.org
 # Security considerations
@@ -7,7 +7,7 @@
 ############################# #
 
 #' Run API in background to test/develop it
-#'
+#' @seealso [ejamapi()] and [url_ejamapi()]
 #' @param fname file with API definition using plumber package
 #' @param host optional, localhost IP
 #' @param port optional, a port number
@@ -16,7 +16,7 @@
 #' @examples
 #' \dontrun{
 #'  # launch and try it in R console
-#'  api_run()
+#'  ejamapi_local()
 #'
 #'  urlx <- "http://127.0.0.1:3035/getblocksnearby?lat=33&lon=-99&radius=2"
 #'  reqx <- httr2::request(urlx)
@@ -40,7 +40,7 @@
 #'
 #' @export
 #'
-api_run <- function(
+ejamapi_local <- function(
 
                     fname = system.file("plumber/plumber.R", package = "EJAM"), # the installed version unless load_all() was done
                     host = "127.0.0.1",
@@ -48,9 +48,9 @@ api_run <- function(
                     quiet = FALSE
 ) {
   ############################# #
-  # api_run_here() will run API in current process:
+  # ejamapi_local_here() will run API in current process:
 
-  api_run_here <- function(
+  ejamapi_local_here <- function(
                            fname = system.file("plumber/plumber.R", package = "EJAM"), # the installed version unless load_all() was done
                            host = "127.0.0.1",
                            port = 3035,
@@ -90,7 +90,7 @@ api_run <- function(
 
   library(callr)
   x <- callr::r_bg(
-    api_run_here,
+    ejamapi_local_here,
     args = list(
       fname = fname, # system.file("plumber/plumber.R", package = "EJAM"), # the installed version unless load_all() was done
       host = host, # "127.0.0.1",
