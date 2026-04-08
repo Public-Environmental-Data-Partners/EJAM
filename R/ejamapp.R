@@ -355,6 +355,10 @@ ejamapp <- function(
     dots$default_standard_analysis_title <- dots$analysis_title # it is also an input but this allows it to work
     cat("launching with specified analysis_title aka default_standard_analysis_title =", dots$analysis_title, "\n")
   }
+
+  if ("testing" %in% names(dots)) {
+    dots$default_testing <- dots$testing
+  }
   ################### #
 
   global_defaults_or_user_options <- get_global_defaults_or_user_options(
