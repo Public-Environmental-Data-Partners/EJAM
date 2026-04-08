@@ -5,7 +5,7 @@
 ## NOTES ON CONSOLIDATING AND CLARIFYING CODE THAT
 ## CHECKS METADATA LIKE THE PACKAGE VERSION NUMBER AND ACS DATA VERSION
 ## FROM THE INSTALLED VERSION OF THE EJAM PACKAGE, AND/OR FROM THE CURRENT LOCAL SOURCE PACKAGE VERSION
-## see global find of "desc::desc"
+## see global find of "desc::desc" including metadata_mapping.R and utils_metadata_add.R and see url_package()
 ######################################################## #
 
 

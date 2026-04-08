@@ -1025,8 +1025,8 @@ v2.32.4 release that was released on USEPA/EJAM-open.
 - Extensive additions of and improvements in articles/vignettes,
   including documentation of how to maintain repo, package, and
   datasets. Articles/vignettes avoid hardcoded repo urls, and use
-  relative links within pkgdown site… unexported helper function
-  `EJAM:::repo_from_desc()` added, avoids hardcoded repo url;
+  relative links within pkgdown site… helper function
+  `url_package()` added, avoids hardcoded repo url;
   download_latest_arrow_data avoids hardcoded repo url; links to
   testdata files on webapp UI avoid hardcoded repo url; simpler [What is
   EJAM](https://ejanalysis.github.io/EJAM/articles/whatis.md) doc.

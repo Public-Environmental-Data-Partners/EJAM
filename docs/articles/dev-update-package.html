@@ -103,58 +103,167 @@
 <p>This document outlines the general development process for updating
 EJAM (for a new release of the package) or relocating it to a different
 repository (repo name and/or github user name), or changing the full
-name of the tool. Also see the separate vignettes on <a href="dev-update-datasets.html">updating datasets</a> and <a href="dev-update-documentation.html">updating documentation</a>.</p>
+name of the tool (the web app). Also see the separate vignettes on <a href="dev-update-datasets.html">updating datasets</a> and <a href="dev-update-documentation.html">updating documentation</a>. This
+document mentions the code repository, the data repository, the
+documentation pages website, and the app’s title.</p>
 <div class="section level2">
-<h2 id="if-relevant-carefully-change-owners-and-names-of-github-repositories">If relevant, carefully change owners and names of github
-repositories<a class="anchor" aria-label="anchor" href="#if-relevant-carefully-change-owners-and-names-of-github-repositories"></a>
+<h2 id="code-repository-if-relevant-carefully-change-owner-and-possibly-repo-name-of-github-code-repository">CODE REPOSITORY: If relevant, carefully change owner (and possibly
+repo name) of github code repository<a class="anchor" aria-label="anchor" href="#code-repository-if-relevant-carefully-change-owner-and-possibly-repo-name-of-github-code-repository"></a>
 </h2>
+<p>If the package is renamed or relocated (if the owner of the
+repository changed, or the location of the data repository changed, or a
+new name were used for the repository), several files would need to be
+updated for everything to work correctly.</p>
 <ul>
-<li><p>The full name/title of the web tool is used in several places and
-all of those should be reading the full name from where it is defined.
-The app title is stored in the DESCRIPTION file, and is available for
-vignettes, functions, etc. directly via
-<code>as.vector(desc::desc_get("Title"))</code>. After the package is
-attached, the name as potentially modified via global_defaults_package.R
-or parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> is available as
-<code>EJAM:::global_or_param("app_title")</code></p></li>
-<li><p>The name of the <em>package</em> (e.g., “EJAM”) is assumed to be
+<li><p>The full URL of the repo where the R package is stored must be
+recorded as the part of the URL parameter in the DESCRIPTION file in the
+root folder of the source package.</p></li>
+<li><p>The full URL is currently <a href="https://github.com/ejanalysis/EJAM" class="external-link uri">https://github.com/ejanalysis/EJAM</a> as found in the
+DESCRIPTION file. It also can be checked via
+<code>url_package(type = "code", get_full_url=TRUE)</code></p></li>
+<li><p>The _pkgdown.yml file in the root folder should also get updated
+with the new URL.</p></li>
+<li><p>Rebuilding/installing the package should update usage of the URL
+where relevant. Some utility functions used it for example.</p></li>
+<li><p>Rebuilding the pkgdown site via <code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code>
+should use that new information within documentation, including articles
+and function/data reference pages.</p></li>
+</ul>
+<div class="section level3">
+<h3 id="code-repo-owner-owner-of-the-github-code-repository">CODE REPO OWNER: owner of the github code repository<a class="anchor" aria-label="anchor" href="#code-repo-owner-owner-of-the-github-code-repository"></a>
+</h3>
+<ul>
+<li><p>The owner name portion is currently “ejanalysis” and can be found
+as part of the URL for the code repository, or via
+<code>gsub("/.*", "", url_package(type = "code"))</code></p></li>
+<li><p>Changing the URL as explained above and transferring ownership
+should work, but generated documentation pages and code test results and
+code comments should be carefully checked.</p></li>
+<li><p>Note it would not make sense to simply globally replace
+“ejanalysis” with “newowner” – There are web links within the R package
+(mostly in documentation) that use the domain <a href="https://ejanalysis.com" class="external-link">ejanalysis.com</a> or equivalently <a href="https://ejanalysis.org" class="external-link">ejanalysis.org</a>, mostly used to provide
+aliases that are convenient shortcuts to the repo, documentation,
+datasets repo, etc. Those aliases include <a href="https://ejanalysis.org/code" class="external-link">ejanalysis.org/code</a>, <a href="https://ejanalysis.org/data" class="external-link">ejanalysis.org/data</a>, and <a href="https://ejanalysis.org/docs" class="external-link">ejanalysis.org/docs</a>. They are
+also available via
+<code>url_package("code", desc_or_alias = "alias")</code> for example.
+The redirect information at that domain would need to be updated to
+point to any new URLs for the data, code, or docs. It should not matter
+if that domain name is different than the owner of any of the
+repositories, so these hard-coded URLs. Those could be changed to use a
+format like url_package(desc_or_alias=“alias”) to make them easier to
+update later, by just changing that one function, but that is not
+essential.</p></li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="code-repo-name-name-of-the-github-code-repository-andor-the-r-package">CODE REPO NAME: Name of the github code repository and/or the R
+package<a class="anchor" aria-label="anchor" href="#code-repo-name-name-of-the-github-code-repository-andor-the-r-package"></a>
+</h3>
+<ul>
+<li><p>The repo name portion is currently “EJAM” and can be found as
+part of the URL for the code repository, or via
+<code>gsub(".*/", "", url_package(type = "code"))</code></p></li>
+<li><p>The R package and the code repository and RStudio project in
+theory could all be different but have been the same.</p></li>
+<li><p>The name of the <em>R package</em> would NOT be easy to change,
+since it is used in so many places in different ways, sometimes
+referring to the github repository name and sometimes just used to refer
+to the R package name or even the tool in general. It is assumed to be
 the same as the name of the github <em>repository</em>, and there are
 many places where the package name is mentioned in vignettes/ articles,
-etc. Changing just the repo name is feasible, as described here, but you
-would have to be careful about this distinction. You would have to
-globally find in files all hardcoded references to the old names, urls,
-etc. since there still are places where it does not check in DESCRIPTION
-for the repo name or assumes repo and package names are
+etc. Changing the repo name (as distinct from the owner of the repo)
+might be feasible, as described here, but you would have to be very
+careful about this distinction between package name, repo name, project
+name, and tool name. You would have to globally find in files all
+hardcoded references to the old names, urls, etc. since there still are
+places in documentation and comments where it does not check in
+DESCRIPTION for the repo name or assumes repo and package names are
 identical.</p></li>
 </ul>
-<p>If the package were renamed or relocated (if a new name were used for
-the repository or the owner of the repository changed, or the location
-of the data repository changed), several files would need to be updated
-for everything to work correctly:</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="datasets-repository-if-relevant-carefully-change-owner-andor-repo-name-of-github-repository-storing-the-large-datasets">DATASETS REPOSITORY: If relevant, carefully change owner and/or repo
+name of github repository storing the large datasets<a class="anchor" aria-label="anchor" href="#datasets-repository-if-relevant-carefully-change-owner-andor-repo-name-of-github-repository-storing-the-large-datasets"></a>
+</h2>
 <ul>
-<li><p>The name of the github repository storing the package code must
-be recorded as part of the URL parameter in the DESCRIPTION file in the
-root folder of the source package.</p></li>
+<li><p>The owner/name of the repo where datasets are stored must be
+recorded as the ejam_data_repo parameter in the DESCRIPTION file in the
+root folder of the source package (which can be checked via
+<code>url_package(type = "data")</code>).</p></li>
+<li><p>The full URL is currently <a href="https://github.com/ejanalysis/ejamdata" class="external-link uri">https://github.com/ejanalysis/ejamdata</a>. It can be
+checked via
+<code>url_package(type = "data", get_full_url=TRUE)</code></p></li>
+<li><p>The owner name portion is currently “ejanalysis” and can be found
+as part of the URL for the data repository, or via
+<code>gsub("/.*", "", url_package(type = "data"))</code></p></li>
+<li><p>The repo name portion is currently “ejamdata” and can be found as
+part of the URL for the data repository, or via
+<code>gsub(".*/", "", url_package(type = "data"))</code></p></li>
+<li><p>Changing the name of this repository, and/or the owner, should be
+easier than in the case of the R package code repository, since the data
+repo is referred to much less often and in fewer ways. A global find
+just to check this would be important, but changing the info in the
+DESCRIPTION file and rebuilding the package should be sufficient to
+update the info about where the data repository is located, and that
+should be used in all relevant places in the package and documentation
+after reinstalling and rebuilding documentation including the pkgdown
+site. There are some places in documentation or comments where the term
+“ejamdata” is used to refer to the repo without it being based on the
+info in the DESCRIPTION file, notably.</p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="documentation-url-if-relevant-carefully-change-url-for-where-the-r-package-documentation-is-published">DOCUMENTATION URL: If relevant, carefully change URL for where the R
+package documentation is published<a class="anchor" aria-label="anchor" href="#documentation-url-if-relevant-carefully-change-url-for-where-the-r-package-documentation-is-published"></a>
+</h2>
+<ul>
 <li><p>The name of the repo (or other domain) where webpages of package
-documentation are published also must be recorded as part of the URL
+documentation are published must be recorded as part of the URL
 parameter in the DESCRIPTION file in the root folder of the source
 package. The website providing documentation of the R package is created
 via <code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code>, as explained in <a href="dev-update-documentation.html">updating
 documentation</a>.</p></li>
-<li><p>The name of the repo where datasets are stored must be recorded
-as the ejam_data_repo parameter in the DESCRIPTION file in the root
-folder of the source package.</p></li>
+<li><p>This URL at least through mid-2026 was associated with the same
+ownername as the R code repository, but it is relatively easy to change
+where the documentation is published and it does not have to be the same
+as the code repository owner. If the documentation is published on
+github pages, then the URL would be something like
+<code>https://OWNER.github.io/REPONAME</code> and the OWNER and REPONAME
+in that URL would need to be updated if the documentation is moved to a
+different location. If the documentation is published on a different
+domain, then that URL would need to be updated in DESCRIPTION.</p></li>
+<li><p>This URL can be checked via
+<code>url_package(type = "docs")</code> which should return the full URL
+where documentation is published (currently <a href="https://ejanalysis.github.io/EJAM" class="uri">https://ejanalysis.github.io/EJAM</a>).</p></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="update-the-package-release">Update the package release<a class="anchor" aria-label="anchor" href="#update-the-package-release"></a>
+<h2 id="app-title-if-relevant-carefully-change-the-title-of-the-web-app">APP TITLE: If relevant, carefully change the title of the web
+app<a class="anchor" aria-label="anchor" href="#app-title-if-relevant-carefully-change-the-title-of-the-web-app"></a>
 </h2>
 <ul>
-<li><p>Update EJAM version number in <em>DESCRIPTION</em> in development
-branch (e.g. to 2.32.7) (&amp; tying it to EJSCREEN version numbers if
-relevant). Search in files globally too, as there still are places where
-the version number is not read from DESCRIPTION, like the files
-*_pkgdown.yml* and <em>golem-config.yml</em> and <em>CITATION</em> and
+<li>The full name/title of the web app / tool is used in several places
+and all of those should be reading the full name from where it is
+defined. The web app title is stored in the DESCRIPTION file, and is
+available for vignettes, functions, etc. directly via
+<code>as.vector(desc::desc_get("Title"))</code>. After the package is
+attached, the name as potentially modified via global_defaults_package.R
+or parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> is available as
+<code>EJAM:::global_or_param("app_title")</code>
+</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="package-releases-update-the-package-release">PACKAGE RELEASES: Update the package release<a class="anchor" aria-label="anchor" href="#package-releases-update-the-package-release"></a>
+</h2>
+<ul>
+<li><p>Update EJAM version number in the Version: field of the
+<em>DESCRIPTION</em> file in the development branch (e.g., 2.32.7)
+(&amp; tying it to EJSCREEN version numbers if relevant). Search in
+files globally too, as there still are places where the version number
+is not read from DESCRIPTION, like the files *_pkgdown.yml* and
+<em>golem-config.yml</em> and <em>CITATION</em> and
 <em>CITATION.cff</em> where the version must be updated too!</p></li>
 <li><p>Update <code>NEWS.md</code> in development branch listing changes
 made. Use the numbering x.y.z (same numbering as was put in
@@ -164,27 +273,25 @@ DESCRIPTION).</p></li>
 using the <code>NEWS.md</code> as the changelog, creating a new tag like
 “v2.32.N”.</p></li>
 </ul>
-</div>
-<div class="section level2">
-<h2 id="update-the-test-installation-script">Update the test installation script<a class="anchor" aria-label="anchor" href="#update-the-test-installation-script"></a>
-</h2>
-<p>You may want to update the test script.</p>
+<div class="section level3">
+<h3 id="update-and-run-the-test-installation-script">Update and run the test installation script<a class="anchor" aria-label="anchor" href="#update-and-run-the-test-installation-script"></a>
+</h3>
+<p>You may want to update the test script that checks if the package can
+be installed.</p>
 <ul>
 <li>Remove older versions of R from the testing and add more recent
 ones</li>
 <li>Add new system libraries required by newly added packages
 (e.g. certain libraries need for installation on Ubuntu)</li>
 </ul>
-</div>
-<div class="section level2">
-<h2 id="test-the-installation-process">Test the installation process<a class="anchor" aria-label="anchor" href="#test-the-installation-process"></a>
-</h2>
 <p>To ensure that, after changes are made, the package can still be
 installed by users with various operating systems and versions of R, a
 workflow file,
 <code>.github/workflows/test-ability-to-install.yml</code>, is triggered
-by any push to the main branch. This file tests installation with the
-following matrix of options:</p>
+by any push to the main branch. This file could attempt installation
+with the following matrix of options, for example, but this has to be
+updated over time and checked as dependencies and other factors do
+change making <strong>some of these tests fail eventually</strong>:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>OS</strong>: Latest Ubuntu, Windows, macOS</p></li>
 <li><p><strong>R version</strong>: latest release and some prior
@@ -197,44 +304,6 @@ versions</p></li>
 if they want to install from github - <a href="installing.html">see
 article on installing for info on setting up a PAT</a>.</p>
 </div>
-<div class="section level2">
-<h2 id="obsolete-step-make-updates-public-before-a-new-release-from-when-a-nonpublic-repo-was-used-for-development-at-epa">obsolete step: Make updates public before a new release (from when a
-nonpublic repo was used for development at EPA)<a class="anchor" aria-label="anchor" href="#obsolete-step-make-updates-public-before-a-new-release-from-when-a-nonpublic-repo-was-used-for-development-at-epa"></a>
-</h2>
-<p>If the development repo being used is internal or private, not
-public, then to make the package installable, the updates need to be
-pushed to a public repo. These would be the steps:</p>
-<ol style="list-style-type: decimal">
-<li>If not already done, add ejanalysis/EJAM (or the appropriate public
-repo) as a remote for the internal repo main branch:</li>
-</ol>
-<p><code>git remote add EJAM git@github.com:ejanalysis/EJAM.git</code></p>
-<ol start="2" style="list-style-type: decimal">
-<li>Push to the main branch of that public repo:</li>
-</ol>
-<p><code>git push EJAM main:main</code></p>
-<ol start="3" style="list-style-type: decimal">
-<li>
-<p>If you want to squash commits</p>
-<ol style="list-style-type: lower-alpha">
-<li>If you want to add a new squash commit, do this from main in the
-internal repo:</li>
-</ol>
-</li>
-</ol>
-<p><code>git checkout -b squash-temp</code>
-<code>git reset --soft #SHA OF PREVIOUS MAIN COMMIT</code>
-<code>git commit -m "Creating squashed commit"</code>
-<code>git push --force EJAM squash-temp:main</code></p>
-<pre><code>b.  If you just want EJAM to end with a single squash commit, do this from main in the internal repo:</code></pre>
-<p><code>git checkout –orphan squash-temp</code> <code>git add .</code>
-<code>git commit -m "Publishing to public repo"</code>
-<code>git push --force EJAM squash-temp:main</code>
-<code>git -M main</code></p>
-<ol start="4" style="list-style-type: decimal">
-<li>Update EJAM release using a similar process as updating an internal
-repo release.</li>
-</ol>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -243,7 +312,7 @@ repo release.</li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>January 2026</p>
+  <p>February 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
