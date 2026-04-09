@@ -13,7 +13,7 @@ Description: Actively maintained non-EPA version of EJAM, the web app
     indicators by site and overall (all sites as a whole), in maps/plots/reports.
     This version grew from a fork of the last version EPA released before it was archived.
 License: MIT + file LICENSE
-URL: https://ejanalysis.github.io/EJAM, https://github.com/ejanalysis/EJAM, https://ejanalysis.org
+URL: https://public-environmental-data-partners.github.io/EJAM, https://github.com/Public-Environmental-Data-Partners/EJAM, https://ejanalysis.org
 Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-1696-5638"))
 Author: Mark A. Corrales <ejam@ejanalysis.com>
 Maintainer: Mark A. Corrales <ejam@ejanalysis.com>
