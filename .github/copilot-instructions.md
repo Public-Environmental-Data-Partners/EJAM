@@ -186,7 +186,7 @@ The notes below might need to be updated every time the github workflow actions 
 
 5. **pkgdown Documentation** (`.github/workflows/pkgdown.yaml`)
    - Builds and deploys documentation website to GitHub Pages
-   - Deployed to: https://ejanalysis.github.io/EJAM/
+   - Deployed to: https://public-environmental-data-partners.github.io/EJAM/
 
 ### On Pushes to development:
 

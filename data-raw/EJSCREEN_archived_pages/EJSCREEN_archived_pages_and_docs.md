@@ -1,3 +1,3 @@
 # EJSCREEN Documentation Links
 
-See links in the [EJSCREEN documentation article](https://ejanalysis.github.io/EJAM/articles/ejscreen.html).
+See links in the [EJSCREEN documentation article](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html).

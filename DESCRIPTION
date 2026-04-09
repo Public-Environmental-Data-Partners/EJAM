@@ -17,7 +17,7 @@ URL: https://public-environmental-data-partners.github.io/EJAM, https://github.c
 Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-1696-5638"))
 Author: Mark A. Corrales <ejam@ejanalysis.com>
 Maintainer: Mark A. Corrales <ejam@ejanalysis.com>
-ejam_data_repo: ejanalysis/ejamdata
+ejam_data_repo: Public-Environmental-Data-Partners/ejamdata
 VersionEJSCREEN: 2.32
 ReleaseDateEJSCREEN: 2024-08-12
 VersionACS: 2018-2022
