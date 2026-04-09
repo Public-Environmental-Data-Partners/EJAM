@@ -215,6 +215,7 @@ url_frs_facility <- function(regid = NULL,
 #'
 #' @return data.frame of info about the nearby facilities
 #' @examples
+#' \donttest{
 #'   # find the one NPL site that is within half a mile of this point
 #' frompoints = data.frame(lat = 39.65, lon = -75.73)
 #' radius = 0.5
@@ -225,9 +226,9 @@ url_frs_facility <- function(regid = NULL,
 #'                                               radius = radius,
 #'                                               sitecategory = sitecategory)
 #'
-#' map_ejscreen_facilities_nearby(frompoints = frompoints,
-#'                                facilities = facilities1,
-#'                                radius = radius)
+#' EJAM:::map_ejscreen_facilities_nearby(frompoints = frompoints,
+#'                                       facilities = facilities1,
+#'                                       radius = radius)
 #'
 #' facilities1b <- get_ejscreen_facilities_nearby(frompoints = frompoints,
 #'                                                radius = radius,
@@ -254,9 +255,10 @@ url_frs_facility <- function(regid = NULL,
 #' NROW(frompoints2)
 #'   # how many facilities are near each frompoint?
 #' cbind(frompoint = 1:NROW(frompoints2),
-#'   facility_count_near_this_point = table(facilities2$frompoint_n)))
+#'   facility_count_near_this_point = table(facilities2$frompoint_n))
 #'   # how many frompoints have N facilities nearby?
 #' table(table(facilities2$frompoint_n))
+#' }
 #' @seealso [getfrsnearby()]
 #'
 #' @export
@@ -271,25 +273,38 @@ get_ejscreen_facilities_nearby <- function(frompoints, radius=3, sitecategory="t
                         radius = radius, units = "miles",
                         f = "pjson")
   facilities <- list()
-  for (i in 1:NROW(frompoints)) {
+  for (i in seq_len(NROW(frompoints))) {
 
   req1 <- httr2::request(urls[i])
   resp1 <- httr2::req_perform(req1)
   # httr2::resp_url_queries(resp1)
   # httr2::resp_content_type(resp1)
   # cat(httr2::resp_body_string(resp1))
-  facilities[[i]] <- jsonlite::fromJSON(httr2::resp_body_string(resp1))$features$attributes
+  fac_i <- jsonlite::fromJSON(httr2::resp_body_string(resp1))$features$attributes
   # or  # y = jsonify::from_json(httr2::resp_body_string(resp1))$features$attributes
-  facilities[[i]]$frompoint_n <- i
-  facilities[[i]]$frompoint_lat <- frompoints$lat[i]
-  facilities[[i]]$frompoint_lon <- frompoints$lon[i]
+  if (is.null(fac_i) || NROW(fac_i) == 0) {
+    facilities[[i]] <- NULL
+    next
   }
-  facilities <- do.call(rbind, facilities)
-  facilities$sitecategory <- sitecategory
+  # rename latitude/longitude to lat/lon for consistency with rest of package
+  if ("latitude"  %in% names(fac_i)) {names(fac_i)[names(fac_i) == "latitude"]  <- "lat"}
+  if ("longitude" %in% names(fac_i)) {names(fac_i)[names(fac_i) == "longitude"] <- "lon"}
+  fac_i$frompoint_n <- i
+  fac_i$frompoint_lat <- frompoints$lat[i]
+  fac_i$frompoint_lon <- frompoints$lon[i]
+  facilities[[i]] <- fac_i
+  }
+  facilities <- facilities[!vapply(facilities, is.null, logical(1L))]
+  if (length(facilities) == 0L) {
+    facilities <- data.frame()
+  } else {
+    facilities <- do.call(rbind, facilities)
+    facilities$sitecategory <- sitecategory
+  }
   # print( t(facilities) )
   if (showmap) {
-    for (ii in 1:NROW(frompoints)) {
-      frompoints$count_nearby <- NROW(facilities[facilities$frompoint_n == i,])
+    for (ii in seq_len(NROW(frompoints))) {
+      frompoints$count_nearby[ii] <- if (NROW(facilities) > 0) NROW(facilities[facilities$frompoint_n == ii, ]) else 0L
     }
     frompoints$radius.miles <- radius
     x <- map_ejscreen_facilities_nearby(frompoints = frompoints,
