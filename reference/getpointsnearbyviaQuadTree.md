@@ -79,19 +79,20 @@ getpointsnearbyviaQuadTree(
 - quadtree:
 
   (actually a pointer to a large quadtree object) created using
-  [`indexpoints()`](https://ejanalysis.github.io/EJAM/reference/indexpoints.md)
+  [`indexpoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexpoints.md)
   which uses the SearchTree package. Helps find the "topoints"
 
 - quaddatatable:
 
   table in [data.table](https://r-datatable.com) format like
-  [quaddata](https://ejanalysis.github.io/EJAM/reference/quaddata.md)
+  [quaddata](https://public-environmental-data-partners.github.io/EJAM/reference/quaddata.md)
   passed to function
 
   - the data.table used to create quadtree, such as
-    [blockpoints](https://ejanalysis.github.io/EJAM/reference/blockpoints.md)
-    or [frs](https://ejanalysis.github.io/EJAM/reference/frs.md). Helps
-    find the "topoints"
+    [blockpoints](https://public-environmental-data-partners.github.io/EJAM/reference/blockpoints.md)
+    or
+    [frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md).
+    Helps find the "topoints"
 
 - updateProgress, :
 
@@ -117,4 +118,4 @@ with distance in miles as one output column of table in
 
 ## See also
 
-[`getpointsnearby()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearby.md)
+[`getpointsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearby.md)

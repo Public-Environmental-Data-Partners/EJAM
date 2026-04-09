@@ -109,15 +109,15 @@ testing purposes.
 
 For documentation on each input or output item (R object), see
 [reference documentation on each
-object](https://ejanalysis.github.io/EJAM/reference/index.html#test-data)
+object](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#test-data)
 
 This code snippet provides a useful list of test/ sample data objects in
 EJAM and related packages:
 
 **POINT DATA (LAT/LON COORDINATES)** for testing
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
-[`mapfast()`](https://ejanalysis.github.io/EJAM/reference/mapfast.md),
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md),
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
+[`mapfast()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfast.md),
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
 etc.
 
 See all files and all dataset examples related to one topic:
@@ -160,7 +160,7 @@ x[grepl("^testp", x$Item), ]
 ```
 
 **STREET ADDRESSES** for testing geocoding in
-[`latlon_from_address()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_address.md)
+[`latlon_from_address()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_address.md)
 etc.
 
 ``` r
@@ -171,7 +171,7 @@ cat("\n\n")
 ```
 
 **FACILITY REGISTRY IDs** for testing
-[`latlon_from_regid()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_regid.md)
+[`latlon_from_regid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_regid.md)
 etc.
 
 ``` r
@@ -226,14 +226,14 @@ cat("\n\n")
 ```
 
 **EXAMPLES OF OUTPUTS** from
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md),
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
 etc., you can use as inputs to
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md),
-[`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md),
-[`ejam2ratios()`](https://ejanalysis.github.io/EJAM/reference/ejam2ratios.md),
-[`ejam2barplot()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot.md),
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md),
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md),
+[`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md),
+[`ejam2ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2ratios.md),
+[`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md),
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md),
 etc.
 
 ``` r
@@ -276,8 +276,8 @@ and the blockgroup-related datasets with EJSCREEN indicators.
 
 Some datasets get downloaded by the package at installation or launch or
 as needed. See the article on [Updating EJAM
-Datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.md)
+Datasets](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md)
 for more information on these.
 
 Also see [reference documentation for each
-dataset](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-).
+dataset](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-).

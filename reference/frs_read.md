@@ -22,9 +22,9 @@ frs_read(fullpath = "NATIONAL_SINGLE.csv", only_essential_cols = TRUE)
 
 ## Value
 
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md), a table in
-[data.table](https://r-datatable.com) format with columns as noted in
-details.
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md),
+a table in [data.table](https://r-datatable.com) format with columns as
+noted in details.
 
 ## Details
 
@@ -34,7 +34,7 @@ Uses
 More than 4 million rows of data.
 
 See
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 for more details on which fields might be useful.
 
 
@@ -63,7 +63,7 @@ for more details on which fields might be useful.
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 which uses
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 The main functions that get updates of the data for this package.

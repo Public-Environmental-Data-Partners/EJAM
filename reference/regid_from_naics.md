@@ -15,7 +15,7 @@ regid_from_naics(naics, children = TRUE, id_only = TRUE, ...)
 
   a vector of naics codes, or a data.table with column named code, as
   with output of
-  [`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+  [`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 - children:
 
@@ -33,21 +33,21 @@ regid_from_naics(naics, children = TRUE, id_only = TRUE, ...)
 - ...:
 
   passed to
-  [`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+  [`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 ## Value
 
 vector of registry ID values of facilities in EPA FRS that are listed
 there as being in this/these NAICS, like
-[`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md)
+[`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md)
 but with id_only = TRUE
 
 ## Details
 
 Finding the right NAICS/SIC and finding all the right sites is
 complicated. See discussion of
-[`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md).
+[`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md).
 
 ## See also
 
-[`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md)
+[`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md)

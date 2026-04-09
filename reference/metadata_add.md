@@ -46,7 +46,7 @@ returns x but with new or altered attributes
 
 to update only the ejam_package_version attribute of every data item:
 
-[`metadata_update_attr()`](https://ejanalysis.github.io/EJAM/reference/metadata_update_attr.md)
+[`metadata_update_attr()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_update_attr.md)
 
 This utility would be used in scripts in EJAM/data-raw/ to add metadata
 to objects like x before use_data(x, overwrite=T)
@@ -56,12 +56,12 @@ is.vector() will no longer be true!
 
 ## See also
 
-[`metadata_check_print()`](https://ejanalysis.github.io/EJAM/reference/metadata_check_print.md)
-[`metadata_check()`](https://ejanalysis.github.io/EJAM/reference/metadata_check.md)
+[`metadata_check_print()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_check_print.md)
+[`metadata_check()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_check.md)
 `metadata_add()`
-[`metadata_update_attr()`](https://ejanalysis.github.io/EJAM/reference/metadata_update_attr.md)
-[`metadata_add_and_use_this()`](https://ejanalysis.github.io/EJAM/reference/metadata_add_and_use_this.md)
-[`dataset_documenter()`](https://ejanalysis.github.io/EJAM/reference/dataset_documenter.md)
+[`metadata_update_attr()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_update_attr.md)
+[`metadata_add_and_use_this()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_add_and_use_this.md)
+[`dataset_documenter()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataset_documenter.md)
 
 ## Examples
 

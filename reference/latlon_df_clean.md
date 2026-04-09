@@ -41,11 +41,11 @@ makes numeric)
 ## See also
 
 Used by
-[`latlon_from_anything()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_anything.md).
+[`latlon_from_anything()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_anything.md).
 Uses
-[`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
-[`latlon_is.valid()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.valid.md)
-[`latlon_as.numeric()`](https://ejanalysis.github.io/EJAM/reference/latlon_as.numeric.md)
+[`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
+[`latlon_is.valid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.valid.md)
+[`latlon_as.numeric()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_as.numeric.md)
 
 ## Examples
 

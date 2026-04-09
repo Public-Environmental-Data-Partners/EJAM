@@ -35,12 +35,12 @@ popup_from_ejscreen(
   optional word or phrase about the sites or how they were selected.
 
   The `site_method` parameter can be used as-is by
-  [`create_filename()`](https://ejanalysis.github.io/EJAM/reference/create_filename.md)
+  [`create_filename()`](https://public-environmental-data-partners.github.io/EJAM/reference/create_filename.md)
   to be part of the saved file name. It can also be used by the shiny
   app to add informational text in the header of a report, via
-  [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+  [`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
   and related helper functions like
-  [`report_residents_within_xyz()`](https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.md)
+  [`report_residents_within_xyz()`](https://public-environmental-data-partners.github.io/EJAM/reference/report_residents_within_xyz.md)
   or via \[ejam2excel() and related helper functions.
 
   The `site_method` parameter provides more detailed info about how

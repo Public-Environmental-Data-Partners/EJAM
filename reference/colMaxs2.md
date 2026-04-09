@@ -25,7 +25,7 @@ named vector of numbers
 
 ## See also
 
-[`colMins2()`](https://ejanalysis.github.io/EJAM/reference/colMins2.md)
+[`colMins2()`](https://public-environmental-data-partners.github.io/EJAM/reference/colMins2.md)
 
 ## Examples
 

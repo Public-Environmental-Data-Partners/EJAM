@@ -28,9 +28,9 @@ df with data in specified columns multiplied by 100
 
 ## See also
 
-[`table_signif_round_x100()`](https://ejanalysis.github.io/EJAM/reference/table_signif_round_x100.md)
-[`table_signif()`](https://ejanalysis.github.io/EJAM/reference/table_signif.md)
-[`table_round()`](https://ejanalysis.github.io/EJAM/reference/table_round.md)
+[`table_signif_round_x100()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_signif_round_x100.md)
+[`table_signif()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_signif.md)
+[`table_round()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_round.md)
 `table_x100()`
 
 ## Examples

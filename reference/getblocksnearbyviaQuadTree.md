@@ -1,7 +1,7 @@
 # Fast way to find nearby points (distance to each Census block centroid near each site)
 
 This is what
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 uses to do the work. Given a set of points and a specified radius in
 miles, this function quickly finds all the US Census blocks near each
 point. This does the work actually supporting getblocksnearby()
@@ -113,7 +113,7 @@ longitude.
 
 Results are the sites2blocks table in
 [data.table](https://r-datatable.com) format that would be used by
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md),
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md),
 with distance in miles as one output column of data.table. Adjusts
 distance to avg resident in block when it is very small relative to
 block size, the same way EJSCREEN adjusts distances in creating
@@ -130,8 +130,8 @@ apportionment of blockgroups would provide.
 
 ## See also
 
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 ## Examples
 

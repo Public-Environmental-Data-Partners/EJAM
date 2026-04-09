@@ -7,7 +7,7 @@ EPA-regulated site in the Facility Registry Service
 
 Table in [data.table](https://r-datatable.com) format. This file is not
 stored in the package, but is obtained via
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md).
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md).
 
 Created by frs_make_programid_lookup()
 
@@ -36,5 +36,5 @@ rows for one site if it is in multiple programs.
 
 ## See also
 
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md)
-[frs_by_naics](https://ejanalysis.github.io/EJAM/reference/frs_by_naics.md)
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+[frs_by_naics](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md)

@@ -50,4 +50,4 @@ name of .R file where documentation was written
 ## Details
 
 see [article on updating
-datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html)
+datasets](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html)

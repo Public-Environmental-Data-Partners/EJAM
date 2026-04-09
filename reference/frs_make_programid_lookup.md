@@ -12,9 +12,9 @@ frs_make_programid_lookup(x)
 
 - x:
 
-  [frs](https://ejanalysis.github.io/EJAM/reference/frs.md) table in
-  [data.table](https://r-datatable.com) format from
-  [`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+  [frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+  table in [data.table](https://r-datatable.com) format from
+  [`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 
 ## Value
 
@@ -32,4 +32,4 @@ be found here:
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)

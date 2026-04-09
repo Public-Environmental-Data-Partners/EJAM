@@ -8,11 +8,11 @@ particularly how many counties have a large number of block groups and
 residents.
 
 *Note there are also [guides to using EJAM in R for County/FIPS
-analysis](https://ejanalysis.github.io/EJAM/articles/articles/analyzing.html#fips-codes)
+analysis](https://public-environmental-data-partners.github.io/EJAM/articles/articles/analyzing.html#fips-codes)
 and [reference documents on relevant R
-functions](https://ejanalysis.github.io/EJAM/reference/index.html#specify-counties-etc-)
+functions](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-counties-etc-)
 and [county-related test
-data](https://ejanalysis.github.io/EJAM/reference/index.html#examples-of-inputs-census-units-by-fips-).*
+data](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#examples-of-inputs-census-units-by-fips-).*
 
 The US has over 3,200 Counties but the 80/20 rule applies almost exactly
 – About 80% of the population is in just 20% of all Counties. In fact,

@@ -31,7 +31,7 @@ map_counties_in_state(
 
   name of column to use in setting colors of counties on map, but must
   be one returned by
-  [`shapes_counties_from_countyfips()`](https://ejanalysis.github.io/EJAM/reference/shapes_counties_from_countyfips.md)
+  [`shapes_counties_from_countyfips()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapes_counties_from_countyfips.md)
   like "STATE_NAME"
 
 - type:

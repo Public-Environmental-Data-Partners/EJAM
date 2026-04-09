@@ -12,12 +12,13 @@ frs_update_datasets() (which is not an exported function)
 The definitions of active/inactive here are not quite the same as used
 in ECHO. See attributes(frs) to see date created, etc.
 
-Also, EJSCREEN has [maps of EPA-regulated facilities of a few program
-types](https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities)target="\_blank"
-and for a table of acronym definitions see
+Also, [EJSCREEN](https://ejanalysis.com/ejscreenapp) has maps of
+EPA-regulated
+[facilities](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities)
+of a few program types and for a table of acronym definitions see
 https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx
 and
-[epa_programs_defined](https://ejanalysis.github.io/EJAM/reference/epa_programs_defined.md)
+[epa_programs_defined](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs_defined.md)
 
 - Count of all REGISTRY_ID rows: Approx 7 million
 
@@ -57,8 +58,8 @@ colnames
 
 ## See also
 
-[epa_programs](https://ejanalysis.github.io/EJAM/reference/epa_programs.md)
-[epa_programs_defined](https://ejanalysis.github.io/EJAM/reference/epa_programs_defined.md)
-[frs_by_programid](https://ejanalysis.github.io/EJAM/reference/frs_by_programid.md)
-[frs_by_naics](https://ejanalysis.github.io/EJAM/reference/frs_by_naics.md)
-[frs_by_sic](https://ejanalysis.github.io/EJAM/reference/frs_by_sic.md)
+[epa_programs](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.md)
+[epa_programs_defined](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs_defined.md)
+[frs_by_programid](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)
+[frs_by_naics](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md)
+[frs_by_sic](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md)

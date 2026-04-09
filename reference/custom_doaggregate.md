@@ -22,7 +22,7 @@ custom_doaggregate(
 - sites2blocks:
 
   see
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - custom_blockgroupstats:
 
@@ -59,5 +59,5 @@ custom_doaggregate(
 ## Value
 
 list of tables similar to what
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 returns

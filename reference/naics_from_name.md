@@ -32,22 +32,22 @@ naics_from_name(mynames, children = FALSE, ignore.case = TRUE, fixed = FALSE)
 ## Value
 
 a subset of the
-[naicstable](https://ejanalysis.github.io/EJAM/reference/naicstable.md)
+[naicstable](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md)
 data.table (not just the codes column)
 
 ## Details
 
 See
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 which uses this
 
 ## See also
 
-[`naics_findwebscrape()`](https://ejanalysis.github.io/EJAM/reference/naics_findwebscrape.md)
-[`naics_subcodes_from_code()`](https://ejanalysis.github.io/EJAM/reference/naics_subcodes_from_code.md)
-[`naics_from_code()`](https://ejanalysis.github.io/EJAM/reference/naics_from_code.md)
+[`naics_findwebscrape()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_findwebscrape.md)
+[`naics_subcodes_from_code()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_subcodes_from_code.md)
+[`naics_from_code()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_code.md)
 `naics_from_name()`
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 ## Examples
 

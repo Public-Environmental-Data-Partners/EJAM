@@ -21,5 +21,5 @@ equivalent of results of reading the .xlsx test data files.
 ## See also
 
 testpoints_5
-[testpoints_50](https://ejanalysis.github.io/EJAM/reference/testpoints_50.md)
-[testpoints_500](https://ejanalysis.github.io/EJAM/reference/testpoints_500.md)
+[testpoints_50](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_50.md)
+[testpoints_500](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_500.md)

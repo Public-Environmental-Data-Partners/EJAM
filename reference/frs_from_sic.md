@@ -14,12 +14,12 @@ frs_from_sic(sic_code_or_name, ...)
 - sic_code_or_name:
 
   passed to
-  [`sic_from_any()`](https://ejanalysis.github.io/EJAM/reference/sic_from_any.md)
+  [`sic_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_any.md)
 
 - ...:
 
   passed to
-  [`sic_from_any()`](https://ejanalysis.github.io/EJAM/reference/sic_from_any.md)
+  [`sic_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_any.md)
 
 ## Value
 
@@ -33,9 +33,9 @@ facilities based on NAICS or SIC.
 
 ## See also
 
-[`regid_from_sic()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_sic.md)
-[`sic_from_any()`](https://ejanalysis.github.io/EJAM/reference/sic_from_any.md)
-[`latlon_from_sic()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_sic.md)
+[`regid_from_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_sic.md)
+[`sic_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_any.md)
+[`latlon_from_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_sic.md)
 
 ## Examples
 

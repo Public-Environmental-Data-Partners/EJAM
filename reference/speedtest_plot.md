@@ -28,4 +28,4 @@ side effect is a plot. returns x but with seconds column added to it
 
 ## See also
 
-[`speedtest()`](https://ejanalysis.github.io/EJAM/reference/speedtest.md)
+[`speedtest()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest.md)

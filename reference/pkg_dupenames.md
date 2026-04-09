@@ -42,14 +42,14 @@ within source code of 2+ packages, and see what is on search path, for
 dev renaming / moving functions/ packages
 
 See
-[`pkg_dupeRfiles()`](https://ejanalysis.github.io/EJAM/reference/pkg_dupeRfiles.md)
+[`pkg_dupeRfiles()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_dupeRfiles.md)
 for files supporting a shiny app that is not a package, e.g.
 
 See `pkg_dupenames()` for objects that are in R packages.
 
 See
-[`pkg_functions_and_data()`](https://ejanalysis.github.io/EJAM/reference/pkg_functions_and_data.md),
+[`pkg_functions_and_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_functions_and_data.md),
 pkg_functions_and_sourcefiles(), etc.
 
 See
-[`pkg_data()`](https://ejanalysis.github.io/EJAM/reference/pkg_data.md)
+[`pkg_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_data.md)

@@ -6,8 +6,9 @@ This article highlights some key features or areas ripe for future
 enhancements. Additional specific feature requests or ideas are in
 github issues in the EJAM repository. Updates on the status of the
 repository, web app hosting, and open source package development are in
-the [README](https://ejanalysis.github.io/EJAM/articles/) or at
-[ejanalysis.com/status](https://ejanalysis.com/status).
+the
+[README](https://public-environmental-data-partners.github.io/EJAM/articles/)
+or at [ejanalysis.com/status](https://ejanalysis.com/status).
 
 ### Possible future enhancements
 
@@ -36,8 +37,9 @@ html), for better pagination when printing - better handling of polygons
 obtain a multisite summary report (not just a 1-site report) (via the
 sitenumber parameter) - allowing the API to use most or all of the same
 parameters as the functions
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) and
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md),
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+and
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md),
 providing more features and flexibility in customizing reports. - data
 (an easy way to obtain subsets of data at the block or blockgroup level,
 for example, via an assets) - enhancements and/or fixes as noted in
@@ -45,10 +47,10 @@ for example, via an assets) - enhancements and/or fixes as noted in
 repository](https://github.com/edgi-govdata-archiving/EJAM-API/issues) -
 access to services such as fast identification of nearby blocks or other
 points (via
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-[`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
 or
-[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)) -
+[`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)) -
 summarization (aggregation over blocks or blockgroups), maybe for
 user-provided indicators
 
@@ -71,18 +73,18 @@ through the web app interface. See preliminary work such as the
 following:
 [`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html)
 as a way to obtain Census ACS demographics,
-[`acs_bybg()`](https://ejanalysis.github.io/EJAM/reference/acs_bybg.md)
+[`acs_bybg()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_bybg.md)
 examples of another way to obtain data and then using ACS raw data to
 calculate indicators,
-[`calctype()`](https://ejanalysis.github.io/EJAM/reference/calctype.md)
+[`calctype()`](https://public-environmental-data-partners.github.io/EJAM/reference/calctype.md)
 for metadata on how a given indicator should get aggregated over blocks
 or blockgroups,
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 parameters like wtdmeancols, and exploratory early drafts of possible
 approaches to creating new indicators or aggregating them for a report,
-in[`calc_ejam()`](https://ejanalysis.github.io/EJAM/reference/calc_ejam.md),
-[`custom_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/custom_doaggregate.md),
-[`doaggregate_newscores()`](https://ejanalysis.github.io/EJAM/reference/doaggregate_newscores.md),
+in[`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md),
+[`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md),
+[`doaggregate_newscores()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate_newscores.md),
 etc.
 
 #### Counts of nearby points of interest
@@ -96,11 +98,11 @@ nursing homes). The tool would report on counts of POI, in an analysis
 of circular buffers (e.g., \# of parks near each facility analyzed), but
 also for FIPS Census units (e.g., \# of parks in each County) or
 polygons/shapefiles (e.g., \# of parks in each high-risk zone). See
-[`countpoints_nearby()`](https://ejanalysis.github.io/EJAM/reference/countpoints_nearby.md),
+[`countpoints_nearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/countpoints_nearby.md),
 and related early draft work in EJAM/R/PROXIMITY_FUNCTIONS.R. Note
 certain POI are already tallied in the reports, such as hospitals,
 schools, TRI sites, etc. and more information is available using
-[`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md).
+[`ejam2areafeatures()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2areafeatures.md).
 
 #### Facility Density Scores for all EPA-regulated Facilities
 
@@ -148,7 +150,7 @@ with initial filtering of results, to suggest what might be highlighted.
 These could be used for a revised summary report, but especially will be
 explored for the long-form written report, particularly for ways to
 provide an Executive Summary. See early draft work in functions such as
-[`count_sites_with_n_high_scores()`](https://ejanalysis.github.io/EJAM/reference/count_sites_with_n_high_scores.md)
+[`count_sites_with_n_high_scores()`](https://public-environmental-data-partners.github.io/EJAM/reference/count_sites_with_n_high_scores.md)
 and the report/written_report folder.
 
 #### Visualization Tools
@@ -162,7 +164,7 @@ there appears to be interest in it. Another possibility is that plots,
 maps, and tables could be made to interact in sync with each other,
 where that supports useful data exploration. See examples of plots in
 the vignettes, for example, and [the many plot_xyz functions and mapping
-functions](https://ejanalysis.github.io/EJAM/reference/index.html#viewing-results).
+functions](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#viewing-results).
 
 #### Spatial Resolution
 

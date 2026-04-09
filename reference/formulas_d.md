@@ -20,14 +20,14 @@ An object of class `character` of length 130.
 Created for EJAM by datacreate_formulas.R script
 
 See also
-[formulas_all](https://ejanalysis.github.io/EJAM/reference/formulas_all.md)
+[formulas_all](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_all.md)
 and
-[formulas_ejscreen_acs](https://ejanalysis.github.io/EJAM/reference/formulas_ejscreen_acs.md)
+[formulas_ejscreen_acs](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs.md)
 
 Can be used by
-[`calc_ejam()`](https://ejanalysis.github.io/EJAM/reference/calc_ejam.md)
+[`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md)
 or
-[`acs_bybg()`](https://ejanalysis.github.io/EJAM/reference/acs_bybg.md)
+[`acs_bybg()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_bybg.md)
 for
 
 1.  aggregation over blockgroups at a site or

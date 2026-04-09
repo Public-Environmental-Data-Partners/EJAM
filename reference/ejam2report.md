@@ -48,7 +48,7 @@ ejam2report(
 - ejamitout:
 
   output as from
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
   list with a table in [data.table](https://r-datatable.com) format
   called `results_bysite` if sitenumber parameter is used, or a table in
   [data.table](https://r-datatable.com) format called `results_overall`
@@ -68,7 +68,7 @@ ejam2report(
   optional relative path to a logo for the upper right of the overall
   header. Ignored if logo_html is specified and not NULL, but otherwise
   uses default or param set in
-  [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+  [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 
 - logo_html:
 
@@ -99,13 +99,13 @@ ejam2report(
   optional word or phrase about the sites or how they were selected.
 
   The `site_method` parameter can be used as-is by
-  [`create_filename()`](https://ejanalysis.github.io/EJAM/reference/create_filename.md)
+  [`create_filename()`](https://public-environmental-data-partners.github.io/EJAM/reference/create_filename.md)
   to be part of the saved file name. It can also be used by the shiny
   app to add informational text in the header of a report, via
   `ejam2report()` and related helper functions like
-  [`report_residents_within_xyz()`](https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.md)
+  [`report_residents_within_xyz()`](https://public-environmental-data-partners.github.io/EJAM/reference/report_residents_within_xyz.md)
   or via
-  [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+  [`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
   and related helper functions.
 
   The `site_method` parameter provides more detailed info about how
@@ -161,7 +161,7 @@ ejam2report(
 - footer_version_number, footer_date, footer_text, footer_html:
 
   to customize the report footer - see
-  [`generate_report_footer()`](https://ejanalysis.github.io/EJAM/reference/generate_report_footer.md)
+  [`generate_report_footer()`](https://public-environmental-data-partners.github.io/EJAM/reference/generate_report_footer.md)
   Should provide footer_date to ensure user's timezone is used to
   determine today's date.
 

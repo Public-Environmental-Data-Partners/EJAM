@@ -22,7 +22,7 @@ name2fips(
   vector of 1 or more exact names of states or ST abbreviations or
   countynames that include the comma and state abbrev., like "Harris
   County, TX" (not the same as where ST is separate in
-  [`fips_counties_from_countyname()`](https://ejanalysis.github.io/EJAM/reference/fips_counties_from_countyname.md))
+  [`fips_counties_from_countyname()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_counties_from_countyname.md))
   Ignores case.
 
 - exact:
@@ -33,13 +33,13 @@ name2fips(
 - usegrep:
 
   passed to
-  [`fips_place_from_placename()`](https://ejanalysis.github.io/EJAM/reference/fips_place_from_placename.md)
+  [`fips_place_from_placename()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_place_from_placename.md)
   and if TRUE, helps find partial matches
 
 - geocoding:
 
   passed to
-  [`fips_place_from_placename()`](https://ejanalysis.github.io/EJAM/reference/fips_place_from_placename.md)
+  [`fips_place_from_placename()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_place_from_placename.md)
 
 - details:
 

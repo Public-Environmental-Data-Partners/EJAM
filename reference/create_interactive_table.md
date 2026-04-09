@@ -45,4 +45,4 @@ create_interactive_table(
 
 ## See also
 
-[`ejam2tableviewer()`](https://ejanalysis.github.io/EJAM/reference/ejam2tableviewer.md)
+[`ejam2tableviewer()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2tableviewer.md)

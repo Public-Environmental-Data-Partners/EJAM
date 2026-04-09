@@ -61,7 +61,7 @@ ratios and set of columns for State ratios
 ## Details
 
 For examples, see
-[`calc_pctile_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.md)
+[`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)
 
 Note how averages (or percentiles) are defined in EJSCREEN data –
 technically it has been defined as average blockgroup (or percentile
@@ -79,6 +79,6 @@ all US blockgroups (i.e., the average US resident).
 
 ## See also
 
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
-[`calc_avg_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_avg_columns.md)
-[`calc_pctile_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+[`calc_avg_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_avg_columns.md)
+[`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)

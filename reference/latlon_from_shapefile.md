@@ -15,7 +15,7 @@ latlon_from_shapefile(shp, include_only_latlon = TRUE)
 - shp:
 
   shapefile that is class sf, as from
-  [`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+  [`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)
   or
   [`sf::st_read()`](https://r-spatial.github.io/sf/reference/st_read.html),
   with geometry column that has points so is class sfc_POINT
@@ -29,10 +29,10 @@ latlon_from_shapefile(shp, include_only_latlon = TRUE)
 
 [data.table](https://r-datatable.com) with columns named lat and lon,
 and optionally all from shp as well, as can be used as input to
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
-[`mapfast()`](https://ejanalysis.github.io/EJAM/reference/mapfast.md),
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
+[`mapfast()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfast.md),
 etc.
 
 ## See also
 
-[`latlon_from_shapefile_centroids()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_shapefile_centroids.md)
+[`latlon_from_shapefile_centroids()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_shapefile_centroids.md)

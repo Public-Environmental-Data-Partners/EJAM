@@ -12,11 +12,11 @@ You should check which functions have adequate unit tests.
 
 You can see a grouped, organized list of unit test files *within the
 source code* of a function
-**[`test_ejam()`](https://ejanalysis.github.io/EJAM/reference/test_ejam.md)**,
+**[`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)**,
 which is not exported but is loaded by the package. That function also
 has an option that helps check coverage. It relies on
 **`EJAM/tests/test_coverage_check.R`**. The
-[`test_ejam()`](https://ejanalysis.github.io/EJAM/reference/test_ejam.md)
+[`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)
 function noted above already prompts for using it, but you could
 separately [`source()`](https://rdrr.io/r/base/source.html) it and use
 it. The source code there also had notes on the topic.
@@ -58,7 +58,7 @@ Unit tests should be changed if necessary in these situations:
 - if the web app UI changes - then special tests of the web app
   functionality can be updated/created as explained in [Testing EJAM App
   with
-  shinytest2](https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.md).
+  shinytest2](https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.md).
   Also note that any screenshots for any *User Guide* would need to be
   updated if the UI changes.
 
@@ -76,12 +76,12 @@ order by default), you might want to test only some groups of related
 functions that you are working on, and see a summary of which tests in
 which files from which groups are passing, skipped, etc. To do this,
 note there is an unexported function called
-**[`test_ejam()`](https://ejanalysis.github.io/EJAM/reference/test_ejam.md)**
+**[`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)**
 that you can use to run the unit tests interactively. Assuming you want
 to use that function, whenever you add or rename or delete unit test
 files in the `EJAM/tests/testthat/` folder you need to edit the list of
 test file names in the source code of that function,
-[`test_ejam()`](https://ejanalysis.github.io/EJAM/reference/test_ejam.md)
+[`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)
 or you can just try to use it and it will stop and tell you which files
 are missing from the list in the source code.
 
@@ -91,7 +91,7 @@ A github action/workflow is another way unit tests could be run.
 
 There are recorded interactions used as tests of the web app, as
 explained in [Testing EJAM App with
-shinytest2](https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.md).
+shinytest2](https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.md).
 
 ### Running unit tests via github workflow
 

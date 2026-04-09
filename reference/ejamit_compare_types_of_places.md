@@ -21,7 +21,7 @@ ejamit_compare_types_of_places(
 - sitepoints:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - typeofsite:
 
@@ -31,22 +31,22 @@ ejamit_compare_types_of_places(
 - shapefile:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - fips:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - silentinteractive:
 
   passed to
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - ...:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 ## Value
 

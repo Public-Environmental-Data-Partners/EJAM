@@ -22,4 +22,4 @@ Also see
 - [2021-05/frs_program_abbreviations_and_names.xlsx](https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx)
 
 Also see
-[frs_by_programid](https://ejanalysis.github.io/EJAM/reference/frs_by_programid.md)
+[frs_by_programid](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)

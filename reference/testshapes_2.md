@@ -16,4 +16,4 @@ columns.
 ## See also
 
 same as
-[testinput_shapes_2](https://ejanalysis.github.io/EJAM/reference/testinput_shapes_2.md)
+[testinput_shapes_2](https://public-environmental-data-partners.github.io/EJAM/reference/testinput_shapes_2.md)

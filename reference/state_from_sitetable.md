@@ -31,10 +31,10 @@ not already a column: ejam_uniq_id, ST, statename, FIPS.ST, REGION, n
 
 ## See also
 
-[`state_from_blockid_table()`](https://ejanalysis.github.io/EJAM/reference/state_from_blockid_table.md)
-[`state_per_site_for_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/state_per_site_for_doaggregate.md)
-[`state_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/state_from_latlon.md)
-[`state_from_fips_bybg()`](https://ejanalysis.github.io/EJAM/reference/state_from_fips_bybg.md)
+[`state_from_blockid_table()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_blockid_table.md)
+[`state_per_site_for_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_per_site_for_doaggregate.md)
+[`state_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_latlon.md)
+[`state_from_fips_bybg()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_fips_bybg.md)
 
 ## Examples
 

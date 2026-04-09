@@ -21,7 +21,7 @@ state_from_latlon(lat, lon)
 ## Value
 
 unlike
-[`fips_state_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/fips_state_from_latlon.md),
+[`fips_state_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_state_from_latlon.md),
 returns data.frame: ST, statename, FIPS.ST, REGION, n as many rows as
 elements in lat or lon
 
@@ -36,11 +36,11 @@ drafted.
 
 ## See also
 
-[`fips_bg_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/fips_bg_from_latlon.md)
+[`fips_bg_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_bg_from_latlon.md)
 might be faster??
-[states_shapefile](https://ejanalysis.github.io/EJAM/reference/states_shapefile.md)
-[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)
-[`state_from_sitetable()`](https://ejanalysis.github.io/EJAM/reference/state_from_sitetable.md)
+[states_shapefile](https://public-environmental-data-partners.github.io/EJAM/reference/states_shapefile.md)
+[`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)
+[`state_from_sitetable()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_sitetable.md)
 
 ## Examples
 

@@ -30,13 +30,13 @@ getblocksnearby_from_fips3(fips, in_shiny = FALSE, need_blockwt = TRUE)
 ## Value
 
 same as for
-[getblocksnearby](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[getblocksnearby](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 but one row per FIPS, and the distance column is irrelevant
 
 ## See also
 
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-[`fips_bgs_in_fips()`](https://ejanalysis.github.io/EJAM/reference/fips_bgs_in_fips.md)
-[`fips_lead_zero()`](https://ejanalysis.github.io/EJAM/reference/fips_lead_zero.md)
-[`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
-[`fips_from_table()`](https://ejanalysis.github.io/EJAM/reference/fips_from_table.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
+[`fips_bgs_in_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_bgs_in_fips.md)
+[`fips_lead_zero()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_lead_zero.md)
+[`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+[`fips_from_table()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_from_table.md)

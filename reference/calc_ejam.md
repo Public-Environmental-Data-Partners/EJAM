@@ -54,28 +54,28 @@ data.frame of calculated variables one row per bg row
 
 ## Details
 
-- [`custom_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/custom_doaggregate.md)
+- [`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md)
   may use `calc_ejam()`
 
 - `calc_ejam()` uses
-  [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
+  [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
 
-- [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
+- [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
   uses
-  [`calc_varname_from_formula()`](https://ejanalysis.github.io/EJAM/reference/calc_varname_from_formula.md)
+  [`calc_varname_from_formula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_varname_from_formula.md)
   and maybe source_this_codetext()
 
 &nbsp;
 
-- [`custom_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/custom_doaggregate.md)
+- [`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md)
   may use `calc_ejam()`
 
 - `calc_ejam()` uses
-  [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
+  [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
 
-- [`calc_byformula()`](https://ejanalysis.github.io/EJAM/reference/calc_byformula.md)
+- [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
   uses
-  [`formula_varname()`](https://ejanalysis.github.io/EJAM/reference/formula_varname.md)
+  [`formula_varname()`](https://public-environmental-data-partners.github.io/EJAM/reference/formula_varname.md)
   and maybe source_this_codetext()
 
 ## Examples

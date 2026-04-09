@@ -52,9 +52,9 @@ vector of fractions 0-1 of all sites, or text about that
 
 ## See also
 
-[`popshare_at_top_x_pct()`](https://ejanalysis.github.io/EJAM/reference/popshare_at_top_x_pct.md)
-[`popshare_at_top_n()`](https://ejanalysis.github.io/EJAM/reference/popshare_at_top_n.md)
-[`popshare_p_lives_at_what_n()`](https://ejanalysis.github.io/EJAM/reference/popshare_p_lives_at_what_n.md)
+[`popshare_at_top_x_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/popshare_at_top_x_pct.md)
+[`popshare_at_top_n()`](https://public-environmental-data-partners.github.io/EJAM/reference/popshare_at_top_n.md)
+[`popshare_p_lives_at_what_n()`](https://public-environmental-data-partners.github.io/EJAM/reference/popshare_p_lives_at_what_n.md)
 `popshare_p_lives_at_what_pct()`
 
 ## Examples

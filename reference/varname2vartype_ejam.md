@@ -29,6 +29,6 @@ percentile, etc.
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[`vartype_cat2color_ejam()`](https://ejanalysis.github.io/EJAM/reference/vartype_cat2color_ejam.md)
-[`varname2color_ejam()`](https://ejanalysis.github.io/EJAM/reference/varname2color_ejam.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[`vartype_cat2color_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/vartype_cat2color_ejam.md)
+[`varname2color_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/varname2color_ejam.md)

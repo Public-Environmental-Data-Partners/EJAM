@@ -21,7 +21,7 @@ fixcolnames(namesnow, oldtype = "csvname", newtype = "r", mapping_for_names)
   "shortlabel" or "original", or "csv" or "r" (aka "rname") or "api" or
   "longname" or "shortname" etc. (colnames of map_headernames, or
   aliases per helper
-  [`fixmapheadernamescolname()`](https://ejanalysis.github.io/EJAM/reference/fixmapheadernamescolname.md))
+  [`fixmapheadernamescolname()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixmapheadernamescolname.md))
 
 - newtype:
 
@@ -56,7 +56,7 @@ really seeking metadata like what category it is in, it returns a blank
 if the old name is not found at all.
 
 These are some key column names in the
-[map_headernames](https://ejanalysis.github.io/EJAM/reference/map_headernames.md)
+[map_headernames](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
 table:
 
 - "shortname" (aka "short", for plot labels, etc.)
@@ -91,7 +91,7 @@ table:
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
 
 ## Examples
 

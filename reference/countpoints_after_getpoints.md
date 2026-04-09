@@ -19,11 +19,11 @@ countpoints_after_getpoints(
 - sites2points:
 
   output of function like
-  [`getpointsnearby()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearby.md)
+  [`getpointsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearby.md)
   or
-  [`getfrsnearby()`](https://ejanalysis.github.io/EJAM/reference/getfrsnearby.md)
+  [`getfrsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getfrsnearby.md)
   or
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 - frompoints_id_colname:
 

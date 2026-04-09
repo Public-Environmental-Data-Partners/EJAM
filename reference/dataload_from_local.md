@@ -27,12 +27,12 @@ dataload_from_local(
 - envir:
 
   use defaults. see
-  [`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+  [`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
 
 - folder_local_source:
 
   Your local folder path. see
-  [`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+  [`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
 
 - justchecking:
 
@@ -63,7 +63,7 @@ and found on disk locally.
 ## Details
 
 See
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
 also. dataload_dynamic rm(bgid2fips, blockid2fips, blockpoints,
 blockwts, quaddata)
 

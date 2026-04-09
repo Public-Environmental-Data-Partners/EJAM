@@ -42,7 +42,7 @@ data.frame of info about where query was found and how many hits.
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
 
 ## Examples
 

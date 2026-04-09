@@ -52,8 +52,8 @@ vector of codes and their names
 
 ## See also
 
-[`naics_from_code()`](https://ejanalysis.github.io/EJAM/reference/naics_from_code.md)
-[NAICS](https://ejanalysis.github.io/EJAM/reference/NAICS.md)
+[`naics_from_code()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_code.md)
+[NAICS](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md)
 
 ## Examples
 

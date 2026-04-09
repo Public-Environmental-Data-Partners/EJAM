@@ -16,4 +16,4 @@ columns.
 ## See also
 
 same as
-[testshapes_2](https://ejanalysis.github.io/EJAM/reference/testshapes_2.md)
+[testshapes_2](https://public-environmental-data-partners.github.io/EJAM/reference/testshapes_2.md)

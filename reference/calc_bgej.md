@@ -28,7 +28,7 @@ calc_bgej(
 - bgstats:
 
   like
-  [blockgroupstats](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md),
+  [blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md),
   a new data.table with one row per blockgroup, and columns that include
   c('bgid', 'bgfips', 'ST', 'pop'), environmental indicators with
   colnames defined in vnames_e, and the 4 types of demographic indexes.
@@ -83,11 +83,11 @@ calc_bgej(
 
   name of column in bgstats that has the 2-character State abbreviation
   to use in finding envt percentiles in the
-  [statestats](https://ejanalysis.github.io/EJAM/reference/statestats.md)
+  [statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md)
   table used by
-  [`calc_pctile_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.md)
+  [`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)
 
 ## Value
 
 data.table like
-[bgej](https://ejanalysis.github.io/EJAM/reference/bgej.md)
+[bgej](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md)

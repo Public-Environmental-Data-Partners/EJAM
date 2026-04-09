@@ -68,7 +68,7 @@ same as [`barplot()`](https://rdrr.io/r/graphics/barplot.html)
 
 ## See also
 
-[`ejam2barplot_sites()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot_sites.md)
+[`ejam2barplot_sites()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot_sites.md)
 
 ## Examples
 

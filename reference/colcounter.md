@@ -50,11 +50,11 @@ vector of counts as long as NROW(x)
 
 ## See also
 
-[`colcounter_summary_all()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_all.md)
-[`colcounter_summary()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary.md)
-[`colcounter_summary_cum()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum.md)
-[`colcounter_summary_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_pct.md)
-[`colcounter_summary_cum_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
+[`colcounter_summary_all()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_all.md)
+[`colcounter_summary()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary.md)
+[`colcounter_summary_cum()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum.md)
+[`colcounter_summary_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_pct.md)
+[`colcounter_summary_cum_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
 
 ## Examples
 

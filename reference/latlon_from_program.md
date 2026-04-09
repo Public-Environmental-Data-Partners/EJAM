@@ -20,7 +20,7 @@ table in [data.table](https://r-datatable.com) format with lat lon
 REGISTRY_ID program – but not pgm_sys_id since there could be duplicates
 where same REGISTRY_ID has 2 different pgm_sys_id values in the same
 program, so results were sometimes longer than if using
-[`frs_from_program()`](https://ejanalysis.github.io/EJAM/reference/frs_from_program.md)
+[`frs_from_program()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_program.md)
 
 ## Details
 

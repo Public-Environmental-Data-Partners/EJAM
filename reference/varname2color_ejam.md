@@ -25,7 +25,7 @@ vector of colors
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[`varname2vartype_ejam()`](https://ejanalysis.github.io/EJAM/reference/varname2vartype_ejam.md)
-[`varname2varcategory_ejam()`](https://ejanalysis.github.io/EJAM/reference/varname2varcategory_ejam.md)
-[`vartype_cat2color_ejam()`](https://ejanalysis.github.io/EJAM/reference/vartype_cat2color_ejam.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[`varname2vartype_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/varname2vartype_ejam.md)
+[`varname2varcategory_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/varname2varcategory_ejam.md)
+[`vartype_cat2color_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/vartype_cat2color_ejam.md)

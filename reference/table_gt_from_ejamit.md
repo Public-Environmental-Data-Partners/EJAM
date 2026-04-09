@@ -27,7 +27,7 @@ Provides table in gt format from the R package called gt
 
 See the R package called gt. Also see code that creates html tables from
 html template and code that creates formatted spreadsheets like
-[`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+[`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
 or related functions
 
 ## Examples

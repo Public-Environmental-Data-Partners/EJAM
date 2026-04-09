@@ -42,7 +42,7 @@ This is an IMPORTANT TABLE that provides information about each variable
 
 It was created from a spreadsheet of the same name, that is in a
 data-raw folder. Several helper functions are used to query it such as
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
 and many functions rely on it. You can see examples of what it contains
 like this, for example:
 
@@ -50,10 +50,10 @@ like this, for example:
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
-[`varin_map_headernames()`](https://ejanalysis.github.io/EJAM/reference/varin_map_headernames.md)
-[`varlist2names()`](https://ejanalysis.github.io/EJAM/reference/namesbyvarlist.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
+[`varin_map_headernames()`](https://public-environmental-data-partners.github.io/EJAM/reference/varin_map_headernames.md)
+[`varlist2names()`](https://public-environmental-data-partners.github.io/EJAM/reference/namesbyvarlist.md)
 
 ## Examples
 

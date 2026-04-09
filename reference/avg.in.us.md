@@ -1,8 +1,8 @@
 # avg.in.us (DATA) national averages of key indicators, for convenience
 
 also available via
-[usastats](https://ejanalysis.github.io/EJAM/reference/usastats.md) and
-created by /data-raw/datacreate_avg.in.us
+[usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md)
+and created by /data-raw/datacreate_avg.in.us
 
 ## Usage
 

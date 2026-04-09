@@ -1,7 +1,7 @@
 # Show EJAM results as a map of points
 
 Takes the output of ejamit() and uses
-[`mapfastej()`](https://ejanalysis.github.io/EJAM/reference/mapfastej.md)
+[`mapfastej()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfastej.md)
 to create a map of the points.
 
 ## Usage
@@ -26,7 +26,7 @@ ejam2map(
 - column_names:
 
   can be "ej", passed to
-  [`mapfast()`](https://ejanalysis.github.io/EJAM/reference/mapfast.md)
+  [`mapfast()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfast.md)
 
 - launch_browser:
 
@@ -43,12 +43,12 @@ ejam2map(
 - sitenumber:
 
   as used in
-  [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+  [`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
 
 ## Value
 
 like what
-[`mapfastej()`](https://ejanalysis.github.io/EJAM/reference/mapfastej.md)
+[`mapfastej()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfastej.md)
 returns
 
 ## Details

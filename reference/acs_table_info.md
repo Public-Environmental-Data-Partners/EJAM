@@ -18,7 +18,7 @@ acs_table_info(yr, tables_acs, dataset = "acs5")
 - tables_acs:
 
   optional, vector of table names like "B01001" or default,
-  [tables_ejscreen_acs](https://ejanalysis.github.io/EJAM/reference/tables_ejscreen_acs.md)
+  [tables_ejscreen_acs](https://public-environmental-data-partners.github.io/EJAM/reference/tables_ejscreen_acs.md)
 
 - dataset:
 

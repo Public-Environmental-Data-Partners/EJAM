@@ -20,29 +20,29 @@ ejamit_compare_distances2plot(
 - results_bydistance:
 
   output of
-  [`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md),
+  [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md),
   table similar to ejamit()\$results_overall except it has one row per
   distance.
 
 - myvars:
 
   optional, see
-  [`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
+  [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
 
 - ylab:
 
   optional, see
-  [`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
+  [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
 
 - ylim:
 
   optional, see
-  [`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
+  [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
 
 - n:
 
   optional, see
-  [`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
+  [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
 
 - ...:
 
@@ -56,6 +56,6 @@ you get closer to the site(s)
 ## Details
 
 used by
-[`ejam2barplot_distances()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot_distances.md)
+[`ejam2barplot_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot_distances.md)
 to plot results of
-[`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
+[`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)

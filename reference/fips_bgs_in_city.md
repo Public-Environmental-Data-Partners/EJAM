@@ -31,6 +31,6 @@ vector of blockgroup fips codes
 ## Details
 
 used by
-[`fips_bgs_in_fips()`](https://ejanalysis.github.io/EJAM/reference/fips_bgs_in_fips.md),
+[`fips_bgs_in_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_bgs_in_fips.md),
 and uses fips_bgs_intersect_city_approx() and
 fips_bgs_intersect_city_exact() helpers

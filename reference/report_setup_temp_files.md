@@ -26,5 +26,5 @@ report_setup_temp_files(
 ## Details
 
 used by
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
 only now? was also copying logo .png ? but not now?

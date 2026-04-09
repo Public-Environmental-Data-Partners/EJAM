@@ -7,4 +7,4 @@ it is in multiple SIC.
 ## Details
 
 This file is not stored in the package, but is obtained via
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md).
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md).

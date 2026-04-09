@@ -1,12 +1,12 @@
 # Summarize count (and percent) of rows with exactly (and at least) N cols \>= various thresholds
 
 This wraps 4 functions to return 4 tables: using
-[`colcounter_summary()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary.md),
-[`colcounter_summary_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_pct.md),
-[`colcounter_summary_cum()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum.md),
-[`colcounter_summary_cum_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
+[`colcounter_summary()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary.md),
+[`colcounter_summary_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_pct.md),
+[`colcounter_summary_cum()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum.md),
+[`colcounter_summary_cum_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
 For another view and text explanations of the findings, see
-[`count_sites_with_n_high_scores()`](https://ejanalysis.github.io/EJAM/reference/count_sites_with_n_high_scores.md)
+[`count_sites_with_n_high_scores()`](https://public-environmental-data-partners.github.io/EJAM/reference/count_sites_with_n_high_scores.md)
 
 ## Usage
 
@@ -38,10 +38,10 @@ cum_pct
 ## See also
 
 `colcounter_summary_all()`
-[`colcounter_summary()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary.md)
-[`colcounter_summary_cum()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum.md)
-[`colcounter_summary_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_pct.md)
-[`colcounter_summary_cum_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
+[`colcounter_summary()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary.md)
+[`colcounter_summary_cum()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum.md)
+[`colcounter_summary_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_pct.md)
+[`colcounter_summary_cum_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
 
 ## Examples
 

@@ -40,6 +40,6 @@ and <https://echo.epa.gov/tools/data-downloads/frs-download-summary>
 ## See also
 
 Used by
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 which uses
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)

@@ -36,7 +36,7 @@ plot_blocks_nearby(
 - sites2blocks:
 
   optional. If provided, used as sites2blocks like
-  [testoutput_getblocksnearby_10pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
+  [testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
   If neither sites2blocks nor sitepoints is provided it cannot plot and
   returns error. If sites2blocks and sitepoints are both provided, it
   uses them both to plot blocks and sites (centers of circles). If
@@ -65,12 +65,12 @@ plot_blocks_nearby(
 - maxradius:
 
   optional. see
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 - avoidorphans:
 
   optional. see
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 - ...:
 
@@ -84,7 +84,7 @@ invisibly returns sites2blocks like getblocksnearby() does
 ## Details
 
 Uses
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 if lat,lon points provided as sitepoints, but skips it if looks like
 user passed output of getblocksnearby(), and then displays a map of
 those blocks near the specified point.

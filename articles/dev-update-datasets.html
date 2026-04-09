@@ -18,7 +18,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating EJAM Datasets">
 <meta name="description" content="Managing large {arrow} datasets used by EJAM app and package">
 <meta property="og:description" content="Managing large {arrow} datasets used by EJAM app and package">
-<meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg">
+<meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ejanalysis/EJAM/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Public-Environmental-Data-Partners/EJAM/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -94,7 +94,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating EJAM Datasets</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/vignettes/dev-update-datasets.Rmd" class="external-link"><code>vignettes/dev-update-datasets.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-update-datasets.Rmd" class="external-link"><code>vignettes/dev-update-datasets.Rmd</code></a></small>
       <div class="d-none name"><code>dev-update-datasets.Rmd</code></div>
     </div>
 
@@ -166,12 +166,12 @@ datasets if useful:</p>
 separate, data-related repository:</p>
 <ul>
 <li><p>Datasets stored within the EJAM package (.rda files): <a href="../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-">Documentation</a>
-and <a href="https://github.com/ejanalysis/EJAM/tree/main/data" class="external-link">access
+and <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data" class="external-link">access
 to package data files</a></p></li>
 <li><p>Datasets used by EJAM but stored separately (large .arrow files):
 <a href="../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-">Documentation</a>
-and <a href="https://github.com/ejanalysis/ejamdata/tree/main/data" class="external-link">access to
-the large data files</a></p></li>
+and <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data" class="external-link">access
+to the large data files</a></p></li>
 </ul>
 </div>
 <div class="section level3">
@@ -308,8 +308,8 @@ distinct from the <em>package code</em> repository) must be recorded/
 updated in the EJAM package DESCRIPTION file, so that the package will
 know where to look for the data files if the datasets were moved to a
 new repository, for example. The current (either installed or loaded
-source version) of that repository is <a href="https://github.com/ejanalysis/ejamdata" class="external-link uri">https://github.com/ejanalysis/ejamdata</a> (which can be
-checked via
+source version) of that repository is <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>
+(which can be checked via
 <code>url_package(type = "data", get_full_url = TRUE)</code>)</p>
 </div>
 <div class="section level3">
@@ -426,15 +426,15 @@ latest arrow files are downloaded when user loads EJAM.</li>
 </ol>
 <!-- --><ul>
 <li>
-<code>devtools::install_github("ejanalysis/EJAM")</code> (or as
-adjusted depending on the actual repository owner and name)</li>
+<code>devtools::install_github("Public-Environmental-Data-Partners/EJAM")</code>
+(or as adjusted depending on the actual repository owner and name)</li>
 </ul>
 <!-- --><ol start="2" style="list-style-type: decimal">
 <li>User loads EJAM as usual</li>
 </ol>
 <!-- --><ul>
 <li>
-<code><a href="https://ejanalysis.github.io/EJAM">library(EJAM)</a></code>. This will trigger the new
+<code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code>. This will trigger the new
 <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code> function.</li>
 </ul>
 <!-- --><ol start="3" style="list-style-type: decimal">
@@ -452,7 +452,7 @@ because the data are now stored in the <code>data</code> directory.</li>
 <li><p>The key arrow files are updated from within the EJAM code
 repository, as explained above.</p></li>
 <li><p>Those files were then being copied into a clone of the ejamdata
-repo before being pushed to the actual ejamdata repo on github (at <a href="https://github.com/ejanalysis/ejamdata" class="external-link uri">https://github.com/ejanalysis/ejamdata</a>)</p></li>
+repo before being pushed to the actual ejamdata repo on github (at <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>)</p></li>
 <li><p>This triggers ejamdata’s <code>push_to_ejam.yaml</code> workflow
 that increments the latest release tag reflecting the new version and
 creates a new release</p></li>
@@ -487,11 +487,11 @@ tibble/dataframe.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>February 2026</p>
+  <p>April 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.7</p>
+  <p>EJAM Version 2.32.8</p>
 </div>
 
     </footer>

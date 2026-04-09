@@ -7,23 +7,23 @@ how to explore the results in more detail than the web app can provide.
 
 ## Running a Basic Analysis
 
-- **[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)**
+- **[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)**
   launches the web app locally (to run in RStudio on a single computer
   rather than on a server)
 
-- **[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)**
+- **[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)**
   provides most results in just one function (if you already have a list
   of places to analyze), as shown in the [Basics - Quick Start
-  Guide](https://ejanalysis.github.io/EJAM/articles/basics.md)
+  Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.md)
 
 ## Tools for Exploring Results
 
 For a standard analysis, the basic tools like
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md),
-[`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md),
-[`ejam2map()`](https://ejanalysis.github.io/EJAM/reference/ejam2map.md),
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md),
+[`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md),
+[`ejam2map()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2map.md),
 etc. let you explore results, as shown in the [Basics - Quick Start
-Guide](https://ejanalysis.github.io/EJAM/articles/basics.md).
+Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.md).
 
 If you want more ways to visualize and dig into results, examples are
 provided below in the sections on [EXPLORING
@@ -38,7 +38,7 @@ compared. The web app helps you select locations in several ways.
 
 If you are working in RStudio, and you already have identified the
 points or areas to analyze, the
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 function will accept 1) point coordinates, 2) a shapefile, or 3) a list
 of FIPS codes.
 
@@ -47,8 +47,8 @@ need a more in-depth, custom approach to finding facilities or Census
 places to analyze, there are several groups of functions to help with
 that, as shown in all the examples below. They are also shown in the
 [EJAM package reference
-manual](https://ejanalysis.github.io/EJAM/reference/index.md), by
-category.
+manual](https://public-environmental-data-partners.github.io/EJAM/reference/index.md),
+by category.
 
 You can specify locations for analysis in a variety of ways:
 
@@ -98,7 +98,7 @@ longitude for each point, one row per site, with columns called lat and
 lon (or some synonyms that work).
 
 There are also [more detailed functions for working with latlon
-coordinates.](https://ejanalysis.github.io/EJAM/reference/index.html#specify-points-by-lat-lon)
+coordinates.](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-points-by-lat-lon)
 
 The simplest way to do that in the RStudio console is something like
 `x <- ejamit()`, which prompts you to upload a spreadsheet with lat lon
@@ -108,7 +108,7 @@ As explained below, you can get the latitudes and longitudes of
 EPA-regulated facilities if you want to specify a set of facilities by
 uploading their Registry ID numbers in a table, or using other
 identifiers. For example, there is a function
-[`latlon_from_programid()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_programid.md)
+[`latlon_from_programid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_programid.md)
 in the examples below.
 
 You can also get coordinates in a few other ways, such as by NAICS (or
@@ -121,7 +121,7 @@ EPA-regulated facilities can be found in the Facility Registry Services
 by identification number.
 
 [See a list of functions related to EPA
-IDs](https://ejanalysis.github.io/EJAM/reference/index.html#specify-facilities-by-id)
+IDs](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-facilities-by-id)
 
 #### by Facility, using EPA Registry ID
 
@@ -159,7 +159,7 @@ if (exists("frs_by_programid")) {
 ### Facilities by Type
 
 [See a list of functions related to type of facility
-(NAICS/SIC/Program/MACT)](https://ejanalysis.github.io/EJAM/reference/index.html#specify-facility-type)
+(NAICS/SIC/Program/MACT)](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-facility-type)
 
 #### by Industry (NAICS)
 
@@ -191,12 +191,12 @@ See many more examples of [Working with NAICS Codes (Industry
 Codes)](#working-with-naics-codes-industry-codes), in a section below.
 
 [Functions related to NAICS/SIC
-codes](https://ejanalysis.github.io/EJAM/reference/index.html#choosing-naics-sic-industry-codes)
+codes](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#choosing-naics-sic-industry-codes)
 
 #### by EPA Regulatory Program
 
 [See a list of functions related to EPA
-programs](https://ejanalysis.github.io/EJAM/reference/index.html#epa-programs)
+programs](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#epa-programs)
 
 ``` r
 # note latlon_from_programid() requires the frs and frs_by_programid datasets, which it tries to load on demand.
@@ -250,7 +250,7 @@ if (exists("frs_by_programid") && exists("frs")) {
 #### by MACT Subpart (hazardous air pollutant source category)
 
 [Functions related to MACT
-codes](https://ejanalysis.github.io/EJAM/reference/index.html#mact-categories)
+codes](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#mact-categories)
 
 ``` r
 # note latlon_from_mactsubpart() requires the frs_by_mact dataset, which it tries to load on demand
@@ -582,9 +582,9 @@ You can upload polygons in a shapefile, and use EJAM to analyze them.
 See the Shiny app.
 
 See
-[`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+[`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)
 and other [shapefile-related
-functions](https://ejanalysis.github.io/EJAM/reference/index.html#specify-places-by-shapefile):
+functions](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-places-by-shapefile):
 
 ``` r
 shapefile_from_any()
@@ -604,7 +604,7 @@ You can compare places defined by FIPS code, such as a group of US
 Counties.
 
 See a list of [functions for working with Census FIPS
-codes](https://ejanalysis.github.io/EJAM/reference/index.html#specify-counties-etc-).
+codes](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-counties-etc-).
 
 Compare all Counties in a State, using EJAM indicators
 
@@ -657,18 +657,18 @@ mapfastej_counties(xmd$results_bysite, 'state.pctile.pctlowinc')
 See also
 
 - [functions for
-  mapping](https://ejanalysis.github.io/EJAM/reference/index.html#viewing-results).
+  mapping](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#viewing-results).
 
 - [functions for seeing
-  plots/graphics](https://ejanalysis.github.io/EJAM/reference/index.html#plots-mean-of-one-indicator-at-each-site-or-type-of-site-comparing-sites-or-categories-of-sites-)
+  plots/graphics](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#plots-mean-of-one-indicator-at-each-site-or-type-of-site-comparing-sites-or-categories-of-sites-)
 
 - [functions for seeing tables of
-  results](https://ejanalysis.github.io/EJAM/reference/index.html#tables)
+  results](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#tables)
 
 #### The most striking findings (e.g., which group is most over-represented?)
 
 See examples above using
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
 but also you can check some key findings like this:
 
 ``` r
@@ -749,22 +749,22 @@ findings$stats[ 1, , ]
 
 ### Local features and special areas – schools, hospitals, nonattainment areas, etc.
 
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) also
-provides special summary statistics related to the group of indicators
-that count features like schools within each blockgroup, overlaps with
-specially-designated areas such as [nonattainment
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+also provides special summary statistics related to the group of
+indicators that count features like schools within each blockgroup,
+overlaps with specially-designated areas such as [nonattainment
 areas](https://www.epa.gov/criteria-air-pollutants/process-determine-whether-areas-meet-naaqs-designations-process),
 and lack of critical services like health insurance. See the help for
-[`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md)
+[`batch.summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.md)
 for details.
 
 The function
-[`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md)
+[`ejam2areafeatures()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2areafeatures.md)
 is just a convenient way to see the information in
 `ejamit()$results_summarized$flagged_areas` created by
-[`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md),
+[`batch.summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.md),
 as used by
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
 from the indicators in these lists:
 
 - `names_featuresinarea`
@@ -1000,7 +1000,7 @@ cbind(overall = as.list( out$results_overall[ , ..names_d_pctile])); cat("\n")
 ## VISUALIZATION OF FINDINGS (PLOTS)
 
 See examples below, and the [list of plot-related
-functions](https://ejanalysis.github.io/EJAM/reference/index.html#viewing-results).
+functions](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#viewing-results).
 
 ### Indicators
 

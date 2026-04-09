@@ -78,8 +78,8 @@ run_app(
 An object that represents the app. Printing the object or passing it to
 [`shiny::runApp()`](https://rdrr.io/pkg/shiny/man/runApp.html) will run
 the app, as would just typing `run_app()` or
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md) in
-the console.
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
+in the console.
 
 ## Details
 
@@ -119,8 +119,8 @@ There is a file called `_disable_autoload.R` in the source package /R
 folder used when the shiny app is started, to tell the server to NOT
 source all the .R files, since they are already loaded as part of the
 EJAM package when someone does
-[`require(EJAM)`](https://ejanalysis.github.io/EJAM), i.e., via
-[`require()`](https://rdrr.io/r/base/library.html) or
+[`require(EJAM)`](https://public-environmental-data-partners.github.io/EJAM),
+i.e., via [`require()`](https://rdrr.io/r/base/library.html) or
 [`library()`](https://rdrr.io/r/base/library.html).
 
 ## Examples
@@ -159,9 +159,10 @@ ejamapp(fips = fips_counties_from_state_abbrev("RI"),
 ejamapp(fips = name2fips(c("akutan,ak", "syracuse city,ny")))
 
 
- ## Use preferred settings, for your set of analyses:
+ ## More options for settings:
 
 ejamapp(
+  default_show_advanced_settings=TRUE, # to make advanced tab visible at start
   analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
   radius = 3.1, # PREFERRED RADIUS
   default_max_miles = 31,      # to raise the radius cap
@@ -179,13 +180,16 @@ ejamapp(
 
 ejamapp(
   analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
-  default_selected_type_of_site_category="NAICS",
-  default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
-  default_naics="562211",
-  radius=3.1,
-  default_show_advanced_settings=TRUE # to make advanced tab visible at start
+  naics="562211", # or default_naics="562211"
 )
+
+  ## SIC as the default:
+ sic_from_any(3585)
+ ejamapp(sic="3585")
+
+  ## MACT as the default:
+ mact_table$dropdown_label
+ ejamapp(mact="OOOO")
 
   ## Cities dropdown list as default shown at launch:
 

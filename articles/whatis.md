@@ -8,10 +8,10 @@ The Environmental Justice Analysis Multisite tool (EJAM) is both a web
 app and a software toolkit:
 
 - [EJAM can be used as a web
-  app](https://ejanalysis.github.io/EJAM/articles/webapp.md), providing
-  a simple user interface that lets anyone quickly see the results of a
-  basic analysis. EJAM is what powered the EJSCREEN Multisite Tool web
-  application in late 2024/early 2025.
+  app](https://public-environmental-data-partners.github.io/EJAM/articles/webapp.md),
+  providing a simple user interface that lets anyone quickly see the
+  results of a basic analysis. EJAM is what powered the EJSCREEN
+  Multisite Tool web application in late 2024/early 2025.
 
 - EJAM is also an open-source software package (and local web app) for
   developers and analysts. It is an R Package written in the [R
@@ -153,11 +153,11 @@ version 2.32 released in late 2024. Non-EPA development of EJAM at least
 through version 2.32.7 in February 2026 was still using that same
 dataset.
 
-EJAM version 2.32.7 (released January 2026) is based on American
-Community Survey (ACS) data representing the five-year period of
-2018-2022 (released by the Census Bureau 2023-12-07). The ACS data are
-the basis for blockgroup resolution estimates of demographic and other
-data on residential populations and households.
+EJAM version 2.32.8 (released April 2026) is based on American Community
+Survey (ACS) data representing the five-year period of 2018-2022
+(released by the Census Bureau 2023-12-07). The ACS data are the basis
+for blockgroup resolution estimates of demographic and other data on
+residential populations and households.
 
 Census 2020 block population counts are used for the approximate
 distribution of residents within a given blockgroup.

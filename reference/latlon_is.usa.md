@@ -29,6 +29,6 @@ Islands.
 ## See also
 
 `latlon_is.usa()`
-[`latlon_is.islandareas()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.islandareas.md)
-[`latlon_is.available()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.available.md)
-[`latlon_is.possible()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.possible.md)
+[`latlon_is.islandareas()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.islandareas.md)
+[`latlon_is.available()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.available.md)
+[`latlon_is.possible()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.possible.md)

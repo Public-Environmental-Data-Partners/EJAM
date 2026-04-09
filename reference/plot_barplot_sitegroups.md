@@ -69,7 +69,7 @@ same as [`barplot()`](https://rdrr.io/r/graphics/barplot.html)
 
 ## See also
 
-[`ejam2barplot_sitegroups()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot_sitegroups.md)
+[`ejam2barplot_sitegroups()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot_sitegroups.md)
 
 ## Examples
 

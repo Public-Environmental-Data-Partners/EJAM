@@ -27,7 +27,7 @@ url_ejamapi(
 - sitepoints:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - lat, lon:
 
@@ -37,19 +37,18 @@ url_ejamapi(
 - radius:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
   default is 0 if fips or shapefile specified
 
 - fips:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-  but this initial version only works for a blockgroup FIPS!
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - shapefile:
 
   see
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
   but each polygon is encoded as geojson string which might get too long
   for encoding in a URL for the API using GET
 
@@ -74,7 +73,9 @@ url_ejamapi(
 
 - baseurl:
 
-  do not change unless endpoint actually changed
+  do not change unless endpoint actually changed. See
+  [`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md)
+  for a better way to handle choice of endpoint.
 
 - sitenumber:
 
@@ -87,13 +88,16 @@ url_ejamapi(
   Like with other url_xyz functions, the default is to output a vector
   of URLs, one per site. The default value for sitenumber is "each" or
   -1 which means we want one url for each site. Note there is no
-  comparable value of sitenumber in the ejam2report() or ejam2map() or
-  similar functions, which never return a vector of reports, maps, etc.
-  Getting a vector of 1 per site is useful mainly for the url_xyz
-  functions like url_ejamapi().
+  comparable value of sitenumber in the
+  [`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
+  or
+  [`ejam2map()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2map.md)
+  or similar functions, which never return a vector of reports, maps,
+  etc. Getting a vector of 1 per site is useful mainly for the url_xyz
+  functions.
 
   Like the sitenumber parameter in
-  [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md),
+  [`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md),
   a value of NULL or 0 or "" or "overall" in url_ejamapi() means a
   single URL is returned that requests one overall summary report
   (assuming \>1 sites were provided).
@@ -113,29 +117,31 @@ vector of character string URLs – see details on sitenumber parameter
 
 ## Details
 
-- Work in progress - initial draft relied on API from
-  https://github.com/edgi-govdata-archiving/EJAM-API
+- This is work in progress to some extent – this and the API may be add
+  features in later releases.
 
-  (see parameter `baseurl` that used the /report endpoint)
+- Relies on API from https://github.com/edgi-govdata-archiving/EJAM-API
 
 - Another option in the future might be to construct a URL that is a
-  link to the live EJAM app but has url-encoded parameters that are app
-  settings, such as sitepoints, radius_default, etc.
+  "deep link" to the live EJAM app but has url-encoded parameters that
+  are app settings, such as sitepoints, radius_default, etc.
 
 - Will try to use the same input parameters as
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   does.
 
-- The 12/2025 API used ejam2report() with these parameter settings:
+- The API as of mid-2026 used
+  [`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
+  with these parameter settings:
 
   - `sitenumber = 1`
 
   - `report_title="EJSCREEN Community Report"`
 
-  So it was not yet accepting parameters used by
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  Therefore, it was not yet accepting parameters used by
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   and
-  [`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+  [`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
   such as
 
   - sitenumber=0 (for a multisite report)
@@ -149,6 +155,10 @@ vector of character string URLs – see details on sitenumber parameter
   - thresholds & threshnames
 
   - radius_donut_lower_edge
+
+## See also
+
+[`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md)
 
 ## Examples
 

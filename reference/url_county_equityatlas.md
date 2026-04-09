@@ -62,7 +62,7 @@ url_county_equityatlas(
 - statereport:
 
   Do not use directly. Used by
-  [`url_state_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_state_equityatlas.md).
+  [`url_state_equityatlas()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_state_equityatlas.md).
   if TRUE, gets report on enclosing State/DC/PR, not county. if FALSE,
   returns NA when given a State fips, otherwise return report on
   enclosing county.

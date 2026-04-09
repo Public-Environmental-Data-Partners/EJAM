@@ -49,7 +49,7 @@ data.frame if txt=F, returns file path/name(s) of .geojson file(s).
 ## Details
 
 helper for
-[`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
+[`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
 Note it removes all spaces in the string.
 
 Note that trying to use txt=T and combine_in_one_string = T for large
@@ -59,8 +59,12 @@ the text for.
 
 ## See also
 
-[`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
-which also can read text that is geojson format
+[`geojsonsf::sf_geojson()`](https://rdrr.io/pkg/geojsonsf/man/sf_geojson.html)
+that should be able to do the same as shape2geojson(). Also,
+[`geojsonsf::geojson_sf()`](https://rdrr.io/pkg/geojsonsf/man/geojson_sf.html)
+that does the inverse, converts geojson to sf. Also see
+[`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)
+that converts text in geojson format to sf.
 
 ## Examples
 

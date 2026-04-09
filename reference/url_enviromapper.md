@@ -77,10 +77,10 @@ information on a map, given the lat,lon
 
 ## See also
 
-[`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
-[`url_ejscreenmap()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.md)
-[`url_echo_facility()`](https://ejanalysis.github.io/EJAM/reference/url_echo_facility.md)
-[`url_frs_facility()`](https://ejanalysis.github.io/EJAM/reference/url_frs_facility.md)
+[`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
+[`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)
+[`url_echo_facility()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_echo_facility.md)
+[`url_frs_facility()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_frs_facility.md)
 `url_enviromapper()`
 
 ## Examples

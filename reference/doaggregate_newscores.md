@@ -28,9 +28,9 @@ doaggregate_newscores(
 - sites2blocks:
 
   output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md),
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
   as for
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - userstats:
 
@@ -56,32 +56,32 @@ doaggregate_newscores(
 - sites2states_or_latlon:
 
   see
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - radius:
 
   see
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - countcols:
 
   see
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - popmeancols:
 
   see
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - calculatedcols:
 
   see
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - varsneedpctiles:
 
   see
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - usastats_newscores:
 
@@ -98,4 +98,4 @@ doaggregate_newscores(
 ## Value
 
 see
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)

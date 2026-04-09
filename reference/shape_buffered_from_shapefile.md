@@ -44,9 +44,9 @@ Just a wrapper for
 
 ## See also
 
-[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)
-[`shapefile_from_sitepoints()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_sitepoints.md)
-[`shape_buffered_from_shapefile_points()`](https://ejanalysis.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md)
+[`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)
+[`shapefile_from_sitepoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_sitepoints.md)
+[`shape_buffered_from_shapefile_points()`](https://public-environmental-data-partners.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md)
 
 ## Examples
 

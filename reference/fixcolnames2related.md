@@ -42,8 +42,8 @@ c(names_e, names_d, names_d_subgroups)
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
 
 ## Examples
 

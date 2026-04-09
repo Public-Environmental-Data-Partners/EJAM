@@ -12,17 +12,17 @@ metadata_check_print(...)
 ## Value
 
 same as
-[`metadata_check()`](https://ejanalysis.github.io/EJAM/reference/metadata_check.md),
+[`metadata_check()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_check.md),
 invisibly
 
 ## See also
 
 `metadata_check_print()`
-[`metadata_check()`](https://ejanalysis.github.io/EJAM/reference/metadata_check.md)
-[`metadata_add()`](https://ejanalysis.github.io/EJAM/reference/metadata_add.md)
-[`metadata_update_attr()`](https://ejanalysis.github.io/EJAM/reference/metadata_update_attr.md)
-[`metadata_add_and_use_this()`](https://ejanalysis.github.io/EJAM/reference/metadata_add_and_use_this.md)
-[`dataset_documenter()`](https://ejanalysis.github.io/EJAM/reference/dataset_documenter.md)
+[`metadata_check()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_check.md)
+[`metadata_add()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_add.md)
+[`metadata_update_attr()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_update_attr.md)
+[`metadata_add_and_use_this()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_add_and_use_this.md)
+[`dataset_documenter()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataset_documenter.md)
 
 ## Examples
 

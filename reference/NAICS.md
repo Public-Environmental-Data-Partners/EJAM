@@ -9,7 +9,7 @@ see <https://naics.com>
 
 ## See also
 
-[naicstable](https://ejanalysis.github.io/EJAM/reference/naicstable.md)
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
-[`naics_categories()`](https://ejanalysis.github.io/EJAM/reference/naics_categories.md)
+[naicstable](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
+[`naics_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md)
 NAICS

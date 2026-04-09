@@ -33,5 +33,5 @@ jsondoc_vartype
 ## See also
 
 `xls_varname2vartype()`
-[`xls_vartype2color()`](https://ejanalysis.github.io/EJAM/reference/xls_vartype2color.md)
-[`xls_varname2color()`](https://ejanalysis.github.io/EJAM/reference/xls_varname2color.md)
+[`xls_vartype2color()`](https://public-environmental-data-partners.github.io/EJAM/reference/xls_vartype2color.md)
+[`xls_varname2color()`](https://public-environmental-data-partners.github.io/EJAM/reference/xls_varname2color.md)

@@ -9,9 +9,11 @@ Counties).
 
 ## **What is EJAM and How to do Analysis with the EJAM R Package**
 
-[EJAM package documentation](https://ejanalysis.github.io/EJAM) provides
-an overview of EJAM, a complete reference document on all functions, and
-articles (vignettes) introducing key functions and how to use them.
+[EJAM package
+documentation](https://public-environmental-data-partners.github.io/EJAM)
+provides an overview of EJAM, a complete reference document on all
+functions, and articles (vignettes) introducing key functions and how to
+use them.
 
 ## **Data Sources – Residential Population and Environmental Indicators**
 
@@ -34,9 +36,9 @@ Bureau annually and then used in EJAM.
 
 Useful links:
 
-- <https://ejanalysis.github.io/EJAM>
+- <https://public-environmental-data-partners.github.io/EJAM>
 
-- <https://github.com/ejanalysis/EJAM>
+- <https://github.com/Public-Environmental-Data-Partners/EJAM>
 
 - <https://ejanalysis.org>
 

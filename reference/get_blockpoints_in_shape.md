@@ -1,7 +1,7 @@
 # Find all Census blocks in a polygon, using internal point of block
 
 Like
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md),
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
 but for blocks in each polygon rather than blocks near each facility.
 For analyzing all residents in certain zones such as places at elevated
 risk, redlined areas, watersheds, etc.
@@ -28,7 +28,7 @@ get_blockpoints_in_shape(
   Spatial data as from
   [`sf::st_as_sf()`](https://r-spatial.github.io/sf/reference/st_as_sf.html),
   with points as from
-  [`shapefile_from_sitepoints()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_sitepoints.md),
+  [`shapefile_from_sitepoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_sitepoints.md),
   or a table of points with lat,lon columns that will first be converted
   here using that function, or polygons
 
@@ -51,7 +51,7 @@ get_blockpoints_in_shape(
 
   multiplied by addedbuffermiles, how far to search for blocks nearby
   using
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md),
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
   before using those found to do the intersection via sf::
 
 - crs:
@@ -61,7 +61,7 @@ get_blockpoints_in_shape(
   and
   [`sf::st_transform()`](https://r-spatial.github.io/sf/reference/st_transform.html)
   and
-  [`shape_buffered_from_shapefile_points()`](https://ejanalysis.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md),
+  [`shape_buffered_from_shapefile_points()`](https://public-environmental-data-partners.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md),
   crs = 4269 or Geodetic CRS NAD83
 
 - updateProgress:
@@ -78,9 +78,9 @@ get_blockpoints_in_shape(
 Block points table for those blocks whose internal point is inside the
 buffer which is just a circular buffer of specified radius if polys are
 just points. This is like the output of
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md),
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
 or
-[`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+[`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
 if return_shp=F.
 
 The ejam_uniq_id represents which of the input sites is being referred
@@ -92,14 +92,14 @@ ejam_uniq_id values of 5 and 8.
 ## Details
 
 This uses
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 to get a very fast rough/good estimate of which US block points are
 nearby (with a safety margin - see param below), before then using sf::
 to carefully identify which of those candidate blocks are actually
 inside each polygon (e.g., circle) according to sf:: methods.
 
 For circular buffers, just using
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 should work and not need this function.
 
 For non-circular polygons, buffered or not, this function will provide a
@@ -109,10 +109,10 @@ takes forever for sf:: to check all US blocks.
 
 ## See also
 
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-[`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
-[`shapefile_from_sitepoints()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_sitepoints.md)
-[`shape_buffered_from_shapefile_points()`](https://ejanalysis.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+[`shapefile_from_sitepoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_sitepoints.md)
+[`shape_buffered_from_shapefile_points()`](https://public-environmental-data-partners.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md)
 
 ## Examples
 

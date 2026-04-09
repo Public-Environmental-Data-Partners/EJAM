@@ -16,5 +16,5 @@ equipment rental (411 sites)" and values like "7353"
 
 ## See also
 
-[SIC](https://ejanalysis.github.io/EJAM/reference/SIC.md)
-[naics_categories](https://ejanalysis.github.io/EJAM/reference/naics_categories.md)
+[SIC](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md)
+[naics_categories](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md)

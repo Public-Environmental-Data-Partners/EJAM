@@ -22,7 +22,7 @@ plot_distance_by_pctd(
 - s2b:
 
   output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md),
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
   or else can be a table of points with lat,lon columns and 1 row per
   point. If NULL (not provided as a parameter to the function), will
   prompt for a file to upload and use, if interactive() is TRUE, or else
@@ -71,7 +71,7 @@ This function uses the distance of each Census block from the site in
 conjunction with the blockgroup residential population data, to provide
 a relatively detailed picture of how far away residents in each group
 live. In contrast, the function
-[`distance_cdf_by_group_plot()`](https://ejanalysis.github.io/EJAM/reference/distance_by_group_plot.md)
+[`distance_cdf_by_group_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/distance_by_group_plot.md)
 is based on ejamit()\$results_bybg_people, which provides only
 blockgroup resolution information about distance.
 

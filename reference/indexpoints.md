@@ -1,7 +1,7 @@
 # Utility to create efficient quadtree spatial index of any set of lat,lon
 
 Index a list of points (e.g., schools) so
-[`getpointsnearby()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearby.md)
+[`getpointsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearby.md)
 can find them very quickly
 
 ## Usage
@@ -36,11 +36,11 @@ as created by `indexpoints()`.
 ## Details
 
 This creates a spatial index to be used by
-[`getpointsnearby()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearby.md)
+[`getpointsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearby.md)
 to support
-[`proxistat()`](https://ejanalysis.github.io/EJAM/reference/proxistat.md),
+[`proxistat()`](https://public-environmental-data-partners.github.io/EJAM/reference/proxistat.md),
 to create a new proximity score for every block and blockgroup in the
 US. It relies on
-[`create_quaddata()`](https://ejanalysis.github.io/EJAM/reference/create_quaddata.md)
+[`create_quaddata()`](https://public-environmental-data-partners.github.io/EJAM/reference/create_quaddata.md)
 for one step, then
 [`SearchTrees::createTree()`](https://rdrr.io/pkg/SearchTrees/man/createTree.html)

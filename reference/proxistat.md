@@ -29,12 +29,13 @@ proxistat(
   a [data.table](https://r-datatable.com) of lat lon, all points
   representing some amenity or hazard that the proximity score indicates
   proximity to. It could be a subset of the
-  [frs](https://ejanalysis.github.io/EJAM/reference/frs.md) table, e.g.
+  [frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+  table, e.g.
 
 - bpoints:
 
   Representing places to be assigned proximity scores – such as
-  [blockpoints](https://ejanalysis.github.io/EJAM/reference/blockpoints.md),
+  [blockpoints](https://public-environmental-data-partners.github.io/EJAM/reference/blockpoints.md),
   the centroid/internal point of every block in the USA – a
   [data.table](https://r-datatable.com) of Census block points lat lon,
   representing where residents are, for the entire US (or at least a
@@ -92,7 +93,7 @@ Tries to use getpointsnearby() for one batch of blocks at a time,
 finding user-specified sites nearby those blocks (for each block, get
 distance FROM a block TO any nearby user-specified SITE points). The
 inverse approach compared to
-[`proxistat_via_getblocks()`](https://ejanalysis.github.io/EJAM/reference/proxistat_via_getblocks.md)
+[`proxistat_via_getblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/proxistat_via_getblocks.md)
 
 A "facility" proximity score for the residents in one place is an
 indicator of how far away those facilities are, and how many there are

@@ -13,7 +13,7 @@ url_xl_style(urls, urltext = urls)
 - urls:
 
   vector of urls such as from
-  [`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
+  [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
 
 - urltext:
 

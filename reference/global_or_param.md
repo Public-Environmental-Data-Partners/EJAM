@@ -25,7 +25,7 @@ value of the param, or NULL if not found
 This and
 [`golem::get_golem_options()`](https://thinkr-open.github.io/golem/reference/get_golem_options.html)
 are very similar tools, useful in server and ui. See help for
-[`get_global_defaults_or_user_options()`](https://ejanalysis.github.io/EJAM/reference/get_global_defaults_or_user_options.md)
+[`get_global_defaults_or_user_options()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_global_defaults_or_user_options.md)
 
 `global_or_param()` is used a lot in server and also ui (while sometimes
 [`golem::get_golem_options()`](https://thinkr-open.github.io/golem/reference/get_golem_options.html)
@@ -33,11 +33,11 @@ had been used instead but now is not, for the same purpose). It is used
 generally in ui to set default values for params that are set in the
 global_defaults\_ files and often can be modified in the advanced tab.
 To provide alternative values as params passed to
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 you would have to understand the options by seeing what they are
 defaulted to in the files and how they are used as parameters in ui or
 server. See
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 
 This is much like
 [`golem::get_golem_options()`](https://thinkr-open.github.io/golem/reference/get_golem_options.html)

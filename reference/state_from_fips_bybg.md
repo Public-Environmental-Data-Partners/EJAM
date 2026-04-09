@@ -26,7 +26,7 @@ vector of 2-character state abbreviations like CA,CA,CA,MD,MD,TX
 ## Details
 
 Unlike
-[`fips2stateabbrev()`](https://ejanalysis.github.io/EJAM/reference/fips2stateabbrev.md),
+[`fips2stateabbrev()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips2stateabbrev.md),
 this returns a vector of 2-letter State abbreviations that is one per
 blockgroup that matches the input FIPS, not necessarily a vector as long
 as the input vector of FIPS codes!, and not just a short list of unique
@@ -34,5 +34,5 @@ states!
 
 ## See also
 
-[`fips2stateabbrev()`](https://ejanalysis.github.io/EJAM/reference/fips2stateabbrev.md)
+[`fips2stateabbrev()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips2stateabbrev.md)
 to get just one state per FIPS

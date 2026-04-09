@@ -18,5 +18,6 @@ Also see [SIC info](https://siccode.com)
 
 ## See also
 
-SIC [sictable](https://ejanalysis.github.io/EJAM/reference/sictable.md)
-[`sic_categories()`](https://ejanalysis.github.io/EJAM/reference/sic_categories.md)
+SIC
+[sictable](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md)
+[`sic_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_categories.md)

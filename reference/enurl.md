@@ -24,7 +24,7 @@ a tag, with "shiny.tag" class: class(enurl("google.com", "click here"))
 
 ## See also
 
-[`url_linkify()`](https://ejanalysis.github.io/EJAM/reference/url_linkify.md)
+[`url_linkify()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_linkify.md)
 
 ## Examples
 

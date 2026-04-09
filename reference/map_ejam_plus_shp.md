@@ -44,6 +44,6 @@ map html widget
 ## Details
 
 used by server,
-[`ejam2map()`](https://ejanalysis.github.io/EJAM/reference/ejam2map.md),
+[`ejam2map()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2map.md),
 and
-[`mapfast()`](https://ejanalysis.github.io/EJAM/reference/mapfast.md)
+[`mapfast()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfast.md)

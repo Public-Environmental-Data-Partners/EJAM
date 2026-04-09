@@ -17,7 +17,7 @@ columns.
 ## Details
 
 This is used by
-[`state_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/state_from_latlon.md)
+[`state_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_latlon.md)
 to find which state is associated with each point that the user wants to
 analyze. That is needed to report indicators in the form of
 State-specific percentiles (e.g., a score that is at the 80th percentile
@@ -28,5 +28,5 @@ from Census Bureau.
 ## See also
 
 seealso
-[`state_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/state_from_latlon.md)
-[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)
+[`state_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_latlon.md)
+[`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)

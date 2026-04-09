@@ -42,7 +42,7 @@ build_community_report(
   optional relative path to a logo for the upper right of the overall
   header. Ignored if logo_html is specified and not NULL, otherwise uses
   default or param set in
-  [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md),
+  [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md),
   except NULL means default logo, "" means omit logo entirely.
 
 - logo_html:
@@ -123,11 +123,11 @@ build_community_report(
 ## Details
 
 This is used by the shiny app server. For use in RStudio, see
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
 (which relies on this).
 
 This function gets called by app_server but also by
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md),
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md),
 and also is used by the community_report_template.Rmd used to generate a
 report
 
@@ -135,4 +135,4 @@ It uses functions in community_report_helper_funs.R, etc.
 
 ## See also
 
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)

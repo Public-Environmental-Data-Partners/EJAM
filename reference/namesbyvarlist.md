@@ -37,9 +37,9 @@ c(names_d, names_d_subgroups)
 ## See also
 
 `varlist2names()`
-[`varin_map_headernames()`](https://ejanalysis.github.io/EJAM/reference/varin_map_headernames.md)
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[`names_whichlist_multi_key()`](https://ejanalysis.github.io/EJAM/reference/names_whichlist_multi_key.md)
+[`varin_map_headernames()`](https://public-environmental-data-partners.github.io/EJAM/reference/varin_map_headernames.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[`names_whichlist_multi_key()`](https://public-environmental-data-partners.github.io/EJAM/reference/names_whichlist_multi_key.md)
 
 ## Examples
 

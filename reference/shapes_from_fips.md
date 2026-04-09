@@ -24,7 +24,7 @@ shapes_from_fips(
 - fips:
 
   vector of one or more Census FIPS codes such as from
-  [`name2fips()`](https://ejanalysis.github.io/EJAM/reference/name2fips.md)
+  [`name2fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/name2fips.md)
 
 - myservice_blockgroup:
 
@@ -80,7 +80,7 @@ example to specify it explicitly.
 Blocks are not implemented yet here. For info on blocks bounds, see
 [`tigris::block_groups()`](https://rdrr.io/pkg/tigris/man/block_groups.html)
 Also note the
-[blockwts](https://ejanalysis.github.io/EJAM/reference/blockwts.md)
+[blockwts](https://public-environmental-data-partners.github.io/EJAM/reference/blockwts.md)
 dataset had a placeholder column block_radius_miles that as of v2.32.5
 was just zero values, but see notes in
 EJAM/data-raw/datacreate_blockwts.R on how it could be obtained. If it
@@ -88,7 +88,7 @@ were used, it could be a way to quickly get the area of each block,
 using the formula area = pi \* (block_radius_miles^2)
 
 For zip code boundaries, see the [EJAM
-documentation](https://ejanalysis.github.io/EJAM/reference/ejanalysis.org/ejamdocs)
+documentation](https://public-environmental-data-partners.github.io/EJAM/reference/ejanalysis.org/ejamdocs)
 article on zipcodes.
 
 ## Examples

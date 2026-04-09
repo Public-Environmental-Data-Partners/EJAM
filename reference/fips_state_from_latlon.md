@@ -25,8 +25,8 @@ fips_state_from_latlon(sitepoints = NULL, lat = NULL, lon = NULL)
 ## Value
 
 just vector of fips, unlike
-[`state_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/state_from_latlon.md)
+[`state_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_latlon.md)
 
 ## See also
 
-[`state_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/state_from_latlon.md)
+[`state_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_latlon.md)

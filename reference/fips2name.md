@@ -28,14 +28,14 @@ fips2name(fips, quiet = FALSE, ...)
 - quiet:
 
   whether to silence warnings – also passed to
-  [`fips_lead_zero()`](https://ejanalysis.github.io/EJAM/reference/fips_lead_zero.md)
+  [`fips_lead_zero()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_lead_zero.md)
   and
-  [`fipstype()`](https://ejanalysis.github.io/EJAM/reference/fipstype.md)
+  [`fipstype()`](https://public-environmental-data-partners.github.io/EJAM/reference/fipstype.md)
 
 - ...:
 
   passed to
-  [`fips2countyname()`](https://ejanalysis.github.io/EJAM/reference/fips2countyname.md)
+  [`fips2countyname()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips2countyname.md)
   to control whether it appends something like , NY or , New York after
   county name
 
@@ -54,7 +54,7 @@ is located within.
 
 ## See also
 
-[`fips_counties_from_countyname()`](https://ejanalysis.github.io/EJAM/reference/fips_counties_from_countyname.md)
+[`fips_counties_from_countyname()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_counties_from_countyname.md)
 
 ## Examples
 

@@ -36,9 +36,9 @@ vector of URLs as strings, same length as id parameter
 url_by_id() is a helper used by locate_by_id()
 
 see
-[`latlon_from_programid()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_programid.md)
+[`latlon_from_programid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_programid.md)
 and
-[`latlon_from_regid()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_regid.md)
+[`latlon_from_regid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_regid.md)
 in contrast to this.
 
 This function helps use an API to get latest info that is online, unlike

@@ -60,8 +60,8 @@ blockgroup-site pairings.
 
 ## See also
 
-[`plot_distance_mean_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
-[`distance_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`plot_distance_mean_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
 
 ## Examples
 

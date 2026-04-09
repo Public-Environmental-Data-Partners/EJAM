@@ -9,33 +9,33 @@ These issues might be relevant to deploying/hosting:
 Consider the `isPublic` parameter as set in the file app.R – The
 `isPublic` flag determined whether to show the public/basic or expert
 version of the web application. See the help in
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 and for more details see [Defaults and Custom Settings for the Web
-App](https://ejanalysis.github.io/EJAM/articles/dev-app-settings.md).
+App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.md).
 One way to improve this process would be to modify the `isPublic` toggle
 to be an environment variable. This would allow us to set the value once
 in each application server, and not have to change it each time we push
 updates. Moreover, it would make testing the app easier to handle in the
 GitHub actions (see [shinytests
-vignette](https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.md)).
+vignette](https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.md)).
 Note that after mid-2025 the isPublic setting is defined in the file
 app.R and has been handled as explained in the article [Defaults and
 Custom Settings for the Web
-App](https://ejanalysis.github.io/EJAM/articles/dev-app-settings.md).
+App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.md).
 
 ### Consider other parameters
 
 Consider the other parameters like logo-related and app title
 parameters, defined in the files `global_defaults_package.R` or
 `global_defaults_shiny.R`. See the help in
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 and for more details see [Defaults and Custom Settings for the Web
-App](https://ejanalysis.github.io/EJAM/articles/dev-app-settings.md).
+App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.md).
 
 ### Update EJAM Application
 
 Update the app. See [Updating the Package as a New
-Release](https://ejanalysis.github.io/EJAM/articles/dev-update-package.md)
+Release](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-package.md)
 vignette.
 
 ### Decide which branch to deploy from

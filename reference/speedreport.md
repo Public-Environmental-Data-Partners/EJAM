@@ -28,4 +28,4 @@ text string summarizing the speed
 
 ## See also
 
-[`speedmessage()`](https://ejanalysis.github.io/EJAM/reference/speedmessage.md)
+[`speedmessage()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedmessage.md)

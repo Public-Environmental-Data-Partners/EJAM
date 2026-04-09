@@ -8,17 +8,17 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/ejanalysis/EJAM/blob/HEAD/inst/CITATION)
+[`inst/CITATION`](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/inst/CITATION)
 
 Corrales MA (2026). *Environmental Justice Analysis Multisite tool
 (EJAM) v2.32.7*. Also see https://ejanalysis.com/EJAM,
-<https://ejanalysis.github.io/EJAM/index.html>.
+<https://public-environmental-data-partners.github.io/EJAM/index.html>.
 
     @Manual{,
       author = {Mark A. Corrales},
       title = {Environmental Justice Analysis Multisite tool (EJAM) v2.32.7},
       year = {2026},
       address = {Washington, DC},
-      url = {https://ejanalysis.github.io/EJAM/index.html},
+      url = {https://public-environmental-data-partners.github.io/EJAM/index.html},
       note = {Also see https://ejanalysis.com/EJAM},
     }

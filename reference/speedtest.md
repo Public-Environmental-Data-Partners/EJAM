@@ -45,7 +45,7 @@ speedtest(
 
   optional, if using random points, how to weight them, such as
   facilities, people, or blockgroups. see
-  [`testpoints_n()`](https://ejanalysis.github.io/EJAM/reference/testpoints_n.md)
+  [`testpoints_n()`](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_n.md)
 
 - radii:
 
@@ -56,8 +56,9 @@ speedtest(
 - avoidorphans:
 
   see
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-  or [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
+  or
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   regarding this param
 
 - test_ejamit:
@@ -114,8 +115,8 @@ speedtest(
 ## Value
 
 EJAM results similar to as from the web app or
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) and
-also creates a plot
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+and also creates a plot
 
 ## Details
 
@@ -138,7 +139,7 @@ large dataset
 
 ## See also
 
-[`speedtest_plot()`](https://ejanalysis.github.io/EJAM/reference/speedtest_plot.md)
+[`speedtest_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest_plot.md)
 
 ## Examples
 

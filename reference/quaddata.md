@@ -17,5 +17,5 @@ blockid - BLOCK_X, BLOCK_Y, BLOCK_Z (not lat, lon)
 
 ## See also
 
-[`indexblocks()`](https://ejanalysis.github.io/EJAM/reference/indexblocks.md)
-[EJAM](https://ejanalysis.github.io/EJAM/reference/EJAM.md)
+[`indexblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexblocks.md)
+[EJAM](https://public-environmental-data-partners.github.io/EJAM/reference/EJAM.md)

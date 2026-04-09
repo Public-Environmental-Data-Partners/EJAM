@@ -80,7 +80,7 @@ ejamit(
 - quadtree:
 
   (a pointer to the large quadtree object) created using
-  [`indexblocks()`](https://ejanalysis.github.io/EJAM/reference/indexblocks.md)
+  [`indexblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexblocks.md)
   which uses the [SearchTree](https://github.com/gmbecker/SearchTrees)
   package. Takes about 2-5 seconds to create this each time it is
   needed. It can be automatically created when the package is attached
@@ -91,7 +91,7 @@ ejamit(
   optional FIPS code vector to provide if using FIPS instead of
   sitepoints to specify places to analyze, such as a list of US Counties
   or tracts. Passed to
-  [`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+  [`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
 
 - shapefile:
 
@@ -141,13 +141,13 @@ ejamit(
 
   whether to try to include Summary Indexes (assuming dataset is
   available) - passed to
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - calculate_ratios:
 
   whether to calculate and return ratio of each indicator to US and
   State overall averages - passed to
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - extra_demog:
 
@@ -168,7 +168,7 @@ ejamit(
 - need_blockwt:
 
   if fips parameter is used, passed to
-  [`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+  [`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
 
 - thresholds:
 
@@ -193,13 +193,13 @@ ejamit(
 - updateProgress:
 
   CURRENTLY UNUSED - was a progress bar function passed to
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
   in shiny app, but not actually used in ejamit().
 
 - updateProgress_getblocks:
 
   progress bar function passed to
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   in shiny app
 
 - progress_all:
@@ -209,27 +209,27 @@ ejamit(
 - in_shiny:
 
   if fips parameter is used, passed to
-  [`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+  [`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
 
 - quiet:
 
   Optional. passed to
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   and
-  [`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md).
+  [`batch.summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.md).
   set to TRUE to avoid message about using
-  [`getblocks_diagnostics()`](https://ejanalysis.github.io/EJAM/reference/getblocks_diagnostics.md),
+  [`getblocks_diagnostics()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocks_diagnostics.md),
   which is relevant only if a user saved the output of this function.
 
 - silentinteractive:
 
   to prevent long output showing in console in RStudio when in
   interactive mode, passed to
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
   also. app server sets this to TRUE when calling
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
   but `ejamit()` default is to set this to FALSE when calling
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md).
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md).
 
 - called_by_ejamit:
 
@@ -239,7 +239,7 @@ ejamit(
 - testing:
 
   used while testing this function, passed to
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - showdrinkingwater:
 
@@ -254,17 +254,17 @@ ejamit(
 - download_city_fips_bounds:
 
   passed to
-  [`area_sqmi()`](https://ejanalysis.github.io/EJAM/reference/area_sqmi.md)
+  [`area_sqmi()`](https://public-environmental-data-partners.github.io/EJAM/reference/area_sqmi.md)
 
 - download_noncity_fips_bounds:
 
   passed to
-  [`area_sqmi()`](https://ejanalysis.github.io/EJAM/reference/area_sqmi.md)
+  [`area_sqmi()`](https://public-environmental-data-partners.github.io/EJAM/reference/area_sqmi.md)
 
 - ...:
 
   passed to
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   etc. such as report_progress_every_n = 0
 
 ## Value
@@ -303,7 +303,7 @@ This returns a named list of results.
   may be near two analyzed sites, for example.
 
 - **results_summarized** See
-  [`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md)
+  [`batch.summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.md)
   documenting what is here!
 
 - **longnames** descriptive long names for the indicators in the above
@@ -319,12 +319,13 @@ This returns a named list of results.
 
 ## Details
 
-See examples in vignettes/ articles at https://ejanalysis.github.io/EJAM
+See examples in vignettes/ articles at
+https://public-environmental-data-partners.github.io/EJAM
 
 ## See also
 
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 ## Examples
 

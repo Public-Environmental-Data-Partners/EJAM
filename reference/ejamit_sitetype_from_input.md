@@ -15,17 +15,17 @@ ejamit_sitetype_from_input(sitepoints = NULL, fips = NULL, shapefile = NULL)
 - sitepoints:
 
   parameter as was passed to
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - fips:
 
   parameter as was passed to
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - shapefile:
 
   parameter as was passed to
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 ## Value
 
@@ -38,10 +38,10 @@ Note `sitetype` is not quite the same as the `site_method` parameter
 used in building reports. `site_method` can be one of these: SHP,
 latlon, FIPS, NAICS, FRS, EPA_PROGRAM, SIC, MACT `sitetype` can be
 latlon, fips, or shp as returned by
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md), but
-can include lowercase versions of site_method values too within server
-code and some function parameters!
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
+but can include lowercase versions of site_method values too within
+server code and some function parameters!
 
 ## See also
 
-[`sites_from_input()`](https://ejanalysis.github.io/EJAM/reference/sites_from_input.md)
+[`sites_from_input()`](https://public-environmental-data-partners.github.io/EJAM/reference/sites_from_input.md)

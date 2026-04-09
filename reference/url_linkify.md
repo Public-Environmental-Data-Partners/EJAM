@@ -60,4 +60,4 @@ that enurl()
 
 ## See also
 
-[`enurl()`](https://ejanalysis.github.io/EJAM/reference/enurl.md)
+[`enurl()`](https://public-environmental-data-partners.github.io/EJAM/reference/enurl.md)

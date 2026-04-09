@@ -62,4 +62,4 @@ Could also consider plotting something like boxplot(demogvar ~
 round(distance, 1))
 
 See notes on plots at
-[`plot_barplot_ratios()`](https://ejanalysis.github.io/EJAM/reference/plot_barplot_ratios.md)
+[`plot_barplot_ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_ratios.md)

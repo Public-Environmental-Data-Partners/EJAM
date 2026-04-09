@@ -14,7 +14,7 @@ out_bydistance2results_bydistance(out_bydistance)
 - out_bydistance:
 
   list of tables that is output of
-  [`ejamit_compare_distances_fulloutput()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances_fulloutput.md)
+  [`ejamit_compare_distances_fulloutput()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances_fulloutput.md)
 
 ## Value
 
@@ -30,5 +30,5 @@ ejamit()\$results_overall for each distance.
 
 ## See also
 
-[`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
-[`ejamit_compare_distances_fulloutput()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances_fulloutput.md)
+[`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
+[`ejamit_compare_distances_fulloutput()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances_fulloutput.md)

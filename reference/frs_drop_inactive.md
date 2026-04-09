@@ -13,21 +13,21 @@ frs_drop_inactive(frs, closedid)
 - frs:
 
   Required, table in [data.table](https://r-datatable.com) format from
-  [`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+  [`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 
 - closedid:
 
   Required, vector of codes to treat as inactive, obtained from
-  [`frs_inactive_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_inactive_ids.md)
+  [`frs_inactive_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_inactive_ids.md)
   which downloads national dataset and uses assumed codes and returns
   ids of the inactive sites.
 
 ## Value
 
 Returns the full
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md) table in
-[data.table](https://r-datatable.com) format but without the inactive
-ids
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+table in [data.table](https://r-datatable.com) format but without the
+inactive ids
 
 ## Details
 
@@ -72,12 +72,12 @@ Codes assumed to mean site is closed:
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 which uses
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 and
-[`frs_inactive_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_inactive_ids.md)
-[`frs_active_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_active_ids.md)
+[`frs_inactive_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_inactive_ids.md)
+[`frs_active_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_active_ids.md)
 
 ## Examples
 

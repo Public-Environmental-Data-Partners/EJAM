@@ -20,7 +20,7 @@ ejam2barplot(
 - ejamitout:
 
   like from
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - varnames:
 

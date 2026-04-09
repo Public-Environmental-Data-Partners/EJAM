@@ -21,7 +21,7 @@ plot_barplot_ratios(
 - ratio.to.us.d.overall:
 
   named list of a few ratios to plot, but see
-  [`ejam2barplot()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot.md)
+  [`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md)
   for an easier way to specify which indicator to show.
 
 - shortlabels:
@@ -54,7 +54,7 @@ ggplot should be returned
 ## Details
 
 See `plot_barplot_ratios_ez()` which is easier to use, or
-[`ejam2barplot()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot.md)
+[`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md)
 which is even easier.
 
 If the parameter called main has the word "State" in it, then the legend
@@ -65,10 +65,10 @@ in State.
 
 ## See also
 
-[`ejam2ratios()`](https://ejanalysis.github.io/EJAM/reference/ejam2ratios.md)
-[`ejam2barplot()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot.md)
+[`ejam2ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2ratios.md)
+[`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md)
 `plot_barplot_ratios_ez()`
-[`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+[`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
 
 ## Examples
 

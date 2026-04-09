@@ -29,7 +29,7 @@ table_round(x, var = names(x), varnametype = "rname", ...)
 - ...:
 
   passed to
-  [`is.numericish()`](https://ejanalysis.github.io/EJAM/reference/is.numericish.md)
+  [`is.numericish()`](https://public-environmental-data-partners.github.io/EJAM/reference/is.numericish.md)
 
 ## Value
 
@@ -43,8 +43,8 @@ intent is to show 0 digits after the 0-100 percent number.
 
 ## See also
 
-[`is.numericish()`](https://ejanalysis.github.io/EJAM/reference/is.numericish.md)
-[`table_rounding_info()`](https://ejanalysis.github.io/EJAM/reference/table_rounding_info.md)
+[`is.numericish()`](https://public-environmental-data-partners.github.io/EJAM/reference/is.numericish.md)
+[`table_rounding_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_rounding_info.md)
 
 ## Examples
 

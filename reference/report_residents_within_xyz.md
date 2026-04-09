@@ -1,7 +1,7 @@
 # Build text for report: Residents within( X miles of)( any of) the (N) point(s)/polygon(s)/Census unit(s)
 
 Helps app_server create locationstr parameter passed to
-[`build_community_report()`](https://ejanalysis.github.io/EJAM/reference/build_community_report.md)
+[`build_community_report()`](https://public-environmental-data-partners.github.io/EJAM/reference/build_community_report.md)
 
 ## Usage
 
@@ -103,8 +103,8 @@ report_residents_within_xyz(
 
 ## See also
 
-[`report_xmilesof()`](https://ejanalysis.github.io/EJAM/reference/report_xmilesof.md)
-[`buffer_desc_from_sitetype()`](https://ejanalysis.github.io/EJAM/reference/buffer_desc_from_sitetype.md)
+[`report_xmilesof()`](https://public-environmental-data-partners.github.io/EJAM/reference/report_xmilesof.md)
+[`buffer_desc_from_sitetype()`](https://public-environmental-data-partners.github.io/EJAM/reference/buffer_desc_from_sitetype.md)
 
 ## Examples
 

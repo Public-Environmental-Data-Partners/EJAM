@@ -16,4 +16,4 @@ speedtable_summarize(speedtable)
 
 ## See also
 
-[`speedtest()`](https://ejanalysis.github.io/EJAM/reference/speedtest.md)
+[`speedtest()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest.md)

@@ -44,4 +44,4 @@ proximityscore, bgfips, lat, lon, etc.
 Tries to use getblocksnearby() normally (for each site, get distance
 FROM a user-specified site TO all nearby blocks) but then filling in
 that info for rest of blocks in US The inverse approach compared to
-[`proxistat()`](https://ejanalysis.github.io/EJAM/reference/proxistat.md)
+[`proxistat()`](https://public-environmental-data-partners.github.io/EJAM/reference/proxistat.md)

@@ -12,9 +12,10 @@ frs_make_naics_lookup(x)
 
 - x:
 
-  data.table [frs](https://ejanalysis.github.io/EJAM/reference/frs.md)
+  data.table
+  [frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
   from
-  [`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+  [`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 
 ## Value
 
@@ -23,8 +24,8 @@ NAICS, REGISTRY_ID, etc.
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 which uses
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md) to
-create
-[frs_by_naics](https://ejanalysis.github.io/EJAM/reference/frs_by_naics.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
+to create
+[frs_by_naics](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md)

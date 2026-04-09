@@ -13,7 +13,7 @@ table_gt_from_ejamit_1site(...)
 - ...:
 
   passed to
-  [`table_gt_from_ejamit_overall()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit_overall.md)
+  [`table_gt_from_ejamit_overall()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_gt_from_ejamit_overall.md)
 
 ## Examples
 

@@ -40,5 +40,5 @@ Almost all datasets lack UM. (74)
 
 ## See also
 
-[stateinfo2](https://ejanalysis.github.io/EJAM/reference/stateinfo2.md)
+[stateinfo2](https://public-environmental-data-partners.github.io/EJAM/reference/stateinfo2.md)
 for more columns

@@ -28,11 +28,11 @@ helper function used by frs_get() to create dataset for EJAM
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 which uses
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 which uses
-[`frs_download()`](https://ejanalysis.github.io/EJAM/reference/frs_download.md)
+[`frs_download()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_download.md)
 `frs_unzip()`
-[`frs_read()`](https://ejanalysis.github.io/EJAM/reference/frs_read.md)
-[`frs_clean()`](https://ejanalysis.github.io/EJAM/reference/frs_clean.md)
+[`frs_read()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_read.md)
+[`frs_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_clean.md)

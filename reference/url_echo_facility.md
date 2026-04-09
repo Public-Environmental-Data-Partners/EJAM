@@ -49,7 +49,7 @@ url_echo_facility(
 - ...:
 
   unused - allows it to ignore things like lat, lon, if called from
-  [`url_columns_bysite()`](https://ejanalysis.github.io/EJAM/reference/url_columns_bysite.md)
+  [`url_columns_bysite()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_columns_bysite.md)
 
 ## Value
 
@@ -61,17 +61,17 @@ Additional details...
 
 ## See also
 
-[`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
-[`url_ejscreenmap()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.md)
+[`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
+[`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)
 `url_echo_facility()`
-[`url_frs_facility()`](https://ejanalysis.github.io/EJAM/reference/url_frs_facility.md)
-[`url_enviromapper()`](https://ejanalysis.github.io/EJAM/reference/url_enviromapper.md)
+[`url_frs_facility()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_frs_facility.md)
+[`url_enviromapper()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_enviromapper.md)
 
-[`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
-[`url_ejscreenmap()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.md)
+[`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
+[`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)
 `url_echo_facility()`
-[`url_frs_facility()`](https://ejanalysis.github.io/EJAM/reference/url_frs_facility.md)
-[`url_enviromapper()`](https://ejanalysis.github.io/EJAM/reference/url_enviromapper.md)
+[`url_frs_facility()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_frs_facility.md)
+[`url_enviromapper()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_enviromapper.md)
 
 ## Examples
 

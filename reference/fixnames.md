@@ -20,7 +20,7 @@ fixnames(namesnow, oldtype = "api", newtype = "r", mapping_for_names)
   designation of the type of variables in namesnow: "long" or
   "original", or "csv" or "r" or "api" (colnames of map_headernames, or
   aliases per helper
-  [`fixmapheadernamescolname()`](https://ejanalysis.github.io/EJAM/reference/fixmapheadernamescolname.md))
+  [`fixmapheadernamescolname()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixmapheadernamescolname.md))
 
 - newtype:
 
@@ -38,7 +38,7 @@ return an entire renamed df or dt. Just the new colnames are returned.
 ## Details
 
 YOU CAN SPECIFY A TYPE USING AN ALIAS LIKE "api" or "long" UNLIKE IN
-[`fixnames_to_type()`](https://ejanalysis.github.io/EJAM/reference/fixnames_to_type.md)
+[`fixnames_to_type()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_to_type.md)
 where you had to specify the actual colnames of map_headernames, like
 "apiname"
 
@@ -48,7 +48,7 @@ that and still return just a vector of new colnames
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[`fixnames_to_type()`](https://ejanalysis.github.io/EJAM/reference/fixnames_to_type.md)
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[`fixnames_to_type()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_to_type.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
 `fixnames()`

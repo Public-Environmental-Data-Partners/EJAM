@@ -29,5 +29,5 @@ sites – depending on value of active
 
 ## See also
 
-[`frs_active_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_active_ids.md)
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_active_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_active_ids.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)

@@ -14,14 +14,15 @@ table_tall_from_overall(results_overall, longnames = NULL)
 
   table in [data.table](https://r-datatable.com) format of 1 row, from
   output of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) or
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  or
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 - longnames:
 
   vector of names of variables in results_overall, from output of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) or
-  doaggregate()
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  or doaggregate()
 
 ## Value
 

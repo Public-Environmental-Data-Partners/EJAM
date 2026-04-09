@@ -74,14 +74,14 @@ EJAM relies on datasets mostly stored in the package itself or in a
 separate, data-related repository:
 
 - Datasets stored within the EJAM package (.rda files):
-  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
-  and [access to data
-  files](https://github.com/ejanalysis/EJAM/tree/main/data)
+  [Documentation](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
+  and [access to package data
+  files](https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data)
 
 - Datasets used by EJAM but stored separately (large .arrow files):
-  [Documentation](https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
-  and [access to data
-  files](https://github.com/ejanalysis/ejamdata/tree/main/data)
+  [Documentation](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-)
+  and [access to the large data
+  files](https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data)
 
 ### Key datasets
 
@@ -90,15 +90,15 @@ to be changed ANNUALLY or more often:
 
 - ***Blockgroup Datasets***: These include datasets included with the
   package
-  [`?blockgroupstats`](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md),
-  [usastats](https://ejanalysis.github.io/EJAM/reference/usastats.md),
-  [`?statestats`](https://ejanalysis.github.io/EJAM/reference/statestats.md),
+  [`?blockgroupstats`](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md),
+  [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md),
+  [`?statestats`](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md),
   etc.) as well as larger tables stored in a separate repository and
   downloaded by the EJAM package
-  ([`?bgpts`](https://ejanalysis.github.io/EJAM/reference/bgpts.md),
-  [`?bgej`](https://ejanalysis.github.io/EJAM/reference/bgej.md),
-  [`?bgid2fips`](https://ejanalysis.github.io/EJAM/reference/bgid2fips.md),
-  [`?bg_cenpop2020`](https://ejanalysis.github.io/EJAM/reference/bg_cenpop2020.md),
+  ([`?bgpts`](https://public-environmental-data-partners.github.io/EJAM/reference/bgpts.md),
+  [`?bgej`](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md),
+  [`?bgid2fips`](https://public-environmental-data-partners.github.io/EJAM/reference/bgid2fips.md),
+  [`?bg_cenpop2020`](https://public-environmental-data-partners.github.io/EJAM/reference/bg_cenpop2020.md),
   etc.). They are all created or modified using scripts/functions
   organized from within
   *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
@@ -124,10 +124,10 @@ to be changed ANNUALLY or more often:
 
 - ***Block Datasets***: The *block* (not blockgroup) tables might be
   updated less often, but Census fips codes do change yearly so the
-  [`?blockwts`](https://ejanalysis.github.io/EJAM/reference/blockwts.md),
-  [`?blockpoints`](https://ejanalysis.github.io/EJAM/reference/blockpoints.md),
-  [`?quaddata`](https://ejanalysis.github.io/EJAM/reference/quaddata.md),
-  [`?blockid2fips`](https://ejanalysis.github.io/EJAM/reference/blockid2fips.md),
+  [`?blockwts`](https://public-environmental-data-partners.github.io/EJAM/reference/blockwts.md),
+  [`?blockpoints`](https://public-environmental-data-partners.github.io/EJAM/reference/blockpoints.md),
+  [`?quaddata`](https://public-environmental-data-partners.github.io/EJAM/reference/quaddata.md),
+  [`?blockid2fips`](https://public-environmental-data-partners.github.io/EJAM/reference/blockid2fips.md),
   and related additional data.tables should be updated as needed. This
   is also done from within
   *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* See package
@@ -144,41 +144,41 @@ to be changed ANNUALLY or more often:
   the EPA FRS data rather than using an API to obtain the latest info on
   demand – that is something that could be changed in a future version.
   Facility-related info is stored in tables EJAM uses, such as these:
-  [`?frs`](https://ejanalysis.github.io/EJAM/reference/frs.md),
-  [`?frs_by_programid`](https://ejanalysis.github.io/EJAM/reference/frs_by_programid.md),
-  [`?frs_by_naics`](https://ejanalysis.github.io/EJAM/reference/frs_by_naics.md),
-  [`?frs_by_sic`](https://ejanalysis.github.io/EJAM/reference/frs_by_sic.md),
+  [`?frs`](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md),
+  [`?frs_by_programid`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md),
+  [`?frs_by_naics`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md),
+  [`?frs_by_sic`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md),
   and
-  [`?frs_by_mact`](https://ejanalysis.github.io/EJAM/reference/frs_by_mact.md),
-  [`?NAICS`](https://ejanalysis.github.io/EJAM/reference/NAICS.md),
-  [`?SIC`](https://ejanalysis.github.io/EJAM/reference/SIC.md),
-  [`?naics_counts`](https://ejanalysis.github.io/EJAM/reference/naics_counts.md),
-  [`?naicstable`](https://ejanalysis.github.io/EJAM/reference/naicstable.md),
-  [`?SIC`](https://ejanalysis.github.io/EJAM/reference/SIC.md),
-  [`?sictable`](https://ejanalysis.github.io/EJAM/reference/sictable.md),
-  [`?mact_table`](https://ejanalysis.github.io/EJAM/reference/mact_table.md),
+  [`?frs_by_mact`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_mact.md),
+  [`?NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md),
+  [`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md),
+  [`?naics_counts`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_counts.md),
+  [`?naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md),
+  [`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md),
+  [`?sictable`](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md),
+  [`?mact_table`](https://public-environmental-data-partners.github.io/EJAM/reference/mact_table.md),
   and
-  [`?epa_programs`](https://ejanalysis.github.io/EJAM/reference/epa_programs.md),
-  [`?frsprogramcodes`](https://ejanalysis.github.io/EJAM/reference/frsprogramcodes.md),
+  [`?epa_programs`](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.md),
+  [`?frsprogramcodes`](https://public-environmental-data-partners.github.io/EJAM/reference/frsprogramcodes.md),
   etc. These FRS, MACT, and Program info tables of EPA-relevant data are
   updated in the EJAM package from within
   *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* The
-  [`?NAICS`](https://ejanalysis.github.io/EJAM/reference/NAICS.md),
-  [`?naicstable`](https://ejanalysis.github.io/EJAM/reference/naicstable.md),
+  [`?NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md),
+  [`?naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md),
   and
-  [`?sictable`](https://ejanalysis.github.io/EJAM/reference/sictable.md)
+  [`?sictable`](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md)
   objects (viewable using
-  [`naics_categories()`](https://ejanalysis.github.io/EJAM/reference/naics_categories.md)
+  [`naics_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md)
   and
-  [`sic_categories()`](https://ejanalysis.github.io/EJAM/reference/sic_categories.md)
+  [`sic_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_categories.md)
   utilities) have no EPA-specific data so they do not need frequent
   updates – The NAICS data object stores just the name of each NAICS
   code number, and new codes/names are published every five years, such
   as in 2017 and 2022, so a new version would typically be expected
   in 2027. The tables called
-  [`?SIC`](https://ejanalysis.github.io/EJAM/reference/SIC.md) (unlike
-  the NAICS table) and
-  [`?naics_counts`](https://ejanalysis.github.io/EJAM/reference/naics_counts.md)
+  [`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md)
+  (unlike the NAICS table) and
+  [`?naics_counts`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_counts.md)
   (which has no analogous sic version), however, contain counts of EPA
   FRS facilities, so they need updates when FRS data are updated. The
   inconsistency in how NAICS vs SIC tables and the naics_counts table
@@ -187,11 +187,11 @@ to be changed ANNUALLY or more often:
   switched entirely to more frequent automated updates or even reliance
   on the FRS API.
 
-- [`?map_headernames`](https://ejanalysis.github.io/EJAM/reference/map_headernames.md)
+- [`?map_headernames`](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
   and associated .xlsx, etc. store critical metadata. This needs to
   updated especially if indicator names change or are added, for
   example.
-  [`?map_headernames`](https://ejanalysis.github.io/EJAM/reference/map_headernames.md)
+  [`?map_headernames`](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
   holds most of the useful metadata about each variable (each indicator,
   like %low income) – e.g., how many digits to use in rounding, units, a
   long name of indicator, the type or category of indicator, sort order
@@ -203,8 +203,8 @@ to be changed ANNUALLY or more often:
   *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*
 
 - [Test data (inputs) and examples of
-  outputs](https://ejanalysis.github.io/EJAM/articles/testdata.Rmd) may
-  have to be updated (every time parameters change & when outputs
+  outputs](https://public-environmental-data-partners.github.io/EJAM/articles/testdata.Rmd)
+  may have to be updated (every time parameters change & when outputs
   returned change). Those are generated by scripts/functions referred to
   from *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*
 
@@ -216,9 +216,9 @@ to be changed ANNUALLY or more often:
   That is updated via scripts/functions used by
   *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* via for example the
   helpers
-  [`metadata_add()`](https://ejanalysis.github.io/EJAM/reference/metadata_add.md)
+  [`metadata_add()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_add.md)
   and
-  [`metadata_check()`](https://ejanalysis.github.io/EJAM/reference/metadata_check.md)
+  [`metadata_check()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_check.md)
   and `metadata_mapping.R`
 
 - Version numbering is recorded in the DESCRIPTION file primarily, and
@@ -226,7 +226,7 @@ to be changed ANNUALLY or more often:
   the NEWS file.
 
 - [Updating
-  documentation](https://ejanalysis.github.io/EJAM/articles/dev-update-documentation.md) -
+  documentation](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-documentation.md) -
   updates may be needed for the README, vignettes, and possibly examples
   in some functions in case updates to datasets alter how the examples
   would work.
@@ -254,8 +254,9 @@ repository.
 DESCRIPTION file, so that the package will know where to look for the
 data files if the datasets were moved to a new repository, for example.
 The current (either installed or loaded source version) of that
-repository is ejanalysis/ejamdata (which can be checked via
-`desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo")`)
+repository is
+<https://github.com/Public-Environmental-Data-Partners/ejamdata> (which
+can be checked via `url_package(type = "data", get_full_url = TRUE)`)
 
 ### arrow package and arrow file format
 
@@ -269,48 +270,49 @@ still may be places in the code that simply use the xyz.arrow filename
 but not the actual arrow format that is faster, and those would ideally
 get updated. For example the object called `frs_arrow` is the faster
 format of what had been called the
-[`?frs`](https://ejanalysis.github.io/EJAM/reference/frs.md) dataset.
+[`?frs`](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+dataset.
 
 The names of these tables should be listed in a file called
 `R/arrow_ds_names.R` and the global variable called .arrow_ds_names that
 is used by functions like
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
 and
-[`dataload_from_local()`](https://ejanalysis.github.io/EJAM/reference/dataload_from_local.md).
+[`dataload_from_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.md).
 
 As of EJAM version v2.32.7, there were 11 arrow files used by EJAM:
 
 ### Blockgroup and block-level arrow files
 
-- [`?bgid2fips`](https://ejanalysis.github.io/EJAM/reference/bgid2fips.md).arrow:
+- [`?bgid2fips`](https://public-environmental-data-partners.github.io/EJAM/reference/bgid2fips.md).arrow:
   crosswalk of EJAM blockgroup IDs (1-n) with 12-digit blockgroup FIPS
   codes
-- [`?blockid2fips`](https://ejanalysis.github.io/EJAM/reference/blockid2fips.md).arrow:
+- [`?blockid2fips`](https://public-environmental-data-partners.github.io/EJAM/reference/blockid2fips.md).arrow:
   crosswalk of EJAM block IDs (1-n) with 15-digit block FIPS codes
-- [`?blockpoints`](https://ejanalysis.github.io/EJAM/reference/blockpoints.md).arrow:
+- [`?blockpoints`](https://public-environmental-data-partners.github.io/EJAM/reference/blockpoints.md).arrow:
   Census block internal points lat-lon coordinates, EJAM block ID
-- [`?blockwts`](https://ejanalysis.github.io/EJAM/reference/blockwts.md).arrow:
+- [`?blockwts`](https://public-environmental-data-partners.github.io/EJAM/reference/blockwts.md).arrow:
   Census block population weight as share of blockgroup population, EJAM
   block and blockgroup ID
-- [`?bgej`](https://ejanalysis.github.io/EJAM/reference/bgej.md).arrow:
+- [`?bgej`](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md).arrow:
   blockgroup-level statistics of EJ variables
-- [`?quaddata`](https://ejanalysis.github.io/EJAM/reference/quaddata.md).arrow:
+- [`?quaddata`](https://public-environmental-data-partners.github.io/EJAM/reference/quaddata.md).arrow:
   3D spherical coordinates of Census block internal points, with EJAM
   block ID
 
 ### FRS/facility-related arrow files
 
-- [`?frs`](https://ejanalysis.github.io/EJAM/reference/frs.md).arrow:
+- [`?frs`](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md).arrow:
   data.table of EPA Facility Registry Service (FRS) regulated sites
-- [`?frs_by_naics`](https://ejanalysis.github.io/EJAM/reference/frs_by_naics.md).arrow:
+- [`?frs_by_naics`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md).arrow:
   data.table of NAICS industry code(s) for each EPA-regulated site in
   Facility Registry Service
-- [`?frs_by_sic`](https://ejanalysis.github.io/EJAM/reference/frs_by_sic.md).arrow:
+- [`?frs_by_sic`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md).arrow:
   data.table of SIC industry code(s) for each EPA-regulated site in
   Facility Registry Service
 - `?frs_by_programid.arrow`: data.table of Program System ID code(s) for
   each EPA-regulated site in the Facility Registry Service
-- [`?frs_by_mact`](https://ejanalysis.github.io/EJAM/reference/frs_by_mact.md).arrow:
+- [`?frs_by_mact`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_mact.md).arrow:
   data.table of [MACT
   NESHAP](https://en.wikipedia.org/wiki/National_Emissions_Standards_for_Hazardous_Air_Pollutants)
   codes for sites, indicating the [subpart(s) that categorize relevant
@@ -322,7 +324,9 @@ As of EJAM version v2.32.7, there were 11 arrow files used by EJAM:
 1.  The arrow files are stored in a separate, public, Git-LFS-enabled
     GitHub repo (henceforth ‘ejamdata’). The owner/reponame must be
     recorded/updated in the DESCRIPTION file field called ejam_data_repo
-    – that info is used by the package.
+    (which can be checked via
+    `url_package(type = "data", get_full_url = TRUE)`) – that info is
+    used by the package.
 
 2.  Then, and any time the arrow datasets are updated, we update the
     ejamdata release version via the `.github/push_to_ejam.yaml`
@@ -330,7 +334,7 @@ As of EJAM version v2.32.7, there were 11 arrow files used by EJAM:
     the release, to be downloaded automatically by EJAM
 
 3.  EJAM’s
-    [`download_latest_arrow_data()`](https://ejanalysis.github.io/EJAM/reference/download_latest_arrow_data.md)
+    [`download_latest_arrow_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_latest_arrow_data.md)
     function does the following:
 
 &nbsp;
@@ -351,7 +355,7 @@ download_latest_arrow_data()
 ```
 
 4.  We add a call to this function in the onAttach script (via the
-    [`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+    [`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
     function) so it runs and ensures the latest arrow files are
     downloaded when user loads EJAM.
 
@@ -359,20 +363,20 @@ download_latest_arrow_data()
 
 1.  User installs EJAM
 
-- `devtools::install_github("ejanalysis/EJAM")` (or as adjusted
-  depending on the actual repository owner and name)
+- `devtools::install_github("Public-Environmental-Data-Partners/EJAM")`
+  (or as adjusted depending on the actual repository owner and name)
 
 2.  User loads EJAM as usual
 
-- [`library(EJAM)`](https://ejanalysis.github.io/EJAM). This will
-  trigger the new
-  [`download_latest_arrow_data()`](https://ejanalysis.github.io/EJAM/reference/download_latest_arrow_data.md)
+- [`library(EJAM)`](https://public-environmental-data-partners.github.io/EJAM).
+  This will trigger the new
+  [`download_latest_arrow_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_latest_arrow_data.md)
   function.
 
 3.  User runs EJAM as usual
 
 - The
-  [`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+  [`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
   function will work as usual because the data are now stored in the
   `data` directory.
 
@@ -383,7 +387,7 @@ download_latest_arrow_data()
 
 2.  Those files were then being copied into a clone of the ejamdata repo
     before being pushed to the actual ejamdata repo on github (at
-    ejanalysis/ejamdata)
+    <https://github.com/Public-Environmental-Data-Partners/ejamdata>)
 
 3.  This triggers ejamdata’s `push_to_ejam.yaml` workflow that
     increments the latest release tag reflecting the new version and
@@ -407,7 +411,7 @@ places
 Pros: processing efficiency, significantly reduced memory usage
 
 Implementation: This has been mostly implemented by the
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
 function, which contains a `return_data_table` parameter. If `FALSE`,
 the arrow file is loaded as an .arrow dataset, rather than a
 tibble/dataframe.

@@ -50,25 +50,25 @@ test_ejam(
 - y_skipbasic:
 
   logical, if FALSE, runs some basic
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   functions, but NOT any unit tests.
 
 - y_latlon:
 
   logical, if y_skipbasic=F, whether to run the basic
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   using points
 
 - y_shp:
 
   logical, if y_skipbasic=F, whether to run the basic
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   using shapefile
 
 - y_fips:
 
   logical, if y_skipbasic=F, whether to run the basic
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   using FIPS
 
 - y_coverage_check:

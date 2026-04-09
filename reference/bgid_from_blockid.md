@@ -14,9 +14,9 @@ bgid_from_blockid(blockids, asdt = FALSE)
 - blockids:
 
   vector of blockid values as in
-  [blockwts](https://ejanalysis.github.io/EJAM/reference/blockwts.md)
+  [blockwts](https://public-environmental-data-partners.github.io/EJAM/reference/blockwts.md)
   table or in
-  [testoutput_getblocksnearby_10pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
+  [testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
 
 - asdt:
 

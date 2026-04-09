@@ -67,7 +67,7 @@ url_county_health(
 - statereport:
 
   can be passed here by
-  [`url_state_health()`](https://ejanalysis.github.io/EJAM/reference/url_state_health.md)
+  [`url_state_health()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_state_health.md)
   if FALSE, returns NA when given a State fips, otherwise return report
   on enclosing county. if TRUE, gets report on enclosing State/DC/PR
   (not county).

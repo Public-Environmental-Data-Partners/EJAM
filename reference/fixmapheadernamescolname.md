@@ -34,9 +34,9 @@ ones left as-is
 
 ## See also
 
-[`fixnames_aliases()`](https://ejanalysis.github.io/EJAM/reference/fixnames_aliases.md)
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
+[`fixnames_aliases()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
 
 ## Examples
 

@@ -22,7 +22,7 @@ and newer functions work with it. see [NAICS.com](https://naics.com)
 
 ## See also
 
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
-[NAICS](https://ejanalysis.github.io/EJAM/reference/NAICS.md)
-[`naics_categories()`](https://ejanalysis.github.io/EJAM/reference/naics_categories.md)
-[`naics_findwebscrape()`](https://ejanalysis.github.io/EJAM/reference/naics_findwebscrape.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
+[NAICS](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md)
+[`naics_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md)
+[`naics_findwebscrape()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_findwebscrape.md)

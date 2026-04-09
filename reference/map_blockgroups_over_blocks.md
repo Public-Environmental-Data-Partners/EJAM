@@ -14,7 +14,7 @@ map_blockgroups_over_blocks(y)
 - y:
 
   output of
-  [`plot_blocks_nearby()`](https://ejanalysis.github.io/EJAM/reference/plot_blocks_nearby.md)
+  [`plot_blocks_nearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_blocks_nearby.md)
   but with returnmap = TRUE
 
 ## Value
@@ -23,10 +23,10 @@ leaflet map widget
 
 ## See also
 
-[`plot_blocks_nearby()`](https://ejanalysis.github.io/EJAM/reference/plot_blocks_nearby.md)
-[`map_shapes_mapview()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_mapview.md)
-[`map_shapes_leaflet()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_leaflet.md)
-[`map_shapes_plot()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_plot.md)
+[`plot_blocks_nearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_blocks_nearby.md)
+[`map_shapes_mapview()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_mapview.md)
+[`map_shapes_leaflet()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_leaflet.md)
+[`map_shapes_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_plot.md)
 
 ## Examples
 

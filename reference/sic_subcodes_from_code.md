@@ -18,22 +18,22 @@ sic_subcodes_from_code(mycodes)
 ## Value
 
 a subset of the
-[sictable](https://ejanalysis.github.io/EJAM/reference/sictable.md)
+[sictable](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md)
 table in [data.table](https://r-datatable.com) format (not just the
 codes column)
 
 ## Details
 
 similar idea was naics2children() but this is more robust See
-[`sic_from_any()`](https://ejanalysis.github.io/EJAM/reference/sic_from_any.md)
+[`sic_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_any.md)
 which uses this
 
 ## See also
 
 `sic_subcodes_from_code()`
-[`sic_from_code()`](https://ejanalysis.github.io/EJAM/reference/sic_from_code.md)
-[`sic_from_name()`](https://ejanalysis.github.io/EJAM/reference/sic_from_name.md)
-[`sic_from_any()`](https://ejanalysis.github.io/EJAM/reference/sic_from_any.md)
+[`sic_from_code()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_code.md)
+[`sic_from_name()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_name.md)
+[`sic_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_any.md)
 
 ## Examples
 

@@ -70,12 +70,12 @@ same as [`barplot()`](https://rdrr.io/r/graphics/barplot.html)
 ## Details
 
 see
-[`ejamit_compare_types_of_places()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_types_of_places.md)
+[`ejamit_compare_types_of_places()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_types_of_places.md)
 for more examples
 
 ## See also
 
-[`plot_barplot_sitegroups()`](https://ejanalysis.github.io/EJAM/reference/plot_barplot_sitegroups.md)
+[`plot_barplot_sitegroups()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_sitegroups.md)
 
 ## Examples
 

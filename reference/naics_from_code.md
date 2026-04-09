@@ -1,7 +1,7 @@
 # NAICS - search for industry names by NAICS code(s), 2-6 digits long each
 
 See
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 which uses this
 
 ## Usage
@@ -24,12 +24,12 @@ naics_from_code(mycodes, children = FALSE)
 ## Value
 
 a subset of the
-[naicstable](https://ejanalysis.github.io/EJAM/reference/naicstable.md)
+[naicstable](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md)
 data.table (not just the codes column)
 
 ## See also
 
-[`naics_subcodes_from_code()`](https://ejanalysis.github.io/EJAM/reference/naics_subcodes_from_code.md)
+[`naics_subcodes_from_code()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_subcodes_from_code.md)
 `naics_from_code()`
-[`naics_from_name()`](https://ejanalysis.github.io/EJAM/reference/naics_from_name.md)
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_name()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_name.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)

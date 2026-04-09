@@ -5,7 +5,7 @@ mapping layers available through EJScreen. EJScreen data are updated
 periodically. To see which years of data are in the current version, see
 the 13 indicators in the archived [Overview of Environmental Indicators
 in
-EJScreen](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.md)
+EJScreen](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.md)
 or [as
 archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
 or check the metadata.
@@ -40,7 +40,7 @@ Radiation](https://www.epa.gov/aboutepa/about-office-air-and-radiation).
 For more details on the PM2.5 indicator, including why it is important
 and what you can do moving forward, please visit the [EJScreen Indicator
 Overview for
-PM2.5](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.md)
+PM2.5](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.md)
 or [as
 archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25).
 
@@ -59,7 +59,7 @@ Radiation](https://www.epa.gov/aboutepa/about-office-air-and-radiation).
 For more details on the ozone indicator, including why it is important
 and what you can do moving forward, please visit the [EJScreen Indicator
 Overview for
-Ozone](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.md)
+Ozone](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.md)
 or [as
 archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-ozone).
 
@@ -93,7 +93,7 @@ Assessment](https://www.epa.gov/AirToxScreen).
 For more details on the diesel PM indicator, including why it is
 important and what you can do moving forward, please visit the [EJScreen
 Indicator Overview for Diesel
-PM](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.md)
+PM](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.md)
 or [as
 archived](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-diesel-particulate-matter).
 
@@ -250,7 +250,7 @@ Non-Compliance](https://web.archive.org/web/20250123161322/https://www.epa.gov/e
 
 The source of all the socioeconomic indicators is the [Census Bureau’s
 American Community Survey 5-year summary
-estimates](https://ejanalysis.github.io/EJAM/articles/).
+estimates](https://public-environmental-data-partners.github.io/EJAM/articles/).
 
 #### Percent people of color.
 
@@ -1260,7 +1260,7 @@ comparison at the national and state level.
   that captured the version that had been last updated on December 19,
   2024.*
 - ***[Fast-loading simplified versions of key webpages and reference
-  documents](https://ejanalysis.github.io/EJAM/articles/ejscreen.md)**
+  documents](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.md)**
   are available for EJSCREEN users (because [the complete archived EPA
   EJSCREEN website
   pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen)

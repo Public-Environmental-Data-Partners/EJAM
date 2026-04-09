@@ -26,12 +26,12 @@ ejamit_compare_distances(
 - sitepoints:
 
   like for
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - radii:
 
   optional, vector of radius values like 1:3 for
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - donuts_not_cumulative:
 
@@ -42,12 +42,12 @@ ejamit_compare_distances(
 - quiet:
 
   optional, passed to
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - silentinteractive:
 
   optional, passed to
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - plot:
 
@@ -74,7 +74,7 @@ ejamit_compare_distances(
 - ...:
 
   optional, passed to
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 ## Value
 
@@ -84,11 +84,11 @@ radius
 
 ## See also
 
-[`ejam2barplot_distances()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot_distances.md)
-[`plot_distance_by_pctd()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_by_pctd.md),
-[`distance_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md),
+[`ejam2barplot_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot_distances.md)
+[`plot_distance_by_pctd()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_by_pctd.md),
+[`distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md),
 and
-[`ejamit_compare_distances_fulloutput()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances_fulloutput.md)
+[`ejamit_compare_distances_fulloutput()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances_fulloutput.md)
 
 ## Examples
 

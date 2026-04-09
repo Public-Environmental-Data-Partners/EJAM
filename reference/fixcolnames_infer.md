@@ -45,7 +45,7 @@ found, ignoring case.
 ## Details
 
 `fixcolnames_infer()` and
-[`fixnames_aliases()`](https://ejanalysis.github.io/EJAM/reference/fixnames_aliases.md)
+[`fixnames_aliases()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.md)
 are very similar. and latlon_infer() is also very similar.
 
 - `fixcolnames_infer()` is designed to figure out for a data.frame which
@@ -56,7 +56,7 @@ are very similar. and latlon_infer() is also very similar.
   others as-is.
 
 - In contrast to that,
-  [`fixnames_aliases()`](https://ejanalysis.github.io/EJAM/reference/fixnames_aliases.md)
+  [`fixnames_aliases()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.md)
   is more general and every input element that can be matched with a
   canonical name gets changed to that preferred version, so even if
   multiple input names are different aliases of "lat", for example, they
@@ -64,6 +64,6 @@ are very similar. and latlon_infer() is also very similar.
 
 ## See also
 
-[`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
-[`fixnames_aliases()`](https://ejanalysis.github.io/EJAM/reference/fixnames_aliases.md)
+[`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
+[`fixnames_aliases()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.md)
 that is almost the same

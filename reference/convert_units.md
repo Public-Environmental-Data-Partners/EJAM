@@ -20,7 +20,7 @@ convert_units(x, from = "km", towhat = "mi")
   A string specifying original units of input parameter. Default is 'km'
   which is kilometers. Note all must be in the same units. Units can be
   specified as any of the aliases found in the code for
-  [`fixnames_aliases()`](https://ejanalysis.github.io/EJAM/reference/fixnames_aliases.md)
+  [`fixnames_aliases()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.md)
 
   Note that m2 is for square meters not square miles.
 

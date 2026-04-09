@@ -19,13 +19,13 @@ latlon_from_regid(regid = NULL)
 ## Value
 
 table in [data.table](https://r-datatable.com) format drawn from
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md) dataset, with
-columns "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS"
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+dataset, with columns "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS"
 "PGM_SYS_ACRNMS"
 
 ## See also
 
-[`url_frs_facility()`](https://ejanalysis.github.io/EJAM/reference/url_frs_facility.md)
+[`url_frs_facility()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_frs_facility.md)
 
 ## Examples
 

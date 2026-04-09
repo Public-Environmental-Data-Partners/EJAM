@@ -71,7 +71,7 @@ distance_by_group(
   returnwhat is "plotfilename" then it returns the full path including
   filename of a .png in a tempdir If returnwhat is "plot" then it
   returns the plot object as needed for
-  [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+  [`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
   or related functions
 
 ## Value
@@ -102,9 +102,9 @@ or the site may actually be inside the block, or exactly on top of the
 internal point of the block, in which case zero would not be an
 appropriate estimate of the distance, hence this adjustment is made in
 EJAM
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 ## See also
 
 `distance_by_group()`
-[`distance_by_group_plot()`](https://ejanalysis.github.io/EJAM/reference/distance_by_group_plot.md)
+[`distance_by_group_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/distance_by_group_plot.md)

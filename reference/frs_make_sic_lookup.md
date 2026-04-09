@@ -13,8 +13,9 @@ frs_make_sic_lookup(x)
 - x:
 
   table in [data.table](https://r-datatable.com) format
-  [frs](https://ejanalysis.github.io/EJAM/reference/frs.md) from
-  [`frs_clean_sic()`](https://ejanalysis.github.io/EJAM/reference/frs_clean_sic.md)
+  [frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+  from
+  [`frs_clean_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_clean_sic.md)
 
 ## Value
 
@@ -23,6 +24,6 @@ REGISTRY_ID, SIC columns
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
-[`frs_clean_sic()`](https://ejanalysis.github.io/EJAM/reference/frs_clean_sic.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_clean_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_clean_sic.md)
 and the frs_by_sic data.table

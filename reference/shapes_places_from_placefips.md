@@ -13,7 +13,7 @@ shapes_places_from_placefips(fips, myservice = "tiger", year = 2024)
 - fips:
 
   vector of 7-digit City/town/CDP codes as in the fips column of the
-  [censusplaces](https://ejanalysis.github.io/EJAM/reference/censusplaces.md)
+  [censusplaces](https://public-environmental-data-partners.github.io/EJAM/reference/censusplaces.md)
   dataset
 
 - myservice:
@@ -31,4 +31,4 @@ spatial data.frame for mapping
 
 ## See also
 
-[`shapes_from_fips()`](https://ejanalysis.github.io/EJAM/reference/shapes_from_fips.md)
+[`shapes_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapes_from_fips.md)

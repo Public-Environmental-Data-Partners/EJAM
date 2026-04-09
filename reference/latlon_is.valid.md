@@ -37,7 +37,7 @@ latlon_is.valid(
 - exact_but_slow_islandareas:
 
   see
-  [`latlon_is.islandareas()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.islandareas.md)
+  [`latlon_is.islandareas()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.islandareas.md)
 
 ## Value
 
@@ -67,14 +67,14 @@ lon must be ( between -180 and -64) OR (between 172 and 180)
 
 ## See also
 
-[`latlon_is.usa()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.usa.md)
-[`latlon_is.islandareas()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.islandareas.md)
-[`latlon_is.available()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.available.md)
-[`latlon_is.possible()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.possible.md)
-[`latlon_df_clean()`](https://ejanalysis.github.io/EJAM/reference/latlon_df_clean.md)
-[`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
+[`latlon_is.usa()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.usa.md)
+[`latlon_is.islandareas()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.islandareas.md)
+[`latlon_is.available()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.available.md)
+[`latlon_is.possible()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.possible.md)
+[`latlon_df_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_df_clean.md)
+[`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
 `latlon_is.valid()`
-[`latlon_as.numeric()`](https://ejanalysis.github.io/EJAM/reference/latlon_as.numeric.md)
+[`latlon_as.numeric()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_as.numeric.md)
 
 ## Examples
 

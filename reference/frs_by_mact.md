@@ -14,10 +14,10 @@ For background information on MACT NESHAP subparts:
   sites](https://www.epa.gov/stationary-sources-air-pollution/national-emission-standards-hazardous-air-pollutants-neshap-8)
 
 This file is not stored in the package, but is obtained via
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md).
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md).
 
 See also
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 
 There are about 115k rows here but only about 86k unique program IDs in
 this table, which is from the [ECHO data download of ICIS Air and
@@ -45,10 +45,10 @@ subpart titles in downloaded data from ECHO/FRS, such as
 
 ## See also
 
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
-[mact_table](https://ejanalysis.github.io/EJAM/reference/mact_table.md)
-[frs_by_programid](https://ejanalysis.github.io/EJAM/reference/frs_by_programid.md)
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md)
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
+[mact_table](https://public-environmental-data-partners.github.io/EJAM/reference/mact_table.md)
+[frs_by_programid](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
 
 ## Examples
 

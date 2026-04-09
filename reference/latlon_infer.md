@@ -23,8 +23,8 @@ and lon
 ## See also
 
 latlon_df_clean() latlon_is.valid()
-latlon_as.numeric()[`fixnames_aliases()`](https://ejanalysis.github.io/EJAM/reference/fixnames_aliases.md)
-[`fixcolnames_infer()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames_infer.md)
+latlon_as.numeric()[`fixnames_aliases()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.md)
+[`fixcolnames_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames_infer.md)
 
 ## Examples
 

@@ -24,18 +24,18 @@ See `pkg_dupeRfiles()` for files supporting a shiny app that is not a
 package
 
 See
-[`pkg_dupenames()`](https://ejanalysis.github.io/EJAM/reference/pkg_dupenames.md)
+[`pkg_dupenames()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_dupenames.md)
 for objects that are in R packages.
 
 See
-[`pkg_data()`](https://ejanalysis.github.io/EJAM/reference/pkg_data.md)
+[`pkg_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_data.md)
 for objects that are in R packages.
 
 See
-[`pkg_functions_and_data()`](https://ejanalysis.github.io/EJAM/reference/pkg_functions_and_data.md)
+[`pkg_functions_and_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_functions_and_data.md)
 for functions in R package.
 
 See
-[`pkg_functions_that_use()`](https://ejanalysis.github.io/EJAM/reference/pkg_functions_that_use.md) -
+[`pkg_functions_that_use()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_functions_that_use.md) -
 searches for text in each function exported by pkg (or each .R source
 file in pkg/R)

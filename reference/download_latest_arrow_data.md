@@ -21,9 +21,10 @@ download_latest_arrow_data(
 
 - repository:
 
-  repository name such as https://ejanalysis.github.io/EJAM or
-  "XYZ/ejamdata" (wherever the ejamdata repo is hosted, as specified in
-  the DESCRIPTION file of this package)
+  repository owner/name such as
+  Public-Environmental-Data-Partners/ejamdata or "XYZ/ejamdata"
+  (wherever the ejamdata repo is hosted, as specified in the DESCRIPTION
+  file of this package)
 
 - envir:
 

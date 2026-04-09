@@ -28,4 +28,4 @@ speedmessage(n, perhourslow = 1000, perhourfast = 12000, perhourguess = 6000)
 
 ## See also
 
-[`speedreport()`](https://ejanalysis.github.io/EJAM/reference/speedreport.md)
+[`speedreport()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedreport.md)

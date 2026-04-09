@@ -25,6 +25,6 @@ NULL or vector of ids
 
 ## See also
 
-[`sites_from_input()`](https://ejanalysis.github.io/EJAM/reference/sites_from_input.md)
-[`frs_from_regid()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_regid.md)
+[`sites_from_input()`](https://public-environmental-data-partners.github.io/EJAM/reference/sites_from_input.md)
+[`frs_from_regid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_regid.md)
 regids_valid()

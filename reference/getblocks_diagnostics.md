@@ -18,14 +18,14 @@ getblocks_diagnostics(
 - x:
 
   The output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   like
-  [testoutput_getblocksnearby_10pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
+  [testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
 
 - detailed:
 
   if TRUE, also shows in console a long table of frequencies via
-  [`getblocks_summarize_blocks_per_site()`](https://ejanalysis.github.io/EJAM/reference/getblocks_summarize_blocks_per_site.md)
+  [`getblocks_summarize_blocks_per_site()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocks_summarize_blocks_per_site.md)
 
 - see_pctiles:
 
@@ -42,9 +42,9 @@ A list of stats
 ## See also
 
 This relies on
-[`getblocks_summarize_blocks_per_site()`](https://ejanalysis.github.io/EJAM/reference/getblocks_summarize_blocks_per_site.md)
+[`getblocks_summarize_blocks_per_site()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocks_summarize_blocks_per_site.md)
 and
-[`getblocks_summarize_sites_per_block()`](https://ejanalysis.github.io/EJAM/reference/getblocks_summarize_sites_per_block.md)
+[`getblocks_summarize_sites_per_block()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocks_summarize_sites_per_block.md)
 
 ## Examples
 

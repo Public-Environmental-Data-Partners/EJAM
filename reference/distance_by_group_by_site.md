@@ -1,7 +1,7 @@
 # Ratios at each site, of avg dist of group / avg dist of everyone else near site
 
 Like
-[`distance_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
 but for multiple sites - DRAFT FUNCTION
 
 ## Usage
@@ -15,7 +15,7 @@ distance_by_group_by_site(bybg)
 - bybg:
 
   such as
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)\$results_bybg_people
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)\$results_bybg_people
 
 ## Value
 
@@ -63,11 +63,11 @@ is lower) than other groups within 3 miles of the site.
 
 ## See also
 
-[`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
-[`distance_by_group_plot()`](https://ejanalysis.github.io/EJAM/reference/distance_by_group_plot.md)
-[`plot_distance_mean_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
-[`distance_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
-[`distance_mean_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
+[`distance_by_group_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/distance_by_group_plot.md)
+[`plot_distance_mean_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`distance_mean_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
 
 ## Examples
 

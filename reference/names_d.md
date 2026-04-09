@@ -18,7 +18,7 @@ To see other groups of variables: unique(map_headernames\$varlist)
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[map_headernames](https://ejanalysis.github.io/EJAM/reference/map_headernames.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[map_headernames](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
 names_d
-[names_e](https://ejanalysis.github.io/EJAM/reference/names_e.md)
+[names_e](https://public-environmental-data-partners.github.io/EJAM/reference/names_e.md)
