@@ -1,4 +1,4 @@
-# Development
+# EJAM 2.32.8 (April 2026)
 
 - Moved EJAM and ejamdata repositories and documentation website (and updated all URLs) by changing owner from "ejanalysis" to "Public-Environmental-Data-Partners"
 - MACT, NAICS, SIC categories initially selected at launch of app now can be specified as parameters mact, naics, sic in `ejamapp()`, or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab. Default SIC was added.

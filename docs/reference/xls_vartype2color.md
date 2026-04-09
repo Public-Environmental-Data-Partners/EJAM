@@ -22,6 +22,6 @@ vector of colors like c('lightorange', 'gray')
 
 ## See also
 
-[`xls_varname2vartype()`](https://ejanalysis.github.io/EJAM/reference/xls_varname2vartype.md)
+[`xls_varname2vartype()`](https://public-environmental-data-partners.github.io/EJAM/reference/xls_varname2vartype.md)
 `xls_vartype2color()`
-[`xls_varname2color()`](https://ejanalysis.github.io/EJAM/reference/xls_varname2color.md)
+[`xls_varname2color()`](https://public-environmental-data-partners.github.io/EJAM/reference/xls_varname2color.md)

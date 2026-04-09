@@ -18,7 +18,7 @@ table_rounding_info(var, varnametype = "rname")
 - varnametype:
 
   which column of
-  [map_headernames](https://ejanalysis.github.io/EJAM/reference/map_headernames.md)
+  [map_headernames](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
   to use when looking for var, like "rname" or "api" or "long"
 
 ## Value
@@ -27,10 +27,10 @@ named vector same size as var, with var as names.
 
 ## See also
 
-[`table_signif_round_x100()`](https://ejanalysis.github.io/EJAM/reference/table_signif_round_x100.md)
-[`table_signif()`](https://ejanalysis.github.io/EJAM/reference/table_signif.md)
-[`table_round()`](https://ejanalysis.github.io/EJAM/reference/table_round.md)
-[`table_x100()`](https://ejanalysis.github.io/EJAM/reference/table_x100.md)
+[`table_signif_round_x100()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_signif_round_x100.md)
+[`table_signif()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_signif.md)
+[`table_round()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_round.md)
+[`table_x100()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_x100.md)
 
 ## Examples
 

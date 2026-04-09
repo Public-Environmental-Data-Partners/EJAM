@@ -25,7 +25,7 @@ latlon_from_anything(
   y must be the latitudes). File or data.frame/data.table/matrix must
   have columns called lat and lon, or names that can be inferred to be
   that by
-  [`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
+  [`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
 
 - lon_if_used:
 
@@ -44,7 +44,7 @@ latlon_from_anything(
 - set_invalid_to_na:
 
   used by
-  [`latlon_df_clean()`](https://ejanalysis.github.io/EJAM/reference/latlon_df_clean.md)
+  [`latlon_df_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_df_clean.md)
 
 ## Value
 
@@ -54,30 +54,30 @@ were in anything), and a logical column called "valid"
 ## Details
 
 Also see closely related function
-[`sitepoints_from_any()`](https://ejanalysis.github.io/EJAM/reference/sitepoints_from_any.md).
+[`sitepoints_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sitepoints_from_any.md).
 
 This function relies on
 
-[`read_csv_or_xl()`](https://ejanalysis.github.io/EJAM/reference/read_csv_or_xl.md)
+[`read_csv_or_xl()`](https://public-environmental-data-partners.github.io/EJAM/reference/read_csv_or_xl.md)
 and
 
-[`latlon_df_clean()`](https://ejanalysis.github.io/EJAM/reference/latlon_df_clean.md)
+[`latlon_df_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_df_clean.md)
 which in turn uses
-[`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
-[`latlon_as.numeric()`](https://ejanalysis.github.io/EJAM/reference/latlon_as.numeric.md)
-[`latlon_is.valid()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.valid.md)
+[`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
+[`latlon_as.numeric()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_as.numeric.md)
+[`latlon_is.valid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.valid.md)
 
 ## See also
 
-[`sitepoints_from_any()`](https://ejanalysis.github.io/EJAM/reference/sitepoints_from_any.md)
+[`sitepoints_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sitepoints_from_any.md)
 which is like this but also adds ejam_uniq_id column,
-[`latlon_from_fips()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_fips.md)
+[`latlon_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_fips.md)
 and
-[`latlon_from_shapefile_centroids()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_shapefile_centroids.md)
+[`latlon_from_shapefile_centroids()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_shapefile_centroids.md)
 that find centroids, and see
-[`read_csv_or_xl()`](https://ejanalysis.github.io/EJAM/reference/read_csv_or_xl.md)
+[`read_csv_or_xl()`](https://public-environmental-data-partners.github.io/EJAM/reference/read_csv_or_xl.md)
 and
-[`latlon_df_clean()`](https://ejanalysis.github.io/EJAM/reference/latlon_df_clean.md)
+[`latlon_df_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_df_clean.md)
 
 ## Examples
 

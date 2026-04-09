@@ -21,7 +21,7 @@ same time.
 ## What Can You Do with EJAM?
 
 [What is
-EJAM?](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/whatis.html)
+EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
 
 ## Status of EJAM package in 2026
 
@@ -63,4 +63,4 @@ list under the “Tools” tab in EJSCREEN), or directly via this link:
 [ejanalysis.org/ejamapp](https://ejanalysis.org/ejamapp)
 
 For information about how to host the web app, see [Deploying the Web
-App](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-deploy-app.html)
+App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.html)

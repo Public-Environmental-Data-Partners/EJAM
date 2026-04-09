@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,24 @@
       <small>Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.32.8" id="ejam-2328-april-2026">EJAM 2.32.8 (April 2026)<a class="anchor" aria-label="anchor" href="#ejam-2328-april-2026"></a></h2>
+<ul><li>Moved EJAM and ejamdata repositories and documentation website (and updated all URLs) by changing owner from “ejanalysis” to “Public-Environmental-Data-Partners”</li>
+<li>MACT, NAICS, SIC categories initially selected at launch of app now can be specified as parameters mact, naics, sic in <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab. Default SIC was added.</li>
+<li>MACT, NAICS, SIC validation improved in server. Fixed some edge cases related to invalid mact codes, too many points selected, etc. Removed obsolete naics_validation() function. See better <code><a href="../reference/naics_is.valid.html">naics_is.valid()</a></code>.</li>
+<li>Server handling of specifying large numbers of points was improved.</li>
+<li>Server handling of capitalization of column names in uploaded registry id/programs made more flexible.</li>
+<li>Server prints more consistent info about selected categories of sites to console (and server log, depending on how app is hosted)</li>
+<li>Fixed <code><a href="../reference/ejam2shapefile.html">ejam2shapefile()</a></code> where it had problems if closely related filename had previously been used</li>
+<li>Added utility <code><a href="../reference/distance_epa_api.html">distance_epa_api()</a></code> that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.</li>
+<li>Added utility <code><a href="../reference/calc_formulas_from_varname.html">calc_formulas_from_varname()</a></code> that looks at <code>formulas_ejscreen_acs</code> and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.</li>
+<li>Added parameter to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)</li>
+<li>Added <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.</li>
+<li>Renamed utility api_run() as <code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code> to be consistent with <code>ejamap()</code> and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>
+</li>
+<li>Added utility <code><a href="../reference/url_package.html">url_package()</a></code> based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.</li>
+<li>Documented utilities <code><a href="../reference/grepn.html">grepn()</a></code> and <code><a href="../reference/found_in_files.html">found_in_files()</a></code> (and also improved some internal/unexported utilities pkg_functions_* )</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.7" id="ejam-2327-february-2026">EJAM 2.32.7 (February 2026)<a class="anchor" aria-label="anchor" href="#ejam-2327-february-2026"></a></h2>
 <ul><li>
@@ -120,7 +138,7 @@
 <ul><li>Changed links in header at top right of the webpages, to link to “Share data feedback” and “Help improve the tool” forms just like CEJST has and EJSCREEN is adding. The “Contact Us” link to an email address was removed.</li>
 <li>Updated text in the “About” tab, to refer to and link to EJSCREEN, and to refer to EJAM in terms of EJSCREEN.</li>
 <li>Updated text in README</li>
-<li>Updated text in the <a href="https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html" class="external-link">Future Plans</a> and other vignettes/articles.</li>
+<li>Updated text in the <a href="https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-future-plans.html" class="external-link">Future Plans</a> and other vignettes/articles.</li>
 <li>Renamed <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> parameters (in.analysis_title changed to analysis_title) to be consistent with <code><a href="../reference/ejam2report.html">ejam2report()</a></code> parameter, or to simplify (react.v1_summary_plot changed to report_plot).</li>
 <li>
 <code><a href="../reference/ejamapp.html">ejamapp()</a></code> now lets you specify the city/cities to analyze (to show as preselected upon launch), via default_cities_picked parameter</li>
@@ -148,7 +166,7 @@
 <li>Fixed bug in <code><a href="../reference/fixcolnames.html">fixcolnames()</a></code> that was only renaming the first instance of any duplicated inputs</li>
 <li>Fixed various smaller issues like edge cases or typos in comments or messages.</li>
 </ul></li>
-<li><p>Added (strong) recommendation that you obtain a Census API key, in the <a href="https://ejanalysis.github.io/EJAM/articles/installing.html" class="external-link">guide to installing the package</a>. Also added warnings when envt var CENSUS_API_KEY not found before trying to use <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a> / <a href="https://cran.r-project.org/web/packages/tidycensus/index.html" class="external-link">tidycensus on CRAN</a> or <a href="https://cran.r-project.org/web/packages/tigris/index.html" class="external-link">tigris package</a> downloads of ACS Info or Census unit boundaries, e.g., in <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> and elsewhere.</p></li>
+<li><p>Added (strong) recommendation that you obtain a Census API key, in the <a href="https://Public-Environmental-Data-Partners.github.io/EJAM/articles/installing.html" class="external-link">guide to installing the package</a>. Also added warnings when envt var CENSUS_API_KEY not found before trying to use <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a> / <a href="https://cran.r-project.org/web/packages/tidycensus/index.html" class="external-link">tidycensus on CRAN</a> or <a href="https://cran.r-project.org/web/packages/tigris/index.html" class="external-link">tigris package</a> downloads of ACS Info or Census unit boundaries, e.g., in <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> and elsewhere.</p></li>
 <li><p>Specified R version 4.3 as the minimum required per the DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the <a href="https://ropensci.org/r-universe/" class="external-link">R universe platform</a> and maybe eventually <a href="https://cran.r-project.org" class="external-link">CRAN</a> are other options.</p></li>
 <li><p>Removed dependency on a few packages rarely needed.</p></li>
 <li><p>Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit_<em>, ejscreenapi<strong>, ejscreen_vs</strong>, ejscreenREST<strong>, testoutput</strong></em>, etc.</p></li>
@@ -163,7 +181,7 @@
 <li>Added example of using api_run() (later renamed as <code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code>) to locally run API draft in background</li>
 <li>Revised github actions; Added a github action workflow to run R CMD check, via <code><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck::rcmdcheck()</a></code> to find various problems in package.</li>
 </ul></li>
-<li><p>Added article (vignette) about <a href="https://ejanalysis.github.io/EJAM/articles/dev-speed.html" class="external-link">speed – how long it takes to analyze thousands of sites</a></p></li>
+<li><p>Added article (vignette) about <a href="https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-speed.html" class="external-link">speed – how long it takes to analyze thousands of sites</a></p></li>
 <li><p>Improved <code><a href="../reference/acs_bybg.html">acs_bybg()</a></code> for creating new indicators based on Census Bureau ACS data</p></li>
 <li><p>Improved <code><a href="../reference/popshare_p_lives_at_what_n.html">popshare_p_lives_at_what_n()</a></code> for reporting how most of the residents are at a few key sites typically</p></li>
 <li><p>Added <code>sites_only()</code> helper; added <code><a href="../reference/sites_from_input.html">sites_from_input()</a></code> examples</p></li>
@@ -262,9 +280,9 @@
 <li>
 <a href="https://www.ejanalysis.org/ejamdocs" class="external-link">ejanalysis.org/ejamdocs</a> directs you to the documentation:
 <ul><li>
-<a href="https://ejanalysis.github.io/EJAM/articles/whatis.html" class="external-link">What is EJAM?</a> is an overview of what EJAM can do.</li>
+<a href="https://Public-Environmental-Data-Partners.github.io/EJAM/articles/whatis.html" class="external-link">What is EJAM?</a> is an overview of what EJAM can do.</li>
 <li>
-<a href="https://ejanalysis.github.io/EJAM/articles/webapp.html" class="external-link">Accessing the Web App</a> is about the web app.</li>
+<a href="https://Public-Environmental-Data-Partners.github.io/EJAM/articles/webapp.html" class="external-link">Accessing the Web App</a> is about the web app.</li>
 </ul></li>
 </ul></div>
 <div class="section level4">
@@ -358,7 +376,7 @@
 <li>Added ability to set many options and defaults as parameters passed to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</li>
 <li>Added many examples to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> documentation showing how to change the defaults and options. You can now provide a set of points, fips, or polygons to preload at launch e.g., <code>ejamapp(sitepoints=testpoints_10, radius=5)</code>
 </li>
-<li>Drafted a new article with technical details: <a href="https://ejanalysis.github.io/EJAM/articles/dev-app-settings.html" class="external-link">Defaults and Custom Settings for the Web App</a>
+<li>Drafted a new article with technical details: <a href="https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-app-settings.html" class="external-link">Defaults and Custom Settings for the Web App</a>
 </li>
 <li>Changed where the app title is stored. It is stored in the DESCRIPTION file as a field. (The app title also can be modified by editing <code>global_defaults_package.R</code> or by passing parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>).</li>
 <li>Changed how Advanced tab visibility is controlled (“default_can_show_advanced_settings” and “default_show_advanced_settings” set initial values of shiny inputs of the same names)</li>
@@ -700,11 +718,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>February 2026</p>
+  <p>April 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.7</p>
+  <p>EJAM Version 2.32.8</p>
 </div>
 
     </footer></div>

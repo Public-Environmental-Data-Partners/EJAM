@@ -29,7 +29,7 @@ vector of types: "block", "blockgroup", "tract", "city", "county", or
 ## Details
 
 NOTE: Does NOT check if fips is a real fips. For that, use
-[`fips_valid()`](https://ejanalysis.github.io/EJAM/reference/fips_valid.md)
+[`fips_valid()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_valid.md)
 
 Note a number of length 11 is an ambiguous case this is able to resolve
 as either a complete tract fips or a blockgroup fips with a missing

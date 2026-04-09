@@ -69,7 +69,7 @@ is a 3-dimensional array of numbers. See dimnames(output\$stats).
 ## Details
 
 This function relies on
-[`colcounter_summary_all()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_all.md)
+[`colcounter_summary_all()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_all.md)
 
 It helps provide stat summaries such as:
 

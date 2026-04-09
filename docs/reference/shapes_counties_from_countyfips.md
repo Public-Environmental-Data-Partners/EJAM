@@ -53,4 +53,4 @@ county boundaries for mapping.
 
 ## See also
 
-[`shapes_from_fips()`](https://ejanalysis.github.io/EJAM/reference/shapes_from_fips.md)
+[`shapes_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapes_from_fips.md)

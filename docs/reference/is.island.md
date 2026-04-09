@@ -28,7 +28,7 @@ logical vector of same length as the input
 
 ## See also
 
-[`latlon_is.islandareas()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.islandareas.md)
+[`latlon_is.islandareas()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.islandareas.md)
 
 ## Examples
 

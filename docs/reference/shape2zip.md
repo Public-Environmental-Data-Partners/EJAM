@@ -16,7 +16,7 @@ shape2zip(
 - shp:
 
   a spatial data.frame as from
-  [`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+  [`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)
   or
   [`sf::st_read()`](https://r-spatial.github.io/sf/reference/st_read.html)
 

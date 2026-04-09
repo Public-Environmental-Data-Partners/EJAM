@@ -1,6 +1,6 @@
 # Environmental Justice Analysis Multisite tool
 
-#
+# 
 
 The Environmental Justice Analysis Multisite tool lets you easily and
 quickly see residential population and environmental information
@@ -9,7 +9,8 @@ same time.
 
 ## What Can You Do with EJAM?
 
-[What is EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
+[What is
+EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
 
 ## Status of EJAM package in 2026
 
@@ -21,7 +22,9 @@ R package EJAM was archived.*
 
 *Ongoing development since then is not associated with EPA*, and that
 development including any open source contributions, has taken place in
-a separate repository, a non-EPA, detached fork.
+a separate repository, called
+[Public-Environmental-Data-Partners/EJAM](https://github.com/Public-Environmental-Data-Partners/EJAM),
+a non-EPA, detached fork.
 
 ### code repositories and open source contributions
 
@@ -62,8 +65,8 @@ Starting the Analysis
   : EJAM - Environmental Justice Analysis Multisite tool
 - [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
   : Launch EJAM as Shiny web app (e.g. to run it locally in RStudio)
-- [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md) :
-  Get an EJ analysis (residential population and environmental
+- [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  : Get an EJ analysis (residential population and environmental
   indicators) in or near a list of locations
 - [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
   : Compare EJAM results overall for more than one radius Run ejamit()
@@ -171,8 +174,8 @@ Utilities for working with latitude/ longitude or address
 - [`frs_from_sitename()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_sitename.md)
   : Use site name text search to see FRS Facility Registry Service data
   on those EPA-regulated sites
-- [`frs`](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md) : frs
-  (DATA) EPA Facility Registry Service table of regulated sites
+- [`frs`](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+  : frs (DATA) EPA Facility Registry Service table of regulated sites
 - [`frs_by_programid`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)
   : frs_by_programid (DATA) data.table of Program System ID code(s) for
   each EPA-regulated site in the Facility Registry Service
@@ -236,11 +239,12 @@ NAICS, SIC, MACT, or EPA Program
 - [`naics_counts`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_counts.md)
   : naics_counts (DATA) data.frame with regulated facility counts for
   each industry code
-- [`NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md) :
-  NAICS (DATA) named list of all NAICS code numbers and industry name
+- [`NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md)
+  : NAICS (DATA) named list of all NAICS code numbers and industry name
   for each
-- [`SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md) : SIC
-  (DATA) named list of all SIC code numbers and category name for each
+- [`SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md)
+  : SIC (DATA) named list of all SIC code numbers and category name for
+  each
 - [`naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md)
   : naicstable (DATA) data.table of NAICS code(s) and industry names for
   each EPA-regulated site
@@ -487,10 +491,10 @@ distances
 - [`blockgroupstats`](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md)
   : blockgroupstats (DATA) residential population and environmental
   indicators for Census blockgroups
-- [`bgej`](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md) : bgej
-  (DATA) Summary Indexes for Census blockgroups
-- [`bgpts`](https://public-environmental-data-partners.github.io/EJAM/reference/bgpts.md) :
-  bgpts (DATA) lat lon of popwtd center of blockgroup, and count of
+- [`bgej`](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md)
+  : bgej (DATA) Summary Indexes for Census blockgroups
+- [`bgpts`](https://public-environmental-data-partners.github.io/EJAM/reference/bgpts.md)
+  : bgpts (DATA) lat lon of popwtd center of blockgroup, and count of
   blocks per blockgroup
 - [`bg_cenpop2020`](https://public-environmental-data-partners.github.io/EJAM/reference/bg_cenpop2020.md)
   : bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups
@@ -883,6 +887,10 @@ Report Percentiles or Means
 
 ## Utilities providing URL or API info
 
+- [`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md)
+  : helper for using the EJAM API, a wrapper function to make API calls
+  for data or report Note this function would be most useful to an R
+  user who does NOT have EJAM installed.
 - [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
   : Get URL(s) of HTML summary reports for use with EJAM-API
 - [`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)
@@ -918,10 +926,12 @@ Utilities to handle variable names, indicator metadata, formulas, etc.
 
 - [`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
   : helper function to rename variables that are colnames of data.frame
-- [`names_d`](https://public-environmental-data-partners.github.io/EJAM/reference/names_d.md) :
-  a list of variable names for internal use in EJAM
-- [`names_e`](https://public-environmental-data-partners.github.io/EJAM/reference/names_e.md) :
-  a list of variable names for internal use in EJAM
+- [`fixcolnames_anyoldtype()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames_anyoldtype.md)
+  : helper function to rename variables that are colnames of data.frame
+- [`names_d`](https://public-environmental-data-partners.github.io/EJAM/reference/names_d.md)
+  : a list of variable names for internal use in EJAM
+- [`names_e`](https://public-environmental-data-partners.github.io/EJAM/reference/names_e.md)
+  : a list of variable names for internal use in EJAM
 - [`map_headernames`](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
   : map_headernames provides metadata about all indicators in EJSCREEN /
   EJAM
@@ -946,7 +956,8 @@ EJSCREEN Indicators & Reports
 
 Overview for EJAM Users
 
-- [What is EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.md):
+- [What is
+  EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.md):
 
   What is EJAM?
 

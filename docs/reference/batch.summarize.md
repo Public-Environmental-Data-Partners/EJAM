@@ -29,8 +29,8 @@ batch.summarize(
 
   Not typically used. If it is provided, then parameters sitestats,
   popstats, and overall are ignored. A list that is the output of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) –
-  the list of tables including results_bysite, results_bybg_people,
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  – the list of tables including results_bysite, results_bybg_people,
   results_overall. ejamit() actually already does batch.summarize(), but
   this param might be useful interactively if you want to redo just the
   batch.summarize() step with new params like thresholds or probs.
@@ -122,14 +122,14 @@ matrix of summary stats.
 cols: Each element in a summary col summarizes 1 row (site) across all
 the RELEVANT cols of batch data (e.g., all US Summary Index
 percentiles). This type of info is also saved in a tab of the output of
-[`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+[`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
 
 rows: Each element in a summary row summarizes 1 column (field) across
 all the rows of batch data. A subset of this is \$keyindicators
 
 keystats: Key subset of the summary stats (for all indicators), for
 convenience. See
-[`ejam2table_tall()`](https://ejanalysis.github.io/EJAM/reference/ejam2table_tall.md)
+[`ejam2table_tall()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2table_tall.md)
 to view this.
 
 keyindicators: Key subset of the indicators from \$row results (for
@@ -143,7 +143,7 @@ standards](https://www.epa.gov/criteria-air-pollutants/process-determine-whether
 and who have at least one school / hospital / church in their
 blockgroup, and with no broadband, and with no health insurance. This
 can be viewed using
-[`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md)
+[`ejam2areafeatures()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2areafeatures.md)
 
 In the flagged_areas table, summary stats mean the following:
 
@@ -163,7 +163,7 @@ In the flagged_areas table, summary stats mean the following:
 ## Details
 
 This is the function that takes the
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 results and calculates even more summary statistics, notably to
 characterize the distribution of indicator values across people and
 across sites, as percentile of analyzed people and percentile of
@@ -175,8 +175,9 @@ formulas to this code.
 Note it can provide population-weighted summary stats only for the
 indicators found in popstats, which is fewer than those in sitestats,
 since
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
-or [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+or
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 did not provide various extra indicators in the very large
 results_bybg_people table. The parameter sitestats but not popstats has
 the ratios and pctiles (and US/State averages) of indicators, plus
@@ -187,5 +188,5 @@ nationwide among the top 10% of people analyzed.
 
 ## See also
 
-[`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md)
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+[`ejam2areafeatures()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2areafeatures.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)

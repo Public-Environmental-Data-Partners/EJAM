@@ -36,21 +36,21 @@ probably the simplest:
 
 method A. start in **RStudio**: Click **File**, **New Project**,
 **Version Control**, **Git**, and for the repository URL, enter
-`https://github.com/ejanalysis/EJAM`. For help: [How to create a new
-RStudio project by cloning a remote Git
+`https://github.com/Public-Environmental-Data-Partners/EJAM`. For help:
+[How to create a new RStudio project by cloning a remote Git
 repo](https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository).
 Then add it to GitHub Desktop if that is a tool you use.
 
 method B. start in **GitHub Desktop**: Click **File**, **Clone**,
 **URL**, and for the repository URL, enter
-`https://github.com/ejanalysis/EJAM`. For help: [How to clone a repo
-using GitHub
+`https://github.com/Public-Environmental-Data-Partners/EJAM`. For help:
+[How to clone a repo using GitHub
 Desktop](https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop).
 Then in **RStudio**: Click **File**, **New Project**, **Existing
 Directory**, and specify the folder you just cloned into.
 
 method C. start at **GitHub.com**: Go to [the EJAM repository
-page](https://github.com/ejanalysis/EJAM "github.com/ejanalysis/EJAM"),
+page](https://github.com/Public-Environmental-Data-Partners/EJAM "github.com/Public-Environmental-Data-Partners/EJAM"),
 click the green **Code** button, **Download Zip**, then unzip the zip
 file that contains the package. For help: [How to clone a repo from
 GitHub.com](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository).
@@ -112,6 +112,9 @@ If you *do have a PAT set up*, you can use
 [`remotes::install_github()`](https://remotes.r-lib.org/reference/install_github.html).
 (For help on PAT setup, see the last section of this article).
 
+Replace OWNER/REPO below with “Public-Environmental-Data-Partners/EJAM”
+including the quote marks
+
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
@@ -120,7 +123,7 @@ ref = github_release() # specifies you want the latest released version
 #ref = "development"   # development branch version
 
 remotes::install_github(
-  repo = "ejanalysis/EJAM", ref = ref, 
+  repo = OWNER/REPO, ref = ref, 
   dependencies=T, upgrade="always", build=F)
 library(EJAM)
 ```
@@ -131,16 +134,21 @@ If you *don’t have a [personal access
 token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens)
 (PAT) and don’t want to set one up*, you could [check the github
 repository for the latest
-release](https://github.com/ejanalysis/EJAM/releases/latest) and may be
-able to use
+release](https://github.com/Public-Environmental-Data-Partners/EJAM/releases/latest)
+and may be able to use
 [`remotes::install_url()`](https://remotes.r-lib.org/reference/install_url.html)
 something like this:
+
+Replace “URL_OF_REPO” below with
+“<https://github.com/Public-Environmental-Data-Partners/EJAM>” including
+the quote marks
 
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
+
 remote_zip = paste0(
-  "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
+  "URL_OF_REPO", "/archive/refs/tags/", zipname)
 remotes::install_url(url = remote_zip, 
                      dependencies=T, upgrade='always', build=F)
 library(EJAM)
@@ -149,11 +157,16 @@ library(EJAM)
 *or download the .zip file as a separate step, and install from that
 saved file:*
 
+Replace “URL_OF_REPO” below with
+“<https://github.com/Public-Environmental-Data-Partners/EJAM>” including
+the quote marks
+
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
+
 remote_zip = paste0(
-  "https://github.com/ejanalysis/EJAM/archive/refs/tags/", zipname)
+  "URL_OF_REPO", "/archive/refs/tags/", zipname)
 local_zip = file.path(tempdir(), zipname)
 download.file(remote_zip, destfile = local_zip)
 remotes::install_local(path = local_zip, 
@@ -174,7 +187,7 @@ etc.).
 ## Start Using EJAM
 
 After installing, see the [Basics - Quick Start
-Guide](https://ejanalysis.github.io/EJAM/articles/basics.md).
+Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.md).
 
 ------------------------------------------------------------------------
 
@@ -214,12 +227,12 @@ and Ubuntu, with various R versions and with `remotes::url_install()`
 and `remotes::github_install()`. When a pull request or push to the main
 branch of EJAM occurs, those tests run automatically as github actions
 in a workflow at
-<https://github.com/ejanalysis/EJAM/blob/main/.github/workflows> and
-logs of the results of those tests are here:
-<https://github.com/ejanalysis/EJAM/actions>. The same sort of tests
-could be set up to be triggered by pushes to the development branch, but
-just note a set of installation tests like these can take well over an
-hour to run on github.
+<https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/.github/workflows>
+and logs of the results of those tests are here:
+<https://github.com/Public-Environmental-Data-Partners/EJAM/actions>.
+The same sort of tests could be set up to be triggered by pushes to the
+development branch, but just note a set of installation tests like these
+can take well over an hour to run on github.
 
 ### Details on CRAN packages needed (dependencies)
 
@@ -255,26 +268,26 @@ On first use, the package should automatically download some data files
 from a related repository. Each time the package is attached via
 library() or require(), `.onAttach()` will check for updates and also
 will build a spatial index of Census block points called
-[`?localtree`](https://ejanalysis.github.io/EJAM/reference/quaddata.md),
+[`?localtree`](https://public-environmental-data-partners.github.io/EJAM/reference/quaddata.md),
 via
-[`indexblocks()`](https://ejanalysis.github.io/EJAM/reference/indexblocks.md).
+[`indexblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexblocks.md).
 
 Typically you would not need to download any datasets yourself, because
 EJAM just downloads these when the app starts (technically, when the R
 package is attached) (or only as needed in the case of certain datasets
 that are not always needed). Some datasets are installed along with the
 package, such as the
-[blockgroupstats](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md)
+[blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md)
 data. But large files like
-[blockpoints](https://ejanalysis.github.io/EJAM/reference/blockpoints.md)
+[blockpoints](https://public-environmental-data-partners.github.io/EJAM/reference/blockpoints.md)
 are stored in a separate data repo, and EJAM downloads them from there.
 You might want your own local copies, though, for these reasons:
 
 Attaching the package actually checks (using internal function
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md))
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md))
 for copies in memory first (e.g.,
 `exists("quaddata", envir = globalenv())`), then local disk (using
-[`dataload_from_local()`](https://ejanalysis.github.io/EJAM/reference/dataload_from_local.md)
+[`dataload_from_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.md)
 looking in the data folder of the (source or installed) package, as
 defined by `app_sys()` which is just a wrapper for
 [`system.file()`](https://rdrr.io/r/base/system.file.html)), then

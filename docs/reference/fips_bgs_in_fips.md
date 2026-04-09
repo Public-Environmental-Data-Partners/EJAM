@@ -32,7 +32,7 @@ Takes a vector of one or more FIPS that could be State (2-digit), County
 
 It also works for city/CDP fips but finds the blockgroups that are at
 least partly in the city bounds (see
-[`fips_bgs_in_city()`](https://ejanalysis.github.io/EJAM/reference/fips_bgs_in_city.md)).
+[`fips_bgs_in_city()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_bgs_in_city.md)).
 
 Returns unique vector of FIPS of all US blockgroups (including DC and
 Puerto Rico) that contain any specified blocks, are equal to any
@@ -41,7 +41,7 @@ tract/county/state FIPS.
 
 ## See also
 
-[`fips_lead_zero()`](https://ejanalysis.github.io/EJAM/reference/fips_lead_zero.md)
+[`fips_lead_zero()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_lead_zero.md)
 
 ## Examples
 

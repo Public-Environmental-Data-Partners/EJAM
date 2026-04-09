@@ -17,7 +17,7 @@ shapefile_from_json(path, cleanit = TRUE, crs = 4269, layer = NULL, ...)
 - cleanit:
 
   optional, whether to use
-  [`shapefile_clean()`](https://ejanalysis.github.io/EJAM/reference/shapefile_clean.md)
+  [`shapefile_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_clean.md)
 
 - crs:
 
@@ -43,4 +43,4 @@ data.frame like output of
 
 ## See also
 
-[`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+[`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)

@@ -37,4 +37,4 @@ NOT "- 2" and not "3-1" and not "2.0.6"
 
 ## See also
 
-[`is.numericish()`](https://ejanalysis.github.io/EJAM/reference/is.numericish.md)
+[`is.numericish()`](https://public-environmental-data-partners.github.io/EJAM/reference/is.numericish.md)

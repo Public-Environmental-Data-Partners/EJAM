@@ -1,9 +1,9 @@
 # Build text for report: Locations analyzed: e.g. (" specified point") based on sitetype ("latlon") and site_method
 
 Helps create text for excel report's notes sheet (via
-[`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+[`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
 helpers like
-[`table_xls_format()`](https://ejanalysis.github.io/EJAM/reference/table_xls_format.md))
+[`table_xls_format()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_xls_format.md))
 
 ## Usage
 
@@ -43,9 +43,9 @@ text string, phrase to use in excel notes tab
 
 ## See also
 
-[`report_residents_within_xyz_from_ejamit()`](https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz_from_ejamit.md)
+[`report_residents_within_xyz_from_ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/report_residents_within_xyz_from_ejamit.md)
 and
-[`report_residents_within_xyz()`](https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.md)
+[`report_residents_within_xyz()`](https://public-environmental-data-partners.github.io/EJAM/reference/report_residents_within_xyz.md)
 for a newer approach to this.
 
 ## Examples

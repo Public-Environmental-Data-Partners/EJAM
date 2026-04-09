@@ -32,11 +32,11 @@ REGISTRY_ID, and some renamed to for example lat, lon, NAICS, SIC
 ## Details
 
 Used by
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 This renames some columns (lat, lon, NAICS are new names) and it drops
 rows lacking lat/lon location info in the LATITUDE83 or LONGITUDE83
 columns
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)

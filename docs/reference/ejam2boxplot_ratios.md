@@ -19,7 +19,7 @@ ejam2boxplot_ratios(
 - ejamitout:
 
   output from an EJAM analysis, like from
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - radius:
 

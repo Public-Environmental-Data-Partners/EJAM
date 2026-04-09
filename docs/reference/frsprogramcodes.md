@@ -49,7 +49,7 @@ code](https://www.epa.gov/frs/frs-data-sources) aka data source.
 
 ## See also
 
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md)
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
 
 ## Examples
 

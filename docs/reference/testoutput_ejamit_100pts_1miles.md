@@ -19,8 +19,8 @@ include_ejindexes = TRUE)
 
 ## See also
 
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-[testoutput_doaggregate_100pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_doaggregate_100pts_1miles.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+[testoutput_doaggregate_100pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_doaggregate_100pts_1miles.md)
 and
-[testpoints_100](https://ejanalysis.github.io/EJAM/reference/testpoints_100.md)
+[testpoints_100](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_100.md)

@@ -46,10 +46,10 @@ prints a table of possible hits but returns just the vector of fips
 ## Details
 
 helper used by
-[`name2fips()`](https://ejanalysis.github.io/EJAM/reference/name2fips.md)
+[`name2fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/name2fips.md)
 
 Finding places by name is tricky because the master list
-[censusplaces](https://ejanalysis.github.io/EJAM/reference/censusplaces.md)
+[censusplaces](https://public-environmental-data-partners.github.io/EJAM/reference/censusplaces.md)
 names places using the words city, town, township, village, borrough,
 and CDP while most people will not think to include that qualifier as
 part of a query.

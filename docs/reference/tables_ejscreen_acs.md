@@ -62,4 +62,4 @@ TRACT ONLY, but also used by EJSCREEN:
 
 ## See also
 
-[formulas_ejscreen_acs](https://ejanalysis.github.io/EJAM/reference/formulas_ejscreen_acs.md)
+[formulas_ejscreen_acs](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs.md)

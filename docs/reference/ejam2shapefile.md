@@ -25,7 +25,7 @@ ejam2shapefile(
 - ejamitout:
 
   output of EJAM such as from
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - file:
 

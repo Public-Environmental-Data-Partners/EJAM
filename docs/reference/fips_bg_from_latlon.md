@@ -43,7 +43,7 @@ vector of blockgroup FIPS codes, same length as NROW(df)
 
 ## See also
 
-[`state_from_latlon()`](https://ejanalysis.github.io/EJAM/reference/state_from_latlon.md)
+[`state_from_latlon()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_latlon.md)
 (different approach, unclear which is faster)
 
 ## Examples

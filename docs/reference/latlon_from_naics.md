@@ -15,7 +15,7 @@ latlon_from_naics(naics, children = TRUE, id_only = FALSE, ...)
 
   a vector of naics codes or query of titles of NAICS, or a data.table
   with column named code, as with output of
-  [`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+  [`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 - children:
 
@@ -33,7 +33,7 @@ latlon_from_naics(naics, children = TRUE, id_only = FALSE, ...)
 - ...:
 
   passed to
-  [`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+  [`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 ## Value
 
@@ -43,7 +43,7 @@ naics_found, naics_query (unless id_only parameter set TRUE).
 naics_query is the input parameter that was used (that had been provided
 to this function as naics). naics_found and NAICS are identical
 (redundant), and are the code found that was listed in the
-[frs_by_naics](https://ejanalysis.github.io/EJAM/reference/frs_by_naics.md)
+[frs_by_naics](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md)
 table, so it might be a subcategory (child) of the naics_query term. For
 example, naics_query might be 33611 (5 digits) and for one facility the
 NAICS and naics_found might be 336111 (a 6-digit code) and for another
@@ -67,9 +67,9 @@ Important notes:
   multiple parent NAICS and you want to analyze results by NAICS!
 
 The functions like
-[`regid_from_naics()`](https://ejanalysis.github.io/EJAM/reference/regid_from_naics.md),
+[`regid_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/regid_from_naics.md),
 `latlon_from_naics()`, and
-[`frs_from_naics()`](https://ejanalysis.github.io/EJAM/reference/frs_from_naics.md)
+[`frs_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_naics.md)
 try to find EPA FRS sites based on naics codes or titles.
 
 EPA also provides a [FRS Facility Industrial Classification Search
@@ -80,11 +80,11 @@ See more about NAICS industry codes at <https://www.naics.com/search>
 
 ## See also
 
-[`frs_from_naics()`](https://ejanalysis.github.io/EJAM/reference/frs_from_naics.md)
-[`frs_from_sic()`](https://ejanalysis.github.io/EJAM/reference/frs_from_sic.md)
-[`latlon_from_sic()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_sic.md)
-[`regid_from_naics()`](https://ejanalysis.github.io/EJAM/reference/regid_from_naics.md)
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`frs_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_naics.md)
+[`frs_from_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_sic.md)
+[`latlon_from_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_sic.md)
+[`regid_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/regid_from_naics.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 ## Examples
 
