@@ -589,9 +589,9 @@ ss_upload_fips=null
 ss_upload_frs=null
 ss_upload_program=null
 ss_select_program="CAMDBS"
-ss_select_naics=null
-ss_select_sic=null
-ss_select_mact="AA"
+ss_select_naics="313"  # see default_naics
+ss_select_sic="2015"   # see default_sic
+ss_select_mact="AA" # see default_mact 
 naics_digits_shown="basic"
 add_naics_subcategories="TRUE"
 

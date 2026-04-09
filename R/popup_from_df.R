@@ -54,7 +54,7 @@ popup_from_df <- function(x, column_names=names(x), labels=column_names, n="all"
   # x <- x[ , names(x) %in% column_names]
   x <- x[ ,  column_names, drop = FALSE] # , drop = FALSE  is in case only 1 column specified
 
-  for (i in 1:NCOL(x)) { x[,i] <- paste(labels[i] , x[,i], sep = ': ' )}
+  for (i in 1:NCOL(x)) { x[,i] <- paste(htmltools::htmlEscape(labels[i]), htmltools::htmlEscape(as.character(x[,i])), sep = ': ') }
 
   as.vector(apply(x, MARGIN = 1, FUN = function(thisrow) paste(thisrow, collapse = '<br>')) )
 }
