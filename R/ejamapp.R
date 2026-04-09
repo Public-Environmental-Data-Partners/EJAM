@@ -109,9 +109,10 @@
 #' ejamapp(fips = name2fips(c("akutan,ak", "syracuse city,ny")))
 #'
 #'
-#'  ## Use preferred settings, for your set of analyses:
+#'  ## More options for settings:
 #'
 #' ejamapp(
+#'   default_show_advanced_settings=TRUE, # to make advanced tab visible at start
 #'   analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
 #'   radius = 3.1, # PREFERRED RADIUS
 #'   default_max_miles = 31,      # to raise the radius cap
@@ -129,13 +130,16 @@
 #'
 #' ejamapp(
 #'   analysis_title="Custom NAICS Analysis",
-#'   default_upload_dropdown="dropdown",
-#'   default_selected_type_of_site_category="NAICS",
-#'   default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
-#'   default_naics="562211",
-#'   radius=3.1,
-#'   default_show_advanced_settings=TRUE # to make advanced tab visible at start
+#'   naics="562211", # or default_naics="562211"
 #' )
+#'
+#'   ## SIC as the default:
+#'  sic_from_any(3585)
+#'  ejamapp(sic="3585")
+#'
+#'   ## MACT as the default:
+#'  mact_table$dropdown_label
+#'  ejamapp(mact="OOOO")
 #'
 #'   ## Cities dropdown list as default shown at launch:
 #'
@@ -266,8 +270,13 @@ ejamapp <- function(
 
   if ("fips" %in% names(dots)) {
     # dots$fips will be used
-    dots$default_upload_dropdown <- "upload"
-    dots$default_selected_type_of_site_upload <- "FIPS"
+    if (!('default_upload_dropdown' %in% names(dots))) {
+      dots$default_upload_dropdown <- "upload"
+    }
+    if (!('default_selected_type_of_site_upload' %in% names(dots))) {
+      dots$default_selected_type_of_site_upload <- "FIPS"
+    }
+    cat("launching with specified fips =", paste0(dots$fips, collapse = ", "), "\n")
   }
 
   if ("shp" %in% names(dots) && !("shapefile" %in% names(dots))) {
@@ -280,6 +289,7 @@ ejamapp <- function(
     # dots$shapefile will be used
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
+    cat("launching with specified shapefile", "\n")
   }
 
   if ("pts" %in% names(dots) && !("sitepoints" %in% names(dots))) {
@@ -291,6 +301,27 @@ ejamapp <- function(
   if ("sitepoints" %in% names(dots)) {
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "latlon"
+    cat("launching with specified sitepoints", "\n")
+  }
+
+  if ("naics" %in% names(dots)) {dots$default_naics <- dots$naics}
+  if ("default_naics" %in% names(dots)) {
+    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_selected_type_of_site_category <- "NAICS"
+    dots$default_naics_digits_shown <- "detailed"  # if default_naics is >3 digits, this has to be "detailed" not "basic"
+    cat("launching with specified default_naics =", paste0(dots$default_naics, collapse = ", "), "\n")
+  }
+  if ("sic" %in% names(dots)) {dots$default_sic <- dots$sic}
+  if ("default_sic" %in% names(dots)) {
+    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_selected_type_of_site_category <- "SIC"
+    cat("launching with specified default_sic =", paste0(dots$default_sic, collapse = ", "), "\n")
+    }
+  if ("mact" %in% names(dots)) {dots$default_mact <- dots$mact}
+  if ("default_mact" %in% names(dots)) {
+    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_selected_type_of_site_category <- "MACT"
+    cat("launching with specified default_mact =", paste0(dots$default_mact, collapse = ", "), "\n")
   }
 
   if ("default_radius" %in% names(dots)) {
@@ -298,26 +329,31 @@ ejamapp <- function(
   }
   if ("radius" %in% names(dots)) {
     dots$radius_default <- dots$radius
+    cat("launching with specified radius =", dots$radius_default, "\n")
   }
 
   # more aliases
   if ("default_report_title_multisite" %in% names(dots) && !("report_title_multisite" %in% names(dots))) {
     dots$report_title_multisite <- dots$default_report_title_multisite
+    cat("launching with specified default_report_title_multisite =", dots$default_report_title_multisite, "\n")
   }
   if ("default_report_title" %in% names(dots) && !("report_title_multisite" %in% names(dots))) {
     dots$report_title_multisite <- dots$default_report_title
+    cat("launching with specified default_report_title aka report_title_multisite =", dots$default_report_title, "\n")
   }
   if ("report_title" %in% names(dots) && !("report_title_multisite" %in% names(dots))) {
     # assume they intended to use that for multisite version (also)
     dots$report_title_multisite <- dots$report_title
-    #
+    cat("launching with specified report_title aka report_title_multisite =", dots$report_title, "\n")
   }
 
   if ("default_analysis_title" %in% names(dots)) {
     dots$default_standard_analysis_title <- dots$default_analysis_title
-  }
+    cat("launching with specified default_analysis_title aka default_standard_analysis_title =", dots$default_analysis_title, "\n")
+    }
   if ("analysis_title" %in% names(dots)) {
     dots$default_standard_analysis_title <- dots$analysis_title # it is also an input but this allows it to work
+    cat("launching with specified analysis_title aka default_standard_analysis_title =", dots$analysis_title, "\n")
   }
 
   if ("testing" %in% names(dots)) {
