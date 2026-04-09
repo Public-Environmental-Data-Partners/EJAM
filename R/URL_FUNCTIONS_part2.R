@@ -269,30 +269,30 @@ get_ejscreen_facilities_nearby <- function(frompoints, radius=3, sitecategory="t
   # also see getfrsnearby() draft func
 
   urls <- url_facilities_nearby(sitecategory,
-                        lat = frompoints$lat, lon = frompoints$lon,
-                        radius = radius, units = "miles",
-                        f = "pjson")
+                                lat = frompoints$lat, lon = frompoints$lon,
+                                radius = radius, units = "miles",
+                                f = "pjson")
   facilities <- list()
   for (i in seq_len(NROW(frompoints))) {
 
-  req1 <- httr2::request(urls[i])
-  resp1 <- httr2::req_perform(req1)
-  # httr2::resp_url_queries(resp1)
-  # httr2::resp_content_type(resp1)
-  # cat(httr2::resp_body_string(resp1))
-  fac_i <- jsonlite::fromJSON(httr2::resp_body_string(resp1))$features$attributes
-  # or  # y = jsonify::from_json(httr2::resp_body_string(resp1))$features$attributes
-  if (is.null(fac_i) || NROW(fac_i) == 0) {
-    facilities[[i]] <- NULL
-    next
-  }
-  # rename latitude/longitude to lat/lon for consistency with rest of package
-  if ("latitude"  %in% names(fac_i)) {names(fac_i)[names(fac_i) == "latitude"]  <- "lat"}
-  if ("longitude" %in% names(fac_i)) {names(fac_i)[names(fac_i) == "longitude"] <- "lon"}
-  fac_i$frompoint_n <- i
-  fac_i$frompoint_lat <- frompoints$lat[i]
-  fac_i$frompoint_lon <- frompoints$lon[i]
-  facilities[[i]] <- fac_i
+    req1 <- httr2::request(urls[i])
+    resp1 <- httr2::req_perform(req1)
+    # httr2::resp_url_queries(resp1)
+    # httr2::resp_content_type(resp1)
+    # cat(httr2::resp_body_string(resp1))
+    fac_i <- jsonlite::fromJSON(httr2::resp_body_string(resp1))$features$attributes
+    # or  # y = jsonify::from_json(httr2::resp_body_string(resp1))$features$attributes
+    if (is.null(fac_i) || NROW(fac_i) == 0) {
+      facilities[[i]] <- NULL
+      next
+    }
+    # rename latitude/longitude to lat/lon for consistency with rest of package
+    if ("latitude"  %in% names(fac_i)) {names(fac_i)[names(fac_i) == "latitude"]  <- "lat"}
+    if ("longitude" %in% names(fac_i)) {names(fac_i)[names(fac_i) == "longitude"] <- "lon"}
+    fac_i$frompoint_n <- i
+    fac_i$frompoint_lat <- frompoints$lat[i]
+    fac_i$frompoint_lon <- frompoints$lon[i]
+    facilities[[i]] <- fac_i
   }
   facilities <- facilities[!vapply(facilities, is.null, logical(1L))]
   if (length(facilities) == 0L) {
@@ -308,26 +308,36 @@ get_ejscreen_facilities_nearby <- function(frompoints, radius=3, sitecategory="t
     }
     frompoints$radius.miles <- radius
     x <- map_ejscreen_facilities_nearby(frompoints = frompoints,
-                                   facilities = facilities,
-                                   radius = radius)
+                                        facilities = facilities,
+                                        radius = radius)
     print(x)
   }
   return(facilities)
 }
+
 ################################################### #################################################### #
 
 map_ejscreen_facilities_nearby <- function(frompoints, facilities, radius=3,
                                            label_from = "from point(s)", label_fac ="facilities nearby") {
   # Map point, radius, and any facility found within radius
   if (missing(radius)) {fillOpacity <- 0} else {fillOpacity <- 0.2} # in case not provided dont show radius as circle
+
+  # make last two elements of popup be the facility report URL text and a clickable link
+  facilities$facility_url_text <- facilities$facility_url
+  facilities$facility_url_link <- url_linkify(url = facilities$facility_url, text = "Facility Report")
+  facilities$facility_url <- NULL
+
   EJAM::map_shapes_leaflet(
     EJAM::shape_buffered_from_shapefile_points(
       EJAM::shapefile_from_sitepoints(frompoints),
       radius.miles = radius
     ), color = "blue", fillOpacity = fillOpacity
   )  |>
-    leaflet::addMarkers(lng = facilities$lon, lat = facilities$lat, label = label_fac, popup = popup_from_any(facilities)) |>
-    leaflet::addCircles(lng = frompoints$lon, lat = frompoints$lat, label = label_from, popup = popup_from_any(frompoints),
+    leaflet::addMarkers(lng = facilities$lon, lat = facilities$lat, label = label_fac,
+                        popup = popup_from_df_with_urls(facilities, column_names_urls="facility_url_link", linkify=FALSE)) |>
+
+    leaflet::addCircles(lng = frompoints$lon, lat = frompoints$lat, label = label_from,
+                        popup = popup_from_any(frompoints),
                         radius = 10, color = 'black') # radius here is meters
 
 }
@@ -343,7 +353,7 @@ url_facilities_nearby <- function(sitecategory = c("npl", "tri", "water", "air",
                                   returnGeometry = FALSE,
                                   f = "pjson", # or "html"
                                   ... # passed to url_from_keylist()
-                                  )  {
+)  {
 
   if (units == "meters") {units <- "Meter"}
   if (units == "miles") {units <- "StatuteMile"}
