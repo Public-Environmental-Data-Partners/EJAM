@@ -215,7 +215,7 @@ x <- EJAM:::test_ejam(
         "test-naics_from_code.R",
         "test-naics_from_name.R",
         "test-naics_subcodes_from_code.R",
-        "test-naics_validation.R",
+        "test-naics_is.valid.R",
         "test-naics2children.R"
       ),
       test_frs = c(
@@ -498,7 +498,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
               "test-naics2children.R", "test-naics_categories.R", "test-naics_findwebscrape.R",
               "test-naics_from_any.R", "test-naics_from_code.R", "test-naics_from_name.R",
-              "test-naics_subcodes_from_code.R", "test-naics_validation.R",
+              "test-naics_subcodes_from_code.R", "test-naics_is.valid.R",
               "test-ejam2shapefile.R", "test-latlon_from_shapefile.R", "test-shape2geojson.R",
               "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
               "test-test1.R", "test-test2.R"),

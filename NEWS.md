@@ -17,17 +17,19 @@
 
 ## Other changes since 2.32.7
 
-- MACT, NAICS, or SIC initially selected at launch of app now can be specified as parameters mact, naics, sic in ejamapp(), or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab.
-- More consistent info about selected categories of sites now printed to console (and server log, depending on how app is hosted)
-- Fixed ejam2shapefile() where it had problems if closely related filename had previously been used
-- Fixed some edge cases related to invalid mact codes, too many points selected, etc.
-- Documented package dev-related utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
+- MACT, NAICS, SIC categories initially selected at launch of app now can be specified as parameters mact, naics, sic in `ejamapp()`, or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab. Default SIC was added.
+- MACT, NAICS, SIC validation improved in server. Fixed some edge cases related to invalid mact codes, too many points selected, etc. Removed obsolete naics_validation() function. See better `naics_is.valid()`.
+- Server handling of specifying large numbers of points was improved.
+- Server handling of capitalization of column names in uploaded registry id/programs made more flexible.
+- Server prints more consistent info about selected categories of sites to console (and server log, depending on how app is hosted)
+- Fixed `ejam2shapefile()` where it had problems if closely related filename had previously been used
 - Added utility `distance_epa_api()` that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.
-- Added utility `calc_formulas_from_varname()` that looks at formulas_ejscreen_acs and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
-- Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
-- ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
-- `ejamapi()` added, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.
+- Added utility `calc_formulas_from_varname()` that looks at `formulas_ejscreen_acs` and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
+- Added parameter to `ejamapp()`, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
+- Added `ejamapi()`, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.
 - Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
+- Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
+- Documented utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
 
 
 # EJAM 2.32.7 (February 2026)
