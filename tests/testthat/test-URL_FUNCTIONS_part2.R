@@ -172,47 +172,47 @@ test_that("url_efpoints builds correct base URL for each sitecategory layer numb
 })
 
 test_that("url_efpoints URL starts with expected base domain", {
-  u <- url_efpoints(sitecategory = "npl")
+  u <- EJAM:::url_efpoints(sitecategory = "npl")
   expect_true(grepl("^https://geopub.epa.gov", u))
 })
 
 test_that("url_efpoints includes state_code in where clause when provided", {
-  u <- url_efpoints(sitecategory = "npl", state_code = "NJ")
+  u <- EJAM:::url_efpoints(sitecategory = "npl", state_code = "NJ")
   expect_true(grepl("state_code", utils::URLdecode(u)))
   expect_true(grepl("NJ", u))
 })
 
 test_that("url_efpoints errors when multiple sitecategories supplied", {
-  expect_error(url_efpoints(sitecategory = c("npl", "tri")))
+  expect_error(EJAM:::url_efpoints(sitecategory = c("npl", "tri")))
 })
 
 test_that("url_efpoints errors when baseurl is overridden", {
-  expect_error(url_efpoints(sitecategory = "npl",
-                            baseurl = "https://example.com/query?"))
+  expect_error(EJAM:::url_efpoints(sitecategory = "npl",
+                                  baseurl = "https://example.com/query?"))
 })
 
 test_that("url_facilities_nearby returns one URL per frompoint", {
   lats <- c(39.65, 40.0)
   lons <- c(-75.73, -74.0)
-  urls <- url_facilities_nearby(sitecategory = "npl", lat = lats, lon = lons, radius = 1)
+  urls <- EJAM:::url_facilities_nearby(sitecategory = "npl", lat = lats, lon = lons, radius = 1)
   expect_equal(length(urls), 2)
   expect_true(all(grepl("^https://", urls)))
   expect_true(all(grepl("MapServer/0/query", urls)))
 })
 
 test_that("url_facilities_nearby encodes point geometry in URL", {
-  u <- url_facilities_nearby(sitecategory = "tsdf", lat = 39.65, lon = -75.73, radius = 3)
+  u <- EJAM:::url_facilities_nearby(sitecategory = "tsdf", lat = 39.65, lon = -75.73, radius = 3)
   expect_true(grepl("esriGeometryPoint", utils::URLdecode(u)))
   expect_true(grepl("StatuteMile", utils::URLdecode(u)))
 })
 
 test_that("url_facilities_nearby errors if lat and lon lengths differ", {
-  expect_error(url_facilities_nearby(lat = c(39.65, 40.0), lon = -75.73))
+  expect_error(EJAM:::url_facilities_nearby(lat = c(39.65, 40.0), lon = -75.73))
 })
 
 test_that("url_facilities_nearby uses correct layer number per sitecategory", {
-  expect_true(grepl("MapServer/0/query", url_facilities_nearby("npl",  lat = 39.65, lon = -75.73, radius = 1)))
-  expect_true(grepl("MapServer/4/query", url_facilities_nearby("tsdf", lat = 39.65, lon = -75.73, radius = 1)))
+  expect_true(grepl("MapServer/0/query", EJAM:::url_facilities_nearby("npl",  lat = 39.65, lon = -75.73, radius = 1)))
+  expect_true(grepl("MapServer/4/query", EJAM:::url_facilities_nearby("tsdf", lat = 39.65, lon = -75.73, radius = 1)))
 })
 
 test_that("get_ejscreen_facilities_nearby returns a data.frame (live API)", {

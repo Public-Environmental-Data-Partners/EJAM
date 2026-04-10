@@ -348,18 +348,24 @@ map_ejscreen_facilities_nearby <- function(frompoints, facilities, radius=3,
     facilities$profile_url_link <- url_linkify(url = facilities$profile_url, text = "Facility Profile")
     facilities$profile_url <- NULL
   }
-  EJAM::map_shapes_leaflet(
+  mapx <- EJAM::map_shapes_leaflet(
     EJAM::shape_buffered_from_shapefile_points(
       EJAM::shapefile_from_sitepoints(frompoints),
       radius.miles = radius
     ), color = "blue", fillOpacity = fillOpacity
-  )  |>
-    leaflet::addMarkers(lng = facilities$lon, lat = facilities$lat,
-                        label = label_fac, # what you see when hovering over any marker
-                        popup = popup_from_df_with_urls(facilities,
-                                                        column_names_urls = c("facility_url_link", "profile_url_link"),
-                                                        linkify=FALSE)) |>
+  )
 
+  has_facility_markers <- NROW(facilities) > 0 && all(c("lon", "lat") %in% colnames(facilities))
+  if (has_facility_markers) {
+    mapx <- mapx |>
+      leaflet::addMarkers(lng = facilities$lon, lat = facilities$lat,
+                          label = label_fac, # what you see when hovering over any marker
+                          popup = popup_from_df_with_urls(facilities,
+                                                          column_names_urls = c("facility_url_link", "profile_url_link"),
+                                                          linkify=FALSE))
+  }
+
+  mapx |>
     leaflet::addCircles(lng = frompoints$lon, lat = frompoints$lat, label = label_from,
                         popup = popup_from_any(frompoints),
                         radius = 10, color = 'black') # radius here is meters
@@ -444,12 +450,7 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
   # Hazardous waste (4)
   # Brownfields (5)
 
-  # if (length(state_code) > 1) {stop("only 1 state allowed")}
-  # if (any(state_code != "")) {
-  #   if (!missing(wherestr)) {warning("cant specify wherestr and state_code in this function")}
-  #   state_code <- paste0(state_code, collapse = ",") # check if this works
-  #   wherestr = paste0("state_code='", state_code, "'")
-  state_code_nonempty <- unique(state_code[!is.na(state_code) & state_code != ""])
+  state_code_nonempty <- unique(trimws(state_code[!is.na(state_code) & state_code != ""]))
   if (length(state_code_nonempty) > 0) {
     if (!missing(wherestr)) {warning("cant specify wherestr and state_code in this function")}
     if (length(state_code_nonempty) == 1) {
@@ -482,7 +483,6 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 
   ok = rep(TRUE, length(urlx)) # no validation for now
   if (as_html) {
-    urlx[ok] <- URLencode(urlx[ok]) # consider if we want  reserved = TRUE
     urlx[ok] <- url_linkify(urlx[ok], text = linktext)
   }
 
