@@ -1135,8 +1135,8 @@ app_server <- function(input, output, session) {
       xfips <- EJAM:::global_or_param("fips")
       if (!is.null(xfips)) {
         cat("fips seems to have been passed as parameter to ejamapp() \n")
-        shiny::updateRadioButtons(inputId = "ss_choose_method", selected = "upload")     # already done by ejamapp() but ok to repeat
-        shiny::updateSelectInput(inputId = "ss_choose_method_upload", selected = "FIPS") # already done by ejamapp() but ok to repeat
+        shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = "upload")     # already done by ejamapp() but ok to repeat
+        shiny::updateSelectInput(session = session, inputId = "ss_choose_method_upload", selected = "FIPS") # already done by ejamapp() but ok to repeat
 
         fips_vec <- xfips
         fips_dt <- data.table(fips = fips_vec)
