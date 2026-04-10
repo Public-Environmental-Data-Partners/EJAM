@@ -445,10 +445,22 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
   # Brownfields (5)
 
   # if (length(state_code) > 1) {stop("only 1 state allowed")}
-  if (any(state_code != "")) {
+  # if (any(state_code != "")) {
+  #   if (!missing(wherestr)) {warning("cant specify wherestr and state_code in this function")}
+  #   state_code <- paste0(state_code, collapse = ",") # check if this works
+  #   wherestr = paste0("state_code='", state_code, "'")
+  state_code_nonempty <- unique(state_code[!is.na(state_code) & state_code != ""])
+  if (length(state_code_nonempty) > 0) {
     if (!missing(wherestr)) {warning("cant specify wherestr and state_code in this function")}
-    state_code <- paste0(state_code, collapse = ",") # check if this works
-    wherestr = paste0("state_code='", state_code, "'")
+    if (length(state_code_nonempty) == 1) {
+      wherestr <- paste0("state_code='", state_code_nonempty, "'")
+    } else {
+      wherestr <- paste0(
+        "state_code IN ('",
+        paste0(state_code_nonempty, collapse = "','"),
+        "')"
+      )
+    }
   } else {
     if (missing(wherestr) || is.null(wherestr)) {wherestr <- ""}
   }

@@ -99,7 +99,7 @@ popup_from_df_with_urls <- function(x, column_names=names(x), labels=column_name
 
     poptext <- as.character(x[,i])
     # use html escape for all columns except the ones specified to be URLs so the popup links will work
-    if (!(labels[i] %in% column_names_urls)) {
+    if (!(column_names[i] %in% column_names_urls)) {
       labels[i]  <- htmltools::htmlEscape(labels[i])
       poptext <- htmltools::htmlEscape(poptext)
     } else {
