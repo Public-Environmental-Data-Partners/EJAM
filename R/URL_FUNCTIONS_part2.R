@@ -484,7 +484,6 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 
   ok = rep(TRUE, length(urlx)) # no validation for now
   if (as_html) {
-    urlx[ok] <- URLencode(urlx[ok]) # consider if we want  reserved = TRUE
     urlx[ok] <- url_linkify(urlx[ok], text = linktext)
   }
 
