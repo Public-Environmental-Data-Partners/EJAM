@@ -56,20 +56,35 @@ facilities2 <- get_ejscreen_facilities_nearby(frompoints = frompoints2,
   #  vs how many unique facilities are near 1+ frompoints?
   # distance pairs
 NROW(facilities2)
-  # how many unique facilities?
+  # how many unique facilities according to OBJECTID?
+length(unique(facilities2$OBJECTID))
+  # how many unique facilities according to registry ID?
+  # same registry_id can be found repeatedly under different pgm_sys_id or variations on name
 length(unique(facilities2$registry_id))
-  # how many frompoints is each facility near?
+  # how many frompoints is each facility near? (with repeats of registry_id)
 tail(cbind(frompoint_count_near_this_facility =
   sort(table(facilities2$registry_id))), 10)
-  # how many facilities have N frompoints nearby?
-table(table(facilities2$registry_id))
-  # how many frompoints?
-NROW(frompoints2)
+# but by OBJECTID is different
+tail(cbind(frompoint_count_near_this_facility =
+  sort(table(facilities2$OBJECTID))), 10)
+
+pts2close = data.frame(siteid = 1:2,
+  lat = c(37.638621, 37.64541),
+  lon = c(-122.418158, -122.404147))
+facilities2close <- get_ejscreen_facilities_nearby(
+  frompoints = pts2close, radius = 0.5,
+  sitecategory = "tsdf", showmap = TRUE)
+  # A few facilities are near two of the frompoints
+table(table(facilities2close$OBJECTID))
+ # which facilities are near 2+ frompoints
+tail(cbind(frompoint_count_near_this_facility =
+  sort(table(facilities2close$OBJECTID))), 10)
+
   # how many facilities are near each frompoint?
-cbind(frompoint = 1:NROW(frompoints2),
-  facility_count_near_this_point = table(facilities2$frompoint_n))
-  # how many frompoints have N facilities nearby?
-table(table(facilities2$frompoint_n))
+  # including when same registry id appears more than once
+  # with different program id or site name variant
+cbind(frompoint = 1:NROW(pts2close),
+  facility_count_near_this_point = table(facilities2close$frompoint_n))
 }
 }
 \seealso{

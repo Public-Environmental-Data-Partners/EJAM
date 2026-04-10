@@ -244,20 +244,35 @@ url_frs_facility <- function(regid = NULL,
 #'   #  vs how many unique facilities are near 1+ frompoints?
 #'   # distance pairs
 #' NROW(facilities2)
-#'   # how many unique facilities?
+#'   # how many unique facilities according to OBJECTID?
+#' length(unique(facilities2$OBJECTID))
+#'   # how many unique facilities according to registry ID?
+#'   # same registry_id can be found repeatedly under different pgm_sys_id or variations on name
 #' length(unique(facilities2$registry_id))
-#'   # how many frompoints is each facility near?
+#'   # how many frompoints is each facility near? (with repeats of registry_id)
 #' tail(cbind(frompoint_count_near_this_facility =
 #'   sort(table(facilities2$registry_id))), 10)
-#'   # how many facilities have N frompoints nearby?
-#' table(table(facilities2$registry_id))
-#'   # how many frompoints?
-#' NROW(frompoints2)
+#' # but by OBJECTID is different
+#' tail(cbind(frompoint_count_near_this_facility =
+#'   sort(table(facilities2$OBJECTID))), 10)
+#'
+#' pts2close = data.frame(siteid = 1:2,
+#'   lat = c(37.638621, 37.64541),
+#'   lon = c(-122.418158, -122.404147))
+#' facilities2close <- get_ejscreen_facilities_nearby(
+#'   frompoints = pts2close, radius = 0.5,
+#'   sitecategory = "tsdf", showmap = TRUE)
+#'   # A few facilities are near two of the frompoints
+#' table(table(facilities2close$OBJECTID))
+#'  # which facilities are near 2+ frompoints
+#' tail(cbind(frompoint_count_near_this_facility =
+#'   sort(table(facilities2close$OBJECTID))), 10)
+#'
 #'   # how many facilities are near each frompoint?
-#' cbind(frompoint = 1:NROW(frompoints2),
-#'   facility_count_near_this_point = table(facilities2$frompoint_n))
-#'   # how many frompoints have N facilities nearby?
-#' table(table(facilities2$frompoint_n))
+#'   # including when same registry id appears more than once
+#'   # with different program id or site name variant
+#' cbind(frompoint = 1:NROW(pts2close),
+#'   facility_count_near_this_point = table(facilities2close$frompoint_n))
 #' }
 #' @seealso [getfrsnearby()]
 #'
@@ -323,18 +338,27 @@ map_ejscreen_facilities_nearby <- function(frompoints, facilities, radius=3,
   if (missing(radius)) {fillOpacity <- 0} else {fillOpacity <- 0.2} # in case not provided dont show radius as circle
 
   # make last two elements of popup be the facility report URL text and a clickable link
+  if ('facility_url' %in% colnames(facilities)) {
   facilities$facility_url_text <- facilities$facility_url
   facilities$facility_url_link <- url_linkify(url = facilities$facility_url, text = "Facility Report")
   facilities$facility_url <- NULL
-
+  }
+  if ('profile_url' %in% colnames(facilities)) {
+    facilities$profile_url_text <- facilities$profile_url
+    facilities$profile_url_link <- url_linkify(url = facilities$profile_url, text = "Facility Profile")
+    facilities$profile_url <- NULL
+  }
   EJAM::map_shapes_leaflet(
     EJAM::shape_buffered_from_shapefile_points(
       EJAM::shapefile_from_sitepoints(frompoints),
       radius.miles = radius
     ), color = "blue", fillOpacity = fillOpacity
   )  |>
-    leaflet::addMarkers(lng = facilities$lon, lat = facilities$lat, label = label_fac,
-                        popup = popup_from_df_with_urls(facilities, column_names_urls="facility_url_link", linkify=FALSE)) |>
+    leaflet::addMarkers(lng = facilities$lon, lat = facilities$lat,
+                        label = label_fac, # what you see when hovering over any marker
+                        popup = popup_from_df_with_urls(facilities,
+                                                        column_names_urls = c("facility_url_link", "profile_url_link"),
+                                                        linkify=FALSE)) |>
 
     leaflet::addCircles(lng = frompoints$lon, lat = frompoints$lat, label = label_from,
                         popup = popup_from_any(frompoints),
