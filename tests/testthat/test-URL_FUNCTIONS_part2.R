@@ -163,12 +163,12 @@ for (func in funcnames) {
 ############## TESTS FOR FACILITY-NEARBY URL FUNCTIONS ############## #
 
 test_that("url_efpoints builds correct base URL for each sitecategory layer number", {
-  expect_true(grepl("MapServer/0/query", url_efpoints(sitecategory = "npl")))
-  expect_true(grepl("MapServer/1/query", url_efpoints(sitecategory = "tri")))
-  expect_true(grepl("MapServer/2/query", url_efpoints(sitecategory = "water")))
-  expect_true(grepl("MapServer/3/query", url_efpoints(sitecategory = "air")))
-  expect_true(grepl("MapServer/4/query", url_efpoints(sitecategory = "tsdf")))
-  expect_true(grepl("MapServer/5/query", url_efpoints(sitecategory = "brownfields")))
+  expect_true(grepl("MapServer/0/query", EJAM:::url_efpoints(sitecategory = "npl")))
+  expect_true(grepl("MapServer/1/query", EJAM:::url_efpoints(sitecategory = "tri")))
+  expect_true(grepl("MapServer/2/query", EJAM:::url_efpoints(sitecategory = "water")))
+  expect_true(grepl("MapServer/3/query", EJAM:::url_efpoints(sitecategory = "air")))
+  expect_true(grepl("MapServer/4/query", EJAM:::url_efpoints(sitecategory = "tsdf")))
+  expect_true(grepl("MapServer/5/query", EJAM:::url_efpoints(sitecategory = "brownfields")))
 })
 
 test_that("url_efpoints URL starts with expected base domain", {
