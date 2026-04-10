@@ -1747,6 +1747,11 @@ app_server <- function(input, output, session) {
         data_tomap <- data_uploaded()[valid, ]
       }
 
+      ## guard: no valid lat/lon rows at all
+      if (NROW(data_tomap) == 0) {
+        shiny::validate("No valid lat/lon coordinates found in uploaded data.")
+      }
+
       ## ready to create map
       ## If more than one valid point...
       if (NROW(data_tomap) > 1) {
