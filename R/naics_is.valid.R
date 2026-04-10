@@ -13,7 +13,7 @@
 #' @export
 #'
 naics_is.valid <- function(code) {
-
+  if (is.null(code)) {return(FALSE)}
   code %in% NAICS  # EJAM::NAICS  # EJAM::naicstable$code
 
 }
