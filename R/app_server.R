@@ -421,7 +421,7 @@ app_server <- function(input, output, session) {
         #   ###################################### #
         # if the file or object (spatial data.frame) was provided as shapefile param in ejamapp()
         if (input$testing) {cat("trying to read shapefile parameter\n")}
-        shp <- try( shapefile_from_any(xshp, cleanit = FALSE, silentinteractive=TRUE), silent = !testing)
+        shp <- try( shapefile_from_any(xshp, cleanit = FALSE, silentinteractive=TRUE), silent = !isTRUE(input$testing))
         if (is.null(shp) || inherits(shp, "try-error")) {
           cat("shapefile_from_any() cannot read specified shp parameter \n")
           req(FALSE, cancelOutput = TRUE)
