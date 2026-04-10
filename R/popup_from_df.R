@@ -95,6 +95,8 @@ popup_from_df_with_urls <- function(x, column_names=names(x), labels=column_name
   # x <- x[ , names(x) %in% column_names]
   x <- x[ ,  column_names, drop = FALSE] # , drop = FALSE  is in case only 1 column specified
 
+  if (is.null(column_names_urls)) column_names_urls <- character(0)
+
   for (i in 1:NCOL(x)) {
 
     poptext <- as.character(x[,i])
