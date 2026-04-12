@@ -15,6 +15,10 @@
 - v2.5.0 will provide 2020-2024 ACS and will be released in early 2026.
 - Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
 
+
+
+
+
 ## Other changes since 2.32.7
 
 - MACT, NAICS, SIC categories initially selected at launch of app now can be specified as parameters mact, naics, sic in `ejamapp()`, or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab. Default SIC was added.
@@ -30,6 +34,8 @@
 - Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
 - Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
 - Documented utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
+
+
 
 
 # EJAM 2.32.7 (February 2026)

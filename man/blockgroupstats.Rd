@@ -20,8 +20,10 @@ The \href{https://ejanalysis.github.io/EJAM/articles/ejscreen.html}{source of da
 
 More about blockgroupstats
 \itemize{
-\item During 2025, EJAM used EPA environmental indicators along with population indicators derived
-from 2018-2022 ACS data. Each year this should be re-created as for the latest version.
+\item Each year this should be re-created as for the latest version.
+\item In early 2026, EJAM made available indicators derived from 2019-2023 and 2020-2024 ACS data.
+\item Starting in August 2024 and through 2025, EJAM used EPA environmental indicators along with population indicators derived
+from 2018-2022 ACS data.
 \item See \code{attributes(blockgroupstats)} to confirm vintage of each dataset
 \item Geographic scope includes States, DC, and Puerto Rico (PR), but not any Island Areas (VI, GU, AS, etc.)
 \item Column names include \code{bgfips}, \code{bgid} (for join to \link{blockwts} by/on \code{bgid}),

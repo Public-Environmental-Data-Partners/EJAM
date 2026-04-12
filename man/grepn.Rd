@@ -4,7 +4,7 @@
 \alias{grepn}
 \title{utility - how many times within each element of x vector is the pattern matched ?}
 \usage{
-grepn(pattern, x)
+grepn(pattern, x, ignore.case = TRUE)
 }
 \arguments{
 \item{pattern}{passed to \code{gregexec()}}
