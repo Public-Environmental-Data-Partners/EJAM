@@ -61,7 +61,7 @@ url_online <- function(url = "https://ejam.policyinnovation.info") {
 #' @param newtab unless set to FALSE, link opens in a new browser tab
 #' @param encode unless set to FALSE, it uses [utils::URLencode()] first
 #' @param reserved if encode=T, this parameter is passed to [utils::URLencode()]
-#' @return url_linkify('epa.gov','EPA') returns `"<a href=\"epa.gov\", target=\"_blank\">EPA</a>"`
+#' @return url_linkify('epa.gov','EPA') returns `"<a href=\"epa.gov\" target=\"_blank\">EPA</a>"`
 #' @seealso [enurl()]
 #' @details
 #'   Consider also the golem utility enurl() as modified in this pkg,
@@ -95,7 +95,7 @@ url_linkify <- function(url, text, newtab = TRUE, encode = TRUE, reserved = FALS
   }
   if (newtab) {
     paste0('<a href=\"', url, '\"',
-           ', target=\"_blank\"',
+           ' target=\"_blank\"',
            '>', text, '</a>')
   } else {
     paste0('<a href=\"', url, '\"',
@@ -109,7 +109,7 @@ url_linkify <- function(url, text, newtab = TRUE, encode = TRUE, reserved = FALS
 
 unlinkify = function(x) {
 
-  unlinkify_column <- function(z) {gsub('.*https', 'https', gsub('=report.*', '=report', gsub('., target.*', '', as.vector(unlist(z))))) }
+  unlinkify_column <- function(z) {gsub('.*https', 'https', gsub('=report.*', '=report', gsub('. target.*', '', as.vector(unlist(z))))) }
   if (NCOL(x) > 1) {
     fixed = lapply(x, unlinkify_column)
   } else {
