@@ -32,6 +32,11 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   ### see also ejam2map()
   ### add popups parameter maybe
 
+  # Validate that shp is a spatial data.frame (sf object) or at least has a geometry column
+  if (is.null(shp) || (!inherits(shp, "sf") && !("geometry" %in% names(shp)))) {
+    stop("shp must be a spatial data.frame (sf object) with a geometry column")
+  }
+
   if (!("results_bysite" %in% names(out))) {
     # maybe were given the table not the whole list
     if ("ejam_uniq_id" %in% names(out)) {
