@@ -460,6 +460,9 @@ distances
 - [`getblocks_diagnostics()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocks_diagnostics.md)
   : utility - How many blocks and many other stats about blocks and
   sites
+- [`get_ejscreen_facilities_nearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_ejscreen_facilities_nearby.md)
+  : find, count, map nearby facilities (NPL, TSDF, TRI, etc., as
+  available in EJSCREEN) via API
 - [`getpointsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearby.md)
   : Find IDs of and distances to all nearby points (e.g., schools, or
   EPA-regulated facilities, etc.)

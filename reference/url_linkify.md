@@ -35,7 +35,7 @@ url_linkify(url, text, newtab = TRUE, encode = TRUE, reserved = FALSE)
 ## Value
 
 url_linkify('epa.gov','EPA') returns
-`"<a href=\"epa.gov\", target=\"_blank\">EPA</a>"`
+`"<a href=\"epa.gov\" target=\"_blank\">EPA</a>"`
 
 ## Details
 
