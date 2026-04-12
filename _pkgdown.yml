@@ -244,6 +244,7 @@ reference:
   - getblocksnearby_from_fips
   - get_blockpoints_in_shape
   - getblocks_diagnostics
+  - get_ejscreen_facilities_nearby
   - getpointsnearby
   - getfrsnearby
   - proxistat
