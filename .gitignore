@@ -6,14 +6,14 @@
 # The large datasets stored as .arrow files take up roughly 1 GB of storage space.
 # They are downloaded from a separate repo (ejamdata) and
 # get saved in the data folder when a user installs the package, but they are not part of the package itself per se.
-# seee https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html
+# seee https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html
 
 tests/testthat/_snaps/
 tests/testthat/_snaps/**/*.png
 # Try ignoring the _snaps folders entirely, since they can
 # take >400 MB for the snapshots created during webapp testing via shinytest2 package
 # as explained in the "Testing EJAM App with shinytest2" vignette/article
-# at https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.html
+# at https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.html
 
 # /docs/
 # These are NOT ignored, currently, although perhaps that could be reconsidered.

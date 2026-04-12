@@ -1,11 +1,11 @@
-# EJAM 2.5.0 (February 2026)
+# EJAM 2.5.0 (May 2026)
 
 ## Updated Demographic Data from ACS
 
 - v2.5.0 provides 2020-2024 ACS
 
 
-# EJAM 2.4.0 (February 2026)
+# EJAM 2.4.0 (May 2026)
 
 ## Updated Demographic Data from ACS
 
@@ -16,17 +16,16 @@
 - Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
 
 
+# EJAM 2.32.8 (April 2026)
 
-
-
-## Other changes since 2.32.7
-
+- Moved EJAM and ejamdata repositories and documentation website (and updated all URLs) by changing owner from "ejanalysis" to "Public-Environmental-Data-Partners"
 - MACT, NAICS, SIC categories initially selected at launch of app now can be specified as parameters mact, naics, sic in `ejamapp()`, or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab. Default SIC was added.
 - MACT, NAICS, SIC validation improved in server. Fixed some edge cases related to invalid mact codes, too many points selected, etc. Removed obsolete naics_validation() function. See better `naics_is.valid()`.
 - Server handling of specifying large numbers of points was improved.
 - Server handling of capitalization of column names in uploaded registry id/programs made more flexible.
 - Server prints more consistent info about selected categories of sites to console (and server log, depending on how app is hosted)
 - Fixed `ejam2shapefile()` where it had problems if closely related filename had previously been used
+- Added utility `get_ejscreen_facilities_nearby()` and helpers to use API to find/count NPL, TSDF, TRI, etc. near each point
 - Added utility `distance_epa_api()` that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.
 - Added utility `calc_formulas_from_varname()` that looks at `formulas_ejscreen_acs` and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
 - Added parameter to `ejamapp()`, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
@@ -34,8 +33,6 @@
 - Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
 - Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
 - Documented utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
-
-
 
 
 # EJAM 2.32.7 (February 2026)
@@ -90,7 +87,7 @@
   - Changed links in header at top right of the webpages, to link to "Share data feedback" and "Help improve the tool" forms just like CEJST has and EJSCREEN is adding. The "Contact Us" link to an email address was removed.
   - Updated text in the "About" tab, to refer to and link to EJSCREEN, and to refer to EJAM in terms of EJSCREEN.
   - Updated text in README
-  - Updated text in the [Future Plans](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.html) and other vignettes/articles.
+  - Updated text in the [Future Plans](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-future-plans.html) and other vignettes/articles.
   - Renamed `ejam2excel()` parameters (in.analysis_title changed to analysis_title) to be consistent with `ejam2report()` parameter, or to simplify (react.v1_summary_plot changed to report_plot).
   - `ejamapp()` now lets you specify the city/cities to analyze (to show as preselected upon launch), via default_cities_picked parameter
   - `ejamapp()` has new parameter aliases: "pts" is short for "sitepoints", "shp" is short for "shapefile", "analysis_title" or "default_analysis_title" will set analysis title in report header, and "report_title" or "default_report_title" will set overall title in topmost part of report header.
@@ -110,7 +107,7 @@
   - Fixed bug affecting geocoding in `names2fips()` based on fips_place_from_placename() 
   - Fixed bug in `fixcolnames()` that was only renaming the first instance of any duplicated inputs
   - Fixed various smaller issues like edge cases or typos in comments or messages.
-- Added (strong) recommendation that you obtain a Census API key, in the [guide to installing the package](https://ejanalysis.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downloads of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
+- Added (strong) recommendation that you obtain a Census API key, in the [guide to installing the package](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downloads of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
 - Specified R version 4.3 as the minimum required per the DESCRIPTION file. Although older versions like 4.1 may work for most of what EJAM does, installation can be complicated depending on the platform (windows, macos, ubuntu) since building from source and installing some of the dependencies that require compilation can create varying requirements. A future release might use something like the renv package to simplify installation. Deployment to Posit Connect Cloud handles dependencies well, but individual users may find installation tricky because of dependencies. Putting the package on the [R universe platform](https://ropensci.org/r-universe/) and maybe eventually [CRAN](https://cran.r-project.org) are other options.
 - Removed dependency on a few packages rarely needed.
 - Removed all files, functions, datasets related to old ejscreenapi app that relied on EPA API for EJSCREEN pre-2025, like ejscreenit__, ejscreenapi__, ejscreen_vs__, ejscreenREST__, testoutput___, etc.
@@ -124,7 +121,7 @@
   - Edited apparently problematic file data_names_all.R and may add back the _disable_autoload.R file
   - Added example of using api_run() (later renamed as `ejamapi_local()`) to locally run API draft in background 
   - Revised github actions; Added a github action workflow to run R CMD check, via `rcmdcheck::rcmdcheck()` to find various problems in package.
-- Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://ejanalysis.github.io/EJAM/articles/dev-speed.html)
+- Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-speed.html)
 - Improved `acs_bybg()` for creating new indicators based on Census Bureau ACS data
 - Improved `popshare_p_lives_at_what_n()` for reporting how most of the residents are at a few key sites typically
 - Added `sites_only()` helper; added `sites_from_input()` examples
@@ -218,13 +215,13 @@ or could even be converted to a subset of a website)
 -   [ejanalysis.org/ejam](https://ejanalysis.org/ejam) has info on EJAM
 -   [ejanalysis.org/status](https://ejanalysis.org/status) has info about the 2025 status and history of transition from EPA to non-EPA versions of EJSCREEN and EJAM
 -   [ejanalysis.org/ejamdocs](https://www.ejanalysis.org/ejamdocs) directs you to the documentation:
-    -   [What is EJAM?](https://ejanalysis.github.io/EJAM/articles/whatis.html) is an overview of what EJAM can do.
-    -   [Accessing the Web App](https://ejanalysis.github.io/EJAM/articles/webapp.html) is about the web app.
+    -   [What is EJAM?](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/whatis.html) is an overview of what EJAM can do.
+    -   [Accessing the Web App](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/webapp.html) is about the web app.
 
 ### Web App Documentation
 
 -   Improved the `About page`
--   Collected copies of old user guides to inform a new one that could be developed. [See User Guide examples](https://github.com/ejanalysis/EJAM/tree/EJAM-v2.32.6/data-raw/user-guides) that [will be here](https://github.com/ejanalysis/EJAM/tree/main/data-raw/user-guides)
+-   Collected copies of old user guides to inform a new one that could be developed. [See User Guide examples](https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data-raw/user-guides)
 
 ### Web App Customization
 
@@ -240,7 +237,7 @@ or could even be converted to a subset of a website)
 ### Shortcuts are provided via [ejanalysis.org](https://www.ejanalysis.org) (or [ejanalysis.com](https://www.ejanalysis.com))
 
 -   [ejanalysis.org/repo](https://www.ejanalysis.org/repo) or [ejanalysis.org/ejamrepo](https://www.ejanalysis.org/ejamrepo) directs you to the GitHub page for the EJAM package open source software.
--   [GitHub issues now can be submitted here](https://github.com/ejanalysis/EJAM/issues)
+-   [GitHub issues now can be submitted here](https://github.com/Public-Environmental-Data-Partners/EJAM/issues)
 -   [ejanalysis.org/docs](https://www.ejanalysis.org/docs) or [ejanalysis.org/ejamdocs](https://www.ejanalysis.org/ejamdocs) directs you to the documentation for the EJAM package, including technical reference docs (how to install and use the R package to work directly with the more powerful tools EJAM offers beyond the web app).
 
 ### Weblinks / URLs (API, reports, etc.)
@@ -274,7 +271,7 @@ or could even be converted to a subset of a website)
 -   Added `ejamapp()` as the new name for what was `run_app()` -- This launches EJAM as a local shiny app, in RStudio.
 -   Added ability to set many options and defaults as parameters passed to `ejamapp()`.
 -   Added many examples to `ejamapp()` documentation showing how to change the defaults and options. You can now provide a set of points, fips, or polygons to preload at launch e.g., `ejamapp(sitepoints=testpoints_10, radius=5)`
--   Drafted a new article with technical details: [Defaults and Custom Settings for the Web App](https://ejanalysis.github.io/EJAM/articles/dev-app-settings.html)
+-   Drafted a new article with technical details: [Defaults and Custom Settings for the Web App](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-app-settings.html)
 -   Changed where the app title is stored. It is stored in the DESCRIPTION file as a field. (The app title also can be modified by editing `global_defaults_package.R` or by passing parameters to `ejamapp()`).
 -   Changed how Advanced tab visibility is controlled ("default_can_show_advanced_settings" and "default_show_advanced_settings" set initial values of shiny inputs of the same names)
 -   Fixed a bug where `isPublic` parameter in `ejamapp()` was being ignored.
@@ -285,8 +282,8 @@ or could even be converted to a subset of a website)
 
 ### Added documentation
 
--   Simplified the [README](https://github.com/ejanalysis/EJAM/#readme)
--   Improved the [article on how to install the package](https://ejanalysis.github.io/EJAM/articles/installing.html), but it does need some additional testing/fixes.
+-   Simplified the [README](https://github.com/Public-Environmental-Data-Partners/EJAM/#readme)
+-   Improved the [article on how to install the package](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/installing.html), but it does need some additional testing/fixes.
 -   Renamed fields in the DESCRIPTION file, for VERSION and DATE info!
 -   Redid sample report, etc. outputs in `testdata/examples_of_outputs` folder to reflect changes in version numbers shown in report footer and app header, etc.
 -   Renamed various \*.R files and relocated some source code among those, to make some filenames more consistent.
@@ -343,7 +340,7 @@ or could even be converted to a subset of a website)
 
 -   [Installation instructions in vignette/article](../articles/installing.html) were redone.
 -   Articles (aka vignettes) were renamed (titles and file names).
--   [README](https://github.com/ejanalysis/EJAM/#readme) mentions <https://www.ejanalysis.com> now. `?blockgroupstats` documentation was improved.
+-   [README](https://github.com/Public-Environmental-Data-Partners/EJAM/#readme) mentions <https://www.ejanalysis.com> now. `?blockgroupstats` documentation was improved.
 -   `acs_bybg()` documentation now has notes on the key ACS demographic data tables most relevant to EJSCREEN.
 -   Edited files `DESCRIPTION`, `CITATION.cff` (new), `CITATION`, `LICENSE` (new), `LICENSE.md`, etc.
 
@@ -391,7 +388,7 @@ or could even be converted to a subset of a website)
 
 # EJAM v2.32.4 (June 2025)
 
-Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being located at ejanalysis/EJAM, so the package called the v2.32.4 release on ejanalysis/EJAM is slightly different than the version called the v2.32.4 release that was released on USEPA/EJAM-open.
+Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being located at ejanalysis/EJAM, later moved to Public-Environmental-Data-Partners/EJAM, so the package called the v2.32.4 release on ejanalysis/EJAM (later moved to /EJAM) is slightly different than the version called the v2.32.4 release that was released on USEPA/EJAM-open.
 
 ## Web app
 
