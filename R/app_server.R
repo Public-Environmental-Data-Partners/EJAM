@@ -438,9 +438,9 @@ app_server <- function(input, output, session) {
       infiles <- input$ss_upload_shp$datapath # get path and temp (not original) filename of the uploaded file
       print(infiles)
       infile_ext <- tools::file_ext(infiles)
-      required_extensions <- c('shp', 'shx', 'dbf', 'prj', 'json')
-      valid_zip <- 'zip'
-      has_required_files <- all(required_extensions %in% infile_ext) || any(infile_ext == valid_zip)
+      # required_extensions <- c('shp', 'shx', 'dbf', 'prj', 'json')
+      # valid_zip <- 'zip'
+      # has_required_files <- all(required_extensions %in% infile_ext) || any(infile_ext == valid_zip)
       allowed_extensions <- EJAM:::global_or_param("default_shp_oktypes_1") # c("zip", "gdb", "geojson", "json", "kml", "shp") # see shapefile_from_any()
       if (all(infile_ext %in% allowed_extensions)) {
         error_message(NULL)

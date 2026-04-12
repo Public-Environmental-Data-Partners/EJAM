@@ -6,6 +6,7 @@
 - Server handling of capitalization of column names in uploaded registry id/programs made more flexible.
 - Server prints more consistent info about selected categories of sites to console (and server log, depending on how app is hosted)
 - Fixed `ejam2shapefile()` where it had problems if closely related filename had previously been used
+- Added utility `get_ejscreen_facilities_nearby()` and helpers to use API to find/count NPL, TSDF, TRI, etc. near each point
 - Added utility `distance_epa_api()` that calculates distance between two lat/lon points using the same method as the EPA API, which uses ArcGIS and gives slightly different distances than other functions in this package.
 - Added utility `calc_formulas_from_varname()` that looks at `formulas_ejscreen_acs` and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
 - Added parameter to `ejamapp()`, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)

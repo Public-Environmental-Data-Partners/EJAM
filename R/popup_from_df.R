@@ -34,7 +34,7 @@
 #'
 popup_from_df <- function(x, column_names=names(x), labels=column_names, n="all") {
 
-  if (data.table::is.data.table(x)) x <- as.data.frame(x) # need to confirm/check needed/works with this change
+  if (data.table::is.data.table(x)) x <- as.data.frame(x)
   if (!(is.data.frame(x))) {x <- as.data.frame(x)}
   if ("sf" %in% class(x)) {
     x <- sf::st_drop_geometry(x) # or else popup is blown up by geometry points data
@@ -45,16 +45,76 @@ popup_from_df <- function(x, column_names=names(x), labels=column_names, n="all"
     x <- x[ , 1:n, drop = FALSE]  #  drop = FALSE  is in case only 1 column specified
   }
   if (missing(column_names)) {column_names <- names(x)}
-   if (any(!(column_names %in% names(x)))) {
-     stop("some column_names not found in x for popup")
-     }
-
+  if (any(!(column_names %in% names(x)))) {
+    stop("some column_names not found in x for popup")
+  }
 
   if (length(labels) != length(column_names)) {labels = column_names; warning('column_names and labels must be same length. Using column_names as labels.')}
   # x <- x[ , names(x) %in% column_names]
   x <- x[ ,  column_names, drop = FALSE] # , drop = FALSE  is in case only 1 column specified
 
-  for (i in 1:NCOL(x)) { x[,i] <- paste(htmltools::htmlEscape(labels[i]), htmltools::htmlEscape(as.character(x[,i])), sep = ': ') }
+  for (i in 1:NCOL(x)) {
+
+    x[,i] <- paste(
+      htmltools::htmlEscape(labels[i]),
+      htmltools::htmlEscape(as.character(x[,i])),
+      sep = ': '
+    )
+  }
+
+  as.vector(apply(x, MARGIN = 1, FUN = function(thisrow) paste(thisrow, collapse = '<br>')) )
+}
+############################################################################## #
+
+popup_from_df_with_urls <- function(x, column_names=names(x), labels=column_names, n="all",
+                                    column_names_urls=NULL, linkify=TRUE) {
+
+  ## EXACTLY LIKE popup_from_df() EXCEPT
+  ## this version SKIPS htmltools::htmlEscape() for selected columns,
+  ## so those columns with URLs will be clickable in the popup.
+  ## used by url_facilities_nearby() for example.
+  ## Optionally it can use url_linkify() if that was not already done,
+  ##  to give clickable links the column name as text, and have it open in a new window.
+
+  if (data.table::is.data.table(x)) x <- as.data.frame(x)
+  if (!(is.data.frame(x))) {x <- as.data.frame(x)}
+  if ("sf" %in% class(x)) {
+    x <- sf::st_drop_geometry(x) # or else popup is blown up by geometry points data
+  }
+  if (n == 'all' || n > NCOL(x)) {
+    # x <- x
+  } else {
+    x <- x[ , 1:n, drop = FALSE]  #  drop = FALSE  is in case only 1 column specified
+  }
+  if (missing(column_names)) {column_names <- names(x)}
+  if (any(!(column_names %in% names(x)))) {
+    stop("some column_names not found in x for popup")
+  }
+
+  if (length(labels) != length(column_names)) {labels = column_names; warning('column_names and labels must be same length. Using column_names as labels.')}
+  # x <- x[ , names(x) %in% column_names]
+  x <- x[ ,  column_names, drop = FALSE] # , drop = FALSE  is in case only 1 column specified
+
+  if (is.null(column_names_urls)) column_names_urls <- character(0)
+
+  for (i in 1:NCOL(x)) {
+
+    poptext <- as.character(x[,i])
+    # use html escape for all columns except the ones specified to be URLs so the popup links will work
+    if (!(column_names[i] %in% column_names_urls)) {
+      labels[i]  <- htmltools::htmlEscape(labels[i])
+      poptext <- htmltools::htmlEscape(poptext)
+    } else {
+      if (linkify) {
+        poptext <- url_linkify(poptext, labels[i])
+      }
+    }
+    x[,i] <- paste(
+      labels[i],
+      poptext,
+      sep = ': '
+    )
+  }
 
   as.vector(apply(x, MARGIN = 1, FUN = function(thisrow) paste(thisrow, collapse = '<br>')) )
 }

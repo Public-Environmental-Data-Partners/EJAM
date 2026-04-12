@@ -159,3 +159,86 @@ for (func in funcnames) {
 # url_naics.com()
 
 # url_github_preview()
+
+############## TESTS FOR FACILITY-NEARBY URL FUNCTIONS ############## #
+
+test_that("url_efpoints builds correct base URL for each sitecategory layer number", {
+  expect_true(grepl("MapServer/0/query", EJAM:::url_efpoints(sitecategory = "npl")))
+  expect_true(grepl("MapServer/1/query", EJAM:::url_efpoints(sitecategory = "tri")))
+  expect_true(grepl("MapServer/2/query", EJAM:::url_efpoints(sitecategory = "water")))
+  expect_true(grepl("MapServer/3/query", EJAM:::url_efpoints(sitecategory = "air")))
+  expect_true(grepl("MapServer/4/query", EJAM:::url_efpoints(sitecategory = "tsdf")))
+  expect_true(grepl("MapServer/5/query", EJAM:::url_efpoints(sitecategory = "brownfields")))
+})
+
+test_that("url_efpoints URL starts with expected base domain", {
+  u <- EJAM:::url_efpoints(sitecategory = "npl")
+  expect_true(grepl("^https://geopub.epa.gov", u))
+})
+
+test_that("url_efpoints includes state_code in where clause when provided", {
+  u <- EJAM:::url_efpoints(sitecategory = "npl", state_code = "NJ")
+  expect_true(grepl("state_code", utils::URLdecode(u)))
+  expect_true(grepl("NJ", u))
+})
+
+test_that("url_efpoints errors when multiple sitecategories supplied", {
+  expect_error(EJAM:::url_efpoints(sitecategory = c("npl", "tri")))
+})
+
+test_that("url_efpoints errors when baseurl is overridden", {
+  expect_error(EJAM:::url_efpoints(sitecategory = "npl",
+                                  baseurl = "https://example.com/query?"))
+})
+
+test_that("url_facilities_nearby returns one URL per frompoint", {
+  lats <- c(39.65, 40.0)
+  lons <- c(-75.73, -74.0)
+  urls <- EJAM:::url_facilities_nearby(sitecategory = "npl", lat = lats, lon = lons, radius = 1)
+  expect_equal(length(urls), 2)
+  expect_true(all(grepl("^https://", urls)))
+  expect_true(all(grepl("MapServer/0/query", urls)))
+})
+
+test_that("url_facilities_nearby encodes point geometry in URL", {
+  u <- EJAM:::url_facilities_nearby(sitecategory = "tsdf", lat = 39.65, lon = -75.73, radius = 3)
+  expect_true(grepl("esriGeometryPoint", utils::URLdecode(u)))
+  expect_true(grepl("StatuteMile", utils::URLdecode(u)))
+})
+
+test_that("url_facilities_nearby errors if lat and lon lengths differ", {
+  expect_error(EJAM:::url_facilities_nearby(lat = c(39.65, 40.0), lon = -75.73))
+})
+
+test_that("url_facilities_nearby uses correct layer number per sitecategory", {
+  expect_true(grepl("MapServer/0/query", EJAM:::url_facilities_nearby("npl",  lat = 39.65, lon = -75.73, radius = 1)))
+  expect_true(grepl("MapServer/4/query", EJAM:::url_facilities_nearby("tsdf", lat = 39.65, lon = -75.73, radius = 1)))
+})
+
+test_that("get_ejscreen_facilities_nearby returns a data.frame (live API)", {
+  skip_if_offline()
+  result <- get_ejscreen_facilities_nearby(
+    frompoints = data.frame(lat = 39.65, lon = -75.73),
+    radius = 0.5,
+    sitecategory = "npl"
+  )
+  expect_true(is.data.frame(result))
+  if (NROW(result) > 0) {
+    expect_true("lat" %in% names(result))
+    expect_true("lon" %in% names(result))
+    expect_true("frompoint_n" %in% names(result))
+    expect_true("sitecategory" %in% names(result))
+  }
+})
+
+test_that("get_ejscreen_facilities_nearby returns empty data.frame when no facilities found (live API)", {
+  skip_if_offline()
+  # Use a remote location (middle of the ocean) where no TSDF facilities should exist
+  result <- get_ejscreen_facilities_nearby(
+    frompoints = data.frame(lat = 0.0, lon = -150.0),
+    radius = 0.1,
+    sitecategory = "npl"
+  )
+  expect_true(is.data.frame(result))
+  expect_equal(NROW(result), 0)
+})
