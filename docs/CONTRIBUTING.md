@@ -32,10 +32,11 @@ All contributions to this project will be released under the MIT
 dedication or the CCO-1.0 license file dedication. By submitting a pull
 request or issue, you are agreeing to comply with a waiver of copyright
 interest. See the project’s
-[README](https://ejanalysis.github.io/EJAM/index.md),
-[LICENSE](https://ejanalysis.github.io/EJAM/LICENSE.md), and
-[CONTRIBUTING](https://ejanalysis.github.io/EJAM/CONTRIBUTING.md) policy
-(this page).
+[README](https://public-environmental-data-partners.github.io/EJAM/index.md),
+[LICENSE](https://public-environmental-data-partners.github.io/EJAM/LICENSE.md),
+and
+[CONTRIBUTING](https://public-environmental-data-partners.github.io/EJAM/CONTRIBUTING.md)
+policy (this page).
 
 ## Notes regarding prior (EPA-associated) versions - for reference only:
 

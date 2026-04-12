@@ -21,4 +21,4 @@ also see attributes(bg_cenpop2020) for source URL and date
 
 ## See also
 
-[blockgroupstats](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md)
+[blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md)

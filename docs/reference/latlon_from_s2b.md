@@ -15,7 +15,7 @@ latlon_from_s2b(s2b)
 - s2b:
 
   sites2blocks data.table that is output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 ## Value
 
@@ -28,14 +28,14 @@ This function is needed ONLY if you did not retain site latlons, and
 then only for sites not entirely in single states based on their nearby
 blocks. This is slow and assumes you do not already know the lat,lon of
 the sitepoints. If for some reason all you have is output of
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 then this is how you could estimate where the original sitepoint(s) were
 that were input(s) to
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 But ejamit() or the shiny app do not require doing this since the
 original latlon of sitepoints are retained and provided to
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 which needs to figure out what state each site is in to use the right
 state percentiles.
 

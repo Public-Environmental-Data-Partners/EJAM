@@ -45,5 +45,5 @@ sites) assuming parameter active=TRUE, which is the default
 
 ## See also
 
-[`frs_inactive_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_inactive_ids.md)
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_inactive_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_inactive_ids.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)

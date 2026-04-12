@@ -86,11 +86,11 @@ frs_update_datasets(
 
 Creates saved copies of datasets for the R package, overwriting old
 ones, using
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
 and
-[`frs_inactive_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_inactive_ids.md)
+[`frs_inactive_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_inactive_ids.md)
 and other functions, and invisibly returns
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md).
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md).
 
 ## Details
 
@@ -105,7 +105,7 @@ script like `EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`
 These datasets are obtained from EPA servers, reformatted for this
 package, and then stored in a separate repository - see [updating data
 for
-package](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.md).
+package](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md).
 The save_as_data\_ parameters here are set to FALSE because the files
 are not saved in the source package or its repository like typical
 package datasets would be saved in the data folder of the source
@@ -116,10 +116,10 @@ installing the EJAM package.
 
 ## See also
 
-[`frs_get()`](https://ejanalysis.github.io/EJAM/reference/frs_get.md)
-[`frs_inactive_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_inactive_ids.md)
-[`frs_drop_inactive()`](https://ejanalysis.github.io/EJAM/reference/frs_drop_inactive.md)
-[`frs_make_programid_lookup()`](https://ejanalysis.github.io/EJAM/reference/frs_make_programid_lookup.md)
-[`frs_make_naics_lookup()`](https://ejanalysis.github.io/EJAM/reference/frs_make_naics_lookup.md)
-[`frs_make_sic_lookup()`](https://ejanalysis.github.io/EJAM/reference/frs_make_sic_lookup.md)
-[`frs_make_mact_lookup()`](https://ejanalysis.github.io/EJAM/reference/frs_make_mact_lookup.md)
+[`frs_get()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_get.md)
+[`frs_inactive_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_inactive_ids.md)
+[`frs_drop_inactive()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_drop_inactive.md)
+[`frs_make_programid_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_make_programid_lookup.md)
+[`frs_make_naics_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_make_naics_lookup.md)
+[`frs_make_sic_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_make_sic_lookup.md)
+[`frs_make_mact_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_make_mact_lookup.md)

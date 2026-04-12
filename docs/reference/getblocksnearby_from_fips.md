@@ -41,9 +41,9 @@ getblocksnearby_from_fips(
   sites2blocks table in [data.table](https://r-datatable.com) format and
   a spatial data.frame, respectively, or FALSE to get the pts table in
   [data.table](https://r-datatable.com) format much like output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   or
-  [`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)
+  [`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)
 
 - allow_multiple_fips_types:
 
@@ -59,9 +59,9 @@ getblocksnearby_from_fips(
 - if return_shp=F, returns just a sites2blocks table in
   [data.table](https://r-datatable.com) format with colnames
   ejam_uniq_id, blockid, distance, blockwt, bgid, fips. This is like the
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   and
-  [`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)
+  [`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)
   outputs.
 
 - if return_shp=T, returns a named list where pts is the table in
@@ -77,11 +77,11 @@ getblocksnearby_from_fips(
 
 ## See also
 
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-[`fips_bgs_in_fips()`](https://ejanalysis.github.io/EJAM/reference/fips_bgs_in_fips.md)
-[`fips_lead_zero()`](https://ejanalysis.github.io/EJAM/reference/fips_lead_zero.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
+[`fips_bgs_in_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_bgs_in_fips.md)
+[`fips_lead_zero()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_lead_zero.md)
 `getblocksnearby_from_fips()`
-[`fips_from_table()`](https://ejanalysis.github.io/EJAM/reference/fips_from_table.md)
+[`fips_from_table()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_from_table.md)
 
 ## Examples
 

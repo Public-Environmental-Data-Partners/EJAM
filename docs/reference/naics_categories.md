@@ -18,8 +18,8 @@ naics_categories(digits = 2, dataset = EJAM::NAICS)
 
   Should default to the dataset called NAICS, installed with this
   package. see
-  [NAICS](https://ejanalysis.github.io/EJAM/reference/NAICS.md) Check
-  attr(NAICS, 'year')
+  [NAICS](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md)
+  Check attr(NAICS, 'year')
 
 ## Value
 
@@ -42,8 +42,8 @@ See <https://www.census.gov/naics/>
 
 ## See also
 
-[naics_from_any](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
-[NAICS](https://ejanalysis.github.io/EJAM/reference/NAICS.md)
+[naics_from_any](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
+[NAICS](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md)
 
 ## Examples
 

@@ -1,4 +1,4 @@
-url: https://ejanalysis.github.io/EJAM/
+url: https://public-environmental-data-partners.github.io/EJAM/
 template:
   bootstrap: 5
   params:
@@ -16,8 +16,8 @@ footer:
     left: [datefooter]
     right: [package, versionmsg]
   components:
-    datefooter: February 2026
-    versionmsg: Version 2.32.7
+    datefooter: April 2026
+    versionmsg: Version 2.32.8
 development:
   mode: release
   destination:
@@ -244,6 +244,7 @@ reference:
   - getblocksnearby_from_fips
   - get_blockpoints_in_shape
   - getblocks_diagnostics
+  - get_ejscreen_facilities_nearby
   - getpointsnearby
   - getfrsnearby
   - proxistat

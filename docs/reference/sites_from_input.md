@@ -45,7 +45,7 @@ class or NULL fips would be a vector of Census FIPS codes or NULL
 
 ## See also
 
-[`sites_from_file()`](https://ejanalysis.github.io/EJAM/reference/sites_from_file.md)
+[`sites_from_file()`](https://public-environmental-data-partners.github.io/EJAM/reference/sites_from_file.md)
 
 ## Examples
 

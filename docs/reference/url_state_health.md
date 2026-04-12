@@ -67,7 +67,7 @@ url_state_health(
 - statereport:
 
   Do not use directly here. passed here by
-  [`url_county_health()`](https://ejanalysis.github.io/EJAM/reference/url_county_health.md)
+  [`url_county_health()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_county_health.md)
 
 - ...:
 

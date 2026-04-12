@@ -53,9 +53,9 @@ mapfastej_counties(
 - static_not_leaflet:
 
   set TRUE to use
-  [`map_shapes_plot()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_plot.md)
+  [`map_shapes_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_plot.md)
   instead of
-  [`map_shapes_leaflet()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_leaflet.md)
+  [`map_shapes_leaflet()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_leaflet.md)
 
 - main:
 
@@ -64,16 +64,16 @@ mapfastej_counties(
 - fillOpacity:
 
   passed to
-  [`map_shapes_leaflet()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_leaflet.md)
+  [`map_shapes_leaflet()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_leaflet.md)
   which passes it to
   [`leaflet::addPolygons()`](https://rstudio.github.io/leaflet/reference/map-layers.html)
 
 - ...:
 
   depending on value of static_not_leaflet T/F, passed to
-  [`map_shapes_plot()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_plot.md)
+  [`map_shapes_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_plot.md)
   or to
-  [`map_shapes_leaflet()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_leaflet.md)
+  [`map_shapes_leaflet()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_leaflet.md)
   which passes it to
   [`leaflet::addPolygons()`](https://rstudio.github.io/leaflet/reference/map-layers.html),
   such as opacity=1
@@ -95,8 +95,8 @@ on colorvarname).
 
 ## See also
 
-[`mapfastej()`](https://ejanalysis.github.io/EJAM/reference/mapfastej.md)
-[`map_shapes_leaflet()`](https://ejanalysis.github.io/EJAM/reference/map_shapes_leaflet.md)
+[`mapfastej()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfastej.md)
+[`map_shapes_leaflet()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_shapes_leaflet.md)
 
 ## Examples
 

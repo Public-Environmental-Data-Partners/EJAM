@@ -9,7 +9,8 @@ exported by pkg (or each .R source file in pkg/R)
 pkg_functions_that_use(
   text = "stop\\(",
   pkg = "EJAM",
-  ignore_comments = TRUE
+  ignore_comments = TRUE,
+  internal_included = TRUE
 )
 ```
 
@@ -38,6 +39,12 @@ pkg_functions_that_use(
 
   Note it will fail to ignore comments in .R files that are at the end
   of the line of actual code like print(1) \# that prints 1
+
+- internal_included:
+
+  whether to also check internal functions - tries to identify those
+  using
+  [`pkg_functions_and_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_functions_and_data.md)
 
 ## Value
 

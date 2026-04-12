@@ -12,12 +12,12 @@ minute.
 
 Some relevant EJAM functions:
 
-- [`speedreport()`](https://ejanalysis.github.io/EJAM/reference/speedreport.md)
-- [`speedmessage()`](https://ejanalysis.github.io/EJAM/reference/speedmessage.md)
-- [`speedtest()`](https://ejanalysis.github.io/EJAM/reference/speedtest.md)
-- [`speedtest_plot()`](https://ejanalysis.github.io/EJAM/reference/speedtest_plot.md)
-- [`speedtable_summarize()`](https://ejanalysis.github.io/EJAM/reference/speedtable_summarize.md)
-- [`speedtable_expand()`](https://ejanalysis.github.io/EJAM/reference/speedtable_expand.md)
+- [`speedreport()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedreport.md)
+- [`speedmessage()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedmessage.md)
+- [`speedtest()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest.md)
+- [`speedtest_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest_plot.md)
+- [`speedtable_summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtable_summarize.md)
+- [`speedtable_expand()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtable_expand.md)
 
 Note some of these are internal, not exported, so you would need to use
 EJAM::: if using them without doing load_all() first.

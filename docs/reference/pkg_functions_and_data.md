@@ -55,17 +55,17 @@ unless vectoronly = TRUE in which case it returns a character vector
 ## Details
 
 See
-[`pkg_dupeRfiles()`](https://ejanalysis.github.io/EJAM/reference/pkg_dupeRfiles.md)
+[`pkg_dupeRfiles()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_dupeRfiles.md)
 for files supporting a shiny app that is not a package, e.g.
 
 See
-[`pkg_dupenames()`](https://ejanalysis.github.io/EJAM/reference/pkg_dupenames.md)
+[`pkg_dupenames()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_dupenames.md)
 for objects that are in R packages.
 
 See `pkg_functions_and_data()`, pkg_functions_and_sourcefiles(),
 
 See
-[`pkg_data()`](https://ejanalysis.github.io/EJAM/reference/pkg_data.md)
+[`pkg_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_data.md)
 
 ## See also
 

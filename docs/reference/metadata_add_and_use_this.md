@@ -26,9 +26,9 @@ datasets
 
 ## See also
 
-[`metadata_check_print()`](https://ejanalysis.github.io/EJAM/reference/metadata_check_print.md)
-[`metadata_check()`](https://ejanalysis.github.io/EJAM/reference/metadata_check.md)
-[`metadata_add()`](https://ejanalysis.github.io/EJAM/reference/metadata_add.md)
-[`metadata_update_attr()`](https://ejanalysis.github.io/EJAM/reference/metadata_update_attr.md)
+[`metadata_check_print()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_check_print.md)
+[`metadata_check()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_check.md)
+[`metadata_add()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_add.md)
+[`metadata_update_attr()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_update_attr.md)
 `metadata_add_and_use_this()`
-[`dataset_documenter()`](https://ejanalysis.github.io/EJAM/reference/dataset_documenter.md)
+[`dataset_documenter()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataset_documenter.md)

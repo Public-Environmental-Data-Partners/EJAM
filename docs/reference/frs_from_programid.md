@@ -25,7 +25,8 @@ frs_from_programid(programname, programid)
 ## Value
 
 relevant rows of the table in [data.table](https://r-datatable.com)
-format called [frs](https://ejanalysis.github.io/EJAM/reference/frs.md),
+format called
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md),
 which has column names that are "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME"
 "NAICS" "PGM_SYS_ACRNMS"
 

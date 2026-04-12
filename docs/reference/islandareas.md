@@ -5,9 +5,9 @@ Samoa, Guam, the Commonwealth of the Northern Mariana Islands (Northern
 Mariana Islands), and the United States Virgin Islands.
 
 See also
-[stateinfo](https://ejanalysis.github.io/EJAM/reference/stateinfo.md)
+[stateinfo](https://public-environmental-data-partners.github.io/EJAM/reference/stateinfo.md)
 and
-[stateinfo2](https://ejanalysis.github.io/EJAM/reference/stateinfo2.md)
+[stateinfo2](https://public-environmental-data-partners.github.io/EJAM/reference/stateinfo2.md)
 
 See [Census
 documentation](https://www.census.gov/programs-surveys/geography.html)

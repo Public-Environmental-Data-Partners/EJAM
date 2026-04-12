@@ -7,22 +7,22 @@ settings are defined for the EJAM web app.
 
 Most of what you might want to do is shown in documentation showing
 examples of using the
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 function. This article is only needed if you want even more detail.
 First reading the
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 reference info is recommended before reading any of the details below.
 
 ### HOW SETTINGS GET PASSED TO THE WEB APP
 
 Many defaults are defined in files like `global_defaults_*.R`. They can
 be changed there, but also can be passed to
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 aka
-[`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md) as
-parameters, to override those global default settings for the duration
-of the app. Using
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`run_app()`](https://public-environmental-data-partners.github.io/EJAM/reference/run_app.md)
+as parameters, to override those global default settings for the
+duration of the app. Using
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 parameters allows experienced analysts to customize how the web app
 works without having to edit any files. It can be used on a laptop, for
 example interactively with custom settings. For example, one can change
@@ -78,7 +78,7 @@ editing URL-encoded bookmarks or editing source code!
 1.  The global default constant that is the initial value of x, and is
     normally defined in a `global_defaults_*.R` file installed with the
     EJAM package, but also can be provided as a parameter to
-    [`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md).
+    [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md).
 
 2.  for the subset of settings that can be adjusted in the Advanced tab
     (not all can), there is a second variable: the input\$ one can
@@ -105,10 +105,10 @@ isPublic being T or F.
 #### ejamapp() parameters
 
 If the app is launched directly via
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md) by
-a user in RStudio console, it skips app.R and a user can provide
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
+by a user in RStudio console, it skips app.R and a user can provide
 arguments as parameters in ejamapp(…). See
-[`?ejamapp`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`?ejamapp`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 
 #### global_defaults\_\*.R files
 
@@ -128,16 +128,16 @@ being T or F.
 #### any ejamapp() parameters will override global_defaults\_\*.R settings
 
 Just before launching the app,
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 calls
-[`get_global_defaults_or_user_options()`](https://ejanalysis.github.io/EJAM/reference/get_global_defaults_or_user_options.md)
+[`get_global_defaults_or_user_options()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_global_defaults_or_user_options.md)
 which gets the global defaults and then overrides/replaces them with any
 user-specified versions of those options given as arguments in
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md).
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md).
 
 #### app launch
 
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 launches the app – it uses a function called
 [`golem::with_golem_options()`](https://thinkr-open.github.io/golem/reference/with_golem_options.html),
 which defines the `app` object using
@@ -157,7 +157,7 @@ to check for a named option stored in `app$appOptions$golem_options`.
 Usually these are used as initial/default values for input\$ variables
 in the app. However, note if an expected setting is not found (ie not
 set by user in ejamapp() and not set in any global_defaults\_ file)
-[`global_or_param()`](https://ejanalysis.github.io/EJAM/reference/global_or_param.md)
+[`global_or_param()`](https://public-environmental-data-partners.github.io/EJAM/reference/global_or_param.md)
 also looks in global env, as a last resort!! That might be a problem if
 ui or server looks for a setting that we failed to provide in
 global_defaults files and that variable name happens to be in the global
@@ -212,7 +212,7 @@ reactives but not as shiny app inputs.
 #### Launch local app (the R user’s computer) with custom settings
 
 See the examples in the documentation of the function
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 
 One such example:
 
@@ -244,7 +244,7 @@ Also note that url-encoded bookmarked inputs can launch the app and pass
 various input\$ settings to the app, which would override the default
 values of those input\$ settings provided by the global_defaults\_\*.R
 and/or
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
 parameters handled by the utility function
 get_global_defaults_or_user_options().
 
@@ -353,85 +353,87 @@ cbind(global_defaults = gdefnames)
 #>  [35,] "default_include_averages"                     
 #>  [36,] "default_include_ejindexes"                    
 #>  [37,] "default_include_extraindicators"              
-#>  [38,] "default_max_mb_upload"                        
-#>  [39,] "default_max_miles"                            
-#>  [40,] "default_max_pts_map"                          
-#>  [41,] "default_max_pts_run"                          
-#>  [42,] "default_max_pts_select"                       
-#>  [43,] "default_max_pts_showtable"                    
-#>  [44,] "default_max_pts_upload"                       
-#>  [45,] "default_max_shapes_map"                       
-#>  [46,] "default_maxradius"                            
-#>  [47,] "default_naics"                                
-#>  [48,] "default_naics_digits_shown"                   
-#>  [49,] "default_need_proximityscore"                  
-#>  [50,] "default_ok2plot"                              
-#>  [51,] "default_plotkind_1pager"                      
-#>  [52,] "default_print_uploaded_points_to_log"         
-#>  [53,] "default_reports"                              
-#>  [54,] "default_shiny.testmode"                       
-#>  [55,] "default_show_advanced_settings"               
-#>  [56,] "default_show_full_header_footer"              
-#>  [57,] "default_show_ratios_in_report"                
-#>  [58,] "default_shp_oktypes_1"                        
-#>  [59,] "default_standard_analysis_title"              
-#>  [60,] "default_states_picked"                        
-#>  [61,] "default_subgroups_type"                       
-#>  [62,] "default_testing"                              
-#>  [63,] "default_upload_dropdown"                      
-#>  [64,] "default.an_thresh_comp1"                      
-#>  [65,] "default.an_thresh_comp2"                      
-#>  [66,] "default.an_threshgroup1"                      
-#>  [67,] "default.an_threshgroup2"                      
-#>  [68,] "default.an_threshnames1"                      
-#>  [69,] "default.an_threshnames2"                      
-#>  [70,] "ejamapi_is_down"                              
-#>  [71,] "epa_program_help_msg"                         
-#>  [72,] "escape_html"                                  
-#>  [73,] "fips_help_msg"                                
-#>  [74,] "fipspicker_all_counties_button_defaultchecked"
-#>  [75,] "fipspicker_all_counties_button_defaultshow"   
-#>  [76,] "fipspicker_all_regions_button_defaultchecked" 
-#>  [77,] "fipspicker_all_regions_button_defaultshow"    
-#>  [78,] "fipspicker_all_states_button_defaultchecked"  
-#>  [79,] "fipspicker_all_states_button_defaultshow"     
-#>  [80,] "fipspicker_fips_type2pick_choices_default"    
-#>  [81,] "fipspicker_fips_type2pick_default"            
-#>  [82,] "fipspicker_maxOptions_default_cities_picked"  
-#>  [83,] "fipspicker_maxOptions_default_counties_picked"
-#>  [84,] "fipspicker_maxOptions_default_states_picked"  
-#>  [85,] "frs_help_msg"                                 
-#>  [86,] "html_footer_fmt"                              
-#>  [87,] "html_header_fmt"                              
-#>  [88,] "latlon_help_msg"                              
-#>  [89,] "marker_cluster_cutoff"                        
-#>  [90,] "max_radius_default"                           
-#>  [91,] "maxmax_mb_upload"                             
-#>  [92,] "maxmax_miles"                                 
-#>  [93,] "maxmax_pts_map"                               
-#>  [94,] "maxmax_pts_run"                               
-#>  [95,] "maxmax_pts_select"                            
-#>  [96,] "maxmax_pts_showtable"                         
-#>  [97,] "maxmax_pts_upload"                            
-#>  [98,] "maxmax_shapes_map"                            
-#>  [99,] "minmax_mb_upload"                             
-#> [100,] "minradius"                                    
-#> [101,] "minradius_shapefile"                          
-#> [102,] "radius_default"                               
-#> [103,] "radius_default_shapefile"                     
-#> [104,] "report_logo"                                  
-#> [105,] "report_logo_dir"                              
-#> [106,] "report_logo_file"                             
-#> [107,] "report_title"                                 
-#> [108,] "report_title_multisite"                       
-#> [109,] "sanitize_numeric"                             
-#> [110,] "sanitize_text"                                
-#> [111,] "shp_help_msg"                                 
-#> [112,] "sitereport_download_buttons_colname"          
-#> [113,] "sitereport_download_buttons_show"             
-#> [114,] "stepradius"                                   
-#> [115,] "tabshown_default"                             
-#> [116,] "use_shapefile_from_any"
+#>  [38,] "default_mact"                                 
+#>  [39,] "default_max_mb_upload"                        
+#>  [40,] "default_max_miles"                            
+#>  [41,] "default_max_pts_map"                          
+#>  [42,] "default_max_pts_run"                          
+#>  [43,] "default_max_pts_select"                       
+#>  [44,] "default_max_pts_showtable"                    
+#>  [45,] "default_max_pts_upload"                       
+#>  [46,] "default_max_shapes_map"                       
+#>  [47,] "default_maxradius"                            
+#>  [48,] "default_naics"                                
+#>  [49,] "default_naics_digits_shown"                   
+#>  [50,] "default_need_proximityscore"                  
+#>  [51,] "default_ok2plot"                              
+#>  [52,] "default_plotkind_1pager"                      
+#>  [53,] "default_print_uploaded_points_to_log"         
+#>  [54,] "default_reports"                              
+#>  [55,] "default_shiny.testmode"                       
+#>  [56,] "default_show_advanced_settings"               
+#>  [57,] "default_show_full_header_footer"              
+#>  [58,] "default_show_ratios_in_report"                
+#>  [59,] "default_shp_oktypes_1"                        
+#>  [60,] "default_sic"                                  
+#>  [61,] "default_standard_analysis_title"              
+#>  [62,] "default_states_picked"                        
+#>  [63,] "default_subgroups_type"                       
+#>  [64,] "default_testing"                              
+#>  [65,] "default_upload_dropdown"                      
+#>  [66,] "default.an_thresh_comp1"                      
+#>  [67,] "default.an_thresh_comp2"                      
+#>  [68,] "default.an_threshgroup1"                      
+#>  [69,] "default.an_threshgroup2"                      
+#>  [70,] "default.an_threshnames1"                      
+#>  [71,] "default.an_threshnames2"                      
+#>  [72,] "ejamapi_is_down"                              
+#>  [73,] "epa_program_help_msg"                         
+#>  [74,] "escape_html"                                  
+#>  [75,] "fips_help_msg"                                
+#>  [76,] "fipspicker_all_counties_button_defaultchecked"
+#>  [77,] "fipspicker_all_counties_button_defaultshow"   
+#>  [78,] "fipspicker_all_regions_button_defaultchecked" 
+#>  [79,] "fipspicker_all_regions_button_defaultshow"    
+#>  [80,] "fipspicker_all_states_button_defaultchecked"  
+#>  [81,] "fipspicker_all_states_button_defaultshow"     
+#>  [82,] "fipspicker_fips_type2pick_choices_default"    
+#>  [83,] "fipspicker_fips_type2pick_default"            
+#>  [84,] "fipspicker_maxOptions_default_cities_picked"  
+#>  [85,] "fipspicker_maxOptions_default_counties_picked"
+#>  [86,] "fipspicker_maxOptions_default_states_picked"  
+#>  [87,] "frs_help_msg"                                 
+#>  [88,] "html_footer_fmt"                              
+#>  [89,] "html_header_fmt"                              
+#>  [90,] "latlon_help_msg"                              
+#>  [91,] "marker_cluster_cutoff"                        
+#>  [92,] "max_radius_default"                           
+#>  [93,] "maxmax_mb_upload"                             
+#>  [94,] "maxmax_miles"                                 
+#>  [95,] "maxmax_pts_map"                               
+#>  [96,] "maxmax_pts_run"                               
+#>  [97,] "maxmax_pts_select"                            
+#>  [98,] "maxmax_pts_showtable"                         
+#>  [99,] "maxmax_pts_upload"                            
+#> [100,] "maxmax_shapes_map"                            
+#> [101,] "minmax_mb_upload"                             
+#> [102,] "minradius"                                    
+#> [103,] "minradius_shapefile"                          
+#> [104,] "radius_default"                               
+#> [105,] "radius_default_shapefile"                     
+#> [106,] "report_logo"                                  
+#> [107,] "report_logo_dir"                              
+#> [108,] "report_logo_file"                             
+#> [109,] "report_title"                                 
+#> [110,] "report_title_multisite"                       
+#> [111,] "sanitize_numeric"                             
+#> [112,] "sanitize_text"                                
+#> [113,] "shp_help_msg"                                 
+#> [114,] "sitereport_download_buttons_colname"          
+#> [115,] "sitereport_download_buttons_show"             
+#> [116,] "stepradius"                                   
+#> [117,] "tabshown_default"                             
+#> [118,] "use_shapefile_from_any"
 ```
 
 #### \> function params - compiled full list
@@ -586,7 +588,7 @@ length(
 
 Function parameters whose defaults are or could be included in advanced
 tab, and allowed by
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md).
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md).
 
 ``` r
 
@@ -855,9 +857,9 @@ ss_upload_fips=null
 ss_upload_frs=null
 ss_upload_program=null
 ss_select_program="CAMDBS"
-ss_select_naics=null
-ss_select_sic=null
-ss_select_mact="AA"
+ss_select_naics="313"  # see default_naics
+ss_select_sic="2015"   # see default_sic
+ss_select_mact="AA" # see default_mact 
 naics_digits_shown="basic"
 add_naics_subcategories="TRUE"
 

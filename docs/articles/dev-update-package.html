@@ -18,7 +18,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating the Package as a New Release">
 <meta name="description" content="Steps for incrementing package version and GitHub releases">
 <meta property="og:description" content="Steps for incrementing package version and GitHub releases">
-<meta property="og:image" content="https://ejanalysis.github.io/EJAM/logo.svg">
+<meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.7</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ejanalysis/EJAM/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Public-Environmental-Data-Partners/EJAM/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -94,7 +94,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating the Package as a New Release</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ejanalysis/EJAM/blob/HEAD/vignettes/dev-update-package.Rmd" class="external-link"><code>vignettes/dev-update-package.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-update-package.Rmd" class="external-link"><code>vignettes/dev-update-package.Rmd</code></a></small>
       <div class="d-none name"><code>dev-update-package.Rmd</code></div>
     </div>
 
@@ -118,8 +118,8 @@ updated for everything to work correctly.</p>
 <li><p>The full URL of the repo where the R package is stored must be
 recorded as the part of the URL parameter in the DESCRIPTION file in the
 root folder of the source package.</p></li>
-<li><p>The full URL is currently <a href="https://github.com/ejanalysis/EJAM" class="external-link uri">https://github.com/ejanalysis/EJAM</a> as found in the
-DESCRIPTION file. It also can be checked via
+<li><p>The full URL is currently <a href="https://github.com/Public-Environmental-Data-Partners/EJAM" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/EJAM</a>
+as found in the DESCRIPTION file. It also can be checked via
 <code>url_package(type = "code", get_full_url=TRUE)</code></p></li>
 <li><p>The _pkgdown.yml file in the root folder should also get updated
 with the new URL.</p></li>
@@ -133,8 +133,9 @@ and function/data reference pages.</p></li>
 <h3 id="code-repo-owner-owner-of-the-github-code-repository">CODE REPO OWNER: owner of the github code repository<a class="anchor" aria-label="anchor" href="#code-repo-owner-owner-of-the-github-code-repository"></a>
 </h3>
 <ul>
-<li><p>The owner name portion is currently “ejanalysis” and can be found
-as part of the URL for the code repository, or via
+<li><p>The owner name portion is currently
+“Public-Environmental-Data-Partners” and can be found as part of the URL
+for the code repository, or via
 <code>gsub("/.*", "", url_package(type = "code"))</code></p></li>
 <li><p>Changing the URL as explained above and transferring ownership
 should work, but generated documentation pages and code test results and
@@ -191,11 +192,12 @@ name of github repository storing the large datasets<a class="anchor" aria-label
 recorded as the ejam_data_repo parameter in the DESCRIPTION file in the
 root folder of the source package (which can be checked via
 <code>url_package(type = "data")</code>).</p></li>
-<li><p>The full URL is currently <a href="https://github.com/ejanalysis/ejamdata" class="external-link uri">https://github.com/ejanalysis/ejamdata</a>. It can be
-checked via
+<li><p>The full URL is currently <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>.
+It can be checked via
 <code>url_package(type = "data", get_full_url=TRUE)</code></p></li>
-<li><p>The owner name portion is currently “ejanalysis” and can be found
-as part of the URL for the data repository, or via
+<li><p>The owner name portion is currently
+“Public-Environmental-Data-Partners” and can be found as part of the URL
+for the data repository, or via
 <code>gsub("/.*", "", url_package(type = "data"))</code></p></li>
 <li><p>The repo name portion is currently “ejamdata” and can be found as
 part of the URL for the data repository, or via
@@ -235,7 +237,7 @@ different location. If the documentation is published on a different
 domain, then that URL would need to be updated in DESCRIPTION.</p></li>
 <li><p>This URL can be checked via
 <code>url_package(type = "docs")</code> which should return the full URL
-where documentation is published (currently <a href="https://ejanalysis.github.io/EJAM" class="uri">https://ejanalysis.github.io/EJAM</a>).</p></li>
+where documentation is published (currently <a href="https://public-environmental-data-partners.github.io/EJAM" class="uri">https://public-environmental-data-partners.github.io/EJAM</a>).</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -259,7 +261,7 @@ or parameters to <code><a href="../reference/ejamapp.html">ejamapp()</a></code> 
 </h2>
 <ul>
 <li><p>Update EJAM version number in the Version: field of the
-<em>DESCRIPTION</em> file in the development branch (e.g., 2.32.7)
+<em>DESCRIPTION</em> file in the development branch (e.g., 2.32.8)
 (&amp; tying it to EJSCREEN version numbers if relevant). Search in
 files globally too, as there still are places where the version number
 is not read from DESCRIPTION, like the files *_pkgdown.yml* and
@@ -312,11 +314,11 @@ article on installing for info on setting up a PAT</a>.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>February 2026</p>
+  <p>April 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.7</p>
+  <p>EJAM Version 2.32.8</p>
 </div>
 
     </footer>

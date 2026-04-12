@@ -97,16 +97,16 @@ residents.
 
 Could be edited to allow multiple types of sites and/or reference zones
 more generally like for
-[`ejamit_compare_types_of_places()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_types_of_places.md)
+[`ejamit_compare_types_of_places()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_types_of_places.md)
 
 ## See also
 
 See
-[`plot_boxplot_pctiles()`](https://ejanalysis.github.io/EJAM/reference/plot_boxplot_pctiles.md)
+[`plot_boxplot_pctiles()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_boxplot_pctiles.md)
 for Percentile indicators compared in one plot. See
-[`ejam2boxplot_ratios()`](https://ejanalysis.github.io/EJAM/reference/ejam2boxplot_ratios.md)
+[`ejam2boxplot_ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2boxplot_ratios.md)
 See
-[`ejam2barplot()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot.md)
+[`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md)
 for Ratio indicators compared in one plot. See `plot_boxplot_vs_ref()`
 for a Raw indicator vs. a reference distribution.
 

@@ -17,7 +17,7 @@ latlon_from_address_table(x)
 ## Value
 
 same as output of
-[`latlon_from_address()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_address.md)
+[`latlon_from_address()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_address.md)
 
 ## Examples
 

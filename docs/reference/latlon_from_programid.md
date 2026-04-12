@@ -34,13 +34,13 @@ waste site, operable unit, or other feature tracked by that
 Environmental Information System.
 
 see
-[epa_programs](https://ejanalysis.github.io/EJAM/reference/epa_programs.md)
+[epa_programs](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.md)
 for a list of programs and their acronyms and a count of FRS facilities
 under each. Also see a simple list of names like this:
 as.vector(epa_programs) or sort(unique(frs_by_programid\$program))
 
 There are roughly 3.5 million records in
-[frs_by_programid](https://ejanalysis.github.io/EJAM/reference/frs_by_programid.md)
+[frs_by_programid](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)
 but only about 2.7 million unique pgm_sys_id values because the same
 number may be used under different program types, like RCRAINFO AND
 EGRID.

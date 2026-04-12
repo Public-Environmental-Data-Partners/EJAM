@@ -53,20 +53,21 @@ frs_get(
 ## Details
 
 Used by
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 
 Uses
-[`frs_download()`](https://ejanalysis.github.io/EJAM/reference/frs_download.md),
-[`frs_unzip()`](https://ejanalysis.github.io/EJAM/reference/frs_unzip.md),
-[`frs_read()`](https://ejanalysis.github.io/EJAM/reference/frs_read.md),
-[`frs_clean()`](https://ejanalysis.github.io/EJAM/reference/frs_clean.md)
+[`frs_download()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_download.md),
+[`frs_unzip()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_unzip.md),
+[`frs_read()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_read.md),
+[`frs_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_clean.md)
 
 **See examples for how package maintainer might use this.**
 
 See source code of this function for more notes. For a developer
-updating the [frs](https://ejanalysis.github.io/EJAM/reference/frs.md)
+updating the
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
 datasets in this package, see
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
 
 `frs_get()` invisibly returns the table of data, as a table in
 [data.table](https://r-datatable.com) format It will download, unzip,
@@ -173,11 +174,11 @@ This function creates the following:
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
-[`frs_read()`](https://ejanalysis.github.io/EJAM/reference/frs_read.md)
-[`frs_clean()`](https://ejanalysis.github.io/EJAM/reference/frs_clean.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_read()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_read.md)
+[`frs_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_clean.md)
 frs_by_naics
-[`frs_active_ids()`](https://ejanalysis.github.io/EJAM/reference/frs_active_ids.md)
-[`frs_drop_inactive()`](https://ejanalysis.github.io/EJAM/reference/frs_drop_inactive.md)
-[`frs_make_programid_lookup()`](https://ejanalysis.github.io/EJAM/reference/frs_make_programid_lookup.md)
-[`frs_make_naics_lookup()`](https://ejanalysis.github.io/EJAM/reference/frs_make_naics_lookup.md)
+[`frs_active_ids()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_active_ids.md)
+[`frs_drop_inactive()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_drop_inactive.md)
+[`frs_make_programid_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_make_programid_lookup.md)
+[`frs_make_naics_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_make_naics_lookup.md)

@@ -12,7 +12,7 @@ proximity to points like regulated facilities, areas defined as shapefiles/polyg
 or areas specified as Census units (e.g., Counties).
 }
 \section{\strong{What is EJAM and How to do Analysis with the EJAM R Package}}{
-\href{https://ejanalysis.github.io/EJAM}{EJAM package documentation} provides
+\href{https://public-environmental-data-partners.github.io/EJAM}{EJAM package documentation} provides
 an overview of EJAM, a complete reference document on all functions, and
 articles (vignettes) introducing key functions and how to use them.
 }
@@ -35,8 +35,8 @@ the United States Census Bureau annually and then used in EJAM.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://ejanalysis.github.io/EJAM}
-  \item \url{https://github.com/ejanalysis/EJAM}
+  \item \url{https://public-environmental-data-partners.github.io/EJAM}
+  \item \url{https://github.com/Public-Environmental-Data-Partners/EJAM}
   \item \url{https://ejanalysis.org}
 }
 

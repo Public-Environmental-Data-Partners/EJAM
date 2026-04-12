@@ -26,4 +26,4 @@ popups vector to be used in leaflet maps
 
 ## See also
 
-[`popup_from_any()`](https://ejanalysis.github.io/EJAM/reference/popup_from_any.md)
+[`popup_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/popup_from_any.md)

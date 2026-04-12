@@ -20,7 +20,8 @@ same time.
 
 ## What Can You Do with EJAM?
 
-[What is EJAM?](https://ejanalysis.github.io/EJAM/articles/whatis.html)
+[What is
+EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
 
 ## Status of EJAM package in 2026
 
@@ -33,8 +34,8 @@ R package EJAM was archived.*
 *Ongoing development since then is not associated with EPA*, and that
 development including any open source contributions, has taken place in
 a separate repository, called
-[ejanalysis/EJAM](https://github.com/ejanalysis/EJAM), a non-EPA,
-detached fork.
+[Public-Environmental-Data-Partners/EJAM](https://github.com/Public-Environmental-Data-Partners/EJAM),
+a non-EPA, detached fork.
 
 ### code repositories and open source contributions
 
@@ -62,4 +63,4 @@ list under the “Tools” tab in EJSCREEN), or directly via this link:
 [ejanalysis.org/ejamapp](https://ejanalysis.org/ejamapp)
 
 For information about how to host the web app, see [Deploying the Web
-App](https://ejanalysis.github.io/EJAM/articles/dev-deploy-app.html)
+App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.html)

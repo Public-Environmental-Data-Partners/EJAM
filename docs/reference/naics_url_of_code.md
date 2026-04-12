@@ -21,5 +21,5 @@ https://www.naics.com/six-digit-naics/?v=2017&code=22
 
 ## See also
 
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
-[`naics_findwebscrape()`](https://ejanalysis.github.io/EJAM/reference/naics_findwebscrape.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
+[`naics_findwebscrape()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_findwebscrape.md)

@@ -66,6 +66,6 @@ can return HTML if filename not specified, but otherwise NULL
 ## Details
 
 For a related function for use in RStudio, see
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md)
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)
 which relies on
-[`build_community_report()`](https://ejanalysis.github.io/EJAM/reference/build_community_report.md)
+[`build_community_report()`](https://public-environmental-data-partners.github.io/EJAM/reference/build_community_report.md)

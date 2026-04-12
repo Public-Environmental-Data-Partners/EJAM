@@ -38,5 +38,5 @@ In this table, summary stats mean the following:
 
 ## See also
 
-[`ejam2barplot_areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot_areafeatures.md)
-[`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md)
+[`ejam2barplot_areafeatures()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot_areafeatures.md)
+[`batch.summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.md)

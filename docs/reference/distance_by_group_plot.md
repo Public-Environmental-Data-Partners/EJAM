@@ -10,7 +10,7 @@ This function, distance_cdf_by_group_plot(), is based on
 ejamit()\$results_bybg_people, which provides only blockgroup resolution
 information about distance. For block resolution analysis of distance by
 group, see
-[`plot_distance_by_pctd()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_by_pctd.md).
+[`plot_distance_by_pctd()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_by_pctd.md).
 
 ## Usage
 
@@ -90,7 +90,7 @@ plot_distance_cdf_by_group(
   blockgroup's distance. If returnwhat is "plotfilename" then it returns
   the full path including filename of a .png in a tempdir If returnwhat
   is "plot" then it returns the plot object as needed for
-  [`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+  [`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
   or related functions
 
 - ...:
@@ -123,12 +123,12 @@ optimized
 
 ## See also
 
-[`distance_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) for
-examples
+[`distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+for examples
 
-[`distance_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
-[`getblocksnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
+[`distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`getblocksnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
 for examples
 
 ## Examples

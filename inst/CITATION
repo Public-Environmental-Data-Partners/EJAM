@@ -6,6 +6,6 @@ utils::bibentry(
   title = "Environmental Justice Analysis Multisite tool (EJAM) v2.32.7",
   year = 2026,
   address = "Washington, DC",
-  url = "https://ejanalysis.github.io/EJAM/index.html",
+  url = "https://public-environmental-data-partners.github.io/EJAM/index.html",
   note = "Also see https://ejanalysis.com/EJAM"
 )

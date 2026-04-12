@@ -14,9 +14,9 @@ structure.of.output.list(x, maxshown = 10, objectname = NULL)
 - x:
 
   the output of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) or
-  of
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md),
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  or of
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md),
   a list of objects holding results of analysis
 
 - maxshown:

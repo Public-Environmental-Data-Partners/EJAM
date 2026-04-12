@@ -4,7 +4,7 @@ Given a table of frompoints (lat lon coordinates), find IDs of and
 distances to all nearby points that could represent e.g., schools,
 parks, or EPA-regulated facilities with locations in Facility Registry
 Services (FRS). Like
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 but for nearby points of any type.
 
 ## Usage
@@ -31,7 +31,7 @@ getpointsnearby(
 - frompoints:
 
   used as the sitepoints param of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md).
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md).
   Can be for example Census blocks (based on internal point of each
   block).
 
@@ -43,22 +43,22 @@ getpointsnearby(
 - radius:
 
   passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 - maxradius:
 
   passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 - avoidorphans:
 
   passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 - retain_unadjusted_distance:
 
   passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 - quadtree:
 
@@ -74,28 +74,28 @@ getpointsnearby(
 - quiet:
 
   passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 - updateProgress:
 
   progress bar object, passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 - report_progress_every_n:
 
   passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 - ...:
 
   passed to
-  [`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+  [`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 ## Value
 
 sites2points [data.table](https://r-datatable.com) one row per pair of
 frompoint and nearby topoint, like output of
-[`getpointsnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
+[`getpointsnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getpointsnearbyviaQuadTree.md)
 
 ## Details
 

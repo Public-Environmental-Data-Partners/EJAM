@@ -46,8 +46,8 @@ colcounter_summary_cum(
 
 ## See also
 
-[`colcounter_summary_all()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_all.md)
-[`colcounter_summary()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary.md)
+[`colcounter_summary_all()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_all.md)
+[`colcounter_summary()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary.md)
 `colcounter_summary_cum()`
-[`colcounter_summary_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_pct.md)
-[`colcounter_summary_cum_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
+[`colcounter_summary_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_pct.md)
+[`colcounter_summary_cum_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum_pct.md)

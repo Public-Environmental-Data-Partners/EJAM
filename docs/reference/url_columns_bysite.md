@@ -52,7 +52,7 @@ url_columns_bysite(
 - wherestr:
 
   optional because inferred from fips if provided. Passed to
-  [`url_ejscreenmap()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.md)
+  [`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)
   and can be name of city, county, state like from fips2name(201090), or
   "new rochelle, ny" or "AK" or even a zip code, but NOT a fips code!
   (for FIPS, use the fips parameter instead). Note that nearly half of
@@ -83,8 +83,8 @@ url_columns_bysite(
 
   Whether to return as just the urls or as html hyperlinks to use in a
   DT::datatable() for example passed to
-  [`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md),
-  [`url_ejscreenmap()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.md),
+  [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md),
+  [`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md),
   or other url_xyz report functions.
 
 - validate_regids:
@@ -102,20 +102,21 @@ url_columns_bysite(
 ## Value
 
 list of data.frames to append to the list of data.frames created by
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) or
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+or
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
 
 ## Details
 
 used in
-[`table_xls_format()`](https://ejanalysis.github.io/EJAM/reference/table_xls_format.md),
+[`table_xls_format()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_xls_format.md),
 and server, to create hyperlinks to reports or webpages, one per site
 
 ## See also
 
-[`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
-[`url_ejscreenmap()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.md)
-[`url_echo_facility()`](https://ejanalysis.github.io/EJAM/reference/url_echo_facility.md)
+[`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
+[`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)
+[`url_echo_facility()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_echo_facility.md)
 
 ## Examples
 

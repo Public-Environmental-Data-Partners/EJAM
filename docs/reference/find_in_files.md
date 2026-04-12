@@ -68,7 +68,7 @@ are vectors of text with hits.
 
 ## Details
 
-Also see undocumented related functions
+Also see (mostly undocumented) related functions
 EJAM:::found_in_N_files_T_times() and EJAM:::found_in_files() and
 EJAM:::grab_hits() and EJAM:::grepn()
 

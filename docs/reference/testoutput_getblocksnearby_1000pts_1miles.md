@@ -19,6 +19,6 @@ This is the output of getblocksnearby(testpoints_1000, radius = 1)
 
 ## See also
 
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
-[testpoints_1000](https://ejanalysis.github.io/EJAM/reference/testpoints_1000.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+[testpoints_1000](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_1000.md)

@@ -25,7 +25,7 @@ named vector of numbers
 
 ## See also
 
-[`colMaxs2()`](https://ejanalysis.github.io/EJAM/reference/colMaxs2.md)
+[`colMaxs2()`](https://public-environmental-data-partners.github.io/EJAM/reference/colMaxs2.md)
 
 ## Examples
 

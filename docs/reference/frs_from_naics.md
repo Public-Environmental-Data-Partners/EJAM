@@ -14,24 +14,25 @@ frs_from_naics(naics_code_or_name, childrenForNAICS = TRUE, ...)
 - naics_code_or_name:
 
   passed to
-  [`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+  [`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
   as the query
 
 - childrenForNAICS:
 
   passed to
-  [`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+  [`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
   as the children param of that function
 
 - ...:
 
   passed to
-  [`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+  [`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 ## Value
 
 relevant rows of the table in [data.table](https://r-datatable.com)
-format called [frs](https://ejanalysis.github.io/EJAM/reference/frs.md),
+format called
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md),
 which has column names that are "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME"
 "NAICS" "PGM_SYS_ACRNMS"
 
@@ -47,11 +48,11 @@ also provide search by NAICS or SIC, and by MACT subpart.
 
 ## See also
 
-[`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md)
-[`latlon_from_sic()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_sic.md)
-[`frs_from_sic()`](https://ejanalysis.github.io/EJAM/reference/frs_from_sic.md)
-[`regid_from_naics()`](https://ejanalysis.github.io/EJAM/reference/regid_from_naics.md)
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md)
+[`latlon_from_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_sic.md)
+[`frs_from_sic()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_sic.md)
+[`regid_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/regid_from_naics.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 
 ## Examples
 

@@ -23,7 +23,7 @@ plot_st_v_us(ST = "CA", varnames = names_these)
 ## Value
 
 similar to
-[`plot_barplot_ratios()`](https://ejanalysis.github.io/EJAM/reference/plot_barplot_ratios.md)
+[`plot_barplot_ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_ratios.md)
 
 ## Examples
 

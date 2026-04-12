@@ -22,11 +22,11 @@ frs_make_mact_lookup(frs_by_programid, folder = NULL)
 ## Value
 
 list, of
-[frs_by_mact](https://ejanalysis.github.io/EJAM/reference/frs_by_mact.md)
+[frs_by_mact](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_mact.md)
 table in [data.table](https://r-datatable.com) format and
-[mact_table](https://ejanalysis.github.io/EJAM/reference/mact_table.md)
+[mact_table](https://public-environmental-data-partners.github.io/EJAM/reference/mact_table.md)
 data.frame
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)

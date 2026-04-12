@@ -4,7 +4,7 @@ Table in [data.table](https://r-datatable.com) format. This is the
 format with one row per site-NAICS pair, so multiple rows for one site
 if it is in multiple NAICS. @details This file is not stored in the
 package, but is obtained via
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md).
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md).
 
 The EPA also provides a [FRS Facility Industrial Classification Search
 tool](https://www.epa.gov/frs/frs-query#industrial) where you can find
@@ -41,10 +41,10 @@ length(unique(frs_by_naics\$REGISTRY_ID))
 
 ## See also
 
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md)
-[`frs_from_naics()`](https://ejanalysis.github.io/EJAM/reference/frs_from_naics.md)
-[`naics_categories()`](https://ejanalysis.github.io/EJAM/reference/naics_categories.md)
-[frs_by_programid](https://ejanalysis.github.io/EJAM/reference/frs_by_programid.md)
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
+[`frs_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_naics.md)
+[`naics_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md)
+[frs_by_programid](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)
 and see naics_from_any in EJAM pkg.
 
 ## Examples

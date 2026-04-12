@@ -14,5 +14,5 @@ An object of class `list` of length 8.
 
 ## See also
 
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-[`testdata()`](https://ejanalysis.github.io/EJAM/reference/testdata.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+[`testdata()`](https://public-environmental-data-partners.github.io/EJAM/reference/testdata.md)

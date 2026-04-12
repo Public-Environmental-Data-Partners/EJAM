@@ -128,7 +128,7 @@ table_xls_format(
 
   info about which columns to treat as URLs that should be hyperlinks -
   see
-  [url_columns_bysite](https://ejanalysis.github.io/EJAM/reference/url_columns_bysite.md)
+  [url_columns_bysite](https://public-environmental-data-partners.github.io/EJAM/reference/url_columns_bysite.md)
 
 - ok2plot:
 
@@ -246,9 +246,9 @@ a workbook, ready to be saved in spreadsheet format, with tabs like
 
 ## See also
 
-[`ejam2excel()`](https://ejanalysis.github.io/EJAM/reference/ejam2excel.md)
+[`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
 and related functions like
-[`table_xls_from_ejam()`](https://ejanalysis.github.io/EJAM/reference/table_xls_from_ejam.md)
+[`table_xls_from_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_xls_from_ejam.md)
 
 ## Examples
 
