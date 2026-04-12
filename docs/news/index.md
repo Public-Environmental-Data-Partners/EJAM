@@ -24,6 +24,10 @@
   where it had problems if closely related filename had previously been
   used
 - Added utility
+  [`get_ejscreen_facilities_nearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_ejscreen_facilities_nearby.md)
+  and helpers to use API to find/count NPL, TSDF, TRI, etc. near each
+  point
+- Added utility
   [`distance_epa_api()`](https://public-environmental-data-partners.github.io/EJAM/reference/distance_epa_api.md)
   that calculates distance between two lat/lon points using the same
   method as the EPA API, which uses ArcGIS and gives slightly different
