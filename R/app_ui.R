@@ -357,7 +357,7 @@ app_ui <- function(request) {
                       selectizeInput(inputId = "ss_select_sic",
                                      label = h6("Select industry of interest"),
                                      # choose from named numeric vector on server-side
-                                     ## number is
+
                                      choices = NULL, # will be updated in server to SIC a named vector of >1,000 categories like "7240 - Barber shops"
                                      selected = NULL, # will be updated in server to input$default_sic
                                      width = 400,
