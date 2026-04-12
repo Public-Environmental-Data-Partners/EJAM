@@ -39,7 +39,7 @@ doaggregate(
   miles between all sites (facilities) and nearby Census block internal
   points, with columns ejam_uniq_id, blockid, distance, created by
   getblocksnearby function. See
-  [testoutput_getblocksnearby_10pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
+  [testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
   dataset in package, as input to this function
 
 - sites2states_or_latlon:
@@ -180,24 +180,24 @@ list with named elements:
 - **count_of_blocks_near_multiple_sites** additional detail
 
 Also see outputs of
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 which are similar but provide additional info.
 
 ## Details
 
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 and `doaggregate()` are the two key functions that run
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md).
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md).
 `doaggregate()` takes a set of sites like facilities and the set of
 blocks that are near each, combines those with indicator scores for
 blockgroups, and aggregates the numbers within each place and across all
 overall.
 
 For all examples, see
-[`getblocksnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
+[`getblocksnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
 
 `doaggregate()` is the code run after
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 (or a related function for polygons or FIPS Census units) has identified
 which blocks are nearby.
 
@@ -223,16 +223,16 @@ in each buffer (i.e., near each facility):
 
 This function requires the following datasets:
 
-- [blockwts](https://ejanalysis.github.io/EJAM/reference/blockwts.md):
+- [blockwts](https://public-environmental-data-partners.github.io/EJAM/reference/blockwts.md):
   table in [data.table](https://r-datatable.com) format with these
   columns: blockid , bgid, blockwt
 
-- [quaddata](https://ejanalysis.github.io/EJAM/reference/quaddata.md)
+- [quaddata](https://public-environmental-data-partners.github.io/EJAM/reference/quaddata.md)
   table in [data.table](https://r-datatable.com) format used to create
   localtree, a quad tree index of block points (and localtree that is
   created when package is loaded)
 
-- [blockgroupstats](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md) -
+- [blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md) -
   A table in [data.table](https://r-datatable.com) format (such as
   EJSCREEN residential population and environmental data by blockgroup)
 
@@ -288,8 +288,8 @@ such as a dasymetric map approach.
 
 ## See also
 
-[ejamit](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[ejamit](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 ## Examples
 

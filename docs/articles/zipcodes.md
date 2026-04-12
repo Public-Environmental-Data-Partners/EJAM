@@ -116,5 +116,5 @@ mapfastej(out_plus_shape)
 ```
 
 Note that
-[`ejam2map()`](https://ejanalysis.github.io/EJAM/reference/ejam2map.md)
+[`ejam2map()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2map.md)
 will not work for zipcodes!

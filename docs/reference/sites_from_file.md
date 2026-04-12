@@ -22,4 +22,4 @@ named list, with sitepoints, fips, shapefile as names
 
 ## See also
 
-[`sites_from_input()`](https://ejanalysis.github.io/EJAM/reference/sites_from_input.md)
+[`sites_from_input()`](https://public-environmental-data-partners.github.io/EJAM/reference/sites_from_input.md)

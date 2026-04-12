@@ -25,7 +25,7 @@ usastats_querye(varnames = EJAM::names_e, PCTILES = NULL, dig = 4)
 
 ## See also
 
-[`calc_avg_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_avg_columns.md)
+[`calc_avg_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_avg_columns.md)
 
 ## Examples
 

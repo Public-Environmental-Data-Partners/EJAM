@@ -16,7 +16,7 @@ It is a data.table with one row for every US Census blockgroup.
 \item The EJ Indexes (Summary Indexes) are stored in a separate table, \link{bgej}
 }
 
-The \href{https://ejanalysis.github.io/EJAM/articles/ejscreen.html}{source of data for each indicator was documented by EJSCREEN}
+The \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html}{source of data for each indicator was documented by EJSCREEN}
 
 More about blockgroupstats
 \itemize{
@@ -49,9 +49,9 @@ The column called "area" is not used and not documented.
 
 Other key datasets:
 \itemize{
-\item List of key datasets used by EJAM and details about annual updates: \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}
-\item Datasets stored within the EJAM package (.rda files): \href{https://ejanalysis.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/ejanalysis/EJAM/tree/main/data}{access to installed data files}
-\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files}{Documentation} and \href{https://github.com/ejanalysis/ejamdata/tree/main/data}{access to downloaded data files}
+\item List of key datasets used by EJAM and details about annual updates: \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}
+\item Datasets stored within the EJAM package (.rda files): \href{https://public-environmental-data-partners.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data}{access to installed data files}
+\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data}{access to downloaded data files}
 \item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
 }
 }

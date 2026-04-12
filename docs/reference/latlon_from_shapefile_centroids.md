@@ -21,5 +21,5 @@ data.frame with columns lat,lon
 
 ## See also
 
-[`latlon_from_fips()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_fips.md)
-[`latlon_from_anything()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_anything.md)
+[`latlon_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_fips.md)
+[`latlon_from_anything()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_anything.md)

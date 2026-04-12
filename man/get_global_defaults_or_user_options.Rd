@@ -36,7 +36,7 @@ collects the shiny-app-related default settings that are defined in these places
 and consolidates them all as a list, to be available to server/ui.
 
 For more details, see the
-\href{https://ejanalysis.github.io/EJAM/articles/}{article about defaults and custom settings}.
+\href{https://public-environmental-data-partners.github.io/EJAM/articles/}{article about defaults and custom settings}.
 
 See other ideas for how to include global.R types of code/settings discussed \href{https://github.com/ThinkR-open/golem/issues/6}{here}
 }

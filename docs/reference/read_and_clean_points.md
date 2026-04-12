@@ -38,8 +38,8 @@ EJAM :: latlon_from_anything() uses
 EJAMbatch.summarizer :: read_csv_or_xl() and
 
 EJAM ::latlon_df_clean() which uses EJAM :: latlon_infer()
-[`latlon_as.numeric()`](https://ejanalysis.github.io/EJAM/reference/latlon_as.numeric.md)
-[`latlon_is.valid()`](https://ejanalysis.github.io/EJAM/reference/latlon_is.valid.md)
+[`latlon_as.numeric()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_as.numeric.md)
+[`latlon_is.valid()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_is.valid.md)
 
 read_and_clean_points()
 
@@ -56,4 +56,4 @@ EJAM ::latlon_from_programid() but not \_from_naics() ?
 
 ## See also
 
-[`read_csv_or_xl()`](https://ejanalysis.github.io/EJAM/reference/read_csv_or_xl.md)
+[`read_csv_or_xl()`](https://public-environmental-data-partners.github.io/EJAM/reference/read_csv_or_xl.md)

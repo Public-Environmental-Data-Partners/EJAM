@@ -26,7 +26,7 @@ fixnames_to_type(
   "shortlabel" or "original", or "csv" or "r" (aka "rname") or "api" or
   "longname" or "shortname" etc. (colnames of map_headernames, or
   aliases per helper
-  [`fixmapheadernamescolname()`](https://ejanalysis.github.io/EJAM/reference/fixmapheadernamescolname.md))
+  [`fixmapheadernamescolname()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixmapheadernamescolname.md))
 
 - newtype:
 
@@ -36,7 +36,7 @@ fixnames_to_type(
 - mapping_for_names:
 
   data.frame passed to
-  [`fixnames()`](https://ejanalysis.github.io/EJAM/reference/fixnames.md)
+  [`fixnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames.md)
   to do the work with colnames that are referred to by oldtype and
   newtype
 
@@ -54,6 +54,6 @@ the corresponding string in the column specified by newtype
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
-[`fixnames()`](https://ejanalysis.github.io/EJAM/reference/fixnames.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
+[`fixnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames.md)

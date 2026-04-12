@@ -34,25 +34,26 @@ See also read_builtin() function from the readr package!
 
 Default is to load some but not all the datasets into memory
 immediately.
-[blockgroupstats](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md),
-[usastats](https://ejanalysis.github.io/EJAM/reference/usastats.md),
-[statestats](https://ejanalysis.github.io/EJAM/reference/statestats.md),
+[blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md),
+[usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md),
+[statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md),
 and some others are always essential to EJAM, but
-[frs](https://ejanalysis.github.io/EJAM/reference/frs.md) and
-[frs_by_programid](https://ejanalysis.github.io/EJAM/reference/frs_by_programid.md)
-are huge datasets (and
-[frs_by_sic](https://ejanalysis.github.io/EJAM/reference/frs_by_sic.md)
+[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
 and
-[frs_by_naics](https://ejanalysis.github.io/EJAM/reference/frs_by_naics.md))
+[frs_by_programid](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)
+are huge datasets (and
+[frs_by_sic](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md)
+and
+[frs_by_naics](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md))
 and not always used - only to find regulated facilities by ID, etc. The
 frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
 
 ## See also
 
-[`pkg_data()`](https://ejanalysis.github.io/EJAM/reference/pkg_data.md)
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
-[`dataload_from_local()`](https://ejanalysis.github.io/EJAM/reference/dataload_from_local.md)
-[`indexblocks()`](https://ejanalysis.github.io/EJAM/reference/indexblocks.md)
+[`pkg_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_data.md)
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
+[`dataload_from_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.md)
+[`indexblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexblocks.md)
 [`.onAttach()`](https://rdrr.io/r/base/ns-hooks.html)
 
 ## Examples

@@ -27,34 +27,34 @@ shapefile_from_any(
     read by this function, and must be unzipped and handled separately.
 
   - If folder, tries to read with (unexported) helper
-    [`shapefile_from_folder()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_folder.md)
+    [`shapefile_from_folder()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_folder.md)
     Folder must contain one each of files with extensions .shp, .shx,
     .dbf, and .prj
 
   - If .zip containing a folder, unzips, then tries to read with
     (unexported) helpers
-    [`shapefile_from_folder()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_folder.md)
+    [`shapefile_from_folder()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_folder.md)
     or
-    [`shapefile_from_gdbzip()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_gdbzip.md)
+    [`shapefile_from_gdbzip()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_gdbzip.md)
 
   - If .zip containing .gdb, reads with (unexported) helper
-    [`shapefile_from_gdbzip()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_gdbzip.md)
+    [`shapefile_from_gdbzip()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_gdbzip.md)
 
   - If .gdb, reads with (unexported) helper
-    [`shapefile_from_gdb()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_gdb.md)
+    [`shapefile_from_gdb()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_gdb.md)
 
   - If .json or .geojson, reads with (unexported) helper
-    [`shapefile_from_json()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_json.md)
+    [`shapefile_from_json()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_json.md)
 
   - If text in geojson format, reads with (unexported) helper
-    [`shapefile_from_geojson_text()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_geojson_text.md)
+    [`shapefile_from_geojson_text()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_geojson_text.md)
 
   - If .kml or .shp, uses
     [`sf::st_read()`](https://r-spatial.github.io/sf/reference/st_read.html)
 
   - If vector of .shp, .shx, .dbf, and .prj file names (that may include
     paths), reads with (unexported) helper
-    [`shapefile_from_filepaths()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_filepaths.md)
+    [`shapefile_from_filepaths()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_filepaths.md)
 
 - cleanit:
 

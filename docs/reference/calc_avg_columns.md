@@ -42,7 +42,7 @@ Note the averages are not "calculated" per se, but are actually looked
 up in a table of averages
 
 For examples, see
-[`calc_pctile_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.md)
+[`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)
 
 This could be used, e.g., in doaggregate() or similar to get means for
 indicators being analyzed

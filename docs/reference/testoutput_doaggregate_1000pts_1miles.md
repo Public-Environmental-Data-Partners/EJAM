@@ -21,7 +21,7 @@ sites2states_or_latlon = testpoints_1000, radius = 1, include_ejindexes
 
 ## See also
 
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-[testoutput_getblocksnearby_1000pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_1000pts_1miles.md)
-[testpoints_1000](https://ejanalysis.github.io/EJAM/reference/testpoints_1000.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+[testoutput_getblocksnearby_1000pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_1000pts_1miles.md)
+[testpoints_1000](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_1000.md)

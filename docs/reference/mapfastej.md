@@ -1,7 +1,7 @@
 # Map - points - Create leaflet html widget map of points using EJAM results with EJ stats
 
 Like
-[`mapfast()`](https://ejanalysis.github.io/EJAM/reference/mapfast.md)
+[`mapfast()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfast.md)
 but with column_names = "ej"
 
 ## Usage
@@ -23,22 +23,22 @@ mapfastej(
 
   Typically something like the output of ejamit()\$results_bysite, but
   can also be the full output of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md) in
-  which case this uses just the \$results_bysite table, and in general
-  mydf can be a data.frame or table in
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  in which case this uses just the \$results_bysite table, and in
+  general mydf can be a data.frame or table in
   [data.table](https://r-datatable.com) format that has a set of points
   or polygons or Census FIPS codes.
 
   1.  point data defined by columns named lat and lon, or columns that
-      [`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
+      [`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
       can infer to be that, as from
-      [`sitepoints_from_any()`](https://ejanalysis.github.io/EJAM/reference/sitepoints_from_any.md)
+      [`sitepoints_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sitepoints_from_any.md)
       or
-      [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)\$results_bysite
+      [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)\$results_bysite
 
   2.  polygon data in a spatial data.frame that has a geometry column of
       polygons, as from
-      [`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md),
+      [`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md),
       or
 
   3.  Census units defined by FIPS codes in a column called
@@ -79,7 +79,7 @@ mapfastej(
 ## Value
 
 like what
-[`mapfast()`](https://ejanalysis.github.io/EJAM/reference/mapfast.md)
+[`mapfast()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfast.md)
 returns
 
 ## Examples

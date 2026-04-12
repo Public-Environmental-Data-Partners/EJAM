@@ -13,11 +13,11 @@ calc_bgwts_bysite(sites2blocks)
 - sites2blocks:
 
   like output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   or input to
-  [`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
   or
-  [`custom_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/custom_doaggregate.md)
+  [`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md)
 
 ## Value
 
@@ -27,4 +27,4 @@ that the bg is near. It is like a sites2blockgroups table.
 
 ## See also
 
-[`custom_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/custom_doaggregate.md)
+[`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md)

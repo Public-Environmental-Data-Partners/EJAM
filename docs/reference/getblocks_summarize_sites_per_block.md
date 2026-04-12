@@ -14,9 +14,9 @@ getblocks_summarize_sites_per_block(x, varname = "blockid")
 - x:
 
   The output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   like
-  [testoutput_getblocksnearby_10pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
+  [testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
 
 - varname:
 
@@ -28,4 +28,4 @@ invisibly, a list of stats
 
 ## See also
 
-[`getblocks_diagnostics()`](https://ejanalysis.github.io/EJAM/reference/getblocks_diagnostics.md)
+[`getblocks_diagnostics()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocks_diagnostics.md)

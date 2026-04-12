@@ -31,5 +31,5 @@ TRUE or FALSE
 
 ## See also
 
-[`pkg_dupenames()`](https://ejanalysis.github.io/EJAM/reference/pkg_dupenames.md)
+[`pkg_dupenames()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_dupenames.md)
 [`all.equal.function()`](https://rdrr.io/r/base/all.equal.html)

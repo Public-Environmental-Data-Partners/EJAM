@@ -49,22 +49,22 @@ naics_from_any(
 ## Value
 
 a subset of the
-[naicstable](https://ejanalysis.github.io/EJAM/reference/naicstable.md)
+[naicstable](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md)
 data.table (not just the codes column)
 
 ## Details
 
 Finding the right NAICS/SIC and finding all the right sites is
 complicated. See discussion of
-[`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md).
+[`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md).
 
 ## See also
 
-[`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md)
-[`frs_from_naics()`](https://ejanalysis.github.io/EJAM/reference/frs_from_naics.md)
-[`naics_subcodes_from_code()`](https://ejanalysis.github.io/EJAM/reference/naics_subcodes_from_code.md)
-[`naics_from_code()`](https://ejanalysis.github.io/EJAM/reference/naics_from_code.md)
-[`naics_from_name()`](https://ejanalysis.github.io/EJAM/reference/naics_from_name.md)
+[`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md)
+[`frs_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_naics.md)
+[`naics_subcodes_from_code()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_subcodes_from_code.md)
+[`naics_from_code()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_code.md)
+[`naics_from_name()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_name.md)
 
 ## Examples
 

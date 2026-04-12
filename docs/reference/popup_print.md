@@ -14,7 +14,7 @@ popup_print(x, linkregex = "<a href.*>(.*)<.*", linksimple = "\\1")
 - x:
 
   output of
-  [`popup_from_ejscreen()`](https://ejanalysis.github.io/EJAM/reference/popup_from_ejscreen.md)
+  [`popup_from_ejscreen()`](https://public-environmental-data-partners.github.io/EJAM/reference/popup_from_ejscreen.md)
 
 - linkregex:
 
@@ -26,4 +26,4 @@ popup_print(x, linkregex = "<a href.*>(.*)<.*", linksimple = "\\1")
 
 ## See also
 
-[`popup_from_ejscreen()`](https://ejanalysis.github.io/EJAM/reference/popup_from_ejscreen.md)
+[`popup_from_ejscreen()`](https://public-environmental-data-partners.github.io/EJAM/reference/popup_from_ejscreen.md)

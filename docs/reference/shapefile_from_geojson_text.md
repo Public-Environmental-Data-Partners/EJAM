@@ -1,7 +1,7 @@
-# read text string that is geojson, return spatial data.frame helper for [`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+# read text string that is geojson, return spatial data.frame helper for [`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)
 
 read text string that is geojson, return spatial data.frame helper for
-[`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+[`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)
 
 ## Usage
 
@@ -14,7 +14,7 @@ shapefile_from_geojson_text(x, quiet = FALSE)
 - x:
 
   single text string like from
-  [`shape2geojson()`](https://ejanalysis.github.io/EJAM/reference/shape2geojson.md)
+  [`shape2geojson()`](https://public-environmental-data-partners.github.io/EJAM/reference/shape2geojson.md)
 
 - quiet:
 
@@ -29,4 +29,4 @@ data.frame like from
 
 ## See also
 
-[`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+[`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)

@@ -73,8 +73,8 @@ These are the indicator summary stats shown:
 
 ## See also
 
-[`ejam2areafeatures()`](https://ejanalysis.github.io/EJAM/reference/ejam2areafeatures.md)
-[`batch.summarize()`](https://ejanalysis.github.io/EJAM/reference/batch.summarize.md)
+[`ejam2areafeatures()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2areafeatures.md)
+[`batch.summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.md)
 
 ## Examples
 

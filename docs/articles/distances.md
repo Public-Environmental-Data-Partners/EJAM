@@ -9,7 +9,7 @@ examples is a discussion of background information and considerations in
 selecting radius.
 
 Also see the list of [functions related to comparing
-distances](https://ejanalysis.github.io/EJAM/reference/index.html#comparing-distances-multiple-radius-values).
+distances](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#comparing-distances-multiple-radius-values).
 
 ### RESIDENTIAL POPULATION GROUP PERCENTAGES BY DISTANCE AT BLOCKGROUP RESOLUTION
 
@@ -355,7 +355,7 @@ for (i in 1:NROW(pts)) {
 
 Block by block details are also easy to view in a map of all the nearby
 blocks, as shown in the section on
-[`plot_blocks_nearby()`](https://ejanalysis.github.io/EJAM/reference/plot_blocks_nearby.md)
+[`plot_blocks_nearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_blocks_nearby.md)
 and details of blocks near one site.
 
 #### Cumulative Distribution plots of groups as *a continuous function of distance*
@@ -607,9 +607,9 @@ complementary:
     over-represented within the original total radius near a site.
 
 Some functions like
-[`distance_mean_by_group()`](https://ejanalysis.github.io/EJAM/reference/plot_distance_mean_by_group.md)
+[`distance_mean_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
 or
-[`distance_by_group_by_site()`](https://ejanalysis.github.io/EJAM/reference/distance_by_group_by_site.md)
+[`distance_by_group_by_site()`](https://public-environmental-data-partners.github.io/EJAM/reference/distance_by_group_by_site.md)
 do the second of these two types of analysis. They report, only among
 those anywhere inside the radius, which groups are closer to the site.
 
@@ -758,7 +758,7 @@ EJAM/data-raw/datacreate_blockwts.R if this is needed.
 ##### Table of distances between each site and each block
 
 Use
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 to quickly find residents/blocks that are within a specified distance,
 as a table of distances between sites and nearby blocks.
 

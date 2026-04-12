@@ -26,8 +26,8 @@ vector of same length
 
 ## See also
 
-[`fips_valid()`](https://ejanalysis.github.io/EJAM/reference/fips_valid.md)
-[`fipstype()`](https://ejanalysis.github.io/EJAM/reference/fipstype.md)
+[`fips_valid()`](https://public-environmental-data-partners.github.io/EJAM/reference/fips_valid.md)
+[`fipstype()`](https://public-environmental-data-partners.github.io/EJAM/reference/fipstype.md)
 
 ## Examples
 

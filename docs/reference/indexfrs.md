@@ -1,7 +1,7 @@
 # Utility to create an efficient quadtree spatial index of EPA-regulated facility locations
 
 Index US EPA Facility Registry Service facility locations so
-[`getfrsnearby()`](https://ejanalysis.github.io/EJAM/reference/getfrsnearby.md)
+[`getfrsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getfrsnearby.md)
 can find them very quickly
 
 ## Usage
@@ -32,14 +32,14 @@ indexfrs(frspts = NULL, indexname = "frs_index", envir = globalenv())
 Index is returned and the side effect is it puts in the globalenv() (or
 specified envir) that spatial index with name defined by indexname, as
 created by
-[`indexpoints()`](https://ejanalysis.github.io/EJAM/reference/indexpoints.md).
+[`indexpoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexpoints.md).
 
 ## Details
 
 This creates a quadtree spatial index of some or all facilities, to be
 used by
-[`getfrsnearby()`](https://ejanalysis.github.io/EJAM/reference/getfrsnearby.md),
+[`getfrsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getfrsnearby.md),
 such as to count the regulated facilities near some other specified
 sites, or to create a new proximity score for every block and blockgroup
 in the US, via
-[`proxistat()`](https://ejanalysis.github.io/EJAM/reference/proxistat.md)
+[`proxistat()`](https://public-environmental-data-partners.github.io/EJAM/reference/proxistat.md)

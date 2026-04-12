@@ -2,7 +2,7 @@
 
 data.frame of 100 percentiles and means (about 100 rows) in the USA
 overall, across all locations (e.g., blockgroups in
-[blockgroupstats](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md))
+[blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md))
 for a set of indicators such as percent low income. Each column is one
 indicator (or specifies the percentile).
 
@@ -15,7 +15,7 @@ EJAM/data-raw/datacreate_usastats2.32_add_dsubgroups.R and
 EJAM/data-raw/datacreate_usastats2.32.R
 
 See also
-[statestats](https://ejanalysis.github.io/EJAM/reference/statestats.md)
+[statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md)
 
 ## Usage
 

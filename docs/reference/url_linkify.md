@@ -35,7 +35,7 @@ url_linkify(url, text, newtab = TRUE, encode = TRUE, reserved = FALSE)
 ## Value
 
 url_linkify('epa.gov','EPA') returns
-`"<a href=\"epa.gov\", target=\"_blank\">EPA</a>"`
+`"<a href=\"epa.gov\" target=\"_blank\">EPA</a>"`
 
 ## Details
 
@@ -60,4 +60,4 @@ that enurl()
 
 ## See also
 
-[`enurl()`](https://ejanalysis.github.io/EJAM/reference/enurl.md)
+[`enurl()`](https://public-environmental-data-partners.github.io/EJAM/reference/enurl.md)

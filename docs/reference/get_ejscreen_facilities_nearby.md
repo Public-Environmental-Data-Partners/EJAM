@@ -1,0 +1,106 @@
+# find, count, map nearby facilities (NPL, TSDF, TRI, etc., as available in EJSCREEN) via API
+
+find, count, map nearby facilities (NPL, TSDF, TRI, etc., as available
+in EJSCREEN) via API
+
+## Usage
+
+``` r
+get_ejscreen_facilities_nearby(
+  frompoints,
+  radius = 3,
+  sitecategory = "tsdf",
+  showmap = FALSE
+)
+```
+
+## Arguments
+
+- frompoints:
+
+  data.frame of lat,lon values of points of interest
+
+- radius:
+
+  miles distance to search from each frompoint
+
+- sitecategory:
+
+  type of points of interest (tsdf, npl, )
+
+- showmap:
+
+  logical optional- set TRUE to show map of facilities near each
+  frompoint
+
+## Value
+
+data.frame of info about the nearby facilities
+
+## See also
+
+[`getfrsnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getfrsnearby.md)
+
+## Examples
+
+``` r
+# \donttest{
+  # find the one NPL site that is within half a mile of this point
+frompoints = data.frame(lat = 39.65, lon = -75.73)
+radius = 0.5
+sitecategory = "npl"
+ # require(EJAM) # ; require(httr2); require(jsonlite); require(leaflet)
+
+facilities1 <- get_ejscreen_facilities_nearby(frompoints = frompoints,
+                                              radius = radius,
+                                              sitecategory = sitecategory)
+
+EJAM:::map_ejscreen_facilities_nearby(frompoints = frompoints,
+                                      facilities = facilities1,
+                                      radius = radius)
+
+facilities1b <- get_ejscreen_facilities_nearby(frompoints = frompoints,
+                                               radius = radius,
+                                               sitecategory = sitecategory,
+                                               showmap = TRUE)
+frompoints2 <- testpoints_10[1:2, ]
+facilities2 <- get_ejscreen_facilities_nearby(frompoints = frompoints2,
+                                              radius = 0.5,
+                                              sitecategory = "tsdf",
+                                              showmap = TRUE)
+
+  # how many facility-frompoint pairs,
+  #  vs how many unique facilities are near 1+ frompoints?
+  # distance pairs
+NROW(facilities2)
+  # how many unique facilities according to OBJECTID?
+length(unique(facilities2$OBJECTID))
+  # how many unique facilities according to registry ID?
+  # same registry_id can be found repeatedly under different pgm_sys_id or variations on name
+length(unique(facilities2$registry_id))
+  # how many frompoints is each facility near? (with repeats of registry_id)
+tail(cbind(frompoint_count_near_this_facility =
+  sort(table(facilities2$registry_id))), 10)
+# but by OBJECTID is different
+tail(cbind(frompoint_count_near_this_facility =
+  sort(table(facilities2$OBJECTID))), 10)
+
+pts2close = data.frame(siteid = 1:2,
+  lat = c(37.638621, 37.64541),
+  lon = c(-122.418158, -122.404147))
+facilities2close <- get_ejscreen_facilities_nearby(
+  frompoints = pts2close, radius = 0.5,
+  sitecategory = "tsdf", showmap = TRUE)
+  # A few facilities are near two of the frompoints
+table(table(facilities2close$OBJECTID))
+ # which facilities are near 2+ frompoints
+tail(cbind(frompoint_count_near_this_facility =
+  sort(table(facilities2close$OBJECTID))), 10)
+
+  # how many facilities are near each frompoint?
+  # including when same registry id appears more than once
+  # with different program id or site name variant
+cbind(frompoint = 1:NROW(pts2close),
+  facility_count_near_this_point = table(facilities2close$frompoint_n))
+# }
+```

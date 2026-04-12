@@ -52,4 +52,4 @@ fill_tbl_full_subgroups(
 ## See also
 
 used by
-[`build_community_report()`](https://ejanalysis.github.io/EJAM/reference/build_community_report.md)
+[`build_community_report()`](https://public-environmental-data-partners.github.io/EJAM/reference/build_community_report.md)

@@ -27,4 +27,4 @@ vector of USPS addresses
 
 ## See also
 
-[`address_from_table()`](https://ejanalysis.github.io/EJAM/reference/address_from_table.md)
+[`address_from_table()`](https://public-environmental-data-partners.github.io/EJAM/reference/address_from_table.md)

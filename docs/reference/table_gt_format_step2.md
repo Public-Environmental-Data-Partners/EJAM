@@ -66,4 +66,4 @@ report formatting
 
 ## See also
 
-[`table_gt_from_ejamit()`](https://ejanalysis.github.io/EJAM/reference/table_gt_from_ejamit.md)
+[`table_gt_from_ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_gt_from_ejamit.md)

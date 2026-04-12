@@ -189,7 +189,7 @@ It does essentially what the web app does, to analyze/summarize near a set of po
 or in a set of polygons from a shapefile, or in a list of Census Units like Counties.
 }
 \details{
-See examples in vignettes/ articles at https://ejanalysis.github.io/EJAM
+See examples in vignettes/ articles at https://public-environmental-data-partners.github.io/EJAM
 }
 \examples{
 

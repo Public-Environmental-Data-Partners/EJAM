@@ -1,9 +1,9 @@
 # Utility to create a table used to create a quadtree spatial index of points etc.
 
 Used by
-[`indexpoints()`](https://ejanalysis.github.io/EJAM/reference/indexpoints.md)
+[`indexpoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexpoints.md)
 that in turn is used by
-[`proxistat()`](https://ejanalysis.github.io/EJAM/reference/proxistat.md).
+[`proxistat()`](https://public-environmental-data-partners.github.io/EJAM/reference/proxistat.md).
 It prepares a set of coordinates ready for indexing.
 
 ## Usage
@@ -25,7 +25,7 @@ create_quaddata(pts, idcolname = NULL, xyzcolnames = c("x2", "z2", "y2"))
   if NULL (default), a pointid column is created as a unique id
   1:NROW(). If creating the index of blocks, idcolname is "blockid" If
   set to "id" it just uses that even if not unique id.
-  [`indexpoints()`](https://ejanalysis.github.io/EJAM/reference/indexpoints.md)
+  [`indexpoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexpoints.md)
   does not directly refer to this column but index probably incorporates
   it.
 
@@ -42,9 +42,9 @@ columns with names that are c(xyzcolnames, idcolname)
 ## Details
 
 Very similar to what is used to prepare
-[quaddata](https://ejanalysis.github.io/EJAM/reference/quaddata.md),
+[quaddata](https://public-environmental-data-partners.github.io/EJAM/reference/quaddata.md),
 which is used by
-[`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md).
+[`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md).
 
 Note that BOTH this table and the index of it are needed in
 getblocksnearby() or getpointsnearby() !

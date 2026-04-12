@@ -13,7 +13,7 @@ url_map_google(lat, lon, zoom = 13, point = TRUE)
 - lat:
 
   - Anything that can be handled by
-    [`sitepoints_from_any()`](https://ejanalysis.github.io/EJAM/reference/sitepoints_from_any.md).
+    [`sitepoints_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sitepoints_from_any.md).
     Leave unspecified to interactively browse to a .xlsx file that has
     lat,lon columns, or lat can be a data.frame with lat,lon column
     names in which case longitude should not be provided, such as
@@ -40,4 +40,4 @@ URL(s) vector one per point
 
 ## See also
 
-[`map_google()`](https://ejanalysis.github.io/EJAM/reference/map_google.md)
+[`map_google()`](https://public-environmental-data-partners.github.io/EJAM/reference/map_google.md)

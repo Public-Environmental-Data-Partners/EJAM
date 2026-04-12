@@ -38,7 +38,7 @@ colcounter_summary(
 - na.rm:
 
   if TRUE, used by
-  [`colcounter()`](https://ejanalysis.github.io/EJAM/reference/colcounter.md)
+  [`colcounter()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter.md)
   to count only the non-NA columns in given row
 
 - below:
@@ -56,12 +56,12 @@ A table of frequency counts
 
 ## See also
 
-[`colcounter_summary_all()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_all.md)
+[`colcounter_summary_all()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_all.md)
 `colcounter_summary()`
-[`colcounter_summary_cum()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum.md)
-[`colcounter_summary_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_pct.md)
-[`colcounter_summary_cum_pct()`](https://ejanalysis.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
-[`tablefixed()`](https://ejanalysis.github.io/EJAM/reference/tablefixed.md)
+[`colcounter_summary_cum()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum.md)
+[`colcounter_summary_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_pct.md)
+[`colcounter_summary_cum_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/colcounter_summary_cum_pct.md)
+[`tablefixed()`](https://public-environmental-data-partners.github.io/EJAM/reference/tablefixed.md)
 
 ## Examples
 

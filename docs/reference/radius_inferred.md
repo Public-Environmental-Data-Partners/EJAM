@@ -21,7 +21,7 @@ radius_inferred(
 
   table in [data.table](https://r-datatable.com) format of ejam_uniq_id,
   distance, etc. that is the output of
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
 
 - decimalsreported:
 

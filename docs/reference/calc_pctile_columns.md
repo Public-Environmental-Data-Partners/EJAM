@@ -51,7 +51,7 @@ calc_pctile_columns(
 - quiet:
 
   passed to
-  [`pctile_from_raw_lookup()`](https://ejanalysis.github.io/EJAM/reference/pctile_from_raw_lookup.md)
+  [`pctile_from_raw_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/pctile_from_raw_lookup.md)
 
 ## Value
 
@@ -65,8 +65,8 @@ up in a table of percentiles and raw cutoffs
 
 ## See also
 
-[`pctile_from_raw_lookup()`](https://ejanalysis.github.io/EJAM/reference/pctile_from_raw_lookup.md)
-[`calc_avg_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_avg_columns.md)
+[`pctile_from_raw_lookup()`](https://public-environmental-data-partners.github.io/EJAM/reference/pctile_from_raw_lookup.md)
+[`calc_avg_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_avg_columns.md)
 
 ## Examples
 

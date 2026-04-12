@@ -58,7 +58,8 @@ See installation details in `vignettes/installing.Rmd`
 
 ``` r
 install.packages("remotes")
-remotes::install_github("ejanalysis/EJAM", dependencies = TRUE, force = TRUE)
+# NOTE: replace "REPO_OWNER" with the actual github repo owner (see DESCRIPTION file)
+remotes::install_github("REPO_OWNER/EJAM", dependencies = TRUE, force = TRUE)
 ```
 
 **Installation from local source:**
@@ -213,7 +214,8 @@ actions have been updated via edits to the .yaml files in the
 
 5.  **pkgdown Documentation** (`.github/workflows/pkgdown.yaml`)
     - Builds and deploys documentation website to GitHub Pages
-    - Deployed to: <https://ejanalysis.github.io/EJAM/>
+    - Deployed to:
+      <https://public-environmental-data-partners.github.io/EJAM/>
 
 ### On Pushes to development:
 
@@ -232,7 +234,7 @@ actions have been updated via edits to the .yaml files in the
 2.  **Tests don’t reflect code changes:** Tests use INSTALLED version.
     Always `remotes::install_local(".", force = TRUE)` before testing,
     or do unit testing via the utility function
-    [`test_ejam()`](https://ejanalysis.github.io/EJAM/reference/test_ejam.md)
+    [`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)
     and see more about testing in the vignette at
     vignettes/dev-run-unit-tests.Rmd and
     vignettes/dev-run-shinytests.Rmd
@@ -263,15 +265,15 @@ helpers), `testthat/test-*.R`, `_snaps/` (snapshots)
 ## Architecture
 
 **Golem Framework:** Uses
-[`app_ui()`](https://ejanalysis.github.io/EJAM/reference/app_ui.md)/[`app_server()`](https://ejanalysis.github.io/EJAM/reference/app_server.md),
+[`app_ui()`](https://public-environmental-data-partners.github.io/EJAM/reference/app_ui.md)/[`app_server()`](https://public-environmental-data-partners.github.io/EJAM/reference/app_server.md),
 launched via
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md).
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md).
 Config in `inst/golem-config.yml`. **Data:** - Some is lazy-loaded from
 data/ - Some is saved in the data folder upon package installation
-because some large data files must be downloaded from
-ejanalysis/ejamdata. This is explained in the file
+because some large data files must be downloaded from the ejamdata
+repository. This is explained in the file
 vignettes/dev-update-datasets.Rmd - Some is loaded via
-[`dataload_dynamic()`](https://ejanalysis.github.io/EJAM/reference/dataload_dynamic.md)
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
 and some is in .arrow format instead of .rda format. **Naming:** -
 Closely-related R functions are often grouped within a single .R file in
 the R folder, especially if the filename includes the phrase
@@ -314,16 +316,21 @@ Version is tracked in multiple files and must be updated consistently: -
 
 ## Additional Resources
 
-**Documentation:** <https://ejanalysis.github.io/EJAM/> However that URL
-is for a set of pages that document the main branch or latest release,
-and does not necessarily document the most recent source version or any
-other branch such as the development branch. The more recent
-documentation is in roxygen2 tags within the .R files for a given
-branch, which are converted to .Rd files in the man folder (via
-document()), and eventually may be converted to .html files in the docs
-folder via pkgdown_update() **Code Repository:**
-<https://github.com/ejanalysis/EJAM> **Data Repository:**
-ejanalysis/ejamdata (referenced in DESCRIPTION)
+**Documentation:** See the DESCRIPTION file URL field for the github.io
+documentation URL. Also can be obtained via EJAM::url_package(“docs”,
+get_full_url = T) - Also, <https://ejanalysis.com/docs> redirects to the
+package documentation site. However that URL is for a set of pages that
+document the main branch or latest release, and does not necessarily
+document the most recent source version or any other branch such as the
+development branch. The more recent documentation is in roxygen2 tags
+within the .R files for a given branch, which are converted to .Rd files
+in the man folder (via document()), and eventually may be converted to
+.html files in the docs folder via pkgdown_update() **Code Repository:**
+See the DESCRIPTION file URL field for the github.com R package code
+URL. Also can be obtained via EJAM::url_package(“code”, get_full_url =
+T) **Data Repository:** See the DESCRIPTION file ejam_data_repo field
+for the github.com datasets URL. Also can be obtained via
+EJAM::url_package(“data”, get_full_url = T)
 
 ## Trust These Instructions
 
