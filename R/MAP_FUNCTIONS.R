@@ -46,7 +46,10 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   } else {
     sitetype <- ejamit_sitetype_from_output(out)
   }
-
+  # Validate that shp is a spatial data.frame (sf object) or at least has a geometry column
+  if (is.null(shp)) {
+    stop("map_ejam_plus_shp() received invalid shp input: shp is NULL")
+  }
   if ("ejam_uniq_id" %in% names(shp)) {
     # Assume we are in server, or at least assume that invalids were dropped after id assigned
     # If this function is used in the middle of server, is dealing with shp that already had ejam_uniq_id assigned after which invalids dropped.
@@ -56,16 +59,19 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
       # can just use cbind, not merge - sitenumber already limited each to 1 row, or was only 1 analyzed ever.
       #  if sitenumber was used, shapefile_from_any(cleanit=T) would assign ejam_uniq_id of 1, which probably no longer matches the one in out$results_bysite
     }  else {
-    # If this function is used outside shiny, shp probably does not have ejam_uniq_id assigned and can have invalid rows
-    # Should clean shp like ejamit() would do...
-    # i.e. give it NEW ejam_uniq_id 1:NROW and then doesn't matter if we drop invalid or empty here since
-    # that happens next based on the valid flag out$results_bysite$valid, merged on ejam_uniq_id
-    # This just adds id, may change crs, and
-    #  drops polygons if not valid, but may leave empty. see shapefile_clean()
-    # numbers them before dropping invalid ones
-    shp <- shapefile_from_any(shp, cleanit = TRUE, silentinteractive=TRUE) # this might not be exactly what happens in server or ejamit?    # returns NULL if none valid
+      # If this function is used outside shiny, shp probably does not have ejam_uniq_id assigned and can have invalid rows
+      # Should clean shp like ejamit() would do...
+      # i.e. give it NEW ejam_uniq_id 1:NROW and then doesn't matter if we drop invalid or empty here since
+      # that happens next based on the valid flag out$results_bysite$valid, merged on ejam_uniq_id
+      # This just adds id, may change crs, and
+      #  drops polygons if not valid, but may leave empty. see shapefile_clean()
+      # numbers them before dropping invalid ones
+      shp <- shapefile_from_any(shp, cleanit = TRUE, silentinteractive=TRUE) # this might not be exactly what happens in server or ejamit?    # returns NULL if none valid
+    }
   }
-}
+  if (!inherits(shp, "sf") && !("geometry" %in% names(shp))) {
+    stop("map_ejam_plus_shp() received invalid shp: expected an sf spatial data.frame with a geometry column")
+  }
   shp <- shp[, c("ejam_uniq_id", "geometry")] # the "valid" column is in out$results_bysite, not in shp, and shp should have even invalid rows.
   # in FIPS case, ejam_uniq_id is fips not 1:N, so merge() here would fail.
   # but if we assume same NROW and same sort for shp and out#results_bysite, then we can just use the row number to match them up, or use cbind(shp, out$results_bysite)
@@ -79,10 +85,10 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
       shpout <- cbind(shp[,"geometry"], out$results_bysite) # retains "sf" class only if shp is 1st in cbind()
       names(shpout)[names(shpout) != "geometry"] <- names(out$results_bysite) #  fixes colnames where dot replaced space
     } else {
-    # must ensure merge does not mess up spatial data.frame. cbind(shp, df) is fine.
-    shpout <- merge(shp, out$results_bysite,
-                    by = "ejam_uniq_id",
-                    all.x = FALSE, all.y = TRUE)
+      # must ensure merge does not mess up spatial data.frame. cbind(shp, df) is fine.
+      shpout <- merge(shp, out$results_bysite,
+                      by = "ejam_uniq_id",
+                      all.x = FALSE, all.y = TRUE)
     }
   }
   # as long as inputs are correct, matching on id should work and then we can drop invalid polygons to avoid mapping them.
@@ -98,7 +104,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   }
   shpout <- shpout[shpout$valid, ] # Drop invalid polygons, dont try to map
 
-    # linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+  # linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
   pops <- popup_from_ejscreen(
     shpout %>% sf::st_drop_geometry()
   )
