@@ -14,7 +14,7 @@ acs_endyear(
 }
 \arguments{
 \item{guess_as_of}{optional alternative date to use if guessing what is available
-as of this date, e.g., "2025-01-01" -- Date class like Sys.Date()}
+as of this date, e.g., "2026-01-01" -- Date class like Sys.Date()}
 
 \item{guess_always}{optional, set TRUE to ignore metadata and just guess at year.
 But guess_always=F is ignored if guess_census_has_published=T}
@@ -39,9 +39,9 @@ check which ACS 5-year survey is available, per EJAM metadata or guessed via pub
 }
 \details{
 \itemize{
-\item The 2020-2024 data should be released by Census Bureau 12/11/2025.
-\item The 2019-2023 data were published by Census Bureau 12/12/2024, but were not yet in EJSCREEN as of late 2025.
-\item The 2018-2022 data were published by Census Bureau 12/7/2023, in EJSCREEN mid/late 2024.
+\item The 2020-2024 data were published by Census Bureau 1/29/2026 (delayed from the typical 12/2025).
+\item The 2019-2023 data were published by Census Bureau 12/12/2024.
+\item The 2018-2022 data were published by Census Bureau 12/7/2023, in EJSCREEN mid/late 2024 through at least April 2026.
 }
 
 See schedules such as \url{https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html}

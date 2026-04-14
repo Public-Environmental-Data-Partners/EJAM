@@ -1724,28 +1724,39 @@ url_naics.com <- function(query = "",
 
 #' utility to view rendered .html file stored in a github repo
 #'
-#' @param ghurl URL of HTML file in a github repository
+#' @param ghurl URL of HTML file in a github repository,
+#'   inferred by default from parameters repo, ver, fold, and file
+#' @param repo URL of github repository
+#' @param ver name of branch or tag of a released version
+#' @param fold x
+#' @param file x
 #' @param launch_browser set FALSE to get URL but not launch a browser
 #'
 #' @return URL
 #' @examples
-#' url_github_preview(fold = "docs", file = "index.html", launch_browser = F)
-#' url_github_preview(fold = "docs/reference", file = "ejam2excel.html", launch_browser = F)
+#' url_github_preview(fold = "docs",
+#'   launch_browser = F, file = "index.html")
+#' url_github_preview(fold = "docs/reference",
+#'   launch_browser = F, file = "ejam2excel.html")
 #'
+#' \dontrun{
 #' #   Compare versions of the HTML summary report:
 #'
 #' myfile = "testoutput_ejam2report_100pts_1miles.html"
-#' \dontrun{
+#'
 #' # in latest main branch on GH (but map does not render using this tool)
 #' url_github_preview(file = myfile)
 #'
-#' # from a specific release on GH (but map does not render using this tool)
-#' url_github_preview(ver = "v2.32.5", fold = "inst/testdata/examples_of_output", file = myfile)
+#' # from a specific prior release on GH (but map does not render using this tool)
+#' url_github_preview(file = myfile,
+#'   ver = "v2.32.5", fold = "inst/testdata/examples_of_output")
 #'
 #' # local installed version
+#' browseURL(testdata(myfile, quiet = T))
 #' browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
 #'
 #' # local source package version in checked out branch
+#' browseURL(testdata(myfile, quiet = T, installed = F))
 #' browseURL( file.path(testdatafolder(installed = F), "examples_of_output", myfile) )
 #' }
 #'
@@ -1754,17 +1765,17 @@ url_naics.com <- function(query = "",
 #'
 url_github_preview = function(ghurl = NULL,
                               repo = EJAM::url_package("code", get_full_url = TRUE),
-                              blob = "blob",
-                              ver = "main", # or "v2.32.7"
+                              ver = "main",
                               fold = "inst/testdata/examples_of_output", # or "docs/reference"
                               file = "testoutput_ejam2report_10pts_1miles.html",
                               launch_browser = TRUE
 ) {
 
+  blob <- "blob"
   if (is.null(ghurl)) {
     # repo = url_package("code", get_full_url = TRUE)
     # blob = "blob"
-    # ver = "main" # or "v2.32.7"
+    # ver = "main"
     # fold = "inst/testdata/examples_of_output" # or "docs/reference"
     # file = "testoutput_ejam2report_10pts_1miles.html"
 
