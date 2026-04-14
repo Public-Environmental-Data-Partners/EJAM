@@ -22,7 +22,7 @@ map_shapes_leaflet(
   shapes_counties_from_countyfips(fips_counties_from_state_abbrev("DE")),
   or at least a data.frame that can be interpreted as indicating points
   via
-  [`shapefile_from_sitepoints()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_sitepoints.md)
+  [`shapefile_from_sitepoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_sitepoints.md)
 
 - color:
 

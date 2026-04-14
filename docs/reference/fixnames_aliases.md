@@ -42,10 +42,10 @@ standardized versions of the elements of x, or NA if appropriate
 
 ## Details
 
-[`fixcolnames_infer()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames_infer.md)
+[`fixcolnames_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames_infer.md)
 and `fixnames_aliases()` are very similar.
 
-- [`fixcolnames_infer()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames_infer.md)
+- [`fixcolnames_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames_infer.md)
   is designed to figure out for a data.frame which one column is the
   best guess (top pick) for which should be used as the "lat" column,
   for example, so when several colnames are matches based on the
@@ -77,9 +77,9 @@ The alias_list could be for example this:
 
 ## See also
 
-[`fixcolnames_infer()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames_infer.md)
-[`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+[`fixcolnames_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames_infer.md)
+[`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
 
 ## Examples
 

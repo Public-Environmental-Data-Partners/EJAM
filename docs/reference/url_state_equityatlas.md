@@ -62,7 +62,7 @@ url_state_equityatlas(
 - statereport:
 
   Do not use directly. passed to
-  [`url_county_equityatlas()`](https://ejanalysis.github.io/EJAM/reference/url_county_equityatlas.md).
+  [`url_county_equityatlas()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_county_equityatlas.md).
 
 - ...:
 

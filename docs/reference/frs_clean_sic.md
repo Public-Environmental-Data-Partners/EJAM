@@ -29,9 +29,9 @@ frs data.table
 ## Details
 
 works just like
-[`frs_clean()`](https://ejanalysis.github.io/EJAM/reference/frs_clean.md)
+[`frs_clean()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_clean.md)
 but for SIC codes instead of NAICS
 
 ## See also
 
-[`frs_update_datasets()`](https://ejanalysis.github.io/EJAM/reference/frs_update_datasets.md)
+[`frs_update_datasets()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_update_datasets.md)

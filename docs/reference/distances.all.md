@@ -117,7 +117,7 @@ functions.
 
 ## See also
 
-[`latlon_infer()`](https://ejanalysis.github.io/EJAM/reference/latlon_infer.md)
+[`latlon_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_infer.md)
 get.distances() which allows you to specify a search radius and get
 distances only within that radius which can be faster,
 get.distances.prepaired() for finding distances when data are already

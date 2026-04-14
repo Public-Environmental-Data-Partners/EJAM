@@ -14,9 +14,9 @@ state_from_s2b_bysite(sites2blocks)
 - sites2blocks:
 
   data.table or data.frame, like
-  [testoutput_getblocksnearby_10pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md),
+  [testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md),
   from
-  [`getblocksnearby()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby.md)
+  [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
   that has columns ejam_uniq_id and blockid and distance
 
 ## Value
@@ -43,7 +43,7 @@ single-state sites, and this function will be sufficient.
     elsewhere. (And for the rare edge case where you did not save the
     lat,lon of sites you analyzed, you would need to approximate those
     from the lat/lon of the blocks and their distances, via
-    [`latlon_from_s2b()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_s2b.md),
+    [`latlon_from_s2b()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_s2b.md),
     separately).
 
   - For a multistate site defined by a polygon, it is not entirely clear
@@ -53,7 +53,7 @@ single-state sites, and this function will be sufficient.
 Note this is an unexported function.
 
 Note that the two functions
-[`state_from_blockid_table()`](https://ejanalysis.github.io/EJAM/reference/state_from_blockid_table.md)
+[`state_from_blockid_table()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_blockid_table.md)
 and `state_from_s2b_bysite()` differ – one gets the state info for each
 unique SITE, and the other gets the state abbreviation of each unique
 BLOCK:
@@ -71,8 +71,8 @@ BLOCK:
 
 ## See also
 
-[`state_from_blockid_table()`](https://ejanalysis.github.io/EJAM/reference/state_from_blockid_table.md)
-[`state_per_site_for_doaggregate()`](https://ejanalysis.github.io/EJAM/reference/state_per_site_for_doaggregate.md)
+[`state_from_blockid_table()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_from_blockid_table.md)
+[`state_per_site_for_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/state_per_site_for_doaggregate.md)
 
 ## Examples
 

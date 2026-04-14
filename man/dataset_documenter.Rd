@@ -34,6 +34,6 @@ name of .R file where documentation was written
 utility for pkg devs to update or create documentation of datasets in the package
 }
 \details{
-see \href{https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html}{article on updating datasets}
+see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{article on updating datasets}
 }
 \keyword{internal}

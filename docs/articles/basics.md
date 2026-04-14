@@ -4,13 +4,13 @@
 
 This document is about analysts or coders using the EJAM R package in
 RStudio. After you [install the EJAM R
-package](https://ejanalysis.github.io/EJAM/articles/installing.md), this
-document explains how you can run an EJAM analysis and view results
+package](https://public-environmental-data-partners.github.io/EJAM/articles/installing.md),
+this document explains how you can run an EJAM analysis and view results
 right away using R.
 
 This document is not about [using EJAM as a web
-application](https://ejanalysis.github.io/EJAM/articles/webapp.md), but
-you can launch a local web app after installing the EJAM R package.
+application](https://public-environmental-data-partners.github.io/EJAM/articles/webapp.md),
+but you can launch a local web app after installing the EJAM R package.
 
 ### Load EJAM
 
@@ -45,7 +45,7 @@ out <- ejamit(myfile, radius = 3)
 
 If you already have your own spreadsheet of point locations to analyze,
 then in RStudio you can just use the
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 function without specifying the locations or radius – EJAM will prompt
 you to select the file and a radius.
 
@@ -111,7 +111,7 @@ out <- testoutput_ejamit_100pts_1miles
 ejam2map(out) 
 #> Warning in validateCoords(lng, lat, funcName): Data contains 1 rows with either
 #> missing or invalid lat/lon values and will be ignored
-#> /private/var/folders/w4/0j7n916n37q7gjt7m2vqqwk40000gn/T/RtmpecYzMN/mapfast_62281a0a67ec.html
+#> /private/var/folders/w4/0j7n916n37q7gjt7m2vqqwk40000gn/T/RtmpH3YivO/mapfast_9dc140376cba.html
 ```
 
 ### Report via `ejam2report()` (interactive html file)
@@ -130,7 +130,7 @@ ejam2report(out)
 ### Table of Results in RStudio console
 
 As an alternative to the report provided by
-[`ejam2report()`](https://ejanalysis.github.io/EJAM/reference/ejam2report.md),
+[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md),
 this gives you a quick, simple list of results for all the indicators:
 
 ``` r
@@ -222,11 +222,11 @@ pts
 #### Create a random sample of points representative of the average facility, average resident, or average area
 
 You can create a set of random points with function
-[`testpoints_n()`](https://ejanalysis.github.io/EJAM/reference/testpoints_n.md)
+[`testpoints_n()`](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_n.md)
 that can be weighted to represent the average resident, average
 regulated facility, average point on a map weighted by square meters,
 etc. See more details in the documentation of the function
-[`testpoints_n()`](https://ejanalysis.github.io/EJAM/reference/testpoints_n.md).
+[`testpoints_n()`](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_n.md).
 
 Create random test data points in States of LA and TX
 
@@ -248,11 +248,11 @@ mapfast(testpoints_n(300, ST = c('LA','TX'), weighting = 'bg'), radius = 0.1)
 
 ## Documentation of Functions and Data
 
-- [README](https://ejanalysis.github.io/EJAM/index.md)
+- [README](https://public-environmental-data-partners.github.io/EJAM/index.md)
 - [Function Reference
-  Document](https://ejanalysis.github.io/EJAM/reference/index.md)
+  Document](https://public-environmental-data-partners.github.io/EJAM/reference/index.md)
 - In RStudio, see
-  [`?EJAM`](https://ejanalysis.github.io/EJAM/reference/EJAM.md)
+  [`?EJAM`](https://public-environmental-data-partners.github.io/EJAM/reference/EJAM.md)
 
 ``` r
 ?EJAM

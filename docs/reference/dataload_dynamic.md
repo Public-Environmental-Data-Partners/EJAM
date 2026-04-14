@@ -41,7 +41,7 @@ dataload_dynamic(
   [`arrow::read_ipc_file()`](https://arrow.apache.org/docs/r/reference/read_feather.html)
   should return a table in [data.table](https://r-datatable.com) format
   (T, the default), or arrow (F). Passed to
-  [`dataload_from_local()`](https://ejanalysis.github.io/EJAM/reference/dataload_from_local.md)
+  [`dataload_from_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.md)
 
 - onAttach:
 

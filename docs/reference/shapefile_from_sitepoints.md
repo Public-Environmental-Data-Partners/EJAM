@@ -35,6 +35,6 @@ but as "lat" and "lon" even if they were provided as aliases of those
 
 ## See also
 
-[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)
+[`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)
 `shapefile_from_sitepoints()`
-[`shape_buffered_from_shapefile_points()`](https://ejanalysis.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md)
+[`shape_buffered_from_shapefile_points()`](https://public-environmental-data-partners.github.io/EJAM/reference/shape_buffered_from_shapefile_points.md)

@@ -1,7 +1,7 @@
 # for query term, show list of roughly matching NAICS, scraped from web
 
 This finds more than just
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 does, since that needs an exact match but this looks at naics.com
 website which lists various aliases for a sector.
 
@@ -23,8 +23,8 @@ data.frame of info on what was found, naics and title
 
 ## See also
 
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
-[`url_naics.com()`](https://ejanalysis.github.io/EJAM/reference/url_naics.com.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
+[`url_naics.com()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_naics.com.md)
 
 ## Examples
 

@@ -42,22 +42,22 @@ Each is explained below:
   following: `DESCRIPTION`, `README.Rmd` (for README, **edit the
   README*.Rmd**NOT* the README.*md* file**), R/EJAM-package.R (for
   `?EJAM-package`), `NEWS.md` used to make
-  [NEWS](https://ejanalysis.github.io/EJAM/news/index.md),
+  [NEWS](https://public-environmental-data-partners.github.io/EJAM/news/index.md),
   `CONTRIBUTING.md` used to make
-  [CONTRIBUTING](https://ejanalysis.github.io/EJAM/CONTRIBUTING.md),
-  [LICENSE](https://ejanalysis.github.io/EJAM/LICENSE.md) based on
-  `inst/LICENSE.md`,
-  [CITATION](https://ejanalysis.github.io/EJAM/authors.html#citation)
+  [CONTRIBUTING](https://public-environmental-data-partners.github.io/EJAM/CONTRIBUTING.md),
+  [LICENSE](https://public-environmental-data-partners.github.io/EJAM/LICENSE.md)
+  based on `inst/LICENSE.md`,
+  [CITATION](https://public-environmental-data-partners.github.io/EJAM/authors.html#citation)
   based on `inst/CITATION`, CITATION.cff, and others.
 
 - Some of these are used by and shown by the github.com repository,
   notably the `README.md` that is generated from the `README.Rmd` file
   and appears on the github repository as
-  [README](https://ejanalysis.github.io/EJAM/articles/%60r%20paste0(code_reponame_url,%20%22?tab=readme-ov-file#readme%22)%60)
+  [README](https://public-environmental-data-partners.github.io/EJAM/articles/%60r%20paste0(code_reponame_url,%20%22?tab=readme-ov-file#readme%22)%60)
   and in the pkgdown site as
-  [README](https://ejanalysis.github.io/EJAM/index.md), and the
-  `DESCRIPTION` file that stores package version number and URLs of the
-  package repository, etc.
+  [README](https://public-environmental-data-partners.github.io/EJAM/index.md),
+  and the `DESCRIPTION` file that stores package version number and URLs
+  of the package repository, etc.
 
 ### Functions: reference docs explaining the R functions
 
@@ -72,7 +72,7 @@ Each is explained below:
 - some utility/helper functions, mostly not exported, are stored in
   files prefixed with “utils\_” such as `R/utils_indexblocks.R`
   documenting
-  [`indexblocks()`](https://ejanalysis.github.io/EJAM/reference/indexblocks.md)
+  [`indexblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexblocks.md)
   (but not all helper functions are in files named that way).
 
 - you might find it useful to check docs with
@@ -82,7 +82,7 @@ Each is explained below:
 
 - all datasets are documented in the files named with a prefix of
   “data\_” such as `R/data_blockgroupstats.R` which documents the
-  [`?blockgroupstats`](https://ejanalysis.github.io/EJAM/reference/blockgroupstats.md)
+  [`?blockgroupstats`](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md)
   dataset.
 
 - most dataset documentation is created/updated alongside the code that
@@ -93,7 +93,7 @@ Each is explained below:
 
 - Many `R/*.R` files for datasets are created automatically, not edited
   by hand, through the
-  [`dataset_documenter()`](https://ejanalysis.github.io/EJAM/reference/dataset_documenter.md)
+  [`dataset_documenter()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataset_documenter.md)
   function as used in the scripts within `data-raw/datacreate_*.R` while
   others are updated by editing the .R file directly.
 
@@ -163,7 +163,7 @@ updated by someone who is managing the package, as follows:
 
 - The pkgdown-based webpages should be updated by someone who is
   managing the package, and they should use the
-  [`pkgdown_update()`](https://ejanalysis.github.io/EJAM/reference/pkgdown_update.md)
+  [`pkgdown_update()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkgdown_update.md)
   function mentioned in
   `data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R` You use the
   function pkgdown_update() so that the pages get rebuilt by the
@@ -203,11 +203,11 @@ updated by someone who is managing the package, as follows:
 - The name of the repo from which documentation is published at any
   given time needs to be recorded as part of the URL parameter in the
   `DESCRIPTION` file in the root folder of the source package. That repo
-  URL can be read from there using the unexported helper function
-  `repo_from_desc()` as
-  `EJAM:::repo_from_desc('github.io', get_full_url=T)`, which currently
-  returns (<https://ejanalysis.github.io/EJAM>). Prior to mid-2025,
-  documentation webpages had been on github pages at URLs related to the
-  USEPA/EJAM and USEPA/EJAM-open repositories – but those pages might be
-  archived and/or unpublished, and that source of documentation has
-  become obsolete.
+  URL can be read from there using the helper function
+  [`url_package()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_package.md)
+  as `EJAM::url_package("docs")`, which currently returns
+  (<https://public-environmental-data-partners.github.io/EJAM>). Prior
+  to mid-2025, documentation webpages had been on github pages at URLs
+  related to the USEPA/EJAM and USEPA/EJAM-open repositories – but those
+  pages might be archived and/or unpublished, and that source of
+  documentation has become obsolete.

@@ -21,7 +21,7 @@ TRUE)
 
 ## See also
 
-[`doaggregate()`](https://ejanalysis.github.io/EJAM/reference/doaggregate.md)
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-[testoutput_getblocksnearby_10pts_1miles](https://ejanalysis.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
-[testpoints_10](https://ejanalysis.github.io/EJAM/reference/testpoints_10.md)
+[`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+[testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
+[testpoints_10](https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_10.md)

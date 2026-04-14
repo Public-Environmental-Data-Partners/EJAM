@@ -40,7 +40,7 @@ lookup_pctile(
 - lookup:
 
   Either lookup must be provided, not quoted, or a lookup table called
-  [usastats](https://ejanalysis.github.io/EJAM/reference/usastats.md)
+  [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md)
   must already be in memory. This is the lookup table data.frame with a
   PCTILE column, REGION column, and column whose name is the value of
   varname.in.lookup.table To use state lookups set lookup=statestats
@@ -65,7 +65,7 @@ By default, returns numeric vector length of myvector.
 ## Details
 
 For handling a whole table of raw indicators, see
-[`calc_pctile_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.md)
+[`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)
 
 This function can handle 2 kinds of inputs right now:
 
@@ -81,8 +81,9 @@ This could be recoded to be more efficient - could use
 The data.frame lookup table must have a field called "PCTILE" that has
 quantiles/percentiles and other column(s) with values that fall at those
 percentiles.
-[usastats](https://ejanalysis.github.io/EJAM/reference/usastats.md) and
-[statestats](https://ejanalysis.github.io/EJAM/reference/statestats.md)
+[usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md)
+and
+[statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md)
 are such lookup tables. This function uses a lookup table and finds the
 number in the PCTILE column that corresponds to where a specified value
 (in myvector) appears in the column called varname.in.lookup.table. The
@@ -109,7 +110,7 @@ percentile, not that large percent.
 
 ## See also
 
-[`calc_pctile_columns()`](https://ejanalysis.github.io/EJAM/reference/calc_pctile_columns.md)
+[`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)
 for handling a table not just a vector
 
 ## Examples

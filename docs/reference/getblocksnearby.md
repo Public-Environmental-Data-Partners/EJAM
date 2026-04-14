@@ -103,7 +103,7 @@ getblocksnearby(
 - ...:
 
   passed to
-  [`getblocksnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
+  [`getblocksnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
   or other such functions
 
 ## Value
@@ -116,18 +116,19 @@ have the ids of the sites where blocks were found. If 10 sites were
 input but only sites 5 and 8 were valid and had blocks identified, then
 the data.table here will only include ejam_uniq_id values of 5 and 8.
 This is like the output of
-[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md),
+[`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md),
 or
-[`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+[`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
 if return_shp=F.
 
 ## Details
 
-See [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+See
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 for examples.
 
 getblocksnearby() is a wrapper redirecting to the right version, like
-[`getblocksnearbyviaQuadTree()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
+[`getblocksnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
 Census block "internal points" (defined by Census Bureau) are actually
 what it looks for, and they are like centroids. The blocks are
 pre-indexed for the whole USA, via the data object quadtree aka
@@ -135,6 +136,6 @@ localtree
 
 ## See also
 
-[`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
-[`getblocksnearby_from_fips()`](https://ejanalysis.github.io/EJAM/reference/getblocksnearby_from_fips.md)
-[`get_blockpoints_in_shape()`](https://ejanalysis.github.io/EJAM/reference/get_blockpoints_in_shape.md)
+[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+[`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
+[`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)

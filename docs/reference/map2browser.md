@@ -14,11 +14,11 @@ map2browser(x)
 - x:
 
   output of
-  [`ejam2map()`](https://ejanalysis.github.io/EJAM/reference/ejam2map.md)
+  [`ejam2map()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2map.md)
   or
-  [`mapfastej()`](https://ejanalysis.github.io/EJAM/reference/mapfastej.md)
+  [`mapfastej()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfastej.md)
   or
-  [`mapfast()`](https://ejanalysis.github.io/EJAM/reference/mapfast.md)
+  [`mapfast()`](https://public-environmental-data-partners.github.io/EJAM/reference/mapfast.md)
 
 ## Value
 

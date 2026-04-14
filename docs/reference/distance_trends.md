@@ -20,7 +20,7 @@ distance_trends(
 - results_bydistance:
 
   data.frame of a few indicators, no other columns, taken from output of
-  [`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
+  [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
 
 - myvars:
 
@@ -41,9 +41,9 @@ vector of text names of indicators
 ## Details
 
 Used by
-[`ejamit_compare_distances2plot()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances2plot.md)
+[`ejamit_compare_distances2plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances2plot.md)
 which is used by
-[`ejamit_compare_distances()`](https://ejanalysis.github.io/EJAM/reference/ejamit_compare_distances.md)
+[`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.md)
 
 ## Examples
 

@@ -39,11 +39,11 @@ functions and data directly without the web app, for more complex work).
 
 You can install the EJAM R package and datasets as explained in
 [Installing the EJAM R
-package](https://ejanalysis.github.io/EJAM/articles/installing.md).
+package](https://public-environmental-data-partners.github.io/EJAM/articles/installing.md).
 There is also a [Basics - Quick Start
-Guide](https://ejanalysis.github.io/EJAM/articles/basics.md) and
-extensive [documentation of EJAM
-functions/tools/data](https://ejanalysis.github.io/EJAM/reference/index.md).
+Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.md)
+and extensive [documentation of EJAM
+functions/tools/data](https://public-environmental-data-partners.github.io/EJAM/reference/index.md).
 
 Once EJAM is installed, you can launch the local web app from RStudio as
 follows:
@@ -65,6 +65,7 @@ See documentation of optional parameters via `?ejamapp()`
 Note this is different than running a simple shiny app that is not also
 a package via the [golem](https://golemverse.org/) package. You should
 use the EJAM package function
-[`ejamapp()`](https://ejanalysis.github.io/EJAM/reference/ejamapp.md) or
-[`run_app()`](https://ejanalysis.github.io/EJAM/reference/run_app.md)
+[`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
+or
+[`run_app()`](https://public-environmental-data-partners.github.io/EJAM/reference/run_app.md)
 not [`shiny::runApp()`](https://rdrr.io/pkg/shiny/man/runApp.html).

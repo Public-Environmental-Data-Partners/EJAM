@@ -11,7 +11,7 @@ find or use NAICS codes.
 NAICS/SIC categories can be explored in a few ways:
 
 - [Key EJAM functions for using
-  NAICS/SIC](https://ejanalysis.github.io/EJAM/reference/index.html#naics-sic-datasets)
+  NAICS/SIC](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#naics-sic-datasets)
 - [NAICS.com website](https://www.naics.com) with extensive information
   [about NAICS](https://www.naics.com/everything-naics/) and
   [SIC](https://www.naics.com/everything-sic/)
@@ -21,15 +21,15 @@ NAICS/SIC categories can be explored in a few ways:
 - EPA APIs exist that can be used for similar queries.
 
 Some key functions include
-[`regid_from_naics()`](https://ejanalysis.github.io/EJAM/reference/regid_from_naics.md),
-[`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md),
-[`frs_from_naics()`](https://ejanalysis.github.io/EJAM/reference/frs_from_naics.md),
-[`naics_findwebscrape()`](https://ejanalysis.github.io/EJAM/reference/naics_findwebscrape.md),
+[`regid_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/regid_from_naics.md),
+[`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md),
+[`frs_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_naics.md),
+[`naics_findwebscrape()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_findwebscrape.md),
 and
-[`naics_categories()`](https://ejanalysis.github.io/EJAM/reference/naics_categories.md).
+[`naics_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md).
 These functions can help find EPA FRS sites based on naics codes or
 titles. They rely on `frs_by_naics` (a data.table), and
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 for querying by code or title of category.
 
 Files and dataset examples related to NAICS:
@@ -54,7 +54,7 @@ cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
 
 - Note the difference between `children = TRUE` and `children = FALSE`
   in EJAM functions like
-  [`latlon_from_naics()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_naics.md)
+  [`latlon_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_naics.md)
 
 - Note that searching on a 6-digit code misses parent categories you may
   want. The FRS data on NAICS by site is inconsistent in how many digits
@@ -68,12 +68,12 @@ subcategories.
 And the same title, like “Petroleum Refineries,” may be assigned by the
 NAICS system to the category but also a subcategory, as with codes 32411
 and 324110. The function
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 shows what codes and title exist in the NAICS system.
 
 Also, certain terms appear in the online description of a NAICS but not
 in the title of the NAICS – the function
-[`naics_findwebscrape()`](https://ejanalysis.github.io/EJAM/reference/naics_findwebscrape.md)
+[`naics_findwebscrape()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_findwebscrape.md)
 helps with those cases, e.g., compare these:
 
 ``` r
@@ -94,10 +94,10 @@ naics_from_any("refiner")
 ```
 
 Using
-[`naics_findwebscrape()`](https://ejanalysis.github.io/EJAM/reference/naics_findwebscrape.md)
+[`naics_findwebscrape()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_findwebscrape.md)
 finds only the 6-digit codes that match on title or description, so it
 would find some codes not found by
-[`naics_from_any()`](https://ejanalysis.github.io/EJAM/reference/naics_from_any.md)
+[`naics_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_from_any.md)
 which does not query description, but could lead to missing some
 facilities in the sense that the 6-digit code does not cover the sites
 listed in FRS under only the 5-digit code for Petroleum Refineries (not
@@ -106,10 +106,10 @@ the 6-digit).
 It is important to note that searching on a 6-digit code misses parent
 categories that may include sites you expect to find:
 
-[`frs_from_naics()`](https://ejanalysis.github.io/EJAM/reference/frs_from_naics.md)
+[`frs_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_naics.md)
 used as `frs_from_naics("324110", children = F)[,1:5]` finds a few
 hundred sites, but it fails to find some sites you would find using
-[`frs_from_naics()`](https://ejanalysis.github.io/EJAM/reference/frs_from_naics.md)
+[`frs_from_naics()`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_from_naics.md)
 used as `frs_from_naics("32411", children = F)[,1:5]`
 
 The code example below shows that the FRS dataset has some facilities

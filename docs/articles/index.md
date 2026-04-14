@@ -5,12 +5,12 @@
 EJSCREEN Indicators & Reports
 
 - [EJSCREEN
-  Documentation](https://ejanalysis.github.io/EJAM/articles/ejscreen.md):
+  Documentation](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.md):
 
   EJSCREEN Documentation
 
 - [EJScreen Indicators and Map
-  Descriptions](https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.md):
+  Descriptions](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.md):
 
   EJScreen Indicators and Map Descriptions
 
@@ -18,12 +18,13 @@ EJSCREEN Indicators & Reports
 
 Overview for EJAM Users
 
-- [What is EJAM?](https://ejanalysis.github.io/EJAM/articles/whatis.md):
+- [What is
+  EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.md):
 
   What is EJAM?
 
 - [Accessing the Web
-  App](https://ejanalysis.github.io/EJAM/articles/webapp.md):
+  App](https://public-environmental-data-partners.github.io/EJAM/articles/webapp.md):
 
   Accessing the Web App
 
@@ -32,41 +33,41 @@ Overview for EJAM Users
 For analysts using R
 
 - [Installing the EJAM R
-  package](https://ejanalysis.github.io/EJAM/articles/installing.md):
+  package](https://public-environmental-data-partners.github.io/EJAM/articles/installing.md):
 
   1.  Installing the EJAM R package
 
 - [Basics - Quick Start
-  Guide](https://ejanalysis.github.io/EJAM/articles/basics.md):
+  Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.md):
 
   2.  Basics - Quick Start Guide
 
 - [Using EJAM for Analysis in
-  R](https://ejanalysis.github.io/EJAM/articles/analyzing.md):
+  R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.md):
 
   3.  Using EJAM for Analysis in R
 
 - [Examples of Input/Output Files &
-  Data](https://ejanalysis.github.io/EJAM/articles/testdata.md):
+  Data](https://public-environmental-data-partners.github.io/EJAM/articles/testdata.md):
 
   Examples of Inputs to and Outputs from the Web App and EJAM functions
   (Files & R Datasets)
 
 - [Comparing Distances (Choosing a
-  Radius)](https://ejanalysis.github.io/EJAM/articles/distances.md):
+  Radius)](https://public-environmental-data-partners.github.io/EJAM/articles/distances.md):
 
   Comparing Distances (Choosing a Radius)
 
 - [NAICS
-  (Industries)](https://ejanalysis.github.io/EJAM/articles/naics.md):
+  (Industries)](https://public-environmental-data-partners.github.io/EJAM/articles/naics.md):
 
   NAICS (Industries)
 
-- [Counties](https://ejanalysis.github.io/EJAM/articles/counties.md):
+- [Counties](https://public-environmental-data-partners.github.io/EJAM/articles/counties.md):
 
   Counties
 
-- [Zipcodes](https://ejanalysis.github.io/EJAM/articles/zipcodes.md):
+- [Zipcodes](https://public-environmental-data-partners.github.io/EJAM/articles/zipcodes.md):
 
   Zipcodes
 
@@ -75,46 +76,46 @@ For analysts using R
 For package/app developers
 
 - [Speed of EJAM
-  analysis](https://ejanalysis.github.io/EJAM/articles/dev-speed.md):
+  analysis](https://public-environmental-data-partners.github.io/EJAM/articles/dev-speed.md):
 
   Speed of EJAM analysis
 
 - [Defaults and Custom Settings for the Web
-  App](https://ejanalysis.github.io/EJAM/articles/dev-app-settings.md):
+  App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.md):
 
   Defaults and Custom Settings for the Web App
 
 - [Deploying the Web
-  App](https://ejanalysis.github.io/EJAM/articles/dev-deploy-app.md):
+  App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.md):
 
   Deploying/hosting the web app
 
 - [Testing EJAM App with
-  shinytest2](https://ejanalysis.github.io/EJAM/articles/dev-run-shinytests.md):
+  shinytest2](https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.md):
 
   How to run {shinytest2} suite for app-based functionality testing.
 
 - [Testing EJAM Functions with Unit
-  Tests](https://ejanalysis.github.io/EJAM/articles/dev-run-unit-tests.md):
+  Tests](https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-unit-tests.md):
 
   How to run the suite of {testthat} unit tests
 
 - [Updating EJAM
-  Datasets](https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.md):
+  Datasets](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md):
 
   Managing large {arrow} datasets used by EJAM app and package
 
 - [Updating
-  Documentation](https://ejanalysis.github.io/EJAM/articles/dev-update-documentation.md):
+  Documentation](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-documentation.md):
 
   Steps for updating the web-based documentation/help docs
 
 - [Updating the Package as a New
-  Release](https://ejanalysis.github.io/EJAM/articles/dev-update-package.md):
+  Release](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-package.md):
 
   Steps for incrementing package version and GitHub releases
 
 - [Future Plans and Ideas for
-  EJAM](https://ejanalysis.github.io/EJAM/articles/dev-future-plans.md):
+  EJAM](https://public-environmental-data-partners.github.io/EJAM/articles/dev-future-plans.md):
 
   Future Plans and Ideas for EJAM

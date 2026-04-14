@@ -59,7 +59,7 @@ terms like "state.pctile.pcthisp", "state.pctile.pctnhba", etc.
 
 ## See also
 
-[`varinfo()`](https://ejanalysis.github.io/EJAM/reference/varinfo.md)
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
 
 ## Examples
 

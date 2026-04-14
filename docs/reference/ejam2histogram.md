@@ -28,7 +28,7 @@ ejam2histogram(
 - ejamitout:
 
   output of an EJAM analysis, like from
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md),
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md),
   or just the \$results_bysite part of that
 
 - varname:

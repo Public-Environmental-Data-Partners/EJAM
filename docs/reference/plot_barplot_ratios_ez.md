@@ -49,22 +49,22 @@ plot_barplot_ratios_ez(
 - ...:
 
   passed to
-  [`plot_barplot_ratios()`](https://ejanalysis.github.io/EJAM/reference/plot_barplot_ratios.md),
+  [`plot_barplot_ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_ratios.md),
   to change color scheme etc.
 
 ## Details
 
 Used by and similar to
-[`ejam2barplot()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot.md),
+[`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md),
 which is an easier way to do this!
 
 This function requires you to specify single_location = TRUE when using
 the row_index param. The
-[`ejam2barplot()`](https://ejanalysis.github.io/EJAM/reference/ejam2barplot.md)
+[`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md)
 function just uses a sitenumber parameter.
 
 This function is more flexible than
-[`plot_barplot_ratios()`](https://ejanalysis.github.io/EJAM/reference/plot_barplot_ratios.md),
+[`plot_barplot_ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_ratios.md),
 which it relies on, since this lets you specify whether to use overall
 results from ejamit()\$results_overall or just one site from
 ejamit()\$results_bysite

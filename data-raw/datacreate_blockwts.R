@@ -310,9 +310,9 @@ if (!do_update) {
 
 
 
-# browseURL("https://ejanalysis.github.io/census2020download/reference/blockpoints.html")
-# browseURL("https://ejanalysis.github.io/census2020download/reference/blockwts.html")
-# browseURL("https://ejanalysis.github.io/census2020download/reference/index.html")
+# ?blockpoints
+# ?blockwts
+# browseURL(paste0("https://ejanalysis", ".github.io/census2020download/reference/index.html"))
 
 # devtools::install_github("ejanalysis/census2020download")
 # require # (census2020download)

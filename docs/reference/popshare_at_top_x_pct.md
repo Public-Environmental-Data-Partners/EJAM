@@ -35,9 +35,9 @@ A fraction of 1 (or a vector of results) or text
 ## See also
 
 `popshare_at_top_x_pct()`
-[`popshare_at_top_n()`](https://ejanalysis.github.io/EJAM/reference/popshare_at_top_n.md)
-[`popshare_p_lives_at_what_n()`](https://ejanalysis.github.io/EJAM/reference/popshare_p_lives_at_what_n.md)
-[`popshare_p_lives_at_what_pct()`](https://ejanalysis.github.io/EJAM/reference/popshare_p_lives_at_what_pct.md)
+[`popshare_at_top_n()`](https://public-environmental-data-partners.github.io/EJAM/reference/popshare_at_top_n.md)
+[`popshare_p_lives_at_what_n()`](https://public-environmental-data-partners.github.io/EJAM/reference/popshare_p_lives_at_what_n.md)
+[`popshare_p_lives_at_what_pct()`](https://public-environmental-data-partners.github.io/EJAM/reference/popshare_p_lives_at_what_pct.md)
 
 ## Examples
 

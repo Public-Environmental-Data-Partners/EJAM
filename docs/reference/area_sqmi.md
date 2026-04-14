@@ -33,7 +33,7 @@ area_sqmi(
 - shp:
 
   optional spatial data.frame sf class object like from
-  [`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+  [`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)
 
 - fips:
 
@@ -62,7 +62,7 @@ area_sqmi(
   includewater only matters when download_noncity_fips_bounds = FALSE,
   and only for state, county, tract, blockgroup FIPS, not "city" types
   of fips as identified by
-  [`fipstype()`](https://ejanalysis.github.io/EJAM/reference/fipstype.md)
+  [`fipstype()`](https://public-environmental-data-partners.github.io/EJAM/reference/fipstype.md)
 
 ## Value
 

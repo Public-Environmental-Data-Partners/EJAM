@@ -19,7 +19,7 @@ report_residents_within_xyz_from_ejamit(
 - ejamitout:
 
   list that is output of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
 
 - sitenumber:
 
@@ -34,7 +34,7 @@ report_residents_within_xyz_from_ejamit(
 - ...:
 
   See
-  [`report_residents_within_xyz()`](https://ejanalysis.github.io/EJAM/reference/report_residents_within_xyz.md)
+  [`report_residents_within_xyz()`](https://public-environmental-data-partners.github.io/EJAM/reference/report_residents_within_xyz.md)
   for details of optional parameters that can be specified – they get
   passed from here to that function. For example, if it is a 1-site
   report as via sitenumber=2, and you set ejam_uniq_id = "Jones Mill

@@ -21,4 +21,4 @@ logical, indicating if all 4 extensions are found among the filepaths
 
 ## See also
 
-[`shapefile_from_any()`](https://ejanalysis.github.io/EJAM/reference/shapefile_from_any.md)
+[`shapefile_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/shapefile_from_any.md)

@@ -14,7 +14,7 @@ format_ejamit_columns(df, nms = c())
 - df:
 
   table in [data.table](https://r-datatable.com) format of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   results,
 
 - nms, :
@@ -29,7 +29,7 @@ names provided
 ## See also
 
 Note: \*\*\* overlaps with/could replace with
-[`table_signif_round_x100()`](https://ejanalysis.github.io/EJAM/reference/table_signif_round_x100.md)
+[`table_signif_round_x100()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_signif_round_x100.md)
 
 ## Examples
 

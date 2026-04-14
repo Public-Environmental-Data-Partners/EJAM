@@ -29,13 +29,13 @@ sitepoints_from_anything(
 - anything:
 
   see
-  [`latlon_from_anything()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_anything.md),
+  [`latlon_from_anything()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_anything.md),
   which this is passed to
 
 - lon_if_used:
 
   see
-  [`latlon_from_anything()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_anything.md),
+  [`latlon_from_anything()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_anything.md),
   which this is passed to
 
 - invalid_msg_table:
@@ -49,7 +49,7 @@ sitepoints_from_anything(
 - interactiveprompt:
 
   passed to
-  [`latlon_from_anything()`](https://ejanalysis.github.io/EJAM/reference/latlon_from_anything.md)
+  [`latlon_from_anything()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_anything.md)
 
 ## Value
 

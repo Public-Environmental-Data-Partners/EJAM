@@ -58,11 +58,11 @@ URL(s)
 
 ## See also
 
-[`url_ejamapi()`](https://ejanalysis.github.io/EJAM/reference/url_ejamapi.md)
-[`url_ejscreenmap()`](https://ejanalysis.github.io/EJAM/reference/url_ejscreenmap.md)
-[`url_echo_facility()`](https://ejanalysis.github.io/EJAM/reference/url_echo_facility.md)
+[`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
+[`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)
+[`url_echo_facility()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_echo_facility.md)
 `url_frs_facility()`
-[`url_enviromapper()`](https://ejanalysis.github.io/EJAM/reference/url_enviromapper.md)
+[`url_enviromapper()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_enviromapper.md)
 
 ## Examples
 

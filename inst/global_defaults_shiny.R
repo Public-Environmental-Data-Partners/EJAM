@@ -118,6 +118,8 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
   default_naics = "313", # 313 is about 900 textile mills and subcategories of that #  initial value of ss_select_naics
   default_naics_digits_shown = "basic", # if default_naics is >3 digits, this has to be "detailed" not "basic"
   default_add_naics_subcategories = TRUE,
+  # SIC
+  default_sic = "2015", # poultry
 
   # EPA Programs (to limit NAICS/ facilities query)
   # used by inputId 'ss_limit_fac1' and 'ss_limit_fac2'
@@ -125,6 +127,8 @@ use_shapefile_from_any <- TRUE # used below in list in more than one place so se
   # cbind(epa_programs)
   # sort(unique(frs_by_programid$program)) # similar  # EJAM :: frs_by_programid
 
+  # MACT
+  default_mact = "AA",
   ##################################################################################### #
 
   ## ------------------------ fipspicker module ####
@@ -656,9 +660,9 @@ sanitize_functions <- list(
 ######################################## ######################################### #
 ## HTML for "About EJAM" tab ####
 
-docs_url            <- EJAM:::repo_from_desc("github.io",  get_full_url = TRUE)
-testdata_repo_url   <- EJAM:::repo_from_desc("github.com", get_full_url = TRUE)
-testdata_owner_repo <- EJAM:::repo_from_desc("github.com", get_full_url = FALSE)
+docs_url            <- EJAM::url_package(type = "docs", get_full_url = TRUE)
+testdata_repo_url   <- EJAM::url_package(type = "code", get_full_url = TRUE)
+testdata_owner_repo <- EJAM::url_package(type = "code", get_full_url = FALSE)
 testdata_repo <-  gsub(".*/", "", testdata_owner_repo)
 
 # aboutpage_texts is used by get_global_defaults_or_user_options()
@@ -1061,23 +1065,10 @@ AIR,	IL000031012ACJ<br>
 <!--      <a href="https://web.archive.org/web/20250118193121/https://www.epa.gov/ejscreen/overview-socioeconomic-indicators-ejscreen" alt="Go to glossary page" title="Go to EJSCREEN glossary page" target="_blank">Glossary</a> | -->
 <!--     <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> | -->
 
-<!--     https://ejanalysis.github.io/EJAM/articles/ejscreen.html would be a more direct link than https://ejanalysis.github.io/EJAM/articles/index.html -->
-<a href="https://ejanalysis.github.io/EJAM/articles/index.html" target="_blank" rel="noreferrer">EJSCREEN/EJAM Help</a>
+<!--      /articles/ejscreen.html would be a more direct link than  /articles/index.html -->
+<a href="', EJAM::url_package("docs"), '/articles/index.html" target="_blank" rel="noreferrer">EJSCREEN/EJAM Help</a>
 
-<!--     <a href="https://ejanalysis.github.io/EJAM/articles/index.html" alt="EJSCREEN help" title="EJSCREEN documentation pages" target="_blank">EJSCREEN/EJAM Help</a> | -->
 <!--     <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a> | -->
-
-<!-- <a href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/viewform" target="_blank" rel="noreferrer"> -->
-<!--  <button type="button">Share data feedback -->
-<!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Share data feedback"> -->
-<!--  </button> -->
-<!-- </a> -->
-
-<!-- <a href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform" target="_blank" rel="noreferrer"> -->
-<!--    <button type="button">Help improve the tool -->
-<!--      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0ydjd6TTE0IDN2MmgzLjU5bC05LjgzIDkuODMgMS40MSAxLjQxTDE5IDYuNDFWMTBoMlYzaC03eiIvPjwvc3ZnPg==" alt="Help improve the tool"> -->
-<!--    </button> -->
-<!--  </a> -->
 
 </span>&nbsp;&nbsp;
         </td>
@@ -1137,7 +1128,7 @@ AIR,	IL000031012ACJ<br>
 
   <a
     class="cejst-style-btn"
-    href="https://docs.google.com/forms/d/e/1FAIpQLSe8kbo10ViosV_2aQHQd9EDUVPtSU7IjtblqZF3d96CiarxFA/viewform"
+    href="https://docs.google.com/forms/d/e/1FAIpQLSeQI4Dh3P2mR5crbYsx46Kcn9yaPxhIcIG3qAYNI5xfTojbVA/viewform?usp=dialog"
     target="_blank"
     rel="noopener noreferrer"
   >

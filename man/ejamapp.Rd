@@ -130,9 +130,10 @@ ejamapp(fips = fips_counties_from_state_abbrev("RI"),
 ejamapp(fips = name2fips(c("akutan,ak", "syracuse city,ny")))
 
 
- ## Use preferred settings, for your set of analyses:
+ ## More options for settings:
 
 ejamapp(
+  default_show_advanced_settings=TRUE, # to make advanced tab visible at start
   analysis_title = "PREFERRED REPORT TITLE FOR THESE ANALYSES",
   radius = 3.1, # PREFERRED RADIUS
   default_max_miles = 31,      # to raise the radius cap
@@ -150,13 +151,16 @@ ejamapp(
 
 ejamapp(
   analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
-  default_selected_type_of_site_category="NAICS",
-  default_naics_digits_shown="detailed", # if default_naics is >3 digits, this has to be "detailed" not "basic"
-  default_naics="562211",
-  radius=3.1,
-  default_show_advanced_settings=TRUE # to make advanced tab visible at start
+  naics="562211", # or default_naics="562211"
 )
+
+  ## SIC as the default:
+ sic_from_any(3585)
+ ejamapp(sic="3585")
+
+  ## MACT as the default:
+ mact_table$dropdown_label
+ ejamapp(mact="OOOO")
 
   ## Cities dropdown list as default shown at launch:
 

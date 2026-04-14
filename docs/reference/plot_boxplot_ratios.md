@@ -28,14 +28,14 @@ plot_boxplot_ratios(
   a table with just ratios that are named as regular indicators, but it
   tries to figure out if ratios are available and what the base name is
   in case output of
-  [`ejamit()`](https://ejanalysis.github.io/EJAM/reference/ejamit.md)
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   was provided.
 
 - selected_dvar_nicename:
 
   default is the "short" name of selected_dvar_colname as converted
   using
-  [`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+  [`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
 
 - towhat_nicename:
 
@@ -59,11 +59,11 @@ same format as output of
 ## Details
 
 See
-[`ejam2boxplot_ratios()`](https://ejanalysis.github.io/EJAM/reference/ejam2boxplot_ratios.md)
+[`ejam2boxplot_ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2boxplot_ratios.md)
 now for ratios plots.
 
 See
-[`plot_boxplot_pctiles()`](https://ejanalysis.github.io/EJAM/reference/plot_boxplot_pctiles.md)
+[`plot_boxplot_pctiles()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_boxplot_pctiles.md)
 now espec. for percentiles.
 
 IMPORTANTLY, NOTE this used the ratio at each site USING THE AVERAGE

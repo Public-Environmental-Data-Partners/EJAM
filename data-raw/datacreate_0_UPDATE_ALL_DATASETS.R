@@ -456,7 +456,13 @@ loadall()
 
 ######################################### #
 
-
+## IMPORTANT:
+##
+## Although this file was called "...UPDATE_ALL_DATASETS...", it did NOT update the demographic or environmental indicator data.
+##
+## CODE BELOW WAS DESIGNED SIMPLY TO GET THE EJSCREEN BLOCKGROUP DATASET FROM EPA AND CONVERT IT TO WHAT EJAM USES.
+## IT DID NOT CREATE A NEW BLOCKGROUP DATASET FROM RAW CENSUS BUREAU ACS DOWNLOADS AND RAW ENVIRONMENTAL DATA,
+## SO IT DOES NOT PROVIDE A WAY TO UPDATE EJSCREEN.
 
 ######################################### #
 ### datacreate_blockgroupstats2.32.R (also starts making usastats,statestats!!) ####
@@ -480,12 +486,11 @@ if (askquestions && interactive()) {
     ## do not save via  usethis::use_data(bgej, overwrite = TRUE) - it is a large file
     ## Save bgej to ejamdata repo as .arrow file
     ### WRITE  bgej  TO THE ejamdata REPOSITORY NOW   ####
-    cat("WRITE  bgej  TO THE ejamdata REPOSITORY NOW
+    cat(paste0("WRITE  bgej  TO THE ejamdata REPOSITORY NOW
   THIS is done by copying the bgej.arrow file into the data folder of the ejamdata repository and pushing the changes.
-   See notes in https://ejanalysis.github.io/EJAM/articles/dev-update-datasets.html
-
+   See notes in ", paste0(EJAM::url_package('docs'), "/articles/dev-update-datasets.html"), "
    and note any testoutput files and objects have to be recreated if numbers in bgej etc. changed...
-\n")
+\n"))
   }}
 # created blockgroupstats_new as interim object   and bgej
 # created usastats, statestats but not final versions yet

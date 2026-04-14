@@ -17,7 +17,7 @@ latlon_from_sic(sic, id_only = FALSE)
   a vector of SIC codes, or a table in
   [data.table](https://r-datatable.com) format with column named code,
   as with output of
-  [`sic_from_any()`](https://ejanalysis.github.io/EJAM/reference/sic_from_any.md)
+  [`sic_from_any()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_from_any.md)
 
 - id_only:
 
@@ -42,7 +42,7 @@ Also, this function does not find the sites identified by FRS data as
 being in a child SIC (subcategory of your exact query)!
 
 Relies on
-[frs_by_sic](https://ejanalysis.github.io/EJAM/reference/frs_by_sic.md)
+[frs_by_sic](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md)
 
 See info about SIC industry codes at <https://www.naics.com/search>
 

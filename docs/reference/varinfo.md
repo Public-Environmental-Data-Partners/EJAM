@@ -26,7 +26,7 @@ varinfo(
   types of metadata/info needed, such as "decimals", "long", etc. which
   should be among colnames of map_headernames, or alias like "long" as
   allowed by
-  [`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+  [`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
 
 - varnametype:
 
@@ -59,17 +59,17 @@ not exported:
 
 - `varinfo()`
 
-- [`varname2varcategory_ejam()`](https://ejanalysis.github.io/EJAM/reference/varname2varcategory_ejam.md)
+- [`varname2varcategory_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/varname2varcategory_ejam.md)
 
-- [`varname2vartype_ejam()`](https://ejanalysis.github.io/EJAM/reference/varname2vartype_ejam.md)
+- [`varname2vartype_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/varname2vartype_ejam.md)
 
-- [`table_rounding_info()`](https://ejanalysis.github.io/EJAM/reference/table_rounding_info.md)
+- [`table_rounding_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_rounding_info.md)
 
 - EJAM table_signif_round_x100()
 
-- [`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
+- [`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
 
-- [`fixcolnames_infer()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames_infer.md)
+- [`fixcolnames_infer()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames_infer.md)
 
 - EJAM fixcolnames2related()
 
@@ -93,8 +93,8 @@ and the various related data objects like map_headernames and namez
 
 ## See also
 
-[`fixcolnames()`](https://ejanalysis.github.io/EJAM/reference/fixcolnames.md)
-[`table_rounding_info()`](https://ejanalysis.github.io/EJAM/reference/table_rounding_info.md)
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
+[`table_rounding_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_rounding_info.md)
 
 ## Examples
 
