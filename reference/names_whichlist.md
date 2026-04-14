@@ -1,0 +1,75 @@
+# See which of the lists of names a single term appears in
+
+See which of the lists of names a single term appears in
+
+## Usage
+
+``` r
+names_whichlist(
+  x,
+  exact = T,
+  grepmatching = T,
+  ignore.case.exact = FALSE,
+  ignore.case.grep = FALSE,
+  keylists = F,
+  exactonly = FALSE
+)
+```
+
+## Arguments
+
+- x:
+
+  term, like part or all of a variable name, such as state.avg
+
+- exact:
+
+  whether to look for exact matches
+
+- grepmatching:
+
+  whether to look for matches via grep (partial match)
+
+- ignore.case.exact:
+
+  whether to ignore capitalization in exact matches
+
+- ignore.case.grep:
+
+  passed to grep as ignore.case param
+
+- keylists:
+
+  if true, only report for the key lists not state_pctile types.
+
+- exactonly:
+
+  to limit output to rows with exact matches
+
+## Value
+
+a data.frame of whichlist, exactmatch, grepmatch, and grephits
+(examples)
+
+## Details
+
+EJAM::namez has a list of lists of names used for indicators or
+variables, such as namez\$d_subgroups_state_pctile which is a vector of
+terms like "state.pctile.pcthisp", "state.pctile.pctnhba", etc.
+
+## See also
+
+[`varinfo()`](https://public-environmental-data-partners.github.io/EJAM/reference/varinfo.md)
+
+## Examples
+
+``` r
+   x <- EJAM:::names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
+
+   subset(x,  grepl("all", x$whichlist))
+   subset(x,  grepl("state_p", x$whichlist))
+   z=subset(namez, names(namez) != "all_r" & names(namez) %in%
+      subset(x, x$grepmatch == "yes")$whichlist  )
+   lapply(z, as.vector) # avoids showing attributes if they were set and are distracting here
+   grep("\\.eo$", namez$ej, value = T)
+```
