@@ -2199,7 +2199,7 @@ app_server <- function(input, output, session) {
 
       map_ejam_plus_shp(
         out = data_processed(),
-        shp = data_uploaded(),  # here, shp already has ejam_uniq_id assigned (after which invalid rows were dropped I think)
+        shp = isolate(data_uploaded()),  # isolate here and below to avoid re-evaluation when user switches site selection method; shp already has ejam_uniq_id assigned (after which invalid rows were dropped I think)
         radius_buffer = sanitized_radius_now()
       )
 
@@ -2223,11 +2223,11 @@ app_server <- function(input, output, session) {
 
         # FIPS map - download boundaries then map ------------------------------ #
 
-        req(data_uploaded())
-        FTYPES <- fipstype(data_uploaded())
+        req(isolate(data_uploaded()))
+        FTYPES <- fipstype(isolate(data_uploaded()))
         if (all(FTYPES %in% c("state", "county", "city", "tract", "blockgroup"))) {
 
-          fips_shapes <- try( shapes_from_fips(data_uploaded()), silent = TRUE)
+          fips_shapes <- try(shapes_from_fips(isolate(data_uploaded())), silent = TRUE)
           if (inherits(fips_shapes, "try-error")) {
             fips_shapes <- NULL
             shiny::validate('Unable to obtain FIPS Census units boundaries for map')
