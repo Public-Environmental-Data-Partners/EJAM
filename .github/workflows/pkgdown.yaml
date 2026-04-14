@@ -2,10 +2,10 @@
 name: 'build and deploy documentation website on github pages'
 
 on:
-  # push:
-  #   branches: [ "main" ]
-  pull_request:
+  push:
     branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
   release:
     types: [published]
   workflow_dispatch:
@@ -44,9 +44,9 @@ jobs:
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
-        if: github.event_name != 'pull_request'
+        # if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           clean: true
-          branch: gh-pages
+          branch: main
           folder: docs
