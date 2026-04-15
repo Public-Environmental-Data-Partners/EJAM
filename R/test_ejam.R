@@ -302,6 +302,7 @@ x <- EJAM:::test_ejam(
         "test-sites_from_input.R",
         "test-calc_byformula.R", # create new ACS-based data, etc.
         "test-acs_bybg.R",
+        "test-acs_endyear.R",
 
         "test-url_ejamapi.R",
         "test-ejamapi.R",
