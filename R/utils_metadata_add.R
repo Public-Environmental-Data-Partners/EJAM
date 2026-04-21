@@ -325,7 +325,7 @@ if (!("package:EJAM" %in% search())) {stop("must first use library() or require(
     results <- data.frame(package = NA,
                           item = datasets,
                           matrix(NA, ncol = length(which), nrow = length(datasets)),
-                          has_metadata = NA)
+                          has_metadata = FALSE)
     colnames(results) <- c("package",
                            "item",
                            which,
@@ -344,6 +344,7 @@ if (!("package:EJAM" %in% search())) {stop("must first use library() or require(
       results[results$item == datasets[dn], whichfound]                <- unlist(whichall[whichfound])
       results[results$item == datasets[dn], "has_metadata"] <- any(!is.na(unlist(whichall[whichfound])))
     }
+    results$has_metadata <- as.logical(results$has_metadata)
     return(results)
   }
   ########################################### #   ########################################### #
@@ -364,6 +365,7 @@ if (!("package:EJAM" %in% search())) {stop("must first use library() or require(
         has_metadata = FALSE
       )
       colnames(results) <- c("package", "item", which, "has_metadata")
+      results$has_metadata = as.logical(results$has_metadata)
       return(results)
     }
     ############################################### #
@@ -473,7 +475,7 @@ Also see \n
   for (mycol in 1:NCOL(allresults)) {
     allresults[, mycol] <- as.vector(unlist(allresults[, mycol] ))
   }
-
+  allresults$has_metadata = as.logical(allresults$has_metadata)
   rownames(allresults) <- NULL
 
   return(allresults)
