@@ -60,7 +60,8 @@ test_that("ejamit() still returns results_overall identical to what it used to r
 
                 expect_equal(
                   ejamitoutnow$results_overall,
-                  testoutput_ejamit_10pts_1miles$results_overall
+                  testoutput_ejamit_10pts_1miles$results_overall,
+                  ignore_attr = ".internal.selfref"
                 )
               } )
             })
@@ -69,7 +70,7 @@ test_that("ejamit() still returns results_overall identical to what it used to r
           })
 ########################################################## #
 
-test_that("ejamit() still returns results_bysite identical to numbers it used to return (except EJAM Report column)", {
+test_that("ejamit() still returns results_bysite identical to numbers it used to return (except 1st column)", {
   suppressWarnings({
     suppressMessages({
       if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
@@ -79,7 +80,8 @@ test_that("ejamit() still returns results_bysite identical to numbers it used to
         ejamitoutnow$results_bysite[,-1],
         testoutput_ejamit_10pts_1miles$results_bysite[,-1]
         ,
-        ignore_attr = TRUE # intended to ignore attributes that are metadata like date saved to package, ACS version, etc. that are part of testoutput_ejamit_10pts_1miles
+        ignore_attr = ".internal.selfref" # intended to ignore attribute
+        # but does not ignore attributes that are metadata like date saved to package, ACS version, etc. that are part of testoutput_ejamit_10pts_1miles, etc.
       )
       # all.equal(    ejamitoutnow$results_bysite,
       #               testoutput_ejamit_10pts_1miles$results_bysite)
@@ -87,7 +89,7 @@ test_that("ejamit() still returns results_bysite identical to numbers it used to
   })
 })
 ################################### #
-test_that("ejamit() still returns results_bysite with expected EJAM Report column", {
+test_that("ejamit() still returns results_bysite with same EJAM Report column", {
   suppressWarnings({
     suppressMessages({
       if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}

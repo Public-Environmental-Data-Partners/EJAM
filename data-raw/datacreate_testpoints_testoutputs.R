@@ -51,7 +51,7 @@ pkg_update_testpoints_testoutputs <- function(
 
   myrad = 1 ,# radius in miles. Larger would create MUCH larger versions of sites2blocks example objects
 
-  resaving_testpoints_overlap3 = FALSE,
+  resaving_testpoints_overlap3 = TRUE,
   creatingnew_testpoints_data   = FALSE, # TO REPLACE THE ACTUAL TEST POINTS (can be false and still do other steps below)
 
   resaving_testpoints_rda       = TRUE,
@@ -61,11 +61,11 @@ pkg_update_testpoints_testoutputs <- function(
 
   recreating_getblocksnearby    = TRUE,  # eg if block data changed, or if recreating_doaggregate_output = TRUE b
   resaving_getblocksnearby_rda  = TRUE,
-  resaving_getblocksnearby_helpdocs = TRUE,
+  resaving_getblocksnearby_helpdocs = FALSE,
 
   recreating_doaggregate_output = TRUE, # eg if other indicators added to outputs
   resaving_doaggregate_rda      = TRUE,
-  resaving_doaggregate_helpdocs = TRUE , # just in case
+  resaving_doaggregate_helpdocs = FALSE , # just in case
 
   recreating_ejamit_output      = TRUE, # eg if format or list of indicators changes
   resaving_ejamit_rda           = TRUE,
@@ -466,13 +466,21 @@ pkg_update_testpoints_testoutputs <- function(
   REMEMBER TO UPDATE .Rd files PACKAGE DOCUMENTATION:
 
   devtools::document()  # for .Rd help files. or Clean and INSTALL package
-  devtools::build_manual()  # for pdf manual
-  postdoc::render_package_manual()  # for html manual
+  devtools::build_manual()  # for pdf manual (optional)
+  postdoc::render_package_manual()  # for html manual (optional)
+
 
   See also EJAM/data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R  for the documentation website
   See also
 
-  metadata_update_attr() # to update attributes like package version in all datasets
+  EJAM:::metadata_check() # to see large table of which attributes provide metadata on dataset objects
+
+  EJAM:::metadata_check_print() # to see selected tables of attributes that need to be updated on key dataset objects
+
+  x = EJAM:::metadata_check()
+  x[x$has_metadata,]
+
+  EJAM:::metadata_update_attr() # to update attributes like package version in all datasets (other than atomic vectors, and optionally only if version attr was already set for that object)
 
   devtools::install_local(build = FALSE, upgrade = "never")
 

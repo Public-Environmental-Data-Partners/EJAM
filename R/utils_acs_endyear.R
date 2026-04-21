@@ -27,7 +27,7 @@ acs_yr_range <- function(end.year, parens = FALSE) {
 #' @param lag_yrs_endyr_to_census_publishes years to assume lag between end of endyear and when Census Bureau releases ACS dataset for 5yr summary file
 #' @param lag_yrs_endyr_to_ejscreen years to assume lag between end of endyear and when ejscreen gets updated with ACS data
 #' @details
-#' - The 2020-2024 data should be released by Census Bureau 12/11/2025.
+#' - The 2020-2024 data were published by Census Bureau 1/29/2026 (delayed from the typical 12/2025).
 #'
 #' - The 2019-2023 data were published by Census Bureau 12/12/2024, but were not yet in EJSCREEN as of late 2025.
 #'
