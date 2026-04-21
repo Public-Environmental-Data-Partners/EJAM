@@ -83,10 +83,10 @@ metadata_update_attr <- function(x = pkg_data('EJAM')$Item,
 metadata_add_and_use_this <- function(objectname) {
   if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
   text_to_do <- paste0("", objectname, " = metadata_add(", objectname, ")")
-  eval(parse(text = text_to_do))
+  eval(parse(text = text_to_do), envir = globalenv())
 
   text_to_do <- paste0("usethis::use_data(", objectname, ", overwrite=TRUE)")
-  eval(parse(text = text_to_do))
+  eval(parse(text = text_to_do), envir = globalenv())
 }
 #################################################### #
 
