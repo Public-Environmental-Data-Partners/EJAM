@@ -324,6 +324,7 @@ x <- EJAM:::test_ejam(
       test_webapp = c(
         "test-webapp-ui_and_server.R",
         "test-webapp-FIPS-functionality.R",
+        "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
         "test-webapp-FRS-functionality.R",
         "test-webapp-latlon-functionality.R",
         "test-webapp-NAICS-functionality.R",
@@ -516,12 +517,15 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ############################ #      ############################ #      ############################ #
       addthesenotrun = data.table(
         file = c("test-webapp-FRS-functionality.R", "test-webapp-FIPS-functionality.R",
+                 "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
                  "test-webapp-ui_and_server.R",      "test-webapp-NAICS-functionality.R",
                  "test-webapp-latlon-functionality.R", "test-webapp-shp-gdb-zip-functionality.R",
                  "test-webapp-shp-json-functionality.R", "test-webapp-shp-unzip-functionality.R",
                  "test-webapp-shp-zip-functionality.R"),
         seconds_byfile =
-          c(30, 9, 1, 40, 34, 62, 62, 62, 61)
+          c(30, 9,
+            0,  # placeholder for when FIPS-picker test finished/ready
+            1, 40, 34, 62, 62, 62, 61)
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
       timebyfile <- rbind(timebyfile, addthesenotrun)
