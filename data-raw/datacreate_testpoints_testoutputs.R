@@ -54,7 +54,7 @@ pkg_update_testpoints_testoutputs <- function(
   resaving_testpoints_overlap3 = TRUE,
   creatingnew_testpoints_data   = FALSE, # TO REPLACE THE ACTUAL TEST POINTS (can be false and still do other steps below)
 
-  resaving_testpoints_rda       = TRUE,
+  resaving_testpoints_rda       = TRUE, ## WARNING: it will NOT resave if they are found, so edit the code here to force overwrite
   resaving_testpoints_excel     = TRUE,
   resaving_testpoints_helpdocs  = TRUE,
   resaving_testpoints_bad       = TRUE,
@@ -232,7 +232,7 @@ pkg_update_testpoints_testoutputs <- function(
       testpoints_data  <- testpoints_data[ , c("lat", "lon", "sitenumber", "sitename")]
 
       assign(testpoints_name, testpoints_data)    #        put the data into an object of the right name
-
+      assign(testpoints_name, testpoints_data, envir = globalenv()) # to be sure old one does not get used here, put it in globalenv to replace the lazyloaded old one!
       if (n == 100) {
         testpoints_100_dt <- data.table(testpoints_100)
         if (resaving_testpoints_rda) {
@@ -290,6 +290,7 @@ pkg_update_testpoints_testoutputs <- function(
       if (recreating_getblocksnearby) {
         out_data_getblocks <- getblocksnearby(testpoints_data, radius = myrad, quiet = TRUE)                     ############# #
         assign(out_varname_getblocks, out_data_getblocks)
+        assign(out_varname_getblocks, out_data_getblocks, envir = globalenv()) # just to make sure we dont use the old unupdated version
         ################################## #
       }
       if (n <= 10000) {
@@ -332,6 +333,7 @@ pkg_update_testpoints_testoutputs <- function(
         out_data_doagg <- doaggregate(out_data_getblocks, sites2states_or_latlon = testpoints_data, radius = myrad, silentinteractive = TRUE,
                                       include_ejindexes = TRUE)
         assign(out_varname_doagg, out_data_doagg)
+        assign(out_varname_doagg, out_data_doagg, envir = globalenv()) # just to make sure we dont use the old unupdated version
       }
 
       ## save as DATA IN PACKAGE ####
@@ -390,6 +392,7 @@ pkg_update_testpoints_testoutputs <- function(
         # testoutput_ejamit_100pts_1miles
         # testoutput_ejamit_1000pts_1miles
         assign(out_varname_ejamit, out_data_ejamit)
+        assign(out_varname_ejamit, out_data_ejamit, envir = globalenv()) # must put it in globalenv to replace the lazyloaded old one!
       } else {
         # already exists presumably. use get(out_varname_ejamit) to access the object
       }

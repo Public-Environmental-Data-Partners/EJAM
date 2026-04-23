@@ -80,7 +80,7 @@ if (exists("ejamit") && exists("blockgroupstats") && exists("testpoints_10")) {
         ejamit(testpoints_10, radius = 1,
                quiet = TRUE, silentinteractive = TRUE,
                include_ejindexes = TRUE)
-      ) # include_ejindexes = FALSE was the default but we want to test with them included
+      ) # include_ejindexes = FALSE used to be the default but we want to test with them included
     }))
   }
   ################################################################################### #
