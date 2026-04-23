@@ -1258,7 +1258,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         keyfilesprint = keyfilesprint[order(keyfilesprint$flagged_byfile, decreasing = TRUE), ]
         rownames(keyfilesprint) <- NULL
         print(keyfilesprint)
-        print(colSums(keyfilesprint[,.(failed_byfile, flagged_byfile, seconds_byfile_predicted, seconds_byfile_actual, seconds_extra)]))
+        print(colSums(keyfilesprint[,c('failed_byfile', 'flagged_byfile', 'seconds_byfile_predicted', 'seconds_byfile_actual', 'seconds_extra')]))
       }
       ########################### #
 

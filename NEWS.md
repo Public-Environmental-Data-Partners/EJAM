@@ -1,3 +1,10 @@
+# Development (April 2026)
+
+- Fixed bugs in utilities that help update dataset metadata, etc.
+- Fixed issue in unit testing helper functions/setup, and some unit tests of function creating text for report header.
+- Resaved testoutput and related datasets, and updated or added remaining metadata about version number
+- acs_version metadata for tables_ejscreen_acs corrected
+
 # EJAM 2.32.8 (April 2026)
 
 - Moved EJAM and ejamdata repositories and documentation website (and updated all URLs) by changing owner from "ejanalysis" to "Public-Environmental-Data-Partners"
