@@ -157,7 +157,7 @@ acs_clean_date = function(x) {
 #'
 #'  Census Bureau provides yearly release schedules for ACS data:
 #'
-#'  - The [2020-2024 ACS data](https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html) normally would be released by Census Bureau 12/11/2025, but release was delayed until January 2026.
+#'  - The [2020-2024 ACS data](https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html) normally would be released by Census Bureau 12/11/2025, but release was delayed until January 29, 2026.
 #'
 #'  - The [2019-2023 ACS data](https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html) were published by Census Bureau 12/12/2024.
 #'

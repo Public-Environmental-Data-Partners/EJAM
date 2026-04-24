@@ -1,3 +1,4 @@
+
 # EJAM 2.5.0 (May 2026)
 
 ## Updated Demographic Data from ACS
@@ -14,6 +15,15 @@
 - v2.4.0, this release, is just to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.
 - v2.5.0 will provide 2020-2024 ACS and will be released in early 2026.
 - Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
+
+
+# Development (April 2026)
+
+- Fixed bugs in utilities that help update dataset metadata, etc.
+- Fixed issue in unit testing helper functions/setup, and some unit tests (e.g., function creating text for report header).
+- Resaved testoutput and various other datasets and updated or added remaining metadata about version number, and fixed acs_version metadata for tables_ejscreen_acs.
+- Amended `latlon_from_address()`
+- Fixed `url_county_equityatlas()`
 
 
 # EJAM 2.32.8 (April 2026)

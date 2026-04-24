@@ -169,17 +169,29 @@ address_from_table_goodnames <- function(x, colnames_allowed = c('address', 'str
   }
   stopifnot(is.atomic(colnames_allowed))
   colnamesfound <- intersect(names(x), colnames_allowed)
-  if ("address" %in% colnamesfound && !("street" %in% colnamesfound) && !("city" %in% colnamesfound)) {
-    # seems like address column must be the entire address with street, city, state all in it ?
-    cols2use <- "address"
-    # return(x[, cols2use])
-  } else {
-    if ("address" %in% colnamesfound && !("street" %in% colnamesfound) && ("city" %in% colnamesfound) ) {
-      # seems like address column is probably the street in this case - even if state is missing?
+  cols2use <- colnames_allowed[colnames_allowed %in% colnamesfound]
+  # may need to adjust which cols2use if "address" is a column name:
+  if ("address" %in% colnamesfound) {
+
+    if (!("street" %in% colnamesfound) && !("city" %in% colnamesfound)) {
+      # found "address" column, but no column for  "street", and no column for  "city",
+      # so assume "address" column has the entire address (with street, city, state all in it)
+      cols2use <- "address"
     }
-    cols2use <- colnames_allowed[colnames_allowed %in% colnamesfound]
-    # return(apply(x[, cols2use], 1, paste, collapse = " "))
+
+    if (!("street" %in% colnamesfound) && ("city" %in% colnamesfound)) {
+      # found "address" column and "city" column, but  not a "street" column,
+      # so assume address column is the street in this case (even if state is missing)
+    }
+
+    if ("address" %in% colnamesfound && ("street" %in% colnamesfound) && ("city" %in% colnamesfound)) {
+      # found "address" column but also a "street" column and a "city" column,
+      # so there might be redundancy or might be conflicting info in "address" column!
+      message("found columns named 'address' and 'street' and 'city', so if 'address' column contains a geocoding-amenable place (e.g., 'Research Triangle Park') that disagrees with street/city columns, that will cause confusion in geocoding")
+      # cols2use <- cols2use[!(cols2use %in% "address")]
+    }
   }
+
   return(
     if (length(cols2use) == 1) {
       return(x[, cols2use])

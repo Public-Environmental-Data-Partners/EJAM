@@ -325,6 +325,7 @@ x <- EJAM:::test_ejam(
       test_webapp = c(
         "test-webapp-ui_and_server.R",
         "test-webapp-FIPS-functionality.R",
+        "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
         "test-webapp-FRS-functionality.R",
         "test-webapp-latlon-functionality.R",
         "test-webapp-NAICS-functionality.R",
@@ -502,7 +503,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-naics_subcodes_from_code.R", "test-naics_is.valid.R",
               "test-ejam2shapefile.R", "test-latlon_from_shapefile.R", "test-shape2geojson.R",
               "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
-              "test-test1.R", "test-test2.R"),
+              "test-test1.R", "test-test2.R", "test-url_package.R"),
           seconds_byfile =
             c(25, 4,
               2, 0,
@@ -511,18 +512,21 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               13, 5, 2, 11, 1, 5, 0, 1, 1, 0, 4, 10, 0, 6, 5, 1, 0, 5, 0, 3,
               0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 5, 9, 0, 18, 15, 2, 0, 2, 0, 0,
               0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0,
-              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0)),
-          row.names = c(NA, -94L), class = "data.frame")
+              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0, 15)),
+            class = "data.frame")
       )
       ############################ #      ############################ #      ############################ #
       addthesenotrun = data.table(
         file = c("test-webapp-FRS-functionality.R", "test-webapp-FIPS-functionality.R",
+                 "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
                  "test-webapp-ui_and_server.R",      "test-webapp-NAICS-functionality.R",
                  "test-webapp-latlon-functionality.R", "test-webapp-shp-gdb-zip-functionality.R",
                  "test-webapp-shp-json-functionality.R", "test-webapp-shp-unzip-functionality.R",
                  "test-webapp-shp-zip-functionality.R"),
         seconds_byfile =
-          c(30, 9, 1, 40, 34, 62, 62, 62, 61)
+          c(30, 9,
+            0,  # placeholder for when FIPS-picker test finished/ready
+            1, 40, 34, 62, 62, 62, 61)
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
       timebyfile <- rbind(timebyfile, addthesenotrun)
@@ -1257,7 +1261,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         cat("\n\n")
         keyfilesprint = as.data.frame(byfile_key)[ , !grepl("_bygroup", names(byfile_key))]
         keyfilesprint = keyfilesprint[order(keyfilesprint$flagged_byfile, decreasing = TRUE), ]
+        rownames(keyfilesprint) <- NULL
         print(keyfilesprint)
+        print(colSums(keyfilesprint[,c('failed_byfile', 'flagged_byfile', 'seconds_byfile_predicted', 'seconds_byfile_actual', 'seconds_extra')]))
       }
       ########################### #
 

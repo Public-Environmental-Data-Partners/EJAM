@@ -118,7 +118,7 @@ including the quote marks
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
-#ref = "v2.32.7"   # a tag identifying a specific release
+#ref = "v2.32.8"   # a tag identifying a specific release
 #ref = "HEAD"          # main branch
 #ref = "development"   # development branch version
 
@@ -145,7 +145,7 @@ the quote marks
 
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
+zipname = "v2.32.8.zip" # or whatever the latest release is - update as needed
 
 remote_zip = paste0(
   "URL_OF_REPO", "/archive/refs/tags/", zipname)
@@ -163,7 +163,7 @@ the quote marks
 
 ``` r
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.7.zip" # or whatever the latest release is - update as needed
+zipname = "v2.32.8.zip" # or whatever the latest release is - update as needed
 
 remote_zip = paste0(
   "URL_OF_REPO", "/archive/refs/tags/", zipname)

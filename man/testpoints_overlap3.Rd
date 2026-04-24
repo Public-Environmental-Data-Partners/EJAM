@@ -19,8 +19,8 @@ with 3 overlapping 1-mile radius circles. To view these points:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{ pts <- testpoints_overlap3
 
- mapfast(pts, radius = 1)  
-   
+ mapfast(pts, radius = 1)
+
  plot_blocks_nearby(pts, radius = 1)
 }\if{html}{\out{</div>}}
 }
