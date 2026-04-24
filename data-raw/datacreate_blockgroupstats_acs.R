@@ -122,5 +122,5 @@ cat("update documentation now if relevant \n")
 
 
 cat("update usestats and statestats, etc., next \n")
-# FORMERLY used datacreate_blockgroupstats2.32.R" WHICH started making usastats,statestats
+
 ##################################################################### ###################################################################### #

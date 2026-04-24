@@ -138,8 +138,11 @@ if (0 == 1) {  # collapsable list
          # Census/ACS/geo-related datasets etc.
          "datacreate_blockwts.R", "datacreate_bg_cenpop2020.R", "datacreate_bgpts.R", "datacreate_states_shapefile.R", "datacreate_stateinfo.R", "datacreate_stateinfo2.R", "datacreate_islandareas.R", "datacreate_censusplaces.R",
 
-         "datacreate_blockgroupstats2.32.R", "datacreate_blockgroupstats2.32_add_d_acs22columns.R",  "datacreate_blockgroupstats2.32_recalc_language.R", "datacreate_blockgroupstats_extra_api_vars.R",
-         "datacreate_usastats2.32.R", "datacreate_usastats2.32_add_dsubgroups.R", "datacreate_avg.in.us.R", "datacreate_high_pctiles_tied_with_min.R", "datacreate_formulas.R",
+         "datacreate_blockgroupstats_acs",
+         "datacreate_usastats",
+         "datacreate_avg.in.us.R", "datacreate_high_pctiles_tied_with_min.R",
+
+         "datacreate_formulas.R", "datacreate_formulas_ejscreen_acs.R",  "datacreate_formulas_ejscreen_demog_index.R",  "datacreate_formulas_ejscreen_acs_pctdisability.R",
 
          # testdata nonstandard names, not testinput_ or testoutput_
          "datacreate_testpoints_testoutputs.R",  "datacreate_testpoints_5_50_500.R",
@@ -199,13 +202,22 @@ if (0 == 1) {  # collapsable list
     ##  ejscreen demog and envt data on every blockgroup
     ##  + pctile and avg lookup tables
 
-    documentOpen('./data-raw/datacreate_blockgroupstats2.32.R') # and bgej      # ok
-    documentOpen('./data-raw/datacreate_blockgroupstats2.32_add_d_acs22columns.R')   # ok
-    documentOpen("./data-raw/datacreate_blockgroupstats2.32_recalc_language.R")
-    documentOpen('./data-raw/datacreate_blockgroupstats_extra_api_vars.R')
+    documentOpen('./data-raw/datacreate_blockgroupstats.R')          # ok
+    documentOpen('./data-raw/datacreate_blockgroupstats_pctdisability.R')   # ok
 
-    documentOpen('./data-raw/datacreate_usastats2.32.R')                 # ok
-    documentOpen('./data-raw/datacreate_usastats2.32_add_dsubgroups.R')  # ok
+
+    documentOpen('./data-raw/datacreate_usastats.R')                 # ok
+    documentOpen('./data-raw/"datacreate_blockgroupstats_acs')
+    documentOpen('./data-raw/datacreate_usastats')
+    documentOpen('./data-raw/datacreate_avg.in.us.R')
+    documentOpen('./data-raw/datacreate_high_pctiles_tied_with_min.R')
+
+    documentOpen('./data-raw/datacreate_formulas.R')
+    documentOpen('./data-raw/datacreate_formulas_ejscreen_acs.R')
+    documentOpen('./data-raw/datacreate_formulas_ejscreen_demog_index.R')
+    documentOpen('./data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R')
+
+
     documentOpen('./data-raw/datacreate_avg.in.us.R')                   # ok
     documentOpen('./data-raw/datacreate_high_pctiles_tied_with_min.R')  # ok
     ##  calculations and examples of outputs
@@ -335,7 +347,7 @@ source_maybe('datacreate_blockwts.R', DOIT = FALSE) # script that can include me
 #    and be sure to obtain correct version either from census or directly from ejscreen team
 # Creates mylistoftables, a list that includes tables blockwts, blockpoints, bgid2fips, etc.,
 #   gets updated when FIPS codes or boundaries change for blocks or blockgroups
-#  such as in Connecticut for v2.2 change to v2.32 !
+#  such as in Connecticut
 #  and then write to ejamdata repository if those datasets were updated.
 # bgej  is not ready yet here... it is made when blockgroupstats is made.
 # note that 'bg_cenpop2020' and 'bgpts' are in EJAM/data/
@@ -381,7 +393,7 @@ datawrite_to_local(these) # maybe obsolete
 # via   dataload_dynamic()
 ######################################### #
 ## * BLOCKGROUP POINTS ####
-# documentOpen('./data-raw/datacreate_bgpts.R')              # USED BY datacreate_blockgroupstats2.32.R !! otherwise redundant w bg_cenpop2020
+# documentOpen('./data-raw/datacreate_bgpts.R')
 # documentOpen('./data-raw/datacreate_bg_cenpop2020.R')      # confirm if changed since 2020
 
 ######################################### #
@@ -417,7 +429,7 @@ source_maybe("datacreate_states_shapefile.R", DOIT = FALSE, folder = rawdir)
 ### datacreate_stateinfo2.R ####
 # documentOpen('./data-raw/datacreate_stateinfo.R')          # ok (missing Island Areas)
 # documentOpen('./data-raw/datacreate_stateinfo2.R')         # ok (has Island Areas)
-## ok to update metadata whenever - these should never really change but want to note version 2.32 etc.
+## ok to update metadata whenever - these should never really change
 source_maybe('datacreate_stateinfo.R', DOIT = FALSE, folder = rawdir)
 source_maybe('datacreate_stateinfo2.R', DOIT = FALSE, folder = rawdir)
 ######################################### #
@@ -464,16 +476,12 @@ loadall()
 ## IT DID NOT CREATE A NEW BLOCKGROUP DATASET FROM RAW CENSUS BUREAU ACS DOWNLOADS AND RAW ENVIRONMENTAL DATA,
 ## SO IT DOES NOT PROVIDE A WAY TO UPDATE EJSCREEN.
 
-# see newer datacreate_blockgroupstats.R   for what might be v2.4.0, ACS 2019-2023 IN EJAM early 2026?
-# see newer datacreate_blockgroupstats.R   for what might be v2.5.0, ACS 2020-2024 IN EJAM early 2026?
+# see newer datacreate_blockgroupstats.R
 
 ######################################### #
 
 ## OLDER SCRIPTS, FROM THE DATASET BASED ON EPA-PROVIDED ACS AND ENVT DATA:
 
-### datacreate_blockgroupstats2.32.R (also starts making usastats,statestats!!) ####
-### ACS22 via datacreate_blockgroupstats2.32_add_d_acs22columns ####
-# rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats2.32.R")
 if (askquestions && interactive()) {
   y = askYesNo("Did you already update bgpts via new block weights and fips dataset? (required before updating blockgroupstats)")
   if (is.na(y) || !y) {
@@ -482,57 +490,10 @@ if (askquestions && interactive()) {
   }
 }
 
-source_maybe("datacreate_blockgroupstats2.32.R") # (also starts making usastats,statestats!!)
-# created bgej (with metadata and documentation, and saved it locally but not to ejamdata repo yet)
-### bgej to ejamdatarepo ####
-######################################### #
-if (askquestions && interactive()) {
-  writebgej = askYesNo("write to bgej file in ejamdata repo? ")
-  if (!is.na(writebgej) && writebgej) {
-    ## do not save via  usethis::use_data(bgej, overwrite = TRUE) - it is a large file
-    ## Save bgej to ejamdata repo as .arrow file
-    ### WRITE  bgej  TO THE ejamdata REPOSITORY NOW   ####
-    cat(paste0("WRITE  bgej  TO THE ejamdata REPOSITORY NOW
-  THIS is done by copying the bgej.arrow file into the data folder of the ejamdata repository and pushing the changes.
-   See notes in ", paste0(EJAM::url_package('docs'), "/articles/dev-update-datasets.html"), "
-   and note any testoutput files and objects have to be recreated if numbers in bgej etc. changed...
-\n"))
-  }}
-# created blockgroupstats_new as interim object   and bgej
-# created usastats, statestats but not final versions yet
+# created usastats statestats etc.
+# created bgej
+# created blockgroupstats
 
-################################################################################ #
-if (interactive() && askquestions) {
-  SAVEIMAGE = askYesNo("Save globalenv() as an .rda file now?")
-  if (is.na(SAVEIMAGE)) {SAVEIMAGE <- FALSE}
-}
-if (SAVEIMAGE) { # ARCHIVE as IMAGE?
-  cat("\n SAVING IMAGE OF WORK IN PROGRESS... \n\n")
-  save.image(file = file.path(localfolder, "save.image work on NEW blockgroupstats usastats statestats.rda"))
-}
-################################################################################ #
-
-# not sure about the right sequence of these next 3:
-
-######################################### #
-# rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats2.32_add_d_acs22columns.R")
-# reads ACS22 extra file of demographics not on ftp site
-source_maybe("datacreate_blockgroupstats2.32_add_d_acs22columns.R")  # reads ACS22 extra file of demographics not on ftp site
-######################################### #
-# rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats2.32_recalc_language.R")
-source_maybe("datacreate_blockgroupstats2.32_recalc_language.R", DOIT = TRUE) # this just creates a function that was later used to fix language data
-######################################### #
-### datacreate_blockgroupstats_extra_api_vars.R ####
-# documentOpen('./data-raw/datacreate_blockgroupstats_extra_api_vars.R')
-source_maybe("datacreate_blockgroupstats_extra_api_vars.R")
-
-################################################################################ #
-
-# created blockgroupstats (now with demog subgroups from ACS22 extra file of demographics not on ftp site)
-
-
-################ ################# ################# ################# #
-################ ################# ################# ################# ################# #
 ## check bgid values in all these datasets
 # blockgroupstats :  bgfips, bgid, statename, ST, etc.
 # bgej :                     bgid,   bgfips,  ST, etc.
@@ -552,54 +513,41 @@ source_maybe("datacreate_blockgroupstats_extra_api_vars.R")
 
 # nacounts(blockgroupstats[, .(bgfips,bgid,pop)])
 # exists("bgid2fips")
-
-
-stopifnot(
-  all(
-    !anyDuplicated(blockgroupstats$bgid),
-    # !anyDuplicated(bgej$bgid),
-    !anyDuplicated(quaddata$bgid),
-    !anyDuplicated(bgid2fips$bgid),
-    !anyDuplicated(bgpts),
-    !anyDuplicated(blockwts)
-  )
-)
-
-stopifnot(
-  all(
-    !anyNA(blockgroupstats$bgid),
-    !anyNA(bgej$bgid),
-    !anyNA(quaddata$bgid),
-    !anyNA(bgid2fips$bgid),
-    !anyNA(bgpts),
-    !anyNA(blockwts)
-  )
-)
-
-stopifnot(
-  all(
-    setequal(blockgroupstats$bgid, bgej$bgid),    # ok
-    setequal(blockgroupstats$bgid, quaddata$bgid)   , # false due to CT 19 as of 8/14/24
-    setequal(blockgroupstats$bgid, bgid2fips$bgid)  , # false
-    setequal(blockgroupstats$bgid, bgpts$bgid)      , # false
-    setequal(blockgroupstats$bgid, bg_cenpop2020$bgid)  , # false
-    setequal(blockgroupstats$bgid, blockwts$bgid)         # false
-  )
-)
+#
+#
+# stopifnot(
+#   all(
+#     !anyDuplicated(blockgroupstats$bgid),
+#     # !anyDuplicated(bgej$bgid),
+#     !anyDuplicated(quaddata$bgid),
+#     !anyDuplicated(bgid2fips$bgid),
+#     !anyDuplicated(bgpts),
+#     !anyDuplicated(blockwts)
+#   )
+# )
+#
+# stopifnot(
+#   all(
+#     !anyNA(blockgroupstats$bgid),
+#     !anyNA(bgej$bgid),
+#     !anyNA(quaddata$bgid),
+#     !anyNA(bgid2fips$bgid),
+#     !anyNA(bgpts),
+#     !anyNA(blockwts)
+#   )
+# )
+#
+# stopifnot(
+#   all(
+#     setequal(blockgroupstats$bgid, bgej$bgid),    # ok
+#     setequal(blockgroupstats$bgid, quaddata$bgid)   , # false due to CT 19 as of 8/14/24
+#     setequal(blockgroupstats$bgid, bgid2fips$bgid)  , # false
+#     setequal(blockgroupstats$bgid, bgpts$bgid)      , # false
+#     setequal(blockgroupstats$bgid, bg_cenpop2020$bgid)  , # false
+#     setequal(blockgroupstats$bgid, blockwts$bgid)         # false
+#   )
+# )
 ################ ################# ################# ################# #
-################ ################# ################# ################# #
-
-######################################### #
-### datacreate_usastats2.32.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_usastats2.32.R")
-source_maybe("datacreate_usastats2.32.R")
-# now usastats and statestats exist
-######################################### #
-### datacreate_usastats2.32_add_dsubgroups.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_usastats2.32_add_dsubgroups.R")
-source_maybe("datacreate_usastats2.32_add_dsubgroups.R")
-print(nacounts(usastats))
-print(nacounts(statestats))
 
 ######################################### #
 ### datacreate_avg.in.us.R ####
@@ -607,40 +555,14 @@ print(nacounts(statestats))
 ### this creates "avg.in.us" national averages of key indicators, for convenience, but also avgs are in usastats, statestats
 source_maybe("datacreate_avg.in.us.R")
 ######################################### #
-### datacreate_high_pctiles_tied_with_min.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_high_pctiles_tied_with_min.R")
-##  NO LONGER USING high_pctiles_tied_with_min ***
-source_maybe("datacreate_high_pctiles_tied_with_min.R")
-######################################### #
+
 ### datacreate_formulas.R ####
 # rstudioapi::documentOpen("./data-raw/datacreate_formulas.R")
 source_maybe("datacreate_formulas.R")
 ######################################### #
-# ~------------------------------------------- ####
+
 ## ** TESTDATA & TESTOUTPUTS_ - UPDATE IF RESULTS CHANGE (sample inputs & outputs) ####
-
-# # to see lists of
-# #  datasets as lazyloaded objects vs. files installed with package
-#
-# topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
-#
-# # datasets / R objects
-# cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
-#
-# # files
-# cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
-
-######################################### #
-### datacreate_testpoints_testoutputs.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_testpoints_testoutputs.R")
-## This includes
-##                 devtools::load_all()
-## within it:
-# sources and then uses pkg_update_testpoints_testoutputs()
-
-source_maybe("datacreate_testpoints_testoutputs.R")
-
-######################################### #
+ ######################################### #
 
 # create several small testinput objects
 
@@ -685,7 +607,17 @@ source_maybe('datacreate_testinput_program_sys_id.R')
 # documentOpen('./data-raw/datacreate_testinput_registry_id.R')     #
 source_maybe('datacreate_testinput_registry_id.R')
 
-################ # more outputs
+### datacreate_testpoints_5_50_500.R ####
+# rstudioapi::documentOpen("./data-raw/datacreate_testpoints_5_50_500.R")
+source_maybe('datacreate_testpoints_5_50_500.R')
+
+######################################### #
+################  outputs
+######################################### #
+
+### datacreate_testpoints_testoutputs.R ####
+# rstudioapi::documentOpen("./data-raw/datacreate_testpoints_testoutputs.R")
+source_maybe("datacreate_testpoints_testoutputs.R")
 
 ### datacreate_testoutput_ejamit_shapes_2.R ####
 # rstudioapi::documentOpen('./data-raw/datacreate_testoutput_ejamit_shapes_2.R')     #
@@ -695,12 +627,6 @@ source_maybe('datacreate_testoutput_ejamit_shapes_2.R')
 # rstudioapi::documentOpen("./data-raw/datacreate_testoutput_ejamit_fips_.R")     #
 source_maybe("datacreate_testoutput_ejamit_fips_.R")
 
-# ~------------------------------------------- ####
-
-### datacreate_testpoints_5_50_500.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_testpoints_5_50_500.R")
-source_maybe('datacreate_testpoints_5_50_500.R')
-
 ######################################### ########################################## #
 ###############################          pause here
 ######################################### ########################################## #
@@ -708,75 +634,43 @@ source_maybe('datacreate_testpoints_5_50_500.R')
 # save.image(file.path(localfolder, "work in progress.rda"))
 
 # Rebuild/ reinstall the package here,
-# or at least load_all()  ?
+# or at least load_all()
 
-# system.time({
-#   #  installing  TAKES  ~4 MINUTES  EVEN IF .onAttach() changed to say
-#   # asap_aws   <- FALSE  # download large datasets now?           Set to FALSE while Testing/Building often
-#   # asap_index <- FALSE
-#   # asap_bg    <- FALSE
-#   # and install(  reload = TRUE, upgrade = "never" , quick = TRUE
-#
-#   devtools::install(reload = TRUE, upgrade = "never", quick = TRUE)
-# })
-
-# system.time({
-#   #  THIS TAKES < 30 seconds   if reset = FALSE and not loading block datasets on attach
-#   devtools::load_all(reset = FALSE)
-#
-# })
-
-system.time({
-  #  THIS TAKES 20 seconds even though supposed to be slower if reset = T  and not loading block datasets on attach
   devtools::load_all(reset = TRUE)
-})
-
 
 # devtools::check()
 
-
-# devtools::test()
-
 # rstudioapi::navigateToFile("./R/test_ejam.R")
 # system.time({
-#   #    ABOUT 10-20 MINUTES TO RUN all TESTS (if large datasets had not yet been loaded)
 # source("./R/test_ejam.R") # answering Yes to running ALL tests
 biglist <- EJAM:::test_ejam(ask = askquestions)
 ## but should do AFTER updating test data
 # })
 ############################## #
 
-
 document()
 
 devtools::install(quick = TRUE)
 
-
-
 ######################################### ########################################## #
-
 
 # ~------------------------------------------- ####
 # ** FRS (EPA-REGULATED FACILITIES) FREQUENT UPDATES (incl. NAICS/SIC) ####
 
 ########################################## #
-#
 
 ## >>> frs functions need cleanup here <<< ####
 cat(                                        "frs functions need cleanup here  \n")
 warning("frs functions need cleanup here")
 
 
-
-
 ## > loadall ####
 
 #                            TO BE CHECKED/ REVISED HERE
 
-rmost() # ??
+rmost() #
 
 loadall() # needed to enable frs functions below that need
-
 
 
 ## frs_by_ (lat,lon, regid,program,mact) ####
@@ -795,15 +689,7 @@ source_maybe("datacreate_frs_.R", DOIT = FALSE, folder = rawdir)
 
 ### ? datacreate_frs_by_mact.R - is it redundant with frs_update_datasets() ?  SEE IF THIS HAS BEEN REPLACED ? ####
 # documentOpen('./data-raw/datacreate_frs_by_mact.R')   #  BUT SEE IF THIS HAS BEEN REPLACED  ***
-# Manually also need to save updated frsp .... [TRUNCATED]
-# Error in eval(ei, envir) : object 'folder_save_as_arrow' not found
-# In addition: Warning messages:
-#   1: Expected 2 pieces. Missing pieces filled with `NA` in 941 rows [30455, 30457, 30496, 30497, 30527, 30561, 30607, 30669, 30682, 30696, 30777, 30806, 30833, 30848, 30855, 30870, 30981,
-#                                                                      31035, 31036, 31038, ...].
-# 2: In frs_make_naics_lookup(x = frs) : NAs introduced by coercion
-# 3: One or more parsing issues, call `problems()` on your data frame for details, e.g.:
-#   dat <- vroom(...)
-# problems(dat)
+
 
 ### datacreate_frsprogramcodes.R ####
 # documentOpen('./data-raw/datacreate_frsprogramcodes.R') #

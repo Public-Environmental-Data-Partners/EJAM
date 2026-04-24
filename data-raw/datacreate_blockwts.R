@@ -5,15 +5,19 @@
 
 # They are created as follows:
 
-# for version 2.32 (in July/August 2024)
-# they can be created from the .gdb.zip file that was obtained from the EJSCREEN team
-message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI MP AS, since they lack almost all indicator data in EJSCREEN v2.32")
-
 # for version 2.2 (through July/August 2024)
 # they were created from Census 2020 data
 # using a non-CRAN package (in github) called census2020download !
 # This script can try to install that and use it.
-#
+
+# for version 2.32 (in July/August 2024)
+# were created from the .gdb.zip file that was obtained from the EJSCREEN team
+message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI MP AS, since they lack almost all indicator data in EJSCREEN v2.32")
+
+# for later versions...
+
+
+
 #################################################################################### #
 
 # setup ####
@@ -83,7 +87,7 @@ in EJAM/data-raw/datacreate_blockwts.R if this is needed.
 ### via the census2020download package, as above.
 
 ### At least for buffer aggregation (as in ejamit() or shiny app) reports,
-### EJSCREEN or EJAM v2.32 will not actually use that in buffer analysis -
+### EJSCREEN or EJAM   will not actually use that in buffer analysis -
 ### CONFIRMED EJSCREEN does NOT do the small distance adjustment for buffer aggregation,
 ### even though it was doing that adjustment in the calculation of blockgroup proximity scores once a year in EJSCREEN.
 ### We can now put in placeholder like NA values for now as long as doaggregate() is prevented

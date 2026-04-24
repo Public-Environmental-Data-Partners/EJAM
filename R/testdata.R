@@ -121,9 +121,6 @@ testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_onl
 #' # in latest main branch on GH (but map does not render using this tool)
 #' url_github_preview(file.path(repo, "blob/main/inst/testdata", fname))
 #'
-#' # from a specific release on GH (but map does not render using this tool)
-#' url_github_preview(file.path(repo, "blob/v2.32.5/inst/testdata", fname))
-#'
 #' # local installed version
 #' browseURL( system.file(file.path("testdata", fname), package="EJAM") )
 #'

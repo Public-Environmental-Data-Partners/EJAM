@@ -44,7 +44,7 @@ based on actual recent release dates or typical lags from survey to release by C
 
 Census Bureau provides yearly release schedules for ACS data:
 \itemize{
-\item The \href{https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html}{2020-2024 ACS data} normally would be released by Census Bureau 12/11/2025, but release was delayed until January 2026.
+\item The \href{https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html}{2020-2024 ACS data} normally would be released by Census Bureau 12/11/2025, but release was delayed until January 29, 2026.
 \item The \href{https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html}{2019-2023 ACS data} were published by Census Bureau 12/12/2024.
 \item The \href{https://www.census.gov/programs-surveys/acs/news/data-releases/2022/release-schedule.html}{2018-2022 ACS data} were published by Census Bureau 12/7/2023.
 }
