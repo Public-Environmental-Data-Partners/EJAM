@@ -179,7 +179,7 @@ to be changed ANNUALLY or more often:
   close, relocate, or have their information corrected or otherwise
   updated. EPA’s FRS is the source for much of this information and the
   FRS is updated by EPA frequently and is available via an API. Through
-  at least v2.32.7, EJAM (and therefore the community reports in
+  at least v2.32.8, EJAM (and therefore the community reports in
   EJSCREEN) used a snapshot of the EPA FRS data rather than using an API
   to obtain the latest info on demand – that is something that could be
   changed in a future version. Facility-related info is stored in tables
@@ -320,7 +320,7 @@ is used by functions like
 and
 [`dataload_from_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.md).
 
-As of EJAM version v2.32.7, there were 11 arrow files used by EJAM:
+As of EJAM version v2.32.8, there were 11 arrow files used by EJAM:
 
 ### Blockgroup and block-level arrow files
 

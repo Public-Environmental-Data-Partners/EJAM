@@ -112,42 +112,44 @@ shinytest2_webapp_functionality <- function(test_category) {
       )
     }
     ########################################################################### #
+    # ~ ------------------------------------------------ ####
+    # SCREEN RECORDING / SCRIPT: ####
+    # ~ ------------------------------------------------ ####
 
+    # 1) SPECIFY SITES ####
 
-    # SPECIFY SITES ####
-
-    ## by UPLOADED FILE ####
+    ## by UPLOADED FILE of given type ####
 
     app$set_inputs(ss_choose_method = "upload", wait_ = FALSE)
-
     if(test_category == "latlon") {
+      ### > latlon ####
       shinytestLogMessage("About to upload latlon testpoints_100.xlsx")
       app$upload_file(ss_upload_latlon = EJAM:::app_sys("testdata/latlon/testpoints_100.xlsx"))
-
     } else if(test_category == "FIPS") {
+      ### > FIPS ####
       shinytestLogMessage("About to upload counties_in_Delaware.xlsx for FIPS")
       app$set_inputs(ss_choose_method_upload = "FIPS", wait_ = FALSE)
       app$upload_file(ss_upload_fips = EJAM:::app_sys("testdata/fips/counties_in_Delaware.xlsx"))
-
     } else if(test_category == "shp-zip") {
+      ### > shp-zip ####
       shinytestLogMessage("About to upload portland_shp.zip for SHP")
       app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
       app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland_shp.zip"))
       outputs_to_remove <- c(outputs_to_remove, "quick_view_map")
-
     } else if(test_category == "shp-gdb-zip") {
+      ### > shp-gdb-zip ####
       shinytestLogMessage("About to upload portland.gdp.zip for SHP")
       app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
       app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland.gdb.zip"))
       outputs_to_remove <- c(outputs_to_remove, "quick_view_map")
-
     } else if(test_category == "shp-json") {
+      ### > shp-json ####
       shinytestLogMessage("About to upload portland.json for SHP")
       app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
       app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland.json"))
       outputs_to_remove <- c(outputs_to_remove, "quick_view_map")
-
     } else if(test_category == "shp-unzip") {
+      ### > shp-unzip ####
       shinytestLogMessage("About to upload individual shapefiles for SHP")
       app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
       app$upload_file(ss_upload_shp = c(EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.dbf"),
@@ -155,8 +157,8 @@ shinytest2_webapp_functionality <- function(test_category) {
                                         EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp"),
                                         EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shx")))
       outputs_to_remove <- c(outputs_to_remove, "quick_view_map")
-
     } else if(test_category == "FRS") {
+      ### > FRS ####
       shinytestLogMessage("About to upload frs_testpoints_10.xlsx for FRS")
       app$set_inputs(ss_choose_method_upload = "FRS", wait_ = FALSE)
       app$upload_file(ss_upload_frs = EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
@@ -164,8 +166,8 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     ## by CATEGORY IN DROPDOWN MENU ####
 
-    ### NAICS ####
     if (test_category == "NAICS") {
+      ### > NAICS ####
       shinytestLogMessage("selecting 114 for NAICS")
       app$set_inputs(ss_choose_method = "dropdown", wait_ = FALSE)
       app$set_inputs(ss_choose_method_drop = "NAICS", wait_ = FALSE) # this is default
@@ -174,10 +176,41 @@ shinytest2_webapp_functionality <- function(test_category) {
       app$set_inputs(ss_select_naics = "114", wait_ = FALSE)#, timeout_ = 10000)
     }
 
+    if (test_category == "FIPS-picker") {
+      ### > City (but County/State not tested here)    ####
+
+      shinytestLogMessage("selecting 1 city from dropdown")
+
+      ## placeholder -- see test-webapp-FIPS-picker-functionality.R
+      ## Use lines from the recording of FIPS-picker selecting one city
+
+    }
+
+    if (test_category == "EPA") {
+      ### > EPA program  not tested here  ####
+
+      # placeholder
+
+    }
+
+    if (test_category == "SIC") {
+      ### > SIC  not tested here  ####
+
+      # placeholder
+
+    }
+
+    if (test_category == "MACT") {
+      ### > MACT  not tested here  ####
+
+      # placeholder
+
+    }
+
     ########################################################################### #
+    # ~ ------------------------------------------------ ####
 
-
-    # START ANALYSIS ####
+    # 2) START ANALYSIS ####
 
     shinytestLogMessage("Click to run analysis"); print("Click to run analysis")
     app$wait_for_idle(timeout = 20000)
@@ -189,8 +222,9 @@ shinytest2_webapp_functionality <- function(test_category) {
     app$set_inputs(quick_view_map_bounds = c("north" = 48.86471476180279, "east" = -49.17480468750001, "south" = 35.9602229692967, "west" = -130.7373046875), allow_no_input_binding_ = TRUE)
     app$set_inputs(quick_view_map_center = c("lng" = -89.9560546875, "lat" = 42.74701217318067), allow_no_input_binding_ = TRUE)
 
-    if (!(test_category %in% c("FIPS", "NAICS"))) {
+    # CHANGE radius/title, RE-RUN ANALYSIS ####
 
+    if (!(test_category %in% c("FIPS", "NAICS"))) {
       shinytestLogMessage("go back to Site Selection tab")
       app$set_inputs(all_tabs = "Site Selection", wait_ = FALSE)
       app$wait_for_idle(timeout = 100000)
@@ -207,8 +241,10 @@ shinytest2_webapp_functionality <- function(test_category) {
       customExpectValues(name="rad15")
     }
     ########################################################################### #
+    # ~ ------------------------------------------------ ####
 
-    # SEE RESULTS ####
+    # 3) SEE RESULTS ####
+    # ~  ####
 
     ## SUMMARY REPORT (html DOWNLOAD) ####
 
@@ -221,12 +257,13 @@ shinytest2_webapp_functionality <- function(test_category) {
     ## so the downloaded file was saved to the tempdir()
     ## and within that function, we called exportTestvalues() to save output_df
     #
-      # app$get_download("download_report_multisite")
-      # customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
+    # app$get_download("download_report_multisite")
+    # customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
 
     ## but maybe there is a better way to download the html report?
-      app$expect_download("download_report_multisite")
+    app$expect_download("download_report_multisite")
     ########################################################################### #
+    # ~  ####
 
     ## DETAILS tab ####
 
@@ -235,7 +272,7 @@ shinytest2_webapp_functionality <- function(test_category) {
     app$wait_for_idle(timeout = 20000)
     customExpectValues(name="site-by-site")
 
-    ### DETAILS > SITE by SITE (xlsx DOWNLOAD) ####
+    ### > SITE by SITE (xlsx DOWNLOAD) ####
 
     shinytestLogMessage("downloading results table from details tab")
     app$wait_for_idle(timeout = 50000)
@@ -248,11 +285,11 @@ shinytest2_webapp_functionality <- function(test_category) {
     # save_log("EJAM_app_test_log_pre_results_download.txt")
     ########################################################################### #
 
-    ### DETAILS > PLOT AVERAGE SCORES (BARPLOTS) ####
+    ### > PLOT AVERAGE SCORES (BARPLOTS) ####
 
     ## only test plots for latlon case - should be same as for other cases
-    if (!(test_category %in% c("latlon"))) {
 
+    if (test_category %in% c("latlon")) {
       shinytestLogMessage("going to plot_average details subtab")
       app$set_inputs(details_subtabs = "Plot Average Scores")
       customExpectValues(name="plot_avg")
@@ -277,7 +314,7 @@ shinytest2_webapp_functionality <- function(test_category) {
         customExpectValues(name="EJ-Supp")
       }
 
-      ### DETAILS > PLOT FULL RANGE OF SCORES (HISTOGRAM) ####
+      ### > PLOT FULL RANGE OF SCORES (HISTOGRAM) ####
 
       shinytestLogMessage("going to plot_range details subtab")
       app$set_inputs(details_subtabs = "Plot Full Range of Scores")
@@ -316,6 +353,10 @@ shinytest2_webapp_functionality <- function(test_category) {
       app$set_inputs(summ_hist_ind = "pctlowinc")
       customExpectValues(name="hist-lowinc")
     }
+    ########################################################################### #
+
     shinytestLogMessage(paste0("finished test category: ", test_category))
   })
 }
+# Load application support files into testing environment
+shinytest2::load_app_env()

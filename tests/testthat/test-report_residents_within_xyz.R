@@ -1,64 +1,24 @@
 
 ############################## #   ############################## #
-# in functions that use output of ejamit() or a whole table, params can specify how many sites were analyzed, or were valid; and which row or valid row to report on.
+# in functions that use output of ejamit() or a whole table,
+# params can specify how many sites were analyzed, or were valid; and which row or valid row to report on.
 # but in this function, we do not use that list or table, so..
-# does nsites here really mean how many rows in a table or valid rows or just a label to use in text?
-# does sitenumber here really mean which row, or which valid row, or just a label to use in text?
+
+# does nsites here really mean how many rows in a table or valid rows or just a label to use in text? ***
+
+# does sitenumber here really mean which row, or which valid row, or just a label to use in text? ***
 
 ############################## #   ############################## #
-
-# # originally was checking parameter combinations via argument_combos()
-### but note the fault where unlike if using checkit() below,
-## using argument_combos() means if any of the radii tried here are character, they all get made character
-## and it assumes you did so to provide your own units, so it fails to say "miles" !!
-
-# x = EJAM:::argument_combos(FUN = EJAM:::report_residents_within_xyz, list(radius=c(1,3.1), nsites=c(1,100) , sitetype=c('latlon')), quiet = F)
-# x = EJAM:::argument_combos(FUN = EJAM:::report_residents_within_xyz, list(   sitetype=c( "fips","shp")), quiet = F) #
-# x = EJAM:::argument_combos(FUN = EJAM:::report_residents_within_xyz, list(radius=0, sitetype=c( "fips","shp")), quiet = F)
-# x = EJAM:::argument_combos(FUN = EJAM:::report_residents_within_xyz, list( radius=0.25,  sitetype=c( "fips","shp")), quiet = F)
-#
-# test1_arglist <- list(
-#   sitetype = c('latlon', "shp"),
-#   radius = "3",  # if any of the radii tried here are character, they all get made character and it assumes you did so to provide your own units, so it fails to say "miles" !!
-#   nsites = c(1, "six")
-# )
-#
-# x = EJAM:::argument_combos(FUN = EJAM:::report_residents_within_xyz, test1_arglist, quiet = F)
-#
-# test1_arglist <- list(
-#   sitetype = c("farm", "Georgia site"),
-#   radius = c('9.9 kilometers', "close proximity to"),
-#   nsites = c(1, "seven")
-# )
-# #  expand.grid(test1_arglist, stringsAsFactors = FALSE)
-# x = EJAM:::argument_combos(FUN = EJAM:::report_residents_within_xyz, test1_arglist, quiet = F)
-# ############################## #
-#
-# test_that("report_residents_within_xyz ALL combos ok", {
-#   # if trying ALL combinations via argument_combos()
-# test1_arglist <- list(
-#   sitetype = c('latlon', "fips", "shp", "farm", "Georgia location", "study location, Type X site"),
-#   radius = c(3, 1,  '99 miles',  '9.9 kilometers', "close proximity to"),
-#   nsites = c(1, 100, "seven", "several")
-# )
-#   # expand.grid(test1_arglist, stringsAsFactors = FALSE)
-# expect_no_error({
-# x = argument_combos(FUN = report_residents_within_xyz, test1_arglist, quiet = TRUE)
-# })
-# })
-
-############################## #
-# older way to check combos was this function called checkit()
-# (and it avoids a fault in argument_combos() where checking character string as the radius parameter
-# makes all radius options text not numeric which makes it stop using "miles" even for the originally numeric options)
+############################## #   ############################## #
+# helper function to check combos of parameters:
 
 checkit <- function(params) {
 
-txt = vector("character", nrow(params))
-for (i in seq_along(txt)) {
-  txt[i] <- do.call(report_residents_within_xyz, as.list(params[i,]))
-}
-## This did not quite work:
+  txt = vector("character", nrow(params))
+  for (i in seq_along(txt)) {
+    txt[i] <- do.call(report_residents_within_xyz, as.list(params[i,]))
+  }
+  ## This did not quite work:
   # txt <- apply(params,
   #       MARGIN = 1,
   #       FUN = function(z) {
@@ -70,6 +30,7 @@ for (i in seq_along(txt)) {
   )
   return(x)
 }
+############################## #   ############################## #
 ############################## #   ############################## #
 
 testthat::test_that("report_residents_within_xyz handles latlon", {
@@ -86,7 +47,7 @@ testthat::test_that("report_residents_within_xyz handles latlon", {
     list('latlon', 3, 100, 35, -999)  # latlon are PROVIDED but invalid
   )
   suppressWarnings({
-  test <-   data.table::rbindlist(test, fill = TRUE, use.names=FALSE)
+    test <-   data.table::rbindlist(test, fill = TRUE, use.names=FALSE)
   })
   colnames(test) <- pnames
   ############## #
@@ -132,7 +93,7 @@ test_that("report_residents_within_xyz normal cases", {
   # , label = "test1"
   )
 })
-  # > checkit(test)
+# > checkit(test)
 
 ############################## #   ############################## #
 
@@ -193,30 +154,32 @@ test_that("ejam_uniq_id ok", {
 })
 ############################## #   ############################## #
 
-test_that("pluralize, 'within', empty param cases", {
+### PROBLEM CASES
+
+test_that("pluralize, 'within', empty sitetype or nsites", {
 
   pnames   <- c('sitetype', 'radius', 'nsites'
                 # , 'ejam_uniq_id'
                 # , 'lat', 'lon'
   )
+
   test <- test2 <- list(
 
     # fix/note singular/plural
 
-    list('Type X facility', 3, 100),
-    list('Type X facilities', 3, 100),
+    list('Type X facility', 3, 100),   # facilitys
+    list('Type X facilities', 3, 100), # facilitiess
 
     # fix "within"
 
-    list('study location', "at", 100),       # within at
-    list('Delaware Counties', "within", 3),  # within 'within'
+    list('study location', "at", 100),       # within at mile of
+    list('Delaware Counties', "within", 3),  # within within mile of
 
     # fix "" cases
 
-    list( "Georgia location", '9.9 kilometers', ""),
-    list( "", '9.9 kilometers', "several"),
-    list( "Georgia location", '', "several"),
-    list('', '', '')
+    list( "Georgia location", '9.9 kilometers', ""), # within 9.9 kilometers mile of any of the georgia location
+    list( "", '9.9 kilometers', "several") # within 9.9 kilometers mile of any of the several s
+
   )
 
   test <- data.table::rbindlist(test, fill = TRUE, use.names=FALSE)
@@ -224,11 +187,47 @@ test_that("pluralize, 'within', empty param cases", {
 
   ############################## #
   expect_no_error({
-
-    x = checkit(test)
+    expect_no_warning({
+      x = checkit(test)
+    })
   })
 })
 ############################## #   ############################## #
+
+### PROBLEM CASES
+
+test_that("warns if radius is empty", {
+
+  pnames   <- c('sitetype', 'radius', 'nsites'
+                # , 'ejam_uniq_id'
+                # , 'lat', 'lon'
+  )
+
+  test <- test2 <- list(
+
+    ### cause warnings because radius is ''
+    list( "Georgia location", '', "several"), # within any of the several georgia locations
+    list('', '', '')  # Residents within any of the
+  )
+
+  test <- data.table::rbindlist(test, fill = TRUE, use.names=FALSE)
+  colnames(test) <- pnames
+
+  ############################## #
+  expect_no_error({
+    expect_warning({
+      x = checkit(test[1,])
+    }, regexp = '.*radius should not be NA.*')
+  })
+  expect_no_error({
+    expect_warning({
+      x = checkit(test[2,])
+    }, regexp = '.*radius should not be NA.*')
+  })
+
+})
+############################## #   ############################## #
+
 
 test_that("NA params ok", {
 
@@ -248,49 +247,116 @@ test_that("NA params ok", {
   colnames(test) <- pnames
 
   ############################## #
+  # ## but not useful results if NA
+  # sitetype radius nsites                                                    text
+  # 1     <NA>      3    100       Residents within 3 miles of any of the 100 places
+  # 2   latlon     NA    100         Residents within any of the 100 selected points
+  # 3   latlon      3     NA Residents within 3 miles of any of the  selected points
 
   expect_no_error({
+    expect_warning({
+      x = checkit(test[1,])
+    }, regexp = '.*sitetype should not be NA.*')
+  })
 
-    x = checkit(test)
+  expect_no_error({
+    expect_warning({
+      x = checkit(test[2,])
+    }, regexp = '.*radius should not be NA.*')
+  })
 
-    # ## but not useful results if NA
-    # sitetype radius nsites                                                    text
-    # 1     <NA>      3    100       Residents within 3 miles of any of the 100 places
-    # 2   latlon     NA    100         Residents within any of the 100 selected points
-    # 3   latlon      3     NA Residents within 3 miles of any of the  selected points
+  expect_no_error({
+    expect_warning({
+      x = checkit(test[3,])
+    }, regexp = '.*nsites should not be NA.*')
   })
 
 })
 ########################################################################### #
 ########################################################################### #
 
-test_that("warn if NULL params", {
+test_that("ok if missing sitetype or radius or nsites", {
 
-  pnames   <- c('sitetype', 'radius', 'nsites'
-                # , 'ejam_uniq_id'
-                # , 'lat', 'lon'
-  )
-  test <- test4 <- list(
-    # NULL values
-    list(NULL, 3, 100),
-    list('latlon', NULL, 100),
-    list('latlon', 3, NULL)
-  )
-
-  test <- data.table::rbindlist(test, fill = TRUE, use.names=FALSE)
-  colnames(test) <- pnames
-
-  ############################## #
   expect_no_error({
-    suppressWarnings({
-      x = checkit(test)
-    })
+    report_residents_within_xyz(
+      # omit sitetype
+      radius = 3,
+      nsites=100)
   })
-  expect_warning({
-    x = checkit(test)
-  } )
+
+  expect_no_error({
+    report_residents_within_xyz(
+      sitetype = 'latlon',
+      #  omit radius
+      nsites=100)
+  })
+
+  expect_no_error({
+    report_residents_within_xyz(
+      sitetype = 'latlon',
+      radius = 3
+      # omit nsites
+    )
+  })
 
 })
+########################################################################### #
+
+test_that("OK if zero radius", {
+
+  expect_no_error({
+    report_residents_within_xyz(
+      sitetype = 'latlon',
+      radius = 0,
+      nsites=100)
+  })
+})
+########################################################################### #
+########################################################################### #
+
+## note treatment of NULL values is not consistent here across parameters:  ***
+
+
+########################################################################### #
+
+test_that("no error, no warn, if NULL radius", {
+
+  expect_no_error({
+    report_residents_within_xyz(
+      sitetype = 'latlon',
+      radius = NULL,
+      nsites=100)
+  })
+})
+########################################################################### #
+
+test_that("warn but not error, if NULL nsites", {
+
+  expect_no_error({
+    expect_warning({
+      report_residents_within_xyz(
+        sitetype = 'latlon',
+        radius = 3,
+        nsites = NULL
+      )
+    }, regexp = 'nsites can be >1 but must be a single number not a vector or empty')
+  })
+})
+########################################################################### #
+
+test_that("ERROR, if NULL sitetype", {
+
+  ## SETTING IT TO NULL CAUSES AN ERROR ACTUALLY
+
+  expect_error({
+    report_residents_within_xyz(
+      sitetype = NULL,
+      radius = 3,
+      nsites=100)
+  })
+
+})
+########################################################################### #
 ########################################################################### #
 
 rm(checkit)
@@ -361,7 +427,7 @@ test_that("NA values warn", {
 ############################## #   ############################## #
 
 ########################################################################### #
-## test the function  report_residents_within_xyz_from_ejamit()
+## check the function  report_residents_within_xyz_from_ejamit()
 ########################################################################### #
 if (FALSE) {
 

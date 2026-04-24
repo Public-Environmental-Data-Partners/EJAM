@@ -39,7 +39,7 @@ check which ACS 5-year survey is available, per EJAM metadata or guessed via pub
 }
 \details{
 \itemize{
-\item The 2020-2024 data should be released by Census Bureau 12/11/2025.
+\item The 2020-2024 data were published by Census Bureau 1/29/2026 (delayed from the typical 12/2025).
 \item The 2019-2023 data were published by Census Bureau 12/12/2024, but were not yet in EJSCREEN as of late 2025.
 \item The 2018-2022 data were published by Census Bureau 12/7/2023, in EJSCREEN mid/late 2024.
 }
