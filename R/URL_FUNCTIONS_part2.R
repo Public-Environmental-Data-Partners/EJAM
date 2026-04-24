@@ -1739,8 +1739,10 @@ url_naics.com <- function(query = "",
 #'   inferred by default from parameters repo, ver, fold, and file
 #' @param repo URL of github repository
 #' @param ver name of branch or tag of a released version
-#' @param fold x
-#' @param file x
+#' @param fold path to the repository subfolder containing the HTML file,
+#'   relative to the selected branch or tag, such as `"docs/reference"`
+#' @param file name of the HTML file within `fold`, such as `"index.html"`
+#'   or `"ejam2excel.html"`
 #' @param launch_browser set FALSE to get URL but not launch a browser
 #'
 #' @return URL
