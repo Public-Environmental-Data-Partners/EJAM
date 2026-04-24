@@ -1792,7 +1792,7 @@ url_github_preview = function(ghurl = NULL,
     # fold = "inst/testdata/examples_of_output" # or "docs/reference"
     # file = "testoutput_ejam2report_10pts_1miles.html"
 
-    ghurl <- file.path(repo, blob, ver, fold, file)
+    ghurl <- paste(repo, blob, ver, fold, file, sep = "/")
   }
   urlx <- paste0("http://htmlpreview.github.io/?", ghurl)
 
