@@ -14,8 +14,9 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
 
   if (is.null(FUN)) {FUN <- get(funcname)}
 
-  if (!grepl("equityatlas", funcname)) {
-    # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+  if (!grepl("equityatlas|frs_facility", funcname)) {
+    # url_online() fails for those URLs even when the URL is OK, browseable,
+    # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
     test_that("Site responds with 200", {
       expect_true(url_online(FUN(sitepoints = testpoints_10[1,])))
     })
@@ -35,8 +36,9 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
   try(test_that(paste0(funcname, " sitepoints POINTS works"), {
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10[1,])})})
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10, radius = 1)})})
-    if (!grepl("equityatlas", funcname)) {
-      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+    if (!grepl("equityatlas|frs_facility", funcname)) {
+      # url_online() fails for those URLs even when the URL is OK, browseable,
+      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
       expect_true(url_online(x[1]))
     }
   }))
@@ -51,8 +53,9 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
     expect_no_error({
       x <- FUN(fips = c("060371011101", "060371011102") ) # in "Los Angeles County, CA"   # testinput_fips_blockgroups[1:2] )
     })
-    if (!grepl("equityatlas", funcname)) {
-      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+    if (!grepl("equityatlas|frs_facility", funcname)) {
+      # url_online() fails for those URLs even when the URL is OK, browseable,
+      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
       expect_true(url_online(x[1]))
     }
   }))
@@ -61,8 +64,9 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
     expect_no_error({
       x <- FUN(fips = fipsmix)
     })
-    if (!grepl("equityatlas", funcname)) {
-      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+    if (!grepl("equityatlas|frs_facility", funcname)) { {
+      # url_online() fails for those URLs even when the URL is OK, browseable,
+      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
       expect_true(url_online(x[1]))
     }
   }))
@@ -70,8 +74,9 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
   try(test_that(paste0(funcname, " SHAPEFILE works"), {
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2[1, ])})})
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2, radius = 1)})})
-    if (!grepl("equityatlas", funcname)) {
-      # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+    if (!grepl("equityatlas|frs_facility", funcname)) { {
+      # url_online() fails for those URLs even when the URL is OK, browseable,
+      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
       expect_true(url_online(x[1]))
     }
   }))
@@ -79,8 +84,9 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
   try(test_that(paste0(funcname, " REGID works"), {
     expect_no_error({
       x <- FUN( regid = testinput_regid[1] )
-      if (!grepl("equityatlas", funcname)) {
-        # url_online() fails for those equity atlas URLs even when the URL is OK, browseable
+      if (!grepl("equityatlas|frs_facility", funcname)) { {
+        # url_online() fails for those URLs even when the URL is OK, browseable,
+        # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
         expect_true(url_online(x[1]))
       }
     })
