@@ -3,8 +3,8 @@ utils::citHeader(
 utils::bibentry(
     bibtype = "Manual",
     author = personList(as.person("Mark A. Corrales")),
-    title = paste0("Environmental Justice Analysis Multisite tool (EJAM) version ", desc::desc_get("Version")),
-    year = as.character(gsub("^[^ ]* ", "", desc::desc_get("VersionDate"))),
+    title = paste0("Environmental Justice Analysis Multisite tool (EJAM) version ", utils::packageDescription("EJAM", fields = "Version")),
+    year = as.character(gsub("^[^ ]* ", "", utils::packageDescription("EJAM", fields = "VersionDate"))),
     address = "Washington, DC",
     url = "https://public-environmental-data-partners.github.io/EJAM/index.html",
     note = "Also see https://ejanalysis.com/EJAM"
