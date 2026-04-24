@@ -682,11 +682,11 @@ source_maybe('datacreate_testinput_registry_id.R')
 ################ # more outputs
 
 ### datacreate_testoutput_ejamit_shapes_2.R ####
-# documentOpen('./data-raw/datacreate_testoutput_ejamit_shapes_2.R')     #
+# rstudioapi::documentOpen('./data-raw/datacreate_testoutput_ejamit_shapes_2.R')     #
 source_maybe('datacreate_testoutput_ejamit_shapes_2.R')
 
 ### datacreate_testoutput_ejamit_fips_.R ####
-# documentOpen("./data-raw/datacreate_testoutput_ejamit_fips_.R")     #
+# rstudioapi::documentOpen("./data-raw/datacreate_testoutput_ejamit_fips_.R")     #
 source_maybe("datacreate_testoutput_ejamit_fips_.R")
 
 # ~------------------------------------------- ####

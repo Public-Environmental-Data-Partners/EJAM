@@ -52,9 +52,12 @@ if (!require(rmarkdown))        {cat("Might need rmarkdown package for shinytest
 ## For the EJAM package, if you just use require() or library() here, then tests will not have access to internal functions like latlon_infer()
 ## so those tests fail unless you use load_all() or if test were changed to say EJAM:::latlon_infer() but that would ONLY test installed version, never the source version if it differs
 
-suppressMessages({suppressWarnings({
-  dataload_dynamic("all", silent = TRUE, folder_local_source = file.path(.libPaths()[1],'EJAM','data')) # needs frs, etc.
-})})
+# suppressMessages({suppressWarnings({
+  dataload_dynamic("all",  # needs frs, etc.
+                   # folder_local_source = file.path(.libPaths()[1],'EJAM','data'), # if installed by testthat in special folder then those are not available
+                   silent = FALSE
+                   )
+# })})
 if (!exists("frs")) {stop('needs frs etc.')}
 suppressMessages({suppressWarnings({
   indexblocks()
@@ -77,7 +80,7 @@ if (exists("ejamit") && exists("blockgroupstats") && exists("testpoints_10")) {
         ejamit(testpoints_10, radius = 1,
                quiet = TRUE, silentinteractive = TRUE,
                include_ejindexes = TRUE)
-      ) # include_ejindexes = FALSE was the default but we want to test with them included
+      ) # include_ejindexes = FALSE used to be the default but we want to test with them included
     }))
   }
   ################################################################################### #

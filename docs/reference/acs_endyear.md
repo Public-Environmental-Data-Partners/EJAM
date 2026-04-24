@@ -54,7 +54,8 @@ released by Census Bureau 12/2023, updated in EJSCREEN in mid/late 2024.
 
 ## Details
 
-- The 2020-2024 data should be released by Census Bureau 12/11/2025.
+- The 2020-2024 data were published by Census Bureau 1/29/2026 (delayed
+  from the typical 12/2025).
 
 - The 2019-2023 data were published by Census Bureau 12/12/2024, but
   were not yet in EJSCREEN as of late 2025.
