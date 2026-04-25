@@ -924,7 +924,7 @@ head(
 out <- testoutput_ejamit_1000pts_1miles
 head(cbind(overall = as.list( out$results_overall)))
 #>              overall                                                                 
-#> EJAM Report  "<a href="https://ejanalysis.com" target="_blank">EJAM Site Report</a>"
+#> EJAM Report  "<a href="https://ejanalysis.com", target="_blank">EJAM Site Report</a>"
 #> EJSCREEN Map "https://pedp-ejscreen.azurewebsites.net/index.html"                    
 #> ejam_uniq_id NA                                                                      
 #> valid        TRUE                                                                    

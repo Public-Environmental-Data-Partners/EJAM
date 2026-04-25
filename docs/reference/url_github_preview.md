@@ -32,11 +32,13 @@ url_github_preview(
 
 - fold:
 
-  x
+  path to the repository subfolder containing the HTML file, relative to
+  the selected branch or tag, such as `"docs/reference"`
 
 - file:
 
-  x
+  name of the HTML file within `fold`, such as `"index.html"` or
+  `"ejam2excel.html"`
 
 - launch_browser:
 
@@ -51,8 +53,10 @@ URL
 ``` r
 url_github_preview(fold = "docs",
   launch_browser = F, file = "index.html")
+#> [1] "http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/docs/index.html"
 url_github_preview(fold = "docs/reference",
   launch_browser = F, file = "ejam2excel.html")
+#> [1] "http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/docs/reference/ejam2excel.html"
 
 if (FALSE) { # \dontrun{
 #   Compare versions of the HTML summary report:

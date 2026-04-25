@@ -98,11 +98,13 @@ inferred by default from parameters repo, ver, fold, and file</p></dd>
 
 
 <dt id="arg-fold">fold<a class="anchor" aria-label="anchor" href="#arg-fold"></a></dt>
-<dd><p>x</p></dd>
+<dd><p>path to the repository subfolder containing the HTML file,
+relative to the selected branch or tag, such as <code>"docs/reference"</code></p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
-<dd><p>x</p></dd>
+<dd><p>name of the HTML file within <code>fold</code>, such as <code>"index.html"</code>
+or <code>"ejam2excel.html"</code></p></dd>
 
 
 <dt id="arg-launch-browser">launch_browser<a class="anchor" aria-label="anchor" href="#arg-launch-browser"></a></dt>
@@ -116,32 +118,35 @@ inferred by default from parameters repo, ver, fold, and file</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">url_github_preview</span><span class="op">(</span>fold <span class="op">=</span> <span class="st">"docs"</span>,</span>
-<span>  launch_browser <span class="op">=</span> <span class="cn">F</span>, file <span class="op">=</span> <span class="st">"index.html"</span><span class="op">)</span></span>
-<span><span class="fu">url_github_preview</span><span class="op">(</span>fold <span class="op">=</span> <span class="st">"docs/reference"</span>,</span>
-<span>  launch_browser <span class="op">=</span> <span class="cn">F</span>, file <span class="op">=</span> <span class="st">"ejam2excel.html"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
-<span><span class="co">#   Compare versions of the HTML summary report:</span></span>
-<span></span>
-<span><span class="va">myfile</span> <span class="op">=</span> <span class="st">"testoutput_ejam2report_100pts_1miles.html"</span></span>
-<span></span>
-<span><span class="co"># in latest main branch on GH (but map does not render using this tool)</span></span>
-<span><span class="fu">url_github_preview</span><span class="op">(</span>file <span class="op">=</span> <span class="va">myfile</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># from a specific prior release on GH (but map does not render using this tool)</span></span>
-<span><span class="fu">url_github_preview</span><span class="op">(</span>file <span class="op">=</span> <span class="va">myfile</span>,</span>
-<span>  ver <span class="op">=</span> <span class="st">"v2.32.5"</span>, fold <span class="op">=</span> <span class="st">"inst/testdata/examples_of_output"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># local installed version</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="va">myfile</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"testdata/examples_of_output"</span>, <span class="va">myfile</span><span class="op">)</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span> <span class="op">)</span></span>
-<span></span>
-<span><span class="co"># local source package version in checked out branch</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="va">myfile</span>, quiet <span class="op">=</span> <span class="cn">T</span>, installed <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="testdatafolder.html">testdatafolder</a></span><span class="op">(</span>installed <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, <span class="st">"examples_of_output"</span>, <span class="va">myfile</span><span class="op">)</span> <span class="op">)</span></span>
-<span><span class="op">}</span> <span class="co"># }</span></span>
-<span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">url_github_preview</span><span class="op">(</span>fold <span class="op">=</span> <span class="st">"docs"</span>,</span></span>
+<span class="r-in"><span>  launch_browser <span class="op">=</span> <span class="cn">F</span>, file <span class="op">=</span> <span class="st">"index.html"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/docs/index.html"</span>
+<span class="r-in"><span><span class="fu">url_github_preview</span><span class="op">(</span>fold <span class="op">=</span> <span class="st">"docs/reference"</span>,</span></span>
+<span class="r-in"><span>  launch_browser <span class="op">=</span> <span class="cn">F</span>, file <span class="op">=</span> <span class="st">"ejam2excel.html"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/docs/reference/ejam2excel.html"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co">#   Compare versions of the HTML summary report:</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">myfile</span> <span class="op">=</span> <span class="st">"testoutput_ejam2report_100pts_1miles.html"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># in latest main branch on GH (but map does not render using this tool)</span></span></span>
+<span class="r-in"><span><span class="fu">url_github_preview</span><span class="op">(</span>file <span class="op">=</span> <span class="va">myfile</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># from a specific prior release on GH (but map does not render using this tool)</span></span></span>
+<span class="r-in"><span><span class="fu">url_github_preview</span><span class="op">(</span>file <span class="op">=</span> <span class="va">myfile</span>,</span></span>
+<span class="r-in"><span>  ver <span class="op">=</span> <span class="st">"v2.32.5"</span>, fold <span class="op">=</span> <span class="st">"inst/testdata/examples_of_output"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># local installed version</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="va">myfile</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"testdata/examples_of_output"</span>, <span class="va">myfile</span><span class="op">)</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># local source package version in checked out branch</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="va">myfile</span>, quiet <span class="op">=</span> <span class="cn">T</span>, installed <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="testdatafolder.html">testdatafolder</a></span><span class="op">(</span>installed <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, <span class="st">"examples_of_output"</span>, <span class="va">myfile</span><span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

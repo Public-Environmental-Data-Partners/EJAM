@@ -21,9 +21,11 @@ inferred by default from parameters repo, ver, fold, and file}
 
 \item{ver}{name of branch or tag of a released version}
 
-\item{fold}{x}
+\item{fold}{path to the repository subfolder containing the HTML file,
+relative to the selected branch or tag, such as \code{"docs/reference"}}
 
-\item{file}{x}
+\item{file}{name of the HTML file within \code{fold}, such as \code{"index.html"}
+or \code{"ejam2excel.html"}}
 
 \item{launch_browser}{set FALSE to get URL but not launch a browser}
 }
