@@ -136,7 +136,7 @@ x <- x[order(x$Package, x$Item), !grepl("size", names(x))]
 ``` r
 x[grepl("^testp", x$Item), ]
 #>     Package                Item
-#> 115    EJAM       testpoints_10
+#> 116    EJAM       testpoints_10
 #> 131    EJAM      testpoints_100
 #> 133    EJAM   testpoints_100_dt
 #> 150    EJAM     testpoints_1000
@@ -147,7 +147,7 @@ x[grepl("^testp", x$Item), ]
 #> 125    EJAM      testpoints_bad
 #> 119    EJAM testpoints_overlap3
 #>                                                        Title
-#> 115 test points data.frame with columns sitenumber, lat, lon
+#> 116 test points data.frame with columns sitenumber, lat, lon
 #> 131 test points data.frame with columns sitenumber, lat, lon
 #> 133 test points data.frame with columns sitenumber, lat, lon
 #> 150 test points data.frame with columns sitenumber, lat, lon
@@ -193,7 +193,7 @@ x[grepl("^test[^op_]", x$Item), ]
 #> 37     EJAM                    testinput_mact
 #> 38     EJAM                   testinput_naics
 #> 39     EJAM            testinput_program_name
-#> 114    EJAM          testinput_program_sys_id
+#> 115    EJAM          testinput_program_sys_id
 #> 40     EJAM                   testinput_regid
 #> 41     EJAM             testinput_registry_id
 #> 136    EJAM                testinput_shapes_2
@@ -216,7 +216,7 @@ x[grepl("^test[^op_]", x$Item), ]
 #> 37                                                   testinput_mact dataset
 #> 38                                                  testinput_naics dataset
 #> 39                                           testinput_program_name dataset
-#> 114 test data, EPA program names and program system ID numbers to try using
+#> 115 test data, EPA program names and program system ID numbers to try using
 #> 40                 test data, EPA Facility Registry ID numbers to try using
 #> 41                 test data, EPA Facility Registry ID numbers to try using
 #> 136                                              testinput_shapes_2 dataset

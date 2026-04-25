@@ -32,11 +32,13 @@ url_github_preview(
 
 - fold:
 
-  x
+  path to the repository subfolder containing the HTML file, relative to
+  the selected branch or tag, such as `"docs/reference"`
 
 - file:
 
-  x
+  name of the HTML file within `fold`, such as `"index.html"` or
+  `"ejam2excel.html"`
 
 - launch_browser:
 
