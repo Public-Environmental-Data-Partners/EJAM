@@ -1,6 +1,8 @@
 
 # EJAM 2.32.8 (April 2026)
 
+Released v2.32.8 initially on 4/13/2026
+
 - Moved EJAM and ejamdata repositories and documentation website (and updated all URLs) by changing owner from "ejanalysis" to "Public-Environmental-Data-Partners"
 - MACT, NAICS, SIC categories initially selected at launch of app now can be specified as parameters mact, naics, sic in `ejamapp()`, or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab. Default SIC was added.
 - MACT, NAICS, SIC validation improved in server. Fixed some edge cases related to invalid mact codes, too many points selected, etc. Removed obsolete naics_validation() function. See better `naics_is.valid()`.
@@ -16,6 +18,8 @@
 - Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
 - Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
 - Documented utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
+
+Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/24/2026
 
 - Resaved testoutput and various other datasets and updated or added remaining metadata about version number, and fixed acs_version metadata for `tables_ejscreen_acs`.
 - Fixed bugs in utilities that help update dataset metadata, etc.

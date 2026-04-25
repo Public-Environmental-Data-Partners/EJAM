@@ -65,6 +65,7 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.8" id="ejam-2328-april-2026">EJAM 2.32.8 (April 2026)<a class="anchor" aria-label="anchor" href="#ejam-2328-april-2026"></a></h2>
+<p>Released v2.32.8 initially on 4/13/2026</p>
 <ul><li>Moved EJAM and ejamdata repositories and documentation website (and updated all URLs) by changing owner from “ejanalysis” to “Public-Environmental-Data-Partners”</li>
 <li>MACT, NAICS, SIC categories initially selected at launch of app now can be specified as parameters mact, naics, sic in <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, or as parameters default_mact, default_naics, default_sic in global_defaults_shiny.R, or in Advanced tab. Default SIC was added.</li>
 <li>MACT, NAICS, SIC validation improved in server. Fixed some edge cases related to invalid mact codes, too many points selected, etc. Removed obsolete naics_validation() function. See better <code><a href="../reference/naics_is.valid.html">naics_is.valid()</a></code>.</li>
@@ -77,10 +78,18 @@
 <li>Added utility <code><a href="../reference/calc_formulas_from_varname.html">calc_formulas_from_varname()</a></code> that looks at <code>formulas_ejscreen_acs</code> and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.</li>
 <li>Added parameter to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)</li>
 <li>Added <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.</li>
+<li>Added utility <code><a href="../reference/url_package.html">url_package()</a></code> based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.</li>
 <li>Renamed utility api_run() as <code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code> to be consistent with <code>ejamap()</code> and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>
 </li>
-<li>Added utility <code><a href="../reference/url_package.html">url_package()</a></code> based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.</li>
 <li>Documented utilities <code><a href="../reference/grepn.html">grepn()</a></code> and <code><a href="../reference/found_in_files.html">found_in_files()</a></code> (and also improved some internal/unexported utilities pkg_functions_* )</li>
+</ul><p>Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/24/2026</p>
+<ul><li>Resaved testoutput and various other datasets and updated or added remaining metadata about version number, and fixed acs_version metadata for <code>tables_ejscreen_acs</code>.</li>
+<li>Fixed bugs in utilities that help update dataset metadata, etc.</li>
+<li>Fixed issue in unit testing helper functions/setup, and some unit tests (e.g., function creating text for report header).</li>
+<li>Fixed <code><a href="../reference/url_county_equityatlas.html">url_county_equityatlas()</a></code>
+</li>
+<li>Amended <code><a href="../reference/latlon_from_address.html">latlon_from_address()</a></code>
+</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.7" id="ejam-2327-february-2026">EJAM 2.32.7 (February 2026)<a class="anchor" aria-label="anchor" href="#ejam-2327-february-2026"></a></h2>
