@@ -981,14 +981,14 @@ output in console:<a class="anchor" aria-label="anchor" href="#overall-results-f
 </h5>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## view output of batch run aggregation ####</span></span>
-<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_1000pts_1miles</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_1000pts_1miles</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>overall <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span> <span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              overall                                                                 </span></span>
-<span><span class="co">#&gt; EJAM Report  "&lt;a href="https://ejanalysis.com", target="_blank"&gt;EJAM Site Report&lt;/a&gt;"</span></span>
-<span><span class="co">#&gt; EJSCREEN Map "https://pedp-ejscreen.azurewebsites.net/index.html"                    </span></span>
-<span><span class="co">#&gt; ejam_uniq_id NA                                                                      </span></span>
-<span><span class="co">#&gt; valid        TRUE                                                                    </span></span>
-<span><span class="co">#&gt; invalid_msg  ""                                                                      </span></span>
+<span><span class="co">#&gt;              overall                                                                </span></span>
+<span><span class="co">#&gt; EJAM Report  "&lt;a href="https://ejanalysis.com" target="_blank"&gt;EJAM Site Report&lt;/a&gt;"</span></span>
+<span><span class="co">#&gt; EJSCREEN Map "https://pedp-ejscreen.azurewebsites.net/index.html"                   </span></span>
+<span><span class="co">#&gt; ejam_uniq_id NA                                                                     </span></span>
+<span><span class="co">#&gt; valid        TRUE                                                                   </span></span>
+<span><span class="co">#&gt; invalid_msg  ""                                                                     </span></span>
 <span><span class="co">#&gt; pop          8609095</span></span>
 <span></span>
 <span><span class="co">## To see just some subset of indicators, like Environmental only:</span></span>
