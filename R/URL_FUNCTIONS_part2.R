@@ -1794,7 +1794,7 @@ url_github_preview = function(ghurl = NULL,
 
     ghurl <- paste(repo, blob, ver, fold, file, sep = "/")
   }
-  urlx <- paste0("http://htmlpreview.github.io/?", ghurl)
+  urlx <- paste0("https://htmlpreview.github.io/?", ghurl)
 
   if (launch_browser) {browseURL(urlx[1])}
   return(urlx)
@@ -1810,7 +1810,7 @@ url_github_preview = function(ghurl = NULL,
 #'
 url_ejscreentechdoc = function() {
 
-  paste0(url_package("code", get_full_url = TRUE), "/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf")
+  paste0(url_package("code", get_full_url = TRUE), "/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf")
 
   # could relocate it at some point to serve as normal pdf doc from a web server
 }
