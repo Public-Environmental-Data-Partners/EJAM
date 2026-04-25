@@ -53,7 +53,9 @@ Released v2.32.8 initially on 4/13/2026
   owner/reponame for code repo, data repo, or documentation website.
 - Renamed utility api_run() as
   [`ejamapi_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi_local.md)
-  to be consistent with `ejamap()` and
+  to be consistent with
+  [`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md)
+  and
   [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
 - Documented utilities
   [`grepn()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepn.md)
@@ -932,11 +934,11 @@ It mainly does the following:
 
 Note the URLs, emails, and notes about repository locations/owners were
 edited to reflect this forked non-EPA version of the EJAM package being
-located at ejanalysis/EJAM, later moved to
+located initially at ejanalysis/EJAM, later moved to
 Public-Environmental-Data-Partners/EJAM, so the package called the
-v2.32.4 release on ejanalysis/EJAM (later moved to /EJAM) is slightly
-different than the version called the v2.32.4 release that was released
-on USEPA/EJAM-open.
+v2.32.4 release on ejanalysis/EJAM (later moved to
+Public-Environmental-Data-Partners/EJAM) is slightly different than the
+version called the v2.32.4 release that was released on USEPA/EJAM-open.
 
 ### Web app
 

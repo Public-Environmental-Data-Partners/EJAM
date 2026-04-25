@@ -16,7 +16,7 @@ Released v2.32.8 initially on 4/13/2026
 - Added parameter to `ejamapp()`, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
 - Added `ejamapi()`, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.
 - Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
-- Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
+- Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamapi()` and `url_ejamapi()`
 - Documented utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
 
 Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/24/2026
@@ -381,7 +381,11 @@ or could even be converted to a subset of a website)
 
 # EJAM v2.32.4 (June 2025)
 
-Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being located at ejanalysis/EJAM, later moved to Public-Environmental-Data-Partners/EJAM, so the package called the v2.32.4 release on ejanalysis/EJAM (later moved to /EJAM) is slightly different than the version called the v2.32.4 release that was released on USEPA/EJAM-open.
+Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being 
+located initially at ejanalysis/EJAM, later moved to Public-Environmental-Data-Partners/EJAM, 
+so the package called the v2.32.4 
+release on ejanalysis/EJAM (later moved to Public-Environmental-Data-Partners/EJAM) is slightly different than the version called the v2.32.4 release that was 
+released on USEPA/EJAM-open.
 
 ## Web app
 

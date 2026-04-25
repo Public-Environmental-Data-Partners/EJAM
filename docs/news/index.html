@@ -79,7 +79,7 @@
 <li>Added parameter to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)</li>
 <li>Added <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.</li>
 <li>Added utility <code><a href="../reference/url_package.html">url_package()</a></code> based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.</li>
-<li>Renamed utility api_run() as <code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code> to be consistent with <code>ejamap()</code> and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>
+<li>Renamed utility api_run() as <code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code> to be consistent with <code><a href="../reference/ejamapi.html">ejamapi()</a></code> and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>
 </li>
 <li>Documented utilities <code><a href="../reference/grepn.html">grepn()</a></code> and <code><a href="../reference/found_in_files.html">found_in_files()</a></code> (and also improved some internal/unexported utilities pkg_functions_* )</li>
 </ul><p>Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/24/2026</p>
@@ -562,7 +562,7 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.4" id="ejam-v2324-june-2025">EJAM v2.32.4 (June 2025)<a class="anchor" aria-label="anchor" href="#ejam-v2324-june-2025"></a></h2>
-<p>Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being located at ejanalysis/EJAM, later moved to Public-Environmental-Data-Partners/EJAM, so the package called the v2.32.4 release on ejanalysis/EJAM (later moved to /EJAM) is slightly different than the version called the v2.32.4 release that was released on USEPA/EJAM-open.</p>
+<p>Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being located initially at ejanalysis/EJAM, later moved to Public-Environmental-Data-Partners/EJAM, so the package called the v2.32.4 release on ejanalysis/EJAM (later moved to Public-Environmental-Data-Partners/EJAM) is slightly different than the version called the v2.32.4 release that was released on USEPA/EJAM-open.</p>
 <div class="section level3">
 <h3 id="web-app-2-32-4">Web app<a class="anchor" aria-label="anchor" href="#web-app-2-32-4"></a></h3>
 <ul><li>Fixed logo in “About” tab, app header, and report header, in app_ui, generate_html_header(), global_defaults_xyz, etc., and updated testoutput files related to <code><a href="../reference/ejam2report.html">ejam2report()</a></code> and <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code>
