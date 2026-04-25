@@ -921,14 +921,14 @@ head(
 
 ``` r
 ## view output of batch run aggregation ####
-out <- testoutput_ejamit_1000pts_1miles
+out <- testoutput_ejamit_1000pts_1miles 
 head(cbind(overall = as.list( out$results_overall)))
-#>              overall                                                                 
-#> EJAM Report  "<a href="https://ejanalysis.com", target="_blank">EJAM Site Report</a>"
-#> EJSCREEN Map "https://pedp-ejscreen.azurewebsites.net/index.html"                    
-#> ejam_uniq_id NA                                                                      
-#> valid        TRUE                                                                    
-#> invalid_msg  ""                                                                      
+#>              overall                                                                
+#> EJAM Report  "<a href="https://ejanalysis.com" target="_blank">EJAM Site Report</a>"
+#> EJSCREEN Map "https://pedp-ejscreen.azurewebsites.net/index.html"                   
+#> ejam_uniq_id NA                                                                     
+#> valid        TRUE                                                                   
+#> invalid_msg  ""                                                                     
 #> pop          8609095
 
 ## To see just some subset of indicators, like Environmental only:

@@ -53,10 +53,8 @@ URL
 ``` r
 url_github_preview(fold = "docs",
   launch_browser = F, file = "index.html")
-#> [1] "http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/docs/index.html"
 url_github_preview(fold = "docs/reference",
   launch_browser = F, file = "ejam2excel.html")
-#> [1] "http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/docs/reference/ejam2excel.html"
 
 if (FALSE) { # \dontrun{
 #   Compare versions of the HTML summary report:
