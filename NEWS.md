@@ -1,10 +1,3 @@
-# Development (April 2026)
-
-- Fixed bugs in utilities that help update dataset metadata, etc.
-- Fixed issue in unit testing helper functions/setup, and some unit tests (e.g., function creating text for report header).
-- Resaved testoutput and various other datasets and updated or added remaining metadata about version number, and fixed acs_version metadata for tables_ejscreen_acs.
-- Amended `latlon_from_address()`
-- Fixed `url_county_equityatlas()`
 
 # EJAM 2.32.8 (April 2026)
 
@@ -20,9 +13,16 @@
 - Added utility `calc_formulas_from_varname()` that looks at `formulas_ejscreen_acs` and compiles the subset of formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also.
 - Added parameter to `ejamapp()`, so ejamapp(testing=TRUE) now works as shortcut for ejamapp(default_testing=TRUE)
 - Added `ejamapi()`, simple wrapper for EJAM API to get HTML report on a site or get data.frame of results for multiple sites. Unit tests also added.
-- Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
 - Added utility `url_package()` based on deleted repo_from_desc(), to get current URL or owner/reponame for code repo, data repo, or documentation website.
+- Renamed utility api_run() as `ejamapi_local()` to be consistent with `ejamap()` and `url_ejamapi()`
 - Documented utilities `grepn()` and `found_in_files()` (and also improved some internal/unexported utilities pkg_functions_* )
+
+- Resaved testoutput and various other datasets and updated or added remaining metadata about version number, and fixed acs_version metadata for `tables_ejscreen_acs`.
+- Fixed bugs in utilities that help update dataset metadata, etc.
+- Fixed issue in unit testing helper functions/setup, and some unit tests (e.g., function creating text for report header).
+- Fixed `url_county_equityatlas()`
+- Amended `latlon_from_address()`
+
 
 # EJAM 2.32.7 (February 2026)
 
