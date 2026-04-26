@@ -100,24 +100,24 @@
 
     
     
-<p>The EJAM package and Shiny app make use of many data objects,
-including numerous datasets stored in the package’s /data/ folder as
-well as several large tables stored in a separate repository
-specifically created for holding those large tables, which contain
-information on Census blockgroups, Census block internal points, Census
-block population weights, and EPA FRS facilities.</p>
+<p>The EJAM package and <a href="https://shiny.posit.co" class="external-link">Shiny</a> app
+make use of many data objects, including numerous datasets stored in the
+package’s /data/ folder as well as several large tables stored in a
+separate repository specifically created for holding those large tables,
+which contain information on Census blockgroups, Census block internal
+points, Census block population weights, and EPA FRS facilities.</p>
 <div class="section level2">
 <h2 id="how-to-update-datasets-in-ejam">How to Update Datasets in EJAM<a class="anchor" aria-label="anchor" href="#how-to-update-datasets-in-ejam"></a>
 </h2>
 <p>The process begins from within the EJAM code repo, using the various
 <code>datacreate_*</code> scripts to create updated arrow datasets.
-Notes and scripts are consolidated in the /data-raw/ folder, and the
-starting point is the overarching set of scripts and comments in the
-file called
+Notes and scripts are consolidated in the <code>/data-raw/</code>
+folder, and the starting point is the overarching set of scripts and
+comments in the file called
 <em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em>.
 Almost all updates of data objects and their documentation are organized
 within that file in functions/scripts for the various datasets.
-Documentation of datasets via <code>EJAM/R/data_*.R</code> files is
+Documentation of datasets via <code>/R/data_*.R</code> files is
 generally handled by those same scripts while creating/updating the
 datasets.</p>
 <p>That file covers not only the large arrow datasets that are stored in
@@ -224,8 +224,8 @@ package <code>census2020download</code> on github for the function
 <li>
 <p><strong><em>Facilities Datasets for creating updated proximity
 scores each year</em></strong>: Facility (and roadway) locations for key
-types of sites were used once a year to calculate updated several <a href="https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators" class="external-link">environmental
-indicators (proximity scores) in EJSCREEN</a>. The resulting
+types of sites were used once a year to calculate updated several <a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators">environmental
+indicators that are proximity scores in EJSCREEN</a>. The resulting
 environmental indicators are stored with EJAM, but these facility
 location datasets are not stored in EJAM. EJSCREEN obtains their
 locations for mapping purposes, via an API accessing <a href="https://geopub.epa.gov/arcgis/rest/services/EMEF/efpoints/MapServer" class="external-link">hosted
@@ -233,22 +233,22 @@ datasets with facility locations</a>. In general, scripts for updating
 environmental indicators (including documentation of sources of facility
 location data, etc.) <a href="https://github.com/Public-Environmental-Data-Partners/EJSCREEN-Data-Processing" class="external-link">were
 stored by EPA</a>, and after 2025 new code for updating indicators may
-be found in the non-EPA source package EJAM/data-raw folder. Proximity
+be found in the non-EPA source R package data-raw folder. Proximity
 scores in EJSCREEN as of 2024-2026 were calculated based on the
 locations of these types of sites:</p>
 <ul>
-<li><a href="https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume" class="external-link">Major
+<li><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume">Major
 roadways (traffic)</a></li>
-<li><a href="https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators" class="external-link">Superfund
+<li><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators">Superfund
 NPL sites</a></li>
-<li><a href="https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity" class="external-link">Facilities
+<li><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity">Facilities
 with hazardous waste (TSDF)</a></li>
-<li><a href="https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration" class="external-link">Water
+<li><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration">Water
 bodies downstream of wastewater discharges</a></li>
-<li><a href="https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity" class="external-link">Risk
+<li><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity">Risk
 management plan (RMP) facilities</a></li>
 <li>
-<a href="https://ejanalysis.github.io/EJAM/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust" class="external-link">Underground
+<a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust">Underground
 storage tanks (UST)</a> (for a facility density indicator, similar to a
 proximity indicator).</li>
 </ul>
@@ -262,7 +262,7 @@ of that information may need frequent updates, ideally, since facilities
 open, close, relocate, or have their information corrected or otherwise
 updated. EPA’s FRS is the source for much of this information and the
 FRS is updated by EPA frequently and is available via an API. Through at
-least v2.32.7, EJAM (and therefore the community reports in EJSCREEN)
+least v2.32.8, EJAM (and therefore the community reports in EJSCREEN)
 used a snapshot of the EPA FRS data rather than using an API to obtain
 the latest info on demand – that is something that could be changed in a
 future version. Facility-related info is stored in tables EJAM uses,
@@ -367,7 +367,7 @@ faster format of what had been called the <code><a href="../reference/frs.html">
 .arrow_ds_names that is used by functions like
 <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> and
 <code><a href="../reference/dataload_from_local.html">dataload_from_local()</a></code>.</p>
-<p>As of EJAM version v2.32.7, there were 11 arrow files used by
+<p>As of EJAM version v2.32.8, there were 11 arrow files used by
 EJAM:</p>
 </div>
 <div class="section level3">
