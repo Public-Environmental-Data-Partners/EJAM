@@ -1,20 +1,32 @@
 ######################################################### #
+## if sourcing this function for standalone use outside EJAM package, need these:
+# require(geojsonsf)
+# require(httr2)
+# require(jsonlite)
+# require(htmltools)
+# require(rlang)
+# require(utils)
+# require(mapview) # for examples
+# require(sf) # for examples
+## and the EJAM package would be needed for the last few examples
 
-#' helper for using the EJAM API, a wrapper function to make API calls for data or report
-#' Note this function would be most useful to an R user who does NOT have EJAM installed.
+#' Get EJScreen community report or data via the EJAM API
+#'
 #' @details
+#' This is a utility, a wrapper function to make API calls for data or report from the EJAM API.
 #' Note this function would be most useful to an R user who does NOT have EJAM installed.
 #' Anyone who already has the EJAM package installed
 #' can more quickly and flexibly get reports directly locally via
 #' [EJAM::ejamit()] for the "data", and [EJAM::ejam2report()] for the "report".
 #' The API call provides fewer features/options.
 #'
-#' This function requires the geojsonsf, httr2, jsonlite, htmltools, and rlang packages.
+#' This function requires the geojsonsf, httr2, jsonlite, htmltools, rlang, and utils packages.
 #'
-#' For the "report" endpoint, it additionally currently requires the EJAM package
-#' just for the [EJAM::url_ejamapi()] function that
-#' converts the parameters to a URL for the API
-#' as a GET request to obtain an HTML report.
+#' For the "report" endpoint,
+#' the EJAM package version of this function uses [EJAM::url_ejamapi()] and related helper functions
+#' to convert the parameters to a URL for the API as a GET request to obtain an HTML report.
+#' [A standalone version of this function](https://gist.github.com/ejanalysis/fa588f8f4cf993fe43fb03fe990176e1),
+#' for people who do not install the EJAM package, uses a copy of the necessary functions.
 #'
 #' @seealso [EJAM::url_ejamapi()]
 #'
@@ -68,23 +80,47 @@
 #' @examples
 #' # also see ?EJAM::url_ejamapi()
 #' eg <- TRUE
-#' x1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
-#' x2 = ejamapi(lat = 45, lon = -118, endpoint = 'report', buffer = 3.1, dry_run=eg)
-#' htmltools::html_print(x2)
 #'
-#' y1 = ejamapi(sites = data.frame(lat = c(44,45), lon = c(-117,-118)),
-#'   buffer = 3.1, endpoint = 'data', dry_run=eg)
-#' y1[,3:14]
+#' # one blockgroup
+#' xbg1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
+#' if (!eg) {
+#' # all blockgroups in 1 county
+#' xcounty = ejamapi(fips="10001", scale="blockgroup", endpoint = "data", dry_run=eg)
+#' t(xcounty[1:4,3:100])
 #'
-#' pts=data.frame(
+#' # one point
+#' xpoint1 = ejamapi(lat = 45, lon = -118,
+#'   endpoint = 'report', buffer = 3.1, dry_run = eg)
+#' htmltools::html_print(xpoint1)
+#'
+#' # multiple points
+#' pts = data.frame(lat = c(44,45), lon = c(-117,-118))
+#' y2a = ejamapi(sites = pts, buffer = 3.1, endpoint = 'data', dry_run=eg)
+#' y2a[,3:14]
+#'
+#' # map the results
+#' mapview::mapview(sf::st_as_sf(
+#'  y2a[,1:15],
+#'  coords = c("lon", "lat"), crs = 4286))
+#'
+#' # format like ejamit() output, to be able to use ejam2xyz functions
+#' pts = data.frame(
 #'   lat = c(37.64122, 43.92249),
 #'   lon = c(-122.41065, -72.663705))
-#' y2 = ejamapi(sites=pts, buffer=3.1, endpoint="data",
-#'   ejamit_format=T, dry_run=eg)
-#' EJAM::ejam2report(y2, sitenumber=1)
-#' EJAM::ejam2report(y2, sitenumber=2)
-#' EJAM::ejam2table_tall(y2, sitenumber=2)
+#' y2 = ejamapi(sites=pts, buffer=3.1, endpoint="data", dry_run=eg,
+#'   ejamit_format = TRUE)
+#' t(y2$results_bysite[,3:100])
+#' # to map the results without using EJAM functions:
+#' mapview::mapview(sf::st_as_sf(
+#'   y2$results_bysite[,1:15],
+#'   coords = c("lon", "lat"), crs = 4286))
 #'
+#' # using EJAM functions to see a report even if data endpoint had been used:
+#' EJAM::ejam2report(y2, sitenumber = 1)
+#' EJAM::ejam2report(y2, sitenumber = 2)
+#' zz = EJAM::ejam2table_tall(y2, sitenumber = 2)
+#' head(zz, 50)
+#' }
 #' @return data.frame if using data endpoint, list of html reports if using report endpoint,
 #'   or if ejamit_format=TRUE and "data" is the endpoint, returns a named list somewhat like
 #'   output of `ejamit()` so it can work in some functions like `ejam2report()`.
@@ -115,7 +151,7 @@ ejamapi <- function(
     ejam_functions_available <- !dotz$no_ejam
     # turn off if this function is extracted to use outside EJAM)
   } else {
-    ejam_functions_available <- FALSE
+    ejam_functions_available <- TRUE # differs from standalone version
   }
 
   maxreports <- 10
@@ -209,10 +245,10 @@ ejamapi <- function(
       params <- params[names(params) != "shape"]
       if (!("geojson" %in% class(shape))) {
         if ("sf" %in% class(shape)) {
-        shape <- geojsonsf::sf_geojson(shape)
+          shape <- geojsonsf::sf_geojson(shape)
         } else {
-        stop("shape or shapefile must be class sf or geojson")
-      }}
+          stop("shape or shapefile must be class sf or geojson")
+        }}
       params <- c(params, shape = shape)
       # params <- c(params, shape = EJAM::shape2geojson(shape, combine_in_one_string = TRUE))
       req <- httr2::req_body_json(req=req, data = x)
@@ -256,6 +292,10 @@ ejamapi <- function(
       ### to create the URL for a report without using  EJAM::url_ejamapi() :
       # just needs functions in URL_API_NON_EJAM_FUNCTIONS.R
 
+      if ( length(lon) > 1 || length(fips) > 1 || NROW(shape) > 1) {
+        stop("does not yet support multiple places for endpoint='report' ")
+      }
+
       if (!ejam_functions_available) {
 
         # handle shape parameter - must be sf or geojson class if provided
@@ -270,20 +310,25 @@ ejamapi <- function(
             }
           }
         }
-        params <- list(
+        params <- list(  # standalone version differed here
           lat = lat, lon = lon,
           shape = shape, # ok now as geojson string
           fips = fips,
-          buffer = buffer
+          buffer = buffer  # standalone version differed here
         )
-        urlx <- url_from_keylist(baseurl = paste0( baseurl, "?"),
-                                 keylist = params)
+        urlx <- url_from_keylist(baseurl = paste0( baseurl, "?"),  # standalone version differed here!
+                                 keylist = params  # standalone version differed here
+        )
+        # standalone version differed here
+        # standalone version differed here
+
         # req <- httr2::request(base_url = paste0( baseurl, "?"))
         # req <- httr2::req_body_json(req, params)
 
       } else {
         ################################## #
 
+        ## url_ejamapi() handles shape itself
         ############### #
         params <- list(
           baseurl = paste0( baseurl, "?"),
@@ -295,7 +340,7 @@ ejamapi <- function(
         params <- c(params, ...)
         ############### #
 
-        ## url_ejamapi() is from the EJAM package:
+        ## url_ejamapi() is from the EJAM package
         urlx <- url_ejamapi(baseurl = paste0( baseurl, "?"),
                             lat = lat, lon = lon,
                             shapefile = shape, # EJAM::url_ejamapi() handles shape itself
