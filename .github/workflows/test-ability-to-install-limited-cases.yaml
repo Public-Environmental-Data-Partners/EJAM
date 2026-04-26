@@ -23,7 +23,6 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       # GH_TOKEN: ${{ github.token }}
       GITHUB_PAT: ${{ github.token }}
-      GITHUB_PAT: ${{ github.token }}
 
     steps:
       - name: Checkout repository
