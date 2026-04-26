@@ -45,7 +45,7 @@ download_latest_arrow_data <- function(
     return(NULL)
   }
 
-  # get arrow data version in repo vs. user's version
+  # get arrow data version in repo vs. user's version *** CHECK THIS
   github_token <- Sys.getenv("GITHUB_PAT", unset = Sys.getenv("GITHUB_TOKEN", unset = ""))
 
   # check that it's valid
