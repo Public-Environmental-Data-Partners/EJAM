@@ -60,6 +60,7 @@ jobs:
             libproj-dev \
             libjq-dev \
             libprotobuf-dev \
+            libuv1-dev \
             protobuf-compiler
 
       # - name: System Libraries (macOS)
