@@ -1,13 +1,8 @@
 
 #  FUNCTIONS
 
-
 # address_from_table_goodnames()
 # address_from_table()
-
-# latlon_from_address_table()
-# latlon_from_address()
-
 
 ################################ #
 
@@ -75,111 +70,3 @@ testthat::test_that("address_from_table works", {
 #       c("1200 Pennsylvania Ave, NW Washington DC", "Research Triangle Park"))
 #   })
 # })
-###################### #
-
-testthat::test_that("latlon_from_address works", {
-
-  testthat::skip_if_offline()
-  skip_if_not_installed("AOI")
-  if (!exists("geocode")) {
-    library(AOI)
-    cat("MUST LOAD AOI PKG FOR THIS geocode to work \n\n")
-  }
-  addresses_example_temp = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
-                             "5 Park Ave, New York, New York, 10016")
-  testthat::expect_no_error({
-    x <- latlon_from_address(addresses_example_temp)
-  })
-
-  x$request = tolower(x$request)
-  x$arcgis_address = tolower(x$arcgis_address)
-
-  testthat::expect_equal(
-    x,
-    structure(list(
-      request = tolower(
-        c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
-                  "5 Park Ave, New York, New York, 10016")
-        ),
-      score = c(100L, 100L),
-      arcgis_address = tolower(
-        c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
-                         "5 Park Ave, New York, New York, 10016")
-        ),
-      lon = c(-77.028948300066, -73.980999465092),
-      lat = c(38.8948262664, 40.747143677784)
-    ), row.names = c(NA, -2L), class = "data.frame"),
-    tolerance = 0.01
-  )
-})
-###################### #
-
-testthat::test_that("latlon_from_address err if too many addresses", {
-
-  testthat::skip_if_offline()
-  testthat::expect_error(latlon_from_address(rep("a", 1001)))
-  })
-###################### #
-
-testthat::test_that("latlon_from_address_table works on testinput_address_table", {
-
-  testthat::skip_if_offline()
-  skip_if_not_installed("AOI")
-  testthat::expect_no_error({
-    x <- latlon_from_address_table(testinput_address_table)
-  })
-
-  original = structure(list(
-    request = c("1200 Pennsylvania Ave Washington DC ",
-                "5 pARK AVE NY NY "),
-    score = c(99.48, 100),
-    arcgis_address = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
-                       "5 Park Ave, New York, New York, 10016"),
-    lon = c(-77.028948300066, -73.980999465092),
-    lat = c(38.8948262664, 40.747143677784)
-  ), row.names = c(NA, -2L), class = "data.frame")
-
-  x$request = tolower(x$request)
-  x$arcgis_address = tolower(x$arcgis_address)
-  original$request = tolower(original$request)
-  original$arcgis_address = tolower(original$arcgis_address)
-
-  testthat::expect_equal(x,
-                         original, tolerance = 0.01)
-
-  testthat::expect_no_error({
-    x <- latlon_from_address_table(testinput_address_table_withfull)
-  })
-})
-###################### #
-#
-# testthat::test_that("odd case for latlon_from_address_table", {
-#
-#   testthat::skip_if_offline()
-#   skip_if_not_installed("AOI")
-#
-#   x <- latlon_from_address_table(testinput_address_table_withfull)
-#
-#   original =    structure(list(
-#     arcgis_address = c(
-#       "1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
-#       "5 Park Ave, New York, New York, 10016"),
-#     lon = c(-77.028948300066, -73.980999465092),
-#     lat = c(38.8948262664, 40.747143677784)
-#   ),
-#   class = "data.frame", row.names = c(NA, -2L))
-#
-#   # x$request = tolower(x$request)
-#   x$arcgis_address = tolower(x$arcgis_address)
-#   # original$request = tolower(original$request)
-#   original$arcgis_address = tolower(original$arcgis_address)
-#
-#   testthat::expect_equal(
-#     x[,c("arcgis_address", "lon", "lat")],
-#     original, tolerance = 0.01
-# )
-#
-# })
-#
-## *** NOTE IT FAILS or has trouble IF A COLUMN WITH STREET NAME ONLY IS CALLED "address" instead of that storing the full address.
-

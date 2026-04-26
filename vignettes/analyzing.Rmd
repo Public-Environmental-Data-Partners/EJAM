@@ -662,7 +662,7 @@ head(
 
 ```{r cbindagain, eval = TRUE}
 ## view output of batch run aggregation ####
-out <- testoutput_ejamit_1000pts_1miles
+out <- testoutput_ejamit_1000pts_1miles 
 head(cbind(overall = as.list( out$results_overall)))
 
 ## To see just some subset of indicators, like Environmental only:

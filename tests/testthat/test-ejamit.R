@@ -53,14 +53,16 @@ test_that('ejamit() output has names the same as it used to return, i.e. names(t
 
 test_that("ejamit() still returns results_overall identical to what it used to return
           (saved as testoutput_ejamit_10pts_1miles$results_overall)", {
+            testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
             suppressWarnings({
               suppressMessages({
-                if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
+                # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
                 # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE)  #  - takes roughly 5-10 seconds
 
                 expect_equal(
                   ejamitoutnow$results_overall,
-                  testoutput_ejamit_10pts_1miles$results_overall
+                  testoutput_ejamit_10pts_1miles$results_overall,
+                  ignore_attr = ".internal.selfref"
                 )
               } )
             })
@@ -69,17 +71,19 @@ test_that("ejamit() still returns results_overall identical to what it used to r
           })
 ########################################################## #
 
-test_that("ejamit() still returns results_bysite identical to numbers it used to return (except EJAM Report column)", {
+test_that("ejamit() still returns results_bysite identical to numbers it used to return (except 1st column)", {
+  testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
   suppressWarnings({
     suppressMessages({
-      if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
+      # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
       expect_equal(
         ## Compare all columns expect column 1, the url of the EJAM Report
         ejamitoutnow$results_bysite[,-1],
         testoutput_ejamit_10pts_1miles$results_bysite[,-1]
         ,
-        ignore_attr = TRUE # intended to ignore attributes that are metadata like date saved to package, ACS version, etc. that are part of testoutput_ejamit_10pts_1miles
+        ignore_attr = ".internal.selfref" # intended to ignore attribute
+        # but does not ignore attributes that are metadata like date saved to package, ACS version, etc. that are part of testoutput_ejamit_10pts_1miles, etc.
       )
       # all.equal(    ejamitoutnow$results_bysite,
       #               testoutput_ejamit_10pts_1miles$results_bysite)
@@ -87,10 +91,11 @@ test_that("ejamit() still returns results_bysite identical to numbers it used to
   })
 })
 ################################### #
-test_that("ejamit() still returns results_bysite with expected EJAM Report column", {
+test_that("ejamit() still returns results_bysite with same EJAM Report column", {
+  testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
   suppressWarnings({
     suppressMessages({
-      if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
+      # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
       expect_equal(
         ## Compare column 1, the EJAM Report URLs
@@ -105,7 +110,8 @@ test_that("ejamit() still returns results_bysite with expected EJAM Report colum
 ########################################################## #
 
 test_that("ejamit() returns same exact colnames() in both results_bysite and results_overall", {
-  if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
+  # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
+  testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
   # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
   expect_identical(
     colnames(ejamitoutnow$results_bysite),

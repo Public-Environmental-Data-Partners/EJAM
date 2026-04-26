@@ -5,7 +5,7 @@ mapping layers available through EJScreen. EJScreen data are updated
 periodically. To see which years of data are in the current version, see
 the 13 indicators in the archived [Overview of Environmental Indicators
 in
-EJScreen](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.md)
+EJScreen](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html)
 or [as
 archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
 or check the metadata.
@@ -40,7 +40,7 @@ Radiation](https://www.epa.gov/aboutepa/about-office-air-and-radiation).
 For more details on the PM2.5 indicator, including why it is important
 and what you can do moving forward, please visit the [EJScreen Indicator
 Overview for
-PM2.5](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.md)
+PM2.5](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.html)
 or [as
 archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25).
 
@@ -59,7 +59,7 @@ Radiation](https://www.epa.gov/aboutepa/about-office-air-and-radiation).
 For more details on the ozone indicator, including why it is important
 and what you can do moving forward, please visit the [EJScreen Indicator
 Overview for
-Ozone](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.md)
+Ozone](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.html)
 or [as
 archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-ozone).
 
@@ -93,7 +93,7 @@ Assessment](https://www.epa.gov/AirToxScreen).
 For more details on the diesel PM indicator, including why it is
 important and what you can do moving forward, please visit the [EJScreen
 Indicator Overview for Diesel
-PM](http://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.md)
+PM](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.html)
 or [as
 archived](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-diesel-particulate-matter).
 

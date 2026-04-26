@@ -28,8 +28,8 @@ reponame = EJAM::url_package()
 devtools::install_github(
 
   repo = reponame,
-  # ref = 'development',  # or 'main' or a specific tagged release like 'v2.32.7'
-  ref = 'posit-connect',  # or 'main' or a specific tagged release like 'v2.32.7'
+
+  ref = 'main',  #  or a specific tagged release
 
   build_vignettes = FALSE,
   build_manual = FALSE,

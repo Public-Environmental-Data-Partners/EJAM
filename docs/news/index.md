@@ -2,6 +2,8 @@
 
 ## EJAM 2.32.8 (April 2026)
 
+Released v2.32.8 initially on 4/13/2026
+
 - Moved EJAM and ejamdata repositories and documentation website (and
   updated all URLs) by changing owner from “ejanalysis” to
   “Public-Environmental-Data-Partners”
@@ -45,20 +47,36 @@
   [`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md),
   simple wrapper for EJAM API to get HTML report on a site or get
   data.frame of results for multiple sites. Unit tests also added.
-- Renamed utility api_run() as
-  [`ejamapi_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi_local.md)
-  to be consistent with `ejamap()` and
-  [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
 - Added utility
   [`url_package()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_package.md)
   based on deleted repo_from_desc(), to get current URL or
   owner/reponame for code repo, data repo, or documentation website.
+- Renamed utility api_run() as
+  [`ejamapi_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi_local.md)
+  to be consistent with
+  [`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md)
+  and
+  [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
 - Documented utilities
   [`grepn()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepn.md)
   and
   [`found_in_files()`](https://public-environmental-data-partners.github.io/EJAM/reference/found_in_files.md)
   (and also improved some internal/unexported utilities
   pkg_functions\_\* )
+
+Updated the v2.32.8 release to include some additional fixes and
+cleanup, on 4/24/2026
+
+- Resaved testoutput and various other datasets and updated or added
+  remaining metadata about version number, and fixed acs_version
+  metadata for `tables_ejscreen_acs`.
+- Fixed bugs in utilities that help update dataset metadata, etc.
+- Fixed issue in unit testing helper functions/setup, and some unit
+  tests (e.g., function creating text for report header).
+- Fixed
+  [`url_county_equityatlas()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_county_equityatlas.md)
+- Amended
+  [`latlon_from_address()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_address.md)
 
 ## EJAM 2.32.7 (February 2026)
 
@@ -916,11 +934,11 @@ It mainly does the following:
 
 Note the URLs, emails, and notes about repository locations/owners were
 edited to reflect this forked non-EPA version of the EJAM package being
-located at ejanalysis/EJAM, later moved to
+located initially at ejanalysis/EJAM, later moved to
 Public-Environmental-Data-Partners/EJAM, so the package called the
-v2.32.4 release on ejanalysis/EJAM (later moved to /EJAM) is slightly
-different than the version called the v2.32.4 release that was released
-on USEPA/EJAM-open.
+v2.32.4 release on ejanalysis/EJAM (later moved to
+Public-Environmental-Data-Partners/EJAM) is slightly different than the
+version called the v2.32.4 release that was released on USEPA/EJAM-open.
 
 ### Web app
 

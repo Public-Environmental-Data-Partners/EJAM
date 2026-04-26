@@ -16,7 +16,7 @@ prints to console info about some missing metadata
 }
 \examples{
 # x = EJAM:::metadata_check( which = "ejam_package_version")
-# x[!x$ejam_package_version \%in\% "2.32.7", ]
+# x[!x$ejam_package_version \%in\% "2.32.8", ]
 
 }
 \seealso{
