@@ -120,7 +120,7 @@ Replace OWNER/REPO below with "`r EJAM::url_package("code")`" including the quot
 ```{r install-gh, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
-#ref = "v2.32.8"   # a tag identifying a specific release
+#ref = "v2.5.0"   # a tag identifying a specific release
 #ref = "HEAD"          # main branch
 #ref = "development"   # development branch version
 
@@ -138,7 +138,7 @@ Replace "URL_OF_REPO" below with "`r EJAM::url_package("code", get_full_url = TR
 
 ```{r install-url, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.8.zip" # or whatever the latest release is - update as needed
+zipname = "v2.5.0.zip" # or whatever the latest release is - update as needed
 
 remote_zip = paste0(
   "URL_OF_REPO", "/archive/refs/tags/", zipname)
@@ -153,7 +153,7 @@ Replace "URL_OF_REPO" below with "`r EJAM::url_package("code", get_full_url = TR
 
 ```{r install-local, eval=FALSE}
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
-zipname = "v2.32.8.zip" # or whatever the latest release is - update as needed
+zipname = "v2.5.0.zip" # or whatever the latest release is - update as needed
 
 remote_zip = paste0(
   "URL_OF_REPO", "/archive/refs/tags/", zipname)

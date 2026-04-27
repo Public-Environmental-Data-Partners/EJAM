@@ -16,7 +16,7 @@ tables_ejscreen_acs dataset
 \details{
 See
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{yr = 2023
+\if{html}{\out{<div class="sourceCode">}}\preformatted{yr = 2024
 urls = paste0('https://data.census.gov/table/ACSDT5Y', yr, '.', tables_ejscreen_acs)
 sapply(urls, browseURL)
 acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), 'acs5')
@@ -35,13 +35,13 @@ Notes:
 \item B25032  owned units vs rented units (occupied housing units, same universe as B25003)
 \item B28003  no broadband
 \item B27010  no health insurance
-\item C16002  (language category and) \% of households limited English speaking (lingiso) \url{https://data.census.gov/table/ACSDT5Y2023.C16002}
-\item B16004  (language category and) \% of residents (not hhlds) speak no English at all \url{https://data.census.gov/table/ACSDT5Y2023.B16004}
+\item C16002  (language category and) \% of households limited English speaking (lingiso) \url{https://data.census.gov/table/ACSDT5Y2024.C16002}
+\item B16004  (language category and) \% of residents (not hhlds) speak no English at all \url{https://data.census.gov/table/ACSDT5Y2024.B16004}
 }
 
 TRACT ONLY, but also used by EJSCREEN:
 \itemize{
-\item C16001   languages detailed list: \% of residents (not hhlds) IN TRACT speak Chinese, etc. \url{https://data.census.gov/table/ACSDT5Y2023.C16001}
+\item C16001   languages detailed list: \% of residents (not hhlds) IN TRACT speak Chinese, etc. \url{https://data.census.gov/table/ACSDT5Y2024.C16001}
 \item B18101   disability
 }
 }

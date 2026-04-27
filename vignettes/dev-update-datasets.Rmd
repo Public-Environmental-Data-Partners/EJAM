@@ -250,7 +250,7 @@ The names of these tables should be listed in a file called `R/arrow_ds_names.R`
 and the global variable called .arrow_ds_names that is used by functions like
 `dataload_dynamic()` and `dataload_from_local()`.
 
-As of EJAM version v2.32.8, there were 11 arrow files used by EJAM:
+These were the arrow files used by EJAM:
 
 ### Blockgroup and block-level arrow files
 

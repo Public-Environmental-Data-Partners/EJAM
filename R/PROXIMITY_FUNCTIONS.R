@@ -977,7 +977,7 @@ proxistat <- function(topoints, bpoints = NULL,
   km_per_mile <- meters_per_mile / 1000  # km_per_mile = 1.609344  # meters_per_mile #   [1] 1609.344
 
   warning("dataset for most but not all blocks -
-          PR and Island Area lacked block area data in source used as of 2023 for EJAM")
+          PR and Island Area lacked block area data in source originally used in EJAM")
 
   warning("if none found within radius of 5km, this proximity score function does not yet create score based on single nearest - see source code for notes")
 

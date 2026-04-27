@@ -1,4 +1,6 @@
 # datacreate_tables_ejscreen_acs.R
+# is a script used to create/update tables_ejscreen_acs
+# which is a list of Census Bureau ACS tables
 
 library(EJAM)
 devtools::load_all()
@@ -31,7 +33,7 @@ tables_ejscreen_acs <- c(
 ## ######################### #
 
 # version = paste0("v", desc::desc_get("Version"))
-yr = acs_endyear(guess_always = T)
+yr = acs_endyear(guess_always = T, guess_census_has_published = TRUE)
 cat("SHOULD CONFIRM YEAR TO USE IS ", yr, "\n")
 
 EJAM:::dataset_documenter("tables_ejscreen_acs", seealso = "[formulas_ejscreen_acs]",

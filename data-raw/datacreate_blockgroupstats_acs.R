@@ -2,6 +2,7 @@
 # Script to create new version of just the ACS-based indicators (% demographics)
 
 mydir = '~/Downloads'
+
 library(data.table)
 
 ################################################### #
@@ -11,9 +12,8 @@ yr_desc <- as.vector(gsub("(^20..-)(20..)$", "\\2", desc::desc_get("VersionACS")
 yr_guess <- acs_endyear(guess_census_has_published = TRUE)
 if (!all.equal(yr_desc, yr_guess)) {stop("Need to confirm the ACS year to use for blockgroupstats_acs update")}
 yr <- yr_desc
+# yr = 2022 # can use 2022 for testing
 rm(yr_desc, yr_guess)
-
-  yr = 2022 # for testing
 
 ################################################### #
 # download ACS data, calc most demographics ####

@@ -21,12 +21,12 @@
 #'
 #'   - Each year this should be re-created as for the latest version.
 #'
-#'   - In early 2026, EJAM made available indicators derived from 2019-2023 and 2020-2024 ACS data.
-#'
-#'   - Starting in August 2024 and through 2025, EJAM used EPA environmental indicators along with population indicators derived
-#'   from 2018-2022 ACS data.
-#'
 #'   - See `attributes(blockgroupstats)` to confirm vintage of each dataset
+#'
+#'   - EJAM v2.5.0 used indicators derived from 2020-2024 ACS data.
+#'
+#'   - EJAM v2.32.x starting in August 2024 and through 2025 to early 2026,
+#'   used demographic indicators derived from 2018-2022 ACS data.
 #'
 #'   - Geographic scope includes States, DC, and Puerto Rico (PR), but not any Island Areas (VI, GU, AS, etc.)
 #'
