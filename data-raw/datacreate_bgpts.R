@@ -96,16 +96,11 @@ rm(bg_blockcounts2)
 ############################################# #
 
 # add metadata ####
-# EJAM :::  metadata_add(),
-# latest source version of this internal function is available after devtools::load_all()
-
-bgpts <- metadata_add(bgpts)
-
-############################################# #
-
 # save for EJAM package ####
 
-usethis::use_data(bgpts, overwrite = TRUE)
+# bgpts <- metadata_add(bgpts)
+# usethis::use_data(bgpts, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("bgpts")
 
 # documentation ####
 dataset_documenter('bgpts',

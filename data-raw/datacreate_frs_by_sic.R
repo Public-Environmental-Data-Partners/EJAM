@@ -53,9 +53,6 @@ frs_make_sic_lookup <- function(x) {
   x <- x[ SIC %in% sprintf(0:9999, fmt = '%04.f'), ]
   setkey(x, SIC, REGISTRY_ID)
 
-  attr(x, 'released') <- Sys.Date()
-  print('To use in package,  usethis::use_data(frs_by_sic, overwrite=TRUE)  ')
-
   invisible(x)
   #
   # > str(x)  # frs as of 5/2023 download
@@ -69,7 +66,7 @@ frs_make_sic_lookup <- function(x) {
   # - attr(*, "released")= Date[1:1], format: "2023-05-25"
 
 }
-
+###################################################################################
 
 
 
@@ -85,8 +82,9 @@ frs_by_sic <- frs_make_sic_lookup(natl_single_clean)
 
 
 #saveRDS(frs_by_sic, file = 'frs_by_sic.rds')
-usethis::use_data(frs_by_sic)
-
+# usethis::use_data(frs_by_sic)
+# attr(frs_by_sic, 'released') <- Sys.Date()
+EJAM:::metadata_add_and_use_this("frs_by_sic")
 
 ###################################################################################
 # create SIC ####
@@ -128,7 +126,8 @@ sic_counts_names <- enframe(SIC) %>%
 names(SIC) <- names(sic_counts_names)
 
 #saveRDS(SIC, file='SIC.rds')
-usethis::use_data(SIC, overwrite = TRUE)
+# usethis::use_data(SIC, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("SIC")
 
 
 ## add counts to NAICS code names for shiny dropdown
@@ -148,7 +147,7 @@ naics_counts <- enframe(NAICS,value = 'NAICS') %>%
   dplyr::left_join(naics_counts_nosub) %>%
   rename(count_no_subs = N) %>%
   mutate(label_w_subs = ifelse(.data$count_w_subs > 0, paste0(.data$name, ' (',
-                                                        prettyNum(.data$count_w_subs, big.mark = ','),' sites)'),
+                                                              prettyNum(.data$count_w_subs, big.mark = ','),' sites)'),
                                name
   ),
   label_no_subs = ifelse(!is.na(count_no_subs) & count_no_subs > 0,
@@ -157,5 +156,6 @@ naics_counts <- enframe(NAICS,value = 'NAICS') %>%
                          name)
   )
 
-usethis::use_data(naics_counts, overwrite = TRUE)
+# usethis::use_data(naics_counts, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("naics_counts")
 

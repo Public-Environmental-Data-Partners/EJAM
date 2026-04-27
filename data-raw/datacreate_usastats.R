@@ -203,14 +203,14 @@ gc()
 setDF(usastats)    #   do we want it as data.frame??
 setDF(statestats)  #   do we want it as data.frame??
 
-# EJAM:::metadata_add_and_use_this("usastats")
-# EJAM:::metadata_add_and_use_this("statestats")
+EJAM:::metadata_add_and_use_this("usastats")
+EJAM:::metadata_add_and_use_this("statestats")
 
-usastats <- EJAM:::metadata_add(usastats)
-statestats <- EJAM:::metadata_add(statestats)
-
-usethis::use_data(usastats, overwrite = TRUE)
-usethis::use_data(statestats, overwrite = TRUE)
+# usastats <- EJAM:::metadata_add(usastats)
+# statestats <- EJAM:::metadata_add(statestats)
+#
+# usethis::use_data(usastats, overwrite = TRUE)
+# usethis::use_data(statestats, overwrite = TRUE)
 ################################################### ################## #
 
 #  UPDATE THE DOCUMENTATION ####

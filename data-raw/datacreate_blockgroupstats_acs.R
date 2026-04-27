@@ -108,9 +108,9 @@ blockgroupstats_env <-
 
 warning('be sure you are ready to replace/update metadata and save in package')
 
-# EJAM:::metadata_add_and_use_this(blockgroupstats_acs)
-
-usethis::use_data(blockgroupstats_acs, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("blockgroupstats_acs")
+EJAM:::metadata_add_and_use_this("blockgroupstats")
+# usethis::use_data(blockgroupstats_acs, overwrite = TRUE)
 # usethis::use_data(blockgroupstats, overwrite = TRUE)
 
 cat("Metadata was updated, and new object added to /data/ folder for use in package \n")

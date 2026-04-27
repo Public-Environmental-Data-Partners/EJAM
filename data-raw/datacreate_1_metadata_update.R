@@ -6,9 +6,8 @@
 ############################################################ #
 
 #   see EJAM:::metadata_check()
-
-# then
-#   see metadata_update_attr()
+#   see EJAM:::metadata_update_attr()
+#   see EJAM:::metadata_add_and_use_this()
 
 ############################################################ #
 

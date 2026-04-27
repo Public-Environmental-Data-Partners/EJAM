@@ -44,17 +44,18 @@ epa_programs_defined$Comments <- NULL
 return(epa_programs_defined)
 
 }
-#################################### # 
+#################################### #
 
 
 epa_programs_defined <- epa_programs_defined_download_update()
-rm(epa_programs_defined_download_update) # cleanup 
+rm(epa_programs_defined_download_update) # cleanup
 
-epa_programs_defined <- metadata_add(epa_programs_defined)
-usethis::use_data(epa_programs_defined, overwrite = TRUE)
+# epa_programs_defined <- metadata_add(epa_programs_defined)
+# usethis::use_data(epa_programs_defined, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("epa_programs_defined")
 
-dataset_documenter(varname = "epa_programs_defined", 
-                   title = "Full names and definitions for acronyms of EPA programs in Facility Registry Services (FRS)", 
+dataset_documenter(varname = "epa_programs_defined",
+                   title = "Full names and definitions for acronyms of EPA programs in Facility Registry Services (FRS)",
                    seealso = "[epa_programs]")
 
 cat("Done updating and documenting the dataset 'epa_programs_defined' \n")

@@ -13,9 +13,9 @@ sic_counts_names <- tibble::enframe(SIC) %>%
 
 names(SIC) <- names(sic_counts_names)
 
-attr(SIC, "date_saved_in_package") <- as.character(Sys.Date())
-
-usethis::use_data(SIC, overwrite=T)
+# attr(SIC, "date_saved_in_package") <- as.character(Sys.Date())
+# usethis::use_data(SIC, overwrite=T)
+EJAM:::metadata_add_and_use_this("SIC")
 save(SIC, file = '../misc/SIC.rda')
 
 ### AND SEE  EJAM/data-raw/datacreate_sictable.R

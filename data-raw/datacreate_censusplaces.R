@@ -137,10 +137,10 @@ setDF(censusplaces)
 ############################ ############################# #
 # metadata ####
 attr(censusplaces, "date_created") <- Sys.Date()
-censusplaces <- metadata_add(censusplaces)
-############################ ############################# #
+# censusplaces <- metadata_add(censusplaces)
 # use_data ####
-usethis::use_data(censusplaces, overwrite = TRUE)
+# usethis::use_data(censusplaces, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("censusplaces")
 ############################ ############################# #
 # documentation ####
 dataset_documenter('censusplaces',

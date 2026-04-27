@@ -529,12 +529,14 @@
 
   ## note this is just saved / archived script that had been used to create the first version of this object that stores formulas,
   ## so the dates here do not need to be updated anymore as this is no longer used during yearly updates.
-  ejam_package_version = "2.5.0",
-  ejscreen_version = c(VersionEJSCREEN = "2.5"),
-  ejscreen_releasedate = c(ReleaseDateEJSCREEN = "2026"),
-  acs_releasedate = c(ReleaseDateACS = "2026-01"),
-  acs_version = c(VersionACS = "2010-2024"),
-  census_version = c(VersionCensus = "2020"),
+
+  # "VersionDate"
+  ejam_package_version = desc::desc_get("Version"),             # c(Version = "2.5.0"),
+  ejscreen_version     = desc::desc_get("VersionEJSCREEN"),     # c(VersionEJSCREEN = "2.5"),
+  ejscreen_releasedate = desc::desc_get("ReleaseDateEJSCREEN"), # c(ReleaseDateEJSCREEN = "2026"),
+  acs_releasedate      = desc::desc_get("ReleaseDateACS"),      # c(ReleaseDateACS = "2026-01"),
+  acs_version          = desc::desc_get("VersionACS"),          # c(VersionACS = "2010-2024"),
+  census_version       = desc::desc_get("VersionCensus"),       # c(VersionCensus = "2020"),
   date_saved_in_package = Sys.Date(),
 
   row.names = c(NA, -194L),
@@ -729,6 +731,7 @@
   # 16                       lan_arabic
   # 17                        lan_other
   ### from C16001
+
   info_for_map_headernames <- data.frame(rname  = formulas_ejscreen_acs_newrows[formulas_ejscreen_acs_newrows$rname == formulas_ejscreen_acs_newrows$longname,'longname'],
                                          longname = gsub("lan_", "People speaking ", gsub("pctlan_", "% speaking ", formulas_ejscreen_acs_newrows[formulas_ejscreen_acs_newrows$rname == formulas_ejscreen_acs_newrows$longname,'longname']))
   )
@@ -748,6 +751,24 @@
 
   #################################################################### #################################### #
 
+
+
+
+  message("SAVING FORMULAS, AND CAN USE IN CREATING INITIAL blockgroupstats table from raw acs as with acs_bybg()
+        or newer get_acs_new_dat() but  then need final steps for Demog.Index scores and for disability by blockgroup not tract")
+
+  ### confirmed all of tables are mentioned among formulas created here
+  # for (i in 1:length(tables)) {cat(tables[i]); print( any(grepl(tables[i], EJAM::formulas_ejscreen_acs$formula))) }
+  # cbind(tables, concept = v22$concept[match(tables, v22$table)] )
+
+
+  # # ######################### ## ######################### ## ######################### #
+
+  EJAM:::dataset_documenter("formulas_ejscreen_acs",
+                            description = "Formulas and metadata about Census ACS variables and how to calculate indicators from those raw Census variables, such as creating pctunder5 starting from ACS table B01001 variables.",
+                            details = "[Formulas as documented by EPA were archived here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)",
+                            seealso = "[tables_ejscreen_acs] ")
+  # # ######################### ## ######################### ## ######################### #
   ## save
 
   ## fixed like this
@@ -756,11 +777,17 @@
 ## updated:
 #    attr(formulas_ejscreen_acs, "date_saved_in_package") <- as.character(Sys.Date())
 
-  usethis::use_data(formulas_ejscreen_acs, overwrite = TRUE)
+  EJAM:::metadata_add_and_use_this("formulas_ejscreen_acs")
+
+  # usethis::use_data(formulas_ejscreen_acs, overwrite = TRUE)
 
   #################################################################### #################################### #
+  # # ######################### ## ######################### ## ######################### #
+
 
   ## language vars in EJAM
+
+
   bg = data.table::copy(EJAM::blockgroupstats); bg= data.table::setDF(bg)
   varnames = grep("lan_|_li", names(bg), value = T)
   varnames = c("pop", "hhlds",  "bgfips", varnames)
@@ -941,24 +968,4 @@
 
 ############################################################## #
 
-message("SAVING FORMULAS, AND CAN USE IN CREATING INITIAL blockgroupstats table from raw acs as with acs_bybg()
-        or newer get_acs_new_dat() but  then need final steps for Demog.Index scores and for disability by blockgroup not tract")
 
-### confirmed all of tables are mentioned among formulas created here
-# for (i in 1:length(tables)) {cat(tables[i]); print( any(grepl(tables[i], EJAM::formulas_ejscreen_acs$formula))) }
-# cbind(tables, concept = v22$concept[match(tables, v22$table)] )
-
-
-# formulas_ejscreen_acs  saved for use in package
-
-# EJAM:::metadata_add_and_use_this("formulas_ejscreen_acs")
-## or if that is not working right, do this way:
-
-formulas_ejscreen_acs <- EJAM:::metadata_add(formulas_ejscreen_acs)
-usethis::use_data(formulas_ejscreen_acs, overwrite = T)
-
-
-EJAM:::dataset_documenter("formulas_ejscreen_acs",
-                          description = "Formulas and metadata about Census ACS variables and how to calculate indicators from those raw Census variables, such as creating pctunder5 starting from ACS table B01001 variables.",
-                          details = "[Formulas as documented by EPA were archived here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)",
-                          seealso = "[tables_ejscreen_acs] ")

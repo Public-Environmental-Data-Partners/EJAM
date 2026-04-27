@@ -136,6 +136,6 @@ blockgroupstats[bg_disability, disability := disability, on = "bgfips"]
 blockgroupstats[bg_disability, disab_universe := disab_universe, on = "bgfips"]
 blockgroupstats[bg_disability, pctdisability := pctdisability, on = "bgfips"]
 
-EJAM:::metadata_add_and_use_this(blockgroupstats)
+EJAM:::metadata_add_and_use_this("blockgroupstats")
 
 ##################################################################### ###################################################################### #

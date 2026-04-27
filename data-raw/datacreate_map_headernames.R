@@ -46,9 +46,10 @@ if (!exists("fpath")) {
 } else {
   map_headernames <- datacreate_map_headernames(fpath)
 }
-
-map_headernames <- metadata_add(map_headernames)
-usethis::use_data(map_headernames, overwrite = TRUE)
+## metadata ####
+# map_headernames <- metadata_add(map_headernames)
+# usethis::use_data(map_headernames, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("map_headernames")
 
 rm(datacreate_map_headernames)
 

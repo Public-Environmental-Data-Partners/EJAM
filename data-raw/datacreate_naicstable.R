@@ -23,9 +23,9 @@ naicstable[ , n6 := substr(code,1,6)]
 # data.table::setcolorder(naicstable, neworder = c(""))
 naicstable <- naicstable[ , .(code, n2, n3, n4, n5, n6, name, num_name)]
 
-attr(naicstable, "date_saved_in_package") <- as.character(Sys.Date())
-
-usethis::use_data(naicstable, overwrite = TRUE)
+# attr(naicstable, "date_saved_in_package") <- as.character(Sys.Date())
+# usethis::use_data(naicstable, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("naicstable")
 
 dataset_documenter("naicstable",
                    title = "naicstable (DATA) data.table of NAICS code(s) and industry names for each EPA-regulated site",

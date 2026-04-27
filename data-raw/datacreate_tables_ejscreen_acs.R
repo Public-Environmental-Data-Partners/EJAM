@@ -68,11 +68,11 @@ EJAM:::dataset_documenter("tables_ejscreen_acs", seealso = "[formulas_ejscreen_a
 
 ## ######################### #
 
-# EJAM:::metadata_add_and_use_this("tables_ejscreen_acs")
-tables_ejscreen_acs <- EJAM:::metadata_add(tables_ejscreen_acs)
+EJAM:::metadata_add_and_use_this("tables_ejscreen_acs")
+# tables_ejscreen_acs <- EJAM:::metadata_add(tables_ejscreen_acs)
+# usethis::use_data(tables_ejscreen_acs, overwrite = TRUE)
+
 print(tables_ejscreen_acs)
 print(as.vector(tables_ejscreen_acs))
-
-usethis::use_data(tables_ejscreen_acs, overwrite = TRUE)
 
 # then do devtools::document()

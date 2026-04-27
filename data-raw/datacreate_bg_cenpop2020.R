@@ -89,8 +89,9 @@ sum(bg_cenpop2020$pop2020)
 sum(blockgroupstats$pop, na.rm = T)
 ####################################################### #
 
-bg_cenpop2020 <-  metadata_add(bg_cenpop2020)
-usethis::use_data(bg_cenpop2020, overwrite = TRUE)
+# bg_cenpop2020 <-  metadata_add(bg_cenpop2020)
+# usethis::use_data(bg_cenpop2020, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("bg_cenpop2020")
 
 dataset_documenter('bg_cenpop2020',
   title = "bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups",

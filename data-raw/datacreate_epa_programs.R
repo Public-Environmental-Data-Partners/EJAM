@@ -27,7 +27,7 @@ epa_programs_counts <- epa_programs_counts[order(-count), ]
 #  GET THE PROGRAM NAME AND FULL DEFINITION
 
 setDT(epa_programs_counts,  key = "program")        # was already a data.table
-setDT(epa_programs_defined, key = "PGM_SYS_ACRNM")  # normally has been a data.frame 
+setDT(epa_programs_defined, key = "PGM_SYS_ACRNM")  # normally has been a data.frame
 
 epa_programs_counts <- epa_programs_defined[epa_programs_counts, .(program, count, PGM_SYS_NAME, PGM_SYS_DESC)]
 setDF(epa_programs_defined)
@@ -38,10 +38,10 @@ setDF(epa_programs_defined)
 
 ######################################################################################################## #
 
-#  WHICH PROGRAMS TO KEEP FOR THE PULLDOWN LIST? 
+#  WHICH PROGRAMS TO KEEP FOR THE PULLDOWN LIST?
 
 ######################################################### #
-## AT LEAST DROP THE CLEARLY STATE-SPECIFIC ONES/ PARTNERS  
+## AT LEAST DROP THE CLEARLY STATE-SPECIFIC ONES/ PARTNERS
 #
 epa_programs_counts$fed = !grepl("^[A-Z]{2}[-]", as.vector(epa_programs_counts$program), 1, 3)
 
@@ -88,14 +88,14 @@ epa_programs_counts$fed = !grepl("^[A-Z]{2}[-]", as.vector(epa_programs_counts$p
 # drop some others
 
 othernonfedepa = c("ACES", "AZURITE", "BIA INDIAN SCHOOL",
-                "CARB-TCH", "CASWIS", "CDAFLP", "CEDS", "CIM", "CNFRS", 
+                "CARB-TCH", "CASWIS", "CDAFLP", "CEDS", "CIM", "CNFRS",
                 "DEN", "DTSC-ENVIROSTOR",
                 "FARR", "FDM", "FIS",
                 "GEIMS", "HWTS-DATAMART",
                 "IDDEQ", "IDNR_EFD", "ISD",
-                "MERI-FIS", "NDEQ", "NNEMS", 
+                "MERI-FIS", "NDEQ", "NNEMS",
                 "PDS", "PERMIT TRACKING", "REGION",
-                "SIMS", "SRPMICEMS", "STATE", 
+                "SIMS", "SRPMICEMS", "STATE",
                 "TEST", "UORS", "WDEQ")
 
 epa_programs_counts$fed[epa_programs_counts$program %in% othernonfedepa] <- FALSE
@@ -132,8 +132,8 @@ epa_programs_counts[epa_programs_counts$fed,c(1:3,5)]
    # 21:      SSTS  15945                                                           SECTION SEVEN TRACKING SYSTEM
    # 22:     SWIPR     26                                            SUBPART W IMPOUNDMENT PHOTOGRAPHIC REPORTING
    # 23:       UST    658                                                                UNDERGROUND STORAGE TANK
-   # program  count                                                                            PGM_SYS_NAME                
- 
+   # program  count                                                                            PGM_SYS_NAME
+
 # maybe keep some of those?
 
 maybe_keep_not_in_frsprogramcodes_echo <- c(
@@ -152,7 +152,7 @@ epa_programs_counts$fed[epa_programs_counts$program %in% maybe_keep_not_in_frspr
 
 epa_programs_counts <- epa_programs_counts[fed == TRUE, ]
 epa_programs_counts$fed <- NULL
-                    
+
 # DROP INTERNAL-ONLY ONES
 
 epa_programs_counts <- epa_programs_counts[ (epa_programs_counts$program %in% epa_programs_defined$PGM_SYS_ACRNM), ] # removes 3 internal-only ones
@@ -218,12 +218,12 @@ epa_programs_counts[,1:3]
 # 13 Biennial Reporters (BR) Hazardous Waste Treatment, Storage, Disposal Facilities       BR
 
 setdiff(frsprogramcodes$code, epa_programs_counts$program)
-# [1] "RMP"  # we lack RMP site info from the frs_by_program 
+# [1] "RMP"  # we lack RMP site info from the frs_by_program
 
 setdiff_yx(frsprogramcodes$code, epa_programs_counts$program)
-# [1] "AIRS/AFS"  "AIRS/AQS"  "BRAC"      "CEDRI"     "ECRM"      "EGRID"     "EIA-860"   "EPS"       "FFDOCKET"  "FFEP"     
-# [11] "ICIS"      "LMOP"      "LUST-ARRA" "NCDB"      "OSHA-OIS"  "OTAQREG"   "RADINFO"   "RBLC"      "RFS"       "SSTS"     
-# [21] "SWIPR"     "UST" 
+# [1] "AIRS/AFS"  "AIRS/AQS"  "BRAC"      "CEDRI"     "ECRM"      "EGRID"     "EIA-860"   "EPS"       "FFDOCKET"  "FFEP"
+# [11] "ICIS"      "LMOP"      "LUST-ARRA" "NCDB"      "OSHA-OIS"  "OTAQREG"   "RADINFO"   "RBLC"      "RFS"       "SSTS"
+# [21] "SWIPR"     "UST"
 
 epa_programs_counts[epa_programs_counts$program %in% setdiff( epa_programs_counts$program, frsprogramcodes$code), 1:3]
 
@@ -274,32 +274,32 @@ data.table::setcolorder(epa_programs_counts, c('count', 'program', 'shortname', 
 
 #  OR JUST USE A VERY, VERY SHORT LIST TO LIMIT IT TO ONLY GROUPS THAT CAN BE FINISHED QUICKLY, <5K OR 10K FACILITIES EACH
 
-# ejamit() analyzes about 6,000 sites per minute, 
+# ejamit() analyzes about 6,000 sites per minute,
 # so analyzing more than 3,000 seems too slow for a public tool.
 # Those could be cached or later optimized for speed.
 # but ALL of the interesting groups are >5k sites each except CAMDBS.
 # only 3 groups have < 10k each
-# 36k are in ACRES, Brownfields. 
+# 36k are in ACRES, Brownfields.
 # 192 MB file. Takes 8 minutes total. 4 minutes to do getblocks alone. too long.
 #  48 MB file if delete the bybg table which took 3/4 of the total space!
 ## offer those as cached results, or not at all.
 
 veryshort = c(
-  "BR", "CAMDBS", "E-GGRT", "SEMS", "TSCA", "TRIS", 
+  "BR", "CAMDBS", "E-GGRT", "SEMS", "TSCA", "TRIS",
   "ACRES", "EGRID"
 )
 setdiff(epa_programs_counts$program, veryshort)
 
-# "AIR"  "EIS"   "NPDES"  "SFDW"    "RCRAINFO"   # all are huge groups 
+# "AIR"  "EIS"   "NPDES"  "SFDW"    "RCRAINFO"   # all are huge groups
 
-epa_programs_counts <- epa_programs_counts[order(epa_programs_counts$count), ]  
+epa_programs_counts <- epa_programs_counts[order(epa_programs_counts$count), ]
 
 epa_programs_counts[epa_programs_counts$program %in% veryshort, 1:3]
 epa_programs_counts[ , 1:3]
 
-# JUST USE A VERY, VERY SHORT LIST 
+# JUST USE A VERY, VERY SHORT LIST
   epa_programs_counts <- epa_programs_counts[epa_programs_counts$program %in% veryshort, ]
- 
+
 
 ######################################################### #
 
@@ -324,9 +324,9 @@ epa_programs_counts[ , 1:3]
 # 13 Biennial Reporters (BR) Hazardous Waste Treatment, Storage, Disposal Facilities       BR                                                                 BIENNIAL REPORTERS
 
 # cbind(nchar(frsprogramcodes$description), nchar(epa_programs_counts$PGM_SYS_NAME[match(frsprogramcodes$code, epa_programs_counts$program)]))
-#  
+#
 # [1,]   60   60
-# [2,]   59   14  
+# [2,]   59   14
 # [3,]   64   57
 # [4,]   37   NA   RMP is not in epa_program_counts ?
 # [5,]   50   38
@@ -361,40 +361,40 @@ epa_programs <- setNames(epa_programs_counts$program, epa_programs_counts$pgm_te
 
 # > cbind(epa_programs)
 #                                                                                                    epa_programs
-# ACRES (35,582 sites) Assessment, Cleanup and Redevelopment Exchange System (ACRES) for Brownfields "ACRES"     
-# AIR (134,295 sites) Integrated Compliance Info System for Air (ICIS-Air)                           "AIR"       
-# BR (5,672 sites) Biennial Reporters (BR) Hazardous Waste Treatment, Storage, Disposal Facilities   "BR"        
-# CAMDBS (726 sites) Clean Air Markets Division (CAMD) Business System                               "CAMDBS"    
-# E-GGRT (6,084 sites) Greenhouse Gas Reporting Program (E-GGRT)                                     "E-GGRT"    
-# EIS (119,772 sites) Emissions Inventory System (EIS)                                               "EIS"       
-# NPDES (409,502 sites) National Pollutant Discharge Elimination System (ICIS-NPDES)                 "NPDES"     
-# RCRAINFO (525,179 sites) Resource Conservation and Recovery Act (RCRA) Info System                 "RCRAINFO"  
-# SEMS (11,217 sites) The Superfund Enterprise Management System (SEMS)                              "SEMS"      
-# SFDW (40,887 sites) The Safe Drinking Water Info System (SDWIS)                                    "SFDW"      
-# TRIS (34,147 sites) Toxics Release Inventory Program (TRI)                                         "TRIS"      
-# TSCA (13,581 sites) Toxic Substances Control Act (TSCA)                                            "TSCA"    
+# ACRES (35,582 sites) Assessment, Cleanup and Redevelopment Exchange System (ACRES) for Brownfields "ACRES"
+# AIR (134,295 sites) Integrated Compliance Info System for Air (ICIS-Air)                           "AIR"
+# BR (5,672 sites) Biennial Reporters (BR) Hazardous Waste Treatment, Storage, Disposal Facilities   "BR"
+# CAMDBS (726 sites) Clean Air Markets Division (CAMD) Business System                               "CAMDBS"
+# E-GGRT (6,084 sites) Greenhouse Gas Reporting Program (E-GGRT)                                     "E-GGRT"
+# EIS (119,772 sites) Emissions Inventory System (EIS)                                               "EIS"
+# NPDES (409,502 sites) National Pollutant Discharge Elimination System (ICIS-NPDES)                 "NPDES"
+# RCRAINFO (525,179 sites) Resource Conservation and Recovery Act (RCRA) Info System                 "RCRAINFO"
+# SEMS (11,217 sites) The Superfund Enterprise Management System (SEMS)                              "SEMS"
+# SFDW (40,887 sites) The Safe Drinking Water Info System (SDWIS)                                    "SFDW"
+# TRIS (34,147 sites) Toxics Release Inventory Program (TRI)                                         "TRIS"
+# TSCA (13,581 sites) Toxic Substances Control Act (TSCA)                                            "TSCA"
 
 ############################################################# #
 
 # SORT BY COUNT FROM LOW TO HIGH, for pulldown
 
-epa_programs <- epa_programs[order(epa_programs_counts$count)]  
+epa_programs <- epa_programs[order(epa_programs_counts$count)]
 
 ############################################################# #
 
 # Finally, save it in the EJAM/data/ folder for use as a dataset loaded with the EJAM package:
 
-epa_programs <- metadata_add(epa_programs)
-usethis::use_data(epa_programs, overwrite = TRUE)
+# epa_programs <- metadata_add(epa_programs)
+# usethis::use_data(epa_programs, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("epa_programs")
 
 cat("UPDATED DOCUMENTATION OF THIS DATA SET MANUALLY - HELP DOC IS A BIT COMPLICATED\n")
 if (rstudioapi::isAvailable()) {
     rstudioapi::documentOpen('./R/data_epa_programs.R')
 }
-
 ############################################################################################ #
 
-# ***  note `epa_programs` is a complete list and has counts, while 
+# ***  note `epa_programs` is a complete list and has counts, while
 #  `frsprogramcodes` has the full titles but only about a dozen key programs and no counts.
 
 #   frsprogramcodes
@@ -413,6 +413,6 @@ if (rstudioapi::isAvailable()) {
 # 12   Assessment, Cleanup and Redevelopment Exchange System (ACRES) for Brownfields    ACRES
 # 13 Biennial Reporters (BR) Hazardous Waste Treatment, Storage, Disposal Facilities       BR
 
-# (frsprogramcodes.rda is tiny and not a table so cannot use .arrow for it  
+# (frsprogramcodes.rda is tiny and not a table so cannot use .arrow for it
 #  - see EJAM/data-raw/datacreate_frsprogramcodes.R )
 ############################################################################################ #

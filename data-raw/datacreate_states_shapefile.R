@@ -55,10 +55,10 @@ states_shapefile <- sf::st_read(td)
 attr(states_shapefile, "source_url")       <- baseurl
 attr(states_shapefile, "date_downloaded")       <- as.character(Sys.Date())
 attr(states_shapefile, "date_saved_in_package") <- as.character(Sys.Date())
-
 print(attributes(states_shapefile))
 cat("saving in package\n")
-usethis::use_data(states_shapefile, overwrite = TRUE)
+# usethis::use_data(states_shapefile, overwrite = TRUE)
+ EJAM:::metadata_add_and_use_this("states_shapefile")
 
 dataset_documenter("states_shapefile",
                    title = "This is used to figure out which state contains each point (facility/site).",

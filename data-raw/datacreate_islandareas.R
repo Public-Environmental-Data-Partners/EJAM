@@ -1,3 +1,6 @@
+
+## script to read datafile_islandareas.csv, save it as a dataset in the R package, and document the object
+
 # x <-
 # "lat,lon,ST,limit,corner
 # 12.9515582,144.21516,GU,min,SW
@@ -35,17 +38,16 @@ islandareas_check <- structure(list(
 class = "data.frame",
 row.names = c(NA, -8L))
 
-
 getwd()
 
 islandareas <- as.data.frame(readr::read_csv("data-raw/datafile_islandareas.csv"))
 
 all.equal(islandareas_check, islandareas_check)
 
-
 writexl::write_xlsx(islandareas,    "./data-raw/datafile_islandareas.xlsx")
 
-usethis::use_data(islandareas, overwrite = TRUE)
+metadata_add_and_use_this("islandareas")
+# usethis::use_data(islandareas, overwrite = TRUE)
 
 dataset_documenter("islandareas",
                    "islandareas (DATA) table, bounds info on lat lon of US Island Areas",

@@ -57,9 +57,9 @@ formulas_ejscreen_demog_index$longname <- fixcolnames(formulas_ejscreen_demog_in
 
 ########################################################## #
 
-# EJAM:::metadata_add_and_use_this("formulas_ejscreen_demog_index")
-formulas_ejscreen_demog_index <- EJAM:::metadata_add(formulas_ejscreen_demog_index)
-usethis::use_data(formulas_ejscreen_demog_index, overwrite = T)
+# formulas_ejscreen_demog_index <- EJAM:::metadata_add(formulas_ejscreen_demog_index)
+# usethis::use_data(formulas_ejscreen_demog_index, overwrite = T)
+EJAM:::metadata_add_and_use_this("formulas_ejscreen_demog_index")
 
 EJAM:::dataset_documenter(
   "formulas_ejscreen_demog_index",
