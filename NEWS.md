@@ -16,6 +16,11 @@
 - Added functions that can update ACS-based demographic dataset each year: `calc_bgej()`, `calc_blockgroupstats_acs()`, `calc_blockgroupstats_from_tract_data()`, and related formulas and metadata such as in `formulas_ejscreen_acs`
 
 
+# Development branch after 2.32.8
+
+- Improved `ejamapi()` examples and error-checking, and had it use `url_ejamapi()`
+
+
 # EJAM 2.32.8 (April 2026)
 
 Released v2.32.8 initially on 4/13/2026
