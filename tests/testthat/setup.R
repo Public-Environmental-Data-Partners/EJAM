@@ -7,7 +7,9 @@ cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!
 # see also   testthat.R
 
 # # This script SHOULD get run before tests, so fixtures created here will be available to all the tests.
-# The file does NOT? do library(EJAM) - that would do .onAttach() and dataload_dynamic() and indexblocks()
+# The file now DOES do library(EJAM) - that would do .onAttach() and dataload_dynamic() and indexblocks()
+cat("\n\n      ------------------ NOW DOING library(EJAM) !!!!  -------------      \n\n")
+library(EJAM)
 
 # When tests try to test the shiny app, the app should handle using global_defaults_*.R
 

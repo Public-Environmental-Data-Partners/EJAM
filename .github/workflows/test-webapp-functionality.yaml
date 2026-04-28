@@ -15,7 +15,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     if: ${{ !github.event.repository.private }}
     name: test-webapp-functionality
 
@@ -25,6 +25,8 @@ jobs:
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GH_TOKEN: ${{ github.token }}
+      NOT_CRAN: true
+      SHINYTEST2_APP_DRIVER_TEST_ON_CRAN: 1
 
     steps:
       - uses: actions/checkout@v4
@@ -69,42 +71,42 @@ jobs:
 
       - name: FIPS UI test
         run: |
-          shinytest2::test_app(".", filter="FIPS-functionality")
+          shinytest2::test_app(".", filter="FIPS-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
       - name: FRS UI test
         run: |
-          shinytest2::test_app(".", filter="FRS-functionality")
+          shinytest2::test_app(".", filter="FRS-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
       - name: latlon UI test
         run: |
-          shinytest2::test_app(".", filter="latlon-functionality")
+          shinytest2::test_app(".", filter="latlon-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
       - name: NAICS UI test
         run: |
-          shinytest2::test_app(".", filter="NAICS-functionality")
+          shinytest2::test_app(".", filter="NAICS-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
       - name: shp-gdb-zip UI test
         run: |
-          shinytest2::test_app(".", filter="shp-gdb-zip-functionality")
+          shinytest2::test_app(".", filter="shp-gdb-zip-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
       - name: shp-json UI test
         run: |
-          shinytest2::test_app(".", filter="shp-json-functionality")
+          shinytest2::test_app(".", filter="shp-json-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
       - name: shp-unzip UI test
         run: |
-          shinytest2::test_app(".", filter="shp-unzip-functionality")
+          shinytest2::test_app(".", filter="shp-unzip-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
       - name: shp-zip UI test
         run: |
-          shinytest2::test_app(".", filter="shp-zip-functionality")
+          shinytest2::test_app(".", filter="shp-zip-functionality", check_setup = FALSE)
         shell: Rscript {0}
 
 ################## #

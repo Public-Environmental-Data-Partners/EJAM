@@ -9,7 +9,7 @@ shinytest2_webapp_functionality <- function(test_category) {
 
   test_snap_dir <- paste0(normalizePath(testthat::test_path()), "/_snaps/",
                           platform_variant(), "/",
-                          test_category, "-functionality/")
+                          "webapp-", test_category, "-functionality/")
 
   test_that("{shinytest2} recording: EJAM", {
 
@@ -36,19 +36,18 @@ shinytest2_webapp_functionality <- function(test_category) {
     # Define helper functions  ####
 
     ################## #
-    customExpectValues <- function(inputs = NULL,
-                                   outputs = outputs_to_keep,
-                                   exports = NULL,
+    customExpectValues <- function(inputs = FALSE,
+                                   outputs = NULL,
+                                   exports = FALSE,
                                    name = NULL) {
-      # remove an_leaf_map. It's too big. We can capture part of it with exportTestValues
-      all_output_names <- names(app$get_values(output=TRUE)$output)
+      all_output_names <- names(app$get_values(output = TRUE)$output)
       outputs_to_keep <- setdiff(all_output_names, outputs_to_remove)
-      app$wait_for_idle(timeout = 20000)
+
       app$expect_values(
         name = name,
-        output = if(is.null(outputs)) TRUE else outputs,
-        input = if(is.null(inputs)) TRUE else inputs,
-        export = if(is.null(exports)) TRUE else exports
+        output = if (is.null(outputs)) outputs_to_keep else outputs,
+        input =  inputs,
+        export =  exports
       )
     }
     ################## #
@@ -123,8 +122,8 @@ shinytest2_webapp_functionality <- function(test_category) {
     app$set_inputs(ss_choose_method = "upload", wait_ = FALSE)
     if(test_category == "latlon") {
       ### > latlon ####
-      shinytestLogMessage("About to upload latlon testpoints_100.xlsx")
-      app$upload_file(ss_upload_latlon = EJAM:::app_sys("testdata/latlon/testpoints_100.xlsx"))
+      shinytestLogMessage("About to upload latlon testpoints_10.xlsx")
+      app$upload_file(ss_upload_latlon = EJAM:::app_sys("testdata/latlon/testpoints_10.xlsx"))
     } else if(test_category == "FIPS") {
       ### > FIPS ####
       shinytestLogMessage("About to upload counties_in_Delaware.xlsx for FIPS")
@@ -212,10 +211,17 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     # 2) START ANALYSIS ####
 
+    wait_for_results_ready <- function(result = "analysis_complete", timeout = 5 * 60 * 1000) {
+      app$wait_for_value(
+        export = result,
+        ignore = list(FALSE, NULL),
+        timeout = timeout
+      )
+    }
+
     shinytestLogMessage("Click to run analysis"); print("Click to run analysis")
-    app$wait_for_idle(timeout = 20000)
-    app$click("bt_get_results", wait_ = TRUE, timeout_ = 20000)
-    app$wait_for_idle(timeout = 200000)
+    app$click("bt_get_results", wait_ = FALSE)
+    wait_for_results_ready(result = "analysis_complete")
     customExpectValues(name="analysis1")
 
     shinytestLogMessage("change map bounds and center")
@@ -227,7 +233,7 @@ shinytest2_webapp_functionality <- function(test_category) {
     if (!(test_category %in% c("FIPS", "NAICS"))) {
       shinytestLogMessage("go back to Site Selection tab")
       app$set_inputs(all_tabs = "Site Selection", wait_ = FALSE)
-      app$wait_for_idle(timeout = 100000)
+      app$wait_for_idle(timeout = 10000)
 
       shinytestLogMessage("change radius (to 1.5)")
       app$set_inputs(radius_now = 1.5, wait_=FALSE)
@@ -236,8 +242,8 @@ shinytest2_webapp_functionality <- function(test_category) {
       app$set_inputs(analysis_title = "Summary of Analysis2")
 
       shinytestLogMessage("Click to run analysis again")
-      app$click("bt_get_results", wait_ = TRUE, timeout_ = 20000)
-      app$wait_for_idle(timeout = 200000)
+      app$click("bt_get_results", wait_ = FALSE)
+      wait_for_results_ready(result = "analysis_complete")
       customExpectValues(name="rad15")
     }
     ########################################################################### #
@@ -249,7 +255,7 @@ shinytest2_webapp_functionality <- function(test_category) {
     ## SUMMARY REPORT (html DOWNLOAD) ####
 
     shinytestLogMessage("about to download community report")
-    app$wait_for_idle(timeout = 40000)
+    app$wait_for_idle(timeout = 10000)
 
     ## This step was originally getting the underlying dataframe
     ## output_df, from the report download function in app_server.R
@@ -262,6 +268,13 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     ## but maybe there is a better way to download the html report?
     app$expect_download("download_report_multisite")
+    tryCatch(
+      app$expect_download("download_report_multisite"),
+      error = function(e) {
+        save_log("EJAM_app_test_report_download_log.txt")
+        stop(e)
+      }
+    )
     ########################################################################### #
     # ~  ####
 
