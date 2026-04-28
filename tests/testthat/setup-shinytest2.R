@@ -21,7 +21,7 @@ shinytest2_webapp_functionality <- function(test_category) {
       variant = platform_variant(),
       name = test_category,
       seed=12345,
-      load_timeout=2e+06,
+      load_timeout=120*1000,
       width = 1920,
       screenshot_args = FALSE,
       expect_values_screenshot_args = FALSE,
@@ -64,7 +64,10 @@ shinytest2_webapp_functionality <- function(test_category) {
       new_path <- paste0(test_snap_dir,test_category,"-results-table.new.txt")
       file_exists <- file.exists(old_path)
       # , filename=paste0(normalizePath(testthat::test_path()),"/download_results.xlsx")
-      download_filepath <- tryCatch(app$get_download(outputId), error = function(cond) {
+      download_filepath <- tryCatch(
+        ## does it need to click the button here? or does get_download() do that?
+        app$get_download(outputId),
+        error = function(cond) {
         # save_log("EJAM_app_test_post_download.txt")
         shinytestLogMessage(conditionMessage(cond))
         # save_log("EJAM_app_test_post_download.txt")
@@ -172,7 +175,7 @@ shinytest2_webapp_functionality <- function(test_category) {
       app$set_inputs(ss_choose_method_drop = "NAICS", wait_ = FALSE) # this is default
       # cannot do 1111 - no longer exists with new UI - would need to switch to Detailed list
       # cannot do 111 - too large for shiny. Gets a memory issue and crashes
-      app$set_inputs(ss_select_naics = "114", wait_ = FALSE)#, timeout_ = 10000)
+      app$set_inputs(ss_select_naics = "114", wait_ = FALSE) #, timeout_ = 10000)
     }
 
     if (test_category == "FIPS-picker") {
@@ -211,7 +214,7 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     # 2) START ANALYSIS ####
 
-    wait_for_results_ready <- function(result = "analysis_complete", timeout = 5 * 60 * 1000) {
+    wait_for_results_ready <- function(result = "analysis_complete", timeout = 2 * 60 * 1000) {
       app$wait_for_value(
         export = result,
         ignore = list(FALSE, NULL),
@@ -225,15 +228,29 @@ shinytest2_webapp_functionality <- function(test_category) {
     customExpectValues(name="analysis1")
 
     shinytestLogMessage("change map bounds and center")
-    app$set_inputs(quick_view_map_bounds = c("north" = 48.86471476180279, "east" = -49.17480468750001, "south" = 35.9602229692967, "west" = -130.7373046875), allow_no_input_binding_ = TRUE)
-    app$set_inputs(quick_view_map_center = c("lng" = -89.9560546875, "lat" = 42.74701217318067), allow_no_input_binding_ = TRUE)
+    app$set_inputs(
+      quick_view_map_bounds = list(
+        north = 48.86471476180279,
+        east = -49.17480468750001,
+        south = 35.9602229692967,
+        west = -130.7373046875
+      ),
+      allow_no_input_binding_ = TRUE
+    )
+    app$set_inputs(
+      quick_view_map_center = list(
+        lng = -89.9560546875,
+        lat = 42.74701217318067
+      ),
+      allow_no_input_binding_ = TRUE
+    )
 
     # CHANGE radius/title, RE-RUN ANALYSIS ####
 
     if (!(test_category %in% c("FIPS", "NAICS"))) {
       shinytestLogMessage("go back to Site Selection tab")
       app$set_inputs(all_tabs = "Site Selection", wait_ = FALSE)
-      app$wait_for_idle(timeout = 10000)
+      app$wait_for_idle(timeout = 5 * 1000)
 
       shinytestLogMessage("change radius (to 1.5)")
       app$set_inputs(radius_now = 1.5, wait_=FALSE)
@@ -255,19 +272,21 @@ shinytest2_webapp_functionality <- function(test_category) {
     ## SUMMARY REPORT (html DOWNLOAD) ####
 
     shinytestLogMessage("about to download community report")
-    app$wait_for_idle(timeout = 10000)
+    # app$click("download_report_multisite", wait_ = FALSE) # error: Error in `app_find_node_id(self, private, input = input, output = output, selector = selector)`: Cannot find HTML element with selector #download_report_multisite.shiny-bound-input
+
+    wait_for_results_ready(result = "multisite_report_download_ready")
 
     ## This step was originally getting the underlying dataframe
     ## output_df, from the report download function in app_server.R
     ## because the actual downloaded report was large
     ## so the downloaded file was saved to the tempdir()
     ## and within that function, we called exportTestvalues() to save output_df
+    ##
+    ##   maybe there is a better way to download the html report? ***
     #
     # app$get_download("download_report_multisite")
     # customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
 
-    ## but maybe there is a better way to download the html report?
-    app$expect_download("download_report_multisite")
     tryCatch(
       app$expect_download("download_report_multisite"),
       error = function(e) {
@@ -282,19 +301,24 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     shinytestLogMessage("going to details tab")
     app$set_inputs(results_tabs = "Details")
-    app$wait_for_idle(timeout = 20000)
+    app$wait_for_idle(timeout = 5 * 1000)
+    shinytestLogMessage("should see the results table from details tab")
+    ## or could wait until available, with a timeout cap, as for html webview of summary report ***
     customExpectValues(name="site-by-site")
 
     ### > SITE by SITE (xlsx DOWNLOAD) ####
 
     shinytestLogMessage("downloading results table from details tab")
-    app$wait_for_idle(timeout = 50000)
-    # app$expect_download("download_results_spreadsheet")
 
-    # this downloads the xlsx report, based on the download_results_spreadsheet output in app_server.R
-    # since shinytest2 can't compare binary files, this custom download creates a hashed version
-    # and saves the hash to be compared in future test runs
-    custom_binary_xlsx_download("download_results_spreadsheet") # download xlsx file using the helper function
+    ## this downloads the xlsx report, based on the download_results_spreadsheet output in app_server.R
+    ## since shinytest2 can't compare binary files, this custom download creates a hashed version
+    ## and saves the hash to be compared in future test runs
+
+    # app$wait_for_idle(timeout = 60 * 1000)
+    # app$expect_download("download_results_spreadsheet") # use custom... func instead:
+    ## download xlsx file using the helper function
+    custom_binary_xlsx_download("download_results_spreadsheet")
+
     # save_log("EJAM_app_test_log_pre_results_download.txt")
     ########################################################################### #
 
@@ -305,25 +329,28 @@ shinytest2_webapp_functionality <- function(test_category) {
     if (test_category %in% c("latlon")) {
       shinytestLogMessage("going to plot_average details subtab")
       app$set_inputs(details_subtabs = "Plot Average Scores")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="plot_avg")
 
       shinytestLogMessage("Demographic summ_bar-ind")
       app$set_inputs(summ_bar_ind = "Demographic")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="demo")
 
       shinytestLogMessage("Environmental summ_bar_ind")
       app$set_inputs(summ_bar_ind = "Environmental")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="environ")
 
       if(app$get_value(input="include_ejindexes") == "TRUE") {
         shinytestLogMessage("EJ summ_bar-ind")
         app$set_inputs(summ_bar_ind = "EJ", wait_ = FALSE)
-        # app$wait_for_idle(timeout = 10000)
+        app$wait_for_idle(timeout = 5 * 1000)
         customExpectValues(name="EJ-ind")
 
         shinytestLogMessage("EJ supplemental")
         app$set_inputs(summ_bar_ind = "EJ Supplemental", wait_ = FALSE)
-        # app$wait_for_idle(timeout = 10000)
+        app$wait_for_idle(timeout = 5 * 1000)
         customExpectValues(name="EJ-Supp")
       }
 
@@ -331,39 +358,49 @@ shinytest2_webapp_functionality <- function(test_category) {
 
       shinytestLogMessage("going to plot_range details subtab")
       app$set_inputs(details_subtabs = "Plot Full Range of Scores")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="plot_rng")
 
       shinytestLogMessage("histogram of Sites")
       app$set_inputs(summ_hist_distn = "Sites")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-sites")
 
       shinytestLogMessage("histogram of raw data")
       app$set_inputs(summ_hist_data = "raw")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-raw")
 
       shinytestLogMessage("histogram with 15 bins, 20 bins")
       app$set_inputs(summ_hist_bins = 15)
+      app$wait_for_idle(timeout = 5 * 1000)
       app$set_inputs(summ_hist_bins = 20)
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-bins20")
 
       shinytestLogMessage("histogram of People")
       app$set_inputs(summ_hist_distn = "People")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-ppl")
 
       shinytestLogMessage("histogram of percentiles across people")
       app$set_inputs(summ_hist_data = "pctile")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-pctile")
 
       shinytestLogMessage("histogram of pctile Demog Index Supp")
-      app$set_inputs(summ_hist_ind = "pctile.Demog.Index.Supp") # or just Demog.Index.Supp ?
+      app$set_inputs(summ_hist_ind = "Demog.Index.Supp", allow_no_input_binding_ = TRUE)
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-demo")
 
       shinytestLogMessage("histogram of raw scores across people")
       app$set_inputs(summ_hist_data = "raw")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-raw2")
 
       shinytestLogMessage("histogram of percent low income")
-      app$set_inputs(summ_hist_ind = "pctlowinc")
+      app$set_inputs(summ_hist_ind = "pctlowinc", allow_no_input_binding_ = TRUE)
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-lowinc")
     }
     ########################################################################### #

@@ -1812,7 +1812,11 @@ app_server <- function(input, output, session) {
   analysis_complete <- reactiveVal(FALSE)
   if (isTRUE(getOption("shiny.testmode"))) {
     shiny::exportTestValues(
-      analysis_complete = analysis_complete()
+      analysis_complete = analysis_complete(),
+      multisite_report_download_ready =
+        download_ready_for_report_header_and_tables() &&
+        download_ready_for_report_map() &&
+        download_ready_for_report_plot()
     )
   }
 
