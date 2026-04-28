@@ -12,12 +12,33 @@ calc_blockgroupstats_acs(
 )
 }
 \arguments{
-\item{yr}{end year of 5-year ACS dataset, guesses if not specified}
+\item{yr}{end year of 5-year ACS dataset, guessed if not specified}
+
+\item{formulas}{default is formulas used by EJAM/EJScreen.
+A vector of string formulas such as
+c("pop = B01001_001", "hisp = B03002_012", "pcthisp <- ifelse(pop==0, 0, as.numeric(hisp ) / pop)")}
+
+\item{tables}{default is the key ACS tables needed by EJAM/EJScreen.
+A vector of ACS table numbers, such as c("B01001", "B03002")}
+
+\item{dropMOE}{logical, whether to drop and not retain the margin of error information on every ACS variable}
 }
 \value{
 data.table, one row per blockgroup, columns bgfips, etc.
 }
 \description{
 utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs
+}
+\details{
+This is meant to be used annually for updating EJScreen demographic indicators
+from the Census Bureau American Community Survey (ACS) 5-year summary file, to update the datasets in the package.
+This would normally be called from the script in \code{datacreate_blockgroupstats_acs.R}, which is in the source package folder "data-raw"
+
+Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
+which is documented at https://ejanalysis.github.io/ACSdownload
+}
+\seealso{
+\code{\link[=calc_blockgroupstats_acs]{calc_blockgroupstats_acs()}} \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupstats_from_tract_data()}} \code{\link[=calc_bgej]{calc_bgej()}}
+\code{\link[=formulas_ejscreen_acs]{formulas_ejscreen_acs()}} \code{\link[=formulas_ejscreen_acs_disability]{formulas_ejscreen_acs_disability()}} \code{\link[=formulas_ejscreen_demog_index]{formulas_ejscreen_demog_index()}}
 }
 \keyword{internal}

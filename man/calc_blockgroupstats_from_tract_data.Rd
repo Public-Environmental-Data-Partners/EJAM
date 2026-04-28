@@ -7,7 +7,7 @@
 calc_blockgroupstats_from_tract_data(
   yr,
   tables = c("B18101", "C16001"),
-  formulas,
+  formulas = NULL,
   dropMOE = TRUE
 )
 }
@@ -15,6 +15,11 @@ calc_blockgroupstats_from_tract_data(
 \item{yr}{endyear of ACS 5-year survey to use, inferred if omitted}
 
 \item{tables}{"B18101" and "C16001", e.g., for disability and detailed language spoken}
+
+\item{formulas}{default includes formulas for disability-related and language-related indicators
+calculated from ACS variables found in tables "B18101" and "C16001" - This is a vector of string formulas.}
+
+\item{dropMOE}{logical, whether to drop not retain the margin of error information for each ACS variable}
 }
 \value{
 data.table, one row per blockgroup (not tract)
@@ -23,9 +28,13 @@ data.table, one row per blockgroup (not tract)
 utility to calculate annually for EJSCREEN the updated ACS data available at only tract resolution (\% disability & language detail)
 }
 \details{
+This would normally be called from the script in \code{datacreate_blockgroupstats_acs.R}, which is in the source package folder "data-raw"
+
+Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()
+
 Needs Census API key for \code{\link[tidycensus:get_decennial]{tidycensus::get_decennial()}}.
 
-Takes some time to download data for every State.
+Takes some time to download data for every State!
 
 First get tract counts,
 then apportion into blockgroup counts,

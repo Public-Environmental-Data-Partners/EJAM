@@ -17,15 +17,15 @@ vars_missing = setdiff(vars, varsout)
 
 vars_missing
 #  "p_chinese" "p_korean"
-#   "count.NPL" "count.TSDF" "num_waterdis"  "num_airpoll" "num_brownfield" "num_tri"
+#   "count.NPL" "count.TSDF"
+#   "num_waterdis"  "num_airpoll" "num_brownfield" "num_tri"
 #   "num_school" "num_hospital"  "num_church"
 # "yesno_tribal" "yesno_airnonatt" "yesno_impwaters" "yesno_cejstdis"   "yesno_iradis"
 # "pctflood"  "pctfire"
 # "yesno_houseburden"  "yesno_transdis"  "yesno_fooddesert"
 # "pctnobroadband"  "pctnohealthinsurance"
 # "nonmins"
-# "count.ej.80up" "count.ej.80up.supp"
-# "count.ej.80up2.eo" "count.ej.80up2.supp" "state.count.ej.80up" "state.count.ej.80up.supp"
+# "count.ej.80up" "count.ej.80up.supp" "count.ej.80up2.eo" "count.ej.80up2.supp" "state.count.ej.80up" "state.count.ej.80up.supp"
 
 ########## #
 # INDICATORS NOT IN DATASET blockgroupstats, so probably cannot calculate (with some exceptions)

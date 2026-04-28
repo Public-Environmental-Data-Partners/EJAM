@@ -469,7 +469,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   if (is.null(calculatedcols)) {
     # should this be empty and let all be via "wtdmeancols" or "countcols" ? for now.
-    #  or  should this include all that could be calculated using formulas_all and calc_ejam() ?
+    #  or  should this include all that could be calculated using formulas  and calc_ejam() ?
 
     calculatedcols <- unique(c(
       'flagged'   #  "flagged" is not in names(blockgroupstats) so it gets dropped, but currently calculatedcols is not used at all anyway.

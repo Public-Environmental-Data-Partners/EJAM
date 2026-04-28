@@ -13,7 +13,7 @@
 #'
 acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 
-  if (missing(tables_acs)) {tables_acs <- as.vector(EJAM::tables_ejscreen_acs)}
+  if (missing(tables_acs)) {tables_acs <- as.vector(tables_ejscreen_acs)}
   if (missing(yr)) {yr <- acs_endyear(guess_census_has_published = T)}
   x = tidycensus::load_variables(yr, dataset = dataset, cache = T)
   x$table = gsub("^(.*)_.*$", "\\1", x$name)
@@ -31,19 +31,36 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 
 #' utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs
 #'
-#' @param yr end year of 5-year ACS dataset, guesses if not specified
+#' @details
+#' This is meant to be used annually for updating EJScreen demographic indicators
+#' from the Census Bureau American Community Survey (ACS) 5-year summary file, to update the datasets in the package.
+#' This would normally be called from the script in `datacreate_blockgroupstats_acs.R`, which is in the source package folder "data-raw"
+#'
+#' Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
+#' which is documented at https://ejanalysis.github.io/ACSdownload
+#'
+#' @param yr end year of 5-year ACS dataset, guessed if not specified
+#' @param formulas default is formulas used by EJAM/EJScreen.
+#'   A vector of string formulas such as
+#'   c("pop = B01001_001", "hisp = B03002_012", "pcthisp <- ifelse(pop==0, 0, as.numeric(hisp ) / pop)")
+#' @param tables default is the key ACS tables needed by EJAM/EJScreen.
+#'   A vector of ACS table numbers, such as c("B01001", "B03002")
+#' @param dropMOE logical, whether to drop and not retain the margin of error information on every ACS variable
 #'
 #' @return data.table, one row per blockgroup, columns bgfips, etc.
+#' @seealso [calc_blockgroupstats_acs()] [calc_blockgroupstats_from_tract_data()] [calc_bgej()]
+#'   [formulas_ejscreen_acs()] [formulas_ejscreen_acs_disability()] [formulas_ejscreen_demog_index()]
 #'
 #' @export
 #' @keywords internal
 #'
-calc_blockgroupstats_acs <- function(yr, formulas = EJAM::formulas_ejscreen_acs$formula,
+calc_blockgroupstats_acs <- function(yr,
+                                     formulas = EJAM::formulas_ejscreen_acs$formula,
                                      tables = as.vector(EJAM::tables_ejscreen_acs),
                                      dropMOE = TRUE) {
 
   if (!(require(ACSdownload))) {
-    stop("requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload")
+    stop("requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload and documented at https://ejanalysis.github.io/ACSdownload/")
   }
   # library(EJAM); library(dplyr); library(data.table)
 
@@ -55,6 +72,16 @@ calc_blockgroupstats_acs <- function(yr, formulas = EJAM::formulas_ejscreen_acs$
   ## Tract resolution survey data that has to be allocated to blockgroups.
   ## Check available resolution of each table here.
   x <- acs_table_info(yr = yr, tables_acs = tables, dataset = "acs5")
+  if (all(is.na(x$geography))) {
+    # tidycensus package has not yet updated the geo table, perhaps, as was the case as of April 27, 2026 for the ACS 2020-2024 data released in Jan 2026.
+    # assume geo resolution of each table number is same as prior year, for which it is already in the tidycensus pkg,
+    # and will hope the table numbers are still the same which is not always true
+    x <- acs_table_info(yr = as.numeric(yr) - 1, tables_acs = tables, dataset = "acs5")
+    if (all(is.na(x$geography))) {
+      # still a problem?? know it is available for 2023 dataset, and will hope the table numbers are still the same which is not always true
+      x <- acs_table_info(yr = 2023, tables_acs = tables, dataset = "acs5")
+    }
+  }
   tables_resolution = x$geography[ match(tables, x$table)] # geo res of first hit in x info, per table
   tables_bg    = tables[tables_resolution %in% "block group" ]
   tables_tract = tables[tables_resolution %in% "tract" ]

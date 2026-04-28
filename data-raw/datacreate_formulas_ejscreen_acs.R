@@ -4,6 +4,11 @@
 # this script was used once 11/2025 to update and save the formulas, but would not be used again in this form for annual updates of formulas
 # which would be done manually if necessary at all - sometimes table numbering changes in the ACS vs prior years
 
+# but was updated in 4/2026 !!
+
+## note this is just a saved / archived script that had been used to create the first version of this object that stores formulas,
+## so the dates here do not need to be updated anymore as this is no longer used during yearly updates.
+
 
 
 ############################################################## #
@@ -15,7 +20,7 @@
     ## see the list of relevant tables
     # ######################### ## ######################### ## ######################### #
 
-
+    # tables_ejscreen_acs is this package's version of that
     # ejscreen_acs_tables <- c(
     #
     #   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
@@ -92,6 +97,7 @@
   # Formulas etc. are documented at pages/docs linked here:  and  EJAM::url_ejscreentechdoc()
 
   ########################################################################################## #
+  # initial draft of formulas ####
 
   formulas_ejscreen_acs <- structure(list(
 
@@ -527,7 +533,7 @@
                 "names_d_language", NA, NA)
   ),
 
-  ## note this is just saved / archived script that had been used to create the first version of this object that stores formulas,
+  ## note this is just a saved / archived script that had been used to create the first version of this object that stores formulas,
   ## so the dates here do not need to be updated anymore as this is no longer used during yearly updates.
 
   # "VersionDate"
@@ -542,31 +548,45 @@
   row.names = c(NA, -194L),
   class = "data.frame")
 
-  ## fix duplicates from above
+  # added metadata ??? ####
 
-  formulas_ejscreen_acs[formulas_ejscreen_acs$rname %in% formulas_ejscreen_acs$rname[(duplicated(formulas_ejscreen_acs$rname))],]
+  ############################################################## ############################################################### #
+  # remove extra spaces from formulas ####
+  formulas_ejscreen_acs$formula <- gsub(" +", " ", formulas_ejscreen_acs$formula)
+
+  #  remove actual duplicates where every column is the same ####
+  formulas_ejscreen_acs <- formulas_ejscreen_acs[!duplicated(formulas_ejscreen_acs), ]
+
+  ## now check if the same rname defined more than once
+  x =  formulas_ejscreen_acs[formulas_ejscreen_acs$rname %in% formulas_ejscreen_acs$rname[(duplicated(formulas_ejscreen_acs$rname))],]
+  x =  x[order(x$rname), ]
+  cbind(x, duplicated(x))
+  ############################################################## ############################################################### #
+  # ~ ####
+
+  #  FIX LANGUAGE VARIABLES !! ####
+
+  ## >>   *** NEED TO FIX THIS language variable ?! ####
+  # ... but see later where language variables get worked on/cleaned up  ***
 
 
+  # shows that one was not a duplicate but was an error where the same rname was defined by two different formulas:
+  #                   rname                                                                                               formula longname_old
+  # 169        lan_other_ie                                                   lan_other_ie = B16004_009 + B16004_031 + B16004_053         <NA>
+  # 179        lan_other_ie                                                                             lan_other_ie = C16001_015         <NA>
+
+  # B16004 BLOCKGROUP. has english not well and not at all. B16004 (language category and) % of residents (not hhlds) speak no English at all. by 3 age groups. https://data.census.gov/table/ACSDT5Y2024.B16004
+  # C16001 TRACT ONLY. has english "less than very well"   C16001 languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc. https://data.census.gov/table/ACSDT5Y2024.C16001  has other indo-euro and has other and unspecified.
+  # C16002 (language category and) % of households limited English speaking (lingiso) https://data.census.gov/table/ACSDT5Y2024.C16002
 
 
-  ##   tables search
-  # endyr = acs_endyear(guess_census_has_published = T)
-  # x <- tidycensus::load_variables(endyr, "acs5")
-  # x[grepl("B28003", x$name) & "block group" == x$geography & !is.na(x$geography), ] |> print(n=10 )
-  # # health insurance tables/variables
-  # x[grepl("no health insurance", x$label, ignore.case = T) & "block group" == x$geography & !is.na(x$geography), ] |> print(n=100 )
-  #
-    #
-    # # ######################### ## ######################### ## ######################### #
-    # ## see the list of relevant tables
-    # # ######################### ## ######################### ## ######################### #
-    # ?tables_ejscreen_acs
-    #
-    # # ######################### ## ######################### ## ######################### #
+  ############################################################## ############################################################### #
+  #  language variables not ready yet but see below
+  ## The language variables need long names and clean up. map_headernames may need varlist and longname info for some.
 
   ############################################################## ############################################################### #
 
-  ##   ADD MORE LANGUAGE VARIABLES AND FORMULAS
+  ##  >>  add more lang variables and formulas  ####
 
   ## NOTES ON PROBLEMS IN LANGUAGE VARIABLES FROM 2022 DATA USED IN 2024-2025
   # PCT_LAN_SPANISH  is what comm report on ejscreen site calls "languages spoken at home"
@@ -591,7 +611,7 @@
 
   ############################################################## ############################################################### #
 
-  # these counts, inputs, need to be added to map_headernames$rname: ***
+  ## >>   *** these counts, inputs, need to be added to map_headernames$rname: *** ####
   #
   #   c("lan_arabic", "lan_english", "lan_french", "lan_other_asian",  "lan_other_ie", "lan_rus_pol_slav", "lan_vietnamese")
   formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs$formula),]
@@ -599,10 +619,12 @@
 
   # 112          pctlan_api                   pctlan_api      <- ifelse(lan_universe == 0, 0, as.numeric(lan_api) / lan_universe)         <NA>       % speaking Asian and Pacific Island languages at home
 
+
   ## fix: ***
   # is this part of groups or part of detailed languages?
   # 120     pctlan_other_ie         pctlan_other_ie      <- ifelse(lan_universe == 0, 0, as.numeric(lan_other_ie) / lan_universe)         <NA>                            % speaking Indo-European at home
   # 116           pctlan_ie                     pctlan_ie      <- ifelse(lan_universe == 0, 0, as.numeric(lan_ie) / lan_universe)         <NA>                      % speaking Other Indo-European at home
+
 
   ##
   ## spanish exists as part of groups and detailed languages - in both tables
@@ -619,9 +641,9 @@
   dput(gsub("pct","", formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs$formula),]$rname))
   setdiff(gsub("pct","", formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs$formula),]$rname), map_headernames$rname)
   #  "lan_arabic"  "lan_english"  "lan_french"  "lan_other_asian"  "lan_other_ie"  "lan_rus_pol_slav"  "lan_vietnamese"
-  ################################################## #
+  ############################################################## ############################################################### #
 
-  ## these need denominator filled in within map_headernames: ***
+  ## >>   *** these need denominator filled in within map_headernames: *** ####
   #
   #   z = (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator", "apisection","longname")])
   #   z[z$denominator == "", ]
@@ -675,10 +697,10 @@
   # pctlan_other_ie         pctlan_other_ie lan_universe              Languages Spoken at Home                                               % speaking Indo-European at home
   # pctlan_rus_pol_slav pctlan_rus_pol_slav lan_universe              Languages Spoken at Home                             % speaking Russian, Polish or Other Slavic at home
   # pctlan_vietnamese     pctlan_vietnamese lan_universe              Languages Spoken at Home                                                  % speaking Vietnamese at home
-  ################################################## #
+  ############################################################## ############################################################### #
 
 
-   # add language formulas:
+   ## >> add more C16001 language formulas: ####
   ################################################## #
   # complete list of variables available from C16001, based on download from e.g, https://data.census.gov/table/ACSDT5Y2022.C16001?q=c16001&g=1400000US42091203500&y=2022
   ## COUNTS OF RESIDENTS BY TRACT
@@ -711,6 +733,8 @@
   # 14 C16001_036            Other and unspecified languages
   ################################################## ################################################### #
 
+  # formulas_ejscreen_acs_newrows ???
+
   # data.frame(need_longname_in_map_headernames = formulas_ejscreen_acs_newrows[formulas_ejscreen_acs_newrows$rname == formulas_ejscreen_acs_newrows$longname,'longname'])
   #    need_longname_in_map_headernames
   # 1                      lan_other_ie
@@ -731,10 +755,13 @@
   # 16                       lan_arabic
   # 17                        lan_other
   ### from C16001
+  ################################################## ################################################### #
 
-  info_for_map_headernames <- data.frame(rname  = formulas_ejscreen_acs_newrows[formulas_ejscreen_acs_newrows$rname == formulas_ejscreen_acs_newrows$longname,'longname'],
-                                         longname = gsub("lan_", "People speaking ", gsub("pctlan_", "% speaking ", formulas_ejscreen_acs_newrows[formulas_ejscreen_acs_newrows$rname == formulas_ejscreen_acs_newrows$longname,'longname']))
-  )
+  ## >>   *** MUST UPDATE MAP HEADERNAMES ! info_for_map_headernames ####
+
+  # info_for_map_headernames <- data.frame(rname  = formulas_ejscreen_acs_newrows[formulas_ejscreen_acs_newrows$rname == formulas_ejscreen_acs_newrows$longname,'longname'],
+  #                                        longname = gsub("lan_", "People speaking ", gsub("pctlan_", "% speaking ", formulas_ejscreen_acs_newrows[formulas_ejscreen_acs_newrows$rname == formulas_ejscreen_acs_newrows$longname,'longname']))
+  # )
 
   c16001_vars <- data.frame(
     varname = c("C16001_001", "C16001_002", "C16001_003",
@@ -750,26 +777,50 @@
   )
 
   #################################################################### #################################### #
+# ~ ####
+
+
+  #  *** can we drop the column   longname_old  ??? ####
 
 
 
 
-  message("SAVING FORMULAS, AND CAN USE IN CREATING INITIAL blockgroupstats table from raw acs as with acs_bybg()
-        or newer get_acs_new_dat() but  then need final steps for Demog.Index scores and for disability by blockgroup not tract")
+  # # ######################### ## ######################### ## ######################### #
+  ##   tables search
+  # endyr = acs_endyear(guess_census_has_published = T)
+  # x <- tidycensus::load_variables(endyr, "acs5")
+  # x[grepl("B28003", x$name) & "block group" == x$geography & !is.na(x$geography), ] |> print(n=10 )
+  # # health insurance tables/variables
+  # x[grepl("no health insurance", x$label, ignore.case = T) & "block group" == x$geography & !is.na(x$geography), ] |> print(n=100 )
+  #
+  #
+  # # ######################### ## ######################### ## ######################### #
+  # ## see the list of relevant tables
+  # # ######################### ## ######################### ## ######################### #
+  # ?tables_ejscreen_acs
+  #
+  # # ######################### ## ######################### ## ######################### #
+
+
+
+  message("SAVING FORMULAS to USE IN CREATING blockgroupstats table via script datacreate_formulas_ejscreen_acs.R   ")
 
   ### confirmed all of tables are mentioned among formulas created here
   # for (i in 1:length(tables)) {cat(tables[i]); print( any(grepl(tables[i], EJAM::formulas_ejscreen_acs$formula))) }
   # cbind(tables, concept = v22$concept[match(tables, v22$table)] )
 
 
-  # # ######################### ## ######################### ## ######################### #
+  #################################################################### #################################### #
+
+  # documentation update ####
 
   EJAM:::dataset_documenter("formulas_ejscreen_acs",
                             description = "Formulas and metadata about Census ACS variables and how to calculate indicators from those raw Census variables, such as creating pctunder5 starting from ACS table B01001 variables.",
                             details = "[Formulas as documented by EPA were archived here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)",
                             seealso = "[tables_ejscreen_acs] ")
   # # ######################### ## ######################### ## ######################### #
-  ## save
+
+  # metadata, use data ####
 
   ## fixed like this
 #  formulas_ejscreen_acs$formula[formulas_ejscreen_acs$rname == "REGION"] <-
@@ -784,8 +835,8 @@
   #################################################################### #################################### #
   # # ######################### ## ######################### ## ######################### #
 
-
-  ## language vars in EJAM
+# ~ ####
+  # LOOK AT LANGUAGE VARIABLES MORE   ####
 
 
   bg = data.table::copy(EJAM::blockgroupstats); bg= data.table::setDF(bg)
@@ -866,17 +917,17 @@
   x = x[x$geography %in% c("tract", "block group"), ] # INCL C16001, B18101
   # x$geography <- NULL
   x$table = gsub("_.*$", "", x$name)
-  x = x[x$table %in% ejscreen_acs_tables, ]
+  x = x[x$table %in% tables_ejscreen_acs, ]
   # x |> print(n=320)
   ## language variables:
   # x[x$table %in% c("C16002","B16004", "C16001"), ] |> print(n=120)
   ############ #################################### #
 
-  # C16001  tract only ####
+  ## C16001  tract only ####
 
   x[x$table %in% c( "C16001") & grepl(':$', x$label) & grepl("", x$label), ] |> print(n=100)
 
-  # C16001 is at tract resolution only ###########
+  ## C16001 is at tract resolution only ###########
   #   https://data.census.gov/table/ACSDT5Y2024.C16001
   # Universe: Population 5 years and over
   # name       label                                                         concept                                                     table
@@ -896,7 +947,7 @@
   #13 C16001_036 Estimate!!Total:!!Other and unspecified languages:            Language Spoken at Home for the Population 5 Years and Over C16001
   ############ #################################### #
 
-  # C16002 ####
+  ## C16002 ####
 
   x[x$table %in% "C16002",] |> print(n=40)   ## by block group
 
@@ -920,7 +971,7 @@
   #13 C16002_013 Estimate!!Total:!!Other languages:!!Limited English speaking household                          Household Language by Household Limite… block gr…
   ############ #################################### #
 
-  # B16004  ####
+  ## B16004  ####
   # by block group
 
   x[grepl("B16004", x$name, ignore.case = T) & grepl("not at all", x$label, ignore.case = T)  & "block group" == x$geography & !is.na(x$geography), ] |> print(n=100 )

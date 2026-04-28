@@ -1,7 +1,6 @@
-
-# use the formulas_ejscreen_demog_index in creating updated Demog.Index indicators each year:
-
-# This will use the indicators in a partially-created/partially-updated blockgroupstats table that has new pctlowinc, pctdisability, etc.
+########################################################### #
+# This function will use the indicators in a partially-created/partially-updated blockgroupstats table
+# that has new pctlowinc, pctdisability, etc.
 # to calculate and add columns for the Demog.Index (and related supplemental/State versions)
 ########################################################### #
 

@@ -57,12 +57,20 @@
 ## 6. funcs to AGGREGATE &/or CALC CUSTOM SCORES? ####
 
 ##################################################### #
-#### Need to separately Create vs. Aggregate scores:
+
+#### NOTES on how to CREATE (UPDATED or CUSTOM) indicators  vs.  AGGREGATE (REPORT ON) indicators:
+
+## A. CREATE updated or custom nationwide indicators, in all blockgroups, for
 ##
-## A. CREATE custom indicator scores via FORMULAS, for each BG, from BG ACS raw counts etc.
+##     i. ANNUAL UPDATE of EJScreen/EJAM indicators, from ACS variables and standard FORMULAS specifying how those translate into derived indicators like % low-income as used in EJScreen/EJAM
+##     or maybe
+##     ii. A USER'S CUSTOM INDICATOR to be calculated on the fly, like a proximity score for uploaded points or based on user-specified ACS variables and custom FORMULAS a user provides.
+##
 ##    calc_ejam() has each formula but  does no aggregation.  proxistat() and related funcs sort of do both but mostly create a score.
 ##
-## B. AGGREGATE across blocks, bgs, sites, etc. like these:
+## B. AGGREGATE across blocks, bgs, sites, etc.
+##   (for a Community Report, 1-site or summary report) like these:
+##
 ##   i. Aggregate scores via count or mean, etc. for each BG, from BG scores & BLOCK WEIGHTS to use in each BG (each included partial or whole BG)
 ##  ii. Aggregate scores via count or mean, etc. for each SITE, from BG scores (2&3 might be combined but might want #2 separately as bybg_people)
 ##      see doaggregate_newscores() ?
@@ -72,11 +80,10 @@
 ##     using maybe the same functions? or dedicated ones like
 ##    calc_counties_from_bg() ?
 
-# NEED A WAY TO DO AGGREGATION BYSITE AND FORMULAS AT THE SAME TIME OR CORRECTLY SEPARATELY.
+# Is there a WAY TO DO CREATING SCORES AND AGGREGATING SCORES in the same general system, OR is it more appropriate to keep those functions separated? Probably separate.
 #
-#  and just doing data.table   dt[, xyz, by = "ejam_uniq_id"]
+#  e.g., just doing data.table   dt[, xyz, by = "ejam_uniq_id"]
 #   would aggregate but need the formula(s) in there.
-#  check formulas_all, which seemed to be work towards aggregation-like calculation??
 
 #   R/utils_calc_ejam.R   (left in that file)  has
 # calc_ejam()
@@ -92,9 +99,8 @@
 # calcweight()
 
 # See doaggregate() for all the notes on aggregation, sums/wtdmeans/etc. and proxistat code that were
-# within  doaggregate()  lines 470-770, especially after line 607, but
-#  really just lines 640-770 did the aggregations:
-#
+# within  doaggregate()  had been approx lines 470-770, especially after line 607, but
+#  really just lines 640-770 did the aggregations,
 #   sums & wtdmeans of BG scores, by site
 ##################################################### #
 

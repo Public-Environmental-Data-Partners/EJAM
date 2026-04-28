@@ -1,13 +1,12 @@
-# FORMULAS THAT WERE BEING USED IN EJAM::doaggregate()
+######################### ########################## ########################## #
 
-## see ?calc_ejam() for examples showing how these can work
-
-# but see  newer work in   formulas_ejscreen_acs
-
-######################### #
-
-# NOTE some of this INFO IS MORE OR LESS IN map_headernames
-# and probably should merge formulas with that table at some point
+# This obsolete script was being used to create formulas_d and formulas_all,
+# but those are obsolete and
+# should be replaced by formulas_ejscreen_acs which represents newer work
+#
+######################### ########################## ########################## #
+# ALSO NOTE some of this INFO IS MORE OR LESS IN map_headernames
+# and probably will merge formulas with that table at some point.
 
 # map_headernames$rname[map_headernames$calculation_type == "wtdmean"]
 # map_headernames$rname[map_headernames$calculation_type == "ej formula"]
@@ -27,6 +26,11 @@
 # grep("avg", map_headernames$rname[map_headernames$calculation_type == "constant"], value = T)
 # grep("avg", map_headernames$rname[map_headernames$calculation_type == "constant"], value = T, invert = TRUE)
 # grep("univ|base", map_headernames$rname, ignore.case = T, value = T)
+######################### ########################## ########################## #
+##  ?calc_ejam() had examples showing how these  worked
+######################### ########################## ########################## #
+
+stop("formulas_d and formulas_all are obsolete and being replaced by formulas_ejscreen_acs etc.")
 
 # countcols ####
 

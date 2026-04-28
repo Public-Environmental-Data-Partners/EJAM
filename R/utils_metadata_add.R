@@ -84,7 +84,7 @@ metadata_update_attr <- function(x,
 #' @param update_ejam_package_version passed to [metadata_add()]. can set to FALSE to avoid changing this attribute
 #'
 #' @return just for side effects (unlike [metadata_add()] which returns the updated object)
-#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
+#' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()]  [dataset_documenter()]
 #'
 #' @keywords internal
 #'

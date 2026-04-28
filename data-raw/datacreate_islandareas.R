@@ -4,18 +4,6 @@
 # 2) save it as a dataset in the R package with metadata, and
 # 3) document the dataset
 
-# x <-
-# "lat,lon,ST,limit,corner
-# 12.9515582,144.21516,GU,min,SW
-# 13.7783567,145.05135,GU,max,NE
-# 14.0129859,145.067686,MP,min,SW
-# 15.396985,145.9186,MP,max,NE
-# 17.611087,-65.0974,VI,min,SW
-# 18.45958,-64.52,VI,max,NE
-# -15.811126,-173.48980,AS,min,SW
-# -9.74635292,-168,AS,max,NE
-# "
-
 islandareas_from_here <- structure(list(
 
   lat = c(12.951558,   13.7783567,
@@ -42,21 +30,39 @@ islandareas_from_here <- structure(list(
 class = "data.frame",
 row.names = c(NA, -8L))
 
-getwd()
+# > islandareas_from_here
+# lat       lon ST limit corner
+# 1  12.951558  144.2152 GU   min     SW
+# 2  13.778357  145.0514 GU   max     NE
+# 3  14.012986  145.0677 MP   min     SW
+# 4  15.396990  145.9186 MP   max     NE
+# 5  17.611087  -65.0974 VI   min     SW
+# 6  18.459580  -64.5200 VI   max     NE
+# 7 -15.811126 -173.4898 AS   min     SW
+# 8  -9.746353 -168.0000 AS   max     NE
 
-islandareas_from_csv <- as.data.frame(readr::read_csv("data-raw/datafile_islandareas.csv"))
-
-if(all.equal(islandareas_from_csv, islandareas_from_here)) {
-  ok = TRUE
+fname <- "data-raw/datafile_islandareas.csv"
+if (!file.exists(fname)) {
+  message("did not find file '", fname, "'")
+  ok <- TRUE # just use data from here
 } else {
-  ok = FALSE
+  # compare numbers from file vs from here, assuming file is found
+  islandareas_from_csv <- as.data.frame(readr::read_csv(fname))
+  if (isTRUE(all.equal(islandareas_from_csv, islandareas_from_here, tolerance = 0.000001))) {
+    ## but note "Component “lat”: Mean relative difference: 1.834309e-07"
+    ok <- TRUE
+  } else {
+    ok <- FALSE
+    stop("csv file info does not match what is in datacreate_ file")
+  }
 }
-if (!ok) {
-  cat("Check csv info vs what is in datacreate file \n")
-} else {
+
+if (ok) {
   islandareas <- islandareas_from_here
 
-  writexl::write_xlsx(islandareas,    "./data-raw/datafile_islandareas.xlsx")
+  ## could save the file but do not really need to anymore
+  # write.csv(islandareas, file = fname)
+  # writexl::write_xlsx(islandareas, gsub("csv", "xlsx", fname))
 
   metadata_add_and_use_this("islandareas")
   # usethis::use_data(islandareas, overwrite = TRUE)
@@ -73,6 +79,11 @@ if (!ok) {
 #'   - Note the U.S. Minor Outlying Islands (UM) are also Island Areas, but are not included in EJScreen/EJAM. They are widely dispersed, and include Midway Islands, for example.
 #'
 #'   See [stateinfo2] and see info on these areas via `stateinfo2[stateinfo2$is.island.areas, ]`
+#'
+#'   Puerto Rico is included in both Census 2020 and ACS survey data.
+#'
+#'   The 2020 Census did include information on AS,GU,MP,VI, but the ACS does not include Island Areas.
+#'   See https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html
 #'
 #'   See [Census documentation](https://www.census.gov/programs-surveys/geography.html)
 #'

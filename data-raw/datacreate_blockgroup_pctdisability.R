@@ -1,5 +1,13 @@
 ###################################################### #
 
+
+
+## need to reconcile datacreate_blockgroup_pctdisability()
+#  as defined in  /data-raw/datacreate_blockgroup_pctdisability.R
+# versus  calc_blockgroupstats_from_tract_data()
+# as called from   datacreate_formulas_ejscreen_acs.R   ***
+
+
 # datacreate_blockgroup_pctdisability  -  TAKES A WHILE TO DOWNLOAD THE CENSUS DATA FOR EVERY STATE !!
 
 # to get counts, first need tract counts and then apportion to blockgroup counts:
@@ -33,6 +41,11 @@ datacreate_blockgroup_pctdisability <- function(yr = acs_endyear(guess_census_ha
     c2k[[i]] = tidycensus::get_decennial(state = stateinfo$ST[i], geography = "block group", variables = 'P1_001N', geometry = FALSE, year = 2020)
   }
   c2k2 = data.table::rbindlist(c2k)
+
+  ### Create bgwts here?
+  ###  but see EJAM:::calc_bgwts_nationwide() as done (but not used) in datacreate_blockgroupstats_acs.R file
+  ###  and note it is also used by calc_blockgroupstats_from_tract_data()
+  ###
   bgwts = c2k2[, .(bgfips = GEOID, pop = value)]
   bgwts[, tractfips := substr(bgfips, 1, 11)]
   bgwts[ , tractpop := sum(pop), by = "tractfips"]
@@ -126,16 +139,16 @@ datacreate_blockgroup_pctdisability <- function(yr = acs_endyear(guess_census_ha
 ##################################################################### ###################################################################### #
 
 # for now, save the work in progress
-save(bg_disability, file = "./data-raw/bg_disability_2022.rda") # 2.3 MB
+# save(bg_disability, file = "./data-raw/bg_disability_2022.rda") # 2.3 MB
 
 # if looks ok, join bg_disability into blockgroupstats
 
-warning('do manually next steps if actually ready')
-
-blockgroupstats[bg_disability, disability := disability, on = "bgfips"]
-blockgroupstats[bg_disability, disab_universe := disab_universe, on = "bgfips"]
-blockgroupstats[bg_disability, pctdisability := pctdisability, on = "bgfips"]
-
-EJAM:::metadata_add_and_use_this("blockgroupstats")
+# warning('do manually next steps if actually ready')
+#
+# blockgroupstats[bg_disability, disability := disability, on = "bgfips"]
+# blockgroupstats[bg_disability, disab_universe := disab_universe, on = "bgfips"]
+# blockgroupstats[bg_disability, pctdisability := pctdisability, on = "bgfips"]
+#
+# EJAM:::metadata_add_and_use_this("blockgroupstats")
 
 ##################################################################### ###################################################################### #

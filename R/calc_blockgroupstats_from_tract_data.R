@@ -1,13 +1,19 @@
 
-# calc_blockgroupstats_from_tract_data() -  TAKES A WHILE TO DOWNLOAD THE CENSUS DATA FOR EVERY STATE !!
+
+## compare / reconcile with  /data-raw/datacreate_blockgroup_pctdisability.R ***
+
 
 ###################################################### #
 
 #' utility to calculate annually for EJSCREEN the updated ACS data available at only tract resolution (% disability & language detail)
 #' @details
+#' This would normally be called from the script in `datacreate_blockgroupstats_acs.R`, which is in the source package folder "data-raw"
+#'
+#'  Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()
+#'
 #'  Needs Census API key for [tidycensus::get_decennial()].
 #'
-#'  Takes some time to download data for every State.
+#'  Takes some time to download data for every State!
 #'
 #'  First get tract counts,
 #'  then apportion into blockgroup counts,
@@ -15,13 +21,19 @@
 #'
 #' @param yr endyear of ACS 5-year survey to use, inferred if omitted
 #' @param tables "B18101" and "C16001", e.g., for disability and detailed language spoken
+#' @param formulas default includes formulas for disability-related and language-related indicators
+#'  calculated from ACS variables found in tables "B18101" and "C16001" - This is a vector of string formulas.
+#' @param dropMOE logical, whether to drop not retain the margin of error information for each ACS variable
+#'
 #' @return data.table, one row per blockgroup (not tract)
 #'
 #' @export
 #' @keywords internal
 #'
-calc_blockgroupstats_from_tract_data <- function(yr, tables = c("B18101", "C16001"), formulas,
-                                                 dropMOE=TRUE) {
+calc_blockgroupstats_from_tract_data <- function(yr,
+                                                 tables = c("B18101", "C16001"),
+                                                 formulas = NULL,
+                                                 dropMOE = TRUE) {
 
   if (!exists("bgwts")) { # so that we can create this once while testing and not have to download each time this overall function is used
     bgwts <- calc_bgwts_nationwide()
@@ -32,8 +44,9 @@ calc_blockgroupstats_from_tract_data <- function(yr, tables = c("B18101", "C1600
   }  # 2022, 2023, or 2024
   cat("end year to use: ", yr, '\n')
   ###################################################### #
-  if (missing(formulas)) {
-    formulas <- c(formulas_ejscreen_acs_disability$formula, formulas_ejscreen_acs$formula[grepl("lan_", formulas_ejscreen_acs$formula)] )
+  if (missing(formulas) || is.null(formulas)) {
+    formulas <- c(formulas_ejscreen_acs_disability$formula,
+                  formulas_ejscreen_acs$formula[grepl("lan_", formulas_ejscreen_acs$formula)] )
 
     ## e.g., # formulas_ejscreen_acs_disability[c(3,2,1),]
     # disab_universe <- B18101_001

@@ -1,4 +1,10 @@
 
+
+
+### gets used by calc_blockgroup_demog_index() as used by script in datacreate_formulas_ejscreen_acs.R
+
+
+
 ############################################################## ############################################################### #
 
 # special case of Demog.Index creation yearly for entire US, all blockgroups

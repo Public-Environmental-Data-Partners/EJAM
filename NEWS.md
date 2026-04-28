@@ -3,6 +3,7 @@
 ## Updated Demographic Data from ACS
 
 - v2.5.0 provides 2020-2024 ACS
+- Included functions that can update ACS-based demographic dataset each year: `calc_bgej()`, `calc_blockgroupstats_acs()`, `calc_blockgroupstats_from_tract_data()`, etc.
 
 
 # EJAM 2.4.0 (May 2026)
@@ -12,7 +13,7 @@
 - v2.4.0, this release, is just to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.
 - v2.32.*, used throughout 2025, used American Community Survey (ACS) 2018-2022 (even though newer ACS 5-year survey data were available from Census Bureau).
 - Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
-- Added functions that can update ACS-based demographic dataset each year: `calc_bgej()`, `calc_blockgroupstats_acs()`, `calc_blockgroupstats_from_tract_data()`, `calc_bgwts_nationwide()`, etc.
+- Added functions that can update ACS-based demographic dataset each year: `calc_bgej()`, `calc_blockgroupstats_acs()`, `calc_blockgroupstats_from_tract_data()`, and related formulas and metadata such as in `formulas_ejscreen_acs`
 
 
 # EJAM 2.32.8 (April 2026)

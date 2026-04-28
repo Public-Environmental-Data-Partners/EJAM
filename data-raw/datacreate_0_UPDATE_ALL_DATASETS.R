@@ -167,7 +167,7 @@ if (0 == 1) {  # collapsable list
   rm(x)
   ####################################### #
   {  # overall
-    documentOpen('./data-raw/datacreate_0_UPDATE_ALL_DATASETS.R')
+    # documentOpen('./data-raw/datacreate_0_UPDATE_ALL_DATASETS.R') # this file
     # documentOpen('./data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R')
 
     # with annual census fips codes or boundaries changes (when EJSCREEN incorporates those)
@@ -476,7 +476,13 @@ loadall()
 ## IT DID NOT CREATE A NEW BLOCKGROUP DATASET FROM RAW CENSUS BUREAU ACS DOWNLOADS AND RAW ENVIRONMENTAL DATA,
 ## SO IT DOES NOT PROVIDE A WAY TO UPDATE EJSCREEN.
 
-# see newer datacreate_blockgroupstats.R
+
+
+# see newer  /data-raw/datacreate_blockgroupstats_acs.R
+
+
+
+
 
 ######################################### #
 

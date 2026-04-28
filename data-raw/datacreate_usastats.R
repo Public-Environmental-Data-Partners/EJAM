@@ -1,7 +1,16 @@
-
-# Script to create new version of usastats dataset
+############################################################################### #
+# Script to create new version of usastats and statestats datasets
+# and has to create EJ indexes as bgej in the middle of that
 
 # Calculate percentiles baed raw ACS data in blockgroupstats and in bgej datasets
+
+message("note: must have already updated blockgroupstats via  /data-raw/datacreate_blockgroupstats_acs.R  before doing this")
+
+mydir <- tempdir()
+
+############################################################################### #
+
+# specify colnames (indicators) to calculate percentiles of ####
 
 # > setdiff(c(names_d, names_e, names_ej, names_ej_supp, names_d_subgroups, names_d_subgroups_alone, names_health),  names(usastats))
 # [1] "rateheartdisease" "rateasthma"       "ratecancer"
@@ -149,11 +158,27 @@ more <- c(
 )
 myvars <- c(myvars1, more)
 myvars <- unique(myvars) # pcthisp dupe
+
 ############################################################################### #
+# calculate percentiles for usastats_new, statestats_new ####
 
 # dataload_dynamic("bgej")
 # all.equal(blockgroupstats$bgfips, bgej$bgfips) # yes
-bg = cbind(blockgroupstats, bgej)
+
+
+## TO BE CONFIRMED BUT ....
+##
+## tricky step -- must create usastats and statestats for ENVIRONMENT and DEMOG
+## before you can calculate EJ Indexes to create bgej
+## but then you can finally create the EJ columns within usastats and statestats only after bgej has been created !
+
+
+# bg = cbind(blockgroupstats, bgej) ### CANNOT HAVE bgej yet ?!
+bg = data.table::copy(blockgroupstats)
+
+
+
+
 myvars <- myvars[myvars %in% names(bg)]
 
 # myvars <- myvars[(!myvars %in% c("Demog.Index.State", "Demog.Index.Supp.State"))]
@@ -162,7 +187,44 @@ usastats_new <- EJAM:::pctiles_lookup_create(bg[, ..myvars])
 
 statestats_new <- EJAM:::pctiles_lookup_create(bg[, ..myvars], zone.vector = bg$ST)
 
+# note they are still missing EJ index pctiles
 ################################################################################ #
+# create bgej (EJ Indexes) ####
+
+# source("./data-raw/datacreate_bgej.R")
+## or do it directly here:
+
+bgej <- calc_bgej(bgstats = bg) #   use new blockgroupstats
+
+# # This file is not stored in the package. It goes in the ejamdata repository. and probably as .arrow not .rda
+save(bgej, file = file.path(mydir, "bgej.rda"))
+message("saved interim file in ", mydir)
+################################################################################ #
+
+# calc pctiles of EJ indexes - add those columns to usastats, statestats ####
+
+# now finish creating usastats_new and statestats_new to include the EJ INDEX columns in them
+
+myvars <- names(bgej)
+# "bgid"  "bgfips"  "ST"  "pop"
+# names_ej,       names_ej_sup,
+# names_ej_state, names_ej_supp_state
+dontuse= c("bgid", "bgfips", "pop", "ST")
+myvars <- myvars[!myvars %in% dontuse]
+
+usastats_new_ej   <- EJAM:::pctiles_lookup_create(bg[, ..myvars])
+statestats_new_ej <- EJAM:::pctiles_lookup_create(bg[, ..myvars], zone.vector = bg$ST)
+
+# merge with non-ej-index percentiles tables
+# check if ok to simply use cbind - presumes same exact rows in same exact order !
+# maybe better to carefully merge on columns REGION and PCTILE
+
+usastats_new   <- cbind(usastats_new,   usastats_new_ej)
+statestats_new <- cbind(statestats_new, statestats_new_ej)
+
+################################################################################ #
+
+# fix state vs nonstate column names ####
 
 # MAKE THE STATE summary INDICATORS (RAW SCORES) COLUMNS HAVE STATE PERCENTILE NAMES TO DISTINGUISH FROM US VERSIONS
 # BUT BE SURE THAT LOOKUP CODE TURNING RAW STATE summary SCORES INTO PCTILES IS USING THE RIGHT NAMES
@@ -172,26 +234,31 @@ data.table::setnames(statestats_new,
                      old = c(names_ej, names_ej_supp),
                      new = c(names_ej_state, names_ej_supp_state))
 setDF(statestats_new)
-# but later they will be data.table
+# but later they will be data.table? no maybe not.
 # cbind(names(usastats_new), names(statestats_new))
-
-# > usastats_new, statestats_new rownames ####
-# make rownames less confusing since starting with 1 was for the row where PCTILE == 0,
-# so make them match in USA one at least, but cannot same way for state one since they repeat for each state
-
-rownames(usastats_new)     <- usastats_new$PCTILE
-rownames(statestats_new) <- paste0(statestats_new$REGION, statestats_new$PCTILE)
 
 ################################################################################ #
 
-# switch to usastats, statestats (from usastats_new, etc.)  ####
+# fix rownames  ####
+
+# make rownames less confusing since starting with 1 was for the row where PCTILE == 0,
+# so make them match in USA one at least, but cannot same way for state one since they repeat for each state
+rownames(usastats_new)     <- usastats_new$PCTILE
+rownames(statestats_new) <- paste0(statestats_new$REGION, statestats_new$PCTILE)
+################################################################################ #
+
+# name them "usastats", "statestats" (from usastats_new, etc.)  ####
 
 usastats   <- usastats_new
 statestats <- statestats_new
 rm(statestats_new, usastats_new, myvars1, myvars, more)
+rm(bg)
 gc()
-
 ######################################################################################## ################## #
+
+# island areas? ####
+
+message("Island Areas?")
 
 #  no Island Areas here at all as rows - maybe add those but with only NA values for all pctiles and mean and all indicators?
 #  should fix percentile lookup function to handle cases where a REGION is missing from lookup table.
@@ -200,20 +267,25 @@ gc()
 
 # metadata and use_data ####
 
-setDF(usastats)    #   do we want it as data.frame??
-setDF(statestats)  #   do we want it as data.frame??
+setDF(usastats)    #   do we want it as data.frame? data.table?
+setDF(statestats)  #   ditto
 
 EJAM:::metadata_add_and_use_this("usastats")
 EJAM:::metadata_add_and_use_this("statestats")
 
 # usastats <- EJAM:::metadata_add(usastats)
 # statestats <- EJAM:::metadata_add(statestats)
-#
 # usethis::use_data(usastats, overwrite = TRUE)
 # usethis::use_data(statestats, overwrite = TRUE)
+
+save(usastats, file = file.path(mydir, "usastats.rda"))
+message("saved interim file in ", mydir)
+save(statestats, file = file.path(mydir, "statestats.rda"))
+message("saved interim file in ", mydir)
+
 ################################################### ################## #
 
-#  UPDATE THE DOCUMENTATION ####
+#  update documentation ####
 
 EJAM:::dataset_documenter("usastats",
                    "usastats (DATA) data.frame of 100 percentiles and means",
@@ -228,6 +300,7 @@ EJAM:::dataset_documenter("usastats",
 #'   For details on how the table was made, see source package files in data-raw folder.
 #'
 #'   See also [statestats]")
+
 
 EJAM:::dataset_documenter("statestats",
                    "statestats (DATA) data.frame of 100 percentiles and means for each US State and PR and DC.",
