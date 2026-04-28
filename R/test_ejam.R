@@ -986,15 +986,15 @@ and all filenames listed there actually exist as in that folder called `test`.\n
   }
   ## ./tests/testthat/setup-shinytest2.R ####
   if (any(as.vector(unlist(partial_testlist)) %in% testlist$test_webapp)) {
-    warning("note shinytest2 uses the installed version of a package by default to run tests, not the latest source version - see dev-run-shinytests article/vignette")
-  if (file.exists("./tests/testthat/setup-shinytest2.R")) {
+    message("note shinytest2 uses the installed version of a package by default to run tests, not the latest source version - see dev-run-shinytests.Rmd vignette")
+    ## The webapp tests each do something like this:   shinytest2_webapp_functionality("latlon")
+    if (file.exists("./tests/testthat/setup-shinytest2.R")) {
     source("./tests/testthat/setup-shinytest2.R")
   } else {
     cat("Need to source the setup-shinytest2.R file first \n")
   }
   }
   ########################### #  ########################################## #
-
   #
   #
   ########################### #  ########################################## #

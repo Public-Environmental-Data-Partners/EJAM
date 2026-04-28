@@ -36,7 +36,10 @@ test_ejam_1group <- function(fnames,
             )
 
           )
-          if (inherits(x, "try-error")) {cat("Stopped on failure in ", fnames[i], "\n")}
+          if (inherits(x, "try-error")) {
+            cat("Stopped on failure in ", fnames[i], "\n")
+            x <- NULL
+            }
         }
         , print = print4eachfile) # here it is a useless param of capture_output_lines()
       }))

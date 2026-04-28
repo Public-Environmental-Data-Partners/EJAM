@@ -162,7 +162,9 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
     radioButtons(inputId = ns("fips_type2pick"), label = "What kinds of areas do you want to use?", #  compare or download
                  selected = EJAM:::global_or_param("fipspicker_fips_type2pick_default"),
                  inline = TRUE,
-                 choices = EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default")
+                 choices = ifelse(is.null( EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default")),
+                                  # radioButtons() gives error in testing if choices is NULL because global defaults weren't loaded
+                                  NA, EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default"))
                  #   c(
                  #   # `EPA Regions` = "EPA Regions",
                  #   States = "States",

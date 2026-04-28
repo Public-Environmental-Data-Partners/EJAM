@@ -2,6 +2,15 @@
 ## THIS FILE LOADS EJAM AND GLOBAL DEFAULTS, AND THEN
 ## RUNS THE SHINYTEST2 WEB APP UI FUNCTIONALITY UNIT TESTS
 
+# BUT, see https://rstudio.github.io/shinytest2/articles/use-package.html
+# and note in source code of shinytest2::test_app
+# which says
+# rlang::warn(c(x = "Calling `shinytest2::test_app()` within a {testthat} test has been deprecated in {shinytest2} v0.5.0.",
+#               x = "This will become an error in a future version of {shinytest2}.",
+#               i = "If you are testing within a package, it is strongly recommended relocate your app tests to be within your package tests. Please note, you will need to use `local_app_support()` or `with_app_support()` to load your app's support files as needed.",
+#               i = "If you are using CI, don't forget to collect your new snapshots after your initial run!",
+#               i = "See {.url https://rstudio.github.io/shinytest2/articles/use-package.html } for more details.",
+#               i = "To suppress this warning, remove `shinytest2::test_app()` calls from your {testthat} tests or add the parameter `test_app(quiet = TRUE)`."))
 ################################# # ################################# #
 # see also setup.R
 
@@ -98,8 +107,6 @@ library(shinytest2)
 
 testthat::set_max_fails(200)
 
-################################# #
-
 # This file is what ensures tests are run during  R CMD check,
 #   which you can start via  check() (i.e., build then do ⁠R CMD check)
 # check() automatically builds and checks a source package, using all known best practices.
@@ -109,28 +116,7 @@ testthat::set_max_fails(200)
 
 # test_check("EJAM") # this runs all the tests including web app functionality tests
 
-# run just the web app functionality unit tests
+# Use shinytest2::test_app() within the testthat.R file to run just the web app functionality unit tests?
+## but this approach seems to be getting deprecated by shinytest2 ?
 
 shinytest2::test_app(".", filter = "-functionality", check_setup = FALSE)
-
-# or
-# "-functionality" filter to only shiny tests because they're all named with '-functionality'
-# filter="FIPS-functionality" would filter to just the FIPS shinytest
-# or
-# could use the EJAM:::test_ejam() function
-
-################################# #
-#
-#   For adding a new test of web app functionality:
-
-# shinytest2::record_test(".")
-
-# When tests fail, run this to review diffs
-# snapshot_review()
-#
-# Run this to review specific files
-# testthat::snapshot_review(files="latlon-functionality/latlon-pctlowinc.json")
-#
-# To accept the new snapshots
-# snapshot_accept()
-################################# #

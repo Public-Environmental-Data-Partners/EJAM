@@ -1,9 +1,18 @@
+########################################################################### #
+## Function that tests web app UI functionality
 
 cat("loading the function shinytest2_webapp_functionality() \n")
 cat("see also the article/vignette built from dev-run-shinytests.Rmd \n")
 unlink("tests/shinytestlog.txt") # deletes this file if it exists
+# see also "tests/testthat/testthat.R"
 
-## Function that tests web app UI functionality
+## To use this function, in RStudio you can do
+# shinytest2::test_app(".", filter = "latlon-functionality", check_setup = FALSE)
+## or can do
+# library(EJAM)
+# x = EJAM:::test_ejam(ask=F, run_these="webapp")
+########################################################################### #
+
 
 shinytest2_webapp_functionality <- function(test_category) {
 
@@ -408,5 +417,6 @@ shinytest2_webapp_functionality <- function(test_category) {
     shinytestLogMessage(paste0("finished test category: ", test_category))
   })
 }
+
 # Load application support files into testing environment
 shinytest2::load_app_env()
