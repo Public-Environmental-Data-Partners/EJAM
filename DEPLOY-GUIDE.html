@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EJAM Deployment Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #24292f;
+      background: #ffffff;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    h1 { font-size: 2rem; border-bottom: 2px solid #d0d7de; padding-bottom: .5rem; margin-top: 0; }
+    h2 { font-size: 1.4rem; border-bottom: 1px solid #d0d7de; padding-bottom: .3rem; margin-top: 2.5rem; }
+    h3 { font-size: 1.1rem; margin-top: 1.8rem; color: #1f6feb; }
+
+    p { margin: .75rem 0; }
+
+    a { color: #0969da; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    blockquote {
+      border-left: 4px solid #0969da;
+      background: #f6f8fa;
+      margin: 1rem 0;
+      padding: .6rem 1rem;
+      color: #57606a;
+      border-radius: 0 4px 4px 0;
+    }
+    blockquote p { margin: 0; }
+
+    pre {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      font-size: .875rem;
+      line-height: 1.5;
+    }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .875em;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      padding: .15em .35em;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1rem 0;
+      font-size: .95rem;
+    }
+    th {
+      background: #f6f8fa;
+      font-weight: 600;
+      text-align: left;
+      padding: .5rem .75rem;
+      border: 1px solid #d0d7de;
+    }
+    td {
+      padding: .45rem .75rem;
+      border: 1px solid #d0d7de;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f6f8fa; }
+
+    hr { border: none; border-top: 1px solid #d0d7de; margin: 2rem 0; }
+
+    .badge {
+      display: inline-block;
+      background: #ddf4ff;
+      color: #0969da;
+      border: 1px solid #b6e3ff;
+      border-radius: 2em;
+      font-size: .78rem;
+      font-weight: 600;
+      padding: .1em .6em;
+      margin-right: .3em;
+    }
+    .badge.prod { background: #fff8c5; color: #9a6700; border-color: #e3b341; }
+    .badge.dev  { background: #dafbe1; color: #1a7f37; border-color: #82cfaf; }
+    .badge.soon { background: #ffebe9; color: #cf222e; border-color: #ff8182; }
+
+    .infra-diagram {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 1rem 1.5rem;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: .85rem;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.6em;
+      height: 1.6em;
+      background: #0969da;
+      color: #fff;
+      border-radius: 50%;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .4em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+<h1>EJAM Deployment Guide</h1>
+
+<blockquote>
+  <p>Hosting infrastructure for the EJAM R Shiny application on AWS ECS Fargate.
+  This guide covers first-time environment setup, Terraform provisioning, Docker image builds, and the GitHub Actions deployment workflow.</p>
+</blockquote>
+
+<hr>
+
+<h2>Related Files</h2>
+
+<table>
+  <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>ejam-infra/main.tf</code></td><td>Terraform — full AWS infrastructure definition</td></tr>
+    <tr><td><code>Dockerfile</code></td><td>Container image build instructions</td></tr>
+    <tr><td><code>.dockerignore</code></td><td>Files excluded from the Docker build context</td></tr>
+    <tr><td><code>.github/workflows/deploy.yaml</code></td><td>GitHub Actions CI/CD deployment workflow</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Branching Strategy</h2>
+
+<div class="infra-diagram">main  ──►  dev-deploy  ──►  prod-deploy</div>
+
+<br>
+
+<table>
+  <thead><tr><th>Branch</th><th>Environment</th><th>Infrastructure</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>prod-deploy</code></td>
+      <td><span class="badge prod">prod</span></td>
+      <td><code>ejam-prod-*</code> resources</td>
+    </tr>
+    <tr>
+      <td><code>dev-deploy</code></td>
+      <td><span class="badge dev">dev</span></td>
+      <td><code>ejam-dev-*</code> resources <em>(in progress)</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Workflow:</strong></p>
+<ol>
+  <li>Develop on feature branches, merge to <code>main</code> via PR</li>
+  <li>Merge <code>main</code> → <code>dev-deploy</code> to validate on dev infrastructure</li>
+  <li>After validation, merge <code>dev-deploy</code> → <code>prod-deploy</code> to release to prod</li>
+</ol>
+
+<blockquote>
+  <p><span class="badge soon">Coming soon</span> Automated branch-based deploys via GitHub Actions — pushes to <code>dev-deploy</code> trigger a dev environment deploy, pushes to <code>prod-deploy</code> trigger a prod deploy. Each environment points to its own isolated AWS infrastructure. Shared resources (ECR repository) will be evaluated to reduce cost.</p>
+</blockquote>
+
+<hr>
+
+<h2>Prerequisites</h2>
+
+<h3>Homebrew (Mac)</h3>
+<pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+
+<h3>Terraform</h3>
+<pre><code>brew install hashicorp/tap/terraform</code></pre>
+
+<h3>AWS CLI</h3>
+<pre><code>brew install awscli</code></pre>
+
+<h3>Docker Desktop</h3>
+<p>Download and install from <a href="https://www.docker.com/products/docker-desktop/">docker.com/products/docker-desktop</a>. Ensure it is running before any Docker steps.</p>
+
+<hr>
+
+<h2><span class="step-number">1</span> Repository Setup</h2>
+
+<pre><code>git clone &lt;repo-url&gt;
+cd EJAM-mc
+git checkout prod-deploy   # or dev-deploy for the dev environment</code></pre>
+
+<hr>
+
+<h2><span class="step-number">2</span> AWS Configuration</h2>
+
+<h3>Configure credentials</h3>
+<p>Contact Vim Shah if you need AWS credentials issued.</p>
+<pre><code>aws configure</code></pre>
+<p>You will be prompted for:</p>
+<ul>
+  <li>AWS Access Key ID</li>
+  <li>AWS Secret Access Key</li>
+  <li>Default region: <code>us-east-1</code></li>
+  <li>Default output format: <code>json</code></li>
+</ul>
+
+<h3>Verify credentials</h3>
+<pre><code>aws sts get-caller-identity</code></pre>
+<p>Expected output:</p>
+<pre><code>{
+  "UserId": "...",
+  "Account": "716228812058",
+  "Arn": "arn:aws:iam::716228812058:user/your.name"
+}</code></pre>
+
+<h3>Attach IAM policy</h3>
+<p>Your AWS user requires a custom policy (<code>ejam-terraform-deploy</code>) to provision infrastructure. Contact Gabriel Watson for the policy JSON. Attach via:</p>
+<p><strong>AWS Console → IAM → Users → <code>&lt;your-user&gt;</code> → Add permissions → Attach policies</strong></p>
+
+<hr>
+
+<h2><span class="step-number">3</span> Terraform — Provision Infrastructure</h2>
+
+<pre><code>cd ejam-infra</code></pre>
+
+<h3>Initialize</h3>
+<pre><code>terraform init</code></pre>
+
+<h3>Plan</h3>
+<pre><code>terraform plan -var="aws_account_id=$(aws sts get-caller-identity --query Account --output text)"</code></pre>
+
+<h3>Apply</h3>
+<pre><code>terraform apply -var="aws_account_id=$(aws sts get-caller-identity --query Account --output text)"</code></pre>
+<p>Type <code>yes</code> when prompted.</p>
+
+<h3>Record outputs</h3>
+<p>After a successful apply, Terraform prints the infrastructure endpoints. Save these — you will need the ECR URL for Docker steps.</p>
+<pre><code>alb_dns_name       = "http://ejam-prod-alb-&lt;id&gt;.us-east-1.elb.amazonaws.com"
+ecr_repository_url = "716228812058.dkr.ecr.us-east-1.amazonaws.com/ejam"
+ecs_cluster_name   = "ejam-prod-cluster"
+ecs_service_name   = "ejam-prod-service"</code></pre>
+
+<hr>
+
+<h2><span class="step-number">4</span> Docker — Build &amp; Push Image</h2>
+
+<blockquote>
+  <p><strong>Recommendation:</strong> Push the image via GitHub Actions (Section 5) rather than locally. The uncompressed image is ~4 GB and local pushes are slow on typical connections.</p>
+</blockquote>
+
+<h3>Authenticate Docker to ECR</h3>
+<pre><code>aws ecr get-login-password --region us-east-1 \
+  | docker login --username AWS --password-stdin \
+    716228812058.dkr.ecr.us-east-1.amazonaws.com</code></pre>
+
+<h3>Build the image</h3>
+<p>Ensure Docker Desktop is running first.</p>
+<pre><code>docker build -t ejam .</code></pre>
+<p>Validate the build succeeded in Docker Desktop before pushing.</p>
+
+<h3>Tag and push</h3>
+<pre><code>docker tag ejam:latest 716228812058.dkr.ecr.us-east-1.amazonaws.com/ejam:latest
+docker push 716228812058.dkr.ecr.us-east-1.amazonaws.com/ejam:latest</code></pre>
+
+<h3><code>.dockerignore</code></h3>
+<p>The following are excluded from the build context:</p>
+<pre><code>.RData
+.Rhistory
+.Rproj.user
+.git
+.github
+ejam-infra</code></pre>
+
+<hr>
+
+<h2><span class="step-number">5</span> GitHub Actions — Automated Deploy</h2>
+
+<p>The preferred deployment path. On push to the appropriate branch, the <code>deploy.yaml</code> workflow builds the Docker image, pushes it to ECR, and updates the ECS service.</p>
+
+<h3>Required secrets</h3>
+<p>Configure in <strong>GitHub → Settings → Secrets and variables → Actions</strong>:</p>
+
+<table>
+  <thead><tr><th>Secret</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td><code>AWS_ACCESS_KEY_ID</code></td><td>Your AWS access key</td></tr>
+    <tr><td><code>AWS_SECRET_ACCESS_KEY</code></td><td>Your AWS secret key</td></tr>
+  </tbody>
+</table>
+
+<h3>Trigger a deploy</h3>
+<p>The workflow can be triggered manually from <strong>GitHub → Actions → deploy.yaml → Run workflow</strong>, selecting the target branch.</p>
+
+<hr>
+
+<h2>Teardown</h2>
+
+<pre><code>cd ejam-infra
+terraform destroy -var="aws_account_id=$(aws sts get-caller-identity --query Account --output text)"</code></pre>
+
+<blockquote>
+  <p><strong>Note:</strong> The prod ALB has deletion protection enabled. Disable it in the AWS Console before <code>terraform destroy</code> will succeed on prod:<br>
+  <strong>EC2 → Load Balancers → ejam-prod-alb → Actions → Edit attributes → Deletion protection: off</strong></p>
+</blockquote>
+
+<hr>
+
+<h2>Troubleshooting</h2>
+
+<table>
+  <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td><code>UnauthorizedOperation</code> on any EC2/ECS/IAM action</td><td>Add the missing action to the <code>ejam-terraform-deploy</code> IAM policy</td></tr>
+    <tr><td>Docker build fails</td><td>Verify Docker Desktop is running; check <code>.dockerignore</code> is present</td></tr>
+    <tr><td>ECS tasks failing health checks</td><td>Confirm the container exposes port 2001 and returns HTTP 200 on <code>GET /</code></td></tr>
+    <tr><td>Slow local Docker push</td><td>Use GitHub Actions instead (Section 5)</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Infrastructure Overview</h2>
+
+<div class="infra-diagram">Internet
+   │
+   ▼
+ALB (ejam-prod-alb)  ← port 80
+   │
+   ▼
+ECS Service (2 tasks, 2 vCPU / 7 GB each)
+   │
+   ├── Task 1  [us-east-1a]
+   └── Task 2  [us-east-1b]
+         │
+         └── Container: ejam  (port 2000 app / 2001 health)
+                   │
+                   └── Image pulled from ECR (ejam repo)</div>
+
+<br>
+<p><strong>Resources created by Terraform:</strong></p>
+<ul>
+  <li>VPC + 2 public subnets (us-east-1a/b) + IGW</li>
+  <li>Application Load Balancer + target group + HTTP listener</li>
+  <li>ECS Fargate cluster + service + task definition (2 tasks)</li>
+  <li>ECR repository (<code>ejam</code>) with image scanning + lifecycle policy</li>
+  <li>IAM execution role + task role</li>
+  <li>CloudWatch log group (<code>/ecs/ejam-prod</code>, 30-day retention)</li>
+</ul>
+
+</body>
+</html>

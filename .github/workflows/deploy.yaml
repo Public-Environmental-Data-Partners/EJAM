@@ -1,0 +1,122 @@
+name: Build & Deploy to ECS Fargate
+
+on:
+  push:
+    branches: [prod-deploy]
+  workflow_dispatch:
+
+# ──────────────────────────────────────────────
+# Update these to match your Terraform outputs
+# ──────────────────────────────────────────────
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: ejam
+  ECS_CLUSTER: ejam-prod-cluster
+  ECS_SERVICE: ejam-prod-service
+  ECS_TASK_FAMILY: ejam
+  CONTAINER_NAME: ejam
+  APP_PORT: 2000
+
+# ──────────────────────────────────────────────
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    # ── OIDC auth (recommended) ──────────────
+    # If using OIDC instead of access keys, uncomment this and the OIDC step below,
+    # and remove the access-key lines in the credentials step.
+    # permissions:
+    #   id-token: write
+    #   contents: read
+
+    steps:
+
+      # ── Checkout ───────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── AWS Credentials ────────────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Option A: Access keys (store in repo/org secrets)
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+          # Option B: OIDC (preferred — no long-lived keys)
+          # role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/github-actions-deploy
+          # aws-region: ${{ env.AWS_REGION }}
+
+      # ── ECR Login ──────────────────────────
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Build & Push ───────────────────────
+      - name: Build, tag, and push image
+        id: build
+        env:
+          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          FULL_IMAGE=$REGISTRY/$ECR_REPOSITORY
+
+          docker build -t $FULL_IMAGE:$IMAGE_TAG .
+          docker tag $FULL_IMAGE:$IMAGE_TAG $FULL_IMAGE:latest
+
+          docker push $FULL_IMAGE:$IMAGE_TAG
+          docker push $FULL_IMAGE:latest
+
+          echo "image=$FULL_IMAGE:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+      # ── Deploy ─────────────────────────────
+      - name: Deploy to ECS
+        env:
+          NEW_IMAGE: ${{ steps.build.outputs.image }}
+        run: |
+          set -euo pipefail
+
+          echo "▶ Fetching latest task definition for family: $ECS_TASK_FAMILY"
+          LATEST_ARN=$(aws ecs list-task-definitions \
+            --family-prefix "$ECS_TASK_FAMILY" \
+            --sort DESC \
+            --query 'taskDefinitionArns[0]' \
+            --output text)
+
+          if [[ "$LATEST_ARN" == "None" ]]; then
+            echo "❌ No task definition found for family $ECS_TASK_FAMILY"
+            exit 1
+          fi
+
+          echo "▶ Current task definition: $LATEST_ARN"
+
+          # Pull the existing definition and swap the image
+          NEW_DEF=$(aws ecs describe-task-definition --task-definition "$LATEST_ARN" \
+            | jq --arg IMG "$NEW_IMAGE" --arg NAME "$CONTAINER_NAME" \
+              '.taskDefinition
+               | .containerDefinitions = [.containerDefinitions[] | if .name == $NAME then .image = $IMG else . end]
+               | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+          echo "▶ Registering new task definition..."
+          NEW_ARN=$(aws ecs register-task-definition \
+            --cli-input-json "$NEW_DEF" \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "▶ New task definition: $NEW_ARN"
+
+          echo "▶ Updating ECS service..."
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE" \
+            --task-definition "$NEW_ARN" \
+            --force-new-deployment
+
+          echo "▶ Waiting for service to stabilize..."
+          aws ecs wait services-stable \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE"
+
+          echo "✅ Deployment complete"

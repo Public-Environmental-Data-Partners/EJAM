@@ -24,6 +24,12 @@ tests/testthat/_snaps/**/*.png
 # (The default is that use_pkgdown(): creates a pkgdown config file and adds relevant files or directories to .Rbuildignore and .gitignore to ignore the docs folder?)
 # However, maybe gh actions can create and deploy the site (from a docs folder on github.com?) without one having to run EJAM:::pkgdown_update() locally and committing the local docs folders.
 
+# Terraform — provider binaries and local state (not committed)
+ejam-infra/.terraform/
+ejam-infra/.terraform.lock.hcl
+ejam-infra/terraform.tfstate
+ejam-infra/terraform.tfstate.backup
+
 ################################################################################### #
 # Standard or obvious items to ignore
 
