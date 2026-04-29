@@ -783,6 +783,32 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       #     # noquestions  was given as a parameter
       #   }}
     }
+    if ("test_webapp" %in% names(partial_testlist)) {
+      old_not_cran <- Sys.getenv("NOT_CRAN", unset = NA)
+      old_shinytest2_app_driver_test_on_cran <- Sys.getenv(
+        "SHINYTEST2_APP_DRIVER_TEST_ON_CRAN",
+        unset = NA
+      )
+      on.exit({
+        if (is.na(old_not_cran)) {
+          Sys.unsetenv("NOT_CRAN")
+        } else {
+          Sys.setenv(NOT_CRAN = old_not_cran)
+        }
+        if (is.na(old_shinytest2_app_driver_test_on_cran)) {
+          Sys.unsetenv("SHINYTEST2_APP_DRIVER_TEST_ON_CRAN")
+        } else {
+          Sys.setenv(
+            SHINYTEST2_APP_DRIVER_TEST_ON_CRAN =
+              old_shinytest2_app_driver_test_on_cran
+          )
+        }
+      }, add = TRUE)
+      Sys.setenv(
+        NOT_CRAN = "true",
+        SHINYTEST2_APP_DRIVER_TEST_ON_CRAN = "1"
+      )
+    }
   } # end if not just basic
   # finished asking what to do and setting up
 
@@ -1464,4 +1490,3 @@ loggable <- function(x, file = 'will be created using timestamp if not provided 
 
 }
 ################################### #
-
