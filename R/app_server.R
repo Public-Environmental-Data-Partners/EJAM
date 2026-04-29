@@ -1810,6 +1810,10 @@ app_server <- function(input, output, session) {
 
   # web app functionality test can wait for this
   analysis_complete <- reactiveVal(FALSE)
+  if (!isTRUE(getOption("shiny.testmode")) &&
+      isTRUE(EJAM:::global_or_param("default_shiny.testmode"))) {
+    options(shiny.testmode = TRUE)
+  }
   if (isTRUE(getOption("shiny.testmode"))) {
     shiny::exportTestValues(
       analysis_complete = analysis_complete(),

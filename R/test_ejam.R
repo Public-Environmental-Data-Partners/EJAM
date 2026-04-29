@@ -956,10 +956,11 @@ and all filenames listed there actually exist as in that folder called `test`.\n
   ########################### #  ########################################## #
   ########################### #  ########################################## #
   ########################### #  ########################################## #
+
   ## load_all() or library(EJAM) ####
+
   cat('\n')
   if (useloadall) {
-
     # Note devtools package is in Suggests not Imports, in DESCRIPTION file
     dx = try({suppressWarnings(suppressMessages({devtools_available <- requireNamespace("devtools")}))}, silent = TRUE)
     if (!devtools_available) {
@@ -975,29 +976,23 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     #   suppressPackageStartupMessages({   library(EJAM)   })
     # })
   }
+
   ## dataload_dynamic() ####
+
   cat("Downloading all large datasets that might be needed...\n")
   dataload_dynamic("all")
+
   ## ./tests/testthat/setup.R ####
-  if (file.exists("./tests/testthat/setup.R")) {
-    source("./tests/testthat/setup.R")
+
+  ## testthat might source setup.R already by itself, but ok to do here:
+  ## (and now setup.R also sources the function that is used to run webapp functionality tests)
+  tpath = testthat::test_path()
+  if (file.exists(file.path(tpath, "setup.R"))) {
+    source(file.path(tpath, "setup.R"))
   } else {
     cat("Need to source the setup.R file first \n")
   }
-  ## ./tests/testthat/setup-shinytest2.R ####
-  if (any(as.vector(unlist(partial_testlist)) %in% testlist$test_webapp)) {
-    message("note shinytest2 uses the installed version of a package by default to run tests, not the latest source version - see dev-run-shinytests.Rmd vignette")
-    ## The webapp tests each do something like this:   shinytest2_webapp_functionality("latlon")
-    if (file.exists("./tests/testthat/setup-shinytest2.R")) {
-    source("./tests/testthat/setup-shinytest2.R")
-  } else {
-    cat("Need to source the setup-shinytest2.R file first \n")
-  }
-  }
-  ########################### #  ########################################## #
-  #
-  #
-  ########################### #  ########################################## #
+   ########################### #  ########################################## #
 
   ## log file started ####
 

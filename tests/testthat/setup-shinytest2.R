@@ -1,36 +1,87 @@
 ########################################################################### #
+
 ## Function that tests web app UI functionality
 
+########################################################################### #
+
+## setup.R should already have done this:
+# library(EJAM) # and anyway, shinytest2::AppDriver() by default uses app.R which does library(EJAM) if needed, before it uses ejamapp()
+# library(shinytest2)
+
+## might also need this, though:
+# devtools::load_all()
+
 cat("loading the function shinytest2_webapp_functionality() \n")
-cat("see also the article/vignette built from dev-run-shinytests.Rmd \n")
+
+cat("see also the article/vignette built from dev-run-shinytests.Rmd at \n")
+cat(paste0(url_package("docs"), "/articles/dev-run-shinytests.html \n"))
+# browseURL(paste0(url_package("docs"), "/articles/dev-run-shinytests.html"))
+
 unlink("tests/shinytestlog.txt") # deletes this file if it exists
 # see also "tests/testthat/testthat.R"
 
-## To use this function, in RStudio you can do
+## To use this function, in RStudio you could do
 # shinytest2::test_app(".", filter = "latlon-functionality", check_setup = FALSE)
-## or can do
+# but that is getting deprecated by shinytest2 as an approach?
+## or should be able to do
 # library(EJAM)
 # x = EJAM:::test_ejam(ask=F, run_these="webapp")
+## and
+# directly interactively using
+# shinytest2_webapp_functionality("latlon")
+# does not really work best since it cant check/save snapshots.
 ########################################################################### #
 
+# test_webapp = c(
+#   "test-webapp-ui_and_server.R",
+#   "test-webapp-FIPS-functionality.R",
+#   "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
+#   "test-webapp-FRS-functionality.R",
+#   "test-webapp-latlon-functionality.R",
+#   "test-webapp-NAICS-functionality.R",
+#   "test-webapp-shp-gdb-zip-functionality.R",
+#   "test-webapp-shp-json-functionality.R",
+#   "test-webapp-shp-unzip-functionality.R",
+#   "test-webapp-shp-zip-functionality.R"
+# )
+# "ui_and_server" "FIPS"          "FIPS-picker"   "FRS"           "latlon"        "NAICS"         "shp-gdb-zip"   "shp-json"      "shp-unzip"     "shp-zip"
+########################################################################### #
 
 shinytest2_webapp_functionality <- function(test_category) {
 
+  old_width <- getOption("width") # Some functions alter this and it is noisy to see warnings that options changed
+  on.exit(options(width = old_width), add = TRUE)
+
+  valid_categories = c(
+    # "ui_and_server", # not shinytest2 just regular testthat tests
+                       "FIPS", "FIPS-picker", "FRS", "latlon", "NAICS",
+                       "shp-gdb-zip", "shp-json", "shp-unzip", "shp-zip")
+  if (!all(test_category %in% valid_categories)) {
+    stop("invalid test_category specified - must be one of these: ", paste0(valid_categories, collapse = ", "))
+  }
   test_snap_dir <- paste0(normalizePath(testthat::test_path()), "/_snaps/",
-                          platform_variant(), "/",
+                          shinytest2::platform_variant(), "/",  # such as mac-4.5
                           "webapp-", test_category, "-functionality/")
 
-  test_that("{shinytest2} recording: EJAM", {
+  test_that(paste0("{shinytest2} tests of ", test_category, " category"), {
 
     ########################################################################### #
 
     outputs_to_remove <- c('an_leaf_map')
 
+    sourcefolder <- testthat::test_path("../../")
+    if (basename(normalizePath(  sourcefolder )) == "EJAM" && file.exists(file.path(sourcefolder, "app.R"))) {
+    # ok  #   it finds app.R and uses that for launch, which uses ejamapp( )
+    } else {
+      message("might not be finding the correct folder to use as root, where app.R should be found")
+    }
+
     app <- AppDriver$new(
+      app_dir = sourcefolder,
       variant = platform_variant(),
       name = test_category,
       seed=12345,
-      load_timeout=120*1000,
+      load_timeout= 60 * 1000, # 60 * 1000 means wait up to 1 minute  !
       width = 1920,
       screenshot_args = FALSE,
       expect_values_screenshot_args = FALSE,
@@ -224,10 +275,23 @@ shinytest2_webapp_functionality <- function(test_category) {
     # 2) START ANALYSIS ####
 
     wait_for_results_ready <- function(result = "analysis_complete", timeout = 2 * 60 * 1000) {
-      app$wait_for_value(
-        export = result,
-        ignore = list(FALSE, NULL),
-        timeout = timeout
+
+      tryCatch(
+        app$wait_for_value(
+          export = result,
+          ignore = list(FALSE, NULL),
+          timeout = timeout
+        ),
+        error = function(e) {
+          save_log(paste0("tests/testthat/", test_category, "-", result, "-timeout-log.txt"))
+          vals <- try(app$get_values(export = TRUE), silent = TRUE)
+          if (!inherits(vals, "try-error")) {
+            cat("Exports visible at timeout:\n")
+            print(names(vals$export))
+            print(vals$export)
+          }
+          stop(e)
+        }
       )
     }
 
@@ -417,6 +481,11 @@ shinytest2_webapp_functionality <- function(test_category) {
     shinytestLogMessage(paste0("finished test category: ", test_category))
   })
 }
+########################################################################### #
 
-# Load application support files into testing environment
-shinytest2::load_app_env()
+## This used to Load all .R / application support files into testing environment, but
+## should not be needed since
+##  library(EJAM) loads all needed functions - but note that means the package must be installed for this testing to work
+## and app.R will use ejamapp() which will read all the needed global defaults
+
+#  shinytest2::load_app_env()

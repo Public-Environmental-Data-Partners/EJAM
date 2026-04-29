@@ -4,55 +4,75 @@
 ############################### #
 cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
 
-# see also   testthat.R
-
 # # This script SHOULD get run before tests, so fixtures created here will be available to all the tests.
 # The file now DOES do library(EJAM) - that would do .onAttach() and dataload_dynamic() and indexblocks()
+############################### #
 cat("\n\n      ------------------ NOW DOING library(EJAM) !!!!  -------------      \n\n")
+
+# library(EJAM) ####
 library(EJAM)
-
-# When tests try to test the shiny app, the app should handle using global_defaults_*.R
-
-################################# # ################################# #
-## Note: to profile parts of the shiny app for performance, etc.
-## see shinytest2 package, and see profiler:
-# shiny::callModule(profvis_server, "profiler")
-## and also see  /EJAM/tests/testthat/test-ui_and_server.R
-## and see  https://shiny.posit.co/r/articles/improve/debugging/
-## etc.
-################################# # ################################# #
-
 ############################### #
-# keep track of global envt side effects ####
-#  and alert us if any functions in tests have
-#  changed global options, a side effect we probably want functions to avoid
 
-set_state_inspector(function() {
-  list(options = options())
-})
+# >> not load_all() ??? ####
+
+message("Consider whether you want to use remotes::install_local() or devtools::load_all() before running tests...
+ It is recommended during development to use `remotes::install_local()`
+ to ensure your development code is the one tested, especially for the webapp functionality tests.
+ This is because shinytest2 automatically references the installed version of a package.
+
+ Also, if you just use require() or library() here and do not use load_all(),
+ then tests will not have access to internal functions like latlon_infer()
+ so those tests (if run interactively at least) fail,
+ and even if a test were changed to say EJAM:::latlon_infer(),
+ that would still only test the installed version, not the source version, which may differ.
+")
 ############################### #
-# internet available? ####
+
+# require key packages ####
+
+# To run tests interactively, and maybe to test webapp functionality,
+# you need to load() or require() various packages!
+
+if (!require(testthat))   {cat("Need testthat package for unit tests to work \n\n")}
+if (!require(mapview))    {cat("Need mapview package for some tests of mapping to work \n\n")}
+if (!require(AOI))        {cat("Need AOI package for tests of street address handling to work \n\n")}
+if (!require(golem))        {cat("Need golem package for some tests to work \n\n")}
+if (!require(rmarkdown))        {cat("Need rmarkdown  package for some tests to work \n\n")}
+if (!require(data.table))       {cat("Need data.table package for some tests to work \n\n")}
+if (!require(magrittr))         {cat("Need magrittr   package for some tests to work \n\n")}
+############################### #
+# if doing tests of webapp, also need shinytest2, so might as well load it here just in case
+if (!require(shinytest2)) {cat("Need shinytest2 package for some tests of web app to work \n\n")}
+# if doing tests of webapp, also need the function from this file, so might as well source it here just in case
+testdir = testthat::test_path()
+if (file.exists(file.path(testdir, "setup-shinytest2.R"))) {
+  source(file.path(testdir, "setup-shinytest2.R"))
+} else {
+  message("Need to source the setup-shinytest2.R file first to test webapp functionality \n")
+}
+############################### #
+# is internet available? ####
 EJAM:::offline_warning("NO INTERNET CONNECTION AVAILABLE - SOME TESTS MAY FAIL WITHOUT CLEAR EXPLANATION")
 EJAM:::offline_cat("\n\nNO INTERNET CONNECTION AVAILABLE - SOME TESTS MAY FAIL WITHOUT CLEAR EXPLANATION\n\n")
 # skip_if_offline()
 ################################# # ################################# #
+# keep track of global envt side effects of testing ####
+#  and alert us if any functions in tests have
+#  changed global options, a side effect we probably want functions to avoid.
+# but Warm up readr before state inspection starts. The first readr::read_csv()
+# call creates session options like readr.default_locale/readr.num_threads.
+tf <- tempfile(fileext = ".csv")
+writeLines(c("x", "1"), tf)
+invisible(readr::read_csv(tf, show_col_types = FALSE))
+unlink(tf)
 
-
-# GET DATA AND BUILD INDEX JUST IN CASE ####
-
-#Source and library calls
-if (!require(mapview))    {cat("Need mapview package for some tests of mapping to work \n\n")}
-if (!require(AOI))        {cat("Need AOI package for tests of street address handling to work \n\n")}
-if (!require(shinytest2)) {cat("Need shinytest2 package for some tests of web app to work \n\n")}
-if (!require(golem))        {cat("Might need golem package for shinytest2 tests of web app UI to work \n\n")}
-if (!require(rmarkdown))        {cat("Might need rmarkdown package for shinytest2 tests of web app UI to work \n\n")}
-# to run tests interactively, you also need to do
-# require(testthat)
-# require(data.table)
-# require(magrittr)
-
-## For the EJAM package, if you just use require() or library() here, then tests will not have access to internal functions like latlon_infer()
-## so those tests fail unless you use load_all() or if test were changed to say EJAM:::latlon_infer() but that would ONLY test installed version, never the source version if it differs
+testthat::set_state_inspector(function() {
+  list(options = options())
+})
+############################### #
+# get all EJAM-related datasets JUST IN CASE ####
+# (some are normally only loaded into memory if / when needed)
+## (and build index, but library(EJAM) should have already done the indexblocks() part at least)
 
 # suppressMessages({suppressWarnings({
   dataload_dynamic("all",  # needs frs, etc.
@@ -64,14 +84,22 @@ if (!exists("frs")) {stop('needs frs etc.')}
 suppressMessages({suppressWarnings({
   indexblocks()
 })})
+############################### #
+# global defaults   ####
 
-## needs these? from global?
-# default_show_advanced_settings
-# html_header_fmt
+# THIS IS HANDLED IN ejamapp(), which gets run from app.R which is the default used by shinytest2::AppDriver
+## When tests try to test the shiny app, the ejamapp() function would normally handle using global_defaults_*.R
+# (The  global defaults also were  being directly put in envt by  /tests/testthat.R BUT THAT FILE MIGHT NOT BE USED ANY MORE )
+#
+## but note app.R would normally use isPublic and hide the Advanced tab and some options like MACT/SIC/EPA program
+## so isPublic can be set FALSE here and that should be found by app.R when shinytest2 tests start and use app.R
+
+isPublic = FALSE
 
 ################################# # ################################# #
 
 # Create ejamitoutnow ####
+
 # here in setup.R, since some tests are using it.
 # see datacreate_testpoints_testoutputs.R and datacreate_testoutput_ejamit_shapes_2.R and  datacreate_testoutput_ejamit_fips.R
 if (exists("ejamit") && exists("blockgroupstats") && exists("testpoints_10")) {

@@ -3,6 +3,8 @@
 
 # Also see test-ejamit_compare_distances.R, for test of "donuts ok in ejamit(radius_donut_lower_edge=3)"
 
+# save setting to later restore it to what it had been since some functions alter it
+oldwidth = options("width")
 ########################################################## #
 
 test_that('ejamit() returns a list with no error, for very simple example', {
@@ -293,6 +295,8 @@ test_that("US EJ Index via ejamit() approx = via formula, for 1 bgfips", {
 # more tests for ejamit could go here ***
 
 
+#  restore it to what it had been since some functions alter it
+options(width = as.vector(unlist(oldwidth)))
 
 
 ############################### # ############################### # ############################### # ############################### #

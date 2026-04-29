@@ -21,7 +21,10 @@ This document covers the UI-related automated tests.
 
 This package had been using `shinytest2::test_app()` in the file `tests/testthat.R`, but that approach was deprecated, per this note in the source code of `shinytest2::test_app()` -- "Calling `shinytest2::test_app()` within a {testthat} test has been deprecated in {shinytest2} v0.5.0."
 
-Instead, `EJAM:::test_ejam()` uses an approach that first sources `testthat/setup-shinytest2.R` which defines `shinytest2_webapp_functionality()`, a function that contains the steps tested in the web app, and then directly uses that function from within test files like `/tests/testthat/test-webapp-latlon-functionality.R` etc.
+Instead, `EJAM:::test_ejam()` uses an approach that first sources `testthat/setup.R` 
+which sources `testthat/setup-shinytest2.R` which defines `shinytest2_webapp_functionality()`, 
+a function that contains the steps tested in the web app, and 
+then directly uses that function from within test files like `/tests/testthat/test-webapp-latlon-functionality.R` etc.
 
 
 
@@ -98,18 +101,38 @@ Throughout the app code, `shiny::exportTestValues()` can be used to store values
 
 ## Running Tests Locally
 
-The primary method for running the shinytests (other than doing so via GitHub Actions) is:
+One way to run the shinytests is via the GitHub Actions. 
 
+Another way is this:
 ``` r
-# for one subset of tests, like just the latlon analysis features:
+x = EJAM:::test_ejam(ask=F, run_these="webapp")
+```
+
+You could also run a test like this, but you cannot save or compare snapshots to reference when testing interactively.
+``` r
+remotes::install_local() # once
+library(EJAM) # once
+source(testthat::test_path("setup.R")) # once
+
+# run a single test:
+shinytest2_webapp_functionality("latlon")
+```
+
+It is recommended during development to use `remotes::install_local()`  
+to ensure your development code is the one tested. 
+This is because shinytest2 automatically references the installed version of a package.
+
+Another useful way was this (but this might be deprecated by shinytest2)
+``` r
+# first, source `setup.R`, from the tests/testthat/ folder. 
+source(testthat::test_path("setup.R"))
+
+# then for one subset of tests, like just the latlon analysis features:
 shinytest2::test_app(".", filter="latlon-functionality", check_setup = FALSE)
 
 # for all the webapp functionality tests
 shinytest2::test_app(".", filter="-functionality", check_setup = FALSE)
 ```
-
-However, it is strongly recommended during development to source() the entire `testthat.R` which runs `remotes::install_local()` to ensure your development code is the one tested. This is because shinytest2 automatically references the installed version of a package.
-
 
 ## GitHub Actions Integration
 
