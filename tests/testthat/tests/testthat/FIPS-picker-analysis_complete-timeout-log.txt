@@ -1,0 +1,1021 @@
+{shinytest2} R info   21:46:04.86 Start AppDriver initialization
+{shinytest2} R info   21:46:04.86 Starting Shiny app
+{shinytest2} R info   21:46:14.01 Creating new ChromoteSession
+{shinytest2} R info   21:46:14.08 Setting window size: 1080x1920
+{shinytest2} R info   21:46:14.08 Setting window size to `1920`x`1080`
+{shinytest2} R info   21:46:14.09 Navigating to Shiny app
+{shinytest2} R info   21:46:14.31 Injecting shiny-tracer.js
+{shinytest2} R info   21:46:14.35 Waiting for Shiny to become ready
+{shinytest2} R info   21:46:14.56 Waiting for Shiny to become idle for 200ms within 60000ms
+{shinytest2} R info   21:46:15.28 Shiny app started
+{shinytest2} R info   21:46:15.31 Setting inputs: 'ss_choose_method'
+{shinytest2} R info   21:46:15.31 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:15.31 Setting inputs: 'ss_choose_method'
+{shinytest2} R info   21:46:15.31 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:15.31 Setting inputs: 'ss_choose_method_drop'
+{shinytest2} R info   21:46:15.35 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:15.35 Waiting for Shiny to become idle for 500ms within 10000ms
+{shinytest2} R info   21:46:16.04 Setting inputs: 'pickermoduleid-fips_type2pick'
+{shinytest2} R info   21:46:16.11 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:16.11 Waiting for Shiny to become idle for 500ms within 10000ms
+{shinytest2} R info   21:46:16.68 Setting inputs: 'pickermoduleid-cities_picked'
+{shinytest2} R info   21:46:16.68 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:16.68 Waiting for Shiny to become idle for 500ms within 10000ms
+{shinytest2} R info   21:46:17.19 Getting all values
+{shinytest2} R info   21:46:17.20 Setting inputs: 'pickermoduleid-cities_picked'
+{shinytest2} R info   21:46:17.20 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:17.20 Waiting for Shiny to become idle for 500ms within 10000ms
+{shinytest2} R info   21:46:17.82 Getting all values
+{shinytest2} R info   21:46:17.85 Setting inputs: 'pickermoduleid-cities_picked'
+{shinytest2} R info   21:46:17.85 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:17.85 Waiting for Shiny to become idle for 500ms within 10000ms
+{shinytest2} R info   21:46:18.35 Getting all values
+{shinytest2} R info   21:46:18.36 Waiting for Shiny to become idle for 500ms within 10000ms
+{shinytest2} R info   21:46:18.88 Getting all values
+{shinytest2} R info   21:46:18.89 Setting inputs: 'fipspicker_done_button'
+{shinytest2} R info   21:46:18.89 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:18.89 Waiting for Shiny to become idle for 500ms within 10000ms
+{shinytest2} R info   21:46:19.62 Setting inputs: 'bt_get_results'
+{shinytest2} R info   21:46:19.63 Finished setting inputs. Timedout: FALSE
+{shinytest2} R info   21:46:19.63 Getting all values
+{shinytest2} R info   21:46:20.03 Getting all values
+{shinytest2} R info   21:46:20.44 Getting all values
+{shinytest2} R info   21:46:20.85 Getting all values
+{shinytest2} R info   21:46:21.26 Getting all values
+{shinytest2} R info   21:46:21.67 Getting all values
+{shinytest2} R info   21:46:22.08 Getting all values
+{shinytest2} R info   21:46:22.49 Getting all values
+{shinytest2} R info   21:46:22.90 Getting all values
+{shinytest2} R info   21:46:23.31 Getting all values
+{shinytest2} R info   21:46:23.72 Getting all values
+{shinytest2} R info   21:46:24.14 Getting all values
+{shinytest2} R info   21:46:24.55 Getting all values
+{shinytest2} R info   21:46:24.96 Getting all values
+{shinytest2} R info   21:46:25.37 Getting all values
+{shinytest2} R info   21:46:25.78 Getting all values
+{shinytest2} R info   21:46:26.19 Getting all values
+{shinytest2} R info   21:46:26.60 Getting all values
+{shinytest2} R info   21:46:27.02 Getting all values
+{shinytest2} R info   21:46:27.43 Getting all values
+{shinytest2} R info   21:46:27.84 Getting all values
+{shinytest2} R info   21:46:28.25 Getting all values
+{shinytest2} R info   21:46:28.66 Getting all values
+{shinytest2} R info   21:46:29.07 Getting all values
+{shinytest2} R info   21:46:29.48 Getting all values
+{shinytest2} R info   21:46:29.89 Getting all values
+{shinytest2} R info   21:46:30.30 Getting all values
+{shinytest2} R info   21:46:30.71 Getting all values
+{shinytest2} R info   21:46:31.12 Getting all values
+{shinytest2} R info   21:46:31.53 Getting all values
+{shinytest2} R info   21:46:31.95 Getting all values
+{shinytest2} R info   21:46:32.36 Getting all values
+{shinytest2} R info   21:46:32.77 Getting all values
+{shinytest2} R info   21:46:33.18 Getting all values
+{shinytest2} R info   21:46:33.59 Getting all values
+{shinytest2} R info   21:46:34.00 Getting all values
+{shinytest2} R info   21:46:34.41 Getting all values
+{shinytest2} R info   21:46:34.83 Getting all values
+{shinytest2} R info   21:46:35.23 Getting all values
+{shinytest2} R info   21:46:35.64 Getting all values
+{shinytest2} R info   21:46:36.05 Getting all values
+{shinytest2} R info   21:46:36.47 Getting all values
+{shinytest2} R info   21:46:36.87 Getting all values
+{shinytest2} R info   21:46:37.29 Getting all values
+{shinytest2} R info   21:46:37.70 Getting all values
+{shinytest2} R info   21:46:38.11 Getting all values
+{shinytest2} R info   21:46:38.52 Getting all values
+{shinytest2} R info   21:46:38.93 Getting all values
+{shinytest2} R info   21:46:39.34 Getting all values
+{shinytest2} R info   21:46:39.75 Getting all values
+{shinytest2} R info   21:46:40.16 Getting all values
+{shinytest2} R info   21:46:40.58 Getting all values
+{shinytest2} R info   21:46:40.99 Getting all values
+{shinytest2} R info   21:46:41.40 Getting all values
+{shinytest2} R info   21:46:41.81 Getting all values
+{shinytest2} R info   21:46:42.22 Getting all values
+{shinytest2} R info   21:46:42.63 Getting all values
+{shinytest2} R info   21:46:43.04 Getting all values
+{shinytest2} R info   21:46:43.45 Getting all values
+{shinytest2} R info   21:46:43.86 Getting all values
+{shinytest2} R info   21:46:44.27 Getting all values
+{shinytest2} R info   21:46:44.69 Getting all values
+{shinytest2} R info   21:46:45.10 Getting all values
+{shinytest2} R info   21:46:45.51 Getting all values
+{shinytest2} R info   21:46:45.92 Getting all values
+{shinytest2} R info   21:46:46.33 Getting all values
+{shinytest2} R info   21:46:46.74 Getting all values
+{shinytest2} R info   21:46:47.15 Getting all values
+{shinytest2} R info   21:46:47.57 Getting all values
+{shinytest2} R info   21:46:47.98 Getting all values
+{shinytest2} R info   21:46:48.39 Getting all values
+{shinytest2} R info   21:46:48.80 Getting all values
+{shinytest2} R info   21:46:49.21 Getting all values
+{shinytest2} R info   21:46:49.62 Getting all values
+{shinytest2} R info   21:46:50.03 Getting all values
+{shinytest2} R info   21:46:50.44 Getting all values
+{shinytest2} R info   21:46:50.85 Getting all values
+{shinytest2} R info   21:46:51.26 Getting all values
+{shinytest2} R info   21:46:51.67 Getting all values
+{shinytest2} R info   21:46:52.08 Getting all values
+{shinytest2} R info   21:46:52.49 Getting all values
+{shinytest2} R info   21:46:52.90 Getting all values
+{shinytest2} R info   21:46:53.32 Getting all values
+{shinytest2} R info   21:46:53.73 Getting all values
+{shinytest2} R info   21:46:54.14 Getting all values
+{shinytest2} R info   21:46:54.55 Getting all values
+{shinytest2} R info   21:46:54.96 Getting all values
+{shinytest2} R info   21:46:55.37 Getting all values
+{shinytest2} R info   21:46:55.78 Getting all values
+{shinytest2} R info   21:46:56.19 Getting all values
+{shinytest2} R info   21:46:56.60 Getting all values
+{shinytest2} R info   21:46:57.01 Getting all values
+{shinytest2} R info   21:46:57.42 Getting all values
+{shinytest2} R info   21:46:57.83 Getting all values
+{shinytest2} R info   21:46:58.25 Getting all values
+{shinytest2} R info   21:46:58.66 Getting all values
+{shinytest2} R info   21:46:59.07 Getting all values
+{shinytest2} R info   21:46:59.48 Getting all values
+{shinytest2} R info   21:46:59.89 Getting all values
+{shinytest2} R info   21:47:00.30 Getting all values
+{shinytest2} R info   21:47:00.71 Getting all values
+{shinytest2} R info   21:47:01.12 Getting all values
+{shinytest2} R info   21:47:01.53 Getting all values
+{shinytest2} R info   21:47:01.95 Getting all values
+{shinytest2} R info   21:47:02.35 Getting all values
+{shinytest2} R info   21:47:02.77 Getting all values
+{shinytest2} R info   21:47:03.18 Getting all values
+{shinytest2} R info   21:47:03.59 Getting all values
+{shinytest2} R info   21:47:04.00 Getting all values
+{shinytest2} R info   21:47:04.40 Getting all values
+{shinytest2} R info   21:47:04.81 Getting all values
+{shinytest2} R info   21:47:05.22 Getting all values
+{shinytest2} R info   21:47:05.63 Getting all values
+{shinytest2} R info   21:47:06.04 Getting all values
+{shinytest2} R info   21:47:06.45 Getting all values
+{shinytest2} R info   21:47:06.85 Getting all values
+{shinytest2} R info   21:47:07.26 Getting all values
+{shinytest2} R info   21:47:07.66 Getting all values
+{shinytest2} R info   21:47:08.07 Getting all values
+{shinytest2} R info   21:47:08.47 Getting all values
+{shinytest2} R info   21:47:08.88 Getting all values
+{shinytest2} R info   21:47:09.29 Getting all values
+{shinytest2} R info   21:47:09.70 Getting all values
+{shinytest2} R info   21:47:10.11 Getting all values
+{shinytest2} R info   21:47:10.52 Getting all values
+{shinytest2} R info   21:47:10.93 Getting all values
+{shinytest2} R info   21:47:11.34 Getting all values
+{shinytest2} R info   21:47:11.75 Getting all values
+{shinytest2} R info   21:47:12.15 Getting all values
+{shinytest2} R info   21:47:12.56 Getting all values
+{shinytest2} R info   21:47:12.97 Getting all values
+{shinytest2} R info   21:47:13.38 Getting all values
+{shinytest2} R info   21:47:13.79 Getting all values
+{shinytest2} R info   21:47:14.20 Getting all values
+{shinytest2} R info   21:47:14.61 Getting all values
+{shinytest2} R info   21:47:15.03 Getting all values
+{shinytest2} R info   21:47:15.43 Getting all values
+{shinytest2} R info   21:47:15.84 Getting all values
+{shinytest2} R info   21:47:16.25 Getting all values
+{shinytest2} R info   21:47:16.66 Getting all values
+{shinytest2} R info   21:47:17.07 Getting all values
+{shinytest2} R info   21:47:17.48 Getting all values
+{shinytest2} R info   21:47:17.89 Getting all values
+{shinytest2} R info   21:47:18.30 Getting all values
+{shinytest2} R info   21:47:18.71 Getting all values
+{shinytest2} R info   21:47:19.12 Getting all values
+{shinytest2} R info   21:47:19.53 Getting all values
+{shinytest2} R info   21:47:19.94 Getting all values
+{shinytest2} R info   21:47:20.35 Getting all values
+{shinytest2} R info   21:47:20.77 Getting all values
+{shinytest2} R info   21:47:21.18 Getting all values
+{shinytest2} R info   21:47:21.59 Getting all values
+{shinytest2} R info   21:47:22.00 Getting all values
+{shinytest2} R info   21:47:22.41 Getting all values
+{shinytest2} R info   21:47:22.82 Getting all values
+{shinytest2} R info   21:47:23.23 Getting all values
+{shinytest2} R info   21:47:23.64 Getting all values
+{shinytest2} R info   21:47:24.05 Getting all values
+{shinytest2} R info   21:47:24.46 Getting all values
+{shinytest2} R info   21:47:24.88 Getting all values
+{shinytest2} R info   21:47:25.29 Getting all values
+{shinytest2} R info   21:47:25.70 Getting all values
+{shinytest2} R info   21:47:26.11 Getting all values
+{shinytest2} R info   21:47:26.52 Getting all values
+{shinytest2} R info   21:47:26.93 Getting all values
+{shinytest2} R info   21:47:27.34 Getting all values
+{shinytest2} R info   21:47:27.75 Getting all values
+{shinytest2} R info   21:47:28.16 Getting all values
+{shinytest2} R info   21:47:28.57 Getting all values
+{shinytest2} R info   21:47:28.98 Getting all values
+{shinytest2} R info   21:47:29.39 Getting all values
+{shinytest2} R info   21:47:29.80 Getting all values
+{shinytest2} R info   21:47:30.21 Getting all values
+{shinytest2} R info   21:47:30.62 Getting all values
+{shinytest2} R info   21:47:31.03 Getting all values
+{shinytest2} R info   21:47:31.44 Getting all values
+{shinytest2} R info   21:47:31.85 Getting all values
+{shinytest2} R info   21:47:32.26 Getting all values
+{shinytest2} R info   21:47:32.67 Getting all values
+{shinytest2} R info   21:47:33.08 Getting all values
+{shinytest2} R info   21:47:33.49 Getting all values
+{shinytest2} R info   21:47:33.90 Getting all values
+{shinytest2} R info   21:47:34.31 Getting all values
+{shinytest2} R info   21:47:34.72 Getting all values
+{shinytest2} R info   21:47:35.13 Getting all values
+{shinytest2} R info   21:47:35.54 Getting all values
+{shinytest2} R info   21:47:35.95 Getting all values
+{shinytest2} R info   21:47:36.36 Getting all values
+{shinytest2} R info   21:47:36.77 Getting all values
+{shinytest2} R info   21:47:37.19 Getting all values
+{shinytest2} R info   21:47:37.59 Getting all values
+{shinytest2} R info   21:47:38.00 Getting all values
+{shinytest2} R info   21:47:38.41 Getting all values
+{shinytest2} R info   21:47:38.82 Getting all values
+{shinytest2} R info   21:47:39.24 Getting all values
+{shinytest2} R info   21:47:39.65 Getting all values
+{shinytest2} R info   21:47:40.06 Getting all values
+{shinytest2} R info   21:47:40.47 Getting all values
+{shinytest2} R info   21:47:40.88 Getting all values
+{shinytest2} R info   21:47:41.29 Getting all values
+{shinytest2} R info   21:47:41.69 Getting all values
+{shinytest2} R info   21:47:42.09 Getting all values
+{shinytest2} R info   21:47:42.50 Getting all values
+{shinytest2} R info   21:47:42.90 Getting all values
+{shinytest2} R info   21:47:43.31 Getting all values
+{shinytest2} R info   21:47:43.72 Getting all values
+{shinytest2} R info   21:47:44.13 Getting all values
+{shinytest2} R info   21:47:44.54 Getting all values
+{shinytest2} R info   21:47:44.95 Getting all values
+{shinytest2} R info   21:47:45.36 Getting all values
+{shinytest2} R info   21:47:45.77 Getting all values
+{shinytest2} R info   21:47:46.18 Getting all values
+{shinytest2} R info   21:47:46.58 Getting all values
+{shinytest2} R info   21:47:46.99 Getting all values
+{shinytest2} R info   21:47:47.40 Getting all values
+{shinytest2} R info   21:47:47.81 Getting all values
+{shinytest2} R info   21:47:48.22 Getting all values
+{shinytest2} R info   21:47:48.63 Getting all values
+{shinytest2} R info   21:47:49.04 Getting all values
+{shinytest2} R info   21:47:49.45 Getting all values
+{shinytest2} R info   21:47:49.86 Getting all values
+{shinytest2} R info   21:47:50.27 Getting all values
+{shinytest2} R info   21:47:50.68 Getting all values
+{shinytest2} R info   21:47:51.09 Getting all values
+{shinytest2} R info   21:47:51.50 Getting all values
+{shinytest2} R info   21:47:51.90 Getting all values
+{shinytest2} R info   21:47:52.31 Getting all values
+{shinytest2} R info   21:47:52.72 Getting all values
+{shinytest2} R info   21:47:53.13 Getting all values
+{shinytest2} R info   21:47:53.54 Getting all values
+{shinytest2} R info   21:47:53.95 Getting all values
+{shinytest2} R info   21:47:54.36 Getting all values
+{shinytest2} R info   21:47:54.77 Getting all values
+{shinytest2} R info   21:47:55.18 Getting all values
+{shinytest2} R info   21:47:55.59 Getting all values
+{shinytest2} R info   21:47:56.00 Getting all values
+{shinytest2} R info   21:47:56.41 Getting all values
+{shinytest2} R info   21:47:56.82 Getting all values
+{shinytest2} R info   21:47:57.23 Getting all values
+{shinytest2} R info   21:47:57.64 Getting all values
+{shinytest2} R info   21:47:58.05 Getting all values
+{shinytest2} R info   21:47:58.46 Getting all values
+{shinytest2} R info   21:47:58.87 Getting all values
+{shinytest2} R info   21:47:59.28 Getting all values
+{shinytest2} R info   21:47:59.68 Getting all values
+{shinytest2} R info   21:48:00.09 Getting all values
+{shinytest2} R info   21:48:00.50 Getting all values
+{shinytest2} R info   21:48:00.91 Getting all values
+{shinytest2} R info   21:48:01.32 Getting all values
+{shinytest2} R info   21:48:01.73 Getting all values
+{shinytest2} R info   21:48:02.14 Getting all values
+{shinytest2} R info   21:48:02.55 Getting all values
+{shinytest2} R info   21:48:02.96 Getting all values
+{shinytest2} R info   21:48:03.37 Getting all values
+{shinytest2} R info   21:48:03.79 Getting all values
+{shinytest2} R info   21:48:04.20 Getting all values
+{shinytest2} R info   21:48:04.61 Getting all values
+{shinytest2} R info   21:48:05.02 Getting all values
+{shinytest2} R info   21:48:05.43 Getting all values
+{shinytest2} R info   21:48:05.84 Getting all values
+{shinytest2} R info   21:48:06.25 Getting all values
+{shinytest2} R info   21:48:06.66 Getting all values
+{shinytest2} R info   21:48:07.07 Getting all values
+{shinytest2} R info   21:48:07.47 Getting all values
+{shinytest2} R info   21:48:07.88 Getting all values
+{shinytest2} R info   21:48:08.29 Getting all values
+{shinytest2} R info   21:48:08.70 Getting all values
+{shinytest2} R info   21:48:09.11 Getting all values
+{shinytest2} R info   21:48:09.52 Getting all values
+{shinytest2} R info   21:48:09.93 Getting all values
+{shinytest2} R info   21:48:10.34 Getting all values
+{shinytest2} R info   21:48:10.75 Getting all values
+{shinytest2} R info   21:48:11.16 Getting all values
+{shinytest2} R info   21:48:11.56 Getting all values
+{shinytest2} R info   21:48:11.97 Getting all values
+{shinytest2} R info   21:48:12.38 Getting all values
+{shinytest2} R info   21:48:12.79 Getting all values
+{shinytest2} R info   21:48:13.20 Getting all values
+{shinytest2} R info   21:48:13.61 Getting all values
+{shinytest2} R info   21:48:14.02 Getting all values
+{shinytest2} R info   21:48:14.43 Getting all values
+{shinytest2} R info   21:48:14.84 Getting all values
+{shinytest2} R info   21:48:15.25 Getting all values
+{shinytest2} R info   21:48:15.65 Getting all values
+{shinytest2} R info   21:48:16.06 Getting all values
+{shinytest2} R info   21:48:16.47 Getting all values
+{shinytest2} R info   21:48:16.88 Getting all values
+{shinytest2} R info   21:48:17.29 Getting all values
+{shinytest2} R info   21:48:17.70 Getting all values
+{shinytest2} R info   21:48:18.11 Getting all values
+{shinytest2} R info   21:48:18.52 Getting all values
+{shinytest2} R info   21:48:18.92 Getting all values
+{shinytest2} R info   21:48:19.34 Getting all values
+{shinytest2} R info   21:48:19.75 Getting all values
+{shinytest2} R info   21:48:20.16 Getting all values
+{shinytest2} R info   21:48:20.85 Getting all values
+{shinytest2} R info   21:48:21.26 Getting all values
+{shinytest2} R info   21:48:21.67 Getting all values
+{shinytest2} R info   21:48:22.08 Getting all values
+{shinytest2} R info   21:48:22.49 Getting all values
+{shinytest2} R info   21:48:22.90 Getting all values
+{shinytest2} R info   21:48:23.31 Getting all values
+{shinytest2} R info   21:48:23.73 Getting all values
+{shinytest2} R info   21:48:24.14 Getting all values
+{shinytest2} R info   21:48:24.55 Getting all values
+{shinytest2} R info   21:48:24.96 Getting all values
+{shinytest2} R info   21:48:25.37 Getting all values
+{shinytest2} R info   21:48:25.78 Getting all values
+{shinytest2} R info   21:48:26.19 Getting all values
+{shinytest2} R info   21:48:26.60 Getting all values
+{shinytest2} R info   21:48:27.01 Getting all values
+{shinytest2} R info   21:48:27.42 Getting all values
+{shinytest2} R info   21:48:27.83 Getting all values
+{shinytest2} R info   21:48:28.24 Getting all values
+{shinytest2} R info   21:48:28.65 Getting all values
+{shinytest2} R info   21:48:29.06 Getting all values
+{shinytest2} R info   21:48:29.46 Getting all values
+{shinytest2} R info   21:48:29.87 Getting all values
+{shinytest2} R info   21:48:30.28 Getting all values
+{shinytest2} R info   21:48:30.69 Getting all values
+{shinytest2} R info   21:48:31.10 Getting all values
+{shinytest2} R info   21:48:31.51 Getting all values
+{shinytest2} R info   21:48:31.92 Getting all values
+{shinytest2} R info   21:48:32.33 Getting all values
+{shinytest2} R info   21:48:32.74 Getting all values
+{shinytest2} R info   21:48:33.15 Getting all values
+{shinytest2} R info   21:48:33.55 Getting all values
+{shinytest2} R info   21:48:33.96 Getting all values
+{shinytest2} R info   21:48:34.37 Getting all values
+{shinytest2} R info   21:48:34.78 Getting all values
+{shinytest2} R info   21:48:35.19 Getting all values
+{shinytest2} R info   21:48:35.60 Getting all values
+{shinytest2} R info   21:48:36.01 Getting all values
+{shinytest2} R info   21:48:36.42 Getting all values
+{shinytest2} R info   21:48:36.82 Getting all values
+{shinytest2} R info   21:48:37.23 Getting all values
+{shinytest2} R info   21:48:37.64 Getting all values
+{shinytest2} R info   21:48:38.05 Getting all values
+{shinytest2} R info   21:48:38.46 Getting all values
+{shinytest2} R info   21:48:38.87 Getting all values
+{shinytest2} R info   21:48:39.28 Getting all values
+{shinytest2} R info   21:48:39.69 Getting all values
+{shinytest2} R info   21:48:40.10 Getting all values
+{shinytest2} R info   21:48:40.51 Getting all values
+{shinytest2} R info   21:48:40.92 Getting all values
+{shinytest2} R info   21:48:41.33 Getting all values
+{shinytest2} R info   21:48:41.74 Getting all values
+{shinytest2} R info   21:48:42.15 Getting all values
+{shinytest2} R info   21:48:42.56 Getting all values
+{shinytest2} R info   21:48:42.97 Getting all values
+{shinytest2} R info   21:48:43.37 Getting all values
+{shinytest2} R info   21:48:43.78 Getting all values
+{shinytest2} R info   21:48:44.19 Getting all values
+{shinytest2} R info   21:48:44.59 Getting all values
+{shinytest2} R info   21:48:45.00 Getting all values
+{shinytest2} R info   21:48:45.42 Getting all values
+{shinytest2} R info   21:48:45.83 Getting all values
+{shinytest2} R info   21:48:46.23 Getting all values
+{shinytest2} R info   21:48:46.64 Getting all values
+{shinytest2} R info   21:48:47.05 Getting all values
+{shinytest2} R info   21:48:47.46 Getting all values
+{shinytest2} R info   21:48:47.87 Getting all values
+{shinytest2} R info   21:48:48.28 Getting all values
+{shinytest2} R info   21:48:48.69 Getting all values
+{shinytest2} R info   21:48:49.10 Getting all values
+{shinytest2} R info   21:48:49.51 Getting all values
+{shinytest2} R info   21:48:49.92 Getting all values
+{shinytest2} R info   21:48:50.34 Getting all values
+{shinytest2} R info   21:48:50.75 Getting all values
+{shinytest2} R info   21:48:51.16 Getting all values
+{shinytest2} R info   21:48:51.57 Getting all values
+{shinytest2} R info   21:48:51.98 Getting all values
+{shinytest2} R info   21:48:52.39 Getting all values
+{shinytest2} R info   21:48:52.80 Getting all values
+{shinytest2} R info   21:48:53.21 Getting all values
+{shinytest2} R info   21:48:53.62 Getting all values
+{shinytest2} R info   21:48:54.03 Getting all values
+{shinytest2} R info   21:48:54.44 Getting all values
+{shinytest2} R info   21:48:54.85 Getting all values
+{shinytest2} R info   21:48:55.26 Getting all values
+{shinytest2} R info   21:48:55.67 Getting all values
+{shinytest2} R info   21:48:56.08 Getting all values
+{shinytest2} R info   21:48:56.49 Getting all values
+{shinytest2} R info   21:48:56.90 Getting all values
+{shinytest2} R info   21:48:57.31 Getting all values
+{shinytest2} R info   21:48:57.72 Getting all values
+{shinytest2} R info   21:48:58.14 Getting all values
+{shinytest2} R info   21:48:58.55 Getting all values
+{shinytest2} R info   21:48:58.96 Getting all values
+{shinytest2} R info   21:48:59.37 Getting all values
+{shinytest2} R info   21:48:59.78 Getting all values
+{shinytest2} R info   21:49:00.19 Getting all values
+{shinytest2} R info   21:49:00.60 Getting all values
+{shinytest2} R info   21:49:01.01 Getting all values
+{shinytest2} R info   21:49:01.42 Getting all values
+{shinytest2} R info   21:49:01.83 Getting all values
+{shinytest2} R info   21:49:02.24 Getting all values
+{shinytest2} R info   21:49:02.65 Getting all values
+{shinytest2} R info   21:49:03.06 Getting all values
+{shinytest2} R info   21:49:03.47 Getting all values
+{shinytest2} R info   21:49:03.87 Getting all values
+{shinytest2} R info   21:49:04.28 Getting all values
+{shinytest2} R info   21:49:04.69 Getting all values
+{shinytest2} R info   21:49:05.10 Getting all values
+{shinytest2} R info   21:49:05.51 Getting all values
+{shinytest2} R info   21:49:05.92 Getting all values
+{shinytest2} R info   21:49:06.33 Getting all values
+{shinytest2} R info   21:49:06.74 Getting all values
+{shinytest2} R info   21:49:07.14 Getting all values
+{shinytest2} R info   21:49:07.56 Getting all values
+{shinytest2} R info   21:49:07.96 Getting all values
+{shinytest2} R info   21:49:08.37 Getting all values
+{shinytest2} R info   21:49:08.79 Getting all values
+{shinytest2} R info   21:49:09.20 Getting all values
+{shinytest2} R info   21:49:09.60 Getting all values
+{shinytest2} R info   21:49:10.02 Getting all values
+{shinytest2} R info   21:49:10.42 Getting all values
+{shinytest2} R info   21:49:10.83 Getting all values
+{shinytest2} R info   21:49:11.24 Getting all values
+{shinytest2} R info   21:49:11.65 Getting all values
+{shinytest2} R info   21:49:12.06 Getting all values
+{shinytest2} R info   21:49:12.47 Getting all values
+{shinytest2} R info   21:49:12.89 Getting all values
+{shinytest2} R info   21:49:13.30 Getting all values
+{shinytest2} R info   21:49:13.71 Getting all values
+{shinytest2} R info   21:49:14.12 Getting all values
+{shinytest2} R info   21:49:14.53 Getting all values
+{shinytest2} R info   21:49:14.94 Getting all values
+{shinytest2} R info   21:49:15.35 Getting all values
+{shinytest2} R info   21:49:15.76 Getting all values
+{shinytest2} R info   21:49:16.17 Getting all values
+{shinytest2} R info   21:49:16.58 Getting all values
+{shinytest2} R info   21:49:16.99 Getting all values
+{shinytest2} R info   21:49:17.39 Getting all values
+{shinytest2} R info   21:49:17.80 Getting all values
+{shinytest2} R info   21:49:18.21 Getting all values
+{shinytest2} R info   21:49:18.62 Getting all values
+{shinytest2} R info   21:49:19.04 Getting all values
+{shinytest2} R info   21:49:19.45 Getting all values
+{shinytest2} R info   21:49:19.86 Getting all values
+{shinytest2} R info   21:49:20.27 Getting all values
+{shinytest2} R info   21:49:20.68 Getting all values
+{shinytest2} R info   21:49:21.09 Getting all values
+{shinytest2} R info   21:49:21.50 Getting all values
+{shinytest2} R info   21:49:21.91 Getting all values
+{shinytest2} R info   21:49:22.32 Getting all values
+{shinytest2} R info   21:49:22.73 Getting all values
+{shinytest2} R info   21:49:23.14 Getting all values
+{shinytest2} R info   21:49:23.55 Getting all values
+{shinytest2} R info   21:49:23.97 Getting all values
+{shinytest2} R info   21:49:24.38 Getting all values
+{shinytest2} R info   21:49:24.79 Getting all values
+{shinytest2} R info   21:49:25.20 Getting all values
+{shinytest2} R info   21:49:25.61 Getting all values
+{shinytest2} R info   21:49:26.02 Getting all values
+{shinytest2} R info   21:49:26.43 Getting all values
+{shinytest2} R info   21:49:26.84 Getting all values
+{shinytest2} R info   21:49:27.25 Getting all values
+{shinytest2} R info   21:49:27.66 Getting all values
+{shinytest2} R info   21:49:28.08 Getting all values
+{shinytest2} R info   21:49:28.49 Getting all values
+{shinytest2} R info   21:49:28.90 Getting all values
+{shinytest2} R info   21:49:29.31 Getting all values
+{shinytest2} R info   21:49:29.72 Getting all values
+{shinytest2} R info   21:49:30.13 Getting all values
+{shinytest2} R info   21:49:30.54 Getting all values
+{shinytest2} R info   21:49:30.96 Getting all values
+{shinytest2} R info   21:49:31.37 Getting all values
+{shinytest2} R info   21:49:31.78 Getting all values
+{shinytest2} R info   21:49:32.19 Getting all values
+{shinytest2} R info   21:49:32.60 Getting all values
+{shinytest2} R info   21:49:33.01 Getting all values
+{shinytest2} R info   21:49:33.42 Getting all values
+{shinytest2} R info   21:49:33.83 Getting all values
+{shinytest2} R info   21:49:34.25 Getting all values
+{shinytest2} R info   21:49:34.66 Getting all values
+{shinytest2} R info   21:49:35.07 Getting all values
+{shinytest2} R info   21:49:35.48 Getting all values
+{shinytest2} R info   21:49:35.91 Getting all values
+{shinytest2} R info   21:49:36.32 Getting all values
+{shinytest2} R info   21:49:36.73 Getting all values
+{shinytest2} R info   21:49:37.14 Getting all values
+{shinytest2} R info   21:49:37.56 Getting all values
+{shinytest2} R info   21:49:37.97 Getting all values
+{shinytest2} R info   21:49:38.38 Getting all values
+{shinytest2} R info   21:49:38.79 Getting all values
+{shinytest2} R info   21:49:39.21 Getting all values
+{shinytest2} R info   21:49:39.62 Getting all values
+{shinytest2} R info   21:49:40.03 Getting all values
+{shinytest2} R info   21:49:40.44 Getting all values
+{shinytest2} R info   21:49:40.86 Getting all values
+{shinytest2} R info   21:49:41.27 Getting all values
+{shinytest2} R info   21:49:41.68 Getting all values
+{shinytest2} R info   21:49:42.09 Getting all values
+{shinytest2} R info   21:49:42.50 Getting all values
+{shinytest2} R info   21:49:42.91 Getting all values
+{shinytest2} R info   21:49:43.32 Getting all values
+{shinytest2} R info   21:49:43.73 Getting all values
+{shinytest2} R info   21:49:44.14 Getting all values
+{shinytest2} R info   21:49:44.56 Getting all values
+{shinytest2} R info   21:49:44.97 Getting all values
+{shinytest2} R info   21:49:45.38 Getting all values
+{shinytest2} R info   21:49:45.79 Getting all values
+{shinytest2} R info   21:49:46.20 Getting all values
+{shinytest2} R info   21:49:46.61 Getting all values
+{shinytest2} R info   21:49:47.03 Getting all values
+{shinytest2} R info   21:49:47.44 Getting all values
+{shinytest2} R info   21:49:47.85 Getting all values
+{shinytest2} R info   21:49:48.25 Getting all values
+{shinytest2} R info   21:49:48.67 Getting all values
+{shinytest2} R info   21:49:49.08 Getting all values
+{shinytest2} R info   21:49:49.49 Getting all values
+{shinytest2} R info   21:49:49.90 Getting all values
+{shinytest2} R info   21:49:50.31 Getting all values
+{shinytest2} R info   21:49:50.72 Getting all values
+{shinytest2} R info   21:49:51.13 Getting all values
+{shinytest2} R info   21:49:51.54 Getting all values
+{shinytest2} R info   21:49:51.95 Getting all values
+{shinytest2} R info   21:49:52.36 Getting all values
+{shinytest2} R info   21:49:52.78 Getting all values
+{shinytest2} R info   21:49:53.19 Getting all values
+{shinytest2} R info   21:49:53.60 Getting all values
+{shinytest2} R info   21:49:54.01 Getting all values
+{shinytest2} R info   21:49:54.42 Getting all values
+{shinytest2} R info   21:49:54.83 Getting all values
+{shinytest2} R info   21:49:55.24 Getting all values
+{shinytest2} R info   21:49:55.65 Getting all values
+{shinytest2} R info   21:49:56.13 Getting all values
+{shinytest2} R info   21:49:56.53 Getting all values
+{shinytest2} R info   21:49:56.94 Getting all values
+{shinytest2} R info   21:49:57.35 Getting all values
+{shinytest2} R info   21:49:57.76 Getting all values
+{shinytest2} R info   21:49:58.17 Getting all values
+{shinytest2} R info   21:49:58.58 Getting all values
+{shinytest2} R info   21:49:58.99 Getting all values
+{shinytest2} R info   21:49:59.41 Getting all values
+{shinytest2} R info   21:49:59.82 Getting all values
+{shinytest2} R info   21:50:00.22 Getting all values
+{shinytest2} R info   21:50:00.64 Getting all values
+{shinytest2} R info   21:50:01.05 Getting all values
+{shinytest2} R info   21:50:01.46 Getting all values
+{shinytest2} R info   21:50:01.87 Getting all values
+{shinytest2} R info   21:50:02.28 Getting all values
+{shinytest2} R info   21:50:02.69 Getting all values
+{shinytest2} R info   21:50:03.10 Getting all values
+{shinytest2} R info   21:50:03.51 Getting all values
+{shinytest2} R info   21:50:03.92 Getting all values
+{shinytest2} R info   21:50:04.33 Getting all values
+{shinytest2} R info   21:50:04.74 Getting all values
+{shinytest2} R info   21:50:05.15 Getting all values
+{shinytest2} R info   21:50:05.56 Getting all values
+{shinytest2} R info   21:50:05.97 Getting all values
+{shinytest2} R info   21:50:06.38 Getting all values
+{shinytest2} R info   21:50:06.79 Getting all values
+{shinytest2} R info   21:50:07.20 Getting all values
+{shinytest2} R info   21:50:07.61 Getting all values
+{shinytest2} R info   21:50:08.03 Getting all values
+{shinytest2} R info   21:50:08.44 Getting all values
+{shinytest2} R info   21:50:08.85 Getting all values
+{shinytest2} R info   21:50:09.26 Getting all values
+{shinytest2} R info   21:50:09.67 Getting all values
+{shinytest2} R info   21:50:10.08 Getting all values
+{shinytest2} R info   21:50:10.49 Getting all values
+{shinytest2} R info   21:50:10.90 Getting all values
+{shinytest2} R info   21:50:11.31 Getting all values
+{shinytest2} R info   21:50:11.72 Getting all values
+{shinytest2} R info   21:50:12.13 Getting all values
+{shinytest2} R info   21:50:12.54 Getting all values
+{shinytest2} R info   21:50:12.95 Getting all values
+{shinytest2} R info   21:50:13.36 Getting all values
+{shinytest2} R info   21:50:13.76 Getting all values
+{shinytest2} R info   21:50:14.17 Getting all values
+{shinytest2} R info   21:50:14.58 Getting all values
+{shinytest2} R info   21:50:15.00 Getting all values
+{shinytest2} R info   21:50:15.41 Getting all values
+{shinytest2} R info   21:50:15.82 Getting all values
+{shinytest2} R info   21:50:16.23 Getting all values
+{shinytest2} R info   21:50:16.64 Getting all values
+{shinytest2} R info   21:50:17.05 Getting all values
+{shinytest2} R info   21:50:17.46 Getting all values
+{shinytest2} R info   21:50:17.87 Getting all values
+{shinytest2} R info   21:50:18.28 Getting all values
+{shinytest2} R info   21:50:18.70 Getting all values
+{shinytest2} R info   21:50:19.11 Getting all values
+{shinytest2} R info   21:50:19.51 Getting all values
+{shinytest2} R info   21:50:19.92 Getting all values
+{shinytest2} R info   21:50:20.34 Getting all values
+{shinytest2} R info   21:50:20.75 Getting all values
+{shinytest2} R info   21:50:21.15 Getting all values
+{shinytest2} R info   21:50:21.57 Getting all values
+{shinytest2} R info   21:50:21.98 Getting all values
+{shinytest2} R info   21:50:22.39 Getting all values
+{shinytest2} R info   21:50:22.81 Getting all values
+{shinytest2} R info   21:50:23.92 Getting all values
+{shinytest2} R info   21:50:24.34 Getting all values
+{shinytest2} R info   21:50:24.75 Getting all values
+{shinytest2} R info   21:50:25.17 Getting all values
+{shinytest2} R info   21:50:25.58 Getting all values
+{shinytest2} R info   21:50:25.99 Getting all values
+{shinytest2} R info   21:50:26.41 Getting all values
+{shinytest2} R info   21:50:26.82 Getting all values
+{shinytest2} R info   21:50:27.23 Getting all values
+{shinytest2} R info   21:50:27.64 Getting all values
+{shinytest2} R info   21:50:28.06 Getting all values
+{shinytest2} R info   21:50:28.47 Getting all values
+{shinytest2} R info   21:50:28.88 Getting all values
+{shinytest2} R info   21:50:29.29 Getting all values
+{shinytest2} R info   21:50:29.71 Getting all values
+{shinytest2} R info   21:50:30.12 Getting all values
+{shinytest2} R info   21:50:30.53 Getting all values
+{shinytest2} R info   21:50:30.95 Getting all values
+{shinytest2} R info   21:50:31.36 Getting all values
+{shinytest2} R info   21:50:31.78 Getting all values
+{shinytest2} R info   21:50:32.19 Getting all values
+{shinytest2} R info   21:50:32.61 Getting all values
+{shinytest2} R info   21:50:33.02 Getting all values
+{shinytest2} R info   21:50:33.44 Getting all values
+{shinytest2} R info   21:50:33.85 Getting all values
+{shinytest2} R info   21:50:34.27 Getting all values
+{shinytest2} R info   21:50:34.68 Getting all values
+{shinytest2} R info   21:50:35.09 Getting all values
+{shinytest2} R info   21:50:35.50 Getting all values
+{shinytest2} R info   21:50:35.91 Getting all values
+{shinytest2} R info   21:50:36.32 Getting all values
+{shinytest2} R info   21:50:36.73 Getting all values
+{shinytest2} R info   21:50:37.14 Getting all values
+{shinytest2} R info   21:50:37.55 Getting all values
+{shinytest2} R info   21:50:37.96 Getting all values
+{shinytest2} R info   21:50:38.37 Getting all values
+{shinytest2} R info   21:50:38.79 Getting all values
+{shinytest2} R info   21:50:39.20 Getting all values
+{shinytest2} R info   21:50:39.61 Getting all values
+{shinytest2} R info   21:50:40.02 Getting all values
+{shinytest2} R info   21:50:40.43 Getting all values
+{shinytest2} R info   21:50:40.84 Getting all values
+{shinytest2} R info   21:50:41.26 Getting all values
+{shinytest2} R info   21:50:41.67 Getting all values
+{shinytest2} R info   21:50:42.08 Getting all values
+{shinytest2} R info   21:50:42.49 Getting all values
+{shinytest2} R info   21:50:42.90 Getting all values
+{shinytest2} R info   21:50:43.31 Getting all values
+{shinytest2} R info   21:50:43.72 Getting all values
+{shinytest2} R info   21:50:44.13 Getting all values
+{shinytest2} R info   21:50:44.54 Getting all values
+{shinytest2} R info   21:50:44.96 Getting all values
+{shinytest2} R info   21:50:45.37 Getting all values
+{shinytest2} R info   21:50:45.78 Getting all values
+{shinytest2} R info   21:50:46.19 Getting all values
+{shinytest2} R info   21:50:46.60 Getting all values
+{shinytest2} R info   21:50:47.01 Getting all values
+{shinytest2} R info   21:50:47.42 Getting all values
+{shinytest2} R info   21:50:47.83 Getting all values
+{shinytest2} R info   21:50:48.23 Getting all values
+{shinytest2} R info   21:50:48.64 Getting all values
+{shinytest2} R info   21:50:49.05 Getting all values
+{shinytest2} R info   21:50:49.47 Getting all values
+{shinytest2} R info   21:50:49.88 Getting all values
+{shinytest2} R info   21:50:50.29 Getting all values
+{shinytest2} R info   21:50:50.70 Getting all values
+{shinytest2} R info   21:50:51.11 Getting all values
+{shinytest2} R info   21:50:51.52 Getting all values
+{shinytest2} R info   21:50:51.93 Getting all values
+{shinytest2} R info   21:50:52.34 Getting all values
+{shinytest2} R info   21:50:52.75 Getting all values
+{shinytest2} R info   21:50:53.16 Getting all values
+{shinytest2} R info   21:50:53.57 Getting all values
+{shinytest2} R info   21:50:53.98 Getting all values
+{shinytest2} R info   21:50:54.39 Getting all values
+{shinytest2} R info   21:50:54.80 Getting all values
+{shinytest2} R info   21:50:55.22 Getting all values
+{shinytest2} R info   21:50:55.63 Getting all values
+{shinytest2} R info   21:50:56.04 Getting all values
+{shinytest2} R info   21:50:56.45 Getting all values
+{shinytest2} R info   21:50:56.86 Getting all values
+{shinytest2} R info   21:50:57.27 Getting all values
+{shinytest2} R info   21:50:57.68 Getting all values
+{shinytest2} R info   21:50:58.09 Getting all values
+{shinytest2} R info   21:50:58.51 Getting all values
+{shinytest2} R info   21:50:58.92 Getting all values
+{shinytest2} R info   21:50:59.33 Getting all values
+{shinytest2} R info   21:50:59.74 Getting all values
+{shinytest2} R info   21:51:00.16 Getting all values
+{shinytest2} R info   21:51:00.56 Getting all values
+{shinytest2} R info   21:51:00.97 Getting all values
+{shinytest2} R info   21:51:01.38 Getting all values
+{shinytest2} R info   21:51:01.80 Getting all values
+{shinytest2} R info   21:51:02.21 Getting all values
+{shinytest2} R info   21:51:02.62 Getting all values
+{shinytest2} R info   21:51:03.03 Getting all values
+{shinytest2} R info   21:51:03.45 Getting all values
+{shinytest2} R info   21:51:03.85 Getting all values
+{shinytest2} R info   21:51:04.26 Getting all values
+{shinytest2} R info   21:51:04.66 Getting all values
+{shinytest2} R info   21:51:05.07 Getting all values
+{shinytest2} R info   21:51:05.48 Getting all values
+{shinytest2} R info   21:51:05.89 Getting all values
+{shinytest2} R info   21:51:06.30 Getting all values
+{shinytest2} R info   21:51:06.71 Getting all values
+{shinytest2} R info   21:51:07.12 Getting all values
+{shinytest2} R info   21:51:07.53 Getting all values
+{shinytest2} R info   21:51:07.94 Getting all values
+{shinytest2} R info   21:51:08.35 Getting all values
+{shinytest2} R info   21:51:08.76 Getting all values
+{shinytest2} R info   21:51:09.18 Getting all values
+{shinytest2} R info   21:51:09.58 Getting all values
+{shinytest2} R info   21:51:10.00 Getting all values
+{shinytest2} R info   21:51:10.40 Getting all values
+{shinytest2} R info   21:51:10.82 Getting all values
+{shinytest2} R info   21:51:11.23 Getting all values
+{shinytest2} R info   21:51:11.64 Getting all values
+{shinytest2} R info   21:51:12.05 Getting all values
+{shinytest2} R info   21:51:12.46 Getting all values
+{shinytest2} R info   21:51:12.88 Getting all values
+{shinytest2} R info   21:51:13.29 Getting all values
+{shinytest2} R info   21:51:13.70 Getting all values
+{shinytest2} R info   21:51:14.11 Getting all values
+{shinytest2} R info   21:51:14.52 Getting all values
+{shinytest2} R info   21:51:14.93 Getting all values
+{shinytest2} R info   21:51:15.34 Getting all values
+{shinytest2} R info   21:51:15.76 Getting all values
+{shinytest2} R info   21:51:16.17 Getting all values
+{shinytest2} R info   21:51:16.58 Getting all values
+{shinytest2} R info   21:51:16.99 Getting all values
+{shinytest2} R info   21:51:17.40 Getting all values
+{shinytest2} R info   21:51:17.81 Getting all values
+{shinytest2} R info   21:51:18.22 Getting all values
+{shinytest2} R info   21:51:18.63 Getting all values
+{shinytest2} R info   21:51:19.04 Getting all values
+{shinytest2} R info   21:51:19.45 Getting all values
+{shinytest2} R info   21:51:19.87 Getting all values
+{shiny}      R stderr ----------- Loading required package: shiny
+{shiny}      R stderr ----------- ℹ Loading EJAM
+{shiny}      R stderr ----------- Registered S3 method overwritten by 'geojsonsf':
+{shiny}      R stderr -----------   method        from   
+{shiny}      R stderr -----------   print.geojson geojson
+{shiny}      R stderr ----------- Now running .onAttach(), as part of attaching the EJAM package.
+{shiny}      R stderr ----------- Reading global_defaults_package.R
+{shiny}      R stderr ----------- Trying to source a local source code copy from /Users/markcorrales/R PACKAGES/EJAM/inst/global_defaults_package.R 
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Loading specified arrow datasets: blockpoints, blockwts, quaddata
+{shiny}      R stderr ----------- Finding or downloading all arrow files: blockwts, blockpoints, quaddata, bgej, bgid2fips, blockid2fips, frs, frs_by_programid, frs_by_naics, frs_by_sic, frs_by_mact
+{shiny}      R stderr ----------- Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and latest-released data repository versions match.
+{shiny}      R stderr ----------- looking for blockpoints, blockwts, quaddata in memory...
+{shiny}      R stderr ----------- For help using the EJAM package in RStudio:
+{shiny}      R stderr -----------                           ?EJAM
+{shiny}      R stderr -----------                         To launch shiny app locally:
+{shiny}      R stderr -----------                           ejamapp()
+{shiny}      R stderr -----------                         
+{shiny}      R stderr ----------- Running application in test mode.
+{shiny}      R stderr ----------- createTcpServer: address already in use
+{shiny}      R stderr ----------- createTcpServer: address already in use
+{shiny}      R stderr ----------- createTcpServer: address already in use
+{shiny}      R stderr ----------- createTcpServer: address already in use
+{shiny}      R stderr ----------- createTcpServer: address already in use
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:6957
+{shiny}      R stderr ----------- SEND {"config":{"workerId":"","sessionId":"ffd503d4c4d091eb4314e839bc3ed1b6","user":null}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_regions_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-regions_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_states_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-states_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_cities_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-cities_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-reset_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-show":{"id":"pickermoduleid-fips_type2pick","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"return_to_results","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-reset":{"id":"ss_upload_latlon","shinyInputId":"shinyjs-resettable-ss_upload_latlon"}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-reset":{"id":"ss_upload_shp","shinyInputId":"shinyjs-resettable-ss_upload_shp"}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-reset":{"id":"ss_upload_frs","shinyInputId":"shinyjs-resettable-ss_upload_frs"}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-reset":{"id":"ss_upload_program","shinyInputId":"shinyjs-resettable-ss_upload_program"}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-reset":{"id":"ss_upload_fips","shinyInputId":"shinyjs-resettable-ss_upload_fips"}}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"error_message","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"error_message","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_regions_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-regions_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_states_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-states_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_cities_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-cities_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-regions_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_regions_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-states_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_states_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_cities_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-cities_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-show":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_regions_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-regions_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_regions_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-regions_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_states_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-states_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-states_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-show":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-download_fips_table","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-disable":{"id":"bt_get_results","selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"show_data_preview","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"notification":{"type":"remove","message":"radius_warning"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"invalid_sites_alert2","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"invalid_sites_alert2","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_map_text","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_map_text","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_slider_ui","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_slider_ui","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-enable":{"id":"radius_now","selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_label","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_label","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_leaf_map","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_leaf_map","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"analysis_title_ui","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"analysis_title_ui","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"shiny-change-tab-visibility":{"inputId":"all_tabs","target":"Advanced Settings","type":"hide"}}
+{shiny}      R stderr ----------- SEND {"shiny-change-tab-visibility":{"inputId":"all_tabs","target":"See Results","type":"hide"}}
+{shiny}      R stderr ----------- SEND {"shiny-change-tab-visibility":{"inputId":"results_tabs","target":"Written Report","type":"hide"}}
+{shiny}      R stderr ----------- SEND {"shiny-change-tab-visibility":{"inputId":"details_subtabs","target":"Plot Full Range of Scores","type":"hide"}}
+{shiny}      R stderr ----------- SEND {"shiny-change-tab-visibility":{"inputId":"all_tabs","target":"Advanced Settings","type":"hide"}}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{".clientdata_output_error_message_hidden":true}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"client_tz":"America/New_York"}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{".clientdata_output_an_leaf_map_width":1227.328125}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"shinyjs-resettable-ss_upload_latlon":{}}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"shinyjs-resettable-ss_upload_shp":{}}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"shinyjs-resettable-ss_upload_frs":{}}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"shinyjs-resettable-ss_upload_program":{}}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"shinyjs-resettable-ss_upload_fips":{}}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"analysis_title":"Summary of Analysis","an_leaf_map_bounds":{"north":54.62297813269033,"east":-44.6484375,"south":21.04349121680354,"west":-152.49023437500003},"an_leaf_map_center":{"lng":-98.5795,"lat":39.8283},"an_leaf_map_zoom":4,"radius_now":1,"pickermoduleid-regions_picked":["1","2","3","4","5","6","7","8","9","10"],"ss_select_mact":"AA"}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"radius_label","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_label","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_label","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"errors":{},"values":{"radius_label":{"html":"<b>Distance from Site: <br/>1 miles (1.61 km)<\/b>","deps":[]}},"inputMessages":[{"id":"pickermoduleid-states_picked","message":{"config":"<script type=\"application/json\" data-for=\"pickermoduleid-states_picked\">{\"maxOptions\":255,\"closeAfterSelect\":true}<\/script>"}},{"id":"pickermoduleid-states_picked","message":{"value":"","url":"session/ffd503d4c4d091eb4314e839bc3ed1b6/dataobj/pickermoduleid-states_picked?w=&nonce=268742b3e8515ebd"}}]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"default_naics":["313"]}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"errors":{},"values":{},"inputMessages":[{"id":"naics_digits_shown","message":{"value":"basic"}}]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"ss_select_naics":["313"]}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"default_sic":["2015"]}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"errors":{},"values":{},"inputMessages":[{"id":"ss_select_sic","message":{"value":"2015","url":"session/ffd503d4c4d091eb4314e839bc3ed1b6/dataobj/ss_select_sic?w=&nonce=a28b5eee47911d1a"}}]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"ss_select_sic":["2015"]}}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"ss_choose_method":"dropdown"}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"an_map_text","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"an_leaf_map","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"invalid_sites_alert2","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"radius_slider_ui","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-disable":{"id":"bt_get_results","selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"show_data_preview","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"notification":{"type":"remove","message":"radius_warning"}}
+{shiny}      R stderr ----------- SEND {"notification":{"type":"remove","message":"max_pts_warning"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_map_text","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_map_text","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_leaf_map","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_leaf_map","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"invalid_sites_alert2","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"invalid_sites_alert2","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_slider_ui","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_slider_ui","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-disable":{"id":"radius_now","selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"radius_now":0}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"radius_label","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_label","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"radius_label","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"errors":{},"values":{"radius_label":{"html":"<b>Distance from Site: <br/>0 miles (0 km)<\/b>","deps":[]}},"inputMessages":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"pickermoduleid-fips_type2pick":"Cities or Places"}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_regions_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-regions_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_states_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-states_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_cities_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-cities_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-regions_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_regions_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-states_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_states_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-show":{"id":"pickermoduleid-cities_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-download_fips_table","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"pickermoduleid-all_counties_button":true}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"pickermoduleid-states_picked":["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","AS","GU","MP","PR","UM","VI"]}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"errors":{},"values":{},"inputMessages":[{"id":"pickermoduleid-counties_picked","message":{"config":"<script type=\"application/json\" data-for=\"pickermoduleid-counties_picked\">{\"maxOptions\":255,\"closeAfterSelect\":true}<\/script>"}},{"id":"pickermoduleid-counties_picked","message":{"value":"","url":"session/ffd503d4c4d091eb4314e839bc3ed1b6/dataobj/pickermoduleid-counties_picked?w=&nonce=e848d125aaeb45d6"}},{"id":"pickermoduleid-all_counties_button","message":{"value":false}}]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"pickermoduleid-all_counties_button":false}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-all_counties_button","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-hide":{"id":"pickermoduleid-counties_picked","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"errors":{},"values":{},"inputMessages":[{"id":"pickermoduleid-counties_picked","message":{"value":"","url":"session/ffd503d4c4d091eb4314e839bc3ed1b6/dataobj/pickermoduleid-counties_picked?w=&nonce=687cbd29da5f3122"}}]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"pickermoduleid-cities_picked":["3684000"]}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-show":{"id":"pickermoduleid-download_fips_table","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- SEND {"values":[]}
+{shiny}      R stderr ----------- RECV {"method":"update","data":{"fipspicker_done_button:shiny.action":1}}
+{shiny}      R stderr ----------- SEND {"busy":"busy"}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"invalid_sites_alert2","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"an_map_text","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"progress":{"type":"binding","message":{"id":"an_leaf_map","persistent":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-enable":{"id":"bt_get_results","selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-show":{"id":"show_data_preview","anim":false,"animType":"slide","time":0.5,"selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"notification":{"type":"remove","message":"radius_warning"}}
+{shiny}      R stderr ----------- SEND {"custom":{"shinyjs-enable":{"id":"bt_get_results","selector":null,"asis":false}}}
+{shiny}      R stderr ----------- SEND {"notification":{"type":"remove","message":"max_pts_warning"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"invalid_sites_alert2","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"invalid_sites_alert2","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_map_text","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_map_text","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_leaf_map","status":"recalculating"}}
+{shiny}      R stderr ----------- SEND {"recalculating":{"name":"an_leaf_map","status":"recalculated"}}
+{shiny}      R stderr ----------- SEND {"busy":"idle"}
+{shiny}      R stderr ----------- Error : (converted from warning) Error in <reactive:orig_leaf_map>: (converted from warning) Problem with map_shapes_leaflet() function
+{shiny}      R stderr ----------- 
+{shiny}      R stdout ----------- Overriding `library()` / `require()` to load local package: EJAM 
+{shiny}      R stdout ----------- Disabling Shiny autoloading of R/ files `options(shiny.autoload.r = FALSE)` as dev package directory is the same as the app directory
+{shiny}      R stdout ----------- blockpoints  is loading from local folder ...done.
+{shiny}      R stdout ----------- blockwts     is loading from local folder ...done.
+{shiny}      R stdout ----------- quaddata     is loading from local folder ...done.
+{shiny}      R stdout ----------- 
+{shiny}      R stdout ----------- Checking for index of Census blocks called 'localtree' ...not found...Building index...  Done building index.
+{shiny}      R stdout ----------- Checking for index of Census blocks called 'localtree' ...localtree already exists.
+{shiny}      R stdout ----------- isPublic =  TRUE 
+{shiny}      R stdout ----------- testing == FALSE 
+{shiny}      R stdout ----------- ----------------------
+{shiny}      R stdout ----------- COUNT OF ROWS IN FIPS FILE:  1 
+{shiny}      R stdout ----------- colnames: eparegion,ST,countyname,placename,fips,countyname_ST 
+{shiny}      R stdout ----------- COUNT OF SITES BY FIPS SELECTED (Number of FIPS codes):  1 total, 1 valid, 0  invalid 

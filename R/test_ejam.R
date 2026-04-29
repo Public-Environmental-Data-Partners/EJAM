@@ -525,7 +525,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         seconds_byfile =
           c(30, 9,
             0,  # placeholder for when FIPS-picker test finished/ready
-            1, 40, 34, 62, 62, 62, 61)
+            1, 135, 134, 135, 135, 135, 135)
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
       timebyfile <- rbind(timebyfile, addthesenotrun)
