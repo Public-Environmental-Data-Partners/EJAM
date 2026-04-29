@@ -64,10 +64,8 @@ jobs:
           FULL_IMAGE=$REGISTRY/$ECR_REPOSITORY
 
           docker build -t $FULL_IMAGE:$IMAGE_TAG .
-          docker tag $FULL_IMAGE:$IMAGE_TAG $FULL_IMAGE:latest
 
           docker push $FULL_IMAGE:$IMAGE_TAG
-          docker push $FULL_IMAGE:latest
 
           echo "image=$FULL_IMAGE:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
