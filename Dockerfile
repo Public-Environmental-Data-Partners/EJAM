@@ -26,6 +26,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
 RUN mkdir -p /home/epic
 WORKDIR /home/epic
 
+# TO DO: Split this up for better pushing or make smaller - its 4GBs as is.
 # Install required R packages from CRAN
 RUN install2.r --error \
     s2 \
