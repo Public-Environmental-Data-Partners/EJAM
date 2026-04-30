@@ -2,7 +2,7 @@
 ## THIS now likely obsolete FILE LOADed EJAM AND GLOBAL DEFAULTS, AND THEN
 ## Ran THE SHINYTEST2 WEB APP UI FUNCTIONALITY UNIT TESTS.
 ## but see vignette on dev-run-shinytests.Rmd and test_ejam() which explain how to run the tests locally, so
-## this testthat.R file is not needed expect possibly for R CMD check, and for check()
+## this testthat.R file is not needed except possibly for R CMD check, and for check()
 
 # BUT, see https://rstudio.github.io/shinytest2/articles/use-package.html
 # and note in source code of shinytest2::test_app
