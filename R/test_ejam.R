@@ -314,7 +314,8 @@ x <- EJAM:::test_ejam(
         "test-is.numericish.R",
         "test-create_filename.R",
         "test-grepn.R",
-        "test-url_package.R"
+        "test-url_package.R",
+        "test-pctile_x_is_hit_by_score.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",
@@ -502,7 +503,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-naics_subcodes_from_code.R", "test-naics_is.valid.R",
               "test-ejam2shapefile.R", "test-latlon_from_shapefile.R", "test-shape2geojson.R",
               "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
-              "test-test1.R", "test-test2.R", "test-url_package.R"),
+              "test-test1.R", "test-test2.R", "test-url_package.R", "test-pctile_x_is_hit_by_score.R"),
           seconds_byfile =
             c(25, 4,
               2, 0,
@@ -511,7 +512,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               13, 5, 2, 11, 1, 5, 0, 1, 1, 0, 4, 10, 0, 6, 5, 1, 0, 5, 0, 3,
               0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 5, 9, 0, 18, 15, 2, 0, 2, 0, 0,
               0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0,
-              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0, 15)),
+              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0, 15, 1)),
             class = "data.frame")
       )
       ############################ #      ############################ #      ############################ #
