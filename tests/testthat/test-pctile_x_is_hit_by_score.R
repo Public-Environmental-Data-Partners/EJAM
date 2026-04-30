@@ -53,7 +53,7 @@ test_that("pctile_x_is_hit_by_score2() matches lookup_pctile()", {
   ) >= 90
 
   expect_identical(
-    pctile_x_is_hit_by_score2(
+    EJAM:::pctile_x_is_hit_by_score2(
       "pctlowinc",
       cutoff = 0.90,
       score = us_scores
@@ -71,7 +71,7 @@ test_that("pctile_x_is_hit_by_score2() matches lookup_pctile()", {
   ) >= 80
 
   expect_identical(
-    pctile_x_is_hit_by_score2(
+    EJAM:::pctile_x_is_hit_by_score2(
       "pctlowinc",
       cutoff = 0.80,
       score = state_scores,
@@ -86,9 +86,11 @@ test_that("default score path works when ST = TRUE", {
 
   expect_no_error({
     hit1 <- pctile_x_is_hit_by_score("pctlowinc", cutoff = 0.80, ST = TRUE)
-    hit2 <- pctile_x_is_hit_by_score2("pctlowinc", cutoff = 0.80, ST = TRUE)
   })
-# all.equal(hit1,hit2)
+  expect_no_error({
+    hit2 <- EJAM:::pctile_x_is_hit_by_score2("pctlowinc", cutoff = 0.80, ST = TRUE)
+  })
+  # all.equal(hit1,hit2)
   expect_length(hit1, nrow(blockgroupstats))
   expect_length(hit2, nrow(blockgroupstats))
 })

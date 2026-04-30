@@ -2,6 +2,24 @@
 
 This document covers the UI-related automated tests.
 
+## NOTE on work in progress
+
+This package had been using
+[`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
+in the file `tests/testthat.R`, but that approach was deprecated, per
+this note in the source code of
+[`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
+– “Calling
+[`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
+within a {testthat} test has been deprecated in {shinytest2} v0.5.0.”
+
+Instead, `EJAM:::test_ejam()` uses an approach that first sources
+`testthat/setup.R` which sources `testthat/setup-shinytest2.R` which
+defines `shinytest2_webapp_functionality()`, a function that contains
+the steps tested in the web app, and then directly uses that function
+from within test files like
+`/tests/testthat/test-webapp-latlon-functionality.R` etc.
+
 ## Dev Environment
 
 If you are successfully running the app, you should have all the
@@ -67,7 +85,7 @@ from code updates, the test fails, indicating which files changed.
 
 ``` plaintext
 tests/
-  ├── testthat.R (modified to launch the shinytest2 web app functionality tests)
+  ├── testthat.R (was modified to launch the shinytest2 web app functionality tests, but see note above about phasing out shinytest2::test_app() )
   └── testthat/
       ├── setup-shinytest2.R
       ├── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)
@@ -83,12 +101,11 @@ tests/
 
 ### File Descriptions
 
-- **`testthat.R`** – Calls
+- **`testthat.R`** – It had been calling
   [`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
-  to run all tests. Can filter specific tests using
-  `filter="test-name"`. This file is work in progress – it may need more
-  work for the shiny app testing to work correctly using the tests in
-  the `test-ui_and_server.R` file.
+  to run all tests, but see note above about phasing out
+  shinytest2::test_app(). This file is work in progress – it may need
+  more work for the shiny app testing to work correctly.
 - **`testthat/setup-shinytest2.R`** – Loads `global.R` and app scripts
   into the testing environment. Does basic setup including defining
   shinytest2_webapp_functionality() which has a script of web app UI
@@ -133,22 +150,49 @@ can be used to store values from reactive expressions or other *items
 that are not inputs or outputs* and therefore may not be included in the
 standard snapshots. Then, in the shinytests, you can specify
 `export=[name]` to include in the snapshot the export named “name” that
-you specified in the code, or `export=TRUE` to include all exports.
+you specified in the code, or `export=TRUE` to include all exports. But,
+see details in the source code of shinytest2_webapp_functionality() as
+defined in the /tests/testthat/ folder.
 
 ## Running Tests Locally
 
-The primary method for running the shinytests (other than doing so via
-GitHub Actions) is:
+One way to run the shinytests is via the GitHub Actions.
+
+Another way is this:
 
 ``` r
-shinytest2::test_app(".", filter="-functionality")
+x = EJAM:::test_ejam(ask=F, run_these="webapp")
 ```
 
-However, it is strongly recommended during development to source() the
-entire `testthat.R` which runs
-[`remotes::install_local()`](https://remotes.r-lib.org/reference/install_local.html)
+You could also run a test like this, but you cannot save or compare
+snapshots to reference when testing interactively.
+
+``` r
+remotes::install_local() # once
+library(EJAM) # once
+source(testthat::test_path("setup.R")) # once
+
+# run a single test:
+shinytest2_webapp_functionality("latlon")
+```
+
+It is recommended during development to use
+[`remotes::install_local()`](https://remotes.r-lib.org/reference/install_local.html)  
 to ensure your development code is the one tested. This is because
 shinytest2 automatically references the installed version of a package.
+
+Another useful way was this (but this might be deprecated by shinytest2)
+
+``` r
+# first, source `setup.R`, from the tests/testthat/ folder. 
+source(testthat::test_path("setup.R"))
+
+# then for one subset of tests, like just the latlon analysis features:
+shinytest2::test_app(".", filter="latlon-functionality", check_setup = FALSE)
+
+# for all the webapp functionality tests
+shinytest2::test_app(".", filter="-functionality", check_setup = FALSE)
+```
 
 ## GitHub Actions Integration
 

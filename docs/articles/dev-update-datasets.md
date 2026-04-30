@@ -120,26 +120,26 @@ to be changed ANNUALLY or more often:
   organized from within
   *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
 
-  - NOTE: Prior to 2025, several key datasets used by EJAM were obtained
-    from EPA’s EJSCREEN data FTP site and others directly from relevant
-    staff. Many of the indicators on the Community Report for the v2.2
-    (early 2024) EJSCREEN data were NOT provided in the gdb and csv
-    files on the FTP site, so they had to be obtained directly from the
-    EJSCREEN team as a separate .csv file. The code referred to from
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
-    datasets from EPA are available, and then converts them into the
-    datasets actually used by EJAM. However, if those are no longer
-    available from those sources, the data could mostly be independently
-    recreated, but this would require a combination of existing code and
-    significant new work.
+- NOTE: Prior to 2025, several key datasets used by EJAM were obtained
+  from EPA’s EJSCREEN data FTP site and others directly from relevant
+  staff. Many of the indicators on the Community Report for the v2.2
+  (early 2024) EJSCREEN data were NOT provided in the gdb and csv files
+  on the FTP site, so they had to be obtained directly from the EJSCREEN
+  team as a separate .csv file. The code referred to from
+  *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
+  datasets from EPA are available, and then converts them into the
+  datasets actually used by EJAM. However, if those are no longer
+  available from those sources, the data could mostly be independently
+  recreated, but this would require a combination of existing code and
+  significant new work.
 
-  - Some relevant code was in archived EJSCREEN repositories, for
-    creating environmental datasets. Some code is in EJAM functions that
-    can get ACS datasets. Much relevant code was in an older non-EPA
-    package called ejscreen, which had been made private as of early
-    2025 but could be refreshed. That package had tools such as
-    ejscreen.create() that had been able to reproduce parts of the
-    blockgroupstats and usastats/statestats datasets.
+- Some relevant code was in archived EJSCREEN repositories, for creating
+  environmental datasets. Some code is in EJAM functions that can get
+  ACS datasets. Much relevant code was in an older non-EPA package
+  called ejscreen, which had been made private as of early 2025 but
+  could be refreshed. That package had tools such as ejscreen.create()
+  that had been able to reproduce parts of the blockgroupstats and
+  usastats/statestats datasets.
 
 - ***Block Datasets***: The *block* (not blockgroup) tables might be
   updated less often, but Census fips codes do change yearly so the
@@ -172,20 +172,24 @@ to be changed ANNUALLY or more often:
   as of 2024-2026 were calculated based on the locations of these types
   of sites:
 
-  - [Major roadways
-    (traffic)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume)
-  - [Superfund NPL
-    sites](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators)
-  - [Facilities with hazardous waste
-    (TSDF)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity)
-  - [Water bodies downstream of wastewater
-    discharges](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration)
-  - [Risk management plan (RMP)
-    facilities](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity)
-  - [Underground storage tanks
-    (UST)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust)
-    (for a facility density indicator, similar to a proximity
-    indicator).
+- [Major roadways
+  (traffic)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume)
+
+- [Superfund NPL
+  sites](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators)
+
+- [Facilities with hazardous waste
+  (TSDF)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity)
+
+- [Water bodies downstream of wastewater
+  discharges](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration)
+
+- [Risk management plan (RMP)
+  facilities](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity)
+
+- [Underground storage tanks
+  (UST)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust)
+  (for a facility density indicator, similar to a proximity indicator).
 
 - ***Facilities Datasets for a user to specify places to analyze/report
   on***: Facility locations and categories are used in EJAM to help a
@@ -464,7 +468,7 @@ piggyback::pb_release_create(
   tag = release_number,
   repo = owner_repo
   # and optionally a release name and description
-  ) 
+) 
 ```
 
 Make sure all the new data objects are in memory as arrow and/or rda
@@ -472,10 +476,12 @@ format.
 
 ``` r
 filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
+some_not_here <- FALSE
+cat("\n")
 for (i in seq_along(filenames_arrow)) {
-  some_not_here <- FALSE
-  if (!file.exists(filenames_arrow[i])) {
-    message(paste0("File ", filenames_arrow[i], " not found in memory."))
+  cat("checking ", filenames_arrow[i], "\n")
+  if (!exists(filenames_arrow[i])) {
+    message(paste0("object ", filenames_arrow[i], " not found in memory."))
     some_not_here <- TRUE
   }
 }
@@ -484,22 +490,43 @@ if (some_not_here) {stop("Please make sure all the new data files are in memory 
 
 # then do the same for the .rda versions such as blockwts, blockpoints, etc.
 
+filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
+some_not_here <- FALSE
+cat("\n")
+for (i in seq_along(filenames_rda)) {
+  cat("checking ", filenames_rda[i], "\n")
+  if (!exists(filenames_rda[i])) {
+    message(paste0("object ", filenames_rda[i], " not found in memory."))
+    some_not_here <- TRUE
+  }
+}
+if (some_not_here) {stop("Please make sure all the new data objects are in memory before running this code.")}
+# dput(filenames_rda)
 
 
 # see objects loaded and class(es) of each
-cbind(sapply(ls(), function(z) paste0(class(get(z)), collapse = ",")))
+cbind(sort(sapply(intersect(ls(), union(filenames_arrow, filenames_rda)),
+                  function(z) paste0(class(get(z)), collapse = ","))))
 ```
 
-Upload each dataset file
+Upload each dataset object as a dataset file
 
 ``` r
 filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
-for (i in seq_along(filenames)) {
-  piggyback::pb_upload(filenames[i], repo = owner_repo) 
+for (i in seq_along(filenames_arrow)) {
+  cat("uploading ", filenames_arrow[i], "\n")
+  piggyback::pb_upload(filenames_arrow[i], repo = owner_repo) 
   # that defaults to use the tag (release_number) you just created
 }
 
 # then do the same for the .rda versions such as blockwts, blockpoints, etc.
+
+filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
+for (i in seq_along(filenames_rda)) {
+  cat("uploading ", filenames_rda[i], "\n")
+  piggyback::pb_upload(filenames_rda[i], repo = owner_repo) 
+  # that defaults to use the tag (release_number) you just created
+}
 ```
 
 Open browser to confirm they are there
