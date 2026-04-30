@@ -9,7 +9,7 @@
 # library(shinytest2)
 
 ## might also need this, though:
-# devtools::load_all()
+# pkgload::load_all()
 
 cat("loading the function shinytest2_webapp_functionality() \n")
 
@@ -94,7 +94,7 @@ shinytest2_webapp_functionality <- function(test_category) {
           deparse(sourcefolder_norm),
           ", winslash = '/', mustWork = TRUE)"
         ),
-        "devtools::load_all(sourcefolder, quiet = TRUE, helpers = FALSE, export_all = FALSE)",
+        "pkgload::load_all(sourcefolder, quiet = TRUE, helpers = FALSE, export_all = FALSE)",
         "getExportedValue('EJAM', 'ejamapp')(",
         "  isPublic = FALSE,",
         "  default_shiny.testmode = TRUE,",
