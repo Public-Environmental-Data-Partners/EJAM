@@ -490,6 +490,9 @@ Report Percentiles or Means
   [`lookup_pctile()`](https://public-environmental-data-partners.github.io/EJAM/reference/pctile_from_raw_lookup.md)
   : Find approx percentiles in lookup table for just 1 indicator or 1
   zone (State or US)
+- [`pctile_x_is_hit_by_score()`](https://public-environmental-data-partners.github.io/EJAM/reference/pctile_x_is_hit_by_score.md)
+  : Check whether raw scores meet a percentile cutoff (e.g., to see
+  which blockgroups are at high percentiles)
 - [`usastats_means()`](https://public-environmental-data-partners.github.io/EJAM/reference/usastats_means.md)
   : usastats_means - convenient way to see US MEANS of ENVIRONMENTAL and
   residential population indicators
@@ -835,9 +838,7 @@ Report Percentiles or Means
 ## Utilities providing URL or API info
 
 - [`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md)
-  : helper for using the EJAM API, a wrapper function to make API calls
-  for data or report Note this function would be most useful to an R
-  user who does NOT have EJAM installed.
+  : Get EJScreen community report or data via the EJAM API
 - [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
   : Get URL(s) of HTML summary reports for use with EJAM-API
 - [`url_ejscreenmap()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejscreenmap.md)

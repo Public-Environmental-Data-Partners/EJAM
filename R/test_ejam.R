@@ -17,7 +17,7 @@
 #'
 #' @param ask logical, whether it should ask in RStudio what parameter values to use
 #' @param noquestions logical, whether to avoid questions later on about where to save shapefiles
-#' @param useloadall logical, TRUE means use [load_all()], FALSE means use [library()].
+#' @param useloadall logical, TRUE means use [pkgload::load_all()], FALSE means use [library()].
 #'   But useloadall=T is essential actually, for unexported functions to be found when they are tested!
 #' @param y_skipbasic logical, if FALSE, runs some basic [ejamit()] functions, but NOT any unit tests.
 #' @param y_latlon logical, if y_skipbasic=F, whether to run the basic [ejamit()] using points
@@ -314,7 +314,8 @@ x <- EJAM:::test_ejam(
         "test-is.numericish.R",
         "test-create_filename.R",
         "test-grepn.R",
-        "test-url_package.R"
+        "test-url_package.R",
+        "test-pctile_x_is_hit_by_score.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",
@@ -502,7 +503,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-naics_subcodes_from_code.R", "test-naics_is.valid.R",
               "test-ejam2shapefile.R", "test-latlon_from_shapefile.R", "test-shape2geojson.R",
               "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
-              "test-test1.R", "test-test2.R", "test-url_package.R"),
+              "test-test1.R", "test-test2.R", "test-url_package.R", "test-pctile_x_is_hit_by_score.R"),
           seconds_byfile =
             c(25, 4,
               2, 0,
@@ -511,7 +512,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               13, 5, 2, 11, 1, 5, 0, 1, 1, 0, 4, 10, 0, 6, 5, 1, 0, 5, 0, 3,
               0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 5, 9, 0, 18, 15, 2, 0, 2, 0, 0,
               0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0,
-              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0, 15)),
+              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0, 15, 1)),
             class = "data.frame")
       )
       ############################ #      ############################ #      ############################ #
@@ -525,7 +526,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         seconds_byfile =
           c(30, 9,
             0,  # placeholder for when FIPS-picker test finished/ready
-            1, 40, 34, 62, 62, 62, 61)
+            1, 135, 134, 135, 135, 135, 135)
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
       timebyfile <- rbind(timebyfile, addthesenotrun)
@@ -783,6 +784,32 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       #     # noquestions  was given as a parameter
       #   }}
     }
+    if ("test_webapp" %in% names(partial_testlist)) {
+      old_not_cran <- Sys.getenv("NOT_CRAN", unset = NA)
+      old_shinytest2_app_driver_test_on_cran <- Sys.getenv(
+        "SHINYTEST2_APP_DRIVER_TEST_ON_CRAN",
+        unset = NA
+      )
+      on.exit({
+        if (is.na(old_not_cran)) {
+          Sys.unsetenv("NOT_CRAN")
+        } else {
+          Sys.setenv(NOT_CRAN = old_not_cran)
+        }
+        if (is.na(old_shinytest2_app_driver_test_on_cran)) {
+          Sys.unsetenv("SHINYTEST2_APP_DRIVER_TEST_ON_CRAN")
+        } else {
+          Sys.setenv(
+            SHINYTEST2_APP_DRIVER_TEST_ON_CRAN =
+              old_shinytest2_app_driver_test_on_cran
+          )
+        }
+      }, add = TRUE)
+      Sys.setenv(
+        NOT_CRAN = "true",
+        SHINYTEST2_APP_DRIVER_TEST_ON_CRAN = "1"
+      )
+    }
   } # end if not just basic
   # finished asking what to do and setting up
 
@@ -956,10 +983,11 @@ and all filenames listed there actually exist as in that folder called `test`.\n
   ########################### #  ########################################## #
   ########################### #  ########################################## #
   ########################### #  ########################################## #
+
   ## load_all() or library(EJAM) ####
+
   cat('\n')
   if (useloadall) {
-
     # Note devtools package is in Suggests not Imports, in DESCRIPTION file
     dx = try({suppressWarnings(suppressMessages({devtools_available <- requireNamespace("devtools")}))}, silent = TRUE)
     if (!devtools_available) {
@@ -975,29 +1003,23 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     #   suppressPackageStartupMessages({   library(EJAM)   })
     # })
   }
+
   ## dataload_dynamic() ####
+
   cat("Downloading all large datasets that might be needed...\n")
   dataload_dynamic("all")
+
   ## ./tests/testthat/setup.R ####
-  if (file.exists("./tests/testthat/setup.R")) {
-    source("./tests/testthat/setup.R")
+
+  ## testthat might source setup.R already by itself, but ok to do here:
+  ## (and now setup.R also sources the function that is used to run webapp functionality tests)
+  tpath = testthat::test_path()
+  if (file.exists(file.path(tpath, "setup.R"))) {
+    source(file.path(tpath, "setup.R"))
   } else {
     cat("Need to source the setup.R file first \n")
   }
-  ## ./tests/testthat/setup-shinytest2.R ####
-  if (any(as.vector(unlist(partial_testlist)) %in% testlist$test_webapp)) {
-    warning("note shinytest2 uses the installed version of a package by default to run tests, not the latest source version - see dev-run-shinytests article/vignette")
-  if (file.exists("./tests/testthat/setup-shinytest2.R")) {
-    source("./tests/testthat/setup-shinytest2.R")
-  } else {
-    cat("Need to source the setup-shinytest2.R file first \n")
-  }
-  }
-  ########################### #  ########################################## #
-
-  #
-  #
-  ########################### #  ########################################## #
+   ########################### #  ########################################## #
 
   ## log file started ####
 
@@ -1469,4 +1491,3 @@ loggable <- function(x, file = 'will be created using timestamp if not provided 
 
 }
 ################################### #
-

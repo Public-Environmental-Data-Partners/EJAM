@@ -102,6 +102,23 @@
     
 <p>This document covers the UI-related automated tests.</p>
 <div class="section level2">
+<h2 id="note-on-work-in-progress">NOTE on work in progress<a class="anchor" aria-label="anchor" href="#note-on-work-in-progress"></a>
+</h2>
+<p>This package had been using <code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> in
+the file <code>tests/testthat.R</code>, but that approach was
+deprecated, per this note in the source code of
+<code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> – “Calling
+<code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> within a {testthat} test has been
+deprecated in {shinytest2} v0.5.0.”</p>
+<p>Instead, <code>EJAM:::test_ejam()</code> uses an approach that first
+sources <code>testthat/setup.R</code> which sources
+<code>testthat/setup-shinytest2.R</code> which defines
+<code>shinytest2_webapp_functionality()</code>, a function that contains
+the steps tested in the web app, and then directly uses that function
+from within test files like
+<code>/tests/testthat/test-webapp-latlon-functionality.R</code> etc.</p>
+</div>
+<div class="section level2">
 <h2 id="dev-environment">Dev Environment<a class="anchor" aria-label="anchor" href="#dev-environment"></a>
 </h2>
 <p>If you are successfully running the app, you should have all the
@@ -163,7 +180,7 @@ cause test failures)</li>
 <h2 id="ejams-shinytest2-folder-structure">EJAM’s shinytest2 Folder Structure<a class="anchor" aria-label="anchor" href="#ejams-shinytest2-folder-structure"></a>
 </h2>
 <pre class="plaintext"><code>tests/
-  ├── testthat.R (modified to launch the shinytest2 web app functionality tests)
+  ├── testthat.R (was modified to launch the shinytest2 web app functionality tests, but see note above about phasing out shinytest2::test_app() )
   └── testthat/
       ├── setup-shinytest2.R
       ├── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)
@@ -180,12 +197,11 @@ cause test failures)</li>
 </h3>
 <ul>
 <li>
-<strong><code>testthat.R</code></strong> – Calls
-<code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> to run all tests. Can filter
-specific tests using <code>filter="test-name"</code>. This file is work
-in progress – it may need more work for the shiny app testing to work
-correctly using the tests in the <code>test-ui_and_server.R</code>
-file.</li>
+<strong><code>testthat.R</code></strong> – It had been calling
+<code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> to run all tests, but see note above
+about phasing out shinytest2::test_app(). This file is work in progress
+– it may need more work for the shiny app testing to work
+correctly.</li>
 <li>
 <strong><code>testthat/setup-shinytest2.R</code></strong> – Loads
 <code>global.R</code> and app scripts into the testing environment. Does
@@ -249,21 +265,43 @@ that are not inputs or outputs</em> and therefore may not be included in
 the standard snapshots. Then, in the shinytests, you can specify
 <code>export=[name]</code> to include in the snapshot the export named
 “name” that you specified in the code, or <code>export=TRUE</code> to
-include all exports.</p>
+include all exports. But, see details in the source code of
+shinytest2_webapp_functionality() as defined in the /tests/testthat/
+folder.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="running-tests-locally">Running Tests Locally<a class="anchor" aria-label="anchor" href="#running-tests-locally"></a>
 </h2>
-<p>The primary method for running the shinytests (other than doing so
-via GitHub Actions) is:</p>
+<p>One way to run the shinytests is via the GitHub Actions.</p>
+<p>Another way is this:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"-functionality"</span><span class="op">)</span></span></code></pre></div>
-<p>However, it is strongly recommended during development to source()
-the entire <code>testthat.R</code> which runs
-<code><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">remotes::install_local()</a></code> to ensure your development code is
-the one tested. This is because shinytest2 automatically references the
-installed version of a package.</p>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/test_ejam.html">test_ejam</a></span><span class="op">(</span>ask<span class="op">=</span><span class="cn">F</span>, run_these<span class="op">=</span><span class="st">"webapp"</span><span class="op">)</span></span></code></pre></div>
+<p>You could also run a test like this, but you cannot save or compare
+snapshots to reference when testing interactively.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># once</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span> <span class="co"># once</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span> <span class="co"># once</span></span>
+<span></span>
+<span><span class="co"># run a single test:</span></span>
+<span><span class="fu">shinytest2_webapp_functionality</span><span class="op">(</span><span class="st">"latlon"</span><span class="op">)</span></span></code></pre></div>
+<p>It is recommended during development to use
+<code><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">remotes::install_local()</a></code><br>
+to ensure your development code is the one tested. This is because
+shinytest2 automatically references the installed version of a
+package.</p>
+<p>Another useful way was this (but this might be deprecated by
+shinytest2)</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># first, source `setup.R`, from the tests/testthat/ folder. </span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># then for one subset of tests, like just the latlon analysis features:</span></span>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"latlon-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># for all the webapp functionality tests</span></span>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="github-actions-integration">GitHub Actions Integration<a class="anchor" aria-label="anchor" href="#github-actions-integration"></a>
@@ -301,7 +339,7 @@ before updating snapshots.</li>
 <div class="section level3">
 <h3 id="reviewing-snapshots">Reviewing Snapshots<a class="anchor" aria-label="anchor" href="#reviewing-snapshots"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">snapshot_review</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Optionally, can filter to review specific files or folders of
 snapshots.</p>
@@ -309,7 +347,7 @@ snapshots.</p>
 <div class="section level3">
 <h3 id="accepting-new-snapshots">Accepting New Snapshots<a class="anchor" aria-label="anchor" href="#accepting-new-snapshots"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">snapshot_accept</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Optionally, can accept them interactively when reviewing.</p>
 </div>

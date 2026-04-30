@@ -2,8 +2,7 @@
 % Please edit documentation in R/ejamapi.R
 \name{ejamapi}
 \alias{ejamapi}
-\title{helper for using the EJAM API, a wrapper function to make API calls for data or report
-Note this function would be most useful to an R user who does NOT have EJAM installed.}
+\title{Get EJScreen community report or data via the EJAM API}
 \usage{
 ejamapi(
   lat = NULL,
@@ -87,43 +86,68 @@ If dry_run=TRUE, for the "data" endpoint, the request itself, via the httr2 pack
 and for the "report" endpoint the URL is returned.
 }
 \description{
-helper for using the EJAM API, a wrapper function to make API calls for data or report
-Note this function would be most useful to an R user who does NOT have EJAM installed.
+Get EJScreen community report or data via the EJAM API
 }
 \details{
+This is a utility, a wrapper function to make API calls for data or report from the EJAM API.
 Note this function would be most useful to an R user who does NOT have EJAM installed.
 Anyone who already has the EJAM package installed
 can more quickly and flexibly get reports directly locally via
 \code{\link[=ejamit]{ejamit()}} for the "data", and \code{\link[=ejam2report]{ejam2report()}} for the "report".
 The API call provides fewer features/options.
 
-This function requires the geojsonsf, httr2, jsonlite, htmltools, and rlang packages.
+This function requires the geojsonsf, httr2, jsonlite, htmltools, rlang, and utils packages.
 
-For the "report" endpoint, it additionally currently requires the EJAM package
-just for the \code{\link[=url_ejamapi]{url_ejamapi()}} function that
-converts the parameters to a URL for the API
-as a GET request to obtain an HTML report.
+For the "report" endpoint,
+the EJAM package version of this function uses \code{\link[=url_ejamapi]{url_ejamapi()}} and related helper functions
+to convert the parameters to a URL for the API as a GET request to obtain an HTML report.
+\href{https://gist.github.com/ejanalysis/fa588f8f4cf993fe43fb03fe990176e1}{A standalone version of this function},
+for people who do not install the EJAM package, uses a copy of the necessary functions.
 }
 \examples{
 # also see ?EJAM::url_ejamapi()
 eg <- TRUE
-x1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
-x2 = ejamapi(lat = 45, lon = -118, endpoint = 'report', buffer = 3.1, dry_run=eg)
-htmltools::html_print(x2)
 
-y1 = ejamapi(sites = data.frame(lat = c(44,45), lon = c(-117,-118)),
-  buffer = 3.1, endpoint = 'data', dry_run=eg)
-y1[,3:14]
+# one blockgroup
+xbg1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
+if (!eg) {
+# all blockgroups in 1 county
+xcounty = ejamapi(fips="10001", scale="blockgroup", endpoint = "data", dry_run=eg)
+t(xcounty[1:4,3:100])
 
-pts=data.frame(
+# one point
+xpoint1 = ejamapi(lat = 45, lon = -118,
+  endpoint = 'report', buffer = 3.1, dry_run = eg)
+htmltools::html_print(xpoint1)
+
+# multiple points
+pts = data.frame(lat = c(44,45), lon = c(-117,-118))
+y2a = ejamapi(sites = pts, buffer = 3.1, endpoint = 'data', dry_run=eg)
+y2a[,3:14]
+
+# map the results
+mapview::mapview(sf::st_as_sf(
+ y2a[,1:15],
+ coords = c("lon", "lat"), crs = 4286))
+
+# format like ejamit() output, to be able to use ejam2xyz functions
+pts = data.frame(
   lat = c(37.64122, 43.92249),
   lon = c(-122.41065, -72.663705))
-y2 = ejamapi(sites=pts, buffer=3.1, endpoint="data",
-  ejamit_format=T, dry_run=eg)
-EJAM::ejam2report(y2, sitenumber=1)
-EJAM::ejam2report(y2, sitenumber=2)
-EJAM::ejam2table_tall(y2, sitenumber=2)
+y2 = ejamapi(sites=pts, buffer=3.1, endpoint="data", dry_run=eg,
+  ejamit_format = TRUE)
+t(y2$results_bysite[,3:100])
+# to map the results without using EJAM functions:
+mapview::mapview(sf::st_as_sf(
+  y2$results_bysite[,1:15],
+  coords = c("lon", "lat"), crs = 4286))
 
+# using EJAM functions to see a report even if data endpoint had been used:
+EJAM::ejam2report(y2, sitenumber = 1)
+EJAM::ejam2report(y2, sitenumber = 2)
+zz = EJAM::ejam2table_tall(y2, sitenumber = 2)
+head(zz, 50)
+}
 }
 \seealso{
 \code{\link[=url_ejamapi]{url_ejamapi()}}

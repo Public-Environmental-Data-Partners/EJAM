@@ -42,7 +42,7 @@ test_ejam(
 - useloadall:
 
   logical, TRUE means use
-  [`devtools::load_all()`](https://devtools.r-lib.org/reference/load_all.html),
+  [`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html),
   FALSE means use [`library()`](https://rdrr.io/r/base/library.html).
   But useloadall=T is essential actually, for unexported functions to be
   found when they are tested!
