@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_latest_arrow_data.R
 \name{download_latest_arrow_data}
 \alias{download_latest_arrow_data}
-\title{Download latest versions of arrow datasets if user doesn't have them already}
+\title{Download latest release of arrow datasets if user doesn't have them already}
 \usage{
 download_latest_arrow_data(
   varnames = .arrow_ds_names,
@@ -22,10 +22,11 @@ download_latest_arrow_data(
 Used when EJAM package is attached
 }
 \details{
-Checks to see what is the latest version of datasets available according to a repository's latest release tag.
-Compares that to what version was last saved locally (as stored in the installed package's
-ejamdata_version.txt file).
+Checks to see what is the latest release of datasets available according to the data repository's latest release tag.
+Compares that to what version was last saved locally (as stored in the installed package's ejamdata_version.txt file).
 
-Relies on \code{\link[piggyback:pb_releases]{piggyback::pb_releases()}} to download data files from a specific release (version) of the package.
+Relies on \code{\link[piggyback:pb_releases]{piggyback::pb_releases()}} to track / update / store / download
+data files as assets of a specific release on the data repository.
+For details, see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical details of how datasets are updated}
 }
 \keyword{internal}

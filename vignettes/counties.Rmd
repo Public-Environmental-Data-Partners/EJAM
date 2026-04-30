@@ -45,7 +45,7 @@ A few large counties contain a large proportion of the US population. This
 vignette briefly explores the distribution of counties in the US, particularly how many counties
 have a large number of block groups and residents.
 
-_Note there are also [guides to using EJAM in R for County/FIPS analysis](articles/analyzing.html#fips-codes) and [reference documents on relevant R functions](../reference/index.html#specify-counties-etc-) and [county-related test data](../reference/index.html#examples-of-inputs-census-units-by-fips-)._
+_Note there are also [guides to using EJAM in R for County/FIPS analysis](analyzing.html#fips-codes) and [reference documents on relevant R functions](../reference/index.html#specify-counties-etc-) and [county-related test data](../reference/index.html#examples-of-inputs-census-units-by-fips-)._
 
 The US has over 3,200 Counties but the 80/20 rule applies almost exactly -- About 80% of the population is in just 20% of all Counties. In fact, most of the US population lives in less than 5% of all US Counties. About 150 counties account for most of the US residents. 
 ```{r stats1, eval=TRUE}
@@ -53,9 +53,9 @@ The US has over 3,200 Counties but the 80/20 rule applies almost exactly -- Abou
 z <- blockgroupstats[ , .(pop = sum(pop), bgcount = .N), 
      by = .(countyfips = substr(bgfips,1,5))][order(bgcount), ]
 z[ , name := fips2name(countyfips)]
-setcolorder(z, "countyfips", after = NCOL(z))
-setcolorder(z, "bgcount")
-setorder(z, -bgcount)
+data.table::setcolorder(z, "countyfips", after = NCOL(z))
+data.table::setcolorder(z, "bgcount")
+data.table::setorder(z, -bgcount)
 # percent of residents and percent of counties
 zz <- z[order(-pop), ]
 zz$cumpop = cumsum(zz$pop)
