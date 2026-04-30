@@ -1,4 +1,4 @@
-# Download latest versions of arrow datasets if user doesn't have them already
+# Download latest release of arrow datasets if user doesn't have them already
 
 Used when EJAM package is attached
 
@@ -33,11 +33,14 @@ download_latest_arrow_data(
 
 ## Details
 
-Checks to see what is the latest version of datasets available according
-to a repository's latest release tag. Compares that to what version was
-last saved locally (as stored in the installed package's
+Checks to see what is the latest release of datasets available according
+to the data repository's latest release tag. Compares that to what
+version was last saved locally (as stored in the installed package's
 ejamdata_version.txt file).
 
 Relies on
 [`piggyback::pb_releases()`](https://docs.ropensci.org/piggyback/reference/pb_releases.html)
-to download data files from a specific release (version) of the package.
+to track / update / store / download data files as assets of a specific
+release on the data repository. For details, see [technical details of
+how datasets are
+updated](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html)

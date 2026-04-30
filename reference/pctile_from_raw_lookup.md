@@ -64,10 +64,17 @@ By default, returns numeric vector length of myvector.
 
 ## Details
 
-For handling a whole table of raw indicators, see
-[`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)
+- To convert a vector of raw indicators to percentiles, you can use
+  `lookup_pctile()`.
 
-This function can handle 2 kinds of inputs right now:
+- To convert an entire table of raw indicators to percentiles, see
+  [`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md).
+
+- To check a vector of raw indicators and see which ones are at/above a
+  specified percentile, see
+  [`pctile_x_is_hit_by_score()`](https://public-environmental-data-partners.github.io/EJAM/reference/pctile_x_is_hit_by_score.md).
+
+`lookup_pctile()` can handle 2 kinds of inputs right now:
 
 - a vector of scores and vector of corresponding indicator names, in
   only 1 zone (e.g. 1 State)
@@ -116,18 +123,23 @@ for handling a table not just a vector
 ## Examples
 
 ``` r
-# \donttest{
-
+ # \donttest{
+# Get some saved analysis results
+x <- testoutput_ejamit_10pts_1miles$results_overall
+# The raw scores of demographic indicators
 eg <- dput(
         round(as.vector(
-          unlist(testoutput_ejamit_10pts_1miles$results_overall[ , ..names_d] )),
+          unlist(x[ , ..names_d] )),
           3)
       )
 
+# The raw scores and percentiles from saved analysis results
 data.frame(value = eg,
-           pctile = t(testoutput_ejamit_10pts_1miles$results_overall[ , ..names_d_pctile]))
+           pctile = t(x[ , ..names_d_pctile]))
 
-data.frame(value = eg, pctile = lookup_pctile(eg, names_d))
+# Replicate those percentiles using this function
+data.frame(value = eg,
+           pctile = lookup_pctile(eg, names_d))
 
 # }
 ```
