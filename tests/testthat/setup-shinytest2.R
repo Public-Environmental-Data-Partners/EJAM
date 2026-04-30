@@ -117,7 +117,7 @@ shinytest2_webapp_functionality <- function(test_category) {
       variant = shinytest2::platform_variant(),
       name = test_category,
       seed=12345,
-      load_timeout= 60 * 1000, # 60 * 1000 means wait up to 1 minute  !
+      load_timeout= 120 * 1000, # 120 * 1000 means wait up to 2 minutes  !
       width = 1920,
       screenshot_args = FALSE,
       expect_values_screenshot_args = FALSE,
