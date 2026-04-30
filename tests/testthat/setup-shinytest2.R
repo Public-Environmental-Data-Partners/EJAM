@@ -62,7 +62,7 @@ shinytest2_webapp_functionality <- function(test_category) {
   test_snap_dir <- paste0(normalizePath(testthat::test_path()), "/_snaps/",
                           shinytest2::platform_variant(), "/",  # such as mac-4.5
                           "webapp-", test_category, "-functionality/")
-
+  if (!dir.exists(test_snap_dir)) {dir.create(test_snap_dir, recursive = TRUE, showWarnings = FALSE)}
   test_that(paste0("{shinytest2} tests of ", test_category, " category"), {
 
     ########################################################################### #
