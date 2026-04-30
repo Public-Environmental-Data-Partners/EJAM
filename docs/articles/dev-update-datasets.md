@@ -83,6 +83,23 @@ separate, data-related repository:
   and [access to the large data
   files](https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data)
 
+### Why the large datasets are put into the data-related repository using “piggyback” instead of committed using git.
+
+As explained in the documentation for the [piggyback R
+package](https://docs.ropensci.org/piggyback/):
+
+“Because larger (\> 50 MB) data files cannot easily be committed to git,
+a different approach is required to manage data associated with an
+analysis in a GitHub repository. This package provides a simple
+work-around by allowing larger (up to 2 GB) data files to piggyback on a
+repository as assets attached to individual GitHub releases. These files
+are not handled by git in any way, but instead are uploaded, downloaded,
+or edited directly by calls through the GitHub API. These data files can
+be versioned manually by creating different releases. This approach
+works equally well with public or private repositories. Data can be
+uploaded and downloaded programmatically from scripts. No authentication
+is required to download data from public repositories.”
+
 ### Key datasets
 
 Some notable data files, code details, and other objects that may need
@@ -103,26 +120,26 @@ to be changed ANNUALLY or more often:
   organized from within
   *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
 
-  - NOTE: Prior to 2025, several key datasets used by EJAM were obtained
-    from EPA’s EJSCREEN data FTP site and others directly from relevant
-    staff. Many of the indicators on the Community Report for the v2.2
-    (early 2024) EJSCREEN data were NOT provided in the gdb and csv
-    files on the FTP site, so they had to be obtained directly from the
-    EJSCREEN team as a separate .csv file. The code referred to from
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
-    datasets from EPA are available, and then converts them into the
-    datasets actually used by EJAM. However, if those are no longer
-    available from those sources, the data could mostly be independently
-    recreated, but this would require a combination of existing code and
-    significant new work.
+- NOTE: Prior to 2025, several key datasets used by EJAM were obtained
+  from EPA’s EJSCREEN data FTP site and others directly from relevant
+  staff. Many of the indicators on the Community Report for the v2.2
+  (early 2024) EJSCREEN data were NOT provided in the gdb and csv files
+  on the FTP site, so they had to be obtained directly from the EJSCREEN
+  team as a separate .csv file. The code referred to from
+  *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
+  datasets from EPA are available, and then converts them into the
+  datasets actually used by EJAM. However, if those are no longer
+  available from those sources, the data could mostly be independently
+  recreated, but this would require a combination of existing code and
+  significant new work.
 
-  - Some relevant code was in archived EJSCREEN repositories, for
-    creating environmental datasets. Some code is in EJAM functions that
-    can get ACS datasets. Much relevant code was in an older non-EPA
-    package called ejscreen, which had been made private as of early
-    2025 but could be refreshed. That package had tools such as
-    ejscreen.create() that had been able to reproduce parts of the
-    blockgroupstats and usastats/statestats datasets.
+- Some relevant code was in archived EJSCREEN repositories, for creating
+  environmental datasets. Some code is in EJAM functions that can get
+  ACS datasets. Much relevant code was in an older non-EPA package
+  called ejscreen, which had been made private as of early 2025 but
+  could be refreshed. That package had tools such as ejscreen.create()
+  that had been able to reproduce parts of the blockgroupstats and
+  usastats/statestats datasets.
 
 - ***Block Datasets***: The *block* (not blockgroup) tables might be
   updated less often, but Census fips codes do change yearly so the
@@ -155,20 +172,24 @@ to be changed ANNUALLY or more often:
   as of 2024-2026 were calculated based on the locations of these types
   of sites:
 
-  - [Major roadways
-    (traffic)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume)
-  - [Superfund NPL
-    sites](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators)
-  - [Facilities with hazardous waste
-    (TSDF)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity)
-  - [Water bodies downstream of wastewater
-    discharges](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration)
-  - [Risk management plan (RMP)
-    facilities](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity)
-  - [Underground storage tanks
-    (UST)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust)
-    (for a facility density indicator, similar to a proximity
-    indicator).
+- [Major roadways
+  (traffic)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume)
+
+- [Superfund NPL
+  sites](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators)
+
+- [Facilities with hazardous waste
+  (TSDF)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity)
+
+- [Water bodies downstream of wastewater
+  discharges](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration)
+
+- [Risk management plan (RMP)
+  facilities](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity)
+
+- [Underground storage tanks
+  (UST)](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust)
+  (for a facility density indicator, similar to a proximity indicator).
 
 - ***Facilities Datasets for a user to specify places to analyze/report
   on***: Facility locations and categories are used in EJAM to help a
@@ -379,16 +400,16 @@ As of EJAM version v2.32.8, there were 11 arrow files used by EJAM:
 
 &nbsp;
 
-1.  Checks ejamdata repo’s latest release/version.
+1.  Checks data repo’s latest release/version.
 2.  Checks user’s EJAM package’s ejamdata version, which is stored in
     `data/ejamdata_version.txt`.
 3.  If the `data/ejamdata_version.txt` file doesn’t exist, e.g. if it’s
     the first time installing EJAM, it will be created at the end of the
     script.
-4.  If the versions are different, download the latest arrow from the
+4.  If the versions are different, downloads the latest arrow from the
     latest ejamdata release with
     [`piggyback::pb_download()`](https://docs.ropensci.org/piggyback/reference/pb_download.html).
-    see how this function works for details:
+    See how this function works for details:
 
 ``` r
 download_latest_arrow_data()
@@ -420,33 +441,136 @@ download_latest_arrow_data()
   function will work as usual because the data are now stored in the
   `data` directory.
 
-## How new versions of arrow datasets are republished/ released
+## How new versions of arrow datasets are republished / released
 
-1.  The key arrow files are updated from within the EJAM code
-    repository, as explained above.
+First, update the key arrow files within the EJAM code repository, as
+explained above.
 
-2.  Those files were then being copied into a clone of the ejamdata repo
-    before being pushed to the actual ejamdata repo on github (at
-    <https://github.com/Public-Environmental-Data-Partners/ejamdata>)
+As mentioned above, we use [the piggyback
+package](https://docs.ropensci.org/piggyback/index.html) to place large
+datasets in the assets of a new release on the
+<https://github.com/Public-Environmental-Data-Partners/ejamdata>
+repository, rather than committing via git. Therefore, new datasets to
+be provided via the ejamdata repository should be submitted/updated as
+follows:
 
-3.  This triggers ejamdata’s `push_to_ejam.yaml` workflow that
-    increments the latest release tag reflecting the new version and
-    creates a new release
+Create a new release number for the data repository
+
+``` r
+library(piggyback)
+
+release_number <- "v2.5.0" # Update as needed
+owner_repo <- EJAM:::url_package("data", get_full_url = F) 
+# e.g., "Public-Environmental-Data-Partners/ejamdata"
+
+# Requires github token with permissions!
+piggyback::pb_release_create(
+  tag = release_number,
+  repo = owner_repo
+  # and optionally a release name and description
+) 
+```
+
+Make sure all the new data objects are in memory as arrow and/or rda
+format.
+
+``` r
+filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
+some_not_here <- FALSE
+cat("\n")
+for (i in seq_along(filenames_arrow)) {
+  cat("checking ", filenames_arrow[i], "\n")
+  if (!exists(filenames_arrow[i])) {
+    message(paste0("object ", filenames_arrow[i], " not found in memory."))
+    some_not_here <- TRUE
+  }
+}
+if (some_not_here) {stop("Please make sure all the new data files are in memory before running this code.")}
+# dput(filenames_arrow)
+
+# then do the same for the .rda versions such as blockwts, blockpoints, etc.
+
+filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
+some_not_here <- FALSE
+cat("\n")
+for (i in seq_along(filenames_rda)) {
+  cat("checking ", filenames_rda[i], "\n")
+  if (!exists(filenames_rda[i])) {
+    message(paste0("object ", filenames_rda[i], " not found in memory."))
+    some_not_here <- TRUE
+  }
+}
+if (some_not_here) {stop("Please make sure all the new data objects are in memory before running this code.")}
+# dput(filenames_rda)
+
+
+# see objects loaded and class(es) of each
+cbind(sort(sapply(intersect(ls(), union(filenames_arrow, filenames_rda)),
+                  function(z) paste0(class(get(z)), collapse = ","))))
+```
+
+Upload each dataset object as a dataset file
+
+``` r
+filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
+for (i in seq_along(filenames_arrow)) {
+  cat("uploading ", filenames_arrow[i], "\n")
+  piggyback::pb_upload(filenames_arrow[i], repo = owner_repo) 
+  # that defaults to use the tag (release_number) you just created
+}
+
+# then do the same for the .rda versions such as blockwts, blockpoints, etc.
+
+filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
+for (i in seq_along(filenames_rda)) {
+  cat("uploading ", filenames_rda[i], "\n")
+  piggyback::pb_upload(filenames_rda[i], repo = owner_repo) 
+  # that defaults to use the tag (release_number) you just created
+}
+```
+
+Open browser to confirm they are there
+
+``` r
+browseURL(paste0(EJAM:::url_package("data", get_full_url = T), "/releases"))
+```
+
+Reload EJAM so it can get the updates. It should detect that new
+versions are available and will get them to store with the installed
+package.
+
+``` r
+rm(list=ls())
+require(EJAM)
+
+# Confirm they all can be loaded into memory now
+# as arrow files:
+dataload_dynamic("all", return_data_table = FALSE)
+# as .rda files:
+dataload_dynamic("all", return_data_table = TRUE)
+```
+
+Note that this previously had been handled with a github actions
+workflow that tried use LFS and upon a commit of new dataset files to
+the data repo it would automatically update the release number, create a
+release, and include the new files in the release (but not as individual
+assets). It had been called `push_to_ejam.yaml` but is no longer used.
 
 ## Potential Improvements
 
-### Making Code more Arrow-Friendly
+### Making More of the Code More Arrow-Friendly
 
 Problem: loading the data as tibbles/dataframes takes a long time
 
-Solution: We may be able to modify our code to be more arrow -friendly.
-This essentially keeps the analysis code as a sort of query, and only
-actually loads the results into memory when requested (e.g., via
+Solution: We may be able to modify more of our code to be more arrow
+-friendly. This essentially keeps the analysis code as a sort of query,
+and only actually loads the results into memory when requested (e.g.,
+via
 [`dplyr::collect()`](https://dplyr.tidyverse.org/reference/compute.html))
 This dramatically reduces used memory, which would speed up processing
 times and avoid potential crashes resulting from not enough memory.
 However, this would require a decent lift to update the code in all
-places
+places.
 
 Pros: processing efficiency, significantly reduced memory usage
 

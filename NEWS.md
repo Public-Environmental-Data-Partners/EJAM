@@ -1,3 +1,7 @@
+# Development
+
+- Improved `ejamapi()` examples and error-checking, and had it use `url_ejamapi()`
+
 
 # EJAM 2.32.8 (April 2026)
 

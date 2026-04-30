@@ -1808,8 +1808,27 @@ app_server <- function(input, output, session) {
 
   ## data_processed()  reactive holds results of ejamit()
 
+  # web app functionality test can wait for this
+  analysis_complete <- reactiveVal(FALSE)
+  if (!isTRUE(getOption("shiny.testmode")) &&
+      isTRUE(EJAM:::global_or_param("default_shiny.testmode"))) {
+    options(shiny.testmode = TRUE)
+  }
+  if (isTRUE(getOption("shiny.testmode"))) {
+    observe({
+      shiny::exportTestValues(
+        analysis_complete = analysis_complete(),
+        multisite_report_download_ready =
+          download_ready_for_report_header_and_tables() &&
+          download_ready_for_report_map() &&
+          download_ready_for_report_plot()
+      )
+    })
+  }
+
   observeEvent(input$bt_get_results, {  # (button is pressed)
 
+    analysis_complete(FALSE)
     # disable download buttons until finished analysis
     shinyjs::disable(id = 'download_report_multisite')
     shinyjs::disable(id = 'download_results_spreadsheet')
@@ -2061,7 +2080,7 @@ app_server <- function(input, output, session) {
     showTab(session = session, inputId = 'all_tabs', target = 'See Results') # in case was hidden because app had just launched
     updateTabsetPanel(session = session, inputId = "all_tabs",     selected = "See Results")
     updateTabsetPanel(session = session, inputId = 'results_tabs', selected = 'Community Report')
-
+    analysis_complete(TRUE)
   })  # end of observeEvent based on Start analysis button called input$bt_get_results
 
   #############################################################################  #
@@ -2525,7 +2544,8 @@ app_server <- function(input, output, session) {
       } else {
         shp_for_report <- NULL
       }
-      report_path <- ejam2report(
+      report_path <- tryCatch(
+        ejam2report(
         fileextension = '.html',
         filename = filename_fullpath,
         ejamitout = data_processed(),
@@ -2546,12 +2566,38 @@ app_server <- function(input, output, session) {
         footer_date = date_in_user_timezone(),
         footer_text = NULL,
         footer_html = NULL, # NULL means use defaults
+
         original_style_report = isTRUE(input$original_style_report)
+        ),
+        error = function(e) {
+          msg <- paste0(
+            "downloadable_file_report_multisite(): ejam2report() failed: ",
+            conditionMessage(e),
+            "\nfilename_fullpath: ", filename_fullpath,
+            "\nfile.exists(dirname): ", dir.exists(dirname(filename_fullpath))
+          )
+          message(msg)
+          warning(msg, call. = FALSE)
+        }
       )
     })
     if (input$testing) {
       cat(paste0('in reactive creating report file, filename created as param is: \n"', filename, '"\n'))
       cat(paste0('in reactive creating report file, report_path created by ejam2report() is: \n"', report_path, '"\n'))
+    }
+    if (input$testing) {
+      cat(paste0('multisite report filename: "', filename, '"\n'))
+      cat(paste0('multisite report_path: "', report_path, '"\n'))
+      cat(paste0('multisite report exists: ', file.exists(report_path), '\n'))
+    }
+    if (is.null(report_path) || !nzchar(report_path) || !file.exists(report_path)) {
+      stop(
+        paste0(
+          "downloadable_file_report_multisite(): report file missing.",
+          "\nreport_path: ", paste0(report_path, collapse = ", ")
+        ),
+        call. = FALSE
+      )
     }
     report_path
   })
@@ -2565,7 +2611,21 @@ app_server <- function(input, output, session) {
       basename(downloadable_file_report_multisite())
     },
     content = function(file) {
-      file.copy(from = downloadable_file_report_multisite(), to = file, overwrite = TRUE)
+      src <- downloadable_file_report_multisite()
+      if (!file.exists(src)) {
+        stop(paste0("download_report_multisite: source file does not exist: ", src), call. = FALSE)
+      }
+      ok <- file.copy(from = src, to = file, overwrite = TRUE)
+      if (!isTRUE(ok) || !file.exists(file)) {
+        stop(
+          paste0(
+            "download_report_multisite: file.copy failed.",
+            "\nfrom: ", src,
+            "\nto: ", file
+          ),
+          call. = FALSE
+        )
+      }
     }
   )
   #############################################################################  #
