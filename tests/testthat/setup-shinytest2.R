@@ -72,11 +72,14 @@ shinytest2_webapp_functionality <- function(test_category) {
     dir.create(test_log_dir, recursive = TRUE, showWarnings = FALSE)
 
     sourcefolder <- testthat::test_path("../../")
-    if (basename(normalizePath(  sourcefolder )) == "EJAM" && file.exists(file.path(sourcefolder, "app.R"))) {
-      # ok  #   it finds app.R and uses that for launch, which uses ejamapp( )
+    if (basename(normalizePath(  sourcefolder )) == "EJAM"
+        # && file.exists(file.path(sourcefolder, "app.R")) # not needed since now a temp version of app.R gets created in a temp folder for this testing, to help ensure it can use isPublic=F, etc.
+        ) {
+      # ok
     } else {
-      message("might not be finding the correct folder to use as root, where app.R should be found")
+      message("might not be finding the correct folder to use as root")
     }
+    ## CREATE TEMP DIR WITH TEMP VERSION OF app.R that launches app via ejamapp() for testing purposes, using isPublic = FALSE, etc.
     make_shinytest_app_dir <- function(sourcefolder) {
       app_dir <- file.path(
         tempdir(),

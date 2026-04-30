@@ -11,11 +11,6 @@ options( "golem.app.prod" = TRUE)
 
 if (!exists("blockgroupstats")) {library(EJAM)} # to use installed version only if not already attached
 
-if (exists("isPublic") && isFALSE(isPublic)) {
-  # this would be true during unit testing!
-  ejamapp(isPublic = FALSE)
-} else {
-  # this would be the default for a hosted public app
-  ejamapp(isPublic = TRUE)
-}
+# this would be the default for a hosted public app
+ejamapp(isPublic = TRUE)
 
