@@ -458,7 +458,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         if (!requireNamespace("pagedown", quietly = TRUE)) {
           warning("The 'pagedown' package is required to generate PDF reports. ",
                   "Install it with: install.packages('pagedown'). ",
-                  "Falling back to HTML output.")
+                  "Generated HTML output instead at: ", sub("\\.pdf$", ".html", output_file))
           file.copy(html_temp, sub("\\.pdf$", ".html", output_file))
           output_file <- sub("\\.pdf$", ".html", output_file)
         } else {

@@ -2569,9 +2569,12 @@ app_server <- function(input, output, session) {
           showModal(modalDialog(
             title = "PDF not available",
             "The 'pagedown' package is required to generate PDF reports. ",
-            "Please install it with: install.packages('pagedown'), or download the HTML version instead.",
+            "Please install it with: install.packages('pagedown'), or select HTML format instead.",
             easyClose = TRUE
           ))
+          # Still provide the HTML file so the download does not fail silently;
+          # copy as .html so the content is usable even though filename says .pdf
+          file.copy(from = html_path, to = sub("\\.pdf$", ".html", file), overwrite = TRUE)
           file.copy(from = html_path, to = file, overwrite = TRUE)
         } else {
           pagedown::chrome_print(

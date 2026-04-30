@@ -393,6 +393,9 @@
   @page {
     size: letter portrait;
     margin: 0.75in 0.5in 1in 0.5in;
+    /* @bottom-center uses Paged Media / pagedown-specific CSS counter syntax.
+       This renders page numbers when converting HTML to PDF with pagedown::chrome_print().
+       It will NOT render in standard browser print dialogs. */
     @bottom-center {
       content: counter(page) " of " counter(pages);
       font-size: 9pt;
@@ -510,7 +513,9 @@ body {
   display: none;
 }
 
-/* Print-only running footer with report info */
+/* Print-only running footer with report info.
+   NOTE: 'position: running(footer)' is a Paged Media CSS feature specific to pagedown/Paged.js.
+   This element will not appear in standard browser print output. */
 #report-print-footer {
   display: block;
   position: running(footer);
