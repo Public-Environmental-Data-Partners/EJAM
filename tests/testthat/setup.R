@@ -41,15 +41,16 @@ if (!require(rmarkdown))        {cat("Need rmarkdown  package for some tests to 
 if (!require(data.table))       {cat("Need data.table package for some tests to work \n\n")}
 if (!require(magrittr))         {cat("Need magrittr   package for some tests to work \n\n")}
 ############################### #
-# if doing tests of webapp, also need shinytest2, so might as well load it here just in case
-if (!require(shinytest2)) {cat("Need shinytest2 package for some tests of web app to work \n\n")}
-# if doing tests of webapp, also need the function from this file, so might as well source it here just in case
-testdir = testthat::test_path()
-if (file.exists(file.path(testdir, "setup-shinytest2.R"))) {
-  source(file.path(testdir, "setup-shinytest2.R"))
-} else {
-  message("Need to source the setup-shinytest2.R file first to test webapp functionality \n")
-}
+## no simple way to check if doing tests of webapp, or just other unit tests, so just load these here in case needed, even though it slows it down:
+  # if doing tests of webapp, need shinytest2 package loaded
+  if (!require(shinytest2)) {cat("Need shinytest2 package for some tests of web app to work \n\n")}
+  # if doing tests of webapp, need the function from this file, so source it here
+  testdir = testthat::test_path()
+  if (!exists("shinytest2_webapp_functionality") && file.exists(file.path(testdir, "setup-shinytest2.R"))) {
+    source(file.path(testdir, "setup-shinytest2.R"))
+  } else {
+    message("Need to source the setup-shinytest2.R file first to test webapp functionality \n")
+  }
 ############################### #
 # is internet available? ####
 EJAM:::offline_warning("NO INTERNET CONNECTION AVAILABLE - SOME TESTS MAY FAIL WITHOUT CLEAR EXPLANATION")
@@ -75,10 +76,10 @@ testthat::set_state_inspector(function() {
 ## (and build index, but library(EJAM) should have already done the indexblocks() part at least)
 
 # suppressMessages({suppressWarnings({
-  dataload_dynamic("all",  # needs frs, etc.
-                   # folder_local_source = file.path(.libPaths()[1],'EJAM','data'), # if installed by testthat in special folder then those are not available
-                   silent = FALSE
-                   )
+dataload_dynamic("all",  # needs frs, etc.
+                 # folder_local_source = file.path(.libPaths()[1],'EJAM','data'), # if installed by testthat in special folder then those are not available
+                 silent = FALSE
+)
 # })})
 if (!exists("frs")) {stop('needs frs etc.')}
 suppressMessages({suppressWarnings({

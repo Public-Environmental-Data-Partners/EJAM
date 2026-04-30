@@ -4,15 +4,11 @@
 
 ########################################################################### #
 
-## setup.R should already have done this:
+## setup.R will already have done this:
 # library(EJAM) # and anyway, shinytest2::AppDriver() by default uses app.R which does library(EJAM) if needed, before it uses ejamapp()
 # library(shinytest2)
 
-## might also need this, though:
-# pkgload::load_all()
-
-cat("loading the function shinytest2_webapp_functionality() \n")
-
+cat("getting the function 'shinytest2_webapp_functionality()' \n")
 cat("see also the article/vignette built from dev-run-shinytests.Rmd at \n")
 cat(paste0(EJAM::url_package("docs"), "/articles/dev-run-shinytests.html \n"))
 # browseURL(paste0(EJAM::url_package("docs"), "/articles/dev-run-shinytests.html"))
@@ -31,20 +27,6 @@ unlink("tests/shinytestlog.txt") # deletes this file if it exists
 # shinytest2_webapp_functionality("latlon")
 # does not really work best since it cant check/save snapshots.
 ########################################################################### #
-
-# test_webapp = c(
-#   "test-webapp-ui_and_server.R",
-#   "test-webapp-FIPS-functionality.R",
-#   "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
-#   "test-webapp-FRS-functionality.R",
-#   "test-webapp-latlon-functionality.R",
-#   "test-webapp-NAICS-functionality.R",
-#   "test-webapp-shp-gdb-zip-functionality.R",
-#   "test-webapp-shp-json-functionality.R",
-#   "test-webapp-shp-unzip-functionality.R",
-#   "test-webapp-shp-zip-functionality.R"
-# )
-# "ui_and_server" "FIPS"          "FIPS-picker"   "FRS"           "latlon"        "NAICS"         "shp-gdb-zip"   "shp-json"      "shp-unzip"     "shp-zip"
 ########################################################################### #
 
 shinytest2_webapp_functionality <- function(test_category) {
@@ -52,20 +34,40 @@ shinytest2_webapp_functionality <- function(test_category) {
   old_width <- getOption("width") # Some functions alter this and it is noisy to see warnings that options changed
   on.exit(options(width = old_width), add = TRUE)
 
-  valid_categories = c(
-    # "ui_and_server", # not shinytest2 just regular testthat tests
-    "FIPS", "FIPS-picker", "FRS", "latlon", "NAICS",
-    "shp-gdb-zip", "shp-json", "shp-unzip", "shp-zip")
+  ## validate test_category
+  # test_webapp = c(
+  #   "test-webapp-ui_and_server.R",  # but this one file does not use shinytest2_webapp_functionality()
+  #   "test-webapp-FIPS-functionality.R",
+  #   "test-webapp-FIPS-picker-functionality.R",
+  #   "test-webapp-FRS-functionality.R",
+  #   "test-webapp-latlon-functionality.R",
+  #   "test-webapp-NAICS-functionality.R",
+  #   "test-webapp-shp-gdb-zip-functionality.R",
+  #   "test-webapp-shp-json-functionality.R",
+  #   "test-webapp-shp-unzip-functionality.R",
+  #   "test-webapp-shp-zip-functionality.R"
+  # )
+  # valid_categories = c(
+  #   ## "ui_and_server", # not shinytest2 just regular testthat tests
+  #   "FIPS", "FIPS-picker", "FRS", "latlon", "NAICS",
+  #   "shp-gdb-zip", "shp-json", "shp-unzip", "shp-zip")
+  testfolder = file.path(normalizePath(testthat::test_path()))
+  found_categories = gsub("^test-webapp-(.*)-functionality.R", "\\1", list.files(path = testfolder, pattern = "test-.*-functionality.R"))
+  valid_categories = found_categories ## NOT c(found_categories, "ui_and_server")
+  if (length(valid_categories) == 0) {stop("cannot find any test files like test-webapp-xyz-functionality.R in ", testfolder)}
   if (!all(test_category %in% valid_categories)) {
     stop("invalid test_category specified - must be one of these: ", paste0(valid_categories, collapse = ", "))
   }
-  test_snap_dir <- paste0(normalizePath(testthat::test_path()), "/_snaps/",
-                          shinytest2::platform_variant(), "/",  # such as mac-4.5
-                          "webapp-", test_category, "-functionality/")
-  if (!dir.exists(test_snap_dir)) {dir.create(test_snap_dir, recursive = TRUE, showWarnings = FALSE)}
+  ########################################################################### #
+
   test_that(paste0("{shinytest2} tests of ", test_category, " category"), {
 
-    ########################################################################### #
+    testthat::skip_if_not_installed("shinytest2") # should never happen, since this gets sourced by setup.R which does library(shinytest2)
+
+    test_snap_dir <- paste0(normalizePath(testthat::test_path()), "/_snaps/",
+                            shinytest2::platform_variant(), "/",  # such as mac-4.5
+                            "webapp-", test_category, "-functionality/")
+    if (!dir.exists(test_snap_dir)) {dir.create(test_snap_dir, recursive = TRUE, showWarnings = FALSE)}
 
     outputs_to_remove <- c('an_leaf_map')
     test_log_dir <- testthat::test_path("_logs")
