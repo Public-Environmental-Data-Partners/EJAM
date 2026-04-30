@@ -286,6 +286,7 @@ reference:
   - calc_ejam
   - calc_byformula
   - lookup_pctile
+  - pctile_x_is_hit_by_score
   - usastats_means
   - usastats_query
   - usastats_queryd

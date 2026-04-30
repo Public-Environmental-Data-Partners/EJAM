@@ -151,7 +151,9 @@ ejamapi <- function(
     ejam_functions_available <- !dotz$no_ejam
     # turn off if this function is extracted to use outside EJAM)
   } else {
-    ejam_functions_available <- TRUE # differs from standalone version
+    # differs from standalone version
+    # if given no_ejam=F or if sourced standalone, only enable EJAM-package-provided helpers if they are actually available
+    ejam_functions_available <- exists("url_ejamapi", mode = "function", inherits = TRUE)
   }
 
   maxreports <- 10
@@ -251,7 +253,7 @@ ejamapi <- function(
         }}
       params <- c(params, shape = shape)
       # params <- c(params, shape = EJAM::shape2geojson(shape, combine_in_one_string = TRUE))
-      req <- httr2::req_body_json(req=req, data = x)
+      req <- httr2::req_body_json(req = req, data = params)
       #  # see  https://httr2.r-lib.org/reference/req_body.html#ref-examples
 
     } else {

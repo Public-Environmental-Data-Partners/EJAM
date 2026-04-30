@@ -77,6 +77,12 @@ data-related repository:
 -   Datasets used by EJAM but stored separately (large .arrow files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and 
 [access to the large data files](`r paste0(data_reponame_url, "/tree/main/data")`)
 
+### Why the large datasets are put into the data-related repository using "piggyback" instead of committed using git.
+
+As explained in the documentation for the [piggyback R package](https://docs.ropensci.org/piggyback/): 
+
+"Because larger (> 50 MB) data files cannot easily be committed to git, a different approach is required to manage data associated with an analysis in a GitHub repository. This package provides a simple work-around by allowing larger (up to 2 GB) data files to piggyback on a repository as assets attached to individual GitHub releases. These files are not handled by git in any way, but instead are uploaded, downloaded, or edited directly by calls through the GitHub API. These data files can be versioned manually by creating different releases. This approach works equally well with public or private repositories. Data can be uploaded and downloaded programmatically from scripts. No authentication is required to download data from public repositories."
+
 ### Key datasets
 
 Some notable data files, code details, and other objects that may need to be
@@ -295,13 +301,13 @@ These were the arrow files used by EJAM:
 
 <!-- -->
 
-a.  Checks ejamdata repo's latest release/version.
+a.  Checks data repo's latest release/version.
 b.  Checks user's EJAM package's ejamdata version, which is stored in
     `data/ejamdata_version.txt`.
 c.  If the `data/ejamdata_version.txt` file doesn't exist, e.g. if it's the
     first time installing EJAM, it will be created at the end of the script.
-d.  If the versions are different, download the latest arrow from the latest
-    ejamdata release with `piggyback::pb_download()`. see how this function
+d.  If the versions are different, downloads the latest arrow from the latest
+    ejamdata release with `piggyback::pb_download()`. See how this function
     works for details:
 
 ```{r, eval=FALSE}
@@ -336,28 +342,100 @@ download_latest_arrow_data()
 -   The `dataload_dynamic()` function will work as usual because the data are
     now stored in the `data` directory.
 
-## How new versions of arrow datasets are republished/ released
+## How new versions of arrow datasets are republished / released
 
-1.  The key arrow files are updated from within the EJAM code repository, as
-    explained above.
+First, update the key arrow files within the EJAM code repository, as explained above.
 
-2.  Those files were then being copied into a clone of the ejamdata repo before being pushed to the actual ejamdata repo on github (at `r data_reponame_url`)
+As mentioned above, we use [the piggyback package](https://docs.ropensci.org/piggyback/index.html) to place large datasets in the assets of a new release on the `r data_reponame_url` repository, rather than committing via git. Therefore, new datasets to be provided via the ejamdata repository should be submitted/updated as follows:
 
-3.  This triggers ejamdata's `push_to_ejam.yaml` workflow that increments the
-    latest release tag reflecting the new version and creates a new release
+Create a new release number for the data repository
+
+``` {r, eval=FALSE}
+library(piggyback)
+
+release_number <- "v2.5.0" # Update as needed
+owner_repo <- EJAM:::url_package("data", get_full_url = F) 
+# e.g., "Public-Environmental-Data-Partners/ejamdata"
+
+# Requires github token with permissions!
+piggyback::pb_release_create(
+  tag = release_number,
+  repo = owner_repo
+  # and optionally a release name and description
+  ) 
+```
+
+Make sure all the new data objects are in memory as arrow and/or rda format.
+
+
+``` {r, eval=FALSE}
+filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
+for (i in seq_along(filenames_arrow)) {
+  some_not_here <- FALSE
+  if (!file.exists(filenames_arrow[i])) {
+    message(paste0("File ", filenames_arrow[i], " not found in memory."))
+    some_not_here <- TRUE
+  }
+}
+if (some_not_here) {stop("Please make sure all the new data files are in memory before running this code.")}
+# dput(filenames_arrow)
+
+# then do the same for the .rda versions such as blockwts, blockpoints, etc.
+
+
+
+# see objects loaded and class(es) of each
+cbind(sapply(ls(), function(z) paste0(class(get(z)), collapse = ",")))
+```
+
+Upload each dataset file
+```{r, eval=FALSE}
+filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
+for (i in seq_along(filenames)) {
+  piggyback::pb_upload(filenames[i], repo = owner_repo) 
+  # that defaults to use the tag (release_number) you just created
+}
+
+# then do the same for the .rda versions such as blockwts, blockpoints, etc.
+
+
+
+
+```
+
+Open browser to confirm they are there
+```{r, eval=FALSE}
+browseURL(paste0(EJAM:::url_package("data", get_full_url = T), "/releases"))
+```
+
+Reload EJAM so it can get the updates. It should detect that new versions are available and will get them to store with the installed package.
+
+```{r, eval=FALSE}
+rm(list=ls())
+require(EJAM)
+
+# Confirm they all can be loaded into memory now
+# as arrow files:
+dataload_dynamic("all", return_data_table = FALSE)
+# as .rda files:
+dataload_dynamic("all", return_data_table = TRUE)
+```
+
+Note that this previously had been handled with a github actions workflow that tried use LFS and upon a commit of new dataset files to the data repo it would automatically update the release number, create a release, and include the new files in the release (but not as individual assets). It had been called `push_to_ejam.yaml` but is no longer used.
+
 
 ## Potential Improvements
 
-### Making Code more Arrow-Friendly
+### Making More of the Code More Arrow-Friendly
 
 Problem: loading the data as tibbles/dataframes takes a long time
 
-Solution: We may be able to modify our code to be more arrow -friendly. This
+Solution: We may be able to modify more of our code to be more arrow -friendly. This
 essentially keeps the analysis code as a sort of query, and only actually loads
 the results into memory when requested (e.g., via `dplyr::collect()`) This
 dramatically reduces used memory, which would speed up processing times and
 avoid potential crashes resulting from not enough memory. However, this would
-require a decent lift to update the code in all places
+require a decent lift to update the code in all places.
 
 Pros: processing efficiency, significantly reduced memory usage
 
