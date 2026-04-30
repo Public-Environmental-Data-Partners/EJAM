@@ -1815,13 +1815,15 @@ app_server <- function(input, output, session) {
     options(shiny.testmode = TRUE)
   }
   if (isTRUE(getOption("shiny.testmode"))) {
-    shiny::exportTestValues(
-      analysis_complete = analysis_complete(),
-      multisite_report_download_ready =
-        download_ready_for_report_header_and_tables() &&
-        download_ready_for_report_map() &&
-        download_ready_for_report_plot()
-    )
+    observe({
+      shiny::exportTestValues(
+        analysis_complete = analysis_complete(),
+        multisite_report_download_ready =
+          download_ready_for_report_header_and_tables() &&
+          download_ready_for_report_map() &&
+          download_ready_for_report_plot()
+      )
+    })
   }
 
   observeEvent(input$bt_get_results, {  # (button is pressed)
