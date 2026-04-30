@@ -46,10 +46,12 @@ if (!require(magrittr))         {cat("Need magrittr   package for some tests to 
   if (!require(shinytest2)) {cat("Need shinytest2 package for some tests of web app to work \n\n")}
   # if doing tests of webapp, need the function from this file, so source it here
   testdir = testthat::test_path()
-  if (!exists("shinytest2_webapp_functionality") && file.exists(file.path(testdir, "setup-shinytest2.R"))) {
-    source(file.path(testdir, "setup-shinytest2.R"))
-  } else {
-    message("Need to source the setup-shinytest2.R file first to test webapp functionality \n")
+  if (!exists("shinytest2_webapp_functionality")) {
+    if (file.exists(file.path(testdir, "setup-shinytest2.R"))) {
+      source(file.path(testdir, "setup-shinytest2.R"))
+    } else {
+      message("Need to source the setup-shinytest2.R file first to test webapp functionality \n")
+    }
   }
 ############################### #
 # is internet available? ####
