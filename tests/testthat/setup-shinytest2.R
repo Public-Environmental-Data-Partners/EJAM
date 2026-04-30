@@ -167,6 +167,7 @@ shinytest2_webapp_functionality <- function(test_category) {
           # save_log("EJAM_app_test_post_download.txt")
           shinytestLogMessage(conditionMessage(cond))
           # save_log("EJAM_app_test_post_download.txt")
+          stop(cond)
         })
       hash_xlsx_all_sheets(
         download_filepath,
