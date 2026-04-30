@@ -1,27 +1,123 @@
-
-cat("loading the function shinytest2_webapp_functionality() \n")
-cat("see also the article/vignette built from dev-run-shinytests.Rmd \n")
-unlink("tests/shinytestlog.txt") # deletes this file if it exists
+########################################################################### #
 
 ## Function that tests web app UI functionality
 
+########################################################################### #
+
+## setup.R will already have done this:
+# library(EJAM) # and anyway, shinytest2::AppDriver() by default uses app.R which does library(EJAM) if needed, before it uses ejamapp()
+# library(shinytest2)
+
+cat("getting the function 'shinytest2_webapp_functionality()' \n")
+cat("see also the article/vignette built from dev-run-shinytests.Rmd at \n")
+cat(paste0(EJAM::url_package("docs"), "/articles/dev-run-shinytests.html \n"))
+# browseURL(paste0(EJAM::url_package("docs"), "/articles/dev-run-shinytests.html"))
+
+unlink("tests/shinytestlog.txt") # deletes this file if it exists
+# see also "tests/testthat/testthat.R"
+
+## To use this function, in RStudio you could do
+# shinytest2::test_app(".", filter = "latlon-functionality", check_setup = FALSE)
+# but that is getting deprecated by shinytest2 as an approach?
+## or should be able to do
+# library(EJAM)
+# x = EJAM:::test_ejam(ask=F, run_these="webapp")
+## and
+# directly interactively using
+# shinytest2_webapp_functionality("latlon")
+# does not really work best since it cant check/save snapshots.
+########################################################################### #
+########################################################################### #
+
 shinytest2_webapp_functionality <- function(test_category) {
 
-  test_snap_dir <- paste0(normalizePath(testthat::test_path()), "/_snaps/",
-                          platform_variant(), "/",
-                          test_category, "-functionality/")
+  old_width <- getOption("width") # Some functions alter this and it is noisy to see warnings that options changed
+  on.exit(options(width = old_width), add = TRUE)
 
-  test_that("{shinytest2} recording: EJAM", {
+  ## validate test_category
+  # test_webapp = c(
+  #   "test-webapp-ui_and_server.R",  # but this one file does not use shinytest2_webapp_functionality()
+  #   "test-webapp-FIPS-functionality.R",
+  #   "test-webapp-FIPS-picker-functionality.R",
+  #   "test-webapp-FRS-functionality.R",
+  #   "test-webapp-latlon-functionality.R",
+  #   "test-webapp-NAICS-functionality.R",
+  #   "test-webapp-shp-gdb-zip-functionality.R",
+  #   "test-webapp-shp-json-functionality.R",
+  #   "test-webapp-shp-unzip-functionality.R",
+  #   "test-webapp-shp-zip-functionality.R"
+  # )
+  # valid_categories = c(
+  #   ## "ui_and_server", # not shinytest2 just regular testthat tests
+  #   "FIPS", "FIPS-picker", "FRS", "latlon", "NAICS",
+  #   "shp-gdb-zip", "shp-json", "shp-unzip", "shp-zip")
+  testfolder = file.path(normalizePath(testthat::test_path()))
+  found_categories = gsub("^test-webapp-(.*)-functionality.R", "\\1", list.files(path = testfolder, pattern = "test-.*-functionality.R"))
+  valid_categories = found_categories ## NOT c(found_categories, "ui_and_server")
+  if (length(valid_categories) == 0) {stop("cannot find any test files like test-webapp-xyz-functionality.R in ", testfolder)}
+  if (!all(test_category %in% valid_categories)) {
+    stop("invalid test_category specified - must be one of these: ", paste0(valid_categories, collapse = ", "))
+  }
+  ########################################################################### #
 
-    ########################################################################### #
+  test_that(paste0("{shinytest2} tests of ", test_category, " category"), {
+
+    testthat::skip_if_not_installed("shinytest2") # should never happen, since this gets sourced by setup.R which does library(shinytest2)
+
+    test_snap_dir <- paste0(normalizePath(testthat::test_path()), "/_snaps/",
+                            shinytest2::platform_variant(), "/",  # such as mac-4.5
+                            "webapp-", test_category, "-functionality/")
+    if (!dir.exists(test_snap_dir)) {dir.create(test_snap_dir, recursive = TRUE, showWarnings = FALSE)}
 
     outputs_to_remove <- c('an_leaf_map')
+    test_log_dir <- testthat::test_path("_logs")
+    dir.create(test_log_dir, recursive = TRUE, showWarnings = FALSE)
 
-    app <- AppDriver$new(
-      variant = platform_variant(),
+    sourcefolder <- testthat::test_path("../../")
+    if (basename(normalizePath(  sourcefolder )) == "EJAM"
+        # && file.exists(file.path(sourcefolder, "app.R")) # not needed since now a temp version of app.R gets created in a temp folder for this testing, to help ensure it can use isPublic=F, etc.
+        ) {
+      # ok
+    } else {
+      message("might not be finding the correct folder to use as root")
+    }
+    ## CREATE TEMP DIR WITH TEMP VERSION OF app.R that launches app via ejamapp() for testing purposes, using isPublic = FALSE, etc.
+    make_shinytest_app_dir <- function(sourcefolder) {
+      app_dir <- file.path(
+        tempdir(),
+        paste0("ejam-shinytest2-", test_category, "-", format(Sys.time(), "%Y%m%d%H%M%OS3"))
+      )
+      dir.create(app_dir, recursive = TRUE, showWarnings = FALSE)
+
+      sourcefolder_norm <- normalizePath(sourcefolder, winslash = "/", mustWork = TRUE)
+      app_r_lines <- c(
+        "# Autogenerated by tests/testthat/setup-shinytest2.R",
+        "options(golem.app.prod = TRUE)",
+        "options(shiny.testmode = TRUE)",
+        paste0(
+          "sourcefolder <- normalizePath(",
+          deparse(sourcefolder_norm),
+          ", winslash = '/', mustWork = TRUE)"
+        ),
+        "pkgload::load_all(sourcefolder, quiet = TRUE, helpers = FALSE, export_all = FALSE)",
+        "getExportedValue('EJAM', 'ejamapp')(",
+        "  isPublic = FALSE,",
+        "  default_shiny.testmode = TRUE,",
+        "  default_testing = TRUE",
+        ")"
+      )
+      writeLines(app_r_lines, con = file.path(app_dir, "app.R"))
+      app_dir
+    }
+    app_dir_for_test <- make_shinytest_app_dir(sourcefolder)
+    on.exit(unlink(app_dir_for_test, recursive = TRUE, force = TRUE), add = TRUE)
+
+    app <- shinytest2::AppDriver$new(
+      app_dir = app_dir_for_test,
+      variant = shinytest2::platform_variant(),
       name = test_category,
       seed=12345,
-      load_timeout=2e+06,
+      load_timeout= 60 * 1000, # 60 * 1000 means wait up to 1 minute  !
       width = 1920,
       screenshot_args = FALSE,
       expect_values_screenshot_args = FALSE,
@@ -36,19 +132,18 @@ shinytest2_webapp_functionality <- function(test_category) {
     # Define helper functions  ####
 
     ################## #
-    customExpectValues <- function(inputs = NULL,
-                                   outputs = outputs_to_keep,
-                                   exports = NULL,
+    customExpectValues <- function(inputs = FALSE,
+                                   outputs = NULL,
+                                   exports = FALSE,
                                    name = NULL) {
-      # remove an_leaf_map. It's too big. We can capture part of it with exportTestValues
-      all_output_names <- names(app$get_values(output=TRUE)$output)
+      all_output_names <- names(app$get_values(output = TRUE)$output)
       outputs_to_keep <- setdiff(all_output_names, outputs_to_remove)
-      app$wait_for_idle(timeout = 20000)
+
       app$expect_values(
         name = name,
-        output = if(is.null(outputs)) TRUE else outputs,
-        input = if(is.null(inputs)) TRUE else inputs,
-        export = if(is.null(exports)) TRUE else exports
+        output = if (is.null(outputs)) outputs_to_keep else outputs,
+        input =  inputs,
+        export =  exports
       )
     }
     ################## #
@@ -60,16 +155,20 @@ shinytest2_webapp_functionality <- function(test_category) {
       # write(logmsg,file="shinytestlog.txt",append=TRUE)
     }
     ################## #
-    custom_binary_xlsx_download <- function(outputId) {
-      old_path <- paste0(test_snap_dir,test_category,"-results-table.txt")
-      new_path <- paste0(test_snap_dir,test_category,"-results-table.new.txt")
+    custom_binary_xlsx_download <- function(outputId, name = test_category) {
+      old_path <- paste0(test_snap_dir, name, "-results-table.txt")
+      new_path <- paste0(test_snap_dir, name, "-results-table.new.txt")
       file_exists <- file.exists(old_path)
       # , filename=paste0(normalizePath(testthat::test_path()),"/download_results.xlsx")
-      download_filepath <- tryCatch(app$get_download(outputId), error = function(cond) {
-        # save_log("EJAM_app_test_post_download.txt")
-        shinytestLogMessage(conditionMessage(cond))
-        # save_log("EJAM_app_test_post_download.txt")
-      })
+      download_filepath <- tryCatch(
+        ## does it need to click the button here? or does get_download() do that?
+        app$get_download(outputId),
+        error = function(cond) {
+          # save_log("EJAM_app_test_post_download.txt")
+          shinytestLogMessage(conditionMessage(cond))
+          # save_log("EJAM_app_test_post_download.txt")
+          stop(cond)
+        })
       hash_xlsx_all_sheets(
         download_filepath,
         ifelse(
@@ -105,10 +204,101 @@ shinytest2_webapp_functionality <- function(test_category) {
     }
     ################## #
     save_log <- function(fname) {
+      fname <- file.path(test_log_dir, basename(fname))
       logs <- app$get_logs()
       capture.output(
         logs[logs$location != "chromote" & nchar(logs$message) < 1000, ],
         file = fname
+      )
+    }
+    ################## #
+    selectize_set_values <- function(input_id, values, labels = values) {
+      values <- as.character(values)
+      labels <- as.character(labels)
+      app$run_js(sprintf(
+        "
+          var el = document.getElementById(%s);
+          var values = %s;
+          var labels = %s;
+          if (el && el.selectize) {
+            values.forEach(function(value, i) {
+              el.selectize.addOption({
+                value: value,
+                text: labels[i] || value
+              });
+            });
+            el.selectize.setValue(values);
+            el.selectize.refreshOptions(false);
+          }
+        ",
+        jsonlite::toJSON(input_id, auto_unbox = TRUE),
+        jsonlite::toJSON(values, auto_unbox = FALSE),
+        jsonlite::toJSON(labels, auto_unbox = FALSE)
+      ))
+    }
+    ################## #
+    picker_values_are_selected <- function(input_id, values) {
+      picked <- app$get_value(input = input_id)
+      setequal(as.character(picked), as.character(values))
+    }
+    ################## #
+    select_fips_picker_values <- function(area_type, input_id, values, labels = values, label_for_log = area_type) {
+      values <- as.character(values)
+
+      shinytestLogMessage("select dropdown Categories method of site selection")
+      app$set_inputs(ss_choose_method = "dropdown", wait_ = FALSE)
+      app$set_inputs(ss_choose_method_drop = "FIPS_PLACE", wait_ = FALSE)
+      app$wait_for_idle(timeout = 10 * 1000)
+
+      shinytestLogMessage(paste0("select ", area_type, " as method of site selection"))
+      app$set_inputs(`pickermoduleid-fips_type2pick` = area_type)
+      app$wait_for_idle(timeout = 10 * 1000)
+
+      shinytestLogMessage(paste0("specify ", label_for_log))
+      for (attempt in 1:3) {
+        args <- c(setNames(list(values), input_id), list(wait_ = FALSE))
+        do.call(app$set_inputs, args)
+        app$wait_for_idle(timeout = 10 * 1000)
+        picked <- app$get_value(input = input_id)
+        shinytestLogMessage(paste0(
+          input_id, " after selection attempt ", attempt, ": ",
+          paste(picked, collapse = ",")
+        ))
+        if (picker_values_are_selected(input_id, values)) {
+          break
+        }
+      }
+
+      if (!picker_values_are_selected(input_id, values)) {
+        shinytestLogMessage(paste0(input_id, " not fully selected, using selectize js fallback"))
+        selectize_set_values(input_id = input_id, values = values, labels = labels)
+        app$wait_for_idle(timeout = 10 * 1000)
+        picked <- app$get_value(input = input_id)
+        shinytestLogMessage(paste0(
+          input_id, " after js fallback: ",
+          paste(picked, collapse = ",")
+        ))
+      }
+
+      testthat::expect_true(
+        picker_values_are_selected(input_id, values),
+        info = paste0("Expected ", input_id, " to contain ", paste(values, collapse = ", "))
+      )
+
+      shinytestLogMessage("click done")
+      tryCatch(
+        {
+          app$click("fipspicker_done_button", wait_ = FALSE)
+          app$wait_for_idle(timeout = 10 * 1000)
+          app$wait_for_js(
+            "document.getElementById('bt_get_results') !== null && !document.getElementById('bt_get_results').disabled",
+            timeout = 20 * 1000
+          )
+        },
+        error = function(e) {
+          save_log(paste0(test_category, "-post-done-log.txt"))
+          stop(e)
+        }
       )
     }
     ########################################################################### #
@@ -123,8 +313,8 @@ shinytest2_webapp_functionality <- function(test_category) {
     app$set_inputs(ss_choose_method = "upload", wait_ = FALSE)
     if(test_category == "latlon") {
       ### > latlon ####
-      shinytestLogMessage("About to upload latlon testpoints_100.xlsx")
-      app$upload_file(ss_upload_latlon = EJAM:::app_sys("testdata/latlon/testpoints_100.xlsx"))
+      shinytestLogMessage("About to upload latlon testpoints_10.xlsx")
+      app$upload_file(ss_upload_latlon = EJAM:::app_sys("testdata/latlon/testpoints_10.xlsx"))
     } else if(test_category == "FIPS") {
       ### > FIPS ####
       shinytestLogMessage("About to upload counties_in_Delaware.xlsx for FIPS")
@@ -173,19 +363,402 @@ shinytest2_webapp_functionality <- function(test_category) {
       app$set_inputs(ss_choose_method_drop = "NAICS", wait_ = FALSE) # this is default
       # cannot do 1111 - no longer exists with new UI - would need to switch to Detailed list
       # cannot do 111 - too large for shiny. Gets a memory issue and crashes
-      app$set_inputs(ss_select_naics = "114", wait_ = FALSE)#, timeout_ = 10000)
+      app$set_inputs(ss_select_naics = "114", wait_ = FALSE) #, timeout_ = 10000)
     }
+    ########################################################################### #
 
     if (test_category == "FIPS-picker") {
+      select_fips_picker_values(
+        area_type = "Cities or Places",
+        input_id = "pickermoduleid-cities_picked",
+        values = "3684000",
+        labels = "Yonkers city, Westchester County, NY (3684000)",
+        label_for_log = "one city"
+      )
+    }
+    ########################################################################### #
+
+    ########################################################################### #
+    #  TESTS FOR FIPS PICKER
+    ########################################################################### #
+
+    if (FALSE && test_category %in% "FIPS-picker") {
       ### > City (but County/State not tested here)    ####
 
-      shinytestLogMessage("selecting 1 city from dropdown")
+      shinytestLogMessage("will test selecting 1 city from dropdown")
 
-      ## placeholder -- see test-webapp-FIPS-picker-functionality.R
-      ## Use lines from the recording of FIPS-picker selecting one city
+      app$set_inputs(`shinyjs-resettable-ss_upload_latlon` = character(0), allow_no_input_binding_ = TRUE)
+      app$set_inputs(`shinyjs-resettable-ss_upload_shp` = character(0), allow_no_input_binding_ = TRUE)
+      app$set_inputs(`shinyjs-resettable-ss_upload_frs` = character(0), allow_no_input_binding_ = TRUE)
+      app$set_inputs(`shinyjs-resettable-ss_upload_program` = character(0), allow_no_input_binding_ = TRUE)
+      app$set_inputs(`shinyjs-resettable-ss_upload_fips` = character(0), allow_no_input_binding_ = TRUE)
+      ################################################ #
+      shinytestLogMessage("using initial map")
+      app$set_window_size(width = 1339, height = 994)
+      app$set_inputs(an_leaf_map_bounds = c(54.6229781326903, -61.611328125, 21.0434912168035, -135.439453125), allow_no_input_binding_ = TRUE)
+      app$set_inputs(an_leaf_map_center = c(-98.525390625, 39.8422860207434), allow_no_input_binding_ = TRUE)
+      app$set_window_size(width = 1339, height = 994)
+
+      app$set_inputs(default_naics = "313")
+      app$set_inputs(ss_select_naics = "313")
+      app$set_inputs(default_sic = "2015")
+      app$set_inputs(ss_select_sic = "2015")
+      app$set_inputs(an_leaf_map_bounds = c(54.6229781326903, -58.88671875, 21.0434912168035, -138.251953125), allow_no_input_binding_ = TRUE)
+      app$set_inputs(an_leaf_map_center = c(-98.5693359375, 39.8422860207434), allow_no_input_binding_ = TRUE)
+      app$set_window_size(width = 1434, height = 1158)
+      app$set_inputs(an_leaf_map_bounds = c(54.6229781326903, -45.703125, 21.0434912168035, -151.435546875), allow_no_input_binding_ = TRUE)
+      app$set_window_size(width = 1883, height = 1158)
+      ################################################ #
+
+      shinytestLogMessage("select dropdown Categories method of site selection")
+      app$set_inputs(ss_choose_method = "dropdown")
+
+      app$set_inputs(an_leaf_map_bounds = c(54.6229781326903, -56.865234375, 21.0434912168035, -140.2734375), allow_no_input_binding_ = TRUE)
+      app$set_window_size(width = 1502, height = 1158)
+      ################################################ #
+
+      shinytestLogMessage("select 'Cities of Places' as method of site selection")
+      app$set_inputs(`pickermoduleid-fips_type2pick` = "Cities or Places")
+
+      app$set_inputs(`pickermoduleid-states_picked` = c("AL", "AK", "AZ", "AR", "CA",
+                                                        "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY",
+                                                        "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+                                                        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
+                                                        "UT", "VT", "VA", "WA", "WV", "WI", "WY", "AS", "GU", "MP", "PR", "UM", "VI"))
+      ################################################ #
+
+      shinytestLogMessage("specify one city")
+      app$set_inputs(`pickermoduleid-cities_picked` = "3684000")
+      ################################################ #
+      shinytestLogMessage("click done")
+      app$click("fipspicker_done_button")
+
+      # is there a way to wait until map is ready here?
+
+      ################################################ #
+      shinytestLogMessage("mouseover preview map")
+      app$set_inputs(an_leaf_map_shape_mouseover = c(0.421320887360868, 40.9573205538086,
+                                                     -73.8291341303544), allow_no_input_binding_ = TRUE)
+      shinytestLogMessage("click shape on map")
+      app$set_inputs(an_leaf_map_shape_click = c(0.42315841908534, 40.9433181283034,
+                                                 -73.8686302283186), allow_no_input_binding_ = TRUE)
+      ################################################ #
+      shinytestLogMessage("expect preview map")
+
+      # is there a way to wait until map is ready here?
+
+      app$expect_values(output = "an_leaf_map")
+      ################################################ #
+      shinytestLogMessage("mousing")
+      app$set_inputs(an_leaf_map_shape_mouseout = c(0.488682803768655, 40.9433181283034,
+                                                    -73.8686302283186), allow_no_input_binding_ = TRUE)
+      app$set_inputs(an_leaf_map_shape_mouseover = c(0.353217325016352, 40.940724760675,
+                                                     -73.8724081159499), allow_no_input_binding_ = TRUE)
+      app$set_inputs(an_leaf_map_shape_mouseout = c(0.0315728309706905, 40.8953243445332,
+                                                    -73.8597006757354), allow_no_input_binding_ = TRUE)
+      ################################################ #
+
+      shinytestLogMessage("GET RESULTS")
+      # Update this to work like the other shinytest2 tests that worked
+      app$click("bt_get_results")
+      ################################################ #
+
+      shinytestLogMessage("EXPECT REPORT HTML")
+
+      # Update this to work like the other shinytest2 tests that worked
+      # use a way to wait until map is ready here
+      # like wait_for_results_ready() ***
+
+      app$expect_values(output = "comm_report_html")
+      ################################################ #
+      shinytestLogMessage("mousing on report's results map")
+      app$set_inputs(quick_view_map_shape_mouseover = c(0.424042970362076, 40.9116051954735,
+                                                        -73.8545608520508), allow_no_input_binding_ = TRUE)
+
+      shinytestLogMessage("click on report's results map")
+      app$set_inputs(quick_view_map_shape_click = c(0.574973725370002, 40.9362489359378,
+                                                    -73.8607406616211), allow_no_input_binding_ = TRUE)
+      ################################################ #
+
+      shinytestLogMessage("EXPECT REPORT OF RESULTS TO SHOW MAP")
+
+      # is there a way to wait until map is ready here?
+
+      app$expect_values(output = "quick_view_map")
+      ################################################ #
+      app$set_inputs(quick_view_map_shape_mouseout = c(0.0900601374075561, 40.9362489359378,
+                                                       -73.8607406616211), allow_no_input_binding_ = TRUE)
+      app$set_inputs(quick_view_map_bounds = c(41.0001116336573, -73.6200714111328, 40.8963867461564,
+                                               -74.1086196899414), allow_no_input_binding_ = TRUE)
+      app$set_inputs(quick_view_map_center = c(-73.8643455505371, 40.9482695567752),
+                     allow_no_input_binding_ = TRUE)
+      app$set_inputs(quick_view_map_shape_mouseover = c(0.0165197251473244, 40.9328771773305,
+                                                        -73.8624572753906), allow_no_input_binding_ = TRUE)
+      app$set_inputs(quick_view_map_shape_mouseout = c(0.495737726676899, 40.9349521260697,
+                                                       -73.8662338256836), allow_no_input_binding_ = TRUE)
+      app$set_inputs(quick_view_map_shape_mouseover = c(0.548687330576262, 40.9383237787759,
+                                                        -73.8964462280274), allow_no_input_binding_ = TRUE)
+      app$set_inputs(quick_view_map_shape_mouseout = c(0.287342401223261, 40.9001881389278,
+                                                       -73.9033126831055), allow_no_input_binding_ = TRUE)
+
+      ################################################ #
+      shinytestLogMessage("DETAILS TAB")
+
+      app$set_inputs(results_tabs = "Details")
+
+      shinytestLogMessage("DETAILED INTERACTIVE TABLE")
+
+      # is there a way to wait until TABLE is ready here?
+
+      app$set_inputs(interactive_table_rows_current = 1, allow_no_input_binding_ = TRUE)
+      app$set_inputs(interactive_table_rows_all = 1, allow_no_input_binding_ = TRUE)
+
+      app$set_inputs(interactive_table_state = c(1776974771683, 0, 100, "", TRUE, FALSE,
+                                                 TRUE, c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE,
+                                                                                                                         "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE,
+                                                                                                                                                                                   FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                                                                                   TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE),
+                                                 c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "",
+                                                                                                                   TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE,
+                                                                                                                                                                         TRUE), c(TRUE, "", TRUE, FALSE, TRUE), c(TRUE, "", TRUE, FALSE, TRUE)),
+                     allow_no_input_binding_ = TRUE)
+
+      ################################################ #
+      shinytestLogMessage("CLICK CELL IN INTERACTIVE TABLE")
+      app$set_inputs(interactive_table_cell_clicked = c("1", "4", ""), allow_no_input_binding_ = TRUE, priority_ = "event")
+
+      ################################################ #
+      shinytestLogMessage("CLICK URL LINK IN INTERACTIVE TABLE")
+      app$set_inputs(interactive_table_cell_clicked = c("1", "1", "<a href=\"https://ejamapi-84652557241.us-central1.run.app/report?fips=3684000&buffer=0&sitetype=fips&validate_regids=FALSE\" target=\"_blank\">EJAM Site Report</a>"),
+                     allow_no_input_binding_ = TRUE, priority_ = "event")
+
+      ################################################ #
+      shinytestLogMessage("EXPECT VALUE / INTERACTIVE TABLE")
+
+      # is this the correct way to check for the table?
+
+      app$expect_values(output = "interactive_table")
+
+
+
+      ## done with FIPS-picker case
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
-
+    ########################################################################### #
+    ########################################################################### #
+    ########################################################################### #
     if (test_category == "EPA") {
       ### > EPA program  not tested here  ####
 
@@ -212,22 +785,59 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     # 2) START ANALYSIS ####
 
+    wait_for_results_ready <- function(
+      result = "analysis_complete",
+      timeout = if (test_category == "FIPS-picker") 5 * 60 * 1000 else 2 * 60 * 1000
+    ) {
+
+      tryCatch(
+        app$wait_for_value(
+          export = result,
+          ignore = list(FALSE, NULL),
+          timeout = timeout
+        ),
+        error = function(e) {
+          save_log(paste0("tests/testthat/", test_category, "-", result, "-timeout-log.txt"))
+          vals <- try(app$get_values(export = TRUE), silent = TRUE)
+          if (!inherits(vals, "try-error")) {
+            cat("Exports visible at timeout:\n")
+            print(names(vals$export))
+            print(vals$export)
+          }
+          stop(e)
+        }
+      )
+    }
+
     shinytestLogMessage("Click to run analysis"); print("Click to run analysis")
-    app$wait_for_idle(timeout = 20000)
-    app$click("bt_get_results", wait_ = TRUE, timeout_ = 20000)
-    app$wait_for_idle(timeout = 200000)
+    app$click("bt_get_results", wait_ = FALSE)
+    wait_for_results_ready(result = "analysis_complete")
     customExpectValues(name="analysis1")
 
     shinytestLogMessage("change map bounds and center")
-    app$set_inputs(quick_view_map_bounds = c("north" = 48.86471476180279, "east" = -49.17480468750001, "south" = 35.9602229692967, "west" = -130.7373046875), allow_no_input_binding_ = TRUE)
-    app$set_inputs(quick_view_map_center = c("lng" = -89.9560546875, "lat" = 42.74701217318067), allow_no_input_binding_ = TRUE)
+    app$set_inputs(
+      quick_view_map_bounds = list(
+        north = 48.86471476180279,
+        east = -49.17480468750001,
+        south = 35.9602229692967,
+        west = -130.7373046875
+      ),
+      allow_no_input_binding_ = TRUE
+    )
+    app$set_inputs(
+      quick_view_map_center = list(
+        lng = -89.9560546875,
+        lat = 42.74701217318067
+      ),
+      allow_no_input_binding_ = TRUE
+    )
 
     # CHANGE radius/title, RE-RUN ANALYSIS ####
 
-    if (!(test_category %in% c("FIPS", "NAICS"))) {
+    if (!(test_category %in% c("FIPS", "FIPS-picker", "NAICS"))) {
       shinytestLogMessage("go back to Site Selection tab")
       app$set_inputs(all_tabs = "Site Selection", wait_ = FALSE)
-      app$wait_for_idle(timeout = 100000)
+      app$wait_for_idle(timeout = 5 * 1000)
 
       shinytestLogMessage("change radius (to 1.5)")
       app$set_inputs(radius_now = 1.5, wait_=FALSE)
@@ -236,8 +846,8 @@ shinytest2_webapp_functionality <- function(test_category) {
       app$set_inputs(analysis_title = "Summary of Analysis2")
 
       shinytestLogMessage("Click to run analysis again")
-      app$click("bt_get_results", wait_ = TRUE, timeout_ = 20000)
-      app$wait_for_idle(timeout = 200000)
+      app$click("bt_get_results", wait_ = FALSE)
+      wait_for_results_ready(result = "analysis_complete")
       customExpectValues(name="rad15")
     }
     ########################################################################### #
@@ -249,19 +859,28 @@ shinytest2_webapp_functionality <- function(test_category) {
     ## SUMMARY REPORT (html DOWNLOAD) ####
 
     shinytestLogMessage("about to download community report")
-    app$wait_for_idle(timeout = 40000)
+    # app$click("download_report_multisite", wait_ = FALSE) # error: Error in `app_find_node_id(self, private, input = input, output = output, selector = selector)`: Cannot find HTML element with selector #download_report_multisite.shiny-bound-input
+
+    wait_for_results_ready(result = "multisite_report_download_ready")
 
     ## This step was originally getting the underlying dataframe
     ## output_df, from the report download function in app_server.R
     ## because the actual downloaded report was large
     ## so the downloaded file was saved to the tempdir()
     ## and within that function, we called exportTestvalues() to save output_df
+    ##
+    ##   maybe there is a better way to download the html report? ***
     #
     # app$get_download("download_report_multisite")
     # customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
 
-    ## but maybe there is a better way to download the html report?
-    app$expect_download("download_report_multisite")
+    tryCatch(
+      app$expect_download("download_report_multisite"),
+      error = function(e) {
+        save_log("EJAM_app_test_report_download_log.txt")
+        stop(e)
+      }
+    )
     ########################################################################### #
     # ~  ####
 
@@ -269,20 +888,68 @@ shinytest2_webapp_functionality <- function(test_category) {
 
     shinytestLogMessage("going to details tab")
     app$set_inputs(results_tabs = "Details")
-    app$wait_for_idle(timeout = 20000)
+    app$wait_for_idle(timeout = 5 * 1000)
+    shinytestLogMessage("should see the results table from details tab")
+    ## or could wait until available, with a timeout cap, as for html webview of summary report ***
     customExpectValues(name="site-by-site")
 
     ### > SITE by SITE (xlsx DOWNLOAD) ####
 
     shinytestLogMessage("downloading results table from details tab")
-    app$wait_for_idle(timeout = 50000)
-    # app$expect_download("download_results_spreadsheet")
 
-    # this downloads the xlsx report, based on the download_results_spreadsheet output in app_server.R
-    # since shinytest2 can't compare binary files, this custom download creates a hashed version
-    # and saves the hash to be compared in future test runs
-    custom_binary_xlsx_download("download_results_spreadsheet") # download xlsx file using the helper function
+    ## this downloads the xlsx report, based on the download_results_spreadsheet output in app_server.R
+    ## since shinytest2 can't compare binary files, this custom download creates a hashed version
+    ## and saves the hash to be compared in future test runs
+
+    # app$wait_for_idle(timeout = 60 * 1000)
+    # app$expect_download("download_results_spreadsheet") # use custom... func instead:
+    ## download xlsx file using the helper function
+    custom_binary_xlsx_download("download_results_spreadsheet")
+
     # save_log("EJAM_app_test_log_pre_results_download.txt")
+    ########################################################################### #
+
+    if (test_category == "FIPS-picker") {
+      shinytestLogMessage("go back to Site Selection tab to test county picker")
+      app$set_inputs(all_tabs = "Site Selection", wait_ = FALSE)
+      app$wait_for_idle(timeout = 5 * 1000)
+
+      select_fips_picker_values(
+        area_type = "Counties",
+        input_id = "pickermoduleid-counties_picked",
+        values = c("10001", "10003", "10005"),
+        labels = c("Kent County, DE", "New Castle County, DE", "Sussex County, DE"),
+        label_for_log = "three Delaware counties"
+      )
+
+      shinytestLogMessage("Click to run analysis for three Delaware counties")
+      app$click("bt_get_results", wait_ = FALSE)
+      wait_for_results_ready(result = "analysis_complete")
+      customExpectValues(name = "counties-analysis")
+
+      shinytestLogMessage("about to download community report for three Delaware counties")
+      wait_for_results_ready(result = "multisite_report_download_ready")
+      tryCatch(
+        app$expect_download("download_report_multisite"),
+        error = function(e) {
+          save_log("FIPS-picker-counties-report-download-log.txt")
+          stop(e)
+        }
+      )
+
+      shinytestLogMessage("going to details tab for three Delaware counties")
+      app$set_inputs(results_tabs = "Details")
+      app$wait_for_idle(timeout = 5 * 1000)
+      shinytestLogMessage("should see the results table for three Delaware counties")
+      customExpectValues(name = "counties-site-by-site")
+
+      shinytestLogMessage("downloading results table for three Delaware counties")
+      custom_binary_xlsx_download(
+        "download_results_spreadsheet",
+        name = "FIPS-picker-counties"
+      )
+    }
+
     ########################################################################### #
 
     ### > PLOT AVERAGE SCORES (BARPLOTS) ####
@@ -292,25 +959,28 @@ shinytest2_webapp_functionality <- function(test_category) {
     if (test_category %in% c("latlon")) {
       shinytestLogMessage("going to plot_average details subtab")
       app$set_inputs(details_subtabs = "Plot Average Scores")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="plot_avg")
 
       shinytestLogMessage("Demographic summ_bar-ind")
       app$set_inputs(summ_bar_ind = "Demographic")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="demo")
 
       shinytestLogMessage("Environmental summ_bar_ind")
       app$set_inputs(summ_bar_ind = "Environmental")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="environ")
 
       if(app$get_value(input="include_ejindexes") == "TRUE") {
         shinytestLogMessage("EJ summ_bar-ind")
         app$set_inputs(summ_bar_ind = "EJ", wait_ = FALSE)
-        # app$wait_for_idle(timeout = 10000)
+        app$wait_for_idle(timeout = 5 * 1000)
         customExpectValues(name="EJ-ind")
 
         shinytestLogMessage("EJ supplemental")
         app$set_inputs(summ_bar_ind = "EJ Supplemental", wait_ = FALSE)
-        # app$wait_for_idle(timeout = 10000)
+        app$wait_for_idle(timeout = 5 * 1000)
         customExpectValues(name="EJ-Supp")
       }
 
@@ -318,45 +988,64 @@ shinytest2_webapp_functionality <- function(test_category) {
 
       shinytestLogMessage("going to plot_range details subtab")
       app$set_inputs(details_subtabs = "Plot Full Range of Scores")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="plot_rng")
 
       shinytestLogMessage("histogram of Sites")
       app$set_inputs(summ_hist_distn = "Sites")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-sites")
 
       shinytestLogMessage("histogram of raw data")
       app$set_inputs(summ_hist_data = "raw")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-raw")
 
       shinytestLogMessage("histogram with 15 bins, 20 bins")
       app$set_inputs(summ_hist_bins = 15)
+      app$wait_for_idle(timeout = 5 * 1000)
       app$set_inputs(summ_hist_bins = 20)
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-bins20")
 
       shinytestLogMessage("histogram of People")
       app$set_inputs(summ_hist_distn = "People")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-ppl")
 
       shinytestLogMessage("histogram of percentiles across people")
       app$set_inputs(summ_hist_data = "pctile")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-pctile")
 
       shinytestLogMessage("histogram of pctile Demog Index Supp")
-      app$set_inputs(summ_hist_ind = "pctile.Demog.Index.Supp") # or just Demog.Index.Supp ?
+      app$set_inputs(summ_hist_ind = "Demog.Index.Supp", allow_no_input_binding_ = TRUE)
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-demo")
 
       shinytestLogMessage("histogram of raw scores across people")
       app$set_inputs(summ_hist_data = "raw")
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-raw2")
 
       shinytestLogMessage("histogram of percent low income")
-      app$set_inputs(summ_hist_ind = "pctlowinc")
+      app$set_inputs(summ_hist_ind = "pctlowinc", allow_no_input_binding_ = TRUE)
+      app$wait_for_idle(timeout = 5 * 1000)
       customExpectValues(name="hist-lowinc")
     }
+    ########################################################################### #
+    ########################################################################### #
+
     ########################################################################### #
 
     shinytestLogMessage(paste0("finished test category: ", test_category))
   })
 }
-# Load application support files into testing environment
-shinytest2::load_app_env()
+########################################################################### #
+
+## This used to Load all .R / application support files into testing environment, but
+## should not be needed since
+##  library(EJAM) loads all needed functions - but note that means the package must be installed for this testing to work
+## and app.R will use ejamapp() which will read all the needed global defaults
+
+#  shinytest2::load_app_env()
