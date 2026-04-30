@@ -391,14 +391,24 @@
 
   @media print {
   @page {
-    width: 8.5in;
-    height: 11in;
+    size: letter portrait;
+    margin: 0.75in 0.5in 1in 0.5in;
+    @bottom-center {
+      content: counter(page) " of " counter(pages);
+      font-size: 9pt;
+      color: #555;
+    }
   }
-  
-  /* .print-page { 
-    border: 1px solid red;
-  } */
-    
+
+  @page :first {
+    margin-top: 0.25in;
+  }
+
+  html, body {
+    width: 100%;
+    height: auto;
+  }
+
   #footer4 {  
   display: block;
   position: relative;
@@ -459,6 +469,57 @@ margin-top: -30px;
 
 #page-4-header {
 margin-top: -30px;
+}
+
+/* Smart pagination: avoid breaking inside table rows */
+table {
+  page-break-inside: auto;
+}
+tr {
+  page-break-inside: avoid;
+  page-break-after: auto;
+}
+thead {
+  display: table-header-group;
+}
+tfoot {
+  display: table-footer-group;
+}
+
+/* Keep section headers with their following content */
+h2, h3, h4 {
+  page-break-after: avoid;
+}
+
+/* Avoid breaking inside key report blocks */
+.report-section {
+  page-break-inside: avoid;
+}
+
+/* The extra/subgroups table may be long - allow it to break, but
+   keep its header rows visible on each page */
+#print-content-frame > div:last-of-type table {
+  page-break-inside: auto;
+}
+
+/* Page number footer via CSS counter (works with pagedown/Chrome) */
+body {
+  counter-reset: page;
+}
+.page-footer-content {
+  display: none;
+}
+
+/* Print-only running footer with report info */
+#report-print-footer {
+  display: block;
+  position: running(footer);
+  width: 100%;
+  text-align: right;
+  font-size: 9pt;
+  color: #555;
+  background-color: #edeff0;
+  padding: 4px 10px;
 }
 }
 

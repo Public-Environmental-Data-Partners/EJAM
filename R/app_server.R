@@ -2510,7 +2510,7 @@ app_server <- function(input, output, session) {
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
+        ext = '.html'
       )
       filename_fullpath <- file.path(tempdir(), filename)
 
@@ -2555,10 +2555,36 @@ app_server <- function(input, output, session) {
 
   output$download_report_multisite <- downloadHandler(
     filename = function() {
-      basename(downloadable_file_report_multisite())
+      html_path <- downloadable_file_report_multisite()
+      if (isTRUE(input$format_report_multisite %in% "pdf")) {
+        sub("\\.html$", ".pdf", basename(html_path))
+      } else {
+        basename(html_path)
+      }
     },
     content = function(file) {
-      file.copy(from = downloadable_file_report_multisite(), to = file, overwrite = TRUE)
+      html_path <- downloadable_file_report_multisite()
+      if (isTRUE(input$format_report_multisite %in% "pdf")) {
+        if (!requireNamespace("pagedown", quietly = TRUE)) {
+          showModal(modalDialog(
+            title = "PDF not available",
+            "The 'pagedown' package is required to generate PDF reports. ",
+            "Please install it with: install.packages('pagedown'), or download the HTML version instead.",
+            easyClose = TRUE
+          ))
+          file.copy(from = html_path, to = file, overwrite = TRUE)
+        } else {
+          pagedown::chrome_print(
+            input   = html_path,
+            output  = file,
+            wait    = 5,
+            timeout = 120,
+            verbose = 0
+          )
+        }
+      } else {
+        file.copy(from = html_path, to = file, overwrite = TRUE)
+      }
     }
   )
   #############################################################################  #

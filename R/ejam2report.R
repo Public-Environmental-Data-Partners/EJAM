@@ -44,8 +44,11 @@
 #'   they are not in ejamitout
 #' @param launch_browser set TRUE to have it launch browser and show report.
 #' @param return_html set TRUE to have function return HTML object instead of URL of local file
-#' @param fileextension html or .html or pdf or .pdf (assuming pdf option has been implemented).
-#'   Creating PDF output from R Markdown requires that LaTeX be installed.
+#' @param fileextension html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+#'   PDF generation uses [pagedown::chrome_print()] which requires the `pagedown` package and a
+#'   Chrome/Chromium browser to be available on the system.
+#'   The PDF preserves the full HTML/CSS styling and supports smart page breaks.
+#'   If `pagedown` is not installed, a warning is issued and HTML output is returned instead.
 #' @param filename optional path and name for report file, used by web app
 #' @param show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in main table of envt/demog. info.
 #' @param extratable_show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in extra table
@@ -440,14 +443,43 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     } else {
       ## render & return filepath ####
-      rmarkdown::render(
-        input = rmd_template,
-        output_format = ifelse(fileextension == ".pdf", "pdf_document", "html_document"), # add pdf option here
-        output_file = output_file,
-        params = report_params,
-        envir = new.env(parent = globalenv()),
-        quiet = TRUE
-      )
+      if (fileextension == ".pdf") {
+        ## For PDF: render HTML first, then convert to PDF using pagedown::chrome_print() ####
+        # This preserves the full CSS styling unlike a LaTeX-based pdf_document
+        html_temp <- tempfile(fileext = ".html")
+        rmarkdown::render(
+          input = rmd_template,
+          output_format = "html_document",
+          output_file = html_temp,
+          params = report_params,
+          envir = new.env(parent = globalenv()),
+          quiet = TRUE
+        )
+        if (!requireNamespace("pagedown", quietly = TRUE)) {
+          warning("The 'pagedown' package is required to generate PDF reports. ",
+                  "Install it with: install.packages('pagedown'). ",
+                  "Falling back to HTML output.")
+          file.copy(html_temp, sub("\\.pdf$", ".html", output_file))
+          output_file <- sub("\\.pdf$", ".html", output_file)
+        } else {
+          pagedown::chrome_print(
+            input   = html_temp,
+            output  = output_file,
+            wait    = 5,
+            timeout = 120,
+            verbose = 0
+          )
+        }
+      } else {
+        rmarkdown::render(
+          input = rmd_template,
+          output_format = "html_document",
+          output_file = output_file,
+          params = report_params,
+          envir = new.env(parent = globalenv()),
+          quiet = TRUE
+        )
+      }
       suppressWarnings({
         output_file <- normalizePath(output_file) # allows it to work on MacOS, e.g.
       })
