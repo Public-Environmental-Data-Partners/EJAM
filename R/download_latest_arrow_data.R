@@ -64,14 +64,15 @@ download_latest_arrow_data <- function(
     if (!token_is_valid) github_token = ""
   }
 
-  # get latest release to determine if user has latest versions
+  # see what is release of datasets repo according to piggyback::pb_releases()
+  # and then determine if user has latest versions as recorded in ejamdata_version.txt
 
   latestArrowVersion <- tryCatch({piggyback::pb_releases(
     repo = repository, # must be xyz/abc, not full URL
     .token = github_token
   )[1, "tag_name"]},
   error = function(e) {
-    message(paste0("\u274C Failed trying to get info from github repository ", repository, " about latest release..."))
+    message(paste0("\u274C Failed trying to get info from github repository ", repository, " about latest release according to piggyback::pb_releases()..."))
     FALSE
   })
 
