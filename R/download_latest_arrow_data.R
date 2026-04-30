@@ -1,13 +1,14 @@
 
-#' Download latest versions of arrow datasets if user doesn't have them already
+#' Download latest release of arrow datasets if user doesn't have them already
 #'
 #' Used when EJAM package is attached
 #' @details
-#'   Checks to see what is the latest version of datasets available according to a repository's latest release tag.
-#'   Compares that to what version was last saved locally (as stored in the installed package's
-#'   ejamdata_version.txt file).
+#'   Checks to see what is the latest release of datasets available according to the data repository's latest release tag.
+#'   Compares that to what version was last saved locally (as stored in the installed package's ejamdata_version.txt file).
 #'
-#'   Relies on [piggyback::pb_releases()] to download data files from a specific release (version) of the package.
+#'   Relies on [piggyback::pb_releases()] to track / update / store / download
+#'   data files as assets of a specific release on the data repository.
+#'   For details, see [technical details of how datasets are updated](`r paste0(EJAM::url_package(type = "docs", get_full_url = TRUE), "/articles/dev-update-datasets.html")`)
 #'
 #' @param varnames use defaults, or vector of names like "bgej" or use "all" to get all available
 #' @param repository repository owner/name such as `r EJAM::url_package(type = "data", get_full_url = FALSE)` or "XYZ/ejamdata"
