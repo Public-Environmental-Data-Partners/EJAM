@@ -294,7 +294,9 @@ ejamapi <- function(
       ### to create the URL for a report without using  EJAM::url_ejamapi() :
       # just needs functions in URL_API_NON_EJAM_FUNCTIONS.R
 
-      if ( length(lon) > 1 || length(fips) > 1 || NROW(shape) > 1) {
+      latlon_length_mismatch <- !is.null(lat) && !is.null(lon) && length(lat) != length(lon)
+      if (length(lat) > 1 || length(lon) > 1 || latlon_length_mismatch ||
+          length(fips) > 1 || NROW(shape) > 1) {
         stop("does not yet support multiple places for endpoint='report' ")
       }
 
