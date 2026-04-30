@@ -23,6 +23,9 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
     /tmp/aws/install && \
     rm -rf /tmp/awscliv2.zip /tmp/aws
 
+ARG GITHUB_PAT
+ENV GITHUB_PAT=$GITHUB_PAT
+
 RUN mkdir -p /home/epic
 WORKDIR /home/epic
 
