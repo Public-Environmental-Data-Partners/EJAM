@@ -104,12 +104,12 @@ Throughout the app code, `shiny::exportTestValues()` can be used to store values
 One way to run the shinytests is via the GitHub Actions. 
 
 Another way is this:
-``` r
+``` {r, eval=FALSE}
 x = EJAM:::test_ejam(ask=F, run_these="webapp")
 ```
 
 You could also run a test like this, but you cannot save or compare snapshots to reference when testing interactively.
-``` r
+``` {r, eval=FALSE}
 remotes::install_local() # once
 library(EJAM) # once
 source(testthat::test_path("setup.R")) # once
@@ -123,7 +123,7 @@ to ensure your development code is the one tested.
 This is because shinytest2 automatically references the installed version of a package.
 
 Another useful way was this (but this might be deprecated by shinytest2)
-``` r
+``` {r, eval=FALSE}
 # first, source `setup.R`, from the tests/testthat/ folder. 
 source(testthat::test_path("setup.R"))
 

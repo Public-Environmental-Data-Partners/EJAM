@@ -17,7 +17,7 @@
 #'
 #' @param ask logical, whether it should ask in RStudio what parameter values to use
 #' @param noquestions logical, whether to avoid questions later on about where to save shapefiles
-#' @param useloadall logical, TRUE means use [load_all()], FALSE means use [library()].
+#' @param useloadall logical, TRUE means use [pkgload::load_all()], FALSE means use [library()].
 #'   But useloadall=T is essential actually, for unexported functions to be found when they are tested!
 #' @param y_skipbasic logical, if FALSE, runs some basic [ejamit()] functions, but NOT any unit tests.
 #' @param y_latlon logical, if y_skipbasic=F, whether to run the basic [ejamit()] using points
