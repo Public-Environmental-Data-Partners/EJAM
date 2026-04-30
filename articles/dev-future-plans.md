@@ -71,7 +71,7 @@ new indicators on the fly. This could first be a set of functions
 available for use in R and could subsequently be made available for use
 through the web app interface. See preliminary work such as the
 following:
-[`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html)
+[ACSdownload::get_acs_new()](https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html)
 as a way to obtain Census ACS demographics,
 [`acs_bybg()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_bybg.md)
 examples of another way to obtain data and then using ACS raw data to

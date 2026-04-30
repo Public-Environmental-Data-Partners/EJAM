@@ -8,7 +8,7 @@ particularly how many counties have a large number of block groups and
 residents.
 
 *Note there are also [guides to using EJAM in R for County/FIPS
-analysis](https://public-environmental-data-partners.github.io/EJAM/articles/articles/analyzing.html#fips-codes)
+analysis](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html#fips-codes)
 and [reference documents on relevant R
 functions](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-counties-etc-)
 and [county-related test
@@ -24,9 +24,9 @@ About 150 counties account for most of the US residents.
 z <- blockgroupstats[ , .(pop = sum(pop), bgcount = .N), 
      by = .(countyfips = substr(bgfips,1,5))][order(bgcount), ]
 z[ , name := fips2name(countyfips)]
-setcolorder(z, "countyfips", after = NCOL(z))
-setcolorder(z, "bgcount")
-setorder(z, -bgcount)
+data.table::setcolorder(z, "countyfips", after = NCOL(z))
+data.table::setcolorder(z, "bgcount")
+data.table::setorder(z, -bgcount)
 # percent of residents and percent of counties
 zz <- z[order(-pop), ]
 zz$cumpop = cumsum(zz$pop)
