@@ -7,8 +7,9 @@
 
 # see ?ejamapi_local() and test-ejamapi_local.R for testing the DRAFT-ONLY API defined in the EJAM package, run locally.
 
-# save setting to later restore it to what it had been since some functions alter it
-oldwidth = options("width")
+# save setting and restore it on exit since some functions alter it
+old <- getOption("width")
+on.exit(options(width = old), add = TRUE)
 
 # test-url_ejamapi.R
 
@@ -268,5 +269,3 @@ if (FALSE) {
 
 }
 
-# restore it to what it had been since some functions alter it
-options(width = as.vector(unlist(oldwidth)))
