@@ -105,7 +105,7 @@ pctile_x_is_hit_by_score <- function(raw_score_name, cutoff = 0.90, score = NULL
   stopifnot(!is.null(cutoff), !all(is.na(cutoff)),
             length(cutoff) == 1, is.numeric(cutoff))
   if (cutoff > 1 || cutoff < 0)  {
-    stop("cutoff must be a percentile value given as a fraction 0 through 100")
+    stop("cutoff must be a percentile value given as a fraction from 0 to 1, e.g. 0.90 for the 90th percentile")
   }
   if (cutoff != round(cutoff, 2)) {
     warning("cutoff should be rounded to 2 decimal places - must be like 0.90 or 0.91 so it is an integer when expressed as 0-100, since cutoffs are defined that way. using ", round(cutoff, 2), " instead.")
@@ -192,7 +192,7 @@ pctile_x_is_hit_by_score2 = function(raw_score_name, cutoff = 0.90, score=NULL, 
   stopifnot(!is.null(cutoff), !all(is.na(cutoff)),
             length(cutoff) == 1, is.numeric(cutoff))
   if (cutoff > 1 || cutoff < 0)  {
-    stop("cutoff must be a percentile value given as a fraction 0 through 100")
+    stop("cutoff must be a percentile value given as a fraction 0 through 1")
   }
   if (cutoff != round(cutoff, 2)) {
     warning("cutoff should be rounded to 2 decimal places - must be like 0.90 or 0.91 so it is an integer when expressed as 0-100, since cutoffs are defined that way. using ", round(cutoff, 2), " instead.")

@@ -340,7 +340,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
 #' @export
 #'
 lookup_pctile <- function(myvector, varname.in.lookup.table, lookup = usastats, zone = "USA") {
-# this is an exported alias for the internal pctile_from_raw_lookup() that had a more consistent naming scheme but is mayber harder to remember.
+  # this is an exported alias for the internal pctile_from_raw_lookup(), which had a more consistent naming scheme but may be harder to remember.
   pctile_from_raw_lookup(myvector = myvector, varname.in.lookup.table = varname.in.lookup.table, lookup = lookup, zone = zone)
 } #  function(...) {pctile_from_raw_lookup(...)}
 ######################################################################### #
