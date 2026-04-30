@@ -2601,7 +2601,6 @@ app_server <- function(input, output, session) {
       basename(downloadable_file_report_multisite())
     },
     content = function(file) {
-      file.copy(from = downloadable_file_report_multisite(), to = file, overwrite = TRUE)
       src <- downloadable_file_report_multisite()
       if (!file.exists(src)) {
         stop(paste0("download_report_multisite: source file does not exist: ", src), call. = FALSE)
