@@ -4,16 +4,16 @@ ensure_pandoc_available_for_ejam <- function() {
     return(invisible(TRUE))
   }
 
-  candidate_dirs <- c(
-    Sys.getenv("RSTUDIO_PANDOC", unset = ""),
-    Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/*"),
-    Sys.glob("/Applications/RStudio*.app/Contents/MacOS/quarto/bin/tools/*")
+  candidate_pandoc_paths <- c(
+    file.path(Sys.getenv("RSTUDIO_PANDOC", unset = ""), "pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/MacOS/quarto/bin/tools/pandoc")
   )
-  candidate_dirs <- unique(candidate_dirs[nzchar(candidate_dirs)])
-  candidate_dirs <- candidate_dirs[file.exists(file.path(candidate_dirs, "pandoc"))]
+  candidate_pandoc_paths <- unique(candidate_pandoc_paths[nzchar(candidate_pandoc_paths)])
+  candidate_pandoc_paths <- candidate_pandoc_paths[file.exists(candidate_pandoc_paths)]
 
-  if (length(candidate_dirs) > 0) {
-    Sys.setenv(RSTUDIO_PANDOC = candidate_dirs[[1]])
+  if (length(candidate_pandoc_paths) > 0) {
+    Sys.setenv(RSTUDIO_PANDOC = dirname(candidate_pandoc_paths[[1]]))
     rmarkdown::find_pandoc(cache = FALSE)
   }
 
