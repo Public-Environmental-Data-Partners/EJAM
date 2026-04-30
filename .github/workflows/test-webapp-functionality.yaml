@@ -48,7 +48,7 @@ jobs:
           pandoc --version
 
       - name: Install GitHub CLI
-        run: sudo apt-get install gh
+        run: brew install gh
 
       - name: Install EJAM Package
         run: |
