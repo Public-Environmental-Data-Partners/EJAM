@@ -23,7 +23,7 @@ library(data.table)
 
 ## if not using EJAM::: prefix for internal/un-exported functions below,
 ## then EJAM needs to be loaded like this to have access to internal functions
-# devtools::load_all(EJAM)
+# devtools::load_all()
 
 ################################################### #
 # DEMOGRAPHIC DATA ####
@@ -48,6 +48,7 @@ blockgroupstats_acs <- calc_blockgroupstats_acs(yr = yr) # use defaults, otherwi
 save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 1.rda"))
 message("saved interim file in ", mydir)
 ################################################### #
+
 # calc pctdisability and language details indicators (from tract data) ####
 
 # bgwts <- EJAM:::calc_bgwts_nationwide() # takes a minute to download each state Census 2020
@@ -68,7 +69,7 @@ message("saved interim file in ", mydir)
 # blockgroupstats_acs[bg_disability, disab_universe := disab_universe, on = "bgfips"]
 # blockgroupstats_acs[bg_disability, pctdisability  := pctdisability,  on = "bgfips"]
 # e.g., pctlan_vietnamese, etc. etc.
-blockgroupstats_acs <- merge(blockgroupstats_acs, bg_from_tracts, on = "bgfips", all.x = TRUE)
+blockgroupstats_acs <- merge(blockgroupstats_acs, bg_from_tracts, by = "bgfips", all.x = TRUE)
 ################################################### #
 
 save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 2.rda"))
@@ -156,7 +157,19 @@ message("saved interim file",    file.path(mydir, "blockgroupstats_new.rda"))
 
 ## can add some validation here
 
+t(blockgroupstats_new[1:3, ])
+print(dim(blockgroupstats_env))
+print(names(blockgroupstats_new))
+print(setdiff(names(blockgroupstats), names(blockgroupstats_new)))
+#
+# ### *** I think the problem is the order of formulas matters -
+# over17 <- pop - under18
+# must come before
+# pctover17 <- ifelse(pop == 0, 0, as.numeric(over17) / pop)
+# for example.
 
+
+stop(" DOING THE NEXT STEP MEANS blockgroupstats WITH OLDER ENVT DATA, ETC. WILL BE REPLACED IN THIS BRANCH ")
 
 blockgroupstats <- data.table::copy(blockgroupstats_new)
 

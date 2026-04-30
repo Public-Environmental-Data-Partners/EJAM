@@ -41,7 +41,7 @@ if (FALSE) {
 ################################################################ #
 
 
-#' DRAFT utility to use formulas provided as text, to calculate indicators
+#' DRAFT  utility to use formulas provided as text, to calculate indicators
 #'
 #' @param bg data.frame//table of indicators or variables to use
 #' @param keep.old names of columns (variables) to retain from among those provided in bg
@@ -162,7 +162,7 @@ calc_ejam <- function(bg,
 ################################################################ #
 
 
-#' DRAFT utility to use formulas provided as text, to calculate indicators
+#' DRAFT  utility to use formulas provided as text, to calculate indicators
 #'
 #' @param mydf data.frame of indicators or variables to use
 #' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
@@ -179,7 +179,7 @@ calc_ejam <- function(bg,
 calc_byformula <- function(mydf, formulas = NULL, keep = calc_varname_from_formula(formulas), quiet = FALSE) {
 
 
-  # DRAFT WORK NOT COMPLETED
+  # DRAFT WORK NOT COMPLETE
 
   if (is.data.table(mydf)) {
     wasdt = TRUE

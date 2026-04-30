@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_ejam.R
 \name{calc_ejam}
 \alias{calc_ejam}
-\title{DRAFT utility to use formulas provided as text, to calculate indicators}
+\title{DRAFT  utility to use formulas provided as text, to calculate indicators}
 \usage{
 calc_ejam(
   bg,
@@ -27,7 +27,7 @@ calc_ejam(
 data.frame of calculated variables one row per bg row
 }
 \description{
-DRAFT utility to use formulas provided as text, to calculate indicators
+DRAFT  utility to use formulas provided as text, to calculate indicators
 }
 \details{
 \itemize{

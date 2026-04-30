@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_ejam.R
 \name{calc_byformula}
 \alias{calc_byformula}
-\title{DRAFT utility to use formulas provided as text, to calculate indicators}
+\title{DRAFT  utility to use formulas provided as text, to calculate indicators}
 \usage{
 calc_byformula(
   mydf,
@@ -28,7 +28,7 @@ data.frame of results, but
 if mydf was a data.table, returns a table in \href{https://r-datatable.com}{data.table} format
 }
 \description{
-DRAFT utility to use formulas provided as text, to calculate indicators
+DRAFT  utility to use formulas provided as text, to calculate indicators
 }
 \details{
 \itemize{
