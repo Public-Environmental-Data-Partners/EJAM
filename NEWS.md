@@ -7,7 +7,7 @@ Web app features:
 Other changes:
 
 - Improved `ejamapi()` examples and error-checking, and had it use `url_ejamapi()`
-- Significantly revamped webapp functionality testing (done by shinytest2) to be faster, robust, and only check for basic web app UI functionality (not using snaphots that change when very minor updates occur).
+- Significantly revamped webapp functionality testing (done by shinytest2) to be faster, robust, and only check for basic web app UI functionality (not using snapshots that change when very minor updates occur).
 - Revised some of unit testing setup, like setup.R etc.
 - Disabled most github actions workflows pending debugging/updates. Changed to `checkout@v4.3.0` not just `checkout@v4` in all gh action workflows
 - Revised/updated instructions for github copilot
