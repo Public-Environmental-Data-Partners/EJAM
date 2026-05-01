@@ -69,7 +69,7 @@ jobs:
 
 ################## #
 
-## note also could just do
+## note also could just do shinytest2::test_app(".", filter="-functionality", check_setup = FALSE)
 
       - name: FIPS UI test
         run: |

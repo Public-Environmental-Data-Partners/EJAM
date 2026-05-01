@@ -9,8 +9,9 @@ cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!
 # ############################### #
 # cat("\n\n      ------------------ NOW DOING library(EJAM) !!!!  -------------      \n\n")
 #
-# # library(EJAM) ####
-# library(EJAM) # should have already happened !!
+if (!"EJAM" %in% loadedNamespaces()) {
+  library(EJAM)
+}
 ############################### #
 
 
@@ -103,10 +104,14 @@ EJAM:::offline_cat("\n\nNO INTERNET CONNECTION AVAILABLE - SOME TESTS MAY FAIL W
 #  changed global options, a side effect we probably want functions to avoid.
 # but Warm up readr before state inspection starts. The first readr::read_csv()
 # call creates session options like readr.default_locale/readr.num_threads.
-tf <- tempfile(fileext = ".csv")
-writeLines(c("x", "1"), tf)
-invisible(readr::read_csv(tf, show_col_types = FALSE))
-unlink(tf)
+if (!isTRUE(getOption("EJAM.readr_warmed_for_tests"))) {
+  options(EJAM.readr_warmed_for_tests = TRUE)
+
+  tf <- tempfile(fileext = ".csv")
+  writeLines(c("x", "1"), tf)
+  invisible(readr::read_csv(tf, show_col_types = FALSE))
+  unlink(tf)
+}
 
 testthat::set_state_inspector(function() {
   list(options = options())

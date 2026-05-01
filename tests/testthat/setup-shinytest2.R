@@ -32,7 +32,7 @@ unlink("tests/shinytestlog.txt") # deletes this file if it exists
 # shinytest2_webapp_functionality(test_category = "latlon")
 ########################################################################### #
 ########################################################################### #
-
+if (!exists("shinytest2_webapp_functionality")) {
 shinytest2_webapp_functionality <- function(test_category = "all") {
 
   ## validate test_category
@@ -1274,7 +1274,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
   })
 }
 ########################################################################### #
-
+}
 ## This used to Load all .R / application support files into testing environment, but
 ## should not be needed since
 ##  library(EJAM) loads all needed functions - but note that means the package must be installed for this testing to work
