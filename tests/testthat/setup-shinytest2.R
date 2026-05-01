@@ -291,8 +291,7 @@ shinytest2_webapp_functionality <- function(test_category) {
       }
 
       testthat::expect_true(
-        picker_values_are_selected(input_id, values),
-        info = paste0("Expected ", input_id, " to contain ", paste(values, collapse = ", "))
+        picker_values_are_selected(input_id, values)
       )
 
       shinytestLogMessage("click done")
@@ -328,13 +327,11 @@ shinytest2_webapp_functionality <- function(test_category) {
       )
 
       testthat::expect_true(
-        file.exists(download_filepath),
-        info = paste0("Downloaded report file should exist: ", download_filepath)
+        file.exists(download_filepath)
       )
       testthat::expect_gt(
         file.info(download_filepath)$size,
-        50 * 1024,
-        info = "Downloaded report should not be empty or tiny"
+        50 * 1024
       )
 
       html <- readLines(download_filepath, warn = FALSE, encoding = "UTF-8")
@@ -346,8 +343,7 @@ shinytest2_webapp_functionality <- function(test_category) {
       )
       for (txt in stable_text) {
         testthat::expect_true(
-          any(grepl(txt, html, fixed = TRUE)),
-          info = paste0("Downloaded report should contain stable text: ", txt)
+          any(grepl(txt, html, fixed = TRUE))
         )
       }
 
