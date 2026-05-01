@@ -29,18 +29,19 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
     warning(paste0("Necessary files missing from ", app_sys(Rmd_folder)))
   }
   # ------------------------------------  maybe it still needs the logo file?
-  if (file.exists(app_sys(paste0(Rmd_folder, EJAM:::global_or_param("report_logo_file"))))) {
-  file.copy(
-    # from = EJAM:::global_or_param("report_logo"),
-    from = app_sys(paste0(Rmd_folder, EJAM:::global_or_param("report_logo_file"))),
-    to = tempReport, overwrite = TRUE)
+  # Copy the logo into tempdir() (not to tempReport, which is the .Rmd path).
+  # Using to = tempdir() (a directory) ensures the file keeps its original name so
+  # the .Rmd template can reference it.  Also guard against the case where
+  # report_logo_file is empty, which would make app_sys() resolve to a directory.
+  logo_src <- app_sys(paste0(Rmd_folder, EJAM:::global_or_param("report_logo_file")))
+  if (nzchar(logo_src) && file.exists(logo_src) && !dir.exists(logo_src)) {
+    file.copy(from = logo_src, to = tempdir(), overwrite = TRUE)
   } else {
-  if (file.exists(app_sys(EJAM:::global_or_param("report_logo")))) {
-  file.copy(
-    from = EJAM:::global_or_param("report_logo"),
-    # from = app_sys(paste0(Rmd_folder, EJAM:::global_or_param("report_logo_file"))),
-    to = tempReport, overwrite = TRUE)
-  }}
+    logo_alt <- EJAM:::global_or_param("report_logo")
+    if (nzchar(logo_alt) && file.exists(logo_alt) && !dir.exists(logo_alt)) {
+      file.copy(from = logo_alt, to = tempdir(), overwrite = TRUE)
+    }
+  }
   # ------------------------------------ .Rmd template file ----------------------------------------- -
   file.copy(from = app_sys(paste0(Rmd_folder, Rmd_name)),
             to = tempReport, overwrite = TRUE)

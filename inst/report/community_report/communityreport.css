@@ -389,35 +389,38 @@
 }
   }
 
-/* Hidden in screen view; used as a running footer element by pagedown/Paged.js */
+/* Hidden in screen view; shown as a fixed footer on every page when printing to PDF. */
 .pdf-running-footer {
   display: none;
 }
 
   @media print {
 
-/* Running footer element: pagedown/Paged.js pulls this into page margin boxes.
-   The element is hidden from the document flow but placed on every page. */
+/* Force all elements to preserve background colors and images when printing.
+   Without this Chrome strips background-color from headers and table cells. */
+* {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* Fixed footer: Chrome's native print places position:fixed elements on every
+   printed page, so this footer text appears on each PDF page.
+   The element is hidden from screen view (display:none above). */
 .pdf-running-footer {
   display: block;
-  position: running(reportfooter);
+  position: fixed;
+  bottom: 0.1in;
+  left: 0.5in;
+  right: 0.5in;
   font-size: 8pt;
   color: #555;
+  background: white;
 }
 
   @page {
     size: letter portrait;
     margin: 0.75in 0.5in 1in 0.5in;
-    /* @bottom-left / @bottom-right use Paged Media / pagedown-specific CSS.
-       These render when converting HTML to PDF with pagedown::chrome_print().
-       They will NOT render in standard browser print dialogs.
-       @bottom-left: footer text (version + date) from the running .pdf-running-footer element.
-       @bottom-right: page counter. */
-    @bottom-left {
-      content: element(reportfooter);
-      font-size: 8pt;
-      color: #555;
-    }
+    /* Page numbers via CSS Paged Media — works in Chrome's native print. */
     @bottom-right {
       content: counter(page) " of " counter(pages);
       font-size: 9pt;
@@ -441,9 +444,15 @@
   }
 
 .header { 
-  page-break-before: always;
   position: relative;
   top: 1px;
+}
+
+/* Force a page break before section headers that follow the first page.
+   The first .header div (analysis title/location) intentionally has no
+   page-break so the main header and first table share page 1. */
+#page-2-header {
+  page-break-before: always;
 }
 
 #header-secondary-background { 
