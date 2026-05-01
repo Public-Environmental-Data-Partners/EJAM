@@ -139,7 +139,7 @@ Using GitHub Actions (GHA) we can have GitHub run our shiny web app UI tests pri
 ### Workflow
 
 -   The GHA sets up R, installs dependencies, and runs scripted shinytest2 tests.
--   The workflow is stored in `.github/workflows/test-webapp-functionality.yml`.
+-   The workflow is stored in `.github/workflows/test-webapp-functionality.yaml`.
 -   PRs to a specified branch such as  `development`, `main` can trigger GHA workflows (as specified in the workflow yml file).
 
 ### Speed Optimization
