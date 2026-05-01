@@ -505,27 +505,6 @@ h2, h3, h4 {
   page-break-inside: auto;
 }
 
-/* Page number footer via CSS counter (works with pagedown/Chrome) */
-body {
-  counter-reset: page;
-}
-.page-footer-content {
-  display: none;
-}
-
-/* Print-only running footer with report info.
-   NOTE: 'position: running(footer)' is a Paged Media CSS feature specific to pagedown/Paged.js.
-   This element will not appear in standard browser print output. */
-#report-print-footer {
-  display: block;
-  position: running(footer);
-  width: 100%;
-  text-align: right;
-  font-size: 9pt;
-  color: #555;
-  background-color: #edeff0;
-  padding: 4px 10px;
-}
 }
 
 </style> 
