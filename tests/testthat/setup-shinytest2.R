@@ -80,7 +80,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     old_width <- getOption("width") # Some functions alter this and it is noisy to see warnings that options changed
     withr::defer(options(width = old_width), testthat::teardown_env())
 
-    testthat::skip_if_not_installed("shinytest2") # defensive check: skip these tests if shinytest2 is not available in the current test environment
+    testthat::skip_if_not_installed("shinytest2") # setup-shinytest2.R is sourced automatically by testthat, but shinytest2 itself is only needed for these web app tests
 
     test_log_dir <- testthat::test_path("_logs")
     dir.create(test_log_dir, recursive = TRUE, showWarnings = FALSE)
