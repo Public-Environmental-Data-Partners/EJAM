@@ -1,4 +1,26 @@
 
+ensure_pandoc_available_for_ejam <- function() {
+  if (rmarkdown::pandoc_available()) {
+    return(invisible(TRUE))
+  }
+
+  candidate_pandoc_paths <- c(
+    file.path(Sys.getenv("RSTUDIO_PANDOC", unset = ""), "pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/MacOS/quarto/bin/tools/pandoc")
+  )
+  candidate_pandoc_paths <- unique(candidate_pandoc_paths[nzchar(candidate_pandoc_paths)])
+  candidate_pandoc_paths <- candidate_pandoc_paths[file.exists(candidate_pandoc_paths)]
+
+  if (length(candidate_pandoc_paths) > 0) {
+    Sys.setenv(RSTUDIO_PANDOC = dirname(candidate_pandoc_paths[[1]]))
+    rmarkdown::find_pandoc(cache = FALSE)
+  }
+
+  invisible(rmarkdown::pandoc_available())
+}
+################################################## #  ################################################## #
+
 #' View HTML Report on EJAM Results (Overall or at 1 Site)
 #'
 #' @description Get the html text or the path to the html file with a multisite summary or community report
@@ -412,6 +434,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ######################################## #
 
     # RENDER as HTML FILE ####
+    ensure_pandoc_available_for_ejam()
+    if (!rmarkdown::pandoc_available()) {
+      stop(
+        "Pandoc is required to render the report but was not found. Set PATH or RSTUDIO_PANDOC so rmarkdown can find pandoc.",
+        call. = FALSE
+      )
+    }
 
     report_params <- list(
       community_html = community_html,

@@ -89,41 +89,41 @@ Some notable data files, code details, and other objects that may need to be
 changed ANNUALLY or more often:
 
 -   ***Blockgroup Datasets (Demographic and Environmental data)***: These
-    include datasets included with the package `?blockgroupstats`,
-    [usastats](../reference/usastats.html), `?statestats`, etc.) as well as
-    larger tables stored in a separate repository and downloaded by the EJAM
-    package (`?bgpts`, `?bgej`, `?bgid2fips`, `?bg_cenpop2020`, etc.). They are
-    all created or modified using scripts/functions organized from within
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
+include datasets included with the package `?blockgroupstats`,
+[usastats](../reference/usastats.html), `?statestats`, etc.) as well as
+larger tables stored in a separate repository and downloaded by the EJAM
+package (`?bgpts`, `?bgej`, `?bgid2fips`, `?bg_cenpop2020`, etc.). They are
+all created or modified using scripts/functions organized from within
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
 
-    -   NOTE: Prior to 2025, several key datasets used by EJAM were obtained
-        from EPA's EJSCREEN data FTP site and others directly from relevant
-        staff. Many of the indicators on the Community Report for the v2.2
-        (early 2024) EJSCREEN data were NOT provided in the gdb and csv files on
-        the FTP site, so they had to be obtained directly from the EJSCREEN team
-        as a separate .csv file. The code referred to from
-        *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
-        datasets from EPA are available, and then converts them into the
-        datasets actually used by EJAM. However, if those are no longer
-        available from those sources, the data could mostly be independently
-        recreated, but this would require a combination of existing code and
-        significant new work.
+-   NOTE: Prior to 2025, several key datasets used by EJAM were obtained
+from EPA's EJSCREEN data FTP site and others directly from relevant
+staff. Many of the indicators on the Community Report for the v2.2
+(early 2024) EJSCREEN data were NOT provided in the gdb and csv files on
+the FTP site, so they had to be obtained directly from the EJSCREEN team
+as a separate .csv file. The code referred to from
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
+datasets from EPA are available, and then converts them into the
+datasets actually used by EJAM. However, if those are no longer
+available from those sources, the data could mostly be independently
+recreated, but this would require a combination of existing code and
+significant new work.
 
-    -   Some relevant code was in archived EJSCREEN repositories, for creating
-        environmental datasets. Some code is in EJAM functions that can get ACS
-        datasets. Much relevant code was in an older non-EPA package called
-        ejscreen, which had been made private as of early 2025 but could be
-        refreshed. That package had tools such as ejscreen.create() that had
-        been able to reproduce parts of the blockgroupstats and
-        usastats/statestats datasets.
+-   Some relevant code was in archived EJSCREEN repositories, for creating
+environmental datasets. Some code is in EJAM functions that can get ACS
+datasets. Much relevant code was in an older non-EPA package called
+ejscreen, which had been made private as of early 2025 but could be
+refreshed. That package had tools such as ejscreen.create() that had
+been able to reproduce parts of the blockgroupstats and
+usastats/statestats datasets.
 
 -   ***Block Datasets***: The *block* (not blockgroup) tables might be updated
-    less often, but Census fips codes do change yearly so the `?blockwts`,
-    `?blockpoints`, `?quaddata`, `?blockid2fips`, and related additional
-    data.tables should be updated as needed. This is also done from within
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* See package
-    `census2020download` on github for the function `census2020_get_data()` that
-    may be useful.
+less often, but Census fips codes do change yearly so the `?blockwts`,
+`?blockpoints`, `?quaddata`, `?blockid2fips`, and related additional
+data.tables should be updated as needed. This is also done from within
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* See package
+`census2020download` on github for the function `census2020_get_data()` that
+may be useful.
 
 ```{r notes, eval=FALSE, include=FALSE}
 # note that any URLs created in this .Rmd file that point to 
@@ -135,92 +135,92 @@ changed ANNUALLY or more often:
 ```
 
 -   ***Facilities Datasets for creating updated proximity scores each year***:
-    Facility (and roadway) locations for key types of sites were used once a
-    year to calculate updated several [environmental indicators that are proximity
-    scores in EJSCREEN](`r paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#environmental-burden-indicators")`).
-    The resulting environmental indicators are stored with EJAM, but these
-    facility location datasets are not stored in EJAM. EJSCREEN obtains their
-    locations for mapping purposes, via an API accessing [hosted datasets with
-    facility locations](https://geopub.epa.gov/arcgis/rest/services/EMEF/efpoints/MapServer).
-    In general, scripts for updating environmental indicators (including
-    documentation of sources of facility location data, etc.) [were stored by
-    EPA](https://github.com/Public-Environmental-Data-Partners/EJSCREEN-Data-Processing),
-    and after 2025 new code for updating indicators may be found in the non-EPA
-    source R package data-raw folder. Proximity scores in EJSCREEN as of
-    2024-2026 were calculated based on the locations of these types of sites:
+Facility (and roadway) locations for key types of sites were used once a
+year to calculate updated several [environmental indicators that are proximity
+scores in EJSCREEN](`r paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#environmental-burden-indicators")`).
+The resulting environmental indicators are stored with EJAM, but these
+facility location datasets are not stored in EJAM. EJSCREEN obtains their
+locations for mapping purposes, via an API accessing [hosted datasets with
+facility locations](https://geopub.epa.gov/arcgis/rest/services/EMEF/efpoints/MapServer).
+In general, scripts for updating environmental indicators (including
+documentation of sources of facility location data, etc.) [were stored by
+EPA](https://github.com/Public-Environmental-Data-Partners/EJSCREEN-Data-Processing),
+and after 2025 new code for updating indicators may be found in the non-EPA
+source R package data-raw folder. Proximity scores in EJSCREEN as of
+2024-2026 were calculated based on the locations of these types of sites:
 
-    -   [Major roadways (traffic)](`r                         paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume"                                  )`)
-    -   [Superfund NPL sites](`r                              paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#environmental-burden-indicators"                               )`)
-    -   [Facilities with hazardous waste (TSDF)](`r           paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity"                                     )`)
-    -   [Water bodies downstream of wastewater discharges](`r paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration" )`)
-    -   [Risk management plan (RMP) facilities](`r            paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity"                )`)
-    -   [Underground storage tanks (UST)](`r                  paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust"                                 )`)
-        (for a facility density indicator, similar to a proximity indicator).
+-   [Major roadways (traffic)](`r                         paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume"                                  )`)
+-   [Superfund NPL sites](`r                              paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#environmental-burden-indicators"                               )`)
+-   [Facilities with hazardous waste (TSDF)](`r           paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#hazardous-waste-proximity"                                     )`)
+-   [Water bodies downstream of wastewater discharges](`r paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#wastewater-discharge-stream-proximity-and-toxic-concentration" )`)
+-   [Risk management plan (RMP) facilities](`r            paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#risk-management-program-rmp-facility-proximity"                )`)
+-   [Underground storage tanks (UST)](`r                  paste0(docs_reponame_url, "/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust"                                 )`)
+(for a facility density indicator, similar to a proximity indicator).
 
 -   ***Facilities Datasets for a user to specify places to analyze/report on***:
-    Facility locations and categories are used in EJAM to help a user specify
-    sets of EPA-regulated facilities or other types of sites to analyze and
-    report on in EJSCREEN reports, using their *NAICS/SIC/MACT/program*
-    information and coordinates. All of that information may need frequent
-    updates, ideally, since facilities open, close, relocate, or have their
-    information corrected or otherwise updated. EPA's FRS is the source for much
-    of this information and the FRS is updated by EPA frequently and is
-    available via an API. Through at least v2.32.8, EJAM (and therefore the
-    community reports in EJSCREEN) used a snapshot of the EPA FRS data rather
-    than using an API to obtain the latest info on demand -- that is something
-    that could be changed in a future version. Facility-related info is stored
-    in tables EJAM uses, such as these: `?frs`, `?frs_by_programid`,
-    `?frs_by_naics`, `?frs_by_sic`, and `?frs_by_mact`, `?NAICS`, `?SIC`,
-    `?naics_counts`, `?naicstable`, `?SIC`, `?sictable`, `?mact_table`, and
-    `?epa_programs`, `?frsprogramcodes`, etc. These FRS, MACT, and Program info
-    tables of EPA-relevant data are updated in the EJAM package from within
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* The `?NAICS`,
-    `?naicstable`, and `?sictable` objects (viewable using `naics_categories()`
-    and `sic_categories()` utilities) have no EPA-specific data so they do not
-    need frequent updates -- The NAICS data object stores just the name of each
-    NAICS code number, and new codes/names are published every five years, such
-    as in 2017 and 2022, so a new version would typically be expected in 2027.
-    The tables called `?SIC` (unlike the NAICS table) and `?naics_counts` (which
-    has no analogous sic version), however, contain counts of EPA FRS
-    facilities, so they need updates when FRS data are updated. The
-    inconsistency in how NAICS vs SIC tables and the naics_counts table were
-    named and defined was by historical accident, not intentional, so it would
-    be OK if refactoring later made them consistent or even switched entirely to
-    more frequent automated updates or even reliance on the FRS API.
+Facility locations and categories are used in EJAM to help a user specify
+sets of EPA-regulated facilities or other types of sites to analyze and
+report on in EJSCREEN reports, using their *NAICS/SIC/MACT/program*
+information and coordinates. All of that information may need frequent
+updates, ideally, since facilities open, close, relocate, or have their
+information corrected or otherwise updated. EPA's FRS is the source for much
+of this information and the FRS is updated by EPA frequently and is
+available via an API. Through at least v2.32.8, EJAM (and therefore the
+community reports in EJSCREEN) used a snapshot of the EPA FRS data rather
+than using an API to obtain the latest info on demand -- that is something
+that could be changed in a future version. Facility-related info is stored
+in tables EJAM uses, such as these: `?frs`, `?frs_by_programid`,
+`?frs_by_naics`, `?frs_by_sic`, and `?frs_by_mact`, `?NAICS`, `?SIC`,
+`?naics_counts`, `?naicstable`, `?SIC`, `?sictable`, `?mact_table`, and
+`?epa_programs`, `?frsprogramcodes`, etc. These FRS, MACT, and Program info
+tables of EPA-relevant data are updated in the EJAM package from within
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* The `?NAICS`,
+`?naicstable`, and `?sictable` objects (viewable using `naics_categories()`
+and `sic_categories()` utilities) have no EPA-specific data so they do not
+need frequent updates -- The NAICS data object stores just the name of each
+NAICS code number, and new codes/names are published every five years, such
+as in 2017 and 2022, so a new version would typically be expected in 2027.
+The tables called `?SIC` (unlike the NAICS table) and `?naics_counts` (which
+has no analogous sic version), however, contain counts of EPA FRS
+facilities, so they need updates when FRS data are updated. The
+inconsistency in how NAICS vs SIC tables and the naics_counts table were
+named and defined was by historical accident, not intentional, so it would
+be OK if refactoring later made them consistent or even switched entirely to
+more frequent automated updates or even reliance on the FRS API.
 
 -   `?map_headernames` and associated .xlsx, etc. store critical metadata. This
-    needs to updated especially if indicator names change or are added, for
-    example. `?map_headernames` holds most of the useful metadata about each
-    variable (each indicator, like %low income) -- e.g., how many digits to use
-    in rounding, units, a long name of indicator, the type or category of
-    indicator, sort order to use in reports, method of calculating aggregations
-    of the indicator over blockgroups, etc. This is modified directly in the
-    spreadsheet at data-raw/map_headernames\_\_\_\_.xlsx (renamed for each
-    package version), and then functions or scripts read that .xlsx to create
-    the map_headernames dataset. See
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*
+needs to updated especially if indicator names change or are added, for
+example. `?map_headernames` holds most of the useful metadata about each
+variable (each indicator, like %low income) -- e.g., how many digits to use
+in rounding, units, a long name of indicator, the type or category of
+indicator, sort order to use in reports, method of calculating aggregations
+of the indicator over blockgroups, etc. This is modified directly in the
+spreadsheet at data-raw/map_headernames\_\_\_\_.xlsx (renamed for each
+package version), and then functions or scripts read that .xlsx to create
+the map_headernames dataset. See
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*
 
 -   [Test data (inputs) and examples of outputs](testdata.Rmd) may have to be
-    updated (every time parameters change & when outputs returned change). Those
-    are generated by scripts/functions referred to from
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*
+updated (every time parameters change & when outputs returned change). Those
+are generated by scripts/functions referred to from
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*
 
 -   A default year is used in various functions, such as for the last year of
-    the 5-year ACS dataset. These defaults like yr or year should be updated via
-    global searches where relevant.
+the 5-year ACS dataset. These defaults like yr or year should be updated via
+global searches where relevant.
 
 -   metadata about vintage/ version is in attributes of most datasets. That is
-    updated via scripts/functions used by
-    *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* via for example the helpers
-    `metadata_add()` and `metadata_check()` and `metadata_mapping.R`
+updated via scripts/functions used by
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* via for example the helpers
+`metadata_add()` and `metadata_check()` and `metadata_mapping.R`
 
 -   Version numbering is recorded in the DESCRIPTION file primarily, and note
-    use of the `ejamdata_version.txt` file, and tags on releases, and the NEWS
-    file.
+use of the `ejamdata_version.txt` file, and tags on releases, and the NEWS
+file.
 
 -   [Updating documentation](dev-update-documentation.html) - updates may be
-    needed for the README, vignettes, and possibly examples in some functions in
-    case updates to datasets alter how the examples would work.
+needed for the README, vignettes, and possibly examples in some functions in
+case updates to datasets alter how the examples would work.
 
 Again, all of those updates should be done starting from an understanding of the
 file called `/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`. That script includes
@@ -261,41 +261,41 @@ As of EJAM version v2.32.8, there were 11 arrow files used by EJAM:
 ### Blockgroup and block-level arrow files
 
 -   `?bgid2fips`.arrow: crosswalk of EJAM blockgroup IDs (1-n) with 12-digit
-    blockgroup FIPS codes
+blockgroup FIPS codes
 -   `?blockid2fips`.arrow: crosswalk of EJAM block IDs (1-n) with 15-digit block
-    FIPS codes
+FIPS codes
 -   `?blockpoints`.arrow: Census block internal points lat-lon coordinates, EJAM
-    block ID
+block ID
 -   `?blockwts`.arrow: Census block population weight as share of blockgroup
-    population, EJAM block and blockgroup ID
+population, EJAM block and blockgroup ID
 -   `?bgej`.arrow: blockgroup-level statistics of EJ variables
 -   `?quaddata`.arrow: 3D spherical coordinates of Census block internal points,
-    with EJAM block ID
+with EJAM block ID
 
 ### FRS/facility-related arrow files
 
 -   `?frs`.arrow: data.table of EPA Facility Registry Service (FRS) regulated
-    sites
+sites
 -   `?frs_by_naics`.arrow: data.table of NAICS industry code(s) for each
-    EPA-regulated site in Facility Registry Service
+EPA-regulated site in Facility Registry Service
 -   `?frs_by_sic`.arrow: data.table of SIC industry code(s) for each
-    EPA-regulated site in Facility Registry Service
+EPA-regulated site in Facility Registry Service
 -   `?frs_by_programid.arrow`: data.table of Program System ID code(s) for each
-    EPA-regulated site in the Facility Registry Service
+EPA-regulated site in the Facility Registry Service
 -   `?frs_by_mact`.arrow: data.table of [MACT
-    NESHAP](https://en.wikipedia.org/wiki/National_Emissions_Standards_for_Hazardous_Air_Pollutants)
-    codes for sites, indicating the [subpart(s) that categorize relevant
-    EPA-regulated
-    sites](https://www.epa.gov/stationary-sources-air-pollution/national-emission-standards-hazardous-air-pollutants-neshap-8)
+NESHAP](https://en.wikipedia.org/wiki/National_Emissions_Standards_for_Hazardous_Air_Pollutants)
+codes for sites, indicating the [subpart(s) that categorize relevant
+EPA-regulated
+sites](https://www.epa.gov/stationary-sources-air-pollution/national-emission-standards-hazardous-air-pollutants-neshap-8)
 
 ## Development/Setup
 
 1.  The arrow files are stored in a separate, public, Git-LFS-enabled GitHub repo (henceforth 'ejamdata'). The owner/reponame must be recorded/updated in the DESCRIPTION file field called ejam_data_repo (which can be checked via `url_package(type = "data", get_full_url = TRUE)`) -- that info is used by the package.
 
 2.  Then, and any time the arrow datasets are updated, we update the ejamdata
-    release version via the `.github/push_to_ejam.yaml` workflow in the ejamdata
-    repo, thereby saving the arrow files with the release, to be downloaded
-    automatically by EJAM
+release version via the `.github/push_to_ejam.yaml` workflow in the ejamdata
+repo, thereby saving the arrow files with the release, to be downloaded
+automatically by EJAM
 
 3.  EJAM's `download_latest_arrow_data()` function does the following:
 
@@ -303,12 +303,12 @@ As of EJAM version v2.32.8, there were 11 arrow files used by EJAM:
 
 a.  Checks data repo's latest release/version.
 b.  Checks user's EJAM package's ejamdata version, which is stored in
-    `data/ejamdata_version.txt`.
+`data/ejamdata_version.txt`.
 c.  If the `data/ejamdata_version.txt` file doesn't exist, e.g. if it's the
-    first time installing EJAM, it will be created at the end of the script.
+first time installing EJAM, it will be created at the end of the script.
 d.  If the versions are different, downloads the latest arrow from the latest
-    ejamdata release with `piggyback::pb_download()`. See how this function
-    works for details:
+ejamdata release with `piggyback::pb_download()`. See how this function
+works for details:
 
 ```{r, eval=FALSE}
 download_latest_arrow_data()
@@ -331,7 +331,7 @@ download_latest_arrow_data()
 <!-- -->
 
 -   `library(EJAM)`. This will trigger the new `download_latest_arrow_data()`
-    function.
+function.
 
 <!-- -->
 
@@ -340,7 +340,7 @@ download_latest_arrow_data()
 <!-- -->
 
 -   The `dataload_dynamic()` function will work as usual because the data are
-    now stored in the `data` directory.
+now stored in the `data` directory.
 
 ## How new versions of arrow datasets are republished / released
 
@@ -362,18 +362,21 @@ piggyback::pb_release_create(
   tag = release_number,
   repo = owner_repo
   # and optionally a release name and description
-  ) 
+) 
 ```
 
 Make sure all the new data objects are in memory as arrow and/or rda format.
 
 
 ``` {r, eval=FALSE}
+
 filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
+some_not_here <- FALSE
+cat("\n")
 for (i in seq_along(filenames_arrow)) {
-  some_not_here <- FALSE
-  if (!file.exists(filenames_arrow[i])) {
-    message(paste0("File ", filenames_arrow[i], " not found in memory."))
+  cat("checking ", filenames_arrow[i], "\n")
+  if (!exists(filenames_arrow[i])) {
+    message(paste0("object ", filenames_arrow[i], " not found in memory."))
     some_not_here <- TRUE
   }
 }
@@ -382,24 +385,44 @@ if (some_not_here) {stop("Please make sure all the new data files are in memory 
 
 # then do the same for the .rda versions such as blockwts, blockpoints, etc.
 
+filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
+some_not_here <- FALSE
+cat("\n")
+for (i in seq_along(filenames_rda)) {
+  cat("checking ", filenames_rda[i], "\n")
+  if (!exists(filenames_rda[i])) {
+    message(paste0("object ", filenames_rda[i], " not found in memory."))
+    some_not_here <- TRUE
+  }
+}
+if (some_not_here) {stop("Please make sure all the new data objects are in memory before running this code.")}
+# dput(filenames_rda)
 
 
 # see objects loaded and class(es) of each
-cbind(sapply(ls(), function(z) paste0(class(get(z)), collapse = ",")))
+cbind(sort(sapply(intersect(ls(), union(filenames_arrow, filenames_rda)),
+                  function(z) paste0(class(get(z)), collapse = ","))))
+
 ```
 
-Upload each dataset file
+Upload each dataset object as a dataset file
 ```{r, eval=FALSE}
+
 filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
-for (i in seq_along(filenames)) {
-  piggyback::pb_upload(filenames[i], repo = owner_repo) 
+for (i in seq_along(filenames_arrow)) {
+  cat("uploading ", filenames_arrow[i], "\n")
+  piggyback::pb_upload(filenames_arrow[i], repo = owner_repo) 
   # that defaults to use the tag (release_number) you just created
 }
 
 # then do the same for the .rda versions such as blockwts, blockpoints, etc.
 
-
-
+filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
+for (i in seq_along(filenames_rda)) {
+  cat("uploading ", filenames_rda[i], "\n")
+  piggyback::pb_upload(filenames_rda[i], repo = owner_repo) 
+  # that defaults to use the tag (release_number) you just created
+}
 
 ```
 

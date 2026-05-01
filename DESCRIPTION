@@ -58,6 +58,7 @@ Imports:
     pdist,
     piggyback (>= 0.1.5),
     pkgdown (>= 2.1.2),
+    pkgload,
     plotly (>= 4.11.0),
     purrr (>= 1.1.0),
     readr (>= 2.1.2),

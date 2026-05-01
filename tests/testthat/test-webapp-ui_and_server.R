@@ -36,7 +36,7 @@ global_defaults_or_user_options <- EJAM:::get_global_defaults_or_user_options(
 # default_extratable_hide_missing_rows_for
 
 # > SETUP: assign each global default value to this envt ####
-
+# but it won't be seen by app_ui() where it relies on fipspicker module during testing?
 for (i in seq_along(global_defaults_or_user_options)) {
   assign(names(global_defaults_or_user_options)[i], (global_defaults_or_user_options[[i]]))
 }

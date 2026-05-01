@@ -7,6 +7,9 @@
 
 # see ?ejamapi_local() and test-ejamapi_local.R for testing the DRAFT-ONLY API defined in the EJAM package, run locally.
 
+# save setting and restore it on exit since some functions alter it
+old <- getOption("width")
+on.exit(options(width = old), add = TRUE)
 
 # test-url_ejamapi.R
 
@@ -265,3 +268,4 @@ if (FALSE) {
 # ejam2report(ejamit(shapefile=shp1, radius=0))
 
 }
+

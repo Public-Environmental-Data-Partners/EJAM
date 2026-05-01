@@ -88,7 +88,7 @@ test_that("default score path works when ST = TRUE", {
     hit1 <- pctile_x_is_hit_by_score("pctlowinc", cutoff = 0.80, ST = TRUE)
   })
   expect_no_error({
-    hit2 <- pctile_x_is_hit_by_score2("pctlowinc", cutoff = 0.80, ST = TRUE)
+    hit2 <- EJAM:::pctile_x_is_hit_by_score2("pctlowinc", cutoff = 0.80, ST = TRUE)
   })
   # all.equal(hit1,hit2)
   expect_length(hit1, nrow(blockgroupstats))

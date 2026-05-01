@@ -1808,8 +1808,27 @@ app_server <- function(input, output, session) {
 
   ## data_processed()  reactive holds results of ejamit()
 
+  # web app functionality test can wait for this
+  analysis_complete <- reactiveVal(FALSE)
+  if (!isTRUE(getOption("shiny.testmode")) &&
+      isTRUE(EJAM:::global_or_param("default_shiny.testmode"))) {
+    options(shiny.testmode = TRUE)
+  }
+  if (isTRUE(getOption("shiny.testmode"))) {
+    observe({
+      shiny::exportTestValues(
+        analysis_complete = analysis_complete(),
+        multisite_report_download_ready =
+          download_ready_for_report_header_and_tables() &&
+          download_ready_for_report_map() &&
+          download_ready_for_report_plot()
+      )
+    })
+  }
+
   observeEvent(input$bt_get_results, {  # (button is pressed)
 
+    analysis_complete(FALSE)
     # disable download buttons until finished analysis
     shinyjs::disable(id = 'download_report_multisite')
     shinyjs::disable(id = 'download_results_spreadsheet')
@@ -2061,7 +2080,7 @@ app_server <- function(input, output, session) {
     showTab(session = session, inputId = 'all_tabs', target = 'See Results') # in case was hidden because app had just launched
     updateTabsetPanel(session = session, inputId = "all_tabs",     selected = "See Results")
     updateTabsetPanel(session = session, inputId = 'results_tabs', selected = 'Community Report')
-
+    analysis_complete(TRUE)
   })  # end of observeEvent based on Start analysis button called input$bt_get_results
 
   #############################################################################  #
@@ -2519,7 +2538,8 @@ app_server <- function(input, output, session) {
       } else {
         shp_for_report <- NULL
       }
-      report_path <- ejam2report(
+      report_path <- tryCatch(
+        ejam2report(
         fileextension = '.html',
         filename = filename_fullpath,
         ejamitout = data_processed(),
@@ -2540,11 +2560,36 @@ app_server <- function(input, output, session) {
         footer_date = date_in_user_timezone(),
         footer_text = NULL,
         footer_html = NULL # NULL means use defaults
+        ),
+        error = function(e) {
+          msg <- paste0(
+            "downloadable_file_report_multisite(): ejam2report() failed: ",
+            conditionMessage(e),
+            "\nfilename_fullpath: ", filename_fullpath,
+            "\nfile.exists(dirname): ", dir.exists(dirname(filename_fullpath))
+          )
+          message(msg)
+          warning(msg, call. = FALSE)
+        }
       )
     })
     if (input$testing) {
       cat(paste0('in reactive creating report file, filename created as param is: \n"', filename, '"\n'))
       cat(paste0('in reactive creating report file, report_path created by ejam2report() is: \n"', report_path, '"\n'))
+    }
+    if (input$testing) {
+      cat(paste0('multisite report filename: "', filename, '"\n'))
+      cat(paste0('multisite report_path: "', report_path, '"\n'))
+      cat(paste0('multisite report exists: ', file.exists(report_path), '\n'))
+    }
+    if (is.null(report_path) || !nzchar(report_path) || !file.exists(report_path)) {
+      stop(
+        paste0(
+          "downloadable_file_report_multisite(): report file missing.",
+          "\nreport_path: ", paste0(report_path, collapse = ", ")
+        ),
+        call. = FALSE
+      )
     }
     report_path
   })
@@ -2564,8 +2609,15 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       html_path <- downloadable_file_report_multisite()
+      if (!file.exists(html_path)) {
+        msg <- paste0("download_report_multisite: html file does not exist: ", html_path)
+        validate(msg) # validate avoids crashing web app
+        # stop(msg, call. = FALSE)
+      }
       if (isTRUE(input$format_report_multisite %in% "pdf")) {
+        # pdf format was requested
         if (!requireNamespace("pagedown", quietly = TRUE)) {
+          # cannot create pdf
           showModal(modalDialog(
             title = "PDF not available",
             "The 'pagedown' package is required to generate PDF reports. ",
@@ -2575,55 +2627,63 @@ app_server <- function(input, output, session) {
           # Still provide the HTML file so the download does not fail silently;
           # copy as .html so the content is usable even though filename says .pdf
           file.copy(from = html_path, to = sub("\\.pdf$", ".html", file), overwrite = TRUE)
-          file.copy(from = html_path, to = file, overwrite = TRUE)
+          ok <- file.copy(from = html_path, to = file, overwrite = TRUE)
         } else {
-          pagedown::chrome_print(
-            input   = html_path,
-            output  = file,
-            wait    = 5,
-            timeout = 120,
-            verbose = 0
-          )
+          # create pdf
+          tryCatch({
+            pagedown::chrome_print(input = html_path, output = file, wait = 5, timeout = 120, verbose = 0)
+          }, error = function(e) {validate(conditionMessage(e))})
         }
       } else {
-        file.copy(from = html_path, to = file, overwrite = TRUE)
+        # html format was requested
+        ok <- file.copy(from = html_path, to = file, overwrite = TRUE)
+      }
+
+      if (!isTRUE(ok) || !file.exists(file)) {
+        msg <- paste0("download_report_multisite: file.copy failed.", "\nfrom: ", html_path, "\nto: ", file)
+        validate(msg)
+        # stop(msg, call. = FALSE)
       }
     }
   )
-  #############################################################################  #
-  # .  ####
-  # ______ DETAILED RESULTS, results_bysite _________ ####
-  #. ####
-  ##############################################  #
+          #############################################################################  #
+          # .  ####
+          # ______ DETAILED RESULTS, results_bysite _________ ####
+          #. ####
+          ##############################################  #
 
-  # REPORT on 1-SITE - for DOWNLOAD ####
+          # REPORT on 1-SITE - for DOWNLOAD ####
 
-  ### ejam2report() in 1-site downloadHandler() ####
-  # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
+          ### ejam2report() in 1-site downloadHandler() ####
+          # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
 
-  # Default is to use API here to get single-site reports, not render them here  ***
+          # Default is to use API here to get single-site reports, not render them here  ***
 
-  output$download_report_single_site <- downloadHandler(
+          output$download_report_single_site <- downloadHandler(
 
-    filename = function() {
-      location_suffix <- if (!is.null(selected_location_name())) {
-        paste0(" - ", selected_location_name())
-      } else {
-        ""
-      }
-      create_filename(
-        file_desc = paste0('community report', location_suffix),
-        title =  sanitized_analysis_title(),
-        buffer_dist = submitted_radius_val(),
-        site_method = submitted_upload_method(),
-        with_datetime = TRUE,
+            filename = function() {
+              location_suffix <- if (!is.null(selected_location_name())) {
+                paste0(" - ", selected_location_name())
+              } else {
+                ""
+              }
+              create_filename(
+                file_desc = paste0('community report', location_suffix),
+                title =  sanitized_analysis_title(),
+                buffer_dist = submitted_radius_val(),
+                site_method = submitted_upload_method(),
+                with_datetime = TRUE,
         ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
     },
     content = function(file) {
       # rather than happening here, a separate observer of the 1-site buttons does the work
       req(temp_file_path())
-      file.copy(temp_file_path(), file)
+      ok <- file.copy(temp_file_path(), file)
+      if (!isTRUE(ok) || !file.exists(file)) {
+        msg <- paste0("download_report_single_site: file.copy failed.", "\nfrom: ", temp_file_path(), "\nto: ", file)
+        validate(msg)
+      }
     }
   )
   ###############  #
