@@ -226,10 +226,12 @@ build_community_report <- function(
   ## only if those columns are available
   if (include_ejindexes) {
     full_page <- paste0(full_page,
+                        '<section class="report-section report-ej-index-section">',
                         generate_ej_header(),
                         fill_tbl_full_ej(output_df_rounded),
                         #generate_ej_supp_header(),
                         #fill_tbl_full_ej_supp(output_df_rounded),
+                        '</section>',
                         collapse = '')
   }
   ############################################################# #

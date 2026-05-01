@@ -477,6 +477,10 @@
     line-height: 1.1;
   }
 
+  #TOTALPOP {
+    color: white !important;
+  }
+
   .color-alt-table-title,
   .color-alt-table-title th,
   .color-alt-table-header th {
@@ -585,6 +589,11 @@ h2, h3, h4 {
   padding: 1px 4px;
 }
 
+.report-ej-index-section {
+  break-after: page;
+  page-break-after: always;
+}
+
 .report-map-section {
   break-before: page;
   break-inside: avoid-page;
@@ -597,6 +606,16 @@ h2, h3, h4 {
 .report-map-section img {
   break-inside: avoid-page;
   page-break-inside: avoid;
+}
+
+.report-map-section .leaflet-control-attribution,
+.report-map-section .leaflet-control-attribution a {
+  font-size: 5px !important;
+  line-height: 1.05 !important;
+}
+
+.report-map-section .leaflet-control-attribution {
+  padding: 0 2px !important;
 }
 
 .report-plot-section {

@@ -110,8 +110,8 @@ Should provide footer_date to ensure user's timezone is used to determine today'
 PDF generation uses \code{\link[pagedown:chrome_print]{pagedown::chrome_print()}} which requires the \code{pagedown} package and a
 Chrome/Chromium browser to be available on the system.
 The PDF preserves the full HTML/CSS styling and supports smart page breaks.
-If PDF-related dependencies are unavailable, PDF generation stops with a clear error;
-Choose HTML output instead.}
+If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
+PDF output is required when this option is selected; it is not optional.}
 
 \item{filename}{optional path and name for report file, used by web app}
 
