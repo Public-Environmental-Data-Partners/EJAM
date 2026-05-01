@@ -1,9 +1,11 @@
+################################################## #
+# helper
 
 ensure_pandoc_available_for_ejam <- function() {
+
   if (rmarkdown::pandoc_available()) {
     return(invisible(TRUE))
   }
-
   candidate_pandoc_paths <- c(
     file.path(Sys.getenv("RSTUDIO_PANDOC", unset = ""), "pandoc"),
     Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/pandoc"),
@@ -11,15 +13,53 @@ ensure_pandoc_available_for_ejam <- function() {
   )
   candidate_pandoc_paths <- unique(candidate_pandoc_paths[nzchar(candidate_pandoc_paths)])
   candidate_pandoc_paths <- candidate_pandoc_paths[file.exists(candidate_pandoc_paths)]
-
   if (length(candidate_pandoc_paths) > 0) {
     Sys.setenv(RSTUDIO_PANDOC = dirname(candidate_pandoc_paths[[1]]))
     rmarkdown::find_pandoc(cache = FALSE)
   }
-
   invisible(rmarkdown::pandoc_available())
 }
-################################################## #  ################################################## #
+################################################## #
+# helper
+
+pdf_report_status <- function() {
+
+  if (!requireNamespace("pagedown", quietly = TRUE)) {
+    return(list(
+      ok = FALSE,
+      reason = "The 'pagedown' package is required to generate PDF reports."
+    ))
+  }
+  chrome <- tryCatch(
+    pagedown::find_chrome(),
+    error = function(e) ""
+  )
+  if (length(chrome) == 0 || is.na(chrome[[1]]) || !nzchar(chrome[[1]])) {
+    return(list(
+      ok = FALSE,
+      reason = "Chrome or Chromium is required to generate PDF reports."
+    ))
+  }
+  list(ok = TRUE, reason = NULL, chrome = chrome[[1]])
+}
+################################################## #
+# helper
+
+assert_pdf_report_available <- function() {
+
+  status <- pdf_report_status()
+  if (!isTRUE(status$ok)) {
+    msg <- paste0(
+      status$reason,
+      " Install pagedown and make Chrome/Chromium available, or choose HTML format."
+    )
+    shiny::validate(msg)
+    # stop(msg, call. = FALSE)
+  }
+  invisible(TRUE)
+}
+################################################## #
+
 
 #' View HTML Report on EJAM Results (Overall or at 1 Site)
 #'
@@ -70,7 +110,8 @@ ensure_pandoc_available_for_ejam <- function() {
 #'   PDF generation uses [pagedown::chrome_print()] which requires the `pagedown` package and a
 #'   Chrome/Chromium browser to be available on the system.
 #'   The PDF preserves the full HTML/CSS styling and supports smart page breaks.
-#'   If `pagedown` is not installed, a warning is issued and HTML output is returned instead.
+#'   If PDF-related dependencies are unavailable, PDF generation stops with a clear error;
+#'   Choose HTML output instead.
 #' @param filename optional path and name for report file, used by web app
 #' @param show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in main table of envt/demog. info.
 #' @param extratable_show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in extra table
@@ -484,20 +525,21 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
           envir = new.env(parent = globalenv()),
           quiet = TRUE
         )
-        if (!requireNamespace("pagedown", quietly = TRUE)) {
-          warning("The 'pagedown' package is required to generate PDF reports. ",
-                  "Install it with: install.packages('pagedown'). ",
-                  "Generated HTML output instead at: ", sub("\\.pdf$", ".html", output_file))
-          file.copy(html_temp, sub("\\.pdf$", ".html", output_file))
-          output_file <- sub("\\.pdf$", ".html", output_file)
-        } else {
+        assert_pdf_report_available()
+        tryCatch({
+
+        })
+        # create pdf
+        tryCatch({
           pagedown::chrome_print(
-            input   = html_temp,
-            output  = output_file,
-            wait    = 5,
-            timeout = 120,
-            verbose = 0
-          )
+            input = html_temp,
+            output = output_file,
+            wait = 5, timeout = 120, verbose = 0)
+        }, error = function(e) {validate(conditionMessage(e))})
+        if (!file.exists(output_file)) {
+          msg <- paste0("PDF report was not created: ", output_file)
+          # stop(msg, call. = FALSE)
+          shiny::validate(msg)
         }
       } else {
         rmarkdown::render(

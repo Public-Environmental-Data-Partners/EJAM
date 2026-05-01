@@ -315,9 +315,9 @@ app_server <- function(input, output, session) {
   # })
   observe({ # NOTE IT USES select not selectize here
     updateSelectInput(session = session, inputId = 'ss_select_mact', # in site selection tab
-                         choices = setNames(mact_table$subpart, mact_table$dropdown_label),
-                         selected = input$default_mact
-                      )
+                      choices = setNames(mact_table$subpart, mact_table$dropdown_label),
+                      selected = input$default_mact
+    )
   })
   #############################################################################  #
 
@@ -764,39 +764,39 @@ app_server <- function(input, output, session) {
     #  naics_is.valid() could be used here too but if picked from valid list all should be valid (unlike if using uploaded info)
     if (!is.null(naics_user_picked_from_list) && length(naics_user_picked_from_list) > 0) {
 
-        inputnaics <- naics_user_picked_from_list
-        inputnaics <- unique(inputnaics[inputnaics != ""])
-        cat("selected NAICS:  ")
-        cat(paste0(inputnaics, collapse = ", "), "\n")
+      inputnaics <- naics_user_picked_from_list
+      inputnaics <- unique(inputnaics[inputnaics != ""])
+      cat("selected NAICS:  ")
+      cat(paste0(inputnaics, collapse = ", "), "\n")
 
-        #   2. GET FACILITY LAT/LON INFO FROM NAICS CODES
+      #   2. GET FACILITY LAT/LON INFO FROM NAICS CODES
 
-        sitepoints <- frs_from_naics(inputnaics, childrenForNAICS = add_naics_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,NAICS)]
-        ## this part could be replaced each time it happens, by the function sitepoints_from_any
-        sitepoints[, ejam_uniq_id := .I]
-        data.table::setcolorder(sitepoints, 'ejam_uniq_id')
+      sitepoints <- frs_from_naics(inputnaics, childrenForNAICS = add_naics_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,NAICS)]
+      ## this part could be replaced each time it happens, by the function sitepoints_from_any
+      sitepoints[, ejam_uniq_id := .I]
+      data.table::setcolorder(sitepoints, 'ejam_uniq_id')
 
-        if (rlang::is_empty(sitepoints) || nrow(sitepoints) == 0) {
+      if (rlang::is_empty(sitepoints) || nrow(sitepoints) == 0) {
 
-          errmsg    = 'No valid locations found under this NAICS code.'
+        errmsg    = 'No valid locations found under this NAICS code.'
+
+        invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
+        an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
+        disable_buttons[[placetype]] <- TRUE
+        shiny::validate(errmsg)
+
+      } else
+        if (NROW(sitepoints) > input$max_pts_select) {
+
+          cat("ROW COUNT TOO HIGH from selected NAICS code(s): ", NROW(sitepoints), "\n")
+
+          errmsg    = paste0('Max allowed selection of points is ', as.character(input$max_pts_select))
 
           invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
           an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
           disable_buttons[[placetype]] <- TRUE
           shiny::validate(errmsg)
-
-        } else
-          if (NROW(sitepoints) > input$max_pts_select) {
-
-            cat("ROW COUNT TOO HIGH from selected NAICS code(s): ", NROW(sitepoints), "\n")
-
-            errmsg    = paste0('Max allowed selection of points is ', as.character(input$max_pts_select))
-
-            invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-            an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
-            disable_buttons[[placetype]] <- TRUE
-            shiny::validate(errmsg)
-          }
+        }
     } else {
 
       errmsg    = 'Invalid NAICS Input'
@@ -969,56 +969,56 @@ app_server <- function(input, output, session) {
     # check SIC inputs
     if (!is.null(input$ss_select_sic) && length(input$ss_select_sic) > 0) {
 
-        inputsic <- input$ss_select_sic
-        inputsic <- unique(inputsic[inputsic != ""])
-        cat("selected SIC:  ")
-        cat(paste0(inputsic, collapse = ", "), "\n")
+      inputsic <- input$ss_select_sic
+      inputsic <- unique(inputsic[inputsic != ""])
+      cat("selected SIC:  ")
+      cat(paste0(inputsic, collapse = ", "), "\n")
 
-        #   2. GET FACILITY LAT/LON INFO FROM SIC CODES
+      #   2. GET FACILITY LAT/LON INFO FROM SIC CODES
 
-        sitepoints <- frs_from_sic(inputsic, children = add_sic_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,SIC)] # xxx
-        ## this part could be replaced each time it happens, by the function sitepoints_from_any
-        sitepoints[, `:=`(ejam_uniq_id = .I,
-                          valid = !is.na(lon) & !is.na(lat))]
-        data.table::setcolorder(sitepoints, 'ejam_uniq_id')
-        sitepoints$invalid_msg <- NA
-        sitepoints$invalid_msg[is.na(sitepoints$SIC)] <- 'bad SIC Code'
-        sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
+      sitepoints <- frs_from_sic(inputsic, children = add_sic_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,SIC)] # xxx
+      ## this part could be replaced each time it happens, by the function sitepoints_from_any
+      sitepoints[, `:=`(ejam_uniq_id = .I,
+                        valid = !is.na(lon) & !is.na(lat))]
+      data.table::setcolorder(sitepoints, 'ejam_uniq_id')
+      sitepoints$invalid_msg <- NA
+      sitepoints$invalid_msg[is.na(sitepoints$SIC)] <- 'bad SIC Code'
+      sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
 
-        if (rlang::is_empty(sitepoints) || nrow(sitepoints) == 0) {
+      if (rlang::is_empty(sitepoints) || nrow(sitepoints) == 0) {
 
-          errmsg    = 'No valid locations found under this SIC code.'
-          cat(errmsg, "\n")
+        errmsg    = 'No valid locations found under this SIC code.'
+        cat(errmsg, "\n")
 
-          invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-          an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
-          disable_buttons[[placetype]] <- TRUE
-          shiny::validate(errmsg)
+        invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
+        an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
+        disable_buttons[[placetype]] <- TRUE
+        shiny::validate(errmsg)
 
-        }  else if (NROW(sitepoints) > input$max_pts_select) {
+      }  else if (NROW(sitepoints) > input$max_pts_select) {
 
-          errmsg    = paste0('Max allowed selection of points is ', as.character(input$max_pts_select))
-          cat("ROW COUNT TOO HIGH from selected SIC code(s): ", NROW(sitepoints), "\n")
+        errmsg    = paste0('Max allowed selection of points is ', as.character(input$max_pts_select))
+        cat("ROW COUNT TOO HIGH from selected SIC code(s): ", NROW(sitepoints), "\n")
 
-          invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
-          an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
-          disable_buttons[[placetype]] <- TRUE
-          shiny::validate(errmsg)
-        }
+        invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
+        an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
+        disable_buttons[[placetype]] <- TRUE
+        shiny::validate(errmsg)
+      }
 
       # } else {
 
-        # sitepoints <- frs_from_sic(inputsic, children = add_sic_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,SIC)] # xxx
-        #
-        # ## this part could be replaced each time it happens, by the function sitepoints_from_any
-        #
-        # sitepoints[, `:=`(ejam_uniq_id = .I,
-        #                   valid = !is.na(lon) & !is.na(lat))]
-        # data.table::setcolorder(sitepoints, 'ejam_uniq_id')
-        # sitepoints$invalid_msg <- NA
-        # sitepoints$invalid_msg[is.na(sitepoints$SIC)] <- 'bad SIC Code'
-        # sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
-        # #invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
+      # sitepoints <- frs_from_sic(inputsic, children = add_sic_subcategories)[, .(lat,lon,REGISTRY_ID,PRIMARY_NAME,SIC)] # xxx
+      #
+      # ## this part could be replaced each time it happens, by the function sitepoints_from_any
+      #
+      # sitepoints[, `:=`(ejam_uniq_id = .I,
+      #                   valid = !is.na(lon) & !is.na(lat))]
+      # data.table::setcolorder(sitepoints, 'ejam_uniq_id')
+      # sitepoints$invalid_msg <- NA
+      # sitepoints$invalid_msg[is.na(sitepoints$SIC)] <- 'bad SIC Code'
+      # sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
+      # #invalid_alert[[placetype]] <- sitepoints[valid == F, .N]
 
       # }
     } else {
@@ -1712,7 +1712,7 @@ app_server <- function(input, output, session) {
       max_pts <- input$max_pts_map # was the fixed max_pts_map
       valid = !is.na(data_uploaded()$lon) & !is.na(data_uploaded()$lat)
       if (NROW(data_uploaded()[valid, ]) > max_pts) { # would have already been stopped probably
-       ## Max allowed points was exceeded!
+        ## Max allowed points was exceeded!
         if (NROW(data_uploaded()[valid, ]) > input$max_pts_run) {
           cat("Too many valid points to analyze?\n")
           validate(paste0('Too many valid points (> ', prettyNum(input$max_pts_run, big.mark = ','),
@@ -2540,26 +2540,26 @@ app_server <- function(input, output, session) {
       }
       report_path <- tryCatch(
         ejam2report(
-        fileextension = '.html',
-        filename = filename_fullpath,
-        ejamitout = data_processed(),
-        return_html = FALSE,
-        site_method = submitted_upload_method(),
-        shp = shp_for_report,
-        analysis_title =  analysis_title,
-        launch_browser = FALSE,
-        show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
-        extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
-        extratable_title = input$extratable_title,
-        extratable_title_top_row = input$extratable_title_top_row,
-        extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-        extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
-        logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
-        logo_html = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
-        footer_version_number = NULL,
-        footer_date = date_in_user_timezone(),
-        footer_text = NULL,
-        footer_html = NULL # NULL means use defaults
+          fileextension = '.html',
+          filename = filename_fullpath,
+          ejamitout = data_processed(),
+          return_html = FALSE,
+          site_method = submitted_upload_method(),
+          shp = shp_for_report,
+          analysis_title =  analysis_title,
+          launch_browser = FALSE,
+          show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
+          extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
+          extratable_title = input$extratable_title,
+          extratable_title_top_row = input$extratable_title_top_row,
+          extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
+          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
+          logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
+          logo_html = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
+          footer_version_number = NULL,
+          footer_date = date_in_user_timezone(),
+          footer_text = NULL,
+          footer_html = NULL # NULL means use defaults
         ),
         error = function(e) {
           msg <- paste0(
@@ -2570,6 +2570,7 @@ app_server <- function(input, output, session) {
           )
           message(msg)
           warning(msg, call. = FALSE)
+          #  shiny::validate(msg)
         }
       )
     })
@@ -2583,13 +2584,12 @@ app_server <- function(input, output, session) {
       cat(paste0('multisite report exists: ', file.exists(report_path), '\n'))
     }
     if (is.null(report_path) || !nzchar(report_path) || !file.exists(report_path)) {
-      stop(
-        paste0(
-          "downloadable_file_report_multisite(): report file missing.",
-          "\nreport_path: ", paste0(report_path, collapse = ", ")
-        ),
-        call. = FALSE
+      msg <- paste0(
+        "downloadable_file_report_multisite(): report file missing.",
+        "\nreport_path: ", paste0(report_path, collapse = ", ")
       )
+      # stop(msg, call. = FALSE)
+      shiny::validate(msg)
     }
     report_path
   })
@@ -2609,31 +2609,23 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       html_path <- downloadable_file_report_multisite()
+
       if (!file.exists(html_path)) {
         msg <- paste0("download_report_multisite: html file does not exist: ", html_path)
-        validate(msg) # validate avoids crashing web app
+        shiny::validate(msg) # validate avoids crashing web app
         # stop(msg, call. = FALSE)
       }
+
       if (isTRUE(input$format_report_multisite %in% "pdf")) {
         # pdf format was requested
-        if (!requireNamespace("pagedown", quietly = TRUE)) {
-          # cannot create pdf
-          showModal(modalDialog(
-            title = "PDF not available",
-            "The 'pagedown' package is required to generate PDF reports. ",
-            "Please install it with: install.packages('pagedown'), or select HTML format instead.",
-            easyClose = TRUE
-          ))
-          # Still provide the HTML file so the download does not fail silently;
-          # copy as .html so the content is usable even though filename says .pdf
-          file.copy(from = html_path, to = sub("\\.pdf$", ".html", file), overwrite = TRUE)
-          ok <- file.copy(from = html_path, to = file, overwrite = TRUE)
-        } else {
-          # create pdf
-          tryCatch({
-            pagedown::chrome_print(input = html_path, output = file, wait = 5, timeout = 120, verbose = 0)
-          }, error = function(e) {validate(conditionMessage(e))})
-        }
+        assert_pdf_report_available() # does stop() or validate() if cannot do pdf
+        # create pdf
+        tryCatch({
+          pagedown::chrome_print(
+            input = html_path,
+            output = file,
+            wait = 5, timeout = 120, verbose = 0)
+        }, error = function(e) {validate(conditionMessage(e))})
       } else {
         # html format was requested
         ok <- file.copy(from = html_path, to = file, overwrite = TRUE)
@@ -2641,48 +2633,54 @@ app_server <- function(input, output, session) {
 
       if (!isTRUE(ok) || !file.exists(file)) {
         msg <- paste0("download_report_multisite: file.copy failed.", "\nfrom: ", html_path, "\nto: ", file)
-        validate(msg)
+        shiny::validate(msg)
         # stop(msg, call. = FALSE)
       }
+
     }
   )
-          #############################################################################  #
-          # .  ####
-          # ______ DETAILED RESULTS, results_bysite _________ ####
-          #. ####
-          ##############################################  #
+  #############################################################################  #
+  # .  ####
+  # ______ DETAILED RESULTS, results_bysite _________ ####
+  #. ####
+  ##############################################  #
 
-          # REPORT on 1-SITE - for DOWNLOAD ####
+  # REPORT on 1-SITE - for DOWNLOAD ####
 
-          ### ejam2report() in 1-site downloadHandler() ####
-          # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
+  ### ejam2report() in 1-site downloadHandler() ####
+  # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
 
-          # Default is to use API here to get single-site reports, not render them here  ***
+  # Default is to use API here to get single-site reports, not render them here  ***
 
-          output$download_report_single_site <- downloadHandler(
+  output$download_report_single_site <- downloadHandler(
 
-            filename = function() {
-              location_suffix <- if (!is.null(selected_location_name())) {
-                paste0(" - ", selected_location_name())
-              } else {
-                ""
-              }
-              create_filename(
-                file_desc = paste0('community report', location_suffix),
-                title =  sanitized_analysis_title(),
-                buffer_dist = submitted_radius_val(),
-                site_method = submitted_upload_method(),
-                with_datetime = TRUE,
+    filename = function() {
+      location_suffix <- if (!is.null(selected_location_name())) {
+        paste0(" - ", selected_location_name())
+      } else {
+        ""
+      }
+      create_filename(
+        file_desc = paste0('community report', location_suffix),
+        title =  sanitized_analysis_title(),
+        buffer_dist = submitted_radius_val(),
+        site_method = submitted_upload_method(),
+        with_datetime = TRUE,
         ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
       )
     },
     content = function(file) {
       # rather than happening here, a separate observer of the 1-site buttons does the work
-      req(temp_file_path())
-      ok <- file.copy(temp_file_path(), file)
+      src <- temp_file_path()
+      req(src)
+      if (!file.exists(src)) {
+        msg <- paste0("download_report_single_site: source file does not exist: ", src)
+        shiny::validate(msg)
+      }
+      ok <- file.copy(src, file)
       if (!isTRUE(ok) || !file.exists(file)) {
-        msg <- paste0("download_report_single_site: file.copy failed.", "\nfrom: ", temp_file_path(), "\nto: ", file)
-        validate(msg)
+        msg <- paste0("download_report_single_site: file.copy failed.", "\nfrom: ", src, "\nto: ", file)
+        shiny::validate(msg)
       }
     }
   )
@@ -2712,8 +2710,12 @@ app_server <- function(input, output, session) {
         selected_location_name(location_name)
 
         # Store a temporary file name/path in the reactive value
-        temp_file <- tempfile(fileext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'))
-        temp_file_path(temp_file)
+        fileextension <- ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
+        temp_file <- tempfile(fileext = fileextension)
+
+        if (fileextension == ".pdf") {
+          assert_pdf_report_available()
+        }
 
         # if shapefile was used for analysis, provide it to ejam2report()
         if (submitted_upload_method() == 'SHP') {
@@ -2722,26 +2724,46 @@ app_server <- function(input, output, session) {
           shp_for_report <- NULL
         }
 
-        ejam2report(
+        report_path <- tryCatch({
 
-          fileextension = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'),
-          filename = temp_file,
-          ejamitout = data_processed(),
-          sitenumber = sitenumber,
-          return_html = FALSE,
-          site_method = submitted_upload_method(),
-          shp = shp_for_report, # NULL or data_uploaded()
-          analysis_title =  sanitized_analysis_title(),
-          launch_browser = FALSE,
-          show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
-          extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
-          extratable_title = input$extratable_title,
-          extratable_title_top_row = input$extratable_title_top_row,
-          extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
-          extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
-          logo_path =  EJAM:::global_or_param("report_logo"),
-          footer_date = date_in_user_timezone()
+          ejam2report(
+
+            fileextension = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'),
+            filename = temp_file,
+            ejamitout = data_processed(),
+            sitenumber = sitenumber,
+            return_html = FALSE,
+            site_method = submitted_upload_method(),
+            shp = shp_for_report, # NULL or data_uploaded()
+            analysis_title =  sanitized_analysis_title(),
+            launch_browser = FALSE,
+            show_ratios_in_report = isTRUE(as.logical(input$show_ratios_in_report)),
+            extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
+            extratable_title = input$extratable_title,
+            extratable_title_top_row = input$extratable_title_top_row,
+            extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
+            extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
+            logo_path =  EJAM:::global_or_param("report_logo"),
+            footer_date = date_in_user_timezone()
+          )
+        },
+        error = function(e) {
+          showModal(modalDialog(
+            title = "PDF not available",
+            conditionMessage(e),
+            easyClose = TRUE
+          ))
+          return(NULL)
+        }
         )
+
+        if (is.null(report_path) || !file.exists(report_path)) {
+          msg <- paste0("single-site report was not created: ", report_path)
+          shiny::validate(msg)
+          # stop(msg, call. = FALSE)
+          # return() # to exit without showing modal?
+        }
+        temp_file_path(report_path)
 
         # modal pops up so user can trigger the download
         showModal(modalDialog(
