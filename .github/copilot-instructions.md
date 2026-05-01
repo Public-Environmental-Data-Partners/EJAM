@@ -2,18 +2,18 @@
 
 ## Repository Overview
 
-EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment. 
+EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment.
 Large repository: Can be roughly ~737MB, 621 R files, 618 man pages, 115MB datasets. However, several very large .arrow data files are used by the package but not part of the bundle that gets downloaded to be installed.
 
 **Tech Stack:** See the DESCRIPTION file for a list of dependencies, such as these: R with a specific version specified, Golem Shiny framework, data.table, sf (spatial), arrow
 
-**Key Directories:** 
+**Key Directories:**
 - Root directory of package (which has several key files like DESCRIPTION, NEWS.md, README.Rmd, etc.)
-- `R/` (source) 
-- `data/` (.rda files lazy-loaded by the package when it is loaded, plus .arrow format datasets saved their upon first install or when datasets are updated on the dataset repo, and "ejamdata_version.txt" with metadata on what is the latest version of certain large datasets) 
+- `R/` (source)
+- `data/` (.rda files lazy-loaded by the package when it is loaded, plus .arrow format datasets saved their upon first install or when datasets are updated on the dataset repo, and "ejamdata_version.txt" with metadata on what is the latest version of certain large datasets)
 - `data-raw/` (scripts for updating the datasets)
-- `inst/` (configs prefixed with "global_", "testdata" folder with examples of data for testing, "report" folder related to templates and creating html report of results, etc.) 
-- `tests/` (unit testing via testthat + shinytest2) 
+- `inst/` (configs prefixed with "global_", "testdata" folder with examples of data for testing, "report" folder related to templates and creating html report of results, etc.)
+- `tests/` (unit testing via testthat + shinytest2)
 - `.github/workflows/` (has CI github actions workflows)
 - `man/` (auto-generated documentation)
 
@@ -54,7 +54,7 @@ brew install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pk
 
 ### R Package Installation
 
-- See installation instructions and notes in `vignettes/installing.Rmd` 
+- See installation instructions and notes in `vignettes/installing.Rmd`
 - Note the key R packages and R version dependencies listed in the `DESCRIPTION` file.
 - **Important:** The package is NOT on CRAN. Always install from GitHub or local source.
 
@@ -90,12 +90,12 @@ library(EJAM)
 
 # Run all web app tests
 shinytest2::test_app(".", filter = "functionality", check_setup = FALSE)
-#or 
+#or
 EJAM:::test_ejam(ask=F,run_these="webapp")
 
 # Run specific web app tests, for example:
 shinytest2::test_app(".", filter = "FIPS-functionality", check_setup = FALSE)
-shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE) 
+shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 ```
 
 **Dependencies for shinytest2:**
@@ -140,7 +140,7 @@ EJAM:::pkgdown_update() # see documentation of this function for details
 library(EJAM)
 ejamapp()
 
-# Or with custom settings (as explained in `vignettes/dev-app-settings.Rmd`), 
+# Or with custom settings (as explained in `vignettes/dev-app-settings.Rmd`),
 # especially the setting isPublic=TRUE that should be used for debugging or testing
 ejamapp(isPublic = TRUE)
 ```
@@ -156,18 +156,18 @@ ejamapp(isPublic=TRUE)
 ```
 
 **Live web app**
-- The app has been hosted at the site pointed to by https://ejanalysis.com/ejamapp 
+- The app has been hosted at the site pointed to by https://ejanalysis.com/ejamapp
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
 
 **API: Example of live hosted EJAM API that is not the same as the API drafted in the plumber folder of this package**
 - There is an EJAM API hosted at the site pointed to by https://ejanalysis.com/ejamapi  and/or (if different) at https://ejamapi-84652557241.us-central1.run.app/
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
-- Also, the code for that API is at https://github.com/Public-Environmental-Data-Partners/EJAM-API 
+- Also, the code for that API is at https://github.com/Public-Environmental-Data-Partners/EJAM-API
 
 ## GitHub Actions / CI Workflows
 
 - Some of the github action workflows for this package might be disabled at any given time, because they are being debugged still or because they are time-consuming and non-essential, for example.
-- See the main branch's folder .github/workflows which has the .yaml files. 
+- See the main branch's folder .github/workflows which has the .yaml files.
 - See the repository to check which are currently enabled.
 
 
@@ -194,11 +194,11 @@ ejamapp(isPublic=TRUE)
 ## Architecture
 
 **Golem Framework:** Uses `app_ui()`/`app_server()`, best launched via `ejamapp()`. Config in `inst/golem-config.yml`.
-**Data:** 
-  - Some is lazy-loaded from data/ 
+**Data:**
+  - Some is lazy-loaded from data/
   - Some is saved in the data folder upon package installation because some large data files must be downloaded from the ejamdata repository. This is explained in the file vignettes/dev-update-datasets.Rmd
-  - Some is loaded via `dataload_dynamic()` and some is obtained and used in .arrow format instead of .rda format in some parts of the app. 
-**Naming:** 
+  - Some is loaded via `dataload_dynamic()` and some is obtained and used in .arrow format instead of .rda format in some parts of the app.
+**Naming:**
   - Closely-related R functions are often grouped within a single .R file in the R folder, especially if the filename includes the phrase "_FUNCTIONS" such as in "PROXIMITY_FUNCTIONS.R"
   - Closely-related R functions often share a common prefix such as "fips_" or "frs_" or "ejamit" or "ejam2" or "calc_" or "latlon" or "plot" or "table_" or "url_" or "shape" or "state_" or "popup_" or "get"
   - Some utilities are in .R files that start with "utils_"
@@ -215,7 +215,7 @@ ejamapp(isPublic=TRUE)
 - R/ source files, especially the .R files in the R folder
 - Configuration files (DESCRIPTION, golem-config.yml, global_defaults* , etc.)
 - Test files in the folders under tests/
-- data-raw/ and subfolders, especially datacreate_*.R 
+- data-raw/ and subfolders, especially datacreate_*.R
 - Vignettes that are .Rmd files in the vignettes/ folder
 - inst/ and subfolders
 - GitHub workflow changes in .github/workflows
@@ -245,9 +245,9 @@ Version of package and versions of critical data sources like ACS are tracked in
 
 ## Additional Resources
 
-**General context information about the EJAM package and EJAM web app and EJScreen, especially their uses, their ongoing development, and their key URLs:** 
+**General context information about the EJAM package and EJAM web app and EJScreen, especially their uses, their ongoing development, and their key URLs:**
 - See https://ejanalysis.com and https://ejanalysis.com/status for an initial, short, broad overview explaining what are EJSCREEN and EJAM, and status of their recent and ongoing development.
-- See https://screening-tools.com for the recent history and broad context of this work and related efforts to preserve tools and data, and organizations involved in continued development. 
+- See https://screening-tools.com for the recent history and broad context of this work and related efforts to preserve tools and data, and organizations involved in continued development.
 - See https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html for an article providing an overview of what the EJAM package and EJAM web app are.
 - See https://ejanalysis.com/ejam-code for key URLs for relevant repositories and documentation.
 
@@ -268,14 +268,14 @@ For most development tasks, following these instructions should allow you to wor
 
 Only search for additional information if:
 
-1. These instructions are incomplete for your specific task, or they are unlikely to be sufficient to provide a high-confidence, accurate, clear, complete answer - 
+1. These instructions are incomplete for your specific task, or they are unlikely to be sufficient to provide a high-confidence, accurate, clear, complete answer -
   In that case, see additional resources mentioned above, including any of the .Rmd files in the vignettes folder.
-2. You encounter an error or question or issue or topic not covered by the resources and information here - In that case, 
+2. You encounter an error or question or issue or topic not covered by the resources and information here - In that case,
   first try to resolve it using your knowledge plus the documentation of relevant R packages,
-  and if that is unlikely to be sufficient to provide a high-confidence, accurate, clear, complete answer, 
-  then look for mentions of the error or problem or topic and solutions to the issue as posted in key resources starting with sources 
-  such as Posit-specific and R-specific discussion groups, stackexchange, stackoverflow, 
-  other support pages for Posit or the R shiny package, and 
+  and if that is unlikely to be sufficient to provide a high-confidence, accurate, clear, complete answer,
+  then look for mentions of the error or problem or topic and solutions to the issue as posted in key resources starting with sources
+  such as Posit-specific and R-specific discussion groups, stackexchange, stackoverflow,
+  other support pages for Posit or the R shiny package, and
   finally, if useful, look at information relevant to any other specific software that is clearly relevant to the problem or question or issue or topic.
 3. You need more details about a specific function's implementation - In that case, see any additional resources noted above for more documentation of specific functions or datasets.
   If that is not sufficient, look where you think the information can be found from a highly reliable source.

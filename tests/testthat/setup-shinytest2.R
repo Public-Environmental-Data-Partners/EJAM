@@ -61,9 +61,8 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     for (i in seq_along(valid_categories)) {
       shinytest2_webapp_functionality(valid_categories[i])
     }
-    return(
-      shinytestLogMessage(paste0("finished test category: ", "all"))
-    )
+    cat(paste0("finished test category: ", "all", "\n"))
+    return(invisible(TRUE))
   }
 
   if (!all(test_category %in% valid_categories)) {
