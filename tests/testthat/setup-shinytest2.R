@@ -13,12 +13,18 @@
 # library(EJAM) # and anyway, shinytest2::AppDriver() by default uses app.R which does library(EJAM) if needed, before it uses ejamapp()
 # library(shinytest2)
 
-cat("getting the function 'shinytest2_webapp_functionality()' \n")
-cat("see also the article/vignette built from dev-run-shinytests.Rmd at \n")
-cat(paste0(EJAM::url_package("docs"), "/articles/dev-run-shinytests.html \n"))
+if (!isTRUE(getOption("EJAM.shinytest2_setup_banner_shown"))) {
+  options(EJAM.shinytest2_setup_banner_shown = TRUE)
+  cat("getting the function 'shinytest2_webapp_functionality()' \n")
+  cat("see also the article/vignette built from dev-run-shinytests.Rmd at \n")
+  cat(paste0(EJAM::url_package("docs"), "/articles/dev-run-shinytests.html \n"))
+}
 # browseURL(paste0(EJAM::url_package("docs"), "/articles/dev-run-shinytests.html"))
 
-unlink("tests/shinytestlog.txt") # deletes this file if it exists
+if (!isTRUE(getOption("EJAM.shinytestlog_removed"))) {
+  options(EJAM.shinytestlog_removed = TRUE)
+  unlink("tests/shinytestlog.txt") # deletes this file if it exists
+}
 # see also "tests/testthat/testthat.R"
 
 ## To use this function, indirectly, in RStudio you could do
