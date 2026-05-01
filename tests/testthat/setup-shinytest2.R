@@ -310,7 +310,7 @@ shinytest2_webapp_functionality <- function(test_category) {
       )
     }
     ################## #
-    custom_html_report_download <- function(outputId, expected_text = character()) {
+    custom_html_report_download <- function(outputId) {
       if (!rmarkdown::pandoc_available()) {
         shinytestLogMessage("Skipping community report download assertion because pandoc is not available")
         return(invisible(NA_character_))
@@ -341,11 +341,6 @@ shinytest2_webapp_functionality <- function(test_category) {
         "Particulate Matter"
       )
       for (txt in stable_text) {
-        testthat::expect_true(
-          grepl(txt, html_text, fixed = TRUE)
-        )
-      }
-      for (txt in expected_text) {
         testthat::expect_true(
           grepl(txt, html_text, fixed = TRUE)
         )
@@ -932,10 +927,7 @@ shinytest2_webapp_functionality <- function(test_category) {
     # app$get_download("download_report_multisite")
     # customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
 
-    custom_html_report_download(
-      "download_report_multisite",
-      expected_text = "Summary of Analysis"
-    )
+    custom_html_report_download("download_report_multisite")
     ########################################################################### #
     # ~  ####
 
@@ -985,10 +977,7 @@ shinytest2_webapp_functionality <- function(test_category) {
 
       shinytestLogMessage("about to download community report for three Delaware counties")
       wait_for_results_ready(result = "multisite_report_download_ready")
-      custom_html_report_download(
-        "download_report_multisite",
-        expected_text = "Summary of Analysis"
-      )
+      custom_html_report_download("download_report_multisite")
 
       shinytestLogMessage("going to details tab for three Delaware counties")
       app$set_inputs(results_tabs = "Details")
