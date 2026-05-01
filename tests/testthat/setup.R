@@ -2,7 +2,10 @@
 # SETUP FOR UNIT TESTS ####
 
 ############################### #
-cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
+if (!isTRUE(getOption("EJAM.test_setup_banner_shown"))) {
+  options(EJAM.test_setup_banner_shown = TRUE)
+  cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
+}
 
 # # This script SHOULD get run before tests, so fixtures created here will be available to all the tests.
 # The file now DOES do library(EJAM) - that would do .onAttach() and dataload_dynamic() and indexblocks()
@@ -121,16 +124,20 @@ testthat::set_state_inspector(function() {
 # (some are normally only loaded into memory if / when needed)
 ## (and build index, but library(EJAM) should have already done the indexblocks() part at least)
 
-# suppressMessages({suppressWarnings({
-dataload_dynamic("all",  # needs frs, etc.
-                 # folder_local_source = file.path(.libPaths()[1],'EJAM','data'), # if installed by testthat in special folder then those are not available
-                 silent = FALSE
-)
-# })})
-if (!exists("frs")) {stop('needs frs etc.')}
-suppressMessages({suppressWarnings({
-  indexblocks()
-})})
+if (!isTRUE(getOption("EJAM.test_data_setup_done"))) {
+  options(EJAM.test_data_setup_done = TRUE)
+
+  # suppressMessages({suppressWarnings({
+  dataload_dynamic("all",  # needs frs, etc.
+                   # folder_local_source = file.path(.libPaths()[1],'EJAM','data'), # if installed by testthat in special folder then those are not available
+                   silent = FALSE
+  )
+  # })})
+  if (!exists("frs")) {stop('needs frs etc.')}
+  suppressMessages({suppressWarnings({
+    indexblocks()
+  })})
+}
 ############################### #
 # global defaults   ####
 
