@@ -208,11 +208,13 @@ build_community_report <- function(
 
     # 2. Envt & Demog table ####
 
+    '<section class="report-section page-1-primary-section">',
     generate_env_demog_header(),
 
     fill_tbl_full(output_df             = output_df_rounded,
                   show_ratios_in_report = show_ratios_in_report
     ),
+    '</section>',
     collapse = ''
   )
 
