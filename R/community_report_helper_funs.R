@@ -628,8 +628,11 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
   }
 
   if (missing(footer_html) || is.null(footer_html)) {
-    # Escape any double-quotes in the footer text so it is safe to embed in a CSS content string.
-    css_footer_text <- gsub('"', '\\\\"', footer_text, fixed = TRUE)
+    footer_text <- as.character(footer_text)
+    footer_text[is.na(footer_text)] <- ""
+    footer_text <- paste(footer_text, collapse = " ")
+    css_footer_text <- encodeString(footer_text, quote = '"')
+    html_footer_text <- htmltools::htmlEscape(footer_text)
 
     # Inject the footer text into the @page @bottom-left margin box via an inline <style> block.
     # Chrome natively supports CSS Paged Media @page margin boxes — this is the same mechanism
@@ -637,11 +640,11 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
     # footer div is also included so the footer appears when the report is viewed in a browser.
     footer_html <- HTML(paste0(
       '<div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">',
-      '<p style="margin-bottom: 0;">', footer_text, '</p>',
+      '<p style="margin-bottom: 0;">', html_footer_text, '</p>',
       '</div>',
       if (nzchar(footer_text)) paste0(
         '\n<style>\n@media print {\n  @page {\n    @bottom-left {\n',
-        '      content: "', css_footer_text, '";\n',
+        '      content: ', css_footer_text, ';\n',
         '      font-size: 8pt;\n      color: #555;\n    }\n  }\n}\n</style>'
       ) else ""
     ))
@@ -700,7 +703,10 @@ normalize_logo_html_for_report <- function(logo_html, in_shiny = FALSE) {
     return(logo_html)
   }
 
-  src <- sub(".*<img[^>]+src=['\"]?([^'\" >]+).*", "\\1", logo_html, perl = TRUE)
+  src <- sub(".*<img[^>]+src=['\"]([^'\"]+)['\"].*", "\\1", logo_html, perl = TRUE)
+  if (identical(src, logo_html)) {
+    src <- sub(".*<img[^>]+src=([^ >]+).*", "\\1", logo_html, perl = TRUE)
+  }
   if (identical(src, logo_html) || !nzchar(src)) {
     return(logo_html)
   }

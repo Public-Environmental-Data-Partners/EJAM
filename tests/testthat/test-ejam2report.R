@@ -10,8 +10,10 @@ test_that("pdf_report_status() returns a list with ok and reason fields", {
 })
 
 test_that("pdf_report_status() returns ok=FALSE with a reason when pagedown is not installed", {
-  skip_if(requireNamespace("pagedown", quietly = TRUE),
-          message = "pagedown is installed; skipping test for missing-package path")
+  local_mocked_bindings(
+    pagedown_report_package_available = function() FALSE,
+    .package = "EJAM"
+  )
   result <- EJAM:::pdf_report_status()
   expect_false(isTRUE(result$ok))
   expect_true(nzchar(result$reason))
@@ -29,6 +31,19 @@ test_that("assert_pdf_report_available() stops with a descriptive message when P
     EJAM:::assert_pdf_report_available(),
     regexp = "Chrome is not available"
   )
+})
+
+test_that("PDF footer CSS handles missing, vector, and escaped footer text", {
+  expect_no_error(
+    footer <- as.character(EJAM:::generate_report_footer(
+      footer_text = c(NA, "A\\B \"quoted\"\nnext")
+    ))
+  )
+  expect_true(grepl("<style>", footer, fixed = TRUE))
+  expect_true(grepl('content: " A\\\\B \\"quoted\\"\\nnext";', footer, fixed = TRUE))
+
+  blank_footer <- as.character(EJAM:::generate_report_footer(footer_text = NA))
+  expect_false(grepl("<style>", blank_footer, fixed = TRUE))
 })
 
 test_that("default report logo resolves to an available file", {

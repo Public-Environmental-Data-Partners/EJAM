@@ -103,7 +103,7 @@ shinytest2_webapp_functionality <- function(test_category) {
             deparse(sourcefolder_norm),
             ", winslash = '/', mustWork = TRUE)"
           ),
-          "devtools::load_all(sourcefolder, quiet = TRUE, helpers = FALSE, export_all = FALSE)",
+          "pkgload::load_all(sourcefolder, quiet = TRUE, helpers = FALSE, export_all = FALSE)",
           "getExportedValue('EJAM', 'ejamapp')(",
           "  isPublic = FALSE,",
           "  default_shiny.testmode = TRUE,",
@@ -341,6 +341,11 @@ shinytest2_webapp_functionality <- function(test_category) {
         "Particulate Matter"
       )
       for (txt in stable_text) {
+        testthat::expect_true(
+          grepl(txt, html_text, fixed = TRUE)
+        )
+      }
+      for (txt in expected_text) {
         testthat::expect_true(
           grepl(txt, html_text, fixed = TRUE)
         )

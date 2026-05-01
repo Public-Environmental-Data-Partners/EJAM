@@ -22,9 +22,15 @@ ensure_pandoc_available_for_ejam <- function() {
 ################################################## #
 # helper
 
+pagedown_report_package_available <- function() {
+  requireNamespace("pagedown", quietly = TRUE)
+}
+################################################## #
+# helper
+
 pdf_report_status <- function() {
 
-  if (!requireNamespace("pagedown", quietly = TRUE)) {
+  if (!pagedown_report_package_available()) {
     return(list(
       ok = FALSE,
       reason = "The 'pagedown' package is required to generate PDF reports."
