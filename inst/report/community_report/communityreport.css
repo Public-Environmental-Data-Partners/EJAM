@@ -389,38 +389,23 @@
 }
   }
 
-/* Hidden in screen view; shown as a fixed footer on every page when printing to PDF. */
-.pdf-running-footer {
-  display: none;
-}
-
   @media print {
 
-/* Force all elements to preserve background colors and images when printing.
+/* Preserve all background colors and images when printing to PDF.
    Without this Chrome strips background-color from headers and table cells. */
 * {
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
 }
 
-/* Fixed footer: Chrome's native print places position:fixed elements on every
-   printed page, so this footer text appears on each PDF page.
-   The element is hidden from screen view (display:none above). */
-.pdf-running-footer {
-  display: block;
-  position: fixed;
-  bottom: 0.1in;
-  left: 0.5in;
-  right: 0.5in;
-  font-size: 8pt;
-  color: #555;
-  background: white;
-}
-
+/* Page size and margins.
+   @bottom-right: page numbers — Chrome natively supports CSS Paged Media margin boxes.
+   @bottom-left:  footer text — injected as an inline <style> by generate_report_footer()
+                  in community_report_helper_funs.R so the dynamic text (version + date)
+                  can be encoded as a CSS content string. */
   @page {
     size: letter portrait;
     margin: 0.75in 0.5in 1in 0.5in;
-    /* Page numbers via CSS Paged Media — works in Chrome's native print. */
     @bottom-right {
       content: counter(page) " of " counter(pages);
       font-size: 9pt;
@@ -437,55 +422,6 @@
     height: auto;
   }
 
-  #footer4 {  
-  display: block;
-  position: relative;
-  top: 540px;
-  }
-
-.header { 
-  position: relative;
-  top: 1px;
-}
-
-/* Force a page break before section headers that follow the first page.
-   The first .header div (analysis title/location) intentionally has no
-   page-break so the main header and first table share page 1. */
-#page-2-header {
-  page-break-before: always;
-}
-
-#header-secondary-background { 
-background-color: #71bf44;
-  width: 1071px;
-height: 210px;
-display: inline-block;
-position: absolute;
-top: 70px;
-left: 0px;
-border-radius: 0 0 50px 0;
-}
-
-#header-primary-background { 
-background-color: #005ea2;
-  width: 1060px;
-height: 220px;
-display: inline-block;
-border-radius: 0 0 50px 0;
-position: absolute;
-top: 40px;
-left: 0px;
-}
-#header-background-detail { 
-display: inline-block;
-width: 16px;
-height: 30px;
-position: absolute;
-left: 1055px;
-top: 0;
-background-color: white;
-}
-
 hr {
   display: none;
 }
@@ -494,15 +430,14 @@ hr {
 #print-button-background,
 #download-button,
 #download-button-background {
-display: none;
+  display: none;
 }
 
-#page-3-header {
-margin-top: -30px;
-}
-
-#page-4-header {
-margin-top: -30px;
+/* Force a page break before section headers that follow the first page.
+   The first .header div (analysis title/location) intentionally has no
+   page-break so the main header and first table share page 1. */
+#page-2-header {
+  page-break-before: always;
 }
 
 /* Smart pagination: avoid breaking inside table rows */

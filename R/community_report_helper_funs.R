@@ -628,17 +628,23 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
   }
 
   if (missing(footer_html) || is.null(footer_html)) {
-    footer_html <- HTML(paste0('
-  <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
-    <p style="margin-bottom: 0;">', footer_text, '</p>
-  </div>',
-      # Running element consumed by pagedown/Paged.js @page margin box in communityreport.css.
-      # Hidden in screen view (display:none in CSS). Has no effect in standard browser print.
-      if (nzchar(footer_text)) paste0('\n  <div class="pdf-running-footer">', footer_text, '</div>') else ""
+    # Escape any double-quotes in the footer text so it is safe to embed in a CSS content string.
+    css_footer_text <- gsub('"', '\\\\"', footer_text, fixed = TRUE)
+
+    # Inject the footer text into the @page @bottom-left margin box via an inline <style> block.
+    # Chrome natively supports CSS Paged Media @page margin boxes — this is the same mechanism
+    # that makes page numbers (counter(page)) appear on every PDF page.  The visible on-screen
+    # footer div is also included so the footer appears when the report is viewed in a browser.
+    footer_html <- HTML(paste0(
+      '<div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">',
+      '<p style="margin-bottom: 0;">', footer_text, '</p>',
+      '</div>',
+      if (nzchar(footer_text)) paste0(
+        '\n<style>\n@media print {\n  @page {\n    @bottom-left {\n',
+        '      content: "', css_footer_text, '";\n',
+        '      font-size: 8pt;\n      color: #555;\n    }\n  }\n}\n</style>'
+      ) else ""
     ))
-    ## that should be same as
-    # shiny::div(style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
-    #            shiny::p(style = "margin-bottom: 0", footer_text))
   }
 
   return(footer_html)
