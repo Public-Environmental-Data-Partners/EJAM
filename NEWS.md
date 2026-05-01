@@ -1,7 +1,16 @@
 # Development
 
-- Added PDF format downloads of Community Report in the web app. 
+Web app features:
+
+- Added PDF-format Community Report download option in the web app! Printing out the html report did not really work because of the page breaks, but the new pdf report has page breaks that make sense so a printed report looks good. Some features may be added later, such as heatmap color-coding in tables.
+
+Other changes:
+
 - Improved `ejamapi()` examples and error-checking, and had it use `url_ejamapi()`
+- Significantly revamped webapp functionality testing (done by shinytest2) to be faster, robust, and only check for basic web app UI functionality (not using snapshots that change when very minor updates occur).
+- Revised some of unit testing setup, like setup.R etc.
+- Disabled most github actions workflows pending debugging/updates. Changed to `checkout@v4.3.0` not just `checkout@v4` in all gh action workflows
+- Revised/updated instructions for github copilot
 
 
 # EJAM 2.32.8 (April 2026)
