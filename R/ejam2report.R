@@ -53,8 +53,7 @@ assert_pdf_report_available <- function() {
       status$reason,
       " Install pagedown and make Chrome/Chromium available, or choose HTML format."
     )
-    shiny::validate(msg)
-    # stop(msg, call. = FALSE)
+    stop(msg, call. = FALSE)
   }
   invisible(TRUE)
 }
@@ -526,20 +525,17 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
           quiet = TRUE
         )
         assert_pdf_report_available()
-        tryCatch({
 
-        })
         # create pdf
-        tryCatch({
+
           pagedown::chrome_print(
             input = html_temp,
             output = output_file,
             wait = 5, timeout = 120, verbose = 0)
-        }, error = function(e) {validate(conditionMessage(e))})
+
         if (!file.exists(output_file)) {
           msg <- paste0("PDF report was not created: ", output_file)
-          # stop(msg, call. = FALSE)
-          shiny::validate(msg)
+          stop(msg, call. = FALSE)
         }
       } else {
         rmarkdown::render(

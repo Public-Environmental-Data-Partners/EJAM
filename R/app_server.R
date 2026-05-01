@@ -2620,12 +2620,16 @@ app_server <- function(input, output, session) {
         # pdf format was requested
         assert_pdf_report_available() # does stop() or validate() if cannot do pdf
         # create pdf
+        ok <- TRUE
         tryCatch({
           pagedown::chrome_print(
             input = html_path,
             output = file,
             wait = 5, timeout = 120, verbose = 0)
-        }, error = function(e) {validate(conditionMessage(e))})
+        }, error = function(e) {
+          ok <- FALSE
+          validate(conditionMessage(e))
+        })
       } else {
         # html format was requested
         ok <- file.copy(from = html_path, to = file, overwrite = TRUE)
@@ -2713,11 +2717,7 @@ app_server <- function(input, output, session) {
         fileextension <- ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
         temp_file <- tempfile(fileext = fileextension)
 
-        if (fileextension == ".pdf") {
-          assert_pdf_report_available()
-        }
-
-        # if shapefile was used for analysis, provide it to ejam2report()
+         # if shapefile was used for analysis, provide it to ejam2report()
         if (submitted_upload_method() == 'SHP') {
           shp_for_report <- data_uploaded()
         } else {
@@ -2725,6 +2725,10 @@ app_server <- function(input, output, session) {
         }
 
         report_path <- tryCatch({
+
+          if (fileextension == ".pdf") {
+            assert_pdf_report_available()
+          }
 
           ejam2report(
 
@@ -2758,10 +2762,7 @@ app_server <- function(input, output, session) {
         )
 
         if (is.null(report_path) || !file.exists(report_path)) {
-          msg <- paste0("single-site report was not created: ", report_path)
-          shiny::validate(msg)
-          # stop(msg, call. = FALSE)
-          # return() # to exit without showing modal?
+          return() # so the “Download Ready” modal does not show after failure
         }
         temp_file_path(report_path)
 
