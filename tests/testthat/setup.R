@@ -12,7 +12,7 @@ if (!isTRUE(getOption("EJAM.test_setup_banner_shown"))) {
 # ############################### #
 # cat("\n\n      ------------------ NOW DOING library(EJAM) !!!!  -------------      \n\n")
 #
-if (!"EJAM" %in% loadedNamespaces()) {
+if (!"package:EJAM" %in% search()) {
   library(EJAM)
 }
 ############################### #
