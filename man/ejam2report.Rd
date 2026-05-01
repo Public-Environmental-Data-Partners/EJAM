@@ -7,7 +7,7 @@
 ejam2report(
   ejamitout = testoutput_ejamit_10pts_1miles,
   sitenumber = NULL,
-  logo_path = EJAM:::global_or_param("report_logo"),
+  logo_path = NULL,
   logo_html = NULL,
   report_title = NULL,
   analysis_title = NULL,

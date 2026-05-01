@@ -658,24 +658,6 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
 
 ## overall header for report ####
 
-#' Build HTML header for community report
-#' @seealso used by [build_community_report()]
-#' @details
-#' Useful defaults are provided by build_community_report()
-#'
-#' @param analysis_title optional, title to use in header of report
-#' @param report_title optional, generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
-#' @param totalpop optional, total population included in location(s) analyzed
-#' @param locationstr optional, description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()
-#' @param in_shiny optional, whether the function is being called in or outside of shiny - affects location of header
-#' @param logo_path optional, relative path to a logo for the upper right of the overall header.
-#'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp(),
-#'   but NULL means default and "" means omit logo entirely.
-#' @param logo_html optional HTML for img of logo for the upper right of the overall header.
-#'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
-#'
-#' @keywords internal
-#'
 resolve_report_logo_path <- function(logo_path = NULL) {
   if (!is.null(logo_path)) {
     return(logo_path)
@@ -749,6 +731,24 @@ report_logo_html_from_inputs <- function(logo_path = NULL, logo_html = NULL, in_
   logo_html_for_report(logo_path, in_shiny = in_shiny)
 }
 
+#' Build HTML header for community report
+#' @seealso used by [build_community_report()]
+#' @details
+#' Useful defaults are provided by build_community_report()
+#'
+#' @param analysis_title optional, title to use in header of report
+#' @param report_title optional, generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
+#' @param totalpop optional, total population included in location(s) analyzed
+#' @param locationstr optional, description of the location(s) analyzed, e.g., report_residents_within_xyz_from_ejamit()
+#' @param in_shiny optional, whether the function is being called in or outside of shiny - affects location of header
+#' @param logo_path optional, relative path to a logo for the upper right of the overall header.
+#'   Ignored if logo_html is specified and not NULL, but otherwise uses default or param set in ejamapp(),
+#'   but NULL means default and "" means omit logo entirely.
+#' @param logo_html optional HTML for img of logo for the upper right of the overall header.
+#'   If specified, it overrides logo_path. If omitted, gets created based on logo_path.
+#'
+#' @keywords internal
+#'
 generate_html_header <- function(analysis_title = NULL, # defaults of NULL here are handled below
                                  report_title = NULL,
                                  locationstr = NULL, #  # e.g., report_residents_within_xyz_from_ejamit()
