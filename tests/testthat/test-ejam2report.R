@@ -30,3 +30,32 @@ test_that("assert_pdf_report_available() stops with a descriptive message when P
     regexp = "Chrome is not available"
   )
 })
+
+test_that("default report logo resolves to an available file", {
+  logo_path <- EJAM:::resolve_report_logo_path()
+  expect_true(nzchar(logo_path))
+  expect_true(file.exists(logo_path))
+})
+
+test_that("standalone report logo is embedded while explicit blank logo is omitted", {
+  default_logo <- EJAM:::report_logo_html_from_inputs(in_shiny = FALSE)
+  expect_match(default_logo, "<img src=")
+  expect_true(grepl("data:image", default_logo, fixed = TRUE))
+
+  expect_identical(
+    EJAM:::report_logo_html_from_inputs(logo_path = "", in_shiny = FALSE),
+    ""
+  )
+})
+
+test_that("local logo_html image sources are embedded for standalone reports", {
+  logo_path <- EJAM:::resolve_report_logo_path()
+  logo_html <- paste0('<img src="', logo_path, '" alt="logo">')
+  normalized_logo <- EJAM:::report_logo_html_from_inputs(
+    logo_html = logo_html,
+    in_shiny = FALSE
+  )
+
+  expect_true(grepl("data:image", normalized_logo, fixed = TRUE))
+  expect_false(grepl(logo_path, normalized_logo, fixed = TRUE))
+})

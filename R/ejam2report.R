@@ -151,7 +151,7 @@ assert_pdf_report_available <- function() {
 #'
 ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         sitenumber = NULL,
-                        logo_path = EJAM:::global_or_param("report_logo"),
+                        logo_path = NULL,
                         logo_html = NULL, # defined downstream
                         report_title = NULL, # EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
                         analysis_title = NULL, # EJAM:::global_or_param("default_standard_analysis_title")
@@ -338,8 +338,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # HEADER  ####
 
     ## > logo_path ####
-    if (is.null(logo_path)) {
-      logo_path <- EJAM:::global_or_param("report_logo")
+    if (missing(logo_path) || is.null(logo_path)) {
+      logo_path <- NULL
     }
 
     ## > population count formatted ####
