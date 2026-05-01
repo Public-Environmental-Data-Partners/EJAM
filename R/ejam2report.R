@@ -518,6 +518,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
         # render HTML to temp file, capturing the actual output path returned by render()
         html_temp <- tempfile(fileext = ".html")
+
         rendered_path <- rmarkdown::render(
           input = rmd_template,
           output_format = "html_document",
@@ -526,7 +527,6 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
           envir = new.env(parent = globalenv()),
           quiet = TRUE
         )
-
         # convert to PDF using pagedown::chrome_print()
         # This preserves the full CSS styling unlike a LaTeX-based pdf_document
           pagedown::chrome_print(
