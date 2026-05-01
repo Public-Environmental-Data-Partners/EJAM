@@ -335,15 +335,16 @@ shinytest2_webapp_functionality <- function(test_category) {
       )
 
       html <- readLines(download_filepath, warn = FALSE, encoding = "UTF-8")
+      html_text <- paste(html, collapse = "\n")
       stable_text <- c(
-        "EJSCREEN Multisite Summary",
-        "Environmental and Residential Population Indicators",
-        "Report created by EJAM",
+        "data-indicators-table",
+        "Population:",
+        "Particulate Matter",
         expected_text
       )
       for (txt in stable_text) {
         testthat::expect_true(
-          any(grepl(txt, html, fixed = TRUE))
+          grepl(txt, html_text, fixed = TRUE)
         )
       }
 
