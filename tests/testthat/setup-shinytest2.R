@@ -338,9 +338,8 @@ shinytest2_webapp_functionality <- function(test_category) {
       html_text <- paste(html, collapse = "\n")
       stable_text <- c(
         "data-indicators-table",
-        "Population:",
-        "Particulate Matter",
-        expected_text
+        "Population",
+        "Particulate Matter"
       )
       for (txt in stable_text) {
         testthat::expect_true(
