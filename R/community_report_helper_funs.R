@@ -631,8 +631,11 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
     footer_html <- HTML(paste0('
   <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
     <p style="margin-bottom: 0;">', footer_text, '</p>
-  </div>
-  '))
+  </div>',
+      # Running element consumed by pagedown/Paged.js @page margin box in communityreport.css.
+      # Hidden in screen view (display:none in CSS). Has no effect in standard browser print.
+      if (nzchar(footer_text)) paste0('\n  <div class="pdf-running-footer">', footer_text, '</div>') else ""
+    ))
     ## that should be same as
     # shiny::div(style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
     #            shiny::p(style = "margin-bottom: 0", footer_text))
