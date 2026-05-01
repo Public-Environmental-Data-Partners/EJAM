@@ -12,12 +12,17 @@ on:
 
 permissions: read-all
 
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# a) The "pages-build-deployment" workflow gh action is able to publish from the docs folder of main branch if you already locally built the pkgdown site in development and main branches.
+# b) alternatively, the workflow called 'build and deploy documentation website on github pages' in pkgdown.yaml, would be the approach to use if building the site via gh actions, not locally, and deploying from the gh-pages branch, \ (root) folder.
+# Do not need both, so disable or delete the one not being used and configure the repo to publish from the correct branch and folder.
+
+# This Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 
 jobs:
   build-deploy-pkgdown:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     # Only restrict concurrency for non-PR jobs
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
@@ -26,7 +31,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.0
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -39,8 +44,17 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+      - name: Build site      
+      # do specific steps here to avoid build_llms(), since the pkgdown:: wrapper function now also includes build_llms() which takes much too long for this large website.
+        run: |
+          pkg <- pkgdown::as_pkgdown(".")
+          pkgdown::init_site(pkg)
+          pkgdown::build_home(pkg)
+          pkgdown::build_reference(pkg)
+          pkgdown::build_articles(pkg)
+          pkgdown::build_news(pkg)
+          pkgdown::build_sitemap(pkg)
+          
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
@@ -48,5 +62,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           clean: true
-          branch: main
-          folder: docs
+          branch: gh-pages
+          target-folder: \
+          
