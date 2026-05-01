@@ -31,9 +31,6 @@ unlink("tests/shinytestlog.txt") # deletes this file if it exists
 
 shinytest2_webapp_functionality <- function(test_category) {
 
-  old_width <- getOption("width") # Some functions alter this and it is noisy to see warnings that options changed
-  on.exit(options(width = old_width), add = TRUE)
-
   ## validate test_category
   # test_webapp = c(
   #   "test-webapp-ui_and_server.R",  # but this one file does not use shinytest2_webapp_functionality()
@@ -61,6 +58,8 @@ shinytest2_webapp_functionality <- function(test_category) {
   ########################################################################### #
 
   test_that(paste0("{shinytest2} tests of ", test_category, " category"), {
+    old_width <- getOption("width") # Some functions alter this and it is noisy to see warnings that options changed
+    withr::defer(options(width = old_width), testthat::teardown_env())
 
     testthat::skip_if_not_installed("shinytest2") # should never happen, since this gets sourced by setup.R which does library(shinytest2)
 
