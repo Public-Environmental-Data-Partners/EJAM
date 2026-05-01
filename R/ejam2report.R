@@ -51,7 +51,7 @@ assert_pdf_report_available <- function() {
   if (!isTRUE(status$ok)) {
     msg <- paste0(
       status$reason,
-      " Install pagedown and make Chrome/Chromium available, or choose HTML format."
+      " Install pagedown and make Chrome/Chromium available to use PDF output."
     )
     stop(msg, call. = FALSE)
   }
@@ -109,8 +109,8 @@ assert_pdf_report_available <- function() {
 #'   PDF generation uses [pagedown::chrome_print()] which requires the `pagedown` package and a
 #'   Chrome/Chromium browser to be available on the system.
 #'   The PDF preserves the full HTML/CSS styling and supports smart page breaks.
-#'   If PDF-related dependencies are unavailable, PDF generation stops with a clear error;
-#'   Choose HTML output instead.
+#'   If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
+#'   PDF output is required when this option is selected; it is not optional.
 #' @param filename optional path and name for report file, used by web app
 #' @param show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in main table of envt/demog. info.
 #' @param extratable_show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in extra table
@@ -513,10 +513,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     } else {
       ## render & return filepath ####
       if (fileextension == ".pdf") {
-        ## For PDF: render HTML first, then convert to PDF using pagedown::chrome_print() ####
-        # This preserves the full CSS styling unlike a LaTeX-based pdf_document
+        ## For PDF: check dependencies first, then render HTML, then convert to PDF ####
+        assert_pdf_report_available()
+
+        # render HTML to temp file, capturing the actual output path returned by render()
         html_temp <- tempfile(fileext = ".html")
-        rmarkdown::render(
+        rendered_path <- rmarkdown::render(
           input = rmd_template,
           output_format = "html_document",
           output_file = html_temp,
@@ -524,12 +526,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
           envir = new.env(parent = globalenv()),
           quiet = TRUE
         )
-        assert_pdf_report_available()
 
-        # create pdf
-
+        # convert to PDF using pagedown::chrome_print()
+        # This preserves the full CSS styling unlike a LaTeX-based pdf_document
           pagedown::chrome_print(
-            input = html_temp,
+            input = rendered_path,
             output = output_file,
             wait = 5, timeout = 120, verbose = 0)
 

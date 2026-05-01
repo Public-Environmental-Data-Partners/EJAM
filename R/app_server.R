@@ -2618,14 +2618,19 @@ app_server <- function(input, output, session) {
 
       if (isTRUE(input$format_report_multisite %in% "pdf")) {
         # pdf format was requested
-        assert_pdf_report_available() # stop() if pagedown/Chrome unavailable
-        # create pdf
         tryCatch({
+          assert_pdf_report_available() # stop() if pagedown/Chrome unavailable
+          # create pdf
           pagedown::chrome_print(
             input = html_path,
             output = file,
             wait = 5, timeout = 120, verbose = 0)
         }, error = function(e) {
+          showModal(modalDialog(
+            title = "PDF not available",
+            conditionMessage(e),
+            easyClose = TRUE
+          ))
           validate(conditionMessage(e))
         })
       } else {
