@@ -7,7 +7,7 @@
 ejam2report(
   ejamitout = testoutput_ejamit_10pts_1miles,
   sitenumber = NULL,
-  logo_path = EJAM:::global_or_param("report_logo"),
+  logo_path = NULL,
   logo_html = NULL,
   report_title = NULL,
   analysis_title = NULL,
@@ -106,8 +106,12 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.}
 \item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}
 Should provide footer_date to ensure user's timezone is used to determine today's date.}
 
-\item{fileextension}{html or .html or pdf or .pdf (assuming pdf option has been implemented).
-Creating PDF output from R Markdown requires that LaTeX be installed.}
+\item{fileextension}{html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+PDF generation uses \code{\link[pagedown:chrome_print]{pagedown::chrome_print()}} which requires the \code{pagedown} package and a
+Chrome/Chromium browser to be available on the system.
+The PDF preserves the full HTML/CSS styling and supports smart page breaks.
+If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
+PDF output is required when this option is selected; it is not optional.}
 
 \item{filename}{optional path and name for report file, used by web app}
 

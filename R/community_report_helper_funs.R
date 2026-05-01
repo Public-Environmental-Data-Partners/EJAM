@@ -627,14 +627,26 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
   }
 
   if (missing(footer_html) || is.null(footer_html)) {
-    footer_html <- HTML(paste0('
-  <div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">
-    <p style="margin-bottom: 0;">', footer_text, '</p>
-  </div>
-  '))
-    ## that should be same as
-    # shiny::div(style = "background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;",
-    #            shiny::p(style = "margin-bottom: 0", footer_text))
+    footer_text <- as.character(footer_text)
+    footer_text[is.na(footer_text)] <- ""
+    footer_text <- paste(footer_text, collapse = " ")
+    css_footer_text <- encodeString(footer_text, quote = '"')
+    html_footer_text <- htmltools::htmlEscape(footer_text)
+
+    # Inject the footer text into the @page @bottom-left margin box via an inline <style> block.
+    # Chrome natively supports CSS Paged Media @page margin boxes — this is the same mechanism
+    # that makes page numbers (counter(page)) appear on every PDF page.  The visible on-screen
+    # footer div is also included so the footer appears when the report is viewed in a browser.
+    footer_html <- HTML(paste0(
+      '<div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">',
+      '<p style="margin-bottom: 0;">', html_footer_text, '</p>',
+      '</div>',
+      if (nzchar(footer_text)) paste0(
+        '\n<style>\n@media print {\n  @page {\n    @bottom-left {\n',
+        '      content: ', css_footer_text, ';\n',
+        '      font-size: 8pt;\n      color: #555;\n    }\n  }\n}\n</style>'
+      ) else ""
+    ))
   }
 
   return(footer_html)
@@ -647,6 +659,82 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
 # 1. Headers ####
 
 ## overall header for report ####
+
+resolve_report_logo_path <- function(logo_path = NULL) {
+  if (!is.null(logo_path)) {
+    return(logo_path)
+  }
+
+  candidates <- c(
+    EJAM:::global_or_param("report_logo"),
+    system.file("report/community_report/ejamhex4.png", package = "EJAM"),
+    EJAM:::app_sys("report/community_report/ejamhex4.png")
+  )
+  candidates <- candidates[
+    !is.na(candidates) &
+      nzchar(candidates) &
+      file.exists(candidates) &
+      !dir.exists(candidates)
+  ]
+  if (length(candidates) == 0) {
+    return("")
+  }
+  candidates[[1]]
+}
+
+logo_src_for_report <- function(src, in_shiny = FALSE) {
+  if (!isTRUE(in_shiny) && nzchar(src) && file.exists(src) && !dir.exists(src)) {
+    return(knitr::image_uri(src))
+  }
+  src
+}
+
+logo_html_for_report <- function(src, in_shiny = FALSE) {
+  paste0(
+    '<img src=\"',
+    logo_src_for_report(src, in_shiny = in_shiny),
+    '\" alt=\"logo\" width=\"220\" height=\"70\">'
+  )
+}
+
+normalize_logo_html_for_report <- function(logo_html, in_shiny = FALSE) {
+  if (is.null(logo_html) || "" %in% logo_html) {
+    return(logo_html)
+  }
+
+  src <- sub(".*<img[^>]+src=['\"]([^'\"]+)['\"].*", "\\1", logo_html, perl = TRUE)
+  if (identical(src, logo_html)) {
+    src <- sub(".*<img[^>]+src=([^ >]+).*", "\\1", logo_html, perl = TRUE)
+  }
+  if (identical(src, logo_html) || !nzchar(src)) {
+    return(logo_html)
+  }
+
+  normalized_src <- logo_src_for_report(src, in_shiny = in_shiny)
+  sub(src, normalized_src, logo_html, fixed = TRUE)
+}
+
+report_logo_html_from_inputs <- function(logo_path = NULL, logo_html = NULL, in_shiny = FALSE) {
+  notempty <- function(z) {!is.null(z) && !("" %in% z)}
+
+  if (notempty(logo_html)) {
+    return(normalize_logo_html_for_report(logo_html, in_shiny = in_shiny))
+  }
+
+  if (is.null(logo_path)) {
+    logo_path <- resolve_report_logo_path()
+  }
+
+  if (is.null(logo_path) || !nzchar(logo_path)) {
+    return("")
+  }
+
+  if (!file.exists(logo_path) && !isTRUE(in_shiny)) {
+    message("cannot find ", logo_path, " from current folder, but may be available for render as a relative path and will try to use it for the logo on report")
+  }
+
+  logo_html_for_report(logo_path, in_shiny = in_shiny)
+}
 
 #' Build HTML header for community report
 #' @seealso used by [build_community_report()]
@@ -676,72 +764,11 @@ generate_html_header <- function(analysis_title = NULL, # defaults of NULL here 
 ) {
 
   ########## #  ########## #  ########## #  ########## #
-  # helper function picking report logo info -- helps to decide which parameter to use or when to use defaults or warn
-  report_logo_html_from_inputs = function(logo_path, logo_html) {
-
-    default_logo_path <- EJAM:::global_or_param("report_logo")
-
-    pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
-    #### might need RELATIVE not absolute path here, though. See app_server.R
-    #
-    # default_logo_path <-  pkg_relative_path(default_logo_path) # maybe ***
-    # logo_path <- pkg_relative_path(logo_path)                  # maybe ***
-
-    default_logo_html <- paste0('<img src=\"', default_logo_path, '\" alt=\"logo\" width=\"220\" height=\"70\">')
-    notempty <- function(z) {!is.null(z) & !("" %in% z)}
-
-    # if both NULL, use defaults to create html
-    if (is.null(logo_path) && is.null(logo_html)) {
-      return(default_logo_html)
-    }
-    # if logo_path NULL and logo_html "", warn of conflict and use defaults to make html from path (ignore empty html)
-    if (is.null(logo_path) && ("" %in% logo_html)) {
-      return(default_logo_html)
-    }
-
-    # if both "", omit logo
-    if (("" %in% logo_path) && ("" %in% logo_html)) {
-      return("")
-    }
-    # if logo_path "" and logo_html NULL, omit logo (dont warn)
-    if (("" %in% logo_path) && is.null(logo_html)) {
-      return("")
-    }
-
-    # if both PROVIDED as not null and not empty,  try to use given html (and ignore given path)
-    if (notempty(logo_path) && notempty(logo_html)) {
-      # warn if html not seem to match path or a valid path?
-      path_from_html <- gsub(".*img src=.(.*). alt.*", "\\1", logo_html)
-      if (!file.exists(path_from_html)) {
-        message("logo_html seems to point to -- but from current folder, cannot find -- ", path_from_html, ", but will try using logo_html as provided")
-      }
-      return(logo_html)
-    }
-    # if logo_path NULL or "", but logo_html PROVIDED as not null not empty, try to use given html  (and ignore given path)
-    if (!notempty(logo_path) && notempty(logo_html)) {
-      #  warn if html not seem ok ?
-      path_from_html <- gsub(".*img src=.(.*). alt.*", "\\1", logo_html)
-      if (!file.exists(path_from_html)) {
-        message("logo_html seems to point to -- but from current folder, cannot find -- ", path_from_html, ", but will try using logo_html as provided")
-      }
-      return(logo_html)
-    }
-
-    # if logo_path PROVIDED as not null and not empty, and logo_html NULL or "", (warn?) try to use path to make html (and ignore given html)
-    if (notempty(logo_path) && !notempty(logo_html)) {
-      if (!file.exists(file.path(  logo_path))) {
-        message("cannot find ", logo_path, " from current folder, but may be available for render as a relative path and will try to use it for the logo on report")
-        # return("") # to be safe could omit logo if seems like file not available
-      }
-      logo_html <- paste0('<img src=\"', logo_path, '\" alt=\"logo\" width=\"220\" height=\"70\">')
-      return(logo_html)
-    }
-
-    # catchall
-    return(default_logo_html)
-  }
-
-  logo_html <- report_logo_html_from_inputs(logo_path = logo_path, logo_html = logo_html)
+  logo_html <- report_logo_html_from_inputs(
+    logo_path = logo_path,
+    logo_html = logo_html,
+    in_shiny = in_shiny
+  )
   if (is.null(logo_html) || all(is.na(logo_html)) || length(logo_html) == 0) {
     logo_html <- "" # just in case still wasn't valid/available
   }

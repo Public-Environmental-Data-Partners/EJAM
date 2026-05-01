@@ -35,14 +35,20 @@ shiny::HTML(params$community_html)   # from build_community_report()
 ```{r map_section, echo=FALSE}
 #
 if (!(is.null(params$map) || anyNA(params$map) || length(params$map) == 0)) {
-  #
-  params$map
+  htmltools::tagList(
+    htmltools::tags$section(
+      class = "report-section report-map-section",
+      params$map
+    )
+  )
 }
 ```
 
-```{r plot, fig.align='center', out.width='100%'}
+```{r plot, results='asis', fig.align='center', out.width='100%'}
 #
-params$plot
+cat('<section class="report-section report-plot-section">')
+print(params$plot)
+cat('</section>')
 ```
 
 ```{r footer, fig.align='center', out.width='100%'}

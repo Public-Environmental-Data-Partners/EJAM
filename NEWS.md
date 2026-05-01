@@ -18,6 +18,7 @@
 
 # Development branch after 2.32.8
 
+- Added PDF format downloads of Community Report in the web app. 
 - Improved `ejamapi()` examples and error-checking, and had it use `url_ejamapi()`
 
 
