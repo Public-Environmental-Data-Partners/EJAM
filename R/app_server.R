@@ -29,6 +29,7 @@ app_server <- function(input, output, session) {
 
   hideTab(inputId = 'all_tabs', target = 'Advanced Settings')
   data_processed <-  reactiveVal(NULL) # initialized so it can be set later in reaction to an event, using data_processed(newvalue)
+  analysis_complete <- reactiveVal(FALSE)
 
   sanitized_standard_analysis_title <- reactive({
     EJAM:::global_or_param("sanitize_text")(input$standard_analysis_title)
@@ -1807,24 +1808,15 @@ app_server <- function(input, output, session) {
   # download_ready_for_report_footer_version_date <- reactiveVal(FALSE) # quick, assume ready
 
   ## data_processed()  reactive holds results of ejamit()
-
-  # web app functionality test can wait for this
-  analysis_complete <- reactiveVal(FALSE)
-  if (!isTRUE(getOption("shiny.testmode")) &&
-      isTRUE(EJAM:::global_or_param("default_shiny.testmode"))) {
-    options(shiny.testmode = TRUE)
-  }
-  if (isTRUE(getOption("shiny.testmode"))) {
-    observe({
-      shiny::exportTestValues(
-        analysis_complete = analysis_complete(),
-        multisite_report_download_ready =
-          download_ready_for_report_header_and_tables() &&
-          download_ready_for_report_map() &&
-          download_ready_for_report_plot()
-      )
-    })
-  }
+  observe({
+    shiny::exportTestValues(
+      analysis_complete = analysis_complete(),
+      multisite_report_download_ready =
+        download_ready_for_report_header_and_tables() &&
+        download_ready_for_report_map() &&
+        download_ready_for_report_plot()
+    )
+  })
 
   observeEvent(input$bt_get_results, {  # (button is pressed)
 
@@ -2054,6 +2046,7 @@ app_server <- function(input, output, session) {
 
     ## assign doaggregate output to data_processed reactive
     data_processed(out)
+    analysis_complete(TRUE)
 
     ## update overall progress bar
     progress_all$inc(1/3, message = 'Step 3 of 3', detail = 'Summarizing')
