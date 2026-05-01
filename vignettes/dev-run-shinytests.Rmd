@@ -73,11 +73,11 @@ tests/
 
 ### File Descriptions
 
--   **`testthat/setup.R`** – Does setup (loads `global_*.R` and app scripts into the testing environment, etc.), and sources `shinytest2_webapp_functionality()` which is in `testthat/setup-shinytest2.R`
+-   **`testthat/setup.R`** – Does setup for the test environment (loads `global_*.R` and app scripts into the testing environment, etc.). This file is auto-sourced by `testthat`.
 
--   **`setup-shinytest2.R`** – Contains source code for shinytest2_webapp_functionality() which does a series of tests of web app UI interactions, using the app to upload or select, and analyze, multiple data types (FIPS, shapefile, latlon, NAICS, etc.).
+-   **`setup-shinytest2.R`** – Is also auto-sourced by `testthat` because its filename starts with `setup-`, and it contains the source code for `shinytest2_webapp_functionality()`, which does a series of tests of web app UI interactions using the app to upload or select, and analyze, multiple data types (FIPS, shapefile, latlon, NAICS, etc.).
 
--   **`testthat/test-webapp-[DATA TYPE]-functionality.R`** – Each of these just does the call to shinytest2_webapp_functionality(), specifying the data type to test with.
+-   **`testthat/test-webapp-[DATA TYPE]-functionality.R`** – Each of these calls `shinytest2_webapp_functionality()`, specifying the data type to test with, after that helper has been made available by testthat's automatic sourcing of the setup files.
 
 
 ## Updating Tests
