@@ -2618,27 +2618,24 @@ app_server <- function(input, output, session) {
 
       if (isTRUE(input$format_report_multisite %in% "pdf")) {
         # pdf format was requested
-        assert_pdf_report_available() # does stop() or validate() if cannot do pdf
+        assert_pdf_report_available() # stop() if pagedown/Chrome unavailable
         # create pdf
-        ok <- TRUE
         tryCatch({
           pagedown::chrome_print(
             input = html_path,
             output = file,
             wait = 5, timeout = 120, verbose = 0)
         }, error = function(e) {
-          ok <- FALSE
           validate(conditionMessage(e))
         })
       } else {
         # html format was requested
         ok <- file.copy(from = html_path, to = file, overwrite = TRUE)
-      }
-
-      if (!isTRUE(ok) || !file.exists(file)) {
-        msg <- paste0("download_report_multisite: file.copy failed.", "\nfrom: ", html_path, "\nto: ", file)
-        shiny::validate(msg)
-        # stop(msg, call. = FALSE)
+        if (!isTRUE(ok) || !file.exists(file)) {
+          msg <- paste0("download_report_multisite: file.copy failed.", "\nfrom: ", html_path, "\nto: ", file)
+          shiny::validate(msg)
+          # stop(msg, call. = FALSE)
+        }
       }
 
     }
