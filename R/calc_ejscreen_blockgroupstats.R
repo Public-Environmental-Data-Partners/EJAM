@@ -11,65 +11,76 @@
 #' can be created by an upstream envirodata step from the saved ACS stage, even
 #' though EJAM treats it as an environmental indicator for EJ-index calculations.
 #'
-#' @param blockgroupstats_acs ACS-derived blockgroup table, or NULL if reading
-#'   from a saved pipeline stage.
+#' @param bg_acsdata ACS-derived blockgroup table, or NULL if reading from a
+#'   saved pipeline stage.
 #' @param bg_envirodata environmental/non-ACS blockgroup table, or NULL if
-#'   reading from a saved pipeline stage such as `"envirodata"`.
+#'   reading from a saved pipeline stage such as `"bg_envirodata"`.
 #' @param pipeline_dir folder for reading/writing pipeline stage files.
-#' @param blockgroupstats_acs_stage stage name for ACS input.
+#' @param bg_acsdata_stage stage name for ACS input.
 #' @param bg_envirodata_stage stage name for environmental input.
 #' @param save_stage logical, whether to save the final `blockgroupstats` stage.
 #' @param stage_format file format for saved/read stages: "rds", "rda", or
 #'   "arrow".
+#' @param blockgroupstats_acs,blockgroupstats_acs_stage old names retained as
+#'   aliases for draft scripts.
 #'
 #' @return data.table like [blockgroupstats].
 #'
 #' @keywords internal
 #' @export
 #'
-calc_ejscreen_blockgroupstats <- function(blockgroupstats_acs = NULL,
+calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
                                           bg_envirodata = NULL,
                                           pipeline_dir = NULL,
-                                          blockgroupstats_acs_stage = "blockgroupstats_acs",
-                                          bg_envirodata_stage = "envirodata",
+                                          bg_acsdata_stage = "bg_acsdata",
+                                          bg_envirodata_stage = "bg_envirodata",
                                           save_stage = FALSE,
-                                          stage_format = "rds") {
+                                          stage_format = "rds",
+                                          blockgroupstats_acs = NULL,
+                                          blockgroupstats_acs_stage = NULL) {
+  if (is.null(bg_acsdata) && !is.null(blockgroupstats_acs)) {
+    bg_acsdata <- blockgroupstats_acs
+  }
+  if (!is.null(blockgroupstats_acs_stage)) {
+    bg_acsdata_stage <- blockgroupstats_acs_stage
+  }
+
   acs <- ejscreen_pipeline_input(
-    x = blockgroupstats_acs,
-    stage = blockgroupstats_acs_stage,
+    x = bg_acsdata,
+    stage = bg_acsdata_stage,
     pipeline_dir = pipeline_dir,
     format = stage_format,
-    input_name = "blockgroupstats_acs"
+    input_name = "bg_acsdata"
   )
   enviro <- ejscreen_pipeline_input(
     x = bg_envirodata,
     stage = bg_envirodata_stage,
     pipeline_dir = pipeline_dir,
     format = stage_format,
-    input_name = "envirodata"
+    input_name = "bg_envirodata"
   )
 
   acs <- data.table::as.data.table(data.table::copy(acs))
   enviro <- data.table::as.data.table(data.table::copy(enviro))
 
   if (!"bgfips" %in% names(acs)) {
-    stop("blockgroupstats_acs must have a bgfips column")
+    stop("bg_acsdata must have a bgfips column")
   }
   if (!"bgfips" %in% names(enviro)) {
-    stop("envirodata must have a bgfips column")
+    stop("bg_envirodata must have a bgfips column")
   }
   if (!"pctpre1960" %in% names(enviro)) {
-    stop("envirodata must include pctpre1960, even if that column was created from the ACS stage")
+    stop("bg_envirodata must include pctpre1960, even if that column was created from the ACS stage")
   }
   if (!"lowlifex" %in% names(acs)) {
     if (!"lowlifex" %in% names(enviro)) {
-      stop("Need lowlifex in blockgroupstats_acs or envirodata before calculating Demog.Index.Supp")
+      stop("Need lowlifex in bg_acsdata or bg_envirodata before calculating Demog.Index.Supp")
     }
     acs <- merge(acs, enviro[, .(bgfips, lowlifex)], by = "bgfips", all.x = TRUE)
   }
 
   if (any(grepl("Demog.Index", names(acs)))) {
-    stop("blockgroupstats_acs already has Demog.Index columns; remove or replace them before this step")
+    stop("bg_acsdata already has Demog.Index columns; remove or replace them before this step")
   }
 
   blockgroup_demog_index <- calc_blockgroup_demog_index(bgstats = acs)

@@ -44,6 +44,7 @@ rm(yr_desc, yr_guess)
 # requires having first created formulas_ejscreen_acs via  /data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R
 
 blockgroupstats_acs <- calc_blockgroupstats_acs(yr = yr) # use defaults, otherwise
+bg_acsdata <- blockgroupstats_acs
 
 save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 1.rda"))
 message("saved interim file in ", mydir)
@@ -75,23 +76,22 @@ blockgroupstats_acs <- merge(blockgroupstats_acs, bg_from_tracts, by = "bgfips",
 # ENVIRONMENTAL, HEALTH, or other NON-ACS columns ####
 
 # The new environmental raw scores data would be provided by an upstream
-# envirodata stage, which can use saved ACS data to include pctpre1960.
+# bg_envirodata stage, which can use saved ACS data to include pctpre1960.
 # For now, use the old/existing environmental and non-ACS health scores for testing this
 # code with new ACS data and old non-ACS data.
 external_indicator_cols <- unique(c(names_e, setdiff(names_health, "pctdisability")))
 external_indicator_cols <- external_indicator_cols[external_indicator_cols %in% names(blockgroupstats)]
-envirodata <- blockgroupstats[, c("bgfips", external_indicator_cols), with = FALSE]
-bg_envirodata <- envirodata
+bg_envirodata <- blockgroupstats[, c("bgfips", external_indicator_cols), with = FALSE]
 
-if (!"pctpre1960" %in% names(envirodata)) {
-  stop("Need pctpre1960 in envirodata before calculating EJ indexes")
+if (!"pctpre1960" %in% names(bg_envirodata)) {
+  stop("Need pctpre1960 in bg_envirodata before calculating EJ indexes")
 }
-if (!"lowlifex" %in% names(envirodata)) {
-  stop("Need lowlifex in envirodata before calculating Demog.Index.Supp")
+if (!"lowlifex" %in% names(bg_envirodata)) {
+  stop("Need lowlifex in bg_envirodata before calculating Demog.Index.Supp")
 }
 blockgroupstats_acs <- merge(
   blockgroupstats_acs,
-  envirodata[, .(bgfips, lowlifex)],
+  bg_envirodata[, .(bgfips, lowlifex)],
   by = "bgfips",
   all.x = TRUE
 )
@@ -138,17 +138,18 @@ setcolorder(blockgroupstats_acs, c("bgid", "bgfips", "statename", "ST", "countyn
 
 ## IF SAVING JUST THE DEMOGRAPHICS WITHOUT ENVT OR EJ ETC., DO THIS:
 
-# save(blockgroupstats_acs, file = "./data-raw/blockgroupstats_acs.rda")
+# save(bg_acsdata, file = "./data-raw/bg_acsdata.rda")
 # or
-# EJAM:::metadata_add_and_use_this("blockgroupstats_acs")
-# EJAM:::dataset_documenter("blockgroupstats_acs")
+# EJAM:::metadata_add_and_use_this("bg_acsdata")
+# EJAM:::dataset_documenter("bg_acsdata")
 # or
-save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs.rda"))
-message("saved interim file",    file.path(mydir, "blockgroupstats_acs.rda"))
+bg_acsdata <- blockgroupstats_acs
+save(bg_acsdata, file = file.path(mydir, "bg_acsdata.rda"))
+message("saved interim file",    file.path(mydir, "bg_acsdata.rda"))
 ############################################################## #
 
-save(envirodata, file = file.path(mydir, "envirodata.rda"))
-message("saved interim file in ", mydir)
+save(bg_envirodata, file = file.path(mydir, "bg_envirodata.rda"))
+message("saved interim file",    file.path(mydir, "bg_envirodata.rda"))
 
 ############################################################## #
 # CREATE new version of blockgroupstats ####

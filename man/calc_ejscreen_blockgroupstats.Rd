@@ -5,25 +5,27 @@
 \title{Combine ACS and environmental inputs into blockgroupstats}
 \usage{
 calc_ejscreen_blockgroupstats(
-  blockgroupstats_acs = NULL,
+  bg_acsdata = NULL,
   bg_envirodata = NULL,
   pipeline_dir = NULL,
-  blockgroupstats_acs_stage = "blockgroupstats_acs",
-  bg_envirodata_stage = "envirodata",
+  bg_acsdata_stage = "bg_acsdata",
+  bg_envirodata_stage = "bg_envirodata",
   save_stage = FALSE,
-  stage_format = "rds"
+  stage_format = "rds",
+  blockgroupstats_acs = NULL,
+  blockgroupstats_acs_stage = NULL
 )
 }
 \arguments{
-\item{blockgroupstats_acs}{ACS-derived blockgroup table, or NULL if reading
-from a saved pipeline stage.}
+\item{bg_acsdata}{ACS-derived blockgroup table, or NULL if reading from a
+saved pipeline stage.}
 
 \item{bg_envirodata}{environmental/non-ACS blockgroup table, or NULL if
-reading from a saved pipeline stage such as \code{"envirodata"}.}
+reading from a saved pipeline stage such as \code{"bg_envirodata"}.}
 
 \item{pipeline_dir}{folder for reading/writing pipeline stage files.}
 
-\item{blockgroupstats_acs_stage}{stage name for ACS input.}
+\item{bg_acsdata_stage}{stage name for ACS input.}
 
 \item{bg_envirodata_stage}{stage name for environmental input.}
 
@@ -31,6 +33,9 @@ reading from a saved pipeline stage such as \code{"envirodata"}.}
 
 \item{stage_format}{file format for saved/read stages: "rds", "rda", or
 "arrow".}
+
+\item{blockgroupstats_acs, blockgroupstats_acs_stage}{old names retained as
+aliases for draft scripts.}
 }
 \value{
 data.table like \link{blockgroupstats}.

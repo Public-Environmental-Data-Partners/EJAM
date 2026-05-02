@@ -7,8 +7,9 @@
 #' misleading, without trying to be a full scientific validation report.
 #'
 #' @param x object to validate.
-#' @param stage pipeline stage name, such as `"blockgroupstats_acs"`,
-#'   `"envirodata"`, `"bg_envirodata"`, `"blockgroupstats"`, `"bgej"`,
+#' @param stage pipeline stage name, such as `"bg_acsdata"`,
+#'   `"blockgroupstats_acs"`, `"bg_envirodata"`, `"envirodata"`,
+#'   `"blockgroupstats"`, `"bgej"`, `"bg_ejindexes"`,
 #'   `"usastats_acs"`, `"statestats_acs"`, `"usastats_envirodata"`,
 #'   `"statestats_envirodata"`, `"usastats_ej"`, `"statestats_ej"`,
 #'   `"usastats"`, or `"statestats"`.
@@ -122,6 +123,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
   }
 
   known_stages <- ejscreen_pipeline_stage_names()
+  canonical_stage <- ejscreen_pipeline_stage_canonical(stage)
   us_lookup_stages <- c("usastats_acs", "usastats_envirodata", "usastats_ej", "usastats")
   state_lookup_stages <- c("statestats_acs", "statestats_envirodata", "statestats_ej", "statestats")
   if (!stage %in% known_stages) {
@@ -140,22 +142,22 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
   }
 
   if (length(errors) == 0) {
-    if (stage == "blockgroupstats_acs") {
+    if (canonical_stage == "bg_acsdata") {
       has_cols(c("bgfips", "pop"))
       warn_missing_cols(c("pctmin", "pctlowinc", "pctlingiso", "pctlths", "pctdisability"))
       check_bgfips()
       check_nonnegative(c("pop"))
       check_fraction_percent_cols()
-    } else if (stage %in% c("envirodata", "bg_envirodata")) {
+    } else if (canonical_stage == "bg_envirodata") {
       has_cols(c("bgfips", "pctpre1960"))
       warn_missing_cols("lowlifex")
       check_bgfips()
       expected_env <- if (exists("names_e")) names_e else character()
       if (length(intersect(expected_env, names(x))) == 0) {
-        add_warning("envirodata has none of the expected environmental indicator columns in names_e")
+        add_warning("bg_envirodata has none of the expected environmental indicator columns in names_e")
       }
       check_all_na_numeric(setdiff(names(x), "bgfips"))
-    } else if (stage == "blockgroupstats") {
+    } else if (canonical_stage == "blockgroupstats") {
       required <- c(
         "bgfips", "bgid", "ST", "statename", "pop",
         "Demog.Index", "Demog.Index.Supp",
@@ -168,7 +170,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       expected_env <- if (exists("names_e")) names_e else character()
       warn_missing_cols(expected_env)
       check_fraction_percent_cols()
-    } else if (stage == "bgej") {
+    } else if (canonical_stage == "bgej") {
       has_cols(c("bgfips", "ST", "pop"))
       check_bgfips()
       expected_ej <- c(
@@ -179,15 +181,15 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       )
       warn_missing_cols(expected_ej)
       check_nonnegative(intersect(expected_ej, names(x)))
-    } else if (stage %in% us_lookup_stages) {
+    } else if (canonical_stage %in% us_lookup_stages) {
       check_lookup(expect_usa = TRUE)
-      if (stage == "usastats_envirodata") {
+      if (canonical_stage == "usastats_envirodata") {
         expected_env <- if (exists("names_e")) names_e else character()
         warn_missing_cols(expected_env)
       }
-    } else if (stage %in% state_lookup_stages) {
+    } else if (canonical_stage %in% state_lookup_stages) {
       check_lookup(expect_usa = FALSE)
-      if (stage == "statestats_envirodata") {
+      if (canonical_stage == "statestats_envirodata") {
         expected_env <- if (exists("names_e")) names_e else character()
         warn_missing_cols(expected_env)
       }

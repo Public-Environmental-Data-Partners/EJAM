@@ -44,19 +44,35 @@ ejscreen_pipeline_dir <- function(root = tempdir(), yr = NULL, pipeline_name = "
 #' @export
 ejscreen_pipeline_stage_names <- function() {
   c(
+    bg_acsdata = "bg_acsdata",
     blockgroupstats_acs = "blockgroupstats_acs",
-    envirodata = "envirodata",
     bg_envirodata = "bg_envirodata",
+    envirodata = "envirodata",
     usastats_acs = "usastats_acs",
     statestats_acs = "statestats_acs",
     usastats_envirodata = "usastats_envirodata",
     statestats_envirodata = "statestats_envirodata",
     bgej = "bgej",
+    bg_ejindexes = "bg_ejindexes",
+    bg_ej = "bg_ej",
     usastats_ej = "usastats_ej",
     statestats_ej = "statestats_ej",
     usastats = "usastats",
     statestats = "statestats",
     blockgroupstats = "blockgroupstats"
+  )
+}
+
+ejscreen_pipeline_stage_canonical <- function(stage) {
+  if (is.null(stage) || !nzchar(stage)) {
+    return(stage)
+  }
+  switch(stage,
+    blockgroupstats_acs = "bg_acsdata",
+    envirodata = "bg_envirodata",
+    bg_ejindexes = "bgej",
+    bg_ej = "bgej",
+    stage
   )
 }
 

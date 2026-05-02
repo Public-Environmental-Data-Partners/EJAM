@@ -19,6 +19,20 @@
 #' @param pipeline_dir folder for reading/writing pipeline stage files.
 #' @param save_stages logical, whether to save outputs to `pipeline_dir`.
 #' @param stage_format file format for saved stages: "rds", "rda", or "arrow".
+#' @param acs_vars variables to include in the ACS-only lookup stages. Defaults
+#'   to current EJSCREEN/EJAM ACS indicators found in `bgstats`.
+#' @param enviro_vars variables to include in the environmental lookup stages.
+#'   Defaults to current environmental, health, site, climate, and feature
+#'   variables found in `bgstats`.
+#' @param ej_indicator_vars environmental indicators to use when calculating EJ
+#'   indexes. Defaults to [names_e], but can be replaced for custom indicators.
+#' @param ej_indicator_pctile_vars,ej_indicator_state_pctile_vars names for
+#'   national/state environmental percentile columns used internally by
+#'   [calc_bgej()].
+#' @param ej_index_vars,ej_index_supp_vars,ej_index_state_vars,ej_index_supp_state_vars
+#'   names for the four EJ-index families created by [calc_bgej()].
+#' @param demog_index_var,demog_index_supp_var,demog_index_state_var,demog_index_supp_state_var
+#'   demographic index column names used by [calc_bgej()].
 #'
 #' @return list with interim lookup tables, `bgej`, `usastats`, and
 #'   `statestats`.
@@ -31,7 +45,20 @@ calc_ejscreen_stats <- function(bgstats = NULL,
                                 bgstats_stage = NULL,
                                 pipeline_dir = NULL,
                                 save_stages = FALSE,
-                                stage_format = "rds") {
+                                stage_format = "rds",
+                                acs_vars = NULL,
+                                enviro_vars = NULL,
+                                ej_indicator_vars = names_e,
+                                ej_indicator_pctile_vars = names_e_pctile,
+                                ej_indicator_state_pctile_vars = names_e_state_pctile,
+                                ej_index_vars = names_ej,
+                                ej_index_supp_vars = names_ej_supp,
+                                ej_index_state_vars = names_ej_state,
+                                ej_index_supp_state_vars = names_ej_supp_state,
+                                demog_index_var = "Demog.Index",
+                                demog_index_supp_var = "Demog.Index.Supp",
+                                demog_index_state_var = "Demog.Index.State",
+                                demog_index_supp_state_var = "Demog.Index.Supp.State") {
   bg <- ejscreen_pipeline_input(
     x = bgstats,
     stage = bgstats_stage,
@@ -42,46 +69,71 @@ calc_ejscreen_stats <- function(bgstats = NULL,
   )
   bg <- data.table::as.data.table(data.table::copy(bg))
 
-  needed_cols <- c("bgfips", "ST", "pop", names_e,
-                   "Demog.Index", "Demog.Index.Supp",
-                   "Demog.Index.State", "Demog.Index.Supp.State")
+  check_same_length <- function(...) {
+    lens <- vapply(list(...), length, integer(1))
+    if (length(unique(lens)) != 1) {
+      stop("EJ indicator, percentile, and index name vectors must have the same length")
+    }
+    invisible(NULL)
+  }
+  check_same_length(
+    ej_indicator_vars,
+    ej_indicator_pctile_vars,
+    ej_indicator_state_pctile_vars,
+    ej_index_vars,
+    ej_index_supp_vars,
+    ej_index_state_vars,
+    ej_index_supp_state_vars
+  )
+
+  demog_index_vars <- c(
+    demog_index_var,
+    demog_index_supp_var,
+    demog_index_state_var,
+    demog_index_supp_state_var
+  )
+  needed_cols <- c("bgfips", "ST", "pop", ej_indicator_vars, demog_index_vars)
   missing_cols <- setdiff(needed_cols, names(bg))
   if (length(missing_cols) > 0) {
     stop("bgstats is missing columns needed to calculate stats datasets: ",
          paste(missing_cols, collapse = ", "))
   }
 
-  acs_vars <- c(
-    names_d,
-    names_d_demogindexstate,
-    names_d_subgroups, names_d_subgroups_alone,
-    names_age,
-    names_community,
-    names_d_extra,
-    names_d_language,
-    names_d_languageli,
-    "pctnobroadband",
-    "pctnohealthinsurance",
-    "pctdisability"
-  )
+  if (is.null(acs_vars)) {
+    acs_vars <- c(
+      names_d,
+      names_d_demogindexstate,
+      names_d_subgroups, names_d_subgroups_alone,
+      names_age,
+      names_community,
+      names_d_extra,
+      names_d_language,
+      names_d_languageli,
+      "pctnobroadband",
+      "pctnohealthinsurance",
+      "pctdisability"
+    )
+  }
 
-  enviro_vars <- c(
-    names_e,
-    setdiff(names_health, "pctdisability"),
-    names_sitesinarea,
-    names_climate,
-    names_featuresinarea
-  )
+  if (is.null(enviro_vars)) {
+    enviro_vars <- c(
+      ej_indicator_vars,
+      setdiff(names_health, "pctdisability"),
+      names_sitesinarea,
+      names_climate,
+      names_featuresinarea
+    )
+  }
 
   acs_vars <- unique(acs_vars)
-  enviro_vars <- unique(enviro_vars)
+  enviro_vars <- unique(c(enviro_vars, ej_indicator_vars))
   acs_vars <- acs_vars[acs_vars %in% names(bg)]
   enviro_vars <- enviro_vars[enviro_vars %in% names(bg)]
 
   if (length(acs_vars) == 0) {
     stop("bgstats does not have any ACS variables to use for lookup tables")
   }
-  missing_env_for_ej <- setdiff(names_e, enviro_vars)
+  missing_env_for_ej <- setdiff(ej_indicator_vars, enviro_vars)
   if (length(missing_env_for_ej) > 0) {
     stop("bgstats is missing environmental indicators needed to calculate EJ indexes: ",
          paste(missing_env_for_ej, collapse = ", "))
@@ -94,12 +146,23 @@ calc_ejscreen_stats <- function(bgstats = NULL,
 
   bgej_new <- calc_bgej(
     bgstats = bg,
+    vnames_e = ej_indicator_vars,
+    vnames_e_pctile = ej_indicator_pctile_vars,
+    vnames_e_state_pctile = ej_indicator_state_pctile_vars,
+    vnames_ej = ej_index_vars,
+    vnames_ej_supp = ej_index_supp_vars,
+    vnames_ej_state = ej_index_state_vars,
+    vnames_ej_supp_state = ej_index_supp_state_vars,
+    vnames_d_demogindex = demog_index_var,
+    vnames_d_demogindex_supp = demog_index_supp_var,
+    vnames_d_demogindex_state = demog_index_state_var,
+    vnames_d_demogindex_supp_state = demog_index_supp_state_var,
     usastats_lookup = usastats_envirodata,
     statestats_lookup = statestats_envirodata
   )
 
-  myvars_us_ej <- intersect(c(names_ej, names_ej_supp), names(bgej_new))
-  myvars_state_ej <- intersect(c(names_ej_state, names_ej_supp_state), names(bgej_new))
+  myvars_us_ej <- intersect(c(ej_index_vars, ej_index_supp_vars), names(bgej_new))
+  myvars_state_ej <- intersect(c(ej_index_state_vars, ej_index_supp_state_vars), names(bgej_new))
   if (length(myvars_us_ej) == 0 || length(myvars_state_ej) == 0) {
     stop("bgej does not have the expected EJ index columns needed for usastats/statestats")
   }

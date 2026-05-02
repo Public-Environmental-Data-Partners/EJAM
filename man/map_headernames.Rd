@@ -5,7 +5,7 @@
 \alias{map_headernames}
 \title{map_headernames provides metadata about all indicators in EJSCREEN / EJAM}
 \format{
-An object of class \code{data.frame} with 649 rows and 76 columns.
+An object of class \code{data.frame} with 649 rows and 85 columns.
 }
 \usage{
 map_headernames
@@ -17,7 +17,14 @@ map_headernames provides metadata about all indicators in EJSCREEN / EJAM
 This is an IMPORTANT TABLE that provides information about each variable (indicator), such as the following:
 \itemize{
 \item names as used in geodatabase files (original data source)
-\item names as used in the outputs of the EJSCREEN API
+\item names as used in the old EJSCREEN API (\code{ejscreen_apinames_old},
+copied from the historical \code{apiname} column)
+\item names as used in the current EJAM API (\code{ejam_apinames}, copied from
+\code{rname})
+\item names as used in old EJSCREEN staff CSV/FTP-style downloads
+(\code{ejscreen_ftp_names}, copied from \code{csvname})
+\item names as used in current EJSCREEN download, geodatabase, and map
+application fields (\code{ejscreen_names})
 \item names as used in the R code
 \item names as used in short labels of graphics
 \item names as used in table headers (long versions to provide full descriptions of the variables)
@@ -38,6 +45,9 @@ It was created from a spreadsheet of the same name, that is in a data-raw folder
     variables = .N,
     has_apiname = sum(apiname != ""),
     has_csvname = sum(csvname != ""),
+    has_ejscreen_names = sum(ejscreen_names != ""),
+    has_ejscreen_apinames_old = sum(ejscreen_apinames_old != ""),
+    has_ejam_apinames = sum(ejam_apinames != ""),
     has_acsname = sum(acsname != "")
     ),
  keyby = c("raw_pctile_avg", "DEJ", "ratio.to", "pctile.", "avg.",  "varlist" )]

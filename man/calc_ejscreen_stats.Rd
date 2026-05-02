@@ -10,7 +10,20 @@ calc_ejscreen_stats(
   bgstats_stage = NULL,
   pipeline_dir = NULL,
   save_stages = FALSE,
-  stage_format = "rds"
+  stage_format = "rds",
+  acs_vars = NULL,
+  enviro_vars = NULL,
+  ej_indicator_vars = names_e,
+  ej_indicator_pctile_vars = names_e_pctile,
+  ej_indicator_state_pctile_vars = names_e_state_pctile,
+  ej_index_vars = names_ej,
+  ej_index_supp_vars = names_ej_supp,
+  ej_index_state_vars = names_ej_state,
+  ej_index_supp_state_vars = names_ej_supp_state,
+  demog_index_var = "Demog.Index",
+  demog_index_supp_var = "Demog.Index.Supp",
+  demog_index_state_var = "Demog.Index.State",
+  demog_index_supp_state_var = "Demog.Index.Supp.State"
 )
 }
 \arguments{
@@ -26,6 +39,24 @@ calc_ejscreen_stats(
 \item{save_stages}{logical, whether to save outputs to \code{pipeline_dir}.}
 
 \item{stage_format}{file format for saved stages: "rds", "rda", or "arrow".}
+
+\item{acs_vars}{variables to include in the ACS-only lookup stages. Defaults
+to current EJSCREEN/EJAM ACS indicators found in \code{bgstats}.}
+
+\item{enviro_vars}{variables to include in the environmental lookup stages.
+Defaults to current environmental, health, site, climate, and feature
+variables found in \code{bgstats}.}
+
+\item{ej_indicator_vars}{environmental indicators to use when calculating EJ
+indexes. Defaults to \link{names_e}, but can be replaced for custom indicators.}
+
+\item{ej_indicator_pctile_vars, ej_indicator_state_pctile_vars}{names for
+national/state environmental percentile columns used internally by
+\code{\link[=calc_bgej]{calc_bgej()}}.}
+
+\item{ej_index_vars, ej_index_supp_vars, ej_index_state_vars, ej_index_supp_state_vars}{names for the four EJ-index families created by \code{\link[=calc_bgej]{calc_bgej()}}.}
+
+\item{demog_index_var, demog_index_supp_var, demog_index_state_var, demog_index_supp_state_var}{demographic index column names used by \code{\link[=calc_bgej]{calc_bgej()}}.}
 }
 \value{
 list with interim lookup tables, \code{bgej}, \code{usastats}, and

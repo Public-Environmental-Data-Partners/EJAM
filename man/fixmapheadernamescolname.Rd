@@ -5,13 +5,7 @@
 \title{utility to convert aliases to proper colnames of map_headernames
 used by varinfo() and fixcolnames()}
 \usage{
-fixmapheadernamescolname(
-  x,
-  alias_list = list(rname = c("r", "rnames"), longname = c("long", "longnames", "full",
-    "description"), shortlabel = c("short", "shortname", "shortnames", "shortlabels",
-    "labels", "label"), acsname = c("acs", "acsnames"), apiname = c("api", "apinames"),
-    csvname = c("csv", "csvnames"), oldname = c("original", "old", "oldnames"))
-)
+fixmapheadernamescolname(x, alias_list = map_headernames_alias_list())
 }
 \arguments{
 \item{x}{character vector of colnames of map_headernames, or aliases like "long" (ignores case)}

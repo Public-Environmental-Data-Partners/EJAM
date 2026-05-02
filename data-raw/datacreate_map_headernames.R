@@ -60,6 +60,8 @@ datacreate_map_headernames <- function(rawdir = "./data-raw",
   upsert_row("pctlan_tagalog", "% speaking Tagalog (including Filipino) at home", "names_d_language", "lan_universe", "PCT_LAN_TAGALOG")
   upsert_row("pctlan_other_and_unspecified", "% speaking Other and unspecified languages at home", "names_d_language", "lan_universe", "PCT_LAN_OTHER_AND_UNSPECIFIED")
 
+  map_headernames <- EJAM:::augment_map_headernames_ejscreen_names(map_headernames)
+
   cat('must redo sample dataset outputs in EJAM/inst/testdata/  via
   EJAM/data-raw/datacreate_testpoints_testoutputs.R
       \n')
