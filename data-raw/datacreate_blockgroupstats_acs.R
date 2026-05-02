@@ -128,29 +128,28 @@ message("saved interim file",    file.path(mydir, "blockgroupstats_acs.rda"))
 
 
 # stop('can stop here -- need environmental dataset')
+### the new environmental raw scores data would be provided by others as an input, to be used   here
 
-# but to use the existing ones, for testing new ACS with old envt data:
-#
+# But we can for now try this by just using the old/existing environmental scores (indicators) from blockgroupstats[, ..names_e] , for testing this code by using the new ACS with old envt data:
+
 ecols <- c('bgfips', 'bgid', names_e)
-blockgroupstats_env <-
+bg_envirodata <-
   blockgroupstats[, ..ecols]
 
 
 
-### to be added here
 
 
 
 
 
-
-save(blockgroupstats_env, file = file.path(mydir, "blockgroupstats_env.rda"))
+save(bg_envirodata, file = file.path(mydir, "bg_envirodata.rda"))
 message("saved interim file in ", mydir)
 
 ############################################################## #
 # CREATE new version of blockgroupstats ####
 
-blockgroupstats_new <- merge(blockgroupstats_acs, blockgroupstats_env, by = c("bgfips"), all.x = TRUE)
+blockgroupstats_new <- merge(blockgroupstats_acs, bg_envirodata, by = c("bgfips"), all.x = TRUE)
 
 save(blockgroupstats_new, file = file.path(mydir, "blockgroupstats_new.rda"))
 message("saved interim file",    file.path(mydir, "blockgroupstats_new.rda"))
@@ -158,7 +157,7 @@ message("saved interim file",    file.path(mydir, "blockgroupstats_new.rda"))
 ## can add some validation here
 
 t(blockgroupstats_new[1:3, ])
-print(dim(blockgroupstats_env))
+print(dim(bg_envirodata))
 print(names(blockgroupstats_new))
 print(setdiff(names(blockgroupstats), names(blockgroupstats_new)))
 #
@@ -169,7 +168,7 @@ print(setdiff(names(blockgroupstats), names(blockgroupstats_new)))
 # for example.
 
 
-stop(" DOING THE NEXT STEP MEANS blockgroupstats WITH OLDER ENVT DATA, ETC. WILL BE REPLACED IN THIS BRANCH ")
+stop(" DOING THE NEXT STEP MEANS blockgroupstats WITH OLDER ENVT DATA, ETC. would BE REPLACED IN THIS BRANCH - but we may want to keep it for purposes of trying to replicate it, etc.")
 
 blockgroupstats <- data.table::copy(blockgroupstats_new)
 

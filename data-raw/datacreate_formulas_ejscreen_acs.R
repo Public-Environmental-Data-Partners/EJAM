@@ -441,6 +441,85 @@
 # CLEANING UP FORMULAS ####
 #- MIGHT BE USEFUL IF NEW/CUSTOM ONES ARE ADDED LATER
 ############################################################## ############################################################### #
+
+repair_formulas_ejscreen_acs <- function(formulas_ejscreen_acs) {
+  set_formula <- function(rname, formula, longname = NULL, varlist = NULL) {
+    row <- match(rname, formulas_ejscreen_acs$rname)
+    if (is.na(row)) {
+      newrow <- formulas_ejscreen_acs[NA, ][1, ]
+      newrow$rname <- rname
+      newrow$formula <- formula
+      newrow$longname_old <- NA_character_
+      newrow$longname <- if (is.null(longname)) rname else longname
+      if ("varlist" %in% names(newrow)) {
+        newrow$varlist <- if (is.null(varlist)) NA_character_ else varlist
+      }
+      formulas_ejscreen_acs <<- rbind(formulas_ejscreen_acs, newrow)
+    } else {
+      formulas_ejscreen_acs$formula[row] <<- formula
+      if (!is.null(longname)) {
+        formulas_ejscreen_acs$longname[row] <<- longname
+      }
+      if (!is.null(varlist) && "varlist" %in% names(formulas_ejscreen_acs)) {
+        formulas_ejscreen_acs$varlist[row] <<- varlist
+      }
+    }
+  }
+
+  set_formula("hhlds", "hhlds = C16002_001", "Count of Households")
+  set_formula("under18", "under18 <- ageunder5m + age5to9m + age10to14m + age15to17m + ageunder5f + age5to9f + age10to14f + age15to17f", "Population Under Age 18")
+  set_formula("pctownedunits", "pctownedunits <- ifelse(occupiedunits == 0, 0, as.numeric(ownedunits) / occupiedunits)", "% Owner-occupied housing units")
+  set_formula("healthinsurance_universe", "healthinsurance_universe = B27010_001", "Civilian noninstitutionalized population for health insurance coverage status")
+  set_formula("nohealthinsurance", "nohealthinsurance = B27010_017 + B27010_033 + B27010_050 + B27010_066", "People without health insurance coverage")
+  set_formula("pctnohealthinsurance", "pctnohealthinsurance <- ifelse(healthinsurance_universe == 0, 0, as.numeric(nohealthinsurance) / healthinsurance_universe)", "% People without Health Insurance")
+  set_formula("poor", "poor = pov50 + pov99", "Population below Poverty Level")
+  set_formula("pctpoor", "pctpoor <- ifelse(povknownratio == 0, 0, as.numeric(poor) / povknownratio)", "% Population below Poverty Level")
+  set_formula("lan_spanish", "lan_spanish = C16001_003", "Number speaking Spanish at home", "names_d_language_count")
+  set_formula("lan_ie", "lan_ie = C16001_006 + C16001_009 + C16001_012 + C16001_015", "Number speaking Other Indo-European languages at home", "names_d_language_count")
+  set_formula("lan_api", "lan_api = C16001_018 + C16001_021 + C16001_024 + C16001_027 + C16001_030", "Number speaking Asian and Pacific Island languages at home", "names_d_language_count")
+  set_formula("lan_other", "lan_other = C16001_036", "Number speaking Other and unspecified languages at home", "names_d_language_count")
+  set_formula("lan_english", "lan_english = C16001_002", "Number speaking only English at home", "names_d_language_count")
+  set_formula("lan_french", "lan_french = C16001_006", "Number speaking French, Haitian, or Cajun at home", "names_d_language_count")
+  set_formula("lan_german", "lan_german = C16001_009", "Number speaking German or other West Germanic languages at home", "names_d_language_count")
+  set_formula("pctlan_german", "pctlan_german <- ifelse(lan_universe == 0, 0, as.numeric(lan_german) / lan_universe)", "% speaking German or other West Germanic languages at home", "names_d_language")
+  set_formula("lan_rus_pol_slav", "lan_rus_pol_slav = C16001_012", "Number speaking Russian, Polish, or other Slavic languages at home", "names_d_language_count")
+  set_formula("lan_other_ie", "lan_other_ie = C16001_015", "Number speaking Other Indo-European languages at home", "names_d_language_count")
+  set_formula("pctlan_other_ie", "pctlan_other_ie <- ifelse(lan_universe == 0, 0, as.numeric(lan_other_ie) / lan_universe)", "% speaking Other Indo-European languages at home", "names_d_language")
+  set_formula("lan_korean", "lan_korean = C16001_018", "Number speaking Korean at home", "names_d_language_count")
+  set_formula("lan_chinese", "lan_chinese = C16001_021", "Number speaking Chinese (including Mandarin, Cantonese) at home", "names_d_language_count")
+  set_formula("lan_vietnamese", "lan_vietnamese = C16001_024", "Number speaking Vietnamese at home", "names_d_language_count")
+  set_formula("lan_tagalog", "lan_tagalog = C16001_027", "Number speaking Tagalog (including Filipino) at home", "names_d_language_count")
+  set_formula("pctlan_tagalog", "pctlan_tagalog <- ifelse(lan_universe == 0, 0, as.numeric(lan_tagalog) / lan_universe)", "% speaking Tagalog (including Filipino) at home", "names_d_language")
+  set_formula("lan_other_asian", "lan_other_asian = C16001_030", "Number speaking Other Asian and Pacific Island languages at home", "names_d_language_count")
+  set_formula("lan_arabic", "lan_arabic = C16001_033", "Number speaking Arabic at home", "names_d_language_count")
+  set_formula("lan_other_and_unspecified", "lan_other_and_unspecified = C16001_036", "Number speaking Other and unspecified languages at home", "names_d_language_count")
+  set_formula("pctlan_other_and_unspecified", "pctlan_other_and_unspecified <- ifelse(lan_universe == 0, 0, as.numeric(lan_other_and_unspecified) / lan_universe)", "% speaking Other and unspecified languages at home", "names_d_language")
+  set_formula("pctlan_ie", "pctlan_ie <- ifelse(lan_universe == 0, 0, as.numeric(lan_ie) / lan_universe)", "% speaking Other Indo-European languages at home", "names_d_language")
+  set_formula("lan_nonenglish", "lan_nonenglish = lan_universe - lan_english", "Number speaking non-English languages at home", "names_d_language_count")
+  set_formula("pct_korean", "pct_korean <- ifelse(lan_universe == 0, 0, as.numeric(lan_korean) / lan_universe)", "% speaking Korean at home", "names_d_language")
+  set_formula("pct_chinese", "pct_chinese <- ifelse(lan_universe == 0, 0, as.numeric(lan_chinese) / lan_universe)", "% speaking Chinese (including Mandarin, Cantonese) at home", "names_d_language")
+
+  wrong_other_ie <- formulas_ejscreen_acs$rname == "lan_other_ie" &
+    grepl("B16004", formulas_ejscreen_acs$formula)
+  formulas_ejscreen_acs <- formulas_ejscreen_acs[!wrong_other_ie, ]
+
+  wrong_pct_lan <- formulas_ejscreen_acs$rname %in% c("pctlan_korean", "pctlan_chinese")
+  formulas_ejscreen_acs <- formulas_ejscreen_acs[!wrong_pct_lan, ]
+
+  unused_owned_household <- formulas_ejscreen_acs$rname %in% c("ownedhhlds", "occupiedhhlds", "pctownedhhlds")
+  formulas_ejscreen_acs <- formulas_ejscreen_acs[!unused_owned_household, ]
+
+  formulas_ejscreen_acs <- formulas_ejscreen_acs[!duplicated(formulas_ejscreen_acs$rname), ]
+  formulas_ejscreen_acs <- EJAM:::sort_formulas_by_dependency(formulas_ejscreen_acs)
+  rownames(formulas_ejscreen_acs) <- NULL
+  formulas_ejscreen_acs
+}
+
+if (!exists("formulas_ejscreen_acs")) {
+  formulas_ejscreen_acs <- x
+}
+formulas_ejscreen_acs <- repair_formulas_ejscreen_acs(formulas_ejscreen_acs)
+
 ## remove extra spaces from formulas ####
 formulas_ejscreen_acs$formula <- gsub(" +", " ", formulas_ejscreen_acs$formula)
 
@@ -841,7 +920,6 @@ cbind(x, duplicated(x))
   # [14] "https://data.census.gov/table/ACSDT5Y2024.C16001" # by tract
   # [15] "https://data.census.gov/table/ACSDT5Y2024.B18101" # by tract
 
-}
 ############################################################## ############################################################### #
 
 ##   ADD MORE LANGUAGE VARIABLES AND FORMULAS

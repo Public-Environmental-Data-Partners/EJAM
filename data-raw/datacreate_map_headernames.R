@@ -20,6 +20,46 @@ datacreate_map_headernames <- function(rawdir = "./data-raw",
 
   map_headernames[is.na(map_headernames)] <- ''  #changeNAvaluestoemptycell,soitiseasiertosubsetetc.
 
+  upsert_row <- function(rname, longname, varlist, denominator = "", acsname = "") {
+    row <- match(rname, map_headernames$rname)
+    if (is.na(row)) {
+      newrow <- map_headernames[NA, ][1, ]
+      newrow[] <- ""
+      newrow$rname <- rname
+      newrow$longname <- longname
+      newrow$varlist <- varlist
+      newrow$denominator <- denominator
+      newrow$acsname <- acsname
+      map_headernames <<- rbind(map_headernames, newrow)
+    } else {
+      map_headernames$longname[row] <<- longname
+      map_headernames$varlist[row] <<- varlist
+      map_headernames$denominator[row] <<- denominator
+      map_headernames$acsname[row] <<- acsname
+    }
+  }
+
+  upsert_row("lan_english", "Number speaking only English at home", "names_d_language_count", "", "LAN_ENGLISH")
+  upsert_row("lan_french", "Number speaking French, Haitian, or Cajun at home", "names_d_language_count", "", "LAN_FRENCH")
+  upsert_row("lan_german", "Number speaking German or other West Germanic languages at home", "names_d_language_count", "", "LAN_GERMAN")
+  upsert_row("lan_rus_pol_slav", "Number speaking Russian, Polish, or other Slavic languages at home", "names_d_language_count", "", "LAN_RUS_POL_SLAV")
+  upsert_row("lan_other_ie", "Number speaking Other Indo-European languages at home", "names_d_language_count", "", "LAN_OTHER_IE")
+  upsert_row("lan_korean", "Number speaking Korean at home", "names_d_language_count", "", "LAN_KOREAN")
+  upsert_row("lan_chinese", "Number speaking Chinese (including Mandarin, Cantonese) at home", "names_d_language_count", "", "LAN_CHINESE")
+  upsert_row("lan_vietnamese", "Number speaking Vietnamese at home", "names_d_language_count", "", "LAN_VIETNAMESE")
+  upsert_row("lan_tagalog", "Number speaking Tagalog (including Filipino) at home", "names_d_language_count", "", "LAN_TAGALOG")
+  upsert_row("lan_other_asian", "Number speaking Other Asian and Pacific Island languages at home", "names_d_language_count", "", "LAN_OTHER_ASIAN")
+  upsert_row("lan_arabic", "Number speaking Arabic at home", "names_d_language_count", "", "LAN_ARABIC")
+  upsert_row("lan_other_and_unspecified", "Number speaking Other and unspecified languages at home", "names_d_language_count", "", "LAN_OTHER_AND_UNSPECIFIED")
+  upsert_row("poor", "Population below Poverty Level", "names_d_extra_count", "", "POV")
+  upsert_row("pctpoor", "% Population below Poverty Level", "names_d_extra", "povknownratio", "PCT_POV")
+  upsert_row("pctownedunits", "% Owner-occupied housing units", "names_community", "occupiedunits", "PCT_OWNERS")
+  upsert_row("pctnohealthinsurance", "% People without Health Insurance", "names_criticalservice", "healthinsurance_universe", "PCT_NO_HEALTH_INSURANCE")
+  upsert_row("pctlan_german", "% speaking German or other West Germanic languages at home", "names_d_language", "lan_universe", "PCT_LAN_GERMAN")
+  upsert_row("pctlan_other_ie", "% speaking Other Indo-European languages at home", "names_d_language", "lan_universe", "PCT_LAN_OTHER_IE")
+  upsert_row("pctlan_tagalog", "% speaking Tagalog (including Filipino) at home", "names_d_language", "lan_universe", "PCT_LAN_TAGALOG")
+  upsert_row("pctlan_other_and_unspecified", "% speaking Other and unspecified languages at home", "names_d_language", "lan_universe", "PCT_LAN_OTHER_AND_UNSPECIFIED")
+
   cat('must redo sample dataset outputs in EJAM/inst/testdata/  via
   EJAM/data-raw/datacreate_testpoints_testoutputs.R
       \n')

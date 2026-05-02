@@ -917,7 +917,16 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   #  weights = population count, which for "overall" is bgwt * pop for each bg, and for "bysite" is bgwt * pop per site.
 
-  popmeancols_inbgstats <- wtdmeancols_inbgstats[calcweight(wtdmeancols_inbgstats) == "pop"]
+  weights_for_wtdmeancols <- calcweight(wtdmeancols_inbgstats)
+  missing_weight_cols <- weights_for_wtdmeancols[!weights_for_wtdmeancols %in% names(sites2bgs_plusblockgroupdata_bysite)]
+  missing_weight_cols <- unique(setdiff(missing_weight_cols, "pop"))
+  if (length(missing_weight_cols) > 0) {
+    warning("Some weighted-mean denominator columns were not found in blockgroup data, so population weights were used instead: ",
+            paste(missing_weight_cols, collapse = ", "))
+    weights_for_wtdmeancols[weights_for_wtdmeancols %in% missing_weight_cols] <- "pop"
+  }
+
+  popmeancols_inbgstats <- wtdmeancols_inbgstats[weights_for_wtdmeancols == "pop"]
 
   ##     mean PERSON, AT EACH SITE i.e., by SITE - also could see results_summarized  from batch.summarize()
   results_bysite_popmeans <- sites2bgs_plusblockgroupdata_bysite[ , lapply(.SD, function(x) {
@@ -942,12 +951,12 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   #  weights = other types of weights than pop
 
-  weight_types <- setdiff(unique(calcweight(wtdmeancols_inbgstats)), "pop")
+  weight_types <- setdiff(unique(weights_for_wtdmeancols), "pop")
 
   for (i in seq_along(weight_types)) {
 
     #  weights = each type
-    this_weight_type_cols <- wtdmeancols_inbgstats[calcweight(wtdmeancols_inbgstats) == weight_types[i]]
+    this_weight_type_cols <- wtdmeancols_inbgstats[weights_for_wtdmeancols == weight_types[i]]
 
     ## mean by SITE
     results_bysite_wtdmeans <- sites2bgs_plusblockgroupdata_bysite[, lapply(.SD, function(x) {

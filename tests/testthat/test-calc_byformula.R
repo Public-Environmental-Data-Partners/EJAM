@@ -95,6 +95,29 @@ test_that("calc_varname_from_formula() works", {
   )
 })
 
+test_that("formula dependencies are ordered before they are used", {
+  expect_equal(anyDuplicated(formulas_ejscreen_acs$rname), 0L)
+
+  output_names <- formulas_ejscreen_acs$rname
+  prior <- character()
+  out_of_order <- character()
+  for (i in seq_len(nrow(formulas_ejscreen_acs))) {
+    deps <- intersect(formula_rhs_names(formulas_ejscreen_acs$formula[i]), output_names)
+    deps <- setdiff(deps, formulas_ejscreen_acs$rname[i])
+    missing_prior <- setdiff(deps, prior)
+    if (length(missing_prior) > 0) {
+      out_of_order <- c(out_of_order, formulas_ejscreen_acs$rname[i])
+    }
+    prior <- c(prior, formulas_ejscreen_acs$rname[i])
+  }
+
+  expect_equal(out_of_order, character())
+
+  age_formulas <- calc_formulas_from_varname(c("pctunder18", "pctover17"))
+  expect_lt(match("under18", age_formulas$rname), match("pctunder18", age_formulas$rname))
+  expect_lt(match("over17", age_formulas$rname), match("pctover17", age_formulas$rname))
+})
+
 ## might not want this to return 1 ?
 # calc_varname_from_formula("1==1")
 

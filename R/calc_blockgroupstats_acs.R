@@ -123,7 +123,7 @@ calc_blockgroupstats_acs <- function(yr,
       "num1pov", "num15pov", "num2pov", "num2pov.alt",
       "pct1pov", "pct15pov", "pct2pov", "pct2pov.alt",
       # "bgid",
-      # "nobroadband", "nohealthinsurance",
+      "nobroadband", "nohealthinsurance", "healthinsurance_universe",
       # "lan_other_ie",
       "lan_other_ie.1"
     )

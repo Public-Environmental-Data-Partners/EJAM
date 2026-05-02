@@ -53,30 +53,14 @@ calc_blockgroupstats_from_tract_data <- function(yr,
     # disability <- B18101_004 + B18101_007 + B18101_010 + B18101_013 + B18101_016 + B18101_019 + B18101_023 + B18101_026 + B18101_029 + B18101_032 + B18101_035 + B18101_038
     # etc.
 
-    ## all the language details indicators calculations:
+    ## all the language details indicator calculations:
     # x = acs_table_info(tables_acs = "C16001")
     # print(x, n=40)
     # formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs$formula), 'formula']
     ## or leave out the pctlan_ calculations and just see the counts:
     # > formulas_ejscreen_acs[grepl("^lan_", formulas_ejscreen_acs$formula), 'formula']
-    # [1] "lan_eng_na = B16004_008 + B16004_013 + B16004_018 + B16004_023 + B16004_030 + B16004_035 + B16004_040 + B16004_045 + B16004_052 + B16004_057 + B16004_062 + B16004_067"
-    # [2] "lan_spanish  = B16004_004 + B16004_026 + B16004_048"
-    # [3] "lan_api = B16004_014 + B16004_036 + B16004_058"
-    # [4] "lan_other = B16004_019 + B16004_041 + B16004_063"
-    # [5] "lan_other_ie = B16004_009 + B16004_031 + B16004_053"
-    # [6] "lan_universe = C16001_001"
-    # [7] "lan_english = C16001_002"
-    # [8] "lan_french = C16001_006"
-    # [9] "lan_german = C16001_009"
-    # [10] "lan_rus_pol_slav = C16001_012"
-    # [11] "lan_other_ie = C16001_015"
-    # [12] "lan_korean = C16001_018"
-    # [13] "lan_chinese = C16001_021"
-    # [14] "lan_vietnamese = C16001_024"
-    # [15] "lan_other_asian = C16001_030"
-    # [16] "lan_tagalog = C16001_027"
-    # [17] "lan_arabic = C16001_033"
-    # [18] "lan_other_and_unspecified = C16001_036"
+    # uses C16001 for language-at-home counts whose percentages use lan_universe.
+    # B16004 is still used separately for lan_eng_na, "Speak English not at all."
 
   }
   ###################################################### #
@@ -118,12 +102,7 @@ calc_blockgroupstats_from_tract_data <- function(yr,
 
   # > dput(formulas_ejscreen_acs[grepl("^lan_", formulas_ejscreen_acs$formula),]$rname)
 
-  ## hard-coded for now:
-  lanvars = c("lan_eng_na", "lan_spanish", "lan_api", "lan_other", "lan_other_ie",
-              "lan_universe", "lan_english", "lan_french", "lan_german", "lan_rus_pol_slav",
-              "lan_other_ie", "lan_korean", "lan_chinese", "lan_vietnamese",
-              "lan_other_asian", "lan_tagalog", "lan_arabic", "lan_other_and_unspecified"
-  )
+  lanvars <- unique(calc_varname_from_formula(formulas[grepl("^lan_", trimws(formulas))]))
   #  tract_lan_eng_na, tract_lan_spanish, tract_lan_api, tract_lan_other, tract_lan_other_ie,
   # tract_lan_universe, tract_lan_english, tract_lan_french, tract_lan_german, tract_lan_rus_pol_slav,
   # tract_lan_other_ie, tract_lan_korean, tract_lan_chinese, tract_lan_vietnamese,
@@ -143,10 +122,11 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   bg_from_tracts[, disability     := tract_disability * bgwt]
   bg_from_tracts[, disab_universe := tract_disab_universe * bgwt]
 
+  tract_lan_cols <- grep("^tract_lan_", names(bg_from_tracts), value = TRUE)
   lan_counts_bg <- bg_from_tracts[, lapply(.SD, function(x) x * bgwt),
-                 .SDcols = patterns("^tract_lan_")
-  ]
+                                  .SDcols = tract_lan_cols]
   bg_from_tracts <- cbind(bg_from_tracts, lan_counts_bg)
+  bg_from_tracts[, c("tract_disability", "tract_disab_universe", tract_lan_cols) := NULL]
   ############################################################### #
 
   ## CHANGE NAMES NOW FROM tract_ to normal bg names
@@ -168,8 +148,9 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   ### *** creates duplicate names...
 
 
+  pct_language_formulas <- formulas[grepl("^pctlan_|^pct_chinese|^pct_korean", trimws(formulas))]
   bg_from_tracts <- calc_ejam(bg_from_tracts,
-                              formulas = formulas[grepl("^pctlan_", formulas)],
+                              formulas = pct_language_formulas,
              keep.old = c("bgfips",
                             "disability",  "disab_universe",   "pctdisability",
                           grep("^lan_", names(bg_from_tracts) , value = TRUE)
