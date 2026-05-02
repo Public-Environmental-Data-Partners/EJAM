@@ -518,16 +518,22 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       )
       ############################ #      ############################ #      ############################ #
       addthesenotrun = data.table(
-        file = c("test-webapp-FRS-functionality.R", "test-webapp-FIPS-functionality.R",
-                 "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
-                 "test-webapp-ui_and_server.R",      "test-webapp-NAICS-functionality.R",
-                 "test-webapp-latlon-functionality.R", "test-webapp-shp-gdb-zip-functionality.R",
-                 "test-webapp-shp-json-functionality.R", "test-webapp-shp-unzip-functionality.R",
-                 "test-webapp-shp-zip-functionality.R"),
+        file = c(
+          "test-webapp-FRS-functionality.R",
+          "test-webapp-FIPS-functionality.R",
+          "test-webapp-FIPS-picker-functionality.R",
+          "test-webapp-ui_and_server.R",
+          "test-webapp-NAICS-functionality.R",
+          "test-webapp-latlon-functionality.R",
+          "test-webapp-shp-gdb-zip-functionality.R",
+          "test-webapp-shp-json-functionality.R",
+          "test-webapp-shp-unzip-functionality.R",
+          "test-webapp-shp-zip-functionality.R"
+        ),
         seconds_byfile =
-          c(30, 9,
-            0,  # placeholder for when FIPS-picker test finished/ready
-            1, 135, 134, 135, 135, 135, 135)
+          c(25, 25,
+            40,
+            1, 25, 55, 25, 25, 25, 25)
       )
       addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
       timebyfile <- rbind(timebyfile, addthesenotrun)
@@ -989,15 +995,22 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
   cat('\n')
   if (useloadall) {
-    # Note devtools package is in Suggests not Imports, in DESCRIPTION file
+    # Note devtools package was in Suggests not Imports, in DESCRIPTION file
     dx = try({suppressWarnings(suppressMessages({devtools_available <- requireNamespace("devtools")}))}, silent = TRUE)
     if (!devtools_available) {
       # if (inherits(dx, "try-error")) {
-      stop("this requires installing the package devtools first, e.g., \n  install.packages('devtools') \n")
-    }
+      warning("this assumed you have installed the package devtools first, e.g., \n  install.packages('devtools') \n")
+      # use pkgload instead
+      junk <- capture.output({
+        suppressPackageStartupMessages(    pkgload::load_all()   )
+      })
+    } else {
     junk <- capture.output({
       suppressPackageStartupMessages(    devtools::load_all()   )
-    })
+
+      ### ANOTHER OPTION IS TO DO        devtools::install_local()
+
+    })}
   } else {
     cat("useloadall=F WILL FAIL TO FIND THE UNEXPORTED FUNCTIONS WHEN IT TRIES TO TEST THEM without load_all() !! \n")
     # junk <- capture.output({
@@ -1008,7 +1021,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
   ## dataload_dynamic() ####
 
   cat("Downloading all large datasets that might be needed...\n")
-  dataload_dynamic("all")
+
+  dataload_dynamic("all") ## do we need/want the arrow versions of some or all? or let it get those when/as needed?
 
   ## ./tests/testthat/setup.R ####
 
