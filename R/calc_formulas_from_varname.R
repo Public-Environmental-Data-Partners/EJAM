@@ -1,22 +1,12 @@
 
 
-#' compile the formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also
+#' Parse right-hand-side variable names from an R formula string
 #'
-#' @param varname one or more character string variable names found in the "rname" column of the formulas parameter
-#' @param formulas default is to use the built-in [formulas_ejscreen_acs],
-#'   but a custom data.frame would similarly need to have colnames "rname" and "formula"
-#' @param top do not change
-#' @examples
-#' calc_formulas_from_varname("pctlingiso")
-#' calc_formulas_from_varname('pctlths')
-#' calc_formulas_from_varname("pctlowinc")
-#' calc_formulas_from_varname(c("lingiso", "lowinc"))
+#' @param formula character string with an R assignment formula.
 #'
-#' @return data.frame with colnames "rname" and "formula",
-#'   similar to those columns as found in [formulas_ejscreen_acs]
-#'
+#' @return character vector of variable names used on the right side.
 #' @keywords internal
-#' @export
+#' @noRd
 #'
 formula_rhs_names <- function(formula) {
   out <- tryCatch({
@@ -51,8 +41,12 @@ sort_formulas_by_dependency <- function(formulas) {
     }, logical(1))]
 
     if (length(ready) == 0) {
-      ordered <- c(ordered, remaining)
-      break
+      unresolved <- formulas$rname[remaining]
+      unresolved_deps <- vapply(remaining, function(i) {
+        paste(setdiff(deps[[i]], formulas$rname[ordered]), collapse = ", ")
+      }, character(1))
+      stop("Cannot dependency-sort formulas; these rname values have unresolved or circular dependencies: ",
+           paste(paste0(unresolved, " depends on [", unresolved_deps, "]"), collapse = "; "))
     }
 
     ordered <- c(ordered, ready[1])
@@ -62,6 +56,31 @@ sort_formulas_by_dependency <- function(formulas) {
   formulas[ordered, , drop = FALSE]
 }
 
+#' Compile formulas needed to calculate one or more final indicators
+#'
+#' @details Recursively finds formulas for any intermediate variables that are
+#' also outputs in the supplied formula table, then sorts them so dependencies
+#' are calculated before they are used.
+#'
+#' @param varname one or more character string variable names found in the
+#'   `"rname"` column of the formulas parameter.
+#' @param formulas default is to use the built-in [formulas_ejscreen_acs], but a
+#'   custom data.frame can be supplied if it has columns `"rname"` and
+#'   `"formula"`.
+#' @param top do not change.
+#'
+#' @return data.frame with columns `"rname"` and `"formula"`, similar to those
+#'   columns as found in [formulas_ejscreen_acs].
+#'
+#' @examples
+#' calc_formulas_from_varname("pctlingiso")
+#' calc_formulas_from_varname("pctlths")
+#' calc_formulas_from_varname("pctlowinc")
+#' calc_formulas_from_varname(c("lingiso", "lowinc"))
+#'
+#' @keywords internal
+#' @export
+#'
 calc_formulas_from_varname <- function(varname = "pctlowinc", formulas = NULL, top=TRUE) {
 
   if (is.null(formulas) || missing(formulas)) {

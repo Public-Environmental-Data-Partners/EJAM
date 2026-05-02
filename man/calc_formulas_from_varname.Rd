@@ -2,28 +2,35 @@
 % Please edit documentation in R/calc_formulas_from_varname.R
 \name{calc_formulas_from_varname}
 \alias{calc_formulas_from_varname}
-\title{compile the formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also}
+\title{Compile formulas needed to calculate one or more final indicators}
 \usage{
 calc_formulas_from_varname(varname = "pctlowinc", formulas = NULL, top = TRUE)
 }
 \arguments{
-\item{varname}{one or more character string variable names found in the "rname" column of the formulas parameter}
+\item{varname}{one or more character string variable names found in the
+\code{"rname"} column of the formulas parameter.}
 
-\item{formulas}{default is to use the built-in \link{formulas_ejscreen_acs},
-but a custom data.frame would similarly need to have colnames "rname" and "formula"}
+\item{formulas}{default is to use the built-in \link{formulas_ejscreen_acs}, but a
+custom data.frame can be supplied if it has columns \code{"rname"} and
+\code{"formula"}.}
 
-\item{top}{do not change}
+\item{top}{do not change.}
 }
 \value{
-data.frame with colnames "rname" and "formula",
-similar to those columns as found in \link{formulas_ejscreen_acs}
+data.frame with columns \code{"rname"} and \code{"formula"}, similar to those
+columns as found in \link{formulas_ejscreen_acs}.
 }
 \description{
-compile the formulas needed to calculate one or more final indicators by recursively getting formulas for the intermediate variables also
+Compile formulas needed to calculate one or more final indicators
+}
+\details{
+Recursively finds formulas for any intermediate variables that are
+also outputs in the supplied formula table, then sorts them so dependencies
+are calculated before they are used.
 }
 \examples{
 calc_formulas_from_varname("pctlingiso")
-calc_formulas_from_varname('pctlths')
+calc_formulas_from_varname("pctlths")
 calc_formulas_from_varname("pctlowinc")
 calc_formulas_from_varname(c("lingiso", "lowinc"))
 

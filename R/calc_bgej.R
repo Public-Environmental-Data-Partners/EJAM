@@ -22,6 +22,10 @@
 #'
 #' @param vnames_ST name of column in bgstats that has the 2-character State abbreviation to use in
 #'   finding envt percentiles in the [statestats] table used by [calc_pctile_columns()]
+#' @param usastats_lookup optional percentile lookup table to use for national
+#'   environmental percentiles. Defaults to [usastats].
+#' @param statestats_lookup optional percentile lookup table to use for state
+#'   environmental percentiles. Defaults to [statestats].
 #'
 #' @return data.table like [bgej]
 #'
@@ -43,7 +47,10 @@ calc_bgej <- function(bgstats,
                       vnames_d_demogindex_state      = "Demog.Index.State",
                       vnames_d_demogindex_supp_state = "Demog.Index.Supp.State",
 
-                      vnames_ST = "ST"
+                      vnames_ST = "ST",
+
+                      usastats_lookup = NULL,
+                      statestats_lookup = NULL
 
 ) {
 
@@ -56,14 +63,16 @@ calc_bgej <- function(bgstats,
     calc_pctile_columns(bge,
                         varnames        = vnames_e,
                         varnames_pctile = vnames_e_pctile,
-                        zones = "USA")
+                        zones = "USA",
+                        lookup = usastats_lookup)
 
   cat("calculating envt State percentiles\n")
   state_epctiles <-
     calc_pctile_columns(bge,
                         varnames              = vnames_e,
                         varnames_state_pctile = vnames_e_state_pctile,
-                        zones = as.vector(unlist(bgstats[, ..vnames_ST])))
+                        zones = as.vector(unlist(bgstats[, ..vnames_ST])),
+                        lookup = statestats_lookup)
 
   colnames(epctiles)       <- vnames_e_pctile
   colnames(state_epctiles) <- vnames_e_state_pctile

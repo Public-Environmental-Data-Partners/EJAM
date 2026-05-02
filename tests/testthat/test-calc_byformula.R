@@ -118,6 +118,14 @@ test_that("formula dependencies are ordered before they are used", {
   expect_lt(match("over17", age_formulas$rname), match("pctover17", age_formulas$rname))
 })
 
+test_that("formula dependency sorting rejects cycles", {
+  cyclic_formulas <- data.frame(
+    rname = c("x", "y"),
+    formula = c("x <- y + 1", "y <- x + 1")
+  )
+  expect_error(sort_formulas_by_dependency(cyclic_formulas), "unresolved or circular dependencies")
+})
+
 ## might not want this to return 1 ?
 # calc_varname_from_formula("1==1")
 

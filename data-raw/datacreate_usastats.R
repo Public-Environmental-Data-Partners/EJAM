@@ -194,7 +194,11 @@ statestats_new <- EJAM:::pctiles_lookup_create(bg[, ..myvars], zone.vector = bg$
 # source("./data-raw/datacreate_bgej.R")
 ## or do it directly here:
 
-bgej <- calc_bgej(bgstats = bg) #   use new blockgroupstats
+bgej <- calc_bgej(
+  bgstats = bg,
+  usastats_lookup = usastats_new,
+  statestats_lookup = statestats_new
+) # use new blockgroupstats and the new percentile lookup tables
 
 # # This file is not stored in the package. It goes in the ejamdata repository. and probably as .arrow not .rda
 save(bgej, file = file.path(mydir, "bgej.rda"))
@@ -203,39 +207,32 @@ message("saved interim file in ", mydir)
 
 # calc pctiles of EJ indexes - add those columns to usastats, statestats ####
 
-# now finish creating usastats_new and statestats_new to include the EJ INDEX columns in them
+# now finish creating usastats_new and statestats_new to include the EJ INDEX columns in them.
+# Use the national EJ index columns for usastats and the state EJ index columns for statestats.
+myvars_us_ej <- intersect(c(names_ej, names_ej_supp), names(bgej))
+myvars_state_ej <- intersect(c(names_ej_state, names_ej_supp_state), names(bgej))
+if (length(myvars_us_ej) == 0 || length(myvars_state_ej) == 0) {
+  stop("bgej does not have the expected EJ index columns needed for usastats/statestats")
+}
 
-myvars <- names(bgej)
-# "bgid"  "bgfips"  "ST"  "pop"
-# names_ej,       names_ej_sup,
-# names_ej_state, names_ej_supp_state
-dontuse= c("bgid", "bgfips", "pop", "ST")
-myvars <- myvars[!myvars %in% dontuse]
-
-usastats_new_ej   <- EJAM:::pctiles_lookup_create(bg[, ..myvars])
-statestats_new_ej <- EJAM:::pctiles_lookup_create(bg[, ..myvars], zone.vector = bg$ST)
+usastats_new_ej   <- EJAM:::pctiles_lookup_create(bgej[, ..myvars_us_ej])
+statestats_new_ej <- EJAM:::pctiles_lookup_create(bgej[, ..myvars_state_ej], zone.vector = bgej$ST)
 
 # merge with non-ej-index percentiles tables
-# check if ok to simply use cbind - presumes same exact rows in same exact order !
-# maybe better to carefully merge on columns REGION and PCTILE
+merge_pctile_lookups <- function(x, y) {
+  x <- data.table::as.data.table(x)
+  y <- data.table::as.data.table(y)
+  if ("OBJECTID" %in% names(y)) {
+    y[, OBJECTID := NULL]
+  }
+  out <- merge(x, y, by = c("REGION", "PCTILE"), all.x = TRUE, sort = FALSE)
+  data.table::setcolorder(out, c("OBJECTID", "REGION", "PCTILE",
+                                 setdiff(names(out), c("OBJECTID", "REGION", "PCTILE"))))
+  data.frame(out)
+}
 
-usastats_new   <- cbind(usastats_new,   usastats_new_ej)
-statestats_new <- cbind(statestats_new, statestats_new_ej)
-
-################################################################################ #
-
-# fix state vs nonstate column names ####
-
-# MAKE THE STATE summary INDICATORS (RAW SCORES) COLUMNS HAVE STATE PERCENTILE NAMES TO DISTINGUISH FROM US VERSIONS
-# BUT BE SURE THAT LOOKUP CODE TURNING RAW STATE summary SCORES INTO PCTILES IS USING THE RIGHT NAMES
-
-setDT(statestats_new)
-data.table::setnames(statestats_new,
-                     old = c(names_ej, names_ej_supp),
-                     new = c(names_ej_state, names_ej_supp_state))
-setDF(statestats_new)
-# but later they will be data.table? no maybe not.
-# cbind(names(usastats_new), names(statestats_new))
+usastats_new   <- merge_pctile_lookups(usastats_new,   usastats_new_ej)
+statestats_new <- merge_pctile_lookups(statestats_new, statestats_new_ej)
 
 ################################################################################ #
 

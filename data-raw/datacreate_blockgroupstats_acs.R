@@ -72,6 +72,30 @@ message("saved interim file in ", mydir)
 blockgroupstats_acs <- merge(blockgroupstats_acs, bg_from_tracts, by = "bgfips", all.x = TRUE)
 ################################################### #
 
+# ENVIRONMENTAL, HEALTH, or other NON-ACS columns ####
+
+# The new environmental raw scores data would be provided by an upstream
+# envirodata stage, which can use saved ACS data to include pctpre1960.
+# For now, use the old/existing environmental and non-ACS health scores for testing this
+# code with new ACS data and old non-ACS data.
+external_indicator_cols <- unique(c(names_e, setdiff(names_health, "pctdisability")))
+external_indicator_cols <- external_indicator_cols[external_indicator_cols %in% names(blockgroupstats)]
+envirodata <- blockgroupstats[, c("bgfips", external_indicator_cols), with = FALSE]
+bg_envirodata <- envirodata
+
+if (!"pctpre1960" %in% names(envirodata)) {
+  stop("Need pctpre1960 in envirodata before calculating EJ indexes")
+}
+if (!"lowlifex" %in% names(envirodata)) {
+  stop("Need lowlifex in envirodata before calculating Demog.Index.Supp")
+}
+blockgroupstats_acs <- merge(
+  blockgroupstats_acs,
+  envirodata[, .(bgfips, lowlifex)],
+  by = "bgfips",
+  all.x = TRUE
+)
+
 save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 2.rda"))
 message("saved interim file in ", mydir)
 
@@ -80,7 +104,7 @@ message("saved interim file in ", mydir)
 
 # note first need to have done   /data-raw/datacreate_formulas_ejscreen_demog_index.R
 
-blockgroup_demog_index <- calc_blockgroup_demog_index(yr = yr)
+blockgroup_demog_index <- calc_blockgroup_demog_index(bgstats = blockgroupstats_acs)
 
   # dry run of join
 btest <- merge(blockgroupstats_acs, blockgroup_demog_index, by = "bgfips")
@@ -123,33 +147,19 @@ save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs.rda"))
 message("saved interim file",    file.path(mydir, "blockgroupstats_acs.rda"))
 ############################################################## #
 
-# ENVIRONMENTAL INDICATORS or other NON-Demographic columns ####
-
-
-
-# stop('can stop here -- need environmental dataset')
-### the new environmental raw scores data would be provided by others as an input, to be used   here
-
-# But we can for now try this by just using the old/existing environmental scores (indicators) from blockgroupstats[, ..names_e] , for testing this code by using the new ACS with old envt data:
-
-ecols <- c('bgfips', 'bgid', names_e)
-bg_envirodata <-
-  blockgroupstats[, ..ecols]
-
-
-
-
-
-
-
-
-save(bg_envirodata, file = file.path(mydir, "bg_envirodata.rda"))
+save(envirodata, file = file.path(mydir, "envirodata.rda"))
 message("saved interim file in ", mydir)
 
 ############################################################## #
 # CREATE new version of blockgroupstats ####
 
-blockgroupstats_new <- merge(blockgroupstats_acs, bg_envirodata, by = c("bgfips"), all.x = TRUE)
+cols_to_add <- setdiff(names(bg_envirodata), c("bgfips", names(blockgroupstats_acs)))
+blockgroupstats_new <- merge(
+  blockgroupstats_acs,
+  bg_envirodata[, c("bgfips", cols_to_add), with = FALSE],
+  by = "bgfips",
+  all.x = TRUE
+)
 
 save(blockgroupstats_new, file = file.path(mydir, "blockgroupstats_new.rda"))
 message("saved interim file",    file.path(mydir, "blockgroupstats_new.rda"))
@@ -193,5 +203,3 @@ cat("update documentation now if necessary \n")
 cat("next, update usestats and statestats, and bgej,  via  /data-raw/datacreate_usastats.R\n")
 
 ##################################################################### ###################################################################### #
-
-

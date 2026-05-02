@@ -68,18 +68,20 @@
 pctiles_lookup_create <- function(x, zone.vector = NULL, zoneOverallName = 'USA',
                                   wts = NULL, usecollapse = TRUE, type = 7) {
   mydf <- x
+  pctile_probs <- (0:100) / 100
+  pctile_labels <- c(as.character(0:100), "mean")
 
   pctiles.exact <- function(x, usecollapse = FALSE, type = 7) {
     if (usecollapse) {
-      cbind(collapse::fquantile(x, type = type, probs = (1:100)/100, na.rm = TRUE))
+      cbind(collapse::fquantile(x, type = type, probs = pctile_probs, na.rm = TRUE))
     } else {
-      cbind(    stats::quantile(x, type = type, probs = (1:100)/100, na.rm = TRUE))
+      cbind(    stats::quantile(x, type = type, probs = pctile_probs, na.rm = TRUE))
     }
     # actually this should be written to assign the floor of exact % of scores that are < given bg score (?) ***
     # floor(sum(x < thisx)/length(x))
   }
 
-  wtd.pctiles.exact <-  function(x, wts = NULL, na.rm = TRUE, type = 7, probs = (1:100) / 100, usecollapse = FALSE) {
+  wtd.pctiles.exact <-  function(x, wts = NULL, na.rm = TRUE, type = 7, probs = pctile_probs, usecollapse = FALSE) {
     #  PERCENTILES, WEIGHTED, SO DISTRIBUTION OVER PEOPLE NOT PLACES, in case you need that
     #    EJSCREEN does not use weights anymore for that, however.
     if (usecollapse) {
@@ -120,7 +122,7 @@ pctiles_lookup_create <- function(x, zone.vector = NULL, zoneOverallName = 'USA'
     }
 
     r$REGION <- "USA" # zoneOverallName
-    r$PCTILE <- rownames(r) #   1:100, 'mean'
+    r$PCTILE <- pctile_labels #   0:100, 'mean'
 
   } else {
 
@@ -139,7 +141,7 @@ pctiles_lookup_create <- function(x, zone.vector = NULL, zoneOverallName = 'USA'
           r[[i]] <- rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z,  ], function(x) mean(x, na.rm = TRUE)))))
         }
         r[[i]]$REGION <- z
-        r[[i]]$PCTILE <- rownames(r[[i]]) # 1:100,'mean'
+        r[[i]]$PCTILE <- pctile_labels # 0:100,'mean'
       } else {
 
         # ZONES AND WEIGHTS ####
@@ -151,7 +153,7 @@ pctiles_lookup_create <- function(x, zone.vector = NULL, zoneOverallName = 'USA'
           r[[i]] = rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z,  ], function(x) stats::weighted.mean(x, w = wts[zone.vector == z], na.rm = TRUE) ) ) ))
         }
         r[[i]]$REGION <- z
-        r[[i]]$PCTILE <- rownames(r[[i]]) # 1:100, 'mean'
+        r[[i]]$PCTILE <- pctile_labels # 0:100, 'mean'
       }
     }
     # ZONE LOOP DONE
