@@ -46,6 +46,9 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #' @param tables default is the key ACS tables needed by EJAM/EJScreen.
 #'   A vector of ACS table numbers, such as c("B01001", "B03002")
 #' @param dropMOE logical, whether to drop and not retain the margin of error information on every ACS variable
+#' @param acs_raw optional raw ACS table list or `bg_acs_raw` pipeline object
+#'   previously created by [download_bg_acs_raw()]. If supplied, no ACS download
+#'   is performed for blockgroup-resolution tables.
 #'
 #' @return data.table, one row per blockgroup, columns bgfips, etc.
 #' @seealso [calc_blockgroupstats_acs()] [calc_blockgroupstats_from_tract_data()] [calc_bgej()]
@@ -57,9 +60,10 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 calc_blockgroupstats_acs <- function(yr,
                                      formulas = EJAM::formulas_ejscreen_acs$formula,
                                      tables = as.vector(EJAM::tables_ejscreen_acs),
-                                     dropMOE = TRUE) {
+                                     dropMOE = TRUE,
+                                     acs_raw = NULL) {
 
-  if (!(require(ACSdownload))) {
+  if (!requireNamespace("ACSdownload", quietly = TRUE)) {
     stop("requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload and documented at https://ejanalysis.github.io/ACSdownload/")
   }
   # library(EJAM); library(dplyr); library(data.table)
@@ -67,34 +71,38 @@ calc_blockgroupstats_acs <- function(yr,
   if (missing(yr)) {
     yr <- acs_endyear(guess_always = T, guess_census_has_published = T)
   }
-  ################################################### #
-  ## BLOCK GROUP SURVEY DATA HANDLED DIFFERENTLY/ SEPARATELY FROM
-  ## Tract resolution survey data that has to be allocated to blockgroups.
-  ## Check available resolution of each table here.
-  x <- acs_table_info(yr = yr, tables_acs = tables, dataset = "acs5")
-  if (all(is.na(x$geography))) {
-    # tidycensus package has not yet updated the geo table, perhaps, as was the case as of April 27, 2026 for the ACS 2020-2024 data released in Jan 2026.
-    # assume geo resolution of each table number is same as prior year, for which it is already in the tidycensus pkg,
-    # and will hope the table numbers are still the same which is not always true
-    x <- acs_table_info(yr = as.numeric(yr) - 1, tables_acs = tables, dataset = "acs5")
+  if (is.null(acs_raw)) {
+    ################################################### #
+    ## BLOCK GROUP SURVEY DATA HANDLED DIFFERENTLY/ SEPARATELY FROM
+    ## Tract resolution survey data that has to be allocated to blockgroups.
+    ## Check available resolution of each table here.
+    x <- acs_table_info(yr = yr, tables_acs = tables, dataset = "acs5")
     if (all(is.na(x$geography))) {
-      # still a problem?? know it is available for 2023 dataset, and will hope the table numbers are still the same which is not always true
-      x <- acs_table_info(yr = 2023, tables_acs = tables, dataset = "acs5")
+      # tidycensus package has not yet updated the geo table, perhaps, as was the case as of April 27, 2026 for the ACS 2020-2024 data released in Jan 2026.
+      # assume geo resolution of each table number is same as prior year, for which it is already in the tidycensus pkg,
+      # and will hope the table numbers are still the same which is not always true
+      x <- acs_table_info(yr = as.numeric(yr) - 1, tables_acs = tables, dataset = "acs5")
+      if (all(is.na(x$geography))) {
+        # still a problem?? know it is available for 2023 dataset, and will hope the table numbers are still the same which is not always true
+        x <- acs_table_info(yr = 2023, tables_acs = tables, dataset = "acs5")
+      }
     }
+    tables_resolution = x$geography[ match(tables, x$table)] # geo res of first hit in x info, per table
+    tables_bg    = tables[tables_resolution %in% "block group" ]
+    tables_tract = tables[tables_resolution %in% "tract" ]
+    ################################################### #
+    # - get new ACS data for most indicators using downloads (not Census API)
+    suppressWarnings({
+      bg <- ACSdownload::get_acs_new(
+        yr = yr,
+        return_list_not_merged = FALSE,
+        fips = "blockgroup",
+        tables = tables_bg
+      )
+    })
+  } else {
+    bg <- merge_acs_raw_tables(acs_raw_component(acs_raw, "blockgroup"))
   }
-  tables_resolution = x$geography[ match(tables, x$table)] # geo res of first hit in x info, per table
-  tables_bg    = tables[tables_resolution %in% "block group" ]
-  tables_tract = tables[tables_resolution %in% "tract" ]
-  ################################################### #
-  # - get new ACS data for most indicators using downloads (not Census API)
-  suppressWarnings({
-    bg <- ACSdownload::get_acs_new(
-      yr = yr,
-      return_list_not_merged = FALSE,
-      fips = "blockgroup",
-      tables = tables_bg
-    )
-  })
   bg$bgfips = bg$fips
   bg$GEO_ID = NULL
 

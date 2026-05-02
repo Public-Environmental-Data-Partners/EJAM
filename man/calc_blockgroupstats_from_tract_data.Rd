@@ -8,7 +8,8 @@ calc_blockgroupstats_from_tract_data(
   yr,
   tables = c("B18101", "C16001"),
   formulas = NULL,
-  dropMOE = TRUE
+  dropMOE = TRUE,
+  acs_raw = NULL
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ calc_blockgroupstats_from_tract_data(
 calculated from ACS variables found in tables "B18101" and "C16001" - This is a vector of string formulas.}
 
 \item{dropMOE}{logical, whether to drop not retain the margin of error information for each ACS variable}
+
+\item{acs_raw}{optional raw ACS table list or \code{bg_acs_raw} pipeline object
+previously created by \code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}}. If supplied, no ACS download
+is performed for tract-resolution tables.}
 }
 \value{
 data.table, one row per blockgroup (not tract)

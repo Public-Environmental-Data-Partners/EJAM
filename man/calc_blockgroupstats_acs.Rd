@@ -8,7 +8,8 @@ calc_blockgroupstats_acs(
   yr,
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tables = as.vector(EJAM::tables_ejscreen_acs),
-  dropMOE = TRUE
+  dropMOE = TRUE,
+  acs_raw = NULL
 )
 }
 \arguments{
@@ -22,6 +23,10 @@ c("pop = B01001_001", "hisp = B03002_012", "pcthisp <- ifelse(pop==0, 0, as.nume
 A vector of ACS table numbers, such as c("B01001", "B03002")}
 
 \item{dropMOE}{logical, whether to drop and not retain the margin of error information on every ACS variable}
+
+\item{acs_raw}{optional raw ACS table list or \code{bg_acs_raw} pipeline object
+previously created by \code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}}. If supplied, no ACS download
+is performed for blockgroup-resolution tables.}
 }
 \value{
 data.table, one row per blockgroup, columns bgfips, etc.

@@ -30,7 +30,7 @@
 if (FALSE) {
   c1 <- fips2countyname(fips_counties_from_state_abbrev('DE'), includestate = F)[1]
   bgdf = data.frame(EJAM::blockgroupstats[ST == "DE" & countyname == c1, ..names_d])[1:10, ]
-  newdf <-  ejscreen::ejscreen.acs.calc(
+  newdf <-  calc_ejam(
     bgdf, keep.old = "", keep.new = c("my_custom_stat", "mystat2"),
     formulas = c(
       "my_custom_stat <- (pctlowinc + pctmin)/2",

@@ -10,7 +10,7 @@ ejscreen_pipeline_validate(x, stage, strict = TRUE)
 \item{x}{object to validate.}
 
 \item{stage}{pipeline stage name, such as \code{"bg_acsdata"},
-\code{"blockgroupstats_acs"}, \code{"bg_envirodata"}, \code{"envirodata"},
+\code{"bg_acs_raw"}, \code{"blockgroupstats_acs"}, \code{"bg_envirodata"}, \code{"envirodata"},
 \code{"blockgroupstats"}, \code{"bgej"}, \code{"bg_ejindexes"},
 \code{"usastats_acs"}, \code{"statestats_acs"}, \code{"usastats_envirodata"},
 \code{"statestats_envirodata"}, \code{"usastats_ej"}, \code{"statestats_ej"},

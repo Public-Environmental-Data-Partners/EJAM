@@ -8,7 +8,7 @@
 #'
 #' @param x object to validate.
 #' @param stage pipeline stage name, such as `"bg_acsdata"`,
-#'   `"blockgroupstats_acs"`, `"bg_envirodata"`, `"envirodata"`,
+#'   `"bg_acs_raw"`, `"blockgroupstats_acs"`, `"bg_envirodata"`, `"envirodata"`,
 #'   `"blockgroupstats"`, `"bgej"`, `"bg_ejindexes"`,
 #'   `"usastats_acs"`, `"statestats_acs"`, `"usastats_envirodata"`,
 #'   `"statestats_envirodata"`, `"usastats_ej"`, `"statestats_ej"`,
@@ -121,6 +121,34 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     }
     invisible(NULL)
   }
+  check_acs_raw_component <- function(component) {
+    tables <- x[[component]]
+    if (is.null(tables)) {
+      add_error(paste0("missing ", component, " ACS table list"))
+      return(NULL)
+    }
+    if (!is.list(tables)) {
+      add_error(paste0(component, " ACS tables must be stored as a list"))
+      return(NULL)
+    }
+    bad <- names(tables)[!vapply(tables, is.data.frame, logical(1))]
+    if (length(bad) > 0) {
+      add_error(paste0(component, " ACS tables are not data.frames: ", paste(bad, collapse = ", ")))
+    }
+    missing_fips <- names(tables)[vapply(tables, function(tab) {
+      is.data.frame(tab) && !"fips" %in% names(tab)
+    }, logical(1))]
+    if (length(missing_fips) > 0) {
+      add_error(paste0(component, " ACS tables are missing fips: ", paste(missing_fips, collapse = ", ")))
+    }
+    zero_rows <- names(tables)[vapply(tables, function(tab) {
+      is.data.frame(tab) && NROW(tab) == 0
+    }, logical(1))]
+    if (length(zero_rows) > 0) {
+      add_warning(paste0(component, " ACS tables have zero rows: ", paste(zero_rows, collapse = ", ")))
+    }
+    invisible(NULL)
+  }
 
   known_stages <- ejscreen_pipeline_stage_names()
   canonical_stage <- ejscreen_pipeline_stage_canonical(stage)
@@ -130,7 +158,21 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     return(invisible(list(stage = stage, errors = errors, warnings = warnings)))
   }
 
-  if (!is.data.frame(x)) {
+  if (canonical_stage == "bg_acs_raw") {
+    if (!is.list(x)) {
+      add_error("bg_acs_raw must be a list")
+    } else {
+      for (required_name in c("yr", "blockgroup_tables", "blockgroup")) {
+        if (is.null(x[[required_name]])) {
+          add_error(paste0("bg_acs_raw is missing ", required_name))
+        }
+      }
+      check_acs_raw_component("blockgroup")
+      if (!is.null(x$tract) && length(x$tract) > 0) {
+        check_acs_raw_component("tract")
+      }
+    }
+  } else if (!is.data.frame(x)) {
     add_error("stage object must be a data.frame or data.table")
   } else {
     if (NROW(x) == 0) {

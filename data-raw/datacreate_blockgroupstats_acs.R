@@ -38,39 +38,26 @@ yr <- yr_desc
 rm(yr_desc, yr_guess)
 
 ################################################### #
-# download ACS data, calc most demographics ####
+# download raw ACS data, then calculate ACS-derived bg_acsdata stage ####
 
-# requires ACSDownload package
+# requires ACSdownload package
 # requires having first created formulas_ejscreen_acs via  /data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R
 
-blockgroupstats_acs <- calc_blockgroupstats_acs(yr = yr) # use defaults, otherwise
-bg_acsdata <- blockgroupstats_acs
+bg_acs_raw <- download_bg_acs_raw(
+  yr = yr,
+  pipeline_dir = mydir,
+  save_stage = TRUE,
+  stage_format = "rda"
+)
 
-save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 1.rda"))
-message("saved interim file in ", mydir)
-################################################### #
-
-# calc pctdisability and language details indicators (from tract data) ####
-
-# bgwts <- EJAM:::calc_bgwts_nationwide() # takes a minute to download each state Census 2020
-# save(bgwts, file = file.path(mydir, 'bgwts.rda'))
-# message("saved bgwts file in ", temporary_folder)
-## bgwts just gets used by calc_blockgroupstats_from_tract_data() which creates it if not found in search path ***
-
-# bg_disability <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "B18101") # gets disability  from tract data
-# bg_language   <- calc_blockgroupstats_from_tract_data(yr = yr, tables = "C16001") # gets detailed language from tract data
-
-bg_from_tracts <- calc_blockgroupstats_from_tract_data(yr = yr, tables = c("B18101", "C16001"))
-
-save(bg_from_tracts, file = file.path(mydir, "bg_from_tracts.rda"))
-message("saved interim file in ", mydir)
-
-# # join into blockgroupstats_acs
-# blockgroupstats_acs[bg_disability, disability     := disability,     on = "bgfips"]
-# blockgroupstats_acs[bg_disability, disab_universe := disab_universe, on = "bgfips"]
-# blockgroupstats_acs[bg_disability, pctdisability  := pctdisability,  on = "bgfips"]
-# e.g., pctlan_vietnamese, etc. etc.
-blockgroupstats_acs <- merge(blockgroupstats_acs, bg_from_tracts, by = "bgfips", all.x = TRUE)
+bg_acsdata <- calc_bg_acsdata(
+  yr = yr,
+  acs_raw_stage = "bg_acs_raw",
+  pipeline_dir = mydir,
+  save_stage = TRUE,
+  stage_format = "rda"
+)
+blockgroupstats_acs <- bg_acsdata
 ################################################### #
 
 # ENVIRONMENTAL, HEALTH, or other NON-ACS columns ####
@@ -136,16 +123,11 @@ setcolorder(blockgroupstats_acs, c("bgid", "bgfips", "statename", "ST", "countyn
 
 ############################################################## #
 
-## IF SAVING JUST THE DEMOGRAPHICS WITHOUT ENVT OR EJ ETC., DO THIS:
+## The clean ACS-only bg_acsdata stage was already saved by calc_bg_acsdata()
+## above, before lowlifex and Demog.Index columns were added.
 
-# save(bg_acsdata, file = "./data-raw/bg_acsdata.rda")
-# or
 # EJAM:::metadata_add_and_use_this("bg_acsdata")
 # EJAM:::dataset_documenter("bg_acsdata")
-# or
-bg_acsdata <- blockgroupstats_acs
-save(bg_acsdata, file = file.path(mydir, "bg_acsdata.rda"))
-message("saved interim file",    file.path(mydir, "bg_acsdata.rda"))
 ############################################################## #
 
 save(bg_envirodata, file = file.path(mydir, "bg_envirodata.rda"))

@@ -44,6 +44,8 @@ ejscreen_pipeline_dir <- function(root = tempdir(), yr = NULL, pipeline_name = "
 #' @export
 ejscreen_pipeline_stage_names <- function() {
   c(
+    bg_acs_raw = "bg_acs_raw",
+    acs_raw = "acs_raw",
     bg_acsdata = "bg_acsdata",
     blockgroupstats_acs = "blockgroupstats_acs",
     bg_envirodata = "bg_envirodata",
@@ -68,6 +70,7 @@ ejscreen_pipeline_stage_canonical <- function(stage) {
     return(stage)
   }
   switch(stage,
+    acs_raw = "bg_acs_raw",
     blockgroupstats_acs = "bg_acsdata",
     envirodata = "bg_envirodata",
     bg_ejindexes = "bgej",

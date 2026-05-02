@@ -24,6 +24,9 @@
 #' @param formulas default includes formulas for disability-related and language-related indicators
 #'  calculated from ACS variables found in tables "B18101" and "C16001" - This is a vector of string formulas.
 #' @param dropMOE logical, whether to drop not retain the margin of error information for each ACS variable
+#' @param acs_raw optional raw ACS table list or `bg_acs_raw` pipeline object
+#'   previously created by [download_bg_acs_raw()]. If supplied, no ACS download
+#'   is performed for tract-resolution tables.
 #'
 #' @return data.table, one row per blockgroup (not tract)
 #'
@@ -33,7 +36,8 @@
 calc_blockgroupstats_from_tract_data <- function(yr,
                                                  tables = c("B18101", "C16001"),
                                                  formulas = NULL,
-                                                 dropMOE = TRUE) {
+                                                 dropMOE = TRUE,
+                                                 acs_raw = NULL) {
 
   if (!exists("bgwts")) { # so that we can create this once while testing and not have to download each time this overall function is used
     bgwts <- calc_bgwts_nationwide()
@@ -66,9 +70,13 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   ###################################################### #
   # - download tract level acs for B18101 and C16001, e.g.
 
-  tracts <- suppressWarnings({
-    ACSdownload::get_acs_new(tables = tables, fips = "tract", yr = yr, return_list_not_merged = F)
-  })
+  if (is.null(acs_raw)) {
+    tracts <- suppressWarnings({
+      ACSdownload::get_acs_new(tables = tables, fips = "tract", yr = yr, return_list_not_merged = F)
+    })
+  } else {
+    tracts <- merge_acs_raw_tables(acs_raw_component(acs_raw, "tract"))
+  }
   # tracts <- tracts[[1]]
   if (dropMOE) {
     tracts <- tracts[, !grepl("_M", names(tracts)), with = FALSE]
