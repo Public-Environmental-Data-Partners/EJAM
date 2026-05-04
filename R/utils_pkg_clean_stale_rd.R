@@ -41,9 +41,9 @@ pkg_clean_stale_rd <- function(r_dir = "R",
     else message("DESCRIPTION not found or no Package field; package name unknown \n")
   }
   ################################################################## #
-  ## do find_roxygen_topics() ####
+  ## do pkg_find_roxygen_topics() ####
   # and report on skipped @noRd topics
-  roxy_topics <- find_roxygen_topics(r_dir, pkg_name = pkg_name,
+  roxy_topics <- pkg_find_roxygen_topics(r_dir, pkg_name = pkg_name,
                                      max_lines_after_block = max_lines_after_block,
                                      verbose = verbose, report_basics_even_if_verbose_F = report_basics_even_if_verbose_F)
 
@@ -136,16 +136,18 @@ pkg_clean_stale_rd <- function(r_dir = "R",
   invisible(to_delete_files[deleted])
 }
 ################################################################## #
-
+# ~ ---------------------------------- ####
 ################################################################## #
-# find roxygen topics in R/ code
+
+# utility to find roxygen topics in R/ code ####
+
 # - collects @name, @rdname, @aliases
 # - respects @noRd (skips such blocks)
 # - considers @docType package (uses @name if present, else pkgname-package)
 # - if no explicit tags, attempts to infer object names from subsequent code
 # - looks for multiple assignments and setClass(...) forms
 
-find_roxygen_topics <- function(r_dir = "R", pkg_name = NA_character_,
+pkg_find_roxygen_topics <- function(r_dir = "R", pkg_name = NA_character_,
                                 max_lines_after_block = 50, verbose = FALSE, report_basics_even_if_verbose_F = TRUE) {
 
   r_files <- list.files(r_dir, pattern = "\\.R$", full.names = TRUE, recursive = TRUE)

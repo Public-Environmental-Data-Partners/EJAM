@@ -78,6 +78,7 @@ if (!nzchar(report_logo) || !file.exists(report_logo)) {
   if (length(possible_logos) > 0) {
     report_logo <- possible_logos[[1]]
   }
+  rm(package_root, possible_logos)
 }
 
 # notloaded_and_notinstalled <- inherits(try( find.package("EJAM") , silent = TRUE), "try-error")
