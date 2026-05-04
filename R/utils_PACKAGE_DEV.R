@@ -101,6 +101,166 @@
 ##################################################################################### #
 # . ####
 
+## package version number ####
+
+#' utility to get "Version" of package, from source or installed version
+#'
+#' @param local_source_only if FALSE (default), look at installed package.
+#'  If TRUE, only check for DESCRIPTION file in working directory, and
+#'  do not check for installed version (or version loaded by load_all() ).
+#' @param package name of package to check, default is "EJAM"
+#' @param short if TRUE, tries to return a shorter version of the info.
+#' @examples x <- pkg_ver()
+#' @returns desc as.character() of the specified field, or NULL if not found
+#' @details
+#' EJAM:::pkg_ver() is very similar to [golem::pkg_version()]
+#'
+#' By default (if local_source_only=F) looks at installed version
+#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#'
+#' @keywords internal
+#' @noRd
+#'
+pkg_ver = function(short = FALSE, local_source_only = FALSE, package="EJAM") {
+
+  pv = pkg_description(field = "Version", local_source_only = local_source_only, package = package)
+
+  ## trim version number to Major.Minor ???
+  if (short) {
+    pv <- substr(pv, start = 1, stop = gregexpr('\\.', pv)[[1]][2] - 1)
+  }
+
+  return(pv)
+
+  # Note
+  ## There are many ways to check the version number of a package
+  #
+  ## Note the installed and source version numbers may differ during development.
+  ## Also note using load_all() might change which versions some of these approaches report on.
+  #
+  ## The installed version   (or version loaded from local source by load_all() if that is done)
+  #
+  # as.character(desc::desc(package = "EJAM")$get("Version"))
+  # as.character(utils::packageVersion("EJAM"))
+  # as.character(EJAM:::description_file$get("Version")) # description_file is created by metadata_mapping.R
+  # as.character(EJAM:::metadata_mapping$blockgroupstats[['ejam_package_version']])
+  # as.character(EJAM:::global_or_param("app_version")) # only available after package is attached, and relies on EJAM:::description_file$get("Version")
+  #
+  # ## The local source version:   (these read the local source version number)
+  # #
+  # as.character(desc::desc(file = "DESCRIPTION")$get("Version"))
+  # as.character(desc::desc_get("Version"))
+  # golem::pkg_version()
+
+}
+# ######################################################## #
+
+## package DESCRIPTION ####
+
+#' utility to get DESCRIPTION file from source or installed version, or check a field like "Version"
+#'
+#' @param field  If field parameter is NULL, return description file as desc package object.
+#' Assuming field is the name of a field in DESCRIPTION, such as "Version", return value of that field
+#' but does not validate that field.
+#'
+#' @param local_source_only if FALSE (default), look at installed package.
+#'  If TRUE, only check for DESCRIPTION file in working directory, and
+#'  do not check for installed version (or version loaded by load_all() ).
+#' @param package name of package to check, default is "EJAM"
+#' @examples x <- pkg_description()
+#' @returns desc package object that is from DESCRIPTION file,
+#'   or just the specified field, or NULL if not found
+#' @details
+#' By default (if local_source_only=F) looks at installed version
+#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#'
+#' @keywords internal
+#' @noRd
+#'
+pkg_description <- function(field = NULL, local_source_only = FALSE, package="EJAM") {
+
+  if (local_source_only) {
+
+    # 1) check in working directory for current local source version
+    #  (not necessarily the same as the version installed, or the one loaded)
+
+    desc <- try(desc::desc(file = "DESCRIPTION"), silent = TRUE)
+
+    if (!inherits(desc, 'try-error')) {
+      message("found local source version")
+      if (is.null(field)) {
+        return(desc)
+      } else {
+        out <- desc$get(field)
+        out <- as.character(out)
+        if (all(is.na(out))) {
+          return(NULL)
+        } else {
+          return(out)
+        }
+      }
+    } else {
+      warning('cannot find DESCRIPTION file in working directory')
+      return(NULL)
+    }
+  }
+
+  # 2) if local DESCRIPTION not requested, this then checks for an INSTALLED version (or version loaded via load_all()  )
+
+  desc <- try(desc::desc(package = package), silent = TRUE)
+
+  if (!inherits(desc, 'try-error')) {
+    # message("found installed version")
+    if (is.null(field)) {
+      return(desc)
+    } else {
+      out <- desc$get(field)
+      out <- as.character(out)
+      if (all(is.na(out))) {
+        return(NULL)
+      } else {
+        return(out)
+      }
+    }
+  }
+
+  # 3) if still not found, maybe try another way to check for INSTALLED version (or version loaded via load_all() )
+
+  desc <- try(desc::desc(file = system.file('DESCRIPTION', package = package)), silent = TRUE)
+
+  if (!inherits(desc, 'try-error')) {
+    # message("found installed version")
+    if (is.null(field)) {
+      return(desc)
+    } else {
+      out <- desc$get(field)
+      out <- as.character(out)
+      if (all(is.na(out))) {
+        return(NULL)
+      } else {
+        return(out)
+      }
+    }
+  }
+
+  # 4) if still not found, give up
+
+  if (inherits(desc, 'try-error')) {
+    warning('cannot find DESCRIPTION file in working directory or in ', package, ' package')
+    return(NULL)
+  }
+
+}
+# ###################################################### #
+
+
+# ###################################################### #
+#   ##    To see if it is loaded:  getNamespaceInfo("EJAM", "path")
+#   ##    To see if it is on the search() path, attached:  attr(as.environment("package:EJAM"), "path")
+# ###################################################### #
+
+##################################################################################### #
+
 ## package directory ####
 
 pkg_dir_installed = function(pkg="EJAM") {find.package(pkg, lib.loc = .libPaths())}
