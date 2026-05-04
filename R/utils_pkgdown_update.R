@@ -2,6 +2,10 @@
 # . ####
 # HOW TO USE THIS FUNCTION ####
 
+  # note this could at some point be replaced by a gh actions workflow that would automatically update the pkgdown site (after a PR or push),
+  # but for now, this is a utility function to run manually when you want to update the pkgdown site,
+  # and it has some options for what steps to do or not do, and whether to ask about each step or just use defaults.
+
 # cat(
 #   "
 # To use this function:

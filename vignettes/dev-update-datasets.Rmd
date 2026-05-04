@@ -358,6 +358,8 @@ release_number <- "v2.5.0" # Update as needed
 owner_repo <- EJAM:::url_package("data", get_full_url = F) 
 # e.g., "Public-Environmental-Data-Partners/ejamdata"
 
+# You can go to the repo and manually create a new release using a web browser, 
+# or try using piggyback: 
 # Requires github token with permissions!
 piggyback::pb_release_create(
   tag = release_number,
@@ -366,64 +368,52 @@ piggyback::pb_release_create(
 ) 
 ```
 
-Make sure all the new data objects are in memory as arrow and/or rda format.
+Make sure all the new data objects are available as .arrow format files.
 
 
 ``` {r, eval=FALSE}
+library(piggyback)
 
-filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
+release_number <- "v2.5.0" # Update as needed
+owner_repo <- EJAM:::url_package("data", get_full_url = F) 
+
+new_datasets_folder <- "~/Downloads"
+
+filenames_arrow <- paste0(EJAM:::.arrow_ds_names, ".arrow")
+filepaths_arrow <- file.path(new_datasets_folder, filenames_arrow)
 some_not_here <- FALSE
 cat("\n")
-for (i in seq_along(filenames_arrow)) {
-  cat("checking ", filenames_arrow[i], "\n")
-  if (!exists(filenames_arrow[i])) {
-    message(paste0("object ", filenames_arrow[i], " not found in memory."))
+for (i in seq_along(filepaths_arrow)) {
+  cat("checking ", filepaths_arrow[i], "\n")
+  if (!file.exists(filepaths_arrow[i])) {
+    message(paste0("file ", filepaths_arrow[i], " not found********"))
     some_not_here <- TRUE
   }
 }
-if (some_not_here) {stop("Please make sure all the new data files are in memory before running this code.")}
+if (some_not_here) {stop("Please make sure all the new .arrow data files are available before running this code.")}
 # dput(filenames_arrow)
 
-# then do the same for the .rda versions such as blockwts, blockpoints, etc.
-
-filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
-some_not_here <- FALSE
-cat("\n")
-for (i in seq_along(filenames_rda)) {
-  cat("checking ", filenames_rda[i], "\n")
-  if (!exists(filenames_rda[i])) {
-    message(paste0("object ", filenames_rda[i], " not found in memory."))
-    some_not_here <- TRUE
-  }
-}
-if (some_not_here) {stop("Please make sure all the new data objects are in memory before running this code.")}
-# dput(filenames_rda)
-
-
-# see objects loaded and class(es) of each
-cbind(sort(sapply(intersect(ls(), union(filenames_arrow, filenames_rda)),
-                  function(z) paste0(class(get(z)), collapse = ","))))
+# the .rda files  are NOT there as assets
+ 
 
 ```
 
 Upload each dataset object as a dataset file
 ```{r, eval=FALSE}
+library(piggyback)
 
-filenames_arrow <- paste0(EJAM:::.arrow_ds_names, "_arrow")
-for (i in seq_along(filenames_arrow)) {
-  cat("uploading ", filenames_arrow[i], "\n")
-  piggyback::pb_upload(filenames_arrow[i], repo = owner_repo) 
+release_number <- "v2.5.0" # Update as needed
+owner_repo <- EJAM:::url_package("data", get_full_url = F) 
+
+## need authorization to do this: 
+
+filepaths_arrow <- filepaths_arrow
+for (i in seq_along(filepaths_arrow)) {
+  cat("uploading ", filepaths_arrow[i], "\n")
+  piggyback::pb_upload(filepaths_arrow[i], repo = owner_repo) 
   # that defaults to use the tag (release_number) you just created
 }
-
-# then do the same for the .rda versions such as blockwts, blockpoints, etc.
-
-filenames_rda <- paste0(EJAM:::.arrow_ds_names, "")
-for (i in seq_along(filenames_rda)) {
-  cat("uploading ", filenames_rda[i], "\n")
-  piggyback::pb_upload(filenames_rda[i], repo = owner_repo) 
-  # that defaults to use the tag (release_number) you just created
-}
+ 
 
 ```
 
