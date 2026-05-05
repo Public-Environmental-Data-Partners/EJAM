@@ -340,6 +340,18 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
 #' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
 #'
+#' ## useful reminders of how to filter lines of code vs comments when using find_in_files()
+#'
+#' grepl_line_not_commented_out = "^[ ]*[^# ]+.*"  ## line starts with zero or more spaces followed by a non-space non-# character, so not commented out and not blank line, but may have a comment later in the line after code
+#' grepl_line_commented_out     = "^[ |#]*#.*"     ## line starts with (zero or more spaces and then) a hash mark
+#' grepl_line_may_have_comment  = "#.*"            ## line contains a hash mark somewhere, but that may be number sign within quoted text
+#'  grepl(grepl_line_may_have_comment,  " print('The # of people is 4.')")  ## TRUE even though there is no comment here
+#'  grepl(grepl_line_may_have_comment,  " # print('The number of people is 4.')") # a commented-out line
+#'  grepl(grepl_line_may_have_comment,  "   print('The number of people is 4.')   # a comment only after the code")
+#'
+#' EJAM:::find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
+#' EJAM:::find_in_files(paste0(grepl_line_commented_out,     "xxx"))
+#' EJAM:::find_in_files(paste0(grepl_line_may_have_comment,  "xxx"))
 #'
 #' @return a list of named vectors,
 #'   where names are file paths with hits, elements are vectors of text with hits.
@@ -366,6 +378,15 @@ find_in_files <- function(pattern,
   #
   # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_m', whole_line = T)
   # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_m', whole_line = F)
+
+  if (FALSE) {
+    # testing/checking
+
+    grepl_line_not_commented_out = "^[ ]*[^# ]+.*"  ## line starts with zero or more spaces followed by a non-space non-# character, so not commented out and not blank line, but may have a comment later in the line after code
+    grepl_line_commented_out     = "^[ |#]*#.*"     ## line starts with (zero or more spaces and then) a hash mark
+    grepl_line_may_have_comment  = "#.*"            ## line contains a hash mark somewhere, but that may be number sign within quoted text
+
+  }
 
   if (!quiet) {
     cat("\nSearching in ", path, ' to find files containing ', pattern, '\n')
@@ -592,8 +613,8 @@ pkg_functions_and_data <- function(pkg = "EJAM",
     funcs <- funcs[sapply(funcs, function(fname) {is.function(get(fname))})] # removes things in namespace like  ".__NAMESPACE__." that are not functions
     sort(union(dataonly(pkg),
                funcs
-               ))
-    } # all.names filters those starting with "."
+    ))
+  } # all.names filters those starting with "."
   exported_only_withdata          <- function(pkg) {ls(paste0("package:", pkg))}
   # same as ls(envir = as.environment(x = paste0("package:", pkg)))
   # same as  getNamespaceExports() except sorted
@@ -910,13 +931,13 @@ pkg_functions_and_sourcefiles <- function(pkg = "EJAM",
     }
   }
   if (!quiet) {cat("\n")}
-    x <- data.frame(file = filenames, object = funcnames)
-    if (alphasort_table) {
-      x <- x[order(x$object), ]
-    } else {
-      x <- x[order(x$file, x$object), ]
-    }
-    return(x)
+  x <- data.frame(file = filenames, object = funcnames)
+  if (alphasort_table) {
+    x <- x[order(x$object), ]
+  } else {
+    x <- x[order(x$file, x$object), ]
+  }
+  return(x)
 }
 ##################################################################################### #
 
@@ -970,7 +991,7 @@ pkg_functions_with_keywords_internal_tag <- function(
   loadagain = TRUE,
   quiet = FALSE,
   alphasort_table = TRUE # or can group by file if set FALSE
-  ) {
+) {
 
   # Does load_all() first if loadagain==TRUE so even unexported functions will seem exported, fyi
   #
@@ -1756,7 +1777,7 @@ pkg_sizes = function(pkgs, quiet=FALSE) {
 
 ## based on https://www.r-bloggers.com/2022/09/minimum-r-version-dependency-in-r-packages/
 
-find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
+pkg_dependencies_min_R <- function(package = 'EJAM', recursive_deps = NULL) {
 
   db <- tools::CRAN_package_db()
 
@@ -1798,14 +1819,15 @@ find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
 }
 ############################ #
 
+# is a package loaded or just installed or not even installed?
+
+# also see  EJAM:::pkg_dir_installed()
 
 pkg_available <- function(pkg,
                           if_not_installed = c("stop", "warning", "message", "cat")[2],
                           if_not_loaded = c("stop", "warning", "message", "cat")[2]
                           # ,if_not_attached =  c("stop", "warning", "message", "cat")[2]
 ) {
-
-  # is a package loaded or just installed or not even installed?
 
   stopifnot(!missing(pkg), !is.null(pkg), length(pkg) == 1)
   stopifnot(length(if_not_installed) == 1, if_not_installed %in% c("stop", "warning", "message", "cat"),
