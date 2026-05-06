@@ -52,6 +52,9 @@ add_demog_index_constants <- function(x) {
 }
 
 shift_nonnegative <- function(x) {
+  if (all(is.na(x))) {
+    return(x)
+  }
   shift <- min(x, na.rm = TRUE)
   if (!is.finite(shift)) {
     return(x)

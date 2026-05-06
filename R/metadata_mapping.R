@@ -52,11 +52,11 @@ metadata_mapping <- list(
     census_version = description_file$get("VersionCensus")
   ),
 
-  # datacreate_blockgroupstats....
-  # rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats_acs.R")
+
+
   blockgroupstats =	default_metadata,
 
-  # datacreate_usastats and others
+  #  others
   avg.in.us       =	default_metadata,
   statestats      = default_metadata,
   usastats        = default_metadata,

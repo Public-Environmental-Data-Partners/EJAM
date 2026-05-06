@@ -14,14 +14,15 @@
 #' @param repository repository owner/name such as `r EJAM::url_package(type = "data", get_full_url = FALSE)` or "XYZ/ejamdata"
 #'   (wherever the ejamdata repo is hosted, as specified in the DESCRIPTION file of this package)
 #' @param envir if needed to specify environment other than default, e.g., globalenv() or parent.frame()
-#'
+#' @param piggybacktag default is "latest" but if a different release were needed this could be changed.
 #' @keywords internal
 #' @export
 #'
 download_latest_arrow_data <- function(
     varnames = .arrow_ds_names,
     repository = NULL,
-    envir = globalenv()
+    envir = globalenv(),
+    piggybacktag = "latest"
 ) {
 
   if (missing(repository) || is.null(repository)) {
@@ -116,7 +117,7 @@ download_latest_arrow_data <- function(
       file = missing_files,
       dest = installed_data_folder,
       repo = repository,
-      tag = "latest",
+      tag = piggybacktag,
       use_timestamps = FALSE,
       .token = github_token
     )},

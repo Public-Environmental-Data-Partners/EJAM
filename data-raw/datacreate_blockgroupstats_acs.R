@@ -1,18 +1,12 @@
 ################################################### #
 
-# Overarching/wrapper Script to create new version of
+# This file is now mostly superseded by data-raw/run_ejscreen_acs2024_pipeline.R plus the calc_* functions.
+# see pipeline and script at data-raw/run_ejscreen_acs2024_pipeline.R
+
+if (FALSE) { # BECAUSE OBSOLETE
+
+  # The was a drafted Overarching/wrapper Script to create new version of
 # just the ACS-based indicators (% demographics)
-
-
-
-
-## need to reconcile datacreate_blockgroup_pctdisability()
-#  as defined in  /data-raw/datacreate_blockgroup_pctdisability.R
-# versus  calc_blockgroupstats_from_tract_data()
-# as called from   datacreate_formulas_ejscreen_acs.R   ***
-
-
-
 
 ################################################### #
 
@@ -47,7 +41,7 @@ bg_acs_raw <- download_bg_acs_raw(
   yr = yr,
   pipeline_dir = mydir,
   save_stage = TRUE,
-  stage_format = "rda"
+  stage_format = "csv"
 )
 
 bg_acsdata <- calc_bg_acsdata(
@@ -55,36 +49,41 @@ bg_acsdata <- calc_bg_acsdata(
   acs_raw_stage = "bg_acs_raw",
   pipeline_dir = mydir,
   save_stage = TRUE,
-  stage_format = "rda"
+  stage_format = "csv"
 )
 blockgroupstats_acs <- bg_acsdata
 ################################################### #
 
-# ENVIRONMENTAL, HEALTH, or other NON-ACS columns ####
+# ENVIRONMENTAL and EXTRA NON-ACS columns ####
 
 # The new environmental raw scores data would be provided by an upstream
 # bg_envirodata stage, which can use saved ACS data to include pctpre1960.
 # For now, use the old/existing environmental and non-ACS health scores for testing this
 # code with new ACS data and old non-ACS data.
-external_indicator_cols <- unique(c(names_e, setdiff(names_health, "pctdisability")))
+external_indicator_cols <- unique(names_e)
 external_indicator_cols <- external_indicator_cols[external_indicator_cols %in% names(blockgroupstats)]
 bg_envirodata <- blockgroupstats[, c("bgfips", external_indicator_cols), with = FALSE]
+
+bg_extra_indicators <- calc_bg_extra_indicators(
+  existing_blockgroupstats = blockgroupstats,
+  reuse_existing_if_missing = TRUE,
+  pipeline_dir = mydir,
+  save_stage = TRUE,
+  stage_format = "csv"
+)
 
 if (!"pctpre1960" %in% names(bg_envirodata)) {
   stop("Need pctpre1960 in bg_envirodata before calculating EJ indexes")
 }
-if (!"lowlifex" %in% names(bg_envirodata)) {
-  stop("Need lowlifex in bg_envirodata before calculating Demog.Index.Supp")
-}
 blockgroupstats_acs <- merge(
   blockgroupstats_acs,
-  bg_envirodata[, .(bgfips, lowlifex)],
+  bg_extra_indicators[, .(bgfips, lowlifex)],
   by = "bgfips",
   all.x = TRUE
 )
 
-save(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs step 2.rda"))
-message("saved interim file in ", mydir)
+data.table::fwrite(blockgroupstats_acs, file = file.path(mydir, "blockgroupstats_acs_step2.csv"))
+message("saved interim CSV file in ", mydir)
 
 ################################################### #
 # calc Demog.Index ####
@@ -130,8 +129,8 @@ setcolorder(blockgroupstats_acs, c("bgid", "bgfips", "statename", "ST", "countyn
 # EJAM:::dataset_documenter("bg_acsdata")
 ############################################################## #
 
-save(bg_envirodata, file = file.path(mydir, "bg_envirodata.rda"))
-message("saved interim file",    file.path(mydir, "bg_envirodata.rda"))
+ejscreen_pipeline_save(bg_envirodata, "bg_envirodata", mydir, format = "csv")
+message("saved interim file",    file.path(mydir, "bg_envirodata.csv"))
 
 ############################################################## #
 # CREATE new version of blockgroupstats ####
@@ -144,8 +143,8 @@ blockgroupstats_new <- merge(
   all.x = TRUE
 )
 
-save(blockgroupstats_new, file = file.path(mydir, "blockgroupstats_new.rda"))
-message("saved interim file",    file.path(mydir, "blockgroupstats_new.rda"))
+data.table::fwrite(blockgroupstats_new, file = file.path(mydir, "blockgroupstats_new.csv"))
+message("saved interim file",    file.path(mydir, "blockgroupstats_new.csv"))
 
 ## can add some validation here
 
@@ -186,3 +185,4 @@ cat("update documentation now if necessary \n")
 cat("next, update usestats and statestats, and bgej,  via  /data-raw/datacreate_usastats.R\n")
 
 ##################################################################### ###################################################################### #
+}

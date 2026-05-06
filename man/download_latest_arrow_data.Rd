@@ -7,7 +7,8 @@
 download_latest_arrow_data(
   varnames = .arrow_ds_names,
   repository = NULL,
-  envir = globalenv()
+  envir = globalenv(),
+  piggybacktag = "latest"
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ download_latest_arrow_data(
 (wherever the ejamdata repo is hosted, as specified in the DESCRIPTION file of this package)}
 
 \item{envir}{if needed to specify environment other than default, e.g., globalenv() or parent.frame()}
+
+\item{piggybacktag}{default is "latest" but if a different release were needed this could be changed.}
 }
 \description{
 Used when EJAM package is attached

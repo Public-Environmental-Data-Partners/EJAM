@@ -138,8 +138,7 @@ if (0 == 1) {  # collapsable list
          # Census/ACS/geo-related datasets etc.
          "datacreate_blockwts.R", "datacreate_bg_cenpop2020.R", "datacreate_bgpts.R", "datacreate_states_shapefile.R", "datacreate_stateinfo.R", "datacreate_stateinfo2.R", "datacreate_islandareas.R", "datacreate_censusplaces.R",
 
-         "datacreate_blockgroupstats_acs",
-         "datacreate_usastats",
+
          "datacreate_avg.in.us.R", "datacreate_high_pctiles_tied_with_min.R",
 
          "datacreate_formulas.R", "datacreate_formulas_ejscreen_acs.R",  "datacreate_formulas_ejscreen_demog_index.R",  "datacreate_formulas_ejscreen_acs_pctdisability.R",
@@ -202,13 +201,7 @@ if (0 == 1) {  # collapsable list
     ##  ejscreen demog and envt data on every blockgroup
     ##  + pctile and avg lookup tables
 
-    documentOpen('./data-raw/datacreate_blockgroupstats.R')          # ok
-    documentOpen('./data-raw/datacreate_blockgroupstats_pctdisability.R')   # ok
 
-
-    documentOpen('./data-raw/datacreate_usastats.R')                 # ok
-    documentOpen('./data-raw/"datacreate_blockgroupstats_acs')
-    documentOpen('./data-raw/datacreate_usastats')
     documentOpen('./data-raw/datacreate_avg.in.us.R')
     documentOpen('./data-raw/datacreate_high_pctiles_tied_with_min.R')
 
@@ -328,6 +321,8 @@ loadall()
 
 ######################################### ########################################## #
 # ~------------------------------------------- ####
+# ~------------------------------------------- ####
+# ~------------------------------------------- ####
 # ** FIPS CODES/ Census Boundaries - ANNUAL UPDATES (if EJSCREEN incorporates those) ####
 # . ####
 ######################################### #
@@ -391,6 +386,8 @@ datawrite_to_local(these) # maybe obsolete
 
 # ONE COULD LOAD FROM LOCAL or ejamdata repo THE EXISTING VERSIONS OF THESE DATASETS IF available INSTEAD OF UPDATING THEM
 # via   dataload_dynamic()
+
+
 ######################################### #
 ## * BLOCKGROUP POINTS ####
 # documentOpen('./data-raw/datacreate_bgpts.R')
@@ -465,95 +462,15 @@ loadall()
 
 ## Demog + Envt data on blockgroups ####
 ## + pctile & avg lookup tables (usastats, statestats) ####
-
-######################################### #
+## >>> see newer data updates pipeline as noted in NEWS.md ####
 
 ## IMPORTANT:
 ##
 ## Although this file was called "...UPDATE_ALL_DATASETS...", it did NOT update the demographic or environmental indicator data.
-##
-## CODE BELOW WAS DESIGNED SIMPLY TO GET THE EJSCREEN BLOCKGROUP DATASET FROM EPA AND CONVERT IT TO WHAT EJAM USES.
-## IT DID NOT CREATE A NEW BLOCKGROUP DATASET FROM RAW CENSUS BUREAU ACS DOWNLOADS AND RAW ENVIRONMENTAL DATA,
-## SO IT DOES NOT PROVIDE A WAY TO UPDATE EJSCREEN.
-
-
-
-# see newer  /data-raw/datacreate_blockgroupstats_acs.R
 
 
 
 
-
-######################################### #
-
-## OLDER SCRIPTS, FROM THE DATASET BASED ON EPA-PROVIDED ACS AND ENVT DATA:
-
-if (askquestions && interactive()) {
-  y = askYesNo("Did you already update bgpts via new block weights and fips dataset? (required before updating blockgroupstats)")
-  if (is.na(y) || !y) {
-    rm(y)
-    stop("Need to update bgpts via new block weights and fips dataset before updating blockgroupstats")
-  }
-}
-
-# created usastats statestats etc.
-# created bgej
-# created blockgroupstats
-
-## check bgid values in all these datasets
-# blockgroupstats :  bgfips, bgid, statename, ST, etc.
-# bgej :                     bgid,   bgfips,  ST, etc.
-# bgid2fips :                bgid,   bgfips
-# bgpts                      bgid, + bgfips, etc.
-# bg_cenpop2020              bgid (not bgfips) ST, etc.
-
-# + blockwts :      blockid, bgid, etc.
-
-# data.table(blockgroupstats)[is.na(bgfips), table(ST)]
-# AS  GU  MP  - had been this but now zero since those were dropped
-# 77  58 135
-# data.table(blockgroupstats)[is.na(bgid), table(ST)]
-# - had been this but now zero since those were dropped
-# AS   CT   GU   MP   VI
-# 77 2717   58  135  416
-
-# nacounts(blockgroupstats[, .(bgfips,bgid,pop)])
-# exists("bgid2fips")
-#
-#
-# stopifnot(
-#   all(
-#     !anyDuplicated(blockgroupstats$bgid),
-#     # !anyDuplicated(bgej$bgid),
-#     !anyDuplicated(quaddata$bgid),
-#     !anyDuplicated(bgid2fips$bgid),
-#     !anyDuplicated(bgpts),
-#     !anyDuplicated(blockwts)
-#   )
-# )
-#
-# stopifnot(
-#   all(
-#     !anyNA(blockgroupstats$bgid),
-#     !anyNA(bgej$bgid),
-#     !anyNA(quaddata$bgid),
-#     !anyNA(bgid2fips$bgid),
-#     !anyNA(bgpts),
-#     !anyNA(blockwts)
-#   )
-# )
-#
-# stopifnot(
-#   all(
-#     setequal(blockgroupstats$bgid, bgej$bgid),    # ok
-#     setequal(blockgroupstats$bgid, quaddata$bgid)   , # false due to CT 19 as of 8/14/24
-#     setequal(blockgroupstats$bgid, bgid2fips$bgid)  , # false
-#     setequal(blockgroupstats$bgid, bgpts$bgid)      , # false
-#     setequal(blockgroupstats$bgid, bg_cenpop2020$bgid)  , # false
-#     setequal(blockgroupstats$bgid, blockwts$bgid)         # false
-#   )
-# )
-################ ################# ################# ################# #
 
 ######################################### #
 ### datacreate_avg.in.us.R ####
@@ -561,11 +478,7 @@ if (askquestions && interactive()) {
 ### this creates "avg.in.us" national averages of key indicators, for convenience, but also avgs are in usastats, statestats
 source_maybe("datacreate_avg.in.us.R")
 ######################################### #
-
-### datacreate_formulas.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_formulas.R")
-source_maybe("datacreate_formulas.R")
-######################################### #
+# ~------------------------------------------- ####
 
 ## ** TESTDATA & TESTOUTPUTS_ - UPDATE IF RESULTS CHANGE (sample inputs & outputs) ####
  ######################################### #
@@ -659,7 +572,8 @@ document()
 devtools::install(quick = TRUE)
 
 ######################################### ########################################## #
-
+# ~------------------------------------------- ####
+# ~------------------------------------------- ####
 # ~------------------------------------------- ####
 # ** FRS (EPA-REGULATED FACILITIES) FREQUENT UPDATES (incl. NAICS/SIC) ####
 

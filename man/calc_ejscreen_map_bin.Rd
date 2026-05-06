@@ -21,3 +21,4 @@ historical EJSCREEN/ejanalysis thresholds: 0-9th percentile is bin 1,
 10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin 10, and 95-100 is bin 11.
 Missing or out-of-range percentiles are assigned bin 0.
 }
+\keyword{internal}

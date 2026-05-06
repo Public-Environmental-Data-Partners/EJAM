@@ -9,10 +9,10 @@
 #' @param x object to validate.
 #' @param stage pipeline stage name, such as `"bg_acsdata"`,
 #'   `"bg_acs_raw"`, `"blockgroupstats_acs"`, `"bg_envirodata"`, `"envirodata"`,
-#'   `"blockgroupstats"`, `"bgej"`, `"bg_ejindexes"`,
+#'   `"bg_extra_indicators"`, `"blockgroupstats"`, `"bgej"`, `"bg_ejindexes"`,
 #'   `"usastats_acs"`, `"statestats_acs"`, `"usastats_envirodata"`,
 #'   `"statestats_envirodata"`, `"usastats_ej"`, `"statestats_ej"`,
-#'   `"usastats"`, or `"statestats"`.
+#'   `"usastats"`, `"statestats"`, or `"ejscreen_export"`.
 #' @param strict logical. If TRUE, errors stop execution. Warnings are still
 #'   emitted as warnings.
 #'
@@ -63,6 +63,30 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     }
     invisible(NULL)
   }
+  check_id <- function() {
+    if (!"ID" %in% names(x)) {
+      add_error("missing required columns: ID")
+      return(NULL)
+    }
+    if (any(is.na(x$ID) | !nzchar(as.character(x$ID)))) {
+      add_error("ID has missing or blank values")
+    }
+    dup_count <- sum(duplicated(x$ID))
+    if (dup_count > 0) {
+      add_error(paste0("ID has ", dup_count, " duplicate rows"))
+    }
+    invisible(NULL)
+  }
+  check_no_blank_cols <- function(cols) {
+    cols <- intersect(cols, names(x))
+    bad <- cols[vapply(cols, function(col) {
+      any(is.na(x[[col]]) | !nzchar(as.character(x[[col]])))
+    }, logical(1))]
+    if (length(bad) > 0) {
+      add_error(paste0("columns have missing or blank values: ", paste(bad, collapse = ", ")))
+    }
+    invisible(NULL)
+  }
   check_nonnegative <- function(cols) {
     cols <- intersect(cols, names(x))
     bad <- cols[vapply(cols, function(col) {
@@ -91,6 +115,42 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     if (length(bad) > 0) {
       add_warning(paste0("numeric columns are entirely NA: ", paste(bad, collapse = ", ")))
     }
+  }
+  check_ejscreen_export_helpers <- function() {
+    pctile_cols <- grep("^(P_|S_P_)", names(x), value = TRUE)
+    bin_cols <- grep("^B_", names(x), value = TRUE)
+
+    bad_pctile <- pctile_cols[vapply(pctile_cols, function(col) {
+      vals <- suppressWarnings(as.numeric(x[[col]]))
+      any(!is.na(vals) & (vals < 0 | vals > 100))
+    }, logical(1))]
+    if (length(bad_pctile) > 0) {
+      add_error(paste0("EJSCREEN percentile columns have values outside 0-100: ",
+                       paste(bad_pctile, collapse = ", ")))
+    }
+
+    bad_bins <- bin_cols[vapply(bin_cols, function(col) {
+      vals <- suppressWarnings(as.numeric(x[[col]]))
+      any(!is.na(vals) & (vals < 0 | vals > 11 | abs(vals - round(vals)) > .Machine$double.eps^0.5))
+    }, logical(1))]
+    if (length(bad_bins) > 0) {
+      add_error(paste0("EJSCREEN map-bin columns have values outside integer bins 0-11: ",
+                       paste(bad_bins, collapse = ", ")))
+    }
+
+    text_cols <- grep("^T_", names(x), value = TRUE)
+    non_text <- text_cols[!vapply(text_cols, function(col) {
+      is.character(x[[col]]) || is.factor(x[[col]])
+    }, logical(1))]
+    if (length(non_text) > 0) {
+      add_warning(paste0("EJSCREEN popup-text columns are not character/factor: ",
+                         paste(non_text, collapse = ", ")))
+    }
+
+    if (!any(grepl("^(D2_|D5_|P_D2_|P_D5_)", names(x)))) {
+      add_warning("ejscreen_export has no D2/D5 EJ index fields")
+    }
+    invisible(NULL)
   }
   check_lookup <- function(expect_usa = NULL) {
     has_cols(c("REGION", "PCTILE"))
@@ -192,21 +252,30 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       check_fraction_percent_cols()
     } else if (canonical_stage == "bg_envirodata") {
       has_cols(c("bgfips", "pctpre1960"))
-      warn_missing_cols("lowlifex")
       check_bgfips()
       expected_env <- if (exists("names_e")) names_e else character()
       if (length(intersect(expected_env, names(x))) == 0) {
         add_warning("bg_envirodata has none of the expected environmental indicator columns in names_e")
       }
       check_all_na_numeric(setdiff(names(x), "bgfips"))
+    } else if (canonical_stage == "bg_extra_indicators") {
+      has_cols(c("bgfips", "lowlifex"))
+      check_bgfips()
+      expected_extra <- attr(x, "extra_indicator_vars", exact = TRUE)
+      if (is.null(expected_extra)) {
+        expected_extra <- if (exists("ejscreen_default_extra_indicator_vars")) ejscreen_default_extra_indicator_vars() else character()
+      }
+      warn_missing_cols(expected_extra)
+      check_all_na_numeric(setdiff(names(x), "bgfips"))
     } else if (canonical_stage == "blockgroupstats") {
       required <- c(
-        "bgfips", "bgid", "ST", "statename", "pop",
+        "bgfips", "bgid", "ST", "statename", "REGION", "pop",
         "Demog.Index", "Demog.Index.Supp",
         "Demog.Index.State", "Demog.Index.Supp.State"
       )
       has_cols(required)
       check_bgfips()
+      check_no_blank_cols(c("bgid", "ST", "statename", "REGION"))
       check_nonnegative(c("pop", "Demog.Index", "Demog.Index.Supp",
                           "Demog.Index.State", "Demog.Index.Supp.State"))
       expected_env <- if (exists("names_e")) names_e else character()
@@ -223,6 +292,10 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       )
       warn_missing_cols(expected_ej)
       check_nonnegative(intersect(expected_ej, names(x)))
+    } else if (canonical_stage == "ejscreen_export") {
+      check_id()
+      warn_missing_cols(c("STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))
+      check_ejscreen_export_helpers()
     } else if (canonical_stage %in% us_lookup_stages) {
       check_lookup(expect_usa = TRUE)
       if (canonical_stage == "usastats_envirodata") {

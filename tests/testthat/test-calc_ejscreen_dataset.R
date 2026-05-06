@@ -1,0 +1,268 @@
+test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    bgid = c("1", "2"),
+    ST = c("DE", "DE"),
+    pop = c(100, 200),
+    pctmin = c(0.2, 0.3),
+    pctlowinc = c(0.1, 0.4),
+    pctlingiso = c(0.02, 0.03),
+    pctlths = c(0.05, 0.06),
+    pctdisability = c(0.09, 0.08)
+  )
+  bg_envirodata <- data.table::data.table(
+    bgfips = bg_acsdata$bgfips,
+    pctpre1960 = c(0.2, 0.3),
+    pm = c(7, 8)
+  )
+  bg_extra_indicators <- data.table::data.table(
+    bgfips = bg_acsdata$bgfips,
+    lowlifex = c(0.1, 0.2)
+  )
+  blockgroupstats <- data.table::copy(bg_acsdata)
+  blockgroupstats[, `:=`(
+    pctpre1960 = bg_envirodata$pctpre1960,
+    pm = bg_envirodata$pm,
+    lowlifex = bg_extra_indicators$lowlifex,
+    Demog.Index = c(0.2, 0.3),
+    Demog.Index.Supp = c(0.3, 0.4),
+    Demog.Index.State = c(0.2, 0.3),
+    Demog.Index.Supp.State = c(0.3, 0.4)
+  )]
+
+  stats <- list(
+    usastats_acs = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.25, 1)),
+    statestats_acs = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.25, 1)),
+    usastats_envirodata = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pm = c(0, 7.5, 10)),
+    statestats_envirodata = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), pm = c(0, 7.5, 10)),
+    bgej = data.table::data.table(bgfips = bg_acsdata$bgfips, ST = bg_acsdata$ST, pop = bg_acsdata$pop, EJ.custom = c(1, 2)),
+    usastats_ej = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), EJ.custom = c(0, 1.5, 2)),
+    statestats_ej = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), EJ.custom = c(0, 1.5, 2)),
+    usastats = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.25, 1), pm = c(0, 7.5, 10), EJ.custom = c(0, 1.5, 2)),
+    statestats = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.25, 1), pm = c(0, 7.5, 10), EJ.custom = c(0, 1.5, 2))
+  )
+
+  testthat::local_mocked_bindings(
+    calc_ejscreen_blockgroupstats = function(bg_acsdata,
+                                             bg_envirodata,
+                                             bg_extra_indicators,
+                                             pipeline_dir,
+                                             extra_indicator_vars,
+                                             reuse_existing_extra_if_missing,
+                                             existing_blockgroupstats,
+                                             save_stage,
+                                             stage_format) {
+      expect_false(save_stage)
+      expect_equal(bg_acsdata$bgfips, blockgroupstats$bgfips)
+      expect_true("pctpre1960" %in% names(bg_envirodata))
+      expect_true("lowlifex" %in% names(bg_extra_indicators))
+      blockgroupstats
+    },
+    calc_ejscreen_stats = function(bgstats,
+                                   pipeline_dir,
+                                   save_stages,
+                                   stage_format,
+                                   acs_vars,
+                                   enviro_vars,
+                                   ej_indicator_vars,
+                                   ej_indicator_pctile_vars,
+                                   ej_indicator_state_pctile_vars,
+                                   ej_index_vars,
+                                   ej_index_supp_vars,
+                                   ej_index_state_vars,
+                                   ej_index_supp_state_vars,
+                                   demog_index_var,
+                                   demog_index_supp_var,
+                                   demog_index_state_var,
+                                   demog_index_supp_state_var) {
+      expect_false(save_stages)
+      expect_equal(bgstats$bgfips, blockgroupstats$bgfips)
+      stats
+    },
+    .package = "EJAM"
+  )
+
+  out <- calc_ejscreen_dataset(
+    yr = 2024,
+    bg_acsdata = bg_acsdata,
+    bg_envirodata = bg_envirodata,
+    bg_extra_indicators = bg_extra_indicators,
+    extra_indicator_vars = "lowlifex",
+    download_acs_raw = FALSE
+  )
+
+  expect_s3_class(out, "ejam_ejscreen_dataset")
+  expect_named(out, c(
+    "bg_acs_raw", "bg_acsdata", "bg_envirodata", "bg_extra_indicators",
+    "usastats_acs", "statestats_acs", "usastats_envirodata",
+    "statestats_envirodata", "usastats_ej", "statestats_ej",
+    "blockgroupstats", "bgej", "usastats", "statestats"
+  ))
+  expect_equal(out$blockgroupstats, blockgroupstats)
+  expect_equal(out$bgej, stats$bgej)
+})
+
+test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
+  pipeline_dir <- file.path(tempdir(), "ejam-calc-ejscreen-dataset-test")
+  bgfips <- c("100010001001", "100010001002")
+  bg_acsdata <- data.table::data.table(
+    bgfips = bgfips,
+    bgid = c("1", "2"),
+    ST = c("DE", "DE"),
+    statename = c("Delaware", "Delaware"),
+    countyname = c("Kent", "Kent"),
+    REGION = c("3", "3"),
+    pop = c(100, 200),
+    pctmin = c(0.2, 0.3),
+    pctlowinc = c(0.1, 0.4),
+    pctlingiso = c(0.02, 0.03),
+    pctlths = c(0.05, 0.06),
+    pctdisability = c(0.09, 0.08)
+  )
+  bg_envirodata <- data.table::data.table(bgfips = bgfips)
+  for (v in unique(c("pctpre1960", names_e))) {
+    bg_envirodata[[v]] <- c(0.2, 0.3)
+  }
+  bg_extra_indicators <- data.table::data.table(
+    bgfips = bgfips,
+    lowlifex = c(0.1, 0.2)
+  )
+  blockgroupstats <- merge(bg_acsdata, bg_envirodata, by = "bgfips")
+  blockgroupstats <- merge(blockgroupstats, bg_extra_indicators, by = "bgfips")
+  blockgroupstats[, `:=`(
+    Demog.Index = c(0.2, 0.3),
+    Demog.Index.Supp = c(0.3, 0.4),
+    Demog.Index.State = c(0.2, 0.3),
+    Demog.Index.Supp.State = c(0.3, 0.4)
+  )]
+
+  lookup <- function(region, vars) {
+    out <- data.frame(REGION = region, PCTILE = c("0", "mean", "100"), stringsAsFactors = FALSE)
+    for (v in vars) {
+      out[[v]] <- c(0, 0.5, 1)
+    }
+    out
+  }
+  expected_ej <- unique(c(names_ej, names_ej_supp, names_ej_state, names_ej_supp_state))
+  bgej <- data.table::data.table(bgfips = bgfips, ST = c("DE", "DE"), pop = c(100, 200))
+  for (v in expected_ej) {
+    bgej[[v]] <- c(1, 2)
+  }
+  stats <- list(
+    usastats_acs = lookup("USA", "pctlowinc"),
+    statestats_acs = lookup("DE", "pctlowinc"),
+    usastats_envirodata = lookup("USA", names_e),
+    statestats_envirodata = lookup("DE", names_e),
+    bgej = bgej,
+    usastats_ej = lookup("USA", c(names_ej, names_ej_supp)),
+    statestats_ej = lookup("DE", c(names_ej_state, names_ej_supp_state)),
+    usastats = lookup("USA", c("pctlowinc", names_e, names_ej, names_ej_supp)),
+    statestats = lookup("DE", c("pctlowinc", names_e, names_ej_state, names_ej_supp_state))
+  )
+
+  testthat::local_mocked_bindings(
+    calc_ejscreen_blockgroupstats = function(...) blockgroupstats,
+    calc_ejscreen_stats = function(...) stats,
+    calc_ejscreen_export = function(blockgroupstats,
+                                    bgej,
+                                    usastats_ej,
+                                    statestats_ej,
+                                    output_vars,
+                                    rename_newtype,
+                                    required_output_names,
+                                    save_path,
+                                    overwrite) {
+      expect_equal(usastats_ej, stats$usastats_ej)
+      expect_equal(statestats_ej, stats$statestats_ej)
+      data.frame(
+        ID = blockgroupstats$bgfips,
+        STATE_NAME = "Delaware",
+        ST_ABBREV = "DE",
+        CNTY_NAME = "Kent County",
+        REGION = "3",
+        D2_PM25 = c(1, 2),
+        P_D2_PM25 = c(50, 95),
+        B_D2_PM25 = c(6L, 11L),
+        T_D2_PM25 = c("50 %ile", "95 %ile"),
+        check.names = FALSE
+      )
+    },
+    .package = "EJAM"
+  )
+
+  out <- calc_ejscreen_dataset(
+    yr = 2024,
+    bg_acsdata = bg_acsdata,
+    bg_envirodata = bg_envirodata,
+    bg_extra_indicators = bg_extra_indicators,
+    extra_indicator_vars = "lowlifex",
+    save_stages = TRUE,
+    pipeline_dir = pipeline_dir,
+    include_ejscreen_export = TRUE,
+    download_acs_raw = FALSE
+  )
+
+  saved <- attr(out, "saved_stage_paths")
+  expect_true(all(file.exists(unname(saved))))
+  expect_true(all(c(
+    "bg_acsdata", "bg_envirodata", "bg_extra_indicators",
+    "blockgroupstats", "bgej", "usastats", "statestats",
+    "ejscreen_export"
+  ) %in% names(saved)))
+  expect_true(all(grepl("\\.csv$", saved[c("bg_acsdata", "blockgroupstats", "bgej", "usastats", "statestats", "ejscreen_export")])))
+  expect_equal(out$ejscreen_export$ID, bgfips)
+  expect_equal(
+    as.data.frame(ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "csv")),
+    as.data.frame(blockgroupstats)
+  )
+})
+
+test_that("calc_ejscreen_dataset can resume from a saved blockgroupstats stage", {
+  pipeline_dir <- file.path(tempdir(), "ejam-calc-ejscreen-dataset-resume-test")
+  blockgroupstats <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    bgid = c("1", "2"),
+    ST = c("DE", "DE"),
+    statename = c("Delaware", "Delaware"),
+    REGION = c("3", "3"),
+    pop = c(100, 200),
+    Demog.Index = c(0.2, 0.3),
+    Demog.Index.Supp = c(0.3, 0.4),
+    Demog.Index.State = c(0.2, 0.3),
+    Demog.Index.Supp.State = c(0.3, 0.4),
+    pctlowinc = c(0.1, 0.2)
+  )
+  for (v in names_e) {
+    blockgroupstats[[v]] <- c(0.2, 0.3)
+  }
+  ejscreen_pipeline_save(blockgroupstats, "blockgroupstats", pipeline_dir, format = "rds")
+
+  stats <- list(
+    usastats_acs = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.15, 1)),
+    statestats_acs = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.15, 1)),
+    usastats_envirodata = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pm = c(0, 0.25, 1)),
+    statestats_envirodata = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), pm = c(0, 0.25, 1)),
+    bgej = data.table::data.table(bgfips = blockgroupstats$bgfips, ST = blockgroupstats$ST, pop = blockgroupstats$pop),
+    usastats_ej = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), EJ.custom = c(0, 1, 2)),
+    statestats_ej = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), EJ.custom = c(0, 1, 2)),
+    usastats = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), EJ.custom = c(0, 1, 2)),
+    statestats = data.frame(REGION = "DE", PCTILE = c("0", "mean", "100"), EJ.custom = c(0, 1, 2))
+  )
+
+  testthat::local_mocked_bindings(
+    calc_ejscreen_blockgroupstats = function(...) stop("blockgroupstats should have been loaded"),
+    calc_ejscreen_stats = function(...) stats,
+    .package = "EJAM"
+  )
+
+  out <- calc_ejscreen_dataset(
+    yr = 2024,
+    pipeline_dir = pipeline_dir,
+    stage_format = "rds",
+    use_saved_stages = TRUE,
+    download_acs_raw = FALSE
+  )
+
+  expect_equal(out$blockgroupstats, blockgroupstats)
+  expect_true(attr(out, "loaded_stages")[["blockgroupstats"]])
+})

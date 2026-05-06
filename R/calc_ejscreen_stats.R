@@ -18,7 +18,8 @@
 #' @param bgstats_stage optional stage name to read from `pipeline_dir`.
 #' @param pipeline_dir folder for reading/writing pipeline stage files.
 #' @param save_stages logical, whether to save outputs to `pipeline_dir`.
-#' @param stage_format file format for saved stages: "rds", "rda", or "arrow".
+#' @param stage_format file format for saved stages: `"csv"`, `"rds"`,
+#'   `"rda"`, or `"arrow"`.
 #' @param acs_vars variables to include in the ACS-only lookup stages. Defaults
 #'   to current EJSCREEN/EJAM ACS indicators found in `bgstats`.
 #' @param enviro_vars variables to include in the environmental lookup stages.
@@ -34,8 +35,8 @@
 #' @param demog_index_var,demog_index_supp_var,demog_index_state_var,demog_index_supp_state_var
 #'   demographic index column names used by [calc_bgej()].
 #'
-#' @return list with interim lookup tables, `bgej`, `usastats`, and
-#'   `statestats`.
+#' @return list with interim lookup tables,
+#'   `bgej`, `usastats`, and `statestats`.
 #'
 #' @keywords internal
 #' @export
@@ -45,7 +46,7 @@ calc_ejscreen_stats <- function(bgstats = NULL,
                                 bgstats_stage = NULL,
                                 pipeline_dir = NULL,
                                 save_stages = FALSE,
-                                stage_format = "rds",
+                                stage_format = c("csv", "rds", "rda", "arrow"),
                                 acs_vars = NULL,
                                 enviro_vars = NULL,
                                 ej_indicator_vars = names_e,
@@ -59,6 +60,8 @@ calc_ejscreen_stats <- function(bgstats = NULL,
                                 demog_index_supp_var = "Demog.Index.Supp",
                                 demog_index_state_var = "Demog.Index.State",
                                 demog_index_supp_state_var = "Demog.Index.Supp.State") {
+  stage_format <- match.arg(stage_format)
+
   bg <- ejscreen_pipeline_input(
     x = bgstats,
     stage = bgstats_stage,

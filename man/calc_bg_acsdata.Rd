@@ -16,7 +16,7 @@ calc_bg_acsdata(
   acs_raw_stage = NULL,
   pipeline_dir = NULL,
   save_stage = FALSE,
-  stage_format = "rds",
+  stage_format = c("csv", "rds", "rda", "arrow"),
   overwrite = TRUE,
   validation_strict = TRUE
 )
@@ -48,8 +48,8 @@ Defaults to \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupst
 
 \item{save_stage}{logical, whether to save the \code{bg_acsdata} stage.}
 
-\item{stage_format}{file format for saved stages: \code{"rds"}, \code{"rda"}, or
-\code{"arrow"}.}
+\item{stage_format}{file format for saved stages: \code{"csv"}, \code{"rds"},
+\code{"rda"}, or \code{"arrow"}.}
 
 \item{overwrite}{logical, whether to overwrite an existing saved stage.}
 
@@ -62,15 +62,16 @@ data.table, one row per blockgroup.
 Calculate the ACS-derived blockgroup pipeline stage
 }
 \details{
-This is the first reusable ACS pipeline step for annual EJSCREEN/EJAM
-data updates. It downloads blockgroup-resolution ACS tables with
-\code{\link[=calc_blockgroupstats_acs]{calc_blockgroupstats_acs()}}, optionally apportions tract-resolution ACS
+This is the first step in the reusable ACS pipeline for annual
+EJSCREEN/EJAM data updates. It downloads blockgroup-resolution ACS tables via
+\code{\link[=calc_blockgroupstats_acs]{calc_blockgroupstats_acs()}}, apportions tract-resolution-only ACS
 tables to blockgroups with \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupstats_from_tract_data()}}, merges
 those ACS-derived indicators, and can save the validated \code{bg_acsdata} stage.
 
-\code{bg_acsdata} is intentionally limited to ACS-derived columns. Demographic
-index columns are calculated later by \code{\link[=calc_ejscreen_blockgroupstats]{calc_ejscreen_blockgroupstats()}} after
-\code{bg_envirodata} has been joined, because the supplemental demographic index
-needs \code{lowlifex}.
+\code{bg_acsdata} is intentionally limited to data columns that can be created
+using only ACS data. "Demographic index" columns are calculated later
+by \code{\link[=calc_ejscreen_blockgroupstats]{calc_ejscreen_blockgroupstats()}}, after
+\code{bg_envirodata} and extra indicators have been joined, because the
+supplemental demographic index needs \code{lowlifex} which is not from the ACS.
 }
 \keyword{internal}

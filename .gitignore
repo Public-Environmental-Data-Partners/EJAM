@@ -8,6 +8,10 @@
 # get saved in the data folder when a user installs the package, but they are not part of the package itself per se.
 # seee https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html
 
+/data-raw/pipeline_outputs/
+# Generated annual data-update pipeline checkpoints can include many large CSV
+# files, such as raw ACS tables and derived blockgroupstats/bgej/usastats files.
+
 tests/testthat/_snaps/
 tests/testthat/_snaps/**/*.png
 # Try ignoring the _snaps folders entirely, since they can

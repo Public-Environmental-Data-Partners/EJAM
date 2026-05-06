@@ -1,6 +1,6 @@
 ########## #
 # "OTHER" INDICATORS WE WANT TO SEE IN OUTPUTS/RESULTS
-# global_defaults_*.R define  default_extratable_list_of_sections
+# global_defaults_*.R should define  default_extratable_list_of_sections
 
 vars = as.vector(unlist(default_extratable_list_of_sections))
 

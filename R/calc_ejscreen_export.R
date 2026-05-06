@@ -21,7 +21,13 @@
 #' @param pipeline_dir folder for reading saved pipeline stages.
 #' @param blockgroupstats_stage,bgej_stage stage names to read when objects are
 #'   not supplied.
-#' @param blockgroupstats_path,bgej_path explicit paths to saved inputs.
+#' @param usastats_ej,statestats_ej EJ-index percentile lookup tables. These
+#'   are used to add `P_D2_...`/`P_D5_...` fields before creating EJSCREEN map
+#'   helper fields.
+#' @param usastats_ej_stage,statestats_ej_stage stage names to read for
+#'   EJ-index percentile lookup tables when objects are not supplied.
+#' @param blockgroupstats_path,bgej_path,usastats_ej_path,statestats_ej_path
+#'   explicit paths to saved inputs.
 #' @param stage_format input file format when reading pipeline stages.
 #' @param by key column used to merge `blockgroupstats` and `bgej`.
 #' @param output_vars optional EJAM `rname` columns to keep before renaming.
@@ -31,6 +37,14 @@
 #' @param mapping_for_names map_headernames-like crosswalk.
 #' @param required_output_names optional final EJSCREEN field names that must be
 #'   present after renaming.
+#' @param include_ej_percentiles logical. If TRUE, add missing national EJ-index
+#'   percentile columns from `usastats_ej`.
+#' @param include_state_ej_percentiles logical. If TRUE, add missing state
+#'   EJ-index percentile columns from `statestats_ej`.
+#' @param ej_percentile_vars,ej_percentile_output_vars raw national EJ-index
+#'   variables and corresponding percentile variables to add.
+#' @param ej_state_percentile_vars,ej_state_percentile_output_vars raw state
+#'   EJ-index variables and corresponding percentile variables to add.
 #' @param include_ejscreen_map_fields logical. If TRUE, create EJSCREEN app
 #'   `B_...` map color-bin columns and `T_...` popup-text columns from exported
 #'   `P_...` percentile columns.
@@ -52,23 +66,37 @@
 #'
 calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  bgej = NULL,
+                                 usastats_ej = NULL,
+                                 statestats_ej = NULL,
                                  pipeline_dir = NULL,
                                  blockgroupstats_stage = "blockgroupstats",
                                  bgej_stage = "bgej",
+                                 usastats_ej_stage = "usastats_ej",
+                                 statestats_ej_stage = "statestats_ej",
                                  blockgroupstats_path = NULL,
                                  bgej_path = NULL,
-                                 stage_format = "rds",
+                                 usastats_ej_path = NULL,
+                                 statestats_ej_path = NULL,
+                                 stage_format = c("csv", "rds", "rda", "arrow"),
                                  by = "bgfips",
                                  output_vars = NULL,
                                  rename_newtype = "ejscreen_names",
                                  mapping_for_names = map_headernames,
                                  required_output_names = NULL,
+                                 include_ej_percentiles = TRUE,
+                                 include_state_ej_percentiles = TRUE,
+                                 ej_percentile_vars = c(names_ej, names_ej_supp),
+                                 ej_percentile_output_vars = c(names_ej_pctile, names_ej_supp_pctile),
+                                 ej_state_percentile_vars = c(names_ej_state, names_ej_supp_state),
+                                 ej_state_percentile_output_vars = c(names_ej_state_pctile, names_ej_supp_state_pctile),
                                  include_ejscreen_map_fields = TRUE,
                                  map_field_pctile_names = NULL,
                                  overwrite_ejscreen_map_fields = TRUE,
                                  save_path = NULL,
                                  save_format = NULL,
                                  overwrite = TRUE) {
+  stage_format <- match.arg(stage_format)
+
   bg <- ejscreen_pipeline_input(
     x = blockgroupstats,
     stage = blockgroupstats_stage,
@@ -101,8 +129,127 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     bg <- merge(bg, ej[, c(by, ej_cols), with = FALSE], by = by, all.x = TRUE, sort = FALSE)
   }
 
+  mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
+
+  load_optional_lookup <- function(x, stage, path, input_name) {
+    if (!is.null(x)) {
+      return(data.table::as.data.table(data.table::copy(x)))
+    }
+    if (!is.null(path)) {
+      return(data.table::as.data.table(data.table::copy(ejscreen_pipeline_input(
+        stage = stage,
+        path = path,
+        format = stage_format,
+        input_name = input_name
+      ))))
+    }
+    if (!is.null(pipeline_dir) && ejscreen_pipeline_stage_exists(stage, pipeline_dir, stage_format)) {
+      return(data.table::as.data.table(data.table::copy(ejscreen_pipeline_input(
+        stage = stage,
+        pipeline_dir = pipeline_dir,
+        format = stage_format,
+        input_name = input_name
+      ))))
+    }
+    NULL
+  }
+
+  add_ej_pctiles_from_lookup <- function(raw_vars,
+                                         pctile_vars,
+                                         lookup,
+                                         lookup_name,
+                                         zones = "USA") {
+    if (length(raw_vars) != length(pctile_vars)) {
+      stop(lookup_name, " raw and percentile variable vectors must have the same length")
+    }
+    needed <- raw_vars %in% names(bg) & !pctile_vars %in% names(bg)
+    if (!any(needed)) {
+      return(invisible(NULL))
+    }
+    if (is.null(lookup)) {
+      warning(
+        "Cannot add missing EJ percentile export columns because ",
+        lookup_name,
+        " was not supplied or found as a saved pipeline stage",
+        call. = FALSE
+      )
+      return(invisible(NULL))
+    }
+    lookup <- data.frame(lookup, check.names = FALSE)
+    missing_lookup <- raw_vars[needed & !raw_vars %in% names(lookup)]
+    if (length(missing_lookup) > 0) {
+      warning(
+        lookup_name,
+        " is missing EJ index columns needed for export percentiles: ",
+        paste(missing_lookup, collapse = ", "),
+        call. = FALSE
+      )
+    }
+    todo <- needed & raw_vars %in% names(lookup)
+    if (!any(todo)) {
+      return(invisible(NULL))
+    }
+    for (i in which(todo)) {
+      bg[[pctile_vars[[i]]]] <<- pctile_from_raw_lookup(
+        myvector = bg[[raw_vars[[i]]]],
+        varname.in.lookup.table = raw_vars[[i]],
+        lookup = lookup,
+        zone = zones,
+        quiet = TRUE
+      )
+    }
+    invisible(NULL)
+  }
+
+  if (isTRUE(include_ej_percentiles)) {
+    us_ej_lookup <- load_optional_lookup(
+      usastats_ej,
+      stage = usastats_ej_stage,
+      path = usastats_ej_path,
+      input_name = "usastats_ej"
+    )
+    add_ej_pctiles_from_lookup(
+      raw_vars = ej_percentile_vars,
+      pctile_vars = ej_percentile_output_vars,
+      lookup = us_ej_lookup,
+      lookup_name = "usastats_ej",
+      zones = "USA"
+    )
+  }
+
+  if (isTRUE(include_state_ej_percentiles)) {
+    needs_state_pctiles <- any(ej_state_percentile_vars %in% names(bg) &
+                                 !ej_state_percentile_output_vars %in% names(bg))
+    if (!needs_state_pctiles) {
+      invisible(NULL)
+    } else if (!"ST" %in% names(bg)) {
+      warning("Cannot add state EJ percentile export columns because the combined table has no ST column", call. = FALSE)
+    } else {
+      state_ej_lookup <- load_optional_lookup(
+        statestats_ej,
+        stage = statestats_ej_stage,
+        path = statestats_ej_path,
+        input_name = "statestats_ej"
+      )
+      add_ej_pctiles_from_lookup(
+        raw_vars = ej_state_percentile_vars,
+        pctile_vars = ej_state_percentile_output_vars,
+        lookup = state_ej_lookup,
+        lookup_name = "statestats_ej",
+        zones = bg$ST
+      )
+    }
+  }
+
+  is_non_output_name <- function(x) {
+    x <- as.character(x)
+    is_blank_string(x) |
+      grepl("use for pctile|do not report|don.?t report", x, ignore.case = TRUE)
+  }
+
   if (is.null(output_vars)) {
-    output_vars <- names(bg)
+    target_names <- mapping_for_names[[rename_newtype]][match(names(bg), mapping_for_names$rname)]
+    output_vars <- names(bg)[!is.na(target_names) & !is_non_output_name(target_names)]
   }
   missing_output_vars <- setdiff(output_vars, names(bg))
   if (length(missing_output_vars) > 0) {
@@ -111,7 +258,6 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
   }
   out <- data.frame(bg[, ..output_vars])
 
-  mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
   new_names <- fixcolnames(
     names(out),
     oldtype = "r",
@@ -122,6 +268,11 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     dupes <- unique(new_names[duplicated(new_names)])
     stop("Renaming would create duplicate output column names: ",
          paste(dupes, collapse = ", "))
+  }
+  non_output_vars <- output_vars[is_non_output_name(new_names)]
+  if (length(non_output_vars) > 0) {
+    stop("Output variables do not have usable EJSCREEN output names: ",
+         paste(non_output_vars, collapse = ", "))
   }
   names(out) <- new_names
 
@@ -142,12 +293,44 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     }
   }
 
+  ##################################### #
+  # helper for calc_ejscreen_export()
+
+  ejscreen_export_save <- function(x, save_path, save_format = NULL, overwrite = TRUE) {
+
+    if (file.exists(save_path) && !overwrite) {
+      stop("Refusing to overwrite existing file: ", save_path)
+    }
+    if (is.null(save_format)) {
+      save_format <- tolower(sub("^.*\\.([^.]+)$", "\\1", save_path))
+    }
+    dir.create(dirname(save_path), recursive = TRUE, showWarnings = FALSE)
+
+    if (save_format == "csv") {
+      data.table::fwrite(x, save_path)
+    } else if (save_format == "rds") {
+      saveRDS(x, save_path)
+    } else if (save_format == "rda") {
+      ejscreen_export <- x
+      save(ejscreen_export, file = save_path)
+    } else if (save_format == "arrow") {
+      if (!requireNamespace("arrow", quietly = TRUE)) {
+        stop("The arrow package is required to save Arrow export files")
+      }
+      arrow::write_ipc_file(x, sink = save_path)
+    } else {
+      stop("Unsupported export save format: ", save_format)
+    }
+    invisible(normalizePath(save_path, mustWork = FALSE))
+  }
+  ##################################### #
+
   if (!is.null(save_path)) {
     ejscreen_export_save(out, save_path, save_format = save_format, overwrite = overwrite)
   }
-
   out
 }
+###################################################### #
 
 #' Add EJSCREEN map helper fields
 #'
@@ -172,7 +355,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 #'
 #' @return data.frame with added or updated `B_...` and `T_...` fields.
 #'
-#' @export
+#' @keywords internal
 #'
 add_ejscreen_map_fields <- function(x,
                                     mapping_for_names = map_headernames,
@@ -188,6 +371,16 @@ add_ejscreen_map_fields <- function(x,
     ))
   }
   pctile_names <- intersect(pctile_names, names(out))
+  ############################## #
+  first_nonblank <- function(x) {
+    x <- as.character(x)
+    x <- x[!is_blank_string(x)]
+    if (length(x) == 0) {
+      return("")
+    }
+    x[1]
+  }
+  ############################## #
 
   for (pctile_name in pctile_names) {
     map_info <- mh[mh$ejscreen_pctile == pctile_name, , drop = FALSE]
@@ -207,12 +400,13 @@ add_ejscreen_map_fields <- function(x,
       out[[bin_name]] <- calc_ejscreen_map_bin(out[[pctile_name]])
     }
     if (!text_name %in% names(out) || isTRUE(overwrite)) {
-      out[[text_name]] <- calc_ejscreen_pctile_text(out[[pctile_name]])
+      out[[text_name]] <- calc_ejscreen_map_pctile_text(out[[pctile_name]])
     }
   }
 
   out
 }
+###################################################### #
 
 #' Calculate EJSCREEN map color bins
 #'
@@ -225,7 +419,7 @@ add_ejscreen_map_fields <- function(x,
 #'
 #' @return integer vector of bin numbers from 0 to 11.
 #'
-#' @export
+#' @keywords internal
 #'
 calc_ejscreen_map_bin <- function(x) {
   x_num <- suppressWarnings(as.numeric(x))
@@ -245,51 +439,13 @@ calc_ejscreen_map_bin <- function(x) {
 #'
 #' @return character vector.
 #'
-#' @export
+#' @keywords internal
 #'
-calc_ejscreen_pctile_text <- function(x) {
+calc_ejscreen_map_pctile_text <- function(x) {
   x_num <- suppressWarnings(as.numeric(x))
   txt <- rep(NA_character_, length(x_num))
   valid <- !is.na(x_num) & x_num >= 0 & x_num <= 100
   txt[valid] <- paste0(floor(x_num[valid]), " %ile")
   txt
 }
-
-first_nonblank <- function(x) {
-  x <- as.character(x)
-  x <- x[!is_blank_string(x)]
-  if (length(x) == 0) {
-    return("")
-  }
-  x[1]
-}
-
-ejscreen_export_save <- function(x, save_path, save_format = NULL, overwrite = TRUE) {
-  if (file.exists(save_path) && !overwrite) {
-    stop("Refusing to overwrite existing file: ", save_path)
-  }
-  if (is.null(save_format)) {
-    save_format <- tolower(sub("^.*\\.([^.]+)$", "\\1", save_path))
-  }
-  dir.create(dirname(save_path), recursive = TRUE, showWarnings = FALSE)
-
-  if (save_format == "csv") {
-    data.table::fwrite(x, save_path)
-  } else if (save_format == "rds") {
-    saveRDS(x, save_path)
-  } else if (save_format == "rda") {
-    ejscreen_export <- x
-    save(ejscreen_export, file = save_path)
-  } else if (save_format == "arrow") {
-    if (!requireNamespace("arrow", quietly = TRUE)) {
-      stop("The arrow package is required to save Arrow export files")
-    }
-    arrow::write_ipc_file(x, sink = save_path)
-  } else {
-    stop("Unsupported export save format: ", save_format)
-  }
-
-  invisible(normalizePath(save_path, mustWork = FALSE))
-}
-
 ###################################################### #

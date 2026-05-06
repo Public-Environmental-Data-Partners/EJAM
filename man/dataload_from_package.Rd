@@ -32,6 +32,33 @@ and not always used - only to find regulated facilities by ID, etc.
 The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
 }
 \examples{
+
+ # some way to see what functions are in the package:
+
+ x1 <- EJAM:::pkg_functions_and_data(data_included=F, vectoronly=T)
+ x2 <- EJAM:::pkg_functions_and_sourcefiles()
+ info3 <- capture.output({ x3 <- EJAM:::pkg_functions_by_roxygen_tag() })
+ info4 <- capture.output({ x4 <- EJAM:::pkg_functions_found_in_files() })
+ ## x5 <- EJAM:::pkg_functions_preceding_lines() # may need to be debugged
+
+ # See function names that use certain words - Useful view!
+
+ extra <- capture.output({
+   y <- EJAM:::pkg_functions_found_in_files()
+ }); rm(extra)
+ terms <- c("name",  "var", "fix",  "meta", "calc", "ejscreen", "report", "make")
+ # also try   "^get", "^block", "^bg"
+ sapply(terms, function(term) {cbind(grep(term, y, value=T))})
+
+ # See filenames that use certain words - Useful view!
+
+ # list.files(recursive = T, pattern = "^datacreate")
+ list.files(recursive = T, pattern = "^util.*R$")
+ sapply(setdiff(terms, 'name'), function(term) {
+   list.files(recursive = T, pattern = paste0(term, ".*R$"))
+ })
+
+
  # some ways to to see what datasets are in the EJAM package:
 
   yo <- EJAM:::pkg_functions_and_data(functions_included = F, vectoronly = T)

@@ -7,11 +7,16 @@
 calc_ejscreen_blockgroupstats(
   bg_acsdata = NULL,
   bg_envirodata = NULL,
+  bg_extra_indicators = NULL,
   pipeline_dir = NULL,
   bg_acsdata_stage = "bg_acsdata",
   bg_envirodata_stage = "bg_envirodata",
+  bg_extra_indicators_stage = "bg_extra_indicators",
+  extra_indicator_vars = ejscreen_default_extra_indicator_vars(),
+  reuse_existing_extra_if_missing = FALSE,
+  existing_blockgroupstats = NULL,
   save_stage = FALSE,
-  stage_format = "rds",
+  stage_format = c("csv", "rds", "rda", "arrow"),
   blockgroupstats_acs = NULL,
   blockgroupstats_acs_stage = NULL
 )
@@ -23,16 +28,31 @@ saved pipeline stage.}
 \item{bg_envirodata}{environmental/non-ACS blockgroup table, or NULL if
 reading from a saved pipeline stage such as \code{"bg_envirodata"}.}
 
+\item{bg_extra_indicators}{non-ACS, non-enviro blockgroup indicators such as
+\code{lowlifex}, health outcome rates, site/feature counts, climate indicators,
+and flag fields.}
+
 \item{pipeline_dir}{folder for reading/writing pipeline stage files.}
 
 \item{bg_acsdata_stage}{stage name for ACS input.}
 
 \item{bg_envirodata_stage}{stage name for environmental input.}
 
+\item{bg_extra_indicators_stage}{stage name for extra-indicator input.}
+
+\item{extra_indicator_vars}{expected extra indicator columns.}
+
+\item{reuse_existing_extra_if_missing}{logical. If TRUE, missing
+\code{bg_extra_indicators} columns are copied from \code{existing_blockgroupstats}
+with a warning. The default FALSE errors on missing extra inputs.}
+
+\item{existing_blockgroupstats}{optional source for reuse when
+\code{reuse_existing_extra_if_missing} is TRUE. Defaults to current package data.}
+
 \item{save_stage}{logical, whether to save the final \code{blockgroupstats} stage.}
 
-\item{stage_format}{file format for saved/read stages: "rds", "rda", or
-"arrow".}
+\item{stage_format}{file format for saved/read stages: \code{"csv"}, \code{"rds"},
+\code{"rda"}, or \code{"arrow"}.}
 
 \item{blockgroupstats_acs, blockgroupstats_acs_stage}{old names retained as
 aliases for draft scripts.}
@@ -47,7 +67,7 @@ Combine ACS and environmental inputs into blockgroupstats
 This is a reusable pipeline step. It combines an ACS-derived
 blockgroup table with environmental and other non-ACS indicator columns,
 calculates demographic indexes, and optionally saves the final
-\code{blockgroupstats} stage.
+\link{blockgroupstats} stage.
 
 The environmental input is expected to include \code{pctpre1960}. That indicator
 can be created by an upstream envirodata step from the saved ACS stage, even

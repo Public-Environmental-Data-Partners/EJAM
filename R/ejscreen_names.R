@@ -46,6 +46,36 @@ augment_map_headernames_ejscreen_names <- function(mapping_for_names = map_heade
     mh[[col]][is.na(mh[[col]])] <- ""
   }
 
+  add_default_name_row <- function(values) {
+    if (any(mh$rname == values[["rname"]])) {
+      return(invisible(NULL))
+    }
+    newrow <- as.data.frame(
+      stats::setNames(as.list(rep("", length(names(mh)))), names(mh)),
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+    for (col in intersect(names(values), names(newrow))) {
+      newrow[[col]] <- values[[col]]
+    }
+    mh <<- rbind(mh, newrow)
+    invisible(NULL)
+  }
+
+  # Keep the block-group identifier in EJSCREEN exports even if map_headernames
+  # does not carry a data row for this package-internal key field.
+  add_default_name_row(c(
+    rname = "bgfips",
+    longname = "Block group FIPS",
+    csvname = "ID",
+    ejscreen_names = "ID",
+    ejscreen_ftp_names = "ID",
+    ejam_apinames = "bgfips",
+    ejscreen_csv = "ID",
+    ejscreen_gdb = "ID",
+    ejscreen_app = "ID"
+  ))
+
   fill_blank <- function(target, value) {
     ok <- is_blank_string(mh[[target]]) & !is_blank_string(value)
     mh[[target]][ok] <<- value[ok]

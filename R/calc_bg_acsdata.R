@@ -2,16 +2,17 @@
 
 #' Calculate the ACS-derived blockgroup pipeline stage
 #'
-#' @details This is the first reusable ACS pipeline step for annual EJSCREEN/EJAM
-#' data updates. It downloads blockgroup-resolution ACS tables with
-#' [calc_blockgroupstats_acs()], optionally apportions tract-resolution ACS
+#' @details This is the first step in the reusable ACS pipeline for annual
+#' EJSCREEN/EJAM data updates. It downloads blockgroup-resolution ACS tables via
+#' [calc_blockgroupstats_acs()], apportions tract-resolution-only ACS
 #' tables to blockgroups with [calc_blockgroupstats_from_tract_data()], merges
 #' those ACS-derived indicators, and can save the validated `bg_acsdata` stage.
 #'
-#' `bg_acsdata` is intentionally limited to ACS-derived columns. Demographic
-#' index columns are calculated later by [calc_ejscreen_blockgroupstats()] after
-#' `bg_envirodata` has been joined, because the supplemental demographic index
-#' needs `lowlifex`.
+#' `bg_acsdata` is intentionally limited to data columns that can be created
+#' using only ACS data. "Demographic index" columns are calculated later
+#' by [calc_ejscreen_blockgroupstats()], after
+#' `bg_envirodata` and extra indicators have been joined, because the
+#' supplemental demographic index needs `lowlifex` which is not from the ACS.
 #'
 #' @param yr end year of the ACS 5-year survey to use.
 #' @param formulas formulas used for blockgroup-resolution ACS tables.
@@ -28,8 +29,8 @@
 #' @param acs_raw_stage optional stage name to read from `pipeline_dir`.
 #' @param pipeline_dir folder for saving the pipeline stage.
 #' @param save_stage logical, whether to save the `bg_acsdata` stage.
-#' @param stage_format file format for saved stages: `"rds"`, `"rda"`, or
-#'   `"arrow"`.
+#' @param stage_format file format for saved stages: `"csv"`, `"rds"`,
+#'   `"rda"`, or `"arrow"`.
 #' @param overwrite logical, whether to overwrite an existing saved stage.
 #' @param validation_strict logical passed to [ejscreen_pipeline_save()].
 #'
@@ -49,9 +50,11 @@ calc_bg_acsdata <- function(yr,
                             acs_raw_stage = NULL,
                             pipeline_dir = NULL,
                             save_stage = FALSE,
-                            stage_format = "rds",
+                            stage_format = c("csv", "rds", "rda", "arrow"),
                             overwrite = TRUE,
                             validation_strict = TRUE) {
+  stage_format <- match.arg(stage_format)
+
   if (missing(yr)) {
     yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)
   }

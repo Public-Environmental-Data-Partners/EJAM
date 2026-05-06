@@ -4,8 +4,12 @@
 #'
 #' @details This creates the raw ACS checkpoint for the annual EJSCREEN/EJAM
 #' data update pipeline. It downloads the Census Bureau ACS table-based summary
-#' file tables with `ACSdownload::get_acs_new()` and stores them as a single
-#' list object with separate `blockgroup` and `tract` table lists.
+#' file tables with `ACSdownload::get_acs_new()`. By default, the saved
+#' checkpoint uses a folder-plus-manifest layout: one file per ACS table in
+#' `bg_acs_raw/blockgroup/` and `bg_acs_raw/tract/`, plus manifest files that
+#' describe the checkpoint. That is easier to inspect and extend than one large
+#' list object, while still being loadable as the same `ejam_bg_acs_raw` list
+#' object used by downstream functions.
 #'
 #' This stage is deliberately before EJAM formula calculations. The downloaded
 #' tables are the parsed ACSdownload output, including Census table columns,
@@ -19,8 +23,14 @@
 #' @param fiveorone ACS sample length, `"5"` by default.
 #' @param pipeline_dir folder for saving the pipeline stage.
 #' @param save_stage logical, whether to save the `bg_acs_raw` stage.
-#' @param stage_format file format for saved stages: `"rds"`, `"rda"`, or
-#'   `"arrow"`.
+#' @param stage_format file format for saved object stages: `"rds"`, `"rda"`,
+#'   `"csv"`, or `"arrow"`. Raw ACS folder checkpoints use
+#'   `raw_table_format` for the per-table files.
+#' @param raw_acs_storage raw ACS checkpoint storage pattern. `"folder"` saves
+#'   one ACS table per file plus a manifest. `"object"` saves the historical
+#'   single `bg_acs_raw` list object.
+#' @param raw_table_format file format for per-table raw ACS files when
+#'   `raw_acs_storage = "folder"`.
 #' @param overwrite logical, whether to overwrite an existing saved stage.
 #' @param validation_strict logical passed to [ejscreen_pipeline_save()].
 #'
@@ -36,9 +46,15 @@ download_bg_acs_raw <- function(yr,
                                 fiveorone = "5",
                                 pipeline_dir = NULL,
                                 save_stage = FALSE,
-                                stage_format = "rds",
+                                stage_format = c("csv", "rds", "rda", "arrow"),
+                                raw_acs_storage = c("folder", "object"),
+                                raw_table_format = stage_format,
                                 overwrite = TRUE,
                                 validation_strict = TRUE) {
+  stage_format <- match.arg(stage_format)
+  raw_acs_storage <- match.arg(raw_acs_storage)
+  raw_table_format <- match.arg(raw_table_format, c("rds", "rda", "csv", "arrow"))
+
   if (missing(yr)) {
     yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)
   }
@@ -68,6 +84,7 @@ download_bg_acs_raw <- function(yr,
     fiveorone = as.character(fiveorone),
     downloaded_at = as.character(Sys.time()),
     source = "Census Bureau ACS table-based summary files via ACSdownload::get_acs_new()",
+    raw_acs_storage = raw_acs_storage,
     blockgroup_tables = blockgroup_tables,
     tract_tables = if (include_tract_data) tract_tables else character(),
     blockgroup = blockgroup,
@@ -79,14 +96,25 @@ download_bg_acs_raw <- function(yr,
     if (is.null(pipeline_dir)) {
       stop("pipeline_dir must be provided when save_stage is TRUE")
     }
-    ejscreen_pipeline_save(
-      out,
-      stage = "bg_acs_raw",
-      pipeline_dir = pipeline_dir,
-      format = stage_format,
-      overwrite = overwrite,
-      validation_strict = validation_strict
-    )
+    if (raw_acs_storage == "folder") {
+      saved_path <- save_bg_acs_raw_folder(
+        out,
+        pipeline_dir = pipeline_dir,
+        table_format = raw_table_format,
+        overwrite = overwrite,
+        validation_strict = validation_strict
+      )
+    } else {
+      saved_path <- ejscreen_pipeline_save(
+        out,
+        stage = "bg_acs_raw",
+        pipeline_dir = pipeline_dir,
+        format = stage_format,
+        overwrite = overwrite,
+        validation_strict = validation_strict
+      )
+    }
+    attr(out, "saved_stage_path") <- saved_path
   } else {
     ejscreen_pipeline_validate(out, stage = "bg_acs_raw", strict = validation_strict)
   }
@@ -105,6 +133,245 @@ download_acs_raw_tables <- function(yr, tables, fips, fiveorone = "5") {
     fiveorone = fiveorone,
     return_list_not_merged = TRUE
   )
+}
+
+bg_acs_raw_folder_path <- function(pipeline_dir, stage = "bg_acs_raw") {
+  if (missing(pipeline_dir) || is.null(pipeline_dir)) {
+    stop("pipeline_dir must be provided")
+  }
+  file.path(pipeline_dir, stage)
+}
+
+bg_acs_raw_manifest_path <- function(pipeline_dir, stage = "bg_acs_raw") {
+  file.path(bg_acs_raw_folder_path(pipeline_dir, stage), "manifest.rds")
+}
+
+bg_acs_raw_folder_exists <- function(pipeline_dir, stage = "bg_acs_raw") {
+  raw_dir <- bg_acs_raw_folder_path(pipeline_dir, stage)
+  dir.exists(raw_dir) &&
+    (file.exists(file.path(raw_dir, "manifest.rds")) ||
+       file.exists(file.path(raw_dir, "manifest.csv")) ||
+       dir.exists(file.path(raw_dir, "blockgroup")) ||
+       dir.exists(file.path(raw_dir, "tract")))
+}
+
+save_bg_acs_raw_folder <- function(acs_raw,
+                                   pipeline_dir,
+                                   stage = "bg_acs_raw",
+                                   table_format = c("rds", "rda", "csv", "arrow"),
+                                   overwrite = TRUE,
+                                   validation_strict = TRUE) {
+  table_format <- match.arg(table_format)
+  ejscreen_pipeline_validate(acs_raw, stage = stage, strict = validation_strict)
+
+  raw_dir <- bg_acs_raw_folder_path(pipeline_dir, stage)
+  if (dir.exists(raw_dir)) {
+    if (!overwrite) {
+      stop("Refusing to overwrite existing raw ACS folder: ", raw_dir)
+    }
+    unlink(raw_dir, recursive = TRUE)
+  }
+  dir.create(file.path(raw_dir, "blockgroup"), recursive = TRUE, showWarnings = FALSE)
+  dir.create(file.path(raw_dir, "tract"), recursive = TRUE, showWarnings = FALSE)
+
+  manifest_rows <- list()
+  for (component in c("blockgroup", "tract")) {
+    tables <- acs_raw_component(acs_raw, component)
+    if (is.null(tables) || length(tables) == 0) {
+      next
+    }
+    table_names <- names(tables)
+    if (is.null(table_names) || any(!nzchar(table_names))) {
+      stop(component, " ACS tables must be named before saving as a folder checkpoint")
+    }
+    for (table_name in table_names) {
+      if (grepl("[/\\\\]", table_name)) {
+        stop("ACS table names cannot contain path separators: ", table_name)
+      }
+      rel_file <- file.path(component, paste0(table_name, ".", table_format))
+      out_path <- file.path(raw_dir, rel_file)
+      save_acs_raw_table_file(tables[[table_name]], out_path, table_format, object_name = table_name)
+      manifest_rows[[length(manifest_rows) + 1L]] <- data.frame(
+        component = component,
+        table = table_name,
+        file = rel_file,
+        format = table_format,
+        rows = NROW(tables[[table_name]]),
+        columns = NCOL(tables[[table_name]]),
+        has_fips = "fips" %in% names(tables[[table_name]]),
+        stringsAsFactors = FALSE
+      )
+    }
+  }
+
+  manifest_tables <- if (length(manifest_rows) == 0) {
+    data.frame(
+      component = character(),
+      table = character(),
+      file = character(),
+      format = character(),
+      rows = integer(),
+      columns = integer(),
+      has_fips = logical(),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    do.call(rbind, manifest_rows)
+  }
+
+  manifest <- list(
+    stage = stage,
+    yr = acs_raw$yr,
+    fiveorone = as.character(acs_raw$fiveorone),
+    downloaded_at = acs_raw$downloaded_at,
+    source = acs_raw$source,
+    raw_acs_storage = "folder",
+    raw_table_format = table_format,
+    blockgroup_tables = manifest_tables$table[manifest_tables$component == "blockgroup"],
+    tract_tables = manifest_tables$table[manifest_tables$component == "tract"],
+    tables = manifest_tables
+  )
+  saveRDS(manifest, file = file.path(raw_dir, "manifest.rds"))
+  data.table::fwrite(manifest_tables, file = file.path(raw_dir, "manifest.csv"))
+
+  normalizePath(raw_dir, mustWork = FALSE)
+}
+
+load_bg_acs_raw_folder <- function(pipeline_dir,
+                                   stage = "bg_acs_raw",
+                                   validation_strict = TRUE) {
+  raw_dir <- bg_acs_raw_folder_path(pipeline_dir, stage)
+  if (!dir.exists(raw_dir)) {
+    stop("Raw ACS folder not found: ", raw_dir)
+  }
+
+  manifest <- list()
+  manifest_path <- file.path(raw_dir, "manifest.rds")
+  if (file.exists(manifest_path)) {
+    manifest <- readRDS(manifest_path)
+  }
+
+  table_files <- scan_bg_acs_raw_folder(raw_dir)
+  if (NROW(table_files) == 0) {
+    stop("Raw ACS folder has no table files: ", raw_dir)
+  }
+
+  manifest_value <- function(name, default) {
+    value <- manifest[[name]]
+    if (is.null(value)) {
+      return(default)
+    }
+    value
+  }
+
+  out <- list(
+    stage = stage,
+    yr = manifest_value("yr", NA_integer_),
+    fiveorone = as.character(manifest_value("fiveorone", NA_character_)),
+    downloaded_at = manifest_value("downloaded_at", NA_character_),
+    source = manifest_value("source", "Raw ACS table files from folder checkpoint"),
+    raw_acs_storage = "folder",
+    source_folder = normalizePath(raw_dir, mustWork = FALSE),
+    blockgroup = list(),
+    tract = list()
+  )
+
+  for (i in seq_len(NROW(table_files))) {
+    component <- table_files$component[[i]]
+    table_name <- table_files$table[[i]]
+    table_path <- file.path(raw_dir, table_files$file[[i]])
+    out[[component]][[table_name]] <- load_acs_raw_table_file(table_path, table_files$format[[i]])
+  }
+  out$blockgroup_tables <- names(out$blockgroup)
+  out$tract_tables <- names(out$tract)
+  class(out) <- c("ejam_bg_acs_raw", class(out))
+
+  ejscreen_pipeline_validate(out, stage = stage, strict = validation_strict)
+  out
+}
+
+scan_bg_acs_raw_folder <- function(raw_dir) {
+  supported_ext <- c("rds", "rda", "csv", "arrow")
+  rows <- list()
+  for (component in c("blockgroup", "tract")) {
+    component_dir <- file.path(raw_dir, component)
+    if (!dir.exists(component_dir)) {
+      next
+    }
+    files <- list.files(component_dir, full.names = FALSE, recursive = FALSE)
+    files <- files[tolower(sub("^.*\\.([^.]+)$", "\\1", files)) %in% supported_ext]
+    if (length(files) == 0) {
+      next
+    }
+    for (file_name in files) {
+      format <- tolower(sub("^.*\\.([^.]+)$", "\\1", file_name))
+      rows[[length(rows) + 1L]] <- data.frame(
+        component = component,
+        table = sub("\\.[^.]+$", "", basename(file_name)),
+        file = file.path(component, file_name),
+        format = format,
+        stringsAsFactors = FALSE
+      )
+    }
+  }
+  out <- if (length(rows) == 0) {
+    data.frame(component = character(), table = character(), file = character(), format = character())
+  } else {
+    do.call(rbind, rows)
+  }
+  if (NROW(out) > 0 && any(duplicated(paste(out$component, out$table)))) {
+    dupes <- out[duplicated(paste(out$component, out$table)) | duplicated(paste(out$component, out$table), fromLast = TRUE), ]
+    stop("Duplicate raw ACS table files found for component/table combinations: ",
+         paste(paste(dupes$component, dupes$table, sep = "/"), collapse = ", "))
+  }
+  out
+}
+
+save_acs_raw_table_file <- function(x, path, format, object_name) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  if (format == "rds") {
+    saveRDS(x, file = path)
+  } else if (format == "rda") {
+    env <- list2env(setNames(list(x), object_name), parent = emptyenv())
+    save(list = object_name, file = path, envir = env)
+  } else if (format == "csv") {
+    data.table::fwrite(x, file = path)
+  } else if (format == "arrow") {
+    if (!requireNamespace("arrow", quietly = TRUE)) {
+      stop("The arrow package is required to save raw ACS tables in Arrow format")
+    }
+    arrow::write_ipc_file(x, sink = path)
+  } else {
+    stop("Unsupported raw ACS table format: ", format)
+  }
+  invisible(normalizePath(path, mustWork = FALSE))
+}
+
+load_acs_raw_table_file <- function(path, format = NULL) {
+  if (is.null(format)) {
+    format <- tolower(sub("^.*\\.([^.]+)$", "\\1", path))
+  }
+  if (!file.exists(path)) {
+    stop("Raw ACS table file not found: ", path)
+  }
+  if (format == "rds") {
+    return(readRDS(path))
+  }
+  if (format == "rda") {
+    env <- new.env(parent = emptyenv())
+    loaded <- load(path, envir = env)
+    return(get(loaded[1], envir = env))
+  }
+  if (format == "csv") {
+    return(ejscreen_read_csv_table(path))
+  }
+  if (format == "arrow") {
+    if (!requireNamespace("arrow", quietly = TRUE)) {
+      stop("The arrow package is required to load raw ACS tables in Arrow format")
+    }
+    return(arrow::read_ipc_file(file = path, as_data_frame = TRUE))
+  }
+  stop("Unsupported raw ACS table format: ", format)
 }
 
 acs_raw_component <- function(acs_raw, component = c("blockgroup", "tract")) {
@@ -157,7 +424,7 @@ merge_acs_raw_tables <- function(acs_tables) {
       x <- prepared[[i]]
       drop_shared <- intersect(c("GEO_ID", "SUMLEVEL"), names(x))
       x[, (drop_shared) := NULL]
-      out <- merge(out, x, by = "fips")
+      out <- merge(out, x, by = "fips", all = TRUE, sort = FALSE)
     }
   }
   out

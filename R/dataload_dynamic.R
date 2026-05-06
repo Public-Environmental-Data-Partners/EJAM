@@ -15,7 +15,7 @@
 #' @param return_data_table whether the [read_ipc_file()] should return a table in
 #'   [data.table](https://r-datatable.com) format (T, the default), or arrow (F). Passed to [dataload_from_local()]
 #' @param onAttach Indicates whether the function is being called from onAttach. IF so, it will download all arrow files if necessary
-#'
+#' @param piggybacktag default is "latest" but if a different release were needed this could be changed.
 #' @return
 #'
 #'   returns vector of names of objects now in memory in specified envir, either because
@@ -34,7 +34,8 @@ dataload_dynamic <- function(
     folder_local_source = NULL, # './data/', # or "~/../Downloads"
     silent = FALSE,
     return_data_table = TRUE,
-    onAttach = FALSE) {
+    onAttach = FALSE,
+    piggybacktag = "latest") {
 
   message(paste0("Loading specified arrow datasets: ", paste(varnames, collapse = ", ")))
 
@@ -67,7 +68,8 @@ dataload_dynamic <- function(
 
   download_latest_arrow_data(
     varnames = if (onAttach) .arrow_ds_names else varnames,
-    envir = envir
+    envir = envir,
+    piggybacktag = piggybacktag
   )
 
   ####################################################### #

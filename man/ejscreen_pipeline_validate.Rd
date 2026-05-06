@@ -11,10 +11,10 @@ ejscreen_pipeline_validate(x, stage, strict = TRUE)
 
 \item{stage}{pipeline stage name, such as \code{"bg_acsdata"},
 \code{"bg_acs_raw"}, \code{"blockgroupstats_acs"}, \code{"bg_envirodata"}, \code{"envirodata"},
-\code{"blockgroupstats"}, \code{"bgej"}, \code{"bg_ejindexes"},
+\code{"bg_extra_indicators"}, \code{"blockgroupstats"}, \code{"bgej"}, \code{"bg_ejindexes"},
 \code{"usastats_acs"}, \code{"statestats_acs"}, \code{"usastats_envirodata"},
 \code{"statestats_envirodata"}, \code{"usastats_ej"}, \code{"statestats_ej"},
-\code{"usastats"}, or \code{"statestats"}.}
+\code{"usastats"}, \code{"statestats"}, or \code{"ejscreen_export"}.}
 
 \item{strict}{logical. If TRUE, errors stop execution. Warnings are still
 emitted as warnings.}

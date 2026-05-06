@@ -10,7 +10,7 @@ calc_ejscreen_stats(
   bgstats_stage = NULL,
   pipeline_dir = NULL,
   save_stages = FALSE,
-  stage_format = "rds",
+  stage_format = c("csv", "rds", "rda", "arrow"),
   acs_vars = NULL,
   enviro_vars = NULL,
   ej_indicator_vars = names_e,
@@ -38,7 +38,8 @@ calc_ejscreen_stats(
 
 \item{save_stages}{logical, whether to save outputs to \code{pipeline_dir}.}
 
-\item{stage_format}{file format for saved stages: "rds", "rda", or "arrow".}
+\item{stage_format}{file format for saved stages: \code{"csv"}, \code{"rds"},
+\code{"rda"}, or \code{"arrow"}.}
 
 \item{acs_vars}{variables to include in the ACS-only lookup stages. Defaults
 to current EJSCREEN/EJAM ACS indicators found in \code{bgstats}.}
@@ -59,8 +60,8 @@ national/state environmental percentile columns used internally by
 \item{demog_index_var, demog_index_supp_var, demog_index_state_var, demog_index_supp_state_var}{demographic index column names used by \code{\link[=calc_bgej]{calc_bgej()}}.}
 }
 \value{
-list with interim lookup tables, \code{bgej}, \code{usastats}, and
-\code{statestats}.
+list with interim lookup tables,
+\code{bgej}, \code{usastats}, and \code{statestats}.
 }
 \description{
 Calculate bgej, usastats, and statestats from a blockgroupstats-like table

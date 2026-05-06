@@ -12,7 +12,9 @@ download_bg_acs_raw(
   fiveorone = "5",
   pipeline_dir = NULL,
   save_stage = FALSE,
-  stage_format = "rds",
+  stage_format = c("csv", "rds", "rda", "arrow"),
+  raw_acs_storage = c("folder", "object"),
+  raw_table_format = stage_format,
   overwrite = TRUE,
   validation_strict = TRUE
 )
@@ -33,8 +35,16 @@ blockgroup apportionment.}
 
 \item{save_stage}{logical, whether to save the \code{bg_acs_raw} stage.}
 
-\item{stage_format}{file format for saved stages: \code{"rds"}, \code{"rda"}, or
-\code{"arrow"}.}
+\item{stage_format}{file format for saved object stages: \code{"rds"}, \code{"rda"},
+\code{"csv"}, or \code{"arrow"}. Raw ACS folder checkpoints use
+\code{raw_table_format} for the per-table files.}
+
+\item{raw_acs_storage}{raw ACS checkpoint storage pattern. \code{"folder"} saves
+one ACS table per file plus a manifest. \code{"object"} saves the historical
+single \code{bg_acs_raw} list object.}
+
+\item{raw_table_format}{file format for per-table raw ACS files when
+\code{raw_acs_storage = "folder"}.}
 
 \item{overwrite}{logical, whether to overwrite an existing saved stage.}
 
@@ -49,8 +59,12 @@ Download raw ACS tables for the blockgroup ACS pipeline
 \details{
 This creates the raw ACS checkpoint for the annual EJSCREEN/EJAM
 data update pipeline. It downloads the Census Bureau ACS table-based summary
-file tables with \code{ACSdownload::get_acs_new()} and stores them as a single
-list object with separate \code{blockgroup} and \code{tract} table lists.
+file tables with \code{ACSdownload::get_acs_new()}. By default, the saved
+checkpoint uses a folder-plus-manifest layout: one file per ACS table in
+\verb{bg_acs_raw/blockgroup/} and \verb{bg_acs_raw/tract/}, plus manifest files that
+describe the checkpoint. That is easier to inspect and extend than one large
+list object, while still being loadable as the same \code{ejam_bg_acs_raw} list
+object used by downstream functions.
 
 This stage is deliberately before EJAM formula calculations. The downloaded
 tables are the parsed ACSdownload output, including Census table columns,

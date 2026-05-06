@@ -41,3 +41,4 @@ helper, but implemented directly in EJAM. Percentiles must be on EJSCREEN's
 0-100 scale, not 0-1. Current EJSCREEN services use popup text like
 \code{"95 \%ile"}, so that is the text format used here.
 }
+\keyword{internal}

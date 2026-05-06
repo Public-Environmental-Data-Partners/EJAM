@@ -248,7 +248,7 @@
                   "pctdisability <- ifelse(disab_universe == 0, 0, as.numeric(disability) / disab_universe)",
                   "bgid = EJAM::bgpts[match(fips, bgfips), bgid]", "countyname = fips2countyname(fips, includestate = FALSE)",
                   "statename = fips2statename(fips)", "ST = fips2stateabbrev(fips)",
-                  "REGION = EJAM:::fips_st2eparegion(ST)", "under18 <- ageunder5m + age5to9m + age10to14m + age15to17m + ageunder5m + age5to9f + age10to14f + age15to17f",
+                  "REGION = EJAM:::fips_st2eparegion(EJAM:::fips2statefips(fips))", "under18 <- ageunder5m + age5to9m + age10to14m + age15to17m + ageunder5m + age5to9f + age10to14f + age15to17f",
                   "over17 <- pop - under18", "female = B01001_026", "male = B01001_002",
                   "ownedhhlds = B25003_002", "occupiedhhlds = B25003_001", "pctownedhhlds <- ifelse(occupied == 0, 0, ownedhhlds / occupiedhhlds)",
                   "ownedunits = B25032_002", "occupiedunits = B25032_001", "nobroadband = B28003_001 - B28003_004",
@@ -472,6 +472,7 @@ repair_formulas_ejscreen_acs <- function(formulas_ejscreen_acs) {
   set_formula("healthinsurance_universe", "healthinsurance_universe = B27010_001", "Civilian noninstitutionalized population for health insurance coverage status")
   set_formula("nohealthinsurance", "nohealthinsurance = B27010_017 + B27010_033 + B27010_050 + B27010_066", "People without health insurance coverage")
   set_formula("pctnohealthinsurance", "pctnohealthinsurance <- ifelse(healthinsurance_universe == 0, 0, as.numeric(nohealthinsurance) / healthinsurance_universe)", "% People without Health Insurance")
+  set_formula("REGION", "REGION = EJAM:::fips_st2eparegion(EJAM:::fips2statefips(fips))", "EPA Region")
   set_formula("poor", "poor = pov50 + pov99", "Population below Poverty Level")
   set_formula("pctpoor", "pctpoor <- ifelse(povknownratio == 0, 0, as.numeric(poor) / povknownratio)", "% Population below Poverty Level")
   set_formula("lan_spanish", "lan_spanish = C16001_003", "Number speaking Spanish at home", "names_d_language_count")

@@ -7,17 +7,29 @@
 calc_ejscreen_export(
   blockgroupstats = NULL,
   bgej = NULL,
+  usastats_ej = NULL,
+  statestats_ej = NULL,
   pipeline_dir = NULL,
   blockgroupstats_stage = "blockgroupstats",
   bgej_stage = "bgej",
+  usastats_ej_stage = "usastats_ej",
+  statestats_ej_stage = "statestats_ej",
   blockgroupstats_path = NULL,
   bgej_path = NULL,
-  stage_format = "rds",
+  usastats_ej_path = NULL,
+  statestats_ej_path = NULL,
+  stage_format = c("csv", "rds", "rda", "arrow"),
   by = "bgfips",
   output_vars = NULL,
   rename_newtype = "ejscreen_names",
   mapping_for_names = map_headernames,
   required_output_names = NULL,
+  include_ej_percentiles = TRUE,
+  include_state_ej_percentiles = TRUE,
+  ej_percentile_vars = c(names_ej, names_ej_supp),
+  ej_percentile_output_vars = c(names_ej_pctile, names_ej_supp_pctile),
+  ej_state_percentile_vars = c(names_ej_state, names_ej_supp_state),
+  ej_state_percentile_output_vars = c(names_ej_state_pctile, names_ej_supp_state_pctile),
   include_ejscreen_map_fields = TRUE,
   map_field_pctile_names = NULL,
   overwrite_ejscreen_map_fields = TRUE,
@@ -33,12 +45,19 @@ from a saved pipeline stage.}
 \item{bgej}{bgej-like data.frame, or NULL if reading from a saved pipeline
 stage.}
 
+\item{usastats_ej, statestats_ej}{EJ-index percentile lookup tables. These
+are used to add \code{P_D2_...}/\code{P_D5_...} fields before creating EJSCREEN map
+helper fields.}
+
 \item{pipeline_dir}{folder for reading saved pipeline stages.}
 
 \item{blockgroupstats_stage, bgej_stage}{stage names to read when objects are
 not supplied.}
 
-\item{blockgroupstats_path, bgej_path}{explicit paths to saved inputs.}
+\item{usastats_ej_stage, statestats_ej_stage}{stage names to read for
+EJ-index percentile lookup tables when objects are not supplied.}
+
+\item{blockgroupstats_path, bgej_path, usastats_ej_path, statestats_ej_path}{explicit paths to saved inputs.}
 
 \item{stage_format}{input file format when reading pipeline stages.}
 
@@ -54,6 +73,18 @@ Defaults to all available columns after the merge.}
 
 \item{required_output_names}{optional final EJSCREEN field names that must be
 present after renaming.}
+
+\item{include_ej_percentiles}{logical. If TRUE, add missing national EJ-index
+percentile columns from \code{usastats_ej}.}
+
+\item{include_state_ej_percentiles}{logical. If TRUE, add missing state
+EJ-index percentile columns from \code{statestats_ej}.}
+
+\item{ej_percentile_vars, ej_percentile_output_vars}{raw national EJ-index
+variables and corresponding percentile variables to add.}
+
+\item{ej_state_percentile_vars, ej_state_percentile_output_vars}{raw state
+EJ-index variables and corresponding percentile variables to add.}
 
 \item{include_ejscreen_map_fields}{logical. If TRUE, create EJSCREEN app
 \code{B_...} map color-bin columns and \code{T_...} popup-text columns from exported

@@ -5,7 +5,7 @@
 #' @details This is a reusable pipeline step. It combines an ACS-derived
 #' blockgroup table with environmental and other non-ACS indicator columns,
 #' calculates demographic indexes, and optionally saves the final
-#' `blockgroupstats` stage.
+#' [blockgroupstats] stage.
 #'
 #' The environmental input is expected to include `pctpre1960`. That indicator
 #' can be created by an upstream envirodata step from the saved ACS stage, even
@@ -15,12 +15,22 @@
 #'   saved pipeline stage.
 #' @param bg_envirodata environmental/non-ACS blockgroup table, or NULL if
 #'   reading from a saved pipeline stage such as `"bg_envirodata"`.
+#' @param bg_extra_indicators non-ACS, non-enviro blockgroup indicators such as
+#'   `lowlifex`, health outcome rates, site/feature counts, climate indicators,
+#'   and flag fields.
 #' @param pipeline_dir folder for reading/writing pipeline stage files.
 #' @param bg_acsdata_stage stage name for ACS input.
 #' @param bg_envirodata_stage stage name for environmental input.
+#' @param bg_extra_indicators_stage stage name for extra-indicator input.
+#' @param extra_indicator_vars expected extra indicator columns.
+#' @param reuse_existing_extra_if_missing logical. If TRUE, missing
+#'   `bg_extra_indicators` columns are copied from `existing_blockgroupstats`
+#'   with a warning. The default FALSE errors on missing extra inputs.
+#' @param existing_blockgroupstats optional source for reuse when
+#'   `reuse_existing_extra_if_missing` is TRUE. Defaults to current package data.
 #' @param save_stage logical, whether to save the final `blockgroupstats` stage.
-#' @param stage_format file format for saved/read stages: "rds", "rda", or
-#'   "arrow".
+#' @param stage_format file format for saved/read stages: `"csv"`, `"rds"`,
+#'   `"rda"`, or `"arrow"`.
 #' @param blockgroupstats_acs,blockgroupstats_acs_stage old names retained as
 #'   aliases for draft scripts.
 #'
@@ -31,13 +41,20 @@
 #'
 calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
                                           bg_envirodata = NULL,
+                                          bg_extra_indicators = NULL,
                                           pipeline_dir = NULL,
                                           bg_acsdata_stage = "bg_acsdata",
                                           bg_envirodata_stage = "bg_envirodata",
+                                          bg_extra_indicators_stage = "bg_extra_indicators",
+                                          extra_indicator_vars = ejscreen_default_extra_indicator_vars(),
+                                          reuse_existing_extra_if_missing = FALSE,
+                                          existing_blockgroupstats = NULL,
                                           save_stage = FALSE,
-                                          stage_format = "rds",
+                                          stage_format = c("csv", "rds", "rda", "arrow"),
                                           blockgroupstats_acs = NULL,
                                           blockgroupstats_acs_stage = NULL) {
+  stage_format <- match.arg(stage_format)
+
   if (is.null(bg_acsdata) && !is.null(blockgroupstats_acs)) {
     bg_acsdata <- blockgroupstats_acs
   }
@@ -59,9 +76,25 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     format = stage_format,
     input_name = "bg_envirodata"
   )
+  if (is.null(bg_extra_indicators) && !is.null(pipeline_dir) &&
+      !is.null(bg_extra_indicators_stage) &&
+      file.exists(ejscreen_pipeline_stage_path(bg_extra_indicators_stage, pipeline_dir, stage_format))) {
+    bg_extra_indicators <- ejscreen_pipeline_input(
+      stage = bg_extra_indicators_stage,
+      pipeline_dir = pipeline_dir,
+      format = stage_format,
+      input_name = "bg_extra_indicators"
+    )
+  }
 
-  acs <- data.table::as.data.table(data.table::copy(acs))
+  acs    <- data.table::as.data.table(data.table::copy(acs))
   enviro <- data.table::as.data.table(data.table::copy(enviro))
+  extra <- complete_bg_extra_indicators(
+    bg_extra_indicators = bg_extra_indicators,
+    extra_indicator_vars = extra_indicator_vars,
+    reuse_existing_if_missing = reuse_existing_extra_if_missing,
+    existing_blockgroupstats = existing_blockgroupstats
+  )
 
   if (!"bgfips" %in% names(acs)) {
     stop("bg_acsdata must have a bgfips column")
@@ -72,12 +105,9 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
   if (!"pctpre1960" %in% names(enviro)) {
     stop("bg_envirodata must include pctpre1960, even if that column was created from the ACS stage")
   }
-  if (!"lowlifex" %in% names(acs)) {
-    if (!"lowlifex" %in% names(enviro)) {
-      stop("Need lowlifex in bg_acsdata or bg_envirodata before calculating Demog.Index.Supp")
-    }
-    acs <- merge(acs, enviro[, .(bgfips, lowlifex)], by = "bgfips", all.x = TRUE)
-  }
+  acs <- add_bg_geography_columns(acs)
+  cols_to_add <- setdiff(names(extra), c("bgfips", names(acs)))
+  acs <- merge(acs, extra[, c("bgfips", cols_to_add), with = FALSE], by = "bgfips", all.x = TRUE)
 
   if (any(grepl("Demog.Index", names(acs)))) {
     stop("bg_acsdata already has Demog.Index columns; remove or replace them before this step")
