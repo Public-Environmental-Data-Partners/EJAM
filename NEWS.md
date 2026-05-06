@@ -1,8 +1,8 @@
-# Development
+# EJAM 2.32.8.001 (May 2026)
 
 Web app features:
 
-- Added PDF-format Community Report download option in the web app! Printing out the html report did not really work because of the page breaks, but the new pdf report has page breaks that make sense so a printed report looks good. Some features may be added later, such as heatmap color-coding in tables.
+- Added PDF-format Community Report download option in the web app! Printing out the html report did not really work because of the page breaks, but the new pdf report has page breaks that make sense so a printed report looks good. Heatmap color-coding in tables is also working in the pdf.
 
 Other changes:
 

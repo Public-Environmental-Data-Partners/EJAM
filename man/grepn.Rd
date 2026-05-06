@@ -17,4 +17,7 @@ vector of numbers
 \description{
 utility - how many times within each element of x vector is the pattern matched ?
 }
+\seealso{
+\code{\link[=find_in_files]{find_in_files()}}
+}
 \keyword{internal}

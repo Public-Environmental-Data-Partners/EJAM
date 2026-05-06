@@ -1,5 +1,31 @@
 # Changelog
 
+## EJAM 2.32.8.001 (May 2026)
+
+Web app features:
+
+- Added PDF-format Community Report download option in the web app!
+  Printing out the html report did not really work because of the page
+  breaks, but the new pdf report has page breaks that make sense so a
+  printed report looks good. Heatmap color-coding in tables is also
+  working in the pdf.
+
+Other changes:
+
+- Improved
+  [`ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapi.md)
+  examples and error-checking, and had it use
+  [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
+- Significantly revamped webapp functionality testing (done by
+  shinytest2) to be faster, robust, and only check for basic web app UI
+  functionality (not using snapshots that change when very minor updates
+  occur).
+- Revised some of unit testing setup, like setup.R etc.
+- Disabled most github actions workflows pending debugging/updates.
+  Changed to `checkout@v4.3.0` not just `checkout@v4` in all gh action
+  workflows
+- Revised/updated instructions for github copilot
+
 ## EJAM 2.32.8 (April 2026)
 
 Released v2.32.8 initially on 4/13/2026
