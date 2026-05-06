@@ -534,16 +534,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
             !anyNA(report_params$map) &&
             length(report_params$map) > 0) {
           map_png_path <- tryCatch({
-            if (!webshot::is_phantomjs_installed()) {
-              stop("PhantomJS is required to capture a map snapshot for PDF output. ",
-                   "Install it once by running: webshot::install_phantomjs()")
-            }
             map_widget_html <- tempfile(fileext = ".html")
             map_png        <- tempfile(fileext = ".png")
             htmlwidgets::saveWidget(report_params$map, file = map_widget_html,
                                     selfcontained = TRUE)
-            webshot::webshot(map_widget_html, file = map_png,
-                             delay = 4, vwidth = 900, vheight = 500)
+            webshot2::webshot(map_widget_html, file = map_png,
+                              delay = 4, vwidth = 900, vheight = 500)
             if (file.exists(map_png)) map_png else NULL
           }, error = function(e) {
             message("Could not capture static map snapshot for PDF: ",
