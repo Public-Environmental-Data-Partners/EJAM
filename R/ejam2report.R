@@ -524,18 +524,21 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
         # For PDF: convert interactive leaflet map to a static PNG so it renders
         # reliably in headless Chrome instead of depending on tile loading and JS timing.
-        map_widget_html <- NULL
-        map_png         <- NULL
+        map_widget_html  <- NULL
+        map_widget_files <- NULL
+        map_png          <- NULL
         on.exit({
           if (!is.null(map_widget_html)) unlink(map_widget_html)
+          if (!is.null(map_widget_files)) unlink(map_widget_files, recursive = TRUE)
           if (!is.null(map_png)) unlink(map_png)
         }, add = TRUE)
         if (!is.null(report_params$map) &&
             !anyNA(report_params$map) &&
             length(report_params$map) > 0) {
           map_png_path <- tryCatch({
-            map_widget_html <- tempfile(fileext = ".html")
-            map_png        <- tempfile(fileext = ".png")
+            map_widget_html  <- tempfile(fileext = ".html")
+            map_widget_files <- sub("\\.html$", "_files", map_widget_html)
+            map_png          <- tempfile(fileext = ".png")
             htmlwidgets::saveWidget(report_params$map, file = map_widget_html,
                                     selfcontained = TRUE)
             webshot2::webshot(map_widget_html, file = map_png,
