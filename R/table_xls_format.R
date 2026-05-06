@@ -128,11 +128,6 @@ table_xls_format <- function(overall,
                              ejscreen_ejam_caveat = NULL,
                              ...) {
 
-  ## check for PhantomJS installation
-  if (!webshot::is_phantomjs_installed()) {
-    webshot::install_phantomjs()
-  }
-
   if (is.null(ejscreen_ejam_caveat)) {
     ejscreen_ejam_caveat <- "Some numbers as shown on pre-2025 EPA EJSCREEN reports using ACS 2018-2022 in some cases were very slightly different than estimates in 2025 EJSCREEN reports (as calculations were transitioned from EPA to non-EPA software based on EJAM). All numbers shown in both types of reports are estimates, and any differences are well within the range of uncertainty inherent in the American Community Survey data as used in EJSCREEN. Slight differences are inherent in very quickly calculating results for multiple locations."
   }
@@ -382,7 +377,7 @@ table_xls_format <- function(overall,
     Sys.setenv(OPENSSL_CONF="/dev/null")
     map_file <- file.path(mytempdir, "map1.png")
     tryCatch({
-      webshot::webshot(mypath, file = map_file, cliprect = "viewport")
+      webshot2::webshot(mypath, file = map_file, cliprect = "viewport")
     }, error = function(e) {
       message("Error converting HTML to PNG:", e$message)
       # Handle the error (e.g., fallback mechanism, logging, etc.)
@@ -414,9 +409,9 @@ table_xls_format <- function(overall,
     mytempdir <- tempdir()
     Sys.setenv(OPENSSL_CONF="/dev/null")
     png_file <- file.path(mytempdir, 'community_report.png')
-    # Convert HTML to image using webshot
+    # Convert HTML to image using webshot2
     tryCatch({
-      webshot::webshot(url = community_html, file = png_file)
+      webshot2::webshot(url = community_html, file = png_file)
     }, error = function(e) {
       message("Error converting HTML to PNG:", e$message)
       # Handle the error (e.g., fallback mechanism, logging, etc.)
