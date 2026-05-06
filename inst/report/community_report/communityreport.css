@@ -407,7 +407,7 @@
     size: letter portrait;
     margin: 0.75in 0.5in 1in 0.5in;
     @bottom-right {
-      content: counter(page) " of " counter(pages);
+      content: counter(page);
       font-size: 9pt;
       color: #555;
     }

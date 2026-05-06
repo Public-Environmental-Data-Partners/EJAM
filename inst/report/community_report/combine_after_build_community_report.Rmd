@@ -6,6 +6,7 @@ output:
 params:
   community_html: NULL
   map: NULL
+  map_png_path: NULL
   plot: NULL
   footer_version_number: NULL
   footer_date: NULL
@@ -34,7 +35,20 @@ shiny::HTML(params$community_html)   # from build_community_report()
 
 ```{r map_section, echo=FALSE}
 #
-if (!(is.null(params$map) || anyNA(params$map) || length(params$map) == 0)) {
+if (!is.null(params$map_png_path) && nzchar(params$map_png_path) && file.exists(params$map_png_path)) {
+  # Static PNG snapshot (used for PDF output); embed inline so the self-contained HTML
+  # can be passed to chrome_print() without needing external file access.
+  htmltools::tagList(
+    htmltools::tags$section(
+      class = "report-section report-map-section",
+      htmltools::tags$img(
+        src = knitr::image_uri(params$map_png_path),
+        alt = "Map",
+        style = "width: 100%; max-width: 100%;"
+      )
+    )
+  )
+} else if (!(is.null(params$map) || anyNA(params$map) || length(params$map) == 0)) {
   htmltools::tagList(
     htmltools::tags$section(
       class = "report-section report-map-section",

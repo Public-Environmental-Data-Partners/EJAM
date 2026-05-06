@@ -522,6 +522,36 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         ## For PDF: check dependencies first, then render HTML, then convert to PDF ####
         assert_pdf_report_available()
 
+        # For PDF: convert interactive leaflet map to a static PNG so it renders
+        # reliably in headless Chrome instead of depending on tile loading and JS timing.
+        if (!is.null(report_params$map) &&
+            !anyNA(report_params$map) &&
+            length(report_params$map) > 0) {
+          map_png_path <- tryCatch({
+            if (!webshot::is_phantomjs_installed()) {
+              message("Installing PhantomJS for map snapshot (one-time setup)...")
+              webshot::install_phantomjs()
+            }
+            map_widget_html <- tempfile(fileext = ".html")
+            map_png        <- tempfile(fileext = ".png")
+            htmlwidgets::saveWidget(report_params$map, file = map_widget_html,
+                                    selfcontained = TRUE)
+            webshot::webshot(map_widget_html, file = map_png,
+                             delay = 4, vwidth = 900, vheight = 500)
+            if (file.exists(map_png)) map_png else NULL
+          }, error = function(e) {
+            message("Could not capture static map snapshot for PDF: ",
+                    conditionMessage(e))
+            NULL
+          })
+          if (!is.null(map_png_path)) {
+            report_params$map_png_path <- map_png_path
+            # Remove the interactive widget so knitr does not also render it into the
+            # intermediate HTML that chrome_print() will convert — the PNG is all we need.
+            report_params$map <- NULL
+          }
+        }
+
         # render HTML to temp file, capturing the actual output path returned by render()
         html_temp <- tempfile(fileext = ".html")
 
@@ -535,10 +565,15 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         )
         # convert to PDF using pagedown::chrome_print()
         # This preserves the full CSS styling unlike a LaTeX-based pdf_document
+        tryCatch(
           pagedown::chrome_print(
             input = rendered_path,
             output = output_file,
-            wait = 5, timeout = 120, verbose = 0)
+            wait = 5, timeout = 120, verbose = 0),
+          error = function(e) {
+            stop(paste0("chrome_print failed: ", conditionMessage(e)), call. = FALSE)
+          }
+        )
 
         if (!file.exists(output_file)) {
           msg <- paste0("PDF report was not created: ", output_file)
@@ -579,8 +614,16 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     #browseURL(temp_comm_report)
 
   } else {
-    rstudioapi::showDialog(title = 'Report not available',
-                           'Individual site reports not yet available.')
+    msg <- 'Individual site reports not yet available for this site (valid = FALSE).'
+    if (shiny::isRunning()) {
+      shiny::showModal(shiny::modalDialog(
+        title = 'Report not available',
+        msg,
+        easyClose = TRUE
+      ))
+    } else {
+      message(msg)
+    }
     return(NA)
   }
 }

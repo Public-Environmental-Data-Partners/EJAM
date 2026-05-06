@@ -68,7 +68,11 @@ fill_tbl_row <- function(output_df, Rname, longname, show_ratios_in_report) {
       } else {
         NULL
       }
-      return(paste0('<td style="background-color: ', bg_color, ';">', val, '</td>'))  # Apply color to ratio column
+      if (!is.null(bg_color)) {
+        return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))  # Apply color to ratio column
+      } else {
+        return(paste0('<td>', val, '</td>'))
+      }
     } else {
       return(paste0('<td>', val, '</td>'))  # Default case for other columns
     }
@@ -375,7 +379,11 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
         NULL
       }
       # Add background color if applicable
-      return(paste0('<td style="background-color: ', bg_color, ';">', val, '</td>'))
+      if (!is.null(bg_color)) {
+        return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))
+      } else {
+        return(paste0('<td>', val, '</td>'))
+      }
     } else {
       # Default case for other columns
       return(paste0('<td>', val, '</td>'))
