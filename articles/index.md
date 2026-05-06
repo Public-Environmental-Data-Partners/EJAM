@@ -100,10 +100,15 @@ For package/app developers
 
   How to run the suite of {testthat} unit tests
 
-- [Updating EJAM
-  Datasets](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md):
+- [Updating and Managing the Datasets used by
+  EJAM](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md):
 
-  Managing large {arrow} datasets used by EJAM app and package
+  Managing datasets used by EJAM (including arrow files)
+
+- [Updating EJScreen Datasets Annually (via the
+  Pipeline)](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-ejscreen-datasets-yearly.md):
+
+  Annual staged workflow for updating ACS-based EJScreen/EJAM datasets
 
 - [Updating
   Documentation](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-documentation.md):

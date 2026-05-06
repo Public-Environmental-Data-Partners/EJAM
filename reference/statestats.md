@@ -6,9 +6,10 @@ for all the blockgroups in that zone (e.g., blockgroups in
 for a set of indicators such as percent low income. Each column is one
 indicator (or specifies the percentile).
 
-This should be similar to the lookup tables in the gdb on the FTP site
-of EJSCREEN, except it also has data for additional population
-subgroups. See also
+For details on how the table was made, see source package files in
+data-raw folder.
+
+See also
 [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md)
 for more details.
 
@@ -20,4 +21,4 @@ statestats
 
 ## Format
 
-An object of class `data.frame` with 5304 rows and 67 columns.
+An object of class `data.frame` with 5252 rows and 111 columns.

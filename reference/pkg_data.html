@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -111,25 +112,80 @@ It may create and leave objects in global envt - not careful about that.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="co"># see just a vector of the data object names</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
+<span> <span class="co"># some way to see what functions are in the package:</span></span>
+<span></span>
+<span> <span class="va">x1</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_functions_and_data.html">pkg_functions_and_data</a></span><span class="op">(</span>data_included<span class="op">=</span><span class="cn">F</span>, vectoronly<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
+<span> <span class="va">x2</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_functions_and_sourcefiles</span><span class="op">(</span><span class="op">)</span></span>
+<span> <span class="va">info3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="op">{</span> <span class="va">x3</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_functions_by_roxygen_tag</span><span class="op">(</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span></span>
+<span> <span class="va">info4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="op">{</span> <span class="va">x4</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_functions_found_in_files</span><span class="op">(</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span></span>
+<span> <span class="co">## x5 &lt;- EJAM:::pkg_functions_preceding_lines() # may need to be debugged</span></span>
+<span></span>
+<span> <span class="co"># See function names that use certain words - Useful view!</span></span>
+<span></span>
+<span> <span class="va">extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>   <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_functions_found_in_files</span><span class="op">(</span><span class="op">)</span></span>
+<span> <span class="op">}</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">extra</span><span class="op">)</span></span>
+<span> <span class="va">terms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>,  <span class="st">"var"</span>, <span class="st">"fix"</span>,  <span class="st">"meta"</span>, <span class="st">"calc"</span>, <span class="st">"ejscreen"</span>, <span class="st">"report"</span>, <span class="st">"make"</span><span class="op">)</span></span>
+<span> <span class="co"># also try   "^get", "^block", "^bg"</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">terms</span>, <span class="kw">function</span><span class="op">(</span><span class="va">term</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="va">term</span>, <span class="va">y</span>, value<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co"># See filenames that use certain words - Useful view!</span></span>
+<span></span>
+<span> <span class="co"># list.files(recursive = T, pattern = "^datacreate")</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">T</span>, pattern <span class="op">=</span> <span class="st">"^util.*R$"</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">terms</span>, <span class="st">'name'</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">term</span><span class="op">)</span> <span class="op">{</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">T</span>, pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">term</span>, <span class="st">".*R$"</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span> <span class="co"># some ways to to see what datasets are in the EJAM package:</span></span>
+<span></span>
+<span>  <span class="va">yo</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_functions_and_data.html">pkg_functions_and_data</a></span><span class="op">(</span>functions_included <span class="op">=</span> <span class="cn">F</span>, vectoronly <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>  <span class="va">x</span>  <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_data</span><span class="op">(</span><span class="st">"EJAM"</span>, simple <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setequal</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Item</span>, <span class="va">yo</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co"># Plot showing that just a couple of large datasets</span></span>
+<span> <span class="co"># account for most of the total:</span></span>
+<span></span>
+<span>  <span class="va">biggest</span> <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">bigp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span>  <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span>,decreasing <span class="op">=</span> <span class="cn">T</span> <span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span>,</span>
+<span>       ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, ylab<span class="op">=</span><span class="st">"Share of total size"</span>, xlab<span class="op">=</span><span class="st">"datasets sorted large to small"</span>, type <span class="op">=</span> <span class="st">'b'</span>,</span>
+<span>            main<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">biggest</span>, <span class="st">" alone is "</span>, <span class="va">bigp</span>,<span class="st">"% of total"</span><span class="op">)</span><span class="op">)</span></span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fl">0</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h<span class="op">=</span><span class="fl">0</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h<span class="op">=</span><span class="fl">1</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">sizen</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span><span class="op">$</span><span class="va">size</span> <span class="op">&gt;=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="co"># at least 100 KB</span></span>
+<span>  <span class="va">xo</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">Item</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"names_"</span>, <span class="va">xo</span>, value <span class="op">=</span> <span class="cn">T</span>, ignore.case <span class="op">=</span> <span class="cn">T</span>, invert <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="co"># most were like names_d, etc.</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"avg.in.us"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span> <span class="co"># lazy load an object into memory and make it visible to user</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span> <span class="co"># another way to see just a vector of the data object names</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"EJAM"</span><span class="op">)</span><span class="op">$</span><span class="va">results</span><span class="op">[</span>, <span class="st">'Item'</span><span class="op">]</span></span>
 <span></span>
 <span> <span class="co"># not actually sorted within each pkg by default</span></span>
-<span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_data</span><span class="op">(</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_data</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="co"># not actually sorted by default</span></span>
-<span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_data</span><span class="op">(</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">$</span><span class="va">Item</span></span>
-<span> <span class="co">##EJAM:::pkg_data("MASS", simple=T)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_data</span><span class="op">(</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span></span>
+<span> <span class="co">## EJAM:::pkg_data("MASS", simple=T)</span></span>
 <span></span>
 <span> <span class="co"># sorted by size if simple=F</span></span>
-<span> <span class="co">##EJAM:::pkg_data("datasets", simple=F)</span></span>
+<span> <span class="co">## EJAM:::pkg_data("datasets", simple=F)</span></span>
 <span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">pkg_data</span><span class="op">(</span>simple <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span> <span class="co"># sorted by size already, to see largest ones among all these pkgs:</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co"># sorted alphabetically within each pkg</span></span>
-<span> <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Package</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
+<span>   <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Package</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span> <span class="op">)</span></span>
 <span> <span class="co"># sorted alphabetically across all the pkgs</span></span>
-<span> <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
+<span>   <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span> <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># datasets as lazyloaded objects vs. files installed with package</span></span>
 <span></span>
@@ -140,6 +196,7 @@ It may create and leave objects in global envt - not careful about that.</p>
 <span></span>
 <span><span class="co"># files</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>files.in.package <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="va">topic</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -147,11 +204,11 @@ It may create and leave objects in global envt - not careful about that.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

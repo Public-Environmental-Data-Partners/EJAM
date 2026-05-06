@@ -6,7 +6,7 @@ matched ?
 ## Usage
 
 ``` r
-grepn(pattern, x)
+grepn(pattern, x, ignore.case = TRUE)
 ```
 
 ## Arguments

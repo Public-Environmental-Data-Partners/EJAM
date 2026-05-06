@@ -11,7 +11,8 @@ dataload_dynamic(
   folder_local_source = NULL,
   silent = FALSE,
   return_data_table = TRUE,
-  onAttach = FALSE
+  onAttach = FALSE,
+  piggybacktag = "latest"
 )
 ```
 
@@ -47,6 +48,11 @@ dataload_dynamic(
 
   Indicates whether the function is being called from onAttach. IF so,
   it will download all arrow files if necessary
+
+- piggybacktag:
+
+  default is "latest" but if a different release were needed this could
+  be changed.
 
 ## Value
 

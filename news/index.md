@@ -1,5 +1,108 @@
 # Changelog
 
+## EJAM 2.5.0 (May 2026)
+
+### Updated Demographic Data from ACS
+
+- v2.5.0 provides 2020-2024 American Community Survey (ACS) demographic
+  data
+
+- v2.32.\*, used throughout 2025, used 2018-2022 ACS data (even though
+  newer ACS 5-year survey data were available from Census Bureau).
+
+- Note that Census Bureau discourages using ACS 5-year surveys for
+  comparisons or trends if they have overlapping periods. Comparisons
+  between the 2018-2022, 2019-2023, and 2020-2024 datasets is not
+  appropriate per Census Bureau.
+
+- Created a data update pipeline with several stages to read (or
+  calculate) tables of data and save intermediate or final files at each
+  stage:
+
+  1.  download ACS raw data on demographics (including some available
+      only at tract resolution)
+  2.  calculate ACS-based demographic indicators (and lead paint
+      indicator)
+  3.  validate/save key environmental indicators (or re-use existing
+      ones)
+  4.  validate/save the many extra indicators like % low life expectancy
+      (or re-use existing ones)
+  5.  calculate demographic indexes (using % low life expectancy, etc.)
+  6.  combine those blockgroup demog., envt., and extra indicators as
+      \[blockgroupstats\]
+  7.  create percentile lookup tables for demographics and environmental
+      data
+  8.  calculate EJ indexes (from envt. percentiles and demog. indexes)
+      and save as \[bgej\] table
+  9.  create percentile lookup tables for EJ indexes
+  10. combine those as \[usastats\] and \[statestats\] percentile lookup
+      tables
+  11. create an EJScreen-ready export file
+
+- Added
+  [`calc_ejscreen_dataset()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.md)
+  as the high-level wrapper for the staged pipeline. It can read
+  supplied R objects, read saved stages from disk, or create and save
+  stages such as `bg_acsdata`, `bg_envirodata`, `bg_extra_indicators`,
+  `blockgroupstats`, `bgej`, `usastats`, `statestats`, and
+  `ejscreen_export`.
+
+- Added functions that can update ACS-based demographic dataset each
+  year:
+  [`calc_bgej()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_bgej.md),
+  [`calc_blockgroupstats_acs()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_blockgroupstats_acs.md),
+  [`calc_blockgroupstats_from_tract_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_blockgroupstats_from_tract_data.md),
+  etc.
+
+- Pipeline stages are now saved as CSV files by default, so annual
+  update checkpoints are easier to inspect, replace, and rerun
+  outside R. The raw ACS checkpoint uses a folder-plus-manifest layout
+  with one file per ACS table, which makes it easier to add supplemental
+  ACS-like tables before the next stage runs. Pipeline storage can use a
+  local folder now and `s3://...` AWS S3 paths later, with Git LFS rules
+  in place if a checkpoint folder needs to be force-added to the
+  repository temporarily.
+
+- Added `bg_envirodata` and `bg_extra_indicators` as explicit pipeline
+  inputs. This makes it clear which columns come from ACS, which come
+  from environmental data, and which come from other blockgroup-level
+  sources such as low life expectancy, health outcome rates, feature
+  counts, and flags. Missing extra indicators can intentionally be
+  reused from the current package data, but that path is explicit rather
+  than silent.
+
+- Added
+  [`calc_bg_extra_indicators()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_extra_indicators.md)
+  and related helpers for the non-ACS, non-environmental blockgroup
+  indicator stage.
+
+- Added
+  [`calc_ejscreen_export()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.md)
+  support for creating an EJScreen-ready dataset from `blockgroupstats`
+  and `bgej`, using `map_headernames` naming columns and adding EJScreen
+  EJ-index percentile fields such as `P_D2_...` and `P_D5_...` from the
+  saved EJ-index lookup tables. It then creates map helper fields such
+  as `B_...` map bins and `T_...` percentile popup text. The
+  `ejscreen_export` stage validates the `ID` key and map helper fields
+  before saving, and the pipeline runner writes an export schema report
+  for review.
+
+- Updated `map_headernames` naming support so EJAM names, current
+  EJScreen export/app names, old EJScreen FTP names, and old EJScreen
+  API names can be tracked separately.
+
+- Improved formula handling for ACS-derived indicators, including
+  dependency ordering and validation checks, and fixed the EPA Region
+  formula so it uses state FIPS rather than state abbreviations.
+
+## EJAM 2.4.0 (May 2026)
+
+### Updated Demographic Data from ACS
+
+- A release tagged as v2.4.0 was a placeholder for a way to provide
+  2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint
+  indicator), in case those are useful.
+
 ## EJAM 2.32.8.001 (May 2026)
 
 Web app features:

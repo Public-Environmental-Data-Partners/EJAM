@@ -37,6 +37,10 @@ testdata(pattern = NULL, installed = TRUE, quiet = FALSE, folder_only = FALSE)
 
 path to local testdata folder comes with the EJAM package
 
+## See also
+
+[`pkg_functions_and_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkg_functions_and_data.md)
+
 ## Examples
 
 ``` r

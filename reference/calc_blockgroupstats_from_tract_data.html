@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -73,8 +74,9 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_blockgroupstats_from_tract_data</span><span class="op">(</span></span>
 <span>  <span class="va">yr</span>,</span>
 <span>  tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span><span class="op">)</span>,</span>
-<span>  <span class="va">formulas</span>,</span>
-<span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  formulas <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  acs_raw <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,6 +91,21 @@
 <dt id="arg-tables">tables<a class="anchor" aria-label="anchor" href="#arg-tables"></a></dt>
 <dd><p>"B18101" and "C16001", e.g., for disability and detailed language spoken</p></dd>
 
+
+<dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
+<dd><p>default includes formulas for disability-related and language-related indicators
+calculated from ACS variables found in tables "B18101" and "C16001" - This is a vector of string formulas.</p></dd>
+
+
+<dt id="arg-dropmoe">dropMOE<a class="anchor" aria-label="anchor" href="#arg-dropmoe"></a></dt>
+<dd><p>logical, whether to drop not retain the margin of error information for each ACS variable</p></dd>
+
+
+<dt id="arg-acs-raw">acs_raw<a class="anchor" aria-label="anchor" href="#arg-acs-raw"></a></dt>
+<dd><p>optional raw ACS table list or <code>bg_acs_raw</code> pipeline object
+previously created by <code><a href="download_bg_acs_raw.html">download_bg_acs_raw()</a></code>. If supplied, no ACS download
+is performed for tract-resolution tables.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -96,8 +113,10 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Needs Census API key for <code><a href="https://walker-data.com/tidycensus/reference/get_decennial.html" class="external-link">tidycensus::get_decennial()</a></code>.</p>
-<p>Takes some time to download data for every State.</p>
+    <p>This would normally be called from the script in <code>datacreate_blockgroupstats_acs.R</code>, which is in the source package folder "data-raw"</p>
+<p>Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()</p>
+<p>Needs Census API key for <code><a href="https://walker-data.com/tidycensus/reference/get_decennial.html" class="external-link">tidycensus::get_decennial()</a></code>.</p>
+<p>Takes some time to download data for every State!</p>
 <p>First get tract counts,
 then apportion into blockgroup counts,
 then calculate percents in blockgroups via formulas.</p>
@@ -108,11 +127,11 @@ then calculate percents in blockgroups via formulas.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

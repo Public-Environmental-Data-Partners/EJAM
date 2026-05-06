@@ -74,18 +74,18 @@ have the same number of rows as the input fips vector.
 
 When using tigris package ("tiger" as service-related parameter here),
 it uses the year that is the default in the version of the tigris
-package that is installed. You can use options(tigris_year = 2022) for
+package that is installed. You can use options(tigris_year = 2023) for
 example to specify it explicitly.
 
 Blocks are not implemented yet here. For info on blocks bounds, see
 [`tigris::block_groups()`](https://rdrr.io/pkg/tigris/man/block_groups.html)
 Also note the
 [blockwts](https://public-environmental-data-partners.github.io/EJAM/reference/blockwts.md)
-dataset had a placeholder column block_radius_miles that as of v2.32.5
-was just zero values, but see notes in
-EJAM/data-raw/datacreate_blockwts.R on how it could be obtained. If it
-were used, it could be a way to quickly get the area of each block,
-using the formula area = pi \* (block_radius_miles^2)
+dataset had a placeholder column block_radius_miles that was just zero
+values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it
+could be obtained. If it were used, it could be a way to quickly get the
+area of each block, using the formula area = pi \*
+(block_radius_miles^2)
 
 For zip code boundaries, see the [EJAM
 documentation](https://public-environmental-data-partners.github.io/EJAM/reference/ejanalysis.org/ejamdocs)

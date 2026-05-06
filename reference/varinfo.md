@@ -87,7 +87,7 @@ not exported:
 
 - EJAM names_whichlist_multi_key()
 
-- EJAM formula_varname()
+- EJAM calc_varname_from_formula()
 
 and the various related data objects like map_headernames and namez
 

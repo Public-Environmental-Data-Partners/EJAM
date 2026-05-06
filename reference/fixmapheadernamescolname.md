@@ -6,13 +6,7 @@ varinfo() and fixcolnames()
 ## Usage
 
 ``` r
-fixmapheadernamescolname(
-  x,
-  alias_list = list(rname = c("r", "rnames"), longname = c("long", "longnames", "full",
-    "description"), shortlabel = c("short", "shortname", "shortnames", "shortlabels",
-    "labels", "label"), acsname = c("acs", "acsnames"), apiname = c("api", "apinames"),
-    csvname = c("csv", "csvnames"), oldname = c("original", "old", "oldnames"))
-)
+fixmapheadernamescolname(x, alias_list = map_headernames_alias_list())
 ```
 
 ## Arguments

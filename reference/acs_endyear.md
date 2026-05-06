@@ -1,7 +1,7 @@
-# check which ACS 5-year survey is available, per EJAM metadata or guessed via published or typical schedules
+# check which ACS 5-year survey is available from Census Bureau or in EJAM/EJSCREEN
 
-check which ACS 5-year survey is available, per EJAM metadata or guessed
-via published or typical schedules
+check which ACS 5-year survey is available from Census Bureau or in
+EJAM/EJSCREEN
 
 ## Usage
 
@@ -10,7 +10,7 @@ acs_endyear(
   guess_as_of = Sys.Date(),
   guess_always = FALSE,
   guess_census_has_published = FALSE,
-  lag_yrs_endyr_to_census_publishes = 0.9452055,
+  lag_yrs_endyr_to_census_publishes = 0.95,
   lag_yrs_endyr_to_ejscreen = 1.6
 )
 ```
@@ -54,14 +54,36 @@ released by Census Bureau 12/2023, updated in EJSCREEN in mid/late 2024.
 
 ## Details
 
-- The 2020-2024 data were published by Census Bureau 1/29/2026 (delayed
-  from the typical 12/2025).
+This function can report what the package metadata says is the version
+of ACS data in the package, or it can guess what version is published by
+Census Bureau or is incorporated into EJAM/EJSCREEN, based on actual
+recent release dates or typical lags from survey to release by Census or
+in EJSCREEN.
 
-- The 2019-2023 data were published by Census Bureau 12/12/2024, but
-  were not yet in EJSCREEN as of late 2025.
+Census Bureau provides yearly release schedules for ACS data:
 
-- The 2018-2022 data were published by Census Bureau 12/7/2023, in
-  EJSCREEN mid/late 2024.
+- The [2020-2024 ACS
+  data](https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html)
+  normally would be released by Census Bureau 12/11/2025, but release
+  was delayed until January 29, 2026.
 
-See schedules such as
-<https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html>
+- The [2019-2023 ACS
+  data](https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html)
+  were published by Census Bureau 12/12/2024.
+
+- The [2018-2022 ACS
+  data](https://www.census.gov/programs-surveys/acs/news/data-releases/2022/release-schedule.html)
+  were published by Census Bureau 12/7/2023.
+
+EJSCREEN has incorporated ACS data in new releases of EJSCREEN on a more
+complicated schedule since 2024. See
+[ejanalysis.com/status](https://ejanalysis.com/status)
+
+- The 2020-2024 ACS data may be in non-EPA versions of EJAM / EJSCREEN
+  starting around mid 2026.
+
+- The 2019-2023 ACS data were never used in EJSCREEN / EJAM, because in
+  2025 EPA stopped updating the tool and data.
+
+- The 2018-2022 ACS data were used in EJSCREEN / EJAM starting in
+  mid/late 2024.

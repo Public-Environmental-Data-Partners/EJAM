@@ -144,17 +144,19 @@ distance defining near versus far. The distribution can be sliced later
 for the summary statistics at any distance, and can be summarized as a
 distribution of distances within each residential population group.
 
-### Data Updates
+### Data Updates and Data Vintage
 
 The EPA released EJSCREEN version 2.32 in August 2024 and then in
 January 2025 took EJSCREEN off line, with no plans for further updates.
 The exact same data were used in EJAM version 2.32.0 and EJSCREEN
-version 2.32 released in late 2024. Non-EPA development of EJAM at least
-through version 2.32.8 in April 2026 was still using that same dataset.
+version 2.32 released in late 2024. Non-EPA development of EJAM through
+version 2.32.8 in April 2026 was still using that same dataset. That was
+based on American Community Survey (ACS) data representing the five-year
+period of 2018-2022.
 
-EJAM version 2.32.8 (released April 2026) is based on American Community
-Survey (ACS) data representing the five-year period of 2018-2022
-(released by the Census Bureau 2023-12-07). The ACS data are the basis
+EJAM version 2.5.0 (released May 2026) is based on American Community
+Survey (ACS) data representing the five-year period of 2020-2024
+(released by the Census Bureau 2026-01-29). The ACS data are the basis
 for blockgroup resolution estimates of demographic and other data on
 residential populations and households.
 

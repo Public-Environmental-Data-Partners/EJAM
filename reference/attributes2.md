@@ -16,4 +16,4 @@ attributes2(x)
 
 ## Value
 
-attributes of x, excluding row.names
+attributes of x, excluding "row.names" and "names"

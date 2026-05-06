@@ -245,6 +245,7 @@ if (exists("frs_by_programid") && exists("frs")) {
 #> 24:      MA-EPICS  34098
 #> 25:          TRIS  34092
 #>           program      N
+#>            <char>  <int>
 ```
 
 #### by MACT Subpart (hazardous air pollutant source category)

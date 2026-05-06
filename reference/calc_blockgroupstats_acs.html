@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -74,7 +75,8 @@
 <span>  <span class="va">yr</span>,</span>
 <span>  formulas <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="formulas_ejscreen_acs.html">formulas_ejscreen_acs</a></span><span class="op">$</span><span class="va">formula</span>,</span>
 <span>  tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="tables_ejscreen_acs.html">tables_ejscreen_acs</a></span><span class="op">)</span>,</span>
-<span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  acs_raw <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -83,12 +85,46 @@
 
 
 <dl><dt id="arg-yr">yr<a class="anchor" aria-label="anchor" href="#arg-yr"></a></dt>
-<dd><p>end year of 5-year ACS dataset, guesses if not specified</p></dd>
+<dd><p>end year of 5-year ACS dataset, guessed if not specified</p></dd>
+
+
+<dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
+<dd><p>default is formulas used by EJAM/EJScreen.
+A vector of string formulas such as
+c("pop = B01001_001", "hisp = B03002_012", "pcthisp &lt;- ifelse(pop==0, 0, as.numeric(hisp ) / pop)")</p></dd>
+
+
+<dt id="arg-tables">tables<a class="anchor" aria-label="anchor" href="#arg-tables"></a></dt>
+<dd><p>default is the key ACS tables needed by EJAM/EJScreen.
+A vector of ACS table numbers, such as c("B01001", "B03002")</p></dd>
+
+
+<dt id="arg-dropmoe">dropMOE<a class="anchor" aria-label="anchor" href="#arg-dropmoe"></a></dt>
+<dd><p>logical, whether to drop and not retain the margin of error information on every ACS variable</p></dd>
+
+
+<dt id="arg-acs-raw">acs_raw<a class="anchor" aria-label="anchor" href="#arg-acs-raw"></a></dt>
+<dd><p>optional raw ACS table list or <code>bg_acs_raw</code> pipeline object
+previously created by <code><a href="download_bg_acs_raw.html">download_bg_acs_raw()</a></code>. If supplied, no ACS download
+is performed for blockgroup-resolution tables.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>data.table, one row per blockgroup, columns bgfips, etc.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This is meant to be used annually for updating EJScreen demographic indicators
+from the Census Bureau American Community Survey (ACS) 5-year summary file, to update the datasets in the package.
+This would normally be called from the script in <code>datacreate_blockgroupstats_acs.R</code>, which is in the source package folder "data-raw"</p>
+<p>Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
+which is documented at https://ejanalysis.github.io/ACSdownload</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code>calc_blockgroupstats_acs()</code> <code><a href="calc_blockgroupstats_from_tract_data.html">calc_blockgroupstats_from_tract_data()</a></code> <code><a href="calc_bgej.html">calc_bgej()</a></code>
+<code><a href="formulas_ejscreen_acs.html">formulas_ejscreen_acs()</a></code> <code><a href="formulas_ejscreen_acs_disability.html">formulas_ejscreen_acs_disability()</a></code> <code><a href="formulas_ejscreen_demog_index.html">formulas_ejscreen_demog_index()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -96,11 +132,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

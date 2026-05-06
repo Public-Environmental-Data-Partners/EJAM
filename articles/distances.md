@@ -33,7 +33,7 @@ ejam2ratios(out)
 #> 
 #> Average Resident in Place(s) Analyzed vs US or State
 #>                       Ratio_to_US_avg Ratio_to_State_avg
-#> Demog.Ind.                        1.2                1.2
+#> Demog.Ind.                        1.2                1.3
 #> Suppl Demog.Ind.                  1.0                1.0
 #> %Low-inc.                         1.0                1.1
 #> %Limited English                  1.6                1.2
@@ -62,7 +62,7 @@ ejam2ratios(out)
 #> TSDF                              3.3                1.8
 #> UST                               1.7                1.7
 #> NPDES                             0.1                2.1
-#> Drinking                          2.5                3.0
+#> Drinking                          2.7                3.2
 ```
 
 ``` r

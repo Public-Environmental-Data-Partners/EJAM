@@ -16,7 +16,7 @@ An object of class `character` of length 15.
 
 See
 
-    yr = 2023
+    yr = 2024
     urls = paste0('https://data.census.gov/table/ACSDT5Y', yr, '.', tables_ejscreen_acs)
     sapply(urls, browseURL)
     acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), 'acs5')
@@ -48,15 +48,15 @@ Notes:
 - B27010 no health insurance
 
 - C16002 (language category and) % of households limited English
-  speaking (lingiso) <https://data.census.gov/table/ACSDT5Y2023.C16002>
+  speaking (lingiso) <https://data.census.gov/table/ACSDT5Y2024.C16002>
 
 - B16004 (language category and) % of residents (not hhlds) speak no
-  English at all <https://data.census.gov/table/ACSDT5Y2023.B16004>
+  English at all <https://data.census.gov/table/ACSDT5Y2024.B16004>
 
 TRACT ONLY, but also used by EJSCREEN:
 
 - C16001 languages detailed list: % of residents (not hhlds) IN TRACT
-  speak Chinese, etc. <https://data.census.gov/table/ACSDT5Y2023.C16001>
+  speak Chinese, etc. <https://data.census.gov/table/ACSDT5Y2024.C16001>
 
 - B18101 disability
 

@@ -35,21 +35,6 @@ a vector as long as myforms input vector
 - [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
   uses `calc_varname_from_formula()` and maybe source_this_codetext()
 
-&nbsp;
-
-- [`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md)
-  may use
-  [`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md)
-
-- [`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md)
-  uses
-  [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
-
-- [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
-  uses
-  [`formula_varname()`](https://public-environmental-data-partners.github.io/EJAM/reference/formula_varname.md)
-  and maybe source_this_codetext()
-
 ## Examples
 
 ``` r

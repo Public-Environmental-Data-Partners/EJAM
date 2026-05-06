@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -131,10 +132,10 @@ correspond to fips for which boundaries could not be obtained for some reason.
 So the output table might not have the same number of rows as the input fips vector.</p>
 <p>When using tigris package ("tiger" as service-related parameter here),
 it uses the year that is the default in the version of the tigris package that is installed.
-You can use options(tigris_year = 2022) for example to specify it explicitly.</p>
+You can use options(tigris_year = 2023) for example to specify it explicitly.</p>
 <p>Blocks are not implemented yet here. For info on blocks bounds, see  <code><a href="https://rdrr.io/pkg/tigris/man/block_groups.html" class="external-link">tigris::block_groups()</a></code>
-Also note the <a href="blockwts.html">blockwts</a> dataset had a placeholder column block_radius_miles that as of
-v2.32.5 was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
+Also note the <a href="blockwts.html">blockwts</a> dataset had a placeholder column block_radius_miles that
+was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
 If it were used, it could be a way to quickly get the area of each block,
 using the formula  area = pi * (block_radius_miles^2)</p>
 <p>For zip code boundaries, see the <a href="ejanalysis.org/ejamdocs">EJAM documentation</a> article on zipcodes.</p>
@@ -167,11 +168,11 @@ using the formula  area = pi * (block_radius_miles^2)</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

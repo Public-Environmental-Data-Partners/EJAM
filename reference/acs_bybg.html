@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -178,46 +179,31 @@ if you omit the space or capitalize by accident)</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Probably requires <a href="https://api.census.gov/data/key_signup.html" class="external-link">getting and specifying an API key for Census Bureau</a> ! (at least if query is large).
+    <p>See newer ACSdownload::get_acs_new() as used in calc_blockgroupstats_acs() etc.,
+which will download ACS nationwide data by table
+instead of using acs_bybg(), which queryied API by State-by-State.</p>
+<p>acs_bybg() probably requires <a href="https://api.census.gov/data/key_signup.html" class="external-link">getting and specifying an API key for Census Bureau</a> ! (at least if query is large).
 see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package help</a>  envt var CENSUS_API_KEY</p>
 <p>NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> tidycensus<span class="sc">::</span><span class="fu">load_variables</span>(<span class="dv">2022</span>, <span class="st">"acs5"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>tables <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="st">"B25034"</span>, <span class="co"># pre1960, for lead paint indicator (environmental not demographic per se)</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="st">"B01001"</span>, <span class="co"># sex and age / basic population counts</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="st">"B03002"</span>, <span class="co"># race with hispanic ethnicity</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="st">"B02001"</span>, <span class="co"># race without hispanic ethnicity</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="st">"B15002"</span>, <span class="co"># education</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="st">"B23025"</span>, <span class="co"># unemployed</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="st">"C17002"</span>, <span class="co"># low income, poor, etc.</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="st">"B19301"</span>, <span class="co"># per capita income</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="st">"B25032"</span>, <span class="co"># owned units vs rented units (occupied housing units, same universe as B25003)</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="st">"B28003"</span>, <span class="co"># no broadband</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="st">"B27010"</span>, <span class="co"># no health insurance</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  <span class="st">"C16002"</span>, <span class="co"># (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"</span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  <span class="st">"B16004"</span>, <span class="co"># (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  <span class="do">####### TRACT ONLY:</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  <span class="co">#   used by EJSCREEN but only available at tract resolution:</span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  <span class="st">"C16001"</span>, <span class="co"># languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"</span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  <span class="st">"B18101"</span> <span class="co"># disability -- at tract resolution only ########### #</span></span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>)</span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>acstabs2 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(tables, <span class="st">"_"</span>)</span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>mytables <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">rbindlist</span>(<span class="fu">lapply</span>(acstabs2, <span class="cf">function</span>(z) {</span>
-<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  x[<span class="fu">substr</span>(x<span class="sc">$</span>name,<span class="dv">1</span>,<span class="dv">7</span>) <span class="sc">%in%</span> z, ][<span class="dv">1</span>, ]</span>
-<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>  }))</span>
-<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="fu">print</span>(mytables)</span>
-<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>  <span class="co"># see details of ALL the variables in these tables</span></span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co"># for (i in 1:NROW(mytables)) {</span></span>
-<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#    x[substr(x$name,1,7) %in% substr(mytables[i,]$name,1,7), ] |&gt; print(n=50)</span></span>
-<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co"># }</span></span>
-<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a> <span class="co"># disability is by tract only:</span></span>
-<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a> <span class="fu">cbind</span>(<span class="fu">unique</span>(<span class="fu">grep</span>(<span class="st">"disab"</span>, x<span class="sc">$</span>concept, <span class="at">value =</span> T, <span class="at">ignore.case =</span> T) ))</span>
-<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a> <span class="co"># x[substr(x$name,1,6) %in% "B18101" &amp; x$geography %in% "block group", ] |&gt; print(n=50) # none</span></span>
-<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a> x[<span class="fu">substr</span>(x<span class="sc">$</span>name,<span class="dv">1</span>,<span class="dv">7</span>) <span class="sc">%in%</span> <span class="st">"B18101_"</span>  , ] <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">50</span>)</span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> tidycensus<span class="sc">::</span><span class="fu">load_variables</span>(<span class="fu">acs_endyear</span>(<span class="at">guess_census_has_published =</span> <span class="cn">TRUE</span>), <span class="st">"acs5"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="do">## tables_ejscreen_acs</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>tables <span class="ot">=</span> tables_ejscreen_acs</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>acstabs2 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(tables, <span class="st">"_"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>mytables <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">rbindlist</span>(<span class="fu">lapply</span>(acstabs2, <span class="cf">function</span>(z) {</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  x[<span class="fu">substr</span>(x<span class="sc">$</span>name,<span class="dv">1</span>,<span class="dv">7</span>) <span class="sc">%in%</span> z, ][<span class="dv">1</span>, ]</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  }))</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">print</span>(mytables)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="co"># see details of ALL the variables in these tables</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># for (i in 1:NROW(mytables)) {</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#    x[substr(x$name,1,7) %in% substr(mytables[i,]$name,1,7), ] |&gt; print(n=50)</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># }</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a> <span class="co"># disability is by tract only:</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a> <span class="fu">cbind</span>(<span class="fu">unique</span>(<span class="fu">grep</span>(<span class="st">"disab"</span>, x<span class="sc">$</span>concept, <span class="at">value =</span> T, <span class="at">ignore.case =</span> T) ))</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a> <span class="co"># x[substr(x$name,1,6) %in% "B18101" &amp; x$geography %in% "block group", ] |&gt; print(n=50) # none</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a> x[<span class="fu">substr</span>(x<span class="sc">$</span>name,<span class="dv">1</span>,<span class="dv">7</span>) <span class="sc">%in%</span> <span class="st">"B18101_"</span>  , ] <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">50</span>)</span></code></pre><p></p></div>
     </div>
 
     <div class="section level2">
@@ -267,27 +253,9 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span></span>
 <span><span class="co">## ACS tables and variables most relevant to EJSCREEN</span></span>
 <span></span>
-<span><span class="va">acsinfo</span> <span class="op">&lt;-</span> <span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/load_variables.html" class="external-link">load_variables</a></span><span class="op">(</span><span class="fl">2022</span>, <span class="st">"acs5"</span><span class="op">)</span></span>
-<span><span class="va">ejscreentables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B01001"</span>, <span class="co"># sex and age / basic population counts</span></span>
-<span>            <span class="st">"B03002"</span>, <span class="co"># race with hispanic ethnicity</span></span>
-<span>            <span class="st">"B02001"</span>, <span class="co"># race without hispanic ethnicity</span></span>
-<span>            <span class="st">"B15002"</span>, <span class="co"># education</span></span>
-<span></span>
-<span>            <span class="st">"C16002"</span>, <span class="co"># language/ lingiso</span></span>
-<span>            <span class="st">"B16004"</span>, <span class="co"># language category and English not at all</span></span>
-<span></span>
-<span>            <span class="st">"C17002"</span>, <span class="co"># low income, poor, etc.</span></span>
-<span>            <span class="st">"B25034"</span>, <span class="co"># pre1960, for lead paint indicator</span></span>
-<span>            <span class="st">"B23025"</span>, <span class="co"># unemployed</span></span>
-<span></span>
-<span>            <span class="st">"B25032"</span>, <span class="co"># owned units vs rented units # ***</span></span>
-<span>            <span class="st">"B25003"</span>, <span class="co"># owned vs rented             # ***</span></span>
-<span></span>
-<span>            <span class="st">"B28003"</span>, <span class="co"># no broadband</span></span>
-<span>            <span class="st">"B27010"</span> ,  <span class="co"># no health insurance</span></span>
-<span></span>
-<span>          <span class="st">"B18101"</span> <span class="co"># disability -- at tract resolution only ########### #</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">acsinfo</span> <span class="op">&lt;-</span> <span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/load_variables.html" class="external-link">load_variables</a></span><span class="op">(</span><span class="fu"><a href="acs_endyear.html">acs_endyear</a></span><span class="op">(</span>guess_census_has_published <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"acs5"</span><span class="op">)</span></span>
+<span><span class="co"># or x = EJAM:::acs_table_info()</span></span>
+<span><span class="va">ejscreentables</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">tables_ejscreen_acs</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">acstabs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">ejscreentables</span>, <span class="st">"_"</span><span class="op">)</span></span>
 <span><span class="va">acsinfo</span><span class="op">$</span><span class="va">table</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"_.*"</span>, <span class="st">""</span>, <span class="va">acsinfo</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
@@ -295,7 +263,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span><span class="va">mytables</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">ejscreentables</span>, <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">{</span><span class="va">acsinfo</span><span class="op">[</span><span class="va">acsinfo</span><span class="op">$</span><span class="va">table</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">z</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ejscreen_tables</span> <span class="op">&lt;-</span>  <span class="va">mytables</span><span class="op">$</span><span class="va">table</span> <span class="co"># same as ejscreentables</span></span>
 <span></span>
-<span><span class="va">myvars</span> <span class="op">&lt;-</span> <span class="va">myacsinfo</span><span class="op">$</span><span class="va">name</span> <span class="co"># 184 variables among 8 tables</span></span>
+<span><span class="va">myvars</span> <span class="op">&lt;-</span> <span class="va">myacsinfo</span><span class="op">$</span><span class="va">name</span> <span class="co">#</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="st">"want to run example that takes &gt;15 minutes"</span> <span class="op">==</span> <span class="st">"yes"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># VERY SLOWLY download data for all these tables</span></span>
@@ -322,11 +290,11 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

@@ -5,7 +5,7 @@ download ACS 5year data from Census API, at County resolution
 ## Usage
 
 ``` r
-acs_bycounty(myvars = "B03002_001", myst = "DE", yr = 2022)
+acs_bycounty(myvars = "B03002_001", myst = "DE", yr = acs_endyear())
 ```
 
 ## Arguments
@@ -21,7 +21,7 @@ acs_bycounty(myvars = "B03002_001", myst = "DE", yr = 2022)
 
 - yr:
 
-  like 2022, end of 5 year ACS 2018-2022
+  like 2024, end of 5 year ACS 2020-2024
 
 ## Value
 
@@ -33,8 +33,8 @@ from tidycensus pkg
 ``` r
 ## also see examples for acs_bybg()
 # \donttest{
-  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = 2022) # nhwa
-  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = 2022) # pop
+  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acs_endyear(guess_always = T, guess_census_has_published = T)) # nhwa
+  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acs_endyear(guess_always = T, guess_census_has_published = T)) # pop
   z = x
   z$estimate = x$estimate / denom$estimate
   z$moe = 0  # x$moe / denom$estimate # need to calculate using census guidance if at all

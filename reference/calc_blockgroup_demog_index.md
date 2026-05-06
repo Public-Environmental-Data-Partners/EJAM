@@ -6,14 +6,21 @@ Indexes per blockgroup from ACS data
 ## Usage
 
 ``` r
-calc_blockgroup_demog_index(yr)
+calc_blockgroup_demog_index(bgstats, formulas = formulas_ejscreen_demog_index)
 ```
 
 ## Arguments
 
-- yr:
+- bgstats:
 
-  endyear of ACS 5-year survey to use, inferred if omitted
+  a data.frame or data.table like
+  [blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md),
+  with one row per blockgroup and the columns used in the demographic
+  index formulas.
+
+- formulas:
+
+  formulas used to calculate the demographic index columns.
 
 ## Value
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -83,7 +84,9 @@
 <span>  vnames_d_demogindex_supp <span class="op">=</span> <span class="st">"Demog.Index.Supp"</span>,</span>
 <span>  vnames_d_demogindex_state <span class="op">=</span> <span class="st">"Demog.Index.State"</span>,</span>
 <span>  vnames_d_demogindex_supp_state <span class="op">=</span> <span class="st">"Demog.Index.Supp.State"</span>,</span>
-<span>  vnames_ST <span class="op">=</span> <span class="st">"ST"</span></span>
+<span>  vnames_ST <span class="op">=</span> <span class="st">"ST"</span>,</span>
+<span>  usastats_lookup <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  statestats_lookup <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -146,6 +149,16 @@ and the 4 types of demographic indexes.</p></dd>
 <dd><p>name of column in bgstats that has the 2-character State abbreviation to use in
 finding envt percentiles in the <a href="statestats.html">statestats</a> table used by <code><a href="calc_pctile_columns.html">calc_pctile_columns()</a></code></p></dd>
 
+
+<dt id="arg-usastats-lookup">usastats_lookup<a class="anchor" aria-label="anchor" href="#arg-usastats-lookup"></a></dt>
+<dd><p>optional percentile lookup table to use for national
+environmental percentiles. Defaults to <a href="usastats.html">usastats</a>.</p></dd>
+
+
+<dt id="arg-statestats-lookup">statestats_lookup<a class="anchor" aria-label="anchor" href="#arg-statestats-lookup"></a></dt>
+<dd><p>optional percentile lookup table to use for state
+environmental percentiles. Defaults to <a href="statestats.html">statestats</a>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -157,11 +170,11 @@ finding envt percentiles in the <a href="statestats.html">statestats</a> table u
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

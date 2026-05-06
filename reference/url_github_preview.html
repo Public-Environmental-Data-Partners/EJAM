@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -131,9 +132,9 @@ or <code>"ejam2excel.html"</code></p></dd>
 <span><span class="co"># in latest main branch on GH (but map does not render using this tool)</span></span>
 <span><span class="fu">url_github_preview</span><span class="op">(</span>file <span class="op">=</span> <span class="va">myfile</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># from a specific prior release on GH (but map does not render using this tool)</span></span>
-<span><span class="fu">url_github_preview</span><span class="op">(</span>file <span class="op">=</span> <span class="va">myfile</span>,</span>
-<span>  ver <span class="op">=</span> <span class="st">"v2.32.5"</span>, fold <span class="op">=</span> <span class="st">"inst/testdata/examples_of_output"</span><span class="op">)</span></span>
+<span><span class="co"># from a specific release on GH (but map does not render using this tool)</span></span>
+<span><span class="va">vernum</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"v"</span>, <span class="fu">desc</span><span class="fu">::</span><span class="fu"><a href="https://desc.r-lib.org/reference/desc_get.html" class="external-link">desc_get</a></span><span class="op">(</span><span class="st">"Version"</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"DESCRIPTION"</span>, package<span class="op">=</span><span class="st">"EJAM"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">url_github_preview</span><span class="op">(</span>ver <span class="op">=</span> <span class="va">vernum</span>, fold <span class="op">=</span> <span class="st">"inst/testdata/examples_of_output"</span>, file <span class="op">=</span> <span class="va">myfile</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># local installed version</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="va">myfile</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
@@ -150,11 +151,11 @@ or <code>"ejam2excel.html"</code></p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

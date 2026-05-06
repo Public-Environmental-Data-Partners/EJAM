@@ -8,7 +8,8 @@ Used when EJAM package is attached
 download_latest_arrow_data(
   varnames = .arrow_ds_names,
   repository = NULL,
-  envir = globalenv()
+  envir = globalenv(),
+  piggybacktag = "latest"
 )
 ```
 
@@ -30,6 +31,11 @@ download_latest_arrow_data(
 
   if needed to specify environment other than default, e.g., globalenv()
   or parent.frame()
+
+- piggybacktag:
+
+  default is "latest" but if a different release were needed this could
+  be changed.
 
 ## Details
 
