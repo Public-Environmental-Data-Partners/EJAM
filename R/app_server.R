@@ -2618,6 +2618,7 @@ app_server <- function(input, output, session) {
           pagedown::chrome_print(
             input = html_path,
             output = file,
+            options = list(printBackground = TRUE),
             wait = 5, timeout = 120, verbose = 0)
         }, error = function(e) {
           showModal(modalDialog(

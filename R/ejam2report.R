@@ -569,6 +569,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
           pagedown::chrome_print(
             input = rendered_path,
             output = output_file,
+            options = list(printBackground = TRUE),
             wait = 5, timeout = 120, verbose = 0),
           error = function(e) {
             stop(paste0("chrome_print failed: ", conditionMessage(e)), call. = FALSE)
