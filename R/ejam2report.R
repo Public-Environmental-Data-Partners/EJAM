@@ -565,6 +565,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         )
         # convert to PDF using pagedown::chrome_print()
         # This preserves the full CSS styling unlike a LaTeX-based pdf_document
+
         tryCatch(
           pagedown::chrome_print(
             input = rendered_path,
@@ -624,6 +625,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       ))
     } else {
       message(msg)
+
     }
     return(NA)
   }
