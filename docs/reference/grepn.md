@@ -22,3 +22,7 @@ grepn(pattern, x)
 ## Value
 
 vector of numbers
+
+## See also
+
+[`find_in_files()`](https://public-environmental-data-partners.github.io/EJAM/reference/find_in_files.md)
