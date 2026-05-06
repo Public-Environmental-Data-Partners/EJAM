@@ -55,12 +55,15 @@ fill_tbl_row <- function(output_df, Rname, longname, show_ratios_in_report) {
     } else if (hdr_names[i] == 'ratio-to-us-avg' || hdr_names[i] == 'ratio-to-state-avg') {
 
       # Color code the ratio column
-      bg_color <- if (!is.na(val)) {
-        if (val > 2.9) {
+      # val may be a formatted character string (e.g. "1,234" or "N/A") after
+      # format_ejamit_columns() runs, so parse to numeric for threshold logic.
+      num_val <- suppressWarnings(as.numeric(gsub(",", "", val)))
+      bg_color <- if (!is.na(num_val)) {
+        if (num_val > 2.9) {
           "red"
-        } else if (val > 1.9) {
+        } else if (num_val > 1.9) {
           "orange"
-        } else if (val > .9) {
+        } else if (num_val > .9) {
           "yellow"
         } else {
           NULL
