@@ -14,23 +14,22 @@ You can see a grouped, organized list of unit test files *within the
 source code* of a function
 **[`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)**,
 which is not exported but is loaded by the package. That function also
-has an option that helps check coverage. It relies on
-**`EJAM/tests/test_coverage_check.R`**. The
+has an option that helps check coverage – that relies on
+**`EJAM/tests/test_coverage_check.R`** which is imperfect but somewhat
+helpful, and its source code has notes on the topic. The
 [`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)
-function noted above already prompts for using it, but you could
-separately [`source()`](https://rdrr.io/r/base/source.html) it and use
-it. The source code there also had notes on the topic.
+function noted above already prompts for using that helper.
 
-It is a bit tedious to figure out which functions have unit tests since
-there is not a 1-to-1 relationship between functions like xyz() vs the
-EJAM/R/xyz.R files defining functions vs EJAM/tests/testthat/test-xyz.R
-files containing unit tests.
+Note that it is a bit difficult to figure out which functions have unit
+tests since there is not a 1-to-1 relationship between functions like
+xyz() vs the EJAM/R/xyz.R files defining functions vs
+EJAM/tests/testthat/test-xyz.R files containing unit tests.
 
 Also see
 [`devtools::test_coverage()`](https://devtools.r-lib.org/reference/test.html)
 which is a shortcut for `covr::package_coverage()` plus
-`covr::report()`. The [covr package](https://covr.r-lib.org/) also has a
-related RStudio addin.
+`covr::report()`. Note the [covr package](https://covr.r-lib.org/) also
+has a related RStudio addin.
 
 ### Adding unit tests (for new functions or where unit tests not yet written)
 
@@ -59,8 +58,12 @@ Unit tests should be changed if necessary in these situations:
   functionality can be updated/created as explained in [Testing EJAM App
   with
   shinytest2](https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.md).
-  Also note that any screenshots for any *User Guide* would need to be
-  updated if the UI changes.
+  Also note that any screenshots for any version of an [EJAM web app
+  User
+  Guide](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html#help-with-how-to-use-ejscreen)
+  that are included in the package would need to be updated if the UI
+  changes, and any unit tests that rely on screenshots or other aspects
+  of the UI would need to be updated if the UI changes.
 
 ### Running unit tests
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,18 @@
       <small>Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.32.8.001" id="ejam-2328001-may-2026">EJAM 2.32.8.001 (May 2026)<a class="anchor" aria-label="anchor" href="#ejam-2328001-may-2026"></a></h2>
+<p>Web app features:</p>
+<ul><li>Added PDF-format Community Report download option in the web app! Printing out the html report did not really work because of the page breaks, but the new pdf report has page breaks that make sense so a printed report looks good. Heatmap color-coding in tables is also working in the pdf.</li>
+</ul><p>Other changes:</p>
+<ul><li>Improved <code><a href="../reference/ejamapi.html">ejamapi()</a></code> examples and error-checking, and had it use <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>
+</li>
+<li>Significantly revamped webapp functionality testing (done by shinytest2) to be faster, robust, and only check for basic web app UI functionality (not using snapshots that change when very minor updates occur).</li>
+<li>Revised some of unit testing setup, like setup.R etc.</li>
+<li>Disabled most github actions workflows pending debugging/updates. Changed to <code>checkout@v4.3.0</code> not just <code>checkout@v4</code> in all gh action workflows</li>
+<li>Revised/updated instructions for github copilot</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.8" id="ejam-2328-april-2026">EJAM 2.32.8 (April 2026)<a class="anchor" aria-label="anchor" href="#ejam-2328-april-2026"></a></h2>
 <p>Released v2.32.8 initially on 4/13/2026</p>
@@ -728,11 +740,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.32.8.001</p>
 </div>
 
     </footer></div>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,13 +68,14 @@
 <div class="section level2">
 <h2 id="repository-overview">Repository Overview<a class="anchor" aria-label="anchor" href="#repository-overview"></a></h2>
 <p>EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment. Large repository: Can be roughly ~737MB, 621 R files, 618 man pages, 115MB datasets. However, several very large .arrow data files are used by the package but not part of the bundle that gets downloaded to be installed.</p>
-<p><strong>Tech Stack:</strong> See the DESCRIPTION file for a list of dependencies, such as these: R (&gt;= 4.3.0), Golem Shiny framework, data.table, sf (spatial), arrow <strong>Key Directories:</strong> <code>R/</code> (source), <code>data/</code> (.rda files), <code>inst/</code> (configs), <code>tests/</code> (testthat + shinytest2), <code>man/</code> (auto-generated), <code>.github/workflows/</code> (has CI workflows)</p>
+<p><strong>Tech Stack:</strong> See the DESCRIPTION file for a list of dependencies, such as these: R with a specific version specified, Golem Shiny framework, data.table, sf (spatial), arrow</p>
+<p><strong>Key Directories:</strong> - Root directory of package (which has several key files like DESCRIPTION, NEWS.md, README.Rmd, etc.) - <code>R/</code> (source) - <code>data/</code> (.rda files lazy-loaded by the package when it is loaded, plus .arrow format datasets saved their upon first install or when datasets are updated on the dataset repo, and “ejamdata_version.txt” with metadata on what is the latest version of certain large datasets) - <code>data-raw/</code> (scripts for updating the datasets) - <code>inst/</code> (configs prefixed with “global_”, “testdata” folder with examples of data for testing, “report” folder related to templates and creating html report of results, etc.) - <code>tests/</code> (unit testing via testthat + shinytest2) - <code>.github/workflows/</code> (has CI github actions workflows) - <code>man/</code> (auto-generated documentation)</p>
 </div>
 <div class="section level2">
 <h2 id="critical-build-requirements">Critical Build Requirements<a class="anchor" aria-label="anchor" href="#critical-build-requirements"></a></h2>
 <div class="section level3">
 <h3 id="system-dependencies-ubuntudebian">System Dependencies (Ubuntu/Debian)<a class="anchor" aria-label="anchor" href="#system-dependencies-ubuntudebian"></a></h3>
-<p><strong>On linux/Ubuntu/Debian, ALWAYS install these system libraries before attempting package installation:</strong></p>
+<p><strong>On linux/Ubuntu/Debian, ALWAYS install these system libraries before attempting package installation:</strong> NOTE THIS LIST MAY NEED TO BE EDITED FROM TIME TO TIME, AS THE REQUIRED R PACKAGES GET UPDATED AND CREATE CHANGING DEPENDENCIES, FOR EXAMPLE!</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">sudo</span> apt-get install <span class="at">-y</span> <span class="dt">\</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  libfontconfig1-dev <span class="dt">\</span></span>
@@ -93,30 +94,25 @@
 <span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  libjq-dev <span class="dt">\</span></span>
 <span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  libprotobuf-dev <span class="dt">\</span></span>
 <span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  protobuf-compiler</span></code></pre></div>
-<p><strong>macOS Dependencies:</strong></p>
+<p><strong>macOS Dependencies:</strong> NOTE THIS LIST MAY NEED TO BE EDITED FROM TIME TO TIME, AS THE REQUIRED R PACKAGES GET UPDATED AND CREATE CHANGING DEPENDENCIES, FOR EXAMPLE!</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">brew</span> update</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">brew</span> install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="r-package-installation">R Package Installation<a class="anchor" aria-label="anchor" href="#r-package-installation"></a></h3>
-<p>See installation details in <code>vignettes/installing.Rmd</code></p>
-<p><strong>Installation from GitHub:</strong></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="co"># NOTE: replace "REPO_OWNER" with the actual github repo owner (see DESCRIPTION file)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"REPO_OWNER/EJAM"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Installation from local source:</strong></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"."</span>, force <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Important:</strong> The package is NOT on CRAN. Always install from GitHub or local source.</p>
-</div>
+<ul><li>See installation instructions and notes in <code>vignettes/installing.Rmd</code>
+</li>
+<li>Note the key R packages and R version dependencies listed in the <code>DESCRIPTION</code> file.</li>
+<li>
+<strong>Important:</strong> The package is NOT on CRAN. Always install from GitHub or local source.</li>
+</ul></div>
 </div>
 <div class="section level2">
 <h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a></h2>
 <div class="section level3">
 <h3 id="unit-tests">Unit Tests<a class="anchor" aria-label="anchor" href="#unit-tests"></a></h3>
 <p><strong>Running all tests:</strong></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard testthat approach</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">test</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -128,26 +124,29 @@
 <div class="section level3">
 <h3 id="shiny-app-tests-shinytest2">Shiny App Tests (shinytest2)<a class="anchor" aria-label="anchor" href="#shiny-app-tests-shinytest2"></a></h3>
 <p><strong>Running web app functionality tests:</strong></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/shinytest2/" class="external-link">shinytest2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run all web app tests</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"./tests/testthat.R"</span><span class="op">)</span></span>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#or</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="reference/test_ejam.html">test_ejam</a></span><span class="op">(</span>ask<span class="op">=</span><span class="cn">F</span>,run_these<span class="op">=</span><span class="st">"webapp"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run specific web app tests, for example:</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"FIPS-functionality"</span><span class="op">)</span> <span class="co"># maybe with , check_setup = FALSE</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"NAICS-functionality"</span><span class="op">)</span> </span></code></pre></div>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"FIPS-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"NAICS-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Dependencies for shinytest2:</strong></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># webshot::install_phantomjs()  # Required for screenshots</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># webshot::install_phantomjs()  # Required for screenshots</span></span>
+<span><span class="co"># also needs pandoc probably</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="linting">Linting<a class="anchor" aria-label="anchor" href="#linting"></a></h2>
 <p><strong>Lintr is configured but runs in CI with continue-on-error: true</strong></p>
 <p>To run lintr locally:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">lintr</span><span class="fu">::</span><span class="fu"><a href="https://lintr.r-lib.org/reference/lint.html" class="external-link">lint_dir</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># CI uses SARIF output</span></span>
@@ -157,90 +156,42 @@
 <div class="section level2">
 <h2 id="building-documentation">Building Documentation<a class="anchor" aria-label="anchor" href="#building-documentation"></a></h2>
 <p><strong>Update just the .Rd files of documentation (roxygen2):</strong></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">document</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Build pkgdown site (which also updates the .Rd files of documentation):</strong></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="reference/pkgdown_update.html">pkgdown_update</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># see documentation of this function for details</span></span>
 <span></span>
 <span><span class="co">## or:</span></span>
-<span><span class="co"># pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)</span></span></code></pre></div>
-<p><strong>Important:</strong> Documentation is automatically built and deployed to GitHub Pages on pushes to main branch.</p>
+<span><span class="co"># See the existing github actions workflow(s) related to build/deploy or just deploying the pkgdown website.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="running-the-shiny-app">Running the Shiny App<a class="anchor" aria-label="anchor" href="#running-the-shiny-app"></a></h2>
-<p><strong>Locally in RStudio:</strong></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p><strong>Running the app locally in RStudio:</strong></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ejamapp.html">ejamapp</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Or with custom settings (as explained in `vignettes/dev-app-settings.Rmd`)</span></span>
+<span><span class="co"># Or with custom settings (as explained in `vignettes/dev-app-settings.Rmd`),</span></span>
+<span><span class="co"># especially the setting isPublic=TRUE that should be used for debugging or testing</span></span>
 <span><span class="fu"><a href="reference/ejamapp.html">ejamapp</a></span><span class="op">(</span>isPublic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>On a server once deployed:</strong></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p><strong>Running the app on a server once deployed:</strong></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># one option is this:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"app.R"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># another option is this:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ejamapp.html">ejamapp</a></span><span class="op">(</span>isPublic<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Live web app</strong> - The app has been hosted at the site pointed to by <a href="https://ejanalysis.com/ejamapp" class="external-link uri">https://ejanalysis.com/ejamapp</a> - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.</p>
+<p><strong>API: Example of live hosted EJAM API that is not the same as the API drafted in the plumber folder of this package</strong> - There is an EJAM API hosted at the site pointed to by <a href="https://ejanalysis.com/ejamapi" class="external-link uri">https://ejanalysis.com/ejamapi</a> and/or (if different) at <a href="https://ejamapi-84652557241.us-central1.run.app/" class="external-link uri">https://ejamapi-84652557241.us-central1.run.app/</a> - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release. - Also, the code for that API is at <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/EJAM-API</a></p>
 </div>
 <div class="section level2">
 <h2 id="github-actions--ci-workflows">GitHub Actions / CI Workflows<a class="anchor" aria-label="anchor" href="#github-actions--ci-workflows"></a></h2>
-<p>The notes below might need to be updated every time the github workflow actions have been updated via edits to the .yaml files in the .github/workflows folder.</p>
-<div class="section level3">
-<h3 id="on-pull-requests-to-main">On Pull Requests to main:<a class="anchor" aria-label="anchor" href="#on-pull-requests-to-main"></a></h3>
-<ol style="list-style-type: decimal"><li>
-<strong>R CMD check</strong> (<code>.github/workflows/check-standard.yaml</code>)
-<ul><li>Runs on: macOS-latest (release), windows-latest (release), ubuntu-latest (devel, release, oldrel-1)</li>
-<li>Builds package with: <code>--no-manual --compact-vignettes=gs+qpdf</code>
-</li>
-<li>
-<strong>Typical duration:</strong> 10-20 minutes per OS</li>
-<li>
-<strong>Common failures:</strong> Missing system dependencies, documentation errors</li>
-</ul></li>
-<li>
-<strong>lintr</strong> (<code>.github/workflows/lintr.yaml</code>)
-<ul><li>Runs on: ubuntu-latest</li>
-<li>continue-on-error: true (won’t fail builds)</li>
-<li>Uploads SARIF results to GitHub Security tab</li>
-</ul></li>
-<li>
-<strong>Test Installation - Comprehensive</strong> (<code>.github/workflows/test-ability-to-install-all-situations.yaml</code>)
-<ul><li>Tests matrix: ubuntu/windows/macOS × R 4.3/4.4/4.5/release × install methods (github)</li>
-<li>Verifies package installs and loads successfully</li>
-<li>
-<strong>Watch for:</strong> macOS-specific issues with fortran compiler on older R versions</li>
-</ul></li>
-<li>
-<strong>Test Shiny App Functionality</strong> (<code>.github/workflows/test-shiny-web-app-functionality.yaml</code>)
-<ul><li>Runs on: ubuntu-latest</li>
-<li>Tests FIPS and NAICS functionality via shinytest2</li>
-<li>Requires PhantomJS installation</li>
-<li>
-<strong>Typical duration:</strong> 5-15 minutes</li>
-<li>
-<strong>Watch for:</strong> Snapshot mismatches, timeout issues</li>
-</ul></li>
-</ol></div>
-<div class="section level3">
-<h3 id="on-pushes-to-main">On Pushes to main:<a class="anchor" aria-label="anchor" href="#on-pushes-to-main"></a></h3>
-<ol start="5" style="list-style-type: decimal"><li>
-<strong>pkgdown Documentation</strong> (<code>.github/workflows/pkgdown.yaml</code>)
-<ul><li>Builds and deploys documentation website to GitHub Pages</li>
-<li>Deployed to: <a href="https://public-environmental-data-partners.github.io/EJAM/" class="uri">https://public-environmental-data-partners.github.io/EJAM/</a>
-</li>
-</ul></li>
-</ol></div>
-<div class="section level3">
-<h3 id="on-pushes-to-development">On Pushes to development:<a class="anchor" aria-label="anchor" href="#on-pushes-to-development"></a></h3>
-<ol start="6" style="list-style-type: decimal"><li>
-<strong>Test Installation - Limited</strong> (<code>.github/workflows/test-ability-to-install-limited-cases.yaml</code>)
-<ul><li>Quick smoke test: ubuntu-latest + R 4.5 + github install method only</li>
-</ul></li>
-</ol></div>
-</div>
+<ul><li>Some of the github action workflows for this package might be disabled at any given time, because they are being debugged still or because they are time-consuming and non-essential, for example.</li>
+<li>See the main branch’s folder .github/workflows which has the .yaml files.</li>
+<li>See the repository to check which are currently enabled.</li>
+</ul></div>
 <div class="section level2">
 <h2 id="common-issues-and-workarounds">Common Issues and Workarounds<a class="anchor" aria-label="anchor" href="#common-issues-and-workarounds"></a></h2>
 <div class="section level3">
@@ -248,46 +199,56 @@
 <ol style="list-style-type: decimal"><li>
 <strong>Package attachment fails (.onAttach errors):</strong> Reinstall from source: <code>remotes::install_local(".", force = TRUE)</code> when new functions are referenced in global_defaults_package.R.</li>
 <li>
-<strong>Tests don’t reflect code changes:</strong> Tests use INSTALLED version. Always <code>remotes::install_local(".", force = TRUE)</code> before testing, or do unit testing via the utility function <code><a href="reference/test_ejam.html">test_ejam()</a></code> and see more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd</li>
+<strong>Tests don’t reflect code changes:</strong> Be sure to know whether tests use latest local source in the checked out branch versus the INSTALLED version which may be different. It is safest to always do <code>remotes::install_local(".", force = TRUE)</code> before testing, or do unit testing via the utility function <code><a href="reference/test_ejam.html">test_ejam()</a></code> and see more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd</li>
 <li>
 <strong>shinytest2 timeouts:</strong> App init might take 2+ minutes. Use <code>load_timeout=2e+06</code> in tests.</li>
 <li>
 <strong>“Cannot find file” in .onAttach():</strong> Ensure <code>inst/global_defaults_package.R</code> exists when using <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code>.</li>
 <li>
-<strong>Slow builds/tests:</strong> In <code>R/aaa_onAttach.R</code>, set <code>asap_download &lt;- asap_index &lt;- asap_bg &lt;- FALSE</code> when iterating.</li>
+<strong>Slow builds/tests:</strong> In <code>R/aaa_onAttach.R</code>, set <code>asap_download &lt;- asap_index &lt;- asap_bg &lt;- FALSE</code> when iterating. That might help somewhat.</li>
 <li>
 <strong>Ubuntu install fails:</strong> Install ALL system libraries above. Missing one causes cryptic errors.</li>
 <li>
 <strong>macOS jpeg errors:</strong> Set environment variables: <code>PATH, LDFLAGS, CPPFLAGS, PKG_CONFIG_PATH</code> for <code>/opt/homebrew/opt/jpeg</code>.</li>
+<li>
+<strong>Cannot find datasets normally loaded via dataload_dynamic() and related functions:</strong> See the vignettes/dev-update-datasets.Rmd about updating datasets where they explain where arrow and rda dataset files are stored.</li>
 </ol></div>
 </div>
 <div class="section level2">
 <h2 id="key-files">Key Files<a class="anchor" aria-label="anchor" href="#key-files"></a></h2>
-<p><strong>Root:</strong> <code>DESCRIPTION</code> (metadata), <code>NAMESPACE</code> (auto-gen), <code>app.R</code> (deployment entry), <code>Dockerfile</code>, <code>.Rbuildignore</code> <strong>R/:</strong> <code>app_ui.R</code>/<code>app_server.R</code> (main app, 136KB server), <code>aaa_onAttach.R</code> (init), <code>MODULE_*</code> (Shiny modules), <code>*_FUNCTIONS</code> (grouped functions) <strong>inst/:</strong> <code>global_defaults_package.R</code> &amp; <code>global_defaults_shiny.R</code> (settings), <code>golem-config.yml</code>, <code>plumber/</code> (API), <code>report/</code> (templates) <strong>tests/:</strong> <code>testthat.R</code> (runner), <code>app-functionality.R</code> (shinytest2 helpers), <code>testthat/test-*.R</code>, <code>_snaps/</code> (snapshots)</p>
+<p><strong>Root:</strong> <code>DESCRIPTION</code> (metadata), <code>NAMESPACE</code> (auto-gen), <code>app.R</code> (deployment entry), <code>Dockerfile</code>, <code>.Rbuildignore</code> <strong>R/:</strong> <code>app_ui.R</code>/<code>app_server.R</code> (key code for the web app), <code>aaa_onAttach.R</code> (init), <code>MODULE_*</code> (Shiny modules), <code>*_FUNCTIONS</code> (grouped functions) <strong>inst/:</strong> <code>global_defaults_package.R</code> &amp; <code>global_defaults_shiny.R</code> (settings), <code>golem-config.yml</code>, <code>plumber/</code> (API), <code>report/</code> (templates) <strong>tests/:</strong> <code>testthat/test-*.R</code>, <code>test_ejam.R</code> (utility for interactively running groups of unit tests), <code>setup.R</code>, <code>setup-shinytest2.R</code> (shinytest2 testing of webapp functionality)</p>
 </div>
 <div class="section level2">
 <h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a></h2>
-<p><strong>Golem Framework:</strong> Uses <code><a href="reference/app_ui.html">app_ui()</a></code>/<code><a href="reference/app_server.html">app_server()</a></code>, launched via <code><a href="reference/ejamapp.html">ejamapp()</a></code>. Config in <code>inst/golem-config.yml</code>. <strong>Data:</strong> - Some is lazy-loaded from data/ - Some is saved in the data folder upon package installation because some large data files must be downloaded from the ejamdata repository. This is explained in the file vignettes/dev-update-datasets.Rmd - Some is loaded via <code><a href="reference/dataload_dynamic.html">dataload_dynamic()</a></code> and some is in .arrow format instead of .rda format. <strong>Naming:</strong> - Closely-related R functions are often grouped within a single .R file in the R folder, especially if the filename includes the phrase “<em>FUNCTIONS” such as in ”PROXIMITY_FUNCTIONS.R” - Closely-related R functions often share a common prefix such as ”fips</em>” or “frs_” or “ejamit” or “ejam2” or “calc_” or “latlon” or “plot” or “table_” or “url_” or “shape” or “state_” or “popup_” or “get” - Some utilities are in .R files that start with “utils_” - All or almost all datasets should be documented in .R files that have a filename that starts with “data_” - Many datasets were created for the package using scripts in the data-raw folder, usually with a file whose name starts with “datacreate_” - Some other naming conventions are these: <code>aaa_</code> prefix = load first, <code>MODULE_</code> = Shiny modules, <code>_FUNCTIONS</code> = grouped functions. Don’t edit .Rd files (auto-generated).</p>
+<p><strong>Golem Framework:</strong> Uses <code><a href="reference/app_ui.html">app_ui()</a></code>/<code><a href="reference/app_server.html">app_server()</a></code>, best launched via <code><a href="reference/ejamapp.html">ejamapp()</a></code>. Config in <code>inst/golem-config.yml</code>. <strong>Data:</strong> - Some is lazy-loaded from data/ - Some is saved in the data folder upon package installation because some large data files must be downloaded from the ejamdata repository. This is explained in the file vignettes/dev-update-datasets.Rmd - Some is loaded via <code><a href="reference/dataload_dynamic.html">dataload_dynamic()</a></code> and some is obtained and used in .arrow format instead of .rda format in some parts of the app. <strong>Naming:</strong> - Closely-related R functions are often grouped within a single .R file in the R folder, especially if the filename includes the phrase “<em>FUNCTIONS” such as in ”PROXIMITY_FUNCTIONS.R” - Closely-related R functions often share a common prefix such as ”fips</em>” or “frs_” or “ejamit” or “ejam2” or “calc_” or “latlon” or “plot” or “table_” or “url_” or “shape” or “state_” or “popup_” or “get” - Some utilities are in .R files that start with “utils_” - All or almost all datasets should be documented in .R files that have a filename that starts with “data_” - Many datasets were created for the package using scripts in the data-raw folder, usually with a file whose name starts with “datacreate_” - Some other naming conventions are these: <code>aaa_</code> prefix = load first, <code>MODULE_</code> = Shiny modules, <code>_FUNCTIONS</code> = grouped functions. Don’t edit .Rd files (auto-generated).</p>
 </div>
 <div class="section level2">
 <h2 id="code-review-notes">Code Review Notes<a class="anchor" aria-label="anchor" href="#code-review-notes"></a></h2>
-<p><strong>When reviewing PRs, ignore:</strong> - Changes to NAMESPACE (auto-generated by roxygen2) - Changes to files in the man/ directory (auto-generated by roxygen2) - Changes to .Rd files (auto-generated documentation created by by roxygen2) - Changes to files in the docs/ folders (auto-generated pkgdown site) - Changes to files under the tests/testthat/_snaps/ folder (snapshots created by the shinytest2 package testing web app functionality)</p>
-<p><strong>Focus review on:</strong> - R/ source files, including the .R files in the R folder but also the .R files in the inst folder - Test files in the folders under tests/ - Vignettes that are .Rmd files in the vignettes/ folder - GitHub workflow changes - Configuration files (DESCRIPTION, golem-config.yml, global_defaults* , etc.)</p>
-<p><strong>Avoid commenting on:</strong> - Very minor issues, such as nitpicking - Minor code formatting issues</p>
+<p><strong>When reviewing PRs, completely ignore:</strong> - Changes to files in the docs/ folders (auto-generated pkgdown site)</p>
+<p><strong>Focus review on:</strong> - R/ source files, especially the .R files in the R folder - Configuration files (DESCRIPTION, golem-config.yml, global_defaults* , etc.) - Test files in the folders under tests/ - data-raw/ and subfolders, especially datacreate_*.R - Vignettes that are .Rmd files in the vignettes/ folder - inst/ and subfolders - GitHub workflow changes in .github/workflows</p>
+<p><strong>When reviewing PRs, mostly ignore or put a very low priority on reviewing these:</strong> - Changes to .Rd files in the man/ directory, and other files in the man/ directory (since they should be auto-generated by roxygen2) - Also low priority for review are <em>.js,</em>.json,*.html outside the docs folder. - Also low priority for review are files in the pkgdown folder</p>
+<p><strong>Avoid commenting on, unless asked to do a final check for any other issues after all the significant things have been reviewed:</strong> - Very minor issues that are nitpicking - Very minor issues that involve very rare or very unlikely cases - Very minor issues that are matters of preference - Non-critical issues related to code formatting</p>
 </div>
 <div class="section level2">
 <h2 id="package-version-management">Package Version Management<a class="anchor" aria-label="anchor" href="#package-version-management"></a></h2>
-<p>Version is tracked in multiple files and must be updated consistently: - <code>DESCRIPTION</code> (primary source) - <code>NEWS.md</code> (changelog) - <code>_pkgdown.yml</code> (documentation site) - <code>inst/golem-config.yml</code> - <code>CITATION.cff</code></p>
+<p>Version of package and versions of critical data sources like ACS are tracked in multiple files and must be updated consistently: - <code>DESCRIPTION</code> (primary source) - <code>NEWS.md</code> (changelog) - <code>_pkgdown.yml</code> (documentation site) - <code>inst/golem-config.yml</code> - <code>CITATION.cff</code></p>
 </div>
 <div class="section level2">
 <h2 id="additional-resources">Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"></a></h2>
-<p><strong>Documentation:</strong> See the DESCRIPTION file URL field for the github.io documentation URL. Also can be obtained via EJAM::url_package(“docs”, get_full_url = T) - Also, <a href="https://ejanalysis.com/docs" class="external-link uri">https://ejanalysis.com/docs</a> redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch. The more recent documentation is in roxygen2 tags within the .R files for a given branch, which are converted to .Rd files in the man folder (via document()), and eventually may be converted to .html files in the docs folder via pkgdown_update() <strong>Code Repository:</strong> See the DESCRIPTION file URL field for the github.com R package code URL. Also can be obtained via EJAM::url_package(“code”, get_full_url = T) <strong>Data Repository:</strong> See the DESCRIPTION file ejam_data_repo field for the github.com datasets URL. Also can be obtained via EJAM::url_package(“data”, get_full_url = T)</p>
+<p><strong>General context information about the EJAM package and EJAM web app and EJScreen, especially their uses, their ongoing development, and their key URLs:</strong> - See <a href="https://ejanalysis.com" class="external-link uri">https://ejanalysis.com</a> and <a href="https://ejanalysis.com/status" class="external-link uri">https://ejanalysis.com/status</a> for an initial, short, broad overview explaining what are EJSCREEN and EJAM, and status of their recent and ongoing development. - See <a href="https://screening-tools.com" class="external-link uri">https://screening-tools.com</a> for the recent history and broad context of this work and related efforts to preserve tools and data, and organizations involved in continued development. - See <a href="https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html" class="uri">https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html</a> for an article providing an overview of what the EJAM package and EJAM web app are. - See <a href="https://ejanalysis.com/ejam-code" class="external-link uri">https://ejanalysis.com/ejam-code</a> for key URLs for relevant repositories and documentation.</p>
+<p><strong>Documentation:</strong> See the DESCRIPTION file URL field for the github.io documentation URL. That URL also can be obtained via EJAM::url_package(“docs”, get_full_url = T) - Also, <a href="https://ejanalysis.com/docs" class="external-link uri">https://ejanalysis.com/docs</a> redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch. However, it is important to note that the most recent documentation for a given branch is in roxygen2 tags within the .R files in the given branch. Periodically those are converted to .Rd files in the man folder (via document()), and eventually may be converted to .html files in the docs folder via pkgdown_update()</p>
+<p><strong>Code Repository:</strong> See the DESCRIPTION file URL field for the github.com R package code URL. That URL also can be obtained via EJAM::url_package(“code”, get_full_url = T)</p>
+<p><strong>Data Repository:</strong> See the DESCRIPTION file ejam_data_repo field for the github.com datasets URL. That URL also can be obtained via EJAM::url_package(“data”, get_full_url = T) And note it might be useful to look at the live web app and/or the hosted API, both of which are mentioned above.</p>
 </div>
 <div class="section level2">
 <h2 id="trust-these-instructions">Trust These Instructions<a class="anchor" aria-label="anchor" href="#trust-these-instructions"></a></h2>
-<p>These instructions have been carefully validated except where they explicitly mention the latest updates or need for updates. Only search for additional information if: 1. These instructions are incomplete for your specific task - In that case, see additional resources mentioned above, or any of the .Rmd files in the vignettes folder. 2. You encounter an error not covered here - In that case, first try to resolve it using documentation of relevant R packages, and if that still is not sufficient to have a clear answer, then look for mentions of the error or problem and solutions to the issue as posted in key resources starting with sources such as stackexchange, stackoverflow, R-specific discussion groups, support for posit or shiny or other specific software that is clearly relevant to the problem. 3. You need details about a specific function’s implementation - In that case, see additional resources noted above for more documentation of specific functions or datasets.</p>
-<p>For most development tasks, following these instructions should allow you to work efficiently without extensive exploration.</p>
-</div>
+<p>These instructions have been carefully validated (at least as of May 1, 2026), except where they explicitly mention the latest updates or need for updates.</p>
+<p>For most development tasks, following these instructions should allow you to work efficiently without extensive exploration outside this package or repository.</p>
+<p>Only search for additional information if:</p>
+<ol style="list-style-type: decimal"><li>These instructions are incomplete for your specific task, or they are unlikely to be sufficient to provide a high-confidence, accurate, clear, complete answer - In that case, see additional resources mentioned above, including any of the .Rmd files in the vignettes folder.</li>
+<li>You encounter an error or question or issue or topic not covered by the resources and information here - In that case, first try to resolve it using your knowledge plus the documentation of relevant R packages, and if that is unlikely to be sufficient to provide a high-confidence, accurate, clear, complete answer, then look for mentions of the error or problem or topic and solutions to the issue as posted in key resources starting with sources such as Posit-specific and R-specific discussion groups, stackexchange, stackoverflow, other support pages for Posit or the R shiny package, and finally, if useful, look at information relevant to any other specific software that is clearly relevant to the problem or question or issue or topic.</li>
+<li>You need more details about a specific function’s implementation - In that case, see any additional resources noted above for more documentation of specific functions or datasets. If that is not sufficient, look where you think the information can be found from a highly reliable source.</li>
+</ol></div>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -295,11 +256,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.32.8.001</p>
 </div>
 
     </footer></div>

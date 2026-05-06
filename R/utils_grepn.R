@@ -4,7 +4,7 @@
 #' @param pattern passed to `gregexec()`
 #' @param x a vector of character strings
 #' @return vector of numbers
-#' @seealso [EJAM:::find_in_files()]
+#' @seealso [find_in_files()]
 #' @keywords internal
 #' @export
 #'

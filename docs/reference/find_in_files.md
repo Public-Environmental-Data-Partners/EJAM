@@ -82,4 +82,17 @@ EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
 EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
 EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
 EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
+
+## useful reminders of how to filter lines of code vs comments when using find_in_files()
+
+grepl_line_not_commented_out = "^[ ]*[^# ]+.*"  ## line starts with zero or more spaces followed by a non-space non-# character, so not commented out and not blank line, but may have a comment later in the line after code
+grepl_line_commented_out     = "^[ |#]*#.*"     ## line starts with (zero or more spaces and then) a hash mark
+grepl_line_may_have_comment  = "#.*"            ## line contains a hash mark somewhere, but that may be number sign within quoted text
+ grepl(grepl_line_may_have_comment,  " print('The # of people is 4.')")  ## TRUE even though there is no comment here
+ grepl(grepl_line_may_have_comment,  " # print('The number of people is 4.')") # a commented-out line
+ grepl(grepl_line_may_have_comment,  "   print('The number of people is 4.')   # a comment only after the code")
+
+EJAM:::find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
+EJAM:::find_in_files(paste0(grepl_line_commented_out,     "xxx"))
+EJAM:::find_in_files(paste0(grepl_line_may_have_comment,  "xxx"))
 ```

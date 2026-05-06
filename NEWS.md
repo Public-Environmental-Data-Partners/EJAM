@@ -2,7 +2,11 @@
 
 ## Updated Demographic Data from ACS
 
-- v2.5.0 provides 2020-2024 ACS demographic data
+- v2.5.0 provides 2020-2024 American Community Survey (ACS) demographic data
+
+- v2.32.*, used throughout 2025, used 2018-2022 ACS data (even though newer ACS 5-year survey data were available from Census Bureau).
+
+- Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
 
 - Created a data update pipeline with several stages
   to read (or calculate) tables of data
@@ -61,22 +65,18 @@
   state FIPS rather than state abbreviations.
 
 
-
 # EJAM 2.4.0 (May 2026)
 
 ## Updated Demographic Data from ACS
 
-- v2.4.0, this release, is just to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.
-- v2.32.*, used throughout 2025, used American Community Survey (ACS) 2018-2022 (even though newer ACS 5-year survey data were available from Census Bureau).
-- Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
-- Added functions that can update ACS-based demographic dataset each year: `calc_bgej()`, `calc_blockgroupstats_acs()`, `calc_blockgroupstats_from_tract_data()`, and related formulas and metadata such as in `formulas_ejscreen_acs`
+- A release tagged as v2.4.0 was a placeholder for a way to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.
 
 
-# Development branch after 2.32.8
+# EJAM 2.32.8.001 (May 2026) 
 
 Web app features:
 
-- Added PDF-format Community Report download option in the web app! Printing out the html report did not really work because of the page breaks, but the new pdf report has page breaks that make sense so a printed report looks good. Some features may be added later, such as heatmap color-coding in tables.
+- Added PDF-format Community Report download option in the web app! Printing out the html report did not really work because of the page breaks, but the new pdf report has page breaks that make sense so a printed report looks good. Heatmap color-coding in tables is also working in the pdf.
 
 Other changes:
 
