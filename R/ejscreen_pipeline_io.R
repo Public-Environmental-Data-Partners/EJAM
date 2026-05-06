@@ -26,6 +26,10 @@
 #' @param stage pipeline stage name.
 #' @param pipeline_dir folder for pipeline stage files.
 #' @param format file format: `"rds"`, `"rda"`, `"csv"`, or `"arrow"`.
+#' @param storage stage storage backend: `"auto"`, `"local"`, or `"s3"`.
+#'   `"auto"` treats `s3://...` pipeline directories or paths as S3 and
+#'   everything else as local file storage. S3 support uses the AWS CLI and does
+#'   not add an R package dependency.
 #' @param x object to save or object supplied directly as pipeline input.
 #' @param object_name object name to use inside `.rda` files.
 #' @param overwrite logical. If FALSE, refuse to overwrite an existing stage
@@ -53,6 +57,7 @@ ejscreen_pipeline_input <- function(x = NULL,
                                     path = NULL,
                                     format = NULL,
                                     object_name = NULL,
+                                    storage = c("auto", "local", "s3"),
                                     input_name = "input") {
   if (!is.null(x)) {
     return(x)
@@ -63,14 +68,89 @@ ejscreen_pipeline_input <- function(x = NULL,
       pipeline_dir = pipeline_dir,
       path = path,
       format = format,
-      object_name = object_name
+      object_name = object_name,
+      storage = storage
     ))
   }
   stop(input_name, " must be supplied as an object or as a saved pipeline stage")
 }
-###################################################### #
+################################################### #
 
 # helps read data from a file and returns the data itself
+# used by ejscreen_pipeline_input()
+
+#' @rdname ejscreen_pipeline_input
+#' @keywords internal
+#'
+ejscreen_pipeline_load <- function(stage = NULL,
+                                   pipeline_dir = NULL,
+                                   path = NULL,
+                                   format = NULL,
+                                   object_name = NULL,
+                                   storage = c("auto", "local", "s3"),
+                                   return_data_table = TRUE) {
+
+  # This reads a file and returns the data itself
+
+  storage <- ejscreen_pipeline_storage_backend(pipeline_dir, path, storage)
+  if (is.null(path)) {
+    if (is.null(format)) {
+      format <- "csv"
+    }
+    path <- ejscreen_pipeline_stage_path(stage, pipeline_dir, format)
+    if (storage == "local" &&
+        !file.exists(path) &&
+        identical(ejscreen_pipeline_stage_canonical(stage), "bg_acs_raw") &&
+        bg_acs_raw_folder_exists(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage))) {
+      return(load_bg_acs_raw_folder(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage)))
+    }
+  } else if (is.null(format)) {
+    format <- sub("^.*\\.([^.]+)$", "\\1", path)
+  }
+
+  load_path <- path
+  if (storage == "s3") {
+    if (!ejscreen_pipeline_is_s3_uri(path)) {
+      stop("S3 pipeline storage requires an s3:// stage path")
+    }
+    if (identical(ejscreen_pipeline_stage_canonical(stage), "bg_acs_raw") &&
+        bg_acs_raw_folder_exists(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage), storage = "s3")) {
+      return(load_bg_acs_raw_folder(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage), storage = "s3"))
+    }
+    load_path <- tempfile(fileext = paste0(".", format))
+    ejscreen_pipeline_s3_download(path, load_path)
+  }
+
+  if (!file.exists(load_path)) {
+    stop("Pipeline stage file not found: ", path)
+  }
+
+  if (format == "rds") {
+    return(readRDS(load_path))
+  }
+  if (format == "rda") {
+    env <- new.env(parent = emptyenv())
+    loaded <- load(load_path, envir = env)
+    if (is.null(object_name)) {
+      object_name <- loaded[1]
+    }
+    return(get(object_name, envir = env))
+  }
+  if (format == "csv") {
+    return(ejscreen_read_csv_table(load_path))
+  }
+  if (format == "arrow") {
+    if (!requireNamespace("arrow", quietly = TRUE)) {
+      stop("The arrow package is required to load pipeline stages in Arrow format")
+    }
+    return(arrow::read_ipc_file(file = load_path, as_data_frame = return_data_table))
+  }
+
+  stop("Unsupported pipeline stage format: ", format)
+}
+###################################################### #
+
+# helps read data from a csv file and returns the data itself
 # used by ejscreen_pipeline_load() etc.
 
 #' @rdname ejscreen_pipeline_input
@@ -91,65 +171,7 @@ ejscreen_read_csv_table <- function(path) {
   }
   data.table::fread(path)
 }
-################################################### #
-
-# helps read data from a file and returns the data itself
-# used by ejscreen_pipeline_input()
-
-#' @rdname ejscreen_pipeline_input
-#' @keywords internal
-#'
-ejscreen_pipeline_load <- function(stage = NULL,
-                                   pipeline_dir = NULL,
-                                   path = NULL,
-                                   format = NULL,
-                                   object_name = NULL,
-                                   return_data_table = TRUE) {
-
-  # This reads a file and returns the data itself
-
-  if (is.null(path)) {
-    if (is.null(format)) {
-      format <- "csv"
-    }
-    path <- ejscreen_pipeline_stage_path(stage, pipeline_dir, format)
-    if (!file.exists(path) &&
-        identical(ejscreen_pipeline_stage_canonical(stage), "bg_acs_raw") &&
-        bg_acs_raw_folder_exists(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage))) {
-      return(load_bg_acs_raw_folder(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage)))
-    }
-  } else if (is.null(format)) {
-    format <- sub("^.*\\.([^.]+)$", "\\1", path)
-  }
-
-  if (!file.exists(path)) {
-    stop("Pipeline stage file not found: ", path)
-  }
-
-  if (format == "rds") {
-    return(readRDS(path))
-  }
-  if (format == "rda") {
-    env <- new.env(parent = emptyenv())
-    loaded <- load(path, envir = env)
-    if (is.null(object_name)) {
-      object_name <- loaded[1]
-    }
-    return(get(object_name, envir = env))
-  }
-  if (format == "csv") {
-    return(ejscreen_read_csv_table(path))
-  }
-  if (format == "arrow") {
-    if (!requireNamespace("arrow", quietly = TRUE)) {
-      stop("The arrow package is required to load pipeline stages in Arrow format")
-    }
-    return(arrow::read_ipc_file(file = path, as_data_frame = return_data_table))
-  }
-
-  stop("Unsupported pipeline stage format: ", format)
-}
-################################################### #
+###################################################### #
 
 # write to file ####
 
@@ -165,32 +187,46 @@ ejscreen_pipeline_save <- function(x,
                                    object_name = stage,
                                    overwrite = TRUE,
                                    validate = TRUE,
-                                   validation_strict = TRUE) {
+                                   validation_strict = TRUE,
+                                   storage = c("auto", "local", "s3")) {
   format <- match.arg(format)
   path <- ejscreen_pipeline_stage_path(stage, pipeline_dir, format)
-  if (file.exists(path) && !overwrite) {
+  storage <- ejscreen_pipeline_storage_backend(pipeline_dir, path, storage)
+  if (storage == "local" && file.exists(path) && !overwrite) {
+    stop("Refusing to overwrite existing pipeline stage: ", path)
+  }
+  if (storage == "s3" && ejscreen_pipeline_s3_uri_exists(path) && !overwrite) {
     stop("Refusing to overwrite existing pipeline stage: ", path)
   }
   if (validate) {
     ejscreen_pipeline_validate(x, stage = stage, strict = validation_strict)
   }
-  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  save_path <- path
+  if (storage == "local") {
+    dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  } else {
+    save_path <- tempfile(fileext = paste0(".", format))
+  }
 
   if (format == "rds") {
-    saveRDS(x, file = path)
+    saveRDS(x, file = save_path)
   } else if (format == "rda") {
     env <- list2env(setNames(list(x), object_name), parent = emptyenv())
-    save(list = object_name, file = path, envir = env)
+    save(list = object_name, file = save_path, envir = env)
   } else if (format == "csv") {
     if (!is.data.frame(x)) {
       stop("CSV pipeline stages must be data.frame or data.table objects")
     }
-    data.table::fwrite(x, file = path)
+    data.table::fwrite(x, file = save_path)
   } else {
     if (!requireNamespace("arrow", quietly = TRUE)) {
       stop("The arrow package is required to save pipeline stages in Arrow format")
     }
-    arrow::write_ipc_file(x, sink = path)
+    arrow::write_ipc_file(x, sink = save_path)
+  }
+
+  if (storage == "s3") {
+    return(ejscreen_pipeline_s3_upload(save_path, path))
   }
 
   normalizePath(path, mustWork = FALSE)
@@ -299,15 +335,92 @@ ejscreen_pipeline_stage_path <- function(stage,
 #'
 ejscreen_pipeline_stage_exists <- function(stage,
                                            pipeline_dir,
-                                           format = "csv") {
+                                           format = "csv",
+                                           storage = c("auto", "local", "s3")) {
   if (missing(stage) || is.null(stage) || !nzchar(stage) ||
       missing(pipeline_dir) || is.null(pipeline_dir)) {
     return(FALSE)
   }
-  if (file.exists(ejscreen_pipeline_stage_path(stage, pipeline_dir, format))) {
+  path <- ejscreen_pipeline_stage_path(stage, pipeline_dir, format)
+  storage <- ejscreen_pipeline_storage_backend(pipeline_dir, path, storage)
+  if (storage == "s3") {
+    if (ejscreen_pipeline_s3_uri_exists(path)) {
+      return(TRUE)
+    }
+    return(identical(ejscreen_pipeline_stage_canonical(stage), "bg_acs_raw") &&
+             bg_acs_raw_folder_exists(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage), storage = "s3"))
+  }
+  if (file.exists(path)) {
     return(TRUE)
   }
   identical(ejscreen_pipeline_stage_canonical(stage), "bg_acs_raw") &&
     bg_acs_raw_folder_exists(pipeline_dir, stage = ejscreen_pipeline_stage_canonical(stage))
 }
 ################################################### #
+
+# check if AWS s3 or local folder storage ####
+
+ejscreen_pipeline_storage_backend <- function(pipeline_dir = NULL,
+                                              path = NULL,
+                                              storage = c("auto", "local", "s3")) {
+  storage <- match.arg(storage)
+  if (storage != "auto") {
+    return(storage)
+  }
+  if (ejscreen_pipeline_is_s3_uri(path) || ejscreen_pipeline_is_s3_uri(pipeline_dir)) {
+    return("s3")
+  }
+  "local"
+}
+###################################################### #
+
+###################################################### #
+# AWS s3 helpers ####
+###################################################### #
+
+ejscreen_pipeline_is_s3_uri <- function(x) {
+  is.character(x) && length(x) == 1L && grepl("^s3://", x)
+}
+###################################################### #
+ejscreen_pipeline_require_aws_cli <- function() {
+  aws <- Sys.which("aws")
+  if (!nzchar(aws)) {
+    stop(
+      "The AWS CLI is required for S3-backed pipeline stages. ",
+      "Install and configure `aws`, or use a local pipeline_dir.",
+      call. = FALSE
+    )
+  }
+  aws
+}
+###################################################### #
+ejscreen_pipeline_aws <- function(args, stdout = TRUE, stderr = TRUE) {
+  aws <- ejscreen_pipeline_require_aws_cli()
+  status <- system2(aws, args = args, stdout = stdout, stderr = stderr)
+  if (is.integer(status) && !identical(status, 0L)) {
+    stop("AWS CLI command failed: aws ", paste(args, collapse = " "), call. = FALSE)
+  }
+  status
+}
+###################################################### #
+ejscreen_pipeline_s3_download <- function(uri, local_path) {
+  dir.create(dirname(local_path), recursive = TRUE, showWarnings = FALSE)
+  ejscreen_pipeline_aws(c("s3", "cp", uri, local_path), stdout = FALSE, stderr = TRUE)
+  local_path
+}
+###################################################### #
+ejscreen_pipeline_s3_upload <- function(local_path, uri) {
+  ejscreen_pipeline_aws(c("s3", "cp", local_path, uri), stdout = FALSE, stderr = TRUE)
+  uri
+}
+###################################################### #
+ejscreen_pipeline_s3_uri_exists <- function(uri) {
+  aws <- Sys.which("aws")
+  if (!nzchar(aws)) {
+    return(FALSE)
+  }
+  out <- suppressWarnings(system2(aws, args = c("s3", "ls", uri), stdout = TRUE, stderr = TRUE))
+  status <- attr(out, "status")
+  is.null(status) && length(out) > 0
+}
+###################################################### #

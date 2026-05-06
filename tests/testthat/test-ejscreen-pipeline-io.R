@@ -28,6 +28,39 @@ test_that("pipeline input can use an object or a saved stage", {
   )
 })
 
+test_that("pipeline IO can use S3 URIs through temporary local stage files", {
+  x <- data.frame(a = 1:2, b = c("x", "y"))
+  uploaded <- NULL
+
+  testthat::local_mocked_bindings(
+    ejscreen_pipeline_s3_uri_exists = function(uri) identical(uri, "s3://bucket/ejam/sample_s3.csv"),
+    ejscreen_pipeline_s3_upload = function(local_path, uri) {
+      uploaded <<- data.table::fread(local_path)
+      uri
+    },
+    ejscreen_pipeline_s3_download = function(uri, local_path) {
+      data.table::fwrite(uploaded, local_path)
+      local_path
+    },
+    .package = "EJAM"
+  )
+
+  path <- EJAM:::ejscreen_pipeline_save(
+    x,
+    "sample_s3",
+    "s3://bucket/ejam",
+    format = "csv",
+    storage = "s3"
+  )
+
+  expect_equal(path, "s3://bucket/ejam/sample_s3.csv")
+  expect_true(EJAM:::ejscreen_pipeline_stage_exists("sample_s3", "s3://bucket/ejam", format = "csv"))
+  expect_equal(
+    as.data.frame(EJAM:::ejscreen_pipeline_load("sample_s3", "s3://bucket/ejam", format = "csv")),
+    x
+  )
+})
+
 test_that("pipeline stage names include preferred bg names and compatibility aliases", {
   stages <- EJAM:::ejscreen_pipeline_stage_names()
   expect_true(all(c("bg_acsdata", "bg_envirodata", "bgej", "bg_ejindexes", "ejscreen_export", "bg_ejscreen") %in% stages))
@@ -39,6 +72,15 @@ test_that("pipeline stage names include preferred bg names and compatibility ali
     basename(EJAM:::ejscreen_pipeline_stage_path("bg_ejscreen", tempdir(), format = "csv")),
     "ejscreen_export.csv"
   )
+})
+
+test_that("empty raw ACS folders are not treated as reusable stages", {
+  pipeline_dir <- file.path(tempdir(), "ejam-empty-raw-acs-folder-test")
+  dir.create(file.path(pipeline_dir, "bg_acs_raw", "blockgroup"), recursive = TRUE)
+  dir.create(file.path(pipeline_dir, "bg_acs_raw", "tract"), recursive = TRUE)
+
+  expect_false(EJAM:::bg_acs_raw_folder_exists(pipeline_dir))
+  expect_false(EJAM:::ejscreen_pipeline_stage_exists("bg_acs_raw", pipeline_dir, format = "csv"))
 })
 
 test_that("bg_envirodata stage validation requires pctpre1960", {

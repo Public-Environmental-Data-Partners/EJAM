@@ -11,6 +11,8 @@
 /data-raw/pipeline_outputs/
 # Generated annual data-update pipeline checkpoints can include many large CSV
 # files, such as raw ACS tables and derived blockgroupstats/bgej/usastats files.
+# If a checkpoint folder should be committed temporarily, force-add it so the
+# .gitattributes Git LFS rules apply.
 
 tests/testthat/_snaps/
 tests/testthat/_snaps/**/*.png

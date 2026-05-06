@@ -40,7 +40,11 @@
 #' @param bg_acsdata optional ACS-derived blockgroup table from
 #'   [calc_bg_acsdata()].
 #' @param blockgroupstats optional already-combined blockgroupstats-like table.
-#' @param pipeline_dir folder for reading/writing pipeline stage files.
+#' @param pipeline_dir folder or `s3://...` URI for reading/writing pipeline
+#'   stage files.
+#' @param pipeline_storage stage storage backend: `"auto"`, `"local"`, or
+#'   `"s3"`. `"auto"` uses S3 when `pipeline_dir` starts with `s3://` and local
+#'   file storage otherwise.
 #' @param save_stages logical, whether to save each stage as it is created.
 #' @param use_saved_stages logical, whether missing inputs may be read from
 #'   existing files in `pipeline_dir`.
@@ -82,6 +86,7 @@ calc_ejscreen_dataset <- function(yr,
                                   bg_acsdata = NULL,
                                   blockgroupstats = NULL,
                                   pipeline_dir = NULL,
+                                  pipeline_storage = c("auto", "local", "s3"),
                                   save_stages = FALSE,
                                   use_saved_stages = TRUE,
                                   stage_format = c("csv", "rds", "rda", "arrow"),
@@ -121,6 +126,7 @@ calc_ejscreen_dataset <- function(yr,
                                   demog_index_supp_state_var = "Demog.Index.Supp.State") {
   # validate parameters ####
   stage_format <- match.arg(stage_format)
+  pipeline_storage <- match.arg(pipeline_storage)
   raw_acs_storage <- match.arg(raw_acs_storage)
   raw_table_format <- match.arg(raw_table_format, c("rds", "rda", "csv", "arrow"))
 
@@ -136,10 +142,10 @@ calc_ejscreen_dataset <- function(yr,
   # define helpers ####
   saved_paths <- character()
   stage_exists <- function(stage) {
-    ejscreen_pipeline_stage_exists(stage, pipeline_dir, stage_format)
+    ejscreen_pipeline_stage_exists(stage, pipeline_dir, stage_format, storage = pipeline_storage)
   }
   load_stage <- function(stage) {
-    ejscreen_pipeline_load(stage = stage, pipeline_dir = pipeline_dir, format = stage_format)
+    ejscreen_pipeline_load(stage = stage, pipeline_dir = pipeline_dir, format = stage_format, storage = pipeline_storage)
   }
   save_stage <- function(x, stage, object_name = stage) {
     if (!isTRUE(save_stages)) {
@@ -152,7 +158,8 @@ calc_ejscreen_dataset <- function(yr,
       format = stage_format,
       object_name = object_name,
       overwrite = overwrite,
-      validation_strict = validation_strict
+      validation_strict = validation_strict,
+      storage = pipeline_storage
     )
     invisible(saved_paths[[stage]])
   }
@@ -166,7 +173,8 @@ calc_ejscreen_dataset <- function(yr,
         pipeline_dir = pipeline_dir,
         table_format = raw_table_format,
         overwrite = overwrite,
-        validation_strict = validation_strict
+        validation_strict = validation_strict,
+        storage = pipeline_storage
       )
     } else {
       saved_paths[["bg_acs_raw"]] <<- ejscreen_pipeline_save(
@@ -175,7 +183,8 @@ calc_ejscreen_dataset <- function(yr,
         pipeline_dir = pipeline_dir,
         format = stage_format,
         overwrite = overwrite,
-        validation_strict = validation_strict
+        validation_strict = validation_strict,
+        storage = pipeline_storage
       )
     }
     invisible(saved_paths[["bg_acs_raw"]])
@@ -236,7 +245,8 @@ calc_ejscreen_dataset <- function(yr,
               raw_acs_storage = raw_acs_storage,
               raw_table_format = raw_table_format,
               overwrite = overwrite,
-              validation_strict = validation_strict
+              validation_strict = validation_strict,
+              storage = pipeline_storage
             )
             if (isTRUE(save_stages)) {
               saved_path <- attr(bg_acs_raw, "saved_stage_path", exact = TRUE)
@@ -269,14 +279,12 @@ calc_ejscreen_dataset <- function(yr,
           dropMOE = dropMOE,
           acs_raw = bg_acs_raw,
           pipeline_dir = pipeline_dir,
-          save_stage = save_stages,
+          save_stage = FALSE,
           stage_format = stage_format,
           overwrite = overwrite,
           validation_strict = validation_strict
         )
-        if (isTRUE(save_stages)) {
-          saved_paths[["bg_acsdata"]] <- ejscreen_pipeline_stage_path("bg_acsdata", pipeline_dir, stage_format)
-        }
+        save_stage(bg_acsdata, "bg_acsdata")
       }
     } else {
       ejscreen_pipeline_validate(bg_acsdata, stage = "bg_acsdata", strict = validation_strict)
@@ -315,14 +323,12 @@ calc_ejscreen_dataset <- function(yr,
         reuse_existing_if_missing = reuse_existing_if_missing,
         existing_blockgroupstats = existing_blockgroupstats,
         pipeline_dir = pipeline_dir,
-        save_stage = save_stages,
+        save_stage = FALSE,
         stage_format = stage_format,
         overwrite = overwrite,
         validation_strict = validation_strict
       )
-      if (isTRUE(save_stages)) {
-        saved_paths[["bg_extra_indicators"]] <- ejscreen_pipeline_stage_path("bg_extra_indicators", pipeline_dir, stage_format)
-      }
+      save_stage(bg_extra_indicators, "bg_extra_indicators")
     } else {
       ejscreen_pipeline_validate(bg_extra_indicators, stage = "bg_extra_indicators", strict = validation_strict)
     }
@@ -433,6 +439,7 @@ calc_ejscreen_dataset <- function(yr,
   # ~ ----------------------------------------- ####
   ## set attributes & return list of tables ####
   attr(out, "pipeline_dir") <- pipeline_dir
+  attr(out, "pipeline_storage") <- ejscreen_pipeline_storage_backend(pipeline_dir, storage = pipeline_storage)
   attr(out, "stage_format") <- stage_format
   attr(out, "saved_stage_paths") <- saved_paths
   attr(out, "loaded_stages") <- c(

@@ -33,6 +33,8 @@
 #'   `raw_acs_storage = "folder"`.
 #' @param overwrite logical, whether to overwrite an existing saved stage.
 #' @param validation_strict logical passed to [ejscreen_pipeline_save()].
+#' @param storage raw ACS checkpoint storage backend: `"auto"`, `"local"`, or
+#'   `"s3"`.
 #'
 #' @return list with raw `blockgroup` and `tract` ACS table lists plus metadata.
 #'
@@ -50,10 +52,12 @@ download_bg_acs_raw <- function(yr,
                                 raw_acs_storage = c("folder", "object"),
                                 raw_table_format = stage_format,
                                 overwrite = TRUE,
-                                validation_strict = TRUE) {
+                                validation_strict = TRUE,
+                                storage = c("auto", "local", "s3")) {
   stage_format <- match.arg(stage_format)
   raw_acs_storage <- match.arg(raw_acs_storage)
   raw_table_format <- match.arg(raw_table_format, c("rds", "rda", "csv", "arrow"))
+  storage <- match.arg(storage)
 
   if (missing(yr)) {
     yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)
@@ -102,7 +106,8 @@ download_bg_acs_raw <- function(yr,
         pipeline_dir = pipeline_dir,
         table_format = raw_table_format,
         overwrite = overwrite,
-        validation_strict = validation_strict
+        validation_strict = validation_strict,
+        storage = storage
       )
     } else {
       saved_path <- ejscreen_pipeline_save(
@@ -111,7 +116,8 @@ download_bg_acs_raw <- function(yr,
         pipeline_dir = pipeline_dir,
         format = stage_format,
         overwrite = overwrite,
-        validation_strict = validation_strict
+        validation_strict = validation_strict,
+        storage = storage
       )
     }
     attr(out, "saved_stage_path") <- saved_path
@@ -146,13 +152,24 @@ bg_acs_raw_manifest_path <- function(pipeline_dir, stage = "bg_acs_raw") {
   file.path(bg_acs_raw_folder_path(pipeline_dir, stage), "manifest.rds")
 }
 
-bg_acs_raw_folder_exists <- function(pipeline_dir, stage = "bg_acs_raw") {
+bg_acs_raw_folder_exists <- function(pipeline_dir,
+                                     stage = "bg_acs_raw",
+                                     storage = c("auto", "local", "s3")) {
   raw_dir <- bg_acs_raw_folder_path(pipeline_dir, stage)
-  dir.exists(raw_dir) &&
-    (file.exists(file.path(raw_dir, "manifest.rds")) ||
-       file.exists(file.path(raw_dir, "manifest.csv")) ||
-       dir.exists(file.path(raw_dir, "blockgroup")) ||
-       dir.exists(file.path(raw_dir, "tract")))
+  storage <- ejscreen_pipeline_storage_backend(pipeline_dir, raw_dir, storage)
+  if (storage == "s3") {
+    aws <- Sys.which("aws")
+    if (!nzchar(aws)) {
+      return(FALSE)
+    }
+    out <- suppressWarnings(system2(aws, args = c("s3", "ls", paste0(raw_dir, "/"), "--recursive"), stdout = TRUE, stderr = TRUE))
+    status <- attr(out, "status")
+    if (!is.null(status) || length(out) == 0) {
+      return(FALSE)
+    }
+    return(any(grepl("\\.(rds|rda|csv|arrow)$", out, ignore.case = TRUE)))
+  }
+  dir.exists(raw_dir) && NROW(scan_bg_acs_raw_folder(raw_dir)) > 0
 }
 
 save_bg_acs_raw_folder <- function(acs_raw,
@@ -160,11 +177,31 @@ save_bg_acs_raw_folder <- function(acs_raw,
                                    stage = "bg_acs_raw",
                                    table_format = c("rds", "rda", "csv", "arrow"),
                                    overwrite = TRUE,
-                                   validation_strict = TRUE) {
+                                   validation_strict = TRUE,
+                                   storage = c("auto", "local", "s3")) {
   table_format <- match.arg(table_format)
+  storage <- ejscreen_pipeline_storage_backend(pipeline_dir, bg_acs_raw_folder_path(pipeline_dir, stage), storage)
   ejscreen_pipeline_validate(acs_raw, stage = stage, strict = validation_strict)
 
   raw_dir <- bg_acs_raw_folder_path(pipeline_dir, stage)
+  if (storage == "s3") {
+    if (bg_acs_raw_folder_exists(pipeline_dir, stage, storage = "s3") && !overwrite) {
+      stop("Refusing to overwrite existing raw ACS folder: ", raw_dir)
+    }
+    local_parent <- tempfile("bg_acs_raw_s3_")
+    local_dir <- save_bg_acs_raw_folder(
+      acs_raw,
+      pipeline_dir = local_parent,
+      stage = stage,
+      table_format = table_format,
+      overwrite = TRUE,
+      validation_strict = validation_strict,
+      storage = "local"
+    )
+    ejscreen_pipeline_aws(c("s3", "cp", local_dir, raw_dir, "--recursive"), stdout = FALSE, stderr = TRUE)
+    return(raw_dir)
+  }
+
   if (dir.exists(raw_dir)) {
     if (!overwrite) {
       stop("Refusing to overwrite existing raw ACS folder: ", raw_dir)
@@ -239,8 +276,21 @@ save_bg_acs_raw_folder <- function(acs_raw,
 
 load_bg_acs_raw_folder <- function(pipeline_dir,
                                    stage = "bg_acs_raw",
-                                   validation_strict = TRUE) {
+                                   validation_strict = TRUE,
+                                   storage = c("auto", "local", "s3")) {
   raw_dir <- bg_acs_raw_folder_path(pipeline_dir, stage)
+  storage <- ejscreen_pipeline_storage_backend(pipeline_dir, raw_dir, storage)
+  if (storage == "s3") {
+    if (!bg_acs_raw_folder_exists(pipeline_dir, stage, storage = "s3")) {
+      stop("Raw ACS folder not found: ", raw_dir)
+    }
+    local_parent <- tempfile("bg_acs_raw_s3_")
+    local_raw_dir <- bg_acs_raw_folder_path(local_parent, stage)
+    dir.create(local_raw_dir, recursive = TRUE, showWarnings = FALSE)
+    ejscreen_pipeline_aws(c("s3", "cp", raw_dir, local_raw_dir, "--recursive"), stdout = FALSE, stderr = TRUE)
+    return(load_bg_acs_raw_folder(local_parent, stage = stage, validation_strict = validation_strict, storage = "local"))
+  }
+
   if (!dir.exists(raw_dir)) {
     stop("Raw ACS folder not found: ", raw_dir)
   }

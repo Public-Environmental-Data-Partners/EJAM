@@ -12,6 +12,7 @@ calc_ejscreen_dataset(
   bg_acsdata = NULL,
   blockgroupstats = NULL,
   pipeline_dir = NULL,
+  pipeline_storage = c("auto", "local", "s3"),
   save_stages = FALSE,
   use_saved_stages = TRUE,
   stage_format = c("csv", "rds", "rda", "arrow"),
@@ -69,7 +70,12 @@ TRUE.}
 
 \item{blockgroupstats}{optional already-combined blockgroupstats-like table.}
 
-\item{pipeline_dir}{folder for reading/writing pipeline stage files.}
+\item{pipeline_dir}{folder or \verb{s3://...} URI for reading/writing pipeline
+stage files.}
+
+\item{pipeline_storage}{stage storage backend: \code{"auto"}, \code{"local"}, or
+\code{"s3"}. \code{"auto"} uses S3 when \code{pipeline_dir} starts with \verb{s3://} and local
+file storage otherwise.}
 
 \item{save_stages}{logical, whether to save each stage as it is created.}
 

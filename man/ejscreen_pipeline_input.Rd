@@ -2,8 +2,8 @@
 % Please edit documentation in R/ejscreen_pipeline_io.R
 \name{ejscreen_pipeline_input}
 \alias{ejscreen_pipeline_input}
-\alias{ejscreen_read_csv_table}
 \alias{ejscreen_pipeline_load}
+\alias{ejscreen_read_csv_table}
 \alias{ejscreen_pipeline_save}
 \alias{ejscreen_pipeline_stage_names}
 \alias{ejscreen_pipeline_stage_canonical}
@@ -19,10 +19,9 @@ ejscreen_pipeline_input(
   path = NULL,
   format = NULL,
   object_name = NULL,
+  storage = c("auto", "local", "s3"),
   input_name = "input"
 )
-
-ejscreen_read_csv_table(path)
 
 ejscreen_pipeline_load(
   stage = NULL,
@@ -30,8 +29,11 @@ ejscreen_pipeline_load(
   path = NULL,
   format = NULL,
   object_name = NULL,
+  storage = c("auto", "local", "s3"),
   return_data_table = TRUE
 )
+
+ejscreen_read_csv_table(path)
 
 ejscreen_pipeline_save(
   x,
@@ -41,7 +43,8 @@ ejscreen_pipeline_save(
   object_name = stage,
   overwrite = TRUE,
   validate = TRUE,
-  validation_strict = TRUE
+  validation_strict = TRUE,
+  storage = c("auto", "local", "s3")
 )
 
 ejscreen_pipeline_stage_names()
@@ -60,7 +63,12 @@ ejscreen_pipeline_stage_path(
   format = c("csv", "rds", "rda", "arrow")
 )
 
-ejscreen_pipeline_stage_exists(stage, pipeline_dir, format = "csv")
+ejscreen_pipeline_stage_exists(
+  stage,
+  pipeline_dir,
+  format = "csv",
+  storage = c("auto", "local", "s3")
+)
 }
 \arguments{
 \item{x}{object to save or object supplied directly as pipeline input.}
@@ -74,6 +82,11 @@ ejscreen_pipeline_stage_exists(stage, pipeline_dir, format = "csv")
 \item{format}{file format: \code{"rds"}, \code{"rda"}, \code{"csv"}, or \code{"arrow"}.}
 
 \item{object_name}{object name to use inside \code{.rda} files.}
+
+\item{storage}{stage storage backend: \code{"auto"}, \code{"local"}, or \code{"s3"}.
+\code{"auto"} treats \verb{s3://...} pipeline directories or paths as S3 and
+everything else as local file storage. S3 support uses the AWS CLI and does
+not add an R package dependency.}
 
 \item{input_name}{label used in error messages when an input is missing.}
 

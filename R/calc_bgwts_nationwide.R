@@ -28,17 +28,38 @@
 #'
 #' @noRd
 #'
-calc_bgwts_nationwide <- function(ST = EJAM::stateinfo$ST, year = 2020, key = NULL) {
+calc_bgwts_nationwide <- function(ST = EJAM::stateinfo$ST,
+                                  year = 2020,
+                                  key = NULL,
+                                  sumfile = "dhc",
+                                  retries = 3,
+                                  retry_wait = 5) {
 
   message("Now need to use Census API key in tidycensus::get_decennial() ")
   c2k <- list()
   for (i in 1:length(ST)) {
-    c2k[[i]] <- tidycensus::get_decennial(state = ST[i],
-                                          geography = "block group",
-                                          variables = 'P1_001N',
-                                          geometry = FALSE,
-                                          year = year,
-                                          key = key)
+    for (attempt in seq_len(retries)) {
+      result <- try(
+        tidycensus::get_decennial(state = ST[i],
+                                  geography = "block group",
+                                  variables = 'P1_001N',
+                                  geometry = FALSE,
+                                  year = year,
+                                  sumfile = sumfile,
+                                  key = key),
+        silent = TRUE
+      )
+      if (!inherits(result, "try-error")) {
+        c2k[[i]] <- result
+        break
+      }
+      if (attempt == retries) {
+        stop(result)
+      }
+      message("Retrying Census decennial block group request for ", ST[i],
+              " after failed attempt ", attempt, " of ", retries)
+      Sys.sleep(retry_wait * attempt)
+    }
   }
   c2k2 <- data.table::rbindlist(c2k)
   bgwts = c2k2[, .(bgfips = GEOID, pop = value)]

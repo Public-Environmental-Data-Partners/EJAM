@@ -332,6 +332,102 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 }
 ###################################################### #
 
+ejscreen_export_schema_report <- function(ejscreen_export = NULL,
+                                          export_path = NULL,
+                                          mapping_for_names = map_headernames,
+                                          rename_newtype = "ejscreen_names",
+                                          expected_output_names = NULL,
+                                          include_map_helper_fields = TRUE) {
+  if (is.null(ejscreen_export) && is.null(export_path)) {
+    stop("ejscreen_export or export_path must be supplied")
+  }
+  if (!is.null(ejscreen_export)) {
+    export_names <- names(ejscreen_export)
+  } else {
+    if (!file.exists(export_path)) {
+      stop("Export file not found: ", export_path)
+    }
+    export_names <- names(data.table::fread(export_path, nrows = 0))
+  }
+
+  mh <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  if (!rename_newtype %in% names(mh)) {
+    stop("rename_newtype is not a column in mapping_for_names: ", rename_newtype)
+  }
+
+  is_non_output_name <- function(x) {
+    x <- as.character(x)
+    is_blank_string(x) |
+      grepl("use for pctile|do not report|don.?t report", x, ignore.case = TRUE)
+  }
+
+  mapped_name <- mh[[rename_newtype]]
+  expected_from_mapping <- unique(mapped_name[!is_non_output_name(mapped_name)])
+  if (isTRUE(include_map_helper_fields)) {
+    pctile_fields <- unique(c(
+      expected_from_mapping[grepl("^P_", expected_from_mapping)],
+      export_names[grepl("^P_", export_names)]
+    ))
+    helper_rows <- mh[mh$ejscreen_pctile %in% pctile_fields, , drop = FALSE]
+    helper_fields <- unique(c(helper_rows$ejscreen_bin, helper_rows$ejscreen_text))
+    expected_from_mapping <- unique(c(
+      expected_from_mapping,
+      helper_fields[!is_non_output_name(helper_fields)]
+    ))
+  }
+  expected_names <- unique(c(expected_from_mapping, expected_output_names))
+  expected_names <- expected_names[!is_non_output_name(expected_names)]
+
+  report_names <- unique(c(expected_names, export_names))
+  export_position <- match(report_names, export_names)
+
+  collapse_unique <- function(x) {
+    x <- unique(as.character(x[!is_blank_string(x)]))
+    if (length(x) == 0) {
+      return("")
+    }
+    paste(x, collapse = "; ")
+  }
+
+  mapped_rnames <- vapply(report_names, function(name) {
+    collapse_unique(mh$rname[mapped_name == name])
+  }, character(1))
+  mapped_longnames <- if ("longname" %in% names(mh)) {
+    vapply(report_names, function(name) {
+      collapse_unique(mh$longname[mapped_name == name])
+    }, character(1))
+  } else {
+    rep("", length(report_names))
+  }
+
+  field_type <- ifelse(report_names == "ID", "id",
+                       ifelse(grepl("^P_", report_names), "percentile",
+                              ifelse(grepl("^S_P_", report_names), "state_percentile",
+                                     ifelse(grepl("^B_", report_names), "map_bin",
+                                            ifelse(grepl("^T_", report_names), "map_text",
+                                                   ifelse(grepl("^(D2_|D5_|S_D2_|S_D5_)", report_names),
+                                                          "ej_index", "field"))))))
+
+  out <- data.frame(
+    ejscreen_name = report_names,
+    present_in_export = report_names %in% export_names,
+    expected_from_mapping = report_names %in% expected_names,
+    export_position = export_position,
+    field_type = field_type,
+    rname = mapped_rnames,
+    longname = mapped_longnames,
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+  out$status <- ifelse(
+    out$present_in_export & out$expected_from_mapping,
+    "present_expected",
+    ifelse(out$present_in_export, "present_extra", "missing_expected")
+  )
+  out[order(is.na(out$export_position), out$export_position, out$ejscreen_name), ]
+}
+###################################################### #
+
 #' Add EJSCREEN map helper fields
 #'
 #' @details EJSCREEN app datasets include map helper fields that EJAM does not

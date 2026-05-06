@@ -37,7 +37,9 @@
   checkpoints are easier to inspect, replace, and rerun outside R. The raw ACS
   checkpoint uses a folder-plus-manifest layout with one file per ACS table,
   which makes it easier to add supplemental ACS-like tables before the next
-  stage runs.
+  stage runs. Pipeline storage can use a local folder now and `s3://...` AWS S3
+  paths later, with Git LFS rules in place if a checkpoint folder needs to be
+  force-added to the repository temporarily.
 
 - Added `bg_envirodata` and `bg_extra_indicators` as explicit pipeline inputs.
   This makes it clear which columns come from ACS, which come from environmental
@@ -54,7 +56,8 @@
   adding EJScreen EJ-index percentile fields such as `P_D2_...` and `P_D5_...`
   from the saved EJ-index lookup tables. It then creates map helper fields such
   as `B_...` map bins and `T_...` percentile popup text. The `ejscreen_export`
-  stage validates the `ID` key and map helper fields before saving.
+  stage validates the `ID` key and map helper fields before saving, and the
+  pipeline runner writes an export schema report for review.
 
 - Updated `map_headernames` naming support so EJAM names, current EJScreen
   export/app names, old EJScreen FTP names, and old EJScreen API names can be

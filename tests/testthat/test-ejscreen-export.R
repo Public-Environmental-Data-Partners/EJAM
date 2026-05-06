@@ -125,6 +125,36 @@ test_that("calc_ejscreen_export default output drops non-reporting placeholder n
   expect_equal(out$KEEP, 1)
 })
 
+test_that("ejscreen_export_schema_report flags missing and extra fields", {
+  export <- data.frame(
+    ID = "100010001001",
+    D2_PM25 = 1,
+    P_D2_PM25 = 50,
+    B_D2_PM25 = 6L,
+    EXTRA_FIELD = 9,
+    check.names = FALSE
+  )
+  mapping <- data.frame(
+    rname = c("bgfips", "EJ.DISPARITY.pm.eo", "pctile.EJ.DISPARITY.pm.eo"),
+    ejscreen_names = c("ID", "D2_PM25", "P_D2_PM25"),
+    ejscreen_pctile = c("", "P_D2_PM25", "P_D2_PM25"),
+    ejscreen_bin = c("", "B_D2_PM25", "B_D2_PM25"),
+    ejscreen_text = c("", "T_D2_PM25", "T_D2_PM25"),
+    longname = c("Block group FIPS", "PM2.5 EJ index", "PM2.5 EJ index percentile"),
+    stringsAsFactors = FALSE
+  )
+
+  report <- ejscreen_export_schema_report(
+    ejscreen_export = export,
+    mapping_for_names = mapping
+  )
+
+  expect_equal(report$status[report$ejscreen_name == "EXTRA_FIELD"], "present_extra")
+  expect_equal(report$status[report$ejscreen_name == "T_D2_PM25"], "missing_expected")
+  expect_equal(report$field_type[report$ejscreen_name == "B_D2_PM25"], "map_bin")
+  expect_true(report$present_in_export[report$ejscreen_name == "ID"])
+})
+
 test_that("EJSCREEN map helper fields use historical bins and current text", {
   expect_equal(
     calc_ejscreen_map_bin(c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101)),

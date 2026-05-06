@@ -16,7 +16,8 @@ download_bg_acs_raw(
   raw_acs_storage = c("folder", "object"),
   raw_table_format = stage_format,
   overwrite = TRUE,
-  validation_strict = TRUE
+  validation_strict = TRUE,
+  storage = c("auto", "local", "s3")
 )
 }
 \arguments{
@@ -49,6 +50,9 @@ single \code{bg_acs_raw} list object.}
 \item{overwrite}{logical, whether to overwrite an existing saved stage.}
 
 \item{validation_strict}{logical passed to \code{\link[=ejscreen_pipeline_save]{ejscreen_pipeline_save()}}.}
+
+\item{storage}{raw ACS checkpoint storage backend: \code{"auto"}, \code{"local"}, or
+\code{"s3"}.}
 }
 \value{
 list with raw \code{blockgroup} and \code{tract} ACS table lists plus metadata.
