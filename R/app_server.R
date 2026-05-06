@@ -2625,6 +2625,7 @@ app_server <- function(input, output, session) {
           pagedown::chrome_print(
             input = html_path,
             output = file,
+            options = list(printBackground = TRUE),
             wait = 5, timeout = 120, verbose = 0)
         }, error = function(e) {
           showModal(modalDialog(
@@ -2694,6 +2695,10 @@ app_server <- function(input, output, session) {
   ###############  #
   ### observe 1-site-report buttons ####
   # (1 button per site in the table of sites, to see report or barplot for that site)
+  #
+  # NOTE: This code was written but is not used if the app obtains these reports via API.
+  # Rendering here is probably faster and supports more parameters / features than API,
+  # while using the API for 1-site reports in the app is simpler.
 
   cur_button <- reactiveVal(NULL)
   temp_file_path <- reactiveVal(NULL)
@@ -2735,7 +2740,7 @@ app_server <- function(input, output, session) {
 
           ejam2report(
 
-            fileextension = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html'),
+            fileextension = fileextension,
             filename = temp_file,
             ejamitout = data_processed(),
             sitenumber = sitenumber,
