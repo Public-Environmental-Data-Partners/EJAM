@@ -500,15 +500,19 @@
     background-color: rgba(76, 76, 76, 0.02) !important;
   }
 
-  .color-alt-table td[style*="yellow"] {
+  /* Heatmap color overrides: must outrank the nth-child alternating-row rules above.
+     Both rule sets use !important, so specificity decides the winner.
+     The nth-child rules are (0,2,3); adding "tbody tr" here lifts these to (0,2,3)
+     as well, and since they appear later in the stylesheet they win by source order. */
+  .color-alt-table tbody tr td[style*="yellow"] {
     background-color: #fff101 !important;
   }
 
-  .color-alt-table td[style*="orange"] {
+  .color-alt-table tbody tr td[style*="orange"] {
     background-color: #faba59 !important;
   }
 
-  .color-alt-table td[style*="red"] {
+  .color-alt-table tbody tr td[style*="red"] {
     background-color: #f2938c !important;
   }
 
