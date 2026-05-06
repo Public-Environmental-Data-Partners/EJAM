@@ -1,9 +1,11 @@
+################################################## #
+# helper
 
 ensure_pandoc_available_for_ejam <- function() {
+
   if (rmarkdown::pandoc_available()) {
     return(invisible(TRUE))
   }
-
   candidate_pandoc_paths <- c(
     file.path(Sys.getenv("RSTUDIO_PANDOC", unset = ""), "pandoc"),
     Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/pandoc"),
@@ -11,15 +13,58 @@ ensure_pandoc_available_for_ejam <- function() {
   )
   candidate_pandoc_paths <- unique(candidate_pandoc_paths[nzchar(candidate_pandoc_paths)])
   candidate_pandoc_paths <- candidate_pandoc_paths[file.exists(candidate_pandoc_paths)]
-
   if (length(candidate_pandoc_paths) > 0) {
     Sys.setenv(RSTUDIO_PANDOC = dirname(candidate_pandoc_paths[[1]]))
     rmarkdown::find_pandoc(cache = FALSE)
   }
-
   invisible(rmarkdown::pandoc_available())
 }
-################################################## #  ################################################## #
+################################################## #
+# helper
+
+pagedown_report_package_available <- function() {
+  requireNamespace("pagedown", quietly = TRUE)
+}
+################################################## #
+# helper
+
+pdf_report_status <- function() {
+
+  if (!pagedown_report_package_available()) {
+    return(list(
+      ok = FALSE,
+      reason = "The 'pagedown' package is required to generate PDF reports."
+    ))
+  }
+  chrome <- tryCatch(
+    pagedown::find_chrome(),
+    error = function(e) ""
+  )
+  if (length(chrome) == 0 || is.na(chrome[[1]]) || !nzchar(chrome[[1]])) {
+    return(list(
+      ok = FALSE,
+      reason = "Chrome or Chromium is required to generate PDF reports."
+    ))
+  }
+  list(ok = TRUE, reason = NULL, chrome = chrome[[1]])
+}
+################################################## #
+# helper
+
+assert_pdf_report_available <- function() {
+
+  status <- pdf_report_status()
+  if (!isTRUE(status$ok)) {
+    msg <- paste0(
+      status$reason,
+      " Install pagedown and make Chrome/Chromium available to use PDF output."
+    )
+    stop(msg, call. = FALSE)
+  }
+  invisible(TRUE)
+}
+################################################## #
+
 
 #' View HTML Report on EJAM Results (Overall or at 1 Site)
 #'
@@ -66,8 +111,12 @@ ensure_pandoc_available_for_ejam <- function() {
 #'   they are not in ejamitout
 #' @param launch_browser set TRUE to have it launch browser and show report.
 #' @param return_html set TRUE to have function return HTML object instead of URL of local file
-#' @param fileextension html or .html or pdf or .pdf (assuming pdf option has been implemented).
-#'   Creating PDF output from R Markdown requires that LaTeX be installed.
+#' @param fileextension html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+#'   PDF generation uses [pagedown::chrome_print()] which requires the `pagedown` package and a
+#'   Chrome/Chromium browser to be available on the system.
+#'   The PDF preserves the full HTML/CSS styling and supports smart page breaks.
+#'   If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
+#'   PDF output is required when this option is selected; it is not optional.
 #' @param filename optional path and name for report file, used by web app
 #' @param show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in main table of envt/demog. info.
 #' @param extratable_show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in extra table
@@ -108,7 +157,7 @@ ensure_pandoc_available_for_ejam <- function() {
 #'
 ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         sitenumber = NULL,
-                        logo_path = EJAM:::global_or_param("report_logo"),
+                        logo_path = NULL,
                         logo_html = NULL, # defined downstream
                         report_title = NULL, # EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
                         analysis_title = NULL, # EJAM:::global_or_param("default_standard_analysis_title")
@@ -295,8 +344,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # HEADER  ####
 
     ## > logo_path ####
-    if (is.null(logo_path)) {
-      logo_path <- EJAM:::global_or_param("report_logo")
+    if (missing(logo_path) || is.null(logo_path)) {
+      logo_path <- NULL
     }
 
     ## > population count formatted ####
@@ -469,14 +518,85 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     } else {
       ## render & return filepath ####
-      rmarkdown::render(
-        input = rmd_template,
-        output_format = ifelse(fileextension == ".pdf", "pdf_document", "html_document"), # add pdf option here
-        output_file = output_file,
-        params = report_params,
-        envir = new.env(parent = globalenv()),
-        quiet = TRUE
-      )
+      if (fileextension == ".pdf") {
+        ## For PDF: check dependencies first, then render HTML, then convert to PDF ####
+        assert_pdf_report_available()
+
+        # For PDF: convert interactive leaflet map to a static PNG so it renders
+        # reliably in headless Chrome instead of depending on tile loading and JS timing.
+        map_widget_html  <- NULL
+        map_widget_files <- NULL
+        map_png          <- NULL
+        on.exit({
+          if (!is.null(map_widget_html)) unlink(map_widget_html)
+          if (!is.null(map_widget_files)) unlink(map_widget_files, recursive = TRUE)
+          if (!is.null(map_png)) unlink(map_png)
+        }, add = TRUE)
+        if (!is.null(report_params$map) &&
+            !anyNA(report_params$map) &&
+            length(report_params$map) > 0) {
+          map_png_path <- tryCatch({
+            map_widget_html  <- tempfile(fileext = ".html")
+            map_widget_files <- sub("\\.html$", "_files", map_widget_html)
+            map_png          <- tempfile(fileext = ".png")
+            htmlwidgets::saveWidget(report_params$map, file = map_widget_html,
+                                    selfcontained = TRUE)
+            webshot2::webshot(map_widget_html, file = map_png,
+                              delay = 4, vwidth = 900, vheight = 500)
+            if (file.exists(map_png)) map_png else NULL
+          }, error = function(e) {
+            message("Could not capture static map snapshot for PDF: ",
+                    conditionMessage(e))
+            NULL
+          })
+          if (!is.null(map_png_path)) {
+            report_params$map_png_path <- map_png_path
+            # Remove the interactive widget so knitr does not also render it into the
+            # intermediate HTML that chrome_print() will convert — the PNG is all we need.
+            report_params$map <- NULL
+          }
+        }
+
+        # render HTML to temp file, capturing the actual output path returned by render()
+        html_temp <- tempfile(fileext = ".html")
+        on.exit(unlink(html_temp), add = TRUE)
+
+        rendered_path <- rmarkdown::render(
+          input = rmd_template,
+          output_format = "html_document",
+          output_file = html_temp,
+          params = report_params,
+          envir = new.env(parent = globalenv()),
+          quiet = TRUE
+        )
+        # convert to PDF using pagedown::chrome_print()
+        # This preserves the full CSS styling unlike a LaTeX-based pdf_document
+
+        tryCatch(
+          pagedown::chrome_print(
+            input = rendered_path,
+            output = output_file,
+            options = list(printBackground = TRUE),
+            wait = 5, timeout = 120, verbose = 0),
+          error = function(e) {
+            stop(paste0("chrome_print failed: ", conditionMessage(e)), call. = FALSE)
+          }
+        )
+
+        if (!file.exists(output_file)) {
+          msg <- paste0("PDF report was not created: ", output_file)
+          stop(msg, call. = FALSE)
+        }
+      } else {
+        rmarkdown::render(
+          input = rmd_template,
+          output_format = "html_document",
+          output_file = output_file,
+          params = report_params,
+          envir = new.env(parent = globalenv()),
+          quiet = TRUE
+        )
+      }
       suppressWarnings({
         output_file <- normalizePath(output_file) # allows it to work on MacOS, e.g.
       })
@@ -502,8 +622,17 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     #browseURL(temp_comm_report)
 
   } else {
-    rstudioapi::showDialog(title = 'Report not available',
-                           'Individual site reports not yet available.')
+    msg <- 'Individual site reports not yet available for this site (valid = FALSE).'
+    if (shiny::isRunning()) {
+      shiny::showModal(shiny::modalDialog(
+        title = 'Report not available',
+        msg,
+        easyClose = TRUE
+      ))
+    } else {
+      message(msg)
+
+    }
     return(NA)
   }
 }

@@ -552,6 +552,13 @@ app_ui <- function(request) {
                                ############################## #
                                ###              > DOWNLOAD BUTTON    ####
                                tags$div(
+                                 radioButtons(
+                                   inputId = "format_report_multisite",
+                                   label   = "Download format:",
+                                   choices = c("HTML" = "html", "PDF" = "pdf"),
+                                   selected = "html",
+                                   inline   = TRUE
+                                 ),
                                  downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
                                )
                              ),  # end report tab
@@ -1301,7 +1308,7 @@ app_ui <- function(request) {
                  ## _radio button on format of short report
                  #                  was DISABLED while PDF KNITTING DEBUGGED
                  radioButtons(inputId = "format1pager", "Format",
-                              choices = c(html = "html", pdf_not_available_yet = "html"),  # "pdf"),
+                              choices = c(html = "html", pdf = "pdf"),
                               inline = TRUE),
 
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),

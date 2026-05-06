@@ -67,6 +67,19 @@ app_logo <- "www/favicon.png"  # (small wordless hex)
 ## see .onAttach() code trying to find paths before the pkg is installed or even attached.
 
 report_logo <- system.file('report/community_report/ejamhex4.png', package = "EJAM")
+if (!nzchar(report_logo) || !file.exists(report_logo)) {
+  package_root <- system.file(package = "EJAM")
+  possible_logos <- c(
+    file.path(package_root, "report/community_report/ejamhex4.png"),
+    file.path(dirname(package_root), "inst/report/community_report/ejamhex4.png"),
+    file.path("inst/report/community_report/ejamhex4.png")
+  )
+  possible_logos <- possible_logos[nzchar(possible_logos) & file.exists(possible_logos)]
+  if (length(possible_logos) > 0) {
+    report_logo <- possible_logos[[1]]
+  }
+  rm(package_root, possible_logos)
+}
 
 # notloaded_and_notinstalled <- inherits(try( find.package("EJAM") , silent = TRUE), "try-error")
 # if (notloaded_and_notinstalled) {

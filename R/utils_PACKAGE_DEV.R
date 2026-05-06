@@ -101,6 +101,166 @@
 ##################################################################################### #
 # . ####
 
+## package version number ####
+
+#' utility to get "Version" of package, from source or installed version
+#'
+#' @param local_source_only if FALSE (default), look at installed package.
+#'  If TRUE, only check for DESCRIPTION file in working directory, and
+#'  do not check for installed version (or version loaded by load_all() ).
+#' @param package name of package to check, default is "EJAM"
+#' @param short if TRUE, tries to return a shorter version of the info.
+#' @examples x <- pkg_ver()
+#' @returns desc as.character() of the specified field, or NULL if not found
+#' @details
+#' EJAM:::pkg_ver() is very similar to [golem::pkg_version()]
+#'
+#' By default (if local_source_only=F) looks at installed version
+#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#'
+#' @keywords internal
+#' @noRd
+#'
+pkg_ver = function(short = FALSE, local_source_only = FALSE, package="EJAM") {
+
+  pv = pkg_description(field = "Version", local_source_only = local_source_only, package = package)
+
+  ## trim version number to Major.Minor ???
+  if (short) {
+    pv <- substr(pv, start = 1, stop = gregexpr('\\.', pv)[[1]][2] - 1)
+  }
+
+  return(pv)
+
+  # Note
+  ## There are many ways to check the version number of a package
+  #
+  ## Note the installed and source version numbers may differ during development.
+  ## Also note using load_all() might change which versions some of these approaches report on.
+  #
+  ## The installed version   (or version loaded from local source by load_all() if that is done)
+  #
+  # as.character(desc::desc(package = "EJAM")$get("Version"))
+  # as.character(utils::packageVersion("EJAM"))
+  # as.character(EJAM:::description_file$get("Version")) # description_file is created by metadata_mapping.R
+  # as.character(EJAM:::metadata_mapping$blockgroupstats[['ejam_package_version']])
+  # as.character(EJAM:::global_or_param("app_version")) # only available after package is attached, and relies on EJAM:::description_file$get("Version")
+  #
+  # ## The local source version:   (these read the local source version number)
+  # #
+  # as.character(desc::desc(file = "DESCRIPTION")$get("Version"))
+  # as.character(desc::desc_get("Version"))
+  # golem::pkg_version()
+
+}
+# ######################################################## #
+
+## package DESCRIPTION ####
+
+#' utility to get DESCRIPTION file from source or installed version, or check a field like "Version"
+#'
+#' @param field  If field parameter is NULL, return description file as desc package object.
+#' Assuming field is the name of a field in DESCRIPTION, such as "Version", return value of that field
+#' but does not validate that field.
+#'
+#' @param local_source_only if FALSE (default), look at installed package.
+#'  If TRUE, only check for DESCRIPTION file in working directory, and
+#'  do not check for installed version (or version loaded by load_all() ).
+#' @param package name of package to check, default is "EJAM"
+#' @examples x <- pkg_description()
+#' @returns desc package object that is from DESCRIPTION file,
+#'   or just the specified field, or NULL if not found
+#' @details
+#' By default (if local_source_only=F) looks at installed version
+#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#'
+#' @keywords internal
+#' @noRd
+#'
+pkg_description <- function(field = NULL, local_source_only = FALSE, package="EJAM") {
+
+  if (local_source_only) {
+
+    # 1) check in working directory for current local source version
+    #  (not necessarily the same as the version installed, or the one loaded)
+
+    desc <- try(desc::desc(file = "DESCRIPTION"), silent = TRUE)
+
+    if (!inherits(desc, 'try-error')) {
+      message("found local source version")
+      if (is.null(field)) {
+        return(desc)
+      } else {
+        out <- desc$get(field)
+        out <- as.character(out)
+        if (all(is.na(out))) {
+          return(NULL)
+        } else {
+          return(out)
+        }
+      }
+    } else {
+      warning('cannot find DESCRIPTION file in working directory')
+      return(NULL)
+    }
+  }
+
+  # 2) if local DESCRIPTION not requested, this then checks for an INSTALLED version (or version loaded via load_all()  )
+
+  desc <- try(desc::desc(package = package), silent = TRUE)
+
+  if (!inherits(desc, 'try-error')) {
+    # message("found installed version")
+    if (is.null(field)) {
+      return(desc)
+    } else {
+      out <- desc$get(field)
+      out <- as.character(out)
+      if (all(is.na(out))) {
+        return(NULL)
+      } else {
+        return(out)
+      }
+    }
+  }
+
+  # 3) if still not found, maybe try another way to check for INSTALLED version (or version loaded via load_all() )
+
+  desc <- try(desc::desc(file = system.file('DESCRIPTION', package = package)), silent = TRUE)
+
+  if (!inherits(desc, 'try-error')) {
+    # message("found installed version")
+    if (is.null(field)) {
+      return(desc)
+    } else {
+      out <- desc$get(field)
+      out <- as.character(out)
+      if (all(is.na(out))) {
+        return(NULL)
+      } else {
+        return(out)
+      }
+    }
+  }
+
+  # 4) if still not found, give up
+
+  if (inherits(desc, 'try-error')) {
+    warning('cannot find DESCRIPTION file in working directory or in ', package, ' package')
+    return(NULL)
+  }
+
+}
+# ###################################################### #
+
+
+# ###################################################### #
+#   ##    To see if it is loaded:  getNamespaceInfo("EJAM", "path")
+#   ##    To see if it is on the search() path, attached:  attr(as.environment("package:EJAM"), "path")
+# ###################################################### #
+
+##################################################################################### #
+
 ## package directory ####
 
 pkg_dir_installed = function(pkg="EJAM") {find.package(pkg, lib.loc = .libPaths())}
@@ -180,6 +340,18 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
 #' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
 #'
+#' ## useful reminders of how to filter lines of code vs comments when using find_in_files()
+#'
+#' grepl_line_not_commented_out = "^[ ]*[^# ]+.*"  ## line starts with zero or more spaces followed by a non-space non-# character, so not commented out and not blank line, but may have a comment later in the line after code
+#' grepl_line_commented_out     = "^[ |#]*#.*"     ## line starts with (zero or more spaces and then) a hash mark
+#' grepl_line_may_have_comment  = "#.*"            ## line contains a hash mark somewhere, but that may be number sign within quoted text
+#'  grepl(grepl_line_may_have_comment,  " print('The # of people is 4.')")  ## TRUE even though there is no comment here
+#'  grepl(grepl_line_may_have_comment,  " # print('The number of people is 4.')") # a commented-out line
+#'  grepl(grepl_line_may_have_comment,  "   print('The number of people is 4.')   # a comment only after the code")
+#'
+#' EJAM:::find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
+#' EJAM:::find_in_files(paste0(grepl_line_commented_out,     "xxx"))
+#' EJAM:::find_in_files(paste0(grepl_line_may_have_comment,  "xxx"))
 #'
 #' @return a list of named vectors,
 #'   where names are file paths with hits, elements are vectors of text with hits.
@@ -206,6 +378,15 @@ find_in_files <- function(pattern,
   #
   # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_m', whole_line = T)
   # find_in_files(pattern =  "#' @return" , path = './R', filename_pattern = 'frs_m', whole_line = F)
+
+  if (FALSE) {
+    # testing/checking
+
+    grepl_line_not_commented_out = "^[ ]*[^# ]+.*"  ## line starts with zero or more spaces followed by a non-space non-# character, so not commented out and not blank line, but may have a comment later in the line after code
+    grepl_line_commented_out     = "^[ |#]*#.*"     ## line starts with (zero or more spaces and then) a hash mark
+    grepl_line_may_have_comment  = "#.*"            ## line contains a hash mark somewhere, but that may be number sign within quoted text
+
+  }
 
   if (!quiet) {
     cat("\nSearching in ", path, ' to find files containing ', pattern, '\n')
@@ -432,8 +613,8 @@ pkg_functions_and_data <- function(pkg = "EJAM",
     funcs <- funcs[sapply(funcs, function(fname) {is.function(get(fname))})] # removes things in namespace like  ".__NAMESPACE__." that are not functions
     sort(union(dataonly(pkg),
                funcs
-               ))
-    } # all.names filters those starting with "."
+    ))
+  } # all.names filters those starting with "."
   exported_only_withdata          <- function(pkg) {ls(paste0("package:", pkg))}
   # same as ls(envir = as.environment(x = paste0("package:", pkg)))
   # same as  getNamespaceExports() except sorted
@@ -750,13 +931,13 @@ pkg_functions_and_sourcefiles <- function(pkg = "EJAM",
     }
   }
   if (!quiet) {cat("\n")}
-    x <- data.frame(file = filenames, object = funcnames)
-    if (alphasort_table) {
-      x <- x[order(x$object), ]
-    } else {
-      x <- x[order(x$file, x$object), ]
-    }
-    return(x)
+  x <- data.frame(file = filenames, object = funcnames)
+  if (alphasort_table) {
+    x <- x[order(x$object), ]
+  } else {
+    x <- x[order(x$file, x$object), ]
+  }
+  return(x)
 }
 ##################################################################################### #
 
@@ -810,7 +991,7 @@ pkg_functions_with_keywords_internal_tag <- function(
   loadagain = TRUE,
   quiet = FALSE,
   alphasort_table = TRUE # or can group by file if set FALSE
-  ) {
+) {
 
   # Does load_all() first if loadagain==TRUE so even unexported functions will seem exported, fyi
   #
@@ -1596,7 +1777,7 @@ pkg_sizes = function(pkgs, quiet=FALSE) {
 
 ## based on https://www.r-bloggers.com/2022/09/minimum-r-version-dependency-in-r-packages/
 
-find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
+pkg_dependencies_min_R <- function(package = 'EJAM', recursive_deps = NULL) {
 
   db <- tools::CRAN_package_db()
 
@@ -1638,14 +1819,15 @@ find_transitive_minR <- function(package = 'EJAM', recursive_deps = NULL) {
 }
 ############################ #
 
+# is a package loaded or just installed or not even installed?
+
+# also see  EJAM:::pkg_dir_installed()
 
 pkg_available <- function(pkg,
                           if_not_installed = c("stop", "warning", "message", "cat")[2],
                           if_not_loaded = c("stop", "warning", "message", "cat")[2]
                           # ,if_not_attached =  c("stop", "warning", "message", "cat")[2]
 ) {
-
-  # is a package loaded or just installed or not even installed?
 
   stopifnot(!missing(pkg), !is.null(pkg), length(pkg) == 1)
   stopifnot(length(if_not_installed) == 1, if_not_installed %in% c("stop", "warning", "message", "cat"),

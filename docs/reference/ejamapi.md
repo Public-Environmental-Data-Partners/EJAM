@@ -166,11 +166,6 @@ eg <- TRUE
 
 # one blockgroup
 xbg1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
-#> Equivalent using EJAM::url_ejamapi() function:
-#> url_ejamapi(baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?", 
-#>     lat = NULL, lon = NULL, shapefile = NULL, fips = "050014801001", 
-#>     radius = NULL)
-#> URL:  https://ejamapi-84652557241.us-central1.run.app/report?fips=050014801001&buffer=0 
 if (!eg) {
 # all blockgroups in 1 county
 xcounty = ejamapi(fips="10001", scale="blockgroup", endpoint = "data", dry_run=eg)
