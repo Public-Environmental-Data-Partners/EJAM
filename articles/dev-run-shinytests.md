@@ -2,38 +2,28 @@
 
 This document covers the UI-related automated tests.
 
-## NOTE on work in progress
+## NOTE on work in progress / how to run the webapp tests
 
-This package had been using
-[`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
-in the file `tests/testthat.R`, but that approach was deprecated, per
-this note in the source code of
-[`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
-– “Calling
-[`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
-within a {testthat} test has been deprecated in {shinytest2} v0.5.0.”
+This package can use
+[`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html).
 
-Instead, `EJAM:::test_ejam()` uses an approach that first sources
-`testthat/setup.R` which sources `testthat/setup-shinytest2.R` which
-defines `shinytest2_webapp_functionality()`, a function that contains
-the steps tested in the web app, and then directly uses that function
-from within test files like
-`/tests/testthat/test-webapp-latlon-functionality.R` etc.
+`EJAM:::test_ejam()` instead uses an approach that first sources
+`testthat/setup.R` which does setup needed and also sources
+`testthat/setup-shinytest2.R` which defines
+`shinytest2_webapp_functionality()`, a function that contains the steps
+tested in the web app, and then directly uses that function from within
+test files like `/tests/testthat/test-webapp-latlon-functionality.R`
+etc.
 
 ## Dev Environment
 
 If you are successfully running the app, you should have all the
 necessary packages, or at least those in Imports or Suggests of the
-`DESCRIPTION` file – the diffviewer package is not there, e.g. Some
-dev-related packages to note:
+`DESCRIPTION` file. Some dev-related packages and tools to note:
 
 - **[shinytest2](https://rstudio.github.io/shinytest2/)** -
   [shinytest2](https://rstudio.github.io/shinytest2/) is the key R
   package helping to test shiny web app functionality
-
-- **[diffviewer](https://diffviewer.r-lib.org)** -
-  [diffviewer](https://diffviewer.r-lib.org) helps visually compare 2
-  files
 
 - **Pandoc** and **knitr** – The Pandoc software comes bundled with
   RStudio, and is a “swiss-army knife” for document conversion. There
@@ -68,59 +58,58 @@ that was named shinytest!) automates shiny web app functionality
 testing, so we can determine if code updates break or unexpectedly
 modify parts of an application.
 
-It runs the installed version of the app in a headless Chromium browser,
-simulating user interactions and taking snapshots. These snapshots are
-stored as JSON files with accompanying PNG images. If differences arise
-from code updates, the test fails, indicating which files changed.
+It runs the app in a headless Chrome or Chromium browser and simulates
+user interactions. The EJAM shinytest2 tests no longer compare full
+saved snapshots of app state, generated HTML, maps, tables, or
+downloaded files. Instead, they assert stable, intentional facts about
+app behavior. This avoids brittle failures from minor changes in
+generated HTML, dates, package versions, table rendering details, or map
+markup.
 
 ### Key Features:
 
-- Compares `.json`, `.html`, `.xlsx` files to a baseline
-- Snapshots include inputs, outputs, and exported values
-- `.png` files provide visual confirmation (but do not cause test
-  failures)
-- Developers can update snapshots to set a new baseline
+- Runs scripted app interactions for each supported web app test
+  category
+- Checks that the expected site-selection path is used for each category
+- Checks uploaded filenames or FIPS picker selections where relevant
+- Checks that analysis completion is exported by the app
+- Checks selected inputs such as radius, title, plot controls, and
+  picker values
+- Checks downloaded reports and spreadsheets by file type, approximate
+  size, and basic structure
+- Checks that key tables, plots, and report outputs render in the
+  `latlon` full-path test
+- Avoids checking exact full HTML reports, map markup, complete table
+  contents, exact dates, or package version text
 
 ## EJAM’s shinytest2 Folder Structure
 
 ``` plaintext
+R/test_ejam.R
+
 tests/
-  ├── testthat.R (was modified to launch the shinytest2 web app functionality tests, but see note above about phasing out shinytest2::test_app() )
   └── testthat/
+      ├── setup.R
       ├── setup-shinytest2.R
-      ├── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)
-      └── _snaps/
-          ├── [OS, e.g. linux]-[R Version, e.g. 4.5]/
-          │   ├── FIPS-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files
-          │   ├── latlon-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files
-          │   ├── NAICS-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files
+      └── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)
 ```
 
 ### File Descriptions
 
-- **`testthat.R`** – It had been calling
-  [`shinytest2::test_app()`](https://rstudio.github.io/shinytest2/reference/test_app.html)
-  to run all tests, but see note above about phasing out
-  shinytest2::test_app(). This file is work in progress – it may need
-  more work for the shiny app testing to work correctly.
-- **`testthat/setup-shinytest2.R`** – Loads `global.R` and app scripts
-  into the testing environment. Does basic setup including defining
-  shinytest2_webapp_functionality() which has a script of web app UI
-  interactions to test, using the app to upload or select, and analyze,
-  multiple data types (FIPS, shapefile, latlon, NAICS, etc.), and save
-  results like reports or spreadsheets.
-- **`testthat/test-webapp-[DATA TYPE]-functionality.R`** – Simple call
-  to the main app functionality function, specifying the data type to
-  test with.
-- **`testthat/_snaps/`** – Stores snapshots categorized by OS, R
-  version, and data type.
-  - **`.json` files** – Capture app snapshots.
-  - **`.png` files** – Screenshots (do not trigger failures).
-  - **`.xlsx` & `.html` files** – Download files. Compared via content
-    hashing to prevent false failures.
+- **`testthat/setup.R`** – Does setup for the test environment (loads
+  `global_*.R` and app scripts into the testing environment, etc.). This
+  file is auto-sourced by `testthat`.
+
+- **`setup-shinytest2.R`** – Is also auto-sourced by `testthat` because
+  its filename starts with `setup-`, and it contains the source code for
+  `shinytest2_webapp_functionality()`, which does a series of tests of
+  web app UI interactions using the app to upload or select, and
+  analyze, multiple data types (FIPS, shapefile, latlon, NAICS, etc.).
+
+- **`testthat/test-webapp-[DATA TYPE]-functionality.R`** – Each of these
+  calls `shinytest2_webapp_functionality()`, specifying the data type to
+  test with, after that helper has been made available by testthat’s
+  automatic sourcing of the setup files.
 
 ## Updating Tests
 
@@ -131,9 +120,9 @@ are some methods and tips for updating the shinytest script accordingly.
 
 ### Direct Updates
 
-Modify `shinytest2_webapp_functionality()` in setup-shinytest2.R to add
-new interactions with the app for the shinytest to test. You would
-update that file by coding new UI interactions directly.
+Modify source code of `shinytest2_webapp_functionality()` to add new
+interactions with the app for the shinytest to test. You would update
+that file by coding new UI interactions directly.
 
 ### Using `shinytest2::record_test()` to generate testing code
 
@@ -146,13 +135,14 @@ copied into test scripts.
 
 Throughout the app code,
 [`shiny::exportTestValues()`](https://rdrr.io/pkg/shiny/man/exportTestValues.html)
-can be used to store values from reactive expressions or other *items
-that are not inputs or outputs* and therefore may not be included in the
-standard snapshots. Then, in the shinytests, you can specify
-`export=[name]` to include in the snapshot the export named “name” that
-you specified in the code, or `export=TRUE` to include all exports. But,
-see details in the source code of shinytest2_webapp_functionality() as
-defined in the /tests/testthat/ folder.
+can be used to expose values from reactive expressions or other *items
+that are not inputs or outputs*. The shinytest2 code can then read those
+exported values with `app$get_values(export = TRUE)` or wait for them
+with `app$wait_for_value(export = "name")`. EJAM uses this pattern for
+stable checks such as `analysis_complete` and
+`multisite_report_download_ready`. See details in
+`shinytest2_webapp_functionality()` as defined in the `/tests/testthat/`
+folder.
 
 ## Running Tests Locally
 
@@ -164,27 +154,27 @@ Another way is this:
 x = EJAM:::test_ejam(ask=F, run_these="webapp")
 ```
 
-You could also run a test like this, but you cannot save or compare
-snapshots to reference when testing interactively.
+You can also run a test directly in an interactive R session. This is
+useful for debugging one category at a time.
 
 ``` r
 remotes::install_local() # once
 library(EJAM) # once
-source(testthat::test_path("setup.R")) # once
+source(testthat::test_path("setup.R")) # once. gets done automatically though, by things like testthat::test_file()
 
 # run a single test:
 shinytest2_webapp_functionality("latlon")
 ```
 
 It is recommended during development to use
-[`remotes::install_local()`](https://remotes.r-lib.org/reference/install_local.html)  
+[`remotes::install_local()`](https://remotes.r-lib.org/reference/install_local.html)
 to ensure your development code is the one tested. This is because
 shinytest2 automatically references the installed version of a package.
 
 Another useful way was this (but this might be deprecated by shinytest2)
 
 ``` r
-# first, source `setup.R`, from the tests/testthat/ folder. 
+# first, source `setup.R`, from the tests/testthat/ folder.
 source(testthat::test_path("setup.R"))
 
 # then for one subset of tests, like just the latlon analysis features:
@@ -202,10 +192,10 @@ app will still work with the merged code.
 
 ### Workflow
 
-- The GHA sets up R, installs dependencies, runs tests, and compares
-  snapshots.
+- The GHA sets up R, installs dependencies, and runs scripted shinytest2
+  tests.
 - The workflow is stored in
-  `.github/workflows/test-webapp-functionality.yml`.
+  `.github/workflows/test-webapp-functionality.yaml`.
 - PRs to a specified branch such as `development`, `main` can trigger
   GHA workflows (as specified in the workflow yml file).
 
@@ -213,26 +203,30 @@ app will still work with the merged code.
 
 - If GHA takes too long, cache dependencies by temporarily disabling
   steps after setup.
-- If snapshots fail, merge the base branch into the feature branch
-  before updating snapshots.
+- Keep slow checks centralized. For example, the `latlon` shinytest2
+  test runs the broad report download, spreadsheet download, details
+  table, and plot checks; other categories should focus on
+  category-specific selection and analysis checks.
 
-## Reviewing & Updating Snapshots (Saved Results of Testing)
+## Updating Expected Behavior Checks
 
-### Reviewing Snapshots
+Do not use
+[`testthat::snapshot_accept()`](https://testthat.r-lib.org/reference/snapshot_accept.html)
+for these shinytest2 tests. If a test fails, inspect whether the app
+behavior changed in a meaningful way. If the behavior is still correct,
+update the explicit assertion in `setup-shinytest2.R` so it checks a
+stable fact instead of exact generated output.
 
-``` r
-testthat::snapshot_review()
-```
+Examples of stable checks include:
 
-Optionally, can filter to review specific files or folders of snapshots.
-
-### Accepting New Snapshots
-
-``` r
-testthat::snapshot_accept()
-```
-
-Optionally, can accept them interactively when reviewing.
+- an uploaded file input contains the expected filename
+- a FIPS picker contains the expected selected FIPS code
+- `analysis_complete` is `TRUE`
+- a downloaded report exists, has an `.html` extension, is above a
+  minimum size, and contains a few stable markers
+- a downloaded spreadsheet exists, has an `.xlsx` extension, has the
+  expected ZIP signature, and contains required sheet names
+- a plot output has rendered an image with nonzero dimensions
 
 ## Debugging Tests & GitHub Actions
 
@@ -251,20 +245,22 @@ log.
 
 ### Debugging GHA
 
-Generally, if you test locally and update snapshots accordingly, GHA
-should pass. However, the tests do sometimes fail due to OS differences,
-R version differences, or even package differences. Here are some tips
-for debugging these issues:
+Generally, if the shinytest2 tests pass locally using the same branch
+and dependencies, GHA should pass. However, the tests can still fail due
+to OS differences, browser availability, R version differences, package
+differences, or timeouts. Here are some tips for debugging these issues:
 
 - Inspect the log in the GitHub repo, under the Actions tab or the
   Checks tab of the PR.
-- Inspect artifacts (zipped test outputs) after a failed run and compare
-  snapshots in a diff viewer to identify discrepancies.
+- Inspect artifacts or logs after a failed run to identify whether the
+  failure was an app behavior regression, browser startup problem,
+  timeout, missing dependency, or assertion that is too brittle.
 
 ## Current State of Tests
 
-- If the shinytests are failing, it is likely because snapshots have not
-  been updated locally and pushed after recent changes.
+- If the shinytests are failing, do not accept new snapshots. Inspect
+  the failing assertion and decide whether app behavior regressed or the
+  test should check a more stable fact.
 - The versions of R and shiny and shinytest2 used for testing also
   should be noted as potentially affecting tests.
 

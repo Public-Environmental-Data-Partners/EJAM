@@ -102,17 +102,12 @@
     
 <p>This document covers the UI-related automated tests.</p>
 <div class="section level2">
-<h2 id="note-on-work-in-progress">NOTE on work in progress<a class="anchor" aria-label="anchor" href="#note-on-work-in-progress"></a>
+<h2 id="note-on-work-in-progress-how-to-run-the-webapp-tests">NOTE on work in progress / how to run the webapp tests<a class="anchor" aria-label="anchor" href="#note-on-work-in-progress-how-to-run-the-webapp-tests"></a>
 </h2>
-<p>This package had been using <code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> in
-the file <code>tests/testthat.R</code>, but that approach was
-deprecated, per this note in the source code of
-<code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> – “Calling
-<code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> within a {testthat} test has been
-deprecated in {shinytest2} v0.5.0.”</p>
-<p>Instead, <code>EJAM:::test_ejam()</code> uses an approach that first
-sources <code>testthat/setup.R</code> which sources
-<code>testthat/setup-shinytest2.R</code> which defines
+<p>This package can use <code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code>.</p>
+<p><code>EJAM:::test_ejam()</code> instead uses an approach that first
+sources <code>testthat/setup.R</code> which does setup needed and also
+sources <code>testthat/setup-shinytest2.R</code> which defines
 <code>shinytest2_webapp_functionality()</code>, a function that contains
 the steps tested in the web app, and then directly uses that function
 from within test files like
@@ -123,13 +118,11 @@ from within test files like
 </h2>
 <p>If you are successfully running the app, you should have all the
 necessary packages, or at least those in Imports or Suggests of the
-<code>DESCRIPTION</code> file – the diffviewer package is not there,
-e.g. Some dev-related packages to note:</p>
+<code>DESCRIPTION</code> file. Some dev-related packages and tools to
+note:</p>
 <ul>
 <li><p><strong><a href="https://rstudio.github.io/shinytest2/" class="external-link">shinytest2</a></strong> - <a href="https://rstudio.github.io/shinytest2/" class="external-link">shinytest2</a> is the key R
 package helping to test shiny web app functionality</p></li>
-<li><p><strong><a href="https://diffviewer.r-lib.org" class="external-link">diffviewer</a></strong> - <a href="https://diffviewer.r-lib.org" class="external-link">diffviewer</a> helps visually
-compare 2 files</p></li>
 <li><p><strong>Pandoc</strong> and <strong>knitr</strong> – The Pandoc
 software comes bundled with RStudio, and is a “swiss-army knife” for
 document conversion. There also is a function called [knitr::pandoc()]
@@ -157,78 +150,65 @@ Chromium application, allowing <a href="https://rstudio.github.io/shinytest2/" c
 not to be confused with the older R package that was named shinytest!)
 automates shiny web app functionality testing, so we can determine if
 code updates break or unexpectedly modify parts of an application.</p>
-<p>It runs the installed version of the app in a headless Chromium
-browser, simulating user interactions and taking snapshots. These
-snapshots are stored as JSON files with accompanying PNG images. If
-differences arise from code updates, the test fails, indicating which
-files changed.</p>
+<p>It runs the app in a headless Chrome or Chromium browser and
+simulates user interactions. The EJAM shinytest2 tests no longer compare
+full saved snapshots of app state, generated HTML, maps, tables, or
+downloaded files. Instead, they assert stable, intentional facts about
+app behavior. This avoids brittle failures from minor changes in
+generated HTML, dates, package versions, table rendering details, or map
+markup.</p>
 <div class="section level3">
 <h3 id="key-features">Key Features:<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h3>
 <ul>
-<li>Compares <code>.json</code>, <code>.html</code>, <code>.xlsx</code>
-files to a baseline</li>
-<li>Snapshots include inputs, outputs, and exported values</li>
-<li>
-<code>.png</code> files provide visual confirmation (but do not
-cause test failures)</li>
-<li>Developers can update snapshots to set a new baseline</li>
+<li>Runs scripted app interactions for each supported web app test
+category</li>
+<li>Checks that the expected site-selection path is used for each
+category</li>
+<li>Checks uploaded filenames or FIPS picker selections where
+relevant</li>
+<li>Checks that analysis completion is exported by the app</li>
+<li>Checks selected inputs such as radius, title, plot controls, and
+picker values</li>
+<li>Checks downloaded reports and spreadsheets by file type, approximate
+size, and basic structure</li>
+<li>Checks that key tables, plots, and report outputs render in the
+<code>latlon</code> full-path test</li>
+<li>Avoids checking exact full HTML reports, map markup, complete table
+contents, exact dates, or package version text</li>
 </ul>
 </div>
 </div>
 <div class="section level2">
 <h2 id="ejams-shinytest2-folder-structure">EJAM’s shinytest2 Folder Structure<a class="anchor" aria-label="anchor" href="#ejams-shinytest2-folder-structure"></a>
 </h2>
-<pre class="plaintext"><code>tests/
-  ├── testthat.R (was modified to launch the shinytest2 web app functionality tests, but see note above about phasing out shinytest2::test_app() )
+<pre class="plaintext"><code>
+R/test_ejam.R
+
+tests/
   └── testthat/
+      ├── setup.R
       ├── setup-shinytest2.R
-      ├── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)
-      └── _snaps/
-          ├── [OS, e.g. linux]-[R Version, e.g. 4.5]/
-          │   ├── FIPS-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files
-          │   ├── latlon-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files
-          │   ├── NAICS-functionality/
-          │   │   ├── .json, .png, .xlsx, .html files</code></pre>
+      └── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)</code></pre>
 <div class="section level3">
 <h3 id="file-descriptions">File Descriptions<a class="anchor" aria-label="anchor" href="#file-descriptions"></a>
 </h3>
 <ul>
-<li>
-<strong><code>testthat.R</code></strong> – It had been calling
-<code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code> to run all tests, but see note above
-about phasing out shinytest2::test_app(). This file is work in progress
-– it may need more work for the shiny app testing to work
-correctly.</li>
-<li>
-<strong><code>testthat/setup-shinytest2.R</code></strong> – Loads
-<code>global.R</code> and app scripts into the testing environment. Does
-basic setup including defining shinytest2_webapp_functionality() which
-has a script of web app UI interactions to test, using the app to upload
-or select, and analyze, multiple data types (FIPS, shapefile, latlon,
-NAICS, etc.), and save results like reports or spreadsheets.</li>
-<li>
-<strong><code>testthat/test-webapp-[DATA TYPE]-functionality.R</code></strong>
-– Simple call to the main app functionality function, specifying the
-data type to test with.</li>
-<li>
-<strong><code>testthat/_snaps/</code></strong> – Stores snapshots
-categorized by OS, R version, and data type.
-<ul>
-<li>
-<strong><code>.json</code> files</strong> – Capture app
-snapshots.</li>
-<li>
-<strong><code>.png</code> files</strong> – Screenshots (do not
-trigger failures).</li>
-<li>
-<strong><code>.xlsx</code> &amp; <code>.html</code> files</strong> –
-Download files. Compared via content hashing to prevent false
-failures.</li>
-</ul>
-</li>
+<li><p><strong><code>testthat/setup.R</code></strong> – Does setup for
+the test environment (loads <code>global_*.R</code> and app scripts into
+the testing environment, etc.). This file is auto-sourced by
+<code>testthat</code>.</p></li>
+<li><p><strong><code>setup-shinytest2.R</code></strong> – Is also
+auto-sourced by <code>testthat</code> because its filename starts with
+<code>setup-</code>, and it contains the source code for
+<code>shinytest2_webapp_functionality()</code>, which does a series of
+tests of web app UI interactions using the app to upload or select, and
+analyze, multiple data types (FIPS, shapefile, latlon, NAICS,
+etc.).</p></li>
+<li><p><strong><code>testthat/test-webapp-[DATA TYPE]-functionality.R</code></strong>
+– Each of these calls <code>shinytest2_webapp_functionality()</code>,
+specifying the data type to test with, after that helper has been made
+available by testthat’s automatic sourcing of the setup files.</p></li>
 </ul>
 </div>
 </div>
@@ -243,10 +223,9 @@ accordingly.</p>
 <div class="section level3">
 <h3 id="direct-updates">Direct Updates<a class="anchor" aria-label="anchor" href="#direct-updates"></a>
 </h3>
-<p>Modify <code>shinytest2_webapp_functionality()</code> in
-setup-shinytest2.R to add new interactions with the app for the
-shinytest to test. You would update that file by coding new UI
-interactions directly.</p>
+<p>Modify source code of <code>shinytest2_webapp_functionality()</code>
+to add new interactions with the app for the shinytest to test. You
+would update that file by coding new UI interactions directly.</p>
 </div>
 <div class="section level3">
 <h3 id="using-shinytest2record_test-to-generate-testing-code">Using <code>shinytest2::record_test()</code> to generate testing
@@ -260,14 +239,15 @@ record your actions, which can then be copied into test scripts.</p>
 <h3 id="using-shinyexporttestvaluesname-value">Using <code>shiny::exportTestValues(name = value)</code><a class="anchor" aria-label="anchor" href="#using-shinyexporttestvaluesname-value"></a>
 </h3>
 <p>Throughout the app code, <code><a href="https://rdrr.io/pkg/shiny/man/exportTestValues.html" class="external-link">shiny::exportTestValues()</a></code> can
-be used to store values from reactive expressions or other <em>items
-that are not inputs or outputs</em> and therefore may not be included in
-the standard snapshots. Then, in the shinytests, you can specify
-<code>export=[name]</code> to include in the snapshot the export named
-“name” that you specified in the code, or <code>export=TRUE</code> to
-include all exports. But, see details in the source code of
-shinytest2_webapp_functionality() as defined in the /tests/testthat/
-folder.</p>
+be used to expose values from reactive expressions or other <em>items
+that are not inputs or outputs</em>. The shinytest2 code can then read
+those exported values with <code>app$get_values(export = TRUE)</code> or
+wait for them with <code>app$wait_for_value(export = "name")</code>.
+EJAM uses this pattern for stable checks such as
+<code>analysis_complete</code> and
+<code>multisite_report_download_ready</code>. See details in
+<code>shinytest2_webapp_functionality()</code> as defined in the
+<code>/tests/testthat/</code> folder.</p>
 </div>
 </div>
 <div class="section level2">
@@ -277,24 +257,23 @@ folder.</p>
 <p>Another way is this:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/test_ejam.html">test_ejam</a></span><span class="op">(</span>ask<span class="op">=</span><span class="cn">F</span>, run_these<span class="op">=</span><span class="st">"webapp"</span><span class="op">)</span></span></code></pre></div>
-<p>You could also run a test like this, but you cannot save or compare
-snapshots to reference when testing interactively.</p>
+<p>You can also run a test directly in an interactive R session. This is
+useful for debugging one category at a time.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># once</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span> <span class="co"># once</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span> <span class="co"># once</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span> <span class="co"># once. gets done automatically though, by things like testthat::test_file()</span></span>
 <span></span>
 <span><span class="co"># run a single test:</span></span>
 <span><span class="fu">shinytest2_webapp_functionality</span><span class="op">(</span><span class="st">"latlon"</span><span class="op">)</span></span></code></pre></div>
 <p>It is recommended during development to use
-<code><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">remotes::install_local()</a></code><br>
-to ensure your development code is the one tested. This is because
-shinytest2 automatically references the installed version of a
-package.</p>
+<code><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">remotes::install_local()</a></code> to ensure your development code is
+the one tested. This is because shinytest2 automatically references the
+installed version of a package.</p>
 <p>Another useful way was this (but this might be deprecated by
 shinytest2)</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># first, source `setup.R`, from the tests/testthat/ folder. </span></span>
+<code class="sourceCode R"><span><span class="co"># first, source `setup.R`, from the tests/testthat/ folder.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># then for one subset of tests, like just the latlon analysis features:</span></span>
@@ -313,10 +292,10 @@ the app will still work with the merged code.</p>
 <h3 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
 </h3>
 <ul>
-<li>The GHA sets up R, installs dependencies, runs tests, and compares
-snapshots.</li>
+<li>The GHA sets up R, installs dependencies, and runs scripted
+shinytest2 tests.</li>
 <li>The workflow is stored in
-<code>.github/workflows/test-webapp-functionality.yml</code>.</li>
+<code>.github/workflows/test-webapp-functionality.yaml</code>.</li>
 <li>PRs to a specified branch such as <code>development</code>,
 <code>main</code> can trigger GHA workflows (as specified in the
 workflow yml file).</li>
@@ -328,29 +307,35 @@ workflow yml file).</li>
 <ul>
 <li>If GHA takes too long, cache dependencies by temporarily disabling
 steps after setup.</li>
-<li>If snapshots fail, merge the base branch into the feature branch
-before updating snapshots.</li>
+<li>Keep slow checks centralized. For example, the <code>latlon</code>
+shinytest2 test runs the broad report download, spreadsheet download,
+details table, and plot checks; other categories should focus on
+category-specific selection and analysis checks.</li>
 </ul>
 </div>
 </div>
 <div class="section level2">
-<h2 id="reviewing-updating-snapshots-saved-results-of-testing">Reviewing &amp; Updating Snapshots (Saved Results of Testing)<a class="anchor" aria-label="anchor" href="#reviewing-updating-snapshots-saved-results-of-testing"></a>
+<h2 id="updating-expected-behavior-checks">Updating Expected Behavior Checks<a class="anchor" aria-label="anchor" href="#updating-expected-behavior-checks"></a>
 </h2>
-<div class="section level3">
-<h3 id="reviewing-snapshots">Reviewing Snapshots<a class="anchor" aria-label="anchor" href="#reviewing-snapshots"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">snapshot_review</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Optionally, can filter to review specific files or folders of
-snapshots.</p>
-</div>
-<div class="section level3">
-<h3 id="accepting-new-snapshots">Accepting New Snapshots<a class="anchor" aria-label="anchor" href="#accepting-new-snapshots"></a>
-</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">snapshot_accept</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Optionally, can accept them interactively when reviewing.</p>
-</div>
+<p>Do not use <code><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">testthat::snapshot_accept()</a></code> for these
+shinytest2 tests. If a test fails, inspect whether the app behavior
+changed in a meaningful way. If the behavior is still correct, update
+the explicit assertion in <code>setup-shinytest2.R</code> so it checks a
+stable fact instead of exact generated output.</p>
+<p>Examples of stable checks include:</p>
+<ul>
+<li>an uploaded file input contains the expected filename</li>
+<li>a FIPS picker contains the expected selected FIPS code</li>
+<li>
+<code>analysis_complete</code> is <code>TRUE</code>
+</li>
+<li>a downloaded report exists, has an <code>.html</code> extension, is
+above a minimum size, and contains a few stable markers</li>
+<li>a downloaded spreadsheet exists, has an <code>.xlsx</code>
+extension, has the expected ZIP signature, and contains required sheet
+names</li>
+<li>a plot output has rendered an image with nonzero dimensions</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="debugging-tests-github-actions">Debugging Tests &amp; GitHub Actions<a class="anchor" aria-label="anchor" href="#debugging-tests-github-actions"></a>
@@ -372,15 +357,17 @@ to view the log.</p>
 <div class="section level3">
 <h3 id="debugging-gha">Debugging GHA<a class="anchor" aria-label="anchor" href="#debugging-gha"></a>
 </h3>
-<p>Generally, if you test locally and update snapshots accordingly, GHA
-should pass. However, the tests do sometimes fail due to OS differences,
-R version differences, or even package differences. Here are some tips
-for debugging these issues:</p>
+<p>Generally, if the shinytest2 tests pass locally using the same branch
+and dependencies, GHA should pass. However, the tests can still fail due
+to OS differences, browser availability, R version differences, package
+differences, or timeouts. Here are some tips for debugging these
+issues:</p>
 <ul>
 <li>Inspect the log in the GitHub repo, under the Actions tab or the
 Checks tab of the PR.</li>
-<li>Inspect artifacts (zipped test outputs) after a failed run and
-compare snapshots in a diff viewer to identify discrepancies.</li>
+<li>Inspect artifacts or logs after a failed run to identify whether the
+failure was an app behavior regression, browser startup problem,
+timeout, missing dependency, or assertion that is too brittle.</li>
 </ul>
 </div>
 </div>
@@ -388,8 +375,9 @@ compare snapshots in a diff viewer to identify discrepancies.</li>
 <h2 id="current-state-of-tests">Current State of Tests<a class="anchor" aria-label="anchor" href="#current-state-of-tests"></a>
 </h2>
 <ul>
-<li>If the shinytests are failing, it is likely because snapshots have
-not been updated locally and pushed after recent changes.</li>
+<li>If the shinytests are failing, do not accept new snapshots. Inspect
+the failing assertion and decide whether app behavior regressed or the
+test should check a more stable fact.</li>
 <li>The versions of R and shiny and shinytest2 used for testing also
 should be noted as potentially affecting tests.</li>
 </ul>
