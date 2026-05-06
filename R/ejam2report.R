@@ -524,13 +524,19 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
         # For PDF: convert interactive leaflet map to a static PNG so it renders
         # reliably in headless Chrome instead of depending on tile loading and JS timing.
+        map_widget_html <- NULL
+        map_png         <- NULL
+        on.exit({
+          if (!is.null(map_widget_html)) unlink(map_widget_html)
+          if (!is.null(map_png)) unlink(map_png)
+        }, add = TRUE)
         if (!is.null(report_params$map) &&
             !anyNA(report_params$map) &&
             length(report_params$map) > 0) {
           map_png_path <- tryCatch({
             if (!webshot::is_phantomjs_installed()) {
-              message("Installing PhantomJS for map snapshot (one-time setup)...")
-              webshot::install_phantomjs()
+              stop("PhantomJS is required to capture a map snapshot for PDF output. ",
+                   "Install it once by running: webshot::install_phantomjs()")
             }
             map_widget_html <- tempfile(fileext = ".html")
             map_png        <- tempfile(fileext = ".png")
@@ -554,6 +560,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
         # render HTML to temp file, capturing the actual output path returned by render()
         html_temp <- tempfile(fileext = ".html")
+        on.exit(unlink(html_temp), add = TRUE)
 
         rendered_path <- rmarkdown::render(
           input = rmd_template,
