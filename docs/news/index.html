@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8.001</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -63,6 +64,44 @@
       <small>Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.5.0" id="ejam-250-may-2026">EJAM 2.5.0 (May 2026)<a class="anchor" aria-label="anchor" href="#ejam-250-may-2026"></a></h2>
+<div class="section level3">
+<h3 id="updated-demographic-data-from-acs-2-5-0">Updated Demographic Data from ACS<a class="anchor" aria-label="anchor" href="#updated-demographic-data-from-acs-2-5-0"></a></h3>
+<ul><li><p>v2.5.0 provides 2020-2024 American Community Survey (ACS) demographic data</p></li>
+<li><p>v2.32.*, used throughout 2025, used 2018-2022 ACS data (even though newer ACS 5-year survey data were available from Census Bureau).</p></li>
+<li><p>Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.</p></li>
+<li>
+<p>Created a data update pipeline with several stages to read (or calculate) tables of data and save intermediate or final files at each stage:</p>
+<ol style="list-style-type: decimal"><li>download ACS raw data on demographics (including some available only at tract resolution)</li>
+<li>calculate ACS-based demographic indicators (and lead paint indicator)</li>
+<li>validate/save key environmental indicators (or re-use existing ones)</li>
+<li>validate/save the many extra indicators like % low life expectancy (or re-use existing ones)</li>
+<li>calculate demographic indexes (using % low life expectancy, etc.)</li>
+<li>combine those blockgroup demog., envt., and extra indicators as [blockgroupstats]</li>
+<li>create percentile lookup tables for demographics and environmental data</li>
+<li>calculate EJ indexes (from envt. percentiles and demog. indexes) and save as [bgej] table</li>
+<li>create percentile lookup tables for EJ indexes</li>
+<li>combine those as [usastats] and [statestats] percentile lookup tables</li>
+<li>create an EJScreen-ready export file</li>
+</ol></li>
+<li><p>Added <code><a href="../reference/calc_ejscreen_dataset.html">calc_ejscreen_dataset()</a></code> as the high-level wrapper for the staged pipeline. It can read supplied R objects, read saved stages from disk, or create and save stages such as <code>bg_acsdata</code>, <code>bg_envirodata</code>, <code>bg_extra_indicators</code>, <code>blockgroupstats</code>, <code>bgej</code>, <code>usastats</code>, <code>statestats</code>, and <code>ejscreen_export</code>.</p></li>
+<li><p>Added functions that can update ACS-based demographic dataset each year: <code><a href="../reference/calc_bgej.html">calc_bgej()</a></code>, <code><a href="../reference/calc_blockgroupstats_acs.html">calc_blockgroupstats_acs()</a></code>, <code><a href="../reference/calc_blockgroupstats_from_tract_data.html">calc_blockgroupstats_from_tract_data()</a></code>, etc.</p></li>
+<li><p>Pipeline stages are now saved as CSV files by default, so annual update checkpoints are easier to inspect, replace, and rerun outside R. The raw ACS checkpoint uses a folder-plus-manifest layout with one file per ACS table, which makes it easier to add supplemental ACS-like tables before the next stage runs. Pipeline storage can use a local folder now and <code>s3://...</code> AWS S3 paths later, with Git LFS rules in place if a checkpoint folder needs to be force-added to the repository temporarily.</p></li>
+<li><p>Added <code>bg_envirodata</code> and <code>bg_extra_indicators</code> as explicit pipeline inputs. This makes it clear which columns come from ACS, which come from environmental data, and which come from other blockgroup-level sources such as low life expectancy, health outcome rates, feature counts, and flags. Missing extra indicators can intentionally be reused from the current package data, but that path is explicit rather than silent.</p></li>
+<li><p>Added <code><a href="../reference/calc_bg_extra_indicators.html">calc_bg_extra_indicators()</a></code> and related helpers for the non-ACS, non-environmental blockgroup indicator stage.</p></li>
+<li><p>Added <code><a href="../reference/calc_ejscreen_export.html">calc_ejscreen_export()</a></code> support for creating an EJScreen-ready dataset from <code>blockgroupstats</code> and <code>bgej</code>, using <code>map_headernames</code> naming columns and adding EJScreen EJ-index percentile fields such as <code>P_D2_...</code> and <code>P_D5_...</code> from the saved EJ-index lookup tables. It then creates map helper fields such as <code>B_...</code> map bins and <code>T_...</code> percentile popup text. The <code>ejscreen_export</code> stage validates the <code>ID</code> key and map helper fields before saving, and the pipeline runner writes an export schema report for review.</p></li>
+<li><p>Updated <code>map_headernames</code> naming support so EJAM names, current EJScreen export/app names, old EJScreen FTP names, and old EJScreen API names can be tracked separately.</p></li>
+<li><p>Improved formula handling for ACS-derived indicators, including dependency ordering and validation checks, and fixed the EPA Region formula so it uses state FIPS rather than state abbreviations.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.4.0" id="ejam-240-may-2026">EJAM 2.4.0 (May 2026)<a class="anchor" aria-label="anchor" href="#ejam-240-may-2026"></a></h2>
+<div class="section level3">
+<h3 id="updated-demographic-data-from-acs-2-4-0">Updated Demographic Data from ACS<a class="anchor" aria-label="anchor" href="#updated-demographic-data-from-acs-2-4-0"></a></h3>
+<ul><li>A release tagged as v2.4.0 was a placeholder for a way to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.32.8.001" id="ejam-2328001-may-2026">EJAM 2.32.8.001 (May 2026)<a class="anchor" aria-label="anchor" href="#ejam-2328001-may-2026"></a></h2>
 <p>Web app features:</p>
@@ -744,7 +783,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8.001</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

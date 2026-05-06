@@ -19,7 +19,9 @@ calc_bgej(
   vnames_d_demogindex_supp = "Demog.Index.Supp",
   vnames_d_demogindex_state = "Demog.Index.State",
   vnames_d_demogindex_supp_state = "Demog.Index.Supp.State",
-  vnames_ST = "ST"
+  vnames_ST = "ST",
+  usastats_lookup = NULL,
+  statestats_lookup = NULL
 )
 ```
 
@@ -86,6 +88,18 @@ calc_bgej(
   [statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md)
   table used by
   [`calc_pctile_columns()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.md)
+
+- usastats_lookup:
+
+  optional percentile lookup table to use for national environmental
+  percentiles. Defaults to
+  [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md).
+
+- statestats_lookup:
+
+  optional percentile lookup table to use for state environmental
+  percentiles. Defaults to
+  [statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md).
 
 ## Value
 

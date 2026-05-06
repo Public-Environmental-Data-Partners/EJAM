@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -70,7 +71,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">namesbyvarlist</span><span class="op">(</span><span class="va">varlist</span>, nametype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rname"</span>, <span class="st">"longname"</span>, <span class="st">"apiname"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">namesbyvarlist</span><span class="op">(</span></span>
+<span>  <span class="va">varlist</span>,</span>
+<span>  nametype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rname"</span>, <span class="st">"longname"</span>, <span class="st">"apiname"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  mapping <span class="op">=</span> <span class="va">map_headernames</span>,</span>
+<span>  include <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  available_vars <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -85,6 +93,24 @@
 <dd><p>vector of 1 or more names of columns in map_headernames, or a shortcut type that can be
 api, csv, r, original, long, shortlabel</p></dd>
 
+
+<dt id="arg-mapping">mapping<a class="anchor" aria-label="anchor" href="#arg-mapping"></a></dt>
+<dd><p>data.frame with at least <code>varlist</code> and requested <code>nametype</code>
+columns. Defaults to <a href="map_headernames.html">map_headernames</a>.</p></dd>
+
+
+<dt id="arg-include">include<a class="anchor" aria-label="anchor" href="#arg-include"></a></dt>
+<dd><p>optional vector of names to keep.</p></dd>
+
+
+<dt id="arg-exclude">exclude<a class="anchor" aria-label="anchor" href="#arg-exclude"></a></dt>
+<dd><p>optional vector of names to drop.</p></dd>
+
+
+<dt id="arg-available-vars">available_vars<a class="anchor" aria-label="anchor" href="#arg-available-vars"></a></dt>
+<dd><p>optional vector of names available in a target dataset.
+Rows whose <code>rname</code> is not available are dropped.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -92,7 +118,7 @@ api, csv, r, original, long, shortlabel</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>varlist2names() is a way to just get a vector of variable names even if the varlist is not stored as a separate data object
+    <p>varlist2names() aka namesbyvarlist() is a way to just get a vector of variable names even if the varlist is not stored as a separate data object
 and is only found in the map_headernames$varlist column:</p>
 <p>varlist2names(c('names_d', 'names_d_subgroups'))</p>
 <p>c(names_d, names_d_subgroups)</p>
@@ -105,15 +131,15 @@ and is only found in the map_headernames$varlist column:</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">map_headernames</span><span class="op">$</span><span class="va">varlist</span><span class="op">)</span></span>
-<span> </span>
+<span></span>
 <span> <span class="fu">namesbyvarlist</span><span class="op">(</span><span class="st">'names_e_avg'</span>, <span class="st">'rname'</span><span class="op">)</span></span>
 <span> <span class="fu">namesbyvarlist</span><span class="op">(</span><span class="st">'names_d'</span><span class="op">)</span></span>
 <span> <span class="fu">namesbyvarlist</span><span class="op">(</span><span class="st">'names_d'</span>, <span class="st">'r'</span><span class="op">)</span></span>
 <span> <span class="fu">namesbyvarlist</span><span class="op">(</span><span class="st">'names_d'</span>, <span class="st">'long'</span><span class="op">)</span></span>
 <span> <span class="fu">namesbyvarlist</span><span class="op">(</span><span class="st">'names_d'</span>, <span class="st">'shortlabel'</span><span class="op">)</span></span>
-<span> </span>
-<span> <span class="fu">namesbyvarlist</span><span class="op">(</span> <span class="st">'names_e_pctile'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'r'</span>, <span class="st">'longname'</span><span class="op">)</span><span class="op">)</span>    </span>
-<span> <span class="fu">namesbyvarlist</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'names_e_pctile'</span>, <span class="st">'names_e_state_pctile'</span><span class="op">)</span>, </span>
+<span></span>
+<span> <span class="fu">namesbyvarlist</span><span class="op">(</span> <span class="st">'names_e_pctile'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'r'</span>, <span class="st">'longname'</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="fu">namesbyvarlist</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'names_e_pctile'</span>, <span class="st">'names_e_state_pctile'</span><span class="op">)</span>,</span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'varlist'</span>, <span class="st">'rname'</span>, <span class="st">'apiname'</span>, <span class="st">'csvname'</span>, <span class="st">'shortlabel'</span>, <span class="st">'longname'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -121,11 +147,11 @@ and is only found in the map_headernames$varlist column:</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

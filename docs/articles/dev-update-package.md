@@ -163,7 +163,7 @@ for everything to work correctly.
 ## PACKAGE RELEASES: Update the package release
 
 - Update EJAM version number in the Version: field of the *DESCRIPTION*
-  file in the development branch (e.g., 2.32.8) (& tying it to EJSCREEN
+  file in the development branch (e.g., 2.5.0) (& tying it to EJSCREEN
   version numbers if relevant). Search in files globally too, as there
   still are places where the version number is not read from
   DESCRIPTION, like the files \*\_pkgdown.yml\* and *golem-config.yml*

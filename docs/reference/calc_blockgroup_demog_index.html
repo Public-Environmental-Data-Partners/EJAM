@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -70,15 +71,20 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_blockgroup_demog_index</span><span class="op">(</span><span class="va">yr</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_blockgroup_demog_index</span><span class="op">(</span><span class="va">bgstats</span>, formulas <span class="op">=</span> <span class="va">formulas_ejscreen_demog_index</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-yr">yr<a class="anchor" aria-label="anchor" href="#arg-yr"></a></dt>
-<dd><p>endyear of ACS 5-year survey to use, inferred if omitted</p></dd>
+<dl><dt id="arg-bgstats">bgstats<a class="anchor" aria-label="anchor" href="#arg-bgstats"></a></dt>
+<dd><p>a data.frame or data.table like <a href="blockgroupstats.html">blockgroupstats</a>, with one row
+per blockgroup and the columns used in the demographic index formulas.</p></dd>
+
+
+<dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
+<dd><p>formulas used to calculate the demographic index columns.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -91,11 +97,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

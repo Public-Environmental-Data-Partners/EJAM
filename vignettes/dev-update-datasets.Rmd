@@ -1,11 +1,11 @@
 ---
-title: "Updating EJAM Datasets"
-description: "Managing large {arrow} datasets used by EJAM app and package"
+title: "Updating and Managing the Datasets used by EJAM"
+description: "Managing datasets used by EJAM (including arrow files)"
 output: 
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Updating EJAM Datasets}
+  %\VignetteIndexEntry{Updating and Managing the Datasets used by EJAM}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -90,32 +90,14 @@ changed ANNUALLY or more often:
 
 -   ***Blockgroup Datasets (Demographic and Environmental data)***: These
 include datasets included with the package `?blockgroupstats`,
-[usastats](../reference/usastats.html), `?statestats`, etc.) as well as
-larger tables stored in a separate repository and downloaded by the EJAM
-package (`?bgpts`, `?bgej`, `?bgid2fips`, `?bg_cenpop2020`, etc.). They are
-all created or modified using scripts/functions organized from within
-*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
-
--   NOTE: Prior to 2025, several key datasets used by EJAM were obtained
-from EPA's EJSCREEN data FTP site and others directly from relevant
-staff. Many of the indicators on the Community Report for the v2.2
-(early 2024) EJSCREEN data were NOT provided in the gdb and csv files on
-the FTP site, so they had to be obtained directly from the EJSCREEN team
-as a separate .csv file. The code referred to from
-*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
-datasets from EPA are available, and then converts them into the
-datasets actually used by EJAM. However, if those are no longer
-available from those sources, the data could mostly be independently
-recreated, but this would require a combination of existing code and
-significant new work.
-
--   Some relevant code was in archived EJSCREEN repositories, for creating
-environmental datasets. Some code is in EJAM functions that can get ACS
-datasets. Much relevant code was in an older non-EPA package called
-ejscreen, which had been made private as of early 2025 but could be
-refreshed. That package had tools such as ejscreen.create() that had
-been able to reproduce parts of the blockgroupstats and
-usastats/statestats datasets.
+[usastats](../reference/usastats.html), `?statestats`, and `?bgej`. The
+annual staged workflow for updating these ACS/EJScreen-style blockgroup
+datasets is now documented separately in [Updating EJScreen Datasets Annually
+(via the Pipeline)](dev-update-ejscreen-datasets-yearly.html). That pipeline
+covers `bg_acs_raw`, `bg_acsdata`, `bg_envirodata`,
+`bg_extra_indicators`, `blockgroupstats`, `bgej`, `usastats`, `statestats`,
+and the provisional `ejscreen_export` stage. This more general vignette focuses
+on the other datasets and storage/release mechanics used by EJAM.
 
 -   ***Block Datasets***: The *block* (not blockgroup) tables might be updated
 less often, but Census fips codes do change yearly so the `?blockwts`,
@@ -174,7 +156,7 @@ in tables EJAM uses, such as these: `?frs`, `?frs_by_programid`,
 `?frs_by_naics`, `?frs_by_sic`, and `?frs_by_mact`, `?NAICS`, `?SIC`,
 `?naics_counts`, `?naicstable`, `?SIC`, `?sictable`, `?mact_table`, and
 `?epa_programs`, `?frsprogramcodes`, etc. These FRS, MACT, and Program info
-tables of EPA-relevant data are updated in the EJAM package from within
+tables of EPA-relevant data have been updated in the EJAM package from scripts within
 *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* The `?NAICS`,
 `?naicstable`, and `?sictable` objects (viewable using `naics_categories()`
 and `sic_categories()` utilities) have no EPA-specific data so they do not

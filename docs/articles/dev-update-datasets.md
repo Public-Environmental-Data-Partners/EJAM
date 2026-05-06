@@ -1,4 +1,4 @@
-# Updating EJAM Datasets
+# Updating and Managing the Datasets used by EJAM
 
 The EJAM package and [Shiny](https://shiny.posit.co) app make use of
 many data objects, including numerous datasets stored in the package’s
@@ -110,36 +110,17 @@ to be changed ANNUALLY or more often:
   [`?blockgroupstats`](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md),
   [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md),
   [`?statestats`](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md),
-  etc.) as well as larger tables stored in a separate repository and
-  downloaded by the EJAM package
-  ([`?bgpts`](https://public-environmental-data-partners.github.io/EJAM/reference/bgpts.md),
-  [`?bgej`](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md),
-  [`?bgid2fips`](https://public-environmental-data-partners.github.io/EJAM/reference/bgid2fips.md),
-  [`?bg_cenpop2020`](https://public-environmental-data-partners.github.io/EJAM/reference/bg_cenpop2020.md),
-  etc.). They are all created or modified using scripts/functions
-  organized from within
-  *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*.
-
-- NOTE: Prior to 2025, several key datasets used by EJAM were obtained
-  from EPA’s EJSCREEN data FTP site and others directly from relevant
-  staff. Many of the indicators on the Community Report for the v2.2
-  (early 2024) EJSCREEN data were NOT provided in the gdb and csv files
-  on the FTP site, so they had to be obtained directly from the EJSCREEN
-  team as a separate .csv file. The code referred to from
-  *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* assumes the basic
-  datasets from EPA are available, and then converts them into the
-  datasets actually used by EJAM. However, if those are no longer
-  available from those sources, the data could mostly be independently
-  recreated, but this would require a combination of existing code and
-  significant new work.
-
-- Some relevant code was in archived EJSCREEN repositories, for creating
-  environmental datasets. Some code is in EJAM functions that can get
-  ACS datasets. Much relevant code was in an older non-EPA package
-  called ejscreen, which had been made private as of early 2025 but
-  could be refreshed. That package had tools such as ejscreen.create()
-  that had been able to reproduce parts of the blockgroupstats and
-  usastats/statestats datasets.
+  and
+  [`?bgej`](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md).
+  The annual staged workflow for updating these ACS/EJScreen-style
+  blockgroup datasets is now documented separately in [Updating EJScreen
+  Datasets Annually (via the
+  Pipeline)](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-ejscreen-datasets-yearly.md).
+  That pipeline covers `bg_acs_raw`, `bg_acsdata`, `bg_envirodata`,
+  `bg_extra_indicators`, `blockgroupstats`, `bgej`, `usastats`,
+  `statestats`, and the provisional `ejscreen_export` stage. This more
+  general vignette focuses on the other datasets and storage/release
+  mechanics used by EJAM.
 
 - ***Block Datasets***: The *block* (not blockgroup) tables might be
   updated less often, but Census fips codes do change yearly so the
@@ -192,61 +173,63 @@ to be changed ANNUALLY or more often:
   (for a facility density indicator, similar to a proximity indicator).
 
 - ***Facilities Datasets for a user to specify places to analyze/report
-  on***: Facility locations and categories are used in EJAM to help a
-  user specify sets of EPA-regulated facilities or other types of sites
-  to analyze and report on in EJSCREEN reports, using their
-  *NAICS/SIC/MACT/program* information and coordinates. All of that
-  information may need frequent updates, ideally, since facilities open,
-  close, relocate, or have their information corrected or otherwise
-  updated. EPA’s FRS is the source for much of this information and the
-  FRS is updated by EPA frequently and is available via an API. Through
-  at least v2.32.8, EJAM (and therefore the community reports in
-  EJSCREEN) used a snapshot of the EPA FRS data rather than using an API
-  to obtain the latest info on demand – that is something that could be
-  changed in a future version. Facility-related info is stored in tables
-  EJAM uses, such as these:
-  [`?frs`](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md),
-  [`?frs_by_programid`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md),
-  [`?frs_by_naics`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md),
-  [`?frs_by_sic`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md),
-  and
-  [`?frs_by_mact`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_mact.md),
-  [`?NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md),
-  [`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md),
-  [`?naics_counts`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_counts.md),
-  [`?naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md),
-  [`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md),
-  [`?sictable`](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md),
-  [`?mact_table`](https://public-environmental-data-partners.github.io/EJAM/reference/mact_table.md),
-  and
-  [`?epa_programs`](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.md),
-  [`?frsprogramcodes`](https://public-environmental-data-partners.github.io/EJAM/reference/frsprogramcodes.md),
-  etc. These FRS, MACT, and Program info tables of EPA-relevant data are
-  updated in the EJAM package from within
-  *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* The
-  [`?NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md),
-  [`?naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md),
-  and
-  [`?sictable`](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md)
-  objects (viewable using
-  [`naics_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md)
-  and
-  [`sic_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_categories.md)
-  utilities) have no EPA-specific data so they do not need frequent
-  updates – The NAICS data object stores just the name of each NAICS
-  code number, and new codes/names are published every five years, such
-  as in 2017 and 2022, so a new version would typically be expected
-  in 2027. The tables called
-  [`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md)
-  (unlike the NAICS table) and
-  [`?naics_counts`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_counts.md)
-  (which has no analogous sic version), however, contain counts of EPA
-  FRS facilities, so they need updates when FRS data are updated. The
-  inconsistency in how NAICS vs SIC tables and the naics_counts table
-  were named and defined was by historical accident, not intentional, so
-  it would be OK if refactoring later made them consistent or even
-  switched entirely to more frequent automated updates or even reliance
-  on the FRS API.
+  on***:
+
+Facility locations and categories are used in EJAM to help a user
+specify sets of EPA-regulated facilities or other types of sites to
+analyze and report on in EJSCREEN reports, using their
+*NAICS/SIC/MACT/program* information and coordinates. All of that
+information may need frequent updates, ideally, since facilities open,
+close, relocate, or have their information corrected or otherwise
+updated. EPA’s FRS is the source for much of this information and the
+FRS is updated by EPA frequently and is available via an API. Through at
+least v2.32.8, EJAM (and therefore the community reports in EJSCREEN)
+used a snapshot of the EPA FRS data rather than using an API to obtain
+the latest info on demand – that is something that could be changed in a
+future version. Facility-related info is stored in tables EJAM uses,
+such as these:
+[`?frs`](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md),
+[`?frs_by_programid`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md),
+[`?frs_by_naics`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md),
+[`?frs_by_sic`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md),
+and
+[`?frs_by_mact`](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_mact.md),
+[`?NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md),
+[`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md),
+[`?naics_counts`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_counts.md),
+[`?naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md),
+[`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md),
+[`?sictable`](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md),
+[`?mact_table`](https://public-environmental-data-partners.github.io/EJAM/reference/mact_table.md),
+and
+[`?epa_programs`](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.md),
+[`?frsprogramcodes`](https://public-environmental-data-partners.github.io/EJAM/reference/frsprogramcodes.md),
+etc. These FRS, MACT, and Program info tables of EPA-relevant data have
+been updated in the EJAM package from scripts within
+*`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`* The
+[`?NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md),
+[`?naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md),
+and
+[`?sictable`](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md)
+objects (viewable using
+[`naics_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_categories.md)
+and
+[`sic_categories()`](https://public-environmental-data-partners.github.io/EJAM/reference/sic_categories.md)
+utilities) have no EPA-specific data so they do not need frequent
+updates – The NAICS data object stores just the name of each NAICS code
+number, and new codes/names are published every five years, such as in
+2017 and 2022, so a new version would typically be expected in 2027. The
+tables called
+[`?SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md)
+(unlike the NAICS table) and
+[`?naics_counts`](https://public-environmental-data-partners.github.io/EJAM/reference/naics_counts.md)
+(which has no analogous sic version), however, contain counts of EPA FRS
+facilities, so they need updates when FRS data are updated. The
+inconsistency in how NAICS vs SIC tables and the naics_counts table were
+named and defined was by historical accident, not intentional, so it
+would be OK if refactoring later made them consistent or even switched
+entirely to more frequent automated updates or even reliance on the FRS
+API.
 
 - [`?map_headernames`](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
   and associated .xlsx, etc. store critical metadata. This needs to
@@ -341,7 +324,7 @@ is used by functions like
 and
 [`dataload_from_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.md).
 
-As of EJAM version v2.32.8, there were 11 arrow files used by EJAM:
+These were the arrow files used by EJAM:
 
 ### Blockgroup and block-level arrow files
 

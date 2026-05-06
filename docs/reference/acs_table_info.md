@@ -29,3 +29,7 @@ acs_table_info(yr, tables_acs, dataset = "acs5")
 
 invisibly returns data.table of all variables in specified tables, and
 also prints to console the first variable of each table
+
+## See also
+
+[`url_acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_acs_table_info.md)

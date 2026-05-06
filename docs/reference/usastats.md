@@ -10,9 +10,8 @@ This should be similar to the lookup tables in the gdb on the FTP site
 of EJSCREEN, except it also has data for additional population
 subgroups.
 
-For details on how the table was made, see source package files
-EJAM/data-raw/datacreate_usastats2.32_add_dsubgroups.R and
-EJAM/data-raw/datacreate_usastats2.32.R
+For details on how the table was made, see source package files in
+data-raw folder.
 
 See also
 [statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md)
@@ -25,4 +24,4 @@ usastats
 
 ## Format
 
-An object of class `data.frame` with 102 rows and 67 columns.
+An object of class `data.frame` with 101 rows and 111 columns.

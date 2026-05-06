@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8.001</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -1220,27 +1221,6 @@
 
         <dt>
 
-          <code><a href="acs_bybg.html">acs_bybg()</a></code>
-
-        </dt>
-        <dd>download ACS 5year data from Census API, at blockgroup resolution (slowly if for entire US)</dd>
-
-        <dt>
-
-          <code><a href="acs_table_info.html">acs_table_info()</a></code>
-
-        </dt>
-        <dd>utility to download and print some info about each variable in each ACS 5yr table</dd>
-
-        <dt>
-
-          <code><a href="tables_ejscreen_acs.html">tables_ejscreen_acs</a></code>
-
-        </dt>
-        <dd>tables_ejscreen_acs dataset</dd>
-
-        <dt>
-
           <code><a href="avg.in.us.html">avg.in.us</a></code>
 
         </dt>
@@ -1288,7 +1268,72 @@
         </dt>
         <dd>Regression model to predict runtime for ejamit</dd>
       </dl></div><div class="section level2">
-      <h2 id="calculations-aggregation">Calculations &amp; Aggregation<a class="anchor" aria-label="anchor" href="#calculations-aggregation"></a></h2>
+
+      <h3 id="using-acs-data-to-calculate-new-indicators">Using ACS Data to Calculate New Indicators<a class="anchor" aria-label="anchor" href="#using-acs-data-to-calculate-new-indicators"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="url_acs_table_info.html">url_acs_table_info()</a></code>
+
+        </dt>
+        <dd>get URL(s) of Census Bureau pages showing ACS 5-year tables examples</dd>
+
+        <dt>
+
+          <code><a href="acs_table_info.html">acs_table_info()</a></code>
+
+        </dt>
+        <dd>utility to download and print some info about each variable in each ACS 5yr table</dd>
+
+        <dt>
+
+          <code><a href="acs_endyear.html">acs_endyear()</a></code>
+
+        </dt>
+        <dd>check which ACS 5-year survey is available from Census Bureau or in EJAM/EJSCREEN</dd>
+
+        <dt>
+
+          <code><a href="tables_ejscreen_acs.html">tables_ejscreen_acs</a></code>
+
+        </dt>
+        <dd>tables_ejscreen_acs dataset</dd>
+
+        <dt>
+
+          <code><a href="formulas_ejscreen_acs.html">formulas_ejscreen_acs</a></code>
+
+        </dt>
+        <dd>formulas_ejscreen_acs dataset</dd>
+
+        <dt>
+
+          <code><a href="acs_bybg.html">acs_bybg()</a></code>
+
+        </dt>
+        <dd>download ACS 5year data from Census API, at blockgroup resolution (slowly if for entire US)</dd>
+
+        <dt>
+
+          <code><a href="calc_ejam.html">calc_ejam()</a></code>
+
+        </dt>
+        <dd>DRAFT utility to use formulas provided as text, to calculate indicators</dd>
+
+        <dt>
+
+          <code><a href="calc_byformula.html">calc_byformula()</a></code>
+
+        </dt>
+        <dd>DRAFT utility to use formulas provided as text, to calculate indicators</dd>
+      </dl></div><div class="section level2">
+      <h2 id="calculating-and-aggregating">Calculating and Aggregating<a class="anchor" aria-label="anchor" href="#calculating-and-aggregating"></a></h2>
 
       <div class="section-desc"><p>Tools that Create or Aggregate Indicators at each Place &amp; Overall, &amp; Report Percentiles or Means</p></div>
 
@@ -2378,7 +2423,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8.001</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

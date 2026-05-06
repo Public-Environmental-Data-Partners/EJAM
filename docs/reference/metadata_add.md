@@ -20,9 +20,10 @@ metadata_add(
 
 - x:
 
-  dataset (or any object) whose metadata (stored as attributes) you want
-  to update or create EJAM, EJSCREEN, and other dataset versions and
-  release dates are tracked in DESCRIPTION
+  dataset (or any object, unquoted, i.e., not its name but the object
+  itself) whose metadata (stored as attributes) you want to update or
+  create EJAM, EJSCREEN, and other dataset versions and release dates
+  are tracked in DESCRIPTION
 
 - metadata:
 

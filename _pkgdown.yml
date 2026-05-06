@@ -63,6 +63,7 @@ articles:
   - dev-run-shinytests
   - dev-run-unit-tests
   - dev-update-datasets
+  - dev-update-ejscreen-datasets-yearly
   - dev-update-documentation
   - dev-update-package
   - dev-future-plans

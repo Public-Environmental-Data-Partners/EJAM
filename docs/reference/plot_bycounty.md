@@ -12,7 +12,7 @@ plot_bycounty(
   mystate = NULL,
   labeltype = NULL,
   acsinfo = NULL,
-  yr = 2022
+  yr = acs_endyear()
 )
 ```
 

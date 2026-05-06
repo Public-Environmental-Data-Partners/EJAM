@@ -14,6 +14,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-speed.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-documentation.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-ejscreen-datasets-yearly.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-package.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/distances.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html</loc></url>
@@ -36,6 +37,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/acs_bycounty.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/acs_endyear.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/acs_table_info.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/add_ejscreen_map_fields.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/address_from_table.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/address_from_table_goodnames.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/app_run_EJAM.html</loc></url>
@@ -44,6 +46,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/area_sqmi.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ask_number.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/attributes2.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/augment_map_headernames_ejscreen_names.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/avg.in.us.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/batch.clean.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.html</loc></url>
@@ -60,6 +63,8 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/build_barplot_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/build_community_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_avg_columns.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_acsdata.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_extra_indicators.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_bgej.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_bgwts_bysite.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_bgwts_overall.html</loc></url>
@@ -69,6 +74,12 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_counties_from_bg.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_blockgroupstats.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_bin.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_pctile_text.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_stats.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_formulas_from_varname.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ratio_columns.html</loc></url>
@@ -111,6 +122,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/distances.all.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate_newscores.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_acs_raw.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/download_latest_arrow_data.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejam2areafeatures.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.html</loc></url>
@@ -139,6 +151,8 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_types_of_places.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_sitetype_from_input.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejampackages.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_input.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_validate.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/enurl.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs_defined.html</loc></url>
@@ -185,7 +199,6 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_to_type.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/format_ejamit_columns.html</loc></url>
-<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formula_varname.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_all.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_d.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs.html</loc></url>
@@ -603,6 +616,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/testpoints_overlap3.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/testshapes_2.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/unshared.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/url_acs_table_info.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/url_by_id.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/url_columns_bysite.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/url_county_equityatlas.html</loc></url>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating EJAM Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
@@ -75,12 +76,19 @@
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>An object of class <code>data.frame</code> with 634 rows and 76 columns.</p>
+    <p>An object of class <code>data.frame</code> with 649 rows and 85 columns.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This is an IMPORTANT TABLE that provides information about each variable (indicator), such as the following:</p><ul><li><p>names as used in geodatabase files (original data source)</p></li>
-<li><p>names as used in the outputs of the EJSCREEN API</p></li>
+<li><p>names as used in the old EJSCREEN API (<code>ejscreen_apinames_old</code>,
+copied from the historical <code>apiname</code> column)</p></li>
+<li><p>names as used in the current EJAM API (<code>ejam_apinames</code>, copied from
+<code>rname</code>)</p></li>
+<li><p>names as used in old EJSCREEN staff CSV/FTP-style downloads
+(<code>ejscreen_ftp_names</code>, copied from <code>csvname</code>)</p></li>
+<li><p>names as used in current EJSCREEN download, geodatabase, and map
+application fields (<code>ejscreen_names</code>)</p></li>
 <li><p>names as used in the R code</p></li>
 <li><p>names as used in short labels of graphics</p></li>
 <li><p>names as used in table headers (long versions to provide full descriptions of the variables)</p></li>
@@ -100,10 +108,13 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="co">#   See how many variables are on each list, for example:</span></span>
 <span>  <span class="co"># \donttest{</span></span>
-<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu">copy</span><span class="op">(</span><span class="va">map_headernames</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
+<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">map_headernames</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
 <span>    variables <span class="op">=</span> <span class="va">.N</span>,</span>
 <span>    has_apiname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">apiname</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
 <span>    has_csvname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">csvname</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
+<span>    has_ejscreen_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ejscreen_names</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
+<span>    has_ejscreen_apinames_old <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ejscreen_apinames_old</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
+<span>    has_ejam_apinames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ejam_apinames</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
 <span>    has_acsname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">acsname</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
 <span> keyby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw_pctile_avg"</span>, <span class="st">"DEJ"</span>, <span class="st">"ratio.to"</span>, <span class="st">"pctile."</span>, <span class="st">"avg."</span>,  <span class="st">"varlist"</span> <span class="op">)</span><span class="op">]</span></span>
@@ -139,11 +150,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.5.0</p>
 </div>
 
     </footer></div>

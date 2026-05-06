@@ -445,14 +445,6 @@ distances
   blocks per blockgroup
 - [`bg_cenpop2020`](https://public-environmental-data-partners.github.io/EJAM/reference/bg_cenpop2020.md)
   : bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups
-- [`acs_bybg()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_bybg.md)
-  : download ACS 5year data from Census API, at blockgroup resolution
-  (slowly if for entire US)
-- [`acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_table_info.md)
-  : utility to download and print some info about each variable in each
-  ACS 5yr table
-- [`tables_ejscreen_acs`](https://public-environmental-data-partners.github.io/EJAM/reference/tables_ejscreen_acs.md)
-  : tables_ejscreen_acs dataset
 - [`avg.in.us`](https://public-environmental-data-partners.github.io/EJAM/reference/avg.in.us.md)
   : avg.in.us (DATA) national averages of key indicators, for
   convenience
@@ -472,7 +464,31 @@ distances
 - [`modelEjamit`](https://public-environmental-data-partners.github.io/EJAM/reference/modelEjamit.md)
   : Regression model to predict runtime for ejamit
 
-## Calculations & Aggregation
+### Using ACS Data to Calculate New Indicators
+
+- [`url_acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_acs_table_info.md)
+  : get URL(s) of Census Bureau pages showing ACS 5-year tables examples
+- [`acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_table_info.md)
+  : utility to download and print some info about each variable in each
+  ACS 5yr table
+- [`acs_endyear()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_endyear.md)
+  : check which ACS 5-year survey is available from Census Bureau or in
+  EJAM/EJSCREEN
+- [`tables_ejscreen_acs`](https://public-environmental-data-partners.github.io/EJAM/reference/tables_ejscreen_acs.md)
+  : tables_ejscreen_acs dataset
+- [`formulas_ejscreen_acs`](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs.md)
+  : formulas_ejscreen_acs dataset
+- [`acs_bybg()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_bybg.md)
+  : download ACS 5year data from Census API, at blockgroup resolution
+  (slowly if for entire US)
+- [`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md)
+  : DRAFT utility to use formulas provided as text, to calculate
+  indicators
+- [`calc_byformula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_byformula.md)
+  : DRAFT utility to use formulas provided as text, to calculate
+  indicators
+
+## Calculating and Aggregating
 
 Tools that Create or Aggregate Indicators at each Place & Overall, &
 Report Percentiles or Means

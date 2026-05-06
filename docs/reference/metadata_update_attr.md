@@ -8,7 +8,7 @@ FILES)
 
 ``` r
 metadata_update_attr(
-  x = pkg_data("EJAM")$Item,
+  x,
   attr_name = "ejam_package_version",
   newvalue = desc::desc_get("Version"),
   exclude_atomic_vectors = TRUE,
@@ -20,6 +20,7 @@ metadata_update_attr(
 
 - x:
 
+  if missing, defaults to all items found in EJAM pkg; otherwise, a
   vector of 1+ quoted names of data object(s), like "testpoints_10"
 
 - attr_name:

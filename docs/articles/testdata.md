@@ -136,25 +136,25 @@ x <- x[order(x$Package, x$Item), !grepl("size", names(x))]
 ``` r
 x[grepl("^testp", x$Item), ]
 #>     Package                Item
-#> 116    EJAM       testpoints_10
+#> 115    EJAM       testpoints_10
 #> 131    EJAM      testpoints_100
 #> 133    EJAM   testpoints_100_dt
-#> 150    EJAM     testpoints_1000
-#> 163    EJAM    testpoints_10000
+#> 149    EJAM     testpoints_1000
+#> 162    EJAM    testpoints_10000
 #> 124    EJAM        testpoints_5
 #> 129    EJAM       testpoints_50
-#> 145    EJAM      testpoints_500
+#> 144    EJAM      testpoints_500
 #> 125    EJAM      testpoints_bad
 #> 119    EJAM testpoints_overlap3
 #>                                                        Title
-#> 116 test points data.frame with columns sitenumber, lat, lon
+#> 115 test points data.frame with columns sitenumber, lat, lon
 #> 131 test points data.frame with columns sitenumber, lat, lon
 #> 133 test points data.frame with columns sitenumber, lat, lon
-#> 150 test points data.frame with columns sitenumber, lat, lon
-#> 163 test points data.frame with columns sitenumber, lat, lon
+#> 149 test points data.frame with columns sitenumber, lat, lon
+#> 162 test points data.frame with columns sitenumber, lat, lon
 #> 124 test points data.frame with columns sitenumber, lat, lon
 #> 129 test points data.frame with columns sitenumber, lat, lon
-#> 145 test points data.frame with columns sitenumber, lat, lon
+#> 144 test points data.frame with columns sitenumber, lat, lon
 #> 125       test points data.frame with columns note, lat, lon
 #> 119       test points data.frame with columns note, lat, lon
 ```
@@ -193,7 +193,7 @@ x[grepl("^test[^op_]", x$Item), ]
 #> 37     EJAM                    testinput_mact
 #> 38     EJAM                   testinput_naics
 #> 39     EJAM            testinput_program_name
-#> 115    EJAM          testinput_program_sys_id
+#> 114    EJAM          testinput_program_sys_id
 #> 40     EJAM                   testinput_regid
 #> 41     EJAM             testinput_registry_id
 #> 136    EJAM                testinput_shapes_2
@@ -216,7 +216,7 @@ x[grepl("^test[^op_]", x$Item), ]
 #> 37                                                   testinput_mact dataset
 #> 38                                                  testinput_naics dataset
 #> 39                                           testinput_program_name dataset
-#> 115 test data, EPA program names and program system ID numbers to try using
+#> 114 test data, EPA program names and program system ID numbers to try using
 #> 40                 test data, EPA Facility Registry ID numbers to try using
 #> 41                 test data, EPA Facility Registry ID numbers to try using
 #> 136                                              testinput_shapes_2 dataset
@@ -244,26 +244,26 @@ x[grepl("^testout", x$Item), ]
 #> 157    EJAM       testoutput_doaggregate_10pts_1miles
 #> 174    EJAM          testoutput_ejamit_1000pts_1miles
 #> 167    EJAM           testoutput_ejamit_100pts_1miles
-#> 162    EJAM            testoutput_ejamit_10pts_1miles
+#> 161    EJAM            testoutput_ejamit_10pts_1miles
 #> 164    EJAM             testoutput_ejamit_fips_cities
 #> 165    EJAM           testoutput_ejamit_fips_counties
 #> 156    EJAM                testoutput_ejamit_shapes_2
-#> 170    EJAM testoutput_getblocksnearby_1000pts_1miles
+#> 169    EJAM testoutput_getblocksnearby_1000pts_1miles
 #> 155    EJAM  testoutput_getblocksnearby_100pts_1miles
-#> 148    EJAM   testoutput_getblocksnearby_10pts_1miles
+#> 147    EJAM   testoutput_getblocksnearby_10pts_1miles
 #>                                                                  Title
 #> 173                                       test output of doaggregate()
 #> 166                                       test output of doaggregate()
 #> 157                                       test output of doaggregate()
 #> 174                                            test output of ejamit()
 #> 167                                            test output of ejamit()
-#> 162                                            test output of ejamit()
+#> 161                                            test output of ejamit()
 #> 164                              testoutput_ejamit_fips_cities dataset
 #> 165                            testoutput_ejamit_fips_counties dataset
 #> 156                                 testoutput_ejamit_shapes_2 dataset
-#> 170 test output of getblocksnearby(), and is an input to doaggregate()
+#> 169 test output of getblocksnearby(), and is an input to doaggregate()
 #> 155 test output of getblocksnearby(), and is an input to doaggregate()
-#> 148 test output of getblocksnearby(), and is an input to doaggregate()
+#> 147 test output of getblocksnearby(), and is an input to doaggregate()
 cat("\n\n")
 ```
 

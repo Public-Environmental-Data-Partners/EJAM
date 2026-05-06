@@ -12,7 +12,7 @@ formulas_ejscreen_acs
 
 ## Format
 
-An object of class `data.frame` with 99 rows and 4 columns.
+An object of class `data.frame` with 186 rows and 5 columns.
 
 ## Details
 
@@ -21,4 +21,6 @@ here](https://web.archive.org/web/20250118134239/https://www.epa.gov/system/file
 
 ## See also
 
-acs_bybg() and ACSdownload::get_acs_new()
+[tables_ejscreen_acs](https://public-environmental-data-partners.github.io/EJAM/reference/tables_ejscreen_acs.md)
+[`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md)
+[`acs_bybg()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_bybg.md)

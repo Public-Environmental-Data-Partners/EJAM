@@ -2,22 +2,13 @@
 
 DRAFT utility to use formulas provided as text, to calculate indicators
 
-DRAFT utility to use formulas provided as text, to calculate indicators
-
 ## Usage
 
 ``` r
 calc_byformula(
   mydf,
   formulas = NULL,
-  keep = formula_varname(formulas),
-  quiet = FALSE
-)
-
-calc_byformula(
-  mydf,
-  formulas = NULL,
-  keep = formula_varname(formulas),
+  keep = calc_varname_from_formula(formulas),
   quiet = FALSE
 )
 ```
@@ -49,9 +40,6 @@ calc_byformula(
 data.frame of results, but if mydf was a data.table, returns a table in
 [data.table](https://r-datatable.com) format
 
-data.frame of results, but if mydf was a data.table, returns a table in
-[data.table](https://r-datatable.com) format
-
 ## Details
 
 - [`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md)
@@ -63,17 +51,4 @@ data.frame of results, but if mydf was a data.table, returns a table in
 
 - `calc_byformula()` uses
   [`calc_varname_from_formula()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_varname_from_formula.md)
-  and maybe source_this_codetext()
-
-&nbsp;
-
-- [`custom_doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/custom_doaggregate.md)
-  may use
-  [`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md)
-
-- [`calc_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejam.md)
-  uses `calc_byformula()`
-
-- `calc_byformula()` uses
-  [`formula_varname()`](https://public-environmental-data-partners.github.io/EJAM/reference/formula_varname.md)
   and maybe source_this_codetext()
