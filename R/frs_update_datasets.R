@@ -6,9 +6,9 @@
 #' the locations, IDs, etc. for hundreds of thousands of EPA-regulated sites.
 #'   
 #'  This function is only for a package maintainer/updater
-#'  (or analyst who wants to get the latest information).
-#'  It would normally be called from a script like 
-#'  `EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`
+#'  (or an analyst who wants to get the latest information).
+#'  It is typically run from the dataset-maintenance workflow in
+#'  `EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`.
 #' 
 #'  These datasets are obtained from EPA servers, reformatted for this package, and
 #'  then stored in a separate repository - see [updating data for package](../articles/dev-update-datasets.html).
@@ -258,4 +258,3 @@ frs_update_datasets <- function(folder = NULL,
 # 2: In frs_make_naics_lookup(x = frs) : NAs introduced by coercion
 # Called from: `[.data.table`(frs, , ..usefulcolumns)
 # 
-

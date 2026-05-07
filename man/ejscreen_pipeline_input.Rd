@@ -10,6 +10,7 @@
 \alias{ejscreen_pipeline_dir}
 \alias{ejscreen_pipeline_stage_path}
 \alias{ejscreen_pipeline_stage_exists}
+\alias{ejscreen_pipeline_storage_backend}
 \title{Helpers for file-backed EJSCREEN/EJAM data update pipeline stages}
 \usage{
 ejscreen_pipeline_input(
@@ -69,6 +70,12 @@ ejscreen_pipeline_stage_exists(
   format = "csv",
   storage = c("auto", "local", "s3")
 )
+
+ejscreen_pipeline_storage_backend(
+  pipeline_dir = NULL,
+  path = NULL,
+  storage = c("auto", "local", "s3")
+)
 }
 \arguments{
 \item{x}{object to save or object supplied directly as pipeline input.}
@@ -97,7 +104,7 @@ file.}
 
 \item{validate}{logical. If TRUE, validate known stages before saving.}
 
-\item{validation_strict}{logical passed to \code{\link[=ejscreen_pipeline_validate]{ejscreen_pipeline_validate()}}.}
+\item{validation_strict}{logical passed to \code{EJAM:::ejscreen_pipeline_validate()}.}
 
 \item{root}{root folder where the pipeline folder should be created.}
 
@@ -107,13 +114,11 @@ folder name.}
 \item{pipeline_name}{short pipeline folder name.}
 }
 \value{
-\itemize{
-\item \code{EJAM:::ejscreen_pipeline_stage_names()} returns known stage names.
-\item \code{EJAM:::ejscreen_pipeline_dir()} & \code{EJAM:::ejscreen_pipeline_stage_path()} return paths.
-\item \code{EJAM:::ejscreen_pipeline_save()} writes data to files and returns the path.
-\item \code{ejscreen_pipeline_input()} & helper \code{EJAM:::ejscreen_pipeline_load()} read data from files
-& return the loaded or supplied object.
-}
+-\code{EJAM:::ejscreen_pipeline_stage_names()} returns known stage names.
+-\code{EJAM:::ejscreen_pipeline_dir()} &\code{EJAM:::ejscreen_pipeline_stage_path()} return paths.
+-\code{EJAM:::ejscreen_pipeline_save()} writes data to files and returns the path.
+-\code{EJAM:::ejscreen_pipeline_input()} & helper\code{EJAM:::ejscreen_pipeline_load()} read data from files or input, returns the data object.
+-\code{EJAM:::ejscreen_pipeline_storage_backend()} checks if using AWS s3 or local folder storage, returns one of "auto", "local", "s3"
 }
 \description{
 Helpers for file-backed EJSCREEN/EJAM data update pipeline stages

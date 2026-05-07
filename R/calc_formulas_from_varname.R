@@ -1,14 +1,21 @@
+############################################################################## #
 
-
-#' Parse right-hand-side variable names from an R formula string
+#' Parse right-hand-side variable names from an R formula string (or vector of formulas)
 #'
-#' @param formula character string with an R assignment formula.
+#' @param formula character string with an R assignment formula,
+#'   or a vector of such formulas, like c("c = a + b", "b = a * 3", "a = 2")
+#'   or formulas_ejscreen_acs$formula
 #'
-#' @return character vector of variable names used on the right side.
+#' @return
+#'   - Character vector of unique variable names used on the right side,
+#'     if formula is singular.
+#'   - A list of such vectors if a vector of formulas is provided as input!
+#'
 #' @keywords internal
-#' @noRd
 #'
-formula_rhs_names <- function(formula) {
+calc_formulas_rhs_names <- function(formula) {
+
+  if (length(formula) == 1) {
   out <- tryCatch({
     expr <- parse(text = formula)[[1]]
     if (!as.character(expr[[1]]) %in% c("<-", "=")) {
@@ -17,9 +24,21 @@ formula_rhs_names <- function(formula) {
     all.names(expr[[3]], functions = FALSE, unique = TRUE)
   }, error = function(e) character())
   setdiff(out, c("TRUE", "FALSE", "NA"))
+  } else {
+    sapply(formula, calc_formulas_rhs_names)
+  }
 }
+############################################################################## #
+# helper for cleaning up a vector of formulas like formulas_ejscreen_acs$formula
+#  or c("c = a + b", "b = a * 3", "a = 2") gets sorted so that the
+#  "a" formula is first,
+# then "b" formula is done since it relies on "a"
+# and "c" formula happens last, only after a and b have been created.
+# sort formulas so that formulas that depend on other formulas are ordered after those they depend on,
+# so that they can be calculated in order without missing dependencies.
+# If there are circular dependencies or missing dependencies, an error is thrown.
 
-sort_formulas_by_dependency <- function(formulas) {
+calc_formulas_sort_by_dependency <- function(formulas) {
   if (NROW(formulas) <= 1) {
     return(formulas)
   }
@@ -30,7 +49,7 @@ sort_formulas_by_dependency <- function(formulas) {
 
   outputs <- formulas$rname
   deps <- lapply(formulas$formula, function(x) {
-    setdiff(intersect(formula_rhs_names(x), outputs), calc_varname_from_formula(x))
+    setdiff(intersect(calc_formulas_rhs_names(x), outputs), calc_varname_from_formula(x))
   })
 
   remaining <- seq_len(NROW(formulas))
@@ -55,6 +74,7 @@ sort_formulas_by_dependency <- function(formulas) {
 
   formulas[ordered, , drop = FALSE]
 }
+############################################################################## #
 
 #' Compile formulas needed to calculate one or more final indicators
 #'
@@ -99,12 +119,12 @@ calc_formulas_from_varname <- function(varname = "pctlowinc", formulas = NULL, t
     }
 
     found <- unique(c(found, new_rnames))
-    rhs <- unique(unlist(lapply(new_rows$formula, formula_rhs_names), use.names = FALSE))
+    rhs <- unique(unlist(lapply(new_rows$formula, calc_formulas_rhs_names), use.names = FALSE))
     wanted <- unique(c(wanted, intersect(rhs, formulas$rname)))
   }
 
   these <- unique(formulas[formulas$rname %in% found, c("rname", "formula")])
-  these <- sort_formulas_by_dependency(these)
+  these <- calc_formulas_sort_by_dependency(these)
   rownames(these) <- NULL
   these
 }

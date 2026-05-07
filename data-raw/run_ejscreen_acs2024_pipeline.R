@@ -281,7 +281,7 @@ validation_summary <- rbindlist(lapply(stages_to_validate, function(stage) {
 write_pipeline_csv(validation_summary, "pipeline_validation_summary.csv")
 
 if (isTRUE(include_ejscreen_export)) {
-  ejscreen_schema_report <- ejscreen_export_schema_report(
+  ejscreen_schema_report <- EJAM:::calc_ejscreen_export_schema_report(
     ejscreen_export = out$ejscreen_export
   )
   write_pipeline_csv(ejscreen_schema_report, "ejscreen_export_schema_report.csv")

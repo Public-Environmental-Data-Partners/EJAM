@@ -1,5 +1,7 @@
 
-## NOTES ON creating/cleaning formulas_ejscreen_acs,
+stop("this is no longer used but might have useful notes on history of early work on this")
+
+## OLD NOTES ON creating/cleaning formulas_ejscreen_acs,
 # including CLEANING UP LANGUAGE VARIABLES ETC.
 
 # This originally was a script to make a set of formulas that can convert raw ACS5 data into ejscreen indicators
@@ -511,7 +513,7 @@ repair_formulas_ejscreen_acs <- function(formulas_ejscreen_acs) {
   formulas_ejscreen_acs <- formulas_ejscreen_acs[!unused_owned_household, ]
 
   formulas_ejscreen_acs <- formulas_ejscreen_acs[!duplicated(formulas_ejscreen_acs$rname), ]
-  formulas_ejscreen_acs <- EJAM:::sort_formulas_by_dependency(formulas_ejscreen_acs)
+  formulas_ejscreen_acs <- EJAM:::calc_formulas_sort_by_dependency(formulas_ejscreen_acs)
   rownames(formulas_ejscreen_acs) <- NULL
   formulas_ejscreen_acs
 }

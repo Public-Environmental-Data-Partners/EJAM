@@ -59,7 +59,7 @@ be updated only when the package features/code changes, such as the important
 data object called `map_headernames` (which in turn is used to update objects
 such as `names_e`).
 
-See the draft utility `EJAM:::pkg_data()` for a view of datasets if useful:
+See the draft utility `EJAM:::pkg_data()` for a dataset inventory:
 
 ```{r}
 x <- EJAM:::pkg_data()
@@ -172,7 +172,7 @@ be OK if refactoring later made them consistent or even switched entirely to
 more frequent automated updates or even reliance on the FRS API.
 
 -   `?map_headernames` and associated .xlsx, etc. store critical metadata. This
-needs to updated especially if indicator names change or are added, for
+needs to be updated especially if indicator names change or are added, for
 example. `?map_headernames` holds most of the useful metadata about each
 variable (each indicator, like %low income) -- e.g., how many digits to use
 in rounding, units, a long name of indicator, the type or category of
@@ -229,7 +229,7 @@ file format through the `{arrow}` R package, with file extension `.arrow`. This
 allows us to work with larger-than-memory data and store it outside of the EJAM
 package itself.
 
-Earlier version of EJAM did not use the actual arrow format, so there still may
+Earlier versions of EJAM did not use the actual Arrow format, so there still may
 be places in the code that simply use the xyz.arrow filename but not the actual
 arrow format that is faster, and those would ideally get updated. For example
 the object called `frs_arrow` is the faster format of what had been called the
@@ -287,8 +287,8 @@ automatically by EJAM
 a.  Checks data repo's latest release/version.
 b.  Checks user's EJAM package's ejamdata version, which is stored in
 `data/ejamdata_version.txt`.
-c.  If the `data/ejamdata_version.txt` file doesn't exist, e.g. if it's the
-first time installing EJAM, it will be created at the end of the script.
+c.  If the `data/ejamdata_version.txt` file doesn't exist, for example on the
+first EJAM install, it will be created at the end of the script.
 d.  If the versions are different, downloads the latest arrow from the latest
 ejamdata release with `piggyback::pb_download()`. See how this function
 works for details:

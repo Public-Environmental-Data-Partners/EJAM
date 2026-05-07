@@ -102,7 +102,7 @@ test_that("formula dependencies are ordered before they are used", {
   prior <- character()
   out_of_order <- character()
   for (i in seq_len(nrow(formulas_ejscreen_acs))) {
-    deps <- intersect(formula_rhs_names(formulas_ejscreen_acs$formula[i]), output_names)
+    deps <- intersect(calc_formulas_rhs_names(formulas_ejscreen_acs$formula[i]), output_names)
     deps <- setdiff(deps, formulas_ejscreen_acs$rname[i])
     missing_prior <- setdiff(deps, prior)
     if (length(missing_prior) > 0) {
@@ -123,7 +123,7 @@ test_that("formula dependency sorting rejects cycles", {
     rname = c("x", "y"),
     formula = c("x <- y + 1", "y <- x + 1")
   )
-  expect_error(sort_formulas_by_dependency(cyclic_formulas), "unresolved or circular dependencies")
+  expect_error(calc_formulas_sort_by_dependency(cyclic_formulas), "unresolved or circular dependencies")
 })
 
 ## might not want this to return 1 ?

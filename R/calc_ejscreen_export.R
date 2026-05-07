@@ -95,6 +95,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  save_path = NULL,
                                  save_format = NULL,
                                  overwrite = TRUE) {
+
   stage_format <- match.arg(stage_format)
 
   bg <- ejscreen_pipeline_input(
@@ -277,7 +278,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
   names(out) <- new_names
 
   if (isTRUE(include_ejscreen_map_fields)) {
-    out <- add_ejscreen_map_fields(
+    out <- calc_ejscreen_map_fields_added(
       out,
       mapping_for_names = mapping_for_names,
       pctile_names = map_field_pctile_names,
@@ -331,13 +332,33 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
   out
 }
 ###################################################### #
+# . ####
 
-ejscreen_export_schema_report <- function(ejscreen_export = NULL,
-                                          export_path = NULL,
-                                          mapping_for_names = map_headernames,
-                                          rename_newtype = "ejscreen_names",
-                                          expected_output_names = NULL,
-                                          include_map_helper_fields = TRUE) {
+#' Report which EJSCREEN export fields are expected, missing, or extra
+#'
+#' @details This helper compares a proposed EJSCREEN export table with the
+#' names implied by [map_headernames] or another mapping table. It is used by
+#' the annual data-update pipeline to write `ejscreen_export_schema_report.csv`.
+#'
+#' @param ejscreen_export optional data.frame containing an EJSCREEN export.
+#' @param export_path optional path to a saved export CSV.
+#' @param mapping_for_names map_headernames-like crosswalk.
+#' @param rename_newtype naming column in `mapping_for_names` to check.
+#' @param expected_output_names optional extra expected output field names.
+#' @param include_map_helper_fields logical. If TRUE, include expected `B_...`
+#'   and `T_...` helper fields associated with percentile fields.
+#'
+#' @return data.frame describing present/missing/extra export fields.
+#'
+#' @keywords internal
+#'
+calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
+                                               export_path = NULL,
+                                               mapping_for_names = map_headernames,
+                                               rename_newtype = "ejscreen_names",
+                                               expected_output_names = NULL,
+                                               include_map_helper_fields = TRUE) {
+
   if (is.null(ejscreen_export) && is.null(export_path)) {
     stop("ejscreen_export or export_path must be supplied")
   }
@@ -427,8 +448,58 @@ ejscreen_export_schema_report <- function(ejscreen_export = NULL,
   out[order(is.na(out$export_position), out$export_position, out$ejscreen_name), ]
 }
 ###################################################### #
+# . ####
 
-#' Add EJSCREEN map helper fields
+###################################################### #
+
+#' Calculate EJSCREEN map color bins
+#'
+#' @details EJSCREEN shows color-coded maps based on percentile bins.
+#'  This helper calculates those bin numbers so the can be stored in EJSCREEN's dataset of blockgroups.
+#'  Percentiles are expected to be represented on a 0-100 scale. Bins match the
+#' historical EJSCREEN thresholds: 0-9th percentile is bin 1,
+#' 10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin 10, and 95-100 is bin 11.
+#' Missing or out-of-range percentiles are assigned bin 0.
+#'
+#' @param x numeric vector of percentiles on a 0-100 scale.
+#'
+#' @return integer vector of bin numbers from 0 to 11.
+#'
+#' @keywords internal
+#'
+calc_ejscreen_map_bin <- function(x) {
+
+  x_num <- suppressWarnings(as.numeric(x))
+  bins <- rep(0L, length(x_num))
+  valid <- !is.na(x_num) & x_num >= 0 & x_num <= 100
+  bins[valid] <- findInterval(x_num[valid], c(10, 20, 30, 40, 50, 60, 70, 80, 90, 95)) + 1L
+  bins
+}
+###################################################### #
+
+#' Calculate EJSCREEN percentile popup text
+#'
+#' @details Percentiles are expected on EJSCREEN's 0-100 scale. The returned
+#' strings follow the current EJSCREEN app service style, such as `"95 %ile"`.
+#' Missing or out-of-range percentiles return `NA_character_`.
+#'
+#' @param x numeric vector of percentiles on a 0-100 scale.
+#'
+#' @return character vector.
+#'
+#' @keywords internal
+#'
+calc_ejscreen_map_pctile_text <- function(x) {
+
+  x_num <- suppressWarnings(as.numeric(x))
+  txt <- rep(NA_character_, length(x_num))
+  valid <- !is.na(x_num) & x_num >= 0 & x_num <= 100
+  txt[valid] <- paste0(floor(x_num[valid]), " %ile")
+  txt
+}
+###################################################### #
+
+#' Add EJSCREEN map bin and pctile text fields
 #'
 #' @details EJSCREEN app datasets include map helper fields that EJAM does not
 #' otherwise need: `B_...` small-integer color-bin fields and `T_...` popup-text
@@ -453,10 +524,11 @@ ejscreen_export_schema_report <- function(ejscreen_export = NULL,
 #'
 #' @keywords internal
 #'
-add_ejscreen_map_fields <- function(x,
-                                    mapping_for_names = map_headernames,
-                                    pctile_names = NULL,
-                                    overwrite = TRUE) {
+calc_ejscreen_map_fields_added <- function(x,
+                                           mapping_for_names = map_headernames,
+                                           pctile_names = NULL,
+                                           overwrite = TRUE) {
+
   out <- as.data.frame(x, stringsAsFactors = FALSE, check.names = FALSE)
   mh <- augment_map_headernames_ejscreen_names(mapping_for_names)
 
@@ -502,46 +574,3 @@ add_ejscreen_map_fields <- function(x,
 
   out
 }
-###################################################### #
-
-#' Calculate EJSCREEN map color bins
-#'
-#' @details Percentiles are expected on EJSCREEN's 0-100 scale. Bins match the
-#' historical EJSCREEN/ejanalysis thresholds: 0-9th percentile is bin 1,
-#' 10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin 10, and 95-100 is bin 11.
-#' Missing or out-of-range percentiles are assigned bin 0.
-#'
-#' @param x numeric vector of percentiles on a 0-100 scale.
-#'
-#' @return integer vector of bin numbers from 0 to 11.
-#'
-#' @keywords internal
-#'
-calc_ejscreen_map_bin <- function(x) {
-  x_num <- suppressWarnings(as.numeric(x))
-  bins <- rep(0L, length(x_num))
-  valid <- !is.na(x_num) & x_num >= 0 & x_num <= 100
-  bins[valid] <- findInterval(x_num[valid], c(10, 20, 30, 40, 50, 60, 70, 80, 90, 95)) + 1L
-  bins
-}
-
-#' Calculate EJSCREEN percentile popup text
-#'
-#' @details Percentiles are expected on EJSCREEN's 0-100 scale. The returned
-#' strings follow the current EJSCREEN app service style, such as `"95 %ile"`.
-#' Missing or out-of-range percentiles return `NA_character_`.
-#'
-#' @param x numeric vector of percentiles on a 0-100 scale.
-#'
-#' @return character vector.
-#'
-#' @keywords internal
-#'
-calc_ejscreen_map_pctile_text <- function(x) {
-  x_num <- suppressWarnings(as.numeric(x))
-  txt <- rep(NA_character_, length(x_num))
-  valid <- !is.na(x_num) & x_num >= 0 & x_num <= 100
-  txt[valid] <- paste0(floor(x_num[valid]), " %ile")
-  txt
-}
-###################################################### #

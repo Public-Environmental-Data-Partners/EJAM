@@ -44,9 +44,6 @@ when \code{reuse_existing_if_missing} is TRUE. Defaults to current package data.
 \item{overwrite}{logical, whether to overwrite an existing saved stage.}
 
 \item{validation_strict}{logical passed to \code{\link[=ejscreen_pipeline_save]{ejscreen_pipeline_save()}}.}
-
-\item{extra_indicator_varlists}{\code{map_headernames$varlist} groups used to
-identify extra indicator defaults.}
 }
 \value{
 data.table with \code{bgfips} and extra indicator columns.

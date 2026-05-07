@@ -141,7 +141,7 @@ if (0 == 1) {  # collapsable list
 
          "datacreate_avg.in.us.R", "datacreate_high_pctiles_tied_with_min.R",
 
-         "datacreate_formulas.R", "datacreate_formulas_ejscreen_acs.R",  "datacreate_formulas_ejscreen_demog_index.R",  "datacreate_formulas_ejscreen_acs_pctdisability.R",
+         "datacreate_formulas.R", "datacreate_formulas_ejscreen_demog_index.R",  "datacreate_formulas_ejscreen_acs_pctdisability.R",
 
          # testdata nonstandard names, not testinput_ or testoutput_
          "datacreate_testpoints_testoutputs.R",  "datacreate_testpoints_5_50_500.R",
@@ -206,7 +206,7 @@ if (0 == 1) {  # collapsable list
     documentOpen('./data-raw/datacreate_high_pctiles_tied_with_min.R')
 
     documentOpen('./data-raw/datacreate_formulas.R')
-    documentOpen('./data-raw/datacreate_formulas_ejscreen_acs.R')
+    # legacy only: do not source archived_datacreate_formulas_ejscreen_acs_notes.R to rebuild formulas_ejscreen_acs
     documentOpen('./data-raw/datacreate_formulas_ejscreen_demog_index.R')
     documentOpen('./data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R')
 
@@ -214,7 +214,7 @@ if (0 == 1) {  # collapsable list
     documentOpen('./data-raw/datacreate_avg.in.us.R')                   # ok
     documentOpen('./data-raw/datacreate_high_pctiles_tied_with_min.R')  # ok
     ##  calculations and examples of outputs
-    documentOpen('./data-raw/datacreate_formulas.R')                    # was in progress; maybe not used yet
+    documentOpen('./data-raw/datacreate_formulas.R')                    # current formulas helper script
 
     documentOpen('./data-raw/datacreate_testpoints_testoutputs.R')
     documentOpen('./data-raw/datacreate_testpoints_5_50_500.R')

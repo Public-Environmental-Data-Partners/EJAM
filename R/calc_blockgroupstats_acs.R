@@ -34,7 +34,8 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #' @details
 #' This is meant to be used annually for updating EJScreen demographic indicators
 #' from the Census Bureau American Community Survey (ACS) 5-year summary file, to update the datasets in the package.
-#' This would normally be called from the script in `datacreate_blockgroupstats_acs.R`, which is in the source package folder "data-raw"
+#' This is now typically orchestrated by [calc_ejscreen_dataset()] and by the
+#' staged pipeline runner script `data-raw/run_ejscreen_acs2024_pipeline.R`.
 #'
 #' Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
 #' which is documented at https://ejanalysis.github.io/ACSdownload

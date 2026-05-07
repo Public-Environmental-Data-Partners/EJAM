@@ -1,7 +1,8 @@
 
 
 
-### gets used by calc_blockgroup_demog_index() as used by script in datacreate_formulas_ejscreen_acs.R
+### gets used by calc_blockgroup_demog_index(), now orchestrated by the staged
+### pipeline and calc_ejscreen_dataset(); archived formula notes are reference only.
 
 
 

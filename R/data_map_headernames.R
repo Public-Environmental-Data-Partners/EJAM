@@ -21,7 +21,10 @@
 #'   - method for aggregating the value across blockgroups (sum, weighted mean, what is the weight, etc.)
 #'   - etc.
 #'
-#'   It was created from a spreadsheet of the same name, that is in a data-raw folder. Several helper functions are used to query it such as [fixcolnames()] and many functions rely on it. You can see examples of what it contains like this, for example:
+#'   It was created from a spreadsheet of the same name in the `data-raw`
+#'   folder. Several helper functions are used to query it, such as
+#'   [fixcolnames()], and many functions rely on it. You can see examples of
+#'   what it contains below.
 #'
 #'   `data.frame(t(map_headernames[1:2, ]))`
 #' @seealso [varinfo()] [fixcolnames()] [varin_map_headernames()] [varlist2names()]

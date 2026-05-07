@@ -14,8 +14,6 @@
 #' @param bg_extra_indicators optional data.frame or data.table with `bgfips`
 #'   and extra indicator columns.
 #' @param extra_indicator_vars expected extra indicator columns.
-#' @param extra_indicator_varlists `map_headernames$varlist` groups used to
-#'   identify extra indicator defaults.
 #' @param reuse_existing_if_missing logical, whether missing extra indicators
 #'   should be copied from `existing_blockgroupstats`.
 #' @param existing_blockgroupstats optional blockgroupstats-like table to use

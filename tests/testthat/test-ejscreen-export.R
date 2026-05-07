@@ -125,7 +125,7 @@ test_that("calc_ejscreen_export default output drops non-reporting placeholder n
   expect_equal(out$KEEP, 1)
 })
 
-test_that("ejscreen_export_schema_report flags missing and extra fields", {
+test_that("calc_ejscreen_export_schema_report flags missing and extra fields", {
   export <- data.frame(
     ID = "100010001001",
     D2_PM25 = 1,
@@ -144,7 +144,7 @@ test_that("ejscreen_export_schema_report flags missing and extra fields", {
     stringsAsFactors = FALSE
   )
 
-  report <- ejscreen_export_schema_report(
+  report <- EJAM:::calc_ejscreen_export_schema_report(
     ejscreen_export = export,
     mapping_for_names = mapping
   )
@@ -157,7 +157,7 @@ test_that("ejscreen_export_schema_report flags missing and extra fields", {
 
 test_that("EJSCREEN map helper fields use historical bins and current text", {
   expect_equal(
-    calc_ejscreen_map_bin(c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101)),
+    EJAM:::calc_ejscreen_map_bin(c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101)),
     c(0L, 0L, 1L, 1L, 2L, 9L, 10L, 10L, 11L, 11L, 0L)
   )
   expect_equal(
@@ -166,7 +166,7 @@ test_that("EJSCREEN map helper fields use historical bins and current text", {
       "90 %ile", "94 %ile", "95 %ile", "100 %ile", NA)
   )
 
-  out <- add_ejscreen_map_fields(
+  out <- EJAM:::calc_ejscreen_map_fields_added(
     data.frame(
       P_D2_NO2 = c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101),
       check.names = FALSE

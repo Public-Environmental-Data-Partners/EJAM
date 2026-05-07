@@ -87,6 +87,11 @@ The pipeline creates or reads these stages:
 The pipeline also writes `pipeline_validation_summary.csv`. When the EJScreen
 export is created, it also writes `ejscreen_export_schema_report.csv`.
 
+The pipeline uses the packaged `formulas_ejscreen_acs` object for ACS-derived
+indicator formulas. The old `data-raw/archived_datacreate_formulas_ejscreen_acs_notes.R`
+script is legacy reference material and should not be used as the current
+rebuild workflow.
+
 ## Storage Choices
 
 By default, the runner writes CSV checkpoints to a local folder:
