@@ -5,7 +5,7 @@ Add EJSCREEN map helper fields
 ## Usage
 
 ``` r
-add_ejscreen_map_fields(
+calc_ejscreen_map_fields_added(
   x,
   mapping_for_names = map_headernames,
   pctile_names = NULL,
