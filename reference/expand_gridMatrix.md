@@ -37,8 +37,8 @@ colnames. Otherwise it uses "x" and "y" as colnames.
 ## Examples
 
 ``` r
- expand_gridMatrix(99:103, 1:2) 
+ EJAM:::expand_gridMatrix(99:103, 1:2)
  zz <- 1:10; top <- 1:2
- expand_gridMatrix(zz, top) 
+ EJAM:::expand_gridMatrix(zz, top)
  
 ```

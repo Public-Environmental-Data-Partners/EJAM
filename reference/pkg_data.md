@@ -52,16 +52,19 @@ Also see functions like pkg_functions_and_data() and pkg_functions_xyz
  info4 <- capture.output({ x4 <- EJAM:::pkg_functions_found_in_files() })
  ## x5 <- EJAM:::pkg_functions_preceding_lines() # may need to be debugged
 
- # See function names that use certain words - Useful view!
+ # Which functions, files, or data objects are named with certain terms?
 
- extra <- capture.output({
-   y <- EJAM:::pkg_functions_found_in_files()
- }); rm(extra)
  terms <- c("name",  "var", "fix",  "meta", "calc", "ejscreen", "report", "make")
  # also try   "^get", "^block", "^bg"
- sapply(terms, function(term) {cbind(grep(term, y, value=T))})
 
- # See filenames that use certain words - Useful view!
+ # See FUNCTION names that use certain words - Useful view
+
+ extra <- capture.output({
+   funcs <- EJAM:::pkg_functions_found_in_files()
+ }); rm(extra)
+ sapply(terms, function(term) {cbind(grep(term, funcs, value=T))})
+
+ # See FILE names that use certain words - Useful view
 
  # list.files(recursive = T, pattern = "^datacreate")
  list.files(recursive = T, pattern = "^util.*R$")
@@ -69,6 +72,16 @@ Also see functions like pkg_functions_and_data() and pkg_functions_xyz
    list.files(recursive = T, pattern = paste0(term, ".*R$"))
  })
 
+ # See DATASET names that use certain words - Useful view
+
+ dat <- EJAM:::pkg_functions_and_data(functions_included = F, vectoronly = T)
+ terms1 = "formula"
+ cat("DATA OBJECTS \n"); grep(terms1, dat, value=T)
+ cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=T), "()")
+
+ terms1="calc"
+ cat("DATA OBJECTS \n"); grep(terms1, dat, value=T)
+ cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=T), "()")
 
  # some ways to to see what datasets are in the EJAM package:
 

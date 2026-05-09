@@ -117,7 +117,8 @@ is performed for blockgroup-resolution tables.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This is meant to be used annually for updating EJScreen demographic indicators
 from the Census Bureau American Community Survey (ACS) 5-year summary file, to update the datasets in the package.
-This would normally be called from the script in <code>datacreate_blockgroupstats_acs.R</code>, which is in the source package folder "data-raw"</p>
+This is now typically orchestrated by <code><a href="calc_ejscreen_dataset.html">calc_ejscreen_dataset()</a></code> and by the
+staged pipeline runner script <code>data-raw/run_ejscreen_acs2024_pipeline.R</code>.</p>
 <p>Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
 which is documented at https://ejanalysis.github.io/ACSdownload</p>
     </div>

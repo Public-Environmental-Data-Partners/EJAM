@@ -95,6 +95,19 @@
   dependency ordering and validation checks, and fixed the EPA Region
   formula so it uses state FIPS rather than state abbreviations.
 
+- Reduced the exported API surface by making many pipeline-stage
+  helpers, developer utilities, and thin wrapper functions internal.
+  Public workflows now center more clearly on higher-level entry points
+  such as
+  [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md),
+  [`calc_ejscreen_dataset()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.md),
+  and
+  [`calc_ejscreen_export()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.md).
+
+- Updated tests, vignettes, maintainer scripts, pkgdown reference
+  indexing, and examples so internal helpers continue to work via
+  `EJAM:::` where needed.
+
 ## EJAM 2.4.0 (May 2026)
 
 ### Updated Demographic Data from ACS

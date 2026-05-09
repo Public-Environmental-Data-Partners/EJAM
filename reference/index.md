@@ -468,9 +468,6 @@ distances
 
 - [`url_acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_acs_table_info.md)
   : get URL(s) of Census Bureau pages showing ACS 5-year tables examples
-- [`acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_table_info.md)
-  : utility to download and print some info about each variable in each
-  ACS 5yr table
 - [`acs_endyear()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_endyear.md)
   : check which ACS 5-year survey is available from Census Bureau or in
   EJAM/EJSCREEN
@@ -889,8 +886,6 @@ Report Percentiles or Means
 Utilities to handle variable names, indicator metadata, formulas, etc.
 
 - [`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
-  : helper function to rename variables that are colnames of data.frame
-- [`fixcolnames_anyoldtype()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames_anyoldtype.md)
   : helper function to rename variables that are colnames of data.frame
 - [`names_d`](https://public-environmental-data-partners.github.io/EJAM/reference/names_d.md)
   : a list of variable names for internal use in EJAM

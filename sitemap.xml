@@ -37,7 +37,6 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/acs_bycounty.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/acs_endyear.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/acs_table_info.html</loc></url>
-<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_fields_added.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/address_from_table.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/address_from_table_goodnames.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/app_run_EJAM.html</loc></url>
@@ -77,10 +76,13 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_blockgroupstats.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export_schema_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_bin.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_fields_added.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_pctile_text.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_stats.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_formulas_from_varname.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_formulas_rhs_names.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ratio_columns.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_varname_from_formula.html</loc></url>

@@ -12,7 +12,7 @@ minute.
 
 Some relevant EJAM functions:
 
-- [`speedreport()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedreport.md)
+- `EJAM:::speedreport()`
 - [`speedmessage()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedmessage.md)
 - [`speedtest()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest.md)
 - [`speedtest_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest_plot.md)
@@ -31,7 +31,7 @@ minutes.
 began = Sys.time()
 x = ejamit(testpoints_100, radius = 1)
 ended = Sys.time()
-speedreport(start = began, end = ended, n = 100)
+EJAM:::speedreport(start = began, end = ended, n = 100)
 
 ## Rate of 34,314 places per hour: 100 places took 10 seconds
 ```

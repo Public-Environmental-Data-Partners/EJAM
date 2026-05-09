@@ -44,7 +44,9 @@ ejam2barplot(
 
 - ...:
 
-  passed to `plot_barplot_ratios_ez()`, to change color scheme, etc.
+  passed to
+  [`plot_barplot_ratios_ez()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_ratios_ez.md),
+  to change color scheme, etc.
 
 ## Value
 

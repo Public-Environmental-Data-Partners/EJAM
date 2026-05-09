@@ -43,5 +43,5 @@ Uses EJAM:::find_in_files()
 ## Examples
 
 ``` r
-  found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+  EJAM:::found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
 ```

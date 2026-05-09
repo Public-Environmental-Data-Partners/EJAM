@@ -54,7 +54,9 @@ ggplot should be returned
 
 ## Details
 
-See `plot_barplot_ratios_ez()` which is easier to use, or
+See
+[`plot_barplot_ratios_ez()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_ratios_ez.md)
+which is easier to use, or
 [`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md)
 which is even easier.
 
@@ -68,7 +70,7 @@ in State.
 
 [`ejam2ratios()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2ratios.md)
 [`ejam2barplot()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot.md)
-`plot_barplot_ratios_ez()`
+[`plot_barplot_ratios_ez()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_barplot_ratios_ez.md)
 [`ejam2excel()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2excel.md)
 
 ## Examples

@@ -28,6 +28,6 @@ correct structure filled with NA values.
 ## Examples
 
 ``` r
-  x <- table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_bysite[ 1, ])
-  x <- table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_overall)
+  x <- EJAM:::table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_bysite[ 1, ])
+  x <- EJAM:::table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_overall)
 ```

@@ -1,6 +1,6 @@
-# Add EJSCREEN map helper fields
+# Add EJSCREEN map bin and pctile text fields
 
-Add EJSCREEN map helper fields
+Add EJSCREEN map bin and pctile text fields
 
 ## Usage
 

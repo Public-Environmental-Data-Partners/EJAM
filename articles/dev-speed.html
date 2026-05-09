@@ -113,7 +113,7 @@ loaded and attached, which needs to be done once up front and can take a
 minute.</p>
 <p>Some relevant EJAM functions:</p>
 <ul>
-<li><code><a href="../reference/speedreport.html">speedreport()</a></code></li>
+<li><code>EJAM:::speedreport()</code></li>
 <li><code><a href="../reference/speedmessage.html">speedmessage()</a></code></li>
 <li><code><a href="../reference/speedtest.html">speedtest()</a></code></li>
 <li><code><a href="../reference/speedtest_plot.html">speedtest_plot()</a></code></li>
@@ -130,7 +130,7 @@ minutes.</p>
 <code class="sourceCode R"><span><span class="va">began</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span><span class="va">testpoints_100</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">ended</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/speedreport.html">speedreport</a></span><span class="op">(</span>start <span class="op">=</span> <span class="va">began</span>, end <span class="op">=</span> <span class="va">ended</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedreport.html">speedreport</a></span><span class="op">(</span>start <span class="op">=</span> <span class="va">began</span>, end <span class="op">=</span> <span class="va">ended</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Rate of 34,314 places per hour: 100 places took 10 seconds</span></span></code></pre></div>
 <p>Analyzing all 159 counties in Georgia can take less than 10 seconds.
