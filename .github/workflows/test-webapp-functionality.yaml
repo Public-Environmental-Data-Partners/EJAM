@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 # system libraries:
 #   libcurl -- needed to complete setup-renv
