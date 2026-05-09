@@ -41,8 +41,8 @@
   checkpoints are easier to inspect, replace, and rerun outside R. The raw ACS
   checkpoint uses a folder-plus-manifest layout with one file per ACS table,
   which makes it easier to add supplemental ACS-like tables before the next
-  stage runs. Pipeline storage can use a local folder now and `s3://...` AWS S3
-  paths later, with Git LFS rules in place if a checkpoint folder needs to be
+  stage runs. Pipeline storage can use a local folder now or `s3://...` AWS S3
+  paths, with Git LFS rules in place if a checkpoint folder needs to be
   force-added to the repository temporarily.
 
 - Added `bg_envirodata` and `bg_extra_indicators` as explicit pipeline inputs.

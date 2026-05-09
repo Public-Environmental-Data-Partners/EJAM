@@ -50,7 +50,7 @@ pipeline_dir <- Sys.getenv(
 )
 pipeline_storage <- Sys.getenv("EJAM_PIPELINE_STORAGE", unset = "auto")
 pipeline_storage <- match.arg(pipeline_storage, c("auto", "local", "s3"))
-pipeline_storage <- ejscreen_pipeline_storage_backend(pipeline_dir, storage = pipeline_storage)
+pipeline_storage <- EJAM:::ejscreen_pipeline_storage_backend(pipeline_dir, storage = pipeline_storage)
 force_acs <- env_flag("EJAM_FORCE_ACS", FALSE)
 force_bg_acsdata <- env_flag("EJAM_FORCE_BG_ACSDATA", force_acs)
 include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
@@ -63,15 +63,15 @@ message("Pipeline folder: ", pipeline_dir)
 message("Pipeline storage: ", pipeline_storage)
 
 stage_path <- function(stage) {
-  ejscreen_pipeline_stage_path(stage, pipeline_dir, format = "csv")
+  EJAM:::ejscreen_pipeline_stage_path(stage, pipeline_dir, format = "csv")
 }
 
 load_csv_stage <- function(stage) {
-  ejscreen_pipeline_load(stage, pipeline_dir = pipeline_dir, format = "csv", storage = pipeline_storage)
+  EJAM:::ejscreen_pipeline_load(stage, pipeline_dir = pipeline_dir, format = "csv", storage = pipeline_storage)
 }
 
 stage_exists <- function(stage) {
-  ejscreen_pipeline_stage_exists(stage, pipeline_dir = pipeline_dir, format = "csv", storage = pipeline_storage)
+  EJAM:::ejscreen_pipeline_stage_exists(stage, pipeline_dir = pipeline_dir, format = "csv", storage = pipeline_storage)
 }
 
 pipeline_file_path <- function(file_name) {
@@ -83,7 +83,7 @@ write_pipeline_text <- function(lines, file_name) {
   if (pipeline_storage == "s3") {
     tmp <- tempfile(fileext = ".txt")
     writeLines(lines, con = tmp)
-    ejscreen_pipeline_s3_upload(tmp, path)
+    EJAM:::ejscreen_pipeline_s3_upload(tmp, path)
   } else {
     writeLines(lines, con = path)
   }
@@ -95,7 +95,7 @@ write_pipeline_csv <- function(x, file_name) {
   if (pipeline_storage == "s3") {
     tmp <- tempfile(fileext = ".csv")
     fwrite(x, tmp)
-    ejscreen_pipeline_s3_upload(tmp, path)
+    EJAM:::ejscreen_pipeline_s3_upload(tmp, path)
   } else {
     fwrite(x, path)
   }
@@ -108,7 +108,7 @@ write_pipeline_csv <- function(x, file_name) {
 
 if (force_acs || !stage_exists("bg_acs_raw")) {
   message("Creating bg_acs_raw from ACSdownload/Census files")
-  bg_acs_raw <- download_bg_acs_raw(
+  bg_acs_raw <- EJAM::download_bg_acs_raw(
     yr = yr,
     pipeline_dir = pipeline_dir,
     save_stage = TRUE,
@@ -140,7 +140,7 @@ if (force_bg_acsdata || !stage_exists("bg_acsdata")) {
     stage_format = "csv",
     overwrite = TRUE
   )
-  ejscreen_pipeline_save(bg_acsdata, "bg_acsdata", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
+  EJAM:::ejscreen_pipeline_save(bg_acsdata, "bg_acsdata", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
 } else {
   message("Reusing saved bg_acsdata")
   bg_acsdata <- load_csv_stage("bg_acsdata")
@@ -156,9 +156,9 @@ if (stage_exists("bg_envirodata")) {
   bg_envirodata <- load_csv_stage("bg_envirodata")
 } else if (isTRUE(use_provisional_bg_envirodata)) {
   message("Creating PROVISIONAL bg_envirodata.csv from current package blockgroupstats")
-  env_cols <- intersect(names_e, names(EJAM::blockgroupstats))
+  env_cols <- intersect(EJAM::names_e, names(EJAM::blockgroupstats))
   bg_envirodata <- as.data.table(EJAM::blockgroupstats)[, c("bgfips", env_cols), with = FALSE]
-  ejscreen_pipeline_save(bg_envirodata, "bg_envirodata", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
+  EJAM:::ejscreen_pipeline_save(bg_envirodata, "bg_envirodata", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
   write_pipeline_text(
     c(
       "PROVISIONAL bg_envirodata.csv",
@@ -192,7 +192,7 @@ if (stage_exists("bg_extra_indicators")) {
     stage_format = "csv",
     overwrite = TRUE
   )
-  ejscreen_pipeline_save(bg_extra_indicators, "bg_extra_indicators", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
+  EJAM:::ejscreen_pipeline_save(bg_extra_indicators, "bg_extra_indicators", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
   write_pipeline_text(
     c(
       "PROVISIONAL bg_extra_indicators.csv",
@@ -211,7 +211,7 @@ if (stage_exists("bg_extra_indicators")) {
 message("Creating blockgroupstats, bgej, usastats, statestats",
         if (isTRUE(include_ejscreen_export)) ", and ejscreen_export" else "")
 
-out <- calc_ejscreen_dataset(
+out <- EJAM::calc_ejscreen_dataset(
 
   yr = yr,
   bg_acsdata = bg_acsdata,
