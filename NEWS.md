@@ -82,6 +82,14 @@
   `calc_ejscreen_dataset()`, and `calc_ejscreen_export()`. Updated tests, vignettes, maintainer scripts, pkgdown reference indexing, and
   examples so internal helpers continue to work via `EJAM:::` where needed.
 
+- Improved the messages predicting how long it will take to run an analysis. 
+  Runtime timing tools now distinguish point-buffer, FIPS, and shapefile
+  analyses. Detailed speed test CSVs include `analysis_type` and
+  `analysis_subtype`; FIPS subtypes come from `fipstype(fips)` so city/place
+  and county analyses can be modeled separately. Runtime model rebuilding can
+  keep separate `ejamit()` models by input type and subtype when scenario timing
+  rows are available, and the Shiny app now shows these scenario-aware runtime
+  estimates before starting an analysis.
 
 
 # EJAM 2.4.0 (May 2026)

@@ -7,7 +7,7 @@
 speedtest_plot(x, ltype = "b", plotfile = NULL, secondsperthousand = FALSE)
 }
 \arguments{
-\item{x}{table from speedtest()}
+\item{x}{table from \code{\link[=speedtest]{speedtest()}}, or one element of output of \code{\link[=speedtest_runtime_scenarios]{speedtest_runtime_scenarios()}}}
 
 \item{ltype}{optional type of line for plot}
 

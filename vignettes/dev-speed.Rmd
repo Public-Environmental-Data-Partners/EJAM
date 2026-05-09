@@ -46,12 +46,12 @@ when the package is loaded and attached, which needs to be done once up front an
 
 Some relevant EJAM functions:
 
--   `speedreport()`
--   `speedmessage()`
--   `speedtest()`
--   `speedtest_plot()`
--   `speedtable_summarize()`
--   `speedtable_expand()`
+-   `EJAM:::speedreport()`
+-   `EJAM:::speedmessage()`
+-   `EJAM:::speedtest()`
+-   `EJAM:::speedtest_plot()`
+-   `EJAM:::speedtable_summarize()`
+-   `EJAM:::speedtable_expand()`
 
 Note some of these are internal, not exported, so you would need to use EJAM:::
 if using them without doing load_all() first.
@@ -64,7 +64,7 @@ Ten thousand sites with a radius of 5 miles at each can take about 5 minutes.
 began = Sys.time()
 x = ejamit(testpoints_100, radius = 1)
 ended = Sys.time()
-speedreport(start = began, end = ended, n = 100)
+EJAM:::speedreport(start = began, end = ended, n = 100)
 
 ## Rate of 34,314 places per hour: 100 places took 10 seconds
 ```
@@ -112,7 +112,47 @@ You can automate running various scenarios with the speedtest() utility:
 point_counts = c(10, 30, 50, 100, 300, 500, 1000, 3000, 5000, 10000)
 radii = c(1, 3, 5, 6.2, 10)
 speeds <- EJAM:::speedtest(n = point_counts, radii = radii)
+
+# If you want a CSV of detailed timings for runtime modeling, including
+# small-point cases like 1, 2, and 10 points:
+speeds_detailed <- EJAM:::speedtest(
+  n = point_counts,
+  radii = radii,
+  collect_detailed = TRUE,
+  detail_point_counts = c(1, 2, 10),
+  detailed_csv = "data-raw/Analysis_timing_results_runtime_models.csv",
+  logging = FALSE,
+  plot = FALSE,
+  honk_when_ready = FALSE
+)
+detailed_rows <- attr(speeds_detailed, "detailed_results")
 ```
+
+The runtime models should be trained separately for the main input modes:
+point buffers, FIPS Census units, and uploaded polygons. Point-buffer runs use
+radius as an important predictor, but FIPS and polygon runs do not have the
+same meaning of radius. To collect one combined timing table with an
+`analysis_type` column, use:
+
+```{r speedtest-scenarios, eval = FALSE, echo = TRUE}
+scenario_speeds <- EJAM:::speedtest_runtime_scenarios(
+  detailed_csv = "data-raw/Analysis_timing_results_runtime_scenarios.csv",
+  point_counts = c(1, 2, 10, 100),
+  point_radii = c(1, 3.106856, 5),
+  fips_counts = c(1, 3, 25),
+  shapefile_counts = c(1, 3, 25)
+)
+scenario_rows <- attr(scenario_speeds, "detailed_results")
+```
+
+The combined detailed table includes `analysis_type` and `analysis_subtype`.
+For FIPS runs, the subtype is based on `fipstype(fips)`, so city/place FIPS and
+county FIPS can be modeled separately. The default county scenario uses up to
+25 California county FIPS codes, the default city scenario uses up to 25
+`censusplaces$fips` values, and the default polygon scenario uses the Portland
+example shapefile in `inst/testdata/shapes/portland_folder_shp/`. You can
+provide different FIPS vectors or a different shapefile if you want the timing
+data to reflect another expected workload.
 
 For small numbers of points, the radius and number of points do not have a large impact on total time, 
 but for larger radius values the number of points matters more. Likewise, for larger numbers of points,

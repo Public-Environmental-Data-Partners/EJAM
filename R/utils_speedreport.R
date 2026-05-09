@@ -8,7 +8,6 @@
 #' @seealso [speedmessage()]
 #'
 #' @keywords internal
-#' @export
 #'
 speedreport <- function(start,end,n) {
 

@@ -11,5 +11,5 @@ info = capture.output({
   )
 })
 print(info)
-rmost(notremove = "info")
+EJAM:::rmost(notremove = "info")
 beepr::beep()

@@ -6,7 +6,7 @@
 \usage{
 speedtest_runtime_scenarios(
   detailed_csv = file.path("data-raw", "Analysis_timing_results_runtime_scenarios.csv"),
-  point_counts = c(1L, 2L, 10L),
+  point_counts = c(1L, 10L, 100L, 1000L, 3000L, 10000L),
   point_radii = c(1, 3.106856, 5),
   fips = NULL,
   fips_counties = NULL,
