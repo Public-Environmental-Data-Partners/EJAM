@@ -271,26 +271,49 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 
 ## searching text in source files ####
 
-# Helper for EJAM:::find_in_files()
-#
-# Related: EJAM:::found_in_files()
-# Undocumented related functions:
-# EJAM:::found_in_N_files_T_times()
-# EJAM:::grab_hits()
-# EJAM:::grepn()
-
-grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, value = TRUE) {
-
-  # use grepl to find all members of character vector z where the character string "h" appears in the string
-  # but the string does not start with zero or more spaces followed by the character "#"
-  # ## example
-  #   xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
-  #
-  # cbind(xx, grab_hits("ej", xx, ignorecomments = TRUE,  value = F))
-  # cbind(xx, grab_hits("ej", xx, ignorecomments = FALSE, value = F))
-  #
-  # cbind(  grab_hits("ej", xx, ignorecomments = TRUE,    value = T))
-  # cbind(  grab_hits("ej", xx, ignorecomments = FALSE,   value = T))
+#' utility - Helper for find_in_files()
+#'
+#' @details
+#'  This is somewhat like grepv() but with these options:
+#'  option to return numbers of the elements or line numbers as names of the output vector
+#'  option to ignore commented-out lines of code (if searching with in lines of code)
+#'  option to return just the matching part of the element or line instead of the whole line if desired.ut
+#'
+#'  use grepl to find all members of character vector z where the character string "h" appears in the string
+#'  but the string does not start with zero or more spaces followed by the character "#"
+#'
+#' @examples
+#'
+#' grep_lines("x",  c("x", "y", "has any x x xxxxx"))
+#'
+#' xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
+#'
+#'  cbind(xx, grep_lines("ej", xx, ignorecomments = TRUE,  value = F))
+#'  cbind(xx, grep_lines("ej", xx, ignorecomments = FALSE, value = F))
+#'
+#'  cbind(  grep_lines("ej", xx, ignorecomments = TRUE,    value = T))
+#'  cbind(  grep_lines("ej", xx, ignorecomments = FALSE,   value = T))
+#'
+#' @inherit grepn seealso
+#'
+#' @keywords internal
+#'
+#' Search an in-memory character vector line by line
+#'
+#' @description Internal helper used by [find_in_files()] to search text that is
+#'   already in memory, such as the output of [readLines()].
+#' @param pattern regular expression to look for
+#' @param x character vector to search, typically one element per line
+#' @param ignore.case logical passed to [grepl()]
+#' @param ignorecomments if `TRUE`, lines beginning with `#` are excluded
+#' @param value if `TRUE`, return matching lines; otherwise return a logical vector
+#' @return Character vector of matching lines if `value = TRUE`, otherwise a
+#'   logical vector the same length as `x`. Returned values are named with line
+#'   numbers where applicable.
+#' @seealso [find_in_files()] [grepn()] [grepns()] [grepls()]
+#' @keywords internal
+#'
+grep_lines = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, value = TRUE) {
 
   hit_line = grepl(pattern = pattern, x = x, ignore.case = ignore.case)
   commented_line = grepl("^\\s*#", x = x)
@@ -311,7 +334,7 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 ################################ #
 
 
-#' utility to do global search/find in full text of the files in a folder, like source code files or unit tests
+#' Search across files for lines matching a regular expression
 #'
 #' @param pattern regular expression to look for
 #' @param path can be e.g., "./R" or "./tests/testthat" or "."
@@ -324,12 +347,8 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #'   vs entire line of text that has a match in it
 #' @param quiet whether to print results or just invisibly return
 #'
-#' @details
-#' Also see (mostly undocumented) related functions
-#' EJAM:::found_in_N_files_T_times() and
-#' EJAM:::found_in_files() and
-#' EJAM:::grab_hits() and
-#' EJAM:::grepn()
+#' @seealso [grep_lines()] [grepn()] [grepns()] [grepls()] [found_in_files()]
+#'   [found_in_N_files_T_times()]
 #'
 #' @examples
 #' EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
@@ -399,7 +418,7 @@ find_in_files <- function(pattern,
   }
   found <- x |>
     purrr::map(
-      ~grab_hits(pattern, readLines(.x, warn = FALSE), value = TRUE, ignore.case = ignore.case,
+      ~grep_lines(pattern, readLines(.x, warn = FALSE), value = TRUE, ignore.case = ignore.case,
                  ignorecomments = ignorecomments)
     ) |>
     purrr::keep(~length(.x) > 0)
@@ -485,7 +504,7 @@ find_in_files <- function(pattern,
 ################################ #
 
 
-#' search for vector of query terms, to see which ones are found in any of the files
+#' Check which search terms are found in any file
 #'
 #' @param pattern_vector in a loop, each element is passed to `find_in_files()`
 #' @param path optional path like "./R"
@@ -493,22 +512,16 @@ find_in_files <- function(pattern,
 #' and note TRUE IS NOT DEFAULT IN find_in_files() but is here
 #' @param ... passed to `find_in_files()` can be ignore.case, filename_pattern, etc.
 #' @examples
-#'   found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
-#' @details
-#' Uses EJAM:::find_in_files()
+#'   EJAM:::found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+#' @details Uses [find_in_files()] once for each element of `pattern_vector`.
 #'
-#' @return data.frame
+#' @return Logical vector, one element per search term in `pattern_vector`.
+#' @seealso [find_in_files()] [found_in_N_files_T_times()] [grepn()] [grepns()]
+#'   [grepls()] [grep_lines()]
 #'
 #' @keywords internal
-#' @export
 #'
 found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
-
-  # Undocumented related functions:
-  #
-  # EJAM:::found_in_N_files_T_times()
-  # EJAM:::grab_hits()
-  # EJAM:::grepn()
 
   found <- vector(length = length(pattern_vector))
   for (i in seq_along(pattern_vector)) {
@@ -521,20 +534,24 @@ found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, 
 }
 ################################ #
 
-# frequency of occurrences of each term within a list of files
-# actually how many lines of code does it appear in so counts as 1 each line where it appears even if it appears >1x in that line
-# ignorecomments = TRUE IS NOT DEFAULT IN find_in_files() but is here
-
-# Uses EJAM:::find_in_files()
-#
-# Related:
-# EJAM:::found_in_files()
-# Undocumented related functions:
-# EJAM:::found_in_N_files_T_times()
-# EJAM:::grepn()  - seek 1 query pattern in each of vector of strings
-# EJAM:::found_in_N_files_T_times() - seek vector of query patterns, in each of vector of files
-# EJAM:::grab_hits()
-
+#' Count how often each search term appears across files
+#'
+#' @description For each term in `pattern_vector`, runs [find_in_files()] and
+#'   reports both how many files contain the term and how many matching lines
+#'   were found overall.
+#' @param pattern_vector character vector of search terms
+#' @param path optional path like "./R"
+#' @param ignorecomments if `TRUE`, ignore matches in lines that are just
+#'   comments rather than active source code
+#' @param ... passed to [find_in_files()] such as `ignore.case` or
+#'   `filename_pattern`
+#' @return Data frame with columns `term`, `nfiles`, and `nhits`.
+#' @examples
+#' EJAM:::found_in_N_files_T_times(c("gray", "grey"), path = "./R", quiet = TRUE)
+#' @seealso [find_in_files()] [found_in_files()] [grepn()] [grepns()] [grepls()]
+#'   [grep_lines()]
+#' @keywords internal
+#'
 found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
 
   nfiles <- vector(length = length(pattern_vector))

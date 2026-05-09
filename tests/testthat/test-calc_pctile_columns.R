@@ -39,8 +39,8 @@ test_that("calc_pctile_columns() matches doaggregate()", {
     #   ----------------- AVERAGES -----------------
 
     avgs <- cbind(
-      calc_avg_columns(varnames = names_these, zones = "USA"),
-      calc_avg_columns(varnames = names_these, zones = testbgs$ST)
+      EJAM:::calc_avg_columns(varnames = names_these, zones = "USA"),
+      EJAM:::calc_avg_columns(varnames = names_these, zones = testbgs$ST)
     )
     data.table::setDT(avgs)
     # t(avgs)
@@ -61,8 +61,8 @@ test_that("calc_pctile_columns() matches doaggregate()", {
     #   ----------------- PERCENTILES -----------------
     #
       pctiles <- cbind(
-        calc_pctile_columns(testbgs, varnames = names_these, zones = "USA"),
-        calc_pctile_columns(testbgs, varnames = names_these, zones = testbgs$ST)
+        EJAM:::calc_pctile_columns(testbgs, varnames = names_these, zones = "USA"),
+        EJAM:::calc_pctile_columns(testbgs, varnames = names_these, zones = testbgs$ST)
       )
       data.table::setDT(pctiles)
       expect_true(

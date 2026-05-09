@@ -1,7 +1,6 @@
 #' utility to rm(list=ls()) but NOT remove key datasets EJAM uses
 #' @details removes them from globalenv()
 #'
-#' @export
 #' @keywords internal
 #'
 rmost <- function(notremove = c(

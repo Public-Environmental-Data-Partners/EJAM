@@ -132,7 +132,7 @@ if (force_acs || !stage_exists("bg_acs_raw")) {
 
 if (force_bg_acsdata || !stage_exists("bg_acsdata")) {
   message("Creating bg_acsdata from bg_acs_raw")
-  bg_acsdata <- calc_bg_acsdata(
+  bg_acsdata <- EJAM:::calc_bg_acsdata(
     yr = yr,
     acs_raw = bg_acs_raw,
     pipeline_dir = pipeline_dir,
@@ -183,7 +183,7 @@ if (stage_exists("bg_extra_indicators")) {
 } else {
   message("Creating bg_extra_indicators.csv from current package blockgroupstats")
 
-  bg_extra_indicators <- calc_bg_extra_indicators(
+  bg_extra_indicators <- EJAM:::calc_bg_extra_indicators(
 
     existing_blockgroupstats = EJAM::blockgroupstats,
     reuse_existing_if_missing = TRUE,
@@ -267,7 +267,7 @@ if (isTRUE(include_ejscreen_export)) {
 
 validation_summary <- rbindlist(lapply(stages_to_validate, function(stage) {
   x <- load_csv_stage(stage)
-  result <- ejscreen_pipeline_validate(x, stage = stage, strict = FALSE)
+  result <- EJAM:::ejscreen_pipeline_validate(x, stage = stage, strict = FALSE)
   data.table(
     stage = stage,
     path = stage_path(stage),

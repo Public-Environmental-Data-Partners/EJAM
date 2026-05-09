@@ -2,7 +2,7 @@
 % Please edit documentation in R/dataload_dynamic.R
 \name{dataload_dynamic}
 \alias{dataload_dynamic}
-\title{Utility to download / load datasets}
+\title{Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)}
 \usage{
 dataload_dynamic(
   varnames = .arrow_ds_names[1:3],
@@ -41,7 +41,7 @@ returns vector of names of objects now in memory in specified envir, either beca
 }
 }
 \description{
-Utility to download / load datasets
+Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)
 }
 \details{
 First checks memory, then installed package's data folder

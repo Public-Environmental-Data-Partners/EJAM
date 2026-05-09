@@ -93,13 +93,12 @@ calc_formulas_sort_by_dependency <- function(formulas) {
 #'   columns as found in [formulas_ejscreen_acs].
 #'
 #' @examples
-#' calc_formulas_from_varname("pctlingiso")
-#' calc_formulas_from_varname("pctlths")
-#' calc_formulas_from_varname("pctlowinc")
-#' calc_formulas_from_varname(c("lingiso", "lowinc"))
+#' EJAM:::calc_formulas_from_varname("pctlingiso")
+#' EJAM:::calc_formulas_from_varname("pctlths")
+#' EJAM:::calc_formulas_from_varname("pctlowinc")
+#' EJAM:::calc_formulas_from_varname(c("lingiso", "lowinc"))
 #'
 #' @keywords internal
-#' @export
 #'
 calc_formulas_from_varname <- function(varname = "pctlowinc", formulas = NULL, top=TRUE) {
 

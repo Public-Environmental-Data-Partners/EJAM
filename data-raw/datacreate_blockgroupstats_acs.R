@@ -44,7 +44,7 @@ bg_acs_raw <- download_bg_acs_raw(
   stage_format = "csv"
 )
 
-bg_acsdata <- calc_bg_acsdata(
+bg_acsdata <- EJAM:::calc_bg_acsdata(
   yr = yr,
   acs_raw_stage = "bg_acs_raw",
   pipeline_dir = mydir,
@@ -64,7 +64,7 @@ external_indicator_cols <- unique(names_e)
 external_indicator_cols <- external_indicator_cols[external_indicator_cols %in% names(blockgroupstats)]
 bg_envirodata <- blockgroupstats[, c("bgfips", external_indicator_cols), with = FALSE]
 
-bg_extra_indicators <- calc_bg_extra_indicators(
+bg_extra_indicators <- EJAM:::calc_bg_extra_indicators(
   existing_blockgroupstats = blockgroupstats,
   reuse_existing_if_missing = TRUE,
   pipeline_dir = mydir,

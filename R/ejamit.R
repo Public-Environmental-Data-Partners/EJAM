@@ -301,6 +301,19 @@ ejamit <- function(sitepoints = NULL,
     #rm(shp)
     ##################################### #
 
+    # Estimate full ejamit runtime for polygon analyses using polygon-specific
+    # timing data when available.
+    ejamit_runtime_estimate <- speed_ejamit_runtime_estimate(
+      rows = nrow(shp_valid),
+      radius = 0,
+      analysis_type = "shapefile",
+      analysis_subtype = "polygon"
+    )
+    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    if (predicted_time > 120) {
+      print(ejamit_runtime_estimate$message)
+    }
+
     # . radius (buffer) for polygons ####
     if (missing(radius)) {
       if (interactive() && !silentinteractive && !in_shiny && rstudioapi::isAvailable()) {
@@ -339,7 +352,7 @@ ejamit <- function(sitepoints = NULL,
       progress_doagg$set(value   = 0,
                          message = 'Initiating aggregation')
       nrows_blocks_value            <- nrow(mysites2blocks)
-      predicted_doaggregate_runtime <- predict_doaggregate_runtime(nrows_blocks_value)
+      predicted_doaggregate_runtime <- speed_predict_doaggregate_runtime(nrows_blocks_value)
       upper_bound_value             <- predicted_doaggregate_runtime[, "fit"]
       updateProgress_doagg <- function(value = NULL,
                                        message_detail = NULL,
@@ -406,6 +419,20 @@ ejamit <- function(sitepoints = NULL,
     data_uploaded$invalid_msg = ifelse(data_uploaded$valid, "",  "invalid FIPS")
     data_uploaded$ejam_uniq_id = as.character(data_uploaded$ejam_uniq_id) # for merge or join below to work, must match class (integer vs character) of output of doaggregate() and before that output of getblocksnearby_from_fips(fips_counties_from_state_abbrev('DE'))  #  1:length(fips))
 
+    # Estimate full ejamit runtime for FIPS analyses using FIPS-specific timing
+    # data when available.
+    fips_runtime_subtype <- speed_fips_analysis_subtype(fips[data_uploaded$valid])
+    ejamit_runtime_estimate <- speed_ejamit_runtime_estimate(
+      rows = sum(data_uploaded$valid, na.rm = TRUE),
+      radius = 0,
+      analysis_type = "fips",
+      analysis_subtype = fips_runtime_subtype
+    )
+    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    if (predicted_time > 120) {
+      print(ejamit_runtime_estimate$message)
+    }
+
     # . radius is ignored for fips ####
     radius <- 999 # use this value when analyzing by fips not by circular buffers, as input to doaggregate(),
     # then in output of doaggregate()$results_bysite$radius.miles is returned as 0 for every fips, as in _overall.
@@ -451,7 +478,7 @@ ejamit <- function(sitepoints = NULL,
       on.exit(progress_doagg$close(), add = TRUE)
       progress_doagg$set(value = 0, message = 'Initiating aggregation')
       nrows_blocks_value            <- nrow(mysites2blocks)
-      predicted_doaggregate_runtime <- predict_doaggregate_runtime(nrows_blocks_value)
+      predicted_doaggregate_runtime <- speed_predict_doaggregate_runtime(nrows_blocks_value)
       upper_bound_value             <- predicted_doaggregate_runtime[, "fit"]
       updateProgress_doagg <- function(value = NULL,
                                        message_detail = NULL,
@@ -554,13 +581,18 @@ ejamit <- function(sitepoints = NULL,
     ##################################### #
 
     # Get runtime of ejamit in seconds
-    ejamit_runtime_prediction <- predict_ejamit_runtime(nrow(sitepoints), radius)
-    predicted_time <- ejamit_runtime_prediction[, "upr"]
+    ejamit_runtime_estimate <- speed_ejamit_runtime_estimate(
+      rows = nrow(sitepoints),
+      radius = radius,
+      analysis_type = "points",
+      analysis_subtype = "point_buffer"
+    )
+    predicted_time <- ejamit_runtime_estimate$seconds_upper
 
     ## print runtime if predicted time > 2 minutes / 120 seconds
     ## note: models may over-estimate runtime for small analyses
     if (predicted_time > 120) {
-      print(paste("Ejamit is predicted to take", round(predicted_time, 0), "seconds"))
+      print(ejamit_runtime_estimate$message)
     }
     # . getblocksnearby() ####
 
@@ -596,7 +628,7 @@ ejamit <- function(sitepoints = NULL,
       progress_doagg$set(value   = 0,
                          message = 'Initiating aggregation')
       nrows_blocks_value            <- nrow(mysites2blocks)
-      predicted_doaggregate_runtime <- predict_doaggregate_runtime(nrows_blocks_value)
+      predicted_doaggregate_runtime <- speed_predict_doaggregate_runtime(nrows_blocks_value)
       upper_bound_value             <- predicted_doaggregate_runtime[, "fit"]
       updateProgress_doagg <- function(value = NULL,
                                        message_detail = NULL,
@@ -618,7 +650,7 @@ ejamit <- function(sitepoints = NULL,
     }
 
     if (!silentinteractive) {cat('Aggregating at each site and overall.\n')}
-    doaggregate_runtime_prediction <- predict_doaggregate_runtime(nrow(mysites2blocks))
+    doaggregate_runtime_prediction <- speed_predict_doaggregate_runtime(nrow(mysites2blocks))
     predicted_time <- doaggregate_runtime_prediction[, "fit"]
     if (interactive()) {
       cat(paste("doaggregate is predicted to take", round(predicted_time, 0), "seconds \n"))
@@ -849,5 +881,3 @@ ejamit <- function(sitepoints = NULL,
 
   invisible(out)
 }
-
-

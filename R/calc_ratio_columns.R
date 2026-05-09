@@ -29,7 +29,6 @@
 #'   the average blockgroup in the US or State, so technically they are not exactly comparable, but in practice the ratio
 #'   would be almost the same if compared to a population weighted average of all US blockgroups (i.e., the average US resident).
 #'
-#' @export
 #' @keywords internal
 #'
 calc_ratio_columns = function(mytable,

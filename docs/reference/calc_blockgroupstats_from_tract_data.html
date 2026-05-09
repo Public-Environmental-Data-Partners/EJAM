@@ -113,7 +113,8 @@ is performed for tract-resolution tables.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This would normally be called from the script in <code>datacreate_blockgroupstats_acs.R</code>, which is in the source package folder "data-raw"</p>
+    <p>This is now typically orchestrated by <code><a href="calc_ejscreen_dataset.html">calc_ejscreen_dataset()</a></code> and by the
+staged pipeline runner script <code>data-raw/run_ejscreen_acs2024_pipeline.R</code>.</p>
 <p>Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()</p>
 <p>Needs Census API key for <code><a href="https://walker-data.com/tidycensus/reference/get_decennial.html" class="external-link">tidycensus::get_decennial()</a></code>.</p>
 <p>Takes some time to download data for every State!</p>

@@ -22,8 +22,8 @@ provides information about the sources, definitions, and vintage of the
 residential population and environmental data and indicators used by
 EJAM.
 
-Each year, EJAM should updated to use newer residential population and
-environmental data, and some indicators may be added, dropped, or
+Each year, EJAM should be updated to use newer residential population
+and environmental data, and some indicators may be added, dropped, or
 revised during those updates. For details on these updates and changes
 to datasets and indicators, please note the information about updates
 and changes: [Data Change

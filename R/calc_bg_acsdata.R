@@ -36,7 +36,6 @@
 #'
 #' @return data.table, one row per blockgroup.
 #'
-#' @export
 #' @keywords internal
 #'
 calc_bg_acsdata <- function(yr,

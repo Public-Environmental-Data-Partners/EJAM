@@ -37,7 +37,6 @@
 #' @return data.table like [blockgroupstats].
 #'
 #' @keywords internal
-#' @export
 #'
 calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
                                           bg_envirodata = NULL,

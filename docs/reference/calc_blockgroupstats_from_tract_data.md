@@ -50,9 +50,10 @@ data.table, one row per blockgroup (not tract)
 
 ## Details
 
-This would normally be called from the script in
-`datacreate_blockgroupstats_acs.R`, which is in the source package
-folder "data-raw"
+This is now typically orchestrated by
+[`calc_ejscreen_dataset()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.md)
+and by the staged pipeline runner script
+`data-raw/run_ejscreen_acs2024_pipeline.R`.
 
 Relies on the function get_acs_new() which is available from the package
 ACSdownload (on github) as ACSdownload::get_acs_new()

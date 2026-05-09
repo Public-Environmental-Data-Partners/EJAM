@@ -23,7 +23,7 @@ test_that("calc_avg_columns 1 var, USA", {
     vars = names_e
     expect_equal(
 
-      as.numeric(round(calc_avg_columns(vars[1]), 3)), # 1 var, USA
+      as.numeric(round(EJAM:::calc_avg_columns(vars[1]), 3)), # 1 var, USA
       as.numeric(round(usastats_means("pm"),3))
 
     )
@@ -35,7 +35,7 @@ test_that("calc_avg_columns multivar, USA", {
   expect_no_error({
     vars = names_e
     expect_equal(
-      round(as.numeric(calc_avg_columns(vars)  ),3),  # multivar, USA
+      round(as.numeric(EJAM:::calc_avg_columns(vars)  ),3),  # multivar, USA
       round(as.numeric(usastats[usastats$PCTILE=='mean', vars]),3)
     )
   })
@@ -45,7 +45,7 @@ test_that("calc_avg_columns multivar, 1 zone", {
   expect_no_error({
     vars = names_e
     expect_equal(
-      round(as.numeric(calc_avg_columns(vars, zone = "TX") ), 3),              # multivar, 1 zone
+      round(as.numeric(EJAM:::calc_avg_columns(vars, zone = "TX") ), 3),              # multivar, 1 zone
       round(as.numeric(statestats[statestats$PCTILE=='mean' & statestats$REGION == "TX", vars]), 3)
     )
   })
@@ -55,7 +55,7 @@ test_that("calc_avg_columns 1 var,    1 zone", {
   expect_no_error({
     vars = names_e
     expect_equal(
-      round(as.numeric(calc_avg_columns(vars[1], zone = "TX") ), 3),                # 1 var,    1 zone
+      round(as.numeric(EJAM:::calc_avg_columns(vars[1], zone = "TX") ), 3),                # 1 var,    1 zone
       round(as.numeric(statestats[statestats$PCTILE=='mean' & statestats$REGION == "TX", vars[1]]), 3)
     )
   })
@@ -66,7 +66,7 @@ test_that("calc_avg_columns  # 1 var,    multizone", {
     vars = names_e
     expect_equal(
       # calc_avg_columns(vars[1], zone = c("TX", "TX", "GA")) # 1 var,    multizone
-      as.vector(unlist((round((calc_avg_columns(vars[1], zone = c("TX", "TX", "GA")) ), 3)))),       # 1 var,    multizone
+      as.vector(unlist((round((EJAM:::calc_avg_columns(vars[1], zone = c("TX", "TX", "GA")) ), 3)))),       # 1 var,    multizone
       round(c(
         statestats[statestats$PCTILE=='mean' &  "TX"== statestats$REGION  , vars[1]]  ,
         statestats[statestats$PCTILE=='mean' &  "TX"== statestats$REGION  , vars[1]]  ,
@@ -80,12 +80,12 @@ test_that("calc_avg_columns multivar, multizone", {
   expect_no_error({
     vars = names_e
     expect_equal(
-      calc_avg_columns(vars,    zone = c("TX", "TX", "GA")), # multivar, multizone
+      EJAM:::calc_avg_columns(vars,    zone = c("TX", "TX", "GA")), # multivar, multizone
 
       rbind(
-        calc_avg_columns(vars,    zone = "TX"),
-        calc_avg_columns(vars,    zone = "TX"),
-        calc_avg_columns(vars,    zone = "GA")
+        EJAM:::calc_avg_columns(vars,    zone = "TX"),
+        EJAM:::calc_avg_columns(vars,    zone = "TX"),
+        EJAM:::calc_avg_columns(vars,    zone = "GA")
       )
     )
   })
@@ -93,7 +93,7 @@ test_that("calc_avg_columns multivar, multizone", {
 ########## # ########## # ########## # ########## # ########## #
 test_that("error", {
   expect_error(
-    calc_avg_columns("invalid")
+    EJAM:::calc_avg_columns("invalid")
   )
 })
 ########## # ########## # ########## # ########## # ########## #
@@ -108,15 +108,15 @@ test_that("custom vars ok", {
   expect_no_error({
 
 
-  calc_avg_columns(custom_vars[1], lookup = customstats) # 1 var, USA
-  x = calc_avg_columns(custom_vars,    lookup = customstats)   # multivar, USA
+  EJAM:::calc_avg_columns(custom_vars[1], lookup = customstats) # 1 var, USA
+  x = EJAM:::calc_avg_columns(custom_vars,    lookup = customstats)   # multivar, USA
   expect_equal(names(x),
                c("avg.pctlefthanded" ,  "avg.airqualityscore"))
 
-  calc_avg_columns(custom_vars,    zone = "TX",                lookup = customstats) # multivar, 1 zone
-  calc_avg_columns(custom_vars[1], zone = "TX",                lookup = customstats) # 1 var,    1 zone
-  calc_avg_columns(custom_vars[1], zone = c("TX", "TX", "GA"), lookup = customstats) # 1 var,    multizone
-  x = calc_avg_columns(custom_vars,    zone = c("TX", "TX", "GA"), lookup = customstats) # multivar, multizone
+  EJAM:::calc_avg_columns(custom_vars,    zone = "TX",                lookup = customstats) # multivar, 1 zone
+  EJAM:::calc_avg_columns(custom_vars[1], zone = "TX",                lookup = customstats) # 1 var,    1 zone
+  EJAM:::calc_avg_columns(custom_vars[1], zone = c("TX", "TX", "GA"), lookup = customstats) # 1 var,    multizone
+  x = EJAM:::calc_avg_columns(custom_vars,    zone = c("TX", "TX", "GA"), lookup = customstats) # multivar, multizone
 
   expect_equal(names(x),
                c("state.avg.pctlefthanded" ,  "state.avg.airqualityscore"))

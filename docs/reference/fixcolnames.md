@@ -66,15 +66,14 @@ table:
 
 - "rname" (aka "r", the R variable names as used in the EJAM code)
 
-- "apiname" (aka "api", as returned by EJSCREEN API)
+- "apiname" (aka "api", as used by the old EJSCREEN API)
 
-- "csvname" (aka "csv", as found in the CSV files of just the key
-  residential population and environmental indicators, found on the
-  EJSCREEN FTP site)
+- "csvname" (aka "csv", as used in archived EJSCREEN CSV/FTP downloads
+  for key indicators)
 
-- "acsname" (aka "acs", as found in a ACS data file internally used by
-  EJSCREEN, containing all the extra residential population groups and
-  other indicators not stored in the CSV files on the EJSCREEN FTP site)
+- "acsname" (aka "acs", as used in ACS-derived fields for additional
+  demographic indicators not included in archived EJSCREEN CSV/FTP
+  downloads)
 
 - "DEJ" (whether the indicator is residential population, environmental,
   etc.)

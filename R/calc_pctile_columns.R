@@ -82,7 +82,6 @@
 #' ############################# ############################## #
 #'
 #' @keywords internal
-#' @export
 #'
 calc_pctile_columns <- function(mytable,
                                         varnames = intersect(names(mytable),  names(EJAM::usastats)),

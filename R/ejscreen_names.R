@@ -29,7 +29,6 @@
 #'   `ejscreen_pctile`, `ejscreen_bin`, and `ejscreen_text` columns.
 #'
 #' @keywords internal
-#' @export
 #'
 augment_map_headernames_ejscreen_names <- function(mapping_for_names = map_headernames) {
   mh <- as.data.frame(mapping_for_names, stringsAsFactors = FALSE)

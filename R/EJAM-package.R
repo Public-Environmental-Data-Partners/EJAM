@@ -4,8 +4,6 @@
 #' @name EJAM
 #' @aliases EJAM-package
 #'
-#' @keywords internal
-#'
 #' @md
 #'
 #' @description

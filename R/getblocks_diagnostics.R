@@ -6,7 +6,6 @@
 #'
 #' @return a number
 #'
-#' @export
 #' @keywords internal
 #'
 getblocks_predict_blocks_per_site <- function(nsites, radius) {
@@ -103,7 +102,6 @@ blockcounts_plot <- function(blockcounts, radius, n = length(blockcounts),
 #' @import data.table
 #' @seealso [getblocks_diagnostics()]
 #'
-#' @export
 #' @keywords internal
 #'
 getblocks_summarize_blocks_per_site <- function(x, varname='ejam_uniq_id') {

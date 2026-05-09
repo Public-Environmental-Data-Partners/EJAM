@@ -13,7 +13,8 @@ popup_from_any(
 )
 }
 \arguments{
-\item{x, }{a table in \href{https://r-datatable.com}{data.table} format table or data frame}
+\item{x, }{a table in \href{https://r-datatable.com}{data.table} format table or data frame.
+If \code{x} is another object type, it is coerced via \code{\link[=as.data.frame]{as.data.frame()}}.}
 
 \item{column_names}{default is all, or a vector of column names from x to use.
 If some of column_names requested are not found in names(x),

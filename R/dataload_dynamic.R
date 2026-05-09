@@ -1,5 +1,5 @@
 
-#' Utility to download / load datasets
+#' Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)
 #'
 #' @details
 #'   First checks memory, then installed package's data folder

@@ -452,13 +452,22 @@ reference:
   desc: "Utilities to handle variable names, indicator metadata, formulas, etc."
   contents:
   - fixcolnames
-  - fixcolnames_anyoldtype
   - names_d
   - names_e
   - map_headernames
 - title: internal
   contents:
   - calc_avg_columns
+  - acs_table_info
+  - augment_map_headernames_ejscreen_names
+  - attributes2
+  - calc_bg_acsdata
+  - calc_bg_extra_indicators
+  - calc_blockgroupstats_acs
+  - calc_blockgroupstats_from_tract_data
+  - calc_ejscreen_blockgroupstats
+  - calc_ejscreen_stats
+  - calc_formulas_from_varname
   - calc_ratio_columns
   - calc_pctile_columns
   - batch.summarize
@@ -478,6 +487,7 @@ reference:
   - testoutput_doaggregate_100pts_1miles
   - testoutput_doaggregate_1000pts_1miles
   - app_run_EJAM
+  - run_app
   - app_server
   - app_ui
   - bgid2fips
@@ -513,6 +523,10 @@ reference:
   - out_bydistance2results_bysite_bydistance
   - meters_per_mile
   - format_ejamit_columns
+  - found_in_files
+  - grepn
+  - getblocks_predict_blocks_per_site
+  - getblocks_summarize_blocks_per_site
   - table_order_variables
   - custom_ejamit
   - custom_doaggregate
@@ -526,6 +540,7 @@ reference:
   - colMaxs2
   - change.fieldnames
   - rmost
+  - speedreport
   - map_shapes_leaflet_proxy
   - map_facilities_proxy
   - popup_from_df
@@ -561,11 +576,19 @@ reference:
   - enurl
   - create_filename
   - fixnames_aliases
+  - fixcolnames_anyoldtype
   - fixcolnames_infer
+  - ejscreen_default_extra_indicator_vars
+  - ejscreen_default_extra_indicator_varlists
+  - ejscreen_pipeline_validate
   - varname2color_ejam
   - varname2varcategory_ejam
   - varname2vartype_ejam
   - vartype_cat2color_ejam
+  - expand_gridMatrix
+  - xls_varname2color
+  - xls_varname2vartype
+  - xls_vartype2color
   - sitepoints_from_anything
   - ejampackages
   - testpoints_bad

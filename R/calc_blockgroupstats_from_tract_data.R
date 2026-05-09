@@ -31,7 +31,6 @@
 #'
 #' @return data.table, one row per blockgroup (not tract)
 #'
-#' @export
 #' @keywords internal
 #'
 calc_blockgroupstats_from_tract_data <- function(yr,

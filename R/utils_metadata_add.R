@@ -5,7 +5,6 @@
 #'
 #' @return attributes of x, excluding "row.names" and "names"
 #'
-#' @export
 #' @keywords internal
 #'
 attributes2 = function(x) {

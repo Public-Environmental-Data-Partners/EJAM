@@ -76,6 +76,21 @@ test_that("popup_from_any() works even if 1 row or 1 indicator", {
   })
 })
 ############################################## #
+
+test_that("popup_from_any() coerces non-data-frame objects via as.data.frame()", {
+  mat <- matrix(c("A", "B", 1, 2), ncol = 2)
+  colnames(mat) <- c("name", "value")
+
+  expect_no_error({
+    x <- popup_from_any(mat)
+  })
+
+  expect_equal(2, length(x))
+  expect_true(all(grepl("name: ", x, fixed = TRUE)))
+  expect_true(all(grepl("value: ", x, fixed = TRUE)))
+})
+############################################## #
+
 if (exists("popup_from_df")) { # will likely deprecate
   test_that("popup_from_df() works but popup_from_any() may replace it", {
     expect_no_error({

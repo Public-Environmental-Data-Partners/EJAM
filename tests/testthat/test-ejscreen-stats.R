@@ -13,7 +13,7 @@ test_that("calc_ejscreen_stats accepts custom environmental indicator sets", {
     check.names = FALSE
   )
 
-  out <- calc_ejscreen_stats(
+  out <- EJAM:::calc_ejscreen_stats(
     bgstats = bgstats,
     acs_vars = "pctlowinc",
     enviro_vars = c("custom_env", "another_env"),

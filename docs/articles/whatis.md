@@ -14,11 +14,11 @@ app and a software toolkit:
   Multisite Tool web application in late 2024/early 2025.
 
 - EJAM is also an open-source software package (and local web app) for
-  developers and analysts. It is an R Package written in the [R
+  developers and analysts. It is an R package written in the [R
   programming language](https://www.r-project.org/), with source code on
   GitHub. It provides functions to help analysts work with blockgroup
-  data, points, and polygons, to very quickly aggregate and compare
-  large numbers of locations.
+  data, points, and polygons, to quickly aggregate and compare large
+  numbers of locations.
 
 ### What does it do?
 
@@ -72,11 +72,11 @@ areas. It also provides new insights into which environmental stressors
 may affect specific residential population subgroups to varying degrees,
 near a regulated sector overall and at individual sites.
 
-This allows easy geospatial analysis to move beyond looking at a small
-number of indicators for a few residential population groups, at one
-site in a single permitting decision, to a more complete picture of
-conditions near a whole set of facilities that is the focus of a risk
-analysis or a proposed action or initiative, for example.
+This allows geospatial analysis to move beyond a small number of
+indicators for a few residential population groups at one site in a
+single permitting decision, to a more complete picture of conditions
+near a whole set of facilities that may be the focus of a risk analysis
+or proposed action.
 
 **Immediate Results (Speed)**
 
@@ -92,12 +92,12 @@ other tools have used).
 
 **Easy Ways to Specify the Places to Analyze**
 
-The new tool also lets one pick locations through several different
-approaches, such as - specifying facility points by industry categories
-of various types (NAICS, SIC, EPA program, etc.) - providing a table of
-point locations given as latitudes and longitudes - using shapefiles
-with polygons (e.g., from the results of air quality modeling work) -
-selecting Census units to compare, such as Counties.
+The new tool also lets users pick locations through several approaches:
+specifying facility points by industry categories (NAICS, SIC, EPA
+program, etc.), providing a table of point locations as
+latitudes/longitudes, using shapefiles with polygons (e.g., from air
+quality modeling), and selecting Census units to compare, such as
+counties.
 
 **Open Source Well-Documented Extensible Software**
 
@@ -109,22 +109,21 @@ building or supplementing their own tools, websites, or mobile apps.
 **Accuracy and Spatial Resolution**
 
 EJAM and EJSCREEN use the same approach to characterizing populations at
-each site, to maintain consistency and avoid any confusion. Compared to
-other often-used approaches, EJSCREEN / EJAM use high-resolution
-buffering to provide more accurate information about which populations
-live inside a buffer, which is important in rural areas where a single
-blockgroup can cover a very large area. For circular buffers, the
-internal points of Census 2020 blocks are used, not areal apportionment
-of blockgroups, to estimate where residents live within each blockgroup.
-This avoids the simplistic assumption that people are evenly spread out
-within each blockgroup. Instead, it uses blocks to get information about
-which part of a blockgroup is where residents actually live. There are
-several million blocks in the US, as compared with fewer than a quarter
-million blockgroups. The only more accurate approaches are 1) to use
-areal apportionment of blocks (not blockgroups), but that is very slow,
-or 2) to use something like the 30x30 meter grid EPA developed using
-dasymetric estimates of where people live at even higher resolution than
-a block, but that requires large amounts of storage and computer time.
+each site, to maintain consistency and avoid confusion. Compared to
+other common approaches, EJSCREEN/EJAM use high-resolution buffering to
+provide more accurate information about which populations live inside a
+buffer, which is important in rural areas where a single blockgroup can
+cover a very large area. For circular buffers, internal points of Census
+2020 blocks are used rather than areal apportionment of blockgroups to
+estimate where residents live within each blockgroup. This avoids the
+simplistic assumption that people are evenly spread out within each
+blockgroup. Instead, it uses blocks to estimate where residents actually
+live within each blockgroup. There are several million blocks in the
+United States, compared with fewer than a quarter million blockgroups.
+The only more accurate approaches are: 1) using areal apportionment of
+blocks (not blockgroups), which is very slow, or 2) using very
+high-resolution grids (for example, 30x30 meter grids), which require
+large amounts of storage and compute time.
 
 EJAM calculations also take note of which residences are near which
 sites, to avoid double-counting people in the summary statistics but
@@ -146,13 +145,15 @@ distribution of distances within each residential population group.
 
 ### Data Updates and Data Vintage
 
-The EPA released EJSCREEN version 2.32 in August 2024 and then in
-January 2025 took EJSCREEN off line, with no plans for further updates.
-The exact same data were used in EJAM version 2.32.0 and EJSCREEN
-version 2.32 released in late 2024. Non-EPA development of EJAM through
-version 2.32.8 in April 2026 was still using that same dataset. That was
-based on American Community Survey (ACS) data representing the five-year
-period of 2018-2022.
+EPA released EJSCREEN version 2.32 in August 2024 and took EJSCREEN
+offline in January 2025, with no plans for any further development or
+updates. The same underlying dataset was used in EJAM version 2.32.0 and
+EJSCREEN version 2.32 released in late 2024. Non-EPA development of EJAM
+through version 2.32.8 (April 2026) still used that same dataset, based
+on American Community Survey (ACS) data for 2018-2022. In 2026, EJAM
+version 2.5.0 incorporated the 2020-2024 ACS data, providing EJSCREEN
+with demographic data two years newer than was in the last version EPA
+released.
 
 EJAM version 2.5.0 (released May 2026) is based on American Community
 Survey (ACS) data representing the five-year period of 2020-2024

@@ -2,11 +2,15 @@
 
 ## Updated Demographic Data from ACS
 
-- v2.5.0 provides 2020-2024 American Community Survey (ACS) demographic data
+- Version 2.5.0 provides 2020-2024 American Community Survey (ACS) demographic data
 
-- v2.32.*, used throughout 2025, used 2018-2022 ACS data (even though newer ACS 5-year survey data were available from Census Bureau).
+- Versions 2.32.*, relied on 2018-2022 ACS data (throughout 2025-early 2026), 
+  even though newer ACS 5-year survey data had been released by Census Bureau.
 
-- Note that Census Bureau discourages using ACS 5-year surveys for comparisons or trends if they have overlapping periods. Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets is not appropriate per Census Bureau.
+- Note that Census Bureau discourages using ACS 5-year surveys 
+  for comparisons or trends if they have overlapping periods. 
+  Comparisons between the 2018-2022, 2019-2023, and 2020-2024 datasets 
+  is not appropriate per Census Bureau.
 
 - Created a data update pipeline with several stages
   to read (or calculate) tables of data
@@ -49,13 +53,16 @@
   path is explicit rather than silent.
 
 - Added `calc_bg_extra_indicators()` and related helpers for the non-ACS,
-  non-environmental blockgroup indicator stage.
+  non-environmental blockgroup indicator stage (e.g., % low life expectancy).
 
-- Added `calc_ejscreen_export()` support for creating an EJScreen-ready dataset
-  from `blockgroupstats` and `bgej`, using `map_headernames` naming columns and
-  adding EJScreen EJ-index percentile fields such as `P_D2_...` and `P_D5_...`
-  from the saved EJ-index lookup tables. It then creates map helper fields such
-  as `B_...` map bins and `T_...` percentile popup text. The `ejscreen_export`
+- Because the EJScreen web app needs its blockgroup dataset to include some columns not used by EJAM,
+  we have now added `calc_ejscreen_export()` support for creating an EJScreen-ready dataset
+  from the EJAM datasets `blockgroupstats` and `bgej`. The transformation uses 
+  `map_headernames` to rename columns and adds EJScreen 
+  EJ-index percentile text fields such as `P_D2_...` and `P_D5_...`
+  from the saved EJ-index lookup tables. It then creates map helper fields 
+  that specify color-coding for maps, such as `B_...` map bins, and 
+  `T_...` percentile fields to provide map popup text. The `ejscreen_export`
   stage validates the `ID` key and map helper fields before saving, and the
   pipeline runner writes an export schema report for review.
 
@@ -64,8 +71,17 @@
   tracked separately.
 
 - Improved formula handling for ACS-derived indicators, including dependency
-  ordering and validation checks, and fixed the EPA Region formula so it uses
-  state FIPS rather than state abbreviations.
+  ordering (i.e., if formula A's inputs include formula B's output, formula B must be done first)
+  and validation checks. Fixed the EPA Region formula (uses state FIPS not state abbrev.).
+
+## Other changes
+
+- Reduced the exported API surface by making many pipeline-stage helpers,
+  developer utilities, and thin wrapper functions internal. Public workflows now
+  center more clearly on higher-level entry points such as `ejamapp()`,
+  `calc_ejscreen_dataset()`, and `calc_ejscreen_export()`. Updated tests, vignettes, maintainer scripts, pkgdown reference indexing, and
+  examples so internal helpers continue to work via `EJAM:::` where needed.
+
 
 
 # EJAM 2.4.0 (May 2026)

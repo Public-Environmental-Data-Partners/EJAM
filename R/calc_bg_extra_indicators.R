@@ -27,7 +27,6 @@
 #'
 #' @return data.table with `bgfips` and extra indicator columns.
 #'
-#' @export
 #' @keywords internal
 #'
 calc_bg_extra_indicators <- function(bg_extra_indicators = NULL,
@@ -68,7 +67,6 @@ calc_bg_extra_indicators <- function(bg_extra_indicators = NULL,
 }
 
 #' @rdname calc_bg_extra_indicators
-#' @export
 ejscreen_default_extra_indicator_vars <- function() {
   vars <- namesbyvarlist(
     varlist = ejscreen_default_extra_indicator_varlists(),
@@ -80,7 +78,6 @@ ejscreen_default_extra_indicator_vars <- function() {
 }
 
 #' @rdname calc_bg_extra_indicators
-#' @export
 ejscreen_default_extra_indicator_varlists <- function() {
   c(
     "names_health",

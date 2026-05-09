@@ -10,12 +10,11 @@
 #' @return This function returns a matrix and tries to assign colnames based on the two input parameters. If they are variables, it uses those names as colnames. Otherwise it uses "x" and "y" as colnames.
 #' @seealso \code{\link{expand.grid}}
 #' @examples
-#'  expand_gridMatrix(99:103, 1:2) 
+#'  EJAM:::expand_gridMatrix(99:103, 1:2)
 #'  zz <- 1:10; top <- 1:2
-#'  expand_gridMatrix(zz, top) 
+#'  EJAM:::expand_gridMatrix(zz, top)
 #'  
 #' @keywords internal
-#' @export
 #' 
 expand_gridMatrix <- function(x, y) {
   z <- cbind(rep(x, length(y)), rep(y, each = length(x)))

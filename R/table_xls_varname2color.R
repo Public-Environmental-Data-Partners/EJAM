@@ -13,7 +13,6 @@
 #' @seealso [xls_varname2vartype()] [xls_vartype2color()] [xls_varname2color()]
 #'
 #' @keywords internal
-#' @export
 #'
 xls_varname2vartype <- function(varname, varnameinfo) {
 
@@ -45,7 +44,6 @@ xls_varname2vartype <- function(varname, varnameinfo) {
 #' @seealso [xls_varname2vartype()] [xls_vartype2color()] [xls_varname2color()]
 #'
 #' @keywords internal
-#' @export
 #'
 xls_vartype2color <- function(vartype) {
 
@@ -81,7 +79,6 @@ xls_vartype2color <- function(vartype) {
 #' @seealso [xls_varname2vartype()] [xls_vartype2color()] [xls_varname2color()]
 #'
 #' @keywords internal
-#' @export
 #'
 xls_varname2color <- function(varname, varnameinfo) {
 

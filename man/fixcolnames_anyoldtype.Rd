@@ -23,3 +23,4 @@ Vector or new column names same length as input
 \description{
 like fixcolnames() but can try multiple values as oldtypes
 }
+\keyword{internal}

@@ -1,6 +1,6 @@
 test_that("bg_extra_indicators requires explicit input or explicit reuse", {
   expect_error(
-    calc_bg_extra_indicators(extra_indicator_vars = "lowlifex"),
+    EJAM:::calc_bg_extra_indicators(extra_indicator_vars = "lowlifex"),
     "bg_extra_indicators must be supplied"
   )
 
@@ -11,7 +11,7 @@ test_that("bg_extra_indicators requires explicit input or explicit reuse", {
   )
 
   expect_warning(
-    out <- calc_bg_extra_indicators(
+    out <- EJAM:::calc_bg_extra_indicators(
       extra_indicator_vars = c("lowlifex", "rateasthma"),
       reuse_existing_if_missing = TRUE,
       existing_blockgroupstats = existing
@@ -46,7 +46,7 @@ test_that("extra indicator defaults are driven by map_headernames varlist groups
     )$rname,
     "num_school"
   )
-  expect_true(all(ejscreen_default_extra_indicator_vars() %in% EJAM::map_headernames$rname))
+  expect_true(all(EJAM:::ejscreen_default_extra_indicator_vars() %in% EJAM::map_headernames$rname))
 })
 
 test_that("bg_extra_indicators fills missing columns only when reuse is explicit", {
@@ -61,12 +61,12 @@ test_that("bg_extra_indicators fills missing columns only when reuse is explicit
   )
 
   expect_error(
-    calc_bg_extra_indicators(partial, extra_indicator_vars = c("lowlifex", "rateasthma")),
+    EJAM:::calc_bg_extra_indicators(partial, extra_indicator_vars = c("lowlifex", "rateasthma")),
     "missing expected extra indicator columns"
   )
 
   expect_warning(
-    out <- calc_bg_extra_indicators(
+    out <- EJAM:::calc_bg_extra_indicators(
       partial,
       extra_indicator_vars = c("lowlifex", "rateasthma"),
       reuse_existing_if_missing = TRUE,
@@ -100,7 +100,7 @@ test_that("calc_ejscreen_blockgroupstats uses explicit extra indicator stage", {
     rateasthma = c(7.1, 8.2, 9.3, 10.4)
   )
 
-  out <- calc_ejscreen_blockgroupstats(
+  out <- EJAM:::calc_ejscreen_blockgroupstats(
     bg_acsdata = bg_acsdata,
     bg_envirodata = bg_envirodata,
     bg_extra_indicators = bg_extra_indicators,
@@ -134,7 +134,7 @@ test_that("calc_ejscreen_blockgroupstats can intentionally reuse old extra indic
   )
 
   expect_error(
-    calc_ejscreen_blockgroupstats(
+    EJAM:::calc_ejscreen_blockgroupstats(
       bg_acsdata = bg_acsdata,
       bg_envirodata = bg_envirodata,
       extra_indicator_vars = "lowlifex"
@@ -143,7 +143,7 @@ test_that("calc_ejscreen_blockgroupstats can intentionally reuse old extra indic
   )
 
   expect_warning(
-    out <- calc_ejscreen_blockgroupstats(
+    out <- EJAM:::calc_ejscreen_blockgroupstats(
       bg_acsdata = bg_acsdata,
       bg_envirodata = bg_envirodata,
       extra_indicator_vars = "lowlifex",

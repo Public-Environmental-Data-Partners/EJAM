@@ -9,8 +9,6 @@
 #'   and also prints to console the first variable of each table
 #' @seealso [url_acs_table_info()]
 #'
-#' @export
-#'
 acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 
   if (missing(tables_acs)) {tables_acs <- as.vector(tables_ejscreen_acs)}
@@ -55,7 +53,6 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #' @seealso [calc_blockgroupstats_acs()] [calc_blockgroupstats_from_tract_data()] [calc_bgej()]
 #'   [formulas_ejscreen_acs()] [formulas_ejscreen_acs_disability()] [formulas_ejscreen_demog_index()]
 #'
-#' @export
 #' @keywords internal
 #'
 calc_blockgroupstats_acs <- function(yr,

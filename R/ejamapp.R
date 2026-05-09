@@ -245,7 +245,7 @@
 #' }
 #' @return An object that represents the app. Printing the object or
 #'   passing it to [runApp()] will run the app, as would just typing
-#'   [run_app()] or [ejamapp()] in the console.
+#'   [ejamapp()] in the console.
 #'
 #'
 #' @export
@@ -382,7 +382,6 @@ ejamapp <- function(
 
 #' @inherit ejamapp
 #'
-#' @export
 #' @keywords internal
 #'
 run_app <- function(
@@ -398,7 +397,6 @@ run_app <- function(
 
 #' @inherit ejamapp
 #'
-#' @export
 #' @keywords internal
 #'
 app_run_EJAM <- function(

@@ -127,6 +127,12 @@
 <span>  <span class="va">pipeline_dir</span>,</span>
 <span>  format <span class="op">=</span> <span class="st">"csv"</span>,</span>
 <span>  storage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"local"</span>, <span class="st">"s3"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ejscreen_pipeline_storage_backend</span><span class="op">(</span></span>
+<span>  pipeline_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  storage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"local"</span>, <span class="st">"s3"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -183,7 +189,7 @@ file.</p></dd>
 
 
 <dt id="arg-validation-strict">validation_strict<a class="anchor" aria-label="anchor" href="#arg-validation-strict"></a></dt>
-<dd><p>logical passed to <code><a href="ejscreen_pipeline_validate.html">ejscreen_pipeline_validate()</a></code>.</p></dd>
+<dd><p>logical passed to <code>EJAM:::ejscreen_pipeline_validate()</code>.</p></dd>
 
 
 <dt id="arg-root">root<a class="anchor" aria-label="anchor" href="#arg-root"></a></dt>
@@ -201,13 +207,12 @@ folder name.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-
-<ul><li><p><code>EJAM:::ejscreen_pipeline_stage_names()</code> returns known stage names.</p></li>
-<li><p><code>EJAM:::ejscreen_pipeline_dir()</code> &amp; <code>EJAM:::ejscreen_pipeline_stage_path()</code> return paths.</p></li>
-<li><p><code>EJAM:::ejscreen_pipeline_save()</code> writes data to files and returns the path.</p></li>
-<li><p><code>ejscreen_pipeline_input()</code> &amp; helper <code>EJAM:::ejscreen_pipeline_load()</code> read data from files
-&amp; return the loaded or supplied object.</p></li>
-</ul></div>
+    <p>-<code>EJAM:::ejscreen_pipeline_stage_names()</code> returns known stage names.
+-<code>EJAM:::ejscreen_pipeline_dir()</code> &amp;<code>EJAM:::ejscreen_pipeline_stage_path()</code> return paths.
+-<code>EJAM:::ejscreen_pipeline_save()</code> writes data to files and returns the path.
+-<code>EJAM:::ejscreen_pipeline_input()</code> &amp; helper<code>EJAM:::ejscreen_pipeline_load()</code> read data from files or input, returns the data object.
+-<code>EJAM:::ejscreen_pipeline_storage_backend()</code> checks if using AWS s3 or local folder storage, returns one of "auto", "local", "s3"</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>These helpers are intended for annual update functions that should be

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_PACKAGE_DEV.R
 \name{found_in_files}
 \alias{found_in_files}
-\title{search for vector of query terms, to see which ones are found in any of the files}
+\title{Check which search terms are found in any file}
 \usage{
 found_in_files(pattern_vector, path = "./R", ignorecomments = TRUE, ...)
 }
@@ -17,15 +17,19 @@ and note TRUE IS NOT DEFAULT IN find_in_files() but is here}
 \item{...}{passed to \code{find_in_files()} can be ignore.case, filename_pattern, etc.}
 }
 \value{
-data.frame
+Logical vector, one element per search term in \code{pattern_vector}.
 }
 \description{
-search for vector of query terms, to see which ones are found in any of the files
+Check which search terms are found in any file
 }
 \details{
-Uses EJAM:::find_in_files()
+Uses \code{\link[=find_in_files]{find_in_files()}} once for each element of \code{pattern_vector}.
 }
 \examples{
-  found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+  EJAM:::found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+}
+\seealso{
+\code{\link[=find_in_files]{find_in_files()}} \code{\link[=found_in_N_files_T_times]{found_in_N_files_T_times()}} \code{\link[=grepn]{grepn()}} \code{\link[=grepns]{grepns()}}
+\code{\link[=grepls]{grepls()}} \code{\link[=grep_lines]{grep_lines()}}
 }
 \keyword{internal}

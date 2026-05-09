@@ -157,7 +157,7 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
 #' @param newtype  same as in [fixcolnames()]
 #' @return Vector or new column names same length as input
 #'
-#' @export
+#' @keywords internal
 #'
 fixcolnames_anyoldtype <- function(namesnow, oldtypes = c('longname', 'apiname', 'api_synonym', 'csvname', 'acsname', 'oldname'), newtype = "r") {
 

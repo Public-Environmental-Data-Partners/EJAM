@@ -1840,10 +1840,50 @@ app_server <- function(input, output, session) {
     ## and done here once for all cases: fips, shp, and latlon sitetype
     progress_all <- shiny::Progress$new(min = 0, max = 1)
     progress_all$set(value = 0, message = 'Step 1 of 3', detail = 'Getting nearby census blocks')
+    ejamitRunTimeNotification <- NULL
+    show_ejamit_runtime_estimate <- function(rows, radius = 0, analysis_type, analysis_subtype = NULL) {
+      if (length(rows) == 0 || is.na(rows) || rows < 1) {
+        return(invisible(NULL))
+      }
+      runtime_estimate <- try(
+        speed_ejamit_runtime_estimate(
+          rows = rows,
+          radius = radius,
+          analysis_type = analysis_type,
+          analysis_subtype = analysis_subtype
+        ),
+        silent = TRUE
+      )
+      if (inherits(runtime_estimate, "try-error")) {
+        return(invisible(NULL))
+      }
+      progress_all$set(value = 0, message = 'Step 1 of 3', detail = runtime_estimate$message)
+      if (runtime_estimate$seconds_upper > 30) {
+        ejamitRunTimeNotification <<- showNotification(
+          runtime_estimate$message,
+          type = 'message',
+          duration = NULL
+        )
+      }
+      invisible(runtime_estimate)
+    }
 
     ################################################# #
     # > ejamit() for FIPS  ####
     if (submitted_upload_method() %in% c('FIPS', 'FIPS_PLACE')) {  # if FIPS, do everything in 1 step right here.
+      fips_uploaded_for_prediction <- data_uploaded()
+      fips_for_prediction <- if (is.data.frame(fips_uploaded_for_prediction)) {
+        fips_from_table(fips_uploaded_for_prediction, addleadzeroes = TRUE, in_shiny = TRUE)
+      } else {
+        fips_lead_zero(fips_uploaded_for_prediction)
+      }
+      fips_for_prediction <- fips_for_prediction[fips_valid(fips_for_prediction)]
+      show_ejamit_runtime_estimate(
+        rows = length(fips_for_prediction),
+        radius = 0,
+        analysis_type = "fips",
+        analysis_subtype = speed_fips_analysis_subtype(fips_for_prediction)
+      )
 
       out <- ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
                     updateProgress_getblocks = NULL, # differs in shp vs latlon cases, unused in fips case.
@@ -1915,6 +1955,12 @@ app_server <- function(input, output, session) {
         } else {
           shp <- data_uploaded()
         }
+        show_ejamit_runtime_estimate(
+          rows = NROW(shp),
+          radius = sanitized_radius_now(),
+          analysis_type = "shapefile",
+          analysis_subtype = "polygon"
+        )
 
         ## progress bar to show getblocksnearby status
         progress_getblocks_shp <- shiny::Progress$new(min = 0, max = 1)
@@ -1974,6 +2020,18 @@ app_server <- function(input, output, session) {
       # > ejamit() for LAT/LON  POINTS  ####
 
       if (!(submitted_upload_method() %in% c('SHP', 'FIPS', 'FIPS_PLACE'))) {  # if LATITUDE AND LONGITUDE (POINTS), find blocks nearby
+        sitepoints_for_prediction <- data_uploaded()
+        n_points_for_prediction <- if (is.data.frame(sitepoints_for_prediction) && "valid" %in% names(sitepoints_for_prediction)) {
+          sum(sitepoints_for_prediction$valid, na.rm = TRUE)
+        } else {
+          NROW(sitepoints_for_prediction)
+        }
+        show_ejamit_runtime_estimate(
+          rows = n_points_for_prediction,
+          radius = sanitized_radius_now(),
+          analysis_type = "points",
+          analysis_subtype = "point_buffer"
+        )
 
         ## progress bar to show getblocksnearby (now all of ejamit actually) status
         progress_getblocks <- shiny::Progress$new(min = 0, max = 1)

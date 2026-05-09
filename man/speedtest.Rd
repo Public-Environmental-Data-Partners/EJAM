@@ -7,6 +7,10 @@
 speedtest(
   n = 10,
   sitepoints = NULL,
+  fips = NULL,
+  shapefile = NULL,
+  analysis_type = NULL,
+  analysis_subtype = NULL,
   weighting = "frs",
   radii = c(1, 3.106856, 5, 10, 31.06856)[1:3],
   avoidorphans = FALSE,
@@ -19,6 +23,9 @@ speedtest(
   logfilename = "log_n_datetime.txt",
   honk_when_ready = TRUE,
   saveoutput = FALSE,
+  collect_detailed = FALSE,
+  detail_point_counts = c(1L, 2L, 10L),
+  detailed_csv = NULL,
   plot = TRUE,
   getblocks_diagnostics_shown = FALSE,
   ...
@@ -30,6 +37,21 @@ set to 0 to interactively pick file of points in RStudio (n is ignored if sitepo
 
 \item{sitepoints}{optional,  (use if you do not want random points) data.frame of points or
 path/file with points, where columns are lat and lon in decimal degrees}
+
+\item{fips}{optional vector of FIPS codes to time FIPS-based analysis instead
+of point-buffer analysis. If provided, \code{speedtest()} times whole
+\code{\link[=ejamit]{ejamit()}} runs rather than the point-specific substeps.}
+
+\item{shapefile}{optional shapefile path or object to time polygon-based
+analysis instead of point-buffer analysis. If provided, \code{speedtest()}
+times whole \code{\link[=ejamit]{ejamit()}} runs rather than the point-specific substeps.}
+
+\item{analysis_type}{optional label for the kind of analysis being timed.
+Usually inferred as \code{"points"}, \code{"fips"}, or \code{"shapefile"}.}
+
+\item{analysis_subtype}{optional label for the subtype being timed. Usually
+inferred as \code{"point_buffer"}, \code{"polygon"}, or the FIPS type such as
+\code{"city"} or \code{"county"}.}
 
 \item{weighting}{optional, if using random points, how to weight them,
 such as facilities, people, or blockgroups. see \code{\link[=testpoints_n]{testpoints_n()}}}
@@ -60,6 +82,19 @@ NOTE this slows it down though.}
 
 \item{saveoutput}{but this slows it down if set to TRUE to save each run as .rda file}
 
+\item{collect_detailed}{if \code{TRUE}, also collect a per-run timing table in the
+schema used by legacy \code{Analysis_timing_results.csv} files}
+
+\item{detail_point_counts}{when \code{collect_detailed = TRUE}, ensure runs for
+these counts are also included when possible. For random-point runs, these
+values are added to \code{n} if they are less than or equal to \code{max(n)}. For
+explicit \code{sitepoints}, \code{fips}, or \code{shapefile} inputs, the first \code{k} rows or
+codes are used for each requested \code{k} that is less than or equal to the
+input size.}
+
+\item{detailed_csv}{optional path to a \code{.csv} file where that detailed timing
+table should be written. If provided, \code{collect_detailed} is forced to \code{TRUE}.}
+
 \item{plot}{whether to create plot of results}
 
 \item{getblocks_diagnostics_shown}{set TRUE to see more details on block counts etc.}
@@ -67,7 +102,10 @@ NOTE this slows it down though.}
 \item{...}{passed to plotting function}
 }
 \value{
-EJAM results similar to as from the web app or \code{\link[=ejamit]{ejamit()}} and also creates a plot
+A summary timing table with one row per \verb{(points, radius)} run. If
+\code{collect_detailed = TRUE}, the returned table also has an attribute called
+\code{"detailed_results"} containing a per-run timing table in the legacy
+\code{Analysis_timing_results.csv} schema.
 }
 \description{
 Run EJAM analysis for several radii and numbers of sitepoints, recording how long each step takes
@@ -96,6 +134,38 @@ This is essentially a test script that times each step of EJAM for a large datas
     n = c(1e2,1e3,1e4),
     radii=c(1, 3.106856, 5, 10, 31.06856),
     logging=TRUE, honk=TRUE
+  )
+
+  EJAM:::speedtest(
+    n = c(100, 1000),
+    radii = c(1, 3.106856),
+    collect_detailed = TRUE,
+    detail_point_counts = c(1, 2, 10),
+    detailed_csv = "data-raw/Analysis_timing_results_new.csv",
+    logging = FALSE,
+    honk_when_ready = FALSE,
+    plot = FALSE
+  )
+
+  EJAM:::speedtest(
+    fips = EJAM::fips_counties_from_state_abbrev("DE"),
+    collect_detailed = TRUE,
+    detail_point_counts = c(1, 3),
+    detailed_csv = "data-raw/Analysis_timing_results_fips.csv",
+    plot = FALSE,
+    honk_when_ready = FALSE
+  )
+
+  EJAM:::speedtest(
+    shapefile = system.file(
+      "testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp",
+      package = "EJAM"
+    ),
+    collect_detailed = TRUE,
+    detail_point_counts = c(1, 3, 25),
+    detailed_csv = "data-raw/Analysis_timing_results_shapefile.csv",
+    plot = FALSE,
+    honk_when_ready = FALSE
   )
  }
 }

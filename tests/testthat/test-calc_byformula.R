@@ -113,7 +113,7 @@ test_that("formula dependencies are ordered before they are used", {
 
   expect_equal(out_of_order, character())
 
-  age_formulas <- calc_formulas_from_varname(c("pctunder18", "pctover17"))
+  age_formulas <- EJAM:::calc_formulas_from_varname(c("pctunder18", "pctover17"))
   expect_lt(match("under18", age_formulas$rname), match("pctunder18", age_formulas$rname))
   expect_lt(match("over17", age_formulas$rname), match("pctover17", age_formulas$rname))
 })

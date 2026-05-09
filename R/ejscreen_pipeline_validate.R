@@ -19,7 +19,6 @@
 #' @return invisibly returns a list with `errors` and `warnings`.
 #'
 #' @keywords internal
-#' @export
 #'
 ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
   if (missing(stage) || is.null(stage) || !nzchar(stage)) {

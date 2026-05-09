@@ -39,7 +39,6 @@
 #'   `bgej`, `usastats`, and `statestats`.
 #'
 #' @keywords internal
-#' @export
 #'
 calc_ejscreen_stats <- function(bgstats = NULL,
                                 bgstats_path = NULL,

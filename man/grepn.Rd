@@ -2,22 +2,55 @@
 % Please edit documentation in R/utils_grepn.R
 \name{grepn}
 \alias{grepn}
-\title{utility - how many times within each element of x vector is the pattern matched ?}
+\title{Count regex matches within each element of a character vector}
 \usage{
 grepn(pattern, x, ignore.case = TRUE)
 }
 \arguments{
-\item{pattern}{passed to \code{gregexec()}}
+\item{pattern}{pattern to search for, passed to \code{gregexec()}}
 
-\item{x}{a vector of character strings}
+\item{x}{a vector of character strings to search within}
+
+\item{ignore.case}{passed to \code{gregexec()}}
 }
 \value{
-vector of numbers
+vector of numbers, same length as x
 }
 \description{
-utility - how many times within each element of x vector is the pattern matched ?
+Count regex matches within each element of a character vector
+}
+\details{
+\itemize{
+\item \code{grepn()} counts matches for one pattern across a character vector.
+\item \code{grepns()} handles multiple patterns and can return either a matrix of
+counts per string or a vector summarizing hits per pattern.
+\item \code{grepls()} handles multiple patterns and returns logical presence/absence
+results rather than counts.
+}
+}
+\examples{
+ grepn("x", c("0 abc", "1 uppercase X", "1 xyz", "2 xx", "3 x x x"))
+ grepn("x", c("0 abc", "1 uppercase X", "1 xyz", "2 xx", "3 x x x"), ignore.case = F)
+
+ grepns(c("x", "y"), c("yes", "yx", "this 1 has some x x xxxxx"))
+ grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
+         rowperx = T, count1perx=T)
+ grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
+         rowperx = F, count1perx=T)
+ grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
+         rowperx = T, count1perx=F)
+ grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
+         rowperx = F, count1perx=F)
+
+ grepls(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
+   rowperx = T)
+ grepls(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
+   rowperx = F)
+
+
 }
 \seealso{
-\code{\link[=find_in_files]{find_in_files()}}
+\code{\link[=grepns]{grepns()}} \code{\link[=grepls]{grepls()}} \code{\link[=find_in_files]{find_in_files()}} \code{\link[=found_in_files]{found_in_files()}}
+\code{\link[=found_in_N_files_T_times]{found_in_N_files_T_times()}} \code{\link[=grep_lines]{grep_lines()}}
 }
 \keyword{internal}

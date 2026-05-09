@@ -53,7 +53,7 @@ test_that("calc_bg_acsdata can save a validated bg_acsdata stage", {
     .package = "EJAM"
   )
 
-  out <- calc_bg_acsdata(
+  out <- EJAM:::calc_bg_acsdata(
     yr = 2024,
     save_stage = TRUE,
     pipeline_dir = pipeline_dir
@@ -170,7 +170,7 @@ test_that("calc_blockgroupstats_acs can transform a raw ACS table checkpoint", {
     ))
   )
 
-  out <- calc_blockgroupstats_acs(
+  out <- EJAM:::calc_blockgroupstats_acs(
     yr = 2024,
     formulas = c(
       "pop = B01001_001",
@@ -233,7 +233,7 @@ test_that("calc_bg_acsdata can read raw ACS stage before formula transformation"
     .package = "EJAM"
   )
 
-  out <- calc_bg_acsdata(
+  out <- EJAM:::calc_bg_acsdata(
     yr = 2024,
     acs_raw_stage = "bg_acs_raw",
     pipeline_dir = pipeline_dir,

@@ -62,6 +62,12 @@ ejscreen_pipeline_stage_exists(
   format = "csv",
   storage = c("auto", "local", "s3")
 )
+
+ejscreen_pipeline_storage_backend(
+  pipeline_dir = NULL,
+  path = NULL,
+  storage = c("auto", "local", "s3")
+)
 ```
 
 ## Arguments
@@ -115,8 +121,7 @@ ejscreen_pipeline_stage_exists(
 
 - validation_strict:
 
-  logical passed to
-  [`ejscreen_pipeline_validate()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_validate.md).
+  logical passed to `EJAM:::ejscreen_pipeline_validate()`.
 
 - root:
 
@@ -133,16 +138,15 @@ ejscreen_pipeline_stage_exists(
 
 ## Value
 
-- `EJAM:::ejscreen_pipeline_stage_names()` returns known stage names.
-
-- `EJAM:::ejscreen_pipeline_dir()` &
-  `EJAM:::ejscreen_pipeline_stage_path()` return paths.
-
-- `EJAM:::ejscreen_pipeline_save()` writes data to files and returns the
-  path.
-
-- `ejscreen_pipeline_input()` & helper `EJAM:::ejscreen_pipeline_load()`
-  read data from files & return the loaded or supplied object.
+\-`EJAM:::ejscreen_pipeline_stage_names()` returns known stage names.
+-`EJAM:::ejscreen_pipeline_dir()`
+&`EJAM:::ejscreen_pipeline_stage_path()` return paths.
+-`EJAM:::ejscreen_pipeline_save()` writes data to files and returns the
+path. -`EJAM:::ejscreen_pipeline_input()` &
+helper`EJAM:::ejscreen_pipeline_load()` read data from files or input,
+returns the data object. -`EJAM:::ejscreen_pipeline_storage_backend()`
+checks if using AWS s3 or local folder storage, returns one of "auto",
+"local", "s3"
 
 ## Details
 

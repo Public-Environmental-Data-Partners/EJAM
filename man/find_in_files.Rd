@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_PACKAGE_DEV.R
 \name{find_in_files}
 \alias{find_in_files}
-\title{utility to do global search/find in full text of the files in a folder, like source code files or unit tests}
+\title{Search across files for lines matching a regular expression}
 \usage{
 find_in_files(
   pattern,
@@ -41,14 +41,7 @@ a list of named vectors,
 where names are file paths with hits, elements are vectors of text with hits.
 }
 \description{
-utility to do global search/find in full text of the files in a folder, like source code files or unit tests
-}
-\details{
-Also see (mostly undocumented) related functions
-EJAM:::found_in_N_files_T_times() and
-EJAM:::found_in_files() and
-EJAM:::grab_hits() and
-EJAM:::grepn()
+Search across files for lines matching a regular expression
 }
 \examples{
 EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
@@ -72,5 +65,9 @@ EJAM:::find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
 EJAM:::find_in_files(paste0(grepl_line_commented_out,     "xxx"))
 EJAM:::find_in_files(paste0(grepl_line_may_have_comment,  "xxx"))
 
+}
+\seealso{
+\code{\link[=grep_lines]{grep_lines()}} \code{\link[=grepn]{grepn()}} \code{\link[=grepns]{grepns()}} \code{\link[=grepls]{grepls()}} \code{\link[=found_in_files]{found_in_files()}}
+\code{\link[=found_in_N_files_T_times]{found_in_N_files_T_times()}}
 }
 \keyword{internal}

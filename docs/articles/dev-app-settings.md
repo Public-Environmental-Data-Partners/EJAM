@@ -18,8 +18,6 @@ reference info is recommended before reading any of the details below.
 Many defaults are defined in files like `global_defaults_*.R`. They can
 be changed there, but also can be passed to
 [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
-aka
-[`run_app()`](https://public-environmental-data-partners.github.io/EJAM/reference/run_app.md)
 as parameters, to override those global default settings for the
 duration of the app. Using
 [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)

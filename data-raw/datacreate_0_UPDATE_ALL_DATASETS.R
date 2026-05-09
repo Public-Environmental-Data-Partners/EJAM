@@ -47,7 +47,7 @@ rmost2 <- function(notremove = c(
   c("askquestions", "localfolder", "td", "rawdir",
     "source_maybe", "consoleclear" ,  "reload", "rmost2", "loadall"),
   .arrow_ds_names
-)) {rmost(notremove = notremove)}
+)) {EJAM:::rmost(notremove = notremove)}
 ######################################### #
 source_maybe <- function(scriptname = NULL,
                          DOIT = TRUE,
@@ -588,7 +588,7 @@ warning("frs functions need cleanup here")
 
 #                            TO BE CHECKED/ REVISED HERE
 
-rmost() #
+EJAM:::rmost() #
 
 loadall() # needed to enable frs functions below that need
 

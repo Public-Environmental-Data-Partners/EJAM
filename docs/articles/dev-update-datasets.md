@@ -33,8 +33,7 @@ when the package features/code changes, such as the important data
 object called `map_headernames` (which in turn is used to update objects
 such as `names_e`).
 
-See the draft utility `EJAM:::pkg_data()` for a view of datasets if
-useful:
+See the draft utility `EJAM:::pkg_data()` for a dataset inventory:
 
 ``` r
 x <- EJAM:::pkg_data()
@@ -232,7 +231,7 @@ entirely to more frequent automated updates or even reliance on the FRS
 API.
 
 - [`?map_headernames`](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
-  and associated .xlsx, etc. store critical metadata. This needs to
+  and associated .xlsx, etc. store critical metadata. This needs to be
   updated especially if indicator names change or are added, for
   example.
   [`?map_headernames`](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
@@ -309,7 +308,7 @@ arrow file format through the [arrow](https://github.com/apache/arrow/)
 R package, with file extension `.arrow`. This allows us to work with
 larger-than-memory data and store it outside of the EJAM package itself.
 
-Earlier version of EJAM did not use the actual arrow format, so there
+Earlier versions of EJAM did not use the actual Arrow format, so there
 still may be places in the code that simply use the xyz.arrow filename
 but not the actual arrow format that is faster, and those would ideally
 get updated. For example the object called `frs_arrow` is the faster
@@ -386,8 +385,8 @@ These were the arrow files used by EJAM:
 1.  Checks data repo’s latest release/version.
 2.  Checks user’s EJAM package’s ejamdata version, which is stored in
     `data/ejamdata_version.txt`.
-3.  If the `data/ejamdata_version.txt` file doesn’t exist, e.g. if it’s
-    the first time installing EJAM, it will be created at the end of the
+3.  If the `data/ejamdata_version.txt` file doesn’t exist, for example
+    on the first EJAM install, it will be created at the end of the
     script.
 4.  If the versions are different, downloads the latest arrow from the
     latest ejamdata release with

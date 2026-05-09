@@ -7,7 +7,7 @@ test_that("map_headernames augmentation fills EJSCREEN name columns", {
     stringsAsFactors = FALSE
   )
 
-  out <- augment_map_headernames_ejscreen_names(mapping)
+  out <- EJAM:::augment_map_headernames_ejscreen_names(mapping)
   mapped <- out[match(mapping$rname, out$rname), ]
   expect_equal(mapped$ejscreen_names, mapping$csvname)
   expect_equal(mapped$ejscreen_ftp_names, mapping$csvname)

@@ -50,11 +50,11 @@ This is an IMPORTANT TABLE that provides information about each variable
 
 - etc.
 
-It was created from a spreadsheet of the same name, that is in a
-data-raw folder. Several helper functions are used to query it such as
-[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)
+It was created from a spreadsheet of the same name in the `data-raw`
+folder. Several helper functions are used to query it, such as
+[`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md),
 and many functions rely on it. You can see examples of what it contains
-like this, for example:
+below.
 
 `data.frame(t(map_headernames[1:2, ]))`
 

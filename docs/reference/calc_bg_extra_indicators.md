@@ -64,11 +64,6 @@ ejscreen_default_extra_indicator_varlists()
   logical passed to
   [`ejscreen_pipeline_save()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_input.md).
 
-- extra_indicator_varlists:
-
-  `map_headernames$varlist` groups used to identify extra indicator
-  defaults.
-
 ## Value
 
 data.table with `bgfips` and extra indicator columns.
