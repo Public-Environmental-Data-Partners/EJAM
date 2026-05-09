@@ -26,12 +26,10 @@
 ###################################################### #
 # setup ####
 
-if (!exists("calc_ejscreen_dataset")) {
-  if (requireNamespace("pkgload", quietly = TRUE)) {
-    pkgload::load_all(export_all = TRUE)
-  } else {
-    library(EJAM)
-  }
+if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd(), "DESCRIPTION"))) {
+  pkgload::load_all(export_all = TRUE)
+} else if (!exists("calc_ejscreen_dataset")) {
+  library(EJAM)
 }
 
 library(data.table)
