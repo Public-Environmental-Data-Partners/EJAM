@@ -35,6 +35,11 @@
 #' @param validation_strict logical passed to [ejscreen_pipeline_save()].
 #' @param storage raw ACS checkpoint storage backend: `"auto"`, `"local"`, or
 #'   `"s3"`.
+#' @param download_timeout timeout in seconds to use while downloading ACS
+#'   table files. This is increased above R's usual 60 second default because
+#'   some Census table-based summary files are hundreds of MB.
+#' @param download_retries number of times to retry a failed ACS table download
+#'   after the initial attempt.
 #'
 #' @return list with raw `blockgroup` and `tract` ACS table lists plus metadata.
 #'
@@ -53,7 +58,9 @@ download_bg_acs_raw <- function(yr,
                                 raw_table_format = stage_format,
                                 overwrite = TRUE,
                                 validation_strict = TRUE,
-                                storage = c("auto", "local", "s3")) {
+                                storage = c("auto", "local", "s3"),
+                                download_timeout = 3600,
+                                download_retries = 2) {
   stage_format <- match.arg(stage_format)
   raw_acs_storage <- match.arg(raw_acs_storage)
   raw_table_format <- match.arg(raw_table_format, c("rds", "rda", "csv", "arrow"))
@@ -70,7 +77,9 @@ download_bg_acs_raw <- function(yr,
     yr = yr,
     tables = blockgroup_tables,
     fips = "blockgroup",
-    fiveorone = fiveorone
+    fiveorone = fiveorone,
+    download_timeout = download_timeout,
+    download_retries = download_retries
   )
   tract <- list()
   if (include_tract_data && length(tract_tables) > 0) {
@@ -78,7 +87,9 @@ download_bg_acs_raw <- function(yr,
       yr = yr,
       tables = tract_tables,
       fips = "tract",
-      fiveorone = fiveorone
+      fiveorone = fiveorone,
+      download_timeout = download_timeout,
+      download_retries = download_retries
     )
   }
 
@@ -128,16 +139,88 @@ download_bg_acs_raw <- function(yr,
   out
 }
 
-download_acs_raw_tables <- function(yr, tables, fips, fiveorone = "5") {
+download_acs_raw_tables <- function(yr,
+                                    tables,
+                                    fips,
+                                    fiveorone = "5",
+                                    download_timeout = 3600,
+                                    download_retries = 2) {
   if (!requireNamespace("ACSdownload", quietly = TRUE)) {
     stop("requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload and documented at https://ejanalysis.github.io/ACSdownload/")
   }
-  ACSdownload::get_acs_new(
-    yr = yr,
-    tables = tables,
-    fips = fips,
-    fiveorone = fiveorone,
-    return_list_not_merged = TRUE
+  if (!is.numeric(download_timeout) || length(download_timeout) != 1 || is.na(download_timeout) || download_timeout <= 0) {
+    stop("download_timeout must be a single positive number of seconds")
+  }
+  if (!is.numeric(download_retries) || length(download_retries) != 1 || is.na(download_retries) || download_retries < 0) {
+    stop("download_retries must be a single non-negative number")
+  }
+
+  old_timeout <- getOption("timeout")
+  new_timeout <- max(as.numeric(old_timeout), download_timeout, na.rm = TRUE)
+  options(timeout = new_timeout)
+  on.exit(options(timeout = old_timeout), add = TRUE)
+
+  tables <- unique(toupper(as.vector(tables)))
+  out <- vector("list", length(tables))
+  names(out) <- toupper(tables)
+
+  for (table in tables) {
+    out[[table]] <- download_acs_raw_table_with_retry(
+      yr = yr,
+      table = table,
+      fips = fips,
+      fiveorone = fiveorone,
+      download_retries = download_retries
+    )
+  }
+
+  out
+}
+
+download_acs_raw_table_with_retry <- function(yr,
+                                              table,
+                                              fips,
+                                              fiveorone = "5",
+                                              download_retries = 2) {
+  table_name <- toupper(table)
+  last_error <- NULL
+  attempts <- seq_len(as.integer(download_retries) + 1L)
+
+  for (attempt in attempts) {
+    if (attempt > 1L) {
+      message(
+        "Retrying ACS table ", table_name, " for ", fips,
+        " (attempt ", attempt, " of ", length(attempts), ")"
+      )
+    }
+
+    result <- tryCatch(
+      ACSdownload::get_acs_new(
+        yr = yr,
+        tables = table,
+        fips = fips,
+        fiveorone = fiveorone,
+        return_list_not_merged = TRUE
+      ),
+      error = function(e) {
+        last_error <<- e
+        NULL
+      }
+    )
+
+    if (!is.null(result)) {
+      if (!table_name %in% names(result)) {
+        stop("ACSdownload did not return requested table ", table_name)
+      }
+      return(result[[table_name]])
+    }
+  }
+
+  stop(
+    "Failed to download ACS table ", table_name, " for ", fips,
+    " after ", length(attempts), " attempts. Last error: ",
+    if (is.null(last_error)) "ACSdownload returned NULL" else conditionMessage(last_error),
+    call. = FALSE
   )
 }
 

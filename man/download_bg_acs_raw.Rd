@@ -17,7 +17,9 @@ download_bg_acs_raw(
   raw_table_format = stage_format,
   overwrite = TRUE,
   validation_strict = TRUE,
-  storage = c("auto", "local", "s3")
+  storage = c("auto", "local", "s3"),
+  download_timeout = 3600,
+  download_retries = 2
 )
 }
 \arguments{
@@ -53,6 +55,13 @@ single \code{bg_acs_raw} list object.}
 
 \item{storage}{raw ACS checkpoint storage backend: \code{"auto"}, \code{"local"}, or
 \code{"s3"}.}
+
+\item{download_timeout}{timeout in seconds to use while downloading ACS
+table files. This is increased above R's usual 60 second default because
+some Census table-based summary files are hundreds of MB.}
+
+\item{download_retries}{number of times to retry a failed ACS table download
+after the initial attempt.}
 }
 \value{
 list with raw \code{blockgroup} and \code{tract} ACS table lists plus metadata.

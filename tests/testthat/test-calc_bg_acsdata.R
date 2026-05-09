@@ -71,7 +71,9 @@ test_that("download_bg_acs_raw saves a folder-plus-manifest raw ACS checkpoint",
   pipeline_dir <- file.path(tempdir(), "ejam-bg-acs-raw-test")
 
   testthat::local_mocked_bindings(
-    download_acs_raw_tables = function(yr, tables, fips, fiveorone) {
+    download_acs_raw_tables = function(yr, tables, fips, fiveorone, download_timeout, download_retries) {
+      expect_equal(download_timeout, 3600)
+      expect_equal(download_retries, 2)
       stats::setNames(lapply(seq_along(tables), function(i) {
         data.table::data.table(
           GEO_ID = paste0("1500000US", fips, "_", i),

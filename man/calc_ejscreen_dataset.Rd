@@ -31,6 +31,8 @@ calc_ejscreen_dataset(
   tract_tables = c("B18101", "C16001"),
   include_tract_data = TRUE,
   fiveorone = "5",
+  download_timeout = 3600,
+  download_retries = 2,
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tract_formulas = NULL,
   dropMOE = TRUE,
@@ -125,6 +127,13 @@ blockgroup apportionment.}
 \item{include_tract_data}{logical, whether to download \code{tract_tables}.}
 
 \item{fiveorone}{ACS sample length, \code{"5"} by default.}
+
+\item{download_timeout}{timeout in seconds to use while downloading ACS
+table files. This is increased above R's usual 60 second default because
+some Census table-based summary files are hundreds of MB.}
+
+\item{download_retries}{number of times to retry a failed ACS table download
+after the initial attempt.}
 
 \item{formulas}{formulas used for blockgroup-resolution ACS tables.}
 

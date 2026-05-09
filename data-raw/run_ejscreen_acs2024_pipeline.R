@@ -55,6 +55,8 @@ force_acs <- env_flag("EJAM_FORCE_ACS", FALSE)
 force_bg_acsdata <- env_flag("EJAM_FORCE_BG_ACSDATA", force_acs)
 include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
 use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", TRUE)
+acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
+acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
 
 if (pipeline_storage == "local") {
   dir.create(pipeline_dir, recursive = TRUE, showWarnings = FALSE)
@@ -116,7 +118,9 @@ if (force_acs || !stage_exists("bg_acs_raw")) {
     raw_acs_storage = "folder",
     raw_table_format = "csv",
     overwrite = TRUE,
-    storage = pipeline_storage
+    storage = pipeline_storage,
+    download_timeout = acs_download_timeout,
+    download_retries = acs_download_retries
   )
 } else {
   message("Reusing saved bg_acs_raw")
@@ -226,6 +230,8 @@ out <- EJAM::calc_ejscreen_dataset(
   raw_acs_storage = "folder",
   raw_table_format = "csv",
   download_acs_raw = FALSE,
+  download_timeout = acs_download_timeout,
+  download_retries = acs_download_retries,
   return_intermediate = TRUE,
   include_ejscreen_export = include_ejscreen_export,
   overwrite = TRUE
