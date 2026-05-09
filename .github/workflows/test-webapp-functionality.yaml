@@ -71,6 +71,11 @@ jobs:
 
 ## note also could just do shinytest2::test_app(".", filter="-functionality", check_setup = FALSE)
 
+      - name: FIPS-picker UI test
+        run: |
+          shinytest2::test_app(".", filter="FIPS-picker-functionality", check_setup = FALSE)
+        shell: Rscript {0}
+        
       - name: FIPS UI test
         run: |
           shinytest2::test_app(".", filter="FIPS-functionality", check_setup = FALSE)
