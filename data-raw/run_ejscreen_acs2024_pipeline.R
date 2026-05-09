@@ -16,13 +16,35 @@
 #      recalculated from the updated bg_envirodata.csv.
 #
 # Useful environment variables:
+
+#   EJAM_PIPELINE_YR
+
 #   EJAM_PIPELINE_DIR: override output folder.
 #   EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
+
+#   CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
 #   EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
 #   EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
-#   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+#   EJAM_ACS_DOWNLOAD_TIMEOUT
+#   EJAM_ACS_DOWNLOAD_RETRIES
+
 #   EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
 
+#   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+#
+## To check them:
+#
+print(
+  cbind(current_setting = Sys.getenv(c(
+    "EJAM_PIPELINE_YR",
+    "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE",
+    "CENSUS_API_KEY",
+    "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA",
+    "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+    "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
+    "EJAM_INCLUDE_EJSCREEN_EXPORT"
+  )))
+)
 ###################################################### #
 # setup ####
 
@@ -34,13 +56,20 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd()
 
 library(data.table)
 
+## SETTINGS ####
+
 env_flag <- function(name, default = FALSE) {
   value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
   toupper(value) %in% c("1", "TRUE", "YES", "Y")
 }
 
-## year ####
-yr <- as.integer(Sys.getenv("EJAM_PIPELINE_YR", unset = "2024"))
+### YEAR ####
+
+default_yr <- suppressMessages({EJAM:::acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE)})
+yr <- as.integer(Sys.getenv("EJAM_PIPELINE_YR", unset = default_yr))
+pipeline_yr <-yr
+
+### STORAGE / FOLDERS ####
 
 pipeline_dir <- Sys.getenv(
   "EJAM_PIPELINE_DIR",
@@ -49,18 +78,49 @@ pipeline_dir <- Sys.getenv(
 pipeline_storage <- Sys.getenv("EJAM_PIPELINE_STORAGE", unset = "auto")
 pipeline_storage <- match.arg(pipeline_storage, c("auto", "local", "s3"))
 pipeline_storage <- EJAM:::ejscreen_pipeline_storage_backend(pipeline_dir, storage = pipeline_storage)
-force_acs <- env_flag("EJAM_FORCE_ACS", FALSE)
-force_bg_acsdata <- env_flag("EJAM_FORCE_BG_ACSDATA", force_acs)
-include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
-use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", TRUE)
-acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
-acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
-
 if (pipeline_storage == "local") {
   dir.create(pipeline_dir, recursive = TRUE, showWarnings = FALSE)
 }
 message("Pipeline folder: ", pipeline_dir)
 message("Pipeline storage: ", pipeline_storage)
+
+### ACS DEMOG DATA defaults ####
+
+force_acs <- env_flag("EJAM_FORCE_ACS", FALSE)
+force_bg_acsdata <- env_flag("EJAM_FORCE_BG_ACSDATA", force_acs)
+acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
+acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
+
+### ENVIRONMENTAL DATA defaults ####
+
+use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", TRUE)
+
+### ESCREEN DATASET EXPORT defaults ####
+
+include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
+
+#################################################### #
+print(
+  cbind(Sys.getenv = Sys.getenv(c(
+    "EJAM_PIPELINE_YR",
+    "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE",
+    "CENSUS_API_KEY",
+    "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA",
+    "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+    "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
+    "EJAM_INCLUDE_EJSCREEN_EXPORT"
+  )),
+used_here = c(
+  pipeline_yr = pipeline_yr,
+  pipeline_dir=pipeline_dir, pipeline_storage=pipeline_storage, census_api_key = "(see actual key)",
+  force_acs=force_acs, force_bg_acsdata=force_bg_acsdata, acs_download_timeout=acs_download_timeout,
+  acs_download_retries=acs_download_retries, use_provisional_bg_envirodata=use_provisional_bg_envirodata,
+  include_ejscreen_export=include_ejscreen_export
+))
+)
+#################################################### #
+
+## helper functions ####
 
 stage_path <- function(stage) {
   EJAM:::ejscreen_pipeline_stage_path(stage, pipeline_dir, format = "csv")
@@ -101,7 +161,7 @@ write_pipeline_csv <- function(x, file_name) {
   }
   invisible(path)
 }
-
+# ~ ####
 ###################################################### #
 # Download ACS raw blockgroup data stage ####
 ###################################################### #
@@ -306,7 +366,7 @@ invisible(out)
 
 # when ready to actually replace the old blockgroupstats dataset entirely:
 if (interactive()) {
-  if (askYesNo("ready to save blockgroupstats in the package data folder with new metadata?")) {
+  if (askYesNo("ready to REPLACE data/blockgroupstats.rda in the package ? ")) {
     blockgroupstats <- out$blockgroupstats
 
     EJAM:::metadata_add_and_use_this("blockgroupstats")

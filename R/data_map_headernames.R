@@ -11,8 +11,8 @@
 #'     `rname`)
 #'   - names as used in old EJSCREEN staff CSV/FTP-style downloads
 #'     (`ejscreen_ftp_names`, copied from `csvname`)
-#'   - names as used in current EJSCREEN download, geodatabase, and map
-#'     application fields (`ejscreen_names`)
+#'   - names as used in current EJSCREEN download, geodatabase, and map-service
+#'     fields (`ejscreen_indicator`)
 #'   - names as used in the R code
 #'   - names as used in short labels of graphics
 #'   - names as used in table headers (long versions to provide full descriptions of the variables)
@@ -35,7 +35,7 @@
 #'     variables = .N,
 #'     has_apiname = sum(apiname != ""),
 #'     has_csvname = sum(csvname != ""),
-#'     has_ejscreen_names = sum(ejscreen_names != ""),
+#'     has_ejscreen_indicator = sum(ejscreen_indicator != ""),
 #'     has_ejscreen_apinames_old = sum(ejscreen_apinames_old != ""),
 #'     has_ejam_apinames = sum(ejam_apinames != ""),
 #'     has_acsname = sum(acsname != "")

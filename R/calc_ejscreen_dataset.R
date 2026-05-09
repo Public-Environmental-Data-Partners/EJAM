@@ -3,8 +3,10 @@
 #' Run the staged EJSCREEN/EJAM dataset update pipeline
 #'
 #' @details
-#' `calc_ejscreen_dataset()` can be called from, for example, a script
-#' like the one in `data-raw/run_ejscreen_acs2024_pipeline.R`
+#' `calc_ejscreen_dataset()` can be called from a script each year.
+#' See the runner script `data-raw/run_ejscreen_acs2024_pipeline.R`
+#' for an example of how to call this function, and how it can be used
+#' to run the whole pipeline from start to finish with minimal manual intervention.
 #'
 #' `calc_ejscreen_dataset()` is a high-level wrapper around the staged
 #' annual update helpers. It is intentionally an orchestrator rather than a
@@ -28,6 +30,39 @@
 #'
 #' `bg_envirodata` must include `pctpre1960`. That column may be produced by an
 #' upstream environmental-data step that reads the saved `bg_acsdata` stage.
+#'
+#' Note that the runner script can use several settings stored as environment variables:
+#'
+#'  - EJAM_PIPELINE_YR
+#'
+#'  - EJAM_PIPELINE_DIR: override output folder.
+#'  - EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
+#'  - AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
+#'  - CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
+#'  - EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
+#'  - EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
+#'  - EJAM_ACS_DOWNLOAD_TIMEOUT
+#'  - EJAM_ACS_DOWNLOAD_RETRIES
+#'
+#'  - EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
+#'
+#'  - EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+#'
+#' To check them:
+#' ```
+#' print(
+#' cbind(current_setting = Sys.getenv(c(
+#'   "EJAM_PIPELINE_YR",
+#'   "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE", "AWS_PROFILE", "AWS_REGION",
+#'   "CENSUS_API_KEY",
+#'   "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA",
+#'   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+#'   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
+#'   "EJAM_INCLUDE_EJSCREEN_EXPORT"
+#' )))
+#' )
+#' ```
+#'
 #'
 #' @param yr end year of the ACS 5-year survey to use.
 #' @param bg_envirodata environmental blockgroup table. If NULL, the wrapper
@@ -66,6 +101,9 @@
 #'   that must be present.
 #' @param ejscreen_export_rename_newtype naming column in [map_headernames] to
 #'   use when renaming the EJSCREEN export.
+#' @param ejscreen_export_feature_server_fields optional final EJSCREEN
+#'   FeatureServer field list. Defaults to the current EJSCREEN v2.32 block
+#'   group FeatureServer schema when an EJSCREEN export is requested.
 #' @inheritParams download_bg_acs_raw
 #' @inheritParams calc_bg_acsdata
 #' @inheritParams calc_bg_extra_indicators
@@ -100,7 +138,8 @@ calc_ejscreen_dataset <- function(yr,
                                   ejscreen_export_path = NULL,
                                   ejscreen_export_vars = NULL,
                                   ejscreen_export_required_names = NULL,
-                                  ejscreen_export_rename_newtype = "ejscreen_names",
+                                  ejscreen_export_rename_newtype = "ejscreen_indicator",
+                                  ejscreen_export_feature_server_fields = NULL,
                                   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
                                   tract_tables = c("B18101", "C16001"),
                                   include_tract_data = TRUE,
@@ -424,15 +463,21 @@ calc_ejscreen_dataset <- function(yr,
   ## > calc_ejscreen_export ####
   # ~ ----------------------------------------- ####
   if (isTRUE(include_ejscreen_export) || !is.null(ejscreen_export_path)) {
+    if (is.null(ejscreen_export_feature_server_fields)) {
+      ejscreen_export_feature_server_fields <- ejscreen_feature_server_fields()
+    }
     # Return 1 ejscreen_export table  ####
     out$ejscreen_export <- calc_ejscreen_export(
       blockgroupstats = blockgroupstats,
       bgej = stats$bgej,
+      usastats_acs = stats$usastats_acs,
+      usastats_envirodata = stats$usastats_envirodata,
       usastats_ej = stats$usastats_ej,
       statestats_ej = stats$statestats_ej,
       output_vars =           ejscreen_export_vars,
       rename_newtype =        ejscreen_export_rename_newtype,
       required_output_names = ejscreen_export_required_names,
+      feature_server_fields = ejscreen_export_feature_server_fields,
       save_path =             ejscreen_export_path,
       overwrite = overwrite
     )

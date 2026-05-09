@@ -4,7 +4,7 @@
 #'
 #' @details This helper prepares a tabular export by merging a
 #' `blockgroupstats`-like table with a `bgej`-like table and renaming available
-#' columns through [map_headernames]. By default it uses `ejscreen_names`, which
+#' columns through [map_headernames]. By default it uses `ejscreen_indicator`, which
 #' is the column intended to represent the current EJSCREEN app/export numeric
 #' field name. It also creates EJSCREEN app map helper fields from exported
 #' percentile fields: `B_...` map color-bin columns and `T_...` popup-text
@@ -18,22 +18,26 @@
 #'   from a saved pipeline stage.
 #' @param bgej bgej-like data.frame, or NULL if reading from a saved pipeline
 #'   stage.
+#' @param usastats_acs,usastats_envirodata ACS and environmental percentile
+#'   lookup tables. These are used to add `P_...` fields before creating
+#'   EJSCREEN map helper fields.
 #' @param pipeline_dir folder for reading saved pipeline stages.
 #' @param blockgroupstats_stage,bgej_stage stage names to read when objects are
 #'   not supplied.
 #' @param usastats_ej,statestats_ej EJ-index percentile lookup tables. These
 #'   are used to add `P_D2_...`/`P_D5_...` fields before creating EJSCREEN map
 #'   helper fields.
-#' @param usastats_ej_stage,statestats_ej_stage stage names to read for
-#'   EJ-index percentile lookup tables when objects are not supplied.
-#' @param blockgroupstats_path,bgej_path,usastats_ej_path,statestats_ej_path
+#' @param usastats_acs_stage,usastats_envirodata_stage,usastats_ej_stage,statestats_ej_stage
+#'   stage names to read for percentile lookup tables when objects are not
+#'   supplied.
+#' @param blockgroupstats_path,bgej_path,usastats_acs_path,usastats_envirodata_path,usastats_ej_path,statestats_ej_path
 #'   explicit paths to saved inputs.
 #' @param stage_format input file format when reading pipeline stages.
 #' @param by key column used to merge `blockgroupstats` and `bgej`.
 #' @param output_vars optional EJAM `rname` columns to keep before renaming.
 #'   Defaults to all available columns after the merge.
 #' @param rename_newtype target naming column in [map_headernames]. Defaults to
-#'   `"ejscreen_names"`.
+#'   `"ejscreen_indicator"`.
 #' @param mapping_for_names map_headernames-like crosswalk.
 #' @param required_output_names optional final EJSCREEN field names that must be
 #'   present after renaming.
@@ -54,6 +58,9 @@
 #'   names start with `P_`.
 #' @param overwrite_ejscreen_map_fields logical. If TRUE, recalculate existing
 #'   `B_...` and `T_...` fields from the matching percentile fields.
+#' @param feature_server_fields optional final EJSCREEN FeatureServer field
+#'   names. When supplied, missing schema fields are added when possible and the
+#'   export is returned in exactly this field order.
 #' @param save_path optional file path to save the export.
 #' @param save_format optional save format. Guessed from `save_path` when NULL.
 #'   Supported values are `"csv"`, `"rds"`, `"rda"`, and `"arrow"`.
@@ -66,21 +73,27 @@
 #'
 calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  bgej = NULL,
+                                 usastats_acs = NULL,
+                                 usastats_envirodata = NULL,
                                  usastats_ej = NULL,
                                  statestats_ej = NULL,
                                  pipeline_dir = NULL,
                                  blockgroupstats_stage = "blockgroupstats",
                                  bgej_stage = "bgej",
+                                 usastats_acs_stage = "usastats_acs",
+                                 usastats_envirodata_stage = "usastats_envirodata",
                                  usastats_ej_stage = "usastats_ej",
                                  statestats_ej_stage = "statestats_ej",
                                  blockgroupstats_path = NULL,
                                  bgej_path = NULL,
+                                 usastats_acs_path = NULL,
+                                 usastats_envirodata_path = NULL,
                                  usastats_ej_path = NULL,
                                  statestats_ej_path = NULL,
                                  stage_format = c("csv", "rds", "rda", "arrow"),
                                  by = "bgfips",
                                  output_vars = NULL,
-                                 rename_newtype = "ejscreen_names",
+                                 rename_newtype = "ejscreen_indicator",
                                  mapping_for_names = map_headernames,
                                  required_output_names = NULL,
                                  include_ej_percentiles = TRUE,
@@ -92,6 +105,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  include_ejscreen_map_fields = TRUE,
                                  map_field_pctile_names = NULL,
                                  overwrite_ejscreen_map_fields = TRUE,
+                                 feature_server_fields = NULL,
                                  save_path = NULL,
                                  save_format = NULL,
                                  overwrite = TRUE) {
@@ -202,6 +216,88 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     invisible(NULL)
   }
 
+  add_mapped_pctiles_from_lookup <- function(lookup,
+                                             lookup_name,
+                                             zones = "USA",
+                                             pctile_fields = NULL) {
+    if (is.null(lookup)) {
+      return(invisible(NULL))
+    }
+    lookup <- data.frame(lookup, check.names = FALSE)
+    if (!all(c("REGION", "PCTILE") %in% names(lookup))) {
+      warning(lookup_name, " must have REGION and PCTILE columns to add mapped percentile fields", call. = FALSE)
+      return(invisible(NULL))
+    }
+
+    mh <- mapping_for_names
+    if (is.null(pctile_fields)) {
+      pctile_fields <- unique(mh$ejscreen_pctile[!is_blank_string(mh$ejscreen_pctile)])
+    }
+    pctile_fields <- pctile_fields[grepl("^P_", pctile_fields)]
+
+    for (pctile_field in unique(pctile_fields)) {
+      pctile_rows <- mh[mh$ejscreen_indicator == pctile_field, , drop = FALSE]
+      pctile_rname <- pctile_rows$rname[!is_blank_string(pctile_rows$rname)][1]
+      if (is.na(pctile_rname) || is_blank_string(pctile_rname) || pctile_rname %in% names(bg)) {
+        next
+      }
+
+      raw_rows <- mh[
+        mh$ejscreen_pctile == pctile_field &
+          mh$ejscreen_indicator != pctile_field &
+          mh$rname %in% names(bg) &
+          mh$rname %in% names(lookup),
+        ,
+        drop = FALSE
+      ]
+      if (NROW(raw_rows) == 0) {
+        next
+      }
+
+      raw_var <- raw_rows$rname[1]
+      bg[[pctile_rname]] <<- pctile_from_raw_lookup(
+        myvector = bg[[raw_var]],
+        varname.in.lookup.table = raw_var,
+        lookup = lookup,
+        zone = zones,
+        quiet = TRUE
+      )
+    }
+    invisible(NULL)
+  }
+
+  if (!is.null(feature_server_fields)) {
+    feature_server_fields <- unique(as.character(feature_server_fields))
+    feature_server_fields <- feature_server_fields[!is_blank_string(feature_server_fields)]
+  }
+  feature_server_pctile_fields <- feature_server_fields[grepl("^P_", feature_server_fields)]
+
+  us_acs_lookup <- load_optional_lookup(
+    usastats_acs,
+    stage = usastats_acs_stage,
+    path = usastats_acs_path,
+    input_name = "usastats_acs"
+  )
+  add_mapped_pctiles_from_lookup(
+    lookup = us_acs_lookup,
+    lookup_name = "usastats_acs",
+    zones = "USA",
+    pctile_fields = feature_server_pctile_fields
+  )
+
+  us_env_lookup <- load_optional_lookup(
+    usastats_envirodata,
+    stage = usastats_envirodata_stage,
+    path = usastats_envirodata_path,
+    input_name = "usastats_envirodata"
+  )
+  add_mapped_pctiles_from_lookup(
+    lookup = us_env_lookup,
+    lookup_name = "usastats_envirodata",
+    zones = "USA",
+    pctile_fields = feature_server_pctile_fields
+  )
+
   if (isTRUE(include_ej_percentiles)) {
     us_ej_lookup <- load_optional_lookup(
       usastats_ej,
@@ -286,6 +382,10 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     )
   }
 
+  if (!is.null(feature_server_fields)) {
+    out <- calc_ejscreen_feature_server_fields_added(out, feature_server_fields = feature_server_fields)
+  }
+
   if (!is.null(required_output_names)) {
     missing_required <- setdiff(required_output_names, names(out))
     if (length(missing_required) > 0) {
@@ -334,6 +434,112 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 ###################################################### #
 # . ####
 
+ejscreen_feature_server_fields <- function() {
+  c(
+    "OBJECTID", "ID", "STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION",
+    "ACSTOTPOP", "ACSIPOVBAS", "ACSEDUCBAS", "ACSTOTHH", "ACSTOTHU",
+    "ACSUNEMPBAS", "ACSDISABBAS", "DEMOGIDX_2", "DEMOGIDX_5",
+    "PEOPCOLOR", "PEOPCOLORPCT", "LOWINCOME", "LOWINCPCT", "UNEMPLOYED",
+    "UNEMPPCT", "DISABILITY", "DISABILITYPCT", "LINGISO", "LINGISOPCT",
+    "LESSHS", "LESSHSPCT", "UNDER5", "UNDER5PCT", "OVER64", "OVER64PCT",
+    "LIFEEXPPCT", "PM25", "OZONE", "DSLPM", "RSEI_AIR", "PTRAF",
+    "PRE1960", "PRE1960PCT", "PNPL", "PRMP", "PTSDF", "UST", "PWDIS",
+    "NO2", "DWATER", "D2_PM25", "D5_PM25", "D2_OZONE", "D5_OZONE",
+    "D2_DSLPM", "D5_DSLPM", "D2_RSEI_AIR", "D5_RSEI_AIR", "D2_PTRAF",
+    "D5_PTRAF", "D2_LDPNT", "D5_LDPNT", "D2_PNPL", "D5_PNPL",
+    "D2_PRMP", "D5_PRMP", "D2_PTSDF", "D5_PTSDF", "D2_UST", "D5_UST",
+    "D2_PWDIS", "D5_PWDIS", "D2_NO2", "D5_NO2", "D2_DWATER",
+    "D5_DWATER", "P_DEMOGIDX_2", "P_DEMOGIDX_5", "P_PEOPCOLORPCT",
+    "P_LOWINCPCT", "P_UNEMPPCT", "P_DISABILITYPCT", "P_LINGISOPCT",
+    "P_LESSHSPCT", "P_UNDER5PCT", "P_OVER64PCT", "P_LIFEEXPPCT",
+    "P_PM25", "P_OZONE", "P_DSLPM", "P_RSEI_AIR", "P_PTRAF", "P_LDPNT",
+    "P_PNPL", "P_PRMP", "P_PTSDF", "P_UST", "P_PWDIS", "P_NO2",
+    "P_DWATER", "P_D2_PM25", "P_D5_PM25", "P_D2_OZONE", "P_D5_OZONE",
+    "P_D2_DSLPM", "P_D5_DSLPM", "P_D2_RSEI_AIR", "P_D5_RSEI_AIR",
+    "P_D2_PTRAF", "P_D5_PTRAF", "P_D2_LDPNT", "P_D5_LDPNT", "P_D2_PNPL",
+    "P_D5_PNPL", "P_D2_PRMP", "P_D5_PRMP", "P_D2_PTSDF", "P_D5_PTSDF",
+    "P_D2_UST", "P_D5_UST", "P_D2_PWDIS", "P_D5_PWDIS", "P_D2_NO2",
+    "P_D5_NO2", "P_D2_DWATER", "P_D5_DWATER", "B_DEMOGIDX_2",
+    "B_DEMOGIDX_5", "B_PEOPCOLORPCT", "B_LOWINCPCT", "B_UNEMPPCT",
+    "B_DISABILITYPCT", "B_LINGISOPCT", "B_LESSHSPCT", "B_UNDER5PCT",
+    "B_OVER64PCT", "B_LIFEEXPPCT", "B_PM25", "B_OZONE", "B_DSLPM",
+    "B_RSEI_AIR", "B_PTRAF", "B_LDPNT", "B_PNPL", "B_PRMP", "B_PTSDF",
+    "B_UST", "B_PWDIS", "B_NO2", "B_DWATER", "B_D2_PM25", "B_D5_PM25",
+    "B_D2_OZONE", "B_D5_OZONE", "B_D2_DSLPM", "B_D5_DSLPM",
+    "B_D2_RSEI_AIR", "B_D5_RSEI_AIR", "B_D2_PTRAF", "B_D5_PTRAF",
+    "B_D2_LDPNT", "B_D5_LDPNT", "B_D2_PNPL", "B_D5_PNPL", "B_D2_PRMP",
+    "B_D5_PRMP", "B_D2_PTSDF", "B_D5_PTSDF", "B_D2_UST", "B_D5_UST",
+    "B_D2_PWDIS", "B_D5_PWDIS", "B_D2_NO2", "B_D5_NO2", "B_D2_DWATER",
+    "B_D5_DWATER", "T_DEMOGIDX_2", "T_DEMOGIDX_5", "T_PEOPCOLORPCT",
+    "T_LOWINCPCT", "T_UNEMPPCT", "T_DISABILITYPCT", "T_LINGISOPCT",
+    "T_LESSHSPCT", "T_UNDER5PCT", "T_OVER64PCT", "T_LIFEEXPPCT",
+    "T_PM25", "T_OZONE", "T_DSLPM", "T_RSEI_AIR", "T_PTRAF", "T_LDPNT",
+    "T_PNPL", "T_PRMP", "T_PTSDF", "T_UST", "T_PWDIS", "T_NO2",
+    "T_DWATER", "T_D2_PM25", "T_D5_PM25", "T_D2_OZONE", "T_D5_OZONE",
+    "T_D2_DSLPM", "T_D5_DSLPM", "T_D2_RSEI_AIR", "T_D5_RSEI_AIR",
+    "T_D2_PTRAF", "T_D5_PTRAF", "T_D2_LDPNT", "T_D5_LDPNT", "T_D2_PNPL",
+    "T_D5_PNPL", "T_D2_PRMP", "T_D5_PRMP", "T_D2_PTSDF", "T_D5_PTSDF",
+    "T_D2_UST", "T_D5_UST", "T_D2_PWDIS", "T_D5_PWDIS", "T_D2_NO2",
+    "T_D5_NO2", "T_D2_DWATER", "T_D5_DWATER", "AREALAND", "AREAWATER",
+    "NPL_CNT", "TSDF_CNT", "EXCEED_COUNT_80", "EXCEED_COUNT_80_SUP",
+    "DEMOGIDX_2ST", "DEMOGIDX_5ST", "EXCEED_COUNT_90",
+    "EXCEED_COUNT_90_SUP", "SYMBOLOGY_EXCEED_COUNT_80", "Shape__Area",
+    "Shape__Length"
+  )
+}
+
+calc_ejscreen_feature_server_fields_added <- function(x, feature_server_fields = ejscreen_feature_server_fields()) {
+  out <- as.data.frame(x, stringsAsFactors = FALSE, check.names = FALSE)
+  n <- NROW(out)
+
+  if ("OBJECTID" %in% feature_server_fields && !"OBJECTID" %in% names(out)) {
+    out$OBJECTID <- seq_len(n)
+  }
+  for (field in intersect(c("Shape__Area", "Shape__Length"), feature_server_fields)) {
+    if (!field %in% names(out)) {
+      out[[field]] <- rep(NA_real_, n)
+    }
+  }
+
+  add_exceed_count <- function(output_field, pattern, threshold) {
+    if (!output_field %in% feature_server_fields || output_field %in% names(out)) {
+      return(invisible(NULL))
+    }
+    pctile_fields <- grep(pattern, names(out), value = TRUE)
+    if (length(pctile_fields) == 0) {
+      out[[output_field]] <<- rep(NA_integer_, n)
+    } else {
+      vals <- as.data.frame(lapply(out[pctile_fields], function(z) suppressWarnings(as.numeric(z))))
+      out[[output_field]] <<- as.integer(rowSums(!is.na(vals) & vals >= threshold))
+    }
+    invisible(NULL)
+  }
+
+  add_exceed_count("EXCEED_COUNT_80", "^P_D2_", 80)
+  add_exceed_count("EXCEED_COUNT_80_SUP", "^P_D5_", 80)
+  add_exceed_count("EXCEED_COUNT_90", "^P_D2_", 90)
+  add_exceed_count("EXCEED_COUNT_90_SUP", "^P_D5_", 90)
+
+  if ("SYMBOLOGY_EXCEED_COUNT_80" %in% feature_server_fields &&
+      !"SYMBOLOGY_EXCEED_COUNT_80" %in% names(out)) {
+    count80 <- suppressWarnings(as.numeric(out$EXCEED_COUNT_80))
+    out$SYMBOLOGY_EXCEED_COUNT_80 <- ifelse(
+      !is.na(count80) & count80 > 0,
+      "1-13 EJ Indexes over 80th %tile",
+      "0 EJ Indexes over 80th %tile"
+    )
+  }
+
+  missing_fields <- setdiff(feature_server_fields, names(out))
+  for (field in missing_fields) {
+    out[[field]] <- NA
+  }
+  out[, feature_server_fields, drop = FALSE]
+}
+
+###################################################### #
+# . ####
+
 #' Report which EJSCREEN export fields are expected, missing, or extra
 #'
 #' @details This helper compares a proposed EJSCREEN export table with the
@@ -355,7 +561,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
                                                export_path = NULL,
                                                mapping_for_names = map_headernames,
-                                               rename_newtype = "ejscreen_names",
+                                               rename_newtype = "ejscreen_indicator",
                                                expected_output_names = NULL,
                                                include_map_helper_fields = TRUE) {
 
@@ -396,7 +602,14 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
       helper_fields[!is_non_output_name(helper_fields)]
     ))
   }
-  expected_names <- unique(c(expected_from_mapping, expected_output_names))
+  feature_server_fields <- ejscreen_feature_server_fields()
+  if (is.null(expected_output_names) && all(feature_server_fields %in% export_names)) {
+    expected_names <- feature_server_fields
+  } else if (!is.null(expected_output_names) && identical(as.character(expected_output_names), feature_server_fields)) {
+    expected_names <- feature_server_fields
+  } else {
+    expected_names <- unique(c(expected_from_mapping, expected_output_names))
+  }
   expected_names <- expected_names[!is_non_output_name(expected_names)]
 
   report_names <- unique(c(expected_names, export_names))

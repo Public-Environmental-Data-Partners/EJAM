@@ -285,7 +285,8 @@ x <- EJAM:::test_ejam(
         "test-pctile_from_raw_lookup.R",
         "test-calc_pctile_columns.R",
         "test-calc_avg_columns.R",
-        "test-calc_ratio_columns.R"
+        "test-calc_ratio_columns.R",
+        "test-utils_speedtest.R"
       ),
       test_ejamit = c(
         "test-ejamit.R",
@@ -294,17 +295,28 @@ x <- EJAM:::test_ejam(
         "test-ejamit_sitetype_from_input.R",
         "test-ejamit_sitetype_from_output.R",
 
+        "test-ejam2report.R",
         "test-ejam2excel.R",
         "test-ejam2barplot_sites.R",
         "test-ejam2histogram.R"
       ),
-      test_misc = c(
-        "test-sites_from_input.R",
-        "test-calc_byformula.R", # create new ACS-based data, etc.
+
+      test_data_pipeline = c(
+        "test-calc_byformula.R",
+        "test-pctiles_lookup_create.R",
+
+        "test-ejscreen-pipeline-io.R",
         "test-acs_bybg.R",
         "test-acs_endyear.R",
+        "test-calc_bg_acsdata.R",
         "test-calc_bg_extra_indicators.R",
         "test-calc_ejscreen_dataset.R",
+        "test-ejscreen-stats.R",
+        "test-ejscreen-export.R"
+      ),
+
+      test_misc = c(
+        "test-sites_from_input.R",
 
         "test-url_ejamapi.R",
         "test-ejamapi.R",
@@ -419,22 +431,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     cat("\n")
     {
       #          groupnames shortgroupnames filecount
-      # 1         test_fips            fips         8
-      # 2        test_naics           naics         8
-      # 3          test_frs             frs         7
-      # 4       test_latlon          latlon        10
-      # 5         test_maps            maps         2
-      # 6        test_shape           shape         6
-      # 7    test_getblocks       getblocks         9
-      # 8  test_fixcolnames     fixcolnames         6
-      # 9         test_doag            doag         5
-      # 10      test_ejamit          ejamit         8
-      # 11        test_misc            misc         7
-      #
-      # 13         test_mod             mod         3
-      # 14         test_webapp       webapp         8
-      # 15        test_test            test         2
-      # 16       test_golem           golem         2
+
       # fnames = unlist(testlist)
     }
 
@@ -545,11 +542,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       timebyfile$seconds_byfile <- round(timebyfile$seconds_byfile, 0)
 
       # sort like testlist is sorted
-      sorted = as.vector(unlist(testlist)) # 101
+      sorted = as.vector(unlist(testlist))
       sorted = sorted[sorted %in% timebyfile$file] # if some are in full test list but not in timing list, don't try to sort by them
- ## e.g.  lacked timing info at one point:  "test-distances.all.R"  "test-calc_byformula.R" "test-grepn.R"
 
-       timebyfile = timebyfile[(match(sorted, file)), ] # 98
+       timebyfile = timebyfile[(match(sorted, file)), ]
 
       testgroup_from_fname <- function(fname) {names(testlist)[as.vector(sapply(testlist, function(z) fname %in% z))]}
       timebyfile$testgroup <-  as.vector(unlist( sapply(timebyfile$file, testgroup_from_fname) ))
@@ -557,18 +553,6 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # timebyfile
       #                                          file seconds_byfile        testgroup
       #                                        <char>          <num>           <char>
-      # 1:                    test-fips_bgs_in_city.R              4        test_fips
-      # 2:                    test-fips_bgs_in_fips.R              5        test_fips
-      # 3:                      test-FIPS_FUNCTIONS.R             23        test_fips
-      # 4:                test-state_from_fips_bybg.R              0        test_fips
-      # 5:                   test-state_from_latlon.R             11        test_fips
-      # 6:                     test-is.numeric.text.R              0        test_fips
-      # 7:                     test-fips2countyfips.R              0        test_fips
-      # 8:                 test-fips_bg_from_latlon.R              6        test_fips
-      # 9:                    test-latlon_from_fips.R              7        test_fips
-      # 10:                    test-naics_categories.R              0       test_naics
-      # 11:                 test-naics_findwebscrape.R              3       test_naics
-      #    etc.
 
       ################# #
 
@@ -585,22 +569,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # > timebygroup
       #            testgroup    seconds_bygroup     minutes_bygroup
       #               <char>           <num>           <num>
-      #  1:        test_test               4             0.1
-      #  2:       test_golem               6             0.1
-      #  3:         test_mod               6             0.1
-      #  4: test_fixcolnames              23             0.4
-      #  5:       test_naics              27             0.4
-      #  6:         test_frs              37             0.6
-      #  7:      test_latlon              49             0.8
-      #  8:       test_shape              51             0.8
-      #  9:        test_maps              87             1.4
-      # 10:
-      # 11:        test_fips             111             1.9
-      # 12:        test_doag             144             2.4
-      # 13:        test_misc             156             2.6
-      # 14:      test_ejamit             209             3.5
-      # 15:   test_getblocks             328             5.5
-      # 16:         test_webapp            1008            16.8  # web app functionality
+
 
       ########################### #  ########################################## #
 

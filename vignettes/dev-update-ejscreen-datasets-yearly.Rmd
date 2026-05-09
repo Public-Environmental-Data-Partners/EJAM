@@ -102,13 +102,13 @@ data-raw/pipeline_outputs/ejscreen_acs_2024
 
 This folder is ignored by Git because the checkpoint files can be very large.
 
-The same pipeline can later use AWS S3 by setting `EJAM_PIPELINE_DIR` to an
+The pipeline can use AWS S3 by setting `EJAM_PIPELINE_DIR` to an
 `s3://...` URI. S3 support uses the AWS CLI, so the machine running the pipeline
-must have `aws` installed and configured.
+must have `aws` installed and configured. The R package aws.s3 also may be needed.
 
 ```{r, eval=FALSE}
 Sys.setenv(
-  EJAM_PIPELINE_DIR = "s3://your-bucket/your-prefix/ejscreen_acs_2024",
+  EJAM_PIPELINE_DIR = "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024",
   EJAM_PIPELINE_STORAGE = "s3"
 )
 
@@ -124,6 +124,14 @@ temporary branch artifact is intentionally needed.
 Start from a clean or well-understood branch, with the package source loaded
 from the EJAM repository. The runner uses environment variables so it can be
 rerun without editing the script.
+
+See notes in the script about the expected environment variables and their defaults,
+and see documentation of the key function it uses, `calc_ejscreen_dataset()`
+Note the need for setting these:
+- AWS_PROFILE
+- AWS_REGION=us-east-1
+- EJAM_PIPELINE_DIR=s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024
+- EJAM_PIPELINE_STORAGE=s3
 
 For a normal 2020-2024 ACS update using local checkpoint files:
 

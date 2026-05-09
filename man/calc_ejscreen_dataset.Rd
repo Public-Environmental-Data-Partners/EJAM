@@ -26,7 +26,8 @@ calc_ejscreen_dataset(
   ejscreen_export_path = NULL,
   ejscreen_export_vars = NULL,
   ejscreen_export_required_names = NULL,
-  ejscreen_export_rename_newtype = "ejscreen_names",
+  ejscreen_export_rename_newtype = "ejscreen_indicator",
+  ejscreen_export_feature_server_fields = NULL,
   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
   tract_tables = c("B18101", "C16001"),
   include_tract_data = TRUE,
@@ -119,6 +120,10 @@ that must be present.}
 \item{ejscreen_export_rename_newtype}{naming column in \link{map_headernames} to
 use when renaming the EJSCREEN export.}
 
+\item{ejscreen_export_feature_server_fields}{optional final EJSCREEN
+FeatureServer field list. Defaults to the current EJSCREEN v2.32 block
+group FeatureServer schema when an EJSCREEN export is requested.}
+
 \item{blockgroup_tables}{ACS tables to download at blockgroup resolution.}
 
 \item{tract_tables}{ACS tables to download at tract resolution for later
@@ -178,8 +183,10 @@ named list containing final datasets (\code{blockgroupstats}, \code{bgej},
 Run the staged EJSCREEN/EJAM dataset update pipeline
 }
 \details{
-\code{calc_ejscreen_dataset()} can be called from, for example, a script
-like the one in \code{data-raw/run_ejscreen_acs2024_pipeline.R}
+\code{calc_ejscreen_dataset()} can be called from a script each year.
+See the runner script \code{data-raw/run_ejscreen_acs2024_pipeline.R}
+for an example of how to call this function, and how it can be used
+to run the whole pipeline from start to finish with minimal manual intervention.
 
 \code{calc_ejscreen_dataset()} is a high-level wrapper around the staged
 annual update helpers. It is intentionally an orchestrator rather than a
@@ -204,5 +211,35 @@ The default stage order is:
 
 \code{bg_envirodata} must include \code{pctpre1960}. That column may be produced by an
 upstream environmental-data step that reads the saved \code{bg_acsdata} stage.
+
+Note that the runner script can use several settings stored as environment variables:
+\itemize{
+\item EJAM_PIPELINE_YR
+\item EJAM_PIPELINE_DIR: override output folder.
+\item EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
+\item AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
+\item CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
+\item EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
+\item EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
+\item EJAM_ACS_DOWNLOAD_TIMEOUT
+\item EJAM_ACS_DOWNLOAD_RETRIES
+\item EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
+\item EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+}
+
+To check them:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{print(
+cbind(current_setting = Sys.getenv(c(
+  "EJAM_PIPELINE_YR",
+  "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE", "AWS_PROFILE", "AWS_REGION",
+  "CENSUS_API_KEY",
+  "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA",
+  "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+  "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
+  "EJAM_INCLUDE_EJSCREEN_EXPORT"
+)))
+)
+}\if{html}{\out{</div>}}
 }
 \keyword{internal}

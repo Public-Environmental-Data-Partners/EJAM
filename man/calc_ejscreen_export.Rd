@@ -7,21 +7,27 @@
 calc_ejscreen_export(
   blockgroupstats = NULL,
   bgej = NULL,
+  usastats_acs = NULL,
+  usastats_envirodata = NULL,
   usastats_ej = NULL,
   statestats_ej = NULL,
   pipeline_dir = NULL,
   blockgroupstats_stage = "blockgroupstats",
   bgej_stage = "bgej",
+  usastats_acs_stage = "usastats_acs",
+  usastats_envirodata_stage = "usastats_envirodata",
   usastats_ej_stage = "usastats_ej",
   statestats_ej_stage = "statestats_ej",
   blockgroupstats_path = NULL,
   bgej_path = NULL,
+  usastats_acs_path = NULL,
+  usastats_envirodata_path = NULL,
   usastats_ej_path = NULL,
   statestats_ej_path = NULL,
   stage_format = c("csv", "rds", "rda", "arrow"),
   by = "bgfips",
   output_vars = NULL,
-  rename_newtype = "ejscreen_names",
+  rename_newtype = "ejscreen_indicator",
   mapping_for_names = map_headernames,
   required_output_names = NULL,
   include_ej_percentiles = TRUE,
@@ -33,6 +39,7 @@ calc_ejscreen_export(
   include_ejscreen_map_fields = TRUE,
   map_field_pctile_names = NULL,
   overwrite_ejscreen_map_fields = TRUE,
+  feature_server_fields = NULL,
   save_path = NULL,
   save_format = NULL,
   overwrite = TRUE
@@ -45,6 +52,10 @@ from a saved pipeline stage.}
 \item{bgej}{bgej-like data.frame, or NULL if reading from a saved pipeline
 stage.}
 
+\item{usastats_acs, usastats_envirodata}{ACS and environmental percentile
+lookup tables. These are used to add \code{P_...} fields before creating
+EJSCREEN map helper fields.}
+
 \item{usastats_ej, statestats_ej}{EJ-index percentile lookup tables. These
 are used to add \code{P_D2_...}/\code{P_D5_...} fields before creating EJSCREEN map
 helper fields.}
@@ -54,10 +65,10 @@ helper fields.}
 \item{blockgroupstats_stage, bgej_stage}{stage names to read when objects are
 not supplied.}
 
-\item{usastats_ej_stage, statestats_ej_stage}{stage names to read for
-EJ-index percentile lookup tables when objects are not supplied.}
+\item{usastats_acs_stage, usastats_envirodata_stage, usastats_ej_stage, statestats_ej_stage}{stage names to read for percentile lookup tables when objects are not
+supplied.}
 
-\item{blockgroupstats_path, bgej_path, usastats_ej_path, statestats_ej_path}{explicit paths to saved inputs.}
+\item{blockgroupstats_path, bgej_path, usastats_acs_path, usastats_envirodata_path, usastats_ej_path, statestats_ej_path}{explicit paths to saved inputs.}
 
 \item{stage_format}{input file format when reading pipeline stages.}
 
@@ -67,7 +78,7 @@ EJ-index percentile lookup tables when objects are not supplied.}
 Defaults to all available columns after the merge.}
 
 \item{rename_newtype}{target naming column in \link{map_headernames}. Defaults to
-\code{"ejscreen_names"}.}
+\code{"ejscreen_indicator"}.}
 
 \item{mapping_for_names}{map_headernames-like crosswalk.}
 
@@ -98,6 +109,10 @@ names start with \code{P_}.}
 \item{overwrite_ejscreen_map_fields}{logical. If TRUE, recalculate existing
 \code{B_...} and \code{T_...} fields from the matching percentile fields.}
 
+\item{feature_server_fields}{optional final EJSCREEN FeatureServer field
+names. When supplied, missing schema fields are added when possible and the
+export is returned in exactly this field order.}
+
 \item{save_path}{optional file path to save the export.}
 
 \item{save_format}{optional save format. Guessed from \code{save_path} when NULL.
@@ -114,7 +129,7 @@ Combine EJAM blockgroup datasets and rename fields for EJSCREEN
 \details{
 This helper prepares a tabular export by merging a
 \code{blockgroupstats}-like table with a \code{bgej}-like table and renaming available
-columns through \link{map_headernames}. By default it uses \code{ejscreen_names}, which
+columns through \link{map_headernames}. By default it uses \code{ejscreen_indicator}, which
 is the column intended to represent the current EJSCREEN app/export numeric
 field name. It also creates EJSCREEN app map helper fields from exported
 percentile fields: \code{B_...} map color-bin columns and \code{T_...} popup-text

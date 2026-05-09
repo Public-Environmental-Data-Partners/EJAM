@@ -57,18 +57,27 @@
 
 - Because the EJScreen web app needs its blockgroup dataset to include some columns not used by EJAM,
   we have now added `calc_ejscreen_export()` support for creating an EJScreen-ready dataset
-  from the EJAM datasets `blockgroupstats` and `bgej`. The transformation uses 
-  `map_headernames` to rename columns and adds EJScreen 
-  EJ-index percentile text fields such as `P_D2_...` and `P_D5_...`
-  from the saved EJ-index lookup tables. It then creates map helper fields 
-  that specify color-coding for maps, such as `B_...` map bins, and 
+  from the EJAM datasets `blockgroupstats` and `bgej`. The transformation uses
+  `map_headernames` to rename columns and adds EJScreen
+  percentile fields such as `P_PM25`, `P_LOWINCPCT`, `P_D2_...`, and `P_D5_...`
+  from the saved ACS, environmental, and EJ-index lookup tables. It then creates map helper fields
+  that specify color-coding for maps, such as `B_...` map bins, and
   `T_...` percentile fields to provide map popup text. The `ejscreen_export`
-  stage validates the `ID` key and map helper fields before saving, and the
-  pipeline runner writes an export schema report for review.
+  stage now defaults to the full current 235-field EJScreen v2.32 block-group
+  FeatureServer schema, including exceedance-count fields, `OBJECTID`, and
+  ArcGIS geometry service fields. It validates the `ID` key and map helper
+  fields before saving, and the pipeline runner writes an export schema report
+  for review.
 
 - Updated `map_headernames` naming support so EJAM names, current EJScreen
   export/app names, old EJScreen FTP names, and old EJScreen API names can be
-  tracked separately.
+  tracked separately. The current EJScreen export/app base field name is now
+  consolidated in `ejscreen_indicator`; the separate `ejscreen_app` column was
+  removed to avoid duplicating the same names. Added explicit schema rows for
+  EJScreen FeatureServer-only fields such as `OBJECTID`, `EXCEED_COUNT_90`,
+  `EXCEED_COUNT_90_SUP`, `SYMBOLOGY_EXCEED_COUNT_80`, `Shape__Area`, and
+  `Shape__Length`, and restored current EJScreen names for `DEMOGIDX_2ST` and
+  `DEMOGIDX_5ST`.
 
 - Improved formula handling for ACS-derived indicators, including dependency
   ordering (i.e., if formula A's inputs include formula B's output, formula B must be done first)

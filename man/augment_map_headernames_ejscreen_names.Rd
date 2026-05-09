@@ -10,10 +10,19 @@ augment_map_headernames_ejscreen_names(mapping_for_names = map_headernames)
 \item{mapping_for_names}{a data.frame like \link{map_headernames}.}
 }
 \value{
-A data.frame with additional or completed \code{ejscreen_names},
-\code{ejscreen_ftp_names}, \code{ejscreen_apinames_old}, \code{ejam_apinames},
-\code{ejscreen_csv}, \code{ejscreen_gdb}, \code{ejscreen_app}, \code{ejscreen_api},
-\code{ejscreen_pctile}, \code{ejscreen_bin}, and \code{ejscreen_text} columns.
+A data.frame with these additional or completed columns:
+\itemize{
+\item \code{ejscreen_indicator}
+\item \code{ejscreen_ftp_names}
+\item \code{ejscreen_apinames_old}
+\item \code{ejam_apinames}
+\item \code{ejscreen_csv}
+\item \code{ejscreen_gdb}
+\item \code{ejscreen_api}
+\item \code{ejscreen_pctile}
+\item \code{ejscreen_bin}
+\item \code{ejscreen_text}
+}
 }
 \description{
 Complete EJSCREEN name columns in map_headernames
@@ -34,7 +43,7 @@ in EPA's old EJSCREEN FTP/download CSV and geodatabase files, such as the
 archived 2024 v2.32 block-group files and the accompanying
 \code{EJScreen_2024_BG_Percentiles_Columns.xlsx} and
 \code{EJScreen_2024_BG_State_Percentiles_Columns.xlsx} column dictionaries. Those
-names are usually the same as \code{ejscreen_names}, but both columns are kept so
+names are usually the same as \code{ejscreen_indicator}, but both columns are kept so
 old FTP/download provenance and current app/export naming can diverge later
 if needed.
 }

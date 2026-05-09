@@ -165,15 +165,21 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
     calc_ejscreen_stats = function(...) stats,
     calc_ejscreen_export = function(blockgroupstats,
                                     bgej,
+                                    usastats_acs,
+                                    usastats_envirodata,
                                     usastats_ej,
                                     statestats_ej,
                                     output_vars,
                                     rename_newtype,
                                     required_output_names,
+                                    feature_server_fields,
                                     save_path,
                                     overwrite) {
+      expect_equal(usastats_acs, stats$usastats_acs)
+      expect_equal(usastats_envirodata, stats$usastats_envirodata)
       expect_equal(usastats_ej, stats$usastats_ej)
       expect_equal(statestats_ej, stats$statestats_ej)
+      expect_true(all(c("ID", "P_D2_PM25", "Shape__Area") %in% feature_server_fields))
       data.frame(
         ID = blockgroupstats$bgfips,
         STATE_NAME = "Delaware",

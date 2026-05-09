@@ -5,7 +5,7 @@
 \alias{map_headernames}
 \title{map_headernames provides metadata about all indicators in EJSCREEN / EJAM}
 \format{
-An object of class \code{data.frame} with 649 rows and 85 columns.
+An object of class \code{data.frame} with 655 rows and 84 columns.
 }
 \usage{
 map_headernames
@@ -23,8 +23,8 @@ copied from the historical \code{apiname} column)
 \code{rname})
 \item names as used in old EJSCREEN staff CSV/FTP-style downloads
 (\code{ejscreen_ftp_names}, copied from \code{csvname})
-\item names as used in current EJSCREEN download, geodatabase, and map
-application fields (\code{ejscreen_names})
+\item names as used in current EJSCREEN download, geodatabase, and map-service
+fields (\code{ejscreen_indicator})
 \item names as used in the R code
 \item names as used in short labels of graphics
 \item names as used in table headers (long versions to provide full descriptions of the variables)
@@ -48,7 +48,7 @@ what it contains below.
     variables = .N,
     has_apiname = sum(apiname != ""),
     has_csvname = sum(csvname != ""),
-    has_ejscreen_names = sum(ejscreen_names != ""),
+    has_ejscreen_indicator = sum(ejscreen_indicator != ""),
     has_ejscreen_apinames_old = sum(ejscreen_apinames_old != ""),
     has_ejam_apinames = sum(ejam_apinames != ""),
     has_acsname = sum(acsname != "")
