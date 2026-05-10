@@ -321,6 +321,9 @@ test_that("map_shapes_leaflet() keeps popup alignment after dropping empty geome
   )
   x2 <- map_shapes_leaflet(shp2, popup = c("first mapped", "missing boundary", "third mapped"))
   expect_equal(map2popups(x2), c("first mapped", "third mapped"))
+
+  x3 <- map_shapes_leaflet(shp2, popup = c("already filtered first", "already filtered third"))
+  expect_equal(map2popups(x3), c("already filtered first", "already filtered third"))
 })
 
 # test_that("map_shapes_leaflet_proxy() works", {
