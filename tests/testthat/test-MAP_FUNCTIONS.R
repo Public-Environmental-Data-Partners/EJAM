@@ -300,6 +300,18 @@ test_that("map_shapes_plot() works", {
   })
 })
 
+test_that("map_shapes_leaflet() keeps popup alignment after dropping empty geometries", {
+  shp <- sf::st_sf(
+    FIPS = c("0000001", "0000002"),
+    geometry = sf::st_sfc(
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE)))
+    )
+  )
+  x <- map_shapes_leaflet(shp, popup = c("missing boundary", "mapped boundary"))
+  expect_equal(map2popups(x), "mapped boundary")
+})
+
 # test_that("map_shapes_leaflet_proxy() works", {
 #
 #   myshapes = shapes_counties_from_countyfips(fips_counties_from_state_abbrev("DE")[1])
