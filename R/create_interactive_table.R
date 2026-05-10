@@ -36,8 +36,12 @@ create_interactive_table <- function(out,
     x <- out
   }
   ########### #
-  ## > data.table ####
-  data.table::setDF(x)
+  ## > data.frame ####
+  if (data.table::is.data.table(x)) {
+    # avoid mutating upstream objects by reference
+    x <- data.table::copy(x)
+    data.table::setDF(x)
+  }
   ########### #
   ## > subset of columns ####
   if (!is.null(columns_used) && length(columns_used) > 0) {
