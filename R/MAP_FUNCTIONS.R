@@ -535,7 +535,9 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
   empty <- try(sf::st_is_empty(shapes))
   if (!inherits(empty, "try-error")) {
     keep <- !empty
-    if (!is.null(popup) && (is.atomic(popup) || is.list(popup)) && length(popup) == length(keep)) {
+    if (!is.null(popup) &&
+        (is.atomic(popup) || is.list(popup) || is.data.frame(popup)) &&
+        length(popup) == length(keep)) {
       popup <- popup[keep]
     }
     shapes = shapes[keep, ]
