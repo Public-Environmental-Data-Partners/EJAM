@@ -8,3 +8,6 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^data/.*[.]arrow$
+^data-raw/pipeline_outputs$
+^data-raw/pipeline_outputs/.*
