@@ -1,15 +1,17 @@
 
 
-#' What percentage of this group's population lives less than X miles from a site? --- *** DRAFT - NEED TO RECHECK CALCULATIONS
+#' What is the indicator value (e.g., % low income) within X miles of a site, as X increases (block by block)?
 #'
-#' @description *** DRAFT - NEED TO RECHECK CALCULATIONS
-#'   This plots the cumulative share of residents found within each distance,
-#'   for a single population group.
-#' @details Also see ejamit_compare_distances() for a plot  of several indicators at several distances!
+#' @description
+#'   This plots one indicator value as a function of distance
+#'   for a single population group or indicator.
+#' @details Also see [ejamit_compare_distances()] for a plot  of several indicators at several distances,
+#' but with less detailed spatial resolution (the distance increments are not as refined)!
 #'
-#'   This function uses the distance of each Census block from the site in conjunction with
-#'   the blockgroup residential population data, to provide a relatively detailed picture of
-#'   how far away residents in each group live. In contrast, the function
+#'   This function uses the distance of each Census block, not just block group,
+#'   from the site in conjunction with
+#'   the blockgroup residential population data, to provide a detailed picture of
+#'   how indicators change as distance increases. In contrast, the function
 #'   [distance_cdf_by_group_plot()] is based on ejamit()$results_bybg_people,
 #'   which provides only blockgroup resolution information about distance.
 #'
@@ -26,8 +28,10 @@
 #'
 #' @param score_colname colname in blockgroupstats for an indicator to be
 #'   aggregated across blocks and blockgroups as a weighted mean
-#' @param scorewts_colname colname in blockgroupstats -- like "pop" -- for the weight
-#'   to use in aggregating the scores referred to by score_colname
+#' @param scorewts_colname by default the function looks up the right value for this,
+#'  using a helper function called calcweight().
+#'  It is a colname in blockgroupstats -- like "pop" -- for the weight
+#'  to use in aggregating the scores referred to by score_colname
 #' @param score_label optional plain-English/alternative label for the variable
 #'
 #' @param radius optional radius to use as maximum analyzed or shown --
@@ -41,8 +45,8 @@
 #' @examples
 #'
 #'  # Example of area where %Black is
-#'  # very high within 1 mile but drops by 3 miles away
-#'  pts = testpoints_100[3,]
+#'  #  high within 1 mile but drops by 4 miles away
+#'  pts = testpoints_100[1,]
 #'   plot_distance_by_pctd(
 #'     getblocksnearby(pts, radius = 10, quiet = T),
 #'     score_colname = "pctnhba")
@@ -62,7 +66,7 @@
 #'
 plot_distance_by_pctd <- function(s2b = NULL, sitenumber = 1, #  NULL,
                                   score_colname = names_these[3],
-                                  scorewts_colname = "pop",
+                                  scorewts_colname = NULL,
                                   score_label = fixcolnames(score_colname, "r", "shortlabel"),
                                   radius = 30
 ) {
@@ -70,6 +74,12 @@ plot_distance_by_pctd <- function(s2b = NULL, sitenumber = 1, #  NULL,
   if (missing(sitenumber)) {warning("aggregate of multiple sites not yet implemented - using site #1")}
 
   if (!(score_colname %in% names(blockgroupstats))) {stop(cat(score_colname, "was not found in colnames(blockgroupstats) \n"))}
+  if (is.null(scorewts_colname)) {
+    scorewts_colname <- calcweight(score_colname)
+    if (is.na(scorewts_colname)) {
+      stop( "scorewts_colname could not be determined from score_colname via calcweight(score_colname)"  )
+    }
+  }
   if (!(scorewts_colname %in% names(blockgroupstats))) {stop(cat(scorewts_colname, "was not found in colnames(blockgroupstats) \n"))}
 
   if (is.null(s2b)) {
@@ -128,20 +138,7 @@ plot_distance_by_pctd <- function(s2b = NULL, sitenumber = 1, #  NULL,
   data.table::setorder(s2b, distance)
 
   ###################################### #
-  # FORMULAS to aggregate over blocks and bgs
-  #
-  # 1) Was using hard-coded variables that are calculated only as percentage of population total
-  # s2b[ , blockpop  :=  pop * blockwt]
-  # s2b$dpop <- s2b[ , ..countvarname] # bg count    #### ***  but this only works for a single indicator named by countvarname, not a vector of them?
-  # s2b[ , blockdpop := dpop * blockwt] # block counts
-  # s2b[ , cumpop  := cumsum(blockpop)]  # cum pop count within <x distance
-  # s2b[ , cumdpop := cumsum(blockdpop)] # same but for countvarname group
-  # s2b[ , pctdwithin := cumdpop / cumpop] # %D among everyone within X distance  **** uses ratio of sums of counts, not pop wtd mean of %s or other raw scores
-  #
-  # 2) But to be more accurate one would use the exact right formula depending on each indicator.
-  # That could be adjusted to use calc_ejam() for example.
-  #
-  # 3)  new wtd mean method ####
+
   s2b$scorewts <- s2b[, ..scorewts_colname] # not as efficient but syntax is awkward otherwise
   s2b$scores  <- s2b[, ..score_colname]
   s2b[, wtdmean_within := cumsum(scorewts * blockwt * scores) / cumsum(scorewts * blockwt)]
