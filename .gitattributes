@@ -3,3 +3,7 @@
 *.bat text eol=crlf
 data-raw/pipeline_outputs/ejscreen_acs_2024/**/*.csv filter=lfs diff=lfs merge=lfs -text
 data-raw/pipeline_outputs/ejscreen_acs_2024/**/*.rds filter=lfs diff=lfs merge=lfs -text
+data-raw/pipeline_outputs/ejscreen_acs_2023/**/*.csv filter=lfs diff=lfs merge=lfs -text
+data-raw/pipeline_outputs/ejscreen_acs_2023/**/*.rds filter=lfs diff=lfs merge=lfs -text
+data-raw/pipeline_outputs/ejscreen_acs_2022/**/*.csv filter=lfs diff=lfs merge=lfs -text
+data-raw/pipeline_outputs/ejscreen_acs_2022/**/*.rds filter=lfs diff=lfs merge=lfs -text

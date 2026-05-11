@@ -47,14 +47,14 @@ print(
   )))
 )
 ###################################################### #
-# to specify those values here,
+# to specify those values before doing sour,
 # e.g., to run the pipeline to recreate datasets using the acs 2018-2022 survey data, with this new code
-yr = "2022"
-Sys.setenv(EJAM_PIPELINE_YR = yr,
-           EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
-           EJAM_FORCE_ACS = TRUE,
-           EJAM_FORCE_BG_ACSDATA = TRUE
-)
+# yr = "2022"
+# Sys.setenv(EJAM_PIPELINE_YR = yr,
+#            EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
+#            EJAM_FORCE_ACS = TRUE,
+#            EJAM_FORCE_BG_ACSDATA = TRUE
+# )
 ###################################################### #
 # setup ####
 
