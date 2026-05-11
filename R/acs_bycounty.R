@@ -39,6 +39,7 @@
 acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = acs_endyear()) {
 
   if (missing(yr)) {message("Using default yr of ", yr)}
+
   ## This right now only works if all extra packages have been attached by hand or added to DESCRIPTION Imports
   ### ## Packages required:
   ## library(tidycensus)
@@ -58,7 +59,7 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = acs_endyear())
       geography = "county",
       variables = unlist(myvars),
       state = myst,
-      year = yr
+      year = as.numeric(yr)
     )
     return(data_county)
 }
