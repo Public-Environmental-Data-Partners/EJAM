@@ -16,6 +16,7 @@ calc_ejscreen_blockgroupstats(
   reuse_existing_extra_if_missing = FALSE,
   existing_blockgroupstats = NULL,
   save_stage = FALSE,
+  pipeline_storage = c("auto", "local", "s3"),
   stage_format = c("csv", "rds", "rda", "arrow"),
   blockgroupstats_acs = NULL,
   blockgroupstats_acs_stage = NULL
@@ -50,6 +51,9 @@ with a warning. The default FALSE errors on missing extra inputs.}
 \code{reuse_existing_extra_if_missing} is TRUE. Defaults to current package data.}
 
 \item{save_stage}{logical, whether to save the final \code{blockgroupstats} stage.}
+
+\item{pipeline_storage}{stage storage backend: \code{"auto"}, \code{"local"}, or
+\code{"s3"}.}
 
 \item{stage_format}{file format for saved/read stages: \code{"csv"}, \code{"rds"},
 \code{"rda"}, or \code{"arrow"}.}

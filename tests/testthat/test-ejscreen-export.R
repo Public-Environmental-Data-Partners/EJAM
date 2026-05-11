@@ -93,6 +93,48 @@ test_that("calc_ejscreen_export combines bgej and renames through map_headername
   expect_equal(saved, data.table::as.data.table(out))
 })
 
+test_that("calc_ejscreen_export saves direct s3 paths through pipeline upload helper", {
+  blockgroupstats <- data.frame(
+    bgfips = "100010001001",
+    pm = 7.1,
+    stringsAsFactors = FALSE
+  )
+  mapping <- data.frame(
+    rname = c("bgfips", "pm"),
+    ejscreen_indicator = c("ID", "PM25"),
+    csvname = c("ID", "PM25"),
+    apiname = "",
+    stringsAsFactors = FALSE
+  )
+  uploaded <- new.env(parent = emptyenv())
+  save_path <- "s3://example-bucket/ejscreen_export.csv"
+
+  testthat::local_mocked_bindings(
+    ejscreen_pipeline_s3_uri_exists = function(uri) {
+      expect_equal(uri, save_path)
+      FALSE
+    },
+    ejscreen_pipeline_s3_upload = function(local_path, uri) {
+      uploaded$uri <- uri
+      uploaded$data <- data.table::fread(local_path, colClasses = c(ID = "character"))
+      uri
+    },
+    .package = "EJAM"
+  )
+
+  out <- calc_ejscreen_export(
+    blockgroupstats = blockgroupstats,
+    bgej = data.frame(bgfips = "100010001001", stringsAsFactors = FALSE),
+    output_vars = c("bgfips", "pm"),
+    mapping_for_names = mapping,
+    include_ejscreen_map_fields = FALSE,
+    save_path = save_path
+  )
+
+  expect_equal(uploaded$uri, save_path)
+  expect_equal(uploaded$data, data.table::as.data.table(out))
+})
+
 test_that("calc_ejscreen_export adds EJ percentile and map helper fields from lookups", {
   blockgroupstats <- data.frame(
     bgfips = c("100010001001", "100010001002"),
@@ -278,7 +320,7 @@ test_that("EJSCREEN map helper fields use historical bins and current text", {
     c(0L, 0L, 1L, 1L, 2L, 9L, 10L, 10L, 11L, 11L, 0L)
   )
   expect_equal(
-    calc_ejscreen_map_pctile_text(c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101)),
+    EJAM:::calc_ejscreen_map_pctile_text(c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101)),
     c(NA, NA, "0 %ile", "9 %ile", "10 %ile", "89 %ile",
       "90 %ile", "94 %ile", "95 %ile", "100 %ile", NA)
   )

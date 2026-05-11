@@ -12,6 +12,7 @@ calc_ejscreen_export(
   usastats_ej = NULL,
   statestats_ej = NULL,
   pipeline_dir = NULL,
+  pipeline_storage = c("auto", "local", "s3"),
   blockgroupstats_stage = "blockgroupstats",
   bgej_stage = "bgej",
   usastats_acs_stage = "usastats_acs",
@@ -61,6 +62,9 @@ are used to add \code{P_D2_...}/\code{P_D5_...} fields before creating EJSCREEN 
 helper fields.}
 
 \item{pipeline_dir}{folder for reading saved pipeline stages.}
+
+\item{pipeline_storage}{stage storage backend: \code{"auto"}, \code{"local"}, or
+\code{"s3"}.}
 
 \item{blockgroupstats_stage, bgej_stage}{stage names to read when objects are
 not supplied.}

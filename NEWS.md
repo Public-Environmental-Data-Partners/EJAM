@@ -45,6 +45,11 @@
   paths, with Git LFS rules in place if a checkpoint folder needs to be
   force-added to the repository temporarily.
 
+- Fixed S3 handling in the pipeline so optional saved stages are detected with
+  the pipeline storage helper instead of local `file.exists()` checks, and
+  direct EJScreen export paths such as `s3://.../ejscreen_export.csv` are
+  written through the same AWS CLI upload helper used by other stages.
+
 - Added `bg_envirodata` and `bg_extra_indicators` as explicit pipeline inputs.
   This makes it clear which columns come from ACS, which come from environmental
   data, and which come from other blockgroup-level sources such as low life

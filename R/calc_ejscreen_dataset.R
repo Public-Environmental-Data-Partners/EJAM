@@ -386,6 +386,7 @@ calc_ejscreen_dataset <- function(yr,
       reuse_existing_extra_if_missing = reuse_existing_if_missing,
       existing_blockgroupstats = existing_blockgroupstats,
       save_stage = FALSE,
+      pipeline_storage = pipeline_storage,
       stage_format = stage_format
     )
 
@@ -479,6 +480,7 @@ calc_ejscreen_dataset <- function(yr,
       required_output_names = ejscreen_export_required_names,
       feature_server_fields = ejscreen_export_feature_server_fields,
       save_path =             ejscreen_export_path,
+      pipeline_storage = pipeline_storage,
       overwrite = overwrite
     )
     if (isTRUE(save_stages)) {

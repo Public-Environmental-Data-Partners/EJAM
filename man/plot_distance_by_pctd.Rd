@@ -2,13 +2,13 @@
 % Please edit documentation in R/plot_distance_by_pctd.R
 \name{plot_distance_by_pctd}
 \alias{plot_distance_by_pctd}
-\title{What percentage of this group's population lives less than X miles from a site? --- *** DRAFT - NEED TO RECHECK CALCULATIONS}
+\title{What is the indicator value (e.g., \% low income) within X miles of a site, as X increases (block by block)?}
 \usage{
 plot_distance_by_pctd(
   s2b = NULL,
   sitenumber = 1,
   score_colname = names_these[3],
-  scorewts_colname = "pop",
+  scorewts_colname = NULL,
   score_label = fixcolnames(score_colname, "r", "shortlabel"),
   radius = 30
 )
@@ -29,7 +29,9 @@ Will be able to omit or set to NULL to use overall aggregate of all sites.}
 \item{score_colname}{colname in blockgroupstats for an indicator to be
 aggregated across blocks and blockgroups as a weighted mean}
 
-\item{scorewts_colname}{colname in blockgroupstats -- like "pop" -- for the weight
+\item{scorewts_colname}{by default the function looks up the right value for this,
+using a helper function called calcweight().
+It is a colname in blockgroupstats -- like "pop" -- for the weight
 to use in aggregating the scores referred to by score_colname}
 
 \item{score_label}{optional plain-English/alternative label for the variable}
@@ -45,24 +47,25 @@ radius is used in that.}
 returns s2b but with more columns in it like wtdmean_within
 }
 \description{
-*** DRAFT - NEED TO RECHECK CALCULATIONS
-This plots the cumulative share of residents found within each distance,
-for a single population group.
+This plots one indicator value as a function of distance
+for a single population group or indicator.
 }
 \details{
-Also see ejamit_compare_distances() for a plot  of several indicators at several distances!
+Also see \code{\link[=ejamit_compare_distances]{ejamit_compare_distances()}} for a plot  of several indicators at several distances,
+but with less detailed spatial resolution (the distance increments are not as refined)!
 
-This function uses the distance of each Census block from the site in conjunction with
-the blockgroup residential population data, to provide a relatively detailed picture of
-how far away residents in each group live. In contrast, the function
+This function uses the distance of each Census block, not just block group,
+from the site in conjunction with
+the blockgroup residential population data, to provide a detailed picture of
+how indicators change as distance increases. In contrast, the function
 \code{\link[=distance_cdf_by_group_plot]{distance_cdf_by_group_plot()}} is based on ejamit()$results_bybg_people,
 which provides only blockgroup resolution information about distance.
 }
 \examples{
 
  # Example of area where \%Black is
- # very high within 1 mile but drops by 3 miles away
- pts = testpoints_100[3,]
+ #  high within 1 mile but drops by 4 miles away
+ pts = testpoints_100[1,]
   plot_distance_by_pctd(
     getblocksnearby(pts, radius = 10, quiet = T),
     score_colname = "pctnhba")

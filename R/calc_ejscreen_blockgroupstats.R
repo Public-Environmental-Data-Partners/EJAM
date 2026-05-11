@@ -19,6 +19,8 @@
 #'   `lowlifex`, health outcome rates, site/feature counts, climate indicators,
 #'   and flag fields.
 #' @param pipeline_dir folder for reading/writing pipeline stage files.
+#' @param pipeline_storage stage storage backend: `"auto"`, `"local"`, or
+#'   `"s3"`.
 #' @param bg_acsdata_stage stage name for ACS input.
 #' @param bg_envirodata_stage stage name for environmental input.
 #' @param bg_extra_indicators_stage stage name for extra-indicator input.
@@ -49,10 +51,12 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
                                           reuse_existing_extra_if_missing = FALSE,
                                           existing_blockgroupstats = NULL,
                                           save_stage = FALSE,
+                                          pipeline_storage = c("auto", "local", "s3"),
                                           stage_format = c("csv", "rds", "rda", "arrow"),
                                           blockgroupstats_acs = NULL,
                                           blockgroupstats_acs_stage = NULL) {
   stage_format <- match.arg(stage_format)
+  pipeline_storage <- match.arg(pipeline_storage)
 
   if (is.null(bg_acsdata) && !is.null(blockgroupstats_acs)) {
     bg_acsdata <- blockgroupstats_acs
@@ -66,6 +70,7 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     stage = bg_acsdata_stage,
     pipeline_dir = pipeline_dir,
     format = stage_format,
+    storage = pipeline_storage,
     input_name = "bg_acsdata"
   )
   enviro <- ejscreen_pipeline_input(
@@ -73,15 +78,22 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     stage = bg_envirodata_stage,
     pipeline_dir = pipeline_dir,
     format = stage_format,
+    storage = pipeline_storage,
     input_name = "bg_envirodata"
   )
   if (is.null(bg_extra_indicators) && !is.null(pipeline_dir) &&
       !is.null(bg_extra_indicators_stage) &&
-      file.exists(ejscreen_pipeline_stage_path(bg_extra_indicators_stage, pipeline_dir, stage_format))) {
+      ejscreen_pipeline_stage_exists(
+        bg_extra_indicators_stage,
+        pipeline_dir = pipeline_dir,
+        format = stage_format,
+        storage = pipeline_storage
+      )) {
     bg_extra_indicators <- ejscreen_pipeline_input(
       stage = bg_extra_indicators_stage,
       pipeline_dir = pipeline_dir,
       format = stage_format,
+      storage = pipeline_storage,
       input_name = "bg_extra_indicators"
     )
   }
@@ -135,7 +147,13 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     if (is.null(pipeline_dir)) {
       stop("pipeline_dir must be provided when save_stage is TRUE")
     }
-    ejscreen_pipeline_save(blockgroupstats_new, "blockgroupstats", pipeline_dir, stage_format)
+    ejscreen_pipeline_save(
+      blockgroupstats_new,
+      "blockgroupstats",
+      pipeline_dir,
+      stage_format,
+      storage = pipeline_storage
+    )
   }
 
   blockgroupstats_new

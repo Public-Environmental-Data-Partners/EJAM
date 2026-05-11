@@ -49,9 +49,12 @@ Note each percentile is not "calculated" per se, but is actually looked up in a 
 #############################
 #  using ejamit() which uses doaggregate()
 
+out = testoutput_ejamit_fips_cities
+\dontrun{
 testrows = c(14840L, 96520L, 105100L, 138880L, 237800L)
 testfips = blockgroupstats$bgfips[ testrows ]
 out = ejamit(fips = testfips)
+}
 x = out$results_bysite
 # look at the averages, ratios, and percentiles
 names_these_pctile       = paste0("pctile.",      names_these)

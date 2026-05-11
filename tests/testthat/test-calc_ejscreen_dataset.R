@@ -48,12 +48,14 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
                                              bg_extra_indicators,
                                              pipeline_dir,
                                              extra_indicator_vars,
-                                             reuse_existing_extra_if_missing,
-                                             existing_blockgroupstats,
-                                             save_stage,
-                                             stage_format) {
-      expect_false(save_stage)
-      expect_equal(bg_acsdata$bgfips, blockgroupstats$bgfips)
+	                                             reuse_existing_extra_if_missing,
+	                                             existing_blockgroupstats,
+	                                             save_stage,
+	                                             pipeline_storage,
+	                                             stage_format) {
+	      expect_false(save_stage)
+	      expect_equal(pipeline_storage, "auto")
+	      expect_equal(bg_acsdata$bgfips, blockgroupstats$bgfips)
       expect_true("pctpre1960" %in% names(bg_envirodata))
       expect_true("lowlifex" %in% names(bg_extra_indicators))
       blockgroupstats
@@ -172,13 +174,15 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
                                     output_vars,
                                     rename_newtype,
                                     required_output_names,
-                                    feature_server_fields,
-                                    save_path,
-                                    overwrite) {
-      expect_equal(usastats_acs, stats$usastats_acs)
-      expect_equal(usastats_envirodata, stats$usastats_envirodata)
-      expect_equal(usastats_ej, stats$usastats_ej)
-      expect_equal(statestats_ej, stats$statestats_ej)
+	                                    feature_server_fields,
+	                                    save_path,
+	                                    pipeline_storage,
+	                                    overwrite) {
+	      expect_equal(usastats_acs, stats$usastats_acs)
+	      expect_equal(usastats_envirodata, stats$usastats_envirodata)
+	      expect_equal(usastats_ej, stats$usastats_ej)
+	      expect_equal(statestats_ej, stats$statestats_ej)
+	      expect_equal(pipeline_storage, "auto")
       expect_true(all(c("ID", "P_D2_PM25", "Shape__Area") %in% feature_server_fields))
       data.frame(
         ID = blockgroupstats$bgfips,
@@ -218,7 +222,7 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
   expect_true(all(grepl("\\.csv$", saved[c("bg_acsdata", "blockgroupstats", "bgej", "usastats", "statestats", "ejscreen_export")])))
   expect_equal(out$ejscreen_export$ID, bgfips)
   expect_equal(
-    as.data.frame(ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "csv")),
+    as.data.frame(EJAM:::ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "csv")),
     as.data.frame(blockgroupstats)
   )
 })
@@ -241,7 +245,7 @@ test_that("calc_ejscreen_dataset can resume from a saved blockgroupstats stage",
   for (v in names_e) {
     blockgroupstats[[v]] <- c(0.2, 0.3)
   }
-  ejscreen_pipeline_save(blockgroupstats, "blockgroupstats", pipeline_dir, format = "rds")
+  EJAM:::ejscreen_pipeline_save(blockgroupstats, "blockgroupstats", pipeline_dir, format = "rds")
 
   stats <- list(
     usastats_acs = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.15, 1)),
@@ -271,4 +275,72 @@ test_that("calc_ejscreen_dataset can resume from a saved blockgroupstats stage",
 
   expect_equal(out$blockgroupstats, blockgroupstats)
   expect_true(attr(out, "loaded_stages")[["blockgroupstats"]])
+})
+
+test_that("calc_ejscreen_blockgroupstats checks optional extra stage with requested storage", {
+  requested_storage <- NULL
+
+  testthat::local_mocked_bindings(
+    ejscreen_pipeline_input = function(x = NULL,
+                                       stage = NULL,
+                                       pipeline_dir = NULL,
+                                       path = NULL,
+                                       format = NULL,
+                                       object_name = NULL,
+                                       storage = c("auto", "local", "s3"),
+                                       input_name = "input") {
+      if (!is.null(x)) {
+        return(x)
+      }
+      if (identical(input_name, "bg_extra_indicators")) {
+        return(data.table::data.table(
+          bgfips = "100010001001",
+          lowlifex = 0.1
+        ))
+      }
+      stop(input_name, " should have been supplied directly")
+    },
+    ejscreen_pipeline_stage_exists = function(stage,
+                                              pipeline_dir,
+                                              format = "csv",
+                                              storage = c("auto", "local", "s3")) {
+      requested_storage <<- storage
+      expect_equal(stage, "bg_extra_indicators")
+      expect_equal(pipeline_dir, "s3://example-bucket/pipeline")
+      TRUE
+    },
+    add_bg_geography_columns = function(x) x,
+    calc_blockgroup_demog_index = function(bgstats) {
+      data.table::data.table(
+        bgfips = bgstats$bgfips,
+        Demog.Index = 0.2,
+        Demog.Index.Supp = 0.3,
+        Demog.Index.State = 0.2,
+        Demog.Index.Supp.State = 0.3
+      )
+    },
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_ejscreen_blockgroupstats(
+    bg_acsdata = data.table::data.table(
+      bgfips = "100010001001",
+      pop = 100,
+      pctmin = 0.2,
+      pctlowinc = 0.1,
+      pctlingiso = 0.02,
+      pctlths = 0.05,
+      pctdisability = 0.09
+    ),
+    bg_envirodata = data.table::data.table(
+      bgfips = "100010001001",
+      pctpre1960 = 0.2
+    ),
+    pipeline_dir = "s3://example-bucket/pipeline",
+    pipeline_storage = "s3",
+    extra_indicator_vars = "lowlifex"
+  )
+
+  expect_equal(requested_storage, "s3")
+  expect_equal(out$lowlifex, 0.1)
 })

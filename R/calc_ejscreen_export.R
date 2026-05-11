@@ -22,6 +22,8 @@
 #'   lookup tables. These are used to add `P_...` fields before creating
 #'   EJSCREEN map helper fields.
 #' @param pipeline_dir folder for reading saved pipeline stages.
+#' @param pipeline_storage stage storage backend: `"auto"`, `"local"`, or
+#'   `"s3"`.
 #' @param blockgroupstats_stage,bgej_stage stage names to read when objects are
 #'   not supplied.
 #' @param usastats_ej,statestats_ej EJ-index percentile lookup tables. These
@@ -78,6 +80,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  usastats_ej = NULL,
                                  statestats_ej = NULL,
                                  pipeline_dir = NULL,
+                                 pipeline_storage = c("auto", "local", "s3"),
                                  blockgroupstats_stage = "blockgroupstats",
                                  bgej_stage = "bgej",
                                  usastats_acs_stage = "usastats_acs",
@@ -111,6 +114,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  overwrite = TRUE) {
 
   stage_format <- match.arg(stage_format)
+  pipeline_storage <- match.arg(pipeline_storage)
 
   bg <- ejscreen_pipeline_input(
     x = blockgroupstats,
@@ -118,6 +122,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     pipeline_dir = pipeline_dir,
     path = blockgroupstats_path,
     format = stage_format,
+    storage = pipeline_storage,
     input_name = "blockgroupstats"
   )
   bg <- data.table::as.data.table(data.table::copy(bg))
@@ -131,6 +136,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
       pipeline_dir = pipeline_dir,
       path = bgej_path,
       format = stage_format,
+      storage = pipeline_storage,
       input_name = "bgej"
     )
     ej <- data.table::as.data.table(data.table::copy(ej))
@@ -155,14 +161,17 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
         stage = stage,
         path = path,
         format = stage_format,
+        storage = pipeline_storage,
         input_name = input_name
       ))))
     }
-    if (!is.null(pipeline_dir) && ejscreen_pipeline_stage_exists(stage, pipeline_dir, stage_format)) {
+    if (!is.null(pipeline_dir) &&
+        ejscreen_pipeline_stage_exists(stage, pipeline_dir, stage_format, storage = pipeline_storage)) {
       return(data.table::as.data.table(data.table::copy(ejscreen_pipeline_input(
         stage = stage,
         pipeline_dir = pipeline_dir,
         format = stage_format,
+        storage = pipeline_storage,
         input_name = input_name
       ))))
     }
@@ -397,37 +406,59 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
   ##################################### #
   # helper for calc_ejscreen_export()
 
-  ejscreen_export_save <- function(x, save_path, save_format = NULL, overwrite = TRUE) {
+  ejscreen_export_save <- function(x,
+                                   save_path,
+                                   save_format = NULL,
+                                   overwrite = TRUE,
+                                   storage = c("auto", "local", "s3")) {
 
-    if (file.exists(save_path) && !overwrite) {
+    storage <- ejscreen_pipeline_storage_backend(path = save_path, storage = storage)
+    if (storage == "local" && file.exists(save_path) && !overwrite) {
+      stop("Refusing to overwrite existing file: ", save_path)
+    }
+    if (storage == "s3" && ejscreen_pipeline_s3_uri_exists(save_path) && !overwrite) {
       stop("Refusing to overwrite existing file: ", save_path)
     }
     if (is.null(save_format)) {
       save_format <- tolower(sub("^.*\\.([^.]+)$", "\\1", save_path))
     }
-    dir.create(dirname(save_path), recursive = TRUE, showWarnings = FALSE)
+    write_path <- save_path
+    if (storage == "local") {
+      dir.create(dirname(save_path), recursive = TRUE, showWarnings = FALSE)
+    } else {
+      write_path <- tempfile(fileext = paste0(".", save_format))
+    }
 
     if (save_format == "csv") {
-      data.table::fwrite(x, save_path)
+      data.table::fwrite(x, write_path)
     } else if (save_format == "rds") {
-      saveRDS(x, save_path)
+      saveRDS(x, write_path)
     } else if (save_format == "rda") {
       ejscreen_export <- x
-      save(ejscreen_export, file = save_path)
+      save(ejscreen_export, file = write_path)
     } else if (save_format == "arrow") {
       if (!requireNamespace("arrow", quietly = TRUE)) {
         stop("The arrow package is required to save Arrow export files")
       }
-      arrow::write_ipc_file(x, sink = save_path)
+      arrow::write_ipc_file(x, sink = write_path)
     } else {
       stop("Unsupported export save format: ", save_format)
+    }
+    if (storage == "s3") {
+      return(invisible(ejscreen_pipeline_s3_upload(write_path, save_path)))
     }
     invisible(normalizePath(save_path, mustWork = FALSE))
   }
   ##################################### #
 
   if (!is.null(save_path)) {
-    ejscreen_export_save(out, save_path, save_format = save_format, overwrite = overwrite)
+    ejscreen_export_save(
+      out,
+      save_path,
+      save_format = save_format,
+      overwrite = overwrite,
+      storage = pipeline_storage
+    )
   }
   out
 }
