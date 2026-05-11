@@ -38,6 +38,7 @@ Imports:
     DT (>= 0.31),
     fs (>= 2.1.0),
     geojsonio (>= 0.11.0),
+    geojsonsf,
     ggplot2 (>= 3.5.0),
     gh (>= 1.5.0),
     glue (>= 1.7.0),
@@ -46,6 +47,7 @@ Imports:
     htmltools (>= 0.5.4),
     htmlwidgets (>= 1.6.2),
     httr,
+    lubridate,
     httr2 (>= 1.2.0),
     jsonlite (>= 0.9.16),
     knitr (>= 1.8),
@@ -65,6 +67,7 @@ Imports:
     readxl (>= 1.4.4),
     rlang (>= 1.1.6),
     rmarkdown (>= 2.29),
+    roxygen2,
     rstudioapi (>= 0.17.0),
     scales (>= 1.4.0),
     SearchTrees,
@@ -80,12 +83,15 @@ Imports:
     viridisLite,
     webshot2,
     writexl (>= 1.5.3),
-    XML (>= 3.99-0.18)
+    XML (>= 3.99-0.18),
+    xml2,
+    zip
 Suggests:
     ACSdownload,
     AOI,
     beepr,
     bookdown,
+    callr,
     datasets,
     devtools,
     fipio,
@@ -104,7 +110,8 @@ Suggests:
     tidygeocoder,
     tigris (>= 2.2.1),
     units,
-    usethis
+    usethis,
+    withr
 Remotes:
     ejanalysis/ACSdownload,
     mikejohnson51/AOI

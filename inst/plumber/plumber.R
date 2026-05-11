@@ -21,8 +21,8 @@ if (!exists("blockwts")) dataload_dynamic("blockwts")
 if (!exists("localtree")) indexblocks()
 
 library(rlang)
-# library(plumber)
-# library(geojsonsf) # needed here but not elsewhere in pkg so if this draft API is not used then avoid creating dependency
+
+
 library(jsonlite)
 library(sf)
 

@@ -16,7 +16,7 @@
 # testthat::skip("skip API tests until ready")
 
 # start the API in background - takes a few seconds to be ready
-ejamapi_local()
+EJAM:::ejamapi_local()
 pause(10)
 test_that("/echo endpoint", {
   endpt <- "echo?msg=heyo"
