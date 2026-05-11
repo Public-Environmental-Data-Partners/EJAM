@@ -62,6 +62,11 @@
   is needed to calculate `pctnohealthinsurance` but was not available
   in blockgroupstats in EJAM v2.32.* but is included there for EJAM v2.5.* 
 
+- Fixed the shinytest2 web app test launcher so tests run from the source tree
+  with `pkgload::load_all()` but fall back to the installed `EJAM` package when
+  run from an `R CMD check` directory that does not contain the package source
+  `DESCRIPTION` file.
+
 - Because the EJScreen web app needs its blockgroup dataset to include some columns not used by EJAM,
   we have now added `calc_ejscreen_export()` support for creating an EJScreen-ready dataset
   from the EJAM datasets `blockgroupstats` and `bgej`. The transformation uses
