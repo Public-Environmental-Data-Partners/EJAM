@@ -51,7 +51,10 @@ print(
 # e.g., to run the pipeline to recreate datasets using the acs 2018-2022 survey data, with this new code
 # yr = "2022"
 # Sys.setenv(EJAM_PIPELINE_YR = yr,
-#            EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
+#            EJAM_PIPELINE_DIR = paste0("s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_", yr),
+#            EJAM_PIPELINE_STORAGE = "s3",
+#         ##   EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
+#         ##   EJAM_PIPELINE_STORAGE = "local",
 #            EJAM_FORCE_ACS = TRUE,
 #            EJAM_FORCE_BG_ACSDATA = TRUE
 # )
