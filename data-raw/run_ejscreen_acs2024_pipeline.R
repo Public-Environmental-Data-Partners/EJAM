@@ -1,7 +1,7 @@
 ###################################################### #
 
 # Repeatable ACS 2020-2024 EJSCREEN/EJAM pipeline runner.
-#
+# Run via source("data-raw/run_ejscreen_acs2024_pipeline.R")
 # Relies on calc_ejscreen_dataset() as a high-level function
 #
 # By default this writes CSV checkpoints to:
@@ -32,6 +32,7 @@
 
 #   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
 #
+###################################################### #
 ## To check them:
 #
 print(
@@ -44,6 +45,15 @@ print(
     "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
     "EJAM_INCLUDE_EJSCREEN_EXPORT"
   )))
+)
+###################################################### #
+# to specify those values here,
+# e.g., to run the pipeline to recreate datasets using the acs 2018-2022 survey data, with this new code
+yr = "2022"
+Sys.setenv(EJAM_PIPELINE_YR = yr,
+           EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
+           EJAM_FORCE_ACS = TRUE,
+           EJAM_FORCE_BG_ACSDATA = TRUE
 )
 ###################################################### #
 # setup ####
@@ -110,14 +120,21 @@ print(
     "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
     "EJAM_INCLUDE_EJSCREEN_EXPORT"
   )),
-used_here = c(
-  pipeline_yr = pipeline_yr,
-  pipeline_dir=pipeline_dir, pipeline_storage=pipeline_storage, census_api_key = "(see actual key)",
-  force_acs=force_acs, force_bg_acsdata=force_bg_acsdata, acs_download_timeout=acs_download_timeout,
-  acs_download_retries=acs_download_retries, use_provisional_bg_envirodata=use_provisional_bg_envirodata,
-  include_ejscreen_export=include_ejscreen_export
-))
+  used_here = c(
+    pipeline_yr = pipeline_yr,
+    pipeline_dir=pipeline_dir, pipeline_storage=pipeline_storage, census_api_key = "(see actual key)",
+    force_acs=force_acs, force_bg_acsdata=force_bg_acsdata, acs_download_timeout=acs_download_timeout,
+    acs_download_retries=acs_download_retries, use_provisional_bg_envirodata=use_provisional_bg_envirodata,
+    include_ejscreen_export=include_ejscreen_export
+  ))
 )
+#################################################### #
+# to insert a pause here to confirm settings, could use this:
+if (interactive()) {
+  ready <- FALSE
+  ready <- askYesNo("Ready to run the pipeline with those settings?")
+  if (!isTRUE(ready)) {stop("halted until ready")}
+}
 #################################################### #
 
 ## helper functions ####
