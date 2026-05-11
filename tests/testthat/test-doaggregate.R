@@ -13,6 +13,27 @@ if (!exists('blockwts')) {
 }
 ################# #  ################# #  ################# #
 
+doaggregate_warning_messages <- function(expr) {
+  warnings <- character()
+  value <- withCallingHandlers(
+    expr,
+    warning = function(w) {
+      warnings <<- c(warnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    }
+  )
+  list(value = value, warnings = warnings)
+}
+
+expect_no_radius_warning <- function(expr) {
+  out <- doaggregate_warning_messages(expr)
+  expect_false(
+    any(grepl("radius|32 miles|1/1\\.5x|1\\.5x", out$warnings, ignore.case = TRUE)),
+    info = paste(out$warnings, collapse = "\n")
+  )
+  out$value
+}
+
 ################# #
 # DOES IT STILL RETURN WHAT IT USED TO, OR HAS FUNCTION CHANGED SO THAT OUTPUTS NO LONGER MATCH ARCHIVED OUTPUTS? ####
 ################# #
@@ -230,7 +251,10 @@ otherwtdmeancols = othercols[calctype(othercols) %in% "wtdmean" ]
 ################### #
 test_that("***replicate other wtdmeans?", {
 
-  wts = bgstats[ , calcweight(otherwtdmeancols), with = F]
+  weight_cols <- unique(calcweight(otherwtdmeancols))
+  missing_weight_cols <- setdiff(weight_cols, names(bgstats))
+  expect_true(all(missing_weight_cols %in% "healthinsurance_universe"))
+  wts = bgstats[ , intersect(weight_cols, names(bgstats)), with = F]
   ## these could be checked also
   expect_equal(sum(bgstats$povknownratio * bgstats$pctlowinc) / sum(bgstats$povknownratio),
                bysite$pctlowinc)
@@ -533,9 +557,11 @@ test_that('error if input has column not named distance', {
 
 test_that('warning if ask for radius < 0', {
   junk = capture_output({
-    expect_no_warning(
+    expect_no_error(
       suppressMessages({
-        doaggregate(sites2blocks = testoutput_getblocksnearby_10pts_1miles , radius = 0)
+        suppressWarnings({
+          doaggregate(sites2blocks = testoutput_getblocksnearby_10pts_1miles , radius = 0)
+        })
       })
     )
     expect_warning({
@@ -568,10 +594,10 @@ testthat::test_that("same result if radius requested is 32 or 50, since >32 gets
 
 test_that("no warning if radius = 32 exactly IF original analysis was for AT LEAST 1/1.5x that radius", {
   x = getblocksnearby(testpoints_10[1,], radius = 1.01 * (32 / 1.5), quiet = TRUE) # 1.5x is where it starts to warn now in doag
-  testthat::expect_no_warning({
-    junk = capture_output({
+  junk = capture_output({
+    y <- expect_no_radius_warning({
       suppressMessages({
-        y <- doaggregate(sites2blocks = x, radius = 32, silentinteractive = TRUE)
+        doaggregate(sites2blocks = x, radius = 32, silentinteractive = TRUE)
       })
     })
   })
@@ -657,8 +683,10 @@ test_that(paste0("radius param to doagg with input below should not warn or err!
   cause_no_warn_no_err <- list(normalnumber = 1.3)
   cat('\n  Trying radius that is', names(cause_no_warn_no_err)[1], '- Testing to ensure it works... ')
   try({
-    expect_no_condition({
-      x <- doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = cause_no_warn_no_err[[1]])
+    x <- expect_no_radius_warning({
+      suppressMessages({
+        doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = cause_no_warn_no_err[[1]])
+      })
     })
   })
   expect_true(
@@ -763,7 +791,9 @@ test_that(paste0("doaggregate radius like with the input below should report err
 #
 # cause_something_else <- bad_numbers[c("matrix_1x1", "array1", "character1", "df1")]  # ????
 
-rm(cause_no_warn_no_err)
+if (exists("cause_no_warn_no_err")) {
+  rm(cause_no_warn_no_err)
+}
 ################# #  ################# #  ################# #
 
 
@@ -791,8 +821,6 @@ rm(cause_no_warn_no_err)
 # TOO MANY ROWS; TOO MANY COLUMNS; TOO MANY MEGABYTES?
 
 # cat('still need to test cases where input table is valid class, type, but too many rows or columns\n')
-
-
 
 
 

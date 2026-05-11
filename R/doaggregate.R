@@ -1,15 +1,18 @@
 #' Summarize environmental and residential population indicators at each location and overall
 #'
-#' @description Used by ejamit() and the shiny app to summarize blockgroups scores at each site and overall.
+#' @description Used by ejamit() and the shiny app to summarize blockgroups scores at each site and overall,
+#'   as a key intermediate step in the overall analysis provided by ejamit().
 #'
 #' @details
-#' [getblocksnearby()] and [doaggregate()] are the two key functions that run [ejamit()].
+#' [getblocksnearby()] (or related functions for fips or shapefiles) and
+#'   [doaggregate()] are the two key functions that run [ejamit()].
+#'
 #'   [doaggregate()] takes a set of sites like facilities and the
 #'   set of blocks that are near each,
 #'   combines those with indicator scores for blockgroups, and
 #'   aggregates the numbers within each place and across all overall.
 #'
-#'   For all examples, see [getblocksnearbyviaQuadTree()]
+#'   Also see [getblocksnearbyviaQuadTree()]
 #'
 #'   [doaggregate()] is the code run after [getblocksnearby()] (or a related function for
 #'   polygons or FIPS Census units) has identified which blocks are nearby.
@@ -81,10 +84,18 @@
 #' the Decennial census blocks can provide, such as a dasymetric map approach.
 #'
 #'
-#' @param sites2blocks table in [data.table](https://r-datatable.com) format, of distances in miles between all sites (facilities) and
-#'   nearby Census block internal points, with columns ejam_uniq_id, blockid, distance,
-#'   created by getblocksnearby  function.
-#'   See [testoutput_getblocksnearby_10pts_1miles] dataset in package, as input to this function
+#' @param sites2blocks table in [data.table](https://r-datatable.com) format,
+#'   of distances in miles between all sites (facilities) and
+#'   nearby Census block internal points, with columns
+#'   ejam_uniq_id, blockid, distance, blockwt, bgid, and sometimes others,
+#'   created by functions that find blocks in or near specified sites,
+#'   such as these examples:
+#'   ```
+#'   s2b_latlon <- getblocksnearby(testpoints_10, radius=1) # same as [testoutput_getblocksnearby_10pts_1miles]
+#'   s2b_fips   <- getblocksnearby_from_fips(testinput_fips_counties)
+#'   s2b_shp    <- get_blockpoints_in_shape(testshapes_2)$pts # notice the $pts here
+#'   ```
+#'
 #' @param sites2states_or_latlon data.table or just data.frame,
 #'   with columns ejam_uniq_id (each unique one in sites2blocks) and
 #'   ST (2-character State abbreviation) or lat and lon
@@ -133,6 +144,10 @@
 #'
 #' @examples
 #' EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+#'
+#' x = doaggregate(testoutput_getblocksnearby_10pts_1miles, radius = 1)
+#' names(x)
+#' ejam2barplot(x)
 #'
 #' @return list with named elements:
 #'
@@ -192,6 +207,10 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   # ensure sites2blocks is a data.table
   if (!data.table::is.data.table(sites2blocks)) {
     data.table::setDT(sites2blocks)
+  }
+  if (!("distance" %in% names(sites2blocks))) {
+    warning("sites2blocks should contain a column named distance; since that is missing, now will set distance to NA which may not make sense for some types of analysis")
+    sites2blocks[, distance := NA_real_]
   }
   ###################################################### #
   ## validate sites2states_or_latlon ####
@@ -801,17 +820,30 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   calculatedcols_inbgstats <- intersect(calculatedcols, names(blockgroupstats))
   calctype_maxbg           <- intersect(calctype_maxbg, names(blockgroupstats))
   calctype_minbg           <- intersect(calctype_minbg, names(blockgroupstats))
+  denominator_cols_needed  <- unique(stats::na.omit(calcweight(wtdmeancols_inbgstats)))
+  denominator_cols_needed  <- setdiff(denominator_cols_needed, c("", "pop"))
+  denominator_cols_inbgstats <- intersect(denominator_cols_needed, names(blockgroupstats))
+  bg_join_cols_bysite <- unique(c(
+    "bgid", "ST",
+    countcols_inbgstats,
+    wtdmeancols_inbgstats,
+    denominator_cols_inbgstats,
+    calculatedcols_inbgstats,
+    calctype_maxbg,
+    calctype_minbg
+  ))
+  bg_join_cols_overall <- setdiff(bg_join_cols_bysite, "ST") # ST gets added back later, as NA values
 
   sites2bgs_plusblockgroupdata_bysite  <- merge(
     sites2bgs_bysite,  #  but has other cols like   "distance_avg" , "proximityscore"  etc.
-    blockgroupstats[ , c('bgid', 'ST', ..countcols_inbgstats, ..wtdmeancols_inbgstats, ..calculatedcols_inbgstats, ..calctype_maxbg, ..calctype_minbg)],
+    blockgroupstats[ , ..bg_join_cols_bysite],
                                                 all.x = TRUE, all.y = FALSE, by = 'bgid')
 
   # just be aware that this is not saving just unique blockgroups, but saves each bgid-ejam_uniq_id pairing???
 
   sites2bgs_plusblockgroupdata_overall <- merge(
     sites2bgs_overall,
-    blockgroupstats[ , c('bgid',       ..countcols_inbgstats, ..wtdmeancols_inbgstats, ..calculatedcols_inbgstats, ..calctype_maxbg, ..calctype_minbg)],
+    blockgroupstats[ , ..bg_join_cols_overall],
                                                 all.x = TRUE, all.y = FALSE, by = 'bgid')
 
   # rm(sites2bgs_overall, sites2bgs_bysite); rm(blockgroupstats)
@@ -921,8 +953,12 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   missing_weight_cols <- weights_for_wtdmeancols[!weights_for_wtdmeancols %in% names(sites2bgs_plusblockgroupdata_bysite)]
   missing_weight_cols <- unique(setdiff(missing_weight_cols, "pop"))
   if (length(missing_weight_cols) > 0) {
-    warning("Some weighted-mean denominator columns were not found in blockgroup data, so population weights were used instead: ",
-            paste(missing_weight_cols, collapse = ", "))
+    legacy_pop_fallback_cols <- "healthinsurance_universe"
+    warning_weight_cols <- setdiff(missing_weight_cols, legacy_pop_fallback_cols)
+    if (length(warning_weight_cols) > 0) {
+      warning("Some weighted-mean denominator columns were not found in blockgroup data, so population weights were used instead: ",
+              paste(warning_weight_cols, collapse = ", "))
+    }
     weights_for_wtdmeancols[weights_for_wtdmeancols %in% missing_weight_cols] <- "pop"
   }
 

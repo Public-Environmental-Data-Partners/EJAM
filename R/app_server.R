@@ -23,7 +23,7 @@ app_server <- function(input, output, session) {
   # Key reactives include these:
   ##  data_uploaded   reactive holds selected latlon points or shapefiles. It is defined later.
   ##  data_processed  reactive holds results of analysis, like output of doaggregate(getblocksnearby(points)), or a subset of output of ejamit()
-  ##  data_summarized reactive holds results of batch.summarize()
+
 
   # SETUP: ####
 
@@ -99,22 +99,21 @@ app_server <- function(input, output, session) {
   #. ####
   # ___ BUTTONS/TABS (events: Go to tab/ Help/ Start analysis) ####
 
-  ## outline of tabs
-  # at one point was this:
-  #
-  # tabsetPanel(                         id = 'all_tabs',     ##
-  #   tabPanel(title = 'About EJAM',
-  #   tabPanel(title = 'Site Selection',
-  #   tabPanel(title =   , # ??
-  #   tabsetPanel(                       id = 'results_tabs', ##
-  #       tabPanel(title = 'Summary',
-  #       tabPanel(title = 'Details',
-  #          tabPanel(title = 'Site-by-Site Table',
-  #          tabPanel(title = 'Plot Average Scores',
-  #          tabPanel(title = 'Plot Full Range of Scores',
-  #       tabPanel(title = 'Written Report',
-  #   tabPanel(title = 'EJSCREEN Batch Tool',
-  #   tabPanel(title = 'Advanced Settings',
+  ## To see names of tabs defined in UI:
+  #      x = find_in_files("tab(|set)Panel[^,]*,", filename_pattern = "app_ui.R", whole_line = T, quiet = T)
+  #      cbind(x[[1]])
+  # was this:
+  # 68   "        tabPanel(title = 'About',"
+  # 505  "        tabPanel(title = \"See Results\","
+  # 513  "                 tabsetPanel(id = 'results_tabs',"
+  # 574  "                             tabPanel(title = 'Details',"
+  # 590  "                                            tabPanel(title = 'Site-by-Site Table',"
+  # 622  "                                            tabPanel(id = \"plot_average\","
+  # 654  "                                            ),  # end of tabPanel(title = 'Plot Average Scores',"
+  # 658  "                                            tabPanel(id = \"plot_range\","
+  # 712  "                               tabPanel(title = 'Written Report',"
+  # 1025 "        tabPanel(title = \"Advanced Settings\","
+
 
   ##     -------------------------- BUTTONS to switch tabs ---------------------- #
 
@@ -1836,10 +1835,10 @@ app_server <- function(input, output, session) {
 
     showNotification('Processing sites now!', type = 'message', duration = 1)
 
-    ## progress bar setup overall for 3 operations  (getblocksnearby, doaggregate, batch.summarize)
+    ## progress bar setup overall for getting blocks at/near sites and then doaggregate()
     ## and done here once for all cases: fips, shp, and latlon sitetype
     progress_all <- shiny::Progress$new(min = 0, max = 1)
-    progress_all$set(value = 0, message = 'Step 1 of 3', detail = 'Getting nearby census blocks')
+    progress_all$set(value = 0, message = 'Step 1 of 3', detail = 'Getting census blocks at/near each site')
     ejamitRunTimeNotification <- NULL
     show_ejamit_runtime_estimate <- function(rows, radius = 0, analysis_type, analysis_subtype = NULL) {
       if (length(rows) == 0 || is.na(rows) || rows < 1) {

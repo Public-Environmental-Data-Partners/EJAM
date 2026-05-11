@@ -298,9 +298,9 @@ change.fieldnames <- function(
 ########################################################################### #
 
 
-#' @title Clean raw output of doaggregate() from the EJAM package
+#' @title Clean raw output of [doaggregate()] from the EJAM package
 #' @description Takes the raw output version of batch buffer results and cleans it up
-#'   to make it ready for batch.summarize function
+#'   to make it ready for [batch.summarize()] function
 #'   Note this drops rows with no pop data - assumes those lack EJSCREEN batch results
 #' @param x Required. output of batch processor that runs EJSCREEN report once per site.
 #' @param namesfile Optional but must specify either namesfile, or both oldcolnames and newcolnames.

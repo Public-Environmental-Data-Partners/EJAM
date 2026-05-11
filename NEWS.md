@@ -55,6 +55,13 @@
 - Added `calc_bg_extra_indicators()` and related helpers for the non-ACS,
   non-environmental blockgroup indicator stage (e.g., % low life expectancy).
 
+- Fixed `doaggregate()` so weighted-mean denominator columns such as
+  `healthinsurance_universe` are retained when available in `blockgroupstats`,
+  and refreshed the 10-point `doaggregate()` / `ejamit()` regression fixtures
+  for the current ACS 2024 branch behavior. The variable `healthinsurance_universe`
+  is needed to calculate `pctnohealthinsurance` but was not available
+  in blockgroupstats in EJAM v2.32.* but is included there for EJAM v2.5.* 
+
 - Because the EJScreen web app needs its blockgroup dataset to include some columns not used by EJAM,
   we have now added `calc_ejscreen_export()` support for creating an EJScreen-ready dataset
   from the EJAM datasets `blockgroupstats` and `bgej`. The transformation uses
