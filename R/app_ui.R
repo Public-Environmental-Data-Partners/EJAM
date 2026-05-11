@@ -1043,7 +1043,7 @@ app_ui <- function(request) {
                      ))
                  }),
                  shiny::checkboxInput("bookmarking_allowed_input", "Allow bookmarking?",
-                                      value = EJAM:::global_or_param("bookmarking_allowed") != 'disable'),
+                                      value = isTRUE(EJAM:::global_or_param("bookmarking_allowed") != 'disable')),
                  ######################################################## #
                  ## ------------------------ app title ### #
                  # will not be editable here. defined in global_defaults_package.R

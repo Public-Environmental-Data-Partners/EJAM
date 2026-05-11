@@ -179,7 +179,7 @@ app_server <- function(input, output, session) {
 
 
   ## hide vs show ABOUT tab  ---------------------- #
-  if (EJAM:::global_or_param("default_hide_about_tab")) {
+  if (isTRUE(EJAM:::global_or_param("default_hide_about_tab"))) {
     hideTab(inputId = 'all_tabs', target = 'About')
   }
   ## hide vs show WRITTEN REPORT tab ---------------------- #
