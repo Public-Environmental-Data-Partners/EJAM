@@ -1281,12 +1281,12 @@ app_ui <- function(request) {
                  checkboxInput(inputId = 'calculate_ratios',
                                label = "Results in Excel should include ratios to US and State averages",
                                value = EJAM:::global_or_param("default_calculate_ratios")),
-                 checkboxInput(inputId = 'include_averages',
-                               label = "Results should include US and State Averages - *** not implemented yet",
-                               value = EJAM:::global_or_param("default_include_averages")),
-                 checkboxInput(inputId = 'include_extraindicators',
-                               label = 'Results should include extra indicators from Community Report - *** not implemented yet',
-                               value = EJAM:::global_or_param("default_include_extraindicators")),
+                 # checkboxInput(inputId = 'include_averages',
+                 #               label = "Results should include US and State Averages - *** not implemented yet",
+                 #               value = EJAM:::global_or_param("default_include_averages")),
+                 # checkboxInput(inputId = 'include_extraindicators',
+                 #               label = 'Results should include extra indicators from Community Report - *** not implemented yet',
+                 #               value = EJAM:::global_or_param("default_include_extraindicators")),
 
                  ######################################################## #
                  ## VIEW INTERACTIVE RESULTS ####
