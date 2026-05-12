@@ -115,3 +115,4 @@ every block and blockgroup in the US via a function called getpointsnearby().
  # points(x = x$lon[tops], y = x$lat[tops], col="red")
 
 }
+\keyword{internal}

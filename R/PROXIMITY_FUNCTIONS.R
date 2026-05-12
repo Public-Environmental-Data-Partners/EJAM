@@ -142,6 +142,7 @@
 #'
 #' @export
 #'
+#'
 custom_ejamit <- function(sitepoints, radius = 3, fips = NULL, shapefile = NULL,
                           custom_blockgroupstats = blockgroupstats,
                           countcols = names_wts,
@@ -765,7 +766,7 @@ if (1 == 0) {
 #'
 #' @return [data.table](https://r-datatable.com) of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 #'
-#' @export
+#' @keywords internal
 #'
 proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 
@@ -954,7 +955,8 @@ proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 #'  # tops = x$proximityscore > 500 & !is.infinite(x$proximityscore) & !is.na(x$proximityscore)
 #'  # points(x = x$lon[tops], y = x$lat[tops], col="red")
 #'
-#' @export
+#' @keywords internal
+#'
 #'
 proxistat <- function(topoints, bpoints = NULL,
                       blocks_per_batch=1000, countradius = 3.106856, maxradius = 621.3712,
@@ -1151,6 +1153,7 @@ proxistat <- function(topoints, bpoints = NULL,
 #'   but not traffic.score or npdes one since those are weighted and not just count per km
 #'
 #' @export
+#' @keywords internal
 #'
 proximity.score.in.miles <- function(scoresdf=NULL) {
   if (is.null(scoresdf)) {
@@ -1374,7 +1377,8 @@ calc_counties_from_bg = function(childDT, score_colname, wt_colname = 'pop', bgf
 #'
 #' @return list of tables similar to what [doaggregate()] returns
 #'
-#' @export
+#' @keywords internal
+#'
 #'
 custom_doaggregate <- function(sites2blocks,
                                custom_blockgroupstats = blockgroupstats,

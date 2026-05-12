@@ -35,3 +35,4 @@ Tries to use getblocksnearby() normally
 but then filling in that info for rest of blocks in US
 The inverse approach compared to \code{\link[=proxistat]{proxistat()}}
 }
+\keyword{internal}

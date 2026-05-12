@@ -31,8 +31,8 @@ each unique value defines a group of sites}
 similar to ejamit output but results_overall has one row per unique typeofsite
 }
 \description{
-*** DRAFT - May change but works as currently drafted.
-e.g., change output formats of results_bytype vs results_overall
+This function may change but works as currently designed
+e.g., may change output formats of results_bytype vs results_overall
 }
 \examples{
   out <- ejamit_compare_types_of_places(testpoints_10[1:4, ],

@@ -43,3 +43,4 @@ list of tables similar to what \code{\link[=doaggregate]{doaggregate()}} returns
 \description{
 custom version of doaggregate(), to calculate user-provided indicators
 }
+\keyword{internal}

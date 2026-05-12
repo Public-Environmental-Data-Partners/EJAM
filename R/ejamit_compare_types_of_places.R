@@ -9,8 +9,8 @@
 
 
 #' Compare subsets (types) of places that are all from one list
-#' @description *** DRAFT - May change but works as currently drafted.
-#'  e.g., change output formats of results_bytype vs results_overall
+#' @description This function may change but works as currently designed
+#'  e.g., may change output formats of results_bytype vs results_overall
 #'
 #' @param sitepoints see [ejamit()]
 #' @param typeofsite   vector of length same as NROW(sitepoints), where
@@ -177,7 +177,7 @@ ejamit_compare_types_of_places <- function(sitepoints, typeofsite = NULL,
   ########################################################## #
   # Find a way to make ejamit by group (by site type) work well with the ejam2xyz() functions.
   #
-  # ejamit_compare_types_of_places() as a 1st draft, for now,
+  # ejamit_compare_types_of_places()   for now,
   # does not report out$results_bybg_people, to save time/space,
   # and
   # does not report a typical out$results_overall, since that would require run of all groups at once
