@@ -22,7 +22,7 @@ just a vector of variables that particular service provides, like FIPS, SQMI, PO
 (or, but not yet implemented, "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages).}
 }
 \value{
-spatial object via \code{\link[sf:st_read]{sf::st_read()}} # sf-data.frame, not sf-tibble like \code{\link[sf:st_read]{sf::read_sf()}}
+spatial object via \code{\link[sf:st_read]{sf::st_read()}} # sf-data.frame, not sf-tibble like \code{\link[sf:read_sf]{sf::read_sf()}}
 }
 \description{
 Get tract boundaries, via API, to map them

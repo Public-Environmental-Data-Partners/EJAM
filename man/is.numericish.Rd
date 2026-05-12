@@ -28,7 +28,7 @@ see which columns seem numeric and could be rounded
 Reports "08" as numeric-ish
 }
 \seealso{
-\code{\link[=is.numeric.text]{is.numeric.text()}}
+\code{\link[=is.numerictext]{is.numerictext()}}
 
 \code{\link[=table_round]{table_round()}}
 }
