@@ -96,6 +96,17 @@ RUN R -e "remotes::install_github('mikejohnson51/AOI')" && \
     R -e "remotes::install_github('hrbrmstr/hrbrthemes')" && \
     rm -rf /tmp/downloaded_packages /tmp/*.rds
 
+# Download ejamdata arrow files directly from GitHub release
+# Bypasses EJAM's internal piggyback download which has trouble in Docker
+RUN mkdir -p /usr/local/lib/R/site-library/EJAM/data && \
+    for FILE in blockpoints blockwts quaddata bgej bgid2fips blockid2fips frs frs_by_programid frs_by_naics frs_by_sic frs_by_mact; do \
+      curl -fSL \
+        -H "Authorization: token ${GITHUB_PAT}" \
+        -H "Accept: application/octet-stream" \
+        "https://github.com/Public-Environmental-Data-Partners/ejamdata/releases/download/v2.32.8/${FILE}.arrow" \
+        -o "/usr/local/lib/R/site-library/EJAM/data/${FILE}.arrow"; \
+    done
+
 # Copy app files
 ADD . /home/epic/
 
