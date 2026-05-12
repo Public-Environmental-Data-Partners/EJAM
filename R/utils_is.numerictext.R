@@ -22,7 +22,7 @@
 #'
 #' @keywords internal
 #'
-is.numeric.text = function(x,
+is.numerictext = function(x,
                            na.is = c(NA, TRUE, FALSE)[1]
 ) {
 
