@@ -300,6 +300,32 @@ test_that("map_shapes_plot() works", {
   })
 })
 
+test_that("map_shapes_leaflet() keeps popup alignment after dropping empty geometries", {
+  shp <- sf::st_sf(
+    FIPS = c("0000001", "0000002"),
+    geometry = sf::st_sfc(
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE)))
+    )
+  )
+  x <- map_shapes_leaflet(shp, popup = c("missing boundary", "mapped boundary"))
+  expect_equal(map2popups(x), "mapped boundary")
+
+  shp2 <- sf::st_sf(
+    FIPS = c("0000001", "0000002", "0000003"),
+    geometry = sf::st_sfc(
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE))),
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(2, 2, 2, 3, 3, 3, 3, 2, 2, 2), ncol = 2, byrow = TRUE)))
+    )
+  )
+  x2 <- map_shapes_leaflet(shp2, popup = c("first mapped", "missing boundary", "third mapped"))
+  expect_equal(map2popups(x2), c("first mapped", "third mapped"))
+
+  x3 <- map_shapes_leaflet(shp2, popup = c("already filtered first", "already filtered third"))
+  expect_equal(map2popups(x3), c("already filtered first", "already filtered third"))
+})
+
 # test_that("map_shapes_leaflet_proxy() works", {
 #
 #   myshapes = shapes_counties_from_countyfips(fips_counties_from_state_abbrev("DE")[1])
