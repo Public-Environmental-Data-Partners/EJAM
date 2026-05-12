@@ -280,7 +280,7 @@ calc_byformula <- function(mydf, formulas = NULL, keep = calc_varname_from_formu
 #' EJAM:::calc_varname_from_formula(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
 #' head(cbind(
 #'   EJAM:::calc_varname_from_formula(formulas_ejscreen_acs$formula),
-#'   formulas_ejscreen_acs$formula$formula)
+#'   formulas_ejscreen_acs$formula)
 #'   )
 #'
 #' @return a vector as long as myforms input vector
