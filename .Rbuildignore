@@ -14,3 +14,5 @@
 ^R/_disable_autoload[.]R$
 ^Rplots.pdf$
 ^app.R$
+^\.positai$
+^\.claude$

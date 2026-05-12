@@ -95,3 +95,4 @@ packrat/lib*/
 
 # Ignore artifacts created while trying out plumber-based API locally
 inst/plumber/log_api_usage*.txt
+.positai

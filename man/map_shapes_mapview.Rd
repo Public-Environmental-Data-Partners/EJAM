@@ -14,16 +14,16 @@ map_shapes_mapview(
 \arguments{
 \item{shapes}{like from shapes_counties_from_countyfips(fips_counties_from_state_abbrev("DE"))}
 
-\item{col.regions}{passed to \code{\link[mapview:mapView]{mapview::mapview()}}}
+\item{col.regions}{passed to \code{\link[mapview:mapview]{mapview::mapview()}}}
 
-\item{map.types}{passed to  \code{\link[mapview:mapView]{mapview::mapview()}}}
+\item{map.types}{passed to  \code{\link[mapview:mapview]{mapview::mapview()}}}
 
 \item{...}{passed to mapview}
 }
 \value{
-like output of mapview function \code{\link[mapview:mapView]{mapview::mapview()}},
+like output of mapview function \code{\link[mapview:mapview]{mapview::mapview()}},
 if mapview package is installed,
-when used with an input that is a spatial object as via \code{\link[sf:st_read]{sf::read_sf()}}
+when used with an input that is a spatial object as via \code{\link[sf:read_sf]{sf::read_sf()}}
 }
 \description{
 Map - polygons - Use mapview package if available

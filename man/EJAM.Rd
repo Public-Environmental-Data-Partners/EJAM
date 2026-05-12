@@ -44,4 +44,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Mark A. Corrales \email{ejam@ejanalysis.com} (\href{https://orcid.org/0000-0002-1696-5638}{ORCID})
 
+Authors:
+\itemize{
+  \item Mark A. Corrales \email{ejam@ejanalysis.com} (\href{https://orcid.org/0000-0002-1696-5638}{ORCID})
+}
+
 }

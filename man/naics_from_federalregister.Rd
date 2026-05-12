@@ -8,7 +8,7 @@ by reading the NAICS listed near the top of the preamble - DRAFT WORK IN PROGRES
 naics_from_federalregister(naics_text_copy_from_fr)
 }
 \arguments{
-\item{naics_text_copy_from_fr}{}
+\item{naics_text_copy_from_fr}{character string text}
 }
 \description{
 NAICS - Try to extract which NAICS could be affected by a rule published in the Federal Register

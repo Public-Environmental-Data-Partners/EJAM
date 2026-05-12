@@ -16,13 +16,13 @@ map_shapes_leaflet(
 \item{shapes}{like from shapes_counties_from_countyfips(fips_counties_from_state_abbrev("DE")),
 or at least a data.frame that can be interpreted as indicating points via \code{\link[=shapefile_from_sitepoints]{shapefile_from_sitepoints()}}}
 
-\item{color}{passed to \code{\link[leaflet:map-layers]{leaflet::addPolygons()}}}
+\item{color}{passed to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}}
 
-\item{popup}{passed to \code{\link[leaflet:map-layers]{leaflet::addPolygons()}}}
+\item{popup}{passed to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}}
 
-\item{fillOpacity}{passed to \code{\link[leaflet:map-layers]{leaflet::addPolygons()}}}
+\item{fillOpacity}{passed to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}}
 
-\item{...}{passed to \code{\link[leaflet:map-layers]{leaflet::addPolygons()}}, such as opacity=1}
+\item{...}{passed to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}, such as opacity=1}
 }
 \value{
 html widget from leaflet::leaflet()
