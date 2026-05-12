@@ -130,7 +130,7 @@ loadall()
 #       "\t documentOpen('", rawdir, "/", fnames, "')"), collapse = "\n"))
 if (0 == 1) {  # collapsable list
   ####   THESE ARE SORTED INTO GROUPS THAT GO TOGETHER :
-  x <- c("datacreate_0_UPDATE_ALL_DATASETS.R", "datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R",
+  x <- c("datacreate_0_UPDATE_ALL_DATASETS.R",
 
          "datacreate_map_headernames.R", "datacreate_names_of_indicators.R", "datacreate_names_pct_as_fraction.R",
          "datacreate_1_metadata_update.R", "datacreate_runtime_models.R",
@@ -167,7 +167,7 @@ if (0 == 1) {  # collapsable list
   ####################################### #
   {  # overall
     # documentOpen('./data-raw/datacreate_0_UPDATE_ALL_DATASETS.R') # this file
-    # documentOpen('./data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R')
+
 
     # with annual census fips codes or boundaries changes (when EJSCREEN incorporates those)
     #
@@ -699,8 +699,7 @@ loadall()
 # DOCUMENTATION WEBSITE UPDATE ####
 
 cat("\n\n You may want to use EJAM:::pkgdown_update() from EJAM/R/utils_pkgdown_update.R
-    formerly stored in 'datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R'   \n\n")
-#  rstudioapi::documentOpen("./data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R")
+     \n")
 #  rstudioapi::documentOpen("./R/utils_pkgdown_update.R")
 
 ## > loadall ####

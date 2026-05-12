@@ -11,7 +11,7 @@ out = ejamit(testpoints_10, radius = 2)
 varsout = names(out$results_overall)
 
 ########## #
-# INDICATORS MISSING -- NOT CALCULATED YET  - NEED FORMULA OR METADATA OR LISTS OF NAMES TO SHOW, UPDATES/FIXES
+# INDICATORS MISSING
 
 vars_missing = setdiff(vars, varsout)
 
@@ -104,11 +104,4 @@ checkon()
 
 #                         varlist       rname in.bgstats in.outputs.already missing.fixable missing.unfixable      calctype           wt
 
-# pct_chinese    names_d_language pct_chinese      FALSE              FALSE           FALSE              TRUE       wtdmean lan_universe
-# pct_korean     names_d_language  pct_korean      FALSE              FALSE           FALSE              TRUE       wtdmean lan_universe
-
-# pctflood          names_climate    pctflood      FALSE              FALSE           FALSE              TRUE       wtdmean          pop
-# pctfire           names_climate     pctfire      FALSE              FALSE           FALSE              TRUE       wtdmean          pop
-
-# nonmins     names_d_other_count     nonmins      FALSE              FALSE           FALSE              TRUE sum of counts
 

@@ -2,12 +2,12 @@
 # helper function to save datasets as .xlsx
 
 savex <-  function(x, folder = "./inst/testdata", fname = "example.xlsx")  {
-  
+
   # use openxlsx::write.xlsx() instead of writexl package function called write_xlsx()
   # writexl is zero dependency package for writing xlsx files that is light weight,
   # but we already have imported openxlsx package to use more features like formatting it offers for xlsx download in app,
   # so may as well just use that to write xlsx and maybe can avoid dependency on writexl.
-  
+
   if (!dir.exists(folder)) {stop("tried to save .xlsx but folder does not exist: ", folder)}
   fpath <- file.path(folder, fname)
   openxlsx::write.xlsx(x, file = fpath, overwrite = TRUE)
@@ -35,24 +35,24 @@ print(x[grepl("id", x$Item), ])
 # create testinput_program_sys_id ####
 
 # testinput_program_sys_id <- c(
-#   "7-0540-00003", "354362", "1513529", "485659", "LAG750956", 
+#   "7-0540-00003", "354362", "1513529", "485659", "LAG750956",
 #   "CAC002995519", "3601252181", "3601439158"
 # )
 testinput_program_sys_id <- data.frame(
   program = c(
     "FIS" ,"NJ-NJEMS", "SIMS", "NJ-NJEMS" , "NPDES", "RCRAINFO", "ICIS", "ICIS" ),
-  pgm_sys_id = c( "7-0540-00003", "354362", "1513529", "485659", "LAG750956", 
+  pgm_sys_id = c( "7-0540-00003", "354362", "1513529", "485659", "LAG750956",
                   "CAC002995519", "3601252181", "3601439158")
 )
 
 if (anyNA( frs_from_programid(testinput_program_sys_id$program,testinput_program_sys_id$pgm_sys_id)$lat )) {stop("some of the testinput_program_sys_id are not in the FRS database or lack lat,lon")}
-## or  
+## or
 # latlon_from_programid(testinput_program_sys_id)
 
 ## metadata ####
 
 ## requires first load_all() or require() or EJAM::: to access the function
-testinput_program_sys_id <- metadata_add(testinput_program_sys_id) 
+testinput_program_sys_id <- metadata_add(testinput_program_sys_id)
 
 ## compare the one in memory right now to the already-installed one:
 # all.equal(testinput_regid, EJAM::testinput_regid)
@@ -66,16 +66,16 @@ usethis::use_data(testinput_program_sys_id, overwrite = TRUE)
 ## Documentation ####
 
 filecontents <- paste0(
-  "#' @name ", "testinput_program_sys_id", " 
+  "#' @name ", "testinput_program_sys_id", "
 #' @docType data
 #' @title test data, EPA program system ID numbers to try using
-#' @details 
+#' @details
 #'  Just for convenience, installed with the package
 'testinput_program_sys_id'
 "
 )
 fname = paste0("./R/data_", "testinput_program_sys_id", ".R")
-writeChar(filecontents, con = fname)             
+writeChar(filecontents, con = fname)
 stopifnot(file.exists(fname))
 
 ## write.xlsx ####
@@ -88,7 +88,7 @@ rm(savex)
 cat('
     REMEMBER TO RECREATE PACKAGE DOCUMENTATION:
     devtools::document()  # for .Rd help files. or Clean and INSTALL package
-    see EJAM/data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R  for the documentation website
+    see EJAM:::pkgdown_update() for the documentation website
     devtools::build_manual()  # for pdf manual
     postdoc::render_package_manual()  # for html manual
     \n')

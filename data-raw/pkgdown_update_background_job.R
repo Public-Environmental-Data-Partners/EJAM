@@ -1,7 +1,7 @@
 if (basename(getwd()) != "EJAM") {stop("must start in root of source folder")}
 
 library(EJAM)
-# source("./data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R")
+
 info = capture.output({
   EJAM:::pkgdown_update(doask = F,
                         doclean_man = F, doclean_docs = TRUE,

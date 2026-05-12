@@ -82,7 +82,7 @@ rm(savex)
 cat('
     REMEMBER TO RECREATE PACKAGE DOCUMENTATION:
     devtools::document()  # for .Rd help files. or Clean and INSTALL package
-    see EJAM/data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R  for the documentation website
+    see EJAM:::pkgdown_update()  for the documentation website
     devtools::build_manual()  # for pdf manual
     postdoc::render_package_manual()  # for html manual
     \n')

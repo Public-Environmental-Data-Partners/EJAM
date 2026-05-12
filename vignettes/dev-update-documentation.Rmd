@@ -168,8 +168,7 @@ who is managing the package, as follows:
     the .yml file.
 
 -   The pkgdown-based webpages should be updated by someone who is managing the
-    package, and they should use the `pkgdown_update()` function mentioned in
-    `data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R` 
+    package, and they should use the `EJAM:::pkgdown_update()` function.
     You use the function pkgdown_update() so that the 
     pages get rebuilt by the `{pkgdown}` R package, based on the
     above files and all other documentation from .R and .md files. For more

@@ -473,7 +473,7 @@ pkg_update_testpoints_testoutputs <- function(
   postdoc::render_package_manual()  # for html manual (optional)
 
 
-  See also EJAM/data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R  for the documentation website
+  See also EJAM:::pkgdown_update()  for the documentation website
   See also
 
   EJAM:::metadata_check() # to see large table of which attributes provide metadata on dataset objects
