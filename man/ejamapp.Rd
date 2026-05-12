@@ -53,7 +53,7 @@ or (https://mastering-shiny.org/action-bookmark.html)}
 \value{
 An object that represents the app. Printing the object or
 passing it to \code{\link[shiny:runApp]{runApp()}} will run the app, as would just typing
-\code{\link[=run_app]{run_app()}} or \code{\link[=ejamapp]{ejamapp()}} in the console.
+\code{\link[=ejamapp]{ejamapp()}} in the console.
 }
 \description{
 Launch the web app
