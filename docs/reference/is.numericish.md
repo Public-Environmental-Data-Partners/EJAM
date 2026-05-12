@@ -39,6 +39,6 @@ Reports "08" as numeric-ish
 
 ## See also
 
-[`is.numeric.text()`](https://public-environmental-data-partners.github.io/EJAM/reference/is.numeric.text.md)
+[`is.numerictext()`](https://public-environmental-data-partners.github.io/EJAM/reference/is.numerictext.md)
 
 [`table_round()`](https://public-environmental-data-partners.github.io/EJAM/reference/table_round.md)
