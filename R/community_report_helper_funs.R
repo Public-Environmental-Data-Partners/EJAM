@@ -555,7 +555,7 @@ fill_tbl_full_subgroups <- function(output_df,
 
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
-#' @param diesel_caveat character string text
+#' @param diesel_caveat text
 #'
 #' @keywords internal
 #'
