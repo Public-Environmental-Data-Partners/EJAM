@@ -111,6 +111,7 @@ if (!isTRUE(getOption("EJAM.readr_warmed_for_tests"))) {
   options(EJAM.readr_warmed_for_tests = TRUE)
 
   tf <- tempfile(fileext = ".csv")
+  on.exit(unlink(tf))
   writeLines(c("x", "1"), tf)
   invisible(readr::read_csv(tf, show_col_types = FALSE))
   unlink(tf)
