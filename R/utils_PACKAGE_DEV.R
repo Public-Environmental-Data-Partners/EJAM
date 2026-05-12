@@ -274,6 +274,8 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 #' utility - Helper for find_in_files()
 #'
 #' @details
+#' Search an in-memory character vector line by line
+#'
 #'  This is somewhat like grepv() but with these options:
 #'  option to return numbers of the elements or line numbers as names of the output vector
 #'  option to ignore commented-out lines of code (if searching with in lines of code)
@@ -297,8 +299,6 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 #' @inherit grepn seealso
 #'
 #' @keywords internal
-#'
-#' Search an in-memory character vector line by line
 #'
 #' @description Internal helper used by [find_in_files()] to search text that is
 #'   already in memory, such as the output of [readLines()].

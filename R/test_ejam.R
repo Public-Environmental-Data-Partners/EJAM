@@ -202,7 +202,7 @@ x <- EJAM:::test_ejam(
         "test-FIPS_FUNCTIONS.R",
         "test-state_from_fips_bybg.R",
         "test-state_from_latlon.R",
-        "test-is.numeric.text.R",
+        "test-is.numerictext.R",
         "test-fips2countyfips.R",
         "test-fips_bg_from_latlon.R",
 
@@ -492,7 +492,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-shapes_from_fips.R", "test-ejam2shapefile.R", "test-latlon_from_shapefile.R",
               "test-shape2geojson.R", "test-shape2zip.R", "test-shapefile_xyz.R",
               "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R", "test-fips_bg_from_latlon.R",
-              "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R", "test-is.numeric.text.R",
+              "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R", "test-is.numerictext.R",
               "test-latlon_from_fips.R", "test-state_from_fips_bybg.R", "test-state_from_latlon.R",
               "test-acs_bybg.R", "test-acs_endyear.R", "test-calc_bg_acsdata.R",
               "test-calc_bg_extra_indicators.R", "test-calc_byformula.R", "test-calc_ejscreen_dataset.R",

@@ -33,6 +33,8 @@ Internal helper used by \code{\link[=find_in_files]{find_in_files()}} to search 
 already in memory, such as the output of \code{\link[=readLines]{readLines()}}.
 }
 \details{
+Search an in-memory character vector line by line
+
 This is somewhat like grepv() but with these options:
 option to return numbers of the elements or line numbers as names of the output vector
 option to ignore commented-out lines of code (if searching with in lines of code)
@@ -57,11 +59,4 @@ xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   x
 \seealso{
 \code{\link[=find_in_files]{find_in_files()}} \code{\link[=grepn]{grepn()}} \code{\link[=grepns]{grepns()}} \code{\link[=grepls]{grepls()}}
 }
-\keyword{Search}
-\keyword{an}
-\keyword{by}
-\keyword{character}
-\keyword{in-memory}
 \keyword{internal}
-\keyword{line}
-\keyword{vector}

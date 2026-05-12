@@ -555,7 +555,7 @@ fill_tbl_full_subgroups <- function(output_df,
 
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
-#' @param diesel_caveat
+#' @param diesel_caveat character string text
 #'
 #' @keywords internal
 #'
@@ -1443,7 +1443,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   } else {
     if (length(radius) > 1) {stop("radius must be a single value")}
     if (is.na(radius) || radius == "") {warning("radius should not be NA or '' "); radius <- NULL}
-    if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
+    if (is.numerictext(radius)) {radius <- as.numeric(radius)}
     if (is.numeric(radius)) {
       digits <- table_rounding_info("radius.miles")
       radius <- round(radius, digits)

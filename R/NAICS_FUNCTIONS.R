@@ -533,7 +533,7 @@ naics_download <- function(year = NULL,
 #' NAICS - Try to extract which NAICS could be affected by a rule published in the Federal Register
 #' by reading the NAICS listed near the top of the preamble - DRAFT WORK IN PROGRESS
 #'
-#' @param naics_text_copy_from_fr
+#' @param naics_text_copy_from_fr character string text
 #'
 #' @keywords internal
 #'
