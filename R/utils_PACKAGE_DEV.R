@@ -115,8 +115,8 @@
 #' @details
 #' EJAM:::pkg_ver() is very similar to [golem::pkg_version()]
 #'
-#' By default (if local_source_only=F) looks at installed version
-#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#' By default (if local_source_only = FALSE) looks at installed version
+#' but if load_all() was used (and local_source_only = FALSE), it looks at local source as loaded by load_all().
 #'
 #' @keywords internal
 #' @noRd
@@ -171,8 +171,8 @@ pkg_ver = function(short = FALSE, local_source_only = FALSE, package="EJAM") {
 #' @returns desc package object that is from DESCRIPTION file,
 #'   or just the specified field, or NULL if not found
 #' @details
-#' By default (if local_source_only=F) looks at installed version
-#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#' By default (if local_source_only = FALSE) looks at installed version
+#' but if load_all() was used (and local_source_only = FALSE), it looks at local source as loaded by load_all().
 #'
 #' @keywords internal
 #' @noRd
@@ -288,11 +288,11 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 #'
 #' xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
 #'
-#'  cbind(xx, grep_lines("ej", xx, ignorecomments = TRUE,  value = F))
-#'  cbind(xx, grep_lines("ej", xx, ignorecomments = FALSE, value = F))
+#'  cbind(xx, grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
+#'  cbind(xx, grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
 #'
-#'  cbind(  grep_lines("ej", xx, ignorecomments = TRUE,    value = T))
-#'  cbind(  grep_lines("ej", xx, ignorecomments = FALSE,   value = T))
+#'  cbind(  grep_lines("ej", xx, ignorecomments = TRUE,    value = TRUE))
+#'  cbind(  grep_lines("ej", xx, ignorecomments = FALSE,   value = TRUE))
 #'
 #' @inherit grepn seealso
 #'
@@ -355,9 +355,9 @@ grep_lines = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, va
 #' EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
 #' EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
 #'
-#' EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
-#' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
-#' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
+#' EJAM:::find_in_files("latlon_from_.{18}",    whole_line = FALSE)
+#' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = FALSE)
+#' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = FALSE)
 #'
 #' ## useful reminders of how to filter lines of code vs comments when using find_in_files()
 #'
@@ -512,7 +512,7 @@ find_in_files <- function(pattern,
 #' and note TRUE IS NOT DEFAULT IN find_in_files() but is here
 #' @param ... passed to `find_in_files()` can be ignore.case, filename_pattern, etc.
 #' @examples
-#'   EJAM:::found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+#'   EJAM:::found_in_files(c("gray", "grey"), quiet = FALSE, ignore.case = FALSE)
 #' @details Uses [find_in_files()] once for each element of `pattern_vector`.
 #'
 #' @return Logical vector, one element per search term in `pattern_vector`.
@@ -592,7 +592,7 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #' @param pkg name of package as character like "EJAM"
 #' @param alphasort_table default is FALSE, to show internal first as a group, then exported funcs, then datasets
 #' @param internal_included default TRUE includes internal (unexported) objects in the list
-#' @param exportedfuncs_included default TRUE includes exported functions (non-datasets, actually) in the list (unless functions_included=F)
+#' @param exportedfuncs_included default TRUE includes exported functions (non-datasets, actually) in the list (unless functions_included = FALSE)
 #' @param data_included default TRUE includes datasets in the output, as would be seen via data(package=pkg)
 #' @param functions_included default TRUE includes functions in the output
 #' @param vectoronly set to TRUE to just get a character vector of object names instead of the data.frame table output
@@ -605,7 +605,7 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #'
 #'  # some way to see what functions are in the package:
 #'
-#'  x1 <- EJAM:::pkg_functions_and_data(data_included=F, vectoronly=T)
+#'  x1 <- EJAM:::pkg_functions_and_data(data_included = FALSE, vectoronly = TRUE)
 #'  x2 <- EJAM:::pkg_functions_and_sourcefiles()
 #'  info3 <- capture.output({ x3 <- EJAM:::pkg_functions_by_roxygen_tag() })
 #'  info4 <- capture.output({ x4 <- EJAM:::pkg_functions_found_in_files() })
@@ -621,31 +621,31 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #'  extra <- capture.output({
 #'    funcs <- EJAM:::pkg_functions_found_in_files()
 #'  }); rm(extra)
-#'  sapply(terms, function(term) {cbind(grep(term, funcs, value=T))})
+#'  sapply(terms, function(term) {cbind(grep(term, funcs, value = TRUE))})
 #'
 #'  # See FILE names that use certain words - Useful view
 #'
-#'  # list.files(recursive = T, pattern = "^datacreate")
-#'  list.files(recursive = T, pattern = "^util.*R$")
+#'  # list.files(recursive = TRUE, pattern = "^datacreate")
+#'  list.files(recursive = TRUE, pattern = "^util.*R$")
 #'  sapply(setdiff(terms, 'name'), function(term) {
-#'    list.files(recursive = T, pattern = paste0(term, ".*R$"))
+#'    list.files(recursive = TRUE, pattern = paste0(term, ".*R$"))
 #'  })
 #'
 #'  # See DATASET names that use certain words - Useful view
 #'
-#'  dat <- EJAM:::pkg_functions_and_data(functions_included = F, vectoronly = T)
+#'  dat <- EJAM:::pkg_functions_and_data(functions_included = FALSE, vectoronly = TRUE)
 #'  terms1 = "formula"
-#'  cat("DATA OBJECTS \n"); grep(terms1, dat, value=T)
-#'  cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=T), "()")
+#'  cat("DATA OBJECTS \n"); grep(terms1, dat, value=TRUE)
+#'  cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=TRUE), "()")
 #'
 #'  terms1="calc"
-#'  cat("DATA OBJECTS \n"); grep(terms1, dat, value=T)
-#'  cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=T), "()")
+#'  cat("DATA OBJECTS \n"); grep(terms1, dat, value=TRUE)
+#'  cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=TRUE), "()")
 #'
 #'  # some ways to to see what datasets are in the EJAM package:
 #'
-#'   yo <- EJAM:::pkg_functions_and_data(functions_included = F, vectoronly = T)
-#'   x  <- EJAM:::pkg_data("EJAM", simple = F)
+#'   yo <- EJAM:::pkg_functions_and_data(functions_included = FALSE, vectoronly = TRUE)
+#'   x  <- EJAM:::pkg_data("EJAM", simple = FALSE)
 #'   setequal(x$Item, yo)
 #'
 #'  # Plot showing that just a couple of large datasets
@@ -653,14 +653,14 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #'
 #'   biggest = x$Item[which.max(x$sizen)]
 #'   bigp = round(100 * x$sizen[which.max(x$sizen)] / sum(x$sizen), 0)
-#'   plot(cumsum(  sort(x$sizen,decreasing = T )) / sum(x$sizen),
+#'   plot(cumsum(  sort(x$sizen,decreasing = TRUE )) / sum(x$sizen),
 #'        ylim=c(0,1), ylab="Share of total size", xlab="datasets sorted large to small", type = 'b',
 #'             main= paste0(biggest, " alone is ", bigp,"% of total"))
 #'             abline(v=0);abline(h=0);abline(h=1);abline(v=length(x$sizen))
 #'
 #'   subset(x, x$size >= 0.1) # at least 100 KB
 #'   xo <- x$Item
-#'   grep("names_", xo, value = T, ignore.case = T, invert = T) # most were like names_d, etc.
+#'   grep("names_", xo, value = TRUE, ignore.case = TRUE, invert = TRUE) # most were like names_d, etc.
 #'   ls()
 #'   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
 #'   ls()
@@ -673,11 +673,11 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #'  head(EJAM:::pkg_data())
 #'  # not actually sorted by default
 #'  head(EJAM:::pkg_data("EJAM")$Item)
-#'  ## EJAM:::pkg_data("MASS", simple=T)
+#'  ## EJAM:::pkg_data("MASS", simple = TRUE)
 #'
 #'  # sorted by size if simple=F
-#'  ## EJAM:::pkg_data("datasets", simple=F)
-#'  x <- EJAM:::pkg_data(simple = F)
+#'  ## EJAM:::pkg_data("datasets", simple = FALSE)
+#'  x <- EJAM:::pkg_data(simple = FALSE)
 #'  # sorted by size already, to see largest ones among all these pkgs:
 #'  tail(x[, 1:3], 20)
 #'
@@ -695,10 +695,10 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #' topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
 #'
 #' # datasets / R objects
-#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
+#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = TRUE)))
 #'
 #' # files
-#' cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+#' cbind(files.in.package = sort(basename(testdata(topic, quiet = TRUE))))
 #'
 #'
 #' @keywords internal
@@ -836,7 +836,7 @@ pkg_functions_and_data <- function(pkg = "EJAM",
 #' @param pkg a character vector giving the package(s) to look in for data sets
 #' @param len Only affects what is printed to console - specifies the
 #'   number of characters to limit Title to, making it easier to see in the console.
-#' @param sortbysize if TRUE (and simple=F),
+#' @param sortbysize if TRUE (and simple = FALSE),
 #'   sort by increasing size of object, within each package, not alpha.
 #' @param simple FALSE to get object sizes, etc., or
 #'    TRUE to just get names in each package, like

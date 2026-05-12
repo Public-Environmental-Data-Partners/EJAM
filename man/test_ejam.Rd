@@ -31,15 +31,15 @@ test_ejam(
 \item{noquestions}{logical, whether to avoid questions later on about where to save shapefiles}
 
 \item{useloadall}{logical, TRUE means use \code{\link[pkgload:load_all]{pkgload::load_all()}}, FALSE means use \code{\link[=library]{library()}}.
-But useloadall=T is essential actually, for unexported functions to be found when they are tested!}
+But useloadall = TRUE is essential actually, for unexported functions to be found when they are tested!}
 
 \item{y_skipbasic}{logical, if FALSE, runs some basic \code{\link[=ejamit]{ejamit()}} functions, but NOT any unit tests.}
 
-\item{y_latlon}{logical, if y_skipbasic=F, whether to run the basic \code{\link[=ejamit]{ejamit()}} using points}
+\item{y_latlon}{logical, if y_skipbasic = FALSE, whether to run the basic \code{\link[=ejamit]{ejamit()}} using points}
 
-\item{y_shp}{logical, if y_skipbasic=F, whether to run the basic \code{\link[=ejamit]{ejamit()}} using shapefile}
+\item{y_shp}{logical, if y_skipbasic = FALSE, whether to run the basic \code{\link[=ejamit]{ejamit()}} using shapefile}
 
-\item{y_fips}{logical, if y_skipbasic=F, whether to run the basic \code{\link[=ejamit]{ejamit()}} using FIPS}
+\item{y_fips}{logical, if y_skipbasic = FALSE, whether to run the basic \code{\link[=ejamit]{ejamit()}} using FIPS}
 
 \item{y_coverage_check}{logical, whether to show simple lists of
 which functions might not have unit tests, just based on matching source file and test file names.}
@@ -49,10 +49,10 @@ which functions might not have unit tests, just based on matching source file an
 
 \item{y_runsome}{logical, whether to run only some groups of tests (so y_runall is FALSE)}
 
-\item{run_these}{if y_runsome = T, a vector of group names to test, like 'fips', 'naics', etc.
+\item{run_these}{if y_runsome = TRUE, a vector of group names to test, like 'fips', 'naics', etc.
 see source code for list}
 
-\item{skip_these}{if y_runall = T, a vector of group names to skip, like 'fips', 'naics', etc.}
+\item{skip_these}{if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.}
 
 \item{y_seeresults}{logical, whether to show results in console}
 
@@ -88,9 +88,9 @@ Note these require installing the package \href{https://testthat.r-lib.org}{test
 \dontrun{
 biglist <- EJAM:::test_ejam()
 
-biglist <- EJAM:::test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
-biglist <- EJAM:::test_ejam(ask = F,
-      y_runsome = T, run_these = c('test', 'maps'),
+biglist <- EJAM:::test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
+biglist <- EJAM:::test_ejam(ask = FALSE,
+      y_runsome = TRUE, run_these = c('test', 'maps'),
       mydir = "~/../Downloads/unit testing") # for example
 
   }

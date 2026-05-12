@@ -18,19 +18,19 @@
 #' @param ask logical, whether it should ask in RStudio what parameter values to use
 #' @param noquestions logical, whether to avoid questions later on about where to save shapefiles
 #' @param useloadall logical, TRUE means use [pkgload::load_all()], FALSE means use [library()].
-#'   But useloadall=T is essential actually, for unexported functions to be found when they are tested!
+#'   But useloadall = TRUE is essential actually, for unexported functions to be found when they are tested!
 #' @param y_skipbasic logical, if FALSE, runs some basic [ejamit()] functions, but NOT any unit tests.
-#' @param y_latlon logical, if y_skipbasic=F, whether to run the basic [ejamit()] using points
-#' @param y_shp logical, if y_skipbasic=F, whether to run the basic [ejamit()] using shapefile
-#' @param y_fips logical, if y_skipbasic=F, whether to run the basic [ejamit()] using FIPS
+#' @param y_latlon logical, if y_skipbasic = FALSE, whether to run the basic [ejamit()] using points
+#' @param y_shp logical, if y_skipbasic = FALSE, whether to run the basic [ejamit()] using shapefile
+#' @param y_fips logical, if y_skipbasic = FALSE, whether to run the basic [ejamit()] using FIPS
 #' @param y_coverage_check logical, whether to show simple lists of
 #'   which functions might not have unit tests, just based on matching source file and test file names.
 #' @param y_runall logical, whether to run all tests instead of only some groups
 #'   (so y_runsome is FALSE)
 #' @param y_runsome logical, whether to run only some groups of tests (so y_runall is FALSE)
-#' @param run_these if y_runsome = T, a vector of group names to test, like 'fips', 'naics', etc.
+#' @param run_these if y_runsome = TRUE, a vector of group names to test, like 'fips', 'naics', etc.
 #'   see source code for list
-#' @param skip_these if y_runall = T, a vector of group names to skip, like 'fips', 'naics', etc.
+#' @param skip_these if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
 #' @param y_seeresults logical, whether to show results in console
 #' @param y_save logical, whether to save files of results
 #' @param y_tempdir logical, whether to save in tempdir
@@ -39,11 +39,11 @@
 #' \dontrun{
 #' biglist <- EJAM:::test_ejam()
 #'
-#' biglist <- EJAM:::test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
+#' biglist <- EJAM:::test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
 # uses defaults, except it asks you what folder to save in
 
-#' biglist <- EJAM:::test_ejam(ask = F,
-#'       y_runsome = T, run_these = c('test', 'maps'),
+#' biglist <- EJAM:::test_ejam(ask = FALSE,
+#'       y_runsome = TRUE, run_these = c('test', 'maps'),
 #'       mydir = "~/../Downloads/unit testing") # for example
 #'
 #'   }

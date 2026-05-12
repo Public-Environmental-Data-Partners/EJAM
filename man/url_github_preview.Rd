@@ -37,9 +37,9 @@ utility to view rendered .html file stored in a github repo
 }
 \examples{
 url_github_preview(fold = "docs",
-  launch_browser = F, file = "index.html")
+  launch_browser = FALSE, file = "index.html")
 url_github_preview(fold = "docs/reference",
-  launch_browser = F, file = "ejam2excel.html")
+  launch_browser = FALSE, file = "ejam2excel.html")
 
 \dontrun{
 #   Compare versions of the HTML summary report:
@@ -54,12 +54,12 @@ vernum = paste0("v", desc::desc_get("Version", file = system.file("DESCRIPTION",
 url_github_preview(ver = vernum, fold = "inst/testdata/examples_of_output", file = myfile)
 
 # local installed version
-browseURL(testdata(myfile, quiet = T))
+browseURL(testdata(myfile, quiet = TRUE))
 browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
 
 # local source package version in checked out branch
-browseURL(testdata(myfile, quiet = T, installed = F))
-browseURL( file.path(testdatafolder(installed = F), "examples_of_output", myfile) )
+browseURL(testdata(myfile, quiet = TRUE, installed = FALSE))
+browseURL( file.path(testdatafolder(installed = FALSE), "examples_of_output", myfile) )
 }
 
 }

@@ -15,7 +15,7 @@ url_linkify(url, text, newtab = TRUE, encode = TRUE, reserved = FALSE)
 
 \item{encode}{unless set to FALSE, it uses \code{\link[utils:URLencode]{utils::URLencode()}} first}
 
-\item{reserved}{if encode=T, this parameter is passed to \code{\link[utils:URLencode]{utils::URLencode()}}}
+\item{reserved}{if encode = T, this parameter is passed to \code{\link[utils:URLencode]{utils::URLencode()}}}
 }
 \value{
 url_linkify('epa.gov','EPA') returns \verb{"<a href=\\"epa.gov\\" target=\\"_blank\\">EPA</a>"}

@@ -55,7 +55,7 @@
 #'   table(y$in_how_many_states)
 #'   y
 #'
-#'   fname = testdata("testpoints_100_sites_", quiet = T)
+#'   fname = testdata("testpoints_100_sites_", quiet = TRUE)
 #'   x = EJAM:::state_from_s2b_bysite(
 #'     getblocksnearby( latlon_from_anything(fname), quadtree = localtree))
 #'   y = read_csv_or_xl(fname)

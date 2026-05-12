@@ -68,10 +68,10 @@
 #'   )
 #'
 #' # At how many sites is at least one of these indicators at least 90th pctile nationwide?
-#' sum(EJAM:::rowMaxs2(data.frame(pctile_data)) >= 90, na.rm = T)
+#' sum(EJAM:::rowMaxs2(data.frame(pctile_data)) >= 90, na.rm = TRUE)
 #' ## or
 #' count_sites_with_n_high_scores(pctile_data, 90,
-#'   xwide = "nationwide", quiet = T)$stats[count = "1", cut = "90", stat = "cum"]
+#'   xwide = "nationwide", quiet = TRUE)$stats[count = "1", cut = "90", stat = "cum"]
 #'
 #' # see most striking stat only
 #' mx <- count_sites_with_n_high_scores(pctile_data,

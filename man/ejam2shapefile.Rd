@@ -22,12 +22,12 @@ ejam2shapefile(
 
 \item{file}{optional filename with no path, with extension one of "geojson"/"json", "shp", "zip", "kml"
 (where zip and shp both mean a .zip file that is a zipped set of .shp format files)
-Ignored if save=F.}
+Ignored if save = FALSE.}
 
 \item{folder}{optional - If omitted (and not running in shiny and if interactive() mode),
 this function prompts you to specify the folder where the file should be saved.
 If omitted and not running in shiny or not interactive() mode, it uses tempdir().
-Ignored if save=F.}
+Ignored if save = FALSE.}
 
 \item{save}{whether to save file - if FALSE, it returns the object not the file path}
 

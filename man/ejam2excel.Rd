@@ -162,7 +162,7 @@ as well as other tabs such as map, plot, notes, etc.
 # Add purple to flag indicators at 99th percentile
 ejam2excel(testoutput_ejamit_10pts_1miles,
   # View spreadsheet 1st without saving it as a file
-  launchexcel = T, save_now = F,
+  launchexcel = TRUE, save_now = FALSE,
   heatmap_cuts = c(80, 90, 95, 99),
   heatmap_colors  = c("yellow", "orange", "red", "purple"),
   # Apply heatmap to only a few of the ratio columns

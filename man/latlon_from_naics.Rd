@@ -79,7 +79,7 @@ See more about NAICS industry codes at \url{https://www.naics.com/search}
   # how many were found via each naics code?
   found = latlon_from_naics(c(211,331))
   x = table( found$naics_found, found$naics_query)
-  x = x[order(x[, 1],decreasing = T),]
+  x = x[order(x[, 1],decreasing = TRUE),]
   x
   }
 }

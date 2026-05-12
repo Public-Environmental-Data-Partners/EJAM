@@ -73,7 +73,7 @@ Helps app_server create locationstr parameter passed to \code{\link[=build_commu
  x <- EJAM:::report_residents_within_xyz(
    sitetype = out$sitetype,
    radius = out$results_overall$radius.miles,
-   nsites = NROW(out$results_bysite[out$results_bysite$valid == T, ]),
+   nsites = NROW(out$results_bysite[out$results_bysite$valid == TRUE, ]),
    area_in_square_miles = out$results_overall$area_sqmi,
    # sitenumber = 6,  # only relevant for 1-site report
    # ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id], # only relevant for 1-site report

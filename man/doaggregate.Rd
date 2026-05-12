@@ -90,7 +90,7 @@ on language, more age groups, sex, percent with disability, poverty, etc.}
 lat,lon of each site will be approximated as average of nearby blocks, although a more accurate slower way would
 be to use reported distance of each of 3 of the furthest block points and triangulate}
 
-\item{called_by_ejamit}{Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive=F)}
+\item{called_by_ejamit}{Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive = FALSE)}
 
 \item{updateProgress}{progress bar function used for shiny app}
 

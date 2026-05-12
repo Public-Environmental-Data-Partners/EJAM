@@ -132,7 +132,7 @@
 #' @param infer_sitepoints set to TRUE to try to infer the lat,lon of each site around which the blocks in sites2blocks were found.
 #'   lat,lon of each site will be approximated as average of nearby blocks, although a more accurate slower way would
 #'   be to use reported distance of each of 3 of the furthest block points and triangulate
-#' @param called_by_ejamit Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive=F)
+#' @param called_by_ejamit Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive = FALSE)
 #' @param updateProgress progress bar function used for shiny app
 #' @param silentinteractive Set to TRUE to see results in RStudio console.
 #'   Set to FALSE to prevent long output showing in console in RStudio when in interactive mode

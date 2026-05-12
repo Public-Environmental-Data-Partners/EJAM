@@ -50,7 +50,7 @@ barplot comparing groups of sites on 1 indicator, based on table of grouped site
    typeofsite <- c("A", "B", "B", "C"))
    cbind(Rows_or_length = sapply(out, NROW))
 
- ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = F)
+ ejam2barplot_sitegroups(out, "sitecount_unique", topn = 3, sortby = FALSE)
 
 }
 \seealso{

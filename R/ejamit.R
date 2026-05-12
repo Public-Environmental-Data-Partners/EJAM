@@ -20,7 +20,7 @@
 #' @param fips optional FIPS code vector to provide if using FIPS instead of sitepoints to specify places to analyze,
 #'   such as a list of US Counties or tracts. Passed to [getblocksnearby_from_fips()]
 #' @param shapefile optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
-#'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)`
+#'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)`
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
 #' @param countcols character vector of names of variables to aggregate within a buffer using a sum of counts,
@@ -66,7 +66,7 @@
 #' @param silentinteractive to prevent long output showing in console in RStudio when in interactive mode,
 #'   passed to [doaggregate()] also. app server sets this to TRUE when calling [doaggregate()] but
 #'   [ejamit()] default is to set this to FALSE when calling [doaggregate()].
-#' @param called_by_ejamit passed to doaggregate(). Set to TRUE by [ejamit()] to suppress some outputs even if ejamit(silentinteractive=F)
+#' @param called_by_ejamit passed to doaggregate(). Set to TRUE by [ejamit()] to suppress some outputs even if ejamit(silentinteractive = FALSE)
 #' @param testing used while testing this function, passed to [doaggregate()]
 #' @param showdrinkingwater T/F whether to include drinking water indicator values or display as NA. Defaults to TRUE.
 #' @param showpctowned T/f whether to include percent owner-occupied units indicator values or display as NA. Defaults to TRUE.
@@ -152,7 +152,7 @@
 #'
 #'   # Shapefile examples
 #'   out2 = ejamit(shapefile = testshapes_2, radius = 0)
-#'   out3 = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)
+#'   out3 = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)
 #'
 #'   # FIPS examples
 #'   out4 = ejamit(fips = testinput_fips_cities)

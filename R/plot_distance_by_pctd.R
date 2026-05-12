@@ -48,7 +48,7 @@
 #'  #  high within 1 mile but drops by 4 miles away
 #'  pts = testpoints_100[1,]
 #'   plot_distance_by_pctd(
-#'     getblocksnearby(pts, radius = 10, quiet = T),
+#'     getblocksnearby(pts, radius = 10, quiet = TRUE),
 #'     score_colname = "pctnhba")
 #'  #browseURL(url_ejamapi(sitepoints = pts, radius = 0.5))
 #'  #browseURL(url_ejamapi(sitepoints = pts, radius = 3))

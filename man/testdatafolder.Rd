@@ -42,7 +42,7 @@ url_github_preview(file.path(repo, "blob/main/inst/testdata", fname))
 browseURL( system.file(file.path("testdata", fname), package="EJAM") )
 
 # local source package version in checked out branch
-browseURL( file.path(testdatafolder(installed = F), fname) )
+browseURL( file.path(testdatafolder(installed = FALSE), fname) )
 }
 
 }

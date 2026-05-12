@@ -139,7 +139,7 @@ acs_clean_date = function(x) {
 #' @param guess_as_of optional alternative date to use if guessing what is available
 #'  as of this date, e.g., "2025-01-01" -- Date class like Sys.Date()
 #' @param guess_always optional, set TRUE to ignore metadata and just guess at year.
-#'  But guess_always=F is ignored if guess_census_has_published=T
+#'  But guess_always = FALSE is ignored if guess_census_has_published = TRUE
 #'
 #' @param guess_census_has_published optional, set to TRUE to guess what is the latest
 #'  end year of 5yr ACS data that Census Bureau has published on their summary file site,

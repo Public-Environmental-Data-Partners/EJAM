@@ -47,11 +47,11 @@ grep_lines("x",  c("x", "y", "has any x x xxxxx"))
 
 xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
 
- cbind(xx, grep_lines("ej", xx, ignorecomments = TRUE,  value = F))
- cbind(xx, grep_lines("ej", xx, ignorecomments = FALSE, value = F))
+ cbind(xx, grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
+ cbind(xx, grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
 
- cbind(  grep_lines("ej", xx, ignorecomments = TRUE,    value = T))
- cbind(  grep_lines("ej", xx, ignorecomments = FALSE,   value = T))
+ cbind(  grep_lines("ej", xx, ignorecomments = TRUE,    value = TRUE))
+ cbind(  grep_lines("ej", xx, ignorecomments = FALSE,   value = TRUE))
 
 }
 \seealso{

@@ -12,10 +12,10 @@
 #' EJAM:::varin_map_headernames("spanish")
 #' EJAM:::varin_map_headernames("lowinc")
 #' EJAM:::varin_map_headernames("pop")
-#' EJAM:::varin_map_headernames("POV", ignore.case = T)
-#' EJAM:::varin_map_headernames("POV", ignore.case = F)
+#' EJAM:::varin_map_headernames("POV", ignore.case = TRUE)
+#' EJAM:::varin_map_headernames("POV", ignore.case = FALSE)
 #'
-#' EJAM:::varin_map_headernames( "traffic.score", exact = T)
+#' EJAM:::varin_map_headernames( "traffic.score", exact = TRUE)
 #'
 #' EJAM:::varin_map_headernames( "traffic" )
 #'

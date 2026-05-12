@@ -67,7 +67,7 @@ calc_blockgroupstats_acs <- function(yr,
   # library(EJAM); library(dplyr); library(data.table)
 
   if (missing(yr)) {
-    yr <- acs_endyear(guess_always = T, guess_census_has_published = T)
+    yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)
   }
   if (is.null(acs_raw)) {
     ################################################### #

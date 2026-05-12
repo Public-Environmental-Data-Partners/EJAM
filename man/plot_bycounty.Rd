@@ -11,12 +11,12 @@ plot_bycounty(
   mystate = NULL,
   labeltype = NULL,
   acsinfo = NULL,
-  yr = acs_endyear()
+  yr = NULL
 )
 }
 \arguments{
-\item{x}{table that is output of acs_bycounty() i.e., output of get_acs()
-from tidycensus pkg that downloads ACS Census Bureau data via API.}
+\item{x}{table that is output of \code{\link[=acs_bycounty]{acs_bycounty()}} i.e., output of
+\code{\link[tidycensus:get_acs]{tidycensus::get_acs()}} that downloads ACS Census Bureau data via API.}
 
 \item{myvars}{optional .extracted from x, one (or more?) ACS5 variables like "B03002_001"}
 
@@ -28,10 +28,12 @@ from tidycensus pkg that downloads ACS Census Bureau data via API.}
 label_bytes(), label_number_auto(), label_number_si(), label_ordinal(),
 label_parse(), label_percent(), label_pvalue(), label_scientific()}
 
-\item{acsinfo}{large table of metadata as from load_variables function
-from tidycensus pkg}
+\item{acsinfo}{large table of metadata as from load_variables() function
+from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{yr}{like 2022, end of 5 year ACS 2018-2022}
+\item{yr}{The year that is the end of a 5 year ACS survey, such as
+2022 for the ACS covering 2018-2022.
+Default is whatever then package is currently using, per \code{\link[=acs_endyear]{acs_endyear()}}.}
 }
 \value{
 plot

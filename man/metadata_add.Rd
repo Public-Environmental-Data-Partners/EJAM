@@ -39,7 +39,7 @@ to update only the ejam_package_version attribute of every data item:
 \code{\link[=metadata_update_attr]{metadata_update_attr()}}
 
 This utility would be used in scripts in EJAM/data-raw/ to
-add metadata to objects like x before use_data(x, overwrite=T)
+add metadata to objects like x before use_data(x, overwrite = TRUE)
 
 Note that by adding attributes, this function changes a vector
 so that is.vector() will no longer be true!

@@ -20,7 +20,7 @@ fips_place_from_placename(
 
 \item{exact}{FALSE is to allow partial matching}
 
-\item{usegrep}{DRAFT PARAM if exact=T, usegrep if TRUE will use the helper function fips_place_from_placename_grep()}
+\item{usegrep}{DRAFT PARAM if exact = TRUE, usegrep if TRUE will use the helper function fips_place_from_placename_grep()}
 
 \item{verbose}{prints more to console about possible hits for each queried place name}
 }

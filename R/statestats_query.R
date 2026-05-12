@@ -132,13 +132,13 @@ statestats_means <- function(ST=unique(EJAM::statestats$REGION), varnames=c(EJAM
 #' statestats_query(varnames = 'proximity.tsdf')
 #'
 #' ## using full blockgroup dataset, not lookup tables of percentiles,
-#' blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm=T)),
+#' blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm = TRUE)),
 #'    .SDcols= c(names_d, names_e)]
 #'
 #' ##   see all total counts (not just US means),
 #' ##   residential populations including subgroups,
 #' ##   but not environmental indicators.
-#' t(blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm=T)),
+#' t(blockgroupstats[, lapply(.SD, function(x) mean(x, na.rm = TRUE)),
 #'     .SDcols= c(names_e, names_d)])
 #'
 #' }

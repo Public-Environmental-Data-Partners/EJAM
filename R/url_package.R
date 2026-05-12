@@ -31,10 +31,10 @@
 #'  url_package("docs")
 #'
 #'  url_package("code")
-#'  url_package("code", get_full_url=T)
+#'  url_package("code", get_full_url = TRUE)
 #'
 #'  url_package("data")
-#'  url_package("data", get_full_url=T)
+#'  url_package("data", get_full_url = TRUE)
 #'
 #'  url_package("docs", desc_or_alias="alias")
 #'  url_package("code", desc_or_alias="alias")

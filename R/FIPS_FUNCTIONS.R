@@ -665,13 +665,13 @@ is.island <- function(ST=NULL, statename=NULL, fips=NULL) {
 #' name2fips("rhode island")
 #' name2fips(c("delaware", "NY"))
 #' name2fips(c("Magnolia town, DE", "Delaware City city, DE"))
-#' name2fips(c('denver',  "new york" ), exact = F)
+#' name2fips(c('denver',  "new york" ), exact = FALSE)
 #' name2fips('denver,co')
 #'
 #' # Can see unexpected results depending on parameters if multiple matches exist:
-#' x1= name2fips("rochester,ny", exact = T)
-#' x2= name2fips("rochester,ny", exact = F)
-#' x3= name2fips("rochester,ny", usegrep = T)
+#' x1= name2fips("rochester,ny", exact = TRUE)
+#' x2= name2fips("rochester,ny", exact = FALSE)
+#' x3= name2fips("rochester,ny", usegrep = TRUE)
 #' x1; x2; x3 # 3 different answers
 #'
 #' @export
@@ -860,7 +860,7 @@ fips_place2placename = function(fips, append_st = TRUE) {
 #' @param place_st vector of place names in format like "yonkers, ny" or "Chelsea city, MA"
 #' @param geocoding set to TRUE to use a geocoding service to try to find hits
 #' @param exact  FALSE is to allow partial matching
-#' @param usegrep DRAFT PARAM if exact=T, usegrep if TRUE will use the helper function fips_place_from_placename_grep()
+#' @param usegrep DRAFT PARAM if exact = TRUE, usegrep if TRUE will use the helper function fips_place_from_placename_grep()
 #' @param verbose prints more to console about possible hits for each queried place name
 #' @return prints a table of possible hits but returns just the vector of fips
 #'
@@ -2003,7 +2003,7 @@ fips2ftypename <- function(fips, ftype = c('block', 'blockgroup', 'tract', 'city
 #' name2fips("Minneapolis, MN")
 #'
 #' name2fips("Anchorage, AK") # not found
-#' name2fips("Anchorage, AK", usegrep = T) # finds the city
+#' name2fips("Anchorage, AK", usegrep = TRUE) # finds the city
 #' name2fips("Anchorage municipality, AK") # finds the county of same name, not city
 #'
 #' @export

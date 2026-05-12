@@ -42,7 +42,7 @@ get assigned which colors from colorpalette}
 or to \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}} which passes it to \code{\link[leaflet:map-layers]{leaflet::addPolygons()}}, such as opacity=1}
 }
 \value{
-leaflet html widget (but if static_not_leaflet=T,
+leaflet html widget (but if static_not_leaflet = TRUE,
 returns just shapes_counties_from_countyfips(mydf$ejam_uniq_id))
 }
 \description{

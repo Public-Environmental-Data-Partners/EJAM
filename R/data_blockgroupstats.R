@@ -16,7 +16,7 @@
 #'
 #'     - The EJ Indexes (aka Summary Indexes) are calculated by EJAM based on blockgroupstats data, and are stored in a separate table, [bgej]
 #'
-#'     - The [definition of and source of data for every indicator was originally documented by EPA for EJSCREEN](`r paste0(EJAM::url_package(type = "docs", get_full_url = T), "/articles/ejscreen.html")`). Originally, the environmental, demographic, and EJ indicators/indexes and extra indicators all were provided by EPA for EJAM versions through v2.32.8 (early 2026).
+#'     - The [definition of and source of data for every indicator was originally documented by EPA for EJSCREEN](`r paste0(EJAM::url_package(type = "docs", get_full_url = TRUE), "/articles/ejscreen.html")`). Originally, the environmental, demographic, and EJ indicators/indexes and extra indicators all were provided by EPA for EJAM versions through v2.32.8 (early 2026).
 #'
 #'     - Metadata on each indicator, such as its glossary definition or long name, are stored in the EJAM package, and can be accessed with the function [varinfo()] and the dataset [map_headernames].
 #'
@@ -67,11 +67,11 @@
 #'
 #'   - OTHER KEY DATASETS:
 #'
-#'     - List of key datasets used by EJAM and details about annual updates: [technical article on updating datasets](`r paste0(EJAM::url_package(get_full_url = T, type = "docs"), "/articles/dev-update-datasets.html")`)
+#'     - List of key datasets used by EJAM and details about annual updates: [technical article on updating datasets](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "docs"), "/articles/dev-update-datasets.html")`)
 #'
-#'     - Datasets stored within the EJAM package (.rda files): [Documentation](`r paste0(EJAM::url_package(get_full_url = T, type = "docs"), "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and [access to installed data files](`r paste0(EJAM::url_package(get_full_url = T, type = "code"), "/tree/main/data")`)
+#'     - Datasets stored within the EJAM package (.rda files): [Documentation](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "docs"), "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and [access to installed data files](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "code"), "/tree/main/data")`)
 #'
-#'     - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](`r paste0(EJAM::url_package(get_full_url = T, type = "docs"), "/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files")`) and [access to downloaded data files](`r paste0(EJAM::url_package(get_full_url = T, type = "data"), "/tree/main/data")`)
+#'     - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "docs"), "/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files")`) and [access to downloaded data files](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "data"), "/tree/main/data")`)
 #'
 #'
 NULL

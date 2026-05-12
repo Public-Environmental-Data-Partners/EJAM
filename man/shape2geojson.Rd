@@ -26,8 +26,8 @@ If FALSE, output is a vector of strings.}
 If FALSE, output is a vector of filenames (saves each row of input shp as a separate file).}
 }
 \value{
-if txt=T, returns geojson text string(s) for the input spatial data.frame
-if txt=F, returns file path/name(s) of .geojson file(s).
+if txt = TRUE, returns geojson text string(s) for the input spatial data.frame
+if txt = FALSE, returns file path/name(s) of .geojson file(s).
 }
 \description{
 convert spatial data.frame to a vector of geojson text strings
@@ -36,7 +36,7 @@ convert spatial data.frame to a vector of geojson text strings
 helper for \code{\link[=url_ejamapi]{url_ejamapi()}}
 Note it removes all spaces in the string.
 
-Note that trying to use txt=T and combine_in_one_string = T for large polygons or many polygons
+Note that trying to use txt=TRUE and combine_in_one_string = TRUE for large polygons or many polygons
 would create a very long string that might exceed URL length limits for GET requests,
 if that is what you're using the text for.
 }

@@ -1,6 +1,6 @@
 
 ### Adding these functions would require the tidycensus pkg and scales and stringr
-# ## not already required by EJAM:
+# ##
 # library(tidycensus) # About 2MB (+ other pkgs it uses)
 # library(scales)
 # library(stringr)
@@ -42,34 +42,34 @@
 #'
 #'  # disability is by tract only:
 #'
-#'  cbind(unique(grep("disab", x$concept, value = T, ignore.case = T) ))
+#'  cbind(unique(grep("disab", x$concept, value = TRUE, ignore.case = TRUE) ))
 #'  # x[substr(x$name,1,6) %in% "B18101" & x$geography %in% "block group", ] |> print(n=50) # none
 #'  x[substr(x$name,1,7) %in% "B18101_"  , ] |> print(n=50)
 #'  ```
-#' @param variables Vector of variables - see get_acs from tidycensus package
-#' @param table  see get_acs from tidycensus package.
+#' @param variables Vector of variables - see [tidycensus::get_acs()]
+#' @param table  see [tidycensus::get_acs()]
 #'
 #'   EJSCREEN-relevant key tables are listed in the details section here.
 #'
 #' @param year optional, e.g., 2024 means ACS5 data covering 2020-2024.
 #'   Tries to use the most recent available if not specified.
 #' @param cache_table  see [tidycensus::get_acs()]
-#' @param output   see get_acs from tidycensus package
+#' @param output   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
 #' @param state Default is 2-character abbreviations, vector of all US States, DC, and PR.
-#' @param county   see get_acs from tidycensus package
-#' @param zcta   see get_acs from tidycensus package
-#' @param geometry   see get_acs from tidycensus package
-#' @param keep_geo_vars   see get_acs from tidycensus package
-#' @param summary_var   see get_acs from tidycensus package
-#' @param key   see get_acs from tidycensus package
-#' @param moe_level   see get_acs from tidycensus package
-#' @param survey   see get_acs from tidycensus package
-#' @param show_call   see get_acs from tidycensus package
+#' @param county   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param zcta   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param geometry   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param keep_geo_vars   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param summary_var   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param key   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param moe_level   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param survey   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param show_call   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
 #' @param geography "block group"
 #'   (but it also will recognize you meant "block group" or "tract"
 #'    if you omit the space or capitalize by accident)
 #' @param dropname whether to drop the column called NAME
-#' @param ...   see get_acs from tidycensus package
+#' @param ...   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
 #'
 #' @examples
 #' \dontrun{

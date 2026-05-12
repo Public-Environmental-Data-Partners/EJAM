@@ -35,7 +35,7 @@ The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
 
  # some way to see what functions are in the package:
 
- x1 <- EJAM:::pkg_functions_and_data(data_included=F, vectoronly=T)
+ x1 <- EJAM:::pkg_functions_and_data(data_included = FALSE, vectoronly = TRUE)
  x2 <- EJAM:::pkg_functions_and_sourcefiles()
  info3 <- capture.output({ x3 <- EJAM:::pkg_functions_by_roxygen_tag() })
  info4 <- capture.output({ x4 <- EJAM:::pkg_functions_found_in_files() })
@@ -51,31 +51,31 @@ The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
  extra <- capture.output({
    funcs <- EJAM:::pkg_functions_found_in_files()
  }); rm(extra)
- sapply(terms, function(term) {cbind(grep(term, funcs, value=T))})
+ sapply(terms, function(term) {cbind(grep(term, funcs, value = TRUE))})
 
  # See FILE names that use certain words - Useful view
 
- # list.files(recursive = T, pattern = "^datacreate")
- list.files(recursive = T, pattern = "^util.*R$")
+ # list.files(recursive = TRUE, pattern = "^datacreate")
+ list.files(recursive = TRUE, pattern = "^util.*R$")
  sapply(setdiff(terms, 'name'), function(term) {
-   list.files(recursive = T, pattern = paste0(term, ".*R$"))
+   list.files(recursive = TRUE, pattern = paste0(term, ".*R$"))
  })
 
  # See DATASET names that use certain words - Useful view
 
- dat <- EJAM:::pkg_functions_and_data(functions_included = F, vectoronly = T)
+ dat <- EJAM:::pkg_functions_and_data(functions_included = FALSE, vectoronly = TRUE)
  terms1 = "formula"
- cat("DATA OBJECTS \n"); grep(terms1, dat, value=T)
- cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=T), "()")
+ cat("DATA OBJECTS \n"); grep(terms1, dat, value=TRUE)
+ cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=TRUE), "()")
 
  terms1="calc"
- cat("DATA OBJECTS \n"); grep(terms1, dat, value=T)
- cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=T), "()")
+ cat("DATA OBJECTS \n"); grep(terms1, dat, value=TRUE)
+ cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=TRUE), "()")
 
  # some ways to to see what datasets are in the EJAM package:
 
-  yo <- EJAM:::pkg_functions_and_data(functions_included = F, vectoronly = T)
-  x  <- EJAM:::pkg_data("EJAM", simple = F)
+  yo <- EJAM:::pkg_functions_and_data(functions_included = FALSE, vectoronly = TRUE)
+  x  <- EJAM:::pkg_data("EJAM", simple = FALSE)
   setequal(x$Item, yo)
 
  # Plot showing that just a couple of large datasets
@@ -83,14 +83,14 @@ The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
 
   biggest = x$Item[which.max(x$sizen)]
   bigp = round(100 * x$sizen[which.max(x$sizen)] / sum(x$sizen), 0)
-  plot(cumsum(  sort(x$sizen,decreasing = T )) / sum(x$sizen),
+  plot(cumsum(  sort(x$sizen,decreasing = TRUE )) / sum(x$sizen),
        ylim=c(0,1), ylab="Share of total size", xlab="datasets sorted large to small", type = 'b',
             main= paste0(biggest, " alone is ", bigp,"\% of total"))
             abline(v=0);abline(h=0);abline(h=1);abline(v=length(x$sizen))
 
   subset(x, x$size >= 0.1) # at least 100 KB
   xo <- x$Item
-  grep("names_", xo, value = T, ignore.case = T, invert = T) # most were like names_d, etc.
+  grep("names_", xo, value = TRUE, ignore.case = TRUE, invert = TRUE) # most were like names_d, etc.
   ls()
   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
   ls()
@@ -103,11 +103,11 @@ The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
  head(EJAM:::pkg_data())
  # not actually sorted by default
  head(EJAM:::pkg_data("EJAM")$Item)
- ## EJAM:::pkg_data("MASS", simple=T)
+ ## EJAM:::pkg_data("MASS", simple = TRUE)
 
  # sorted by size if simple=F
- ## EJAM:::pkg_data("datasets", simple=F)
- x <- EJAM:::pkg_data(simple = F)
+ ## EJAM:::pkg_data("datasets", simple = FALSE)
+ x <- EJAM:::pkg_data(simple = FALSE)
  # sorted by size already, to see largest ones among all these pkgs:
  tail(x[, 1:3], 20)
 
@@ -125,10 +125,10 @@ The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
 topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
 
 # datasets / R objects
-cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
+cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = TRUE)))
 
 # files
-cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+cbind(files.in.package = sort(basename(testdata(topic, quiet = TRUE))))
 
 
 }

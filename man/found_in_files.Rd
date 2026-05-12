@@ -26,7 +26,7 @@ Check which search terms are found in any file
 Uses \code{\link[=find_in_files]{find_in_files()}} once for each element of \code{pattern_vector}.
 }
 \examples{
-  EJAM:::found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+  EJAM:::found_in_files(c("gray", "grey"), quiet = FALSE, ignore.case = FALSE)
 }
 \seealso{
 \code{\link[=find_in_files]{find_in_files()}} \code{\link[=found_in_N_files_T_times]{found_in_N_files_T_times()}} \code{\link[=grepn]{grepn()}} \code{\link[=grepns]{grepns()}}

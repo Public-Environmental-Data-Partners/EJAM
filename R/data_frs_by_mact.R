@@ -46,8 +46,8 @@
 #'   mact_table[order(mact_table$title),]
 #'   mycodes <- c("BBBBBB", "OOOO")
 #'   frs_by_mact[subpart %in% mycodes, ]
-#'   mact_table[grepl("smelt", mact_table$title, ignore.case = T), ]
-#'   frs_by_mact[grepl("smelt", title, ignore.case = T), ]
+#'   mact_table[grepl("smelt", mact_table$title, ignore.case = TRUE), ]
+#'   frs_by_mact[grepl("smelt", title, ignore.case = TRUE), ]
 #'   # a single site can be covered by 19 categories
 #'   frs_by_mact[, howmany := .N, by="programid"][order(howmany), ]
 #'   table(frs_by_mact[, howmany := .N, by="programid"][order(howmany), howmany])

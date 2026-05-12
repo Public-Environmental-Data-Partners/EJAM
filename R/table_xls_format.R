@@ -70,7 +70,7 @@
 #'     saveas =  "out1.xlsx")
 #'  # can just pass the whole results of ejamit(), for convenience
 #'  wb <- EJAM:::table_xls_format(testoutput_ejamit_100pts_1miles)
-#'  openxlsx::saveWorkbook(wb, file = "out2.xlsx", overwrite = T)
+#'  openxlsx::saveWorkbook(wb, file = "out2.xlsx", overwrite = TRUE)
 #' }
 #'
 #' @keywords internal

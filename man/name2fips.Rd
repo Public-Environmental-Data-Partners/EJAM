@@ -49,13 +49,13 @@ name2fips(c("de", "NY"))
 name2fips("rhode island")
 name2fips(c("delaware", "NY"))
 name2fips(c("Magnolia town, DE", "Delaware City city, DE"))
-name2fips(c('denver',  "new york" ), exact = F)
+name2fips(c('denver',  "new york" ), exact = FALSE)
 name2fips('denver,co')
 
 # Can see unexpected results depending on parameters if multiple matches exist:
-x1= name2fips("rochester,ny", exact = T)
-x2= name2fips("rochester,ny", exact = F)
-x3= name2fips("rochester,ny", usegrep = T)
+x1= name2fips("rochester,ny", exact = TRUE)
+x2= name2fips("rochester,ny", exact = FALSE)
+x3= name2fips("rochester,ny", usegrep = TRUE)
 x1; x2; x3 # 3 different answers
 
 }

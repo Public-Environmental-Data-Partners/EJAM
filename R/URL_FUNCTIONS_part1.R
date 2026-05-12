@@ -98,7 +98,7 @@ url_online <- function(url = "https://ejam.policyinnovation.info") {
 #' @param text string that is label
 #' @param newtab unless set to FALSE, link opens in a new browser tab
 #' @param encode unless set to FALSE, it uses [utils::URLencode()] first
-#' @param reserved if encode=T, this parameter is passed to [utils::URLencode()]
+#' @param reserved if encode = T, this parameter is passed to [utils::URLencode()]
 #' @return url_linkify('epa.gov','EPA') returns `"<a href=\"epa.gov\" target=\"_blank\">EPA</a>"`
 #' @seealso [enurl()]
 #' @details

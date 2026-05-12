@@ -48,9 +48,9 @@ EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
 EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
 EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
 
-EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
-EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
-EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
+EJAM:::find_in_files("latlon_from_.{18}",    whole_line = FALSE)
+EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = FALSE)
+EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = FALSE)
 
 ## useful reminders of how to filter lines of code vs comments when using find_in_files()
 

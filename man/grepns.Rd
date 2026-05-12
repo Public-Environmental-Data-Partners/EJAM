@@ -30,22 +30,22 @@ Count matches for multiple patterns across a character vector
 }
 \examples{
  grepn("x", c("0 abc", "1 uppercase X", "1 xyz", "2 xx", "3 x x x"))
- grepn("x", c("0 abc", "1 uppercase X", "1 xyz", "2 xx", "3 x x x"), ignore.case = F)
+ grepn("x", c("0 abc", "1 uppercase X", "1 xyz", "2 xx", "3 x x x"), ignore.case = FALSE)
 
  grepns(c("x", "y"), c("yes", "yx", "this 1 has some x x xxxxx"))
  grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
-         rowperx = T, count1perx=T)
+         rowperx = TRUE, count1perx = TRUE)
  grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
-         rowperx = F, count1perx=T)
+         rowperx = FALSE, count1perx = TRUE)
  grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
-         rowperx = T, count1perx=F)
+         rowperx = TRUE, count1perx = FALSE)
  grepns(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
-         rowperx = F, count1perx=F)
+         rowperx = FALSE, count1perx = FALSE)
 
  grepls(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
-   rowperx = T)
+   rowperx = TRUE)
  grepls(c("hi", "other", 'x'), c("said hi ther hi hi hi e", 'hi', 'another', 'none'),
-   rowperx = F)
+   rowperx = FALSE)
 
 
 }

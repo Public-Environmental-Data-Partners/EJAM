@@ -324,7 +324,7 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 #'   percentile of blockgroups in the US (or the State, depending on colorvarname).
 #'
 #' @seealso [mapfastej()] [map_shapes_leaflet()]
-#' @return leaflet html widget (but if static_not_leaflet=T,
+#' @return leaflet html widget (but if static_not_leaflet = TRUE,
 #'   returns just shapes_counties_from_countyfips(mydf$ejam_uniq_id))
 #' @examples \donttest{
 #' myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
@@ -504,7 +504,7 @@ map_shapes_plot <- function(shapes, main = "Selected Census Units", ...) {
 #' out = testoutput_ejamit_10pts_1miles
 #' out$results_bysite = out$results_bysite[1:2,]
 #' map_shapes_leaflet(
-#'   ejam2shapefile(out, save=F),
+#'   ejam2shapefile(out, save = FALSE),
 #'   popup = popup_from_ejscreen(out$results_bysite)
 #' )
 #'
@@ -721,7 +721,7 @@ if (FALSE) {
 #'
 #' out = ejamit(testpoints_10[1,], radius = 20)
 #' map_shapes_mapview(
-#'   ejam2shapefile(out, save=F),
+#'   ejam2shapefile(out, save = FALSE),
 #'   popup = popup_from_ejscreen(out$results_bysite)
 #' )
 #'

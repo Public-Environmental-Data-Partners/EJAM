@@ -376,7 +376,7 @@ ejamit_compare_distances2plot <- function(results_bydistance,
 #' @return text vector length n, naming which indicators most strongly
 #'   increase as you get closer to the site(s)
 #' @examples
-#' out = ejamit_compare_distances(testpoints_10, radii = 1:2, plot = F)
+#' out = ejamit_compare_distances(testpoints_10, radii = 1:2, plot = FALSE)
 #' ejam2barplot_distances(out)
 #'
 #' @export

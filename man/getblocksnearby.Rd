@@ -63,7 +63,7 @@ columns named "ejam_uniq_id", "blockid", "distance", etc.
 The ejam_uniq_id represents which of the input sites is being referred to, and the table
 will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8
 were valid and had blocks identified, then the data.table here will only include ejam_uniq_id values of 5 and 8.
-This is like the output of  \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}}, or \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} if return_shp=F.
+This is like the output of  \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}}, or \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} if return_shp = FALSE.
 }
 \description{
 Get distance from each site (e.g., facility) to each

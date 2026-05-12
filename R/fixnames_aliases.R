@@ -50,9 +50,9 @@
 #' @examples
 #' fixnames_aliases(c("km", "kilometer", "miles", "statename", 'X', "y"))
 #' fixnames_aliases("LATITUDE")
-#' fixnames_aliases("LATITUDE", ignore.case = F)
-#' fixnames_aliases("LATITUDE", na_if_no_match = T)
-#' fixnames_aliases("LATITUDE", na_if_no_match = T, ignore.case = F)
+#' fixnames_aliases("LATITUDE", ignore.case = FALSE)
+#' fixnames_aliases("LATITUDE", na_if_no_match = TRUE)
+#' fixnames_aliases("LATITUDE", na_if_no_match = TRUE, ignore.case = FALSE)
 #' fixnames_aliases(c(NA, 1, "typo", 1:2))
 #'
 #' fixnames_aliases(c(1:4, "na", "tbd"),

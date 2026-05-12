@@ -15,24 +15,24 @@
 #' @seealso [pkg_functions_and_data()]
 #' @examples
 #' testdata('shape', quiet = TRUE)
-#' testdata('shape', quiet = T, folder_only=T)
+#' testdata('shape', quiet = TRUE, folder_only=TRUE)
 #'
-#' testdata("id", quiet = T)
-#' testdata("id", quiet = T, folder_only=T)
+#' testdata("id", quiet = TRUE)
+#' testdata("id", quiet = TRUE, folder_only=TRUE)
 #'
-#' testdata('fips', quiet = T)
-#' testdata('registryid', quiet = T)
-#' testdata("address", quiet = T)
+#' testdata('fips', quiet = TRUE)
+#' testdata('registryid', quiet = TRUE)
+#' testdata("address", quiet = TRUE)
 #'
 #' # datasets as lazyloaded objects vs. files installed with package
 #'
 #' topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
 #'
 #' # datasets / R objects
-#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
+#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = TRUE)))
 #'
 #' # files
-#' cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+#' cbind(files.in.package = sort(basename(testdata(topic, quiet = TRUE))))
 #'
 #' @keywords internal
 #' @export
@@ -125,7 +125,7 @@ testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_onl
 #' browseURL( system.file(file.path("testdata", fname), package="EJAM") )
 #'
 #' # local source package version in checked out branch
-#' browseURL( file.path(testdatafolder(installed = F), fname) )
+#' browseURL( file.path(testdatafolder(installed = FALSE), fname) )
 #' }
 #'
 #' @keywords internal

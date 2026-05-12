@@ -21,8 +21,8 @@
 #' EJAM:::colcounter_summary_cum_pct(pdata, pcuts)
 #' EJAM:::colcounter_summary_cum_pct(pdata, 5 * (10:20))
 #'
-#' x80 <- EJAM:::colcounter(pdata, threshold = 80, or.tied = T)
-#' x95 <- EJAM:::colcounter(pdata, threshold = 95, or.tied = T)
+#' x80 <- EJAM:::colcounter(pdata, threshold = 80, or.tied = TRUE)
+#' x95 <- EJAM:::colcounter(pdata, threshold = 95, or.tied = TRUE)
 #' table(x95)
 #' EJAM:::tablefixed(x95, NCOL(pdata))
 #' cbind(at80=EJAM:::tablefixed(x80, NCOL(pdata)),
@@ -120,8 +120,8 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
 #' EJAM:::colcounter_summary_cum_pct(pdata, 5 * (10:20))
 #' a3 <- colcounter_summary_all(    pdata, pcuts)
 #'
-#' x80 <- colcounter(pdata, threshold = 80, or.tied = T)
-#' x95 <- colcounter(pdata, threshold = 95, or.tied = T)
+#' x80 <- colcounter(pdata, threshold = 80, or.tied = TRUE)
+#' x95 <- colcounter(pdata, threshold = 95, or.tied = TRUE)
 #' table(x95)
 #' EJAM:::tablefixed(x95, NCOL(pdata))
 #' cbind(at80=EJAM:::tablefixed(x80, NCOL(pdata)), at95=EJAM:::tablefixed(x95, NCOL(pdata)))

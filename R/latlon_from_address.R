@@ -40,8 +40,8 @@
 #'
 #' ## see available test data objects and files:
 #'
-#' # cbind(data.in.package  = sort(grep("address", pkg_data()$Item, value = T)))
-#' # cbind(files.in.package = sort(basename(testdata('address', quiet = T))))
+#' # cbind(data.in.package  = sort(grep("address", pkg_data()$Item, value = TRUE)))
+#' # cbind(files.in.package = sort(basename(testdata('address', quiet = TRUE))))
 #'
 #' \donttest{
 #'
@@ -224,7 +224,7 @@ address_from_table_goodnames <- function(x, colnames_allowed = c('address', 'str
 #'   # #x <- geocode(eg)
 #'   # out <- ejamit(x, radius = 3)
 #'   # fname = system.file("testdata/address/testinput_address_table_9.xlsx", package="EJAM")
-#'   ## or testdata('address_table_9', quiet = T)
+#'   ## or testdata('address_table_9', quiet = TRUE)
 #'
 #' #x1 <- read_csv_or_xl(fname)
 #' #x2 <- latlon_from_anything(fname)

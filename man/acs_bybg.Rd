@@ -26,9 +26,9 @@ acs_bybg(
 )
 }
 \arguments{
-\item{variables}{Vector of variables - see get_acs from tidycensus package}
+\item{variables}{Vector of variables - see \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}}}
 
-\item{table}{see get_acs from tidycensus package.
+\item{table}{see \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}}
 
 EJSCREEN-relevant key tables are listed in the details section here.}
 
@@ -37,27 +37,27 @@ Tries to use the most recent available if not specified.}
 
 \item{cache_table}{see \code{\link[tidycensus:get_acs]{tidycensus::get_acs()}}}
 
-\item{output}{see get_acs from tidycensus package}
+\item{output}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
 \item{state}{Default is 2-character abbreviations, vector of all US States, DC, and PR.}
 
-\item{county}{see get_acs from tidycensus package}
+\item{county}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{zcta}{see get_acs from tidycensus package}
+\item{zcta}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{geometry}{see get_acs from tidycensus package}
+\item{geometry}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{keep_geo_vars}{see get_acs from tidycensus package}
+\item{keep_geo_vars}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{summary_var}{see get_acs from tidycensus package}
+\item{summary_var}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{key}{see get_acs from tidycensus package}
+\item{key}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{moe_level}{see get_acs from tidycensus package}
+\item{moe_level}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{survey}{see get_acs from tidycensus package}
+\item{survey}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
-\item{show_call}{see get_acs from tidycensus package}
+\item{show_call}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 
 \item{geography}{"block group"
 (but it also will recognize you meant "block group" or "tract"
@@ -65,7 +65,7 @@ if you omit the space or capitalize by accident)}
 
 \item{dropname}{whether to drop the column called NAME}
 
-\item{...}{see get_acs from tidycensus package}
+\item{...}{see get_acs() from the \href{https://walker-data.com/tidycensus/}{tidycensus package}}
 }
 \value{
 A \href{https://r-datatable.com}{data.table} (not tibble, and not just a data.frame)
@@ -99,7 +99,7 @@ print(mytables)
 
  # disability is by tract only:
 
- cbind(unique(grep("disab", x$concept, value = T, ignore.case = T) ))
+ cbind(unique(grep("disab", x$concept, value = TRUE, ignore.case = TRUE) ))
  # x[substr(x$name,1,6) \%in\% "B18101" & x$geography \%in\% "block group", ] |> print(n=50) # none
  x[substr(x$name,1,7) \%in\% "B18101_"  , ] |> print(n=50)
 }\if{html}{\out{</div>}}
