@@ -17,15 +17,16 @@
 #'
 #' @param myvars  optional .extracted from x, one or more ACS5 variables like "B03002_001"
 #' @param myst abbreviation of one state, like "DE"
-#' @param yr like `r acs_endyear(guess_census_has_published = TRUE)`, end of 5 year ACS `r suppressMessages({acs_yr_range(acs_endyear(guess_census_has_published = TRUE, guess_always = T))})`
+#' @param yr Default is what the package is currently using as default per [acs_endyear()].
+#'   A year like `r acs_endyear(guess_census_has_published = TRUE)`, end of 5 year ACS `r suppressMessages({acs_yr_range(acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE))})`
 #'
-#' @return tibble table from output of acs_bycounty() i.e., output of get_acs()
-#'   from tidycensus pkg
+#' @return tibble table from output of acs_bycounty() i.e., output of [tidycensus::get_acs()]
+#'
 #' @examples
 #' ## also see examples for acs_bybg()
 #' \donttest{
-#'   x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acs_endyear(guess_always = T, guess_census_has_published = T)) # nhwa
-#'   denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acs_endyear(guess_always = T, guess_census_has_published = T)) # pop
+#'   x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # nhwa
+#'   denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # pop
 #'   z = x
 #'   z$estimate = x$estimate / denom$estimate
 #'   z$moe = 0  # x$moe / denom$estimate # need to calculate using census guidance if at all
@@ -36,9 +37,12 @@
 #'
 #' @export
 #'
-acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = acs_endyear()) {
+acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = NULL) {
 
-  if (missing(yr)) {message("Using default yr of ", yr)}
+  if (missing(yr) || is.null(yr)) {
+    yr <- acs_endyear()
+    message("Using default yr of ", yr)
+  }
 
   ## This right now only works if all extra packages have been attached by hand or added to DESCRIPTION Imports
   ### ## Packages required:
@@ -55,21 +59,21 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = acs_endyear())
     warning("envt var CENSUS_API_KEY not found - tidycensus::get_acs() may require having set up a census api key - see ?tidycensus::census_api_key  ")
   }
 
-    data_county <- tidycensus::get_acs(
-      geography = "county",
-      variables = unlist(myvars),
-      state = myst,
-      year = as.numeric(yr)
-    )
-    return(data_county)
+  data_county <- tidycensus::get_acs(
+    geography = "county",
+    variables = unlist(myvars),
+    state = myst,
+    year = as.numeric(yr)
+  )
+  return(data_county)
 }
 ################################# ################################## #
 
 
 #' plot comparison of counties in 1 state, for 1 indicator (variable)
 #'
-#' @param x table that is output of acs_bycounty() i.e., output of get_acs()
-#'   from tidycensus pkg that downloads ACS Census Bureau data via API.
+#' @param x table that is output of [acs_bycounty()] i.e., output of
+#'   [tidycensus::get_acs()] that downloads ACS Census Bureau data via API.
 #' @param myvars optional .extracted from x, one (or more?) ACS5 variables like "B03002_001"
 #' @param myvarnames optional friendlier names of myvars
 #' @param mystate name of state
@@ -77,62 +81,68 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = acs_endyear())
 #'   label_bytes(), label_number_auto(), label_number_si(), label_ordinal(),
 #'   label_parse(), label_percent(), label_pvalue(), label_scientific()
 #'
-#' @param acsinfo large table of metadata as from load_variables function
-#'   from tidycensus pkg
-#' @param yr like 2022, end of 5 year ACS 2018-2022
+#' @param acsinfo large table of metadata as from load_variables() function
+#'   from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param yr The year that is the end of a 5 year ACS survey, such as
+#'   2022 for the ACS covering 2018-2022.
+#'   Default is whatever then package is currently using, per [acs_endyear()].
 #'
 #' @return plot
 #'
 #' @export
 #'
 plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate = NULL,
-                          labeltype = NULL, acsinfo = NULL, yr = acs_endyear()) {
+                          labeltype = NULL, acsinfo = NULL, yr = NULL) {
 
+  if (missing(yr) || is.null(yr)) {
+    yr <- acs_endyear()
+    message("Using default yr of ", yr)
+  }
   # if (exists("get_acs") & exists("str_remove") & exists("label_number_auto")) {  # now in Imports of DESCRIPTION file
-    # see acs_bycounty() notes
-    if (is.null(labeltype)) {labeltype <- label_number_auto()} # requires scales pkg
-    if (missing(mystate) || is.null(mystate)) {
-      mystate <- gsub("^.*, ", "", x$NAME[1])
+  # see acs_bycounty() notes
+  if (is.null(labeltype)) {labeltype <- label_number_auto()} # requires scales pkg
+  if (missing(mystate) || is.null(mystate)) {
+    mystate <- gsub("^.*, ", "", x$NAME[1])
+  }
+
+  if (length(unique(x$variable)) > 1) {stop("x$variable must be one unique variable only")}
+  if (length(myvars) > 1) {stop("myvars must be length 1")}
+
+  ### get long name of variable and of state
+  if (missing(myvarnames) || is.null(myvarnames)) {
+    if (missing(acsinfo)) {
+      cat("downloading acs variable information to get myvarnames (plain English names of variables) ... \n")
+      acsinfo <- load_variables(yr, "acs5")  # requires tidycensus package
     }
-
-    if (length(unique(x$variable)) > 1) {stop("x$variable must be one unique variable only")}
-    if (length(myvars) > 1) {stop("myvars must be length 1")}
-
-    ### get long name of variable and of state
-    if (missing(myvarnames) || is.null(myvarnames)) {
-      if (missing(acsinfo)) {
-        cat("downloading acs variable information to get myvarnames (plain English names of variables) ... \n")
-        acsinfo <- load_variables(yr, "acs5")  # requires tidycensus package
-      }
-      myvarnames <- acsinfo$label[match(myvars, acsinfo$name)]   # match is ok since each unique name should appear only once in acsinfo table.  anyDuplicated(acsinfo$name)
+    myvarnames <- acsinfo$label[match(myvars, acsinfo$name)]   # match is ok since each unique name should appear only once in acsinfo table.  anyDuplicated(acsinfo$name)
     shortname <- gsub(".*!!([^!]*)$", "\\1", myvarnames)  # e.g., Male:  or
     startofname <- gsub("(.*!!)([^!]*)$", "\\1", myvarnames) # can be ""      myvarnames <- gsub("!!", " ", myvarnames)
-      myvarnames <- gsub("^Estimate", "", myvarnames)
-    } else {
-      shortname = myvarnames
-      startofname = myvarnames
-    }
+    myvarnames <- gsub("^Estimate", "", myvarnames)
+  } else {
+    shortname = myvarnames
+    startofname = myvarnames
+  }
 
-    plot_errorbar <- ggplot2::ggplot(x,
-                            ggplot2::aes(x = estimate,
-                                y = reorder(NAME, estimate))) +
-      ggplot2::geom_errorbar(aes(xmin = estimate - moe, xmax = estimate + moe), #<<
-                             width = 0.5, linewidth = 0.5) + #<<
-      ggplot2::geom_point(color = "darkblue", size = 2) +
+  plot_errorbar <- ggplot2::ggplot(x,
+                                   ggplot2::aes(x = estimate,
+                                                y = reorder(NAME, estimate))) +
+    ggplot2::geom_errorbar(aes(xmin = estimate - moe, xmax = estimate + moe), #<<
+                           width = 0.5, linewidth = 0.5) + #<<
+    ggplot2::geom_point(color = "darkblue", size = 2) +
 
-      ggplot2::scale_x_continuous(labels = labeltype) +
+    ggplot2::scale_x_continuous(labels = labeltype) +
 
-      ggplot2::scale_y_discrete(labels = function(x) {
-        stringr::str_remove(x, paste0(" County, ", mystate))  # requires stringr package
-      }) +
-      ggplot2::labs(title = paste0(shortname, ", ", yr - 4, "-", yr," ACS"),
-                    subtitle = paste0("Counties in ", mystate),
-                    caption = "Data acquired with R and tidycensus. Error bars represent margin of error around estimates.",
-                    x = myvarnames, # startofname, # "ACS estimate",
-                    y = "") +
-      ggplot2::theme_minimal(base_size = 12)
+    ggplot2::scale_y_discrete(labels = function(x) {
+      stringr::str_remove(x, paste0(" County, ", mystate))  # requires stringr package
+    }) +
+    ggplot2::labs(title = paste0(shortname, ", ", yr - 4, "-", yr," ACS"),
+                  subtitle = paste0("Counties in ", mystate),
+                  caption = "Data acquired with R and tidycensus. Error bars represent margin of error around estimates.",
+                  x = myvarnames, # startofname, # "ACS estimate",
+                  y = "") +
+    ggplot2::theme_minimal(base_size = 12)
 
-    plot_errorbar
+  plot_errorbar
   # } else {
   #   warning("Requires the tidycensus package (and supporting packages like stringr and scales) be installed, loaded, and attached.")
   #   return(NULL)
@@ -141,7 +151,7 @@ plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate 
 ################################# ################################## #
 
 
-# yr <- acs_endyear(guess_always = T, guess_census_has_published = T))
+# yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE))
 # myvars <- "B03002_003" # c(income = "B19013_001") # works wrong if named vector now
 # myst <- "UT"
 # labeltype <- scales::label_currency() # requires scales package
