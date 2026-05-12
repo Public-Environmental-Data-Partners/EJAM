@@ -5,7 +5,7 @@
 \alias{statestats}
 \title{statestats (DATA) data.frame of 100 percentiles and means for each US State and PR and DC.}
 \format{
-An object of class \code{data.frame} with 5252 rows and 111 columns.
+An object of class \code{data.frame} with 5304 rows and 67 columns.
 }
 \usage{
 statestats
