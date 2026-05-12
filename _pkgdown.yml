@@ -361,7 +361,6 @@ reference:
   contents:
   - ejam2barplot_sites
   - plot_barplot_sites
-  - plot_lorenz_popcount_by_site
   - ejam2barplot_sitegroups
   - plot_barplot_sitegroups
 - subtitle: "Plots: Mean of each indicator as ratio to average (comparing populations/groups, comparing environmental factors, etc.)"
@@ -388,7 +387,6 @@ reference:
   - plot_distance_mean_by_group
   - plot_distance_cdf_by_group
   - plot_demogshare_by_distance
-  - plot_lorenz_distance_by_dcount
 - title: "Examples of Input & Output Data"
 - subtitle: "Finding Examples of Inputs/Outputs"
   contents:
