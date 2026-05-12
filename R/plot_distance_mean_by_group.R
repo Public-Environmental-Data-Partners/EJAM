@@ -5,7 +5,10 @@
 #' Shows distance to sites, for residents in each population group (vs everyone else).
 #'   plot_distance_mean_by_group() and plot_distance_by_group() are synonymous.
 #'
-#' @details Note that the ratio shown is a ratio of distance among others to distance of a given group,
+#' @details
+#'   For block (not just block group) resolution analysis of distance by group, see [plot_distance_by_pctd()].
+#'
+#'   Note that the ratio shown is a ratio of distance among others to distance of a given group,
 #'   so values below 1 mean the given group lives closer to facilities.
 #'   A value of 0.85 would mean the group is only 85% as far from a site as everyone else.
 #'
@@ -30,7 +33,7 @@
 #'   If returnwhat is "plotfilename" then it returns the full path including filename of a .png in a tempdir
 #'   If returnwhat is "plot" then it returns the plot object as needed for [ejam2excel()] or related functions
 #' @param graph logical optional, set to FALSE to not show the barplot and only save the file of it
-#' @seealso [distance_by_group()] [distance_by_group_plot()]
+#' @seealso [distance_by_group()] [distance_by_group_plot()]   [plot_distance_by_pctd()].
 #' @return see parameter returnwhat
 #'
 #' @aliases plot_distance_by_group

@@ -51,7 +51,7 @@ This plots one indicator value as a function of distance
 for a single population group or indicator.
 }
 \details{
-Also see \code{\link[=ejamit_compare_distances]{ejamit_compare_distances()}} for a plot  of several indicators at several distances,
+Also see \code{\link[=ejamit_compare_distances]{ejamit_compare_distances()}} for a plot of several indicators at several distances,
 but with less detailed spatial resolution (the distance increments are not as refined)!
 
 This function uses the distance of each Census block, not just block group,

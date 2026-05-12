@@ -1,7 +1,7 @@
 
 #' Ratios at each site, of avg dist of group / avg dist of everyone else near site
 #'
-#' Like [distance_by_group()] but for multiple sites - DRAFT FUNCTION
+#' Like [distance_by_group()] but for multiple sites
 #'
 #' @details There are two aspects of proximity to consider when analyzing
 #'   residential population groups within a certain fixed distance (radius) from a single
