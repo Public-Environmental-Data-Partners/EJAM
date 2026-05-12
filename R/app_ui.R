@@ -540,7 +540,7 @@ app_ui <- function(request) {
                                    12, align = 'center',
                                    br(),br(),
                                    shinycssloaders::withSpinner(
-                                     plotOutput(outputId = 'report_plot_output', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
+                                     plotOutput(outputId = 'report_plot_output', width = '100%', height = '600px')  # {{ demog_plot }} goes in .html template
                                    )
                                  )
                                ),
