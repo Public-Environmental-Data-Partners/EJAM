@@ -971,11 +971,12 @@ speed_predict_doaggregate_runtime <- function(nrows_blocks_value) {
 
   doaggregate_model_data <- data.frame(nrows_blocks = nrows_blocks_value)
 
-  predicted_doaggregate_runtime <- predict(modelDoaggregate,
-                                           newdata = doaggregate_model_data,
-                                           interval = "prediction",
-                                           level = 0.95)
-
+  predicted_doaggregate_runtime <- suppressWarnings(
+    predict(modelDoaggregate,
+            newdata = doaggregate_model_data,
+            interval = "prediction",
+            level = 0.95)
+  )
   return(predicted_doaggregate_runtime)
 }
 ############################################################################### #

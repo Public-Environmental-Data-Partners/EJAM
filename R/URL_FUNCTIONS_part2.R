@@ -1132,8 +1132,8 @@ url_county_equityatlas <- function(fips = NULL, # year = 2025,
   #    county fips (or NA if state was input), if want county report
   #    state fips (or NA if invalid ), if want state report
   # is.state <- fipstype(fips) %in% "state" # not needed actually since they are all one or other depending on statereport param
-
-  ## handle NA or length 0 ####
+## or could be a mix of types was input, and state ones become NA via fips2countyfips(fips)
+  ## handle NULL or length 0 ####
   if (is.null(fips) || length(fips) == 0) {
     urlx <- ifna
     return(urlx) # length is 0   # or # return(NULL)  ??
@@ -1578,7 +1578,7 @@ url_county_equityatlas <- function(fips = NULL, # year = 2025,
       )
     }
     # available_county_fips <- fips_counties_from_countynamefull()
-    fips_countyname_full <- fips2countyname(fips, includestate = "ST")
+   suppressWarnings({ fips_countyname_full <- fips2countyname(fips, includestate = "ST")})
     fips_countyname_without_word_county = gsub(" County", "", fips_countyname_full)
     ok_counties <- fips_countyname_without_word_county %in% available_county_names
     if (any(!ok_counties)) {message("Note some of the fips provided specify counties not found in the nationalequityatlas.org data")}
@@ -1748,9 +1748,9 @@ url_naics.com <- function(query = "",
 #' @return URL
 #' @examples
 #' url_github_preview(fold = "docs",
-#'   launch_browser = F, file = "index.html")
+#'   launch_browser = FALSE, file = "index.html")
 #' url_github_preview(fold = "docs/reference",
-#'   launch_browser = F, file = "ejam2excel.html")
+#'   launch_browser = FALSE, file = "ejam2excel.html")
 #'
 #' \dontrun{
 #' #   Compare versions of the HTML summary report:
@@ -1765,12 +1765,12 @@ url_naics.com <- function(query = "",
 #' url_github_preview(ver = vernum, fold = "inst/testdata/examples_of_output", file = myfile)
 #'
 #' # local installed version
-#' browseURL(testdata(myfile, quiet = T))
+#' browseURL(testdata(myfile, quiet = TRUE))
 #' browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
 #'
 #' # local source package version in checked out branch
-#' browseURL(testdata(myfile, quiet = T, installed = F))
-#' browseURL( file.path(testdatafolder(installed = F), "examples_of_output", myfile) )
+#' browseURL(testdata(myfile, quiet = TRUE, installed = FALSE))
+#' browseURL( file.path(testdatafolder(installed = FALSE), "examples_of_output", myfile) )
 #' }
 #'
 #' @keywords internal

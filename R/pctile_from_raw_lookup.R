@@ -266,6 +266,11 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
     # WARN if raw score < PCTILE 0, in lookup ! ####
     # WARN if a raw value < minimum raw value listed in lookup table (which should be percentile zero). Why would that table lack the actual minimum? when created it should have recorded the min of each indic in each zone as the 0 pctile for that indic in that zone.
     # *** COULD IT BE THAT UNITS ARE MISMATCHED?  e.g., QUERY IS FOR RAW VALUE OF 0.35 (FRACTION OF 1) BUT LOOKUP TABLE USES RAW VALUES LIKE 35 (PERCENT. FRACTION OF 100) ?
+    ## This DOES create a 0 PCTILE row:
+    # x = EJAM:::pctiles_lookup_create(blockgroupstats[, ..names_e])
+    ## This also should have a 0 PCTILE row:
+    # head(usastats[c('PCTILE', names_e)])
+
     belowmin <- (myvector_selection < min(myvector_lookup))
     if (any(belowmin, na.rm = TRUE)) {
       whichinterval[zone %in% z][!is.na(belowmin) & belowmin]  <- 1 # which means 0th percentile

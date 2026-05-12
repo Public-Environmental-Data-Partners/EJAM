@@ -1,6 +1,7 @@
 ACRNMS
 ACS
 AFS
+AirToxScreen
 AOI
 ArcGIS
 ArcPro
@@ -11,6 +12,7 @@ BLOCKGROUPS
 Benchmarking
 Blockgroup
 Blockgroups
+Brownfields
 CAA
 CDP
 CDPs
@@ -42,6 +44,7 @@ EJSCREEN
 EJScreen
 Ejamit's
 Env
+EnviroAtlas
 EnviroMapper
 Envt
 FFFF
@@ -52,6 +55,7 @@ FacLong
 FacName
 FeatureServer
 Fips
+GeoJSON
 GHA
 Github
 HEADERNAMES
@@ -63,6 +67,7 @@ LFS
 MACT
 MacOS
 Multisite
+NAAQS
 NAD
 NAICS
 NCOL
