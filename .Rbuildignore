@@ -10,3 +10,9 @@
 ^\.github$
 ^\.positai$
 ^\.claude$
+^data/.*[.]arrow$
+^data-raw/pipeline_outputs$
+^data-raw/pipeline_outputs/.*
+^R/_disable_autoload[.]R$
+^Rplots.pdf$
+^app.R$
