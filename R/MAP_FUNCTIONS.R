@@ -534,7 +534,14 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
   ## DROP EMPTY GEOMETRIES ####
   empty <- try(sf::st_is_empty(shapes))
   if (!inherits(empty, "try-error")) {
-    shapes = shapes[!empty, ]
+    keep <- !empty
+    if (!is.null(popup) && length(popup) == length(keep)) {
+      popup_keep <- try(popup[keep], silent = TRUE)
+      if (!inherits(popup_keep, "try-error")) {
+        popup <- popup_keep
+      }
+    }
+    shapes = shapes[keep, ]
   }
 
   if ("FIPS" %in% names(shapes) && !("pop" %in% names(shapes))) {

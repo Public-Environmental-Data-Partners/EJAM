@@ -188,7 +188,7 @@ Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/2
   so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as 
   the server now does not have to re-render report for use in spreadsheet.
   - Multisite report and spreadsheet download buttons now disabled until each is ready.
-  - Spreadsheet file is now created automatically when results are done, so it will be available immmediately if/when a user decides to download it. 
+  - Spreadsheet file is now created automatically when results are done, so it will be available immediately if/when a user decides to download it. 
   - Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
   might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
   
