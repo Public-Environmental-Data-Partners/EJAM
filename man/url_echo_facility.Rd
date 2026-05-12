@@ -49,7 +49,4 @@ Additional details...
 \seealso{
 \code{\link[=url_ejamapi]{url_ejamapi()}}  \code{\link[=url_ejscreenmap]{url_ejscreenmap()}}
 \code{\link[=url_echo_facility]{url_echo_facility()}} \code{\link[=url_frs_facility]{url_frs_facility()}}  \code{\link[=url_enviromapper]{url_enviromapper()}}
-
-\code{\link[=url_ejamapi]{url_ejamapi()}}  \code{\link[=url_ejscreenmap]{url_ejscreenmap()}}
-\code{\link[=url_echo_facility]{url_echo_facility()}} \code{\link[=url_frs_facility]{url_frs_facility()}}  \code{\link[=url_enviromapper]{url_enviromapper()}}
 }

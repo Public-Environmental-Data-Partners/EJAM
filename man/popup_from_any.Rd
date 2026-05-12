@@ -32,7 +32,7 @@ A vector of strings, one per row or map point,
 with a line break separating column elements
 }
 \description{
-Creates popup vector \code{\link[leaflet:map-layers]{leaflet::addCircles()}} or \code{\link[leaflet:map-layers]{leaflet::addPopups()}} can use.
+Creates popup vector \code{\link[leaflet:addCircles]{leaflet::addCircles()}} or \code{\link[leaflet:addPopups]{leaflet::addPopups()}} can use.
 }
 \details{
 Each popup is made from one row of the data.frame.

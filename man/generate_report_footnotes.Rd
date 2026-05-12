@@ -13,7 +13,7 @@ generate_report_footnotes(
 )
 }
 \arguments{
-\item{diesel_caveat}{}
+\item{diesel_caveat}{text}
 }
 \description{
 helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
