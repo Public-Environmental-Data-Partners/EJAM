@@ -1,4 +1,18 @@
-# THE MODULE ####
+################################################ ################################################# #
+
+# This file is draft possible module
+# for selecting sites by user typing in lat lon values
+
+# It is not yet fully developed or tested, but it is a starting point for development of this module.
+
+# see also a simpler demo in R/MODULE_latlontypedin_simple
+
+# this file ALSO HAS A LOT OF NOTES AT THE END ABOUT
+# HOW TO USE A MODULE, ETC.
+
+################################################ ################################################# #
+# ~ ####
+# MODULE ####
 
 # MODULE UI
 
@@ -17,7 +31,7 @@
 #'
 #'
 MODULE_UI_latlontypedin <- function(id) {
-  pkg_available("rhandsontable", if_not_loaded = "stop")
+  EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
   ns <- NS(id)
   tagList(
     rHandsontableOutput(outputId = ns("TYPED_IN_DATA")), # if you want to display the table output ?  needs rhandsontable pkg
@@ -42,7 +56,7 @@ MODULE_SERVER_latlontypedin <- function(id,
     id = id,
     function(input, output, session) {
       ns <- session$ns
-      pkg_available("rhandsontable", if_not_loaded = "stop")
+      EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
       output$TYPED_IN_DATA <- renderRHandsontable({ # need rhandsontable pkg
         tmp <- isolate(reactdat()) # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
         rownames(tmp) <- NULL
@@ -60,32 +74,37 @@ MODULE_SERVER_latlontypedin <- function(id,
 ################################################ ################################################# #
 
 ################################################ ################################################# #
-# . ####
-# Try it out (from a simplified app, a test version of outer overall app) ####
+# ~ ####
+
+# Setup ####
+
+# Try it out (from a simplified app, a test version of outer overall app)
 
 try_this_module_here <- FALSE # so that installation will not source this and launch the module as a mini app
-
 #   try_this_module_here <- TRUE
 if (try_this_module_here) {
-  ## Set up so it works here (if the packages were not attached, etc.) ####
+  # so it works here (if the packages were not attached, etc.)
   ## This test only would work after sourcing this whole file first, or after installing and loading EJAM to have the module and the sourcing this simplified outer overall app
-
-  cat('also see  EJAM/R/module_latlontypedin_DEMO.R \n')
-
   ## to start from a clean slate:
-
    # rm(list = ls())
    # golem::detach_all_attached()
   # pkgs <- 'EJAM'
-  # pkg_available("rhandsontable", if_not_loaded = "stop")
+  # EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
    ### pkgs <- c('shiny', 'dplyr', 'rhandsontable', 'data.table', 'leaflet', 'magrittr')
   # for (pkg in pkgs) {require(pkg, character.only = TRUE)}
    ### must attach all of those for this to work when testing the app separate from EJAM package
 
+  ################################################ ################################################# #
+  ################################################ ################################################# #
+  # ~ ####
 
-  # SIMPLIFIED OVERALL APP ####
+  # OUTER APP ####
 
-  #  UI of an overall app
+  # A SIMPLIFIED OUTER/OVERALL APP
+
+  ################################################ ################################################# #
+
+  #  UI of an OUTER app
 
   APP_UI_TEST <- function(request) {
 
@@ -103,8 +122,9 @@ if (try_this_module_here) {
       DT::DTOutput(outputId =  "typedin_as_datatable_TEST" ),
       br()
     )}
+  ################################################ ################################################# #
 
-  #  SERVER of an overall app
+  #  SERVER of an OUTER app
 
   APP_SERVER_TEST <- function(input, output, session) {
 
@@ -154,13 +174,69 @@ if (try_this_module_here) {
 
 
   } # end of test server
+  ################################################ ################################################# #
+  ################################################ ################################################# #
+  # ~ ####
 
-  ## Run the simplified app ####
+  # LAUNCH ####
 
   shinyApp(ui = APP_UI_TEST, server = APP_SERVER_TEST)
 
-
 }
+################################################ ################################################# #
+################################################ ################################################# #
+# ~ ####
+
+# TO USE IN app_server.R ####
+##
+## Module code to re-add to app_server.R when using this module
+
+## *Latitude Longitude* LOCATIONS TYPED IN (conditional panel)  ------------------------------------- - ### #
+
+# conditionalPanel(
+#   condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'latlontypedin'",
+#   ### input: Type into a table, a few facility lat/longs
+#   ## _+++ MODULE_UI_latlontypedin  ### #
+#   tags$p("Enter / View / Edit latitude(s) and longitude(s) of point(s) to analyze"),
+#   column(
+#     6,
+#     ## on button click, show modal with DT table of lat lon values
+#     actionButton(inputId = 'show_latlontypedin_module_button', label = "Enter lat lon values on screen", class = 'usa-button usa-button--outline'),
+#     shinyBS::bsModal(
+#       trigger = 'show_latlontypedin_module_button',
+#       id = 'view_latlontypedin',
+#       size = 'large',
+#       title = 'Location data',
+#       helpText('Click or double-click a cell to edit. Right-click to add/remove rows or undo. Click-drag to move a row.'),
+#       # p("Click or double-click a cell to edit."), p("Right-click to add/remove rows or undo. Click-drag to move a row."),
+#       br(),
+#
+#       MODULE_UI_latlontypedin(id = "pts_entry_table1"),  # this shows the data entry table here
+#
+#       # actionButton(inputId = 'latlontypedin_submit_button', label = 'Done entering points', class = 'usa-button usa-button--outline'),
+#       ## use download buttons for speed and handling larger data
+#       # downloadButton('download_sites_before_analysis_csv', label = 'CSV',   class = 'usa-button'),
+#       # downloadButton('download_sites_before_analysis_xl',  label = 'Excel', class = 'usa-button'),
+#       # DT::DTOutput("distTable"), # for example, you could put outputs here like this
+#       # verbatimTextOutput("test_textout"),
+#       br()
+#     ),
+#   ),
+#   # tags$span(
+#   #   tags$ul(
+#   #     tags$li('Required Columns: lat, lon'),
+#   #     tags$li('Optional Columns: siteid')
+#   #   )
+#   # ),
+#   # actionButton(inputId = 'latlon_help', label='More Info', class = 'usa-button usa-button--outline'),
+#   # HTML(latlon_help_msg)
+#   br()
+# ),     # end   latlontypedin   conditionalPanel
+################################################################# #
+# ~ ####
+
+# NOTES ####
+
 ################################################ ################################################# #
 ################################################ ################################################# #
 
@@ -208,47 +284,3 @@ shiny::testServer(app = MODULE_SERVER_latlontypedin, #  args = list(reactdat = r
                   })
 }
 ################################################ ################################################# #
-
-## Module code to re-add to app_server.R when using this module
- ## *Latitude Longitude* LOCATIONS TYPED IN (conditional panel)  ------------------------------------- - ####
-
-                    # conditionalPanel(
-                    #   condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'latlontypedin'",
-                    #   ### input: Type into a table, a few facility lat/longs
-                    #   ## _+++ MODULE_UI_latlontypedin  ####
-                    #   tags$p("Enter / View / Edit latitude(s) and longitude(s) of point(s) to analyze"),
-                    #   column(
-                    #     6,
-                    #     ## on button click, show modal with DT table of lat lon values
-                    #     actionButton(inputId = 'show_latlontypedin_module_button', label = "Enter lat lon values on screen", class = 'usa-button usa-button--outline'),
-                    #     shinyBS::bsModal(
-                    #       trigger = 'show_latlontypedin_module_button',
-                    #       id = 'view_latlontypedin',
-                    #       size = 'large',
-                    #       title = 'Location data',
-                    #       helpText('Click or double-click a cell to edit. Right-click to add/remove rows or undo. Click-drag to move a row.'),
-                    #       # p("Click or double-click a cell to edit."), p("Right-click to add/remove rows or undo. Click-drag to move a row."),
-                    #       br(),
-                    #
-                    #       MODULE_UI_latlontypedin(id = "pts_entry_table1"),  # this shows the data entry table here
-                    #
-                    #       # actionButton(inputId = 'latlontypedin_submit_button', label = 'Done entering points', class = 'usa-button usa-button--outline'),
-                    #       ## use download buttons for speed and handling larger data
-                    #       # downloadButton('download_sites_before_analysis_csv', label = 'CSV',   class = 'usa-button'),
-                    #       # downloadButton('download_sites_before_analysis_xl',  label = 'Excel', class = 'usa-button'),
-                    #       # DT::DTOutput("distTable"), # for example, you could put outputs here like this
-                    #       # verbatimTextOutput("test_textout"),
-                    #       br()
-                    #     ),
-                    #   ),
-                    #   # tags$span(
-                    #   #   tags$ul(
-                    #   #     tags$li('Required Columns: lat, lon'),
-                    #   #     tags$li('Optional Columns: siteid')
-                    #   #   )
-                    #   # ),
-                    #   # actionButton(inputId = 'latlon_help', label='More Info', class = 'usa-button usa-button--outline'),
-                    #   # HTML(latlon_help_msg)
-                    #   br()
-                    # ),     # end   latlontypedin   conditionalPanel
-                    ################################################################# #

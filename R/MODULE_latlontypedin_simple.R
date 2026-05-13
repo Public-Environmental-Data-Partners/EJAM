@@ -1,34 +1,44 @@
 ################################################ ################################################# #
-#
-# Play with a simplified, demo module similar to the MODULE_SERVER_latlontypedin module ####
 
+# This file is draft possible module
+# for selecting sites by user typing in lat lon values
+
+# It is a simplified demo very similar to the full module MODULE_SERVER_latlontypedin, but
+# this one is simpler and easier to test and understand.
+
+# It is not yet fully developed or tested, but it is a starting point for development of this module.
+
+################################################ ################################################# #
+# SETUP ####
 try_demo_module_here <-  FALSE  # try_demo_module_here <-  TRUE
+
 if (try_demo_module_here) {
-  # set up packages/functions for it to work here ####
-  # This test only would work after sourcing this whole file first
-  ################################################ #
-
-  cat('also see MODULE_latlontypedin.R \n')
-
-  ## to start from a clean slate:
-
-  golem::detach_all_attached()
-  rm(list = ls())
+  # This test only would work after sourcing this whole file first,
+  # with try_demo_module_here set to TRUE
+  ## To start from a clean slate:
+  # golem::detach_all_attached()
+  # rm(list = ls())
   pkgs <- c('shiny', 'dplyr', 'rhandsontable', 'data.table', 'leaflet')
   for (pkg in pkgs) {require(pkg, character.only = TRUE)}
-
   ################################################ ################################################# #
   ################################################ ################################################# #
+  # ~ ####
 
-  # SIMPLE DEMO MODULE ####
-  # (simpler than the full module MODULE_SERVER_latlontypedin )
+  #  MODULE ####
+
+  ################################################ #
+
+  ## module UI ### #
 
   MODULE_UI_latlontypedin_DEMO <- function(id, ...) {
     ns <- NS(id)
-    pkg_available("rhandsontable", if_not_loaded = "stop")
+    EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
     rHandsontableOutput(outputId = ns("TYPED_IN_DATA"), ...) # from rhandsontable pkg
-  }
+  } # end module ui
   ################################################ #
+
+  ## module server ### #
+
   MODULE_SERVER_latlontypedin_DEMO <-
     function(id,
              reactdat,  # a reactive object
@@ -37,7 +47,7 @@ if (try_demo_module_here) {
       moduleServer(id,
                    function(input, output, session) {
                      ns <- session$ns
-                     pkg_available("rhandsontable", if_not_loaded = "stop")
+                     EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
                      output$TYPED_IN_DATA <- renderRHandsontable({  # from rhandsontable pkg
                        tmp <- isolate(reactdat())  # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
                        rownames(tmp) <- NULL
@@ -51,14 +61,18 @@ if (try_demo_module_here) {
                      }) %>% bindEvent(input$TYPED_IN_DATA)
                      return( reactdat )
                    })
-    } # end MODULE_SERVER_latlontypedin_DEMO
+    } # end module server
+  ################################################ #
 
   ################################################ ################################################# #
+  # ~ ####
   ################################################ ################################################# #
-  #
-  # SIMPLE DEMO OVERALL APP ####
 
-  ## overall app UI
+  #  OUTER APP ####
+
+  ################################################ #
+
+  ## outer app UI
 
   APP_UI_DEMO <-  function(request) { fluidPage(
 
@@ -75,10 +89,10 @@ if (try_demo_module_here) {
     h3("Example of outer app showing live view of edited data from module"),
     tableOutput("data1"),
     br()
-  )}
+  )} # end outer app UI
   ################################################ #
 
-  ## overall app SERVER
+  ## outer app SERVER
 
   APP_SERVER_DEMO <- function(input, output) {
 
@@ -99,8 +113,7 @@ if (try_demo_module_here) {
       output$data1 <- tmp %>% renderTable()
     })
 
-
-    ## To map those points here ####
+    ## map those points, in outer app ####
 
     # output$map_typedin <- reactive(mapfast(reactive_data1()))  # would not work like this - func would need to return map not just draw it
 
@@ -125,13 +138,15 @@ if (try_demo_module_here) {
       }
     })
 
-  }
+  } # end outer app server
+  ################################################ #
+  # ~ ####
 
-  # Run the simplified app ####
+  # LAUNCH ####
 
   shinyApp(ui = APP_UI_DEMO, server = APP_SERVER_DEMO)
 
-
-
+  ################################################ ################################################# #
+  ################################################ ################################################# #
 
 }

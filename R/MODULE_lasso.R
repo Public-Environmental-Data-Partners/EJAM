@@ -1,6 +1,18 @@
 
-if ("execute this code now? during package loading?" == "yes") {
 
+## IDEA OF A LASSO TOOL FOR THE MAPS, LETTING A USER SELECT POINTS BY DRAWING AN ENCLOSURE AROUND THEM
+## AND CAPTURING THOSE PLACES (FACILITIES, SCHOOLS, WHATEVER)
+## FOR USE IN THE APP, AS A REACTIVE OUTPUT.
+##
+## THIS SHOWS THE BASIC IDEA OF
+## A LASSO TOOL IN LEAFLET, USING THE DRAW TOOLBAR FOR
+## CAPTURING MARKERS WITHIN THE DRAWN ENCLOSURE
+##
+## THIS IS JUST A STARTING POINT, TO SHOW THE IDEA AND FEASIBILITY,
+## AND THERE MAY BE BETTER WAYS TO IMPLEMENT THIS, BUT THIS IS ONE APPROACH.
+
+
+if ("execute this code now? during package loading?" == "yes") {
 
   ######################## ######################### ######################### #
   ##         source this bit to test/try it out here:
