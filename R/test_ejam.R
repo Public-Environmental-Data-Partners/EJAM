@@ -295,6 +295,7 @@ x <- EJAM:::test_ejam(
         "test-ejamit_sitetype_from_input.R",
         "test-ejamit_sitetype_from_output.R",
 
+        "test-ejam2report.R",
         "test-ejam2excel.R",
         "test-ejam2barplot_sites.R",
         "test-ejam2histogram.R"
@@ -315,7 +316,8 @@ x <- EJAM:::test_ejam(
         "test-create_filename.R",
         "test-grepn.R",
         "test-url_package.R",
-        "test-pctile_x_is_hit_by_score.R"
+        "test-pctile_x_is_hit_by_score.R",
+        "test-create_interactive_table.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",
