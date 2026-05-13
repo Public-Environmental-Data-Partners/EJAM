@@ -41,11 +41,17 @@
 #' @param input_name label used in error messages when an input is missing.
 #' @seealso [calc_ejscreen_dataset()]
 #' @return
-#'   -`EJAM:::ejscreen_pipeline_stage_names()` returns known stage names.
-#'   -`EJAM:::ejscreen_pipeline_dir()` &`EJAM:::ejscreen_pipeline_stage_path()` return paths.
-#'   -`EJAM:::ejscreen_pipeline_save()` writes data to files and returns the path.
-#'   -`EJAM:::ejscreen_pipeline_input()` & helper`EJAM:::ejscreen_pipeline_load()` read data from files or input, returns the data object.
-#'   -`EJAM:::ejscreen_pipeline_storage_backend()` checks if using AWS s3 or local folder storage, returns one of "auto", "local", "s3"
+#'   `EJAM:::ejscreen_pipeline_stage_names()` returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that `EJAM:::ejscreen_pipeline_validate()` can check if a specified stage name is valid and apply the specific validation rules for that stage
+#'
+#'   `EJAM:::ejscreen_pipeline_stage_canonical()` returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"
+#'
+#'   `EJAM:::ejscreen_pipeline_stage_path()` returns a path, with pipeline_dir as the folder(s) and filename based on stage and format (file extension), such as "some/temp/dir/ejscreen_acs_2024/bg_envirodata.csv"
+#'
+#'   `EJAM:::ejscreen_pipeline_save()` writes data to files and returns the path, with many options for file format, local vs s3, validation, etc.
+#'
+#'   `EJAM:::ejscreen_pipeline_input()` & helper `EJAM:::ejscreen_pipeline_load()` reads data from files or input, returns the data object
+#'
+#'   `EJAM:::ejscreen_pipeline_storage_backend()` checks if using AWS s3 or local folder storage, returns one of "auto", "local", "s3"
 #'
 #' @keywords internal
 #'
@@ -208,18 +214,17 @@ ejscreen_pipeline_save <- function(x,
 
   if (format == "rds") {
     saveRDS(x, file = save_path)
+
   } else if (format == "rda") {
     env <- list2env(setNames(list(x), object_name), parent = emptyenv())
     save(list = object_name, file = save_path, envir = env)
+
   } else if (format == "csv") {
-    if (!is.data.frame(x)) {
-      stop("CSV pipeline stages must be data.frame or data.table objects")
-    }
+    if (!is.data.frame(x)) {stop("CSV pipeline stages must be data.frame or data.table objects")}
     data.table::fwrite(x, file = save_path)
-  } else {
-    if (!requireNamespace("arrow", quietly = TRUE)) {
-      stop("The arrow package is required to save pipeline stages in Arrow format")
-    }
+
+  } else { # format == "arrow"
+    if (!requireNamespace("arrow", quietly = TRUE)) {stop("The arrow package is required to save pipeline stages in Arrow format")}
     arrow::write_ipc_file(x, sink = save_path)
   }
 
@@ -236,10 +241,11 @@ ejscreen_pipeline_save <- function(x,
 ################################################### #
 
 #' @rdname ejscreen_pipeline_input
+#' @param canonical_only optional logical set to TRUE in ejscreen_pipeline_stage_names() to return only the canonical versions without any aliases
 #' @keywords internal
 #'
-ejscreen_pipeline_stage_names <- function() {
-  c(
+ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
+  x = c(
     acs_raw =       "acs_raw",
     bg_acs_raw = "bg_acs_raw",    # canonical
 
@@ -273,6 +279,11 @@ ejscreen_pipeline_stage_names <- function() {
     ejscreen_export = "ejscreen_export", # canonical
     bg_ejscreen =     "bg_ejscreen"
   )
+  if (canonical_only) {
+    return(unique(as.vector(sapply(EJAM:::ejscreen_pipeline_stage_names(), EJAM:::ejscreen_pipeline_stage_canonical))))
+  } else {
+    return(x)
+  }
 }
 ################################################### #
 
@@ -293,18 +304,6 @@ ejscreen_pipeline_stage_canonical <- function(stage) {
          bg_ejscreen =         "ejscreen_export",
          stage
   )
-}
-###################################################### #
-# was unused but could be helpful for future pipeline stages that need to check for a folder of files instead of a single file
-
-#' @rdname ejscreen_pipeline_input
-#' @keywords internal
-#'
-ejscreen_pipeline_dir <- function(root = tempdir(), yr = NULL, pipeline_name = "ejscreen_acs") {
-  if (!is.null(yr)) {
-    pipeline_name <- paste0(pipeline_name, "_", yr)
-  }
-  file.path(root, pipeline_name)
 }
 ################################################### #
 

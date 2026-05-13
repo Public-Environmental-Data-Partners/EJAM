@@ -4,16 +4,27 @@
 # Run via source("data-raw/run_ejscreen_acs2024_pipeline.R")
 # Relies on calc_ejscreen_dataset() as a high-level function
 #
-# By default this writes CSV checkpoints to:
-#   data-raw/pipeline_outputs/ejscreen_acs_2024
+# Depending on specified year, storage location, and directory,
+#   this writes csv (or other format) file checkpoints to a local or aws directory such as
+#   data-raw/pipeline_outputs/ejscreen_acs_2022
+#   (as an example of local storage of the 2022 data)
+#   or
+#   s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024
+#   (as an example of S3 storage, for the 2020-2024 ACS data).
 #
 # To rerun after updated environmental indicators are available:
 #   1. Save the updated blockgroup-level environmental table as
-#      bg_envirodata.csv in the pipeline folder. It must include bgfips and
-#      pctpre1960, plus the environmental indicators to use for EJ indexes.
+#      bg_envirodata.csv (or format specified by stage_format) in the pipeline folder.
+#      It must include columns "bgfips" and
+#      "pctpre1960", plus the rest of the environmental indicators to use for EJ indexes,
+#       as specified in EJAM::names_e.
 #   2. Source this script again. Existing raw ACS and bg_acsdata checkpoints are
 #      reused, and downstream blockgroupstats/bgej/usastats/statestats are
-#      recalculated from the updated bg_envirodata.csv.
+#      recalculated from the updated file bg_envirodata.csv (or format specified by stage_format).
+#
+#  Also see ejscreen_pipeline_validate_vs_prior()
+#  for comparing the outputs of this pipeline to the prior version of the data,
+#  to help confirm that changes are as expected.
 #
 # Useful environment variables:
 
@@ -23,14 +34,16 @@
 #   EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
 
 #   CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
-#   EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
-#   EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
+
+#   EJAM_FORCE_ACS:        FALSE means reuse already-downloaded raw data. TRUE to redownload/recalculate raw ACS and bg_acsdata.
+#   EJAM_FORCE_BG_ACSDATA: FALSE means reuse already calculated bg_acsdata if it exists (even if forcing redownload of raw ACS). TRUE to rebuild bg_acsdata from saved raw ACS.
+
 #   EJAM_ACS_DOWNLOAD_TIMEOUT
 #   EJAM_ACS_DOWNLOAD_RETRIES
 
-#   EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
+#   EJAM_USE_PROVISIONAL_BG_ENVIRODATA: TRUE means reuse envt data still in EJAM::blockgroupstats. FALSE to require bg_envirodata.csv or .xyz file.
 
-#   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+#   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv or .xyz file.
 #
 ###################################################### #
 ## To check them:
@@ -47,7 +60,7 @@ print(
   )))
 )
 ###################################################### #
-# to specify those values before doing sour,
+# to specify those values
 # e.g., to run the pipeline to recreate datasets using the acs 2018-2022 survey data, with this new code
 # yr = "2022"
 # Sys.setenv(EJAM_PIPELINE_YR = yr,
@@ -55,8 +68,8 @@ print(
 #            EJAM_PIPELINE_STORAGE = "s3",
 #         ##   EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
 #         ##   EJAM_PIPELINE_STORAGE = "local",
-#            EJAM_FORCE_ACS = TRUE,
-#            EJAM_FORCE_BG_ACSDATA = TRUE
+#            EJAM_FORCE_ACS = FALSE,    # FALSE means reuse if already had downloaded.
+#            EJAM_FORCE_BG_ACSDATA = FALSE # or as needed
 # )
 ###################################################### #
 # setup ####
@@ -70,6 +83,8 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd()
 library(data.table)
 
 ## SETTINGS ####
+
+stage_format <- "csv" # options will be c("csv", "rds", "rda", "arrow")
 
 env_flag <- function(name, default = FALSE) {
   value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
@@ -132,67 +147,85 @@ print(
   ))
 )
 #################################################### #
-# to insert a pause here to confirm settings, could use this:
-if (interactive()) {
-  ready <- FALSE
-  ready <- askYesNo("Ready to run the pipeline with those settings?")
-  if (!isTRUE(ready)) {stop("halted until ready")}
-}
+## to insert a pause here to confirm settings, could use this:
+# if (interactive()) {
+#   ready <- FALSE
+#   ready <- askYesNo("Ready to run the pipeline with those settings?")
+#   if (!isTRUE(ready)) {stop("halted until ready")}
+# }
 #################################################### #
 
 ## helper functions ####
 
-stage_path <- function(stage) {
-  EJAM:::ejscreen_pipeline_stage_path(stage, pipeline_dir, format = "csv")
+####################### #
+load_file_stage <- function(stage) {
+  # this helper is shorthand, and presumes that pipeline_dir, stage_format, and pipeline_storage are defined in the environment (as they are in this script), so that you can just call load_file_stage("bg_acsdata") for example, and it will know where to look for it and what format to expect.
+  EJAM:::ejscreen_pipeline_load(stage, pipeline_dir = pipeline_dir, format = stage_format, storage = pipeline_storage)
 }
-
-load_csv_stage <- function(stage) {
-  EJAM:::ejscreen_pipeline_load(stage, pipeline_dir = pipeline_dir, format = "csv", storage = pipeline_storage)
-}
-
+####################### #
 stage_exists <- function(stage) {
-  EJAM:::ejscreen_pipeline_stage_exists(stage, pipeline_dir = pipeline_dir, format = "csv", storage = pipeline_storage)
+  # this helper is shorthand, and presumes that pipeline_dir, stage_format, and pipeline_storage are defined in the environment (as they are in this script), so that you can just call load_file_stage("bg_acsdata") for example, and it will know where to look for it and what format to expect.
+  EJAM:::ejscreen_pipeline_stage_exists(stage, pipeline_dir = pipeline_dir, format = stage_format, storage = pipeline_storage)
 }
+####################### #
+# to save validation summary, use csv format always, even if stage_format is something else, to make it easy to open and read those files.
+# to save schema info, use .txt format always, even if stage_format is something else, to make it easy to open and read those files.
+## see also # EJAM:::ejscreen_pipeline_save(x=, stage=, pipeline_dir=, format = "txt", overwrite = T, storage=)
 
-pipeline_file_path <- function(file_name) {
-  file.path(pipeline_dir, file_name)
-}
+write_pipeline_txt_or_csv <- function(x, filename, pipeline_dir, pipeline_storage) {
 
-write_pipeline_text <- function(lines, file_name) {
-  path <- pipeline_file_path(file_name)
+  # get file extension aka format from filename
+  format <- tools::file_ext(filename)
+  if (format == "txt") {
+    FUN <- writeLines
+  } else {
+    if (format == "csv") {
+      FUN <- data.table::fwrite
+    } else {
+      stop("format must be csv or txt here")
+    }
+  }
+  path <- file.path(pipeline_dir, filename)
   if (pipeline_storage == "s3") {
-    tmp <- tempfile(fileext = ".txt")
-    writeLines(lines, con = tmp)
+    tmp <- tempfile(fileext = paste0(".", format)) ###
+    FUN(x, tmp)
     EJAM:::ejscreen_pipeline_s3_upload(tmp, path)
   } else {
-    writeLines(lines, con = path)
+    FUN(x, path)
   }
   invisible(path)
 }
-
-write_pipeline_csv <- function(x, file_name) {
-  path <- pipeline_file_path(file_name)
-  if (pipeline_storage == "s3") {
-    tmp <- tempfile(fileext = ".csv")
-    fwrite(x, tmp)
-    EJAM:::ejscreen_pipeline_s3_upload(tmp, path)
-  } else {
-    fwrite(x, path)
-  }
-  invisible(path)
+####################### #
+write_pipeline_text <- function(lines, filename) {
+  write_pipeline_txt_or_csv(
+    x = lines,
+    filename = filename,
+    pipeline_dir = pipeline_dir,
+    pipeline_storage = pipeline_storage
+  )
 }
+####################### #
 # ~ ####
 ###################################################### #
 # Download ACS raw blockgroup data stage ####
 ###################################################### #
 
-if (force_acs || !stage_exists("bg_acs_raw")) {
+need_bg_acsdata <- force_bg_acsdata || !stage_exists("bg_acsdata")
+need_bg_acs_raw <- force_acs || need_bg_acsdata
+
+stagename <- "bg_acs_raw"
+message(paste0("Stage: ", stagename))
+
+bg_acs_raw <- NULL
+if (!isTRUE(need_bg_acs_raw)) {
+  message("Skipping bg_acs_raw because saved bg_acsdata exists and ACS rebuild was not requested")
+} else if (force_acs || !stage_exists(stagename)) {
   message("Creating bg_acs_raw from ACSdownload/Census files")
   bg_acs_raw <- EJAM::download_bg_acs_raw(
     yr = yr,
     pipeline_dir = pipeline_dir,
     save_stage = TRUE,
-    stage_format = "csv",
+    stage_format = stage_format,
     raw_acs_storage = "folder",
     raw_table_format = "csv",
     overwrite = TRUE,
@@ -201,49 +234,67 @@ if (force_acs || !stage_exists("bg_acs_raw")) {
     download_retries = acs_download_retries
   )
 } else {
-  message("Reusing saved bg_acs_raw")
-  bg_acs_raw <- load_csv_stage("bg_acs_raw")
+  message(paste0("Using provided/existing ", stagename))
+  bg_acs_raw <- load_file_stage(stagename)
 }
 ###################################################### #
 # Calculate ACS-based indicators, bg_acsdata stage ####
 ###################################################### #
 
 # bg_acsdata  is the cleaned/processed version of the raw ACS data that is used for calculating indicators and stats.
-# This is a separate stage because it can be time consuming to calculate and you may want to manually add other raw scores here,
+# This is a separate stage because it can be time consuming to download ACS in the prior stage and you may want to manually add other raw scores here,
 # but if you have already calculated it and saved it, you can reuse it even if you want to recalculate downstream stages like blockgroupstats or bgej.
 
-if (force_bg_acsdata || !stage_exists("bg_acsdata")) {
+stagename <- "bg_acsdata"
+message(paste0("Stage: ", stagename))
+if (isTRUE(need_bg_acsdata)) {
   message("Creating bg_acsdata from bg_acs_raw")
   bg_acsdata <- EJAM:::calc_bg_acsdata(
     yr = yr,
     acs_raw = bg_acs_raw,
     pipeline_dir = pipeline_dir,
     save_stage = FALSE,
-    stage_format = "csv",
+    stage_format = stage_format,
     overwrite = TRUE
   )
-  EJAM:::ejscreen_pipeline_save(bg_acsdata, "bg_acsdata", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
+  EJAM:::ejscreen_pipeline_save(bg_acsdata, stage = stagename, pipeline_dir = pipeline_dir, format = stage_format, overwrite = TRUE, storage = pipeline_storage)
 } else {
-  message("Reusing saved bg_acsdata")
-  bg_acsdata <- load_csv_stage("bg_acsdata")
+  message(paste0("Using provided/existing ", stagename))
+  bg_acsdata <- load_file_stage(stagename)
 }
+###################################################### #
 
 ###################################################### #
 # Environmental indicators stage - Read new or re-use existing data ####
 ###################################################### #
 
-bg_envirodata_path <- stage_path("bg_envirodata")
-if (stage_exists("bg_envirodata")) {
-  message("Using provided bg_envirodata.csv")
-  bg_envirodata <- load_csv_stage("bg_envirodata")
+## unused?
+# bg_envirodata_path <- EJAM:::ejscreen_pipeline_stage_path(stage = "bg_envirodata", pipeline_dir, format = stage_format)
+
+stagename <- "bg_envirodata"
+message(paste0("Stage: ", stagename))
+
+if (stage_exists(stagename)) {
+  message(paste0("Using provided/existing ", stagename))
+  bg_envirodata <- load_file_stage(stagename)
+
 } else if (isTRUE(use_provisional_bg_envirodata)) {
-  message("Creating PROVISIONAL bg_envirodata.csv from current package blockgroupstats")
+  message(paste0("Creating PROVISIONAL bg_envirodata.", stage_format," from current package blockgroupstats"))
+  if (!all(EJAM::names_e %in% names(EJAM::blockgroupstats))) {
+    warning("Provisional EJAM::blockgroupstats does not have all of expected env indicator columns as specified in EJAM::names_e")
+  }
   env_cols <- intersect(EJAM::names_e, names(EJAM::blockgroupstats))
   bg_envirodata <- as.data.table(EJAM::blockgroupstats)[, c("bgfips", env_cols), with = FALSE]
-  EJAM:::ejscreen_pipeline_save(bg_envirodata, "bg_envirodata", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
+  # validate the provisional copy
+  if (!isTRUE(all.equal(
+    as.data.table(EJAM::blockgroupstats)[, env_cols, with = FALSE],
+    bg_envirodata[, env_cols, with = FALSE],
+    check.attributes = FALSE
+  ))) {stop("Provisional bg_envirodata from blockgroupstats does not have the same env indicator values as EJAM::blockgroupstats")}
+  EJAM:::ejscreen_pipeline_save(bg_envirodata, stage = stagename, pipeline_dir = pipeline_dir, format = stage_format, overwrite = TRUE, storage = pipeline_storage)
   write_pipeline_text(
     c(
-      "PROVISIONAL bg_envirodata.csv",
+      paste0("PROVISIONAL bg_envirodata.", stage_format),
       "This file was copied from the currently packaged EJAM::blockgroupstats.",
       "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_acs2024_pipeline.R.",
       paste("Created:", Sys.time())
@@ -251,19 +302,21 @@ if (stage_exists("bg_envirodata")) {
     "bg_envirodata_SOURCE.txt"
   )
 } else {
-  stop("Missing bg_envirodata.csv. Save updated environmental indicators there or set EJAM_USE_PROVISIONAL_BG_ENVIRODATA=TRUE")
+  stop("Missing bg_envirodata file and use_provisional_bg_envirodata was set FALSE. Save updated environmental indicators there or set EJAM_USE_PROVISIONAL_BG_ENVIRODATA=TRUE")
 }
 
 ###################################################### #
 # Extra indicators stage - Read new or re-use existing data ####
 ###################################################### #
 
-bg_extra_indicators_path <- stage_path("bg_extra_indicators")
-if (stage_exists("bg_extra_indicators")) {
-  message("Using provided bg_extra_indicators.csv")
-  bg_extra_indicators <- load_csv_stage("bg_extra_indicators")
+stagename <- "bg_extra_indicators"
+message(paste0("Stage: ", stagename))
+
+if (stage_exists(stagename)) {
+  message(paste0("Using provided/existing ", stagename))
+  bg_extra_indicators <- load_file_stage(stagename)
 } else {
-  message("Creating bg_extra_indicators.csv from current package blockgroupstats")
+  message(paste0("Creating ", stagename, ".", stage_format," from current package blockgroupstats"))
 
   bg_extra_indicators <- EJAM:::calc_bg_extra_indicators(
 
@@ -271,13 +324,13 @@ if (stage_exists("bg_extra_indicators")) {
     reuse_existing_if_missing = TRUE,
     pipeline_dir = pipeline_dir,
     save_stage = FALSE,
-    stage_format = "csv",
+    stage_format = stage_format,
     overwrite = TRUE
   )
-  EJAM:::ejscreen_pipeline_save(bg_extra_indicators, "bg_extra_indicators", pipeline_dir, format = "csv", overwrite = TRUE, storage = pipeline_storage)
+  EJAM:::ejscreen_pipeline_save(x = bg_extra_indicators, stage = stagename, pipeline_dir = pipeline_dir, format = stage_format, overwrite = TRUE, storage = pipeline_storage)
   write_pipeline_text(
     c(
-      "PROVISIONAL bg_extra_indicators.csv",
+      paste0("PROVISIONAL bg_extra_indicators.", stage_format),
       "This file was copied from the currently packaged EJAM::blockgroupstats.",
       "Replace it with updated non-ACS, non-environmental blockgroup indicators if available, then rerun.",
       paste("Created:", Sys.time())
@@ -304,7 +357,7 @@ out <- EJAM::calc_ejscreen_dataset(
   pipeline_storage = pipeline_storage,
   save_stages = TRUE,
   use_saved_stages = FALSE,
-  stage_format = "csv",
+  stage_format = stage_format,
   raw_acs_storage = "folder",
   raw_table_format = "csv",
   download_acs_raw = FALSE,
@@ -319,6 +372,8 @@ out <- EJAM::calc_ejscreen_dataset(
 # Validation summary ####
 ###################################################### #
 
+message("Validating key stages and saving summary.")
+
 stages_to_validate <- c(
 
   # note this list of stages is not quite the same as the stages in
@@ -330,9 +385,9 @@ stages_to_validate <- c(
   "bg_envirodata", # environmental indicators (the key ones, 13 as of 2026)
   "bg_extra_indicators", # many other indicators, like % low life expectancy, etc.
 
-  # indicators dataset
-  "blockgroupstats", # includes acs, enviro, and extra_indicators, not EJ Indexes
-  "bgej",            # includes just EJ Indexes, 1 for each of the 13 environmental indicators, but each in 4 forms: US basic, US supplementary, State basic, State supplementary
+  # key indicators dataset
+  "blockgroupstats", # a final product - includes acs, enviro, and extra_indicators, not EJ Indexes
+  "bgej",            # a final product - includes just EJ Indexes, 1 for each of the 13 environmental indicators, but each in 4 forms: US basic, US supplementary, State basic, State supplementary
 
   # percentile lookup tables:
   "usastats_acs",
@@ -341,39 +396,53 @@ stages_to_validate <- c(
   "statestats_envirodata",
   "usastats_ej",
   "statestats_ej",
-  "usastats",  # combines the acs, enviro, and ej lookup tables
-  "statestats"
+  "usastats",  # a final product - combines the acs, enviro, and ej lookup tables for USA as 1 file
+  "statestats" # a final product - combines the acs, enviro, and ej lookup tables for all states as 1 file
 )
 
 if (isTRUE(include_ejscreen_export)) {
   stages_to_validate <- c(stages_to_validate, "ejscreen_export")
 }
 
-validation_summary <- rbindlist(lapply(stages_to_validate, function(stage) {
-  x <- load_csv_stage(stage)
-  result <- EJAM:::ejscreen_pipeline_validate(x, stage = stage, strict = FALSE)
-  data.table(
-    stage = stage,
-    path = stage_path(stage),
-    rows = NROW(x),
-    columns = NCOL(x),
-    errors = paste(result$errors, collapse = " | "),
-    warnings = paste(result$warnings, collapse = " | ")
-  )
-}), fill = TRUE)
+filename <- paste0("pipeline_validation_summary.", "csv")
 
-write_pipeline_csv(validation_summary, "pipeline_validation_summary.csv")
+validation_summary <- data.table::rbindlist(
+  lapply(stages_to_validate, function(stagename) {
+    x <- load_file_stage(stagename)
+    result <- EJAM:::ejscreen_pipeline_validate(x, stage = stagename, strict = FALSE)
+    data.table::data.table(
+      stage = stagename,
+      path = EJAM:::ejscreen_pipeline_stage_path(stage = stagename,
+                                                 pipeline_dir = pipeline_dir,
+                                                 format = stage_format),
+      rows = NROW(x),
+      columns = NCOL(x),
+      errors = paste(result$errors, collapse = " | "),
+      warnings = paste(result$warnings, collapse = " | ")
+    )
+  }),
+  fill = TRUE
+)
+
+write_pipeline_txt_or_csv(x = validation_summary,
+                          filename = filename,
+                          pipeline_dir = pipeline_dir,
+                          pipeline_storage = pipeline_storage)
 
 if (isTRUE(include_ejscreen_export)) {
+  filename <- paste0("ejscreen_export_schema_report.", "csv")
   ejscreen_schema_report <- EJAM:::calc_ejscreen_export_schema_report(
     ejscreen_export = out$ejscreen_export
   )
-  write_pipeline_csv(ejscreen_schema_report, "ejscreen_export_schema_report.csv")
+  write_pipeline_txt_or_csv(x = ejscreen_schema_report,
+                            filename = filename,
+                            pipeline_dir = pipeline_dir,
+                            pipeline_storage = pipeline_storage)
 }
 
 if (any(nzchar(validation_summary$errors))) {
   print(validation_summary[nzchar(errors)])
-  stop("Pipeline validation errors found. See pipeline_validation_summary.csv")
+  stop(paste0("Pipeline validation errors found. See pipeline_validation_summary file"))
 }
 
 message("Pipeline completed. Validation summary:")
@@ -383,24 +452,33 @@ message("Output folder: ", pipeline_dir)
 invisible(out)
 
 ###################################################### #
+# REPLACE /data/blockgroupstats.rda etc. if ready  ####
 
 # when ready to actually replace the old blockgroupstats dataset entirely:
 if (interactive()) {
-  if (askYesNo("ready to REPLACE data/blockgroupstats.rda in the package ? ")) {
+  if (askYesNo("ready to REPLACE data/blockgroupstats.rda, bgej.rda, usastats.rda, statestats.rda in the package ? ")) {
     blockgroupstats <- out$blockgroupstats
+    bgej <- out$bgej
+    usastats <- out$usastats
+    statestats <- out$statestats
 
     EJAM:::metadata_add_and_use_this("blockgroupstats")
+    EJAM:::metadata_add_and_use_this("bgej")
+    EJAM:::metadata_add_and_use_this("usastats")
+    EJAM:::metadata_add_and_use_this("statestats")
 
-    rm(blockgroupstats)
+    # rm(blockgroupstats, bgej, usastats, statestats)
 
-    ######################################### #
-    ### datacreate_avg.in.us.R ####
-    # rstudioapi::documentOpen("./data-raw/datacreate_avg.in.us.R")
-    ### this creates "avg.in.us" national averages of key indicators, for convenience, but also avgs are in usastats, statestats
-    source("./data-raw/datacreate_avg.in.us.R")
-    ######################################### #
-
-
-    cat("REBUILD/INSTALL THE PACKAGE NOW \n")
   }
 }
+
+# Create OTHER datasets / minor items? ####
+
+## datacreate_avg.in.us.R ####
+# rstudioapi::documentOpen("./data-raw/datacreate_avg.in.us.R")
+### this creates "avg.in.us" national averages of key indicators, for convenience, but also avgs are in usastats, statestats
+# source("./data-raw/datacreate_avg.in.us.R")
+
+## etc. ####
+
+# cat("REBUILD/INSTALL THE PACKAGE NOW \n")

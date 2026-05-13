@@ -7,7 +7,6 @@
 \alias{ejscreen_pipeline_save}
 \alias{ejscreen_pipeline_stage_names}
 \alias{ejscreen_pipeline_stage_canonical}
-\alias{ejscreen_pipeline_dir}
 \alias{ejscreen_pipeline_stage_path}
 \alias{ejscreen_pipeline_stage_exists}
 \alias{ejscreen_pipeline_storage_backend}
@@ -48,15 +47,9 @@ ejscreen_pipeline_save(
   storage = c("auto", "local", "s3")
 )
 
-ejscreen_pipeline_stage_names()
+ejscreen_pipeline_stage_names(canonical_only = FALSE)
 
 ejscreen_pipeline_stage_canonical(stage)
-
-ejscreen_pipeline_dir(
-  root = tempdir(),
-  yr = NULL,
-  pipeline_name = "ejscreen_acs"
-)
 
 ejscreen_pipeline_stage_path(
   stage,
@@ -106,6 +99,8 @@ file.}
 
 \item{validation_strict}{logical passed to \code{EJAM:::ejscreen_pipeline_validate()}.}
 
+\item{canonical_only}{optional logical set to TRUE in ejscreen_pipeline_stage_names() to return only the canonical versions without any aliases}
+
 \item{root}{root folder where the pipeline folder should be created.}
 
 \item{yr}{optional ACS end year or other year label to append to the pipeline
@@ -114,11 +109,17 @@ folder name.}
 \item{pipeline_name}{short pipeline folder name.}
 }
 \value{
--\code{EJAM:::ejscreen_pipeline_stage_names()} returns known stage names.
--\code{EJAM:::ejscreen_pipeline_dir()} &\code{EJAM:::ejscreen_pipeline_stage_path()} return paths.
--\code{EJAM:::ejscreen_pipeline_save()} writes data to files and returns the path.
--\code{EJAM:::ejscreen_pipeline_input()} & helper\code{EJAM:::ejscreen_pipeline_load()} read data from files or input, returns the data object.
--\code{EJAM:::ejscreen_pipeline_storage_backend()} checks if using AWS s3 or local folder storage, returns one of "auto", "local", "s3"
+\code{EJAM:::ejscreen_pipeline_stage_names()} returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that \code{EJAM:::ejscreen_pipeline_validate()} can check if a specified stage name is valid and apply the specific validation rules for that stage
+
+\code{EJAM:::ejscreen_pipeline_stage_canonical()} returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"
+
+\code{EJAM:::ejscreen_pipeline_stage_path()} returns a path, with pipeline_dir as the folder(s) and filename based on stage and format (file extension), such as "some/temp/dir/ejscreen_acs_2024/bg_envirodata.csv"
+
+\code{EJAM:::ejscreen_pipeline_save()} writes data to files and returns the path, with many options for file format, local vs s3, validation, etc.
+
+\code{EJAM:::ejscreen_pipeline_input()} & helper \code{EJAM:::ejscreen_pipeline_load()} reads data from files or input, returns the data object
+
+\code{EJAM:::ejscreen_pipeline_storage_backend()} checks if using AWS s3 or local folder storage, returns one of "auto", "local", "s3"
 }
 \description{
 Helpers for file-backed EJSCREEN/EJAM data update pipeline stages

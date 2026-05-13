@@ -1,18 +1,16 @@
 ###################################################### #
 
-#' Validate an EJSCREEN/EJAM pipeline stage before saving it
+#' Validate one pipeline stage before saving dataset at that stage, for EJSCREEN/EJAM data updates pipeline
 #'
 #' @details These checks are intentionally lightweight. They catch structural
 #' problems that would make the next stage fail or make a saved checkpoint
 #' misleading, without trying to be a full scientific validation report.
 #'
 #' @param x object to validate.
-#' @param stage pipeline stage name, such as `"bg_acsdata"`,
-#'   `"bg_acs_raw"`, `"blockgroupstats_acs"`, `"bg_envirodata"`, `"envirodata"`,
-#'   `"bg_extra_indicators"`, `"blockgroupstats"`, `"bgej"`, `"bg_ejindexes"`,
-#'   `"usastats_acs"`, `"statestats_acs"`, `"usastats_envirodata"`,
-#'   `"statestats_envirodata"`, `"usastats_ej"`, `"statestats_ej"`,
-#'   `"usastats"`, `"statestats"`, or `"ejscreen_export"`.
+#' @param stage pipeline stage name, must be among known stages or aliases
+#' as found in `EJAM:::ejscreen_pipeline_stage_names()` with canonical names such as
+#' `r paste0(EJAM:::ejscreen_pipeline_stage_names(canonical_only = TRUE), collapse = ", ")`
+#'
 #' @param strict logical. If TRUE, errors stop execution. Warnings are still
 #'   emitted as warnings.
 #'
@@ -21,13 +19,14 @@
 #' @keywords internal
 #'
 ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
+
   if (missing(stage) || is.null(stage) || !nzchar(stage)) {
     return(invisible(list(stage = NA_character_, errors = character(), warnings = character())))
   }
 
   errors <- character()
   warnings <- character()
-
+  # helper functions for validation ####
   add_error <- function(msg) {
     errors <<- c(errors, msg)
   }
@@ -209,6 +208,11 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     invisible(NULL)
   }
 
+  # ~ ####
+  ###################################################### #  ###################################################### #
+
+  # Validate this stage, using helpers ####
+
   known_stages <- ejscreen_pipeline_stage_names()
   canonical_stage <- ejscreen_pipeline_stage_canonical(stage)
   us_lookup_stages <- c("usastats_acs", "usastats_envirodata", "usastats_ej", "usastats")
@@ -216,8 +220,27 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
   if (!stage %in% known_stages) {
     return(invisible(list(stage = stage, errors = errors, warnings = warnings)))
   }
+  ###################################################### #
+  # basic check for all stages (except bg_acs_raw) ####
+
+  if (canonical_stage != "bg_acs_raw") {
+
+    if (!is.data.frame(x)) {
+      add_error("stage object must be a data.frame or data.table")
+    } else {
+      if (NROW(x) == 0) {
+        add_error("stage has zero rows")
+      }
+      if (NCOL(x) == 0) {
+        add_error("stage has zero columns")
+      }
+    }
+  }
+  ###################################################### #
+  # bg_acs_raw ####
 
   if (canonical_stage == "bg_acs_raw") {
+
     if (!is.list(x)) {
       add_error("bg_acs_raw must be a list")
     } else {
@@ -231,25 +254,26 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
         check_acs_raw_component("tract")
       }
     }
-  } else if (!is.data.frame(x)) {
-    add_error("stage object must be a data.frame or data.table")
-  } else {
-    if (NROW(x) == 0) {
-      add_error("stage has zero rows")
-    }
-    if (NCOL(x) == 0) {
-      add_error("stage has zero columns")
-    }
   }
-
+  ###################################################### #
   if (length(errors) == 0) {
+    # passed very basic checks, so can now try stage-specific checks
+
+    ###################################################### #
+    # bg_acsdata ####
+
     if (canonical_stage == "bg_acsdata") {
+
       has_cols(c("bgfips", "pop"))
       warn_missing_cols(c("pctmin", "pctlowinc", "pctlingiso", "pctlths", "pctdisability"))
       check_bgfips()
       check_nonnegative(c("pop"))
       check_fraction_percent_cols()
+      ###################################################### #
+      # bg_envirodata ####
+
     } else if (canonical_stage == "bg_envirodata") {
+
       has_cols(c("bgfips", "pctpre1960"))
       check_bgfips()
       expected_env <- if (exists("names_e")) names_e else character()
@@ -257,7 +281,11 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
         add_warning("bg_envirodata has none of the expected environmental indicator columns in names_e")
       }
       check_all_na_numeric(setdiff(names(x), "bgfips"))
+      ###################################################### #
+      # bg_extra_indicators ####
+
     } else if (canonical_stage == "bg_extra_indicators") {
+
       has_cols(c("bgfips", "lowlifex"))
       check_bgfips()
       expected_extra <- attr(x, "extra_indicator_vars", exact = TRUE)
@@ -266,7 +294,11 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       }
       warn_missing_cols(expected_extra)
       check_all_na_numeric(setdiff(names(x), "bgfips"))
+      ###################################################### #
+      # blockgroupstats ####
+
     } else if (canonical_stage == "blockgroupstats") {
+
       required <- c(
         "bgfips", "bgid", "ST", "statename", "REGION", "pop",
         "Demog.Index", "Demog.Index.Supp",
@@ -280,7 +312,11 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       expected_env <- if (exists("names_e")) names_e else character()
       warn_missing_cols(expected_env)
       check_fraction_percent_cols()
+      ###################################################### #
+      # bgej ####
+
     } else if (canonical_stage == "bgej") {
+
       has_cols(c("bgfips", "ST", "pop"))
       check_bgfips()
       expected_ej <- c(
@@ -291,23 +327,36 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       )
       warn_missing_cols(expected_ej)
       check_nonnegative(intersect(expected_ej, names(x)))
+      ###################################################### #
+      # ejscreen_export ####
+
     } else if (canonical_stage == "ejscreen_export") {
+
       check_id()
       warn_missing_cols(c("STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))
       check_ejscreen_export_helpers()
+      ###################################################### #
+      # us_lookup_stages ####
+
     } else if (canonical_stage %in% us_lookup_stages) {
+
       check_lookup(expect_usa = TRUE)
       if (canonical_stage == "usastats_envirodata") {
         expected_env <- if (exists("names_e")) names_e else character()
         warn_missing_cols(expected_env)
       }
+      ###################################################### #
+      # state_lookup_stages ####
+
     } else if (canonical_stage %in% state_lookup_stages) {
+
       check_lookup(expect_usa = FALSE)
       if (canonical_stage == "statestats_envirodata") {
         expected_env <- if (exists("names_e")) names_e else character()
         warn_missing_cols(expected_env)
       }
     }
+    ###################################################### #
   }
 
   if (length(warnings) > 0) {
@@ -319,5 +368,4 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
 
   invisible(list(stage = stage, errors = errors, warnings = warnings))
 }
-
 ###################################################### #

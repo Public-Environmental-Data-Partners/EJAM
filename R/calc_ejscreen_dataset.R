@@ -407,7 +407,7 @@ calc_ejscreen_dataset <- function(yr,
   stats <- calc_ejscreen_stats(
     bgstats = blockgroupstats,
     pipeline_dir = pipeline_dir,
-    save_stages = FALSE,
+    save_stages = FALSE, # stages will be saved individually in this wrapper, in loop below
     stage_format = stage_format,
     acs_vars = acs_vars,
     enviro_vars = enviro_vars,

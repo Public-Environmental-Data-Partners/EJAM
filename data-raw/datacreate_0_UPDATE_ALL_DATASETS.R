@@ -1,8 +1,13 @@
 ############################################################### #
-## Scripts to update / create latest versions of datasets
-# - ANNUAL blockgroup data from ACS and EJSCREEN
-# - NON-ANNUAL (frequent, episodic, etc.) other datasets
-# also see EJAM pkg github issues about this.
+## Script providing an outline of some steps in how to update / create newer versions of datasets
+
+# - For ANNUAL blockgroup data from ACS and EJSCREEN,
+# see the newer data updates pipeline as noted in NEWS.md and the vignette on annual updates,
+# for a process that is more automated and less manual than this older script.
+
+# - NON-ANNUAL (frequent, episodic, etc.) other datasets: see useful notes in this file
+
+# also see vignettes about data updates, and EJAM pkg github issues about updates
 ############################################################### #
 
 ######################################### ########################################## #

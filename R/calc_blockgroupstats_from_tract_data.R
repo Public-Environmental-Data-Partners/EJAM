@@ -159,11 +159,11 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   pct_language_formulas <- formulas[grepl("^pctlan_|^pct_chinese|^pct_korean", trimws(formulas))]
   bg_from_tracts <- calc_ejam(bg_from_tracts,
                               formulas = pct_language_formulas,
-             keep.old = c("bgfips",
-                            "disability",  "disab_universe",   "pctdisability",
-                          grep("^lan_", names(bg_from_tracts) , value = TRUE)
-                          )
-             )
+                              keep.old = c("bgfips",
+                                           "disability",  "disab_universe",   "pctdisability",
+                                           grep("^lan_", names(bg_from_tracts) , value = TRUE)
+                              )
+  )
 
 
   ############################################################### #
@@ -204,37 +204,37 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   setorder(bg_from_tracts, bgfips)
 
   ##################################################################### #
+  if (FALSE) {
+    # for acs2022, optional code to validate against old ejscreen release from late 2024...
 
-  # for acs2022, validate against old ejscreen release from late 2024...
+    # > dim(blockgroupstats)
+    # [1] 242336    150
+    # > dim(bg_from_tracts)
+    # [1] 242335      4
+    inboth = blockgroupstats$bgfips[bg_from_tracts$bgfips %in% blockgroupstats$bgfips]
+    bs = blockgroupstats[blockgroupstats$bgfips %in% inboth, .(bgfips, pctdisability, disab_universe, disability)]
+    bd = bg_from_tracts[bg_from_tracts$bgfips %in% inboth, ]
 
-  # > dim(blockgroupstats)
-  # [1] 242336    150
-  # > dim(bg_from_tracts)
-  # [1] 242335      4
-  inboth = blockgroupstats$bgfips[bg_from_tracts$bgfips %in% blockgroupstats$bgfips]
-  bs = blockgroupstats[blockgroupstats$bgfips %in% inboth, .(bgfips, pctdisability, disab_universe, disability)]
-  bd = bg_from_tracts[bg_from_tracts$bgfips %in% inboth, ]
+    ratios = bs$disab_universe / bd$disab_universe[match(bs$bgfips, bd$bgfips)]
+    ratios[bs$disab_universe == 0]  <- 1
+    # summary(ratios)
+    #   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+    # 0.9968  1.0000  1.0000  1.0000  1.0000  1.0034   not exact but essentially replicates
 
-  ratios = bs$disab_universe / bd$disab_universe[match(bs$bgfips, bd$bgfips)]
-  ratios[bs$disab_universe == 0]  <- 1
-  # summary(ratios)
-  #   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
-  # 0.9968  1.0000  1.0000  1.0000  1.0000  1.0034   not exact but essentially replicates
+    ratios = bs$disability / bd$disability[match(bs$bgfips, bd$bgfips)]
+    ratios[bs$disability == 0]  <- 1
+    # summary(ratios)
+    #    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+    # 0.9861  1.0000  1.0000  1.0000  1.0000  1.0263    not exact but almost replicates
 
-  ratios = bs$disability / bd$disability[match(bs$bgfips, bd$bgfips)]
-  ratios[bs$disability == 0]  <- 1
-  # summary(ratios)
-  #    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
-  # 0.9861  1.0000  1.0000  1.0000  1.0000  1.0263    not exact but almost replicates
-
-  ratios = bs$pctdisability / bd$pctdisability[match(bs$bgfips, bd$bgfips)]
-  ratios[bs$pctdisability == 0]  <- 1
-  # summary(ratios)
-  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
-  # 1       1       1     Inf       1     Inf   # IF ROUND BEFORE RATIO DONE, REPLICATES EXCEPT Inf glitch
-  #   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
-  # 0.4899  0.9986  1.0000     Inf  1.0015     Inf   ## IF ROUNDED BEFORE RATIO, percentage calculation not replicated.   need to get ratio before rounding counts
-
+    ratios = bs$pctdisability / bd$pctdisability[match(bs$bgfips, bd$bgfips)]
+    ratios[bs$pctdisability == 0]  <- 1
+    # summary(ratios)
+    # Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+    # 1       1       1     Inf       1     Inf   # IF ROUND BEFORE RATIO DONE, REPLICATES EXCEPT Inf glitch
+    #   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+    # 0.4899  0.9986  1.0000     Inf  1.0015     Inf   ## IF ROUNDED BEFORE RATIO, percentage calculation not replicated.   need to get ratio before rounding counts
+  }
   ##################################################################### #
   print("## note that it does include Puerto Rico:")
   print(  table(fips2stateabbrev(   bg_from_tracts$bgfips) ))

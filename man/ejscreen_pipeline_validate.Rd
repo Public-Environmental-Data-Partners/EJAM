@@ -2,19 +2,16 @@
 % Please edit documentation in R/ejscreen_pipeline_validate.R
 \name{ejscreen_pipeline_validate}
 \alias{ejscreen_pipeline_validate}
-\title{Validate an EJSCREEN/EJAM pipeline stage before saving it}
+\title{Validate one pipeline stage before saving dataset at that stage, for EJSCREEN/EJAM data updates pipeline}
 \usage{
 ejscreen_pipeline_validate(x, stage, strict = TRUE)
 }
 \arguments{
 \item{x}{object to validate.}
 
-\item{stage}{pipeline stage name, such as \code{"bg_acsdata"},
-\code{"bg_acs_raw"}, \code{"blockgroupstats_acs"}, \code{"bg_envirodata"}, \code{"envirodata"},
-\code{"bg_extra_indicators"}, \code{"blockgroupstats"}, \code{"bgej"}, \code{"bg_ejindexes"},
-\code{"usastats_acs"}, \code{"statestats_acs"}, \code{"usastats_envirodata"},
-\code{"statestats_envirodata"}, \code{"usastats_ej"}, \code{"statestats_ej"},
-\code{"usastats"}, \code{"statestats"}, or \code{"ejscreen_export"}.}
+\item{stage}{pipeline stage name, must be among known stages or aliases
+as found in \code{EJAM:::ejscreen_pipeline_stage_names()} with canonical names such as
+bg_acs_raw, bg_acsdata, bg_envirodata, bg_extra_indicators, blockgroupstats, usastats_acs, statestats_acs, usastats_envirodata, statestats_envirodata, usastats_ej, statestats_ej, usastats, statestats, bgej, ejscreen_export}
 
 \item{strict}{logical. If TRUE, errors stop execution. Warnings are still
 emitted as warnings.}
@@ -23,7 +20,7 @@ emitted as warnings.}
 invisibly returns a list with \code{errors} and \code{warnings}.
 }
 \description{
-Validate an EJSCREEN/EJAM pipeline stage before saving it
+Validate one pipeline stage before saving dataset at that stage, for EJSCREEN/EJAM data updates pipeline
 }
 \details{
 These checks are intentionally lightweight. They catch structural
