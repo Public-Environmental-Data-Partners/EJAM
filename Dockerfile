@@ -112,7 +112,8 @@ RUN mkdir -p /usr/local/lib/R/site-library/EJAM/data && \
         -H "Accept: application/octet-stream" \
         "https://github.com/Public-Environmental-Data-Partners/ejamdata/releases/download/v2.32.8/${FILE}.arrow" \
         -o "/usr/local/lib/R/site-library/EJAM/data/${FILE}.arrow"; \
-    done
+    done && \
+    echo "v2.32.8" > /usr/local/lib/R/site-library/EJAM/data/ejamdata_version.txt
 
 EXPOSE 2000 2001
 
