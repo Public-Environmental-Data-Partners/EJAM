@@ -65,6 +65,7 @@ calc_bg_extra_indicators <- function(bg_extra_indicators = NULL,
 
   out
 }
+###################################################### #
 
 #' @rdname calc_bg_extra_indicators
 ejscreen_default_extra_indicator_vars <- function() {
@@ -76,6 +77,7 @@ ejscreen_default_extra_indicator_vars <- function() {
   )$rname
   unique(vars)
 }
+###################################################### #
 
 #' @rdname calc_bg_extra_indicators
 ejscreen_default_extra_indicator_varlists <- function() {
@@ -89,11 +91,13 @@ ejscreen_default_extra_indicator_varlists <- function() {
     "names_flag"
   )
 }
+###################################################### #
 
 complete_bg_extra_indicators <- function(bg_extra_indicators = NULL,
                                          extra_indicator_vars = ejscreen_default_extra_indicator_vars(),
                                          reuse_existing_if_missing = FALSE,
                                          existing_blockgroupstats = NULL) {
+
   extra_indicator_vars <- unique(extra_indicator_vars)
   if (!"lowlifex" %in% extra_indicator_vars) {
     extra_indicator_vars <- c("lowlifex", extra_indicator_vars)
@@ -163,8 +167,10 @@ complete_bg_extra_indicators <- function(bg_extra_indicators = NULL,
   data.table::setorder(out, bgfips)
   out
 }
+###################################################### #
 
 add_bg_geography_columns <- function(x) {
+
   x <- data.table::as.data.table(data.table::copy(x))
   if (!"bgfips" %in% names(x)) {
     stop("x must have a bgfips column")
@@ -190,7 +196,14 @@ add_bg_geography_columns <- function(x) {
   fill_missing("countyname", fips2countyname(x$bgfips, includestate = FALSE))
   fill_missing("REGION", fips_st2eparegion(fips2statefips(x$bgfips)))
   fill_missing("bgid", EJAM::bgpts$bgid[match(x$bgfips, EJAM::bgpts$bgfips)])
+
+  ## area, arealand, areawater are needed. At least fill with NA values until can be calculated or obtained from another source.
+  ## get area info from an old version of blockgroupstats ?
+  ## or download the info from Census Bureau ?
+  fill_missing("arealand", NA) # EJAM::blockgroupstats$arealand[match(x$bgfips, EJAM::blockgroupstats$bgfips)]
+  fill_missing("areawater", NA)
+  fill_missing("area", NA)
+
   x
 }
-
 ###################################################### #
