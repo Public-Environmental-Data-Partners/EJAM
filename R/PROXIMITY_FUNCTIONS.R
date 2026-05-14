@@ -677,17 +677,19 @@ countpoints_nearby <- function(frompoints, topoints, radius = 3) {
 }
 ################################################################# #
 
+#' @keywords internal
 countpoints_in_shape <- function(shp, topoints) {
 
-  stop('to be done')
+  return('to be done')
 
 
 }
 ################################################################# #
 
+#' @keywords internal
 countpoints_in_fips <- function(fips, topoints) {
 
-  stop('to be done')
+  return('to be done')
 
 
 }

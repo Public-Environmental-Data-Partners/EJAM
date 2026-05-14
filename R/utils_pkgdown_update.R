@@ -130,8 +130,8 @@ pkgdown_update = function(
 
   if (!interactive()) {doask <- FALSE}
   golem::detach_all_attached()
-  library(devtools) # library() stops with error where require() would only warn
-  library(pkgdown)
+  if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
+  if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work")
   ############################################################# #
 
   # ask what to do ####
@@ -280,8 +280,8 @@ pkgdown_update = function(
     #################### # #################### # #################### # #################### #
     cat('detaching packages  \n')
     golem::detach_all_attached()
-    library(devtools) # library() stops with error where require() would only warn
-    library(pkgdown) # library() stops with error where require() would only warn
+    if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
+    if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work") # library() stops with error where require() would only warn
 
     cat('trying to do document() \n')
     document()
@@ -333,8 +333,8 @@ pkgdown_update = function(
       cat('detaching packages - RESTART R IF THIS FAILS  \n') # got Error: lazy-load database '....EJAM/R/EJAM.rdb' is corrupt
       golem::detach_all_attached()
       # rstudioapi::restartSession() might be needed. or just relaunch R seems to help.
-      library(devtools) # library() stops with error where require() would only warn
-      library(pkgdown)
+      if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
+      if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work")
     })
   }
   #################### # #################### # #################### # #################### #
@@ -345,8 +345,8 @@ pkgdown_update = function(
   if (doloadall_not_library) {
     cat('detaching packages, then doing load_all() \n')
     golem::detach_all_attached()
-    library(devtools) # library() stops with error where require() would only warn
-    library(pkgdown)
+    if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
+    if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work")
     devtools::load_all() # doing load_all() without having done library() first might fail to do some of what is needed?
   } else {
     cat('doing library(EJAM) \n')

@@ -312,6 +312,7 @@ x <- EJAM:::test_ejam(
         "test-calc_bg_extra_indicators.R",
         "test-calc_ejscreen_dataset.R",
         "test-ejscreen-stats.R",
+        "test-ejscreen-pipeline-validate-vs-prior.R",
         "test-ejscreen-export.R"
       ),
 

@@ -1,261 +1,390 @@
-
-#' utility to compare two data.frames or data.tables
+#' Compare a new pipeline dataset to a prior version
 #'
-#' @param new_dt generally should be the new bg_acsdata, bg_usastats, bg_statestats, or new blockgroupstats that we are comparing to a prior year version or versus a previously-available copy of data for the same year if trying to use a new pipeline to replicate/reproduce a particular dataset such as the 2022 data previously published
-#' @param old_dt generally should a previously created version of this dataset, such as the same object for a prior year, or the same or comparable object for the same year -- e.g. the ACS parts of the old blockgroupstats from ACS2022, or maybe old_dt = data.table::copy(EJAM::blockgroupstats) -- if trying to use a new pipeline to replicate a particular dataset such as the 2022 data previously published
+#' @details
+#' This diagnostic helper is intended for annual EJSCREEN/EJAM data updates. It
+#' compares a newly created table, such as `bg_acsdata`, `blockgroupstats`,
+#' `usastats`, or `statestats`, with a prior or reference version of the same
+#' table. It reports row/column count differences, column-name differences,
+#' `bgfips` set/order differences when `bgfips` is available, metadata gaps in
+#' [map_headernames], and value differences in shared columns.
 #'
-#' @returns NULL
+#' Differences are reported as warnings and in the returned object. They are not
+#' fatal unless the inputs are invalid.
+#'
+#' @param new_dt data.frame or data.table created by the new pipeline.
+#' @param old_dt prior or reference data.frame or data.table to compare against.
+#' @param use_waldo logical. If TRUE and the `waldo` package is installed, also
+#'   include `waldo::compare(old_dt, new_dt)` output in the returned object.
+#' @param verbose logical. If TRUE, print a concise text summary.
+#'
+#' @return Invisibly returns a list with class
+#'   `ejam_pipeline_prior_validation`.
 #'
 #' @keywords internal
 #'
-ejscreen_pipeline_validate_vs_prior <- function(new_dt, old_dt) {
+ejscreen_pipeline_validate_vs_prior <- function(new_dt,
+                                                old_dt,
+                                                use_waldo = FALSE,
+                                                verbose = TRUE) {
 
-  ###################################################### #
-  ## Try to replicate the 2022 blockgroupstats
-  ## while this pkg still has the old blockgroupstats based on 2018-2022 ACS,
-  ## then bg_acsdata should be the same as the one used to create that, so can check that here:
-  # e.g., if new_dt is bg_acsdata for 2022, and old_dt is blockgroupstats from 2022,
-  # then should replicate all shared columns and recreate expected ones.
-  # check that the new bg_acsdata replicates the old blockgroupstats, which was based on the same bg_acsdata,
-  # before it was updated to use the new bg_acsdata with more recent ACS data. if it does not replicate,
-  # then that is a problem with the pipeline code that creates blockgroupstats from bg_acsdata,
-  # and should be fixed before update the bg_acsdata to use more recent ACS data.
-  ###################################################### #
-
-  # not missing
   if (missing(new_dt)) {
-    stop("must provide new_dt -- should be the new bg_acsdata, bg_usastats, bg_statestats, or new blockgroupstats that we are comparing to a prior year version or versus a previously-available copy of data for the same year if trying to use a new pipeline to replicate/reproduce a particular dataset such as the 2022 data previously published")
-    # new_dt <- data.table::copy(bg_acsdata)
+    stop("must provide new_dt", call. = FALSE)
   }
   if (missing(old_dt)) {
-    stop("must provide old_dt -- should a previously created version of this dataset, such as the same object for a prior year, or the same or comparable object for the same year -- e.g. the ACS parts of the old blockgroupstats from ACS2022, or maybe old_dt = data.table::copy(EJAM::blockgroupstats) -- if trying to use a new pipeline to replicate a particular dataset such as the 2022 data previously published")
-    # old_dt =  data.table::copy(EJAM::blockgroupstats)
+    stop("must provide old_dt", call. = FALSE)
+  }
+  if (is.null(new_dt)) {
+    stop("new_dt is NULL", call. = FALSE)
+  }
+  if (is.null(old_dt)) {
+    stop("old_dt is NULL", call. = FALSE)
+  }
+  if (!is.data.frame(new_dt) || !is.data.frame(old_dt)) {
+    stop("both must be at least data.frame class, and optionally can be data.table as well", call. = FALSE)
   }
 
-  # not NULL
-  if (is.null(new_dt)) {stop("new_dt is NULL")}
-  if (is.null(old_dt)) {stop("old_dt is NULL")}
-  # both are data.frame at least, and optionally data.table too
-  if (!("data.frame" %in% class(new_dt)) || !("data.frame" %in% class(new_dt)) ) {
-    stop("both must be at least data.frame class (and optionally can be data.table as well)")
-  }
-
-  # same class
-  if (!all.equal(class(new_dt), class(old_dt))) {
-    warning("class(new_dt) and class(old_dt) are not the same: ",
-            "new_dt is ", paste0(class(new_dt), collapse = ", "),
-            " and ",
-            "old_dt is ", paste0(class(new_dt), collapse = ", ")
+  class_equal <- identical(class(new_dt), class(old_dt))
+  if (!class_equal) {
+    warning(
+      "class(new_dt) and class(old_dt) are not the same: ",
+      "new_dt is ", paste0(class(new_dt), collapse = ", "),
+      " and old_dt is ", paste0(class(old_dt), collapse = ", "),
+      call. = FALSE
     )
   }
 
-  # make them both data.table format
-  if (!is.data.table(new_dt)) {new_dt <- data.table::as.data.table(new_dt)}
-  if (!is.data.table(old_dt)) {old_dt <- data.table::as.data.table(old_dt)}
+  new_dt <- data.table::as.data.table(data.table::copy(new_dt))
+  old_dt <- data.table::as.data.table(data.table::copy(old_dt))
 
-  # same row counts
-  if (NROW(old_dt) != NROW(new_dt)) {
-    cat("Row counts differ: new_dt has ", NROW(new_dt), " and old_dt has ", NROW(old_dt), '\n')
-    warning("Row counts differ: new_dt has ", NROW(new_dt), " and old_dt has ", NROW(old_dt))
-  } else {
-    cat("Row counts match, both have ", NROW(new_dt), '\n')
-  }
+  newnames <- names(new_dt)
+  oldnames <- names(old_dt)
+  sharednames <- intersect(newnames, oldnames)
+  uniquely_new <- setdiff(newnames, oldnames)
+  uniquely_old <- setdiff(oldnames, newnames)
 
-  # same column counts
-  if (NCOL(old_dt) != NCOL(new_dt)) {
-    cat("Column counts differ: new_dt has ", NCOL(new_dt), " and old_dt has ", NCOL(old_dt), "\n")
-    warning("Column counts differ: new_dt has ", NCOL(new_dt), " and old_dt has ", NCOL(old_dt))
-  } else {
-    cat("Column counts match, both have ", NCOL(new_dt), '\n')
-  }
-
-  ######################## #
-  # COLUMN NAMES
-  ######################## #
-
-  # overlaps in column names
-  newnames = colnames(new_dt)
-  oldnames = colnames(old_dt)
-  sharednames = intersect(newnames, oldnames)
-  uniquely_new = setdiff(newnames, oldnames)
-  uniquely_old = setdiff(oldnames, newnames)
-  if (length(sharednames) == 0) {
-    cat('zero column names are shared between new and old \n')
-    warning('zero column names are shared between new and old')
-  } else {
-    cat(length(sharednames), "column names are shared by both \n")
-    cat(length(uniquely_old), "are unique to old")
-    if (length(uniquely_old) > 0 ) {
-      cat(": ", paste0(uniquely_old, collapse = ", "), "\n")
-    } else {
-      cat("\n")
-    }
-    cat(length(uniquely_new), " are unique to new")
-    if (length(uniquely_new) > 0 ) {
-      cat(": ", paste0(uniquely_new, collapse = ", "), "\n")
-    } else {
-      cat("\n")
-    }
-  }
-
-  ######################## #
-  ## check that all the columns in new_dt are in map_headernames, the metadata source about variables.
-
-  if (!exists("map_headernames")) {
-    warning("need map_headernames from EJAM package to be able to examine column names and check their metadata")
-  } else {
-
-    nn = names(new_dt)
-    not_in_mh = nn[!(nn %in% map_headernames$rname)]
-    if (length(not_in_mh) > 0) {
-      warning("some columns in new_dt not found in map_headernames")
-      cat(
-        paste0("Columns in new_dt not found in map_headernames, so may need to add there, with metadata: ",
-               paste0(not_in_mh, collapse = ", "))
-      )
-      cat("\n")
-      # cat("Columns in new_dt not found in map_headernames, so may need to add there, with metadata: \n")
-      # print(cbind(not_in_mh))
-      # not_in_mh
-      # [1,] "lingisospanish"
-      # [2,] "lingisoeuro"
-      # [3,] "lingisoasian"
-      # [4,] "lingisoother"
-      # [5,] "bgid"
-      # [6,] "healthinsurance_universe"
-    }
-    x = data.frame(colnames=nn, varlist = varinfo(nn)$varlist)
-    missing_varlist = x$colnames[is.na(x$varlist)]
-    if (length(missing_varlist) > 0) {
-      warning("Some columns in new_dt that are not part of a varlist according to map_headernames")
-      cat(
-        paste0("Columns in new_dt that are not part of a varlist according to map_headernames, so may need to add there, with metadata: ",
-               paste0(missing_varlist, collapse = ", "))
-      )
-      cat("\n")
-    }
-    # cat("Columns in new_dt that are not part of a varlist according to map_headernames: \n")
-    # print(cbind(missing_varlist))
-  }
-
-  ######################## #
-  # COMPARISONS BASED ON bgfips -- HAVE SAME ROWS AND SAME SORT ORDER IN BOTH
-  ######################## #
-
-  # have "bgfips" ?
-  if ("bgfips" %in% names(new_dt) && "bgfips" %in% names(old_dt)) {
-    cat("bgfips column found in each")
-
-    # same bgfips maybe not same order?
-    ok <- setequal(old_dt$bgfips, new_dt$bgfips)
-    cat("Are bgfips identical ignoring sort order? ")
-    cat(ok)
-    cat("\n")
-    if (!ok) {
-      warning("different set of bgfips values in one vs other -- fix that before further comparisons")
-      return(NULL)
-    }
-
-    # same bgfips same order?
-    ok <- all.equal(old_dt$bgfips, new_dt$bgfips)
-    cat("Are bgfips identical and in same order? ")
-    cat(ok)
-    cat("\n")
-    if (!ok) {
-      warning("bgfips are not identical in same sort order in old_dt and new_dt, so cannot compare values -- fix that before further comparisons")
-      return(NULL)
-    }
-  } else {
-    cat("UNCLEAR IF CAN do most comparisons without both having a 'bgfips' column to confirm sort orders are the same -- may want to fix that before further comparisons \n")
-    warning("UNCLEAR IF CAN do most comparisons without both having a 'bgfips' column to confirm sort orders are the same -- may want to fix that before further comparisons")
-    # return(NULL)
-  }
-
-  ## identical data for the SHARED columns?
-  ok <- all.equal(old_dt[, ..sharednames], new_dt[, ..sharednames], check.attributes = F )
-  cat("Are the data identical in at least the shared column names? ")
-  cat( ok )
-  cat("\n")
-  if (!ok) {warning("data are not identical even for the shared column names")}
-
-  ############# #
-  ## failed to create these expected/previously available variables at all ?
-
-  # uniquely_old
-  notmade = setdiff(names(old_dt), names(new_dt))
-  if (!exists("varinfo")) {
-    warning("cannot use varinfo() to check metadata in map_headernames")
-    vlistinfo = NA
-  }  else {
-    junk = capture.output({
-      vlistinfo = varinfo(notmade)$varlist
-    })
-  }
-  notmade = data.frame(rname = notmade, varlist = vlistinfo)
-
-
-  #### HARD-CODED SET OF MISSING BUT EXPECTED NEW COLUMNS INCLUDED THESE :
-
-  notmade$should = grepl("names_d|names_countabove", notmade$varlist)
-
-
-  notmade = notmade[notmade$should, ]
-  notmade = notmade[order(notmade$varlist, notmade$rname),  ]
-  if (exists("formulas_ejscreen_acs")) {
-    notmade$hasformula = notmade$rname %in% formulas_ejscreen_acs$rname
-  }
-  if (NROW(notmade) > 0) {
-    warning("Some specific expected columns are in old_dt but are not in new_dt")
-    cat(
-      paste0("Expected columns in old_dt that are not in new_dt, so may need to add to pipeline code that creates new_dt: ",
-             paste0(notmade$rname, collapse = ", "))
-    )
-    cat("\n")
-    # cat("FAILED TO CREATE EXPECTED COLUMNS: \n")
-    # print(notmade)
-  }
-
-  # calc_formulas_from_varname("lingiso" )
-
-
-  ## failed to replicate values of these variables:
-
-  ## check each column, to see which are not replicated by pipeline
-
-  ok = sapply(sharednames, function(namex) {all.equal(new_dt[, ..namex], old_dt[, ..namex], check.attributes=FALSE)})
-  info = data.frame(rname = sharednames, ok = as.vector(ok))
-  table( info$ok != "TRUE" ) # about one third of the approx 100 columns fail to exactly replicate.
-  notreplicated = info[info$ok != "TRUE", ]
-  junk = capture.output({
-    notreplicated$varlist = varinfo(notreplicated$rname)$varlist
-  })
-  notreplicated = notreplicated[order(notreplicated$varlist, notreplicated$rname),  ]
-  notreplicated = data.frame(varlist = notreplicated$varlist, rname = notreplicated$rname, problem = notreplicated$ok)
-  if (NROW(notreplicated) > 0) {
-    warning("Some columns in old_dt do not exactly replicate in new_dt")
-    cat(
-      paste0("Columns in old_dt that do not exactly replicate in new_dt, so may need to confirm that is ok for these variables: ",
-             paste0(notreplicated$rname, collapse = ", "))
-    )
-    cat('\n')
-    # cat("FAILED TO REPLICATE THESE VALUES: \n")
-    # print(notreplicated )
-    ## "current" means old blockgroupstats or old_dt, "target" means new bg_acsdata or new_dt
-    # e.g.,
-    # sum(is.na(old_dt$pctlan_english))
-    # sum(is.na(new_dt$pctlan_english))
-  }
-
-  cat( "
-  ### WILL ADD STATISTICAL COMPARISONS CODE HERE LATER FROM ejscreen_vs FUNCTIONS
-")
-
-  cat("
-      Comparison via waldo::compare()
-      ")
-  print(
-    {x <-  waldo::compare(old_dt, new_dt)}
+  result <- list(
+    row_count = c(new = NROW(new_dt), old = NROW(old_dt)),
+    column_count = c(new = NCOL(new_dt), old = NCOL(old_dt)),
+    class_equal = class_equal,
+    columns = list(
+      shared = sharednames,
+      only_new = uniquely_new,
+      only_old = uniquely_old
+    ),
+    metadata = list(
+      not_in_map_headernames = character(),
+      missing_varlist = character()
+    ),
+    bgfips = list(
+      has_bgfips = all(c("bgfips") %in% names(new_dt)) && all(c("bgfips") %in% names(old_dt)),
+      set_equal = NA,
+      order_equal = NA
+    ),
+    shared_data_equal = NA,
+    shared_data_difference = character(),
+    missing_expected = data.frame(rname = character(), varlist = character(), stringsAsFactors = FALSE),
+    not_replicated = data.frame(rname = character(), equal = logical(), problem = character(), stringsAsFactors = FALSE),
+    waldo_compare = character()
   )
-  invisible(x)
+  class(result) <- c("ejam_pipeline_prior_validation", "list")
+
+  if (verbose) {
+    if (NROW(old_dt) == NROW(new_dt)) {
+      cat("Row counts match, both have ", NROW(new_dt), "\n", sep = "")
+    } else {
+      cat("Row counts differ: new_dt has ", NROW(new_dt), " and old_dt has ", NROW(old_dt), "\n", sep = "")
+    }
+    if (NCOL(old_dt) == NCOL(new_dt)) {
+      cat("Column counts match, both have ", NCOL(new_dt), "\n", sep = "")
+    } else {
+      cat("Column counts differ: new_dt has ", NCOL(new_dt), " and old_dt has ", NCOL(old_dt), "\n", sep = "")
+    }
+    cat(length(sharednames), " column names are shared by both\n", sep = "")
+    cat(length(uniquely_old), " are unique to old", if (length(uniquely_old) > 0) paste0(": ", paste0(uniquely_old, collapse = ", ")) else "", "\n", sep = "")
+    cat(length(uniquely_new), " are unique to new", if (length(uniquely_new) > 0) paste0(": ", paste0(uniquely_new, collapse = ", ")) else "", "\n", sep = "")
+  }
+
+  if (NROW(old_dt) != NROW(new_dt)) {
+    warning("Row counts differ: new_dt has ", NROW(new_dt), " and old_dt has ", NROW(old_dt), call. = FALSE)
+  }
+  if (NCOL(old_dt) != NCOL(new_dt)) {
+    warning("Column counts differ: new_dt has ", NCOL(new_dt), " and old_dt has ", NCOL(old_dt), call. = FALSE)
+  }
+  if (length(sharednames) == 0) {
+    warning("zero column names are shared between new_dt and old_dt", call. = FALSE)
+    return(invisible(result))
+  }
+
+  if (exists("map_headernames", inherits = TRUE)) {
+    not_in_mh <- newnames[!(newnames %in% map_headernames$rname)]
+    result$metadata$not_in_map_headernames <- not_in_mh
+    if (length(not_in_mh) > 0) {
+      warning("some columns in new_dt not found in map_headernames", call. = FALSE)
+      if (verbose) {
+        cat(
+          "Columns in new_dt not found in map_headernames, so may need metadata: ",
+          paste0(not_in_mh, collapse = ", "),
+          "\n",
+          sep = ""
+        )
+      }
+    }
+
+    varlists <- rep(NA_character_, length(newnames))
+    if (exists("varinfo", inherits = TRUE)) {
+      varlists <- suppressWarnings(varinfo(newnames)$varlist)
+    }
+    missing_varlist <- newnames[is.na(varlists)]
+    result$metadata$missing_varlist <- missing_varlist
+    if (length(missing_varlist) > 0) {
+      warning("some columns in new_dt are not part of a varlist according to map_headernames", call. = FALSE)
+      if (verbose) {
+        cat(
+          "Columns in new_dt missing varlist metadata: ",
+          paste0(missing_varlist, collapse = ", "),
+          "\n",
+          sep = ""
+        )
+      }
+    }
+  } else {
+    warning("map_headernames is unavailable, so metadata checks were skipped", call. = FALSE)
+  }
+
+  if (isTRUE(result$bgfips$has_bgfips)) {
+    result$bgfips$set_equal <- setequal(old_dt$bgfips, new_dt$bgfips)
+    bgfips_order_equal_result <- all.equal(old_dt$bgfips, new_dt$bgfips)
+    result$bgfips$order_equal <- isTRUE(bgfips_order_equal_result)
+
+    if (verbose) {
+      cat("bgfips column found in each\n")
+      cat("Are bgfips identical ignoring sort order? ", result$bgfips$set_equal, "\n", sep = "")
+      cat("Are bgfips identical and in same order? ", if (result$bgfips$order_equal) "TRUE" else paste(bgfips_order_equal_result, collapse = "; "), "\n", sep = "")
+    }
+    if (!isTRUE(result$bgfips$set_equal)) {
+      warning("different set of bgfips values in new_dt vs old_dt", call. = FALSE)
+      return(invisible(result))
+    }
+    if (!isTRUE(result$bgfips$order_equal)) {
+      warning("bgfips are not identical in same sort order in old_dt and new_dt, so value comparisons were skipped", call. = FALSE)
+      return(invisible(result))
+    }
+  } else {
+    warning("cannot confirm row alignment because one or both inputs lack a bgfips column", call. = FALSE)
+  }
+
+  shared_equal_result <- all.equal(old_dt[, ..sharednames], new_dt[, ..sharednames], check.attributes = FALSE)
+  result$shared_data_equal <- isTRUE(shared_equal_result)
+  if (!result$shared_data_equal) {
+    result$shared_data_difference <- as.character(shared_equal_result)
+    warning("data are not identical even for the shared column names", call. = FALSE)
+  }
+  if (verbose) {
+    cat("Are the data identical in shared column names? ",
+        if (result$shared_data_equal) "TRUE" else paste(result$shared_data_difference, collapse = "; "),
+        "\n",
+        sep = "")
+  }
+
+  notmade_names <- setdiff(oldnames, newnames)
+  if (length(notmade_names) > 0) {
+    vlistinfo <- rep(NA_character_, length(notmade_names))
+    if (exists("varinfo", inherits = TRUE)) {
+      vlistinfo <- suppressWarnings(varinfo(notmade_names)$varlist)
+    }
+    notmade <- data.frame(rname = notmade_names, varlist = vlistinfo, stringsAsFactors = FALSE)
+    should_check <- grepl("names_d|names_countabove", notmade$varlist)
+    should_check[is.na(should_check)] <- FALSE
+    notmade <- notmade[should_check, , drop = FALSE]
+    if (NROW(notmade) > 0 && exists("formulas_ejscreen_acs", inherits = TRUE)) {
+      notmade$hasformula <- notmade$rname %in% formulas_ejscreen_acs$rname
+    }
+    result$missing_expected <- notmade[order(notmade$varlist, notmade$rname), , drop = FALSE]
+    if (NROW(result$missing_expected) > 0) {
+      warning("some expected columns are in old_dt but are not in new_dt", call. = FALSE)
+      if (verbose) {
+        cat(
+          "Expected columns in old_dt that are not in new_dt: ",
+          paste0(result$missing_expected$rname, collapse = ", "),
+          "\n",
+          sep = ""
+        )
+      }
+    }
+  }
+
+  column_compare <- lapply(sharednames, function(namex) {
+    comparison <- all.equal(new_dt[[namex]], old_dt[[namex]], check.attributes = FALSE)
+    data.frame(
+      rname = namex,
+      equal = isTRUE(comparison),
+      problem = if (isTRUE(comparison)) "" else paste(as.character(comparison), collapse = "; "),
+      stringsAsFactors = FALSE
+    )
+  })
+  notreplicated <- data.table::rbindlist(column_compare)
+  notreplicated <- as.data.frame(notreplicated[!notreplicated$equal, , drop = FALSE])
+  if (NROW(notreplicated) > 0 && exists("varinfo", inherits = TRUE)) {
+    notreplicated$varlist <- suppressWarnings(varinfo(notreplicated$rname)$varlist)
+    notreplicated <- notreplicated[order(notreplicated$varlist, notreplicated$rname), , drop = FALSE]
+    notreplicated <- notreplicated[, c("varlist", "rname", "equal", "problem"), drop = FALSE]
+  }
+  result$not_replicated <- notreplicated
+  if (NROW(result$not_replicated) > 0) {
+    warning("some columns in old_dt do not exactly replicate in new_dt", call. = FALSE)
+    if (verbose) {
+      cat(
+        "Columns in shared data that do not exactly replicate: ",
+        paste0(result$not_replicated$rname, collapse = ", "),
+        "\n",
+        sep = ""
+      )
+    }
+  }
+
+  if (isTRUE(use_waldo)) {
+    if (requireNamespace("waldo", quietly = TRUE)) {
+      x <- try({result$waldo_compare <- waldo::compare(old_dt, new_dt)})
+      if (inherits(x, "try-error")) {
+        result$waldo_compare <- paste0("waldo::compare() failed with error: ", as.character(x))
+        warning("waldo::compare() failed with error: ", as.character(x), call. = FALSE)
+      }
+    } else {
+      result$waldo_compare <- "waldo package not available, so waldo::compare() was skipped"
+    }
+  }
+
+  invisible(result)
+}
+###################################################### #
+
+#' Summarize a prior-version pipeline validation result
+#'
+#' @param result object returned by `ejscreen_pipeline_validate_vs_prior()`.
+#' @param stage pipeline stage name being compared.
+#' @param path optional saved stage path.
+#' @param old_label label for the prior/reference object.
+#' @param warnings character vector of warnings captured while comparing.
+#'
+#' @return A one-row data.table suitable for a CSV validation summary.
+#' @noRd
+#'
+ejscreen_pipeline_prior_validation_as_row <- function(result,
+                                                      stage,
+                                                      path = NA_character_,
+                                                      old_label = NA_character_,
+                                                      warnings = character()) {
+  if (!inherits(result, "ejam_pipeline_prior_validation")) {
+    stop("result must be from ejscreen_pipeline_validate_vs_prior()", call. = FALSE)
+  }
+
+  collapse_values <- function(x) {
+    x <- as.character(x)
+    x <- x[nzchar(x)]
+    if (length(x) == 0) {
+      return("")
+    }
+    paste(x, collapse = " | ")
+  }
+  collapse_rnames <- function(x) {
+    if (is.null(x) || NROW(x) == 0 || !"rname" %in% names(x)) {
+      return("")
+    }
+    collapse_values(x$rname)
+  }
+
+  data.table::data.table(
+    stage = stage,
+    path = path,
+    old_label = old_label,
+    rows_new = unname(result$row_count["new"]),
+    rows_old = unname(result$row_count["old"]),
+    columns_new = unname(result$column_count["new"]),
+    columns_old = unname(result$column_count["old"]),
+    class_equal = isTRUE(result$class_equal),
+    shared_n = length(result$columns$shared),
+    only_new_n = length(result$columns$only_new),
+    only_old_n = length(result$columns$only_old),
+    only_new = collapse_values(result$columns$only_new),
+    only_old = collapse_values(result$columns$only_old),
+    not_in_map_headernames_n = length(result$metadata$not_in_map_headernames),
+    not_in_map_headernames = collapse_values(result$metadata$not_in_map_headernames),
+    missing_varlist_n = length(result$metadata$missing_varlist),
+    missing_varlist = collapse_values(result$metadata$missing_varlist),
+    has_bgfips = isTRUE(result$bgfips$has_bgfips),
+    bgfips_set_equal = result$bgfips$set_equal,
+    bgfips_order_equal = result$bgfips$order_equal,
+    shared_data_equal = result$shared_data_equal,
+    missing_expected_n = NROW(result$missing_expected),
+    missing_expected = collapse_rnames(result$missing_expected),
+    not_replicated_n = NROW(result$not_replicated),
+    not_replicated = collapse_rnames(result$not_replicated),
+    warnings = collapse_values(warnings)
+  )
+}
+###################################################### #
+
+#' Format a prior-version pipeline validation result as text
+#'
+#' @inheritParams ejscreen_pipeline_prior_validation_as_row
+#'
+#' @return Character vector suitable for `writeLines()`.
+#' @noRd
+#'
+ejscreen_pipeline_prior_validation_text <- function(result,
+                                                    stage,
+                                                    old_label = NA_character_,
+                                                    warnings = character()) {
+  if (!inherits(result, "ejam_pipeline_prior_validation")) {
+    stop("result must be from ejscreen_pipeline_validate_vs_prior()", call. = FALSE)
+  }
+
+  add_table <- function(label, x) {
+    if (is.null(x) || NROW(x) == 0) {
+      return(c(label, "  none"))
+    }
+    c(label, utils::capture.output(print(as.data.frame(x), row.names = FALSE)))
+  }
+  collapse_values <- function(x) {
+    x <- as.character(x)
+    x <- x[nzchar(x)]
+    if (length(x) == 0) {
+      return("none")
+    }
+    paste(x, collapse = ", ")
+  }
+
+  c(
+    paste0("Prior-version validation for stage: ", stage),
+    paste0("Reference object: ", old_label),
+    paste0("Created: ", Sys.time()),
+    "",
+    paste0("Rows: new=", unname(result$row_count["new"]), ", old=", unname(result$row_count["old"])),
+    paste0("Columns: new=", unname(result$column_count["new"]), ", old=", unname(result$column_count["old"])),
+    paste0("Class equal: ", isTRUE(result$class_equal)),
+    paste0("Shared columns: ", length(result$columns$shared)),
+    paste0("Only in new: ", collapse_values(result$columns$only_new)),
+    paste0("Only in old: ", collapse_values(result$columns$only_old)),
+    "",
+    paste0("Has bgfips in both: ", isTRUE(result$bgfips$has_bgfips)),
+    paste0("bgfips set equal: ", result$bgfips$set_equal),
+    paste0("bgfips order equal: ", result$bgfips$order_equal),
+    paste0("Shared data equal: ", result$shared_data_equal),
+    "",
+    paste0("Columns not in map_headernames: ", collapse_values(result$metadata$not_in_map_headernames)),
+    paste0("Columns missing varlist metadata: ", collapse_values(result$metadata$missing_varlist)),
+    "",
+    add_table("Missing expected columns:", result$missing_expected),
+    "",
+    add_table("Not replicated columns:", result$not_replicated),
+    "",
+    paste0("Warnings: ", collapse_values(warnings)),
+    "",
+    if (length(result$waldo_compare) > 0) {
+      c("waldo_compare:", result$waldo_compare)
+    } else {
+      "waldo_compare: not requested"
+    }
+  )
 }
 ###################################################### #

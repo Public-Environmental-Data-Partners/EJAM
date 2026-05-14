@@ -2,16 +2,41 @@
 % Please edit documentation in R/ejscreen_pipeline_validate_replicates_prior.R
 \name{ejscreen_pipeline_validate_vs_prior}
 \alias{ejscreen_pipeline_validate_vs_prior}
-\title{utility to compare two data.frames or data.tables}
+\title{Compare a new pipeline dataset to a prior version}
 \usage{
-ejscreen_pipeline_validate_vs_prior(new_dt, old_dt)
+ejscreen_pipeline_validate_vs_prior(
+  new_dt,
+  old_dt,
+  use_waldo = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{new_dt}{generally should be the new bg_acsdata, bg_usastats, bg_statestats, or new blockgroupstats that we are comparing to a prior year version or versus a previously-available copy of data for the same year if trying to use a new pipeline to replicate/reproduce a particular dataset such as the 2022 data previously published}
+\item{new_dt}{data.frame or data.table created by the new pipeline.}
 
-\item{old_dt}{generally should a previously created version of this dataset, such as the same object for a prior year, or the same or comparable object for the same year -- e.g. the ACS parts of the old blockgroupstats from ACS2022, or maybe old_dt = data.table::copy(EJAM::blockgroupstats) -- if trying to use a new pipeline to replicate a particular dataset such as the 2022 data previously published}
+\item{old_dt}{prior or reference data.frame or data.table to compare against.}
+
+\item{use_waldo}{logical. If TRUE and the \code{waldo} package is installed, also
+include \code{waldo::compare(old_dt, new_dt)} output in the returned object.}
+
+\item{verbose}{logical. If TRUE, print a concise text summary.}
+}
+\value{
+Invisibly returns a list with class
+\code{ejam_pipeline_prior_validation}.
 }
 \description{
-utility to compare two data.frames or data.tables
+Compare a new pipeline dataset to a prior version
+}
+\details{
+This diagnostic helper is intended for annual EJSCREEN/EJAM data updates. It
+compares a newly created table, such as \code{bg_acsdata}, \code{blockgroupstats},
+\code{usastats}, or \code{statestats}, with a prior or reference version of the same
+table. It reports row/column count differences, column-name differences,
+\code{bgfips} set/order differences when \code{bgfips} is available, metadata gaps in
+\link{map_headernames}, and value differences in shared columns.
+
+Differences are reported as warnings and in the returned object. They are not
+fatal unless the inputs are invalid.
 }
 \keyword{internal}
