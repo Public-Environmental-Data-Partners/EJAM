@@ -795,6 +795,14 @@ source("./data-raw/datacreate_testoutput_ejamit_fips_.R")
 source("./data-raw/datacreate_testoutput_ejamit_shapes_2.R" )
 # restart, reinstall
 
+
+# ***
+# Need to update names_* dataset objects using  data-raw/datacreate_names_of_indicators.R
+# but first ensuring that map_headernames is cleaned up so the varlist column will work for this
+# and repeats in rname column will not cause problems or are gone.
+
+
+
 ## etc. ####
 ###################################################### #
 # cat("REBUILD/INSTALL THE PACKAGE NOW \n")
