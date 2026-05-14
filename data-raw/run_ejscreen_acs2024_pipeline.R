@@ -747,18 +747,29 @@ if (interactive()) {
     EJAM:::metadata_add_and_use_this("usastats")
     EJAM:::metadata_add_and_use_this("statestats")
 
+    ######## ######### ######### ######### ######### #
+    ## bgej file  ####
+
     # EJAM:::metadata_add_and_use_this("bgej") # NO - this goes in ejamdata, not in the package datasets
+    ## but that does at least add the updated metadata which it needs
+    ## so do that and then delete it from data folder?
     ### could use workaround for local testing where bgej.arrow gets saved locally in data folder
     ### but that does not translate to anyone else installing from github.
     ## could save as .rda and .arrow on s3 also,
     ## and maybe shift to getting it from there instead of from ejamdata
-## for now save in s3 as rda and arrow. noting the old bgej.arrow is still in local data folder.
+    ## for now save in s3 as rda and arrow.
     EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej"  )
     EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej"  )
-
     # [1] "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.rda"
+    # noting the old bgej.arrow was still in local data folder, so
+    ## replaced it and rerun the datacreate_testout scripts to use new EJ Indexes in those.
+    # EJAM:::ejscreen_pipeline_s3_download( "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.arrow", local_path = "./data/bgej.arrow"  )
+## then reinstall from local or load_all so it is available via dataload_dynamic("bgej") and then can test that it is working and has the new data in it, and then can remove the local data file if want to avoid confusion.
+    # check vintage:
+    # attr(bgej, "acs_version")
+    # attr(bgej, "date_saved_in_package")
+    ######## ######### ######### ######### ######### #
 
-    # rm(blockgroupstats, bgej, usastats, statestats)
 
     # rm(list=ls())
 # restart, reinstall
@@ -773,11 +784,16 @@ if (interactive()) {
 # source("./data-raw/datacreate_avg.in.us.R")
 
 # high_pctiles_tied_with_min.rda  also in case still used
+source("./data-raw/datacreate_high_pctiles_tied_with_min.R")
 
 ## recreate the testoutput files via the scripts in data-raw
 ## such as  data-raw/datacreate_testpoints_testoutputs.R
 # and data-raw/datacreate_testoutput_*.R
 
+source("./data-raw/datacreate_testpoints_testoutputs.R" )
+source("./data-raw/datacreate_testoutput_ejamit_fips_.R")
+source("./data-raw/datacreate_testoutput_ejamit_shapes_2.R" )
+# restart, reinstall
 
 ## etc. ####
 ###################################################### #

@@ -51,7 +51,9 @@ pkg_update_testpoints_testoutputs <- function(
 
   myrad = 1 ,# radius in miles. Larger would create MUCH larger versions of sites2blocks example objects
 
-  resaving_testpoints_overlap3 = TRUE,
+  ## resaving these also updates their metadata on date saved, package version etc.
+
+  resaving_testpoints_overlap3 = TRUE, # example of 3 points with overlapping circles, for testing functions that need that
   creatingnew_testpoints_data   = FALSE, # TO REPLACE THE ACTUAL TEST POINTS (can be false and still do other steps below)
 
   resaving_testpoints_rda       = TRUE, ## WARNING: it will NOT resave if they are found, so edit the code here to force overwrite

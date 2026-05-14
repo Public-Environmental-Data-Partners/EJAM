@@ -99,7 +99,7 @@ metadata_add_and_use_this <- function(objectname, metadata = NULL,
 
   cat("added metadata\n")
 
-  text_to_do <- paste0("", objectname, " = metadata_add(", objectname,
+  text_to_do <- paste0("", objectname, " = EJAM:::metadata_add(", objectname,
                        ", metadata = ", deparse1(substitute(metadata)),
                        ", update_date_saved_in_package = ", update_date_saved_in_package,
                        ", update_ejam_package_version = ", update_ejam_package_version,

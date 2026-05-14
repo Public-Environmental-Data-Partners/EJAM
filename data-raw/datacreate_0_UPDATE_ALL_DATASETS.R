@@ -149,11 +149,13 @@ if (0 == 1) {  # collapsable list
          "datacreate_formulas.R", "datacreate_formulas_ejscreen_demog_index.R",  "datacreate_formulas_ejscreen_acs_pctdisability.R",
 
          # testdata nonstandard names, not testinput_ or testoutput_
-         "datacreate_testpoints_testoutputs.R",  "datacreate_testpoints_5_50_500.R",
+         "datacreate_testpoints_5_50_500.R",
          "datacreate_testdata_frs.R",  "datacreate_testinput_shapes_2.R",
          # testdata standard names, testinput_ or testoutput_
          "datacreate_testinput_address_table.R", "datacreate_testinput_fips.R", "datacreate_testinput_mact.R", "datacreate_testinput_naics.R", "datacreate_testinput_program_name.R", "datacreate_testinput_sic.R",
          "datacreate_testinput_program_sys_id.R", "datacreate_testinput_registry_id.R",
+
+         "datacreate_testpoints_testoutputs.R",
          "datacreate_testoutput_ejamit_fips_.R", "datacreate_testoutput_ejamit_shapes_2.R",
 
          # facility-related datasets etc.
