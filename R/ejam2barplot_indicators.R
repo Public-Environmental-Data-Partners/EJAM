@@ -41,6 +41,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
   ## set indicator group shorter names - use shortlabel
   mybarvars.friendly <- fixcolnames(mybarvars, oldtype = 'r', newtype = 'shortlabel')
 
+  ## standardize legacy and current summary labels to canonical labels used in plots
   standardize_summary <- function(x) {
     dplyr::case_when(
       x %in% c('Average site', 'Average site analyzed') ~ 'Average site analyzed',
