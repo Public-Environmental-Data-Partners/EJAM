@@ -15,6 +15,7 @@ test_that("ejam2barplot_indicators ratio includes analyzed site and person summa
     as.character(unique(x$data$Summary)),
     c("Average person in US", "Average site analyzed", "Average person at sites analyzed")
   )
+  # The US comparison baseline is explicitly added as ratio = 1 for every indicator.
   expect_true(all(x$data$ratio[x$data$Summary == "Average person in US"] == 1))
 })
 
