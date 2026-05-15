@@ -94,7 +94,12 @@
 #'   in addition to final datasets.
 #' @param include_ejscreen_export logical. If TRUE, also create an
 #'   EJSCREEN-ready export using [calc_ejscreen_export()].
+#' @param include_ejscreen_dataset_creator_input logical. If TRUE, also create
+#'   the smaller pre-index input table expected by EPA's
+#'   `ejscreen-dataset-creator-2.3` Python tool.
 #' @param ejscreen_export_path optional file path for the EJSCREEN export.
+#' @param ejscreen_dataset_creator_input_path optional file path for the
+#'   EJScreen dataset-creator input table.
 #' @param ejscreen_export_vars optional EJAM `rname` columns to keep in the
 #'   EJSCREEN export before renaming.
 #' @param ejscreen_export_required_names optional final EJSCREEN field names
@@ -135,7 +140,9 @@ calc_ejscreen_dataset <- function(yr,
                                   download_acs_raw = TRUE,
                                   return_intermediate = TRUE,
                                   include_ejscreen_export = FALSE,
+                                  include_ejscreen_dataset_creator_input = FALSE,
                                   ejscreen_export_path = NULL,
+                                  ejscreen_dataset_creator_input_path = NULL,
                                   ejscreen_export_vars = NULL,
                                   ejscreen_export_required_names = NULL,
                                   ejscreen_export_rename_newtype = "ejscreen_indicator",
@@ -457,6 +464,23 @@ calc_ejscreen_dataset <- function(yr,
       statestats_ej = stats$statestats_ej
 
     ), out)
+  }
+  # ~ ----------------------------------------- ####
+  # EJSCREEN PYTHON DATASET-CREATOR INPUT FILE ####
+  # * Smaller pre-index input for ejscreen-dataset-creator-2.3 ####
+  # ~ ----------------------------------------- ####
+  if (isTRUE(include_ejscreen_dataset_creator_input) ||
+      !is.null(ejscreen_dataset_creator_input_path)) {
+    dataset_creator_input <- calc_ejscreen_dataset_creator_input(
+      blockgroupstats = blockgroupstats,
+      save_path = ejscreen_dataset_creator_input_path,
+      pipeline_storage = pipeline_storage,
+      overwrite = overwrite
+    )
+    out$ejscreen_dataset_creator_input <- dataset_creator_input
+    if (isTRUE(save_stages)) {
+      save_stage(out$ejscreen_dataset_creator_input, "ejscreen_dataset_creator_input")
+    }
   }
   # ~ ----------------------------------------- ####
   # EJSCREEN FILE ####

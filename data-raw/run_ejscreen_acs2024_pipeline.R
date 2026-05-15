@@ -30,6 +30,7 @@
 
 #   EJAM_PIPELINE_YR: the last year of the 5-year ACS survey to use, e.g. 2022 or 2024. Default is the most recent year that is likely to be published by Census.
 
+#   EJAM_PIPELINE_ROOT: parent folder/S3 prefix containing version folders such as ejscreen_acs_2024.
 #   EJAM_PIPELINE_DIR: override output folder.
 #   EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
 
@@ -42,7 +43,9 @@
 
 #   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv or .xyz file.
 
-#   EJAM_VALIDATE_VS_PRIOR: TRUE to compare selected outputs to currently packaged EJAM datasets and save prior_validation_*.txt and prior_validation_summary.csv.
+#   EJAM_VALIDATE_VS_PRIOR: TRUE to compare selected outputs to a prior saved pipeline version and save prior_validation_*.txt and prior_validation_summary.csv.
+#   EJAM_PRIOR_PIPELINE_YR: prior version year to compare against. Defaults to 2022 for yr 2024, otherwise yr - 1.
+#   EJAM_PRIOR_PIPELINE_DIR: optional explicit prior version folder/S3 prefix. If unset, constructed from EJAM_PIPELINE_ROOT and EJAM_PRIOR_PIPELINE_YR.
 #   EJAM_VALIDATE_VS_PRIOR_WALDO: TRUE to include optional waldo::compare() output in prior validation detail files.
 
 #   CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
@@ -65,9 +68,11 @@ dir_parent_local = file.path(getwd(), "data-raw", "pipeline_outputs")
 # dir_parent_local = file.path(tempdir(), "data-raw", "pipeline") # an alternative local path that is outside the package folder
 dir_parent <- if (storage == "local") {dir_parent_local} else {dir_parent_s3}
 dir_full <- file.path(dir_parent, dir_child)
+prior_yr <- if (as.integer(yr) == 2024L) "2022" else as.character(as.integer(yr) - 1L)
 
 Sys.setenv(
   EJAM_PIPELINE_YR = yr,
+  EJAM_PIPELINE_ROOT = dir_parent,
   EJAM_PIPELINE_STORAGE = storage,
   EJAM_PIPELINE_DIR = dir_full,
   EJAM_STAGE_FORMAT = "csv", # options are c("csv", "rds", "rda", "arrow")
@@ -82,6 +87,8 @@ Sys.setenv(
   EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
 
   EJAM_VALIDATE_VS_PRIOR       = "TRUE",
+  EJAM_PRIOR_PIPELINE_YR       = prior_yr,
+  EJAM_PRIOR_PIPELINE_DIR      = "",
   EJAM_VALIDATE_VS_PRIOR_WALDO = "FALSE"
 )
 ###################################################### #
@@ -107,6 +114,8 @@ Sys.setenv(
 #      EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, # TRUE during testing not once finalized datasets - TO TRY TO REPLICATE 2022 DATA
 #      EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
 #            EJAM_VALIDATE_VS_PRIOR = TRUE,
+#            EJAM_PRIOR_PIPELINE_YR = "2022",
+#            EJAM_PRIOR_PIPELINE_DIR = "",
 #            EJAM_VALIDATE_VS_PRIOR_WALDO = FALSE
 # )
 # ###################################################### #
@@ -128,7 +137,9 @@ Sys.setenv(
 #            EJAM_ACS_DOWNLOAD_RETRIES = "2",
 #         EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, #  set FALSE once new envt data are available
 #         EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
-#            EJAM_VALIDATE_VS_PRIOR = TRUE, # 1st time this is used on 2024 yr, it will compare to 2022 TO SEE HOW MUCH THINGS CHANGED VS last version that was packaged so initially that will be 2022 but after saved in package if this is run again it will not do much.
+#            EJAM_VALIDATE_VS_PRIOR = TRUE,
+#            EJAM_PRIOR_PIPELINE_YR = "2022",
+#            EJAM_PRIOR_PIPELINE_DIR = "",
 #            EJAM_VALIDATE_VS_PRIOR_WALDO = FALSE
 # )
 ###################################################### #
@@ -137,6 +148,7 @@ Sys.setenv(
 print(
   cbind(current_setting = Sys.getenv(c(
     'EJAM_PIPELINE_YR',
+    'EJAM_PIPELINE_ROOT',
     'EJAM_PIPELINE_DIR',
     'EJAM_PIPELINE_STORAGE',
     'EJAM_STAGE_FORMAT',
@@ -148,6 +160,8 @@ print(
     'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
     'EJAM_INCLUDE_EJSCREEN_EXPORT',
     'EJAM_VALIDATE_VS_PRIOR',
+    'EJAM_PRIOR_PIPELINE_YR',
+    'EJAM_PRIOR_PIPELINE_DIR',
     'EJAM_VALIDATE_VS_PRIOR_WALDO'
   )))
 )
@@ -155,16 +169,9 @@ print(
 #
 # VALIDATION VS A SPECIFIC PRIOR DATASET ####
 #
-# The code below by default compared new results versus EJAM::blockgroupstats, EJAM::usastats, etc.
-# In other words, it compares to whatever version happens to be currently packaged in EJAM when this script is run,
-# which may be the old 2022 data or the 2024 data, etc.,
-# depending on when you run it and what is in the package at that time.
-#
-# To control which prior datasets/files to use for comparison/replication purposes,
-# in the code below in the section
-# "Optional validation versus prior or currently packaged datasets",
-# make edits to specify which datasets to compare to the prior version of the data, and
-# which columns to compare (e.g. shared columns, or specific key columns).
+# If EJAM_VALIDATE_VS_PRIOR is TRUE, this script compares the new saved pipeline
+# stages to a prior saved pipeline version. Use EJAM_PRIOR_PIPELINE_YR or
+# EJAM_PRIOR_PIPELINE_DIR to control the comparison target.
 
 ###################################################### #
 
@@ -198,6 +205,10 @@ pipeline_dir <- Sys.getenv(
   "EJAM_PIPELINE_DIR",
   unset = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr))
 )
+pipeline_root <- Sys.getenv(
+  "EJAM_PIPELINE_ROOT",
+  unset = if (grepl("/ejscreen_acs_[0-9]+/?$", pipeline_dir)) dirname(pipeline_dir) else "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
+)
 pipeline_storage <- Sys.getenv("EJAM_PIPELINE_STORAGE", unset = "auto")
 pipeline_storage <- match.arg(pipeline_storage, c("auto", "local", "s3"))
 pipeline_storage <- EJAM:::ejscreen_pipeline_storage_backend(pipeline_dir, storage = pipeline_storage)
@@ -224,16 +235,26 @@ use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", 
 ### ESCREEN DATASET EXPORT settings ####
 
 include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
+include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", FALSE)
 
 ### validation vs prior data  ####
 
 validate_vs_prior <- env_flag("EJAM_VALIDATE_VS_PRIOR", TRUE)
 validate_vs_prior_waldo <- env_flag("EJAM_VALIDATE_VS_PRIOR_WALDO", FALSE)
+prior_pipeline_yr <- Sys.getenv(
+  "EJAM_PRIOR_PIPELINE_YR",
+  unset = if (as.integer(pipeline_yr) == 2024L) "2022" else as.character(as.integer(pipeline_yr) - 1L)
+)
+prior_pipeline_dir <- Sys.getenv("EJAM_PRIOR_PIPELINE_DIR", unset = "")
+if (!nzchar(prior_pipeline_dir)) {
+  prior_pipeline_dir <- EJAM:::ejscreen_pipeline_version_dir(prior_pipeline_yr, root = pipeline_root)
+}
 
 #################################################### #
 print(
   cbind(Sys.getenv = Sys.getenv(c(
     'EJAM_PIPELINE_YR',
+    'EJAM_PIPELINE_ROOT',
     'EJAM_PIPELINE_DIR',
     'EJAM_PIPELINE_STORAGE',
     'EJAM_STAGE_FORMAT',
@@ -246,12 +267,16 @@ print(
     'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
 
     'EJAM_INCLUDE_EJSCREEN_EXPORT',
+    'EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT',
 
     'EJAM_VALIDATE_VS_PRIOR',
+    'EJAM_PRIOR_PIPELINE_YR',
+    'EJAM_PRIOR_PIPELINE_DIR',
     'EJAM_VALIDATE_VS_PRIOR_WALDO'
   )),
   using_here = c(
     pipeline_yr = pipeline_yr,
+    pipeline_root=pipeline_root,
     pipeline_dir=pipeline_dir,
     pipeline_storage=pipeline_storage,
     stage_format=stage_format,
@@ -264,8 +289,11 @@ print(
     use_provisional_bg_envirodata=use_provisional_bg_envirodata,
 
     include_ejscreen_export=include_ejscreen_export,
+    include_ejscreen_dataset_creator_input=include_ejscreen_dataset_creator_input,
 
     validate_vs_prior=validate_vs_prior,
+    prior_pipeline_yr=prior_pipeline_yr,
+    prior_pipeline_dir=prior_pipeline_dir,
     validate_vs_prior_waldo=validate_vs_prior_waldo
   ))
 )
@@ -328,79 +356,6 @@ write_pipeline_text <- function(lines, filename) {
     pipeline_dir = pipeline_dir,
     pipeline_storage = pipeline_storage
   )
-}
-####################### #
-prior_shared_subset <- function(old_dt, new_dt) {
-  old_dt <- data.table::as.data.table(data.table::copy(old_dt))
-  shared <- intersect(names(old_dt), names(new_dt))
-  keep <- unique(c("bgfips", shared))
-  keep <- keep[keep %in% names(old_dt)]
-  old_dt[, keep, with = FALSE]
-}
-####################### #
-write_prior_validation <- function(stage, new_dt, old_dt, old_label) {
-  warnings <- character()
-  error <- character()
-  result <- tryCatch(
-    withCallingHandlers(
-      EJAM:::ejscreen_pipeline_validate_vs_prior(
-        new_dt = new_dt,
-        old_dt = old_dt,
-        use_waldo = validate_vs_prior_waldo,
-        verbose = FALSE
-      ),
-      warning = function(w) {
-        warnings <<- c(warnings, conditionMessage(w))
-        invokeRestart("muffleWarning")
-      }
-    ),
-    error = function(e) {
-      error <<- conditionMessage(e)
-      NULL
-    }
-  )
-
-  stage_safe <- gsub("[^A-Za-z0-9_]+", "_", stage)
-  detail_filename <- paste0("prior_validation_", stage_safe, ".txt")
-
-  if (is.null(result)) {
-    write_pipeline_text(
-      c(
-        paste0("Prior-version validation for stage: ", stage),
-        paste0("Reference object: ", old_label),
-        paste0("Created: ", Sys.time()),
-        "",
-        paste0("ERROR: ", error)
-      ),
-      detail_filename
-    )
-    return(data.table::data.table(
-      stage = stage,
-      path = EJAM:::ejscreen_pipeline_stage_path(stage = stage, pipeline_dir = pipeline_dir, format = stage_format),
-      old_label = old_label,
-      error = error,
-      warnings = paste(warnings, collapse = " | ")
-    ))
-  }
-
-  write_pipeline_text(
-    EJAM:::ejscreen_pipeline_prior_validation_text(
-      result = result,
-      stage = stage,
-      old_label = old_label,
-      warnings = warnings
-    ),
-    detail_filename
-  )
-  row <- EJAM:::ejscreen_pipeline_prior_validation_as_row(
-    result = result,
-    stage = stage,
-    path = EJAM:::ejscreen_pipeline_stage_path(stage = stage, pipeline_dir = pipeline_dir, format = stage_format),
-    old_label = old_label,
-    warnings = warnings
-  )
-  row[, error := ""]
-  row[]
 }
 ####################### #
 # ~ ----------------------------------------------- ####
@@ -542,6 +497,7 @@ if (stage_exists(stagename)) {
 ###################################################### #
 
 message("Creating blockgroupstats, bgej, usastats, statestats",
+        if (isTRUE(include_ejscreen_dataset_creator_input)) ", ejscreen_dataset_creator_input" else "",
         if (isTRUE(include_ejscreen_export)) ", and ejscreen_export" else "")
 print(Sys.time())
 
@@ -563,6 +519,7 @@ out <- EJAM::calc_ejscreen_dataset(
   download_timeout = acs_download_timeout,
   download_retries = acs_download_retries,
   return_intermediate = TRUE,
+  include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
   include_ejscreen_export = include_ejscreen_export,
   overwrite = TRUE
 )
@@ -603,6 +560,9 @@ stages_to_validate <- c(
 if (isTRUE(include_ejscreen_export)) {
   stages_to_validate <- c(stages_to_validate, "ejscreen_export")
 }
+if (isTRUE(include_ejscreen_dataset_creator_input)) {
+  stages_to_validate <- c(stages_to_validate, "ejscreen_dataset_creator_input")
+}
 
 filename <- paste0("pipeline_validation_summary.", "csv")
 
@@ -639,6 +599,19 @@ if (isTRUE(include_ejscreen_export)) {
                             pipeline_dir = pipeline_dir,
                             pipeline_storage = pipeline_storage)
 }
+if (isTRUE(include_ejscreen_dataset_creator_input)) {
+  dataset_creator_report <- attr(
+    out$ejscreen_dataset_creator_input,
+    "ejscreen_dataset_creator_input_report",
+    exact = TRUE
+  )
+  if (!is.null(dataset_creator_report)) {
+    write_pipeline_txt_or_csv(x = dataset_creator_report,
+                              filename = "ejscreen_dataset_creator_input_report.csv",
+                              pipeline_dir = pipeline_dir,
+                              pipeline_storage = pipeline_storage)
+  }
+}
 print(Sys.time())
 ###################################################### #
 # > Optional validation versus prior or currently packaged datasets ####
@@ -646,67 +619,29 @@ print(Sys.time())
 
 if (isTRUE(validate_vs_prior)) {
 
-  message("Comparing selected stages to currently packaged EJAM datasets.")
-  prior_blockgroupstats <- data.table::as.data.table(data.table::copy(EJAM::blockgroupstats))
-  if (!exists("bgej")) {dataload_dynamic("bgej")}
-  prior_bgej <- data.table::as.data.table(data.table::copy( bgej ))
-  prior_usastats <- data.table::as.data.table(data.table::copy(EJAM::usastats))
-  prior_statestats <- data.table::as.data.table(data.table::copy(EJAM::statestats))
-
-  prior_validation_summary <- data.table::rbindlist(
-    list(
-      write_prior_validation(
-        stage = "bg_acsdata",
-        new_dt = bg_acsdata,
-        old_dt = prior_shared_subset(prior_blockgroupstats, bg_acsdata),
-        old_label = "shared columns in EJAM::blockgroupstats"
-      ),
-      write_prior_validation(
-        stage = "bg_envirodata",
-        new_dt = bg_envirodata,
-        old_dt = prior_shared_subset(prior_blockgroupstats, bg_envirodata),
-        old_label = "shared columns in EJAM::blockgroupstats"
-      ),
-      write_prior_validation(
-        stage = "bg_extra_indicators",
-        new_dt = bg_extra_indicators,
-        old_dt = prior_shared_subset(prior_blockgroupstats, bg_extra_indicators),
-        old_label = "shared columns in EJAM::blockgroupstats"
-      ),
-      write_prior_validation(
-        stage = "blockgroupstats",
-        new_dt = out$blockgroupstats,
-        old_dt = prior_blockgroupstats,
-        old_label = "EJAM::blockgroupstats"
-      ),
-      write_prior_validation(
-        stage = "bgej",
-        new_dt = out$bgej,
-        old_dt = prior_bgej,
-        old_label = "EJAM::bgej"
-      ),
-      write_prior_validation(
-        stage = "usastats",
-        new_dt = out$usastats,
-        old_dt = prior_usastats,
-        old_label = "EJAM::usastats"
-      ),
-      write_prior_validation(
-        stage = "statestats",
-        new_dt = out$statestats,
-        old_dt = prior_statestats,
-        old_label = "EJAM::statestats"
-      )
+  message("Comparing selected stages to prior saved pipeline version: ", prior_pipeline_dir)
+  prior_validation <- EJAM:::ejscreen_pipeline_compare_versions(
+    new_yr = pipeline_yr,
+    old_yr = prior_pipeline_yr,
+    stages = c(
+      "bg_acsdata",
+      "bg_envirodata",
+      "bg_extra_indicators",
+      "blockgroupstats",
+      "bgej",
+      "usastats",
+      "statestats"
     ),
-    fill = TRUE
+    pipeline_root = pipeline_root,
+    new_pipeline_dir = pipeline_dir,
+    old_pipeline_dir = prior_pipeline_dir,
+    format = stage_format,
+    storage = pipeline_storage,
+    output_dir = pipeline_dir,
+    write_files = TRUE,
+    use_waldo = validate_vs_prior_waldo
   )
-
-  write_pipeline_txt_or_csv(
-    x = prior_validation_summary,
-    filename = "prior_validation_summary.csv",
-    pipeline_dir = pipeline_dir,
-    pipeline_storage = pipeline_storage
-  )
+  prior_validation_summary <- prior_validation$summary
   message("Prior-version validation summary:")
   prior_validation_print_cols <- intersect(
     c("stage", "rows_new", "rows_old", "columns_new", "columns_old",

@@ -1,9 +1,11 @@
 test_that("map_headernames augmentation fills EJSCREEN name columns", {
   mapping <- data.frame(
-    rname = c("no2", "pctpre1960", "pctile.EJ.DISPARITY.no2.eo"),
-    csvname = c("NO2", "PRE1960PCT", "P_D2_NO2"),
-    apiname = c("RAW_E_NO2", "RAW_E_LEAD", ""),
-    ejscreen_csv = c("", "", ""),
+    rname = c("no2", "pctpre1960", "pctile.pctpre1960", "pctile.EJ.DISPARITY.no2.eo"),
+    csvname = c("NO2", "PRE1960PCT", "P_LDPNT", "P_D2_NO2"),
+    ejscreen_apinames_old = c("RAW_E_NO2", "RAW_E_LEAD", "", ""),
+    ejscreen_bin = c("", "", "WRONG_BIN", "WRONG_D2_BIN"),
+    ejscreen_text = c("", "", "WRONG_TEXT", "WRONG_D2_TEXT"),
+    `pctile.` = c(0, 0, 1, 1),
     stringsAsFactors = FALSE
   )
 
@@ -11,10 +13,15 @@ test_that("map_headernames augmentation fills EJSCREEN name columns", {
   mapped <- out[match(mapping$rname, out$rname), ]
   expect_equal(mapped$ejscreen_indicator, mapping$csvname)
   expect_equal(mapped$ejscreen_ftp_names, mapping$csvname)
-  expect_equal(mapped$ejscreen_apinames_old[1:2], mapping$apiname[1:2])
+  expect_equal(mapped$ejscreen_apinames_old[1:2], mapping$ejscreen_apinames_old[1:2])
   expect_equal(mapped$ejam_apinames, mapping$rname)
   expect_equal(out$ejscreen_indicator[out$rname == "bgfips"], "ID")
   expect_false("ejscreen_app" %in% names(out))
+  expect_false("ejscreen_pctile" %in% names(out))
+  expect_false("ejscreen_bin" %in% names(out))
+  expect_false("ejscreen_text" %in% names(out))
+  expect_false(".text" %in% names(out))
+  expect_true("text." %in% names(out))
   expect_true(all(c(
     "EXCEED_COUNT_90",
     "EXCEED_COUNT_90_SUP",
@@ -22,28 +29,24 @@ test_that("map_headernames augmentation fills EJSCREEN name columns", {
     "Shape__Area",
     "Shape__Length"
   ) %in% out$ejscreen_indicator))
-  expect_equal(out$ejscreen_bin[out$rname == "pctpre1960"], "B_LDPNT")
-  expect_equal(out$ejscreen_text[out$rname == "pctile.EJ.DISPARITY.no2.eo"], "T_D2_NO2")
+  expect_equal(out$ejscreen_indicator[out$rname == "bin.pctpre1960"], "B_LDPNT")
+  expect_equal(out$ejscreen_indicator[out$rname == "text.EJ.DISPARITY.no2.eo"], "T_D2_NO2")
+  expect_equal(out$bin.[out$rname == "bin.pctpre1960"], 1)
+  expect_equal(out$text.[out$rname == "text.EJ.DISPARITY.no2.eo"], 1)
 })
 
 test_that("map_headernames augmentation removes legacy special markers from current EJSCREEN name columns", {
   mapping <- data.frame(
     rname = c("state.pctile.Demog.Index", "internal_for_pctile"),
     csvname = c("S_P_DEMOGIDX_2ST", "use for pctile and avg but don't report"),
-    apiname = c("S_D_DEMOGIDX2ST_PER", ""),
+    ejscreen_apinames_old = c("S_D_DEMOGIDX2ST_PER", ""),
     ejscreen_indicator = c("***special", "use for pctile and avg but don't report"),
-    ejscreen_csv = c("***special", "use for pctile and avg but don't report"),
-    ejscreen_gdb = c("***special", "use for pctile and avg but don't report"),
-    ejscreen_pctile = c("P_***special", "use for pctile and avg but don't report"),
-    ejscreen_bin = c("B_***special", "use for pctile and avg but don't report"),
-    ejscreen_text = c("T_***special", "use for pctile and avg but don't report"),
     stringsAsFactors = FALSE
   )
 
   out <- EJAM:::augment_map_headernames_ejscreen_names(mapping)
   current_name_cols <- c(
-    "ejscreen_indicator", "ejscreen_csv", "ejscreen_gdb",
-    "ejscreen_pctile", "ejscreen_bin", "ejscreen_text"
+    "ejscreen_indicator"
   )
 
   expect_false(any(grepl("***special", unlist(out[current_name_cols]), fixed = TRUE)))
@@ -68,7 +71,7 @@ test_that("calc_ejscreen_export combines bgej and renames through map_headername
     rname = c("bgfips", "pm", "EJ.DISPARITY.pm.eo", "pctile.EJ.DISPARITY.pm.eo"),
     ejscreen_indicator = c("ID", "PM25", "D2_PM25", "P_D2_PM25"),
     csvname = c("ID", "PM25", "D2_PM25", "P_D2_PM25"),
-    apiname = c("", "RAW_E_PM25", "", ""),
+    ejscreen_apinames_old = c("", "RAW_E_PM25", "", ""),
     stringsAsFactors = FALSE
   )
   save_path <- tempfile(fileext = ".csv")
@@ -103,7 +106,7 @@ test_that("calc_ejscreen_export saves direct s3 paths through pipeline upload he
     rname = c("bgfips", "pm"),
     ejscreen_indicator = c("ID", "PM25"),
     csvname = c("ID", "PM25"),
-    apiname = "",
+    ejscreen_apinames_old = "",
     stringsAsFactors = FALSE
   )
   uploaded <- new.env(parent = emptyenv())
@@ -156,7 +159,7 @@ test_that("calc_ejscreen_export adds EJ percentile and map helper fields from lo
     rname = c("bgfips", "EJ.DISPARITY.pm.eo", "pctile.EJ.DISPARITY.pm.eo"),
     ejscreen_indicator = c("ID", "D2_PM25", "P_D2_PM25"),
     csvname = c("ID", "D2_PM25", "P_D2_PM25"),
-    apiname = "",
+    ejscreen_apinames_old = "",
     stringsAsFactors = FALSE
   )
 
@@ -212,18 +215,20 @@ test_that("calc_ejscreen_export can produce FeatureServer percentile and schema 
       "bgfips", "Demog.Index", "Demog.Index.State", "pctile.Demog.Index",
       "pm", "pctile.pm", "o3", "pctile.o3",
       "EJ.DISPARITY.pm.eo", "pctile.EJ.DISPARITY.pm.eo",
-      "EJ.DISPARITY.pm.supp", "pctile.EJ.DISPARITY.pm.supp"
+      "EJ.DISPARITY.pm.supp", "pctile.EJ.DISPARITY.pm.supp",
+      "bin.pm", "text.pm", "bin.EJ.DISPARITY.pm.eo", "text.EJ.DISPARITY.pm.eo",
+      "bin.EJ.DISPARITY.pm.supp", "text.EJ.DISPARITY.pm.supp"
     ),
     ejscreen_indicator = c(
       "ID", "DEMOGIDX_2", "DEMOGIDX_2ST", "P_DEMOGIDX_2",
       "PM25", "P_PM25", "OZONE", "P_OZONE",
-      "D2_PM25", "P_D2_PM25", "D5_PM25", "P_D5_PM25"
+      "D2_PM25", "P_D2_PM25", "D5_PM25", "P_D5_PM25",
+      "B_PM25", "T_PM25", "B_D2_PM25", "T_D2_PM25",
+      "B_D5_PM25", "T_D5_PM25"
     ),
-    ejscreen_pctile = c(
-      "", "P_DEMOGIDX_2", "", "P_DEMOGIDX_2",
-      "P_PM25", "P_PM25", "P_OZONE", "P_OZONE",
-      "P_D2_PM25", "P_D2_PM25", "P_D5_PM25", "P_D5_PM25"
-    ),
+    `pctile.` = c(rep(0, 3), 1, 0, 1, 0, 1, 0, 1, 0, 1, rep(0, 6)),
+    bin. = c(rep(0, 12), 1, 0, 1, 0, 1, 0),
+    text. = c(rep(0, 12), 0, 1, 0, 1, 0, 1),
     stringsAsFactors = FALSE
   )
   feature_fields <- EJAM:::ejscreen_feature_server_fields()
@@ -269,7 +274,7 @@ test_that("calc_ejscreen_export default output drops non-reporting placeholder n
     rname = c("keepme", "internal_a", "internal_b"),
     ejscreen_indicator = c("KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
     csvname = c("KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
-    apiname = "",
+    ejscreen_apinames_old = "",
     stringsAsFactors = FALSE
   )
 
@@ -294,12 +299,18 @@ test_that("calc_ejscreen_export_schema_report flags missing and extra fields", {
     check.names = FALSE
   )
   mapping <- data.frame(
-    rname = c("bgfips", "EJ.DISPARITY.pm.eo", "pctile.EJ.DISPARITY.pm.eo"),
-    ejscreen_indicator = c("ID", "D2_PM25", "P_D2_PM25"),
-    ejscreen_pctile = c("", "P_D2_PM25", "P_D2_PM25"),
-    ejscreen_bin = c("", "B_D2_PM25", "B_D2_PM25"),
-    ejscreen_text = c("", "T_D2_PM25", "T_D2_PM25"),
-    longname = c("Block group FIPS", "PM2.5 EJ index", "PM2.5 EJ index percentile"),
+    rname = c(
+      "bgfips", "EJ.DISPARITY.pm.eo", "pctile.EJ.DISPARITY.pm.eo",
+      "bin.EJ.DISPARITY.pm.eo", "text.EJ.DISPARITY.pm.eo"
+    ),
+    ejscreen_indicator = c("ID", "D2_PM25", "P_D2_PM25", "B_D2_PM25", "T_D2_PM25"),
+    `pctile.` = c(0, 0, 1, 0, 0),
+    bin. = c(0, 0, 0, 1, 0),
+    text. = c(0, 0, 0, 0, 1),
+    longname = c(
+      "Block group FIPS", "PM2.5 EJ index", "PM2.5 EJ index percentile",
+      "PM2.5 EJ index map bin", "PM2.5 EJ index popup text"
+    ),
     stringsAsFactors = FALSE
   )
 
@@ -312,6 +323,61 @@ test_that("calc_ejscreen_export_schema_report flags missing and extra fields", {
   expect_equal(report$status[report$ejscreen_name == "T_D2_PM25"], "missing_expected")
   expect_equal(report$field_type[report$ejscreen_name == "B_D2_PM25"], "map_bin")
   expect_true(report$present_in_export[report$ejscreen_name == "ID"])
+})
+
+test_that("calc_ejscreen_dataset_creator_input renames, orders, and reports placeholders", {
+  blockgroupstats <- data.frame(
+    bgfips = c("100010001001", "100010001002"),
+    pop = c(100, 200),
+    `Demog.Index` = c(0.1, 0.2),
+    pm = c(7.1, 8.2),
+    count.ej.80up = c(3, 4),
+    check.names = FALSE
+  )
+  mapping <- data.frame(
+    rname = c("bgfips", "pop", "Demog.Index", "pm", "count.ej.80up"),
+    ejscreen_indicator = c("ID", "ACSTOTPOP", "DEMOGIDX_2", "PM25", "EXCEED_COUNT_80"),
+    csvname = c("ID", "ACSTOTPOP", "DEMOGIDX_2", "PM25", "EXCEED_COUNT_80"),
+    ejscreen_apinames_old = "",
+    stringsAsFactors = FALSE
+  )
+  expected <- c("ID", "ACSTOTPOP", "DEMOGIDX_2", "PM25", "EXCEED_COUNT_80")
+
+  out <- NULL
+  expect_warning(
+    out <- EJAM:::calc_ejscreen_dataset_creator_input(
+      blockgroupstats = blockgroupstats,
+      mapping_for_names = mapping,
+      expected_output_names = expected,
+      placeholder_fields = "EXCEED_COUNT_80",
+      return_report = TRUE
+    ),
+    "filled fields"
+  )
+
+  expect_equal(names(out$data), expected)
+  expect_equal(out$data$ID, blockgroupstats$bgfips)
+  expect_equal(out$data$ACSTOTPOP, blockgroupstats$pop)
+  expect_equal(out$data$DEMOGIDX_2, blockgroupstats$Demog.Index)
+  expect_true(all(is.na(out$data$EXCEED_COUNT_80)))
+  expect_equal(
+    out$report$status[match(expected, out$report$ejscreen_name)],
+    c("mapped", "mapped", "mapped", "mapped", "placeholder")
+  )
+  expect_true(out$report$placeholder[out$report$ejscreen_name == "EXCEED_COUNT_80"])
+})
+
+test_that("ejscreen_dataset_creator_input_fields matches dataset-creator column contract", {
+  fields <- EJAM:::ejscreen_dataset_creator_input_fields()
+
+  expect_equal(length(fields), 51)
+  expect_false(anyDuplicated(fields) > 0)
+  expect_equal(fields[1:5], c("ID", "STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))
+  expect_true(all(c("DISABILITYPCT", "PM25", "NO2", "EXCEED_COUNT_80_SUP") %in% fields))
+  expect_equal(tail(fields, 6), c(
+    "AREALAND", "AREAWATER", "NPL_CNT", "TSDF_CNT",
+    "EXCEED_COUNT_80", "EXCEED_COUNT_80_SUP"
+  ))
 })
 
 test_that("EJSCREEN map helper fields use historical bins and current text", {
@@ -331,10 +397,15 @@ test_that("EJSCREEN map helper fields use historical bins and current text", {
       check.names = FALSE
     ),
     mapping_for_names = data.frame(
-      rname = "pctile.EJ.DISPARITY.no2.eo",
-      ejscreen_pctile = "P_D2_NO2",
-      ejscreen_bin = "B_D2_NO2",
-      ejscreen_text = "T_D2_NO2",
+      rname = c(
+        "pctile.EJ.DISPARITY.no2.eo",
+        "bin.EJ.DISPARITY.no2.eo",
+        "text.EJ.DISPARITY.no2.eo"
+      ),
+      ejscreen_indicator = c("P_D2_NO2", "B_D2_NO2", "T_D2_NO2"),
+      `pctile.` = c(1, 0, 0),
+      bin. = c(0, 1, 0),
+      text. = c(0, 0, 1),
       stringsAsFactors = FALSE
     )
   )

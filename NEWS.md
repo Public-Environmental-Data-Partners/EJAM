@@ -95,6 +95,15 @@
   `EXCEED_COUNT_90_SUP`, `SYMBOLOGY_EXCEED_COUNT_80`, `Shape__Area`, and
   `Shape__Length`, and restored current EJScreen names for `DEMOGIDX_2ST` and
   `DEMOGIDX_5ST`.
+  EJSCREEN map-bin and popup-text fields are now represented as their own
+  `map_headernames` rows with `rname` values like `bin.pm` and `text.pm`,
+  rather than as side columns on percentile rows. The old side-name columns
+  `ejscreen_pctile`, `ejscreen_bin`, and `ejscreen_text` were retired, and
+  the `.text` flag column was renamed to `text.`.
+  Redundant legacy metadata columns such as `apiname`, `ejscreen_api`,
+  `ejscreen_csv`, `ejscreen_gdb`, old version-specific name columns, obsolete
+  JSON/report sorting columns, and stale matching/helper columns were removed;
+  old EJScreen API names now live in `ejscreen_apinames_old`.
 
 - Improved formula handling for ACS-derived indicators, including dependency
   ordering (i.e., if formula A's inputs include formula B's output, formula B must be done first)

@@ -1,3 +1,4 @@
+# . ####
 ###################################################### #
 
 #' Combine EJAM blockgroup datasets and rename fields for EJSCREEN
@@ -240,20 +241,29 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 
     mh <- mapping_for_names
     if (is.null(pctile_fields)) {
-      pctile_fields <- unique(mh$ejscreen_pctile[!is_blank_string(mh$ejscreen_pctile)])
+      pctile_fields <- unique(mh$ejscreen_indicator[
+        map_headernames_pctile_row(mh) &
+          grepl("^P_", mh$ejscreen_indicator) &
+          !is_blank_string(mh$ejscreen_indicator)
+      ])
     }
     pctile_fields <- pctile_fields[grepl("^P_", pctile_fields)]
 
     for (pctile_field in unique(pctile_fields)) {
-      pctile_rows <- mh[mh$ejscreen_indicator == pctile_field, , drop = FALSE]
+      pctile_rows <- mh[
+        map_headernames_pctile_row(mh) &
+          mh$ejscreen_indicator == pctile_field,
+        ,
+        drop = FALSE
+      ]
       pctile_rname <- pctile_rows$rname[!is_blank_string(pctile_rows$rname)][1]
       if (is.na(pctile_rname) || is_blank_string(pctile_rname) || pctile_rname %in% names(bg)) {
         next
       }
+      raw_rname <- ejscreen_base_rname_from_pctile_rname(pctile_rname)
 
       raw_rows <- mh[
-        mh$ejscreen_pctile == pctile_field &
-          mh$ejscreen_indicator != pctile_field &
+        mh$rname == raw_rname &
           mh$rname %in% names(bg) &
           mh$rname %in% names(lookup),
         ,
@@ -465,6 +475,331 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 ###################################################### #
 # . ####
 
+#' EJScreen dataset-creator input field order
+#'
+#' @details These are the input columns expected by the EPA
+#' `ejscreen-dataset-creator-2.3` Python tool, based on its `col_names.py`
+#' lists `info_names`, `data_names`, and `extra_cols`. This is intentionally
+#' smaller than `ejscreen_feature_server_fields()` because the Python tool
+#' calculates EJ indexes, percentiles, map bins, and map text itself.
+#'
+#' @return character vector of EJScreen Python input field names.
+#'
+#' @keywords internal
+#'
+ejscreen_dataset_creator_input_fields <- function() {
+  info_names <- c(
+    "ID", "STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION",
+    "ACSTOTPOP", "ACSIPOVBAS", "ACSEDUCBAS", "ACSTOTHH", "ACSTOTHU",
+    "ACSUNEMPBAS", "ACSDISABBAS", "PEOPCOLOR", "LOWINCOME",
+    "UNEMPLOYED", "DISABILITY", "LINGISO", "LESSHS", "UNDER5",
+    "OVER64", "PRE1960"
+  )
+  data_names <- c(
+    "DEMOGIDX_2", "DEMOGIDX_5", "PEOPCOLORPCT", "LOWINCPCT",
+    "UNEMPPCT", "DISABILITYPCT", "LINGISOPCT", "LESSHSPCT",
+    "UNDER5PCT", "OVER64PCT", "LIFEEXPPCT", "PM25", "OZONE",
+    "DSLPM", "RSEI_AIR", "PTRAF", "PRE1960PCT", "PNPL", "PRMP",
+    "PTSDF", "UST", "PWDIS", "DWATER", "NO2"
+  )
+  extra_cols <- c(
+    "AREALAND", "AREAWATER", "NPL_CNT", "TSDF_CNT",
+    "EXCEED_COUNT_80", "EXCEED_COUNT_80_SUP"
+  )
+  c(info_names, data_names, extra_cols)
+}
+
+#' Fields that are commonly placeholders in EJScreen dataset-creator input
+#'
+#' @details `EXCEED_COUNT_80` and `EXCEED_COUNT_80_SUP` are naturally derived
+#' after EJ indexes and percentiles exist, but the EPA dataset-creator default
+#' `extra_cols` list includes them as input columns. This helper names those
+#' fields so [calc_ejscreen_dataset_creator_input()] can include explicit `NA`
+#' placeholders and report them.
+#'
+#' @return character vector of field names.
+#'
+#' @keywords internal
+#'
+ejscreen_dataset_creator_placeholder_fields <- function() {
+  c("EXCEED_COUNT_80", "EXCEED_COUNT_80_SUP")
+}
+
+#' Create the input CSV expected by EPA's EJScreen dataset-creator tool
+#'
+#' @details This helper prepares the smaller pre-index input table expected by
+#' `ejscreen-dataset-creator-2.3`. It is intended for the alternative workflow
+#' where EJAM creates the ACS/environmental/extra-indicator base table, but the
+#' EJScreen Python scripts calculate EJ indexes, percentiles, map bins, and map
+#' popup text.
+#'
+#' The helper reads a `blockgroupstats`-like object or saved pipeline stage,
+#' renames fields through [map_headernames] via the same `ejscreen_indicator`
+#' metadata used by [fixcolnames()], adds explicit placeholder columns where
+#' requested fields are not available, and returns columns in the order expected
+#' by the Python tool's `col_names.py`.
+#'
+#' A report is attached as the attribute
+#' `ejscreen_dataset_creator_input_report`. Set `return_report = TRUE` to
+#' return both the data and report.
+#'
+#' @param blockgroupstats blockgroupstats-like data.frame, or NULL if reading
+#'   from a saved pipeline stage.
+#' @param pipeline_dir folder for reading/saving pipeline stages.
+#' @param pipeline_storage stage storage backend: `"auto"`, `"local"`, or
+#'   `"s3"`.
+#' @param blockgroupstats_stage stage name to read when `blockgroupstats` is not
+#'   supplied.
+#' @param blockgroupstats_path explicit path to a saved blockgroupstats input.
+#' @param stage_format input/output stage file format.
+#' @param mapping_for_names map_headernames-like crosswalk.
+#' @param rename_newtype target naming column in `mapping_for_names`.
+#' @param expected_output_names final EJScreen field names to create and order.
+#' @param placeholder_fields fields that may be created as explicit `NA`
+#'   placeholders if unavailable.
+#' @param force_placeholder_fields fields to write as explicit `NA`
+#'   placeholders even if a mapped source column is present. This defaults to
+#'   post-percentile exceedance-count fields, because those are not really
+#'   pre-index inputs for the EJScreen Python process.
+#' @param fill_missing logical. If TRUE, add unavailable expected fields as
+#'   `NA` columns and report them. If FALSE, stop when any expected field is
+#'   unavailable.
+#' @param return_report logical. If TRUE, return a list with `data` and
+#'   `report`.
+#' @param save_stage logical. If TRUE, save as the
+#'   `ejscreen_dataset_creator_input` pipeline stage.
+#' @param save_path optional direct path to save the input table.
+#' @param save_format optional direct-save format, guessed from `save_path` when
+#'   NULL.
+#' @param overwrite logical. If FALSE, refuse to overwrite saved output.
+#' @param validation_strict logical passed to [ejscreen_pipeline_save()].
+#'
+#' @return data.frame, or a list with `data` and `report` when
+#'   `return_report = TRUE`.
+#'
+#' @examples
+#' \dontrun{
+#' # Create the pre-index input CSV that EPA's ejscreen-dataset-creator-2.3
+#' # Python tool expects, using pipeline files that already exist on S3.
+#' pipeline_dir <- paste0(
+#'   "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
+#'   "ejscreen_acs_2024"
+#' )
+#'
+#' out <- EJAM:::calc_ejscreen_dataset_creator_input(
+#'   pipeline_dir = pipeline_dir,
+#'   pipeline_storage = "s3",
+#'   stage_format = "csv",
+#'   save_stage = TRUE,
+#'   return_report = TRUE
+#' )
+#'
+#' # This writes the file here:
+#' EJAM:::ejscreen_pipeline_stage_path(
+#'   "ejscreen_dataset_creator_input",
+#'   pipeline_dir = pipeline_dir,
+#'   format = "csv"
+#' )
+#'
+#' # Review any fields that were filled rather than mapped from blockgroupstats.
+#' subset(out$report, status %in% c("placeholder", "missing_filled"))
+#' }
+#'
+#' @keywords internal
+#'
+calc_ejscreen_dataset_creator_input <- function(blockgroupstats = NULL,
+                                                pipeline_dir = NULL,
+                                                pipeline_storage = c("auto", "local", "s3"),
+                                                blockgroupstats_stage = "blockgroupstats",
+                                                blockgroupstats_path = NULL,
+                                                stage_format = c("csv", "rds", "rda", "arrow"),
+                                                mapping_for_names = map_headernames,
+                                                rename_newtype = "ejscreen_indicator",
+                                                expected_output_names = ejscreen_dataset_creator_input_fields(),
+                                                placeholder_fields = ejscreen_dataset_creator_placeholder_fields(),
+                                                force_placeholder_fields = ejscreen_dataset_creator_placeholder_fields(),
+                                                fill_missing = TRUE,
+                                                return_report = FALSE,
+                                                save_stage = FALSE,
+                                                save_path = NULL,
+                                                save_format = NULL,
+                                                overwrite = TRUE,
+                                                validation_strict = TRUE) {
+
+  stage_format <- match.arg(stage_format)
+  pipeline_storage <- match.arg(pipeline_storage)
+  expected_output_names <- unique(as.character(expected_output_names))
+  expected_output_names <- expected_output_names[!is_blank_string(expected_output_names)]
+  placeholder_fields <- unique(as.character(placeholder_fields))
+  placeholder_fields <- placeholder_fields[!is_blank_string(placeholder_fields)]
+  force_placeholder_fields <- unique(as.character(force_placeholder_fields))
+  force_placeholder_fields <- force_placeholder_fields[!is_blank_string(force_placeholder_fields)]
+
+  bg <- ejscreen_pipeline_input(
+    x = blockgroupstats,
+    stage = blockgroupstats_stage,
+    pipeline_dir = pipeline_dir,
+    path = blockgroupstats_path,
+    format = stage_format,
+    storage = pipeline_storage,
+    input_name = "blockgroupstats"
+  )
+  bg <- data.frame(bg, check.names = FALSE, stringsAsFactors = FALSE)
+
+  mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  if (!rename_newtype %in% names(mapping_for_names)) {
+    stop("rename_newtype is not a column in mapping_for_names: ", rename_newtype)
+  }
+
+  is_non_output_name <- function(x) {
+    x <- as.character(x)
+    is_blank_string(x) |
+      grepl("use for pctile|do not report|don.?t report", x, ignore.case = TRUE)
+  }
+
+  out <- as.data.frame(matrix(nrow = NROW(bg), ncol = 0), stringsAsFactors = FALSE)
+  report <- data.frame(
+    ejscreen_name = expected_output_names,
+    source_rname = "",
+    status = "missing",
+    placeholder = FALSE,
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+
+  mapped_names <- mapping_for_names[[rename_newtype]]
+  usable_mapping <- !is_non_output_name(mapped_names) & !is_non_output_name(mapping_for_names$rname)
+
+  for (field in expected_output_names) {
+    if (field %in% force_placeholder_fields) {
+      out[[field]] <- rep(NA_real_, NROW(bg))
+      report$placeholder[report$ejscreen_name == field] <- TRUE
+      report$status[report$ejscreen_name == field] <- "placeholder"
+      next
+    }
+
+    candidates <- mapping_for_names$rname[usable_mapping & mapped_names == field]
+    candidates <- candidates[candidates %in% names(bg)]
+
+    if (length(candidates) > 0) {
+      source_rname <- candidates[[1]]
+      out[[field]] <- bg[[source_rname]]
+      report$source_rname[report$ejscreen_name == field] <- source_rname
+      report$status[report$ejscreen_name == field] <- "mapped"
+    } else if (field %in% names(bg)) {
+      out[[field]] <- bg[[field]]
+      report$source_rname[report$ejscreen_name == field] <- field
+      report$status[report$ejscreen_name == field] <- "already_named"
+    } else if (isTRUE(fill_missing)) {
+      out[[field]] <- if (field %in% placeholder_fields) {
+        rep(NA_real_, NROW(bg))
+      } else {
+        rep(NA, NROW(bg))
+      }
+      report$placeholder[report$ejscreen_name == field] <- field %in% placeholder_fields
+      report$status[report$ejscreen_name == field] <- ifelse(
+        field %in% placeholder_fields,
+        "placeholder",
+        "missing_filled"
+      )
+    }
+  }
+
+  missing_unfilled <- report$ejscreen_name[report$status == "missing"]
+  if (length(missing_unfilled) > 0) {
+    stop("Dataset-creator input is missing expected fields: ",
+         paste(missing_unfilled, collapse = ", "))
+  }
+
+  names(out) <- expected_output_names
+  attr(out, "ejscreen_dataset_creator_input_report") <- report
+
+  if (any(report$status %in% c("placeholder", "missing_filled"))) {
+    warning(
+      "Dataset-creator input contains filled fields: ",
+      paste(report$ejscreen_name[report$status %in% c("placeholder", "missing_filled")], collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  save_direct <- function(x,
+                          path,
+                          format = NULL,
+                          overwrite = TRUE,
+                          storage = c("auto", "local", "s3")) {
+    storage <- ejscreen_pipeline_storage_backend(path = path, storage = storage)
+    if (storage == "local" && file.exists(path) && !overwrite) {
+      stop("Refusing to overwrite existing file: ", path)
+    }
+    if (storage == "s3" && ejscreen_pipeline_s3_uri_exists(path) && !overwrite) {
+      stop("Refusing to overwrite existing file: ", path)
+    }
+    if (is.null(format)) {
+      format <- tolower(sub("^.*\\.([^.]+)$", "\\1", path))
+    }
+    write_path <- path
+    if (storage == "local") {
+      dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+    } else {
+      write_path <- tempfile(fileext = paste0(".", format))
+    }
+
+    if (format == "csv") {
+      data.table::fwrite(x, write_path)
+    } else if (format == "rds") {
+      saveRDS(x, write_path)
+    } else if (format == "rda") {
+      ejscreen_dataset_creator_input <- x
+      save(ejscreen_dataset_creator_input, file = write_path)
+    } else if (format == "arrow") {
+      if (!requireNamespace("arrow", quietly = TRUE)) {
+        stop("The arrow package is required to save Arrow export files")
+      }
+      arrow::write_ipc_file(x, sink = write_path)
+    } else {
+      stop("Unsupported save format: ", format)
+    }
+
+    if (storage == "s3") {
+      return(invisible(ejscreen_pipeline_s3_upload(write_path, path)))
+    }
+    invisible(normalizePath(path, mustWork = FALSE))
+  }
+
+  if (isTRUE(save_stage)) {
+    if (is.null(pipeline_dir)) {
+      stop("pipeline_dir must be supplied when save_stage is TRUE")
+    }
+    ejscreen_pipeline_save(
+      out,
+      stage = "ejscreen_dataset_creator_input",
+      pipeline_dir = pipeline_dir,
+      format = stage_format,
+      overwrite = overwrite,
+      validation_strict = validation_strict,
+      storage = pipeline_storage
+    )
+  }
+
+  if (!is.null(save_path)) {
+    save_direct(
+      out,
+      path = save_path,
+      format = save_format,
+      overwrite = overwrite,
+      storage = pipeline_storage
+    )
+  }
+
+  if (isTRUE(return_report)) {
+    return(list(data = out, report = report))
+  }
+  out
+}
+
+###################################################### #
+# . ####
+
 ejscreen_feature_server_fields <- function() {
   c(
     "OBJECTID", "ID", "STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION",
@@ -626,8 +961,13 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
       expected_from_mapping[grepl("^P_", expected_from_mapping)],
       export_names[grepl("^P_", export_names)]
     ))
-    helper_rows <- mh[mh$ejscreen_pctile %in% pctile_fields, , drop = FALSE]
-    helper_fields <- unique(c(helper_rows$ejscreen_bin, helper_rows$ejscreen_text))
+    pctile_rows <- mh[map_headernames_pctile_row(mh) & mh$ejscreen_indicator %in% pctile_fields, , drop = FALSE]
+    helper_rnames <- unlist(lapply(pctile_rows$rname, function(rname) {
+      base_rname <- ejscreen_base_rname_from_pctile_rname(rname)
+      c(paste0("bin.", base_rname), paste0("text.", base_rname))
+    }), use.names = FALSE)
+    helper_rows <- mh[(map_headernames_bin_row(mh) | map_headernames_text_row(mh)) & mh$rname %in% helper_rnames, , drop = FALSE]
+    helper_fields <- unique(helper_rows$ejscreen_indicator)
     expected_from_mapping <- unique(c(
       expected_from_mapping,
       helper_fields[!is_non_output_name(helper_fields)]
@@ -778,7 +1118,11 @@ calc_ejscreen_map_fields_added <- function(x,
 
   if (is.null(pctile_names)) {
     pctile_names <- unique(c(
-      mh$ejscreen_pctile[!is_blank_string(mh$ejscreen_pctile)],
+      mh$ejscreen_indicator[
+        map_headernames_pctile_row(mh) &
+          grepl("^P_", mh$ejscreen_indicator) &
+          !is_blank_string(mh$ejscreen_indicator)
+      ],
       grep("^P_", names(out), value = TRUE)
     ))
   }
@@ -795,9 +1139,20 @@ calc_ejscreen_map_fields_added <- function(x,
   ############################## #
 
   for (pctile_name in pctile_names) {
-    map_info <- mh[mh$ejscreen_pctile == pctile_name, , drop = FALSE]
-    bin_name <- first_nonblank(map_info$ejscreen_bin)
-    text_name <- first_nonblank(map_info$ejscreen_text)
+    pctile_info <- mh[
+      map_headernames_pctile_row(mh) &
+        mh$ejscreen_indicator == pctile_name,
+      ,
+      drop = FALSE
+    ]
+    base_rname <- ejscreen_base_rname_from_pctile_rname(first_nonblank(pctile_info$rname))
+    map_info <- mh[
+      mh$rname %in% c(paste0("bin.", base_rname), paste0("text.", base_rname)),
+      ,
+      drop = FALSE
+    ]
+    bin_name <- first_nonblank(map_info$ejscreen_indicator[map_headernames_bin_row(map_info)])
+    text_name <- first_nonblank(map_info$ejscreen_indicator[map_headernames_text_row(map_info)])
     if (is_blank_string(bin_name) || is_blank_string(text_name)) {
       app_code <- sub("^P_", "", pctile_name)
       if (is_blank_string(bin_name)) {

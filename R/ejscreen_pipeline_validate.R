@@ -336,6 +336,15 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       warn_missing_cols(c("STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))
       check_ejscreen_export_helpers()
       ###################################################### #
+      # ejscreen_dataset_creator_input ####
+
+    } else if (canonical_stage == "ejscreen_dataset_creator_input") {
+
+      check_id()
+      has_cols(ejscreen_dataset_creator_input_fields())
+      warn_missing_cols(c("STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))
+      check_all_na_numeric(ejscreen_dataset_creator_placeholder_fields())
+      ###################################################### #
       # us_lookup_stages ####
 
     } else if (canonical_stage %in% us_lookup_stages) {

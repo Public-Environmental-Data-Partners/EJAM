@@ -117,7 +117,7 @@ fixnames_aliases <- function(x, na_if_no_match = FALSE, alias_list = NULL, ignor
         "longname", "longnames", "full", "description", "header"),
 
       shortlabel = c("short", "shortname", "shortnames", "shortlabel", "shortlabels", "label", "labels"),
-      apiname = c('api', 'apiname', 'apinames'),
+      ejscreen_apinames_old = c('api', 'old_api'),
       csvname = c("csv", "csvname", "csvnames"),
       acsname = c('acs', 'acsname', 'acsnames'),
       oldname = c("old", "oldname", "oldnames", 'original')

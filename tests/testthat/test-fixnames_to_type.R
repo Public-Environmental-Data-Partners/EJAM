@@ -11,10 +11,10 @@ test_that("fixnames_to_type() works at all", {
     fixnames_to_type(namesnow = map_headernames$rname, oldtype = 'rname', newtype = 'shortlabel')
   })
   expect_no_error({
-    fixnames_to_type(namesnow = map_headernames$apiname, oldtype = 'apiname', newtype = 'longname')
+    fixnames_to_type(namesnow = map_headernames$ejscreen_apinames_old, oldtype = 'ejscreen_apinames_old', newtype = 'longname')
   })
   expect_no_error({
-    fixnames_to_type(namesnow = map_headernames$apiname, oldtype = 'apiname', newtype = 'rname')
+    fixnames_to_type(namesnow = map_headernames$ejscreen_apinames_old, oldtype = 'ejscreen_apinames_old', newtype = 'rname')
   })
   expect_no_error({
     fixnames_to_type(namesnow = map_headernames$longname, oldtype = 'longname', newtype = 'rname')
@@ -54,4 +54,3 @@ test_that("no error but warns and fails to rename if alias not actual colname us
     )
   })
 })
-

@@ -21,7 +21,7 @@ fixmapheadernamescolname <- function(x,
                         alias_list = alias_list
   )
 
-  # akas <- list(api = 'apiname',
+  # akas <- list(api = 'ejscreen_apinames_old',
   #              csv = 'csvname',
   #              acs = 'acsname',
   #              r =   'rname',

@@ -277,7 +277,11 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
     bg_ejindexes = "bg_ejindexes",
 
     ejscreen_export = "ejscreen_export", # canonical
-    bg_ejscreen =     "bg_ejscreen"
+    bg_ejscreen =     "bg_ejscreen",
+
+    ejscreen_dataset_creator_input = "ejscreen_dataset_creator_input", # canonical
+    dataset_creator_input =          "dataset_creator_input",
+    ejscreen_python_input =          "ejscreen_python_input"
   )
   if (canonical_only) {
     return(unique(as.vector(sapply(EJAM:::ejscreen_pipeline_stage_names(), EJAM:::ejscreen_pipeline_stage_canonical))))
@@ -302,6 +306,8 @@ ejscreen_pipeline_stage_canonical <- function(stage) {
          bg_ejindexes =        "bgej",
          bg_ej =               "bgej",
          bg_ejscreen =         "ejscreen_export",
+         dataset_creator_input = "ejscreen_dataset_creator_input",
+         ejscreen_python_input = "ejscreen_dataset_creator_input",
          stage
   )
 }

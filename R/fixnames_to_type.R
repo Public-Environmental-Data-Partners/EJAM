@@ -2,7 +2,8 @@
 #' helper function to change elements of namesnow from an oldtype to a newtype of names
 #'
 #' @description helps convert between original variable names and plain-English short or long versions of variable names
-#' @details YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like "apiname" or "rname",
+#' @details YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like
+#'   "ejscreen_apinames_old" or "rname",
 #'   UNLIKE IN fixnames() or fixcolnames() where you specify a type like "long" or "api"
 #'   Using lookup table mapping_for_names, finds each namesnow
 #'   in the column specified by oldtype
@@ -21,7 +22,7 @@
 #' @keywords internal
 #' @export
 #'
-fixnames_to_type <- function(namesnow, oldtype='apiname', newtype='rname', mapping_for_names) {
+fixnames_to_type <- function(namesnow, oldtype='ejscreen_apinames_old', newtype='rname', mapping_for_names) {
 
   if (missing(mapping_for_names)) {
     if (exists('map_headernames')) {

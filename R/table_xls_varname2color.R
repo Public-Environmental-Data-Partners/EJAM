@@ -62,9 +62,7 @@ xls_vartype2color <- function(vartype) {
     ncol = 2, byrow = TRUE
   )
   colnames(coloring) <- c('vartype', 'color')
-  # but
-  # jsondoc_zone
-  # 'Region' , 'gray'
+
   coloring[match(vartype, coloring[, 'vartype'], nomatch = NA) , 'color']
 }
 ################################################################################## #

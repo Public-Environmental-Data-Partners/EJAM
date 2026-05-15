@@ -16,24 +16,26 @@ A data.frame with these additional or completed columns:
 \item \code{ejscreen_ftp_names}
 \item \code{ejscreen_apinames_old}
 \item \code{ejam_apinames}
-\item \code{ejscreen_csv}
-\item \code{ejscreen_gdb}
-\item \code{ejscreen_api}
-\item \code{ejscreen_pctile}
-\item \code{ejscreen_bin}
-\item \code{ejscreen_text}
+\item \code{text.}
 }
+
+Older \code{.text} input is renamed to \code{text.} when present. Retired sibling-name
+columns are dropped when present because \code{P_}, \code{B_}, and \code{T_} fields are now
+represented as ordinary metadata rows.
 }
 \description{
 Complete EJSCREEN name columns in map_headernames
 }
 \details{
 \code{map_headernames} has historically kept several naming systems:
-\code{rname} for EJAM, \code{acsname} for ACS-derived variables, \code{apiname} for the old
-offline EJSCREEN report/API names, and \code{csvname} for the older EJSCREEN staff
-CSV/FTP-style download fields. Current EJSCREEN map services use
-geodatabase/download field names for numeric fields, plus related \code{P_},
-\code{B_}, and \code{T_} fields for percentiles, map bins, and popup text. This helper
+\code{rname} for EJAM, \code{acsname} for ACS-derived variables,
+\code{ejscreen_apinames_old} for the old offline EJSCREEN report/API names, and
+\code{csvname} for the older EJSCREEN staff CSV/FTP-style download fields. Current
+EJSCREEN map services use geodatabase/download field names for numeric
+fields, plus related \code{P_},
+\code{B_}, and \code{T_} fields for percentiles, map bins, and popup text. Percentile,
+map-bin, and popup-text fields are represented as their own rows, with
+\code{rname} values such as \code{pctile.pm}, \code{bin.pm}, and \code{text.pm}. This helper
 fills explicit columns for each naming system so export code can use one
 crosswalk without confusing old EJSCREEN API names with current EJAM API
 names.

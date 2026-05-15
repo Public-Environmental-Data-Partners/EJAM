@@ -5,7 +5,7 @@
 
 
 mh <- map_headernames
-dropcols = c('names_friendly', 'csv_description', 'acs_description', 'api_description', 'oldname', 'oldname_is_what', 'reportlabel', 'apisection', 'sort_within_varlistEJSCREENREPORT', 'topic_root_term', 'sortvarlistEJSCREENREPORT', 'sort_within_varlistEJSCREENREPORT', 'sort_within_varlist', 'csvname2.2', 'csvname', 'acs2017_2021v2.2', 'jsondoc_zone', 'jsondoc_shortzone', 'jsondoc_sort_zone', 'longmatch', 'csv_descriptions_name', 'csv_example', 'api_example', 'ejscreenreport', 'ejscreensort', 'shortmatch', 'pct_as_fraction_ejscreenit', 'pct_as_fraction_ejamit', 'pct_as_fraction_blockgroupstats', 'units', 'raw_pctile_avg_basedonrname', 'errornote', 'agree', 'api_synonym')
+dropcols = c('names_friendly', 'csv_description', 'acs_description', 'api_description', 'oldname', 'oldname_is_what', 'reportlabel',   'topic_root_term', 'sortvarlistEJSCREENREPORT', 'sort_within_varlistEJSCREENREPORT', 'sort_within_varlist', 'csvname2.2', 'csvname', 'acs2017_2021v2.2', 'jsondoc_zone', 'jsondoc_shortzone', 'jsondoc_sort_zone', 'longmatch', 'csv_descriptions_name', 'csv_example', 'api_example', 'ejscreenreport', 'ejscreensort', 'shortmatch', 'pct_as_fraction_ejscreenit', 'pct_as_fraction_ejamit', 'pct_as_fraction_blockgroupstats', 'units', 'raw_pctile_avg_basedonrname', 'errornote', 'agree', 'api_synonym')
 mh = mh[, !(names(mh) %in% dropcols)]
 
 x <- mh[mh$rname %in% mh$rname[(duplicated(mh$rname))], ]

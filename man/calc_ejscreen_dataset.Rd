@@ -23,7 +23,9 @@ calc_ejscreen_dataset(
   download_acs_raw = TRUE,
   return_intermediate = TRUE,
   include_ejscreen_export = FALSE,
+  include_ejscreen_dataset_creator_input = FALSE,
   ejscreen_export_path = NULL,
+  ejscreen_dataset_creator_input_path = NULL,
   ejscreen_export_vars = NULL,
   ejscreen_export_required_names = NULL,
   ejscreen_export_rename_newtype = "ejscreen_indicator",
@@ -109,7 +111,14 @@ in addition to final datasets.}
 \item{include_ejscreen_export}{logical. If TRUE, also create an
 EJSCREEN-ready export using \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}.}
 
+\item{include_ejscreen_dataset_creator_input}{logical. If TRUE, also create
+the smaller pre-index input table expected by EPA's
+\code{ejscreen-dataset-creator-2.3} Python tool.}
+
 \item{ejscreen_export_path}{optional file path for the EJSCREEN export.}
+
+\item{ejscreen_dataset_creator_input_path}{optional file path for the
+EJScreen dataset-creator input table.}
 
 \item{ejscreen_export_vars}{optional EJAM \code{rname} columns to keep in the
 EJSCREEN export before renaming.}

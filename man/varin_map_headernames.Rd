@@ -8,9 +8,10 @@ varin_map_headernames(
   query = "lowinc",
   ignore.case = TRUE,
   exact = FALSE,
-  cols_with_names = c("oldname", "apiname", "api_synonym", "acsname", "csvname",
-    "ejscreen_csv", "rname", "topic_root_term", "basevarname", "denominator",
-    "shortlabel", "longname", "api_description", "acs_description", "varlist")
+  cols_with_names = c("oldname", "ejscreen_apinames_old", "api_synonym", "acsname",
+    "csvname", "ejscreen_ftp_names", "ejscreen_indicator", "rname", "topic_root_term",
+    "basevarname", "denominator", "shortlabel", "longname", "api_description",
+    "acs_description", "varlist")
 )
 }
 \arguments{
@@ -42,7 +43,7 @@ EJAM:::varin_map_headernames( "traffic.score", exact = TRUE)
 EJAM:::varin_map_headernames( "traffic" )
 
 t(EJAM:::varinfo("traffic.score",
-  info = c("oldname","apiname", "acsname" ,"csvname",
+  info = c("oldname", "ejscreen_apinames_old", "acsname" ,"csvname",
   "basevarname", 'shortlabel', 'longname', 'varlist')))
 
 }

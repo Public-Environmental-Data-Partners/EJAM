@@ -125,7 +125,7 @@ varinfo <- function(var = map_headernames$rname, info=colnames(map_headernames),
 #
 #     t1 <- t2 <- t3 <- t4 <- tt1 <- tt2 <- tt3 <- tt4 <- NA
 #     x <- c( "rname",
-#             'api' , 'apiname',
+#             'api' , 'ejscreen_apinames_old',
 #           'acs', 'acsname',
 #             'csv' , 'csvname',
 #             'r' , 'rname',
@@ -141,4 +141,3 @@ varinfo <- function(var = map_headernames$rname, info=colnames(map_headernames),
 #
 #
 # #################################################################### #
-

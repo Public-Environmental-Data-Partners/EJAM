@@ -33,14 +33,14 @@
 #'
 #'  namesbyvarlist( 'names_e_pctile', c('r', 'longname'))
 #'  namesbyvarlist(c('names_e_pctile', 'names_e_state_pctile'),
-#'    c('varlist', 'rname', 'apiname', 'csvname', 'shortlabel', 'longname'))
+#'    c('varlist', 'rname', 'ejscreen_apinames_old', 'csvname', 'shortlabel', 'longname'))
 #' @seealso [varlist2names()] [varin_map_headernames()] [varinfo()] [names_whichlist_multi_key()]
 #'
 #' @keywords internal
 #' @export
 #'
 namesbyvarlist <- function(varlist,
-                           nametype = c('rname','longname','apiname')[1],
+                           nametype = c('rname','longname','ejscreen_apinames_old')[1],
                            mapping = map_headernames,
                            include = NULL,
                            exclude = NULL,
@@ -48,11 +48,11 @@ namesbyvarlist <- function(varlist,
 
   for (i in 1:length(nametype)) {
     nametype[i] <- switch(nametype[i],
-                           api = 'apiname', # if they say oldtype="api" then look up each of namesnow within the column map_headernames$apiname
+                           api = 'ejscreen_apinames_old',
                            csv = 'csvname',
                            r =   'rname',
                           acs = 'acsname',
-                           original = 'oldname',   # which might be csvname2.2 or apiname or rname
+                           original = 'oldname',   # which might be an older name or rname
                           shortlabel = 'shortlabel',
                           long = 'longname',
                            nametype[i]) # if no match above, use as-is
@@ -95,4 +95,3 @@ varlist2names <- function(varlist, ...) {
   namesbyvarlist(varlist, nametype = "rname", ...)$rname
 }
 ########################################## #
-

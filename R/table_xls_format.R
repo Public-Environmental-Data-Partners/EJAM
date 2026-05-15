@@ -822,7 +822,7 @@ table_xls_format <- function(overall,
   # Also see the internal helper function  round2nearest_n()  which lets you explicitly round to nearest 100, e.g.
 
   # sigfigs_table <-  map_headernames[ "" != (map_headernames$sigfigs), c("sigfigs", "decimals", "rname", "acsname",	"csvname")]
-  digitstable <- map_headernames[ "" != (map_headernames$decimals) | "" != (map_headernames$sigfigs), c("sigfigs", "decimals", "rname", "acsname",	"csvname", "apiname")]
+  digitstable <- map_headernames[ "" != (map_headernames$decimals) | "" != (map_headernames$sigfigs), c("sigfigs", "decimals", "rname", "acsname", "csvname", "ejscreen_apinames_old")]
   decimals_cols <- names(eachsite)[names(eachsite) %in% digitstable$rname[digitstable$decimals != ""]]
   decimals_colnum <- match(decimals_cols, names(eachsite)) # and overall has same exact names and sort order of names
   decimals_tosee <- digitstable$decimals[match(decimals_cols, digitstable$rname)]

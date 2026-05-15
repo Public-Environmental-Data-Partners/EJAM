@@ -621,7 +621,7 @@ cbind(x, duplicated(x))
 
   ## >>   *** these need denominator filled in within map_headernames: *** ####
   #
-  #   z = (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator", "apisection","longname")])
+  #   z = (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator",  "longname")])
   #   z[z$denominator == "", ]
   #
   ##  "api_li" "ie_li"   "other_li"       "spanish_li"
@@ -629,9 +629,9 @@ cbind(x, duplicated(x))
   ##  "lan_universe"
 
 
-  #   (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator", "apisection","longname")])
+  #   (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator",  "longname")])
 
-  #                                   rname  denominator                            apisection                                                                       longname
+  #                                   rname  denominator                                                                                                   longname
 
   # spanish_li                   spanish_li                                                  0                         Number speaking Spanish (in limited English household)
   # api_li                           api_li                                                  0            Number speaking Asian-Pacific Island (in limited English household)
@@ -961,7 +961,7 @@ setdiff(gsub("pct","", formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs
 
 ## these need denominator filled in within map_headernames: ***
 #
-#   z = (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator", "apisection","longname")])
+#   z = (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator",  "longname")])
 #   z[z$denominator == "", ]
 #
 ##  "api_li" "ie_li"   "other_li"       "spanish_li"
@@ -969,9 +969,9 @@ setdiff(gsub("pct","", formulas_ejscreen_acs[grepl("lan_", formulas_ejscreen_acs
 ##  "lan_universe"
 
 
-#   (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator", "apisection","longname")])
+#   (varinfo(grep("lan_|_li", names_all_r,value = T))[,c("rname", "denominator",  "longname")])
 
-#                                   rname  denominator                            apisection                                                                       longname
+#                                   rname  denominator                                                                                                   longname
 
 # spanish_li                   spanish_li                                                  0                         Number speaking Spanish (in limited English household)
 # api_li                           api_li                                                  0            Number speaking Asian-Pacific Island (in limited English household)
