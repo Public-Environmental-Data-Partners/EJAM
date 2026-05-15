@@ -67,6 +67,18 @@
   is needed to calculate `pctnohealthinsurance` but was not available
   in blockgroupstats in EJAM v2.32.* but is included there for EJAM v2.5.* 
 
+- Fixed tract-to-blockgroup apportionment for ACS tract-only indicators such as
+  disability and detailed language variables. When a raw ACS checkpoint is
+  available, the pipeline now derives blockgroup-to-tract weights from the same
+  ACS blockgroup population table instead of falling back to 2020 Decennial
+  blockgroup FIPS. This avoids Connecticut county-code mismatches in ACS 2022+
+  where ACS files use planning-region county codes.
+
+- Fixed `calc_ejscreen_blockgroupstats()` so the final blockgroup table keeps
+  the union of blockgroups found in ACS, environmental, and extra-indicator
+  stages instead of dropping rows that are temporarily missing from the ACS
+  stage.
+
 - Fixed the shinytest2 web app test launcher so tests run from the source tree
   with `pkgload::load_all()` but fall back to the installed `EJAM` package when
   run from an `R CMD check` directory that does not contain the package source

@@ -244,3 +244,37 @@ test_that("calc_bg_acsdata can read raw ACS stage before formula transformation"
 
   expect_true(all(c("pop", "pctdisability") %in% names(out)))
 })
+
+test_that("ACS raw blockgroup population can provide same-vintage tract weights", {
+  raw <- list(
+    stage = "bg_acs_raw",
+    blockgroup = list(B01001 = data.table::data.table(
+      GEO_ID = c("1500000US091104001011", "1500000US091104001012", "1500000US091104001021"),
+      fips = c("091104001011", "091104001012", "091104001021"),
+      SUMLEVEL = "150",
+      B01001_001 = c(100, 300, 0)
+    ))
+  )
+
+  out <- EJAM:::calc_bgwts_from_acs_raw(raw)
+
+  expect_equal(out$bgfips, raw$blockgroup$B01001$fips)
+  expect_equal(out$tractfips, c("09110400101", "09110400101", "09110400102"))
+  expect_equal(out$bgwt, c(0.25, 0.75, 0))
+})
+
+test_that("tract weight selection falls back to nationwide weights when raw ACS weights are unavailable", {
+  fallback <- data.table::data.table(
+    bgfips = "010010201001",
+    tractfips = "01001020100",
+    bgwt = 1
+  )
+  testthat::local_mocked_bindings(
+    calc_bgwts_nationwide = function() fallback,
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_blockgroupstats_bgwts(acs_raw = NULL, env = emptyenv())
+
+  expect_equal(out, fallback)
+})

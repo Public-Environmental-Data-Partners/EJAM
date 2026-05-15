@@ -70,27 +70,31 @@ dir_parent <- if (storage == "local") {dir_parent_local} else {dir_parent_s3}
 dir_full <- file.path(dir_parent, dir_child)
 prior_yr <- if (as.integer(yr) == 2024L) "2022" else as.character(as.integer(yr) - 1L)
 
-Sys.setenv(
-  EJAM_PIPELINE_YR = yr,
-  EJAM_PIPELINE_ROOT = dir_parent,
-  EJAM_PIPELINE_STORAGE = storage,
-  EJAM_PIPELINE_DIR = dir_full,
-  EJAM_STAGE_FORMAT = "csv", # options are c("csv", "rds", "rda", "arrow")
+set_pipeline_default <- function(name, value) {
+  if (!nzchar(Sys.getenv(name, unset = ""))) {
+    do.call(Sys.setenv, as.list(stats::setNames(as.character(value), name)))
+  }
+}
 
-  EJAM_FORCE_ACS        = "FALSE",
-  EJAM_FORCE_BG_ACSDATA = "FALSE",
-  EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
-  EJAM_ACS_DOWNLOAD_RETRIES = "2",
+set_pipeline_default("EJAM_PIPELINE_YR", yr)
+set_pipeline_default("EJAM_PIPELINE_ROOT", dir_parent)
+set_pipeline_default("EJAM_PIPELINE_STORAGE", storage)
+set_pipeline_default("EJAM_PIPELINE_DIR", dir_full)
+set_pipeline_default("EJAM_STAGE_FORMAT", "csv") # options are c("csv", "rds", "rda", "arrow")
 
-  EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE",
+set_pipeline_default("EJAM_FORCE_ACS", "FALSE")
+set_pipeline_default("EJAM_FORCE_BG_ACSDATA", "FALSE")
+set_pipeline_default("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600")
+set_pipeline_default("EJAM_ACS_DOWNLOAD_RETRIES", "2")
 
-  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
+set_pipeline_default("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", "FALSE")
 
-  EJAM_VALIDATE_VS_PRIOR       = "TRUE",
-  EJAM_PRIOR_PIPELINE_YR       = prior_yr,
-  EJAM_PRIOR_PIPELINE_DIR      = "",
-  EJAM_VALIDATE_VS_PRIOR_WALDO = "FALSE"
-)
+set_pipeline_default("EJAM_INCLUDE_EJSCREEN_EXPORT", "TRUE")
+
+set_pipeline_default("EJAM_VALIDATE_VS_PRIOR", "TRUE")
+set_pipeline_default("EJAM_PRIOR_PIPELINE_YR", prior_yr)
+set_pipeline_default("EJAM_PRIOR_PIPELINE_DIR", "")
+set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 ###################################################### #
 # USE NON-DEFAULT SETTINGS - for this run ####
 ###################################################### #
@@ -666,6 +670,10 @@ invisible(out)
 # ~ ----------------------------------------------- ####
 ###################################################### #
 
+if (!interactive()) {
+  message("Skipping optional package-data rebuild scripts in non-interactive pipeline run.")
+} else {
+
 # REPLACE /data/blockgroupstats.rda etc. if ready  ####
 
 # when ready to actually replace the old blockgroupstats dataset entirely:
@@ -742,3 +750,4 @@ source("./data-raw/datacreate_testoutput_ejamit_shapes_2.R" )
 ###################################################### #
 # cat("REBUILD/INSTALL THE PACKAGE NOW \n")
 ###################################################### #
+}

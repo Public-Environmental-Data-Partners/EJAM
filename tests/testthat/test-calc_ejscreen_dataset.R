@@ -104,6 +104,53 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
   expect_equal(out$bgej, stats$bgej)
 })
 
+test_that("calc_ejscreen_blockgroupstats keeps blockgroups missing ACS rows", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = "100010001001",
+    ST = "DE",
+    pop = 100,
+    pctmin = 0.2,
+    pctlowinc = 0.1,
+    pctlingiso = 0.02,
+    pctlths = 0.05,
+    pctdisability = 0.09
+  )
+  bg_envirodata <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    pctpre1960 = c(0.2, 0.3),
+    pm = c(7, 8)
+  )
+  bg_extra_indicators <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    lowlifex = c(0.1, 0.2)
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroup_demog_index = function(bgstats) {
+      data.table::data.table(
+        bgfips = bgstats$bgfips,
+        Demog.Index = ifelse(is.na(bgstats$pctmin), NA_real_, 0.2),
+        Demog.Index.Supp = ifelse(is.na(bgstats$pctmin), NA_real_, 0.3),
+        Demog.Index.State = ifelse(is.na(bgstats$pctmin), NA_real_, 0.2),
+        Demog.Index.Supp.State = ifelse(is.na(bgstats$pctmin), NA_real_, 0.3)
+      )
+    },
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_ejscreen_blockgroupstats(
+    bg_acsdata = bg_acsdata,
+    bg_envirodata = bg_envirodata,
+    bg_extra_indicators = bg_extra_indicators,
+    extra_indicator_vars = "lowlifex"
+  )
+
+  expect_equal(out$bgfips, bg_envirodata$bgfips)
+  expect_true(is.na(out$pop[out$bgfips == "100010001002"]))
+  expect_equal(out$pm, c(7, 8))
+  expect_equal(out$lowlifex, c(0.1, 0.2))
+})
+
 test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
   pipeline_dir <- file.path(tempdir(), "ejam-calc-ejscreen-dataset-test")
   bgfips <- c("100010001001", "100010001002")

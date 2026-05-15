@@ -116,9 +116,24 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
   if (!"pctpre1960" %in% names(enviro)) {
     stop("bg_envirodata must include pctpre1960, even if that column was created from the ACS stage")
   }
+  blockgroup_universe <- unique(c(
+    as.character(acs$bgfips),
+    as.character(enviro$bgfips),
+    as.character(extra$bgfips)
+  ))
+  blockgroup_universe <- blockgroup_universe[!is.na(blockgroup_universe) & nzchar(blockgroup_universe)]
+  acs <- merge(
+    data.table::data.table(bgfips = blockgroup_universe),
+    acs,
+    by = "bgfips",
+    all.x = TRUE,
+    sort = FALSE
+  )
   acs <- add_bg_geography_columns(acs)
   cols_to_add <- setdiff(names(extra), c("bgfips", names(acs)))
-  acs <- merge(acs, extra[, c("bgfips", cols_to_add), with = FALSE], by = "bgfips", all.x = TRUE)
+  if (length(cols_to_add) > 0) {
+    acs <- merge(acs, extra[, c("bgfips", cols_to_add), with = FALSE], by = "bgfips", all.x = TRUE)
+  }
 
   if (any(grepl("Demog.Index", names(acs)))) {
     stop("bg_acsdata already has Demog.Index columns; remove or replace them before this step")

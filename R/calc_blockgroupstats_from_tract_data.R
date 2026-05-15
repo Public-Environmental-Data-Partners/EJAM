@@ -39,14 +39,12 @@ calc_blockgroupstats_from_tract_data <- function(yr,
                                                  dropMOE = TRUE,
                                                  acs_raw = NULL) {
 
-  if (!exists("bgwts")) { # so that we can create this once while testing and not have to download each time this overall function is used
-    bgwts <- calc_bgwts_nationwide()
-  }
-
   if (missing(yr)) {
     yr = acs_endyear(guess_census_has_published = TRUE, guess_always = T)
   }  # 2022, 2023, or 2024
   cat("end year to use: ", yr, '\n')
+
+  bgwts <- calc_blockgroupstats_bgwts(acs_raw = acs_raw, env = parent.frame(), yr = yr)
   ###################################################### #
   if (missing(formulas) || is.null(formulas)) {
     formulas <- c(formulas_ejscreen_acs_disability$formula,
@@ -243,3 +241,97 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   return(bg_from_tracts)
 }
 ##################################################################### ###################################################################### #
+
+calc_bgwts_from_acs_raw <- function(acs_raw, pop_col = "B01001_001") {
+  if (is.null(acs_raw)) {
+    return(NULL)
+  }
+
+  blockgroup_tables <- tryCatch(
+    acs_raw_component(acs_raw, "blockgroup"),
+    error = function(e) NULL
+  )
+  if (is.null(blockgroup_tables) || length(blockgroup_tables) == 0) {
+    return(NULL)
+  }
+
+  bg_pop <- NULL
+  if ("B01001" %in% names(blockgroup_tables) &&
+      all(c("fips", pop_col) %in% names(blockgroup_tables$B01001))) {
+    bg_pop <- blockgroup_tables$B01001
+  } else {
+    has_pop <- vapply(blockgroup_tables, function(x) {
+      is.data.frame(x) && all(c("fips", pop_col) %in% names(x))
+    }, logical(1))
+    if (any(has_pop)) {
+      bg_pop <- blockgroup_tables[[which(has_pop)[1]]]
+    }
+  }
+  if (is.null(bg_pop)) {
+    return(NULL)
+  }
+
+  bgwts <- data.table::as.data.table(data.table::copy(bg_pop))[
+    ,
+    .(
+      bgfips = as.character(fips),
+      pop = suppressWarnings(as.numeric(.SD[[pop_col]]))
+    ),
+    .SDcols = pop_col
+  ]
+  bgwts <- bgwts[nchar(bgfips) == 12]
+  bgwts[, tractfips := substr(bgfips, 1, 11)]
+  bgwts[, tractpop := sum(pop, na.rm = TRUE), by = "tractfips"]
+  bgwts[, bgwt := data.table::fifelse(is.na(pop), NA_real_,
+                                      data.table::fifelse(tractpop == 0, 0, pop / tractpop))]
+  bgwts[, c("pop", "tractpop") := NULL]
+  data.table::setorder(bgwts, bgfips)
+  bgwts
+}
+###################################################### #
+
+calc_blockgroupstats_bgwts <- function(acs_raw = NULL, env = parent.frame(), yr = NULL) {
+  bgwts <- NULL
+  if (!is.null(acs_raw)) {
+    bgwts <- calc_bgwts_from_acs_raw(acs_raw)
+  }
+  if (!is.null(bgwts)) {
+    return(bgwts)
+  }
+  if (exists("bgwts", envir = env, inherits = TRUE)) {
+    return(get("bgwts", envir = env, inherits = TRUE))
+  }
+  if (!is.null(yr) && requireNamespace("ACSdownload", quietly = TRUE)) {
+    bgwts <- tryCatch(
+      calc_bgwts_from_acs_bg_population(yr = yr),
+      error = function(e) {
+        warning(
+          "Could not create same-vintage ACS blockgroup-to-tract weights for ",
+          yr, "; falling back to calc_bgwts_nationwide(): ",
+          conditionMessage(e),
+          call. = FALSE
+        )
+        NULL
+      }
+    )
+    if (!is.null(bgwts)) {
+      return(bgwts)
+    }
+  }
+  calc_bgwts_nationwide()
+}
+###################################################### #
+
+calc_bgwts_from_acs_bg_population <- function(yr, pop_col = "B01001_001") {
+  bg_pop <- ACSdownload::get_acs_new(
+    yr = yr,
+    tables = "B01001",
+    fips = "blockgroup",
+    return_list_not_merged = TRUE
+  )
+  calc_bgwts_from_acs_raw(
+    list(blockgroup = list(B01001 = bg_pop$B01001)),
+    pop_col = pop_col
+  )
+}
+###################################################### #
