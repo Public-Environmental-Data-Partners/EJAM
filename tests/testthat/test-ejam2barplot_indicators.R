@@ -1,4 +1,5 @@
 test_that("ejam2barplot_indicators ratio includes analyzed site and person summaries", {
+  # This test intentionally passes legacy labels to validate backward compatibility.
   expect_no_error({
     x <- ejam2barplot_indicators(
       testoutput_ejamit_1000pts_1miles,
