@@ -388,3 +388,348 @@ ejscreen_pipeline_prior_validation_text <- function(result,
   )
 }
 ###################################################### #
+
+#' Build the standard folder path for one EJSCREEN pipeline version
+#'
+#' @param yr ACS end year, such as 2024.
+#' @param root pipeline root folder or S3 prefix that contains version folders.
+#' @param prefix version folder prefix.
+#'
+#' @return Character path, such as
+#'   `s3://.../pipeline/ejscreen_acs_2024`.
+#' @keywords internal
+#'
+ejscreen_pipeline_version_dir <- function(yr,
+                                          root = NULL,
+                                          prefix = "ejscreen_acs_") {
+  if (is.null(root) || !nzchar(root)) {
+    root <- Sys.getenv(
+      "EJAM_PIPELINE_ROOT",
+      unset = "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
+    )
+  }
+  if (missing(yr) || is.null(yr) || !nzchar(as.character(yr))) {
+    stop("yr must be supplied, such as 2024", call. = FALSE)
+  }
+  root <- sub("/+$", "", root)
+  file.path(root, paste0(prefix, yr))
+}
+###################################################### #
+
+#' Keep the prior columns that can be compared to a new table
+#'
+#' @param old_dt prior/reference data.frame or data.table.
+#' @param new_dt new data.frame or data.table.
+#' @param id_cols identifier columns to preserve when available.
+#'
+#' @return data.table containing identifier columns and columns shared by both
+#'   inputs.
+#' @keywords internal
+#'
+ejscreen_pipeline_prior_shared_subset <- function(old_dt,
+                                                  new_dt,
+                                                  id_cols = "bgfips") {
+  if (!is.data.frame(old_dt) || !is.data.frame(new_dt)) {
+    stop("old_dt and new_dt must be data.frame or data.table objects", call. = FALSE)
+  }
+  old_dt <- data.table::as.data.table(data.table::copy(old_dt))
+  shared <- intersect(names(old_dt), names(new_dt))
+  keep <- unique(c(id_cols, shared))
+  keep <- keep[keep %in% names(old_dt)]
+  old_dt[, keep, with = FALSE]
+}
+###################################################### #
+
+#' Write a text or CSV pipeline comparison artifact
+#'
+#' @noRd
+ejscreen_pipeline_write_text_or_csv <- function(x,
+                                                filename,
+                                                pipeline_dir,
+                                                storage = c("auto", "local", "s3")) {
+  if (missing(pipeline_dir) || is.null(pipeline_dir)) {
+    stop("pipeline_dir must be provided", call. = FALSE)
+  }
+  format <- tools::file_ext(filename)
+  if (!format %in% c("txt", "csv")) {
+    stop("filename must end in .txt or .csv", call. = FALSE)
+  }
+  path <- file.path(pipeline_dir, filename)
+  storage <- ejscreen_pipeline_storage_backend(pipeline_dir, path, storage)
+  write_fun <- if (format == "txt") {
+    function(object, file) writeLines(as.character(object), file)
+  } else {
+    function(object, file) data.table::fwrite(object, file)
+  }
+
+  if (storage == "s3") {
+    tmp <- tempfile(fileext = paste0(".", format))
+    write_fun(x, tmp)
+    return(ejscreen_pipeline_s3_upload(tmp, path))
+  }
+
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  write_fun(x, path)
+  normalizePath(path, mustWork = FALSE)
+}
+###################################################### #
+
+#' Compare one pipeline stage to a prior version
+#'
+#' @param stage label to use in summaries.
+#' @param new_dt optional new data object. If NULL, load `new_stage` from
+#'   `new_pipeline_dir`.
+#' @param old_dt optional prior data object. If NULL, load `old_stage` from
+#'   `old_pipeline_dir`.
+#' @param new_pipeline_dir,old_pipeline_dir pipeline folders for loading stages.
+#' @param new_stage,old_stage stage names to load. Defaults to `stage`.
+#' @param format file format used for loading stages.
+#' @param storage storage backend: `"auto"`, `"local"`, or `"s3"`.
+#' @param old_label label for the prior/reference object.
+#' @param shared_only logical. If TRUE, compare only prior columns shared with
+#'   `new_dt`, plus `id_cols`.
+#' @param id_cols identifier columns to keep for shared-column comparisons.
+#' @param output_dir optional folder/S3 prefix for validation artifacts.
+#' @param write_files logical. If TRUE, write one detail text file and one
+#'   one-row CSV summary for this stage.
+#' @param use_waldo logical passed to [ejscreen_pipeline_validate_vs_prior()].
+#'
+#' @return List with `result`, `summary`, `text`, `warnings`, and `error`.
+#' @keywords internal
+#'
+ejscreen_pipeline_compare_stage <- function(stage,
+                                            new_dt = NULL,
+                                            old_dt = NULL,
+                                            new_pipeline_dir = NULL,
+                                            old_pipeline_dir = NULL,
+                                            new_stage = stage,
+                                            old_stage = stage,
+                                            format = "csv",
+                                            storage = c("auto", "local", "s3"),
+                                            old_label = NULL,
+                                            shared_only = FALSE,
+                                            id_cols = "bgfips",
+                                            output_dir = NULL,
+                                            write_files = FALSE,
+                                            use_waldo = FALSE) {
+  storage <- match.arg(storage)
+  if (missing(stage) || is.null(stage) || !nzchar(stage)) {
+    stop("stage must be supplied", call. = FALSE)
+  }
+
+  if (is.null(old_label)) {
+    old_label <- if (!is.null(old_pipeline_dir)) {
+      paste0(old_stage, " in ", old_pipeline_dir)
+    } else {
+      "prior/reference object"
+    }
+  }
+
+  warnings <- character()
+  error <- character()
+  result <- tryCatch({
+    if (is.null(new_dt)) {
+      if (is.null(new_pipeline_dir)) {
+        stop("new_dt or new_pipeline_dir must be supplied", call. = FALSE)
+      }
+      new_dt <- ejscreen_pipeline_load(new_stage, new_pipeline_dir, format = format, storage = storage)
+    }
+    if (is.null(old_dt)) {
+      if (is.null(old_pipeline_dir)) {
+        stop("old_dt or old_pipeline_dir must be supplied", call. = FALSE)
+      }
+      old_dt <- ejscreen_pipeline_load(old_stage, old_pipeline_dir, format = format, storage = storage)
+    }
+    if (isTRUE(shared_only)) {
+      old_dt <- ejscreen_pipeline_prior_shared_subset(old_dt, new_dt, id_cols = id_cols)
+    }
+
+    withCallingHandlers(
+      ejscreen_pipeline_validate_vs_prior(
+        new_dt = new_dt,
+        old_dt = old_dt,
+        use_waldo = use_waldo,
+        verbose = FALSE
+      ),
+      warning = function(w) {
+        warnings <<- c(warnings, conditionMessage(w))
+        invokeRestart("muffleWarning")
+      }
+    )
+  },
+    error = function(e) {
+      error <<- conditionMessage(e)
+      NULL
+    }
+  )
+
+  path <- if (!is.null(new_pipeline_dir)) {
+    ejscreen_pipeline_stage_path(new_stage, new_pipeline_dir, format = format)
+  } else {
+    NA_character_
+  }
+  stage_safe <- gsub("[^A-Za-z0-9_]+", "_", stage)
+
+  if (is.null(result)) {
+    text <- c(
+      paste0("Prior-version validation for stage: ", stage),
+      paste0("Reference object: ", old_label),
+      paste0("Created: ", Sys.time()),
+      "",
+      paste0("ERROR: ", error)
+    )
+    summary <- data.table::data.table(
+      stage = stage,
+      path = path,
+      old_label = old_label,
+      error = error,
+      warnings = paste(warnings, collapse = " | ")
+    )
+  } else {
+    text <- ejscreen_pipeline_prior_validation_text(
+      result = result,
+      stage = stage,
+      old_label = old_label,
+      warnings = warnings
+    )
+    summary <- ejscreen_pipeline_prior_validation_as_row(
+      result = result,
+      stage = stage,
+      path = path,
+      old_label = old_label,
+      warnings = warnings
+    )
+    summary[, error := ""]
+  }
+
+  if (isTRUE(write_files)) {
+    if (is.null(output_dir)) {
+      if (is.null(new_pipeline_dir)) {
+        stop("output_dir or new_pipeline_dir must be supplied when write_files is TRUE", call. = FALSE)
+      }
+      output_dir <- new_pipeline_dir
+    }
+    ejscreen_pipeline_write_text_or_csv(
+      text,
+      paste0("prior_validation_", stage_safe, ".txt"),
+      pipeline_dir = output_dir,
+      storage = storage
+    )
+    ejscreen_pipeline_write_text_or_csv(
+      summary,
+      paste0("prior_validation_", stage_safe, ".csv"),
+      pipeline_dir = output_dir,
+      storage = storage
+    )
+  }
+
+  list(
+    stage = stage,
+    result = result,
+    summary = summary,
+    text = text,
+    warnings = warnings,
+    error = error
+  )
+}
+###################################################### #
+
+#' Compare saved EJSCREEN pipeline stages across two versions
+#'
+#' @param new_yr,old_yr version years used to build default pipeline folders.
+#' @param stages character vector of stage names to compare.
+#' @param pipeline_root root folder/S3 prefix containing version folders.
+#' @param new_pipeline_dir,old_pipeline_dir optional explicit version folders.
+#' @param old_stages optional stage names in the old folder. Defaults to
+#'   `stages`. Can be a named vector where names are new stage names.
+#' @param format file format for loading stage files.
+#' @param storage storage backend: `"auto"`, `"local"`, or `"s3"`.
+#' @param shared_only_stages stages that should compare only shared prior
+#'   columns, plus `id_cols`.
+#' @param id_cols identifier columns to keep for shared-column comparisons.
+#' @param output_dir optional folder/S3 prefix where validation files are saved.
+#' @param write_files logical. If TRUE, write per-stage detail files plus
+#'   `prior_validation_summary.csv`.
+#' @param use_waldo logical passed to [ejscreen_pipeline_validate_vs_prior()].
+#'
+#' @return List with `summary`, `comparisons`, `new_pipeline_dir`, and
+#'   `old_pipeline_dir`.
+#' @keywords internal
+#'
+ejscreen_pipeline_compare_versions <- function(new_yr = NULL,
+                                               old_yr = NULL,
+                                               stages = c("blockgroupstats", "bgej", "usastats", "statestats"),
+                                               pipeline_root = NULL,
+                                               new_pipeline_dir = NULL,
+                                               old_pipeline_dir = NULL,
+                                               old_stages = NULL,
+                                               format = "csv",
+                                               storage = c("auto", "local", "s3"),
+                                               shared_only_stages = character(),
+                                               id_cols = "bgfips",
+                                               output_dir = NULL,
+                                               write_files = TRUE,
+                                               use_waldo = FALSE) {
+  storage <- match.arg(storage)
+  if (is.null(new_pipeline_dir)) {
+    new_pipeline_dir <- ejscreen_pipeline_version_dir(new_yr, root = pipeline_root)
+  }
+  if (is.null(old_pipeline_dir)) {
+    old_pipeline_dir <- ejscreen_pipeline_version_dir(old_yr, root = pipeline_root)
+  }
+  if (is.null(output_dir)) {
+    output_dir <- new_pipeline_dir
+  }
+  if (is.null(old_stages)) {
+    old_stages <- stats::setNames(stages, stages)
+  } else if (is.null(names(old_stages))) {
+    old_stages <- stats::setNames(old_stages, stages)
+  }
+
+  comparisons <- lapply(stages, function(stage) {
+    old_stage <- old_stages[[stage]]
+    if (is.null(old_stage) || is.na(old_stage)) {
+      old_stage <- stage
+    }
+    ejscreen_pipeline_compare_stage(
+      stage = stage,
+      new_pipeline_dir = new_pipeline_dir,
+      old_pipeline_dir = old_pipeline_dir,
+      new_stage = stage,
+      old_stage = old_stage,
+      format = format,
+      storage = storage,
+      old_label = paste0(old_stage, " in ", old_pipeline_dir),
+      shared_only = stage %in% shared_only_stages,
+      id_cols = id_cols,
+      output_dir = output_dir,
+      write_files = write_files,
+      use_waldo = use_waldo
+    )
+  })
+  names(comparisons) <- stages
+
+  summary <- data.table::rbindlist(
+    lapply(comparisons, function(x) x$summary),
+    fill = TRUE
+  )
+  if (isTRUE(write_files)) {
+    ejscreen_pipeline_write_text_or_csv(
+      summary,
+      "prior_validation_summary.csv",
+      pipeline_dir = output_dir,
+      storage = storage
+    )
+  }
+
+  out <- list(
+    summary = summary,
+    comparisons = comparisons,
+    new_pipeline_dir = new_pipeline_dir,
+    old_pipeline_dir = old_pipeline_dir,
+    output_dir = output_dir
+  )
+  class(out) <- c("ejam_pipeline_version_comparison", "list")
+  out
+}
+###################################################### #
