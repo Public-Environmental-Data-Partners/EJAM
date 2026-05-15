@@ -111,6 +111,7 @@ Suggests:
     tigris (>= 2.2.1),
     units,
     usethis,
+    waldo,
     withr
 Remotes:
     ejanalysis/ACSdownload,
