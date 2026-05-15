@@ -18,6 +18,7 @@ download_bg_acs_raw(
   overwrite = TRUE,
   validation_strict = TRUE,
   storage = c("auto", "local", "s3"),
+  download_fun = ACSdownload::get_acs_new,
   download_timeout = 3600,
   download_retries = 2
 )
@@ -55,6 +56,11 @@ single \code{bg_acs_raw} list object.}
 
 \item{storage}{raw ACS checkpoint storage backend: \code{"auto"}, \code{"local"}, or
 \code{"s3"}.}
+
+\item{download_fun}{ACSdownload-compatible function used to obtain a single
+ACS table for a given \code{yr}, \code{tables}, \code{fips}, and \code{fiveorone}. Defaults to
+\code{\link[ACSdownload:get_acs_new]{ACSdownload::get_acs_new()}}. Supply a wrapper if you need to pin a legacy
+ACS source implementation.}
 
 \item{download_timeout}{timeout in seconds to use while downloading ACS
 table files. This is increased above R's usual 60 second default because

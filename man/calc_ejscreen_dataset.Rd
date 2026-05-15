@@ -21,6 +21,7 @@ calc_ejscreen_dataset(
   overwrite = TRUE,
   validation_strict = TRUE,
   download_acs_raw = TRUE,
+  acs_download_fun = ACSdownload::get_acs_new,
   return_intermediate = TRUE,
   include_ejscreen_export = FALSE,
   include_ejscreen_dataset_creator_input = FALSE,
@@ -104,6 +105,11 @@ single \code{bg_acs_raw} list object.}
 
 \item{download_acs_raw}{logical, whether to download raw ACS tables when
 neither \code{bg_acsdata} nor saved ACS stages are available.}
+
+\item{acs_download_fun}{ACSdownload-compatible function used by
+\code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}} when raw ACS tables need to be downloaded. The
+default is \code{\link[ACSdownload:get_acs_new]{ACSdownload::get_acs_new()}}. Supply a wrapper if you need a
+legacy ACS source implementation.}
 
 \item{return_intermediate}{logical. If TRUE, return key interim stage objects
 in addition to final datasets.}

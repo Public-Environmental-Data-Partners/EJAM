@@ -35,6 +35,10 @@
 #' @param validation_strict logical passed to [ejscreen_pipeline_save()].
 #' @param storage raw ACS checkpoint storage backend: `"auto"`, `"local"`, or
 #'   `"s3"`.
+#' @param download_fun ACSdownload-compatible function used to obtain a single
+#'   ACS table for a given `yr`, `tables`, `fips`, and `fiveorone`. Defaults to
+#'   [ACSdownload::get_acs_new()]. Supply a wrapper if you need to pin a legacy
+#'   ACS source implementation.
 #' @param download_timeout timeout in seconds to use while downloading ACS
 #'   table files. This is increased above R's usual 60 second default because
 #'   some Census table-based summary files are hundreds of MB.
@@ -59,6 +63,7 @@ download_bg_acs_raw <- function(yr,
                                 overwrite = TRUE,
                                 validation_strict = TRUE,
                                 storage = c("auto", "local", "s3"),
+                                download_fun = ACSdownload::get_acs_new,
                                 download_timeout = 3600,
                                 download_retries = 2) {
   stage_format <- match.arg(stage_format)
@@ -70,6 +75,9 @@ download_bg_acs_raw <- function(yr,
     yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)
   }
 
+  download_fun_label <- paste(deparse(substitute(download_fun)), collapse = " ")
+  download_fun <- match.fun(download_fun)
+
   blockgroup_tables <- unique(as.vector(blockgroup_tables))
   tract_tables <- unique(as.vector(tract_tables))
 
@@ -78,6 +86,7 @@ download_bg_acs_raw <- function(yr,
     tables = blockgroup_tables,
     fips = "blockgroup",
     fiveorone = fiveorone,
+    download_fun = download_fun,
     download_timeout = download_timeout,
     download_retries = download_retries
   )
@@ -88,6 +97,7 @@ download_bg_acs_raw <- function(yr,
       tables = tract_tables,
       fips = "tract",
       fiveorone = fiveorone,
+      download_fun = download_fun,
       download_timeout = download_timeout,
       download_retries = download_retries
     )
@@ -98,7 +108,8 @@ download_bg_acs_raw <- function(yr,
     yr = yr,
     fiveorone = as.character(fiveorone),
     downloaded_at = as.character(Sys.time()),
-    source = "Census Bureau ACS table-based summary files via ACSdownload::get_acs_new()",
+    source = paste0("Census Bureau ACS table-based summary files via ", download_fun_label, "()"),
+    download_fun = download_fun_label,
     raw_acs_storage = raw_acs_storage,
     blockgroup_tables = blockgroup_tables,
     tract_tables = if (include_tract_data) tract_tables else character(),
@@ -143,6 +154,7 @@ download_acs_raw_tables <- function(yr,
                                     tables,
                                     fips,
                                     fiveorone = "5",
+                                    download_fun = ACSdownload::get_acs_new,
                                     download_timeout = 3600,
                                     download_retries = 2) {
   if (!requireNamespace("ACSdownload", quietly = TRUE)) {
@@ -161,6 +173,7 @@ download_acs_raw_tables <- function(yr,
   on.exit(options(timeout = old_timeout), add = TRUE)
 
   tables <- unique(toupper(as.vector(tables)))
+  download_fun <- match.fun(download_fun)
   out <- vector("list", length(tables))
   names(out) <- toupper(tables)
 
@@ -170,6 +183,7 @@ download_acs_raw_tables <- function(yr,
       table = table,
       fips = fips,
       fiveorone = fiveorone,
+      download_fun = download_fun,
       download_retries = download_retries
     )
   }
@@ -181,8 +195,10 @@ download_acs_raw_table_with_retry <- function(yr,
                                               table,
                                               fips,
                                               fiveorone = "5",
+                                              download_fun = ACSdownload::get_acs_new,
                                               download_retries = 2) {
   table_name <- toupper(table)
+  download_fun <- match.fun(download_fun)
   last_error <- NULL
   attempts <- seq_len(as.integer(download_retries) + 1L)
 
@@ -195,7 +211,7 @@ download_acs_raw_table_with_retry <- function(yr,
     }
 
     result <- tryCatch(
-      ACSdownload::get_acs_new(
+      download_fun(
         yr = yr,
         tables = table,
         fips = fips,

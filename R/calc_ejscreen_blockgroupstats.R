@@ -55,8 +55,11 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
                                           stage_format = c("csv", "rds", "rda", "arrow"),
                                           blockgroupstats_acs = NULL,
                                           blockgroupstats_acs_stage = NULL) {
+
   stage_format <- match.arg(stage_format)
   pipeline_storage <- match.arg(pipeline_storage)
+  ###################################################### #
+  # bg_acsdata ####
 
   if (is.null(bg_acsdata) && !is.null(blockgroupstats_acs)) {
     bg_acsdata <- blockgroupstats_acs
@@ -73,6 +76,9 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     storage = pipeline_storage,
     input_name = "bg_acsdata"
   )
+  ###################################################### #
+  # bg_envirodata ####
+
   enviro <- ejscreen_pipeline_input(
     x = bg_envirodata,
     stage = bg_envirodata_stage,
@@ -81,6 +87,9 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     storage = pipeline_storage,
     input_name = "bg_envirodata"
   )
+  ###################################################### #
+  # bg_extra_indicators ####
+
   if (is.null(bg_extra_indicators) && !is.null(pipeline_dir) &&
       !is.null(bg_extra_indicators_stage) &&
       ejscreen_pipeline_stage_exists(
@@ -106,6 +115,8 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     reuse_existing_if_missing = reuse_existing_extra_if_missing,
     existing_blockgroupstats = existing_blockgroupstats
   )
+  ###################################################### #
+  # use correct set of blockgroups by fips ####
 
   if (!"bgfips" %in% names(acs)) {
     stop("bg_acsdata must have a bgfips column")
@@ -122,6 +133,9 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     as.character(extra$bgfips)
   ))
   blockgroup_universe <- blockgroup_universe[!is.na(blockgroup_universe) & nzchar(blockgroup_universe)]
+  ###################################################### #
+  # merge acs ####
+
   acs <- merge(
     data.table::data.table(bgfips = blockgroup_universe),
     acs,
@@ -129,19 +143,26 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     all.x = TRUE,
     sort = FALSE
   )
+  ###################################################### #
+  # add geo columns ####
   acs <- add_bg_geography_columns(acs)
   cols_to_add <- setdiff(names(extra), c("bgfips", names(acs)))
   if (length(cols_to_add) > 0) {
     acs <- merge(acs, extra[, c("bgfips", cols_to_add), with = FALSE], by = "bgfips", all.x = TRUE)
   }
-
+  ###################################################### #
+  # calc Demog.Index ####
   if (any(grepl("Demog.Index", names(acs)))) {
     stop("bg_acsdata already has Demog.Index columns; remove or replace them before this step")
   }
-
+  # now calculate the demographic index columns from the ACS+extra table, which will be used in the EJ-index calculations in the next step. This ensures that any extra indicators that are part of the demographic index calculation (e.g. lowlifex) are included in the index calculation.
   blockgroup_demog_index <- calc_blockgroup_demog_index(bgstats = acs)
-  blockgroupstats_new <- merge(acs, blockgroup_demog_index, by = "bgfips", all.x = TRUE)
+  ###################################################### #
+  # add all the new columns ####
 
+  # add demog index
+  blockgroupstats_new <- merge(acs, blockgroup_demog_index, by = "bgfips", all.x = TRUE)
+  # add enviro columns, but only those that aren't already in the ACS+extra table to avoid overwriting any ACS-derived indicators such as pctpre1960
   cols_to_add <- setdiff(names(enviro), c("bgfips", names(blockgroupstats_new)))
   blockgroupstats_new <- merge(
     blockgroupstats_new,
@@ -149,6 +170,18 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
     by = "bgfips",
     all.x = TRUE
   )
+  # now ensure all universe blockgroups are included, even if missing from both inputs (e.g. due to missing ACS data)
+  blockgroupstats_new <- merge(
+    data.table::data.table(bgfips = blockgroup_universe),
+    blockgroupstats_new,
+    by = "bgfips",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  # add geo columns
+  blockgroupstats_new <- add_bg_geography_columns(blockgroupstats_new)
+  ###################################################### #
+  # sort columns ####
 
   preferred_first <- c(
     "bgid", "bgfips", "statename", "ST", "countyname", "REGION", "pop",
@@ -157,6 +190,8 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
   preferred_first <- preferred_first[preferred_first %in% names(blockgroupstats_new)]
   data.table::setcolorder(blockgroupstats_new, preferred_first)
   data.table::setorder(blockgroupstats_new, bgfips)
+  ###################################################### #
+  # save ####
 
   if (save_stage) {
     if (is.null(pipeline_dir)) {
@@ -173,5 +208,4 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
 
   blockgroupstats_new
 }
-
 ###################################################### #

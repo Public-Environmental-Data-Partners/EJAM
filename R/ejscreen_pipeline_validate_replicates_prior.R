@@ -273,6 +273,8 @@ ejscreen_pipeline_prior_validation_as_row <- function(result,
                                                       stage,
                                                       path = NA_character_,
                                                       old_label = NA_character_,
+                                                      new_acs_version = NA_character_,
+                                                      old_acs_version = NA_character_,
                                                       warnings = character()) {
   if (!inherits(result, "ejam_pipeline_prior_validation")) {
     stop("result must be from ejscreen_pipeline_validate_vs_prior()", call. = FALSE)
@@ -297,6 +299,8 @@ ejscreen_pipeline_prior_validation_as_row <- function(result,
     stage = stage,
     path = path,
     old_label = old_label,
+    new_acs_version = paste(as.character(new_acs_version), collapse = "; "),
+    old_acs_version = paste(as.character(old_acs_version), collapse = "; "),
     rows_new = unname(result$row_count["new"]),
     rows_old = unname(result$row_count["old"]),
     columns_new = unname(result$column_count["new"]),
@@ -334,6 +338,8 @@ ejscreen_pipeline_prior_validation_as_row <- function(result,
 ejscreen_pipeline_prior_validation_text <- function(result,
                                                     stage,
                                                     old_label = NA_character_,
+                                                    new_acs_version = NA_character_,
+                                                    old_acs_version = NA_character_,
                                                     warnings = character()) {
   if (!inherits(result, "ejam_pipeline_prior_validation")) {
     stop("result must be from ejscreen_pipeline_validate_vs_prior()", call. = FALSE)
@@ -358,6 +364,8 @@ ejscreen_pipeline_prior_validation_text <- function(result,
     paste0("Prior-version validation for stage: ", stage),
     paste0("Reference object: ", old_label),
     paste0("Created: ", Sys.time()),
+    paste0("New ACS version: ", paste(as.character(new_acs_version), collapse = "; ")),
+    paste0("Reference ACS version: ", paste(as.character(old_acs_version), collapse = "; ")),
     "",
     paste0("Rows: new=", unname(result$row_count["new"]), ", old=", unname(result$row_count["old"])),
     paste0("Columns: new=", unname(result$column_count["new"]), ", old=", unname(result$column_count["old"])),
@@ -413,6 +421,158 @@ ejscreen_pipeline_version_dir <- function(yr,
   }
   root <- sub("/+$", "", root)
   file.path(root, paste0(prefix, yr))
+}
+###################################################### #
+
+#' Infer the ACS end year encoded in a pipeline version folder
+#'
+#' @param pipeline_dir pipeline folder or S3 prefix.
+#'
+#' @return Character ACS end year if the folder contains an
+#'   `ejscreen_acs_YYYY` component; otherwise `NA_character_`.
+#' @keywords internal
+#'
+ejscreen_pipeline_dir_year <- function(pipeline_dir) {
+  if (missing(pipeline_dir) || is.null(pipeline_dir) || !nzchar(pipeline_dir)) {
+    return(NA_character_)
+  }
+  pieces <- strsplit(gsub("/+$", "", pipeline_dir), "/", fixed = TRUE)[[1]]
+  hits <- regmatches(pieces, regexec("^ejscreen_acs_([0-9]{4})$", pieces))
+  years <- vapply(hits, function(x) if (length(x) >= 2) x[[2]] else NA_character_, character(1))
+  years <- years[!is.na(years)]
+  if (length(years) == 0) {
+    return(NA_character_)
+  }
+  years[[length(years)]]
+}
+###################################################### #
+
+#' Convert an ACS end year to the 5-year ACS version label
+#'
+#' @param yr ACS end year.
+#'
+#' @return Character label like `"2020-2024"`.
+#' @keywords internal
+#'
+ejscreen_pipeline_acs_version_from_year <- function(yr) {
+  yr <- as.integer(yr)
+  if (length(yr) != 1L || is.na(yr)) {
+    return(NA_character_)
+  }
+  paste0(yr - 4L, "-", yr)
+}
+###################################################### #
+
+#' Check that a pipeline folder name matches the requested ACS year
+#'
+#' @param yr ACS end year requested for the run.
+#' @param pipeline_dir pipeline folder or S3 prefix.
+#' @param allow_mismatch logical. If TRUE, return FALSE for mismatches instead
+#'   of stopping.
+#'
+#' @return TRUE if no mismatch is detected. FALSE only when `allow_mismatch` is
+#'   TRUE and a mismatch was found.
+#' @keywords internal
+#'
+ejscreen_pipeline_validate_year_dir <- function(yr,
+                                                pipeline_dir,
+                                                allow_mismatch = FALSE) {
+  dir_year <- ejscreen_pipeline_dir_year(pipeline_dir)
+  if (is.na(dir_year)) {
+    return(TRUE)
+  }
+  yr <- as.character(as.integer(yr))
+  if (!identical(yr, dir_year)) {
+    msg <- paste0(
+      "EJAM_PIPELINE_YR (", yr, ") does not match the pipeline folder year (",
+      dir_year, ") in ", pipeline_dir,
+      ". Set both values together, or use a matching ejscreen_acs_YYYY folder."
+    )
+    if (isTRUE(allow_mismatch)) {
+      warning(msg, call. = FALSE)
+      return(FALSE)
+    }
+    stop(msg, call. = FALSE)
+  }
+  TRUE
+}
+###################################################### #
+
+#' Detect ACS version metadata from an object or pipeline folder
+#'
+#' @noRd
+ejscreen_pipeline_detect_acs_version <- function(x = NULL,
+                                                 pipeline_dir = NULL,
+                                                 explicit = NULL) {
+  if (!is.null(explicit) && length(explicit) > 0L && any(nzchar(as.character(explicit)))) {
+    return(paste(as.character(explicit), collapse = "; "))
+  }
+  if (!is.null(x)) {
+    for (nm in c("acs_version", "VersionACS", "acs.version", "ACS_VERSION")) {
+      value <- attr(x, nm, exact = TRUE)
+      if (!is.null(value) && length(value) > 0L && any(nzchar(as.character(value)))) {
+        return(paste(as.character(value), collapse = "; "))
+      }
+    }
+  }
+  yr <- ejscreen_pipeline_dir_year(pipeline_dir)
+  if (!is.na(yr)) {
+    return(ejscreen_pipeline_acs_version_from_year(yr))
+  }
+  NA_character_
+}
+###################################################### #
+
+#' Load a data object from an explicit Git ref
+#'
+#' @param ref Git branch, tag, or commit SHA.
+#' @param path Repository path to an `.rda` file.
+#' @param object_name Optional object name inside the `.rda` file. If NULL, use
+#'   the first object in the file.
+#'
+#' @return List containing `data`, `label`, `ref`, `path`, `object_name`, and
+#'   `acs_version`.
+#' @keywords internal
+#'
+ejscreen_pipeline_load_git_data_object <- function(ref,
+                                                   path = "data/blockgroupstats.rda",
+                                                   object_name = NULL) {
+  if (missing(ref) || is.null(ref) || !nzchar(ref)) {
+    stop("ref must be supplied, such as 'development' or 'v2.32.8.1'", call. = FALSE)
+  }
+  if (missing(path) || is.null(path) || !nzchar(path)) {
+    stop("path must be supplied, such as 'data/blockgroupstats.rda'", call. = FALSE)
+  }
+  git_object <- paste0(ref, ":", path)
+  tmp <- tempfile(fileext = paste0(".", tools::file_ext(path)))
+  err <- tempfile()
+  status <- suppressWarnings(system2("git", c("show", git_object), stdout = tmp, stderr = err))
+  if (!identical(status, 0L) || !file.exists(tmp) || file.info(tmp)$size == 0) {
+    msg <- paste(readLines(err, warn = FALSE), collapse = "\n")
+    stop("Could not read Git object ", git_object, if (nzchar(msg)) paste0(": ", msg), call. = FALSE)
+  }
+  env <- new.env(parent = emptyenv())
+  loaded <- tryCatch(
+    load(tmp, envir = env),
+    error = function(e) {
+      stop("Git object ", git_object, " could not be loaded as an .rda file: ", conditionMessage(e), call. = FALSE)
+    }
+  )
+  if (is.null(object_name)) {
+    object_name <- loaded[[1]]
+  }
+  if (!exists(object_name, envir = env, inherits = FALSE)) {
+    stop("Object ", object_name, " was not found in Git object ", git_object, call. = FALSE)
+  }
+  x <- get(object_name, envir = env)
+  list(
+    data = x,
+    label = git_object,
+    ref = ref,
+    path = path,
+    object_name = object_name,
+    acs_version = ejscreen_pipeline_detect_acs_version(x = x)
+  )
 }
 ###################################################### #
 
@@ -474,6 +634,106 @@ ejscreen_pipeline_write_text_or_csv <- function(x,
 }
 ###################################################### #
 
+#' Write an EJSCREEN pipeline run manifest
+#'
+#' @param pipeline_dir pipeline folder or S3 prefix.
+#' @param storage storage backend: `"auto"`, `"local"`, or `"s3"`.
+#' @param pipeline_yr ACS end year for the run.
+#' @param pipeline_storage resolved pipeline storage backend.
+#' @param stage_format pipeline stage file format.
+#' @param settings named character vector of environment/settings used by the
+#'   run.
+#' @param provisional_inputs named logical vector indicating whether
+#'   provisional inputs were reused or created for this run.
+#' @param run_started_at,run_finished_at run timestamps.
+#' @param status run status label.
+#' @param filename manifest filename.
+#'
+#' @return Path or S3 URI to the written manifest.
+#' @keywords internal
+#'
+ejscreen_pipeline_write_run_manifest <- function(pipeline_dir,
+                                                 storage = c("auto", "local", "s3"),
+                                                 pipeline_yr,
+                                                 pipeline_storage,
+                                                 stage_format,
+                                                 settings = character(),
+                                                 provisional_inputs = logical(),
+                                                 run_started_at = Sys.time(),
+                                                 run_finished_at = Sys.time(),
+                                                 status = "completed",
+                                                 filename = "pipeline_run_manifest.csv") {
+  storage <- match.arg(storage)
+  if (missing(pipeline_dir) || is.null(pipeline_dir) || !nzchar(pipeline_dir)) {
+    stop("pipeline_dir must be supplied", call. = FALSE)
+  }
+
+  scalar <- function(x) {
+    if (is.null(x) || length(x) == 0L) {
+      return(NA_character_)
+    }
+    paste(as.character(x), collapse = "; ")
+  }
+  git_value <- function(args) {
+    out <- suppressWarnings(system2("git", args, stdout = TRUE, stderr = TRUE))
+    if (!is.null(attr(out, "status")) || length(out) == 0L) {
+      return(NA_character_)
+    }
+    scalar(out)
+  }
+  package_version <- tryCatch(
+    as.character(utils::packageVersion("EJAM")),
+    error = function(e) {
+      value <- utils::packageDescription("EJAM", fields = "Version")
+      if (is.na(value)) NA_character_ else as.character(value)
+    }
+  )
+
+  git_status <- suppressWarnings(system2("git", c("status", "--short"), stdout = TRUE, stderr = TRUE))
+  git_dirty <- !is.null(attr(git_status, "status")) || length(git_status) > 0L
+
+  rows <- c(
+    list(
+      manifest_version = "1",
+      status = scalar(status),
+      created_at = scalar(Sys.time()),
+      run_started_at = scalar(run_started_at),
+      run_finished_at = scalar(run_finished_at),
+      package = "EJAM",
+      package_version = package_version,
+      git_sha = git_value(c("rev-parse", "HEAD")),
+      git_branch = git_value(c("branch", "--show-current")),
+      git_dirty = as.character(git_dirty),
+      pipeline_yr = scalar(pipeline_yr),
+      acs_version = ejscreen_pipeline_acs_version_from_year(pipeline_yr),
+      pipeline_dir = pipeline_dir,
+      pipeline_storage = scalar(pipeline_storage),
+      stage_format = scalar(stage_format)
+    ),
+    stats::setNames(
+      as.list(as.character(provisional_inputs)),
+      paste0("used_provisional_", names(provisional_inputs))
+    ),
+    stats::setNames(
+      as.list(as.character(settings)),
+      paste0("setting_", names(settings))
+    )
+  )
+  manifest <- data.table::data.table(
+    manifest_key = names(rows),
+    value = unname(vapply(rows, scalar, character(1)))
+  )
+  data.table::setnames(manifest, "manifest_key", "key")
+
+  ejscreen_pipeline_write_text_or_csv(
+    manifest,
+    filename = filename,
+    pipeline_dir = pipeline_dir,
+    storage = storage
+  )
+}
+###################################################### #
+
 #' Compare one pipeline stage to a prior version
 #'
 #' @param stage label to use in summaries.
@@ -507,6 +767,8 @@ ejscreen_pipeline_compare_stage <- function(stage,
                                             format = "csv",
                                             storage = c("auto", "local", "s3"),
                                             old_label = NULL,
+                                            new_acs_version = NULL,
+                                            old_acs_version = NULL,
                                             shared_only = FALSE,
                                             id_cols = "bgfips",
                                             output_dir = NULL,
@@ -527,6 +789,19 @@ ejscreen_pipeline_compare_stage <- function(stage,
 
   warnings <- character()
   error <- character()
+  new_acs_version_input <- new_acs_version
+  old_acs_version_input <- old_acs_version
+  new_acs_version_detected <- ejscreen_pipeline_detect_acs_version(
+    pipeline_dir = new_pipeline_dir,
+    explicit = new_acs_version_input
+  )
+  old_acs_version_detected <- ejscreen_pipeline_detect_acs_version(
+    pipeline_dir = old_pipeline_dir,
+    explicit = old_acs_version_input
+  )
+  acs_version_env <- new.env(parent = emptyenv())
+  acs_version_env$new <- new_acs_version_detected
+  acs_version_env$old <- old_acs_version_detected
   result <- tryCatch({
     if (is.null(new_dt)) {
       if (is.null(new_pipeline_dir)) {
@@ -543,6 +818,16 @@ ejscreen_pipeline_compare_stage <- function(stage,
     if (isTRUE(shared_only)) {
       old_dt <- ejscreen_pipeline_prior_shared_subset(old_dt, new_dt, id_cols = id_cols)
     }
+    acs_version_env$new <- ejscreen_pipeline_detect_acs_version(
+      x = new_dt,
+      pipeline_dir = new_pipeline_dir,
+      explicit = new_acs_version_input
+    )
+    acs_version_env$old <- ejscreen_pipeline_detect_acs_version(
+      x = old_dt,
+      pipeline_dir = old_pipeline_dir,
+      explicit = old_acs_version_input
+    )
 
     withCallingHandlers(
       ejscreen_pipeline_validate_vs_prior(
@@ -575,6 +860,8 @@ ejscreen_pipeline_compare_stage <- function(stage,
       paste0("Prior-version validation for stage: ", stage),
       paste0("Reference object: ", old_label),
       paste0("Created: ", Sys.time()),
+      paste0("New ACS version: ", acs_version_env$new),
+      paste0("Reference ACS version: ", acs_version_env$old),
       "",
       paste0("ERROR: ", error)
     )
@@ -590,6 +877,8 @@ ejscreen_pipeline_compare_stage <- function(stage,
       result = result,
       stage = stage,
       old_label = old_label,
+      new_acs_version = acs_version_env$new,
+      old_acs_version = acs_version_env$old,
       warnings = warnings
     )
     summary <- ejscreen_pipeline_prior_validation_as_row(
@@ -597,6 +886,8 @@ ejscreen_pipeline_compare_stage <- function(stage,
       stage = stage,
       path = path,
       old_label = old_label,
+      new_acs_version = acs_version_env$new,
+      old_acs_version = acs_version_env$old,
       warnings = warnings
     )
     summary[, error := ""]
@@ -630,6 +921,55 @@ ejscreen_pipeline_compare_stage <- function(stage,
     text = text,
     warnings = warnings,
     error = error
+  )
+}
+###################################################### #
+
+#' Compare one saved pipeline stage to a data object at an explicit Git ref
+#'
+#' @inheritParams ejscreen_pipeline_compare_stage
+#' @param git_ref Git branch, tag, or commit SHA holding the prior/reference
+#'   package data.
+#' @param git_path Repository path to the `.rda` prior/reference file.
+#' @param object_name Optional object name inside `git_path`.
+#'
+#' @return List with `result`, `summary`, `text`, `warnings`, and `error`.
+#' @keywords internal
+#'
+ejscreen_pipeline_compare_stage_to_git_ref <- function(stage,
+                                                       git_ref,
+                                                       git_path = "data/blockgroupstats.rda",
+                                                       object_name = NULL,
+                                                       new_dt = NULL,
+                                                       new_pipeline_dir = NULL,
+                                                       new_stage = stage,
+                                                       format = "csv",
+                                                       storage = c("auto", "local", "s3"),
+                                                       shared_only = FALSE,
+                                                       id_cols = "bgfips",
+                                                       output_dir = NULL,
+                                                       write_files = FALSE,
+                                                       use_waldo = FALSE) {
+  prior <- ejscreen_pipeline_load_git_data_object(
+    ref = git_ref,
+    path = git_path,
+    object_name = object_name
+  )
+  ejscreen_pipeline_compare_stage(
+    stage = stage,
+    new_dt = new_dt,
+    old_dt = prior$data,
+    new_pipeline_dir = new_pipeline_dir,
+    new_stage = new_stage,
+    format = format,
+    storage = storage,
+    old_label = prior$label,
+    old_acs_version = prior$acs_version,
+    shared_only = shared_only,
+    id_cols = id_cols,
+    output_dir = output_dir,
+    write_files = write_files,
+    use_waldo = use_waldo
   )
 }
 ###################################################### #
@@ -679,6 +1019,15 @@ ejscreen_pipeline_compare_versions <- function(new_yr = NULL,
   }
   if (is.null(output_dir)) {
     output_dir <- new_pipeline_dir
+  }
+  if (identical(sub("/+$", "", new_pipeline_dir), sub("/+$", "", old_pipeline_dir))) {
+    stop("new_pipeline_dir and old_pipeline_dir refer to the same folder; refusing to compare a pipeline version to itself", call. = FALSE)
+  }
+  if (!is.null(new_yr) && !is.na(new_yr)) {
+    ejscreen_pipeline_validate_year_dir(new_yr, new_pipeline_dir)
+  }
+  if (!is.null(old_yr) && !is.na(old_yr)) {
+    ejscreen_pipeline_validate_year_dir(old_yr, old_pipeline_dir)
   }
   if (is.null(old_stages)) {
     old_stages <- stats::setNames(stages, stages)

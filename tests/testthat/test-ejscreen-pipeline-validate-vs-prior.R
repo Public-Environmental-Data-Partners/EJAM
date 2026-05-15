@@ -111,6 +111,86 @@ test_that("ejscreen_pipeline_version_dir builds standard local and S3 version fo
   )
 })
 
+test_that("ejscreen_pipeline_validate_year_dir rejects ACS year and folder mismatches", {
+  expect_true(
+    EJAM:::ejscreen_pipeline_validate_year_dir(
+      2024,
+      "s3://bucket/path/pipeline/ejscreen_acs_2024"
+    )
+  )
+  expect_error(
+    EJAM:::ejscreen_pipeline_validate_year_dir(
+      2022,
+      "s3://bucket/path/pipeline/ejscreen_acs_2024"
+    ),
+    "does not match"
+  )
+})
+
+test_that("ejscreen_pipeline_compare_versions refuses to compare a folder to itself", {
+  root <- file.path(tempdir(), "ejam-prior-compare-same-folder")
+  dir <- EJAM:::ejscreen_pipeline_version_dir(2022, root = root)
+  dir.create(dir, recursive = TRUE)
+
+  expect_error(
+    EJAM:::ejscreen_pipeline_compare_versions(
+      new_pipeline_dir = dir,
+      old_pipeline_dir = dir,
+      stages = "blockgroupstats",
+      storage = "local",
+      write_files = FALSE
+    ),
+    "same folder"
+  )
+})
+
+test_that("ejscreen_pipeline_load_git_data_object reads an explicit Git ref object", {
+  skip_if(system2("git", c("rev-parse", "--is-inside-work-tree"), stdout = TRUE, stderr = TRUE) != "true")
+  skip_if(system2("git", c("cat-file", "-e", "development:data/blockgroupstats.rda")) != 0)
+
+  out <- EJAM:::ejscreen_pipeline_load_git_data_object(
+    ref = "development",
+    path = "data/blockgroupstats.rda"
+  )
+
+  expect_s3_class(out$data, "data.frame")
+  expect_equal(out$label, "development:data/blockgroupstats.rda")
+  expect_true("bgfips" %in% names(out$data))
+})
+
+test_that("ejscreen_pipeline_write_run_manifest records run provenance and settings", {
+  pipeline_dir <- file.path(tempdir(), "ejam-pipeline-run-manifest")
+  unlink(pipeline_dir, recursive = TRUE)
+
+  path <- EJAM:::ejscreen_pipeline_write_run_manifest(
+    pipeline_dir = pipeline_dir,
+    storage = "local",
+    pipeline_yr = 2024,
+    pipeline_storage = "local",
+    stage_format = "csv",
+    settings = c(
+      EJAM_PIPELINE_YR = "2024",
+      EJAM_PIPELINE_DIR = pipeline_dir,
+      EJAM_FORCE_ACS = "FALSE"
+    ),
+    provisional_inputs = c(
+      bg_envirodata = TRUE,
+      bg_extra_indicators = FALSE
+    ),
+    run_started_at = as.POSIXct("2026-05-15 12:00:00", tz = "UTC"),
+    run_finished_at = as.POSIXct("2026-05-15 12:05:00", tz = "UTC"),
+    status = "completed"
+  )
+
+  expect_true(file.exists(path))
+  manifest <- data.table::fread(path)
+  expect_true(all(c("key", "value") %in% names(manifest)))
+  expect_equal(manifest[key == "acs_version"]$value, "2020-2024")
+  expect_equal(manifest[key == "used_provisional_bg_envirodata"]$value, "TRUE")
+  expect_equal(manifest[key == "used_provisional_bg_extra_indicators"]$value, "FALSE")
+  expect_equal(manifest[key == "setting_EJAM_PIPELINE_YR"]$value, "2024")
+})
+
 test_that("ejscreen_pipeline_prior_shared_subset keeps bgfips and shared columns only", {
   old_dt <- data.frame(
     bgfips = "010010201001",
@@ -142,6 +222,8 @@ test_that("ejscreen_pipeline_compare_stage can write summary and detail files", 
     bgfips = c("010010201001", "010010201002"),
     pop = c(100, 250)
   )
+  attr(old_dt, "acs_version") <- "2018-2022"
+  attr(new_dt, "acs_version") <- "2020-2024"
 
   out <- suppressWarnings(
     EJAM:::ejscreen_pipeline_compare_stage(
@@ -157,6 +239,8 @@ test_that("ejscreen_pipeline_compare_stage can write summary and detail files", 
 
   expect_s3_class(out$summary, "data.table")
   expect_equal(out$summary$stage, "blockgroupstats")
+  expect_equal(out$summary$new_acs_version, "2020-2024")
+  expect_equal(out$summary$old_acs_version, "2018-2022")
   expect_true(file.exists(file.path(pipeline_dir, "prior_validation_blockgroupstats.txt")))
   expect_true(file.exists(file.path(pipeline_dir, "prior_validation_blockgroupstats.csv")))
 })

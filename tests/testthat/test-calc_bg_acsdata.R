@@ -61,7 +61,7 @@ test_that("calc_bg_acsdata can save a validated bg_acsdata stage", {
 
   expect_true(file.exists(file.path(pipeline_dir, "bg_acsdata.csv")))
   expect_equal(
-    as.data.frame(ejscreen_pipeline_load("bg_acsdata", pipeline_dir, format = "csv")),
+    as.data.frame(EJAM:::ejscreen_pipeline_load("bg_acsdata", pipeline_dir, format = "csv")),
     as.data.frame(out)
   )
   expect_true(all(c("pctpre1960", "pctdisability", "disab_universe") %in% names(out)))
@@ -71,7 +71,8 @@ test_that("download_bg_acs_raw saves a folder-plus-manifest raw ACS checkpoint",
   pipeline_dir <- file.path(tempdir(), "ejam-bg-acs-raw-test")
 
   testthat::local_mocked_bindings(
-    download_acs_raw_tables = function(yr, tables, fips, fiveorone, download_timeout, download_retries) {
+    download_acs_raw_tables = function(yr, tables, fips, fiveorone, download_fun, download_timeout, download_retries) {
+      expect_true(is.function(download_fun))
       expect_equal(download_timeout, 3600)
       expect_equal(download_retries, 2)
       stats::setNames(lapply(seq_along(tables), function(i) {
@@ -104,7 +105,7 @@ test_that("download_bg_acs_raw saves a folder-plus-manifest raw ACS checkpoint",
   expect_true(file.exists(file.path(raw_dir, "manifest.csv")))
   expect_true(file.exists(file.path(raw_dir, "blockgroup", "B01001.csv")))
   expect_true(file.exists(file.path(raw_dir, "tract", "B18101.csv")))
-  loaded <- ejscreen_pipeline_load("bg_acs_raw", pipeline_dir, format = "csv")
+  loaded <- EJAM:::ejscreen_pipeline_load("bg_acs_raw", pipeline_dir, format = "csv")
   expect_equal(loaded$yr, 2024)
   expect_equal(names(loaded$blockgroup), c("B01001", "B03002"))
 })
@@ -129,7 +130,7 @@ test_that("raw ACS folder load includes user-added table files", {
     B99999_001 = c(1, 2)
   ), file.path(raw_dir, "blockgroup", "B99999.rds"))
 
-  loaded <- ejscreen_pipeline_load("bg_acs_raw", pipeline_dir, format = "rds")
+  loaded <- EJAM:::ejscreen_pipeline_load("bg_acs_raw", pipeline_dir, format = "rds")
 
   expect_s3_class(loaded, "ejam_bg_acs_raw")
   expect_equal(names(loaded$blockgroup), "B99999")
@@ -207,7 +208,7 @@ test_that("calc_bg_acsdata can read raw ACS stage before formula transformation"
       B18101_001 = 300
     ))
   )
-  ejscreen_pipeline_save(raw, "bg_acs_raw", pipeline_dir, format = "rds")
+  EJAM:::ejscreen_pipeline_save(raw, "bg_acs_raw", pipeline_dir, format = "rds")
 
   testthat::local_mocked_bindings(
     calc_blockgroupstats_acs = function(yr, formulas, tables, dropMOE, acs_raw) {

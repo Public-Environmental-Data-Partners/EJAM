@@ -90,6 +90,10 @@
 #' @param validation_strict logical passed to stage validators.
 #' @param download_acs_raw logical, whether to download raw ACS tables when
 #'   neither `bg_acsdata` nor saved ACS stages are available.
+#' @param acs_download_fun ACSdownload-compatible function used by
+#'   [download_bg_acs_raw()] when raw ACS tables need to be downloaded. The
+#'   default is [ACSdownload::get_acs_new()]. Supply a wrapper if you need a
+#'   legacy ACS source implementation.
 #' @param return_intermediate logical. If TRUE, return key interim stage objects
 #'   in addition to final datasets.
 #' @param include_ejscreen_export logical. If TRUE, also create an
@@ -138,6 +142,7 @@ calc_ejscreen_dataset <- function(yr,
                                   overwrite = TRUE,
                                   validation_strict = TRUE,
                                   download_acs_raw = TRUE,
+                                  acs_download_fun = ACSdownload::get_acs_new,
                                   return_intermediate = TRUE,
                                   include_ejscreen_export = FALSE,
                                   include_ejscreen_dataset_creator_input = FALSE,
@@ -289,6 +294,7 @@ calc_ejscreen_dataset <- function(yr,
               fiveorone = fiveorone,
               download_timeout = download_timeout,
               download_retries = download_retries,
+              download_fun = acs_download_fun,
               pipeline_dir = pipeline_dir,
               save_stage = save_stages,
               stage_format = stage_format,
