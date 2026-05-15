@@ -3013,7 +3013,7 @@ app_server <- function(input, output, session) {
     }
     mybarvars.sumstat <- switch(mybarvars.stat,
                                 'med' =  c('Median site', 'Median person'),
-                                'avg' = c('Average site', 'Average person')
+                                'avg' = c('Average site analyzed', 'Average person at sites analyzed')
     )
     ejam2barplot_indicators(ejamitout = data_processed(),
                             indicator_type = input$summ_bar_ind, # D,E,EJ,EJS
