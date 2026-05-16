@@ -124,7 +124,7 @@ test_that("pctunemployed uses labor force while unemployedbase preserves age-16-
   expect_equal(out$pctunemployed, 0.1)
 })
 
-test_that("percapincome preserves ACS per-capita income values including sentinels", {
+test_that("percapincome preserves ACS sentinel values and converts missing rows to zero", {
   x <- data.table::data.table(
     B19301_001 = c(12000, -666666666, NA_real_)
   )
@@ -134,7 +134,7 @@ test_that("percapincome preserves ACS per-capita income values including sentine
 
   out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
-  expect_equal(out$percapincome, c(12000, -666666666, NA_real_))
+  expect_equal(out$percapincome, c(12000, -666666666, 0))
 })
 
 test_that("tract allocation defaults to decennial 2020 blockgroup weights", {
