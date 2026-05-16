@@ -31,29 +31,69 @@ package data.}
 
 \item{object_name}{Optional object name inside \code{git_path}.}
 
-\item{new_dt}{optional new data object. If NULL, load \code{new_stage} from
+\item{new_dt}{Optional new data object. If NULL, \code{new_stage} is loaded from
 \code{new_pipeline_dir}.}
 
-\item{format}{file format used for loading stages.}
+\item{new_pipeline_dir}{Folder or S3 prefix holding the new pipeline stage
+file. Required when \code{new_dt} is NULL.}
 
-\item{storage}{storage backend: \code{"auto"}, \code{"local"}, or \code{"s3"}.}
+\item{new_stage}{Stage name to load from \code{new_pipeline_dir}. Defaults to
+\code{stage}.}
 
-\item{shared_only}{logical. If TRUE, compare only prior columns shared with
-\code{new_dt}, plus \code{id_cols}.}
+\item{format}{File format used when loading the saved new pipeline stage.}
 
-\item{id_cols}{identifier columns to keep for shared-column comparisons.}
+\item{storage}{Storage backend: \code{"auto"}, \code{"local"}, or \code{"s3"}.}
 
-\item{output_dir}{optional folder/S3 prefix for validation artifacts.}
+\item{shared_only}{Logical. If TRUE, compare only prior columns shared with
+the new data, plus \code{id_cols}.}
 
-\item{write_files}{logical. If TRUE, write one detail text file and one
+\item{id_cols}{Identifier columns to keep for shared-column comparisons.}
+
+\item{output_dir}{Optional folder or S3 prefix for written validation
+artifacts.}
+
+\item{write_files}{Logical. If TRUE, write one detail text file and one
 one-row CSV summary for this stage.}
 
-\item{use_waldo}{logical passed to \code{\link[=ejscreen_pipeline_validate_vs_prior]{ejscreen_pipeline_validate_vs_prior()}}.}
+\item{use_waldo}{Logical passed to \code{\link[=ejscreen_pipeline_validate_vs_prior]{ejscreen_pipeline_validate_vs_prior()}}.}
 }
 \value{
 List with \code{result}, \code{summary}, \code{text}, \code{warnings}, and \code{error}.
 }
 \description{
 Compare one saved pipeline stage to a data object at an explicit Git ref
+}
+\examples{
+\dontrun{
+# compare s3 copy of 2022 blockgroupstats.csv
+# to v2.32.8.001 release version of blockgroupstats.rda
+
+x <- EJAM:::ejscreen_pipeline_compare_stage_to_git_ref(
+  git_ref = "v2.32.8.001",
+  git_path = "data/blockgroupstats.rda",
+  stage = "blockgroupstats",
+  new_pipeline_dir = paste0(
+    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
+    "ejscreen_acs_2022"
+  )
+)
+print(x$text)
+x$result$not_replicated
+
+# compare only the 13 environmental indicators in names_e
+# from a user-provided file against the v2.32.8.001 package data
+user_env <- data.table::fread("path/to/user_bg_envirodata.csv")
+user_env <- user_env[, c("bgfips", EJAM::names_e), with = FALSE]
+x_env <- EJAM:::ejscreen_pipeline_compare_stage_to_git_ref(
+  git_ref = "v2.32.8.001",
+  git_path = "data/blockgroupstats.rda",
+  stage = "bg_envirodata_names_e",
+  new_dt = user_env,
+  shared_only = TRUE,
+  id_cols = "bgfips"
+)
+print(x_env$text)
+}
+
 }
 \keyword{internal}
