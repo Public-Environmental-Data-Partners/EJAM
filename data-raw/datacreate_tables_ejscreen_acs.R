@@ -21,9 +21,10 @@ tables_ejscreen_acs <- c(
   "B15002",
   "B23025",
   "C17002",
+  "B17017",
   "B19301",
   "B25032",
-  "B28003",
+  "B28002",
   "B27010",
   "C16002",
   "B16004",
@@ -55,10 +56,11 @@ EJAM:::dataset_documenter("tables_ejscreen_acs", seealso = "[formulas_ejscreen_a
 #'  - B02001  race without hispanic ethnicity
 #'  - B15002  education
 #'  - B23025  unemployed
-#'  - C17002  low income, poor, etc.
+#'  - C17002  low income, poverty ratio population universe, etc.
+#'  - B17017  households below poverty level
 #'  - B19301  per capita income
 #'  - B25032  owned units vs rented units (occupied housing units, same universe as B25003)
-#'  - B28003  no broadband
+#'  - B28002  no broadband internet subscription
 #'  - B27010  no health insurance
 #'  - C16002  (language category and) % of households limited English speaking (lingiso) <https://data.census.gov/table/ACSDT5Y",yr,".C16002>
 #'  - B16004  (language category and) % of residents (not hhlds) speak no English at all <https://data.census.gov/table/ACSDT5Y",yr,".B16004>

@@ -9,7 +9,7 @@
 #' - get tract and blockgroup Census 2020 population counts,
 #'   by using [tidycensus::get_decennial()] which needs an API key.
 #' - create a data.table that is one row per blockgroup,
-#'   where the "bgwt" column is the Census 2020 pop as a fraction of tractwide Census 2000 pop,
+#'   where the "bgwt" column is the Census 2020 pop as a fraction of tractwide Census 2020 pop,
 #'   so it can be used as a weight when aggregating across blockgroups within each tract,
 #'   particularly for calculating a weighted average score for each tract,
 #'   based on a score from each blockgroup,
@@ -33,8 +33,26 @@ calc_bgwts_nationwide <- function(ST = EJAM::stateinfo$ST,
                                   key = NULL,
                                   sumfile = "dhc",
                                   retries = 3,
-                                  retry_wait = 5) {
+                                  retry_wait = 5,
+                                  cache_path = NULL,
+                                  use_cache = TRUE,
+                                  refresh_cache = FALSE) {
 
+  if (is.null(cache_path)) {
+    cache_path <- calc_bgwts_nationwide_cache_path(ST = ST, year = year, sumfile = sumfile)
+  }
+  if (!isTRUE(refresh_cache)) {
+    refresh_cache <- isTRUE(as.logical(Sys.getenv("EJAM_REFRESH_DECENNIAL_BGWTS", unset = "FALSE")))
+  }
+  if (isTRUE(use_cache) && !isTRUE(refresh_cache) && file.exists(cache_path)) {
+    bgwts <- readRDS(cache_path)
+    required <- c("bgfips", "tractfips", "bgwt")
+    if (is.data.frame(bgwts) && all(required %in% names(bgwts))) {
+      message("Using cached Census decennial blockgroup weights: ", cache_path)
+      return(data.table::as.data.table(bgwts))
+    }
+    warning("Ignoring invalid cached Census decennial blockgroup weights: ", cache_path, call. = FALSE)
+  }
   message("Now need to use Census API key in tidycensus::get_decennial() ")
   c2k <- list()
   for (i in 1:length(ST)) {
@@ -68,6 +86,31 @@ calc_bgwts_nationwide <- function(ST = EJAM::stateinfo$ST,
   bgwts[, bgwt := ifelse(tractpop == 0, 0, pop / tractpop)]
   bgwts[, pop := NULL]
   bgwts[, tractpop := NULL]
+  if (isTRUE(use_cache)) {
+    dir.create(dirname(cache_path), recursive = TRUE, showWarnings = FALSE)
+    attr(bgwts, "decennial_year") <- year
+    attr(bgwts, "sumfile") <- sumfile
+    attr(bgwts, "states") <- ST
+    saveRDS(bgwts, cache_path)
+    message("Saved Census decennial blockgroup weights cache: ", cache_path)
+  }
   return(bgwts)
+}
+###################################################### #
+
+calc_bgwts_nationwide_cache_path <- function(ST = EJAM::stateinfo$ST,
+                                             year = 2020,
+                                             sumfile = "dhc") {
+  env_path <- Sys.getenv("EJAM_DECENNIAL_BGWTS_CACHE", unset = "")
+  if (nzchar(env_path)) {
+    return(path.expand(env_path))
+  }
+  state_key <- if (setequal(as.character(ST), as.character(EJAM::stateinfo$ST))) {
+    "nationwide"
+  } else {
+    paste(sort(as.character(ST)), collapse = "-")
+  }
+  filename <- paste0("decennial_bgwts_", year, "_", sumfile, "_", state_key, ".rds")
+  file.path(tools::R_user_dir("EJAM", which = "cache"), filename)
 }
 ###################################################### #

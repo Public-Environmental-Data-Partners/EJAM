@@ -52,7 +52,7 @@
 #'
 download_bg_acs_raw <- function(yr,
                                 blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
-                                tract_tables = c("B18101", "C16001"),
+                                tract_tables = c("B18101", "C16001", "B27010"),
                                 include_tract_data = TRUE,
                                 fiveorone = "5",
                                 pipeline_dir = NULL,

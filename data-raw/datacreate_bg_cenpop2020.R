@@ -68,7 +68,7 @@ bg_cenpop2020 <- data.table::as.data.table(x)
 rm(x)
 
 #  look up bgid based on join on bgfips
-if (!exists("bgid2fips")) download_dynamic("bgid2fips")
+if (!exists("bgid2fips")) dataload_dynamic("bgid2fips")
 bg_cenpop2020$bgid <- bgid2fips[bg_cenpop2020,  bgid, on = "bgfips"] # bgid2fips is loaded from aws, e.g. by EJAM pkg
 data.table::setkey(bg_cenpop2020, bgid, bgfips)
 
@@ -78,10 +78,11 @@ data.table::setorder(bg_cenpop2020, bgid, bgfips, lat, lon, pop2020, ST)
 mapfast(bg_cenpop2020[ST == "LA",], radius = 0.01)
 ####################################################### #
 #### DROP MOST OF THAT INFO ACTUALLY...
-#  THIS IS 24MB and already have all this in bgpts, except for pop2020 and lat lon of pop2020wtd centroid !
+#  THIS IS 24MB and already have all this in bgpts, except for pop2020,
+# bgfips, and lat/lon of Census 2020 population-weighted centroid.
 # see datacreate_bgpts.R too
 
-bg_cenpop2020 <- bg_cenpop2020[, .(bgid, lat, lon, pop2020, ST)]
+bg_cenpop2020 <- bg_cenpop2020[, .(bgfips, bgid, lat, lon, pop2020, ST)]
 
 dim(bg_cenpop2020)
 dim(EJAM::blockgroupstats)

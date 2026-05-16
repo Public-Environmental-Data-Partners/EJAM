@@ -22,10 +22,11 @@
 #'  - B02001  race without hispanic ethnicity
 #'  - B15002  education
 #'  - B23025  unemployed
-#'  - C17002  low income, poor, etc.
+#'  - C17002  low income, poverty ratio population universe, etc.
+#'  - B17017  households below poverty level
 #'  - B19301  per capita income
 #'  - B25032  owned units vs rented units (occupied housing units, same universe as B25003)
-#'  - B28003  no broadband
+#'  - B28002  no broadband internet subscription
 #'  - B27010  no health insurance
 #'  - C16002  (language category and) % of households limited English speaking (lingiso) <https://data.census.gov/table/ACSDT5Y2024.C16002>
 #'  - B16004  (language category and) % of residents (not hhlds) speak no English at all <https://data.census.gov/table/ACSDT5Y2024.B16004>

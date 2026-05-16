@@ -9,8 +9,9 @@ calc_bg_acsdata(
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tables = as.vector(EJAM::tables_ejscreen_acs),
   include_tract_data = TRUE,
-  tract_tables = c("B18101", "C16001"),
+  tract_tables = c("B18101", "C16001", "B27010"),
   tract_formulas = NULL,
+  tract_weight_source = c("decennial2020", "acs"),
   dropMOE = TRUE,
   acs_raw = NULL,
   acs_raw_stage = NULL,
@@ -37,6 +38,11 @@ to blockgroups.}
 
 \item{tract_formulas}{formulas used for tract-resolution ACS indicators.
 Defaults to \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupstats_from_tract_data()}} defaults.}
+
+\item{tract_weight_source}{source for tract-to-blockgroup apportionment
+weights. \code{"decennial2020"} matches the legacy EJSCREEN method by using
+2020 Decennial Census blockgroup population weights. \code{"acs"} uses
+same-vintage ACS blockgroup population weights.}
 
 \item{dropMOE}{logical, whether to drop ACS margin-of-error columns.}
 

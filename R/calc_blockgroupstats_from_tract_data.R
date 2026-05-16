@@ -20,35 +20,63 @@
 #'  then apportion into blockgroup counts,
 #'  then calculate percents in blockgroups via formulas.
 #'
+#'  For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
+#'  county equivalents while 2020 Decennial blockgroup FIPS use the older county
+#'  equivalents. When `tract_weight_source = "decennial2020"` and `acs_raw` is
+#'  available, the function detects this mismatch and repairs Connecticut
+#'  weights with same-vintage ACS blockgroup population weights.
+#'
 #' @param yr endyear of ACS 5-year survey to use, inferred if omitted
-#' @param tables "B18101" and "C16001", e.g., for disability and detailed language spoken
+#' @param tables ACS tract tables used for tract-derived indicators, typically
+#'   `"B18101"`, `"C16001"`, and `"B27010"` for disability, detailed language,
+#'   and health insurance.
 #' @param formulas default includes formulas for disability-related and language-related indicators
-#'  calculated from ACS variables found in tables "B18101" and "C16001" - This is a vector of string formulas.
+#'  calculated from tract-level ACS variables. This is a vector of string formulas.
 #' @param dropMOE logical, whether to drop not retain the margin of error information for each ACS variable
 #' @param acs_raw optional raw ACS table list or `bg_acs_raw` pipeline object
 #'   previously created by [download_bg_acs_raw()]. If supplied, no ACS download
 #'   is performed for tract-resolution tables.
+#' @param tract_weight_source source for blockgroup-to-tract apportionment
+#'   weights. `"decennial2020"` uses 2020 Decennial Census population weights,
+#'   matching the legacy EJSCREEN approach. `"acs"` uses same-vintage ACS
+#'   blockgroup population from `acs_raw` or downloads it when needed.
 #'
 #' @return data.table, one row per blockgroup (not tract)
 #'
 #' @keywords internal
 #'
 calc_blockgroupstats_from_tract_data <- function(yr,
-                                                 tables = c("B18101", "C16001"),
+                                                 tables = c("B18101", "C16001", "B27010"),
                                                  formulas = NULL,
                                                  dropMOE = TRUE,
-                                                 acs_raw = NULL) {
+                                                 acs_raw = NULL,
+                                                 tract_weight_source = c("decennial2020", "acs")) {
 
+  tract_weight_source <- match.arg(tract_weight_source)
   if (missing(yr)) {
     yr = acs_endyear(guess_census_has_published = TRUE, guess_always = T)
   }  # 2022, 2023, or 2024
   cat("end year to use: ", yr, '\n')
 
-  bgwts <- calc_blockgroupstats_bgwts(acs_raw = acs_raw, env = parent.frame(), yr = yr)
+  bgwts <- calc_blockgroupstats_bgwts(
+    acs_raw = acs_raw,
+    env = parent.frame(),
+    yr = yr,
+    weight_source = tract_weight_source
+  )
   ###################################################### #
   if (missing(formulas) || is.null(formulas)) {
-    formulas <- c(formulas_ejscreen_acs_disability$formula,
-                  formulas_ejscreen_acs$formula[grepl("lan_", formulas_ejscreen_acs$formula)] )
+    formulas <- c(
+      formulas_ejscreen_acs_disability$formula,
+      formulas_ejscreen_acs$formula[grepl("lan_", formulas_ejscreen_acs$formula)],
+      formulas_ejscreen_acs$formula[
+        formulas_ejscreen_acs$rname %in% c(
+          "healthinsurance_universe",
+          "nohealthinsurance",
+          "pctnohealthinsurance"
+        )
+      ]
+    )
 
     ## e.g., # formulas_ejscreen_acs_disability[c(3,2,1),]
     # disab_universe <- B18101_001
@@ -96,6 +124,12 @@ calc_blockgroupstats_from_tract_data <- function(yr,
 
   data.table::setnames(tracts, old = "disability", new = "tract_disability")
   data.table::setnames(tracts, old = "disab_universe", new = "tract_disab_universe")
+  if ("healthinsurance_universe" %in% names(tracts)) {
+    data.table::setnames(tracts, old = "healthinsurance_universe", new = "tract_healthinsurance_universe")
+  }
+  if ("nohealthinsurance" %in% names(tracts)) {
+    data.table::setnames(tracts, old = "nohealthinsurance", new = "tract_nohealthinsurance")
+  }
 
   ## hard-coded for now, to assume indicator counts start with "lan_" here: ***
 
@@ -117,6 +151,7 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   lanvars_found = intersect(paste0("tract_", lanvars), names(tracts))
   neededvars = c('bgfips', 'bgwt',
                  'tract_disability', 'tract_disab_universe',
+                 intersect(c("tract_healthinsurance_universe", "tract_nohealthinsurance"), names(tracts)),
                  lanvars_found
   )
 
@@ -127,12 +162,23 @@ calc_blockgroupstats_from_tract_data <- function(yr,
 
   bg_from_tracts[, disability     := tract_disability * bgwt]
   bg_from_tracts[, disab_universe := tract_disab_universe * bgwt]
+  if ("tract_healthinsurance_universe" %in% names(bg_from_tracts)) {
+    bg_from_tracts[, healthinsurance_universe := tract_healthinsurance_universe * bgwt]
+  }
+  if ("tract_nohealthinsurance" %in% names(bg_from_tracts)) {
+    bg_from_tracts[, nohealthinsurance := tract_nohealthinsurance * bgwt]
+  }
 
   tract_lan_cols <- grep("^tract_lan_", names(bg_from_tracts), value = TRUE)
   lan_counts_bg <- bg_from_tracts[, lapply(.SD, function(x) x * bgwt),
                                   .SDcols = tract_lan_cols]
   bg_from_tracts <- cbind(bg_from_tracts, lan_counts_bg)
-  bg_from_tracts[, c("tract_disability", "tract_disab_universe", tract_lan_cols) := NULL]
+  bg_from_tracts[, c(
+    "tract_disability",
+    "tract_disab_universe",
+    intersect(c("tract_healthinsurance_universe", "tract_nohealthinsurance"), names(bg_from_tracts)),
+    tract_lan_cols
+  ) := NULL]
   ############################################################### #
 
   ## CHANGE NAMES NOW FROM tract_ to normal bg names
@@ -148,6 +194,13 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   ## or just use the formula directly:
 
   bg_from_tracts[, pctdisability := ifelse(disab_universe == 0, 0, as.numeric(disability) / disab_universe)]
+  if (all(c("healthinsurance_universe", "nohealthinsurance") %in% names(bg_from_tracts))) {
+    bg_from_tracts[, pctnohealthinsurance := ifelse(
+      healthinsurance_universe == 0,
+      0,
+      as.numeric(nohealthinsurance) / healthinsurance_universe
+    )]
+  }
 
 
 
@@ -159,6 +212,7 @@ calc_blockgroupstats_from_tract_data <- function(yr,
                               formulas = pct_language_formulas,
                               keep.old = c("bgfips",
                                            "disability",  "disab_universe",   "pctdisability",
+                                           intersect(c("healthinsurance_universe", "nohealthinsurance", "pctnohealthinsurance"), names(bg_from_tracts)),
                                            grep("^lan_", names(bg_from_tracts) , value = TRUE)
                               )
   )
@@ -191,6 +245,12 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   # ROUND NOW,
   bg_from_tracts[, disability := round(disability, 0)]
   bg_from_tracts[, disab_universe := round(disab_universe, 0)]
+  if ("healthinsurance_universe" %in% names(bg_from_tracts)) {
+    bg_from_tracts[, healthinsurance_universe := round(healthinsurance_universe, 0)]
+  }
+  if ("nohealthinsurance" %in% names(bg_from_tracts)) {
+    bg_from_tracts[, nohealthinsurance := round(nohealthinsurance, 0)]
+  }
 
   ## round the language or other counts here too...   ***
 
@@ -290,35 +350,161 @@ calc_bgwts_from_acs_raw <- function(acs_raw, pop_col = "B01001_001") {
 }
 ###################################################### #
 
-calc_blockgroupstats_bgwts <- function(acs_raw = NULL, env = parent.frame(), yr = NULL) {
+calc_blockgroupstats_bgwts <- function(acs_raw = NULL,
+                                       env = parent.frame(),
+                                       yr = NULL,
+                                       weight_source = c("decennial2020", "acs")) {
+  weight_source <- match.arg(weight_source)
   bgwts <- NULL
-  if (!is.null(acs_raw)) {
-    bgwts <- calc_bgwts_from_acs_raw(acs_raw)
+  if (exists("bgwts", envir = env, inherits = FALSE)) {
+    return(get("bgwts", envir = env, inherits = FALSE))
   }
-  if (!is.null(bgwts)) {
-    return(bgwts)
-  }
-  if (exists("bgwts", envir = env, inherits = TRUE)) {
-    return(get("bgwts", envir = env, inherits = TRUE))
-  }
-  if (!is.null(yr) && requireNamespace("ACSdownload", quietly = TRUE)) {
-    bgwts <- tryCatch(
-      calc_bgwts_from_acs_bg_population(yr = yr),
-      error = function(e) {
-        warning(
-          "Could not create same-vintage ACS blockgroup-to-tract weights for ",
-          yr, "; falling back to calc_bgwts_nationwide(): ",
-          conditionMessage(e),
-          call. = FALSE
-        )
-        NULL
-      }
-    )
+
+  if (weight_source == "acs") {
+    if (!is.null(acs_raw)) {
+      bgwts <- calc_bgwts_from_acs_raw(acs_raw)
+    }
     if (!is.null(bgwts)) {
       return(bgwts)
     }
+    if (!is.null(yr) && requireNamespace("ACSdownload", quietly = TRUE)) {
+      bgwts <- tryCatch(
+        calc_bgwts_from_acs_bg_population(yr = yr),
+        error = function(e) {
+          warning(
+            "Could not create same-vintage ACS blockgroup-to-tract weights for ",
+            yr, "; falling back to 2020 Decennial Census weights: ",
+            conditionMessage(e),
+            call. = FALSE
+          )
+          NULL
+        }
+      )
+      if (!is.null(bgwts)) {
+        return(bgwts)
+      }
+    }
   }
-  calc_bgwts_nationwide()
+
+  tryCatch(
+    {
+      bgwts <- calc_bgwts_from_bg_cenpop2020()
+      if (is.null(bgwts)) {
+        bgwts <- calc_bgwts_nationwide(year = 2020)
+      }
+      repair_decennial_weights_with_acs_mismatched_states(bgwts, acs_raw = acs_raw)
+    },
+    error = function(e) {
+      stop(
+        "Could not create 2020 Decennial Census blockgroup-to-tract weights. ",
+        "Use tract_weight_source = 'acs' to use same-vintage ACS population ",
+        "weights instead. Error: ",
+        conditionMessage(e),
+        call. = FALSE
+      )
+    }
+  )
+}
+###################################################### #
+
+repair_decennial_weights_with_acs_mismatched_states <- function(bgwts, acs_raw = NULL) {
+  if (is.null(acs_raw)) {
+    return(bgwts)
+  }
+  acs_bgwts <- calc_bgwts_from_acs_raw(acs_raw)
+  if (is.null(acs_bgwts) || nrow(acs_bgwts) == 0) {
+    return(bgwts)
+  }
+
+  bgwts <- data.table::as.data.table(data.table::copy(bgwts))
+  acs_bgwts <- data.table::as.data.table(data.table::copy(acs_bgwts))
+  bgwts[, bgfips := as.character(bgfips)]
+  bgwts[, tractfips := as.character(tractfips)]
+  acs_bgwts[, bgfips := as.character(bgfips)]
+  acs_bgwts[, tractfips := as.character(tractfips)]
+
+  acs_states <- unique(substr(acs_bgwts$bgfips, 1, 2))
+  mismatch_states <- acs_states[vapply(acs_states, function(st) {
+    acs_tracts <- unique(acs_bgwts$tractfips[substr(acs_bgwts$bgfips, 1, 2) == st])
+    decennial_tracts <- unique(bgwts$tractfips[substr(bgwts$bgfips, 1, 2) == st])
+    length(decennial_tracts) > 0 && length(intersect(acs_tracts, decennial_tracts)) == 0
+  }, logical(1))]
+
+  incomplete_tracts <- setdiff(acs_bgwts$bgfips, bgwts$bgfips)
+  incomplete_tracts <- unique(acs_bgwts$tractfips[acs_bgwts$bgfips %in% incomplete_tracts])
+  incomplete_tracts <- setdiff(incomplete_tracts, acs_bgwts$tractfips[substr(acs_bgwts$bgfips, 1, 2) %in% mismatch_states])
+
+  if (length(mismatch_states) == 0 && length(incomplete_tracts) == 0) {
+    return(bgwts)
+  }
+
+  if (length(mismatch_states) > 0) {
+    warning(
+      "Using same-vintage ACS blockgroup population weights for state FIPS ",
+      paste(mismatch_states, collapse = ", "),
+      " because 2020 Decennial tract FIPS do not overlap the ACS tract FIPS. ",
+      "This occurs for Connecticut in ACS 2022+ after Census adopted planning regions as county equivalents.",
+      call. = FALSE
+    )
+  }
+  if (length(incomplete_tracts) > 0) {
+    warning(
+      "Using same-vintage ACS blockgroup population weights for ",
+      length(incomplete_tracts),
+      " tract(s) because the decennial weight table is missing one or more ACS blockgroups.",
+      call. = FALSE
+    )
+  }
+
+  bgwts <- bgwts[
+    !substr(bgfips, 1, 2) %in% mismatch_states &
+      !tractfips %in% incomplete_tracts
+  ]
+  bgwts <- data.table::rbindlist(
+    list(
+      bgwts,
+      acs_bgwts[
+        substr(bgfips, 1, 2) %in% mismatch_states |
+          tractfips %in% incomplete_tracts
+      ]
+    ),
+    use.names = TRUE
+  )
+  data.table::setorder(bgwts, bgfips)
+  bgwts
+}
+###################################################### #
+
+calc_bgwts_from_bg_cenpop2020 <- function(bg_cenpop = EJAM::bg_cenpop2020) {
+  if (is.null(bg_cenpop) || !is.data.frame(bg_cenpop)) {
+    return(NULL)
+  }
+  required <- c("bgfips", "pop2020")
+  if (!all(required %in% names(bg_cenpop))) {
+    return(NULL)
+  }
+
+  bgwts <- data.table::as.data.table(data.table::copy(bg_cenpop))[
+    ,
+    .(
+      bgfips = as.character(bgfips),
+      pop = suppressWarnings(as.numeric(pop2020))
+    )
+  ]
+  bgwts <- bgwts[nchar(bgfips) == 12]
+  if (nrow(bgwts) == 0) {
+    return(NULL)
+  }
+  bgwts[, tractfips := substr(bgfips, 1, 11)]
+  bgwts[, tractpop := sum(pop, na.rm = TRUE), by = "tractfips"]
+  bgwts[, bgwt := data.table::fifelse(
+    is.na(pop),
+    NA_real_,
+    data.table::fifelse(tractpop == 0, 0, pop / tractpop)
+  )]
+  bgwts[, c("pop", "tractpop") := NULL]
+  data.table::setorder(bgwts, bgfips)
+  bgwts
 }
 ###################################################### #
 

@@ -24,6 +24,10 @@
 #'   to blockgroups.
 #' @param tract_formulas formulas used for tract-resolution ACS indicators.
 #'   Defaults to [calc_blockgroupstats_from_tract_data()] defaults.
+#' @param tract_weight_source source for tract-to-blockgroup apportionment
+#'   weights. `"decennial2020"` matches the legacy EJSCREEN method by using
+#'   2020 Decennial Census blockgroup population weights. `"acs"` uses
+#'   same-vintage ACS blockgroup population weights.
 #' @param dropMOE logical, whether to drop ACS margin-of-error columns.
 #' @param acs_raw optional raw ACS pipeline object from [download_bg_acs_raw()].
 #' @param acs_raw_stage optional stage name to read from `pipeline_dir`.
@@ -42,8 +46,9 @@ calc_bg_acsdata <- function(yr,
                             formulas = EJAM::formulas_ejscreen_acs$formula,
                             tables = as.vector(EJAM::tables_ejscreen_acs),
                             include_tract_data = TRUE,
-                            tract_tables = c("B18101", "C16001"),
+                            tract_tables = c("B18101", "C16001", "B27010"),
                             tract_formulas = NULL,
+                            tract_weight_source = c("decennial2020", "acs"),
                             dropMOE = TRUE,
                             acs_raw = NULL,
                             acs_raw_stage = NULL,
@@ -53,6 +58,7 @@ calc_bg_acsdata <- function(yr,
                             overwrite = TRUE,
                             validation_strict = TRUE) {
   stage_format <- match.arg(stage_format)
+  tract_weight_source <- match.arg(tract_weight_source)
 
   if (missing(yr)) {
     yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)
@@ -80,7 +86,8 @@ calc_bg_acsdata <- function(yr,
       tables = tract_tables,
       formulas = tract_formulas,
       dropMOE = dropMOE,
-      acs_raw = acs_raw
+      acs_raw = acs_raw,
+      tract_weight_source = tract_weight_source
     )
     bg_acsdata <- merge_bg_acsdata_tract_data(bg_acsdata, bg_from_tracts)
   }
@@ -107,7 +114,13 @@ calc_bg_acsdata <- function(yr,
   bg_acsdata
 }
 
-merge_bg_acsdata_tract_data <- function(bg_acsdata, bg_from_tracts) {
+merge_bg_acsdata_tract_data <- function(bg_acsdata,
+                                        bg_from_tracts,
+                                        override_cols = c(
+                                          "healthinsurance_universe",
+                                          "nohealthinsurance",
+                                          "pctnohealthinsurance"
+                                        )) {
   bg_acsdata <- data.table::as.data.table(data.table::copy(bg_acsdata))
   bg_from_tracts <- data.table::as.data.table(data.table::copy(bg_from_tracts))
 
@@ -116,6 +129,11 @@ merge_bg_acsdata_tract_data <- function(bg_acsdata, bg_from_tracts) {
   }
   if (!"bgfips" %in% names(bg_from_tracts)) {
     stop("bg_from_tracts must have a bgfips column")
+  }
+
+  override_cols <- intersect(override_cols, intersect(names(bg_acsdata), names(bg_from_tracts)))
+  if (length(override_cols) > 0) {
+    bg_acsdata[, (override_cols) := NULL]
   }
 
   cols_to_add <- setdiff(names(bg_from_tracts), names(bg_acsdata))

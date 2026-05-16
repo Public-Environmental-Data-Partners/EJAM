@@ -46,6 +46,8 @@
 #'  - EJAM_STAGE_FORMAT: primary stage format used for loading, usually csv.
 #'  - EJAM_STAGE_FORMATS: comma-separated formats saved by the runner, usually csv,rda.
 #'  - EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended.
+#'  - EJAM_TRACT_WEIGHT_SOURCE: decennial2020 or acs. decennial2020 matches
+#'    legacy EJSCREEN tract-to-blockgroup apportionment.
 #'  - AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
 #'  - CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
 #'  - EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
@@ -190,7 +192,8 @@ calc_ejscreen_dataset <- function(yr,
                                   ejscreen_export_rename_newtype = "ejscreen_indicator",
                                   ejscreen_export_feature_server_fields = NULL,
                                   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
-                                  tract_tables = c("B18101", "C16001"),
+                                  tract_tables = c("B18101", "C16001", "B27010"),
+                                  tract_weight_source = c("decennial2020", "acs"),
                                   include_tract_data = TRUE,
                                   fiveorone = "5",
                                   download_timeout = 3600,
@@ -220,6 +223,7 @@ calc_ejscreen_dataset <- function(yr,
   stage_format <- match.arg(stage_format)
   pipeline_storage <- match.arg(pipeline_storage)
   blockgroup_universe_source <- match.arg(blockgroup_universe_source)
+  tract_weight_source <- match.arg(tract_weight_source)
   raw_acs_storage <- match.arg(raw_acs_storage)
   raw_table_format <- match.arg(raw_table_format, c("rds", "rda", "csv", "arrow"))
 
@@ -373,6 +377,7 @@ calc_ejscreen_dataset <- function(yr,
           include_tract_data = include_tract_data,
           tract_tables = tract_tables,
           tract_formulas = tract_formulas,
+          tract_weight_source = tract_weight_source,
           dropMOE = dropMOE,
           acs_raw = bg_acs_raw,
           pipeline_dir = pipeline_dir,

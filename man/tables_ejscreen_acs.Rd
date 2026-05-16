@@ -5,7 +5,7 @@
 \alias{tables_ejscreen_acs}
 \title{tables_ejscreen_acs dataset}
 \format{
-An object of class \code{character} of length 15.
+An object of class \code{character} of length 16.
 }
 \usage{
 tables_ejscreen_acs
@@ -30,10 +30,11 @@ Notes:
 \item B02001  race without hispanic ethnicity
 \item B15002  education
 \item B23025  unemployed
-\item C17002  low income, poor, etc.
+\item C17002  low income, poverty ratio population universe, etc.
+\item B17017  households below poverty level
 \item B19301  per capita income
 \item B25032  owned units vs rented units (occupied housing units, same universe as B25003)
-\item B28003  no broadband
+\item B28002  no broadband internet subscription
 \item B27010  no health insurance
 \item C16002  (language category and) \% of households limited English speaking (lingiso) \url{https://data.census.gov/table/ACSDT5Y2024.C16002}
 \item B16004  (language category and) \% of residents (not hhlds) speak no English at all \url{https://data.census.gov/table/ACSDT5Y2024.B16004}

@@ -192,6 +192,9 @@ The runner is controlled by environment variables:
 | `EJAM_STAGE_FORMAT` | Primary stage format used for loading/validation, usually `"csv"`. |
 | `EJAM_STAGE_FORMATS` | Comma-separated formats to save for major table stages, usually `"csv,rda"`. |
 | `EJAM_BLOCKGROUP_UNIVERSE_SOURCE` | `"acs"` uses the ACS tabulated blockgroup rows as the final universe. `"union"` also keeps rows found only in environmental or extra-indicator inputs. |
+| `EJAM_TRACT_WEIGHT_SOURCE` | `"decennial2020"` uses 2020 Decennial Census population weights to apportion tract-only ACS tables to blockgroups, matching legacy EJSCREEN. `"acs"` uses same-vintage ACS blockgroup population weights. |
+| `EJAM_DECENNIAL_BGWTS_CACHE` | Optional local `.rds` cache path for 2020 Decennial blockgroup-to-tract weights. If unset, EJAM uses a user cache folder. |
+| `EJAM_REFRESH_DECENNIAL_BGWTS` | `"TRUE"` to ignore and overwrite the cached decennial blockgroup weights. |
 | `AWS_PROFILE`, `AWS_REGION` | Used by the AWS CLI for S3-backed runs. |
 | `CENSUS_API_KEY` | Used by ACS/Census download helpers where needed. |
 | `EJAM_FORCE_ACS` | `"TRUE"` to redownload raw ACS and rebuild ACS stages. |
@@ -214,6 +217,10 @@ Sys.getenv(c(
   "EJAM_PIPELINE_STORAGE",
   "EJAM_STAGE_FORMAT",
   "EJAM_STAGE_FORMATS",
+  "EJAM_BLOCKGROUP_UNIVERSE_SOURCE",
+  "EJAM_TRACT_WEIGHT_SOURCE",
+  "EJAM_DECENNIAL_BGWTS_CACHE",
+  "EJAM_REFRESH_DECENNIAL_BGWTS",
   "AWS_PROFILE",
   "AWS_REGION",
   # "CENSUS_API_KEY",
@@ -230,6 +237,14 @@ Sys.getenv(c(
   "EJAM_PRIOR_PACKAGE_REF"
 ))
 ```
+
+For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region county
+equivalents while 2020 Decennial blockgroup FIPS use the older county
+equivalents. The pipeline detects that no Connecticut tract FIPS overlap in the
+decennial weight table and uses same-vintage ACS blockgroup population weights
+for Connecticut only. In normal package use, the decennial weights are created
+from packaged `bg_cenpop2020` data. If that data is unavailable, EJAM falls back
+to `tidycensus::get_decennial()` and caches the downloaded weights locally.
 
 ## New or renamed indicators
 
@@ -267,6 +282,7 @@ Sys.setenv(
   EJAM_STAGE_FORMAT = "csv",
   EJAM_STAGE_FORMATS = "csv,rda",
   EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
+  EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
   EJAM_FORCE_ACS = "TRUE",
   EJAM_FORCE_BG_ACSDATA = "TRUE",
   EJAM_FORCE_BG_GEODATA = "TRUE",
@@ -295,6 +311,7 @@ Sys.setenv(
   EJAM_STAGE_FORMAT = "csv",
   EJAM_STAGE_FORMATS = "csv,rda",
   EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
+  EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
   EJAM_FORCE_ACS = "TRUE",
   EJAM_FORCE_BG_ACSDATA = "TRUE",
   EJAM_FORCE_BG_GEODATA = "TRUE",

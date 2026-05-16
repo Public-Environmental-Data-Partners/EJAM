@@ -5,7 +5,7 @@
 \alias{formulas_ejscreen_acs}
 \title{formulas_ejscreen_acs dataset}
 \format{
-An object of class \code{data.frame} with 186 rows and 5 columns.
+An object of class \code{data.frame} with 189 rows and 5 columns.
 }
 \usage{
 formulas_ejscreen_acs

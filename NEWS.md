@@ -80,11 +80,32 @@
   in blockgroupstats in EJAM v2.32.* but is included there for EJAM v2.5.* 
 
 - Fixed tract-to-blockgroup apportionment for ACS tract-only indicators such as
-  disability and detailed language variables. When a raw ACS checkpoint is
-  available, the pipeline now derives blockgroup-to-tract weights from the same
-  ACS blockgroup population table instead of falling back to 2020 Decennial
-  blockgroup FIPS. This avoids Connecticut county-code mismatches in ACS 2022+
-  where ACS files use planning-region county codes.
+  disability and detailed language variables. The default pipeline setting
+  `EJAM_TRACT_WEIGHT_SOURCE = "decennial2020"` now uses 2020 Decennial Census
+  blockgroup-to-tract population weights, matching the legacy EJSCREEN
+  apportionment approach. Same-vintage ACS population weights remain available
+  by setting `EJAM_TRACT_WEIGHT_SOURCE = "acs"`. For Connecticut ACS 2022+
+  tract tables, the pipeline now detects the Census planning-region FIPS change
+  and repairs the decennial-weight join with same-vintage ACS blockgroup
+  weights for Connecticut, preventing missing `pctdisability` values.
+  Decennial blockgroup weights are now created from packaged `bg_cenpop2020`
+  data when available, avoiding slow repeated Census API calls. The slower
+  Census API fallback is cached locally after the first download and can be
+  refreshed with `EJAM_REFRESH_DECENNIAL_BGWTS = "TRUE"`.
+
+- Fixed ACS formulas for `pctpre1960` and `pctnobroadband` so they use the
+  Census-defined source bins/universes. `pctpre1960` now uses B25034 pre-1960
+  housing-unit bins, and `pctnobroadband` now uses B28002 broadband Internet
+  subscription fields rather than the C16002 household-language universe.
+
+- Updated `pctnohealthinsurance` to use tract-level B27010 in the ACS pipeline,
+  matching the way the legacy EJScreen 2022 dataset handled that indicator,
+  while retaining the related `healthinsurance_universe` and
+  `nohealthinsurance` count columns for transparent denominator handling.
+
+- Updated `bg_cenpop2020` to retain the 12-character `bgfips` column. Some
+  Connecticut rows still do not have the legacy internal `bgid` lookup, but the
+  Census FIPS key is now preserved so those records are not unusable.
 
 - Fixed `calc_ejscreen_blockgroupstats()` so the final blockgroup table keeps
   the union of blockgroups found in ACS, environmental, and extra-indicator

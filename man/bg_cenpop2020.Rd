@@ -5,14 +5,15 @@
 \alias{bg_cenpop2020}
 \title{bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 242335 rows and 5 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 242335 rows and 6 columns.
 }
 \usage{
 bg_cenpop2020
 }
 \description{
-data.table with all US Census 2020 blockgroups, Census 2020 population count,
-and lat/lon of Census2020-population-weighted centroid of blockgroup
+data.table with all US Census 2020 blockgroups, 12-character
+blockgroup FIPS, Census 2020 population count, and lat/lon of
+Census 2020 population-weighted centroid of blockgroup.
 }
 \details{
 also see attributes(bg_cenpop2020) for source URL and date

@@ -33,7 +33,8 @@ calc_ejscreen_dataset(
   ejscreen_export_rename_newtype = "ejscreen_indicator",
   ejscreen_export_feature_server_fields = NULL,
   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
-  tract_tables = c("B18101", "C16001"),
+  tract_tables = c("B18101", "C16001", "B27010"),
+  tract_weight_source = c("decennial2020", "acs"),
   include_tract_data = TRUE,
   fiveorone = "5",
   download_timeout = 3600,
@@ -150,6 +151,11 @@ group FeatureServer schema when an EJSCREEN export is requested.}
 \item{tract_tables}{ACS tables to download at tract resolution for later
 blockgroup apportionment.}
 
+\item{tract_weight_source}{source for tract-to-blockgroup apportionment
+weights. \code{"decennial2020"} matches the legacy EJSCREEN method by using
+2020 Decennial Census blockgroup population weights. \code{"acs"} uses
+same-vintage ACS blockgroup population weights.}
+
 \item{include_tract_data}{logical, whether to download \code{tract_tables}.}
 
 \item{fiveorone}{ACS sample length, \code{"5"} by default.}
@@ -254,6 +260,8 @@ Note that the runner script can use several settings stored as environment varia
 \item EJAM_STAGE_FORMAT: primary stage format used for loading, usually csv.
 \item EJAM_STAGE_FORMATS: comma-separated formats saved by the runner, usually csv,rda.
 \item EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended.
+\item EJAM_TRACT_WEIGHT_SOURCE: decennial2020 or acs. decennial2020 matches
+legacy EJSCREEN tract-to-blockgroup apportionment.
 \item AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
 \item CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
 \item EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.

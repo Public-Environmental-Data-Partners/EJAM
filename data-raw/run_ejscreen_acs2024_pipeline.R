@@ -36,6 +36,9 @@
 #   EJAM_STAGE_FORMAT: primary stage format used for loading/validation, usually csv.
 #   EJAM_STAGE_FORMATS: comma-separated formats to save for table stages, usually csv,rda.
 #   EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended and means the ACS tabulated blockgroup rows define the final blockgroupstats universe.
+#   EJAM_TRACT_WEIGHT_SOURCE: decennial2020 or acs. decennial2020 matches legacy EJSCREEN tract-to-blockgroup apportionment.
+#   EJAM_DECENNIAL_BGWTS_CACHE: optional local .rds cache path for 2020 Decennial blockgroup-to-tract weights.
+#   EJAM_REFRESH_DECENNIAL_BGWTS: TRUE to redownload and overwrite cached decennial weights.
 
 #   EJAM_FORCE_ACS:        FALSE means reuse already-downloaded raw data. TRUE to redownload/recalculate raw ACS and bg_acsdata.
 #   EJAM_FORCE_BG_ACSDATA: FALSE means reuse already calculated bg_acsdata if it exists (even if forcing redownload of raw ACS). TRUE to rebuild bg_acsdata from saved raw ACS.
@@ -91,6 +94,7 @@ set_pipeline_default("EJAM_PIPELINE_DIR", dir_full)
 set_pipeline_default("EJAM_STAGE_FORMAT", "csv") # options are c("csv", "rds", "rda", "arrow")
 set_pipeline_default("EJAM_STAGE_FORMATS", "csv,rda") # comma-separated list of formats to save
 set_pipeline_default("EJAM_BLOCKGROUP_UNIVERSE_SOURCE", "acs")
+set_pipeline_default("EJAM_TRACT_WEIGHT_SOURCE", "decennial2020")
 
 set_pipeline_default("EJAM_FORCE_ACS", "FALSE")
 set_pipeline_default("EJAM_FORCE_BG_ACSDATA", "FALSE")
@@ -126,6 +130,7 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_STAGE_FORMAT = "csv",  # primary format for loading/validation
 #            EJAM_STAGE_FORMATS = "csv,rda",  # formats to save
 #            EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
+#            EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
 #            EJAM_FORCE_ACS = FALSE,    # FALSE means reuse if already had downloaded.
 #            EJAM_FORCE_BG_ACSDATA = FALSE, # or as needed
 #            EJAM_FORCE_BG_GEODATA = FALSE,
@@ -154,6 +159,7 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_STAGE_FORMAT = "csv",  # primary format for loading/validation
 #            EJAM_STAGE_FORMATS = "csv,rda",  # formats to save
 #            EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
+#            EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
 #         #    #   EJAM_PIPELINE_STORAGE = "local",
 #            EJAM_FORCE_ACS = TRUE,    # FALSE means reuse if already had downloaded.
 #            EJAM_FORCE_BG_ACSDATA = TRUE, # or as needed
@@ -181,6 +187,9 @@ print(
     'EJAM_STAGE_FORMAT',
     'EJAM_STAGE_FORMATS',
     'EJAM_BLOCKGROUP_UNIVERSE_SOURCE',
+    'EJAM_TRACT_WEIGHT_SOURCE',
+    'EJAM_DECENNIAL_BGWTS_CACHE',
+    'EJAM_REFRESH_DECENNIAL_BGWTS',
 
     'EJAM_FORCE_ACS',
     'EJAM_FORCE_BG_ACSDATA',
@@ -256,12 +265,15 @@ if (!stage_format %in% stage_formats) {
 }
 blockgroup_universe_source <- Sys.getenv("EJAM_BLOCKGROUP_UNIVERSE_SOURCE", unset = "acs")
 blockgroup_universe_source <- match.arg(blockgroup_universe_source, c("acs", "union"))
+tract_weight_source <- Sys.getenv("EJAM_TRACT_WEIGHT_SOURCE", unset = "decennial2020")
+tract_weight_source <- match.arg(tract_weight_source, c("decennial2020", "acs"))
 
 message("Pipeline folder: ", pipeline_dir)
 message("Pipeline storage: ", pipeline_storage)
 message("File format aka stage_format: ", stage_format)
 message("Saved stage formats: ", paste(stage_formats, collapse = ", "))
 message("Blockgroup universe source: ", blockgroup_universe_source)
+message("Tract apportionment weight source: ", tract_weight_source)
 
 ### ACS DEMOGRAPHIC DATA settings ####
 
@@ -308,6 +320,9 @@ pipeline_setting_names <- c(
   'EJAM_STAGE_FORMAT',
   'EJAM_STAGE_FORMATS',
   'EJAM_BLOCKGROUP_UNIVERSE_SOURCE',
+  'EJAM_TRACT_WEIGHT_SOURCE',
+  'EJAM_DECENNIAL_BGWTS_CACHE',
+  'EJAM_REFRESH_DECENNIAL_BGWTS',
   'EJAM_FORCE_ACS',
   'EJAM_FORCE_BG_ACSDATA',
   'EJAM_FORCE_BG_GEODATA',
@@ -337,6 +352,7 @@ print(
     stage_format=stage_format,
     stage_formats=paste(stage_formats, collapse = ","),
     blockgroup_universe_source=blockgroup_universe_source,
+    tract_weight_source=tract_weight_source,
 
     force_acs=force_acs,
     force_bg_acsdata=force_bg_acsdata,
@@ -522,6 +538,7 @@ if (isTRUE(need_bg_acsdata)) {
   bg_acsdata <- EJAM:::calc_bg_acsdata(
     yr = yr,
     acs_raw = bg_acs_raw,
+    tract_weight_source = tract_weight_source,
     pipeline_dir = pipeline_dir,
     save_stage = FALSE,
     stage_format = stage_format,
