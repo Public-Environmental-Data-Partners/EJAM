@@ -14,7 +14,9 @@
 #'   which should correspond to also specifying values of
 #'   mybarvars.sumstat equal to
 #'   c('Average site analyzed', 'Average person at sites analyzed') or
-#'   c('Median site', 'Median person') respectively.
+#'   c('Median site', 'Median person at these sites') respectively.
+#'   Legacy inputs such as 'Median person' are accepted and normalized
+#'   to the canonical plot labels used internally.
 #'   If mybarvars.stat is specified then mybarvars.sumstat should be also
 #'   to ensure they correspond! Done in shiny, not checked here.
 #'
