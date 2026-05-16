@@ -164,7 +164,7 @@ pctiles_lookup_create <- function(x, zone.vector = NULL, zoneOverallName = 'USA'
     OBJECTID = 1:NROW(r),
     REGION = r$REGION,
     PCTILE = r$PCTILE,
-    r[ , !(colnames(r) %in% c('REGION', 'PCTILE'))],
+    r[ , !(colnames(r) %in% c('REGION', 'PCTILE')), drop = FALSE],
     stringsAsFactors = FALSE
   )
   rownames(r) <- NULL

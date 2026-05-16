@@ -124,7 +124,7 @@ test_that("pctunemployed uses labor force while unemployedbase preserves age-16-
   expect_equal(out$pctunemployed, 0.1)
 })
 
-test_that("percapincome preserves ACS sentinel values and converts missing rows to zero", {
+test_that("percapincome converts ACS sentinel and missing values to NA", {
   x <- data.table::data.table(
     B19301_001 = c(12000, -666666666, NA_real_)
   )
@@ -134,7 +134,7 @@ test_that("percapincome preserves ACS sentinel values and converts missing rows 
 
   out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
-  expect_equal(out$percapincome, c(12000, -666666666, 0))
+  expect_equal(out$percapincome, c(12000, NA_real_, NA_real_))
 })
 
 test_that("tract allocation defaults to decennial 2020 blockgroup weights", {
@@ -260,8 +260,10 @@ test_that("calc_bg_acsdata can save a validated bg_acsdata stage", {
   )
 
   expect_true(file.exists(file.path(pipeline_dir, "bg_acsdata.csv")))
+  loaded <- as.data.frame(EJAM:::ejscreen_pipeline_load("bg_acsdata", pipeline_dir, format = "csv"))
+  loaded$bgid <- as.character(loaded$bgid)
   expect_equal(
-    as.data.frame(EJAM:::ejscreen_pipeline_load("bg_acsdata", pipeline_dir, format = "csv")),
+    loaded,
     as.data.frame(out)
   )
   expect_true(all(c("pctpre1960", "pctdisability", "disab_universe") %in% names(out)))

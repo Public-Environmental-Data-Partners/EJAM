@@ -61,6 +61,35 @@ test_that("pipeline IO can use S3 URIs through temporary local stage files", {
   )
 })
 
+test_that("pipeline CSV reader preserves blockgroup numeric ids and lookup text ids", {
+  blockgroup_path <- tempfile(fileext = ".csv")
+  blockgroup_stage <- data.frame(
+    bgfips = c("010010201001", "010010201002"),
+    bgid = c(1L, 2L),
+    REGION = c(4L, 4L),
+    stringsAsFactors = FALSE
+  )
+  data.table::fwrite(blockgroup_stage, blockgroup_path)
+  blockgroup_read <- EJAM:::ejscreen_read_csv_table(blockgroup_path)
+
+  expect_type(blockgroup_read$bgfips, "character")
+  expect_type(blockgroup_read$bgid, "integer")
+  expect_type(blockgroup_read$REGION, "integer")
+
+  lookup_path <- tempfile(fileext = ".csv")
+  lookup_stage <- data.frame(
+    REGION = c("USA", "USA"),
+    PCTILE = c("0", "mean"),
+    pctlowinc = c(0, 0.2),
+    stringsAsFactors = FALSE
+  )
+  data.table::fwrite(lookup_stage, lookup_path)
+  lookup_read <- EJAM:::ejscreen_read_csv_table(lookup_path)
+
+  expect_type(lookup_read$REGION, "character")
+  expect_type(lookup_read$PCTILE, "character")
+})
+
 test_that("pipeline stage names include preferred bg names and compatibility aliases", {
   stages <- EJAM:::ejscreen_pipeline_stage_names()
   expect_true(all(c("bg_acsdata", "bg_envirodata", "bgej", "bg_ejindexes", "ejscreen_export", "bg_ejscreen") %in% stages))

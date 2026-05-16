@@ -160,8 +160,8 @@ ejscreen_read_csv_table <- function(path) {
   header <- names(data.table::fread(path, nrows = 0))
   character_cols <- intersect(
     c(
-      "bgfips", "bgid", "blockid", "blockfips", "tractfips",
-      "fips", "GEO_ID", "SUMLEVEL", "ST", "REGION", "PCTILE",
+      "bgfips", "blockid", "blockfips", "tractfips",
+      "fips", "GEO_ID", "SUMLEVEL", "ST", "PCTILE",
       "statename", "countyname"
     ),
     header

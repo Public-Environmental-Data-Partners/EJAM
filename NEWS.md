@@ -79,6 +79,12 @@
   is needed to calculate `pctnohealthinsurance` but was not available
   in blockgroupstats in EJAM v2.32.* but is included there for EJAM v2.5.* 
 
+- ACS negative sentinel values for `percapincome` are now converted to `NA`
+  rather than treated as real income values, so community-report summaries and
+  `ejamit()` aggregations omit them through existing `na.rm = TRUE` behavior.
+  `percapincome` remains available in `blockgroupstats` but is no longer
+  included in default `usastats`/`statestats` lookup stages.
+
 - Fixed tract-to-blockgroup apportionment for ACS tract-only indicators such as
   disability and detailed language variables. The default pipeline setting
   `EJAM_TRACT_WEIGHT_SOURCE = "decennial2020"` now uses 2020 Decennial Census
