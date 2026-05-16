@@ -217,7 +217,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
       barplot_usa_med <-  dplyr::bind_rows(
         usastats %>%
           dplyr::filter(.data$REGION == 'USA', .data$PCTILE == 50) %>%
-          dplyr::mutate(Summary = 'Median person at these sites') %>%
+          dplyr::mutate(Summary = 'Median person in US') %>%
           dplyr::select(Summary, dplyr::all_of(mybarvars)) %>%
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value'),
         usastats %>%
@@ -227,7 +227,15 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value')
       )
 
-      barplot_input <- dplyr::left_join(barplot_data_raw, barplot_usa_med) %>%
+      barplot_input <- barplot_data_raw %>%
+        dplyr::mutate(
+          usa_summary = dplyr::case_when(
+            .data$Summary == 'Median person at these sites' ~ 'Median person in US',
+            TRUE ~ .data$Summary
+          )
+        ) %>%
+        dplyr::left_join(barplot_usa_med, by = c('usa_summary' = 'Summary', 'indicator')) %>%
+        dplyr::select(-usa_summary) %>%
         ## calc ratio
         dplyr::mutate(ratio = .data$value / .data$usa_value) %>%
         dplyr::bind_rows(
