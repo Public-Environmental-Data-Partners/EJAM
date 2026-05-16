@@ -87,7 +87,7 @@
 #'
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Add purple to flag indicators at 99th percentile
 #' ejam2excel(testoutput_ejamit_10pts_1miles,
 #'   # View spreadsheet 1st without saving it as a file

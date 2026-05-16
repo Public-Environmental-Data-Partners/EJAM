@@ -8,10 +8,13 @@ calc_ejscreen_blockgroupstats(
   bg_acsdata = NULL,
   bg_envirodata = NULL,
   bg_extra_indicators = NULL,
+  bg_geodata = NULL,
   pipeline_dir = NULL,
   bg_acsdata_stage = "bg_acsdata",
   bg_envirodata_stage = "bg_envirodata",
   bg_extra_indicators_stage = "bg_extra_indicators",
+  bg_geodata_stage = "bg_geodata",
+  blockgroup_universe_source = c("acs", "union"),
   extra_indicator_vars = ejscreen_default_extra_indicator_vars(),
   reuse_existing_extra_if_missing = FALSE,
   existing_blockgroupstats = NULL,
@@ -33,6 +36,9 @@ reading from a saved pipeline stage such as \code{"bg_envirodata"}.}
 \code{lowlifex}, health outcome rates, site/feature counts, climate indicators,
 and flag fields.}
 
+\item{bg_geodata}{Census/TIGER blockgroup geography fields, especially
+\code{arealand} and \code{areawater} in square meters.}
+
 \item{pipeline_dir}{folder for reading/writing pipeline stage files.}
 
 \item{bg_acsdata_stage}{stage name for ACS input.}
@@ -40,6 +46,14 @@ and flag fields.}
 \item{bg_envirodata_stage}{stage name for environmental input.}
 
 \item{bg_extra_indicators_stage}{stage name for extra-indicator input.}
+
+\item{bg_geodata_stage}{stage name for Census/TIGER geography input.}
+
+\item{blockgroup_universe_source}{which input defines the output
+blockgroup universe. The default \code{"acs"} uses the ACS table rows as the
+authoritative tabulated universe for the requested ACS vintage. \code{"union"}
+keeps the older draft behavior of including any blockgroup present in ACS,
+environmental, or extra-indicator inputs.}
 
 \item{extra_indicator_vars}{expected extra indicator columns.}
 

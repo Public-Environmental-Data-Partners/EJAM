@@ -49,12 +49,14 @@ were valid and had blocks identified, then the data.table here will only include
 Allows EJAM to analyze and compare Counties, for example
 }
 \examples{
+\dontrun{
   x <- getblocksnearby_from_fips(fips_counties_from_state_abbrev("DE"))
   y <- doaggregate(x)
   z <- ejamit(fips = fips_counties_from_statename("Delaware"))
 
   # x2 <- getblocksnearby_from_fips("482011000011") # one blockgroup only
   # y2 <- doaggregate(x2)
+}
 }
 \seealso{
 \code{\link[=getblocksnearby]{getblocksnearby()}} \code{\link[=fips_bgs_in_fips]{fips_bgs_in_fips()}} \code{\link[=fips_lead_zero]{fips_lead_zero()}} \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} \code{\link[=fips_from_table]{fips_from_table()}}

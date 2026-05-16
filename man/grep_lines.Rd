@@ -45,15 +45,15 @@ but the string does not start with zero or more spaces followed by the character
 }
 \examples{
 
-grep_lines("x",  c("x", "y", "has any x x xxxxx"))
+EJAM:::grep_lines("x",  c("x", "y", "has any x x xxxxx"))
 
 xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
 
- cbind(xx, grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
- cbind(xx, grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
+ cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
+ cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
 
- cbind(  grep_lines("ej", xx, ignorecomments = TRUE,    value = TRUE))
- cbind(  grep_lines("ej", xx, ignorecomments = FALSE,   value = TRUE))
+ cbind(  EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,    value = TRUE))
+ cbind(  EJAM:::grep_lines("ej", xx, ignorecomments = FALSE,   value = TRUE))
 
 }
 \seealso{

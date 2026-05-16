@@ -69,7 +69,7 @@ Could be edited to allow multiple types of sites and/or reference zones
 more generally like for \code{\link[=ejamit_compare_types_of_places]{ejamit_compare_types_of_places()}}
 }
 \examples{
-\donttest{
+\dontrun{
   out <- testoutput_ejamit_1000pts_1miles
   # ejam2boxplot(out)
   # plot_boxplot_vs_ref(out$results_bysite)

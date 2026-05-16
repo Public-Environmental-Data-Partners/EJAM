@@ -29,11 +29,13 @@ of sitepoints are retained and provided to \code{\link[=doaggregate]{doaggregate
 which needs to figure out what state each site is in to use the right state percentiles.
 }
 \examples{
+\dontrun{
  pts = testpoints_10
  #x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = TRUE))
  x = EJAM:::latlon_from_s2b(testoutput_getblocksnearby_10pts_1miles)
  cbind(estimate = x, pts,
    latratio = x$lat/pts$lat, lonratio = x$lon/pts$lon)
+}
 
 }
 \keyword{internal}

@@ -28,10 +28,10 @@ utility - How many blocks and many other stats about blocks and sites
 }
 \examples{
   getblocks_diagnostics(testoutput_getblocksnearby_10pts_1miles)
-  # library(data.table)
+\dontrun{
   x <- data.table::copy(testpoints_10)
-  setDT(x)
-  pts <- rbind(data.table(lat = 40.3, lon = -96.23),
+  data.table::setDT(x)
+  pts <- rbind(data.table::data.table(lat = 40.3, lon = -96.23),
     x[ , .(lat, lon)])
  z <- getblocksnearbyviaQuadTree(pts, 1, quadtree = localtree, quiet = TRUE)
  z[ , .(blocks = .N) , keyby = 'ejam_uniq_id']
@@ -40,6 +40,7 @@ utility - How many blocks and many other stats about blocks and sites
 cbind(stats = zz)
 
   getblocks_diagnostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
+}
 
 }
 \seealso{

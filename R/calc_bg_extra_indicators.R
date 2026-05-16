@@ -197,10 +197,9 @@ add_bg_geography_columns <- function(x) {
   fill_missing("REGION", fips_st2eparegion(fips2statefips(x$bgfips)))
   fill_missing("bgid", EJAM::bgpts$bgid[match(x$bgfips, EJAM::bgpts$bgfips)])
 
-  ## area, arealand, areawater are needed. At least fill with NA values until can be calculated or obtained from another source.
-  ## get area info from an old version of blockgroupstats ?
-  ## or download the info from Census Bureau ?
-  fill_missing("arealand", NA) # EJAM::blockgroupstats$arealand[match(x$bgfips, EJAM::blockgroupstats$bgfips)]
+  ## arealand/areawater should come from the bg_geodata pipeline stage.
+  ## The legacy area column is kept only for compatibility, not calculations.
+  fill_missing("arealand", NA)
   fill_missing("areawater", NA)
   fill_missing("area", NA)
 

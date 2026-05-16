@@ -636,6 +636,13 @@ ejscreen_pipeline_write_text_or_csv <- function(x,
 
 #' Write an EJSCREEN pipeline run manifest
 #'
+#' @details The annual pipeline runner writes this manifest after stage
+#' validation. It records run provenance, including package version, Git branch
+#' and SHA, ACS vintage, pipeline location, primary stage format, selected
+#' environment/settings values, and whether provisional inputs were reused.
+#' Keep this file with the stage outputs so later reviewers can tell which code
+#' and settings produced a given S3 or local pipeline folder.
+#'
 #' @param pipeline_dir pipeline folder or S3 prefix.
 #' @param storage storage backend: `"auto"`, `"local"`, or `"s3"`.
 #' @param pipeline_yr ACS end year for the run.

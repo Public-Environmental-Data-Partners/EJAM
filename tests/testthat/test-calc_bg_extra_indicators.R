@@ -1,3 +1,14 @@
+make_test_bg_geodata <- function(bgfips) {
+  data.table::data.table(
+    bgfips = bgfips,
+    arealand = seq_along(bgfips) * 1000,
+    areawater = seq_along(bgfips) * 10,
+    intptlat = 39 + seq_along(bgfips) / 100,
+    intptlon = -75 - seq_along(bgfips) / 100,
+    area = NA_real_
+  )
+}
+
 test_that("bg_extra_indicators requires explicit input or explicit reuse", {
   expect_error(
     EJAM:::calc_bg_extra_indicators(extra_indicator_vars = "lowlifex"),
@@ -104,6 +115,7 @@ test_that("calc_ejscreen_blockgroupstats uses explicit extra indicator stage", {
     bg_acsdata = bg_acsdata,
     bg_envirodata = bg_envirodata,
     bg_extra_indicators = bg_extra_indicators,
+    bg_geodata = make_test_bg_geodata(bg_acsdata$bgfips),
     extra_indicator_vars = c("lowlifex", "rateasthma")
   )
 
@@ -146,6 +158,7 @@ test_that("calc_ejscreen_blockgroupstats can intentionally reuse old extra indic
     out <- EJAM:::calc_ejscreen_blockgroupstats(
       bg_acsdata = bg_acsdata,
       bg_envirodata = bg_envirodata,
+      bg_geodata = make_test_bg_geodata(bg_acsdata$bgfips),
       extra_indicator_vars = "lowlifex",
       reuse_existing_extra_if_missing = TRUE,
       existing_blockgroupstats = existing
@@ -168,7 +181,7 @@ test_that("demographic index shifting does not warn when a state input is all NA
   )
 
   expect_warning(
-    out <- calc_blockgroup_demog_index(bgstats),
+    out <- EJAM:::calc_blockgroup_demog_index(bgstats),
     NA
   )
   expect_equal(out$bgfips, bgstats$bgfips)

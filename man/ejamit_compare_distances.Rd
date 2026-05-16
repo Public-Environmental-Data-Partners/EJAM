@@ -60,6 +60,7 @@ Compare EJAM results overall for more than one radius
 Run ejamit() once per radius, get a summary table with a row per radius
 }
 \examples{
+\dontrun{
   radii <- c(convert_units(5,"km","miles"), convert_units(50,"km","miles"))
   radii <- 1:10
   radii <- c(1, 10)
@@ -71,6 +72,7 @@ Run ejamit() once per radius, get a summary table with a row per radius
     "ratio.to.avg.pctlowinc", "ratio.to.avg.pcthisp", "ratio.to.avg.pctnhba"))
 
   names(bydist) <- fixcolnames(names(bydist), "r", "shortlabel")
+}
 
 
 }

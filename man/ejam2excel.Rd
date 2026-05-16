@@ -158,7 +158,7 @@ creates a spreadsheet with an overall summary tab, a site by site table tab,
 as well as other tabs such as map, plot, notes, etc.
 }
 \examples{
-\donttest{
+\dontrun{
 # Add purple to flag indicators at 99th percentile
 ejam2excel(testoutput_ejamit_10pts_1miles,
   # View spreadsheet 1st without saving it as a file

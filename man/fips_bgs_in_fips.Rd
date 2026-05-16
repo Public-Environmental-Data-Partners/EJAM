@@ -48,6 +48,7 @@ or are contained within any provided tract/county/state FIPS.
    "010010201001003", "010010201001004", "010010201001005")
   fips_bgs_in_fips(x)
 
+\dontrun{
 testfipslist <- list(
   blockgroup = testinput_fips_blockgroups,
   tract = testinput_fips_tracts,
@@ -67,6 +68,7 @@ x1 = sapply(testfipslist, function(v) sapply(v, EJAM:::fips_bgs_in_fips1))
 all.equal(x, x1)
 x['tract']
 x['county']
+}
 
 }
 \seealso{

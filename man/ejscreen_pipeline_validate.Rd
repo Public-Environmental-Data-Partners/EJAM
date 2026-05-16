@@ -11,7 +11,7 @@ ejscreen_pipeline_validate(x, stage, strict = TRUE)
 
 \item{stage}{pipeline stage name, must be among known stages or aliases
 as found in \code{EJAM:::ejscreen_pipeline_stage_names()} with canonical names such as
-bg_acs_raw, bg_acsdata, bg_envirodata, bg_extra_indicators, blockgroupstats, usastats_acs, statestats_acs, usastats_envirodata, statestats_envirodata, usastats_ej, statestats_ej, usastats, statestats, bgej, ejscreen_export, ejscreen_dataset_creator_input}
+bg_acs_raw, bg_acsdata, bg_envirodata, bg_geodata, bg_extra_indicators, blockgroupstats, usastats_acs, statestats_acs, usastats_envirodata, statestats_envirodata, usastats_ej, statestats_ej, usastats, statestats, bgej, ejscreen_export, ejscreen_dataset_creator_input}
 
 \item{strict}{logical. If TRUE, errors stop execution. Warnings are still
 emitted as warnings.}

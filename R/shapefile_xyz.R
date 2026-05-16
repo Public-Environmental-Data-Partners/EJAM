@@ -522,10 +522,10 @@ shapefile_from_gdbzip <- function(fname, layer = NULL, ...) {
 #'   ##  R user can select just the .shp file:
 #'   # testshape <- shapefile_from_any()
 #'   }
-#'   }
 #'   x <- get_blockpoints_in_shape(testshape)
 #'   leaflet::leaflet(x$polys) %>% leaflet::addTiles() %>% leaflet::addPolygons(color = "blue")
 #'   DT::datatable(x$pts)
+#'   }
 #'
 #' @export
 #'
@@ -782,13 +782,13 @@ shapefile_filepaths_validize <- function(filepaths, inputname = NULL) {
 #' @param ... passed to st_buffer()
 #' @return a simple feature [sf::sf] class spatial data.frame, same format as [sf::st_buffer()] returns
 #' @seealso [get_blockpoints_in_shape()] [shapefile_from_sitepoints()] [shape_buffered_from_shapefile_points()]
-#' @examples
+#' @examples \dontrun{
 #' # Within 3 miles of the county borders
 #' fips_counties_from_state_abbrev("DE")[1]
 #' x = shapes_from_fips("10001")
 #' xtra = shape_buffered_from_shapefile(x, radius.miles = 3)
-#' map_shapes_leaflet(x) %>%
-#'   EJAM:::map_shapes_leaflet_proxy(xtra, color = "black")
+#' EJAM:::map_shapes_leaflet_proxy(map_shapes_leaflet(x), xtra, color = "black")
+#' }
 #'
 #' @export
 #'

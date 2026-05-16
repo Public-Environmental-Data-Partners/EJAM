@@ -666,7 +666,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 
   ## if new API is down, return general links to info page ### #
   if (TRUE) { # was checking old epa api now obsolete
-    if (EJAM:::global_or_param("ejamapi_is_down")) {
+    if (isTRUE(EJAM:::global_or_param("ejamapi_is_down"))) {
       urlx <- rep('https://ejanalysis.org', length(urlx))
       if (as_html) {
         urlx <- URLencode(urlx)

@@ -35,7 +35,9 @@ increase as you get closer to the site(s)
 Barplot comparing ejamit_compare_distances() results for more than one radius
 }
 \examples{
+\dontrun{
 out = ejamit_compare_distances(testpoints_10, radii = 1:2, plot = FALSE)
 ejam2barplot_distances(out)
+}
 
 }

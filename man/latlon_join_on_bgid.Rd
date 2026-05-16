@@ -18,6 +18,7 @@ get expanded version of data.table, such as copy(blockgroupstats),
 with new lat,lon columns
 }
 \examples{
+\dontrun{
 # quick map of blockgroups in 1 state, shown as blockgroup centroids
 myst <- "NY"
 dat <- bgpts[fips2stateabbrev(substr(bgfips,1,2)) == myst, ]
@@ -25,7 +26,7 @@ mapfast(dat, radius = 0.1)
 
 # same but popups have all the indicators from EJSCREEN
 myst <- "NY"
-dat <- copy(blockgroupstats[ST == myst, ])
+dat <- data.table::copy(blockgroupstats[ST == myst, ])
 # add latlon cols by reference:
 EJAM:::latlon_join_on_bgid(dat)
 # specify useful labels for the map popups
@@ -35,6 +36,7 @@ mapfast(dat, radius = 0.1,
 ## or add the useful labels to the table 1st
 names(dat) <- fixcolnames(names(dat), "r", "shortlabel")
 mapfast(dat, radius = 0.1)
+}
 
 }
 \keyword{internal}

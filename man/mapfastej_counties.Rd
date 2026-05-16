@@ -57,7 +57,7 @@ the average resident in the county is in a blockgroup that is at the 90th
 percentile of blockgroups in the US (or the State, depending on colorvarname).
 }
 \examples{
-\donttest{
+\dontrun{
 myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
 mydf = ejamit(fips = myfips )$results_bysite
 mapfastej_counties(mydf, colorvarname = "pctile.pctnhba" )

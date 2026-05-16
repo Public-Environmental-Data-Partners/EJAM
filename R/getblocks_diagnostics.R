@@ -152,10 +152,10 @@ getblocks_summarize_sites_per_block <- function(x, varname='blockid') {
 #' @seealso This relies on  [getblocks_summarize_blocks_per_site()] and [getblocks_summarize_sites_per_block()]
 #' @examples
 #'   getblocks_diagnostics(testoutput_getblocksnearby_10pts_1miles)
-#'   # library(data.table)
+#' \dontrun{
 #'   x <- data.table::copy(testpoints_10)
-#'   setDT(x)
-#'   pts <- rbind(data.table(lat = 40.3, lon = -96.23),
+#'   data.table::setDT(x)
+#'   pts <- rbind(data.table::data.table(lat = 40.3, lon = -96.23),
 #'     x[ , .(lat, lon)])
 #'  z <- getblocksnearbyviaQuadTree(pts, 1, quadtree = localtree, quiet = TRUE)
 #'  z[ , .(blocks = .N) , keyby = 'ejam_uniq_id']
@@ -164,6 +164,7 @@ getblocks_summarize_sites_per_block <- function(x, varname='blockid') {
 #' cbind(stats = zz)
 #'
 #'   getblocks_diagnostics(testoutput_getblocksnearby_1000pts_1miles, see_distanceplot = TRUE)
+#' }
 #'
 #' @import data.table
 #'

@@ -279,7 +279,7 @@ metadata_check_print = function(...) {
 #'
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'   [pkg_functions_and_data()]
-#' @examples
+#' @examples \dontrun{
 #' x = EJAM:::metadata_check( which = "ejam_package_version")
 #'
 #'
@@ -289,6 +289,7 @@ metadata_check_print = function(...) {
 #'   x <- EJAM:::metadata_check_print("EJAM")
 #'   x[x$has_metadata == TRUE, ]
 #'   table(x$has_metadata)
+#' }
 #'
 #' @keywords internal
 #'

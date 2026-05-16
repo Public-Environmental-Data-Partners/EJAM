@@ -25,7 +25,7 @@
 #' @return table in [data.table](https://r-datatable.com) format with lat  lon  REGISTRY_ID  program -- but not pgm_sys_id
 #'   since there could be duplicates where same REGISTRY_ID has 2 different pgm_sys_id values
 #'   in the same program, so results were sometimes longer than if using [frs_from_program()]
-#' @examples \donttest{
+#' @examples \dontrun{
 #'  x = latlon_from_program("CAMDBS")
 #'   mapfast(x)
 #'  program <- c("EIS", "UST")
@@ -91,4 +91,3 @@ latlon_from_program <- function(query) {
   # user  system elapsed
   # 1.03    0.00    1.03
 }
-

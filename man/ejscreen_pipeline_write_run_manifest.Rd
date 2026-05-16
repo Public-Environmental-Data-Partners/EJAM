@@ -47,4 +47,12 @@ Path or S3 URI to the written manifest.
 \description{
 Write an EJSCREEN pipeline run manifest
 }
+\details{
+The annual pipeline runner writes this manifest after stage
+validation. It records run provenance, including package version, Git branch
+and SHA, ACS vintage, pipeline location, primary stage format, selected
+environment/settings values, and whether provisional inputs were reused.
+Keep this file with the stage outputs so later reviewers can tell which code
+and settings produced a given S3 or local pipeline folder.
+}
 \keyword{internal}

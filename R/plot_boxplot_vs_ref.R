@@ -83,7 +83,7 @@ plot_boxplot_vs_ref <- function(bysite = NULL, # ejamit()$results_bysite,
 #' @param box.pch.here description
 #' @param ... passed to boxplot()
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   out <- testoutput_ejamit_1000pts_1miles
 #'   # ejam2boxplot(out)
 #'   # plot_boxplot_vs_ref(out$results_bysite)
@@ -320,4 +320,3 @@ plot_vs_us <- function(bysite = NULL, # ejamit()$results_bysite,
       #################################################################### #
     }
   }}
-

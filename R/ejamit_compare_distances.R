@@ -146,6 +146,7 @@ out_bydistance2results_bydistance <- function(out_bydistance) {
 #'   when reporting which indicators most strongly increase as radius decreases.
 #'
 #' @examples
+#' \dontrun{
 #'   radii <- c(convert_units(5,"km","miles"), convert_units(50,"km","miles"))
 #'   radii <- 1:10
 #'   radii <- c(1, 10)
@@ -157,6 +158,7 @@ out_bydistance2results_bydistance <- function(out_bydistance) {
 #'     "ratio.to.avg.pctlowinc", "ratio.to.avg.pcthisp", "ratio.to.avg.pctnhba"))
 #'
 #'   names(bydist) <- fixcolnames(names(bydist), "r", "shortlabel")
+#' }
 #'
 #'
 #' @seealso [ejam2barplot_distances()] [plot_distance_by_pctd()], [distance_by_group()],
@@ -271,7 +273,10 @@ ejamit_compare_distances <- function(sitepoints, radii = c(1,2,3),
 #' @param myvars optional, vector of some colnames of results_bydistance
 #' @param radii optional vector - taken from results_bydistance$radius.miles
 #' @param n optional number of indicators to list. n=3 would mean show the top 3.
-#' @examples EJAM:::distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
+#' @examples
+#' \dontrun{
+#' EJAM:::distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1, 3)))
+#' }
 #' @return vector of text names of indicators
 #'
 #' @keywords internal
@@ -376,8 +381,10 @@ ejamit_compare_distances2plot <- function(results_bydistance,
 #' @return text vector length n, naming which indicators most strongly
 #'   increase as you get closer to the site(s)
 #' @examples
+#' \dontrun{
 #' out = ejamit_compare_distances(testpoints_10, radii = 1:2, plot = FALSE)
 #' ejam2barplot_distances(out)
+#' }
 #'
 #' @export
 #'

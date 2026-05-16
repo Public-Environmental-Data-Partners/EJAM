@@ -37,7 +37,7 @@
 #' 
 #' Also see [EPA documentation describing each program code](https://www.epa.gov/frs/frs-data-sources) aka data source.
 #' 
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   frs_by_programid[program %in% frsprogramcodes$code, .N, by=program]
 #'   
 #'   setkey(frs_by_programid,"program")

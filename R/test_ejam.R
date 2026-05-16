@@ -171,13 +171,13 @@ x <- EJAM:::test_ejam(
     # require(data.table) # used in functions here
 
     # Note testthat package is in Suggests not Imports, in DESCRIPTION file
-    try({suppressWarnings(suppressMessages({testthat_available <- require(testthat)}))}, silent = TRUE)
+    testthat_available <- requireNamespace("testthat", quietly = TRUE)
     if (!testthat_available) {stop("this requires installing the package testthat first, e.g., \n  install.packages('testthat')")}
 
     # Note beepr is in suggests not imports, in DESCRIPTION file
     # to make a sound when an error is hit and when it finishes - using beepr::beep(10) since utils::alarm() may not work.
     if (interactive()) {
-      try({suppressWarnings(suppressMessages({beepr_available <- require(beepr)}))}, silent = TRUE)
+      beepr_available <- requireNamespace("beepr", quietly = TRUE)
       if (!beepr_available) {
         cat("install the beepr package if you want to have this function make a noise when it hits an error and when it is finished with all testing\n")
       }
@@ -309,6 +309,7 @@ x <- EJAM:::test_ejam(
         "test-acs_bybg.R",
         "test-acs_endyear.R",
         "test-calc_bg_acsdata.R",
+        "test-calc_bg_geodata.R",
         "test-calc_bg_extra_indicators.R",
         "test-calc_ejscreen_dataset.R",
         "test-ejscreen-stats.R",

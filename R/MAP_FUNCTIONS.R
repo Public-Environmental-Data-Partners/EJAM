@@ -326,7 +326,7 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 #' @seealso [mapfastej()] [map_shapes_leaflet()]
 #' @return leaflet html widget (but if static_not_leaflet = TRUE,
 #'   returns just shapes_counties_from_countyfips(mydf$ejam_uniq_id))
-#' @examples \donttest{
+#' @examples \dontrun{
 #' myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
 #' mydf = ejamit(fips = myfips )$results_bysite
 #' mapfastej_counties(mydf, colorvarname = "pctile.pctnhba" )
@@ -765,7 +765,7 @@ map_shapes_mapview <- function(shapes, col.regions = "green", map.types = "OpenS
 #'
 #' @return a ggplot() object
 #'
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   mapfast_gg(testpoints_10)
 #'
 #'   pts <- read.table(textConnection(

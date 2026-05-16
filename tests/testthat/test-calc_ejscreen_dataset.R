@@ -1,3 +1,14 @@
+make_test_bg_geodata <- function(bgfips) {
+  data.table::data.table(
+    bgfips = bgfips,
+    arealand = seq_along(bgfips) * 1000,
+    areawater = seq_along(bgfips) * 10,
+    intptlat = 39 + seq_along(bgfips) / 100,
+    intptlon = -75 - seq_along(bgfips) / 100,
+    area = NA_real_
+  )
+}
+
 test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
   bg_acsdata <- data.table::data.table(
     bgfips = c("100010001001", "100010001002"),
@@ -19,6 +30,7 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
     bgfips = bg_acsdata$bgfips,
     lowlifex = c(0.1, 0.2)
   )
+  bg_geodata <- make_test_bg_geodata(bg_acsdata$bgfips)
   blockgroupstats <- data.table::copy(bg_acsdata)
   blockgroupstats[, `:=`(
     pctpre1960 = bg_envirodata$pctpre1960,
@@ -46,16 +58,19 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
     calc_ejscreen_blockgroupstats = function(bg_acsdata,
                                              bg_envirodata,
                                              bg_extra_indicators,
+                                             bg_geodata,
                                              pipeline_dir,
                                              extra_indicator_vars,
-	                                             reuse_existing_extra_if_missing,
-	                                             existing_blockgroupstats,
-	                                             save_stage,
-	                                             pipeline_storage,
-	                                             stage_format) {
-	      expect_false(save_stage)
-	      expect_equal(pipeline_storage, "auto")
-	      expect_equal(bg_acsdata$bgfips, blockgroupstats$bgfips)
+                                             blockgroup_universe_source,
+                                             reuse_existing_extra_if_missing,
+                                             existing_blockgroupstats,
+                                             save_stage,
+                                             pipeline_storage,
+                                             stage_format) {
+      expect_false(save_stage)
+      expect_equal(pipeline_storage, "auto")
+      expect_equal(blockgroup_universe_source, "acs")
+      expect_equal(bg_acsdata$bgfips, blockgroupstats$bgfips)
       expect_true("pctpre1960" %in% names(bg_envirodata))
       expect_true("lowlifex" %in% names(bg_extra_indicators))
       blockgroupstats
@@ -89,6 +104,7 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
     bg_acsdata = bg_acsdata,
     bg_envirodata = bg_envirodata,
     bg_extra_indicators = bg_extra_indicators,
+    bg_geodata = bg_geodata,
     extra_indicator_vars = "lowlifex",
     download_acs_raw = FALSE
   )
@@ -96,6 +112,7 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
   expect_s3_class(out, "ejam_ejscreen_dataset")
   expect_named(out, c(
     "bg_acs_raw", "bg_acsdata", "bg_envirodata", "bg_extra_indicators",
+    "bg_geodata",
     "usastats_acs", "statestats_acs", "usastats_envirodata",
     "statestats_envirodata", "usastats_ej", "statestats_ej",
     "blockgroupstats", "bgej", "usastats", "statestats"
@@ -104,7 +121,58 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
   expect_equal(out$bgej, stats$bgej)
 })
 
-test_that("calc_ejscreen_blockgroupstats keeps blockgroups missing ACS rows", {
+test_that("calc_ejscreen_blockgroupstats uses ACS rows as the default blockgroup universe", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = "100010001001",
+    ST = "DE",
+    pop = 100,
+    pctmin = 0.2,
+    pctlowinc = 0.1,
+    pctlingiso = 0.02,
+    pctlths = 0.05,
+    pctdisability = 0.09
+  )
+  bg_envirodata <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    pctpre1960 = c(0.2, 0.3),
+    pm = c(7, 8)
+  )
+  bg_extra_indicators <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    lowlifex = c(0.1, 0.2)
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroup_demog_index = function(bgstats) {
+      data.table::data.table(
+        bgfips = bgstats$bgfips,
+        Demog.Index = ifelse(is.na(bgstats$pctmin), NA_real_, 0.2),
+        Demog.Index.Supp = ifelse(is.na(bgstats$pctmin), NA_real_, 0.3),
+        Demog.Index.State = ifelse(is.na(bgstats$pctmin), NA_real_, 0.2),
+        Demog.Index.Supp.State = ifelse(is.na(bgstats$pctmin), NA_real_, 0.3)
+      )
+    },
+    .package = "EJAM"
+  )
+
+  expect_warning(
+    out <- EJAM:::calc_ejscreen_blockgroupstats(
+      bg_acsdata = bg_acsdata,
+      bg_envirodata = bg_envirodata,
+      bg_extra_indicators = bg_extra_indicators,
+      bg_geodata = make_test_bg_geodata(bg_envirodata$bgfips),
+      extra_indicator_vars = "lowlifex"
+    ),
+    "Using ACS bg_acsdata as the blockgroup universe"
+  )
+
+  expect_equal(out$bgfips, bg_acsdata$bgfips)
+  expect_false("100010001002" %in% out$bgfips)
+  expect_equal(out$pm, 7)
+  expect_equal(out$lowlifex, 0.1)
+})
+
+test_that("calc_ejscreen_blockgroupstats can opt into union blockgroup universe", {
   bg_acsdata <- data.table::data.table(
     bgfips = "100010001001",
     ST = "DE",
@@ -142,13 +210,14 @@ test_that("calc_ejscreen_blockgroupstats keeps blockgroups missing ACS rows", {
     bg_acsdata = bg_acsdata,
     bg_envirodata = bg_envirodata,
     bg_extra_indicators = bg_extra_indicators,
-    extra_indicator_vars = "lowlifex"
+    bg_geodata = make_test_bg_geodata(bg_envirodata$bgfips),
+    extra_indicator_vars = "lowlifex",
+    blockgroup_universe_source = "union"
   )
 
   expect_equal(out$bgfips, bg_envirodata$bgfips)
   expect_true(is.na(out$pop[out$bgfips == "100010001002"]))
   expect_equal(out$pm, c(7, 8))
-  expect_equal(out$lowlifex, c(0.1, 0.2))
 })
 
 test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
@@ -383,6 +452,7 @@ test_that("calc_ejscreen_blockgroupstats checks optional extra stage with reques
       bgfips = "100010001001",
       pctpre1960 = 0.2
     ),
+    bg_geodata = make_test_bg_geodata("100010001001"),
     pipeline_dir = "s3://example-bucket/pipeline",
     pipeline_storage = "s3",
     extra_indicator_vars = "lowlifex"

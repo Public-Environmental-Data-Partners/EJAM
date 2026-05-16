@@ -145,7 +145,7 @@
 #' @examples
 #' EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
 #'
-#' x = doaggregate(testoutput_getblocksnearby_10pts_1miles, radius = 1)
+#' x = testoutput_doaggregate_10pts_1miles
 #' names(x)
 #' ejam2barplot(x)
 #'

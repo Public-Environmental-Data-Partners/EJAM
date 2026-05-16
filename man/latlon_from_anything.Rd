@@ -53,7 +53,7 @@ which in turn uses \code{\link[=latlon_infer]{latlon_infer()}} \code{\link[=latl
  latlon_from_anything(pts)
  pts = data.frame(Longitude = testpoints_10$lon, Latitude = testpoints_10$lat)
  latlon_from_anything(pts)
- pts = data.table(Lat = testpoints_10$lat, Long = testpoints_10$lon)
+ pts = data.table::data.table(Lat = testpoints_10$lat, Long = testpoints_10$lon)
  latlon_from_anything(pts)
  \dontrun{
  if (interactive()) {

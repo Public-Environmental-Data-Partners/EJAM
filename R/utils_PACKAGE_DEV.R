@@ -286,15 +286,15 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 #'
 #' @examples
 #'
-#' grep_lines("x",  c("x", "y", "has any x x xxxxx"))
+#' EJAM:::grep_lines("x",  c("x", "y", "has any x x xxxxx"))
 #'
 #' xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
 #'
-#'  cbind(xx, grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
-#'  cbind(xx, grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
+#'  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
+#'  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
 #'
-#'  cbind(  grep_lines("ej", xx, ignorecomments = TRUE,    value = TRUE))
-#'  cbind(  grep_lines("ej", xx, ignorecomments = FALSE,   value = TRUE))
+#'  cbind(  EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,    value = TRUE))
+#'  cbind(  EJAM:::grep_lines("ej", xx, ignorecomments = FALSE,   value = TRUE))
 #'
 #' @inherit grepn seealso
 #'
@@ -606,10 +606,12 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #'  # some way to see what functions are in the package:
 #'
 #'  x1 <- EJAM:::pkg_functions_and_data(data_included = FALSE, vectoronly = TRUE)
-#'  x2 <- EJAM:::pkg_functions_and_sourcefiles()
-#'  info3 <- capture.output({ x3 <- EJAM:::pkg_functions_by_roxygen_tag() })
-#'  info4 <- capture.output({ x4 <- EJAM:::pkg_functions_found_in_files() })
-#'  ## x5 <- EJAM:::pkg_functions_preceding_lines() # may need to be debugged
+#'  if (interactive()) {
+#'    x2 <- EJAM:::pkg_functions_and_sourcefiles()
+#'    info3 <- capture.output({ x3 <- EJAM:::pkg_functions_by_roxygen_tag() })
+#'    info4 <- capture.output({ x4 <- EJAM:::pkg_functions_found_in_files() })
+#'    ## x5 <- EJAM:::pkg_functions_preceding_lines() # may need to be debugged
+#'  }
 #'
 #'  # Which functions, files, or data objects are named with certain terms?
 #'

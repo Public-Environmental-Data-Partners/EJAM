@@ -19,10 +19,6 @@
 #' when explicitly requested. The helpers construct file paths, save files,
 #' load files, and normalize compatibility stage aliases to canonical names.
 #'
-#' @param root root folder where the pipeline folder should be created.
-#' @param yr optional ACS end year or other year label to append to the pipeline
-#'   folder name.
-#' @param pipeline_name short pipeline folder name.
 #' @param stage pipeline stage name.
 #' @param pipeline_dir folder for pipeline stage files.
 #' @param format file format: `"rds"`, `"rda"`, `"csv"`, or `"arrow"`.
@@ -255,6 +251,11 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
     envirodata =       "envirodata",
     bg_envirodata = "bg_envirodata", # canonical
 
+    area =       "area",
+    bg_area =    "bg_area",
+    geodata =    "geodata",
+    bg_geodata = "bg_geodata", # canonical
+
     extra_indicators =       "extra_indicators",
     bg_extra_indicators = "bg_extra_indicators", # canonical
 
@@ -302,6 +303,9 @@ ejscreen_pipeline_stage_canonical <- function(stage) {
          acs_raw =             "bg_acs_raw",
          blockgroupstats_acs = "bg_acsdata",
          envirodata =          "bg_envirodata",
+         area =                "bg_geodata",
+         bg_area =             "bg_geodata",
+         geodata =             "bg_geodata",
          extra_indicators =    "bg_extra_indicators",
          bg_ejindexes =        "bgej",
          bg_ej =               "bgej",
@@ -402,7 +406,7 @@ ejscreen_pipeline_require_aws_cli <- function() {
 ###################################################### #
 ejscreen_pipeline_aws <- function(args, stdout = TRUE, stderr = TRUE) {
   aws <- ejscreen_pipeline_require_aws_cli()
-  status <- system2(aws, args = args, stdout = stdout, stderr = stderr)
+  suppressWarnings({status <- system2(aws, args = args, stdout = stdout, stderr = stderr)})
   if (is.integer(status) && !identical(status, 0L)) {
     stop("AWS CLI command failed: aws ", paste(args, collapse = " "), call. = FALSE)
   }

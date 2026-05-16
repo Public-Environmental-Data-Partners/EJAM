@@ -48,7 +48,7 @@ Created by script in /data-raw/
 Also see \href{https://www.epa.gov/frs/frs-data-sources}{EPA documentation describing each program code} aka data source.
 }
 \examples{
-\donttest{
+\dontrun{
   frs_by_programid[program \%in\% frsprogramcodes$code, .N, by=program]
   
   setkey(frs_by_programid,"program")

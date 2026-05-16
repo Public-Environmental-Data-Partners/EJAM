@@ -131,7 +131,7 @@ test_ejam_bygroup <- function(testlist,
   #   "untested_cant", "untested_skipped", "warned"
   # ))
   # probably cannot now, but used to be able to use  reporter=default_compact_reporter()
-  try({suppressWarnings(suppressMessages({beepr_available <- require(beepr)}))}, silent = TRUE)
+  beepr_available <- requireNamespace("beepr", quietly = TRUE)
   xtable <- list()
   i <- 0
   for (tgroupname in names(testlist)) {

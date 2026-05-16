@@ -45,6 +45,7 @@ And we might also want to see the \%D as a function of continuous distance at ju
 So to retain flexibility doaggregate() reports all instances of blockgroup-site pairings.
 }
 \examples{
+\dontrun{
  y <- ejamit(testpoints_100, radius = 3)
 
  # see barplot and table comparing groups to see which are closer to sites analyzed
@@ -57,7 +58,6 @@ So to retain flexibility doaggregate() reports all instances of blockgroup-site 
  # plot cumulative share of group by distance vs overall population
   distance_by_group_plot(y$results_bybg_people,
      demogvarname = 'pctlowinc' )
- \dontrun{
  if (interactive()) {
  # plot is too busy for all groups at once so this is a way to tap through them 1 by 1
  these = c(names_d, names_d_subgroups)

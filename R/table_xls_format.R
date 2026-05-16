@@ -63,14 +63,14 @@
 #'
 #' @seealso [ejam2excel()] and related functions like [table_xls_from_ejam()]
 #' @return a workbook, ready to be saved in spreadsheet format, with tabs like "Overall" and "Each Site"
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   EJAM:::table_xls_format(
-#'     testoutput_ejamit_100pts_1miles$results_overall,
-#'     testoutput_ejamit_100pts_1miles$results_bysite,
-#'     saveas =  "out1.xlsx")
+#'     overall = testoutput_ejamit_100pts_1miles$results_overall,
+#'     eachsite = testoutput_ejamit_100pts_1miles$results_bysite,
+#'     saveas = tempfile(fileext = ".xlsx"))
 #'  # can just pass the whole results of ejamit(), for convenience
 #'  wb <- EJAM:::table_xls_format(testoutput_ejamit_100pts_1miles)
-#'  openxlsx::saveWorkbook(wb, file = "out2.xlsx", overwrite = TRUE)
+#'  openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"), overwrite = TRUE)
 #' }
 #'
 #' @keywords internal

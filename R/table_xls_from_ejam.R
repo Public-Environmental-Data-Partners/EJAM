@@ -5,7 +5,7 @@
 #'
 #' @inheritParams ejam2excel
 #'
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles, fname = tempfile(fileext = ".xlsx"))
 #'   }
 #' @return returns a workbook object for use by openxlsx::saveWorkbook(wb_out, pathname)

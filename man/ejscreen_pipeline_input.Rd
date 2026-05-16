@@ -100,13 +100,6 @@ file.}
 \item{validation_strict}{logical passed to \code{EJAM:::ejscreen_pipeline_validate()}.}
 
 \item{canonical_only}{optional logical set to TRUE in ejscreen_pipeline_stage_names() to return only the canonical versions without any aliases}
-
-\item{root}{root folder where the pipeline folder should be created.}
-
-\item{yr}{optional ACS end year or other year label to append to the pipeline
-folder name.}
-
-\item{pipeline_name}{short pipeline folder name.}
 }
 \value{
 \code{EJAM:::ejscreen_pipeline_stage_names()} returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that \code{EJAM:::ejscreen_pipeline_validate()} can check if a specified stage name is valid and apply the specific validation rules for that stage

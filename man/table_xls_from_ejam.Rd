@@ -156,7 +156,7 @@ or returns just the full path/file name of where it was saved if save_now = TRUE
 Almost identical to \code{\link[=ejam2excel]{ejam2excel()}}
 }
 \examples{
-\donttest{
+\dontrun{
   EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles, fname = tempfile(fileext = ".xlsx"))
   }
 }

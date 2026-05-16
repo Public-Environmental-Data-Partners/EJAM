@@ -20,19 +20,20 @@
   2. calculate ACS-based demographic indicators (and lead paint indicator)
   3. validate/save key environmental indicators (or re-use existing ones)
   4. validate/save the many extra indicators like % low life expectancy (or re-use existing ones)
-  5. calculate demographic indexes (using % low life expectancy, etc.)
-  6. combine those blockgroup demog., envt., and extra indicators as [blockgroupstats]
-  7. create percentile lookup tables for demographics and environmental data
-  8. calculate EJ indexes (from envt. percentiles and demog. indexes) and save as [bgej] table
-  9. create percentile lookup tables for EJ indexes
-  10. combine those as [usastats] and [statestats] percentile lookup tables
-  11. create an EJScreen-ready export file
+  5. validate/save Census/TIGER blockgroup geography fields such as `arealand` and `areawater`
+  6. calculate demographic indexes (using % low life expectancy, etc.)
+  7. combine those blockgroup demog., envt., and extra indicators as [blockgroupstats]
+  8. create percentile lookup tables for demographics and environmental data
+  9. calculate EJ indexes (from envt. percentiles and demog. indexes) and save as [bgej] table
+  10. create percentile lookup tables for EJ indexes
+  11. combine those as [usastats] and [statestats] percentile lookup tables
+  12. create an EJScreen-ready export file
 
 - Added `calc_ejscreen_dataset()` as the high-level wrapper for the staged
   pipeline. It can read supplied R objects, read saved stages from disk, or
   create and save stages such as `bg_acsdata`, `bg_envirodata`,
-  `bg_extra_indicators`, `blockgroupstats`, `bgej`, `usastats`, `statestats`,
-  and `ejscreen_export`.
+  `bg_extra_indicators`, `bg_geodata`, `blockgroupstats`, `bgej`, `usastats`,
+  `statestats`, and `ejscreen_export`.
 
 - Added functions that can update ACS-based demographic dataset each year:
   `calc_bgej()`, `calc_blockgroupstats_acs()`, `calc_blockgroupstats_from_tract_data()`, etc.
@@ -44,6 +45,11 @@
   stage runs. Pipeline storage can use a local folder now or `s3://...` AWS S3
   paths, with Git LFS rules in place if a checkpoint folder needs to be
   force-added to the repository temporarily.
+
+- Pipeline stages can now be saved in multiple formats in the same run, using
+  `EJAM_STAGE_FORMATS` such as `csv,rda`. The CSV files remain the primary
+  easy-to-inspect checkpoints, while `.rda` siblings are also written to S3 for
+  R-native reuse.
 
 - Fixed S3 handling in the pipeline so optional saved stages are detected with
   the pipeline storage helper instead of local `file.exists()` checks, and
@@ -59,6 +65,12 @@
 
 - Added `calc_bg_extra_indicators()` and related helpers for the non-ACS,
   non-environmental blockgroup indicator stage (e.g., % low life expectancy).
+
+- Added `bg_geodata` as an explicit Census/TIGER blockgroup geography pipeline
+  stage. It extracts `bgfips`, `arealand`, `areawater`, and internal-point
+  latitude/longitude fields from TIGER blockgroup files. Area weighting now
+  relies on `arealand + areawater` in square meters; the legacy `area` field is
+  retained only for compatibility with older EPA/EJScreen exports.
 
 - Fixed `doaggregate()` so weighted-mean denominator columns such as
   `healthinsurance_universe` are retained when available in `blockgroupstats`,

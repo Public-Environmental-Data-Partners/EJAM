@@ -8,6 +8,7 @@ calc_ejscreen_dataset(
   yr,
   bg_envirodata = NULL,
   bg_extra_indicators = NULL,
+  bg_geodata = NULL,
   bg_acs_raw = NULL,
   bg_acsdata = NULL,
   blockgroupstats = NULL,
@@ -37,6 +38,8 @@ calc_ejscreen_dataset(
   fiveorone = "5",
   download_timeout = 3600,
   download_retries = 2,
+  download_bg_geodata = FALSE,
+  blockgroup_universe_source = c("acs", "union"),
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tract_formulas = NULL,
   dropMOE = TRUE,
@@ -67,6 +70,9 @@ TRUE.}
 
 \item{bg_extra_indicators}{non-ACS, non-enviro blockgroup indicators such as
 \code{lowlifex}, or NULL to read/reuse/create that stage.}
+
+\item{bg_geodata}{Census/TIGER blockgroup geography stage, with
+square-meter \code{arealand} and \code{areawater} fields.}
 
 \item{bg_acs_raw}{optional raw ACS pipeline object from
 \code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}}.}
@@ -155,6 +161,13 @@ some Census table-based summary files are hundreds of MB.}
 \item{download_retries}{number of times to retry a failed ACS table download
 after the initial attempt.}
 
+\item{download_bg_geodata}{logical, whether to download Census/TIGER
+blockgroup geography when \code{bg_geodata} is not supplied or saved.}
+
+\item{blockgroup_universe_source}{passed to \code{\link[=calc_ejscreen_blockgroupstats]{calc_ejscreen_blockgroupstats()}}.
+The default \code{"acs"} uses the ACS table rows as the authoritative
+blockgroup universe for the requested ACS vintage.}
+
 \item{formulas}{formulas used for blockgroup-resolution ACS tables.}
 
 \item{tract_formulas}{formulas used for tract-resolution ACS indicators.
@@ -215,11 +228,17 @@ The default stage order is:
 \item calculate ACS-based demographic indicators (and lead paint indicator) as \code{bg_acsdata}
 \item validate/save \code{bg_envirodata} (key environmental indicators)
 \item validate/save \code{bg_extra_indicators} (e.g., \% low life expectancy)
+\item create or validate \code{bg_geodata}, the Census/TIGER blockgroup geography
+attributes used for \code{arealand}, \code{areawater}, and internal-point fields
 \item calculate demographic indexes (using \% low life expectancy, etc.)
-\item combine those blockgroup demog., envt., and extra indicators as \link{blockgroupstats}
-\item create intermediate percentile lookup tables \code{usastats_acs}, \code{statestats_acs}, \code{usastats_envirodata}, \code{statestats_envirodata}
-\item calculate EJ indexes (from envt. percentiles and demog. indexes) and save as \link{bgej} table
-\item create intermediate percentile lookup tables \code{usastats_ej}, \code{statestats_ej}
+\item combine those blockgroup demog., envt., extra, and geography indicators
+as \link{blockgroupstats}
+\item create intermediate percentile lookup tables \code{usastats_acs},
+\code{statestats_acs}, \code{usastats_envirodata}, \code{statestats_envirodata}
+\item calculate EJ indexes (from envt. percentiles and demog. indexes) and save
+as \link{bgej} table
+\item create intermediate percentile lookup tables \code{usastats_ej},
+\code{statestats_ej}
 \item combine those as \link{usastats} and \link{statestats}
 \item create an EJScreen-ready export file (optionally)
 }
@@ -232,27 +251,49 @@ Note that the runner script can use several settings stored as environment varia
 \item EJAM_PIPELINE_YR
 \item EJAM_PIPELINE_DIR: override output folder.
 \item EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
+\item EJAM_STAGE_FORMAT: primary stage format used for loading, usually csv.
+\item EJAM_STAGE_FORMATS: comma-separated formats saved by the runner, usually csv,rda.
+\item EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended.
 \item AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
 \item CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
 \item EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
 \item EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
+\item EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.
 \item EJAM_ACS_DOWNLOAD_TIMEOUT
 \item EJAM_ACS_DOWNLOAD_RETRIES
 \item EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
 \item EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+\item EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.
 }
+
+The annual runner also writes \code{pipeline_run_manifest.csv}, which records the
+package version, Git branch/SHA, ACS vintage, run settings, and whether
+provisional environmental or extra-indicator inputs were reused.
+
+Census/TIGER geography can occasionally include valid blockgroup features
+that are not present in the ACS summary-file tables for the same ACS vintage.
+For example, a draft ACS 2020-2024 build found 39 Suffolk County, New York
+blockgroups in TIGER geography but not in the relevant ACS blockgroup or
+tract tables. The default \code{blockgroup_universe_source = "acs"} therefore
+treats \code{bg_acsdata} as the authoritative final blockgroup universe and uses
+\code{bg_geodata} only to annotate those rows.
 
 To check them:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{print(
 cbind(current_setting = Sys.getenv(c(
   "EJAM_PIPELINE_YR",
-  "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE", "AWS_PROFILE", "AWS_REGION",
+  "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE",
+  "EJAM_STAGE_FORMAT", "EJAM_STAGE_FORMATS",
+  "EJAM_BLOCKGROUP_UNIVERSE_SOURCE",
+  "AWS_PROFILE", "AWS_REGION",
   "CENSUS_API_KEY",
-  "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA",
+  "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
-  "EJAM_INCLUDE_EJSCREEN_EXPORT"
+  "EJAM_INCLUDE_EJSCREEN_EXPORT",
+  "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
+  "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"
 )))
 )
 }\if{html}{\out{</div>}}

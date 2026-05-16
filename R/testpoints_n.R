@@ -17,7 +17,9 @@
 #'
 #'   - block = Average Block: random US Census block (internal point like a centroid)
 #'
-#'   - area or place = Average Place: random point on a map (internal point of avg blockgroup weighted by its square meters size)
+#'   - area or place = Average Place: random point on a map (internal point of avg blockgroup weighted by its square meters size).
+#'     If blockgroup `arealand` and `areawater` values are missing, all NA, or all zero,
+#'     this warns and falls back to the default `frs` weighting.
 #'
 #' @param region optional vector of EPA Regions (1-10) to pick from only some regions.
 #' @param ST optional vector of State abbreviations like "NC" to pick from only some States.
@@ -32,7 +34,7 @@
 #' \donttest{
 #' n=2
 #' for (d in c(TRUE,FALSE)) {
-#'   for (w in c('frs', 'pop', 'area', 'bg', 'block')) {
+#'   for (w in c('frs', 'pop', 'bg', 'block')) {
 #'     cat("n=",n,"  weighting=",w, "  dt=",d,"\n\n")
 #'     print(x <- testpoints_n(n, weighting = w, dt = d)); print(class(x))
 #'     cat('\n')
@@ -93,6 +95,15 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
   if (!(weighting %in% c('frs', 'pop', 'area', 'bg', 'block'))) {
     warning("invalid weighting parameter for testpoints_n")
     return(NULL)
+  }
+  if (weighting == "area") {
+    area_unavailable <- !exists("blockgroupstats") ||
+      !all(c("arealand", "areawater") %in% names(blockgroupstats)) ||
+      !any(rowSums(blockgroupstats[, c("arealand", "areawater")], na.rm = TRUE) > 0)
+    if (area_unavailable) {
+      warning("area/place weighting requested, but blockgroupstats$arealand and blockgroupstats$areawater are missing, all NA, or all zero; using default frs weighting instead")
+      weighting <- "frs"
+    }
   }
 
   # RANDOM FACILITIES (EPA-regulated facilities in FRS) ####
@@ -156,13 +167,15 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
       bg_filtered_by_state <- data.table::copy(bgpts[substr(bgfips,1,2) %in% stfips, ])
       rownum <- sample.int(bg_filtered_by_state[,.N], size = n, replace = FALSE)
       if (!dt) {
+        x <- bg_filtered_by_state[rownum, ]
         setDF(bg_filtered_by_state)
-        #return(bg_filtered_by_state[rownum, ])
+        setDF(x)
+        x$sitenumber <- seq_len(nrow(x))
         if (validonly) {
           # message('Returning only sites with valid lat/lons')
-          return(bg_filtered_by_state[rownum & latlon_is.valid(bg_filtered_by_state$lat, bg_filtered_by_state$lon), ]) ##### #
+          return(x[latlon_is.valid(x$lat, x$lon), ])
         } else {
-          return(bg_filtered_by_state[rownum, ] )
+          return(x)
         }
       }
 
@@ -265,11 +278,20 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
     # stop('blockpoints$area needs to be added to blockpoints')
     if (!is.null(ST_needed)) {
       # stfips <- stateinfo$FIPS.ST[match(ST_needed, stateinfo$ST)]
-      bg_filtered_by_state <- data.table::copy(blockgroupstats[ST %in% ST_needed, .(bgfips, bgid, ST, pop, area) ])
-      rownum <- sample.int(bg_filtered_by_state[,.N], size = n, replace = FALSE)
+      bg_filtered_by_state <- data.table::copy(blockgroupstats[ST %in% ST_needed, .(bgfips, bgid, ST, pop, arealand, areawater) ])
+      area_prob <- rowSums(bg_filtered_by_state[, c("arealand", "areawater")], na.rm = TRUE)
+      area_prob[is.na(area_prob) | area_prob < 0] <- 0
+      if (!any(area_prob > 0)) {
+        warning("area/place weighting requested, but blockgroupstats$arealand and blockgroupstats$areawater are missing, all NA, or all zero in the requested state(s); using default frs weighting instead")
+        return(testpoints_n(n = n, weighting = "frs", region = region, ST = ST, validonly = validonly, dt = dt))
+      }
+      rownum <- sample.int(bg_filtered_by_state[,.N], size = n, replace = FALSE, prob = area_prob)
 
       if (!dt) {
-        bg_filtered_by_state <- bgpts[bg_filtered_by_state[rownum, ], .(lat, lon,  bgfips, bgid, ST, pop, area)]
+        bg_filtered_by_state <- bgpts[bg_filtered_by_state[rownum, ],
+                                      .(lat, lon, bgfips = i.bgfips, bgid = i.bgid,
+                                        ST = i.ST, pop = i.pop,
+                                        arealand = i.arealand, areawater = i.areawater)]
         setDF(bg_filtered_by_state)
         bg_filtered_by_state$sitenumber <- seq_len(nrow(bg_filtered_by_state))
 
@@ -280,7 +302,11 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
           return(bg_filtered_by_state)
         }
       }
-      x <- bgpts[bg_filtered_by_state[rownum,] ,  .(lat, lon,  bgfips, bgid, ST, pop, area), on = "bgid"]
+      x <- bgpts[bg_filtered_by_state[rownum, ],
+                 .(lat, lon, bgfips = i.bgfips, bgid = i.bgid,
+                   ST = i.ST, pop = i.pop,
+                   arealand = i.arealand, areawater = i.areawater),
+                 on = "bgid"]
       x$sitenumber <- seq_len(nrow(x))
       if (validonly) {
         # message('Returning only sites with valid lat/lons')
@@ -290,9 +316,19 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
       }
 
     } else {
-      rownum <- sample.int(blockgroupstats[,.N], size = n, replace = FALSE, prob = blockgroupstats$area)
+      area_prob <- rowSums(blockgroupstats[, c("arealand", "areawater")], na.rm = TRUE)
+      area_prob[is.na(area_prob) | area_prob < 0] <- 0
+      if (!any(area_prob > 0)) {
+        warning("area/place weighting requested, but blockgroupstats$arealand and blockgroupstats$areawater are missing, all NA, or all zero; using default frs weighting instead")
+        return(testpoints_n(n = n, weighting = "frs", region = region, ST = ST, validonly = validonly, dt = dt))
+      }
+      rownum <- sample.int(blockgroupstats[,.N], size = n, replace = FALSE, prob = area_prob)
       if (!dt) {
-        x = data.table::copy(bgpts[blockgroupstats[rownum, ], .(lat, lon, bgfips, bgid, ST, pop, area), on = "bgid"])
+        x = data.table::copy(bgpts[blockgroupstats[rownum, ],
+                                   .(lat, lon, bgfips = i.bgfips, bgid = i.bgid,
+                                     ST = i.ST, pop = i.pop,
+                                     arealand = i.arealand, areawater = i.areawater),
+                                   on = "bgid"])
         setDF(x); x$sitenumber <- seq_len(nrow(x))
         if (validonly) {
           # message('Returning only sites with valid lat/lons')
@@ -301,7 +337,11 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
           return(x)
         }
       }
-      x <-           bgpts[blockgroupstats[rownum,],  .(lat, lon, bgfips, bgid, ST, pop, area), on = "bgid"]
+      x <- bgpts[blockgroupstats[rownum, ],
+                 .(lat, lon, bgfips = i.bgfips, bgid = i.bgid,
+                   ST = i.ST, pop = i.pop,
+                   arealand = i.arealand, areawater = i.areawater),
+                 on = "bgid"]
       x$sitenumber <- seq_len(nrow(x))
       if (validonly) {
         # message('Returning only sites with valid lat/lons')

@@ -33,9 +33,13 @@
 #   EJAM_PIPELINE_ROOT: parent folder/S3 prefix containing version folders such as ejscreen_acs_2024.
 #   EJAM_PIPELINE_DIR: override output folder.
 #   EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
+#   EJAM_STAGE_FORMAT: primary stage format used for loading/validation, usually csv.
+#   EJAM_STAGE_FORMATS: comma-separated formats to save for table stages, usually csv,rda.
+#   EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended and means the ACS tabulated blockgroup rows define the final blockgroupstats universe.
 
 #   EJAM_FORCE_ACS:        FALSE means reuse already-downloaded raw data. TRUE to redownload/recalculate raw ACS and bg_acsdata.
 #   EJAM_FORCE_BG_ACSDATA: FALSE means reuse already calculated bg_acsdata if it exists (even if forcing redownload of raw ACS). TRUE to rebuild bg_acsdata from saved raw ACS.
+#   EJAM_FORCE_BG_GEODATA: FALSE means reuse already downloaded Census/TIGER blockgroup geography. TRUE to redownload/recalculate bg_geodata.
 #   EJAM_ACS_DOWNLOAD_TIMEOUT
 #   EJAM_ACS_DOWNLOAD_RETRIES
 
@@ -85,9 +89,12 @@ set_pipeline_default("EJAM_PIPELINE_ROOT", dir_parent)
 set_pipeline_default("EJAM_PIPELINE_STORAGE", storage)
 set_pipeline_default("EJAM_PIPELINE_DIR", dir_full)
 set_pipeline_default("EJAM_STAGE_FORMAT", "csv") # options are c("csv", "rds", "rda", "arrow")
+set_pipeline_default("EJAM_STAGE_FORMATS", "csv,rda") # comma-separated list of formats to save
+set_pipeline_default("EJAM_BLOCKGROUP_UNIVERSE_SOURCE", "acs")
 
 set_pipeline_default("EJAM_FORCE_ACS", "FALSE")
 set_pipeline_default("EJAM_FORCE_BG_ACSDATA", "FALSE")
+set_pipeline_default("EJAM_FORCE_BG_GEODATA", "FALSE")
 set_pipeline_default("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600")
 set_pipeline_default("EJAM_ACS_DOWNLOAD_RETRIES", "2")
 
@@ -116,9 +123,12 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_PIPELINE_STORAGE = "s3",
 #         # or #   EJAM_PIPELINE_STORAGE = "local",
 #         #    #   EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
-#            EJAM_STAGE_FORMAT = "csv",  # options will be c("csv", "rds", "rda", "arrow")
+#            EJAM_STAGE_FORMAT = "csv",  # primary format for loading/validation
+#            EJAM_STAGE_FORMATS = "csv,rda",  # formats to save
+#            EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
 #            EJAM_FORCE_ACS = FALSE,    # FALSE means reuse if already had downloaded.
 #            EJAM_FORCE_BG_ACSDATA = FALSE, # or as needed
+#            EJAM_FORCE_BG_GEODATA = FALSE,
 #            EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
 #            EJAM_ACS_DOWNLOAD_RETRIES = "2",
 #      EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, # TRUE during testing not once finalized datasets - TO TRY TO REPLICATE 2022 DATA
@@ -141,10 +151,13 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_PIPELINE_DIR = paste0("s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_", yr),
 #            EJAM_PIPELINE_STORAGE = "s3",
 #         # or #   EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
-#            EJAM_STAGE_FORMAT = "csv",  # options will be c("csv", "rds", "rda", "arrow")
+#            EJAM_STAGE_FORMAT = "csv",  # primary format for loading/validation
+#            EJAM_STAGE_FORMATS = "csv,rda",  # formats to save
+#            EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
 #         #    #   EJAM_PIPELINE_STORAGE = "local",
 #            EJAM_FORCE_ACS = TRUE,    # FALSE means reuse if already had downloaded.
 #            EJAM_FORCE_BG_ACSDATA = TRUE, # or as needed
+#            EJAM_FORCE_BG_GEODATA = TRUE,
 #            EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
 #            EJAM_ACS_DOWNLOAD_RETRIES = "2",
 #         EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, #  set FALSE once new envt data are available
@@ -166,9 +179,12 @@ print(
     'EJAM_PIPELINE_DIR',
     'EJAM_PIPELINE_STORAGE',
     'EJAM_STAGE_FORMAT',
+    'EJAM_STAGE_FORMATS',
+    'EJAM_BLOCKGROUP_UNIVERSE_SOURCE',
 
     'EJAM_FORCE_ACS',
     'EJAM_FORCE_BG_ACSDATA',
+    'EJAM_FORCE_BG_GEODATA',
     'EJAM_ACS_DOWNLOAD_TIMEOUT',
     'EJAM_ACS_DOWNLOAD_RETRIES',
     'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
@@ -232,15 +248,26 @@ if (pipeline_storage == "local") {
   dir.create(pipeline_dir, recursive = TRUE, showWarnings = FALSE)
 }
 stage_format <- Sys.getenv("EJAM_STAGE_FORMAT", unset = "csv")
+stage_formats <- trimws(strsplit(Sys.getenv("EJAM_STAGE_FORMATS", unset = stage_format), ",", fixed = TRUE)[[1]])
+stage_formats <- unique(stage_formats[nzchar(stage_formats)])
+stage_formats <- intersect(stage_formats, c("csv", "rds", "rda", "arrow"))
+if (!stage_format %in% stage_formats) {
+  stage_formats <- c(stage_format, stage_formats)
+}
+blockgroup_universe_source <- Sys.getenv("EJAM_BLOCKGROUP_UNIVERSE_SOURCE", unset = "acs")
+blockgroup_universe_source <- match.arg(blockgroup_universe_source, c("acs", "union"))
 
 message("Pipeline folder: ", pipeline_dir)
 message("Pipeline storage: ", pipeline_storage)
 message("File format aka stage_format: ", stage_format)
+message("Saved stage formats: ", paste(stage_formats, collapse = ", "))
+message("Blockgroup universe source: ", blockgroup_universe_source)
 
 ### ACS DEMOGRAPHIC DATA settings ####
 
 force_acs <- env_flag("EJAM_FORCE_ACS", FALSE)
 force_bg_acsdata <- env_flag("EJAM_FORCE_BG_ACSDATA", force_acs)
+force_bg_geodata <- env_flag("EJAM_FORCE_BG_GEODATA", FALSE)
 acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
 acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
 
@@ -279,8 +306,11 @@ pipeline_setting_names <- c(
   'EJAM_PIPELINE_DIR',
   'EJAM_PIPELINE_STORAGE',
   'EJAM_STAGE_FORMAT',
+  'EJAM_STAGE_FORMATS',
+  'EJAM_BLOCKGROUP_UNIVERSE_SOURCE',
   'EJAM_FORCE_ACS',
   'EJAM_FORCE_BG_ACSDATA',
+  'EJAM_FORCE_BG_GEODATA',
   'EJAM_ACS_DOWNLOAD_TIMEOUT',
   'EJAM_ACS_DOWNLOAD_RETRIES',
   'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
@@ -305,9 +335,12 @@ print(
     pipeline_dir=pipeline_dir,
     pipeline_storage=pipeline_storage,
     stage_format=stage_format,
+    stage_formats=paste(stage_formats, collapse = ","),
+    blockgroup_universe_source=blockgroup_universe_source,
 
     force_acs=force_acs,
     force_bg_acsdata=force_bg_acsdata,
+    force_bg_geodata=force_bg_geodata,
     acs_download_timeout=acs_download_timeout,
     acs_download_retries=acs_download_retries,
 
@@ -348,6 +381,46 @@ load_file_stage <- function(stage) {
 stage_exists <- function(stage) {
   # this helper is shorthand, and presumes that pipeline_dir, stage_format, and pipeline_storage are defined in the environment (as they are in this script), so that you can just call load_file_stage("bg_acsdata") for example, and it will know where to look for it and what format to expect.
   EJAM:::ejscreen_pipeline_stage_exists(stage, pipeline_dir = pipeline_dir, format = stage_format, storage = pipeline_storage)
+}
+####################### #
+save_file_stage_formats <- function(x,
+                                    stage,
+                                    formats = stage_formats,
+                                    object_name = stage,
+                                    validate = TRUE) {
+  saved <- stats::setNames(character(), character())
+  for (fmt in formats) {
+    if (is.null(x)) {
+      next
+    }
+    saved[[fmt]] <- EJAM:::ejscreen_pipeline_save(
+      x = x,
+      stage = stage,
+      pipeline_dir = pipeline_dir,
+      format = fmt,
+      object_name = object_name,
+      overwrite = TRUE,
+      validate = validate,
+      storage = pipeline_storage
+    )
+  }
+  invisible(saved)
+}
+####################### #
+save_secondary_stage_formats <- function(out, stages, primary_format = stage_format) {
+  secondary_formats <- setdiff(stage_formats, primary_format)
+  if (length(secondary_formats) == 0) {
+    return(invisible(NULL))
+  }
+  for (stagename in intersect(stages, names(out))) {
+    save_file_stage_formats(
+      x = out[[stagename]],
+      stage = stagename,
+      formats = secondary_formats,
+      validate = TRUE
+    )
+  }
+  invisible(NULL)
 }
 ####################### #
 used_provisional_bg_envirodata <- FALSE
@@ -422,6 +495,18 @@ if (!isTRUE(need_bg_acs_raw)) {
   message(paste0("Using provided/existing ", stagename))
   bg_acs_raw <- load_file_stage(stagename)
 }
+if (!is.null(bg_acs_raw)) {
+  raw_object_formats <- setdiff(stage_formats, "csv")
+  if (length(raw_object_formats) > 0) {
+    save_file_stage_formats(
+      x = bg_acs_raw,
+      stage = stagename,
+      formats = raw_object_formats,
+      object_name = stagename,
+      validate = FALSE
+    )
+  }
+}
 ###################################################### #
 # Calculate ACS-based indicators, bg_acsdata stage ####
 ###################################################### #
@@ -442,7 +527,7 @@ if (isTRUE(need_bg_acsdata)) {
     stage_format = stage_format,
     overwrite = TRUE
   )
-  EJAM:::ejscreen_pipeline_save(bg_acsdata, stage = stagename, pipeline_dir = pipeline_dir, format = stage_format, overwrite = TRUE, storage = pipeline_storage)
+  save_file_stage_formats(bg_acsdata, stage = stagename)
 } else {
   message(paste0("Using provided/existing ", stagename))
   bg_acsdata <- load_file_stage(stagename)
@@ -462,6 +547,7 @@ message(paste0("Stage: ", stagename))
 if (stage_exists(stagename)) {
   message(paste0("Using provided/existing ", stagename))
   bg_envirodata <- load_file_stage(stagename)
+  save_file_stage_formats(bg_envirodata, stage = stagename)
 
 } else if (isTRUE(use_provisional_bg_envirodata)) {
   message(paste0("Creating PROVISIONAL bg_envirodata.", stage_format," from current package blockgroupstats"))
@@ -490,7 +576,7 @@ if (stage_exists(stagename)) {
     bg_envirodata[, env_cols, with = FALSE],
     check.attributes = FALSE
   ))) {stop("Provisional bg_envirodata from blockgroupstats does not have the same env indicator values as EJAM::blockgroupstats")}
-  EJAM:::ejscreen_pipeline_save(bg_envirodata, stage = stagename, pipeline_dir = pipeline_dir, format = stage_format, overwrite = TRUE, storage = pipeline_storage)
+  save_file_stage_formats(bg_envirodata, stage = stagename)
   write_pipeline_text(
     c(
       paste0("PROVISIONAL bg_envirodata.", stage_format),
@@ -516,6 +602,7 @@ message(paste0("Stage: ", stagename))
 if (stage_exists(stagename)) {
   message(paste0("Using provided/existing ", stagename))
   bg_extra_indicators <- load_file_stage(stagename)
+  save_file_stage_formats(bg_extra_indicators, stage = stagename)
 } else {
   message(paste0("Creating ", stagename, ".", stage_format," from current package blockgroupstats"))
   used_provisional_bg_extra_indicators <- TRUE
@@ -542,7 +629,7 @@ if (stage_exists(stagename)) {
     stage_format = stage_format,
     overwrite = TRUE
   )
-  EJAM:::ejscreen_pipeline_save(x = bg_extra_indicators, stage = stagename, pipeline_dir = pipeline_dir, format = stage_format, overwrite = TRUE, storage = pipeline_storage)
+  save_file_stage_formats(x = bg_extra_indicators, stage = stagename)
   write_pipeline_text(
     c(
       paste0("PROVISIONAL bg_extra_indicators.", stage_format),
@@ -554,6 +641,48 @@ if (stage_exists(stagename)) {
     ),
     "bg_extra_indicators_SOURCE.txt"
   )
+}
+
+###################################################### #
+# Census/TIGER blockgroup geography stage ####
+###################################################### #
+
+stagename <- "bg_geodata"
+message(paste0("Stage: ", stagename))
+geodata_bgfips <- if (blockgroup_universe_source == "acs") {
+  unique(bg_acsdata$bgfips)
+} else {
+  unique(c(bg_acsdata$bgfips, bg_envirodata$bgfips, bg_extra_indicators$bgfips))
+}
+
+if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
+  message(paste0("Using provided/existing ", stagename))
+  bg_geodata <- load_file_stage(stagename)
+  bg_geodata <- EJAM:::complete_bg_geodata(
+    bg_geodata = bg_geodata,
+    bgfips = geodata_bgfips,
+    existing_blockgroupstats = EJAM::blockgroupstats,
+    reuse_existing_if_missing = TRUE,
+    allow_partial_reuse = FALSE
+  )
+  save_file_stage_formats(bg_geodata, stage = stagename)
+} else {
+  message(paste0("Creating ", stagename, " from Census/TIGER blockgroup files"))
+  bg_geodata <- EJAM:::calc_bg_geodata(
+    yr = yr,
+    bgfips = geodata_bgfips,
+    existing_blockgroupstats = EJAM::blockgroupstats,
+    reuse_existing_if_missing = TRUE,
+    allow_partial_reuse = FALSE,
+    download = TRUE,
+    download_timeout = acs_download_timeout,
+    download_retries = acs_download_retries,
+    pipeline_dir = pipeline_dir,
+    save_stage = FALSE,
+    stage_format = stage_format,
+    pipeline_storage = pipeline_storage
+  )
+  save_file_stage_formats(bg_geodata, stage = stagename)
 }
 
 ###################################################### #
@@ -571,6 +700,7 @@ out <- EJAM::calc_ejscreen_dataset(
   bg_acsdata = bg_acsdata,
   bg_envirodata = bg_envirodata,
   bg_extra_indicators = bg_extra_indicators,
+  bg_geodata = bg_geodata,
 
   pipeline_dir = pipeline_dir,
   pipeline_storage = pipeline_storage,
@@ -585,8 +715,11 @@ out <- EJAM::calc_ejscreen_dataset(
   return_intermediate = TRUE,
   include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
   include_ejscreen_export = include_ejscreen_export,
+  blockgroup_universe_source = blockgroup_universe_source,
   overwrite = TRUE
 )
+
+save_secondary_stage_formats(out, stages = names(out))
 
 ###################################################### #
 # Validation summary ####
@@ -604,6 +737,7 @@ stages_to_validate <- c(
   # inputs or early stages
   "bg_acsdata",    # demographics as calculated from bg_acs_raw (the downloaded survey data)
   "bg_envirodata", # environmental indicators (the key ones, 13 as of 2026)
+  "bg_geodata", # Census/TIGER blockgroup area and internal-point fields
   "bg_extra_indicators", # many other indicators, like % low life expectancy, etc.
 
   # key indicators dataset
@@ -741,6 +875,7 @@ if (isTRUE(validate_vs_prior)) {
       stages = c(
         "bg_acsdata",
         "bg_envirodata",
+        "bg_geodata",
         "bg_extra_indicators",
         "blockgroupstats",
         "bgej",

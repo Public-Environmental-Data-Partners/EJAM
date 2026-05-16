@@ -30,12 +30,14 @@
 #'   were valid and had blocks identified, then the data.table here will only include ejam_uniq_id values of 5 and 8.
 #'
 #' @examples
+#' \dontrun{
 #'   x <- getblocksnearby_from_fips(fips_counties_from_state_abbrev("DE"))
 #'   y <- doaggregate(x)
 #'   z <- ejamit(fips = fips_counties_from_statename("Delaware"))
 #'
 #'   # x2 <- getblocksnearby_from_fips("482011000011") # one blockgroup only
 #'   # y2 <- doaggregate(x2)
+#' }
 #' @seealso [getblocksnearby()] [fips_bgs_in_fips()] [fips_lead_zero()] [getblocksnearby_from_fips()] [fips_from_table()]
 #'
 #' @export

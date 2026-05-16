@@ -194,7 +194,7 @@ latlon_is.islandareas <- function(lat, lon, exact_but_slow_islandareas = FALSE) 
 #' @param exact_but_slow_islandareas see [latlon_is.islandareas()]
 #' @seealso   [latlon_is.usa()] [latlon_is.islandareas()] [latlon_is.available()] [latlon_is.possible()]
 #'   [latlon_df_clean()] [latlon_infer()] [latlon_is.valid()] [latlon_as.numeric()]
-#' @examples  \donttest{
+#' @examples  \dontrun{
 #'  # this would only work using the EJAM package datasets frs and blockpoints:
 #'    if (!exists("frs")) dataload_dynamic("frs")
 #'  table(EJAM:::latlon_is.valid(lat =  frs$lat, lon =  frs$lon))
@@ -331,4 +331,3 @@ latlon_is.valid <- function(lat, lon, quiet = TRUE, invalid_msg_table = FALSE , 
   # FALSE    TRUE
   # 1384 3454658
   #
-

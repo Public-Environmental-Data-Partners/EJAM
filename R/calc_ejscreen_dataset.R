@@ -20,13 +20,19 @@
 #' 2. calculate ACS-based demographic indicators (and lead paint indicator) as `bg_acsdata`
 #' 3. validate/save `bg_envirodata` (key environmental indicators)
 #' 4. validate/save `bg_extra_indicators` (e.g., % low life expectancy)
-#' 5. calculate demographic indexes (using % low life expectancy, etc.)
-#' 6. combine those blockgroup demog., envt., and extra indicators as [blockgroupstats]
-#' 7. create intermediate percentile lookup tables `usastats_acs`, `statestats_acs`, `usastats_envirodata`, `statestats_envirodata`
-#' 8. calculate EJ indexes (from envt. percentiles and demog. indexes) and save as [bgej] table
-#' 9. create intermediate percentile lookup tables `usastats_ej`, `statestats_ej`
-#' 10. combine those as [usastats] and [statestats]
-#' 11. create an EJScreen-ready export file (optionally)
+#' 5. create or validate `bg_geodata`, the Census/TIGER blockgroup geography
+#'    attributes used for `arealand`, `areawater`, and internal-point fields
+#' 6. calculate demographic indexes (using % low life expectancy, etc.)
+#' 7. combine those blockgroup demog., envt., extra, and geography indicators
+#'    as [blockgroupstats]
+#' 8. create intermediate percentile lookup tables `usastats_acs`,
+#'    `statestats_acs`, `usastats_envirodata`, `statestats_envirodata`
+#' 9. calculate EJ indexes (from envt. percentiles and demog. indexes) and save
+#'    as [bgej] table
+#' 10. create intermediate percentile lookup tables `usastats_ej`,
+#'     `statestats_ej`
+#' 11. combine those as [usastats] and [statestats]
+#' 12. create an EJScreen-ready export file (optionally)
 #'
 #' `bg_envirodata` must include `pctpre1960`. That column may be produced by an
 #' upstream environmental-data step that reads the saved `bg_acsdata` stage.
@@ -37,10 +43,14 @@
 #'
 #'  - EJAM_PIPELINE_DIR: override output folder.
 #'  - EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.
+#'  - EJAM_STAGE_FORMAT: primary stage format used for loading, usually csv.
+#'  - EJAM_STAGE_FORMATS: comma-separated formats saved by the runner, usually csv,rda.
+#'  - EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended.
 #'  - AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
 #'  - CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
 #'  - EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
 #'  - EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
+#'  - EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.
 #'  - EJAM_ACS_DOWNLOAD_TIMEOUT
 #'  - EJAM_ACS_DOWNLOAD_RETRIES
 #'
@@ -48,17 +58,36 @@
 #'
 #'  - EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
 #'
+#'  - EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.
+#'
+#' The annual runner also writes `pipeline_run_manifest.csv`, which records the
+#' package version, Git branch/SHA, ACS vintage, run settings, and whether
+#' provisional environmental or extra-indicator inputs were reused.
+#'
+#' Census/TIGER geography can occasionally include valid blockgroup features
+#' that are not present in the ACS summary-file tables for the same ACS vintage.
+#' For example, a draft ACS 2020-2024 build found 39 Suffolk County, New York
+#' blockgroups in TIGER geography but not in the relevant ACS blockgroup or
+#' tract tables. The default `blockgroup_universe_source = "acs"` therefore
+#' treats `bg_acsdata` as the authoritative final blockgroup universe and uses
+#' `bg_geodata` only to annotate those rows.
+#'
 #' To check them:
 #' ```
 #' print(
 #' cbind(current_setting = Sys.getenv(c(
 #'   "EJAM_PIPELINE_YR",
-#'   "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE", "AWS_PROFILE", "AWS_REGION",
+#'   "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE",
+#'   "EJAM_STAGE_FORMAT", "EJAM_STAGE_FORMATS",
+#'   "EJAM_BLOCKGROUP_UNIVERSE_SOURCE",
+#'   "AWS_PROFILE", "AWS_REGION",
 #'   "CENSUS_API_KEY",
-#'   "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA",
+#'   "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
 #'   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
 #'   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
-#'   "EJAM_INCLUDE_EJSCREEN_EXPORT"
+#'   "EJAM_INCLUDE_EJSCREEN_EXPORT",
+#'   "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
+#'   "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"
 #' )))
 #' )
 #' ```
@@ -70,6 +99,8 @@
 #'   TRUE.
 #' @param bg_extra_indicators non-ACS, non-enviro blockgroup indicators such as
 #'   `lowlifex`, or NULL to read/reuse/create that stage.
+#' @param bg_geodata Census/TIGER blockgroup geography stage, with
+#'   square-meter `arealand` and `areawater` fields.
 #' @param bg_acs_raw optional raw ACS pipeline object from
 #'   [download_bg_acs_raw()].
 #' @param bg_acsdata optional ACS-derived blockgroup table from
@@ -90,6 +121,11 @@
 #' @param validation_strict logical passed to stage validators.
 #' @param download_acs_raw logical, whether to download raw ACS tables when
 #'   neither `bg_acsdata` nor saved ACS stages are available.
+#' @param download_bg_geodata logical, whether to download Census/TIGER
+#'   blockgroup geography when `bg_geodata` is not supplied or saved.
+#' @param blockgroup_universe_source passed to [calc_ejscreen_blockgroupstats()].
+#'   The default `"acs"` uses the ACS table rows as the authoritative
+#'   blockgroup universe for the requested ACS vintage.
 #' @param acs_download_fun ACSdownload-compatible function used by
 #'   [download_bg_acs_raw()] when raw ACS tables need to be downloaded. The
 #'   default is [ACSdownload::get_acs_new()]. Supply a wrapper if you need a
@@ -129,6 +165,7 @@
 calc_ejscreen_dataset <- function(yr,
                                   bg_envirodata = NULL,
                                   bg_extra_indicators = NULL,
+                                  bg_geodata = NULL,
                                   bg_acs_raw = NULL,
                                   bg_acsdata = NULL,
                                   blockgroupstats = NULL,
@@ -158,6 +195,8 @@ calc_ejscreen_dataset <- function(yr,
                                   fiveorone = "5",
                                   download_timeout = 3600,
                                   download_retries = 2,
+                                  download_bg_geodata = FALSE,
+                                  blockgroup_universe_source = c("acs", "union"),
                                   formulas = EJAM::formulas_ejscreen_acs$formula,
                                   tract_formulas = NULL,
                                   dropMOE = TRUE,
@@ -180,6 +219,7 @@ calc_ejscreen_dataset <- function(yr,
   # validate parameters ####
   stage_format <- match.arg(stage_format)
   pipeline_storage <- match.arg(pipeline_storage)
+  blockgroup_universe_source <- match.arg(blockgroup_universe_source)
   raw_acs_storage <- match.arg(raw_acs_storage)
   raw_table_format <- match.arg(raw_table_format, c("rds", "rda", "csv", "arrow"))
 
@@ -248,6 +288,7 @@ calc_ejscreen_dataset <- function(yr,
   bg_acsdata_was_loaded <- FALSE
   bg_envirodata_was_loaded <- FALSE
   bg_extra_was_loaded <- FALSE
+  bg_geodata_was_loaded <- FALSE
   blockgroupstats_was_loaded <- FALSE
   upstream_inputs_supplied <- any(vapply(
     list(bg_acs_raw, bg_acsdata, bg_envirodata, bg_extra_indicators),
@@ -388,12 +429,52 @@ calc_ejscreen_dataset <- function(yr,
     } else {
       ejscreen_pipeline_validate(bg_extra_indicators, stage = "bg_extra_indicators", strict = validation_strict)
     }
+
+    geodata_bgfips <- if (blockgroup_universe_source == "acs") {
+      unique(bg_acsdata$bgfips)
+    } else {
+      unique(c(bg_acsdata$bgfips, bg_envirodata$bgfips, bg_extra_indicators$bgfips))
+    }
+
+    if (is.null(bg_geodata) &&
+        isTRUE(use_saved_stages) &&
+        stage_exists("bg_geodata")) {
+      bg_geodata <- load_stage("bg_geodata")
+      bg_geodata_was_loaded <- TRUE
+    }
+    if (is.null(bg_geodata) && isTRUE(download_bg_geodata)) {
+      bg_geodata <- calc_bg_geodata(
+        yr = yr,
+        bgfips = geodata_bgfips,
+        reuse_existing_if_missing = reuse_existing_if_missing,
+        existing_blockgroupstats = existing_blockgroupstats,
+        download_timeout = download_timeout,
+        download_retries = download_retries,
+        pipeline_dir = pipeline_dir,
+        save_stage = FALSE,
+        stage_format = stage_format,
+        pipeline_storage = pipeline_storage,
+        validation_strict = validation_strict
+      )
+      save_stage(bg_geodata, "bg_geodata")
+    } else if (!is.null(bg_geodata)) {
+      bg_geodata <- complete_bg_geodata(
+        bg_geodata = bg_geodata,
+        bgfips = geodata_bgfips,
+        existing_blockgroupstats = existing_blockgroupstats,
+        reuse_existing_if_missing = reuse_existing_if_missing
+      )
+      ejscreen_pipeline_validate(bg_geodata, stage = "bg_geodata", strict = validation_strict)
+      save_stage(bg_geodata, "bg_geodata")
+    }
     # __>> calc_ejscreen_blockgroupstats ####
 
     blockgroupstats <- calc_ejscreen_blockgroupstats(
       bg_acsdata = bg_acsdata,
       bg_envirodata = bg_envirodata,
       bg_extra_indicators = bg_extra_indicators,
+      bg_geodata = bg_geodata,
+      blockgroup_universe_source = blockgroup_universe_source,
       pipeline_dir = pipeline_dir,
       extra_indicator_vars = extra_indicator_vars,
       reuse_existing_extra_if_missing = reuse_existing_if_missing,
@@ -461,6 +542,7 @@ calc_ejscreen_dataset <- function(yr,
       bg_acsdata = bg_acsdata,
       bg_envirodata = bg_envirodata,
       bg_extra_indicators = bg_extra_indicators,
+      bg_geodata = bg_geodata,
 
       usastats_acs = stats$usastats_acs,
       statestats_acs = stats$statestats_acs,
@@ -528,6 +610,7 @@ calc_ejscreen_dataset <- function(yr,
     bg_acsdata = bg_acsdata_was_loaded,
     bg_envirodata = bg_envirodata_was_loaded,
     bg_extra_indicators = bg_extra_was_loaded,
+    bg_geodata = bg_geodata_was_loaded,
     blockgroupstats = blockgroupstats_was_loaded
   )
   class(out) <- c("ejam_ejscreen_dataset", class(out))

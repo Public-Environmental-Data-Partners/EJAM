@@ -126,7 +126,7 @@ state_from_latlon <- function(lat, lon) {
 #' @param dt_with_blockid (or any table in [data.table](https://r-datatable.com) format with either blockid or bgid column)
 #' @return vector of ST info like AK, CA, DE, etc.
 #'
-#' @examples
+#' @examples \dontrun{
 #' x = sample(blockpoints$blockid, 3)
 #' EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ])[]
 #' mapfast(blockpoints[blockid %in% x, ])
@@ -135,6 +135,7 @@ state_from_latlon <- function(lat, lon) {
 #' # unique(EJAM:::state_from_latlon(testpoints_10)$ST) # slow
 #'
 #' all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
+#' }
 #'
 #' @keywords internal
 #'
@@ -166,12 +167,13 @@ state_from_blockid_table <- function(dt_with_blockid) {
 #' @param blockid vector of blockid values as from EJAM in a table called blockpoints
 #' @seealso unexported state_from_blockid_table()
 #' @return vector of ST info like AK, CA, DE, etc.
-#' @examples
+#' @examples \dontrun{
 #' x = sample(blockpoints$blockid, 3)
 #' EJAM:::state_from_blockid(x)[]
 #' mapfast(blockpoints[blockid %in% x, ])
 #'
 #' all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
+#' }
 #'
 #' @keywords internal
 #'

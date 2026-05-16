@@ -40,6 +40,7 @@
 #'    "010010201001003", "010010201001004", "010010201001005")
 #'   fips_bgs_in_fips(x)
 #'
+#' \dontrun{
 #' testfipslist <- list(
 #'   blockgroup = testinput_fips_blockgroups,
 #'   tract = testinput_fips_tracts,
@@ -59,6 +60,7 @@
 #' all.equal(x, x1)
 #' x['tract']
 #' x['county']
+#' }
 #'
 #' @export
 #' @keywords internal

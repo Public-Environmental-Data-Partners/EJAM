@@ -282,6 +282,15 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       }
       check_all_na_numeric(setdiff(names(x), "bgfips"))
       ###################################################### #
+      # bg_geodata ####
+
+    } else if (canonical_stage == "bg_geodata") {
+
+      has_cols(c("bgfips", "arealand", "areawater"))
+      check_bgfips()
+      check_nonnegative(c("arealand", "areawater"))
+      check_all_na_numeric(c("arealand", "areawater"))
+      ###################################################### #
       # bg_extra_indicators ####
 
     } else if (canonical_stage == "bg_extra_indicators") {

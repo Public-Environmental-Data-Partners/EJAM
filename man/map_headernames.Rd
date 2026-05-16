@@ -42,7 +42,7 @@ You can see examples of what it contains below.
 \examples{
   #   See how many variables are on each list, for example:
   \donttest{
-  data.table::setDT(copy(map_headernames))[, .(
+  data.table::setDT(data.table::copy(map_headernames))[, .(
     variables = .N,
     has_csvname = sum(csvname != ""),
     has_ejscreen_indicator = sum(ejscreen_indicator != ""),
