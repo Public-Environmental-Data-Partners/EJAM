@@ -180,29 +180,15 @@ x <- x[order(x$list, x$name) , ]
 # x
 
 sort(unique(x$list))
-# [1] "names_climate"                              "names_climate_avg"
-# [3] "names_climate_pctile"                       "names_climate_state_avg"
-# [5] "names_climate_state_pctile"                 "names_countabove"
-# [7] "names_criticalservice"                      "names_criticalservice_avg"
-# [9] "names_criticalservice_pctile"               "names_criticalservice_state_avg"
-# [11] "names_criticalservice_state_pctile"         "names_d_language"
-# [13] "names_d_other_count"                        "names_d_subgroups_alone_avg"
-# [15] "names_d_subgroups_alone_count"              "names_d_subgroups_alone_pctile"
-# [17] "names_d_subgroups_alone_ratio_to_avg"       "names_d_subgroups_alone_ratio_to_state_avg"
-# [19] "names_d_subgroups_alone_state_avg"          "names_d_subgroups_alone_state_pctile"
-# [21] "names_featuresinarea"                       "names_flag"
-# [23] "names_geo"                                  "names_health"
-# [25] "names_health_avg"                           "names_health_pctile"
-# [27] "names_health_state_avg"                     "names_health_state_pctile"
-# [29] "names_misc"                                 "names_sitesinarea"
+
+
 
 x <- x[!grepl("_avg|_pctile", x$list), ]
 x
 sort(unique(x$list))
-# [1] "names_climate"                 "names_countabove"              "names_criticalservice"
-# [4] "names_d_language"              "names_d_other_count"           "names_d_subgroups_alone_count"
-# [7] "names_featuresinarea"          "names_flag"                    "names_geo"
-# [10] "names_health"                  "names_misc"                    "names_sitesinarea"
+
+
+
 
 dput(as.vector(na.omit( unique(x$list))))
 
@@ -215,13 +201,13 @@ c(
   "names_climate",
   "names_criticalservice",
 
-  "names_d_language", # pctlan_rus_pol_slav etc.
-  "names_d_other_count", #  "pop"   "nonmins"   "age25up"   "hhlds""unemployedbase" "pre1960"   "builtunits" "povknownratio"
-  "names_countabove", #  "count.ej.80up" "count.ej.80up.supp" "count.ej.80up2.eo" "count.ej.80up2.supp" "state.count.ej.80up"      "state.count.ej.80up.supp"
+  "names_d_language",
+  "names_d_other_count",
+  "names_countabove",
 
   "names_d_subgroups_alone_count",
-  "names_geo",  # placename, areatytpe, statlevel, area, etc.
-  "names_misc" # "lifexyears_synonym"  "state.pctile.lowlifex_synonym"
+  "names_geo",
+  "names_misc"
 )
 
 ########################################### #

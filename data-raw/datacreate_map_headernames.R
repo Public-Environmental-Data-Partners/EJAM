@@ -51,22 +51,29 @@ datacreate_map_headernames <- function(rawdir = "./data-raw",
   upsert_row("lan_other_asian", "Number speaking Other Asian and Pacific Island languages at home", "names_d_language_count", "", "LAN_OTHER_ASIAN")
   upsert_row("lan_arabic", "Number speaking Arabic at home", "names_d_language_count", "", "LAN_ARABIC")
   upsert_row("lan_other_and_unspecified", "Number speaking Other and unspecified languages at home", "names_d_language_count", "", "LAN_OTHER_AND_UNSPECIFIED")
-  upsert_row("poverty_household_universe", "Households for whom poverty status is determined", "names_d_extra_count", "", "ACSIPOVHHBAS")
-  upsert_row("poor", "Households below Poverty Level", "names_d_extra_count", "", "POV")
-  upsert_row("pctpoor", "% Households below Poverty Level", "names_d_extra", "poverty_household_universe", "PCT_POV")
-  upsert_row("unemployedbase", "Population 16 years and over", "names_d_other_count", "", "ACSUNEMPBAS")
-  upsert_row("laborforce_universe", "Civilian labor force", "names_d_other_count", "", "ACSLABORFORCE")
-  upsert_row("unemployed", "Unemployed resident count", "names_d_count", "", "UNEMPLOYED")
-  upsert_row("pctunemployed", "% Unemployed", "names_d", "laborforce_universe", "UNEMPPCT")
-  upsert_row("pctownedunits", "% Owner-occupied housing units", "names_community", "occupiedunits", "PCT_OWNERS")
-  upsert_row("broadband_universe", "Count of Households in B28002 Internet Subscription Universe", "names_d_other_count", "", "")
-  upsert_row("healthinsurance_universe", "Civilian noninstitutionalized population for health insurance coverage status", "names_criticalservice_count", "", "")
-  upsert_row("nohealthinsurance", "People without health insurance coverage", "names_criticalservice_count", "", "")
-  upsert_row("pctnohealthinsurance", "% People without Health Insurance", "names_criticalservice", "healthinsurance_universe", "PCT_NO_HEALTH_INSURANCE")
+
   upsert_row("pctlan_german", "% speaking German or other West Germanic languages at home", "names_d_language", "lan_universe", "PCT_LAN_GERMAN")
   upsert_row("pctlan_other_ie", "% speaking Other Indo-European languages at home", "names_d_language", "lan_universe", "PCT_LAN_OTHER_IE")
   upsert_row("pctlan_tagalog", "% speaking Tagalog (including Filipino) at home", "names_d_language", "lan_universe", "PCT_LAN_TAGALOG")
   upsert_row("pctlan_other_and_unspecified", "% speaking Other and unspecified languages at home", "names_d_language", "lan_universe", "PCT_LAN_OTHER_AND_UNSPECIFIED")
+
+  upsert_row("poverty_household_universe", "Households for whom poverty status is determined", "names_d_extra_count", "", "ACSIPOVHHBAS")
+  upsert_row("poor", "Households below Poverty Level", "names_d_extra_count", "", "POV")
+  upsert_row("pctpoor", "% Households below Poverty Level", "names_d_extra", "poverty_household_universe", "PCT_POV")
+
+  upsert_row("unemployedbase", "Population 16 years and over", "names_d_other_count", "", "ACSUNEMPBAS") # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+  upsert_row("laborforce_universe", "Civilian labor force", "names_d_other_count", "", "ACSLABORFORCE") # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+  upsert_row("unemployed", "Unemployed resident count", "names_d_count", "", "UNEMPLOYED")
+  upsert_row("pctunemployed", "% Unemployed (among civilian labor force)", "names_d", "laborforce_universe", "UNEMPPCT")
+
+  upsert_row("pctownedunits", "% Owner-occupied housing units", "names_community", "occupiedunits", "PCT_OWNERS")
+
+  upsert_row("broadband_universe", "Count of Households in B28002 Internet Subscription Universe", "names_d_other_count", "", "")
+
+  upsert_row("healthinsurance_universe", "Civilian noninstitutionalized population for health insurance coverage status", "names_criticalservice_count", "", "")
+  upsert_row("nohealthinsurance", "People without health insurance coverage", "names_criticalservice_count", "", "")
+  upsert_row("pctnohealthinsurance", "% People without Health Insurance", "names_criticalservice", "healthinsurance_universe", "PCT_NO_HEALTH_INSURANCE")
+
 
   map_headernames <- EJAM:::augment_map_headernames_ejscreen_names(map_headernames)
 

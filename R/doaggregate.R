@@ -911,16 +911,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   ## started to draft new calc_wtdmeans() etc. here..
   # cbind(table(EJAM::map_headernames$denominator))
   # cbind(table(calcweight(wtdmeancols)))
-  ## age25up           1
-  ## builtunits        2
-  ## disab_universe    1
-  ## hhlds             2
-  ## lan_universe     15
-  ## lingiso           4
-  ## occupiedunits     1
-  ## pop             103
-  ## povknownratio     1
-  ## unemployedbase    1
+
 
   ## mean person (or hhld etc.) at each SITE ###
   ## cant really update by reference, adding new columns, bc aggregating at the same time

@@ -246,8 +246,8 @@ othercols = setdiff(othercols, c(pctilecols, avg.or.ratio.cols))
 
 otherwtdmeancols = othercols[calctype(othercols) %in% "wtdmean" ]
 # > sort(table(calcweight(otherwtdmeancols)), decreasing = T)
-# lan_universe          hhlds        lingiso        age25up     builtunits disab_universe  occupiedunits  povknownratio unemployedbase
-#          12              4              4              1              1              1              1              1              1
+
+
 ################### #
 test_that("***replicate other wtdmeans?", {
 

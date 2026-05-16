@@ -150,7 +150,9 @@ stop("this is no longer used but might have useful notes on history of early wor
                 "m10", "m11", "m12", "f0", "f4", "f6", "f8", "f9", "f10", "f11",
                 "f12", "lingisospanish", "lingisoeuro", "lingisoasian", "lingisoother",
                 "hhlds", "builtunits", "built1950to1959", "built1940to1949",
-                "builtpre1940", "unemployedbase", "unemployed", "under5", "pctunder5",
+                "builtpre1940",
+                "unemployedbase",   # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+                "unemployed", "under5", "pctunder5",
                 "over64", "pctover64", "nonmins", "pcthisp", "pctnhwa", "pctnhba",
                 "pctnhaiana", "pctnhaa", "pctnhnhpia", "pctnhotheralone", "pctnhmulti",
                 "mins", "pctmin", "num1pov", "num15pov", "num2pov", "num2pov.alt",
@@ -193,7 +195,8 @@ stop("this is no longer used but might have useful notes on history of early wor
                   "lingisoeuro = C16002_007", "lingisoasian = C16002_010", "lingisoother = C16002_013",
                   "hhlds = B16002_001", "builtunits = B25034_001", "built1950to1959 = B25034_008",
                   "built1940to1949 = B25034_009", "builtpre1940 = B25034_010",
-                  "unemployedbase = B23025_003", "unemployed = B23025_005", "under5 <- ageunder5m + ageunder5f",
+                  "unemployedbase = B23025_003",   ##  careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+                  "unemployed = B23025_005", "under5 <- ageunder5m + ageunder5f",
                   "pctunder5 <- ifelse( pop==0, 0, under5 / pop)", "over64 <- age65to66m + age6769m + age7074m + age7579m + age8084m + age85upm + age65to66f + age6769f + age7074f + age7579f + age8084f + age85upf",
                   "pctover64 <- ifelse( pop==0, 0, over64 / pop)", "nonmins <- nhwa",
                   "pcthisp <- ifelse(pop==0, 0, as.numeric(hisp ) / pop)", "pctnhwa <- ifelse(pop==0, 0, as.numeric(nhwa ) / pop)",
@@ -214,7 +217,7 @@ stop("this is no longer used but might have useful notes on history of early wor
                   "lingiso <- lingisospanish + lingisoeuro + lingisoasian + lingisoother",
                   "pctlingiso <- ifelse( hhlds==0, 0, lingiso / hhlds)", "pre1960 <- builtpre1940 + built1940to1949 + built1950to1959",
                   "pctpre1960 <- ifelse( builtunits==0, 0, pre1960 / builtunits)",
-                  "pctunemployed <- ifelse(unemployedbase==0, 0, as.numeric(unemployed) / unemployedbase)",
+                  "pctunemployed <- ifelse(unemployedbase==0, 0, as.numeric(unemployed) / unemployedbase)", #  careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
                   "pctover17 <- ifelse(pop == 0, 0, as.numeric(over17) / pop)",
                   "pctunder18 <- ifelse(pop == 0, 0, as.numeric(under18) / pop)",
                   "pctfire <- ifelse(pop == 0, 0, as.numeric(fire) / pop)", "pctfire30 <- ifelse(pop == 0, 0, as.numeric(fire30) / pop)",
@@ -340,7 +343,8 @@ stop("this is no longer used but might have useful notes on history of early wor
                    "Asian and Pacific Island languages - Limited English speaking household",
                    "Other languages - Limited English speaking household", "Count of Households",
                    "Built housing units count (denominator for % pre 1960)", "Built 1950 to 1959",
-                   "Built 1940 to 1949", "Built 1939 or earlier", "Universe for % unemployed (denominator, count)",
+                   "Built 1940 to 1949", "Built 1939 or earlier",
+                   "Universe for % unemployed (denominator, count)", ## careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
                    "Unemployed resident count", "Under Age 5 resident count", "% under Age 5",
                    "Over Age 64 resident count", "% over Age 64", "Non-POC resident count",
                    "% Hispanic or Latino", "% White (non-Hispanic, single race)",

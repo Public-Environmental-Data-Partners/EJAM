@@ -101,7 +101,7 @@ test_that("pctpoor uses the ACS household poverty universe", {
   expect_equal(out$pctpoor, 0.15)
 })
 
-test_that("pctunemployed uses labor force while unemployedbase preserves age-16-plus universe", {
+test_that("pctunemployed uses labor force while unemployedbase preserves age-16-plus universe", { # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
   x <- data.table::data.table(
     B23025_001 = 500,
     B23025_003 = 250,
@@ -109,7 +109,7 @@ test_that("pctunemployed uses labor force while unemployedbase preserves age-16-
   )
   formulas <- EJAM::formulas_ejscreen_acs$formula[
     EJAM::formulas_ejscreen_acs$rname %in% c(
-      "unemployedbase",
+      "unemployedbase", # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
       "laborforce_universe",
       "unemployed",
       "pctunemployed"
@@ -118,7 +118,7 @@ test_that("pctunemployed uses labor force while unemployedbase preserves age-16-
 
   out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
-  expect_equal(out$unemployedbase, 500)
+  expect_equal(out$unemployedbase, 500)  # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
   expect_equal(out$laborforce_universe, 250)
   expect_equal(out$unemployed, 25)
   expect_equal(out$pctunemployed, 0.1)
