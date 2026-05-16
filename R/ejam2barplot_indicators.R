@@ -230,6 +230,8 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
       barplot_input <- barplot_data_raw %>%
         dplyr::mutate(
           usa_summary = dplyr::case_when(
+            ## Median person-at-sites ratios should use the US median-person baseline.
+            ## Median site rows intentionally keep "Median site" and join to US median-site.
             .data$Summary == 'Median person at these sites' ~ 'Median person in US',
             TRUE ~ .data$Summary
           )

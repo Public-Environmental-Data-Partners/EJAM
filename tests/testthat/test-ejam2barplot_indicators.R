@@ -51,3 +51,23 @@ test_that("ejam2barplot_indicators accepts clarified summary labels as inputs", 
     c("Average person in US", "Average site analyzed", "Average person at sites analyzed")
   )
 })
+
+test_that("ejam2barplot_indicators median ratio joins to US baselines without NAs", {
+  expect_no_error({
+    x <- ejam2barplot_indicators(
+      testoutput_ejamit_1000pts_1miles,
+      indicator_type = "Demographic",
+      data_type = "ratio",
+      mybarvars.stat = "med",
+      mybarvars.sumstat = c("Median site", "Median person")
+    )
+  })
+
+  expect_true("ggplot" %in% class(x))
+  expect_setequal(
+    as.character(unique(x$data$Summary)),
+    c("Median person in US", "Median site", "Median person at these sites")
+  )
+  expect_false(any(is.na(x$data$ratio[x$data$Summary != "Median person in US"])))
+  expect_true(all(x$data$ratio[x$data$Summary == "Median person in US"] == 1))
+})
