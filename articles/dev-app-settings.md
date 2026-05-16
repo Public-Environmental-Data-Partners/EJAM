@@ -929,7 +929,7 @@ extratable_list_of_sections="pctpoor"
 # "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",
 # "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",
 # "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",
-# "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]
+# "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]  # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
 
 # thresholds - counting how many of a certain indicator type are at/above some threshold
 # see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)
