@@ -113,10 +113,27 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
     ## set # of characters to wrap labels
     n_chars_wrap <- 15
 
-    barplot_input$Summary <- factor(barplot_input$Summary,
-                                    levels = c('Average person in US',
-                                               'Average site analyzed',
-                                               'Average person at sites analyzed'))
+    if (mybarvars.stat == 'med') {
+      summary_levels <- c('Median person in US',
+                          'Median site',
+                          'Median person at these sites')
+      scale_fill_manual_values <- c(
+        'Median person in US'          = 'lightgray',
+        'Median person at these sites' = '#62c342',
+        'Median site'                  = '#0e6cb5'
+      )
+    } else {
+      summary_levels <- c('Average person in US',
+                          'Average site analyzed',
+                          'Average person at sites analyzed')
+      scale_fill_manual_values <- c(
+        'Average person in US'             = 'lightgray',
+        'Average person at sites analyzed' = '#62c342',
+        'Average site analyzed'            = '#0e6cb5'
+      )
+    }
+
+    barplot_input$Summary <- factor(barplot_input$Summary, levels = summary_levels)
 
     ## merge with shorter labels/ names and plot
     p_out <- barplot_input %>%
@@ -124,9 +141,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
       ggplot2::ggplot() +
       ggplot2::geom_bar(ggplot2::aes(x = indicator_label, y = value, fill = Summary), stat = 'identity', position = 'dodge') +
 
-      ggplot2::scale_fill_manual(values = c('Average person in US' = 'lightgray',
-                                   'Average person at sites analyzed' = '#62c342',
-                                   'Average site analyzed' = '#0e6cb5')) +
+      ggplot2::scale_fill_manual(values = scale_fill_manual_values) +
 
       ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, n_chars_wrap)) +
       ## set y axis limits to (0, max value) but allow 5% higher on upper end
@@ -202,7 +217,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
       barplot_usa_med <-  dplyr::bind_rows(
         usastats %>%
           dplyr::filter(.data$REGION == 'USA', .data$PCTILE == 50) %>%
-          dplyr::mutate(Summary = 'Median person') %>%
+          dplyr::mutate(Summary = 'Median person at these sites') %>%
           dplyr::select(Summary, dplyr::all_of(mybarvars)) %>%
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value'),
         usastats %>%
