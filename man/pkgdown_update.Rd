@@ -26,7 +26,8 @@ pkgdown_update(
 
 \item{doyamlcheck}{report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?}
 
-\item{dodocument}{use devtools::document() ? usually should leave TRUE}
+\item{dodocument}{use \code{roxygen2::roxygenise()} to regenerate documentation?
+Usually should leave TRUE.}
 
 \item{doinstall}{use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky}
 

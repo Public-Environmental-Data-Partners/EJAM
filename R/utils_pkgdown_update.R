@@ -93,7 +93,8 @@
 #' @param dotests run unit tests first? uses EJAM:::test_ejam()
 #' @param testinteractively related to unit testing
 #' @param doyamlcheck report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?
-#' @param dodocument use devtools::document() ? usually should leave TRUE
+#' @param dodocument use `roxygen2::roxygenise()` to regenerate documentation?
+#'   Usually should leave TRUE.
 #' @param doinstall use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky
 #' @param doloadall_not_library use devtools::load_all() ? usually should leave this TRUE
 #' @param doclean_man delete all files in the /man/ folder ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them
@@ -130,8 +131,6 @@ pkgdown_update = function(
 
   if (!interactive()) {doask <- FALSE}
   golem::detach_all_attached()
-  if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
-  if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work")
   ############################################################# #
 
   # ask what to do ####
@@ -154,12 +153,12 @@ pkgdown_update = function(
 
   if (doask && interactive()  && rstudioapi::isAvailable()
       && missing("dodocument")
-  ) {dodocument <- utils::askYesNo("Do document() now since just installing via this script wont do document() ?")}
+  ) {dodocument <- utils::askYesNo("Regenerate documentation now with roxygen2::roxygenise()?")}
   if (is.na(dodocument)) {stop('stopped')}
 
   if (doask && interactive()  && rstudioapi::isAvailable()
       && missing("doinstall")
-  ) {doinstall <- utils::askYesNo("Do you want to re-install the package? This wont redo document()")}
+  ) {doinstall <- utils::askYesNo("Do you want to re-install the package? This will not rerun roxygen2::roxygenise() unless dodocument is also TRUE")}
   if (is.na(doinstall)) {stop('stopped')}
 
   if (doask && interactive()  && rstudioapi::isAvailable()
@@ -227,6 +226,9 @@ pkgdown_update = function(
   # if doyamlcheck, _pkgdown.yml check ####
 
   if (doyamlcheck) {
+    if (!requireNamespace("pkgdown", quietly = TRUE)) {
+      stop("Package 'pkgdown' is required to check _pkgdown.yml.", call. = FALSE)
+    }
     # first just check if any .Rd files should get deleted as obsolete
     pkg_clean_stale_rd(dry_run = TRUE, verbose=TRUE)
 
@@ -268,7 +270,7 @@ pkgdown_update = function(
     # # MAYBE NEED TO DELETE ALL IN THE man/ FOLDER TO REMOVE OBSOLETE .Rd files like no longer documented or renamed functions ?
     # cat("You might need to do something like  \n  file.remove(list.files('./man', full.names = TRUE, include.dirs = FALSE)) \nto delete all of /man/*.* to be sure there is nothing obsolete like renamed or deleted or no-longer-documented functions. \n")
   }
-  # if dodocument, README & DOCUMENT via via render() & document() ####
+  # if dodocument, README & DOCUMENT via render() & roxygenise() ####
 
   if (dodocument || doclean_man) {
     cat('rendering README.Rmd to .md  \n')
@@ -280,14 +282,15 @@ pkgdown_update = function(
     #################### # #################### # #################### # #################### #
     cat('detaching packages  \n')
     golem::detach_all_attached()
-    if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
-    if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work") # library() stops with error where require() would only warn
 
-    cat('trying to do document() \n')
-    document()
+    cat('trying to do roxygen2::roxygenise() \n')
+    if (!requireNamespace("roxygen2", quietly = TRUE)) {
+      stop("Package 'roxygen2' is required to regenerate documentation.", call. = FALSE)
+    }
+    roxygen2::roxygenise()
     if (doclean_man) {
-      cat('doing document() again now, just in case, because if doclean_man=T, it deletes all files in the man folder, \nafter which the 1st time you try to document() it cannot resolve links to other topics not yet turned into .md files\n')
-      document()
+      cat('doing roxygen2::roxygenise() again now, just in case, because if doclean_man=T, it deletes all files in the man folder, \nafter which the 1st time you try to document it cannot resolve links to other topics not yet turned into .Rd files\n')
+      roxygen2::roxygenise()
       }
   }
   #################### # #################### # #################### # #################### #
@@ -308,8 +311,11 @@ pkgdown_update = function(
 
       # note, If you want to build/install using RStudio buttons, not the function install(), need to
       #   1st confirm you already turned off traditional vignette-building...  see   help(vignette_roclet, package = "roxygen2")
-      #   That button includes a step that is the same as   devtools::document()
+      #   That button includes a step that is similar to roxygen2::roxygenise().
 
+      if (!requireNamespace("devtools", quietly = TRUE)) {
+        stop("Package 'devtools' is required to install the package from pkgdown_update().", call. = FALSE)
+      }
       devtools::install(
 
         quick = TRUE,   # USUALLY LEAVE IT AS TRUE
@@ -333,8 +339,6 @@ pkgdown_update = function(
       cat('detaching packages - RESTART R IF THIS FAILS  \n') # got Error: lazy-load database '....EJAM/R/EJAM.rdb' is corrupt
       golem::detach_all_attached()
       # rstudioapi::restartSession() might be needed. or just relaunch R seems to help.
-      if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
-      if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work")
     })
   }
   #################### # #################### # #################### # #################### #
@@ -345,8 +349,9 @@ pkgdown_update = function(
   if (doloadall_not_library) {
     cat('detaching packages, then doing load_all() \n')
     golem::detach_all_attached()
-    if (!requireNamespace("devtools", quietly=TRUE)) stop("devtools package needed for this function to work") # library() stops with error where require() would only warn
-    if (!requireNamespace("pkgdown", quietly=TRUE)) stop("pkgdown package needed for this function to work")
+    if (!requireNamespace("devtools", quietly = TRUE)) {
+      stop("Package 'devtools' is required to load source files from pkgdown_update().", call. = FALSE)
+    }
     devtools::load_all() # doing load_all() without having done library() first might fail to do some of what is needed?
   } else {
     cat('doing library(EJAM) \n')
@@ -376,6 +381,9 @@ pkgdown_update = function(
   # if dobuild_site, ** BUILD SITE (HTML FILES) ####
 
   if (dobuild_site) {
+    if (!requireNamespace("pkgdown", quietly = TRUE)) {
+      stop("Package 'pkgdown' is required to rebuild the pkgdown site.", call. = FALSE)
+    }
 
     ## if doclean_docs ####
     if (doclean_docs) {
