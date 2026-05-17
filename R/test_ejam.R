@@ -28,8 +28,10 @@
 #' @param y_runall logical, whether to run all tests instead of only some groups
 #'   (so y_runsome is FALSE)
 #' @param y_runsome logical, whether to run only some groups of tests (so y_runall is FALSE)
-#' @param run_these if y_runsome = TRUE, a vector of group names to test, like 'fips', 'naics', etc.
-#'   see source code for list
+#' @param run_these if y_runsome = TRUE, a vector of group names to test, like
+#'   'fips', 'naics', 'webapp', etc. The 'webapp' group runs the combined
+#'   shinytest2 functionality suite; use 'webapp_individual' only when debugging
+#'   one-category web app test files.
 #' @param skip_these if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
 #' @param y_seeresults logical, whether to show results in console
 #' @param y_save logical, whether to save files of results
@@ -345,8 +347,11 @@ x <- EJAM:::test_ejam(
       ),
       test_webapp = c(
         "test-webapp-ui_and_server.R",
+        "test-webapp-all-functionality.R"
+      ),
+      test_webapp_individual = c(
         "test-webapp-FIPS-functionality.R",
-        "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
+        "test-webapp-FIPS-picker-functionality.R",
         "test-webapp-FRS-functionality.R",
         "test-webapp-latlon-functionality.R",
         "test-webapp-NAICS-functionality.R",
@@ -494,7 +499,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
               "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
               "test-report_residents_within_xyz.R", "test-sitetype2text.R",
-              "test-utils_indexpoints.R", "test-webapp-ui_and_server.R", "test-webapp-FIPS-functionality.R",
+              "test-utils_indexpoints.R", "test-webapp-ui_and_server.R", "test-webapp-all-functionality.R", "test-webapp-FIPS-functionality.R",
               "test-webapp-FIPS-picker-functionality.R", "test-webapp-FRS-functionality.R",
               "test-webapp-NAICS-functionality.R", "test-webapp-latlon-functionality.R",
               "test-webapp-shp-gdb-zip-functionality.R", "test-webapp-shp-json-functionality.R",
@@ -521,7 +526,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
             c(11, 5, 19,
               23, 7, 8, 0, 0, 3, 0, 3, 13, 1, 6, 0, 1, 1, 0, 5, 0, 0, 35, 18,
               160, 0, 14, 0, 0, 0, 1, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              1, 8, 0, 0, 0, 0, 3, 32, 1, 2, 0, 0, 0, 1, 20, 30, 18, 17, 42,
+              1, 8, 0, 0, 0, 0, 3, 32, 1, 2, 0, 0, 0, 1, 84, 20, 30, 18, 17, 42,
               17, 16, 16, 17, 2, 10, 0, 2, 2, 0, 4, 0, 3, 1, 0, 0, 0, 1, 0,
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
               0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 0, 0)),
@@ -731,9 +736,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     if (y_runall) {
       skip_these <- unlist(strsplit(gsub(" ", "", skip_these), ","))
       skip_these = paste0("test_", skip_these)
-      partial_testlist <-  testlist
+      partial_testlist <-  testlist[names(testlist) != "test_webapp_individual"]
       if (length(skip_these) > 0 && !is.null(skip_these)) {
-        partial_testlist <-  testlist[!(names(testlist) %in% skip_these)]
+        partial_testlist <-  partial_testlist[!(names(partial_testlist) %in% skip_these)]
       }
     }
     ################################### #  ################################### #
@@ -753,10 +758,14 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       #     # noquestions  was given as a parameter
       #   }}
     }
-    if ("test_webapp" %in% names(partial_testlist)) {
+    if (any(c("test_webapp", "test_webapp_individual") %in% names(partial_testlist))) {
       old_not_cran <- Sys.getenv("NOT_CRAN", unset = NA)
       old_shinytest2_app_driver_test_on_cran <- Sys.getenv(
         "SHINYTEST2_APP_DRIVER_TEST_ON_CRAN",
+        unset = NA
+      )
+      old_ejam_shinytest2_individual <- Sys.getenv(
+        "EJAM_SHINYTEST2_INDIVIDUAL",
         unset = NA
       )
       on.exit({
@@ -773,11 +782,19 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               old_shinytest2_app_driver_test_on_cran
           )
         }
+        if (is.na(old_ejam_shinytest2_individual)) {
+          Sys.unsetenv("EJAM_SHINYTEST2_INDIVIDUAL")
+        } else {
+          Sys.setenv(EJAM_SHINYTEST2_INDIVIDUAL = old_ejam_shinytest2_individual)
+        }
       }, add = TRUE)
       Sys.setenv(
         NOT_CRAN = "true",
         SHINYTEST2_APP_DRIVER_TEST_ON_CRAN = "1"
       )
+      if ("test_webapp_individual" %in% names(partial_testlist)) {
+        Sys.setenv(EJAM_SHINYTEST2_INDIVIDUAL = "true")
+      }
     }
   } # end if not just basic
   # finished asking what to do and setting up

@@ -150,10 +150,16 @@
   stages instead of dropping rows that are temporarily missing from the ACS
   stage.
 
-- Fixed the shinytest2 web app test launcher so tests run from the source tree
-  with `pkgload::load_all()` but fall back to the installed `EJAM` package when
-  run from an `R CMD check` directory that does not contain the package source
-  `DESCRIPTION` file.
+- Sped up shinytest2 web app tests by making spawned Shiny app processes use
+  the installed `EJAM` package by default instead of repeating
+  `pkgload::load_all()` for every web app test file. Set
+  `EJAM_SHINYTEST2_USE_SOURCE=true` to opt into source-tree loading while
+  debugging, and set `EJAM_SHINYTEST2_TRACE=true` only when Shiny trace/reactlog
+  output is needed.
+  The normal `test_ejam(run_these = "webapp")` path now uses
+  `test-webapp-all-functionality.R`, which launches one Shiny app process for
+  the full web app functionality suite. The older one-category web app test
+  files remain available for debugging with `EJAM_SHINYTEST2_INDIVIDUAL=true`.
 
 - Because the EJScreen web app needs its blockgroup dataset to include some columns not used by EJAM,
   we have now added `calc_ejscreen_export()` support for creating an EJScreen-ready dataset

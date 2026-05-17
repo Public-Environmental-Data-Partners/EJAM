@@ -1,6 +1,8 @@
 test_that("shinytest2 app launcher uses installed package when source root is unavailable", {
   expect_true(exists("ejam_shinytest2_make_app_dir"))
 
+  withr::local_envvar(EJAM_SHINYTEST2_USE_SOURCE = NA)
+
   fake_rcheck_root <- file.path(tempdir(), "EJAM.Rcheck")
   dir.create(fake_rcheck_root, recursive = TRUE, showWarnings = FALSE)
 
@@ -13,8 +15,27 @@ test_that("shinytest2 app launcher uses installed package when source root is un
   expect_false(any(grepl("pkgload::load_all", app_lines, fixed = TRUE)))
 })
 
-test_that("shinytest2 app launcher uses source root when available", {
+test_that("shinytest2 app launcher uses installed package by default", {
   expect_true(exists("ejam_shinytest2_make_app_dir"))
+
+  withr::local_envvar(EJAM_SHINYTEST2_USE_SOURCE = NA)
+
+  source_root <- normalizePath(testthat::test_path("../../"), mustWork = TRUE)
+  skip_if_not(file.exists(file.path(source_root, "DESCRIPTION")))
+
+  app_dir <- ejam_shinytest2_make_app_dir(source_root, test_category = "path-root")
+  on.exit(unlink(app_dir, recursive = TRUE, force = TRUE), add = TRUE)
+
+  app_lines <- readLines(file.path(app_dir, "app.R"), warn = FALSE)
+
+  expect_true(any(grepl("library\\(EJAM\\)", app_lines)))
+  expect_false(any(grepl("pkgload::load_all", app_lines, fixed = TRUE)))
+})
+
+test_that("shinytest2 app launcher can opt into source root", {
+  expect_true(exists("ejam_shinytest2_make_app_dir"))
+
+  withr::local_envvar(EJAM_SHINYTEST2_USE_SOURCE = "true")
 
   source_root <- normalizePath(testthat::test_path("../../"), mustWork = TRUE)
   skip_if_not(file.exists(file.path(source_root, "DESCRIPTION")))

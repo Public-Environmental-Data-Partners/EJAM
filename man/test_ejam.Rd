@@ -49,8 +49,10 @@ which functions might not have unit tests, just based on matching source file an
 
 \item{y_runsome}{logical, whether to run only some groups of tests (so y_runall is FALSE)}
 
-\item{run_these}{if y_runsome = TRUE, a vector of group names to test, like 'fips', 'naics', etc.
-see source code for list}
+\item{run_these}{if y_runsome = TRUE, a vector of group names to test, like
+'fips', 'naics', 'webapp', etc. The 'webapp' group runs the combined
+shinytest2 functionality suite; use 'webapp_individual' only when debugging
+one-category web app test files.}
 
 \item{skip_these}{if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.}
 

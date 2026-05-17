@@ -54,6 +54,14 @@ ejam_shinytest2_is_source_root <- function(path) {
   identical(unname(pkg), "EJAM")
 }
 
+ejam_shinytest2_truthy_env <- function(name, default = FALSE) {
+  value <- Sys.getenv(name, unset = NA_character_)
+  if (is.na(value) || !nzchar(value)) {
+    return(isTRUE(default))
+  }
+  tolower(value) %in% c("1", "true", "t", "yes", "y")
+}
+
 ejam_shinytest2_make_app_dir <- function(sourcefolder,
                                          test_category = "webapp",
                                          app_dir = NULL) {
@@ -73,7 +81,9 @@ ejam_shinytest2_make_app_dir <- function(sourcefolder,
   }
 
   sourcefolder_norm <- normalizePath(sourcefolder, winslash = "/", mustWork = FALSE)
-  if (ejam_shinytest2_is_source_root(sourcefolder_norm)) {
+  use_source <- ejam_shinytest2_truthy_env("EJAM_SHINYTEST2_USE_SOURCE") &&
+    ejam_shinytest2_is_source_root(sourcefolder_norm)
+  if (use_source) {
     package_lines <- c(
       paste0(
         "sourcefolder <- normalizePath(",
@@ -84,7 +94,7 @@ ejam_shinytest2_make_app_dir <- function(sourcefolder,
     )
   } else {
     package_lines <- c(
-      "# Source-package root was not available; use installed EJAM under R CMD check.",
+      "# Use installed EJAM by default; set EJAM_SHINYTEST2_USE_SOURCE=true to use source-tree loading.",
       "library(EJAM)"
     )
   }
@@ -112,6 +122,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
   ## validate test_category
   # test_webapp = c(
   #   "test-webapp-ui_and_server.R",  # but this one file does not use shinytest2_webapp_functionality()
+  #   "test-webapp-all-functionality.R",
   #   "test-webapp-FIPS-functionality.R",
   #   "test-webapp-FIPS-picker-functionality.R",
   #   "test-webapp-FRS-functionality.R",
@@ -128,23 +139,26 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
   #   "shp-gdb-zip", "shp-json", "shp-unzip", "shp-zip")
   testfolder = file.path(normalizePath(testthat::test_path()))
   found_categories = gsub("^test-webapp-(.*)-functionality.R", "\\1", list.files(path = testfolder, pattern = "test-.*-functionality.R"))
+  found_categories <- setdiff(found_categories, "all")
   valid_categories = found_categories ## NOT c(found_categories, "ui_and_server")
   if (length(valid_categories) == 0) {stop("cannot find any test files like test-webapp-xyz-functionality.R in ", testfolder)}
 
   if (length(test_category) == 1 && "all" %in% test_category) {
-    for (i in seq_along(valid_categories)) {
-      shinytest2_webapp_functionality(valid_categories[i])
-    }
-    cat(paste0("finished test category: ", "all", "\n"))
-    return(invisible(TRUE))
+    test_categories <- valid_categories
+  } else {
+    test_categories <- test_category
   }
 
-  if (!all(test_category %in% valid_categories)) {
+  if (!all(test_categories %in% valid_categories)) {
     stop("invalid test_category specified - must be one of these: ", paste0(valid_categories, collapse = ", "))
   }
   ########################################################################### #
 
-  test_that(paste0("{shinytest2} tests of ", test_category, " category"), {
+  test_that(paste0(
+    "{shinytest2} tests of ",
+    paste(test_categories, collapse = ", "),
+    if (length(test_categories) == 1) " category" else " categories"
+  ), {
     old_width <- getOption("width") # Some functions alter this and it is noisy to see warnings that options changed
     withr::defer(options(width = old_width), testthat::teardown_env())
 
@@ -162,24 +176,32 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       message("might not be finding the correct folder to use as root")
     }
     ## CREATE TEMP DIR WITH TEMP VERSION OF app.R that launches app via ejamapp() for testing purposes, using isPublic = FALSE, etc.
-    app_dir_for_test <- ejam_shinytest2_make_app_dir(sourcefolder, test_category)
+    app_name <- if (length(test_categories) == 1) test_categories else "webapp-all"
+    app_dir_for_test <- ejam_shinytest2_make_app_dir(sourcefolder, app_name)
     on.exit(unlink(app_dir_for_test, recursive = TRUE, force = TRUE), add = TRUE)
+
+    trace_options <- if (ejam_shinytest2_truthy_env("EJAM_SHINYTEST2_TRACE")) {
+      list(
+        shiny.reactlog = TRUE,
+        shiny.trace = TRUE
+      )
+    } else {
+      list()
+    }
 
     app <- shinytest2::AppDriver$new(
       app_dir = app_dir_for_test,
       variant = shinytest2::platform_variant(),
-      name = test_category,
+      name = app_name,
       seed=12345,
       load_timeout= 120 * 1000, # 120 * 1000 means wait up to 2 minutes  !
       width = 1920,
       screenshot_args = FALSE,
       expect_values_screenshot_args = FALSE,
       height = 1080,
-      options = list(
-        shiny.reactlog = TRUE,
-        shiny.trace = TRUE
-      )
+      options = trace_options
     )
+    test_category <- test_categories[[1]]
     ########################################################################### #
 
     # Define helper functions  ####
@@ -605,6 +627,17 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     # ~ ------------------------------------------------ ####
     # SCREEN RECORDING / SCRIPT: ####
     # ~ ------------------------------------------------ ####
+
+    run_one_category <- function(category) {
+      test_category <<- category
+      shinytestLogMessage(paste0("starting test category: ", test_category))
+
+      app$set_inputs(
+        all_tabs = "Site Selection",
+        wait_ = FALSE,
+        allow_no_input_binding_ = TRUE
+      )
+      app$wait_for_idle(timeout = 5 * 1000)
 
     # 1) SPECIFY SITES ####
 
@@ -1311,7 +1344,27 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     ########################################################################### #
 
     shinytestLogMessage(paste0("finished test category: ", test_category))
+    }
+
+    for (category in test_categories) {
+      run_one_category(category)
+    }
   })
+}
+########################################################################### #
+
+shinytest2_webapp_functionality_individual <- function(test_category) {
+  if (!ejam_shinytest2_truthy_env("EJAM_SHINYTEST2_INDIVIDUAL")) {
+    testthat::test_that(paste0("{shinytest2} individual ", test_category, " category"), {
+      testthat::skip(paste0(
+        "Individual web app category tests are skipped by default. ",
+        "Run test-webapp-all-functionality.R for the faster combined suite, ",
+        "or set EJAM_SHINYTEST2_INDIVIDUAL=true to run this category alone."
+      ))
+    })
+    return(invisible(FALSE))
+  }
+  shinytest2_webapp_functionality(test_category)
 }
 ########################################################################### #
 

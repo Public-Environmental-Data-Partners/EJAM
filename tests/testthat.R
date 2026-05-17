@@ -218,8 +218,9 @@ test_check("EJAM")
 # # do the tests ####
 #
 # # shinytest2::test_app() will run the web app functionality unit tests.
-# # It looks for the files like test-webapp-latlon-functionality.R,
-# # each of which calls shinytest2_webapp_functionality() for one category of tests.
+# # The normal fast path uses test-webapp-all-functionality.R, which calls
+# # shinytest2_webapp_functionality("all") and reuses one app session for all
+# # web app categories. Individual category files are mainly for debugging.
 #
-# shinytest2::test_app(".", filter = "-functionality", check_setup = FALSE)
+# shinytest2::test_app(".", filter = "all-functionality", check_setup = FALSE)
 #

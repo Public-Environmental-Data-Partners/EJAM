@@ -1,1 +1,1 @@
-shinytest2_webapp_functionality("FRS")
+shinytest2_webapp_functionality_individual("FRS")
