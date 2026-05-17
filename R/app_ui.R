@@ -641,9 +641,6 @@ app_ui <- function(request) {
                                                          )
                                                        ),
 
-                                                       ## was hiding this option while debugging median - defaulted to Average
-                                                       ## input: Barplot setting - statistic type
-
                                                        h4('Definitions'),
                                                         HTML("<strong>Average site analyzed</strong> = the average site's average resident (the average resident's score is calculated at each site as the site-specific population-weighted mean, and then the arithmetic mean of those site-specific scores is calculated)
           <br><strong>Average person at sites analyzed</strong> = the average person among all the residents who are at any one or more of the sites, counting each person only once even if they live near more than one site."

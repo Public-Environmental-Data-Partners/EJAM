@@ -2973,17 +2973,37 @@ app_server <- function(input, output, session) {
   output$summ_bar_data <- renderUI({
     req(input$summ_bar_ind)
     if (input$summ_bar_ind == 'Demographic') {
+      tagList(
       radioButtons(inputId = 'summ_bar_data',
                    label = 'Data Type',
                    choiceValues = c('ratio',      'raw'),      # no 'pctile' at this time
                    choiceNames  = c('Ratio to US','Raw data'), # no 'Percentile of population' at this time
-                   selected = 'ratio')
+                   selected = 'ratio'),
+      if (input$allow_median_in_barplot_indicators) {
+        radioButtons('summ_bar_stat',
+                     'Statistic Type',
+                     choiceNames = c("avg", "med"),
+                     choiceValues = c("Average", "Median"),
+                     #inline = TRUE,
+                     selected = "Average")
+      }
+)
     } else if (input$summ_bar_ind == 'Environmental') {
+      tagList(
       radioButtons(inputId = 'summ_bar_data',
                    label = 'Data Type',
                    choiceValues = c('ratio',      'raw'),      # no 'pctile' at this time
                    choiceNames  = c('Ratio to US','Raw data'), # no 'Percentile of population' at this time
-                   selected = 'ratio')
+                   selected = 'ratio'),
+      if (input$allow_median_in_barplot_indicators) {
+          radioButtons('summ_bar_stat',
+                       'Statistic Type',
+                       choiceNames = c("avg", "med"),
+                       choiceValues = c("Average", "Median"),
+                       #inline = TRUE,
+                       selected = "Average")
+      }
+)
     } else if (input$summ_bar_ind == 'EJ Index') {
       radioButtons(inputId = 'summ_bar_data',
                    label = 'Data Type',
@@ -3012,7 +3032,7 @@ app_server <- function(input, output, session) {
       mybarvars.stat <- "avg"
     }
     mybarvars.sumstat <- switch(mybarvars.stat,
-                                'med' =  c('Median site', 'Median person'),
+                                'med' =  c('Median site analyzed', 'Median person at sites analyzed'),
                                 'avg' = c('Average site analyzed', 'Average person at sites analyzed')
     )
     ejam2barplot_indicators(ejamitout = data_processed(),

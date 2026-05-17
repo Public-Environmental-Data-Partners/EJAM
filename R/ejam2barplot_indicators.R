@@ -49,7 +49,8 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
     dplyr::case_when(
       x %in% c('Average site', 'Average site analyzed') ~ 'Average site analyzed',
       x %in% c('Average person', 'Average person at these sites', 'Average person at sites analyzed') ~ 'Average person at sites analyzed',
-      x %in% c('Median person', 'Median person at these sites') ~ 'Median person at these sites',
+      x %in% c('Median site', 'Median site analyzed') ~ 'Median site analyzed',
+      x %in% c('Median person', 'Median person at these sites', 'Median person at sites analyzed') ~ 'Median person at sites analyzed',
       TRUE ~ x
     )
   }
@@ -117,12 +118,12 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
 
     if (mybarvars.stat == 'med') {
       summary_levels <- c('Median person in US',
-                          'Median site',
-                          'Median person at these sites')
+                          'Median site analyzed',
+                          'Median person at sites analyzed')
       scale_fill_manual_values <- c(
         'Median person in US'          = 'lightgray',
-        'Median person at these sites' = '#62c342',
-        'Median site'                  = '#0e6cb5'
+        'Median person at sites analyzed' = '#62c342',
+        'Median site analyzed'                  = '#0e6cb5'
       )
     } else {
       summary_levels <- c('Average person in US',
@@ -234,7 +235,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
           usa_summary = dplyr::case_when(
             ## Median person-at-sites ratios should use the US median-person baseline.
             ## Median site rows intentionally keep "Median site" and join to US median-site.
-            .data$Summary == 'Median person at these sites' ~ 'Median person in US',
+            .data$Summary == 'Median person at sites analyzed' ~ 'Median person in US',
             TRUE ~ .data$Summary
           )
         ) %>%
@@ -248,13 +249,13 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
 
       barplot_input$Summary <- factor(barplot_input$Summary, levels = c(
         'Median person in US',
-        'Median site',
-        'Median person at these sites'
+        'Median site analyzed',
+        'Median person at sites analyzed'
       ))
       scale_fill_manual_values = c(
         'Median person in US'          = 'lightgray',
-        'Median person at these sites' = '#62c342',
-        'Median site'                  = '#0e6cb5'
+        'Median person at sites analyzed' = '#62c342',
+        'Median site analyzed'                  = '#0e6cb5'
       )
     }
 
