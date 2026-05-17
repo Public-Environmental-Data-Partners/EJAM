@@ -2979,7 +2979,7 @@ app_server <- function(input, output, session) {
                    choiceValues = c('ratio',      'raw'),      # no 'pctile' at this time
                    choiceNames  = c('Ratio to US','Raw data'), # no 'Percentile of population' at this time
                    selected = 'ratio'),
-      if (input$allow_median_in_barplot_indicators) {
+      if (isTRUE(as.logical(input$allow_median_in_barplot_indicators))) {
         radioButtons('summ_bar_stat',
                      'Statistic Type',
                      choiceValues = c("avg", "med"),
@@ -2995,7 +2995,7 @@ app_server <- function(input, output, session) {
                    choiceValues = c('ratio',      'raw'),      # no 'pctile' at this time
                    choiceNames  = c('Ratio to US','Raw data'), # no 'Percentile of population' at this time
                    selected = 'ratio'),
-      if (input$allow_median_in_barplot_indicators) {
+      if (isTRUE(as.logical(input$allow_median_in_barplot_indicators))) {
           radioButtons('summ_bar_stat',
                        'Statistic Type',
                        choiceValues = c("avg", "med"),
@@ -3025,7 +3025,7 @@ app_server <- function(input, output, session) {
     req(input$summ_bar_ind)
     req(input$summ_bar_data)
     ##  if allowing option of median ('med'), use thiS
-    if (input$allow_median_in_barplot_indicators) {
+    if (isTRUE(as.logical(input$allow_median_in_barplot_indicators))) {
       # if (EJAM:::global_or_param("default_allow_median_in_barplot_indicators")) {
       mybarvars.stat <- input$summ_bar_stat
     } else {
