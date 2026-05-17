@@ -111,7 +111,6 @@ if (!isTRUE(getOption("EJAM.readr_warmed_for_tests"))) {
   options(EJAM.readr_warmed_for_tests = TRUE)
 
   tf <- tempfile(fileext = ".csv")
-  on.exit(unlink(tf))
   writeLines(c("x", "1"), tf)
   invisible(readr::read_csv(tf, show_col_types = FALSE))
   unlink(tf)
@@ -288,6 +287,19 @@ map2popups <- # popups_from_leaflet <-
     }
     stop("cannot find popup text in leaflet map")
   }
+
+# For polygon maps (addPolygons), which put addPolygons at calls[[1]].
+# map2popups() uses calls[[2]] which is addCircles (for lat/lon point maps) -- correct for ejam2map() latlon.
+# But polygon maps (map_shapes_leaflet, map_shapes_leaflet_proxy) put addPolygons at calls[[1]].
+map2popups_polygon <- function(mymap) {
+  poly_idx <- which(sapply(mymap$x$calls, function(c) identical(c$method, "addPolygons")))
+  if (length(poly_idx) == 0) return(character(0))
+  args <- mymap$x$calls[[poly_idx[1]]]$args
+  char_idx <- which(sapply(args, function(z) is.atomic(z) && is.character(z)))
+  if (length(char_idx) == 0) return(character(0))
+  args[[char_idx[1]]]
+}
+
 map2popups_urls <- # popup_urls_from_popups <-
   function(mymap) {
     popups_html <- map2popups(mymap)

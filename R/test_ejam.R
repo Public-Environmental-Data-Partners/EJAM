@@ -298,6 +298,7 @@ x <- EJAM:::test_ejam(
         "test-ejam2report.R",
         "test-ejam2excel.R",
         "test-ejam2barplot_sites.R",
+        "test-ejam2barplot_indicators.R",
         "test-ejam2histogram.R"
       ),
 
