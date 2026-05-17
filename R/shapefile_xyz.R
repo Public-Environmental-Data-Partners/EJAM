@@ -213,7 +213,7 @@ shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = 
 
 #' Convert table of lat,lon points/sites into spatial data.frame / shapefile
 #'
-#' Creates a simple feature (sf) clas spatial data.frame from points
+#' Creates a simple feature (sf) class spatial data.frame from points
 #' @param sitepoints a table in [data.table](https://r-datatable.com) format or data.frame with columns called lat,lon (or aliases of those)
 #' @param crs used in st_as_sf() default is crs = 4269 or Geodetic CRS NAD83
 #' @param ... passed to [sf::st_as_sf()]

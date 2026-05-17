@@ -75,7 +75,7 @@ be just a placeholder, for the first site, not an overall summary across all sit
 
 \item{dry_run}{set to TRUE to see preview info about what the API call would look like.}
 
-\item{...}{other parameters, passed to \code{\link[httr2:req_body]{httr2::req_body_json()}} in the "data" case,
+\item{...}{other parameters, passed to \code{\link[httr2:req_body_json]{httr2::req_body_json()}} in the "data" case,
 and passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case}
 }
 \value{

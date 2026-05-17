@@ -555,7 +555,7 @@ fill_tbl_full_subgroups <- function(output_df,
 
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
-#' @param diesel_caveat
+#' @param diesel_caveat text
 #'
 #' @keywords internal
 #'
@@ -650,11 +650,11 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
     # that makes page numbers (counter(page)) appear on every PDF page.  The visible on-screen
     # footer div is also included so the footer appears when the report is viewed in a browser.
     footer_html <- HTML(paste0(
-      '<div style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">',
+      '<div class="report-running-footer-screen" style="background-color: #edeff0; color: black; width: 100%; padding: 10px 20px; text-align: right; margin: 10px 0;">',
       '<p style="margin-bottom: 0;">', html_footer_text, '</p>',
       '</div>',
       if (nzchar(footer_text)) paste0(
-        '\n<style>\n@media print {\n  @page {\n    @bottom-left {\n',
+        '\n<style>\n@media print {\n  .report-running-footer-screen { display: none !important; }\n  @page {\n    @bottom-left {\n',
         '      content: ', css_footer_text, ';\n',
         '      font-size: 8pt;\n      color: #555;\n    }\n  }\n}\n</style>'
       ) else ""
@@ -1444,7 +1444,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   } else {
     if (length(radius) > 1) {stop("radius must be a single value")}
     if (is.na(radius) || radius == "") {warning("radius should not be NA or '' "); radius <- NULL}
-    if (is.numeric.text(radius)) {radius <- as.numeric(radius)}
+    if (is.numerictext(radius)) {radius <- as.numeric(radius)}
     if (is.numeric(radius)) {
       digits <- table_rounding_info("radius.miles")
       radius <- round(radius, digits)

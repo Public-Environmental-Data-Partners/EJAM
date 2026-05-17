@@ -534,7 +534,15 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
   ## DROP EMPTY GEOMETRIES ####
   empty <- try(sf::st_is_empty(shapes))
   if (!inherits(empty, "try-error")) {
-    shapes = shapes[!empty, ]
+    keep <- !empty
+    keep[is.na(keep)] <- FALSE  # treat NA-geometry rows (missing boundary) as empty
+    if (!is.null(popup) && length(popup) == length(keep)) {
+      popup_keep <- try(popup[keep], silent = TRUE)
+      if (!inherits(popup_keep, "try-error")) {
+        popup <- popup_keep
+      }
+    }
+    shapes = shapes[keep, ]
   }
 
   if ("FIPS" %in% names(shapes) && !("pop" %in% names(shapes))) {
@@ -577,9 +585,18 @@ map_shapes_leaflet_proxy <- function(mymap, shapes, color = "green", popup = sha
   # in RStudio console, can do  map_shapes_leaflet(shapes)
 
   ## DROP EMPTY GEOMETRIES ####
+  # Filter popup in sync with shapes so they stay positionally aligned (issue #267)
   empty <- try(sf::st_is_empty(shapes))
   if (!inherits(empty, "try-error")) {
-    shapes = shapes[!empty, ]
+    keep <- !empty
+    keep[is.na(keep)] <- FALSE  # treat NA-geometry rows (missing boundary) as empty
+    if (!is.null(popup) && length(popup) == length(keep)) {
+      popup_keep <- try(popup[keep], silent = TRUE)
+      if (!inherits(popup_keep, "try-error")) {
+        popup <- popup_keep
+      }
+    }
+    shapes = shapes[keep, ]
   }
   mymap <- mymap %>%
     leaflet::addPolygons(data = shapes, color = color,  popup = popup, popupOptions = leaflet::popupOptions(maxHeight = 200)) %>%

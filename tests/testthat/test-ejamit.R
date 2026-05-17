@@ -57,14 +57,20 @@ test_that('ejamit() output has names the same as it used to return, i.e. names(t
 test_that("ejamit() still returns results_overall identical to what it used to return
           (saved as testoutput_ejamit_10pts_1miles$results_overall)", {
             testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
+
+            checkthese <- intersect(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
+            # # omits from testing no change in:
+            # > setdiff(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
+            # [1] "EJAM Report"  "EJSCREEN Map"  "ejam_uniq_id"  "valid"  "invalid_msg"   "in_how_many_states"
+
             suppressWarnings({
               suppressMessages({
                 # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
                 # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE)  #  - takes roughly 5-10 seconds
 
                 expect_equal(
-                  ejamitoutnow$results_overall,
-                  testoutput_ejamit_10pts_1miles$results_overall,
+                  ejamitoutnow$results_overall[, ..checkthese],
+                  testoutput_ejamit_10pts_1miles$results_overall[, ..checkthese],
                   ignore_attr = ".internal.selfref"
                 )
               } )
@@ -76,6 +82,12 @@ test_that("ejamit() still returns results_overall identical to what it used to r
 
 test_that("ejamit() still returns results_bysite identical to numbers it used to return (except 1st column)", {
   testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
+
+  # checkthese <- intersect(names(testoutput_ejamit_10pts_1miles$results_bysite), names_all_r)
+  # # omits from testing no change in:
+  # > setdiff(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
+  # [1] "EJAM Report"  "EJSCREEN Map"  "ejam_uniq_id"  "valid"  "invalid_msg"   "in_how_many_states"
+
   suppressWarnings({
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}

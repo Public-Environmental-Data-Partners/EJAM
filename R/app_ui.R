@@ -540,7 +540,7 @@ app_ui <- function(request) {
                                    12, align = 'center',
                                    br(),br(),
                                    shinycssloaders::withSpinner(
-                                     plotOutput(outputId = 'report_plot_output', width = '100%', height = '400px')  # {{ demog_plot }} goes in .html template
+                                     plotOutput(outputId = 'report_plot_output', width = '100%', height = '600px')  # {{ demog_plot }} goes in .html template
                                    )
                                  )
                                ),
@@ -641,13 +641,10 @@ app_ui <- function(request) {
                                                          )
                                                        ),
 
-                                                       ## was hiding this option while debugging median - defaulted to Average
-                                                       ## input: Barplot setting - statistic type
-
                                                        h4('Definitions'),
-                                                       HTML("<strong>Average site</strong> = the average site's average resident (the average resident's score is calculated at each site as the site-specific population-weighted mean, and then the arithmetic mean of those site-specific scores is calculated)
-          <br><strong>Average person at these sites</strong> = the average person among all the residents who are at any one or more of the sites, counting each person only once even if they live near more than one site."
-                                                       ),
+                                                        HTML("<strong>Average site analyzed</strong> = the average site's average resident (the average resident's score is calculated at each site as the site-specific population-weighted mean, and then the arithmetic mean of those site-specific scores is calculated)
+          <br><strong>Average person at sites analyzed</strong> = the average person among all the residents who are at any one or more of the sites, counting each person only once even if they live near more than one site."
+                                                        ),
                                                        br(), br()
                                                        ######################################################################################################### #
                                                      ) # end of wellPanel

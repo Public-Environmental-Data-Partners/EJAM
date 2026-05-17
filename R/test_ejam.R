@@ -202,7 +202,7 @@ x <- EJAM:::test_ejam(
         "test-FIPS_FUNCTIONS.R",
         "test-state_from_fips_bybg.R",
         "test-state_from_latlon.R",
-        "test-is.numeric.text.R",
+        "test-is.numerictext.R",
         "test-fips2countyfips.R",
         "test-fips_bg_from_latlon.R",
 
@@ -295,8 +295,10 @@ x <- EJAM:::test_ejam(
         "test-ejamit_sitetype_from_input.R",
         "test-ejamit_sitetype_from_output.R",
 
+        "test-ejam2report.R",
         "test-ejam2excel.R",
         "test-ejam2barplot_sites.R",
+        "test-ejam2barplot_indicators.R",
         "test-ejam2histogram.R"
       ),
       test_misc = c(
@@ -315,7 +317,8 @@ x <- EJAM:::test_ejam(
         "test-create_filename.R",
         "test-grepn.R",
         "test-url_package.R",
-        "test-pctile_x_is_hit_by_score.R"
+        "test-pctile_x_is_hit_by_score.R",
+        "test-create_interactive_table.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",
@@ -484,7 +487,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-calc_pctile_columns.R", "test-calc_ratio_columns.R", "test-pctile_from_raw_lookup.R",
               "test-utils_flagged_FUNCTIONS.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
               "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R",
-              "test-is.numeric.text.R", "test-latlon_from_fips.R", "test-state_from_fips_bybg.R",
+              "test-is.numerictext.R", "test-latlon_from_fips.R", "test-state_from_fips_bybg.R",
               "test-state_from_latlon.R", "test-latlon_from_anything.R", "test-address_xyz.R",
               "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_address.R",
               "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
@@ -559,7 +562,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # 3:                      test-FIPS_FUNCTIONS.R             23        test_fips
       # 4:                test-state_from_fips_bybg.R              0        test_fips
       # 5:                   test-state_from_latlon.R             11        test_fips
-      # 6:                     test-is.numeric.text.R              0        test_fips
+      # 6:                     test-is.numerictext.R              0        test_fips
       # 7:                     test-fips2countyfips.R              0        test_fips
       # 8:                 test-fips_bg_from_latlon.R              6        test_fips
       # 9:                    test-latlon_from_fips.R              7        test_fips

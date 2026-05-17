@@ -300,14 +300,76 @@ test_that("map_shapes_plot() works", {
   })
 })
 
-# test_that("map_shapes_leaflet_proxy() works", {
-#
-#   myshapes = shapes_counties_from_countyfips(fips_counties_from_state_abbrev("DE")[1])
-#
-#   expect_no_error({
-#     map_shapes_leaflet_proxy(     )
-#   })
-# })
+test_that("map_shapes_leaflet() keeps popup alignment after dropping empty geometries", {
+  # Two shapes: first is empty (simulates a place whose boundary could not be downloaded),
+  # second is a real polygon.  The popup for the empty shape must be dropped so that
+  # the surviving polygon gets its own correct popup (not the one that belonged to the
+  # missing-boundary site).  Covers the fix for issue #267.
+  shp <- sf::st_sf(
+    FIPS = c("0000001", "0000002"),
+    geometry = sf::st_sfc(
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE)))
+    )
+  )
+  x <- map_shapes_leaflet(shp, popup = c("missing boundary", "mapped boundary"))
+  # map2popups_polygon() finds the addPolygons call regardless of call index
+  expect_equal(map2popups_polygon(x), "mapped boundary")
+
+  # Three shapes: empty in the middle – both outer popups must survive in order.
+  shp2 <- sf::st_sf(
+    FIPS = c("0000001", "0000002", "0000003"),
+    geometry = sf::st_sfc(
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE))),
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(2, 2, 2, 3, 3, 3, 3, 2, 2, 2), ncol = 2, byrow = TRUE)))
+    )
+  )
+  x2 <- map_shapes_leaflet(shp2, popup = c("first mapped", "missing boundary", "third mapped"))
+  expect_equal(map2popups_polygon(x2), c("first mapped", "third mapped"))
+
+  # When popup count already matches shape count (all non-empty), no filtering needed.
+  x3 <- map_shapes_leaflet(shp2, popup = c("already filtered first", "already filtered third"))
+  expect_equal(map2popups_polygon(x3), c("already filtered first", "already filtered third"))
+})
+
+test_that("map_shapes_leaflet_proxy() keeps popup alignment after dropping empty geometries", {
+  # Regression test for issue #267:
+  # Previously map_shapes_leaflet_proxy() dropped empty geometries from shapes but
+  # did NOT filter the popup vector, causing the remaining polygon to receive the
+  # wrong popup (the one that belonged to the missing-boundary site).
+
+  # Case 1: first shape empty, second has a real polygon.
+  shp <- sf::st_sf(
+    FIPS = c("0000001", "0000002"),
+    geometry = sf::st_sfc(
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE)))
+    )
+  )
+  base_map <- leaflet::leaflet()
+  x <- map_shapes_leaflet_proxy(base_map, shapes = shp,
+                                popup = c("missing boundary", "mapped boundary"))
+  expect_equal(map2popups_polygon(x), "mapped boundary")
+
+  # Case 2: three shapes, empty in the middle.
+  shp2 <- sf::st_sf(
+    FIPS = c("0000001", "0000002", "0000003"),
+    geometry = sf::st_sfc(
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE))),
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(2, 2, 2, 3, 3, 3, 3, 2, 2, 2), ncol = 2, byrow = TRUE)))
+    )
+  )
+  x2 <- map_shapes_leaflet_proxy(base_map, shapes = shp2,
+                                 popup = c("first mapped", "missing boundary", "third mapped"))
+  expect_equal(map2popups_polygon(x2), c("first mapped", "third mapped"))
+
+  # Case 3: popup count already matches non-empty shape count – no filtering, no error.
+  x3 <- map_shapes_leaflet_proxy(base_map, shapes = shp2,
+                                 popup = c("already filtered first", "already filtered third"))
+  expect_equal(map2popups_polygon(x3), c("already filtered first", "already filtered third"))
+})
 ############################################## #
 test_that("map_shapes_mapview() if mapview pkg available works", {
   junk = capture_output({
@@ -340,10 +402,10 @@ test_that("shapes_blockgroups_from_bgfips() works", {
 })
 ############################################## #
 test_that("mapfast_gg() works", {
-  if (!pkg_available('maps')) {
-    warning("maps package is needed for unit test of mapfast_gg()")
+suppressWarnings({  if (!pkg_available('maps')) {
+    message("maps package is needed for unit test of mapfast_gg()")
     skip("maps package is needed for unit test of mapfast_gg()")
-    }
+    }})
   expect_no_error({
     x = mapfast_gg(testpoints_10)
     x
