@@ -225,7 +225,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value'),
         usastats %>%
           dplyr::filter(.data$REGION == 'USA', .data$PCTILE == 50) %>%
-          dplyr::mutate(Summary = 'Median site') %>%
+          dplyr::mutate(Summary = 'Median site analyzed') %>%
           dplyr::select(Summary, dplyr::all_of(mybarvars)) %>%
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value')
       )

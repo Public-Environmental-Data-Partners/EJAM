@@ -59,15 +59,33 @@ test_that("ejam2barplot_indicators median ratio joins to US baselines without NA
       indicator_type = "Demographic",
       data_type = "ratio",
       mybarvars.stat = "med",
-      mybarvars.sumstat = c("Median site", "Median person")
+      mybarvars.sumstat = c("Median site analyzed", "Median person at sites analyzed")
     )
   })
 
   expect_true("ggplot" %in% class(x))
   expect_setequal(
     as.character(unique(x$data$Summary)),
-    c("Median person in US", "Median site", "Median person at these sites")
+    c("Median person in US", "Median site analyzed", "Median person at sites analyzed")
   )
   expect_false(any(is.na(x$data$ratio[x$data$Summary != "Median person in US"])))
   expect_true(all(x$data$ratio[x$data$Summary == "Median person in US"] == 1))
+})
+
+test_that("ejam2barplot_indicators median raw supports analyzed median labels", {
+  expect_no_error({
+    x <- ejam2barplot_indicators(
+      testoutput_ejamit_1000pts_1miles,
+      indicator_type = "Demographic",
+      data_type = "raw",
+      mybarvars.stat = "med",
+      mybarvars.sumstat = c("Median site analyzed", "Median person at sites analyzed")
+    )
+  })
+
+  expect_true("ggplot" %in% class(x))
+  expect_setequal(
+    as.character(unique(x$data$Summary)),
+    c("Median person in US", "Median site analyzed", "Median person at sites analyzed")
+  )
 })
