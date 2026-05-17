@@ -957,6 +957,32 @@ if (isTRUE(validate_vs_prior)) {
           output_dir = pipeline_dir,
           write_files = TRUE,
           use_waldo = validate_vs_prior_waldo
+        ),
+      usastats_vs_prior_package_usastats =
+        EJAM:::ejscreen_pipeline_compare_stage_to_git_ref(
+          stage = paste0("usastats_vs_", prior_package_ref, "_usastats"),
+          new_pipeline_dir = pipeline_dir,
+          new_stage = "usastats",
+          git_ref = prior_package_ref,
+          git_path = "data/usastats.rda",
+          format = stage_format,
+          storage = pipeline_storage,
+          output_dir = pipeline_dir,
+          write_files = TRUE,
+          use_waldo = validate_vs_prior_waldo
+        ),
+      statestats_vs_prior_package_statestats =
+        EJAM:::ejscreen_pipeline_compare_stage_to_git_ref(
+          stage = paste0("statestats_vs_", prior_package_ref, "_statestats"),
+          new_pipeline_dir = pipeline_dir,
+          new_stage = "statestats",
+          git_ref = prior_package_ref,
+          git_path = "data/statestats.rda",
+          format = stage_format,
+          storage = pipeline_storage,
+          output_dir = pipeline_dir,
+          write_files = TRUE,
+          use_waldo = validate_vs_prior_waldo
         )
     )
     prior_validation_summary <- data.table::rbindlist(
