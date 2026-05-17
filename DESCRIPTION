@@ -82,8 +82,7 @@ Imports:
     webshot2,
     writexl (>= 1.5.3),
     XML (>= 3.99-0.18),
-    xml2,
-    zip
+    xml2
 Suggests:
     ACSdownload,
     AOI,
@@ -112,7 +111,8 @@ Suggests:
     units,
     usethis,
     waldo,
-    withr
+    withr,
+    zip
 Remotes:
     ejanalysis/ACSdownload,
     mikejohnson51/AOI
