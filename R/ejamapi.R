@@ -53,7 +53,8 @@
 #'
 #' # API: blockgroups where at least N of state EJ index percentiles are >= 80
 #' N <- 6L
-#' ej_state_cols <- grep("^state\\.pctile\\..*EJ", names(x), value = TRUE)
+#' # example matched column format: state.pctile.EJ...
+#' ej_state_cols <- grep("^state\\.pctile\\.EJ", names(x), value = TRUE)
 #' x_n_ej <- x[rowSums(x[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
 #' ```
 #'
@@ -80,7 +81,8 @@
 #'
 #' # at least N state EJ index percentiles >= 80
 #' N <- 6L
-#' ej_state_cols <- grep("^state\\.pctile\\..*EJ", names(dat), value = TRUE)
+#' # example matched column format: state.pctile.EJ...
+#' ej_state_cols <- grep("^state\\.pctile\\.EJ", names(dat), value = TRUE)
 #' dat_n_ej <- dat[rowSums(dat[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
 #' ```
 #'
@@ -108,7 +110,7 @@
 #'
 #' # at least N state EJ index percentiles >= 80
 #' N = 6
-#' ej_state_cols = [c for c in dat.columns if c.startswith("state.pctile.") and "EJ" in c]
+#' ej_state_cols = [c for c in dat.columns if c.startswith("state.pctile.EJ")]
 #' dat_n_ej = dat[(dat[ej_state_cols] >= 80).sum(axis=1) >= N]
 #' ```
 #'
@@ -133,7 +135,7 @@
 #' jq --argjson N "$N" '
 #'   .[] | select(
 #'     ([to_entries[]
-#'       | select(.key | test("^state\\.pctile\\..*EJ"))
+#'       | select(.key | test("^state\\.pctile\\.EJ"))
 #'       | .value
 #'       | select(type == "number" and . >= 80)] | length) >= $N
 #'   )
