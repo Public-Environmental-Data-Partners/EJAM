@@ -131,8 +131,6 @@ N <- 6L
 # example matched column format: state.pctile.EJ...
 ej_state_cols <- grep("^state\\\\.pctile\\\\.EJ", names(x), value = TRUE)
 x_n_ej <- x[rowSums(x[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
-# alternative count_above-style approach using EJAM helper:
-x_n_ej_alt <- x[EJAM:::colcounter(x[, ej_state_cols, drop = FALSE], threshold = 80, or.tied = TRUE) >= N, ]
 }
 
 \strong{2) R user without EJAM installed (API-only via httr2/jsonlite)}
