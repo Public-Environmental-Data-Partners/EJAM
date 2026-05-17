@@ -8,7 +8,9 @@ ensure_pandoc_available_for_ejam <- function() {
   }
   candidate_pandoc_paths <- c(
     file.path(Sys.getenv("RSTUDIO_PANDOC", unset = ""), "pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/*/pandoc"),
     Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/MacOS/quarto/bin/tools/*/pandoc"),
     Sys.glob("/Applications/RStudio*.app/Contents/MacOS/quarto/bin/tools/pandoc")
   )
   candidate_pandoc_paths <- unique(candidate_pandoc_paths[nzchar(candidate_pandoc_paths)])

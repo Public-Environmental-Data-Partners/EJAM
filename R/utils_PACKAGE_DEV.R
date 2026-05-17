@@ -279,7 +279,7 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 #'  This is somewhat like grepv() but with these options:
 #'  option to return numbers of the elements or line numbers as names of the output vector
 #'  option to ignore commented-out lines of code (if searching with in lines of code)
-#'  option to return just the matching part of the element or line instead of the whole line if desired.ut
+#'  option to return just the matching part of the element or line instead of the whole line if desired.
 #'
 #'  use grepl to find all members of character vector z where the character string "h" appears in the string
 #'  but the string does not start with zero or more spaces followed by the character "#"

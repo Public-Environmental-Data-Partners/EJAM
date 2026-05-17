@@ -252,6 +252,13 @@ as \link{bgej} table
 \code{bg_envirodata} must include \code{pctpre1960}. That column may be produced by an
 upstream environmental-data step that reads the saved \code{bg_acsdata} stage.
 
+The annual pipeline creates the \code{bgej} stage, and the package-level dynamic
+Arrow loader obtains \code{bgej.arrow} from the \code{ejamdata} release that matches
+the EJAM package version currently in use. For example, when
+\code{packageVersion("EJAM")} reports \verb{2.5.0}, \code{\link[=dataload_dynamic]{dataload_dynamic()}} and
+\code{\link[=download_latest_arrow_data]{download_latest_arrow_data()}} look for \code{bgej.arrow} in the \code{ejamdata}
+release tagged \code{v2.5.0}, not in the latest data-repository release.
+
 Note that the runner script can use several settings stored as environment variables:
 \itemize{
 \item EJAM_PIPELINE_YR

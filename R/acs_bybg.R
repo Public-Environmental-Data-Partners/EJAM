@@ -19,7 +19,7 @@
 #' @details
 #' See newer ACSdownload::get_acs_new() as used in calc_blockgroupstats_acs() etc.,
 #' which will download ACS nationwide data by table
-#' instead of using acs_bybg(), which queryied API by State-by-State.
+#' instead of using acs_bybg(), which queried the API state-by-state.
 #'
 #' acs_bybg() probably requires [getting and specifying an API key for Census Bureau](https://api.census.gov/data/key_signup.html) ! (at least if query is large).
 #'   see [tidycensus package help](https://walker-data.com/tidycensus/)  envt var CENSUS_API_KEY

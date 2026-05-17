@@ -353,7 +353,9 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
                                            ## create 12-digit column inline (original table not altered)
                                            ## do not actually need blockfips here except to join on its first 12 chars *** try to remove need for large blockid2fips file (and/or store fips as integer?)
                                            blockid2fips[, .(blockid, blockfips, blockfips12 = substr(blockfips,1,12))],
-                                           by = c('bgfips' = 'blockfips12'), multiple = 'all') |>
+                                           by = c('bgfips' = 'blockfips12'),
+                                           multiple = 'all',
+                                           relationship = 'many-to-many') |>
         dplyr::left_join(blockpoints) |>
         dplyr::mutate(distance = 0) |>     # or do I want distance to be null, or missing or NA or 0.001, or what? note approximated block_radius_miles is sometimes zero, in blockwts
         data.table::as.data.table()        # makes it a data.table

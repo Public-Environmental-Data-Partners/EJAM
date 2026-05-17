@@ -88,9 +88,11 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
               envir = envir
             )
           )
-          suppressWarnings(
-            eval(parse(text = paste0(varnames_i,'$metadata <- NULL')))
-          )
+          loaded_object <- get(varnames_i, envir = envir, inherits = FALSE)
+          if ("metadata" %in% names(loaded_object)) {
+            loaded_object$metadata <- NULL
+            assign(varnames_i, loaded_object, envir = envir)
+          }
           if (!exists(varnames_i, envir = envir)) {
             if (!silent) {cat(    "Problem - file found but failed to assign to memory/ envir: ", varnames_i, "\n")}
             warning("Problem - file found but failed to assign to memory/ envir: ", varnames_i)

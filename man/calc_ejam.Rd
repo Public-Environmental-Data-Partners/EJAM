@@ -19,7 +19,10 @@ calc_ejam(
 
 \item{keep.new}{names of calculated variables to retain in output}
 
-\item{formulas}{text strings of formulas}
+\item{formulas}{text strings of formulas, or a data.frame with columns
+\code{"rname"} and \code{"formula"}. Formula dependencies are sorted before
+evaluation so intermediate variables are calculated before formulas that
+use them.}
 
 \item{quiet}{if FALSE, prints to console success/failure of each formula}
 }

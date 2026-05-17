@@ -183,6 +183,12 @@ test_that("donuts ok in ejamit_compare_distances(donuts_not_cumulative = T)", {
 ################################################################### #
 
 
+ejamit_compare_distances2plot <- EJAM:::ejamit_compare_distances2plot
+distance_trends <- EJAM:::distance_trends
+out_bydistance2results_bydistance <- EJAM:::out_bydistance2results_bydistance
+out_bydistance2results_bysite_bydistance <- EJAM:::out_bydistance2results_bysite_bydistance
+out_bydistance2results_bydistance_bysite <- EJAM:::out_bydistance2results_bydistance_bysite
+
 test_that(
   "ejamit_compare_distances2plot() works",
   {

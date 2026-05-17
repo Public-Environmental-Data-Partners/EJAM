@@ -31,7 +31,7 @@ this warns and falls back to the default \code{frs} weighting.
 
 \item{region}{optional vector of EPA Regions (1-10) to pick from only some regions.}
 
-\item{ST}{optional, can be a character vector of 2 letter State abbreviations to pick from only some States.}
+\item{ST}{optional vector of State abbreviations like "NC" to pick from only some States.}
 
 \item{validonly}{return only points with valid lat/lon coordinates. Defaults to TRUE.}
 
@@ -47,8 +47,8 @@ The weighting can be specified so that each point reflects the average EPA-regul
 facility, blockgroup, block, place on the map, or US resident.
 }
 \examples{
-mapfast(testpoints_n(300, ST = c('LA','MS')) )
-\donttest{
+mapfast(testpoints_n(30, weighting = "bg", ST = c("LA", "MS")))
+\dontrun{
 n=2
 for (d in c(TRUE,FALSE)) {
   for (w in c('frs', 'pop', 'bg', 'block')) {

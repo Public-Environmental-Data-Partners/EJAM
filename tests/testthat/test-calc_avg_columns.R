@@ -24,7 +24,7 @@ test_that("calc_avg_columns 1 var, USA", {
     expect_equal(
 
       as.numeric(round(EJAM:::calc_avg_columns(vars[1]), 3)), # 1 var, USA
-      as.numeric(round(usastats_means("pm"),3))
+      as.numeric(round(usastats[usastats$PCTILE == "mean" & usastats$REGION == "USA", vars[1]], 3))
 
     )
   })

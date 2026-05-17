@@ -29,7 +29,7 @@ attributes2 = function(x) {
 #' @keywords internal
 #'
 metadata_update_attr <- function(x,
-                                 attr_name = "ejam_package_version", newvalue = desc::desc_get("Version"),
+                                 attr_name = "ejam_package_version", newvalue = ejam_package_version_current(),
                                  exclude_atomic_vectors = TRUE,
                                  only_update_if_had_been_set = FALSE) {
 
@@ -172,7 +172,7 @@ metadata_add <- function(x, metadata=NULL,
     metadata$date_saved_in_package <- as.character(Sys.Date())
   }
   if (update_ejam_package_version) {
-    metadata$ejam_package_version <- as.vector(desc::desc_get("Version"))
+    metadata$ejam_package_version <- ejam_package_version_current()
   }
   cat("Setting attributes for ", deparse1(substitute(x)), '\n'  )
   for (i in seq_along(metadata)) {
@@ -182,6 +182,30 @@ metadata_add <- function(x, metadata=NULL,
 cat("key attributes now: \n\n" )
 print(attributes2(x))
   invisible(x)
+}
+#################################################### #
+
+ejam_package_version_current <- function() {
+  desc_file <- system.file("DESCRIPTION", package = "EJAM")
+  if (nzchar(desc_file)) {
+    out <- tryCatch(
+      desc::desc_get("Version", file = desc_file),
+      error = function(e) NULL
+    )
+    if (!is.null(out) && length(out) > 0 && !is.na(out[[1]]) && nzchar(out[[1]])) {
+      return(as.vector(out[[1]]))
+    }
+  }
+
+  out <- tryCatch(
+    desc::desc_get("Version"),
+    error = function(e) NULL
+  )
+  if (!is.null(out) && length(out) > 0 && !is.na(out[[1]]) && nzchar(out[[1]])) {
+    return(as.vector(out[[1]]))
+  }
+
+  as.character(utils::packageVersion("EJAM"))
 }
 #################################################### #
 

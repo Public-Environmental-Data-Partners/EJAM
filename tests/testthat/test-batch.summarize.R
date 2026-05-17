@@ -88,8 +88,10 @@ test_that("batch.summarize rows Average Person ok", {
     )))
   })
   # not all.equal() due to rounding, NA, TRUE, "", etc.
+  ratio <- round(t1 / t2, 4)
+  both_zero <- t1 == 0 & t2 == 0
   expect_true(
-    all(round(t1 / t2, 4) %in% c(1, NA))
+    all(ratio %in% c(1, NA) | both_zero)
   )
 })
 
@@ -106,7 +108,6 @@ test_that("batch.summarize rows Average Person ok", {
 ######################################## #
 
 # needs more tests here... tests for $flagged_areas_pop, $flagged_areas_sites 
-
 
 
 

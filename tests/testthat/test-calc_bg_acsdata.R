@@ -103,9 +103,9 @@ test_that("pctpoor uses the ACS household poverty universe", {
 
 test_that("pctunemployed uses labor force while unemployedbase preserves age-16-plus universe", { # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
   x <- data.table::data.table(
-    B23025_001 = 500,
-    B23025_003 = 250,
-    B23025_005 = 25
+    B23025_001 = c(500, 100),
+    B23025_003 = c(250, 0),
+    B23025_005 = c(25, 0)
   )
   formulas <- EJAM::formulas_ejscreen_acs$formula[
     EJAM::formulas_ejscreen_acs$rname %in% c(
@@ -118,10 +118,10 @@ test_that("pctunemployed uses labor force while unemployedbase preserves age-16-
 
   out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
-  expect_equal(out$unemployedbase, 500)  # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
-  expect_equal(out$laborforce_universe, 250)
-  expect_equal(out$unemployed, 25)
-  expect_equal(out$pctunemployed, 0.1)
+  expect_equal(out$unemployedbase, c(500, 100))  # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+  expect_equal(out$laborforce_universe, c(250, 0))
+  expect_equal(out$unemployed, c(25, 0))
+  expect_equal(out$pctunemployed, c(0.1, NA_real_))
 })
 
 test_that("percapincome converts ACS sentinel and missing values to NA", {
@@ -135,6 +135,22 @@ test_that("percapincome converts ACS sentinel and missing values to NA", {
   out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
   expect_equal(out$percapincome, c(12000, NA_real_, NA_real_))
+})
+
+test_that("lan_other includes Arabic and other unspecified C16001 categories", {
+  x <- data.table::data.table(
+    C16001_001 = 100,
+    C16001_033 = 7,
+    C16001_036 = 13
+  )
+  formulas <- EJAM::formulas_ejscreen_acs$formula[
+    EJAM::formulas_ejscreen_acs$rname %in% c("lan_universe", "lan_other", "pctlan_other")
+  ]
+
+  out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
+
+  expect_equal(out$lan_other, 20)
+  expect_equal(out$pctlan_other, 0.2)
 })
 
 test_that("tract allocation defaults to decennial 2020 blockgroup weights", {
@@ -164,7 +180,7 @@ test_that("tract allocation defaults to decennial 2020 blockgroup weights", {
   expect_equal(out, decennial_weights)
 })
 
-test_that("decennial tract weights are repaired when ACS state tract FIPS do not overlap", {
+test_that("decennial tract weights are remapped when ACS state tract FIPS do not overlap", {
   acs_raw <- list(
     blockgroup = list(
       B01001 = data.table::data.table(
@@ -174,8 +190,8 @@ test_that("decennial tract weights are repaired when ACS state tract FIPS do not
     )
   )
   decennial_weights <- data.table::data.table(
-    bgfips = c("090010001001", "090010001002", "100010001001"),
-    tractfips = c("09001000100", "09001000100", "10001000100"),
+    bgfips = c("090034001011", "090034001012", "100010001001"),
+    tractfips = c("09003400101", "09003400101", "10001000100"),
     bgwt = c(0.4, 0.6, 1)
   )
 
@@ -186,9 +202,10 @@ test_that("decennial tract weights are repaired when ACS state tract FIPS do not
   )
 
   out_bgfips <- as.character(out$bgfips)
-  expect_false(any(startsWith(out_bgfips, "09001")))
+  expect_false(any(startsWith(out_bgfips, "09003")))
   expect_true(all(c("091104001011", "091104001012", "100010001001") %in% out_bgfips))
-  expect_equal(out$bgwt[match(c("091104001011", "091104001012"), out_bgfips)], c(0.25, 0.75))
+  expect_equal(out$tractfips[match(c("091104001011", "091104001012"), out_bgfips)], c("09110400101", "09110400101"))
+  expect_equal(out$bgwt[match(c("091104001011", "091104001012"), out_bgfips)], c(0.4, 0.6))
 })
 
 test_that("decennial tract weights are repaired when ACS blockgroups are missing", {
@@ -214,6 +231,108 @@ test_that("decennial tract weights are repaired when ACS blockgroups are missing
 
   expect_equal(out$bgfips, c("100010001001", "100010001002"))
   expect_equal(out$bgwt, c(0.25, 0.75))
+})
+
+test_that("tract-derived pctdisability preserves tract rate for zero-weight blockgroups", {
+  b18101 <- data.table::data.table(
+    GEO_ID = "1400000US10001000100",
+    fips = "10001000100",
+    SUMLEVEL = "140",
+    B18101_001 = 1000,
+    B18101_004 = 100,
+    B18101_007 = 0,
+    B18101_010 = 0,
+    B18101_013 = 0,
+    B18101_016 = 0,
+    B18101_019 = 0,
+    B18101_023 = 0,
+    B18101_026 = 0,
+    B18101_029 = 0,
+    B18101_032 = 0,
+    B18101_035 = 0,
+    B18101_038 = 0
+  )
+  bgwts <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    tractfips = "10001000100",
+    bgwt = c(0, 1)
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroupstats_bgwts = function(acs_raw, env, yr, weight_source) {
+      bgwts
+    },
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_blockgroupstats_from_tract_data(
+    yr = 2022,
+    tables = "B18101",
+    formulas = EJAM::formulas_ejscreen_acs_disability$formula,
+    acs_raw = list(tract = list(B18101 = b18101))
+  )
+
+  expect_equal(out$disab_universe, c(0, 1000))
+  expect_equal(out$disability, c(0, 100))
+  expect_equal(out$pctdisability, c(0.1, 0.1))
+})
+
+test_that("tract language values are repeated at blockgroup scale", {
+  b18101 <- data.table::data.table(
+    GEO_ID = "1400000US10001000100",
+    fips = "10001000100",
+    SUMLEVEL = "140",
+    B18101_001 = 1000,
+    B18101_004 = 100,
+    B18101_007 = 0,
+    B18101_010 = 0,
+    B18101_013 = 0,
+    B18101_016 = 0,
+    B18101_019 = 0,
+    B18101_023 = 0,
+    B18101_026 = 0,
+    B18101_029 = 0,
+    B18101_032 = 0,
+    B18101_035 = 0,
+    B18101_038 = 0
+  )
+  c16001 <- data.table::data.table(
+    GEO_ID = "1400000US10001000100",
+    fips = "10001000100",
+    SUMLEVEL = "140",
+    C16001_001 = 100,
+    C16001_002 = 80,
+    C16001_003 = 20
+  )
+  bgwts <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    tractfips = "10001000100",
+    bgwt = c(0.25, 0.75)
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroupstats_bgwts = function(acs_raw, env, yr, weight_source) {
+      bgwts
+    },
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_blockgroupstats_from_tract_data(
+    yr = 2022,
+    tables = c("B18101", "C16001"),
+    formulas = c(
+      EJAM::formulas_ejscreen_acs_disability$formula,
+      "lan_universe = C16001_001",
+      "lan_english = C16001_002",
+      "lan_spanish = C16001_003",
+      "pctlan_spanish <- ifelse(lan_universe == 0, 0, as.numeric(lan_spanish) / lan_universe)"
+    ),
+    acs_raw = list(tract = list(B18101 = b18101, C16001 = c16001))
+  )
+
+  expect_equal(out$lan_universe, c(100, 100))
+  expect_equal(out$lan_spanish, c(20, 20))
+  expect_equal(out$pctlan_spanish, c(0.2, 0.2))
 })
 
 test_that("bg_cenpop2020 keeps FIPS when legacy bgid lookup is missing", {

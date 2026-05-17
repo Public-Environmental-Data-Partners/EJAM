@@ -151,6 +151,9 @@ state_from_blockid_table <- function(dt_with_blockid) {
   } else {
     #   1st use blockid to get bgid from blockwts table, then can
     #   use bgid to get ST from blockgroupstats table
+    if (!exists("blockwts", inherits = TRUE)) {
+      dataload_dynamic("blockwts", envir = environment(), silent = TRUE)
+    }
 
     return(
       blockgroupstats[

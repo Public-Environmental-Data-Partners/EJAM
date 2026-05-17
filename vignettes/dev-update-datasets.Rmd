@@ -241,6 +241,35 @@ and the global variable called .arrow_ds_names that is used by functions like
 
 These were the arrow files used by EJAM:
 
+### Arrow file update groups
+
+Arrow files do not all change on the same schedule. Use these groups when
+planning updates:
+
+1. **Facility Data Updates** include `frs`, `frs_by_programid`,
+   `frs_by_naics`, `frs_by_sic`, and `frs_by_mact`. These may be refreshed
+   when EPA FRS/facility data are updated.
+
+2. **EJSCREEN Annual Data Update** currently includes `bgej.arrow`. It is
+   calculated from the annual EJScreen/EJAM demographic and environmental
+   pipeline and must match the installed package's `blockgroupstats`,
+   `usastats`, and `statestats`. Starting with v2.5.0, `bgej.arrow` should be
+   pinned to the EJAM/EJScreen release tag rather than downloaded from the
+   latest data-repository release.
+
+3. **Blockgroup Geography Updates** include `bgid2fips` and `blockwts`, and
+   related `.rda` objects such as `bgpts` and `bg_cenpop2020`. These need
+   review during each annual update and regeneration when blockgroup FIPS,
+   EJAM `bgid`, internal points, or blockgroup-to-block relationships change.
+
+4. **Block Geography Updates** include `blockpoints`, `quaddata`, and
+   `blockid2fips`. These need regeneration only when block-level FIPS or block
+   internal-point geography changes.
+
+Use `EJAM:::dynamic_geography_arrow_report()` to check whether the current
+blockgroup and block geography Arrow files are compatible with the installed
+`blockgroupstats` blockgroup universe.
+
 ### Blockgroup and block-level arrow files
 
 -   `?bgid2fips`.arrow: crosswalk of EJAM blockgroup IDs (1-n) with 12-digit
@@ -251,7 +280,9 @@ FIPS codes
 block ID
 -   `?blockwts`.arrow: Census block population weight as share of blockgroup
 population, EJAM block and blockgroup ID
--   `?bgej`.arrow: blockgroup-level statistics of EJ variables
+-   `?bgej`.arrow: blockgroup-level statistics of EJ variables. This is part
+of the EJSCREEN Annual Data Update group and must match the package's
+`blockgroupstats`
 -   `?quaddata`.arrow: 3D spherical coordinates of Census block internal points,
 with EJAM block ID
 
@@ -284,13 +315,20 @@ automatically by EJAM
 
 <!-- -->
 
-a.  Checks data repo's latest release/version.
+a.  For facility and most geography Arrow files, checks data repo's latest
+release/version.
 b.  Checks user's EJAM package's ejamdata version, which is stored in
 `data/ejamdata_version.txt`.
 c.  If the `data/ejamdata_version.txt` file doesn't exist, for example on the
 first EJAM install, it will be created at the end of the script.
-d.  If the versions are different, downloads the latest arrow from the latest
-ejamdata release with `piggyback::pb_download()`. See how this function
+d.  If the versions are different, downloads the latest Arrow files from the
+latest ejamdata release with `piggyback::pb_download()`.
+e.  For package-coupled annual files such as `bgej.arrow`, uses the EJAM
+package release tag, such as `v2.5.0`, rather than the latest data-repository
+release. This same rule is used when `dataload_dynamic("bgej")` loads `bgej`:
+the local `bgej.arrow` must match the installed package's `blockgroupstats`, and
+if it does not, EJAM tries to replace it from the package-pinned `ejamdata`
+release tag, which is based on `packageVersion("EJAM")`. See how this function
 works for details:
 
 ```{r, eval=FALSE}

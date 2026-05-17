@@ -121,7 +121,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     # we have to assume that buffer was already added to polygons passed here - do not add them again
     map_ejam_plus_shp(shp = shp,
                       out = ejamitout,
-                      radius = radius,
+                      radius_buffer = radius,
                       launch_browser = launch_browser)
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {

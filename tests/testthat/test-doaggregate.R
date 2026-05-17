@@ -34,6 +34,11 @@ expect_no_radius_warning <- function(expr) {
   out$value
 }
 
+fips2state_abbrev <- EJAM:::fips2state_abbrev
+fips2state_fips <- EJAM:::fips2state_fips
+pctile_from_raw_lookup <- EJAM:::pctile_from_raw_lookup
+state_from_sitetable <- EJAM:::state_from_sitetable
+
 ################# #
 # DOES IT STILL RETURN WHAT IT USED TO, OR HAS FUNCTION CHANGED SO THAT OUTPUTS NO LONGER MATCH ARCHIVED OUTPUTS? ####
 ################# #
@@ -822,5 +827,9 @@ if (exists("cause_no_warn_no_err")) {
 
 # cat('still need to test cases where input table is valid class, type, but too many rows or columns\n')
 
-
-
+rm(
+  fips2state_abbrev ,
+  fips2state_fips ,
+  pctile_from_raw_lookup ,
+  state_from_sitetable
+)

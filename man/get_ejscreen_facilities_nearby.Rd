@@ -27,8 +27,10 @@ data.frame of info about the nearby facilities
 find, count, map nearby facilities (NPL, TSDF, TRI, etc., as available in EJSCREEN) via API
 }
 \examples{
-\donttest{
+\dontrun{
   # find the one NPL site that is within half a mile of this point
+  # Calls a live EJScreen ArcGIS API, so it can fail if that service is
+  # unavailable.
 frompoints = data.frame(lat = 39.65, lon = -75.73)
 radius = 0.5
 sitecategory = "npl"

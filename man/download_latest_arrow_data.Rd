@@ -2,13 +2,14 @@
 % Please edit documentation in R/download_latest_arrow_data.R
 \name{download_latest_arrow_data}
 \alias{download_latest_arrow_data}
-\title{Download latest release of arrow datasets if user doesn't have them already}
+\title{Download package-compatible Arrow datasets if user does not have them already}
 \usage{
 download_latest_arrow_data(
   varnames = .arrow_ds_names,
   repository = NULL,
   envir = globalenv(),
-  piggybacktag = "latest"
+  piggybacktag = "latest",
+  force = FALSE
 )
 }
 \arguments{
@@ -19,14 +20,26 @@ download_latest_arrow_data(
 
 \item{envir}{if needed to specify environment other than default, e.g., globalenv() or parent.frame()}
 
-\item{piggybacktag}{default is "latest" but if a different release were needed this could be changed.}
+\item{piggybacktag}{default is \code{"latest"} for dynamic Arrow data. Package-
+coupled annual datasets such as \code{bgej} override \code{"latest"} internally and
+use \code{paste0("v", packageVersion("EJAM"))} as their release tag.}
+
+\item{force}{set TRUE to download requested files even if local copies exist.}
 }
 \description{
 Used when EJAM package is attached
 }
 \details{
-Checks to see what is the latest release of datasets available according to the data repository's latest release tag.
-Compares that to what version was last saved locally (as stored in the installed package's ejamdata_version.txt file).
+Checks to see what release of each requested Arrow dataset should be used.
+Facility and most geography Arrow files are treated as dynamic data and
+normally come from the latest applicable data-repository release, tracked
+with the installed package's \code{data/ejamdata_version.txt} marker.
+
+Annual EJSCREEN/EJAM data files such as \code{bgej.arrow} are package-coupled.
+They are obtained from the \code{ejamdata} release tag that matches the current
+EJAM package version as reported by \code{packageVersion("EJAM")}. For example,
+EJAM 2.5.0 looks for \code{bgej.arrow} in the \code{ejamdata} release tagged
+\code{v2.5.0}, not in the latest data-repository release.
 
 Relies on \code{\link[piggyback:pb_releases]{piggyback::pb_releases()}} to track / update / store / download
 data files as assets of a specific release on the data repository.

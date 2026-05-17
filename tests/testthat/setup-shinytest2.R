@@ -1162,8 +1162,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
 
     if (run_full_basic_checks()) {
       shinytestLogMessage("going to details tab")
-      app$set_inputs(results_tabs = "Details")
-      app$wait_for_idle(timeout = 5 * 1000)
+      app$set_inputs(results_tabs = "Details", wait_ = FALSE)
       shinytestLogMessage("should see the results table from details tab")
       ## or could wait until available, with a timeout cap, as for html webview of summary report ***
       customExpectValues(name="site-by-site")

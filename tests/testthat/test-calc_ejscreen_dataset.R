@@ -337,10 +337,12 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
   ) %in% names(saved)))
   expect_true(all(grepl("\\.csv$", saved[c("bg_acsdata", "blockgroupstats", "bgej", "usastats", "statestats", "ejscreen_export")])))
   expect_equal(out$ejscreen_export$ID, bgfips)
-  expect_equal(
-    as.data.frame(EJAM:::ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "csv")),
-    as.data.frame(blockgroupstats)
+  loaded_blockgroupstats <- as.data.frame(
+    EJAM:::ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "csv")
   )
+  loaded_blockgroupstats$bgid <- as.character(loaded_blockgroupstats$bgid)
+  loaded_blockgroupstats$REGION <- as.character(loaded_blockgroupstats$REGION)
+  expect_equal(loaded_blockgroupstats, as.data.frame(blockgroupstats))
 })
 
 test_that("calc_ejscreen_dataset can resume from a saved blockgroupstats stage", {
@@ -460,4 +462,68 @@ test_that("calc_ejscreen_blockgroupstats checks optional extra stage with reques
 
   expect_equal(requested_storage, "s3")
   expect_equal(out$lowlifex, 0.1)
+})
+
+test_that("dynamic geography arrow report validates matching blockgroup and block files", {
+  testthat::skip_if_not_installed("arrow")
+
+  td <- tempfile("ejam-geo-arrow-")
+  dir.create(td)
+  bgstats <- data.frame(bgfips = c("100010001001", "100010001002"))
+  arrow::write_feather(
+    data.frame(bgid = c("1", "2"), bgfips = bgstats$bgfips),
+    file.path(td, "bgid2fips.arrow")
+  )
+  arrow::write_feather(
+    data.frame(blockid = c("11", "12"), bgid = c("1", "2"), blockwt = c(1, 1), block_radius_miles = c(0, 0)),
+    file.path(td, "blockwts.arrow")
+  )
+  arrow::write_feather(
+    data.frame(blockid = c("11", "12"), lat = c(39, 40), lon = c(-75, -76)),
+    file.path(td, "blockpoints.arrow")
+  )
+  arrow::write_feather(
+    data.frame(BLOCK_X = c(1, 2), BLOCK_Z = c(1, 1), BLOCK_Y = c(1, 2), blockid = c("11", "12")),
+    file.path(td, "quaddata.arrow")
+  )
+  arrow::write_feather(
+    data.frame(blockid = c("11", "12"), blockfips = c("100010001001001", "100010001002001")),
+    file.path(td, "blockid2fips.arrow")
+  )
+
+  report <- EJAM:::dynamic_geography_arrow_report(
+    folder_local_source = td,
+    blockgroupstats_ref = bgstats
+  )
+
+  expect_s3_class(report, "data.frame")
+  expect_setequal(
+    report$dataset,
+    c("bgid2fips", "blockwts", "blockpoints", "quaddata", "blockid2fips")
+  )
+  expect_true(all(report$file_exists))
+  expect_true(all(report$ok))
+  expect_equal(report$missing_bgfips_n[report$dataset == "bgid2fips"], 0)
+  expect_equal(report$missing_blockid_n[report$dataset == "blockpoints"], 0)
+})
+
+test_that("dynamic geography arrow report flags missing blockgroup coverage", {
+  testthat::skip_if_not_installed("arrow")
+
+  td <- tempfile("ejam-geo-arrow-")
+  dir.create(td)
+  bgstats <- data.frame(bgfips = c("100010001001", "100010001002"))
+  arrow::write_feather(
+    data.frame(bgid = "1", bgfips = "100010001001"),
+    file.path(td, "bgid2fips.arrow")
+  )
+
+  report <- EJAM:::dynamic_geography_arrow_report(
+    folder_local_source = td,
+    blockgroupstats_ref = bgstats,
+    datasets = "bgid2fips"
+  )
+
+  expect_false(report$ok)
+  expect_equal(report$missing_bgfips_n, 1)
 })

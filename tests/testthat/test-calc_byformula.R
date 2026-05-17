@@ -118,6 +118,109 @@ test_that("formula dependencies are ordered before they are used", {
   expect_lt(match("over17", age_formulas$rname), match("pctover17", age_formulas$rname))
 })
 
+test_that("calc_ejam() sorts formula dependencies before evaluation", {
+  mydf <- data.frame(
+    bgid = 1:2,
+    numer_a = c(2, 4),
+    numer_b = c(3, 6),
+    denom = c(10, 20)
+  )
+  formulas <- c(
+    "pct_custom <- ifelse(denom == 0, 0, numer / denom)",
+    "numer <- numer_a + numer_b"
+  )
+
+  out <- calc_ejam(
+    mydf,
+    formulas = formulas,
+    keep.old = "bgid",
+    keep.new = "all"
+  )
+
+  expect_equal(out$numer, c(5, 10))
+  expect_equal(out$pct_custom, c(0.5, 0.5))
+})
+
+test_that("calc_ejam() sorts formula-table dependencies before evaluation", {
+  mydf <- data.frame(
+    bgid = 1:2,
+    numer_a = c(2, 4),
+    numer_b = c(3, 6),
+    denom = c(10, 20)
+  )
+  formulas <- data.frame(
+    rname = c("pct_custom", "numer"),
+    formula = c(
+      "pct_custom <- ifelse(denom == 0, 0, numer / denom)",
+      "numer <- numer_a + numer_b"
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  out <- calc_ejam(
+    mydf,
+    formulas = formulas,
+    keep.old = "bgid",
+    keep.new = "all"
+  )
+
+  expect_equal(out$numer, c(5, 10))
+  expect_equal(out$pct_custom, c(0.5, 0.5))
+})
+
+test_that("supplemental demographic index omits missing low life expectancy", {
+  mydf <- data.frame(
+    bgfips = c("100010001001", "100010001002"),
+    lowlifex = c(NA_real_, 5),
+    pctmin = c(1, 1),
+    pctlowinc = c(2, 2),
+    pctlingiso = c(4, 4),
+    pctlths = c(6, 6),
+    pctdisability = c(8, 8),
+    avg.pctlowlifex = 0,
+    avg.pctmin = 0,
+    avg.pctlowinc = 0,
+    avg.pctlingiso = 0,
+    avg.pctlths = 0,
+    avg.pctdisability = 0,
+    sd.pctlowlifex = 1,
+    sd.pctmin = 1,
+    sd.pctlowinc = 1,
+    sd.pctlingiso = 1,
+    sd.pctlths = 1,
+    sd.pctdisability = 1
+  )
+
+  out <- calc_ejam(
+    mydf,
+    formulas = formulas_ejscreen_demog_index,
+    keep.old = "bgfips",
+    keep.new = c("Demog.Index.Supp", "Demog.Index.Supp.State")
+  )
+
+  expect_equal(out$Demog.Index.Supp[1], (2 + 4 + 6 + 8) / 4)
+  expect_equal(out$Demog.Index.Supp[2], (2 + 4 + 6 + 5 + 8) / 5)
+  expect_equal(out$Demog.Index.Supp.State[1], (2 + 4 + 6 + 8) / 4)
+  expect_equal(out$Demog.Index.Supp.State[2], (2 + 4 + 6 + 5 + 8) / 5)
+})
+
+test_that("calc_byformula() sorts formula dependencies before evaluation", {
+  mydf <- data.frame(
+    numer_a = c(2, 4),
+    numer_b = c(3, 6),
+    denom = c(10, 20)
+  )
+  formulas <- c(
+    "pct_custom <- ifelse(denom == 0, 0, numer / denom)",
+    "numer <- numer_a + numer_b"
+  )
+
+  out <- calc_byformula(mydf, formulas = formulas)
+
+  expect_equal(out$numer, c(5, 10))
+  expect_equal(out$pct_custom, c(0.5, 0.5))
+})
+
 test_that("formula dependency sorting rejects cycles", {
   cyclic_formulas <- data.frame(
     rname = c("x", "y"),

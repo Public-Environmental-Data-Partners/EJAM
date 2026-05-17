@@ -682,6 +682,15 @@ test_that("fips_from_name/name2fips ok if state or county", {
 # fips_from_table()
 
 test_that("fips_from_table() works", {
+  old_options <- options()
+  withr::defer({
+    added_options <- setdiff(names(options()), names(old_options))
+    if (length(added_options) > 0) {
+      do.call(options, stats::setNames(vector("list", length(added_options)), added_options))
+    }
+    options(old_options)
+  })
+
   # fips_alias <- c('FIPS','fips','fips_code','fipscode','Fips','statefips','countyfips',
   #                 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST', 'FIPS.COUNTY', 'FIPS.TRACT')
   suppressWarnings({
@@ -1845,4 +1854,3 @@ options(scipen = 0)
 
 ################################################################### #
 ################################################################### #
-

@@ -75,6 +75,7 @@
 <span>  <span class="va">yr</span>,</span>
 <span>  bg_envirodata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bg_extra_indicators <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bg_geodata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bg_acs_raw <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bg_acsdata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  blockgroupstats <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -88,16 +89,25 @@
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  validation_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  download_acs_raw <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  acs_download_fun <span class="op">=</span> <span class="fu">ACSdownload</span><span class="fu">::</span><span class="va"><a href="https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html" class="external-link">get_acs_new</a></span>,</span>
 <span>  return_intermediate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_ejscreen_export <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  include_ejscreen_dataset_creator_input <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ejscreen_export_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ejscreen_dataset_creator_input_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ejscreen_export_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ejscreen_export_required_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ejscreen_export_rename_newtype <span class="op">=</span> <span class="st">"ejscreen_names"</span>,</span>
+<span>  ejscreen_export_rename_newtype <span class="op">=</span> <span class="st">"ejscreen_indicator"</span>,</span>
+<span>  ejscreen_export_feature_server_fields <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  blockgroup_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="tables_ejscreen_acs.html">tables_ejscreen_acs</a></span><span class="op">)</span>, <span class="va">tract_tables</span><span class="op">)</span>,</span>
-<span>  tract_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span><span class="op">)</span>,</span>
+<span>  tract_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span>, <span class="st">"B27010"</span><span class="op">)</span>,</span>
+<span>  tract_weight_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"decennial2020"</span>, <span class="st">"acs"</span><span class="op">)</span>,</span>
 <span>  include_tract_data <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fiveorone <span class="op">=</span> <span class="st">"5"</span>,</span>
+<span>  download_timeout <span class="op">=</span> <span class="fl">3600</span>,</span>
+<span>  download_retries <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  download_bg_geodata <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  blockgroup_universe_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"union"</span><span class="op">)</span>,</span>
 <span>  formulas <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="formulas_ejscreen_acs.html">formulas_ejscreen_acs</a></span><span class="op">$</span><span class="va">formula</span>,</span>
 <span>  tract_formulas <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -137,6 +147,11 @@ TRUE.</p></dd>
 <dt id="arg-bg-extra-indicators">bg_extra_indicators<a class="anchor" aria-label="anchor" href="#arg-bg-extra-indicators"></a></dt>
 <dd><p>non-ACS, non-enviro blockgroup indicators such as
 <code>lowlifex</code>, or NULL to read/reuse/create that stage.</p></dd>
+
+
+<dt id="arg-bg-geodata">bg_geodata<a class="anchor" aria-label="anchor" href="#arg-bg-geodata"></a></dt>
+<dd><p>Census/TIGER blockgroup geography stage, with
+square-meter <code>arealand</code> and <code>areawater</code> fields.</p></dd>
 
 
 <dt id="arg-bg-acs-raw">bg_acs_raw<a class="anchor" aria-label="anchor" href="#arg-bg-acs-raw"></a></dt>
@@ -203,6 +218,13 @@ single <code>bg_acs_raw</code> list object.</p></dd>
 neither <code>bg_acsdata</code> nor saved ACS stages are available.</p></dd>
 
 
+<dt id="arg-acs-download-fun">acs_download_fun<a class="anchor" aria-label="anchor" href="#arg-acs-download-fun"></a></dt>
+<dd><p>ACSdownload-compatible function used by
+<code><a href="download_bg_acs_raw.html">download_bg_acs_raw()</a></code> when raw ACS tables need to be downloaded. The
+default is <code><a href="https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html" class="external-link">ACSdownload::get_acs_new()</a></code>. Supply a wrapper if you need a
+legacy ACS source implementation.</p></dd>
+
+
 <dt id="arg-return-intermediate">return_intermediate<a class="anchor" aria-label="anchor" href="#arg-return-intermediate"></a></dt>
 <dd><p>logical. If TRUE, return key interim stage objects
 in addition to final datasets.</p></dd>
@@ -213,8 +235,19 @@ in addition to final datasets.</p></dd>
 EJSCREEN-ready export using <code><a href="calc_ejscreen_export.html">calc_ejscreen_export()</a></code>.</p></dd>
 
 
+<dt id="arg-include-ejscreen-dataset-creator-input">include_ejscreen_dataset_creator_input<a class="anchor" aria-label="anchor" href="#arg-include-ejscreen-dataset-creator-input"></a></dt>
+<dd><p>logical. If TRUE, also create
+the smaller pre-index input table expected by EPA's
+<code>ejscreen-dataset-creator-2.3</code> Python tool.</p></dd>
+
+
 <dt id="arg-ejscreen-export-path">ejscreen_export_path<a class="anchor" aria-label="anchor" href="#arg-ejscreen-export-path"></a></dt>
 <dd><p>optional file path for the EJSCREEN export.</p></dd>
+
+
+<dt id="arg-ejscreen-dataset-creator-input-path">ejscreen_dataset_creator_input_path<a class="anchor" aria-label="anchor" href="#arg-ejscreen-dataset-creator-input-path"></a></dt>
+<dd><p>optional file path for the
+EJScreen dataset-creator input table.</p></dd>
 
 
 <dt id="arg-ejscreen-export-vars">ejscreen_export_vars<a class="anchor" aria-label="anchor" href="#arg-ejscreen-export-vars"></a></dt>
@@ -232,6 +265,12 @@ that must be present.</p></dd>
 use when renaming the EJSCREEN export.</p></dd>
 
 
+<dt id="arg-ejscreen-export-feature-server-fields">ejscreen_export_feature_server_fields<a class="anchor" aria-label="anchor" href="#arg-ejscreen-export-feature-server-fields"></a></dt>
+<dd><p>optional final EJSCREEN
+FeatureServer field list. Defaults to the current EJSCREEN v2.32 block
+group FeatureServer schema when an EJSCREEN export is requested.</p></dd>
+
+
 <dt id="arg-blockgroup-tables">blockgroup_tables<a class="anchor" aria-label="anchor" href="#arg-blockgroup-tables"></a></dt>
 <dd><p>ACS tables to download at blockgroup resolution.</p></dd>
 
@@ -241,12 +280,41 @@ use when renaming the EJSCREEN export.</p></dd>
 blockgroup apportionment.</p></dd>
 
 
+<dt id="arg-tract-weight-source">tract_weight_source<a class="anchor" aria-label="anchor" href="#arg-tract-weight-source"></a></dt>
+<dd><p>source for tract-to-blockgroup apportionment
+weights. <code>"decennial2020"</code> matches the legacy EJSCREEN method by using
+2020 Decennial Census blockgroup population weights. <code>"acs"</code> uses
+same-vintage ACS blockgroup population weights.</p></dd>
+
+
 <dt id="arg-include-tract-data">include_tract_data<a class="anchor" aria-label="anchor" href="#arg-include-tract-data"></a></dt>
 <dd><p>logical, whether to download <code>tract_tables</code>.</p></dd>
 
 
 <dt id="arg-fiveorone">fiveorone<a class="anchor" aria-label="anchor" href="#arg-fiveorone"></a></dt>
 <dd><p>ACS sample length, <code>"5"</code> by default.</p></dd>
+
+
+<dt id="arg-download-timeout">download_timeout<a class="anchor" aria-label="anchor" href="#arg-download-timeout"></a></dt>
+<dd><p>timeout in seconds to use while downloading ACS
+table files. This is increased above R's usual 60 second default because
+some Census table-based summary files are hundreds of MB.</p></dd>
+
+
+<dt id="arg-download-retries">download_retries<a class="anchor" aria-label="anchor" href="#arg-download-retries"></a></dt>
+<dd><p>number of times to retry a failed ACS table download
+after the initial attempt.</p></dd>
+
+
+<dt id="arg-download-bg-geodata">download_bg_geodata<a class="anchor" aria-label="anchor" href="#arg-download-bg-geodata"></a></dt>
+<dd><p>logical, whether to download Census/TIGER
+blockgroup geography when <code>bg_geodata</code> is not supplied or saved.</p></dd>
+
+
+<dt id="arg-blockgroup-universe-source">blockgroup_universe_source<a class="anchor" aria-label="anchor" href="#arg-blockgroup-universe-source"></a></dt>
+<dd><p>passed to <code><a href="calc_ejscreen_blockgroupstats.html">calc_ejscreen_blockgroupstats()</a></code>.
+The default <code>"acs"</code> uses the ACS table rows as the authoritative
+blockgroup universe for the requested ACS vintage.</p></dd>
 
 
 <dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
@@ -315,8 +383,10 @@ national/state environmental percentile columns used internally by
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code>calc_ejscreen_dataset()</code> can be called from, for example, a script
-like the one in <code>data-raw/run_ejscreen_acs2024_pipeline.R</code></p>
+    <p><code>calc_ejscreen_dataset()</code> can be called from a script each year.
+See the runner script <code>data-raw/run_ejscreen_acs2024_pipeline.R</code>
+for an example of how to call this function, and how it can be used
+to run the whole pipeline from start to finish with minimal manual intervention.</p>
 <p><code>calc_ejscreen_dataset()</code> is a high-level wrapper around the staged
 annual update helpers. It is intentionally an orchestrator rather than a
 replacement for the individual stage functions. Each major input or output can
@@ -326,15 +396,72 @@ created and saved by this function.</p>
 <li><p>calculate ACS-based demographic indicators (and lead paint indicator) as <code>bg_acsdata</code></p></li>
 <li><p>validate/save <code>bg_envirodata</code> (key environmental indicators)</p></li>
 <li><p>validate/save <code>bg_extra_indicators</code> (e.g., % low life expectancy)</p></li>
+<li><p>create or validate <code>bg_geodata</code>, the Census/TIGER blockgroup geography
+attributes used for <code>arealand</code>, <code>areawater</code>, and internal-point fields</p></li>
 <li><p>calculate demographic indexes (using % low life expectancy, etc.)</p></li>
-<li><p>combine those blockgroup demog., envt., and extra indicators as <a href="blockgroupstats.html">blockgroupstats</a></p></li>
-<li><p>create intermediate percentile lookup tables <code>usastats_acs</code>, <code>statestats_acs</code>, <code>usastats_envirodata</code>, <code>statestats_envirodata</code></p></li>
-<li><p>calculate EJ indexes (from envt. percentiles and demog. indexes) and save as <a href="bgej.html">bgej</a> table</p></li>
-<li><p>create intermediate percentile lookup tables <code>usastats_ej</code>, <code>statestats_ej</code></p></li>
+<li><p>combine those blockgroup demog., envt., extra, and geography indicators
+as <a href="blockgroupstats.html">blockgroupstats</a></p></li>
+<li><p>create intermediate percentile lookup tables <code>usastats_acs</code>,
+<code>statestats_acs</code>, <code>usastats_envirodata</code>, <code>statestats_envirodata</code></p></li>
+<li><p>calculate EJ indexes (from envt. percentiles and demog. indexes) and save
+as <a href="bgej.html">bgej</a> table</p></li>
+<li><p>create intermediate percentile lookup tables <code>usastats_ej</code>,
+<code>statestats_ej</code></p></li>
 <li><p>combine those as <a href="usastats.html">usastats</a> and <a href="statestats.html">statestats</a></p></li>
 <li><p>create an EJScreen-ready export file (optionally)</p></li>
 </ol><p><code>bg_envirodata</code> must include <code>pctpre1960</code>. That column may be produced by an
 upstream environmental-data step that reads the saved <code>bg_acsdata</code> stage.</p>
+<p>The annual pipeline creates the <code>bgej</code> stage, and the package-level dynamic
+Arrow loader obtains <code>bgej.arrow</code> from the <code>ejamdata</code> release that matches
+the EJAM package version currently in use. For example, when
+<code>packageVersion("EJAM")</code> reports <code>2.5.0</code>, <code><a href="dataload_dynamic.html">dataload_dynamic()</a></code> and
+<code><a href="download_latest_arrow_data.html">download_latest_arrow_data()</a></code> look for <code>bgej.arrow</code> in the <code>ejamdata</code>
+release tagged <code>v2.5.0</code>, not in the latest data-repository release.</p>
+<p>Note that the runner script can use several settings stored as environment variables:</p><ul><li><p>EJAM_PIPELINE_YR</p></li>
+<li><p>EJAM_PIPELINE_DIR: override output folder.</p></li>
+<li><p>EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as S3.</p></li>
+<li><p>EJAM_STAGE_FORMAT: primary stage format used for loading, usually csv.</p></li>
+<li><p>EJAM_STAGE_FORMATS: comma-separated formats saved by the runner, usually csv,rda.</p></li>
+<li><p>EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended.</p></li>
+<li><p>EJAM_TRACT_WEIGHT_SOURCE: decennial2020 or acs. decennial2020 matches
+legacy EJSCREEN tract-to-blockgroup apportionment.</p></li>
+<li><p>AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3</p></li>
+<li><p>CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)</p></li>
+<li><p>EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.</p></li>
+<li><p>EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.</p></li>
+<li><p>EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.</p></li>
+<li><p>EJAM_ACS_DOWNLOAD_TIMEOUT</p></li>
+<li><p>EJAM_ACS_DOWNLOAD_RETRIES</p></li>
+<li><p>EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.</p></li>
+<li><p>EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.</p></li>
+<li><p>EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.</p></li>
+</ul><p>The annual runner also writes <code>pipeline_run_manifest.csv</code>, which records the
+package version, Git branch/SHA, ACS vintage, run settings, and whether
+provisional environmental or extra-indicator inputs were reused.</p>
+<p>Census/TIGER geography can occasionally include valid blockgroup features
+that are not present in the ACS summary-file tables for the same ACS vintage.
+For example, a draft ACS 2020-2024 build found 39 Suffolk County, New York
+blockgroups in TIGER geography but not in the relevant ACS blockgroup or
+tract tables. The default <code>blockgroup_universe_source = "acs"</code> therefore
+treats <code>bg_acsdata</code> as the authoritative final blockgroup universe and uses
+<code>bg_geodata</code> only to annotate those rows.</p>
+<p>To check them:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">print</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">cbind</span>(<span class="at">current_setting =</span> <span class="fu">Sys.getenv</span>(<span class="fu">c</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="st">"EJAM_PIPELINE_YR"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="st">"EJAM_PIPELINE_DIR"</span>, <span class="st">"EJAM_PIPELINE_STORAGE"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="st">"EJAM_STAGE_FORMAT"</span>, <span class="st">"EJAM_STAGE_FORMATS"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="st">"EJAM_BLOCKGROUP_UNIVERSE_SOURCE"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="st">"AWS_PROFILE"</span>, <span class="st">"AWS_REGION"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="st">"CENSUS_API_KEY"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="st">"EJAM_FORCE_ACS"</span>, <span class="st">"EJAM_FORCE_BG_ACSDATA"</span>, <span class="st">"EJAM_FORCE_BG_GEODATA"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="st">"EJAM_ACS_DOWNLOAD_TIMEOUT"</span>, <span class="st">"EJAM_ACS_DOWNLOAD_RETRIES"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="st">"EJAM_USE_PROVISIONAL_BG_ENVIRODATA"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="st">"EJAM_INCLUDE_EJSCREEN_EXPORT"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="st">"EJAM_VALIDATE_VS_PRIOR"</span>, <span class="st">"EJAM_PRIOR_PIPELINE_YR"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="st">"EJAM_PRIOR_PIPELINE_DIR"</span>, <span class="st">"EJAM_PRIOR_PACKAGE_REF"</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>)))</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>)</span></code></pre><p></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

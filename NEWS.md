@@ -51,6 +51,15 @@
   easy-to-inspect checkpoints, while `.rda` siblings are also written to S3 for
   R-native reuse.
 
+- Dynamic Arrow datasets are now classified by update group: Facility Data
+  Updates, EJSCREEN Annual Data Update, Blockgroup Geography Updates, and
+  Block Geography Updates. `bgej.arrow` is treated as package-coupled annual
+  EJSCREEN data and is pinned to the current EJAM release tag, such as
+  `v2.5.0`, rather than downloaded from the latest data-repository release.
+  The annual pipeline now writes `dynamic_geography_arrow_report.csv` to check
+  whether `bgid2fips`, `blockwts`, `blockpoints`, `quaddata`, and
+  `blockid2fips` are compatible with the current blockgroup universe.
+
 - Fixed S3 handling in the pipeline so optional saved stages are detected with
   the pipeline storage helper instead of local `file.exists()` checks, and
   direct EJScreen export paths such as `s3://.../ejscreen_export.csv` are
@@ -68,9 +77,23 @@
 
 - Added `bg_geodata` as an explicit Census/TIGER blockgroup geography pipeline
   stage. It extracts `bgfips`, `arealand`, `areawater`, and internal-point
-  latitude/longitude fields from TIGER blockgroup files. Area weighting now
-  relies on `arealand + areawater` in square meters; the legacy `area` field is
-  retained only for compatibility with older EPA/EJScreen exports.
+  latitude/longitude fields from TIGER blockgroup files. The stage now prefers
+  downloadable Census TIGER/Line shapefiles, with TIGERweb as a fallback,
+  because the TIGER/Line `ALAND` and `AWATER` values best match legacy
+  EJScreen/EJAM `arealand` and `areawater` fields. Area weighting now relies on
+  `arealand + areawater` in square meters; the legacy `area` field is retained
+  only for compatibility with older EPA/EJScreen exports. TIGER/Line state zip
+  files are now cached in `EJAM_TIGER_BG_CACHE_DIR`, or the EJAM user cache
+  folder by default, so repeated geodata rebuilds can reuse the downloads.
+
+- Improved utility `calc_formulas_from_varname()` that compiles all formulas needed to calculate specified indicators by getting formulas for intermediate variables too. 
+  It had been checking only `formulas_ejscreen_acs` but now also checks `formulas_ejscreen_acs_disability` and `formulas_ejscreen_demog_index` 
+  so this will work: `calc_formulas_from_varname("Demog.Index.Supp")`
+
+- Updated `formulas_ejscreen_demog_index` so `Demog.Index.Supp` and
+  `Demog.Index.Supp.State` average the four available supplemental components
+  when low life expectancy is missing, instead of returning `NA` for the full
+  supplemental demographic index.
 
 - Fixed `doaggregate()` so weighted-mean denominator columns such as
   `healthinsurance_universe` are retained when available in `blockgroupstats`,
@@ -85,8 +108,13 @@
   `percapincome` remains available in `blockgroupstats` but is no longer
   included in default `usastats`/`statestats` lookup stages.
 
-- Fixed tract-to-blockgroup apportionment for ACS tract-only indicators such as
-  disability and detailed language variables. The default pipeline setting
+- Fixed tract-to-blockgroup handling for ACS tract-only indicators such as
+  disability and detailed language variables. Disability counts use
+  tract-to-blockgroup population weights, while detailed C16001 language values
+  are repeated as tract-level values on each blockgroup in the tract, matching
+  the way the legacy EJSCREEN 2022 table stored those values. Language percent
+  fields now keep the precise Census-derived fractions instead of reproducing
+  legacy two-decimal rounding and `NA` behavior. The default pipeline setting
   `EJAM_TRACT_WEIGHT_SOURCE = "decennial2020"` now uses 2020 Decennial Census
   blockgroup-to-tract population weights, matching the legacy EJSCREEN
   apportionment approach. Same-vintage ACS population weights remain available
@@ -104,10 +132,14 @@
   housing-unit bins, and `pctnobroadband` now uses B28002 broadband Internet
   subscription fields rather than the C16002 household-language universe.
 
-- Updated `pctnohealthinsurance` to use tract-level B27010 in the ACS pipeline,
-  matching the way the legacy EJScreen 2022 dataset handled that indicator,
-  while retaining the related `healthinsurance_universe` and
-  `nohealthinsurance` count columns for transparent denominator handling.
+- Added `healthinsurance_universe`, `nohealthinsurance`, and
+  `pctnohealthinsurance` to the staged ACS pipeline using Census ACS table
+  B27010. The legacy EJScreen 2022 table appears to mix rounded fractions with
+  values scaled 100 times smaller for many states, so the new pipeline keeps
+  precise Census-derived fractions rather than reproducing that legacy scaling.
+
+- Updated the `pctunemployed` ACS formula so blockgroups with a zero civilian
+  labor-force denominator return `NA` rather than zero.
 
 - Updated `bg_cenpop2020` to retain the 12-character `bgfips` column. Some
   Connecticut rows still do not have the legacy internal `bgid` lookup, but the

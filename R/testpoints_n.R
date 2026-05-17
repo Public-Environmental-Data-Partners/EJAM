@@ -28,10 +28,9 @@
 #'
 #' @return data.frame or table in [data.table](https://r-datatable.com) format with columns lat, lon in decimal degrees, and
 #'   any other columns that are in the table used (based on weighting)
-#' @param ST optional, can be a character vector of 2 letter State abbreviations to pick from only some States.
 #' @examples
-#' mapfast(testpoints_n(300, ST = c('LA','MS')) )
-#' \donttest{
+#' mapfast(testpoints_n(30, weighting = "bg", ST = c("LA", "MS")))
+#' \dontrun{
 #' n=2
 #' for (d in c(TRUE,FALSE)) {
 #'   for (w in c('frs', 'pop', 'bg', 'block')) {
@@ -215,6 +214,9 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
   # RANDOM BLOCKS ####
   if (weighting == 'block') {
     cat('loading blockpoints dataset\n')
+    if (!exists("blockpoints", inherits = TRUE)) {
+      dataload_dynamic("blockpoints", envir = environment(), silent = TRUE)
+    }
 
     if (!is.null(ST_needed)) {
 
@@ -354,6 +356,11 @@ testpoints_n <- function(n = 10, weighting = c('frs', 'pop', 'area', 'bg', 'bloc
 
   # RANDOM US RESIDENTS ####
   if (weighting == 'pop') {
+    if (!exists("blockpoints", inherits = TRUE) ||
+        !exists("blockwts", inherits = TRUE)) {
+      dataload_dynamic(c("blockpoints", "blockwts"), envir = environment(), silent = TRUE)
+    }
+
     if (!is.null(ST_needed)) {  # limited by State
       # now this is faster:
       staterownums <- which(state_from_blockid(blockpoints$blockid) %in% ST_needed  )

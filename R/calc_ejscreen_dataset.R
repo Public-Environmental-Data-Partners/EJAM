@@ -37,6 +37,13 @@
 #' `bg_envirodata` must include `pctpre1960`. That column may be produced by an
 #' upstream environmental-data step that reads the saved `bg_acsdata` stage.
 #'
+#' The annual pipeline creates the `bgej` stage, and the package-level dynamic
+#' Arrow loader obtains `bgej.arrow` from the `ejamdata` release that matches
+#' the EJAM package version currently in use. For example, when
+#' `packageVersion("EJAM")` reports `2.5.0`, [dataload_dynamic()] and
+#' [download_latest_arrow_data()] look for `bgej.arrow` in the `ejamdata`
+#' release tagged `v2.5.0`, not in the latest data-repository release.
+#'
 #' Note that the runner script can use several settings stored as environment variables:
 #'
 #'  - EJAM_PIPELINE_YR

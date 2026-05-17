@@ -145,7 +145,11 @@ test_that("ejscreen_pipeline_compare_versions refuses to compare a folder to its
 })
 
 test_that("ejscreen_pipeline_load_git_data_object reads an explicit Git ref object", {
-  skip_if(system2("git", c("rev-parse", "--is-inside-work-tree"), stdout = TRUE, stderr = TRUE) != "true")
+  inside_git <- suppressWarnings(tryCatch(
+    system2("git", c("rev-parse", "--is-inside-work-tree"), stdout = TRUE, stderr = TRUE),
+    error = function(e) ""
+  ))
+  skip_if(!identical(inside_git, "true"))
   skip_if(system2("git", c("cat-file", "-e", "development:data/blockgroupstats.rda")) != 0)
 
   out <- EJAM:::ejscreen_pipeline_load_git_data_object(

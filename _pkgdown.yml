@@ -455,6 +455,7 @@ reference:
   - map_headernames
 - title: internal
   contents:
+  - ejamdata_version
   - calc_avg_columns
   - acs_table_info
   - augment_map_headernames_ejscreen_names

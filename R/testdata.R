@@ -11,6 +11,8 @@
 #' @param quiet set TRUE if you want to just get the path
 #'   without seeing all the info in console and without browsing to the folder
 #' @param folder_only set TRUE to get only directories, no files
+#' @param ... ignored; accepted for compatibility with callers that pass
+#'   standard EJAM quiet/silentinteractive-style arguments.
 #' @return path to local testdata folder comes with the EJAM package
 #' @seealso [pkg_functions_and_data()]
 #' @examples
@@ -37,7 +39,7 @@
 #' @keywords internal
 #' @export
 #'
-testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_only = FALSE) {
+testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_only = FALSE, ...) {
 
   if (installed) {
     # testdata_folder <- system.file('testdata', package = 'EJAM')
@@ -50,7 +52,7 @@ testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_onl
   }
   if (!installed && !file.exists("DESCRIPTION")) {
     warning('testdata(installed = F) can only be used while working directory is the root of a source package - showing testdata(installed = T) instead')
-    return(testdata(installed = TRUE, pattern = pattern, quiet = quiet, folder_only = folder_only))
+    return(testdata(installed = TRUE, pattern = pattern, quiet = quiet, folder_only = folder_only, ...))
   }
 
   # get path, but side effect is printing path in 3 formats, and prefer to show that after the tree

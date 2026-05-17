@@ -26,6 +26,11 @@
 #  for comparing the outputs of this pipeline to the prior version of the data,
 #  to help confirm that changes are as expected.
 #
+# bgej.arrow is part of the EJSCREEN Annual Data Update bundle. When EJAM later
+# obtains bgej.arrow via dataload_dynamic("bgej"), it uses the ejamdata release
+# tag that matches the current packageVersion("EJAM"), such as v2.5.0, rather
+# than the latest ejamdata release.
+#
 # Useful environment variables:
 
 #   EJAM_PIPELINE_YR: the last year of the 5-year ACS survey to use, e.g. 2022 or 2024. Default is the most recent year that is likely to be published by Census.
@@ -43,6 +48,7 @@
 #   EJAM_FORCE_ACS:        FALSE means reuse already-downloaded raw data. TRUE to redownload/recalculate raw ACS and bg_acsdata.
 #   EJAM_FORCE_BG_ACSDATA: FALSE means reuse already calculated bg_acsdata if it exists (even if forcing redownload of raw ACS). TRUE to rebuild bg_acsdata from saved raw ACS.
 #   EJAM_FORCE_BG_GEODATA: FALSE means reuse already downloaded Census/TIGER blockgroup geography. TRUE to redownload/recalculate bg_geodata.
+#   EJAM_TIGER_BG_CACHE_DIR: optional local folder for downloaded Census TIGER/Line blockgroup zip files. Defaults to the EJAM user cache.
 #   EJAM_ACS_DOWNLOAD_TIMEOUT
 #   EJAM_ACS_DOWNLOAD_RETRIES
 
@@ -80,6 +86,7 @@ dir_parent_local = file.path(getwd(), "data-raw", "pipeline_outputs")
 dir_parent <- if (storage == "local") {dir_parent_local} else {dir_parent_s3}
 dir_full <- file.path(dir_parent, dir_child)
 prior_yr <- if (as.integer(yr) == 2024L) "2022" else as.character(as.integer(yr) - 1L)
+default_tiger_bg_cache_dir <- file.path(tools::R_user_dir("EJAM", which = "cache"), "tiger_bg")
 
 set_pipeline_default <- function(name, value) {
   if (!nzchar(Sys.getenv(name, unset = ""))) {
@@ -99,6 +106,7 @@ set_pipeline_default("EJAM_TRACT_WEIGHT_SOURCE", "decennial2020")
 set_pipeline_default("EJAM_FORCE_ACS", "FALSE")
 set_pipeline_default("EJAM_FORCE_BG_ACSDATA", "FALSE")
 set_pipeline_default("EJAM_FORCE_BG_GEODATA", "FALSE")
+set_pipeline_default("EJAM_TIGER_BG_CACHE_DIR", default_tiger_bg_cache_dir)
 set_pipeline_default("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600")
 set_pipeline_default("EJAM_ACS_DOWNLOAD_RETRIES", "2")
 
@@ -194,6 +202,7 @@ print(
     'EJAM_FORCE_ACS',
     'EJAM_FORCE_BG_ACSDATA',
     'EJAM_FORCE_BG_GEODATA',
+    'EJAM_TIGER_BG_CACHE_DIR',
     'EJAM_ACS_DOWNLOAD_TIMEOUT',
     'EJAM_ACS_DOWNLOAD_RETRIES',
     'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
@@ -280,6 +289,7 @@ message("Tract apportionment weight source: ", tract_weight_source)
 force_acs <- env_flag("EJAM_FORCE_ACS", FALSE)
 force_bg_acsdata <- env_flag("EJAM_FORCE_BG_ACSDATA", force_acs)
 force_bg_geodata <- env_flag("EJAM_FORCE_BG_GEODATA", FALSE)
+tiger_bg_cache_dir <- Sys.getenv("EJAM_TIGER_BG_CACHE_DIR", unset = default_tiger_bg_cache_dir)
 acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
 acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
 
@@ -326,6 +336,7 @@ pipeline_setting_names <- c(
   'EJAM_FORCE_ACS',
   'EJAM_FORCE_BG_ACSDATA',
   'EJAM_FORCE_BG_GEODATA',
+  'EJAM_TIGER_BG_CACHE_DIR',
   'EJAM_ACS_DOWNLOAD_TIMEOUT',
   'EJAM_ACS_DOWNLOAD_RETRIES',
   'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
@@ -353,10 +364,13 @@ print(
     stage_formats=paste(stage_formats, collapse = ","),
     blockgroup_universe_source=blockgroup_universe_source,
     tract_weight_source=tract_weight_source,
+    decennial_bgwts_cache = Sys.getenv("EJAM_DECENNIAL_BGWTS_CACHE"),
+    refresh_decennial_bgwts = Sys.getenv("EJAM_REFRESH_DECENNIAL_BGWTS"),
 
     force_acs=force_acs,
     force_bg_acsdata=force_bg_acsdata,
     force_bg_geodata=force_bg_geodata,
+    tiger_bg_cache_dir=tiger_bg_cache_dir,
     acs_download_timeout=acs_download_timeout,
     acs_download_retries=acs_download_retries,
 
@@ -397,6 +411,71 @@ load_file_stage <- function(stage) {
 stage_exists <- function(stage) {
   # this helper is shorthand, and presumes that pipeline_dir, stage_format, and pipeline_storage are defined in the environment (as they are in this script), so that you can just call load_file_stage("bg_acsdata") for example, and it will know where to look for it and what format to expect.
   EJAM:::ejscreen_pipeline_stage_exists(stage, pipeline_dir = pipeline_dir, format = stage_format, storage = pipeline_storage)
+}
+####################### #
+reuse_blockgroupstats <- NULL
+get_reuse_blockgroupstats <- function() {
+  if (!is.null(reuse_blockgroupstats)) {
+    return(reuse_blockgroupstats)
+  }
+
+  pipeline_acs_version <- EJAM:::ejscreen_pipeline_acs_version_from_year(pipeline_yr)
+  current <- data.table::as.data.table(data.table::copy(EJAM::blockgroupstats))
+  current_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(current)
+
+  if (!is.na(current_acs_version) &&
+      identical(current_acs_version, pipeline_acs_version)) {
+    reuse_blockgroupstats <<- current
+    return(reuse_blockgroupstats)
+  }
+
+  if (nzchar(prior_package_ref)) {
+    prior <- tryCatch(
+      EJAM:::ejscreen_pipeline_load_git_data_object(
+        ref = prior_package_ref,
+        path = prior_package_path
+      ),
+      error = function(e) {
+        warning(
+          "Could not load prior package blockgroupstats from ",
+          prior_package_ref,
+          ":",
+          prior_package_path,
+          " for same-vintage provisional reuse: ",
+          conditionMessage(e),
+          call. = FALSE
+        )
+        NULL
+      }
+    )
+    if (!is.null(prior)) {
+      prior_data <- data.table::as.data.table(data.table::copy(prior$data))
+      if (!is.na(prior$acs_version) &&
+          identical(prior$acs_version, pipeline_acs_version)) {
+        reuse_blockgroupstats <<- prior_data
+        return(reuse_blockgroupstats)
+      }
+      warning(
+        "Prior package blockgroupstats ACS version is ",
+        prior$acs_version,
+        ", while this pipeline run is for ",
+        pipeline_acs_version,
+        "; not using that prior object for provisional reuse.",
+        call. = FALSE
+      )
+    }
+  }
+
+  warning(
+    "Using currently packaged EJAM::blockgroupstats for provisional reuse even though its ACS version is ",
+    current_acs_version,
+    " and this pipeline run is for ",
+    pipeline_acs_version,
+    ". Prefer a matching saved stage or set EJAM_PRIOR_PACKAGE_REF to a same-vintage package tag.",
+    call. = FALSE
+  )
+  reuse_blockgroupstats <<- current
+  reuse_blockgroupstats
 }
 ####################### #
 save_file_stage_formats <- function(x,
@@ -567,9 +646,10 @@ if (stage_exists(stagename)) {
   save_file_stage_formats(bg_envirodata, stage = stagename)
 
 } else if (isTRUE(use_provisional_bg_envirodata)) {
-  message(paste0("Creating PROVISIONAL bg_envirodata.", stage_format," from current package blockgroupstats"))
+  message(paste0("Creating PROVISIONAL bg_envirodata.", stage_format," from same-vintage blockgroupstats fallback"))
   used_provisional_bg_envirodata <- TRUE
-  package_blockgroupstats_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(x = EJAM::blockgroupstats)
+  reusable_blockgroupstats <- get_reuse_blockgroupstats()
+  package_blockgroupstats_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(x = reusable_blockgroupstats)
   pipeline_acs_version <- EJAM:::ejscreen_pipeline_acs_version_from_year(pipeline_yr)
   if (!is.na(package_blockgroupstats_acs_version) &&
       !identical(package_blockgroupstats_acs_version, pipeline_acs_version)) {
@@ -582,23 +662,23 @@ if (stage_exists(stagename)) {
       call. = FALSE
     )
   }
-  if (!all(EJAM::names_e %in% names(EJAM::blockgroupstats))) {
-    warning("Provisional EJAM::blockgroupstats does not have all of expected env indicator columns as specified in EJAM::names_e")
+  if (!all(EJAM::names_e %in% names(reusable_blockgroupstats))) {
+    warning("Provisional blockgroupstats fallback does not have all of expected env indicator columns as specified in EJAM::names_e")
   }
-  env_cols <- intersect(EJAM::names_e, names(EJAM::blockgroupstats))
-  bg_envirodata <- as.data.table(EJAM::blockgroupstats)[, c("bgfips", env_cols), with = FALSE]
+  env_cols <- intersect(EJAM::names_e, names(reusable_blockgroupstats))
+  bg_envirodata <- as.data.table(reusable_blockgroupstats)[, c("bgfips", env_cols), with = FALSE]
   # validate the provisional copy
   if (!isTRUE(all.equal(
-    as.data.table(EJAM::blockgroupstats)[, env_cols, with = FALSE],
+    as.data.table(reusable_blockgroupstats)[, env_cols, with = FALSE],
     bg_envirodata[, env_cols, with = FALSE],
     check.attributes = FALSE
-  ))) {stop("Provisional bg_envirodata from blockgroupstats does not have the same env indicator values as EJAM::blockgroupstats")}
+  ))) {stop("Provisional bg_envirodata from blockgroupstats fallback does not have the same env indicator values as the fallback source")}
   save_file_stage_formats(bg_envirodata, stage = stagename)
   write_pipeline_text(
     c(
       paste0("PROVISIONAL bg_envirodata.", stage_format),
-      "This file was copied from the currently packaged EJAM::blockgroupstats.",
-      paste("Packaged blockgroupstats ACS version:", package_blockgroupstats_acs_version),
+      "This file was copied from the same-vintage blockgroupstats fallback.",
+      paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
       paste("Pipeline ACS version:", pipeline_acs_version),
       "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_acs2024_pipeline.R.",
       paste("Created:", Sys.time())
@@ -621,9 +701,10 @@ if (stage_exists(stagename)) {
   bg_extra_indicators <- load_file_stage(stagename)
   save_file_stage_formats(bg_extra_indicators, stage = stagename)
 } else {
-  message(paste0("Creating ", stagename, ".", stage_format," from current package blockgroupstats"))
+  message(paste0("Creating ", stagename, ".", stage_format," from same-vintage blockgroupstats fallback"))
   used_provisional_bg_extra_indicators <- TRUE
-  package_blockgroupstats_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(x = EJAM::blockgroupstats)
+  reusable_blockgroupstats <- get_reuse_blockgroupstats()
+  package_blockgroupstats_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(x = reusable_blockgroupstats)
   pipeline_acs_version <- EJAM:::ejscreen_pipeline_acs_version_from_year(pipeline_yr)
   if (!is.na(package_blockgroupstats_acs_version) &&
       !identical(package_blockgroupstats_acs_version, pipeline_acs_version)) {
@@ -639,7 +720,7 @@ if (stage_exists(stagename)) {
 
   bg_extra_indicators <- EJAM:::calc_bg_extra_indicators(
 
-    existing_blockgroupstats = EJAM::blockgroupstats,
+    existing_blockgroupstats = reusable_blockgroupstats,
     reuse_existing_if_missing = TRUE,
     pipeline_dir = pipeline_dir,
     save_stage = FALSE,
@@ -650,8 +731,8 @@ if (stage_exists(stagename)) {
   write_pipeline_text(
     c(
       paste0("PROVISIONAL bg_extra_indicators.", stage_format),
-      "This file was copied from the currently packaged EJAM::blockgroupstats.",
-      paste("Packaged blockgroupstats ACS version:", package_blockgroupstats_acs_version),
+      "This file was copied from the same-vintage blockgroupstats fallback.",
+      paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
       paste("Pipeline ACS version:", pipeline_acs_version),
       "Replace it with updated non-ACS, non-environmental blockgroup indicators if available, then rerun.",
       paste("Created:", Sys.time())
@@ -678,7 +759,7 @@ if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
   bg_geodata <- EJAM:::complete_bg_geodata(
     bg_geodata = bg_geodata,
     bgfips = geodata_bgfips,
-    existing_blockgroupstats = EJAM::blockgroupstats,
+    existing_blockgroupstats = get_reuse_blockgroupstats(),
     reuse_existing_if_missing = TRUE,
     allow_partial_reuse = FALSE
   )
@@ -688,10 +769,12 @@ if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
   bg_geodata <- EJAM:::calc_bg_geodata(
     yr = yr,
     bgfips = geodata_bgfips,
-    existing_blockgroupstats = EJAM::blockgroupstats,
+    existing_blockgroupstats = get_reuse_blockgroupstats(),
     reuse_existing_if_missing = TRUE,
     allow_partial_reuse = FALSE,
     download = TRUE,
+    geodata_source = "tiger",
+    download_dir = tiger_bg_cache_dir,
     download_timeout = acs_download_timeout,
     download_retries = acs_download_retries,
     pipeline_dir = pipeline_dir,
@@ -801,6 +884,16 @@ validation_summary <- data.table::rbindlist(
 
 write_pipeline_txt_or_csv(x = validation_summary,
                           filename = filename,
+                          pipeline_dir = pipeline_dir,
+                          pipeline_storage = pipeline_storage)
+
+message("Validating dynamic geography Arrow files and saving report.")
+dynamic_geography_arrow_report <- EJAM:::dynamic_geography_arrow_report(
+  blockgroupstats_ref = out$blockgroupstats,
+  silent = TRUE
+)
+write_pipeline_txt_or_csv(x = dynamic_geography_arrow_report,
+                          filename = "dynamic_geography_arrow_report.csv",
                           pipeline_dir = pipeline_dir,
                           pipeline_storage = pipeline_storage)
 

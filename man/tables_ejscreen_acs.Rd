@@ -35,14 +35,16 @@ Notes:
 \item B19301  per capita income
 \item B25032  owned units vs rented units (occupied housing units, same universe as B25003)
 \item B28002  no broadband internet subscription
-\item B27010  no health insurance
+\item B27010  no health insurance. B27010 is available at blockgroup resolution,
+but the annual EJSCREEN pipeline uses tract-level B27010 for
+\code{pctnohealthinsurance} to match the historical EJSCREEN-style derivation.
 \item C16002  (language category and) \% of households limited English speaking (lingiso) \url{https://data.census.gov/table/ACSDT5Y2024.C16002}
 \item B16004  (language category and) \% of residents (not hhlds) speak no English at all \url{https://data.census.gov/table/ACSDT5Y2024.B16004}
 }
 
 TRACT ONLY, but also used by EJSCREEN:
 \itemize{
-\item C16001   languages detailed list: \% of residents (not hhlds) IN TRACT speak Chinese, etc. \url{https://data.census.gov/table/ACSDT5Y2024.C16001}
+\item C16001   languages detailed list: \% of residents (not hhlds) IN TRACT speak Chinese, etc.; EJSCREEN repeats these tract-level values on each blockgroup in the tract \url{https://data.census.gov/table/ACSDT5Y2024.C16001}
 \item B18101   disability
 }
 }

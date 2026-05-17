@@ -50,14 +50,17 @@ Needs Census API key for \code{\link[tidycensus:get_decennial]{tidycensus::get_d
 
 Takes some time to download data for every State!
 
-First get tract counts,
-then apportion into blockgroup counts,
-then calculate percents in blockgroups via formulas.
+First get tract counts, then apportion tract counts into blockgroup counts
+where that is how legacy EJSCREEN handled the indicator. Detailed language
+counts from C16001 are tract-level values repeated on each blockgroup in the
+tract, so language percentages are also tract-level percentages repeated on
+each blockgroup.
 
 For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
 county equivalents while 2020 Decennial blockgroup FIPS use the older county
 equivalents. When \code{tract_weight_source = "decennial2020"} and \code{acs_raw} is
-available, the function detects this mismatch and repairs Connecticut
-weights with same-vintage ACS blockgroup population weights.
+available, the function detects this mismatch and remaps the 2020
+Decennial weights to the same ACS blockgroup suffixes, using same-vintage
+ACS blockgroup population weights only for ambiguous or unmatched cases.
 }
 \keyword{internal}

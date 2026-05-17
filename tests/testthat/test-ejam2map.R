@@ -17,7 +17,7 @@ test_that("map2browser() works latlon", {
 test_that("ejam2map() works latlon", {
   expect_no_error({
     suppressWarnings({
-      mymap = ejam2map(testoutput_ejamit_10pts_1miles)
+      mymap = ejam2map(testoutput_ejamit_10pts_1miles, launch_browser = FALSE)
     })
   })
   expect_true("leaflet" %in% class(mymap))
@@ -55,7 +55,8 @@ test_that("ejam2map() works fips given shp", {
   expect_no_error({
     suppressWarnings({
       mymap = ejam2map(testoutput_ejamit_fips_counties,
-                   shp = shapes_from_fips(  testinput_fips_counties)
+                   shp = shapes_from_fips(  testinput_fips_counties),
+                   launch_browser = FALSE
       )
     })
   })
@@ -81,7 +82,7 @@ test_that("ejam2map() works fips given shp", {
 test_that("ejam2map() works fips not given shp", {
   expect_no_error({
     suppressWarnings({
-      mymap = ejam2map(testoutput_ejamit_fips_counties)
+      mymap = ejam2map(testoutput_ejamit_fips_counties, launch_browser = FALSE)
 
 
     })

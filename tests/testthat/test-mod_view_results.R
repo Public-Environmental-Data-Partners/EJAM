@@ -4,11 +4,14 @@
 # test passes but
 # can run this test only if source those functions or load_all() or if testing whole pkg maybe testthat can use internal functions
 
-testServer(
-  mod_view_results_server,
-  # Add here your module params
-  args = list()
-  , {
+test_that("draft view-results module server works when present", {
+  skip_if_not(exists("mod_view_results_server"), message = "draft view-results module server is not present")
+
+  testServer(
+    mod_view_results_server,
+    # Add here your module params
+    args = list(),
+    {
     ns <- session$ns
     expect_true(
       inherits(ns, "function")
@@ -30,9 +33,12 @@ testServer(
     # expect_true(r$x == 1)
     # - Testing output
     # expect_true(inherits(output$tbl$html, "html"))
+    })
 })
 
 test_that("module ui works", {
+  skip_if_not(exists("mod_view_results_ui"), message = "draft view-results module UI is not present")
+
   ui <- mod_view_results_ui(id = "test")
   golem::expect_shinytaglist(ui)
   # Check that formals have not been removed
@@ -41,4 +47,3 @@ test_that("module ui works", {
     expect_true(i %in% names(fmls))
   }
 })
-

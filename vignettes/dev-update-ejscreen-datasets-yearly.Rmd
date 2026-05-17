@@ -76,8 +76,12 @@ The annual workflow creates or reads these stages:
 5. `bg_geodata`: Census/TIGER blockgroup geography attributes. This stage
    stores `bgfips`, square-meter `arealand` and `areawater`, optional internal
    point fields `intptlat` and `intptlon`, and a compatibility-only `area`
-   column. The pipeline queries Census TIGERweb by default and discovers the
-   correct Census Block Groups layer for the requested ACS/TIGER vintage.
+   column. The pipeline uses Census TIGER/Line blockgroup shapefiles by default
+   because their `ALAND` and `AWATER` values best match the legacy EJScreen
+   tables; Census TIGERweb remains available as a lighter fallback source.
+   TIGER/Line zip files are cached locally using `EJAM_TIGER_BG_CACHE_DIR`, or
+   the EJAM user cache folder when that variable is unset, so later reruns can
+   reuse the state files.
    By default, the pipeline requests geography only for blockgroups found in
    the ACS tabulated rows for that vintage.
 
@@ -109,13 +113,60 @@ The run manifest records the package version, Git branch and SHA, ACS vintage,
 pipeline location, primary stage format, selected run settings, and whether
 provisional environmental or extra-indicator inputs were reused.
 
+## Related Data Update Groups
+
+EJAM data objects do not all change on the same schedule. For annual work, use
+these update groups to decide what must be rebuilt, validated, or only checked.
+
+1. **Facility Data Updates** include FRS-related and facility-code datasets such
+   as `frs`, `frs_by_programid`, `frs_by_naics`, `frs_by_sic`,
+   `frs_by_mact`, `frsprogramcodes`, `epa_programs`, NAICS, SIC, and MACT
+   lookup tables. These can be refreshed when EPA facility data are updated,
+   independently of the annual EJScreen-style pipeline.
+
+2. **EJSCREEN Annual Data Update** includes the main pipeline stages:
+   `bg_acs_raw`, `bg_acsdata`, `bg_envirodata`, `bg_extra_indicators`,
+   `bg_geodata`, `blockgroupstats`, `bgej`, `usastats`, `statestats`, and
+   `ejscreen_export`. It also includes supporting objects that may need review
+   or regeneration, such as `map_headernames`, `names_*`, `namez`,
+   `tables_ejscreen_acs`, `formulas_ejscreen_acs`,
+   `formulas_ejscreen_acs_disability`, `formulas_ejscreen_demog_index`,
+   `avg.in.us`, `high_pctiles_tied_with_min`, and `testoutput*`.
+   `bgej.arrow` belongs in this group and must be pinned to the EJAM/EJScreen
+   annual release, not treated as independently refreshable "latest" data.
+   In practice, `dataload_dynamic("bgej")` uses the installed EJAM package
+   version, as reported by `packageVersion("EJAM")`, to find the matching
+   `ejamdata` release tag, such as `v2.5.0`, and checks the loaded `bgej`
+   against the installed `blockgroupstats` blockgroup universe.
+
+3. **Blockgroup Geography Updates** include blockgroup-keyed geography files
+   and crosswalks such as `bgid2fips`, `blockwts`, `bgpts`, and
+   `bg_cenpop2020`. The annual pipeline always checks whether these are still
+   compatible with the current blockgroup universe, but they only need to be
+   regenerated when blockgroup FIPS, EJAM `bgid`, internal points, or
+   blockgroup-to-block relationships change. `bg_cenpop2020` requires special
+   care because it is tied to Census 2020 geography. Related state/place
+   geography objects such as `states_shapefile`, `stateinfo2`, and
+   `censusplaces` should also be checked when their FIPS or boundaries change.
+
+4. **Block Geography Updates** include block-level geometry/index files such as
+   `blockpoints`, `quaddata`, and `blockid2fips`. These change only when block
+   FIPS or block internal-point geography changes.
+
+The runner writes `dynamic_geography_arrow_report.csv` to summarize whether
+category 3 and 4 Arrow files cover the current `blockgroupstats` blockgroups
+and whether block-level IDs line up across `blockwts`, `blockpoints`,
+`quaddata`, and `blockid2fips`.
+
 ## ACS Geography Universe
 
 For a given ACS 5-year release, use the Census geography vintage associated
 with the ACS end year. For example, ACS 2020-2024 should use 2024 Census/TIGER
-or TIGERweb geography attributes. Those geography sources can occasionally
-include blockgroups that are valid geography features but that are not present
-in the ACS tabulated summary-file tables used by EJAM.
+or TIGERweb geography attributes. The release pipeline prefers the downloadable
+Census TIGER/Line blockgroup shapefiles for `arealand` and `areawater`, with
+TIGERweb as a fallback. Those geography sources can occasionally include
+blockgroups that are valid geography features but that are not present in the
+ACS tabulated summary-file tables used by EJAM.
 
 That mismatch is unusual but real. In the draft ACS 2020-2024 build, the
 Census/TIGER blockgroup geography source included 39 Suffolk County, New York
@@ -195,6 +246,7 @@ The runner is controlled by environment variables:
 | `EJAM_TRACT_WEIGHT_SOURCE` | `"decennial2020"` uses 2020 Decennial Census population weights to apportion tract-only ACS tables to blockgroups, matching legacy EJSCREEN. `"acs"` uses same-vintage ACS blockgroup population weights. |
 | `EJAM_DECENNIAL_BGWTS_CACHE` | Optional local `.rds` cache path for 2020 Decennial blockgroup-to-tract weights. If unset, EJAM uses a user cache folder. |
 | `EJAM_REFRESH_DECENNIAL_BGWTS` | `"TRUE"` to ignore and overwrite the cached decennial blockgroup weights. |
+| `EJAM_TIGER_BG_CACHE_DIR` | Optional local folder for downloaded Census TIGER/Line blockgroup zip files. If unset, EJAM uses a durable user cache folder. |
 | `AWS_PROFILE`, `AWS_REGION` | Used by the AWS CLI for S3-backed runs. |
 | `CENSUS_API_KEY` | Used by ACS/Census download helpers where needed. |
 | `EJAM_FORCE_ACS` | `"TRUE"` to redownload raw ACS and rebuild ACS stages. |
@@ -221,6 +273,7 @@ Sys.getenv(c(
   "EJAM_TRACT_WEIGHT_SOURCE",
   "EJAM_DECENNIAL_BGWTS_CACHE",
   "EJAM_REFRESH_DECENNIAL_BGWTS",
+  "EJAM_TIGER_BG_CACHE_DIR",
   "AWS_PROFILE",
   "AWS_REGION",
   # "CENSUS_API_KEY",
@@ -283,6 +336,7 @@ Sys.setenv(
   EJAM_STAGE_FORMATS = "csv,rda",
   EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
   EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
+  EJAM_TIGER_BG_CACHE_DIR = file.path(tools::R_user_dir("EJAM", "cache"), "tiger_bg"),
   EJAM_FORCE_ACS = "TRUE",
   EJAM_FORCE_BG_ACSDATA = "TRUE",
   EJAM_FORCE_BG_GEODATA = "TRUE",
@@ -312,6 +366,7 @@ Sys.setenv(
   EJAM_STAGE_FORMATS = "csv,rda",
   EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
   EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
+  EJAM_TIGER_BG_CACHE_DIR = file.path(tools::R_user_dir("EJAM", "cache"), "tiger_bg"),
   EJAM_FORCE_ACS = "TRUE",
   EJAM_FORCE_BG_ACSDATA = "TRUE",
   EJAM_FORCE_BG_GEODATA = "TRUE",
@@ -352,8 +407,10 @@ source("data-raw/run_ejscreen_acs2024_pipeline.R")
 
 If `bg_geodata` has already been created for the same ACS/TIGER vintage and
 same blockgroup universe, leave `EJAM_FORCE_BG_GEODATA` false. Set it to
-`"TRUE"` when changing vintages or when you want to refresh the Census TIGERweb
-attributes.
+`"TRUE"` when changing vintages or when you want to refresh the Census
+TIGER/Line area and internal-point attributes.
+Even with `EJAM_FORCE_BG_GEODATA = "TRUE"`, already-downloaded TIGER/Line state
+zip files are reused from `EJAM_TIGER_BG_CACHE_DIR` when present and valid.
 
 ```{r, eval=FALSE}
 Sys.setenv(EJAM_FORCE_BG_GEODATA = "TRUE")
@@ -531,8 +588,10 @@ The longest stages are usually:
   `.csv` and `.rda`;
 - `bg_acsdata`, because it applies ACS formulas and tract-to-blockgroup
   calculations;
-- `bg_geodata`, because it queries Census TIGERweb for every state and Puerto
-  Rico;
+- `bg_geodata`, because it downloads and reads Census TIGER/Line blockgroup
+  shapefiles for every state and Puerto Rico, with TIGERweb available as a
+  fallback. Reusing `EJAM_TIGER_BG_CACHE_DIR` makes later `bg_geodata` rebuilds
+  much faster because the state zip files do not need to be downloaded again;
 - final `blockgroupstats`/`bgej`/statistics/export calculations;
 - prior-version validation when comparing large blockgroup tables.
 

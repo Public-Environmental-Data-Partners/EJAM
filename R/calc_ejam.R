@@ -46,7 +46,10 @@ if (FALSE) {
 #' @param bg data.frame//table of indicators or variables to use
 #' @param keep.old names of columns (variables) to retain from among those provided in bg
 #' @param keep.new names of calculated variables to retain in output
-#' @param formulas text strings of formulas
+#' @param formulas text strings of formulas, or a data.frame with columns
+#'   `"rname"` and `"formula"`. Formula dependencies are sorted before
+#'   evaluation so intermediate variables are calculated before formulas that
+#'   use them.
 #' @param quiet if FALSE, prints to console success/failure of each formula
 #' @details
 #' - [custom_doaggregate()] may use [calc_ejam()]
@@ -143,7 +146,7 @@ calc_ejam <- function(bg,
   # }
 
   # if (missing(formulafile) & !missing(formulas)) {
-  myformulas <- formulas
+  myformulas <- calc_formulas_for_evaluation(formulas)
   ## could add error checking here
   # }
 
@@ -165,8 +168,11 @@ calc_ejam <- function(bg,
 #' DRAFT  utility to use formulas provided as text, to calculate indicators
 #'
 #' @param mydf data.frame of indicators or variables to use
-#' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
-#'   since the contents could potentially be a security risk
+#' @param formulas text strings of formulas, or a data.frame with columns
+#'   `"rname"` and `"formula"`. Formula dependencies are sorted before
+#'   evaluation. WARNING: this should not really be used on user-provided,
+#'   untrusted formula strings, since the contents could potentially be a
+#'   security risk
 #' @param keep useful if some of the formulas are just interim steps
 #'   creating evanescent variables created only for use in later formulas
 #'   and not needed after that
@@ -176,7 +182,7 @@ calc_ejam <- function(bg,
 #' @return data.frame of results, but
 #'   if mydf was a data.table, returns a table in [data.table](https://r-datatable.com) format
 #'
-calc_byformula <- function(mydf, formulas = NULL, keep = calc_varname_from_formula(formulas), quiet = FALSE) {
+calc_byformula <- function(mydf, formulas = NULL, keep = NULL, quiet = FALSE) {
 
 
   # DRAFT WORK NOT COMPLETE
@@ -192,8 +198,10 @@ calc_byformula <- function(mydf, formulas = NULL, keep = calc_varname_from_formu
   if (is.null(formulas)) {
     stop("no formulas specified or found, so no calculation done")
   }
-  formulas <- trimws(formulas)
-  formulas <- formulas[!is.na(formulas)]
+  formulas <- calc_formulas_for_evaluation(formulas)
+  if (is.null(keep)) {
+    keep <- calc_varname_from_formula(formulas)
+  }
   #  cat('\n formulas: ', formulas,'\n\n')
   #  cat('\n keep: ', keep,'\n\n')
 

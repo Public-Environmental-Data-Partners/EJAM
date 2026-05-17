@@ -195,7 +195,8 @@ stop("this is no longer used but might have useful notes on history of early wor
                   "lingisoeuro = C16002_007", "lingisoasian = C16002_010", "lingisoother = C16002_013",
                   "hhlds = B16002_001", "builtunits = B25034_001", "built1950to1959 = B25034_008",
                   "built1940to1949 = B25034_009", "builtpre1940 = B25034_010",
-                  "unemployedbase = B23025_003",   ##  careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+                  "unemployedbase = B23025_001",   ##  careful about names for variables related to pctunemployed - this is the age-16-plus universe, not the pctunemployed denominator
+                  "laborforce_universe = B23025_003",   ##  careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
                   "unemployed = B23025_005", "under5 <- ageunder5m + ageunder5f",
                   "pctunder5 <- ifelse( pop==0, 0, under5 / pop)", "over64 <- age65to66m + age6769m + age7074m + age7579m + age8084m + age85upm + age65to66f + age6769f + age7074f + age7579f + age8084f + age85upf",
                   "pctover64 <- ifelse( pop==0, 0, over64 / pop)", "nonmins <- nhwa",
@@ -217,7 +218,7 @@ stop("this is no longer used but might have useful notes on history of early wor
                   "lingiso <- lingisospanish + lingisoeuro + lingisoasian + lingisoother",
                   "pctlingiso <- ifelse( hhlds==0, 0, lingiso / hhlds)", "pre1960 <- builtpre1940 + built1940to1949 + built1950to1959",
                   "pctpre1960 <- ifelse( builtunits==0, 0, pre1960 / builtunits)",
-                  "pctunemployed <- ifelse(unemployedbase==0, 0, as.numeric(unemployed) / unemployedbase)", #  careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+                  "pctunemployed <- ifelse(laborforce_universe == 0, NA_real_, as.numeric(unemployed) / laborforce_universe)", #  careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
                   "pctover17 <- ifelse(pop == 0, 0, as.numeric(over17) / pop)",
                   "pctunder18 <- ifelse(pop == 0, 0, as.numeric(under18) / pop)",
                   "pctfire <- ifelse(pop == 0, 0, as.numeric(fire) / pop)", "pctfire30 <- ifelse(pop == 0, 0, as.numeric(fire30) / pop)",

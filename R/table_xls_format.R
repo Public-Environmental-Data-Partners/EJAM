@@ -307,9 +307,22 @@ table_xls_format <- function(overall,
           warning('cannot create plot_barplot_ratios() output')
           cat('cannot create plot_barplot_ratios() output\n')
         } else {
-          print(report_plot)
           openxlsx::addWorksheet(wb, sheetName = "plot_ratios",  gridLines = FALSE)
-          openxlsx::insertPlot(wb, "plot_ratios", width = 9, height = 7) # The current plot is saved to a temporary image file using dev.copy. This file is then written to the workbook using insertImage.
+          report_plot_file <- file.path(tempdir(), paste0("report_plot_", Sys.getpid(), ".png"))
+          ggplot2::ggsave(
+            filename = report_plot_file,
+            plot = report_plot,
+            width = 9,
+            height = 7,
+            units = "in"
+          )
+          openxlsx::insertImage(
+            wb,
+            sheet = "plot_ratios",
+            file = report_plot_file,
+            width = 9,
+            height = 7
+          )
         }
       } else {
         cat('cannot create plot_barplot_ratios() output because not all ratio columns are present - probably because calculate_ratios = FALSE \n')

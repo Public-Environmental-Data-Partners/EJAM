@@ -260,8 +260,33 @@ bad_numbers <- list(
 
 map2popups <- # popups_from_leaflet <-
   function(mymap) {
-    popup_data_where = which(sapply((mymap$x$calls[[2]])$args, function(z) (is.atomic(z) & is.character(z))) )
-    ((mymap$x$calls[[2]])$args)[[popup_data_where]]
+    calls <- mymap$x$calls
+    for (call in rev(calls)) {
+      if (identical(call$method, "addTiles")) {
+        next
+      }
+      args <- call$args
+      popup_arg <- names(args)[grepl("popup", names(args), ignore.case = TRUE)]
+      if (length(popup_arg) > 0) {
+        return(args[[popup_arg[1]]])
+      }
+      if (call$method %in% c("addPolygons", "addCircles", "addCircleMarkers") &&
+          length(args) >= 5 &&
+          is.atomic(args[[5]]) &&
+          is.character(args[[5]])) {
+        return(args[[5]])
+      }
+      popup_data_where <- which(vapply(args, function(z) {
+        is.atomic(z) &&
+          is.character(z) &&
+          length(z) > 0 &&
+          !all(grepl("^(https?://|#?[[:xdigit:]]{6}$|green$|red$|blue$)$", z))
+      }, logical(1)))
+      if (length(popup_data_where) > 0) {
+        return(args[[popup_data_where[1]]])
+      }
+    }
+    stop("cannot find popup text in leaflet map")
   }
 map2popups_urls <- # popup_urls_from_popups <-
   function(mymap) {
@@ -343,12 +368,28 @@ if (FALSE) {
 }
 ################################# # ################################# #
 
-# >>> cleanup after testing?? ####
-# # Run after all tests
-# # Setup code is typically best used to create external resources that are needed by many tests. It’s best kept to a minimum because you will have to manually run it before interactively debugging tests.
-# # But, is this right?  it is from the help example but what is cleanup() ?? ***
-# # Needs to be fixed:
-#
-# withr::defer(cleanup(), teardown_env())
+# >>> cleanup after testing ####
+
+cleanup_rplots_pdf <- function() {
+  possible_dirs <- unique(c(
+    getwd(),
+    file.path(getwd(), "tests", "testthat"),
+    file.path(getwd(), ".."),
+    file.path(getwd(), "..", ".."),
+    file.path(getwd(), "..", "..", "tests", "testthat")
+  ))
+  possible_files <- file.path(
+    normalizePath(possible_dirs, mustWork = FALSE),
+    "Rplots.pdf"
+  )
+  invisible(unlink(unique(possible_files), force = TRUE))
+}
+
+cleanup_rplots_pdf()
+cleanup_env <- tryCatch(
+  testthat::teardown_env(),
+  error = function(e) globalenv()
+)
+withr::defer(cleanup_rplots_pdf(), cleanup_env)
 
 ################################# # ################################# #

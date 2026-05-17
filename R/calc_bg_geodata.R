@@ -3,14 +3,20 @@
 #' Blockgroup geography fields used by the EJSCREEN/EJAM pipeline
 #'
 #' @details `bg_geodata` stores Census/TIGER blockgroup geography attributes
-#' needed by later pipeline stages. By default the function queries Census
-#' TIGERweb for only the blockgroup attributes EJAM needs, and it discovers the
-#' Census Block Groups layer for the requested ACS/TIGER vintage instead of
-#' assuming that TIGERweb layer numbers are stable across years. `arealand` and
-#' `areawater` are Census square-meter fields and should be used for area
-#' weighting and area-derived checks. The legacy `area` column is retained only
-#' for compatibility with older EJScreen/EJAM tables and should not be used for
-#' calculations.
+#' needed by later pipeline stages. By default the function downloads Census
+#' TIGER/Line blockgroup shapefiles for the requested ACS/TIGER vintage and
+#' extracts only the attributes EJAM needs. TIGERweb remains available as a
+#' fallback or explicit lighter-weight source, and its Census Block Groups layer
+#' is discovered at runtime instead of assuming that TIGERweb layer numbers are
+#' stable across years. `arealand` and `areawater` are Census square-meter
+#' fields and should be used for area weighting and area-derived checks. The
+#' legacy `area` column is retained only for compatibility with older
+#' EJScreen/EJAM tables and should not be used for calculations. When
+#' `reuse_existing_if_missing = TRUE`, missing legacy `area` values can be
+#' filled from `existing_blockgroupstats` without replacing Census `arealand`
+#' or `areawater`. If the fallback `bgfips` universe does not match, legacy
+#' `area` remains `NA` while Census `arealand` and `areawater` remain available
+#' for calculations.
 #'
 #' @param yr ACS/TIGER vintage year.
 #' @param bgfips optional vector of blockgroup FIPS codes that define the
@@ -21,21 +27,27 @@
 #' @param existing_blockgroupstats optional existing blockgroupstats-like table
 #'   used only as an explicit fallback source.
 #' @param reuse_existing_if_missing logical. If TRUE, reuse `arealand` and
-#'   `areawater` from `existing_blockgroupstats` when TIGER data are missing.
-#'   This requires the old and new `bgfips` sets to match unless
-#'   `allow_partial_reuse` is TRUE.
+#'   `areawater` from `existing_blockgroupstats` when TIGER data are missing,
+#'   and fill missing compatibility-only `area` values from
+#'   `existing_blockgroupstats` when available. This requires the old and new
+#'   `bgfips` sets to match unless `allow_partial_reuse` is TRUE.
 #' @param allow_partial_reuse logical. If TRUE, allow fallback reuse when the
 #'   old and new `bgfips` sets differ, with a warning and possible missing
 #'   values.
 #' @param download logical. If TRUE, download Census blockgroup geography
 #'   attributes when `bg_geodata` is not supplied.
-#' @param geodata_source preferred Census source. `"tigerweb"` queries only
-#'   needed attributes from Census TIGERweb and is the default. `"tiger"`
-#'   downloads TIGER/Line blockgroup zip files.
+#' @param geodata_source preferred Census source. `"tiger"` downloads
+#'   TIGER/Line blockgroup zip files and is the default because it best matches
+#'   legacy EJScreen/EJAM `arealand` and `areawater` values. `"tigerweb"`
+#'   queries only needed attributes from Census TIGERweb and is used as a
+#'   fallback.
 #' @param tigerweb_base_url Census TIGERweb REST base URL.
 #' @param tiger_base_url Census TIGER base URL used by the TIGER/Line zip
 #'   fallback.
-#' @param download_dir local folder for downloaded TIGER/Line zip files.
+#' @param download_dir local folder for downloaded TIGER/Line zip files. By
+#'   default this uses `EJAM_TIGER_BG_CACHE_DIR` when set, otherwise the user
+#'   cache folder from [tools::R_user_dir()] so state zip files can be reused
+#'   across pipeline runs and R sessions.
 #' @param download_timeout timeout in seconds for Census downloads.
 #' @param download_retries number of retries after a failed Census download.
 #' @param pipeline_dir folder for saving the pipeline stage.
@@ -60,10 +72,10 @@ calc_bg_geodata <- function(yr,
                             reuse_existing_if_missing = FALSE,
                             allow_partial_reuse = FALSE,
                             download = is.null(bg_geodata),
-                            geodata_source = c("tigerweb", "tiger"),
+                            geodata_source = c("tiger", "tigerweb"),
                             tigerweb_base_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb",
                             tiger_base_url = "https://www2.census.gov/geo/tiger",
-                            download_dir = file.path(tempdir(), "ejam_tiger_bg"),
+                            download_dir = ejscreen_tiger_bg_cache_dir(),
                             download_timeout = 3600,
                             download_retries = 2,
                             pipeline_dir = NULL,
@@ -220,6 +232,35 @@ complete_bg_geodata <- function(bg_geodata = NULL,
     }
   }
 
+  if ("area" %in% names(out) &&
+      any(is.na(out$area)) &&
+      isTRUE(reuse_existing_if_missing) &&
+      !is.null(existing_blockgroupstats)) {
+    fallback <- normalize_bg_geodata(existing_blockgroupstats)
+    if ("area" %in% names(fallback)) {
+      if (length(bgfips) == 0) {
+        bgfips <- out$bgfips
+      }
+      same_universe <- setequal(fallback$bgfips, bgfips)
+      if (!same_universe && !isTRUE(allow_partial_reuse)) {
+        warning(
+          "Not reusing legacy area because existing and new bgfips sets differ. ",
+          "Leaving missing compatibility-only area values as NA. ",
+          "Census arealand/areawater remain available for calculations.",
+          call. = FALSE
+        )
+      } else {
+        if (!same_universe) {
+          warning("Reusing legacy area with non-matching bgfips sets; unmatched rows will remain missing.", call. = FALSE)
+        }
+        fallback <- fallback[, .(bgfips, area_fallback = area)]
+        out <- merge(out, fallback, by = "bgfips", all.x = TRUE, sort = FALSE)
+        out[is.na(area), area := area_fallback]
+        out[, area_fallback := NULL]
+      }
+    }
+  }
+
   for (col in c("intptlat", "intptlon")) {
     if (!col %in% names(out)) {
       out[, (col) := NA_real_]
@@ -242,10 +283,10 @@ complete_bg_geodata <- function(bg_geodata = NULL,
 
 download_bg_geodata_census <- function(yr,
                                        states,
-                                       preferred_source = c("tigerweb", "tiger"),
+                                       preferred_source = c("tiger", "tigerweb"),
                                        tigerweb_base_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb",
                                        tiger_base_url = "https://www2.census.gov/geo/tiger",
-                                       download_dir = file.path(tempdir(), "ejam_tiger_bg"),
+                                       download_dir = ejscreen_tiger_bg_cache_dir(),
                                        download_timeout = 3600,
                                        download_retries = 2) {
   preferred_source <- match.arg(preferred_source)
@@ -306,7 +347,7 @@ download_bg_geodata_tiger <- function(yr,
                                       states,
                                       tiger_base_url = "https://www2.census.gov/geo/tiger",
                                       tigerweb_base_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb",
-                                      download_dir = file.path(tempdir(), "ejam_tiger_bg"),
+                                      download_dir = ejscreen_tiger_bg_cache_dir(),
                                       download_timeout = 3600,
                                       download_retries = 2) {
   download_bg_geodata_census(
@@ -432,7 +473,7 @@ download_bg_geodata_tiger_legacy_zip_first <- function(yr,
                                                        states,
                                                        tiger_base_url = "https://www2.census.gov/geo/tiger",
                                                        tigerweb_base_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb",
-                                                       download_dir = file.path(tempdir(), "ejam_tiger_bg"),
+                                                       download_dir = ejscreen_tiger_bg_cache_dir(),
                                                        download_timeout = 3600,
                                                        download_retries = 2) {
   states <- normalize_state_fips(states)
@@ -491,7 +532,7 @@ download_bg_geodata_tiger_legacy_zip_first <- function(yr,
 download_tiger_bg_zip_with_retry <- function(yr,
                                              state,
                                              tiger_base_url = "https://www2.census.gov/geo/tiger",
-                                             download_dir = file.path(tempdir(), "ejam_tiger_bg"),
+                                             download_dir = ejscreen_tiger_bg_cache_dir(),
                                              download_retries = 2) {
   dir.create(download_dir, recursive = TRUE, showWarnings = FALSE)
   state <- normalize_state_fips(state)
@@ -499,7 +540,7 @@ download_tiger_bg_zip_with_retry <- function(yr,
     stop("state must be one 2-digit state FIPS code")
   }
   filename <- sprintf("tl_%s_%s_bg.zip", yr, state)
-  url <- paste0(gsub("/+$", "", tiger_base_url), "/TIGER", yr, "/BG/", filename)
+  urls <- tiger_bg_zip_urls(yr = yr, state = state, tiger_base_url = tiger_base_url)
   destfile <- file.path(download_dir, filename)
   if (tiger_zip_is_valid(destfile)) {
     return(destfile)
@@ -509,40 +550,67 @@ download_tiger_bg_zip_with_retry <- function(yr,
 
   last_error <- NULL
   attempts <- seq_len(as.integer(download_retries) + 1L)
-  for (attempt in attempts) {
-    if (attempt > 1L) {
-      message("Retrying TIGER BG file for state ", state, " (attempt ", attempt, " of ", length(attempts), ")")
+  for (url_index in seq_along(urls)) {
+    url <- urls[[url_index]]
+    if (url_index > 1L) {
+      message("Trying alternate TIGER BG file URL for state ", state)
     }
-    ok <- tryCatch(
-      {
-        utils::download.file(url, destfile = destfile, mode = "wb", quiet = FALSE, method = "libcurl")
-        TRUE
-      },
-      error = function(e) {
-        last_error <<- e
-        FALSE
-      },
-      warning = function(w) {
-        last_error <<- w
-        FALSE
+    for (attempt in attempts) {
+      if (attempt > 1L) {
+        message("Retrying TIGER BG file for state ", state, " (attempt ", attempt, " of ", length(attempts), ")")
       }
-    )
-    if (isTRUE(ok) && tiger_zip_is_valid(destfile)) {
-      return(destfile)
-    }
-    if (file.exists(destfile)) {
-      unlink(destfile)
-    }
-    if (attempt < length(attempts)) {
-      Sys.sleep(min(5 * attempt, 30))
+      ok <- tryCatch(
+        {
+          utils::download.file(url, destfile = destfile, mode = "wb", quiet = FALSE, method = "libcurl")
+          TRUE
+        },
+        error = function(e) {
+          last_error <<- e
+          FALSE
+        },
+        warning = function(w) {
+          last_error <<- w
+          FALSE
+        }
+      )
+      if (isTRUE(ok) && tiger_zip_is_valid(destfile)) {
+        return(destfile)
+      }
+      if (file.exists(destfile)) {
+        unlink(destfile)
+      }
+      if (attempt < length(attempts)) {
+        Sys.sleep(min(5 * attempt, 30))
+      }
     }
   }
   stop(
     "Failed to download TIGER blockgroup file for state ", state,
-    " from ", url, ". Last error: ",
+    " from ", paste(urls, collapse = " or "), ". Last error: ",
     if (is.null(last_error)) "download failed" else conditionMessage(last_error),
     call. = FALSE
   )
+}
+###################################################### #
+
+ejscreen_tiger_bg_cache_dir <- function(cache_dir = Sys.getenv("EJAM_TIGER_BG_CACHE_DIR", unset = "")) {
+  if (length(cache_dir) > 0 && !is.na(cache_dir[[1]]) && nzchar(cache_dir[[1]])) {
+    return(path.expand(cache_dir[[1]]))
+  }
+  file.path(tools::R_user_dir("EJAM", which = "cache"), "tiger_bg")
+}
+###################################################### #
+
+tiger_bg_zip_urls <- function(yr,
+                              state,
+                              tiger_base_url = "https://www2.census.gov/geo/tiger") {
+  state <- normalize_state_fips(state)
+  if (length(state) != 1) {
+    stop("state must be one 2-digit state FIPS code")
+  }
+  filename <- sprintf("tl_%s_%s_bg.zip", yr, state)
+  url <- paste0(gsub("/+$", "", tiger_base_url), "/TIGER", yr, "/BG/", filename)
+  c(url, paste0(url, "?download=1"))
 }
 ###################################################### #
 
@@ -565,6 +633,7 @@ tiger_zip_is_valid <- function(path) {
 read_tiger_bg_zip <- function(path) {
   exdir <- tempfile("ejam_tiger_bg_")
   dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(exdir, recursive = TRUE, force = TRUE), add = TRUE)
   utils::unzip(path, exdir = exdir)
   shp <- list.files(exdir, pattern = "\\.shp$", full.names = TRUE)
   if (length(shp) != 1L) {

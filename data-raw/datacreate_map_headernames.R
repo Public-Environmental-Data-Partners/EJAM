@@ -52,6 +52,8 @@ datacreate_map_headernames <- function(rawdir = "./data-raw",
   upsert_row("lan_arabic", "Number speaking Arabic at home", "names_d_language_count", "", "LAN_ARABIC")
   upsert_row("lan_other_and_unspecified", "Number speaking Other and unspecified languages at home", "names_d_language_count", "", "LAN_OTHER_AND_UNSPECIFIED")
 
+  upsert_row("lan_other", "Number speaking Arabic, Other, and unspecified languages at home", "names_d_language_count", "", "LAN_OTHER")
+  upsert_row("pctlan_other", "% speaking Arabic, Other, and unspecified languages at home", "names_d_language", "lan_universe", "PCT_LAN_OTHER")
   upsert_row("pctlan_german", "% speaking German or other West Germanic languages at home", "names_d_language", "lan_universe", "PCT_LAN_GERMAN")
   upsert_row("pctlan_other_ie", "% speaking Other Indo-European languages at home", "names_d_language", "lan_universe", "PCT_LAN_OTHER_IE")
   upsert_row("pctlan_tagalog", "% speaking Tagalog (including Filipino) at home", "names_d_language", "lan_universe", "PCT_LAN_TAGALOG")

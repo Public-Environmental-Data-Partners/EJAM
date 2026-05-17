@@ -4,18 +4,16 @@
 \alias{calc_byformula}
 \title{DRAFT  utility to use formulas provided as text, to calculate indicators}
 \usage{
-calc_byformula(
-  mydf,
-  formulas = NULL,
-  keep = calc_varname_from_formula(formulas),
-  quiet = FALSE
-)
+calc_byformula(mydf, formulas = NULL, keep = NULL, quiet = FALSE)
 }
 \arguments{
 \item{mydf}{data.frame of indicators or variables to use}
 
-\item{formulas}{text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
-since the contents could potentially be a security risk}
+\item{formulas}{text strings of formulas, or a data.frame with columns
+\code{"rname"} and \code{"formula"}. Formula dependencies are sorted before
+evaluation. WARNING: this should not really be used on user-provided,
+untrusted formula strings, since the contents could potentially be a
+security risk}
 
 \item{keep}{useful if some of the formulas are just interim steps
 creating evanescent variables created only for use in later formulas

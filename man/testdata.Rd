@@ -5,7 +5,13 @@
 \title{utility to show dir_tree of available files in testdata folders
 See list of samples of input files to try in EJAM, and output examples from EJAM functions}
 \usage{
-testdata(pattern = NULL, installed = TRUE, quiet = FALSE, folder_only = FALSE)
+testdata(
+  pattern = NULL,
+  installed = TRUE,
+  quiet = FALSE,
+  folder_only = FALSE,
+  ...
+)
 }
 \arguments{
 \item{pattern}{optional query regular expression, used as filter using when getting filenames}
@@ -19,6 +25,9 @@ rather than the locally installed version.}
 without seeing all the info in console and without browsing to the folder}
 
 \item{folder_only}{set TRUE to get only directories, no files}
+
+\item{...}{ignored; accepted for compatibility with callers that pass
+standard EJAM quiet/silentinteractive-style arguments.}
 }
 \value{
 path to local testdata folder comes with the EJAM package

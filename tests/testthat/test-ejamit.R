@@ -6,6 +6,9 @@
 # save setting and restore it on exit since some functions alter it
 old <- getOption("width")
 on.exit(options(width = old), add = TRUE)
+fips_bgs_in_fips1 <- EJAM:::fips_bgs_in_fips1
+fips2state_abbrev <- EJAM:::fips2state_abbrev
+pctile_from_raw_lookup <- EJAM:::pctile_from_raw_lookup
 ########################################################## #
 
 test_that('ejamit() returns a list with no error, for very simple example', {
@@ -19,6 +22,45 @@ test_that('ejamit() returns a list with no error, for very simple example', {
     })
   })
   expect_true('list' %in% class(v10))
+})
+########################################################## #
+
+test_that("dynamic bgej validation rejects stale bgej", {
+  e <- new.env(parent = emptyenv())
+  e$bgej <- data.frame(
+    bgfips = blockgroupstats$bgfips,
+    pop = blockgroupstats$pop + c(1, rep(0, nrow(blockgroupstats) - 1))
+  )
+  suppressWarnings({
+    ok <- EJAM:::dataload_dynamic_validate_bgej(envir = e, silent = TRUE)
+  })
+  expect_false(ok)
+  expect_false(exists("bgej", envir = e, inherits = FALSE))
+})
+########################################################## #
+
+test_that("bgej is classified as EJSCREEN annual update data", {
+  expect_equal(
+    EJAM:::dynamic_data_group(c("bgej", "frs", "bgid2fips", "blockpoints")),
+    c(
+      bgej = "ejscreen_annual_update",
+      frs = "facility_data_update",
+      bgid2fips = "blockgroup_geography_update",
+      blockpoints = "block_geography_update"
+    )
+  )
+})
+########################################################## #
+
+test_that("bgej uses package-pinned release tag instead of latest", {
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag("bgej")),
+    paste0("v", as.character(utils::packageVersion("EJAM")))
+  )
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag("frs")),
+    "latest"
+  )
 })
 ########################################################## #
 

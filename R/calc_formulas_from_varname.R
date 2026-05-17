@@ -76,6 +76,38 @@ calc_formulas_sort_by_dependency <- function(formulas) {
 }
 ############################################################################## #
 
+calc_formulas_for_evaluation <- function(formulas) {
+  if (is.null(formulas)) {
+    return(NULL)
+  }
+
+  if (is.data.frame(formulas)) {
+    if (!all(c("rname", "formula") %in% names(formulas))) {
+      stop("Formula data frames must have columns named 'rname' and 'formula'")
+    }
+    formula_table <- formulas
+  } else {
+    formula_text <- as.character(formulas)
+    formula_text <- trimws(formula_text)
+    formula_text <- formula_text[!is.na(formula_text) & nzchar(formula_text)]
+    formula_table <- data.frame(
+      rname = calc_varname_from_formula(formula_text),
+      formula = formula_text,
+      stringsAsFactors = FALSE
+    )
+  }
+
+  formula_table <- formula_table[!is.na(formula_table$rname) &
+                                   nzchar(formula_table$rname) &
+                                   !is.na(formula_table$formula) &
+                                   nzchar(trimws(formula_table$formula)), ,
+                                 drop = FALSE]
+  formula_table$formula <- trimws(formula_table$formula)
+  formula_table <- calc_formulas_sort_by_dependency(formula_table)
+  formula_table$formula
+}
+############################################################################## #
+
 #' Compile formulas needed to calculate one or more final indicators
 #'
 #' @details Recursively finds formulas for any intermediate variables that are
@@ -103,7 +135,11 @@ calc_formulas_sort_by_dependency <- function(formulas) {
 calc_formulas_from_varname <- function(varname = "pctlowinc", formulas = NULL, top=TRUE) {
 
   if (is.null(formulas) || missing(formulas)) {
-    formulas <- formulas_ejscreen_acs
+    formulas <- rbind(
+      formulas_ejscreen_acs[,  c("rname", "formula")],
+      formulas_ejscreen_acs_disability[,  c("rname", "formula")],
+      formulas_ejscreen_demog_index[,  c("rname", "formula")]
+    )
   }
 
   formulas <- formulas[!is.na(formulas$rname) & !is.na(formulas$formula), ]

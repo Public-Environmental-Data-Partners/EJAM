@@ -16,15 +16,18 @@
 #'
 #'  Takes some time to download data for every State!
 #'
-#'  First get tract counts,
-#'  then apportion into blockgroup counts,
-#'  then calculate percents in blockgroups via formulas.
+#'  First get tract counts, then apportion tract counts into blockgroup counts
+#'  where that is how legacy EJSCREEN handled the indicator. Detailed language
+#'  counts from C16001 are tract-level values repeated on each blockgroup in the
+#'  tract, so language percentages are also tract-level percentages repeated on
+#'  each blockgroup.
 #'
 #'  For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
 #'  county equivalents while 2020 Decennial blockgroup FIPS use the older county
 #'  equivalents. When `tract_weight_source = "decennial2020"` and `acs_raw` is
-#'  available, the function detects this mismatch and repairs Connecticut
-#'  weights with same-vintage ACS blockgroup population weights.
+#'  available, the function detects this mismatch and remaps the 2020
+#'  Decennial weights to the same ACS blockgroup suffixes, using same-vintage
+#'  ACS blockgroup population weights only for ambiguous or unmatched cases.
 #'
 #' @param yr endyear of ACS 5-year survey to use, inferred if omitted
 #' @param tables ACS tract tables used for tract-derived indicators, typically
@@ -117,6 +120,17 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   tracts <- calc_ejam(tracts, formulas = formulas,
                       keep.old = "fips", keep.new = 'all')
 
+  if ("pctdisability" %in% names(tracts)) {
+    data.table::setnames(tracts, old = "pctdisability", new = "tract_pctdisability_rate")
+  }
+  if (!"tract_pctdisability_rate" %in% names(tracts) &&
+      all(c("disability", "disab_universe") %in% names(tracts))) {
+    tracts[, tract_pctdisability_rate := ifelse(
+      disab_universe == 0,
+      0,
+      as.numeric(disability) / disab_universe
+    )]
+  }
   # tracts$pctdisability <- NULL
   tracts <- tracts[, !grepl("^pct", names(tracts)), with = FALSE]
 
@@ -151,6 +165,7 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   lanvars_found = intersect(paste0("tract_", lanvars), names(tracts))
   neededvars = c('bgfips', 'bgwt',
                  'tract_disability', 'tract_disab_universe',
+                 intersect("tract_pctdisability_rate", names(tracts)),
                  intersect(c("tract_healthinsurance_universe", "tract_nohealthinsurance"), names(tracts)),
                  lanvars_found
   )
@@ -170,9 +185,10 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   }
 
   tract_lan_cols <- grep("^tract_lan_", names(bg_from_tracts), value = TRUE)
-  lan_counts_bg <- bg_from_tracts[, lapply(.SD, function(x) x * bgwt),
-                                  .SDcols = tract_lan_cols]
-  bg_from_tracts <- cbind(bg_from_tracts, lan_counts_bg)
+  for (this_lan_col in tract_lan_cols) {
+    this_bg_col <- sub("^tract_", "", this_lan_col)
+    bg_from_tracts[, (this_bg_col) := get(this_lan_col)]
+  }
   bg_from_tracts[, c(
     "tract_disability",
     "tract_disab_universe",
@@ -193,7 +209,15 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   ## apply formulas to it, to calculate bg scale percentages
   ## or just use the formula directly:
 
-  bg_from_tracts[, pctdisability := ifelse(disab_universe == 0, 0, as.numeric(disability) / disab_universe)]
+  if ("pctdisability_rate" %in% names(bg_from_tracts)) {
+    bg_from_tracts[, pctdisability := data.table::fifelse(
+      disab_universe == 0,
+      pctdisability_rate,
+      as.numeric(disability) / disab_universe
+    )]
+  } else {
+    bg_from_tracts[, pctdisability := ifelse(disab_universe == 0, 0, as.numeric(disability) / disab_universe)]
+  }
   if (all(c("healthinsurance_universe", "nohealthinsurance") %in% names(bg_from_tracts))) {
     bg_from_tracts[, pctnohealthinsurance := ifelse(
       healthinsurance_universe == 0,
@@ -440,7 +464,7 @@ repair_decennial_weights_with_acs_mismatched_states <- function(bgwts, acs_raw =
 
   if (length(mismatch_states) > 0) {
     warning(
-      "Using same-vintage ACS blockgroup population weights for state FIPS ",
+      "Remapping 2020 Decennial blockgroup-to-tract weights to ACS tract FIPS for state FIPS ",
       paste(mismatch_states, collapse = ", "),
       " because 2020 Decennial tract FIPS do not overlap the ACS tract FIPS. ",
       "This occurs for Connecticut in ACS 2022+ after Census adopted planning regions as county equivalents.",
@@ -456,22 +480,105 @@ repair_decennial_weights_with_acs_mismatched_states <- function(bgwts, acs_raw =
     )
   }
 
+  decennial_bgwts_all <- bgwts
   bgwts <- bgwts[
     !substr(bgfips, 1, 2) %in% mismatch_states &
       !tractfips %in% incomplete_tracts
   ]
+  remapped_bgwts <- data.table::rbindlist(
+    lapply(
+      mismatch_states,
+      remap_decennial_weights_to_acs_state,
+      decennial_bgwts = decennial_bgwts_all,
+      acs_bgwts = acs_bgwts
+    ),
+    use.names = TRUE
+  )
   bgwts <- data.table::rbindlist(
     list(
       bgwts,
-      acs_bgwts[
-        substr(bgfips, 1, 2) %in% mismatch_states |
-          tractfips %in% incomplete_tracts
-      ]
+      remapped_bgwts,
+      acs_bgwts[tractfips %in% incomplete_tracts]
     ),
     use.names = TRUE
   )
   data.table::setorder(bgwts, bgfips)
   bgwts
+}
+###################################################### #
+
+remap_decennial_weights_to_acs_state <- function(state,
+                                                 decennial_bgwts,
+                                                 acs_bgwts) {
+  decennial_state <- data.table::copy(decennial_bgwts[substr(bgfips, 1, 2) == state])
+  acs_state <- data.table::copy(acs_bgwts[substr(bgfips, 1, 2) == state])
+
+  if (nrow(decennial_state) == 0 || nrow(acs_state) == 0) {
+    return(acs_state)
+  }
+
+  decennial_state[, bg_suffix := substr(bgfips, 6, 12)]
+  acs_state[, bg_suffix := substr(bgfips, 6, 12)]
+
+  decennial_unique <- decennial_state[, .N, by = "bg_suffix"][N == 1, bg_suffix]
+  acs_unique <- acs_state[, .N, by = "bg_suffix"][N == 1, bg_suffix]
+  remap_suffixes <- intersect(decennial_unique, acs_unique)
+
+  if (length(remap_suffixes) == 0) {
+    warning(
+      "Could not remap any 2020 Decennial blockgroup weights for state FIPS ",
+      state,
+      "; using same-vintage ACS blockgroup population weights instead.",
+      call. = FALSE
+    )
+    acs_state[, bg_suffix := NULL]
+    return(acs_state)
+  }
+
+  acs_lookup <- acs_state[
+    bg_suffix %in% remap_suffixes,
+    .(
+      bg_suffix,
+      acs_bgfips = bgfips,
+      acs_tractfips = tractfips
+    )
+  ]
+  remapped <- decennial_state[
+    bg_suffix %in% remap_suffixes
+  ][
+    acs_lookup,
+    on = "bg_suffix"
+  ]
+  remapped[, `:=`(
+    bgfips = acs_bgfips,
+    tractfips = acs_tractfips,
+    acs_bgfips = NULL,
+    acs_tractfips = NULL,
+    bg_suffix = NULL
+  )]
+
+  fallback <- acs_state[!bg_suffix %in% remap_suffixes]
+  if (nrow(fallback) > 0) {
+    warning(
+      "Using same-vintage ACS blockgroup population weights for ",
+      nrow(fallback),
+      " ambiguous or unmatched blockgroup(s) in state FIPS ",
+      state,
+      ".",
+      call. = FALSE
+    )
+  }
+  fallback[, bg_suffix := NULL]
+
+  out <- data.table::rbindlist(
+    list(
+      remapped[, .(bgfips, tractfips, bgwt)],
+      fallback[, .(bgfips, tractfips, bgwt)]
+    ),
+    use.names = TRUE
+  )
+  data.table::setorder(out, bgfips)
+  out
 }
 ###################################################### #
 

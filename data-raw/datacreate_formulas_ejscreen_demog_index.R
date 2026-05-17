@@ -51,10 +51,10 @@ formulas_ejscreen_demog_index <- data.frame(
     "z.pctdisability = (pctdisability - avg.pctdisability) / sd.pctdisability",
 
     "Demog.Index = (z.pctlowinc + z.pctmin) / 2",
-    "Demog.Index.Supp = (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5",
+    "Demog.Index.Supp = ifelse(is.na(z.pctlowlifex), (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctdisability) / 4, (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5)",
 
     "Demog.Index.State      = (z.pctlowinc + z.pctmin) / 2", # # ??
-    "Demog.Index.Supp.State = (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5" # ???
+    "Demog.Index.Supp.State = ifelse(is.na(z.pctlowlifex), (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctdisability) / 4, (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5)"
   ),
   # longname_old = NA,
   longname = NA

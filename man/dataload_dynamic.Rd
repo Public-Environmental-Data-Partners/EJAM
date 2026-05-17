@@ -30,7 +30,9 @@ look in for locally saved copies}
 
 \item{onAttach}{Indicates whether the function is being called from onAttach. IF so, it will download all arrow files if necessary}
 
-\item{piggybacktag}{default is "latest" but if a different release were needed this could be changed.}
+\item{piggybacktag}{default is \code{"latest"} for dynamic Arrow data. Package-
+coupled annual datasets such as \code{bgej} override \code{"latest"} internally and
+use \code{paste0("v", packageVersion("EJAM"))} as their release tag.}
 }
 \value{
 returns vector of names of objects now in memory in specified envir, either because
@@ -44,7 +46,15 @@ returns vector of names of objects now in memory in specified envir, either beca
 Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)
 }
 \details{
-First checks memory, then installed package's data folder
-When package is first loaded, all arrow files are downloaded from a repository called ejamdata
-into package's data directory
+First checks memory, then the installed package's data folder. When the
+package is first loaded, Arrow files are downloaded from the package's data
+repository, normally called \code{ejamdata}, into the package's data directory.
+
+Arrow files do not all follow the same release rule. Facility and most
+geography Arrow files are still treated as dynamic data and normally come
+from the latest applicable \code{ejamdata} release, tracked with the local
+\code{ejamdata_version.txt} marker. Annual EJSCREEN/EJAM data files such as
+\code{bgej.arrow} are package-coupled: they are pinned to the installed EJAM
+package version, so EJAM 2.5.0 looks for \code{bgej.arrow} in the \code{ejamdata}
+release tagged \code{v2.5.0} rather than in the latest data-repository release.
 }
