@@ -46,14 +46,14 @@ Also, you can use this to extract any info from `map_headernames` (which
 here is called mapping_for_names).
 
 NOTE: if you ask to rename your words to a known type like rname or
-apiname, and the namesnow is not found among the oldtype, then it is not
-renamed, and those are returned as unchanged. BUT, if you specify as
-newtype some column that is not a known type of name, like "varcategory"
-then it will instead return an empty string for those in namesnow that
-are not found among the oldtype. That way if you are really seeking a
-new name, but it cannot rename, it keeps the old name while if you are
-really seeking metadata like what category it is in, it returns a blank
-if the old name is not found at all.
+ejscreen_apinames_old, and the namesnow is not found among the oldtype,
+then it is not renamed, and those are returned as unchanged. BUT, if you
+specify as newtype some column that is not a known type of name, like
+"varcategory" then it will instead return an empty string for those in
+namesnow that are not found among the oldtype. That way if you are
+really seeking a new name, but it cannot rename, it keeps the old name
+while if you are really seeking metadata like what category it is in, it
+returns a blank if the old name is not found at all.
 
 These are some key column names in the
 [map_headernames](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
@@ -66,7 +66,7 @@ table:
 
 - "rname" (aka "r", the R variable names as used in the EJAM code)
 
-- "apiname" (aka "api", as used by the old EJSCREEN API)
+- "ejscreen_apinames_old" (aka "api", as used by the old EJSCREEN API)
 
 - "csvname" (aka "csv", as used in archived EJSCREEN CSV/FTP downloads
   for key indicators)
@@ -105,7 +105,7 @@ table:
 
  # see the different names for the same variable,
  # and see it is not in the csv tables on the FTP site
- varinfo("pcthisp", c("csvname", "acsname", "apiname"))
+ varinfo("pcthisp", c("csvname", "acsname", "ejscreen_apinames_old"))
 
  # EJAM:::names_whichlist("RAW_D_INCOME")
  fixcolnames(c("RAW_D_INCOME", "S_D_LIFEEXP"), 'api')

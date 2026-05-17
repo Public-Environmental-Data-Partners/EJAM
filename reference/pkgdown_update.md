@@ -41,7 +41,9 @@ pkgdown_update(
 
 - dodocument:
 
-  use devtools::document() ? usually should leave TRUE
+  use
+  [`roxygen2::roxygenise()`](https://roxygen2.r-lib.org/reference/roxygenize.html)
+  to regenerate documentation? Usually should leave TRUE.
 
 - doinstall:
 

@@ -46,3 +46,8 @@ Useful links:
 
 **Maintainer**: Mark A. Corrales <ejam@ejanalysis.com>
 ([ORCID](https://orcid.org/0000-0002-1696-5638))
+
+Authors:
+
+- Mark A. Corrales <ejam@ejanalysis.com>
+  ([ORCID](https://orcid.org/0000-0002-1696-5638))

@@ -98,11 +98,11 @@
 
 
 <dl><dt id="arg-variables">variables<a class="anchor" aria-label="anchor" href="#arg-variables"></a></dt>
-<dd><p>Vector of variables - see get_acs from tidycensus package</p></dd>
+<dd><p>Vector of variables - see <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p></dd>
 
 
 <dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
-<dd><p>see get_acs from tidycensus package.</p>
+<dd><p>see <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p>
 <p>EJSCREEN-relevant key tables are listed in the details section here.</p></dd>
 
 
@@ -116,7 +116,7 @@ Tries to use the most recent available if not specified.</p></dd>
 
 
 <dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-state">state<a class="anchor" aria-label="anchor" href="#arg-state"></a></dt>
@@ -124,39 +124,39 @@ Tries to use the most recent available if not specified.</p></dd>
 
 
 <dt id="arg-county">county<a class="anchor" aria-label="anchor" href="#arg-county"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-zcta">zcta<a class="anchor" aria-label="anchor" href="#arg-zcta"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-geometry">geometry<a class="anchor" aria-label="anchor" href="#arg-geometry"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-keep-geo-vars">keep_geo_vars<a class="anchor" aria-label="anchor" href="#arg-keep-geo-vars"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-summary-var">summary_var<a class="anchor" aria-label="anchor" href="#arg-summary-var"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-moe-level">moe_level<a class="anchor" aria-label="anchor" href="#arg-moe-level"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-survey">survey<a class="anchor" aria-label="anchor" href="#arg-survey"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-show-call">show_call<a class="anchor" aria-label="anchor" href="#arg-show-call"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-geography">geography<a class="anchor" aria-label="anchor" href="#arg-geography"></a></dt>
@@ -170,7 +170,7 @@ if you omit the space or capitalize by accident)</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>see get_acs from tidycensus package</p></dd>
+<dd><p>see get_acs() from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -181,7 +181,7 @@ if you omit the space or capitalize by accident)</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>See newer ACSdownload::get_acs_new() as used in calc_blockgroupstats_acs() etc.,
 which will download ACS nationwide data by table
-instead of using acs_bybg(), which queryied API by State-by-State.</p>
+instead of using acs_bybg(), which queried the API state-by-state.</p>
 <p>acs_bybg() probably requires <a href="https://api.census.gov/data/key_signup.html" class="external-link">getting and specifying an API key for Census Bureau</a> ! (at least if query is large).
 see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package help</a>  envt var CENSUS_API_KEY</p>
 <p>NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:</p>
@@ -201,7 +201,7 @@ see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycens
 <span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
 <span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a> <span class="co"># disability is by tract only:</span></span>
 <span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a> <span class="fu">cbind</span>(<span class="fu">unique</span>(<span class="fu">grep</span>(<span class="st">"disab"</span>, x<span class="sc">$</span>concept, <span class="at">value =</span> T, <span class="at">ignore.case =</span> T) ))</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a> <span class="fu">cbind</span>(<span class="fu">unique</span>(<span class="fu">grep</span>(<span class="st">"disab"</span>, x<span class="sc">$</span>concept, <span class="at">value =</span> <span class="cn">TRUE</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) ))</span>
 <span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a> <span class="co"># x[substr(x$name,1,6) %in% "B18101" &amp; x$geography %in% "block group", ] |&gt; print(n=50) # none</span></span>
 <span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a> x[<span class="fu">substr</span>(x<span class="sc">$</span>name,<span class="dv">1</span>,<span class="dv">7</span>) <span class="sc">%in%</span> <span class="st">"B18101_"</span>  , ] <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">50</span>)</span></code></pre><p></p></div>
     </div>

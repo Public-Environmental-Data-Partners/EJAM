@@ -49,7 +49,7 @@ dataload_from_local(
 - return_data_table:
 
   whether the
-  [`arrow::read_ipc_file()`](https://arrow.apache.org/docs/r/reference/read_feather.html)
+  [`read_ipc_file()`](https://arrow.apache.org/docs/r/reference/read_feather.html)
   should return a table in [data.table](https://r-datatable.com) format
   (T, the default), or arrow (F)
 

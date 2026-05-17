@@ -1,7 +1,6 @@
-# search for vector of query terms, to see which ones are found in any of the files
+# Check which search terms are found in any file
 
-search for vector of query terms, to see which ones are found in any of
-the files
+Check which search terms are found in any file
 
 ## Usage
 
@@ -34,14 +33,25 @@ found_in_files(pattern_vector, path = "./R", ignorecomments = TRUE, ...)
 
 ## Value
 
-data.frame
+Logical vector, one element per search term in `pattern_vector`.
 
 ## Details
 
-Uses EJAM:::find_in_files()
+Uses
+[`find_in_files()`](https://public-environmental-data-partners.github.io/EJAM/reference/find_in_files.md)
+once for each element of `pattern_vector`.
+
+## See also
+
+[`find_in_files()`](https://public-environmental-data-partners.github.io/EJAM/reference/find_in_files.md)
+[`found_in_N_files_T_times()`](https://public-environmental-data-partners.github.io/EJAM/reference/found_in_N_files_T_times.md)
+[`grepn()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepn.md)
+[`grepns()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepns.md)
+[`grepls()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepls.md)
+[`grep_lines()`](https://public-environmental-data-partners.github.io/EJAM/reference/grep_lines.md)
 
 ## Examples
 
 ``` r
-  EJAM:::found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
+  EJAM:::found_in_files(c("gray", "grey"), quiet = FALSE, ignore.case = FALSE)
 ```

@@ -76,7 +76,7 @@
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>An object of class <code>character</code> of length 15.</p>
+    <p>An object of class <code>character</code> of length 16.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -91,14 +91,17 @@
 <li><p>B02001  race without hispanic ethnicity</p></li>
 <li><p>B15002  education</p></li>
 <li><p>B23025  unemployed</p></li>
-<li><p>C17002  low income, poor, etc.</p></li>
+<li><p>C17002  low income, poverty ratio population universe, etc.</p></li>
+<li><p>B17017  households below poverty level</p></li>
 <li><p>B19301  per capita income</p></li>
 <li><p>B25032  owned units vs rented units (occupied housing units, same universe as B25003)</p></li>
-<li><p>B28003  no broadband</p></li>
-<li><p>B27010  no health insurance</p></li>
+<li><p>B28002  no broadband internet subscription</p></li>
+<li><p>B27010  no health insurance. B27010 is available at blockgroup resolution,
+but the annual EJSCREEN pipeline uses tract-level B27010 for
+<code>pctnohealthinsurance</code> to match the historical EJSCREEN-style derivation.</p></li>
 <li><p>C16002  (language category and) % of households limited English speaking (lingiso) <a href="https://data.census.gov/table/ACSDT5Y2024.C16002" class="external-link">https://data.census.gov/table/ACSDT5Y2024.C16002</a></p></li>
 <li><p>B16004  (language category and) % of residents (not hhlds) speak no English at all <a href="https://data.census.gov/table/ACSDT5Y2024.B16004" class="external-link">https://data.census.gov/table/ACSDT5Y2024.B16004</a></p></li>
-</ul><p>TRACT ONLY, but also used by EJSCREEN:</p><ul><li><p>C16001   languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc. <a href="https://data.census.gov/table/ACSDT5Y2024.C16001" class="external-link">https://data.census.gov/table/ACSDT5Y2024.C16001</a></p></li>
+</ul><p>TRACT ONLY, but also used by EJSCREEN:</p><ul><li><p>C16001   languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.; EJSCREEN repeats these tract-level values on each blockgroup in the tract <a href="https://data.census.gov/table/ACSDT5Y2024.C16001" class="external-link">https://data.census.gov/table/ACSDT5Y2024.C16001</a></p></li>
 <li><p>B18101   disability</p></li>
 </ul></div>
     <div class="section level2">

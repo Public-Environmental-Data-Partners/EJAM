@@ -80,6 +80,7 @@ brew install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pk
 **Running all tests:**
 
 ``` r
+
 # Standard testthat approach
 devtools::test()
 
@@ -101,6 +102,7 @@ you MUST reinstall the package before tests will reflect those changes.
 **Running web app functionality tests:**
 
 ``` r
+
 library(shinytest2)
 library(EJAM)
 
@@ -117,6 +119,7 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 **Dependencies for shinytest2:**
 
 ``` r
+
 # webshot::install_phantomjs()  # Required for screenshots
 # also needs pandoc probably
 ```
@@ -128,6 +131,7 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 To run lintr locally:
 
 ``` r
+
 lintr::lint_dir(".")
 
 # CI uses SARIF output
@@ -142,6 +146,7 @@ them when reasonable.
 **Update just the .Rd files of documentation (roxygen2):**
 
 ``` r
+
 devtools::document()
 ```
 
@@ -149,6 +154,7 @@ devtools::document()
 documentation):**
 
 ``` r
+
 EJAM:::pkgdown_update() # see documentation of this function for details
 
 ## or:
@@ -160,6 +166,7 @@ EJAM:::pkgdown_update() # see documentation of this function for details
 **Running the app locally in RStudio:**
 
 ``` r
+
 library(EJAM)
 ejamapp()
 
@@ -171,6 +178,7 @@ ejamapp(isPublic = TRUE)
 **Running the app on a server once deployed:**
 
 ``` r
+
 # one option is this:
 source("app.R")
 

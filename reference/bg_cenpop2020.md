@@ -1,8 +1,8 @@
 # bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups
 
-data.table with all US Census 2020 blockgroups, Census 2020 population
-count, and lat/lon of Census2020-population-weighted centroid of
-blockgroup
+data.table with all US Census 2020 blockgroups, 12-character blockgroup
+FIPS, Census 2020 population count, and lat/lon of Census 2020
+population-weighted centroid of blockgroup.
 
 ## Usage
 
@@ -13,7 +13,7 @@ bg_cenpop2020
 ## Format
 
 An object of class `data.table` (inherits from `data.frame`) with 242335
-rows and 5 columns.
+rows and 6 columns.
 
 ## Details
 

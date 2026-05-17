@@ -2,7 +2,7 @@
 
 Like
 [`distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
-but for multiple sites - DRAFT FUNCTION
+but for multiple sites
 
 ## Usage
 

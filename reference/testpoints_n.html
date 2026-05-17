@@ -101,7 +101,9 @@ facility, blockgroup, block, place on the map, or US resident.</p>
 <li><p>frs or facility = Average Facility: random EPA-regulated facility from actives in Facility Registry Service (FRS)</p></li>
 <li><p>bg = Average Blockgroup: random US Census blockgroup (internal point like a centroid)</p></li>
 <li><p>block = Average Block: random US Census block (internal point like a centroid)</p></li>
-<li><p>area or place = Average Place: random point on a map (internal point of avg blockgroup weighted by its square meters size)</p></li>
+<li><p>area or place = Average Place: random point on a map (internal point of avg blockgroup weighted by its square meters size).
+If blockgroup <code>arealand</code> and <code>areawater</code> values are missing, all NA, or all zero,
+this warns and falls back to the default <code>frs</code> weighting.</p></li>
 </ul></dd>
 
 
@@ -110,7 +112,7 @@ facility, blockgroup, block, place on the map, or US resident.</p>
 
 
 <dt id="arg-st">ST<a class="anchor" aria-label="anchor" href="#arg-st"></a></dt>
-<dd><p>optional, can be a character vector of 2 letter State abbreviations to pick from only some States.</p></dd>
+<dd><p>optional vector of State abbreviations like "NC" to pick from only some States.</p></dd>
 
 
 <dt id="arg-validonly">validonly<a class="anchor" aria-label="anchor" href="#arg-validonly"></a></dt>
@@ -129,17 +131,17 @@ any other columns that are in the table used (based on weighting)</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="fu">testpoints_n</span><span class="op">(</span><span class="fl">300</span>, ST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'LA'</span>,<span class="st">'MS'</span><span class="op">)</span><span class="op">)</span> <span class="op">)</span></span>
-<span><span class="co"># \donttest{</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="fu">testpoints_n</span><span class="op">(</span><span class="fl">30</span>, weighting <span class="op">=</span> <span class="st">"bg"</span>, ST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LA"</span>, <span class="st">"MS"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span><span class="va">n</span><span class="op">=</span><span class="fl">2</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">d</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>,<span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">w</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'frs'</span>, <span class="st">'pop'</span>, <span class="st">'area'</span>, <span class="st">'bg'</span>, <span class="st">'block'</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">w</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'frs'</span>, <span class="st">'pop'</span>, <span class="st">'bg'</span>, <span class="st">'block'</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"n="</span>,<span class="va">n</span>,<span class="st">"  weighting="</span>,<span class="va">w</span>, <span class="st">"  dt="</span>,<span class="va">d</span>,<span class="st">"\n\n"</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">testpoints_n</span><span class="op">(</span><span class="va">n</span>, weighting <span class="op">=</span> <span class="va">w</span>, dt <span class="op">=</span> <span class="va">d</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">'\n'</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span><span class="op">}</span></span>
-<span><span class="co"># }</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -73,10 +73,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_blockgroupstats_from_tract_data</span><span class="op">(</span></span>
 <span>  <span class="va">yr</span>,</span>
-<span>  tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span><span class="op">)</span>,</span>
+<span>  tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span>, <span class="st">"B27010"</span><span class="op">)</span>,</span>
 <span>  formulas <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  acs_raw <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  acs_raw <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tract_weight_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"decennial2020"</span>, <span class="st">"acs"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,12 +90,14 @@
 
 
 <dt id="arg-tables">tables<a class="anchor" aria-label="anchor" href="#arg-tables"></a></dt>
-<dd><p>"B18101" and "C16001", e.g., for disability and detailed language spoken</p></dd>
+<dd><p>ACS tract tables used for tract-derived indicators, typically
+<code>"B18101"</code>, <code>"C16001"</code>, and <code>"B27010"</code> for disability, detailed language,
+and health insurance.</p></dd>
 
 
 <dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
 <dd><p>default includes formulas for disability-related and language-related indicators
-calculated from ACS variables found in tables "B18101" and "C16001" - This is a vector of string formulas.</p></dd>
+calculated from tract-level ACS variables. This is a vector of string formulas.</p></dd>
 
 
 <dt id="arg-dropmoe">dropMOE<a class="anchor" aria-label="anchor" href="#arg-dropmoe"></a></dt>
@@ -105,6 +108,13 @@ calculated from ACS variables found in tables "B18101" and "C16001" - This is a 
 <dd><p>optional raw ACS table list or <code>bg_acs_raw</code> pipeline object
 previously created by <code><a href="download_bg_acs_raw.html">download_bg_acs_raw()</a></code>. If supplied, no ACS download
 is performed for tract-resolution tables.</p></dd>
+
+
+<dt id="arg-tract-weight-source">tract_weight_source<a class="anchor" aria-label="anchor" href="#arg-tract-weight-source"></a></dt>
+<dd><p>source for blockgroup-to-tract apportionment
+weights. <code>"decennial2020"</code> uses 2020 Decennial Census population weights,
+matching the legacy EJSCREEN approach. <code>"acs"</code> uses same-vintage ACS
+blockgroup population from <code>acs_raw</code> or downloads it when needed.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -118,9 +128,17 @@ staged pipeline runner script <code>data-raw/run_ejscreen_acs2024_pipeline.R</co
 <p>Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()</p>
 <p>Needs Census API key for <code><a href="https://walker-data.com/tidycensus/reference/get_decennial.html" class="external-link">tidycensus::get_decennial()</a></code>.</p>
 <p>Takes some time to download data for every State!</p>
-<p>First get tract counts,
-then apportion into blockgroup counts,
-then calculate percents in blockgroups via formulas.</p>
+<p>First get tract counts, then apportion tract counts into blockgroup counts
+where that is how legacy EJSCREEN handled the indicator. Detailed language
+counts from C16001 are tract-level values repeated on each blockgroup in the
+tract, so language percentages are also tract-level percentages repeated on
+each blockgroup.</p>
+<p>For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
+county equivalents while 2020 Decennial blockgroup FIPS use the older county
+equivalents. When <code>tract_weight_source = "decennial2020"</code> and <code>acs_raw</code> is
+available, the function detects this mismatch and remaps the 2020
+Decennial weights to the same ACS blockgroup suffixes, using same-vintage
+ACS blockgroup population weights only for ambiguous or unmatched cases.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

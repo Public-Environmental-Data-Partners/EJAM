@@ -81,7 +81,7 @@ just points. This is like the output of
 [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md),
 or
 [`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
-if return_shp=F.
+if return_shp = FALSE.
 
 The ejam_uniq_id represents which of the input sites is being referred
 to, and the table will only have the ids of the sites where blocks were

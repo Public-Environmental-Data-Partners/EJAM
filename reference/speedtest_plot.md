@@ -12,7 +12,10 @@ speedtest_plot(x, ltype = "b", plotfile = NULL, secondsperthousand = FALSE)
 
 - x:
 
-  table from speedtest()
+  table from
+  [`speedtest()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest.md),
+  or one element of output of
+  [`speedtest_runtime_scenarios()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest_runtime_scenarios.md)
 
 - ltype:
 

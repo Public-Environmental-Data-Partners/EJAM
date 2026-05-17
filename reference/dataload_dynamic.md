@@ -1,6 +1,7 @@
-# Utility to download / load datasets
+# Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)
 
-Utility to download / load datasets
+Utility to download / load datasets (other than typical datasets, which
+get lazy-loaded from the data folder)
 
 ## Usage
 
@@ -39,7 +40,7 @@ dataload_dynamic(
 - return_data_table:
 
   whether the
-  [`arrow::read_ipc_file()`](https://arrow.apache.org/docs/r/reference/read_feather.html)
+  [`read_ipc_file()`](https://arrow.apache.org/docs/r/reference/read_feather.html)
   should return a table in [data.table](https://r-datatable.com) format
   (T, the default), or arrow (F). Passed to
   [`dataload_from_local()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.md)
@@ -51,8 +52,9 @@ dataload_dynamic(
 
 - piggybacktag:
 
-  default is "latest" but if a different release were needed this could
-  be changed.
+  default is `"latest"` for dynamic Arrow data. Package- coupled annual
+  datasets such as `bgej` override `"latest"` internally and use
+  `paste0("v", packageVersion("EJAM"))` as their release tag.
 
 ## Value
 
@@ -67,6 +69,16 @@ either because
 
 ## Details
 
-First checks memory, then installed package's data folder When package
-is first loaded, all arrow files are downloaded from a repository called
-ejamdata into package's data directory
+First checks memory, then the installed package's data folder. When the
+package is first loaded, Arrow files are downloaded from the package's
+data repository, normally called `ejamdata`, into the package's data
+directory.
+
+Arrow files do not all follow the same release rule. Facility and most
+geography Arrow files are still treated as dynamic data and normally
+come from the latest applicable `ejamdata` release, tracked with the
+local `ejamdata_version.txt` marker. Annual EJSCREEN/EJAM data files
+such as `bgej.arrow` are package-coupled: they are pinned to the
+installed EJAM package version, so EJAM 2.5.0 looks for `bgej.arrow` in
+the `ejamdata` release tagged `v2.5.0` rather than in the latest
+data-repository release.

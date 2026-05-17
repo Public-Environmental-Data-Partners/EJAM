@@ -132,7 +132,7 @@ Like latlon_from_anything() but this also adds a ejam_uniq_id column</p>
 <span> <span class="va">pts</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Lat <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lat</span>, Long <span class="op">=</span> <span class="va">testpoints_10</span><span class="op">$</span><span class="va">lon</span><span class="op">)</span></span>
 <span> <span class="fu">sitepoints_from_any</span><span class="op">(</span><span class="va">pts</span><span class="op">)</span></span>
 <span></span>
-<span> <span class="fu">sitepoints_from_anything</span><span class="op">(</span><span class="va">testpoints_bad</span>, set_invalid_to_na <span class="op">=</span> <span class="cn">F</span>, invalid_msg_table <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span> <span class="fu">sitepoints_from_anything</span><span class="op">(</span><span class="va">testpoints_bad</span>, set_invalid_to_na <span class="op">=</span> <span class="cn">FALSE</span>, invalid_msg_table <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span>   <span class="co">## Try this in an interactive R session:</span></span>
 <span>   <span class="co">##</span></span>

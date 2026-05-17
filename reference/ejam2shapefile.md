@@ -31,15 +31,15 @@ ejam2shapefile(
 
   optional filename with no path, with extension one of
   "geojson"/"json", "shp", "zip", "kml" (where zip and shp both mean a
-  .zip file that is a zipped set of .shp format files) Ignored if
-  save=F.
+  .zip file that is a zipped set of .shp format files) Ignored if save =
+  FALSE.
 
 - folder:
 
   optional - If omitted (and not running in shiny and if interactive()
   mode), this function prompts you to specify the folder where the file
   should be saved. If omitted and not running in shiny or not
-  interactive() mode, it uses tempdir(). Ignored if save=F.
+  interactive() mode, it uses tempdir(). Ignored if save = FALSE.
 
 - save:
 

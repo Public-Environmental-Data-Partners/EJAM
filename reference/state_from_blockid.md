@@ -26,9 +26,11 @@ unexported state_from_blockid_table()
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 x = sample(blockpoints$blockid, 3)
 EJAM:::state_from_blockid(x)[]
 mapfast(blockpoints[blockid %in% x, ])
 
 all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
+} # }
 ```

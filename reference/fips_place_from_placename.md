@@ -32,8 +32,8 @@ fips_place_from_placename(
 
 - usegrep:
 
-  DRAFT PARAM if exact=T, usegrep if TRUE will use the helper function
-  fips_place_from_placename_grep()
+  DRAFT PARAM if exact = TRUE, usegrep if TRUE will use the helper
+  function fips_place_from_placename_grep()
 
 - verbose:
 

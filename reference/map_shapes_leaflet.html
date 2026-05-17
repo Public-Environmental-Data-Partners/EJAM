@@ -115,7 +115,7 @@ or at least a data.frame that can be interpreted as indicating points via <code>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">out</span> <span class="op">=</span> <span class="va">testoutput_ejamit_10pts_1miles</span></span>
 <span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span> <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span></span>
 <span><span class="fu">map_shapes_leaflet</span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="ejam2shapefile.html">ejam2shapefile</a></span><span class="op">(</span><span class="va">out</span>, save<span class="op">=</span><span class="cn">F</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="ejam2shapefile.html">ejam2shapefile</a></span><span class="op">(</span><span class="va">out</span>, save <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>  popup <span class="op">=</span> <span class="fu"><a href="popup_from_ejscreen.html">popup_from_ejscreen</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span></code></pre></div>

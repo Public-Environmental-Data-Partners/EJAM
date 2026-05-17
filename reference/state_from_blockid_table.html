@@ -89,7 +89,8 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">blockpoints</span><span class="op">$</span><span class="va">blockid</span>, <span class="fl">3</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">blockpoints</span><span class="op">$</span><span class="va">blockid</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">state_from_blockid_table</span><span class="op">(</span><span class="va">blockpoints</span><span class="op">[</span><span class="va">blockid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">x</span>, <span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="op">]</span></span>
 <span><span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">blockpoints</span><span class="op">[</span><span class="va">blockid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">x</span>, <span class="op">]</span><span class="op">)</span></span>
 <span></span>
@@ -97,6 +98,7 @@
 <span><span class="co"># unique(EJAM:::state_from_latlon(testpoints_10)$ST) # slow</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="state_from_blockid.html">state_from_blockid</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">state_from_blockid_table</span><span class="op">(</span><span class="va">blockpoints</span><span class="op">[</span><span class="va">blockid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">x</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

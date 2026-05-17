@@ -93,6 +93,7 @@ Other files and related information:
 This function creates the following:
 
 
+
      > head(frs_by_programid)
                lat        lon  REGISTRY_ID   program   pgm_sys_id
        1: 44.13415 -104.12563 110012799846     STATE        #5005

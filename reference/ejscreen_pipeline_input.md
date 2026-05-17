@@ -40,15 +40,9 @@ ejscreen_pipeline_save(
   storage = c("auto", "local", "s3")
 )
 
-ejscreen_pipeline_stage_names()
+ejscreen_pipeline_stage_names(canonical_only = FALSE)
 
 ejscreen_pipeline_stage_canonical(stage)
-
-ejscreen_pipeline_dir(
-  root = tempdir(),
-  yr = NULL,
-  pipeline_name = "ejscreen_acs"
-)
 
 ejscreen_pipeline_stage_path(
   stage,
@@ -123,30 +117,37 @@ ejscreen_pipeline_storage_backend(
 
   logical passed to `EJAM:::ejscreen_pipeline_validate()`.
 
-- root:
+- canonical_only:
 
-  root folder where the pipeline folder should be created.
-
-- yr:
-
-  optional ACS end year or other year label to append to the pipeline
-  folder name.
-
-- pipeline_name:
-
-  short pipeline folder name.
+  optional logical set to TRUE in ejscreen_pipeline_stage_names() to
+  return only the canonical versions without any aliases
 
 ## Value
 
-\-`EJAM:::ejscreen_pipeline_stage_names()` returns known stage names.
--`EJAM:::ejscreen_pipeline_dir()`
-&`EJAM:::ejscreen_pipeline_stage_path()` return paths.
--`EJAM:::ejscreen_pipeline_save()` writes data to files and returns the
-path. -`EJAM:::ejscreen_pipeline_input()` &
-helper`EJAM:::ejscreen_pipeline_load()` read data from files or input,
-returns the data object. -`EJAM:::ejscreen_pipeline_storage_backend()`
-checks if using AWS s3 or local folder storage, returns one of "auto",
-"local", "s3"
+`EJAM:::ejscreen_pipeline_stage_names()` returns vector of allowed stage
+names and aliases, such as "bg_envirodata" etc., so that
+`EJAM:::ejscreen_pipeline_validate()` can check if a specified stage
+name is valid and apply the specific validation rules for that stage
+
+`EJAM:::ejscreen_pipeline_stage_canonical()` returns the character
+string input unchanged (if unrecognized) or returns the canonical
+version of a stage name, mapping any recognized alias like "envirodata"
+to the canonical name like "bg_envirodata"
+
+`EJAM:::ejscreen_pipeline_stage_path()` returns a path, with
+pipeline_dir as the folder(s) and filename based on stage and format
+(file extension), such as
+"some/temp/dir/ejscreen_acs_2024/bg_envirodata.csv"
+
+`EJAM:::ejscreen_pipeline_save()` writes data to files and returns the
+path, with many options for file format, local vs s3, validation, etc.
+
+`EJAM:::ejscreen_pipeline_input()` & helper
+`EJAM:::ejscreen_pipeline_load()` reads data from files or input,
+returns the data object
+
+`EJAM:::ejscreen_pipeline_storage_backend()` checks if using AWS s3 or
+local folder storage, returns one of "auto", "local", "s3"
 
 ## Details
 

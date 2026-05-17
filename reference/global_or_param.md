@@ -23,7 +23,7 @@ value of the param, or NULL if not found
 ## Details
 
 This and
-[`golem::get_golem_options()`](https://thinkr-open.github.io/golem/reference/get_golem_options.html)
+[`get_golem_options()`](https://thinkr-open.github.io/golem/reference/get_golem_options.html)
 are very similar tools, useful in server and ui. See help for
 [`get_global_defaults_or_user_options()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_global_defaults_or_user_options.md)
 

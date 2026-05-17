@@ -21,4 +21,4 @@ statestats
 
 ## Format
 
-An object of class `data.frame` with 5252 rows and 111 columns.
+An object of class `data.frame` with 5304 rows and 107 columns.

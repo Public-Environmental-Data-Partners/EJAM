@@ -8,10 +8,11 @@ available at only tract resolution (% disability & language detail)
 ``` r
 calc_blockgroupstats_from_tract_data(
   yr,
-  tables = c("B18101", "C16001"),
+  tables = c("B18101", "C16001", "B27010"),
   formulas = NULL,
   dropMOE = TRUE,
-  acs_raw = NULL
+  acs_raw = NULL,
+  tract_weight_source = c("decennial2020", "acs")
 )
 ```
 
@@ -23,14 +24,15 @@ calc_blockgroupstats_from_tract_data(
 
 - tables:
 
-  "B18101" and "C16001", e.g., for disability and detailed language
-  spoken
+  ACS tract tables used for tract-derived indicators, typically
+  `"B18101"`, `"C16001"`, and `"B27010"` for disability, detailed
+  language, and health insurance.
 
 - formulas:
 
   default includes formulas for disability-related and language-related
-  indicators calculated from ACS variables found in tables "B18101" and
-  "C16001" - This is a vector of string formulas.
+  indicators calculated from tract-level ACS variables. This is a vector
+  of string formulas.
 
 - dropMOE:
 
@@ -43,6 +45,13 @@ calc_blockgroupstats_from_tract_data(
   created by
   [`download_bg_acs_raw()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_acs_raw.md).
   If supplied, no ACS download is performed for tract-resolution tables.
+
+- tract_weight_source:
+
+  source for blockgroup-to-tract apportionment weights.
+  `"decennial2020"` uses 2020 Decennial Census population weights,
+  matching the legacy EJSCREEN approach. `"acs"` uses same-vintage ACS
+  blockgroup population from `acs_raw` or downloads it when needed.
 
 ## Value
 
@@ -63,5 +72,16 @@ Needs Census API key for
 
 Takes some time to download data for every State!
 
-First get tract counts, then apportion into blockgroup counts, then
-calculate percents in blockgroups via formulas.
+First get tract counts, then apportion tract counts into blockgroup
+counts where that is how legacy EJSCREEN handled the indicator. Detailed
+language counts from C16001 are tract-level values repeated on each
+blockgroup in the tract, so language percentages are also tract-level
+percentages repeated on each blockgroup.
+
+For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
+county equivalents while 2020 Decennial blockgroup FIPS use the older
+county equivalents. When `tract_weight_source = "decennial2020"` and
+`acs_raw` is available, the function detects this mismatch and remaps
+the 2020 Decennial weights to the same ACS blockgroup suffixes, using
+same-vintage ACS blockgroup population weights only for ambiguous or
+unmatched cases.

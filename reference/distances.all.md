@@ -82,6 +82,7 @@ and
 [sf::st_as_sf](https://r-spatial.github.io/sf/reference/st_as_sf.html)
 functions.
 
+
       *** Probably slower than it needs to be partly by using data.frame
        instead of matrix class? Maybe 10-20 percent faster if as.df=FALSE than if TRUE
       Just using distances.all is reasonably fast?

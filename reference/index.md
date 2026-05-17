@@ -462,12 +462,15 @@ distances
 - [`modelDoaggregate`](https://public-environmental-data-partners.github.io/EJAM/reference/modelDoaggregate.md)
   : Regression model to predict runtime for doaggregate
 - [`modelEjamit`](https://public-environmental-data-partners.github.io/EJAM/reference/modelEjamit.md)
-  : Regression model to predict runtime for ejamit
+  : Regression model to predict runtime for point-buffer ejamit analyses
 
 ### Using ACS Data to Calculate New Indicators
 
 - [`url_acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_acs_table_info.md)
   : get URL(s) of Census Bureau pages showing ACS 5-year tables examples
+- [`acs_table_info()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_table_info.md)
+  : utility to download and print some info about each variable in each
+  ACS 5yr table
 - [`acs_endyear()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_endyear.md)
   : check which ACS 5-year survey is available from Census Bureau or in
   EJAM/EJSCREEN
@@ -689,9 +692,6 @@ Report Percentiles or Means
   : barplot comparing sites on 1 indicator, based on table of site data
   a quick way to plot a calculated variable at each site, which
   ejam2barplot_sites() can't
-- [`plot_lorenz_popcount_by_site()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_lorenz_popcount_by_site.md)
-  : lorenz plot bysite (cumulative share of x vs cum share of y) -
-  DRAFT/EXPERIMENTAL COMPARES TWO subsets OF SITES (or people??)
 - [`ejam2barplot_sitegroups()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2barplot_sitegroups.md)
   : Barplot comparing groups of sites on 1 indicator, for output of
   ejamit_compare_types_of_places() easy high-level function for getting
@@ -743,8 +743,8 @@ Report Percentiles or Means
   : Barplot comparing ejamit_compare_distances() results for more than
   one radius
 - [`plot_distance_by_pctd()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_by_pctd.md)
-  : What percentage of this group's population lives less than X miles
-  from a site? — \*\*\* DRAFT - NEED TO RECHECK CALCULATIONS
+  : What is the indicator value (e.g., % low income) within X miles of a
+  site, as X increases (block by block)?
 - [`plot_distance_mean_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
   [`plot_distance_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
   [`distance_mean_by_group()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_mean_by_group.md)
@@ -756,9 +756,6 @@ Report Percentiles or Means
   : Each groups distribution of distances
 - [`plot_demogshare_by_distance()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_demogshare_by_distance.md)
   : plot_demogshare_by_distance - work in progress
-- [`plot_lorenz_distance_by_dcount()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_lorenz_distance_by_dcount.md)
-  : lorenz plot bybg_people (cumulative share of x vs cum share of y) -
-  DRAFT/EXPERIMENTAL COUNT OF SITES (or PEOPLE?) BY BIN
 
 ## Examples of Input & Output Data
 

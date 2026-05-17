@@ -37,11 +37,11 @@ distance_epa_api(
   meters. unit is called distanceUnit in the API: For planar distance,
   if distanceUnit is not specified, the distance is in the units of the
   given spatial reference. If distanceUnit is specified, the unit must
-  be compatible with the given spatial reference. That is, if sr is a
-  PCS, distanceUnit must be linear. If sr is a GCS, distanceUnit must be
-  angular. For geodesic distance, If distanceUnit is not specified, the
-  distance is measured in meters. If distanceUnit is specified, the unit
-  must be linear.
+  be compatible with the given spatial reference (note that crs is
+  called sr in the API). That is, if sr is a PCS, distanceUnit must be
+  linear. If sr is a GCS, distanceUnit must be angular. For geodesic
+  distance, If distanceUnit is not specified, the distance is measured
+  in meters. If distanceUnit is specified, the unit must be linear.
 
 - crs:
 
@@ -71,7 +71,11 @@ API](https://geopub.epa.gov/arcgis/help/en/rest/services-reference/enterprise/di
 ``` r
 pts <- testpoints_10[c(3,10),]
 distances.all(pts[1,],pts[2,])
+if (FALSE) { # \dontrun{
+# Calls EPA's live ArcGIS GeometryServer API, so it can fail if that
+# service is unavailable.
 d <- distance_epa_api(pts = pts)
 print(d)
 mapfast(pts, radius = d/2)
+} # }
 ```

@@ -73,10 +73,12 @@ up in a table of percentiles and raw cutoffs
 ``` r
 # examples of getting pctiles, averages, and ratios to averages
 # via functions that do parts of what is done in doaggregate()
-
+if (FALSE) { # \dontrun{
 #############################
 #  using ejamit() which uses doaggregate()
 
+library(EJAM)
+out = testoutput_ejamit_fips_cities
 testrows = c(14840L, 96520L, 105100L, 138880L, 237800L)
 testfips = blockgroupstats$bgfips[ testrows ]
 out = ejamit(fips = testfips)
@@ -127,6 +129,6 @@ pctiles <- cbind(
 data.table::setDT(pctiles)
 all.equal(pctiles, pctiles0)
 t(pctiles)
-
+} # }
 ############################# ############################## #
 ```

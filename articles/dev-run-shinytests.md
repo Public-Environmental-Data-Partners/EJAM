@@ -12,8 +12,7 @@ This package can use
 `testthat/setup-shinytest2.R` which defines
 `shinytest2_webapp_functionality()`, a function that contains the steps
 tested in the web app, and then directly uses that function from within
-test files like `/tests/testthat/test-webapp-latlon-functionality.R`
-etc.
+test files like `/tests/testthat/test-webapp-all-functionality.R`.
 
 ## Dev Environment
 
@@ -85,12 +84,14 @@ markup.
 ## EJAM’s shinytest2 Folder Structure
 
 ``` plaintext
+
 R/test_ejam.R
 
 tests/
   └── testthat/
       ├── setup.R
       ├── setup-shinytest2.R
+      ├── test-webapp-all-functionality.R
       └── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)
 ```
 
@@ -106,10 +107,16 @@ tests/
   web app UI interactions using the app to upload or select, and
   analyze, multiple data types (FIPS, shapefile, latlon, NAICS, etc.).
 
-- **`testthat/test-webapp-[DATA TYPE]-functionality.R`** – Each of these
-  calls `shinytest2_webapp_functionality()`, specifying the data type to
-  test with, after that helper has been made available by testthat’s
-  automatic sourcing of the setup files.
+- **`testthat/test-webapp-all-functionality.R`** – Runs the normal web
+  app functionality suite. It launches one Shiny app process and runs
+  the FIPS, FIPS picker, FRS, lat/lon, NAICS, and shapefile categories
+  sequentially inside that one app session.
+
+- **`testthat/test-webapp-[DATA TYPE]-functionality.R`** – Individual
+  category files are available for focused debugging. They are skipped
+  by default in ordinary `testthat` runs; set
+  `EJAM_SHINYTEST2_INDIVIDUAL=true` before running one if you want that
+  file to launch and test only that category.
 
 ## Updating Tests
 
@@ -151,37 +158,66 @@ One way to run the shinytests is via the GitHub Actions.
 Another way is this:
 
 ``` r
+
 x = EJAM:::test_ejam(ask=F, run_these="webapp")
 ```
+
+That path uses the combined web app test file, so the Shiny app is
+launched once for the full functionality suite instead of once per
+category.
 
 You can also run a test directly in an interactive R session. This is
 useful for debugging one category at a time.
 
 ``` r
+
 remotes::install_local() # once
 library(EJAM) # once
 source(testthat::test_path("setup.R")) # once. gets done automatically though, by things like testthat::test_file()
 
 # run a single test:
+Sys.setenv(EJAM_SHINYTEST2_INDIVIDUAL = "true")
 shinytest2_webapp_functionality("latlon")
 ```
 
 It is recommended during development to use
 [`remotes::install_local()`](https://remotes.r-lib.org/reference/install_local.html)
-to ensure your development code is the one tested. This is because
-shinytest2 automatically references the installed version of a package.
+to ensure your development code is the one tested. The web app tests
+launch the app in a separate R process, so by default they use the
+installed EJAM package. This is much faster than reloading the source
+tree for every web app test file.
+
+If you specifically need the spawned Shiny app process to use the
+current source tree without reinstalling, set this environment variable
+before running the tests:
+
+``` r
+
+Sys.setenv(EJAM_SHINYTEST2_USE_SOURCE = "true")
+```
+
+For normal test runs, leave `EJAM_SHINYTEST2_USE_SOURCE` unset and
+reinstall the package from local source first. If you need verbose Shiny
+tracing or reactlog output while debugging a failure, set:
+
+``` r
+
+Sys.setenv(EJAM_SHINYTEST2_TRACE = "true")
+```
 
 Another useful way was this (but this might be deprecated by shinytest2)
 
 ``` r
+
 # first, source `setup.R`, from the tests/testthat/ folder.
 source(testthat::test_path("setup.R"))
 
 # then for one subset of tests, like just the latlon analysis features:
+Sys.setenv(EJAM_SHINYTEST2_INDIVIDUAL = "true")
 shinytest2::test_app(".", filter="latlon-functionality", check_setup = FALSE)
 
 # for all the webapp functionality tests
-shinytest2::test_app(".", filter="-functionality", check_setup = FALSE)
+shinytest2::test_app(".", filter="all-functionality", check_setup = FALSE)
 ```
 
 ## GitHub Actions Integration
@@ -207,6 +243,16 @@ app will still work with the merged code.
   test runs the broad report download, spreadsheet download, details
   table, and plot checks; other categories should focus on
   category-specific selection and analysis checks.
+- Run the combined web app suite through
+  `test-webapp-all-functionality.R` or
+  `EJAM:::test_ejam(ask = FALSE, run_these = "webapp")`. The individual
+  category files are mainly debugging entry points.
+- Use the installed package by default for spawned Shiny app processes.
+  Only set `EJAM_SHINYTEST2_USE_SOURCE=true` when you need to debug
+  uninstalled source edits.
+- Leave `EJAM_SHINYTEST2_TRACE` unset for routine test runs, because
+  Shiny trace/reactlog output is mainly useful for debugging and can
+  slow the app tests.
 
 ## Updating Expected Behavior Checks
 

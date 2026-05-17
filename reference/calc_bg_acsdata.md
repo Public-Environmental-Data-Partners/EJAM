@@ -10,8 +10,9 @@ calc_bg_acsdata(
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tables = as.vector(EJAM::tables_ejscreen_acs),
   include_tract_data = TRUE,
-  tract_tables = c("B18101", "C16001"),
+  tract_tables = c("B18101", "C16001", "B27010"),
   tract_formulas = NULL,
+  tract_weight_source = c("decennial2020", "acs"),
   dropMOE = TRUE,
   acs_raw = NULL,
   acs_raw_stage = NULL,
@@ -52,6 +53,13 @@ calc_bg_acsdata(
   formulas used for tract-resolution ACS indicators. Defaults to
   [`calc_blockgroupstats_from_tract_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_blockgroupstats_from_tract_data.md)
   defaults.
+
+- tract_weight_source:
+
+  source for tract-to-blockgroup apportionment weights.
+  `"decennial2020"` matches the legacy EJSCREEN method by using 2020
+  Decennial Census blockgroup population weights. `"acs"` uses
+  same-vintage ACS blockgroup population weights.
 
 - dropMOE:
 

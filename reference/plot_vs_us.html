@@ -172,7 +172,7 @@ See <code>plot_boxplot_vs_ref()</code> for a Raw indicator vs. a reference distr
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_1000pts_1miles</span></span>
 <span>  <span class="co"># ejam2boxplot(out)</span></span>
 <span>  <span class="co"># plot_boxplot_vs_ref(out$results_bysite)</span></span>
@@ -189,7 +189,7 @@ See <code>plot_boxplot_vs_ref()</code> for a Raw indicator vs. a reference distr
 <span> <span class="co"># EJAM:::plot_vs_us(td, varname = "pctnhaa", type =  'ggplot')</span></span>
 <span> <span class="co"># EJAM:::plot_vs_us(td, varname = "pctnhaa", type = 'box', ylim = c(0,20))</span></span>
 <span> <span class="co"># EJAM:::plot_vs_us(td[td$ST %in% "DE", ], 'pcthisp', refdata = blockgroupstats[ST %in% "DE", .(pop, pcthisp)])</span></span>
-<span>  <span class="co"># }</span></span>
+<span>  <span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -163,6 +163,7 @@ vector of character string URLs – see details on sitenumber parameter
 ## Examples
 
 ``` r
+
  pts = data.frame(lat=37.64122, lon=-122.41065)
  pts2 = data.frame(lat = c(37.64122, 43.92249), lon = c(-122.41065, -72.663705))
  pts10 = testpoints_10

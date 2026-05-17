@@ -45,7 +45,9 @@ testpoints_n(
     centroid)
 
   - area or place = Average Place: random point on a map (internal point
-    of avg blockgroup weighted by its square meters size)
+    of avg blockgroup weighted by its square meters size). If blockgroup
+    `arealand` and `areawater` values are missing, all NA, or all zero,
+    this warns and falls back to the default `frs` weighting.
 
 - region:
 
@@ -53,8 +55,8 @@ testpoints_n(
 
 - ST:
 
-  optional, can be a character vector of 2 letter State abbreviations to
-  pick from only some States.
+  optional vector of State abbreviations like "NC" to pick from only
+  some States.
 
 - validonly:
 
@@ -75,15 +77,15 @@ the table used (based on weighting)
 ## Examples
 
 ``` r
-mapfast(testpoints_n(300, ST = c('LA','MS')) )
-# \donttest{
+mapfast(testpoints_n(30, weighting = "bg", ST = c("LA", "MS")))
+if (FALSE) { # \dontrun{
 n=2
 for (d in c(TRUE,FALSE)) {
-  for (w in c('frs', 'pop', 'area', 'bg', 'block')) {
+  for (w in c('frs', 'pop', 'bg', 'block')) {
     cat("n=",n,"  weighting=",w, "  dt=",d,"\n\n")
     print(x <- testpoints_n(n, weighting = w, dt = d)); print(class(x))
     cat('\n')
   }
 }
-# }
+} # }
 ```

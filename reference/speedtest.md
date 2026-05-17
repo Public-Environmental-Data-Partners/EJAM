@@ -9,6 +9,10 @@ how long each step takes
 speedtest(
   n = 10,
   sitepoints = NULL,
+  fips = NULL,
+  shapefile = NULL,
+  analysis_type = NULL,
+  analysis_subtype = NULL,
   weighting = "frs",
   radii = c(1, 3.106856, 5, 10, 31.06856)[1:3],
   avoidorphans = FALSE,
@@ -21,6 +25,9 @@ speedtest(
   logfilename = "log_n_datetime.txt",
   honk_when_ready = TRUE,
   saveoutput = FALSE,
+  collect_detailed = FALSE,
+  detail_point_counts = c(1L, 2L, 10L),
+  detailed_csv = NULL,
   plot = TRUE,
   getblocks_diagnostics_shown = FALSE,
   ...
@@ -40,6 +47,32 @@ speedtest(
   optional, (use if you do not want random points) data.frame of points
   or path/file with points, where columns are lat and lon in decimal
   degrees
+
+- fips:
+
+  optional vector of FIPS codes to time FIPS-based analysis instead of
+  point-buffer analysis. If provided, `speedtest()` times whole
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  runs rather than the point-specific substeps.
+
+- shapefile:
+
+  optional shapefile path or object to time polygon-based analysis
+  instead of point-buffer analysis. If provided, `speedtest()` times
+  whole
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  runs rather than the point-specific substeps.
+
+- analysis_type:
+
+  optional label for the kind of analysis being timed. Usually inferred
+  as `"points"`, `"fips"`, or `"shapefile"`.
+
+- analysis_subtype:
+
+  optional label for the subtype being timed. Usually inferred as
+  `"point_buffer"`, `"polygon"`, or the FIPS type such as `"city"` or
+  `"county"`.
 
 - weighting:
 
@@ -100,6 +133,25 @@ speedtest(
 
   but this slows it down if set to TRUE to save each run as .rda file
 
+- collect_detailed:
+
+  if `TRUE`, also collect a per-run timing table in the schema used by
+  legacy `Analysis_timing_results.csv` files
+
+- detail_point_counts:
+
+  when `collect_detailed = TRUE`, ensure runs for these counts are also
+  included when possible. For random-point runs, these values are added
+  to `n` if they are less than or equal to `max(n)`. For explicit
+  `sitepoints`, `fips`, or `shapefile` inputs, the first `k` rows or
+  codes are used for each requested `k` that is less than or equal to
+  the input size.
+
+- detailed_csv:
+
+  optional path to a `.csv` file where that detailed timing table should
+  be written. If provided, `collect_detailed` is forced to `TRUE`.
+
 - plot:
 
   whether to create plot of results
@@ -114,9 +166,10 @@ speedtest(
 
 ## Value
 
-EJAM results similar to as from the web app or
-[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
-and also creates a plot
+A summary timing table with one row per `(points, radius)` run. If
+`collect_detailed = TRUE`, the returned table also has an attribute
+called `"detailed_results"` containing a per-run timing table in the
+legacy `Analysis_timing_results.csv` schema.
 
 ## Details
 
@@ -156,6 +209,38 @@ if (FALSE) { # \dontrun{
     n = c(1e2,1e3,1e4),
     radii=c(1, 3.106856, 5, 10, 31.06856),
     logging=TRUE, honk=TRUE
+  )
+
+  EJAM:::speedtest(
+    n = c(100, 1000),
+    radii = c(1, 3.106856),
+    collect_detailed = TRUE,
+    detail_point_counts = c(1, 2, 10),
+    detailed_csv = "data-raw/Analysis_timing_results_new.csv",
+    logging = FALSE,
+    honk_when_ready = FALSE,
+    plot = FALSE
+  )
+
+  EJAM:::speedtest(
+    fips = EJAM::fips_counties_from_state_abbrev("DE"),
+    collect_detailed = TRUE,
+    detail_point_counts = c(1, 3),
+    detailed_csv = "data-raw/Analysis_timing_results_fips.csv",
+    plot = FALSE,
+    honk_when_ready = FALSE
+  )
+
+  EJAM:::speedtest(
+    shapefile = system.file(
+      "testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp",
+      package = "EJAM"
+    ),
+    collect_detailed = TRUE,
+    detail_point_counts = c(1, 3, 25),
+    detailed_csv = "data-raw/Analysis_timing_results_shapefile.csv",
+    plot = FALSE,
+    honk_when_ready = FALSE
   )
  } # }
 ```

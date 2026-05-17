@@ -1,7 +1,8 @@
-# Regression model to predict runtime for ejamit
+# Regression model to predict runtime for point-buffer ejamit analyses
 
-Modeled runtime for doaggregate and ejamitbased off 100 runs with random
-parameters. Use these models to make predictions in app_server
+Weighted runtime model for point-buffer ejamit analyses, fit from
+Analysis_timing_results\*.csv files with extra emphasis on small
+point-count runs.
 
 ## Usage
 
@@ -11,10 +12,14 @@ modelEjamit
 
 ## Format
 
-An object of class `lm` of length 12.
+An object of class `lm` of length 13.
 
 ## Details
 
-Ejamit's runtime is modeled off radius and number of rows of input
-dataset, doaggregate runtime is modeled off rows of getblocksnearby
-output
+Regression model to predict runtime for point-buffer ejamit analyses
+
+The model is trained from point-buffer rows in all
+Analysis_timing_results\*.csv files in data-raw/. Small runs such as 1,
+2, and 10 points are up-weighted so predictions are more accurate for
+small analyses. ejamit runtime is modeled from input_number and radius
+using weighted least squares.

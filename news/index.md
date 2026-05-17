@@ -4,11 +4,12 @@
 
 ### Updated Demographic Data from ACS
 
-- v2.5.0 provides 2020-2024 American Community Survey (ACS) demographic
-  data
+- Version 2.5.0 provides 2020-2024 American Community Survey (ACS)
+  demographic data
 
-- v2.32.\*, used throughout 2025, used 2018-2022 ACS data (even though
-  newer ACS 5-year survey data were available from Census Bureau).
+- Versions 2.32.\*, relied on 2018-2022 ACS data (throughout 2025-early
+  2026), even though newer ACS 5-year survey data had been released by
+  Census Bureau.
 
 - Note that Census Bureau discourages using ACS 5-year surveys for
   comparisons or trends if they have overlapping periods. Comparisons
@@ -27,24 +28,26 @@
       ones)
   4.  validate/save the many extra indicators like % low life expectancy
       (or re-use existing ones)
-  5.  calculate demographic indexes (using % low life expectancy, etc.)
-  6.  combine those blockgroup demog., envt., and extra indicators as
+  5.  validate/save Census/TIGER blockgroup geography fields such as
+      `arealand` and `areawater`
+  6.  calculate demographic indexes (using % low life expectancy, etc.)
+  7.  combine those blockgroup demog., envt., and extra indicators as
       \[blockgroupstats\]
-  7.  create percentile lookup tables for demographics and environmental
+  8.  create percentile lookup tables for demographics and environmental
       data
-  8.  calculate EJ indexes (from envt. percentiles and demog. indexes)
+  9.  calculate EJ indexes (from envt. percentiles and demog. indexes)
       and save as \[bgej\] table
-  9.  create percentile lookup tables for EJ indexes
-  10. combine those as \[usastats\] and \[statestats\] percentile lookup
+  10. create percentile lookup tables for EJ indexes
+  11. combine those as \[usastats\] and \[statestats\] percentile lookup
       tables
-  11. create an EJScreen-ready export file
+  12. create an EJScreen-ready export file
 
 - Added
   [`calc_ejscreen_dataset()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.md)
   as the high-level wrapper for the staged pipeline. It can read
   supplied R objects, read saved stages from disk, or create and save
   stages such as `bg_acsdata`, `bg_envirodata`, `bg_extra_indicators`,
-  `blockgroupstats`, `bgej`, `usastats`, `statestats`, and
+  `bg_geodata`, `blockgroupstats`, `bgej`, `usastats`, `statestats`, and
   `ejscreen_export`.
 
 - Added functions that can update ACS-based demographic dataset each
@@ -59,9 +62,31 @@
   outside R. The raw ACS checkpoint uses a folder-plus-manifest layout
   with one file per ACS table, which makes it easier to add supplemental
   ACS-like tables before the next stage runs. Pipeline storage can use a
-  local folder now and `s3://...` AWS S3 paths later, with Git LFS rules
-  in place if a checkpoint folder needs to be force-added to the
-  repository temporarily.
+  local folder now or `s3://...` AWS S3 paths, with Git LFS rules in
+  place if a checkpoint folder needs to be force-added to the repository
+  temporarily.
+
+- Pipeline stages can now be saved in multiple formats in the same run,
+  using `EJAM_STAGE_FORMATS` such as `csv,rda`. The CSV files remain the
+  primary easy-to-inspect checkpoints, while `.rda` siblings are also
+  written to S3 for R-native reuse.
+
+- Dynamic Arrow datasets are now classified by update group: Facility
+  Data Updates, EJSCREEN Annual Data Update, Blockgroup Geography
+  Updates, and Block Geography Updates. `bgej.arrow` is treated as
+  package-coupled annual EJSCREEN data and is pinned to the current EJAM
+  release tag, such as `v2.5.0`, rather than downloaded from the latest
+  data-repository release. The annual pipeline now writes
+  `dynamic_geography_arrow_report.csv` to check whether `bgid2fips`,
+  `blockwts`, `blockpoints`, `quaddata`, and `blockid2fips` are
+  compatible with the current blockgroup universe.
+
+- Fixed S3 handling in the pipeline so optional saved stages are
+  detected with the pipeline storage helper instead of local
+  [`file.exists()`](https://rdrr.io/r/base/files.html) checks, and
+  direct EJScreen export paths such as `s3://.../ejscreen_export.csv`
+  are written through the same AWS CLI upload helper used by other
+  stages.
 
 - Added `bg_envirodata` and `bg_extra_indicators` as explicit pipeline
   inputs. This makes it clear which columns come from ACS, which come
@@ -74,26 +99,156 @@
 - Added
   [`calc_bg_extra_indicators()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_extra_indicators.md)
   and related helpers for the non-ACS, non-environmental blockgroup
-  indicator stage.
+  indicator stage (e.g., % low life expectancy).
 
-- Added
+- Added `bg_geodata` as an explicit Census/TIGER blockgroup geography
+  pipeline stage. It extracts `bgfips`, `arealand`, `areawater`, and
+  internal-point latitude/longitude fields from TIGER blockgroup files.
+  The stage now prefers downloadable Census TIGER/Line shapefiles, with
+  TIGERweb as a fallback, because the TIGER/Line `ALAND` and `AWATER`
+  values best match legacy EJScreen/EJAM `arealand` and `areawater`
+  fields. Area weighting now relies on `arealand + areawater` in square
+  meters; the legacy `area` field is retained only for compatibility
+  with older EPA/EJScreen exports. TIGER/Line state zip files are now
+  cached in `EJAM_TIGER_BG_CACHE_DIR`, or the EJAM user cache folder by
+  default, so repeated geodata rebuilds can reuse the downloads.
+
+- Improved utility
+  [`calc_formulas_from_varname()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_formulas_from_varname.md)
+  that compiles all formulas needed to calculate specified indicators by
+  getting formulas for intermediate variables too. It had been checking
+  only `formulas_ejscreen_acs` but now also checks
+  `formulas_ejscreen_acs_disability` and `formulas_ejscreen_demog_index`
+  so this will work: `calc_formulas_from_varname("Demog.Index.Supp")`
+
+- Updated `formulas_ejscreen_demog_index` so `Demog.Index.Supp` and
+  `Demog.Index.Supp.State` average the four available supplemental
+  components when low life expectancy is missing, instead of returning
+  `NA` for the full supplemental demographic index.
+
+- Fixed
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+  so weighted-mean denominator columns such as
+  `healthinsurance_universe` are retained when available in
+  `blockgroupstats`, and refreshed the 10-point
+  [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md)
+  /
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  regression fixtures for the current ACS 2024 branch behavior. The
+  variable `healthinsurance_universe` is needed to calculate
+  `pctnohealthinsurance` but was not available in blockgroupstats in
+  EJAM v2.32.\* but is included there for EJAM v2.5.\*
+
+- ACS negative sentinel values for `percapincome` are now converted to
+  `NA` rather than treated as real income values, so community-report
+  summaries and
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  aggregations omit them through existing `na.rm = TRUE` behavior.
+  `percapincome` remains available in `blockgroupstats` but is no longer
+  included in default `usastats`/`statestats` lookup stages.
+
+- Fixed tract-to-blockgroup handling for ACS tract-only indicators such
+  as disability and detailed language variables. Disability counts use
+  tract-to-blockgroup population weights, while detailed C16001 language
+  values are repeated as tract-level values on each blockgroup in the
+  tract, matching the way the legacy EJSCREEN 2022 table stored those
+  values. Language percent fields now keep the precise Census-derived
+  fractions instead of reproducing legacy two-decimal rounding and `NA`
+  behavior. The default pipeline setting
+  `EJAM_TRACT_WEIGHT_SOURCE = "decennial2020"` now uses 2020 Decennial
+  Census blockgroup-to-tract population weights, matching the legacy
+  EJSCREEN apportionment approach. Same-vintage ACS population weights
+  remain available by setting `EJAM_TRACT_WEIGHT_SOURCE = "acs"`. For
+  Connecticut ACS 2022+ tract tables, the pipeline now detects the
+  Census planning-region FIPS change and repairs the decennial-weight
+  join with same-vintage ACS blockgroup weights for Connecticut,
+  preventing missing `pctdisability` values. Decennial blockgroup
+  weights are now created from packaged `bg_cenpop2020` data when
+  available, avoiding slow repeated Census API calls. The slower Census
+  API fallback is cached locally after the first download and can be
+  refreshed with `EJAM_REFRESH_DECENNIAL_BGWTS = "TRUE"`.
+
+- Fixed ACS formulas for `pctpre1960` and `pctnobroadband` so they use
+  the Census-defined source bins/universes. `pctpre1960` now uses B25034
+  pre-1960 housing-unit bins, and `pctnobroadband` now uses B28002
+  broadband Internet subscription fields rather than the C16002
+  household-language universe.
+
+- Added `healthinsurance_universe`, `nohealthinsurance`, and
+  `pctnohealthinsurance` to the staged ACS pipeline using Census ACS
+  table B27010. The legacy EJScreen 2022 table appears to mix rounded
+  fractions with values scaled 100 times smaller for many states, so the
+  new pipeline keeps precise Census-derived fractions rather than
+  reproducing that legacy scaling.
+
+- Updated the `pctunemployed` ACS formula so blockgroups with a zero
+  civilian labor-force denominator return `NA` rather than zero.
+
+- Updated `bg_cenpop2020` to retain the 12-character `bgfips` column.
+  Some Connecticut rows still do not have the legacy internal `bgid`
+  lookup, but the Census FIPS key is now preserved so those records are
+  not unusable.
+
+- Fixed
+  [`calc_ejscreen_blockgroupstats()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_blockgroupstats.md)
+  so the final blockgroup table keeps the union of blockgroups found in
+  ACS, environmental, and extra-indicator stages instead of dropping
+  rows that are temporarily missing from the ACS stage.
+
+- Sped up shinytest2 web app tests by making spawned Shiny app processes
+  use the installed `EJAM` package by default instead of repeating
+  [`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html)
+  for every web app test file. Set `EJAM_SHINYTEST2_USE_SOURCE=true` to
+  opt into source-tree loading while debugging, and set
+  `EJAM_SHINYTEST2_TRACE=true` only when Shiny trace/reactlog output is
+  needed. The normal `test_ejam(run_these = "webapp")` path now uses
+  `test-webapp-all-functionality.R`, which launches one Shiny app
+  process for the full web app functionality suite. The older
+  one-category web app test files remain available for debugging with
+  `EJAM_SHINYTEST2_INDIVIDUAL=true`.
+
+- Because the EJScreen web app needs its blockgroup dataset to include
+  some columns not used by EJAM, we have now added
   [`calc_ejscreen_export()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.md)
-  support for creating an EJScreen-ready dataset from `blockgroupstats`
-  and `bgej`, using `map_headernames` naming columns and adding EJScreen
-  EJ-index percentile fields such as `P_D2_...` and `P_D5_...` from the
-  saved EJ-index lookup tables. It then creates map helper fields such
-  as `B_...` map bins and `T_...` percentile popup text. The
-  `ejscreen_export` stage validates the `ID` key and map helper fields
-  before saving, and the pipeline runner writes an export schema report
-  for review.
+  support for creating an EJScreen-ready dataset from the EJAM datasets
+  `blockgroupstats` and `bgej`. The transformation uses
+  `map_headernames` to rename columns and adds EJScreen percentile
+  fields such as `P_PM25`, `P_LOWINCPCT`, `P_D2_...`, and `P_D5_...`
+  from the saved ACS, environmental, and EJ-index lookup tables. It then
+  creates map helper fields that specify color-coding for maps, such as
+  `B_...` map bins, and `T_...` percentile fields to provide map popup
+  text. The `ejscreen_export` stage now defaults to the full current
+  235-field EJScreen v2.32 block-group FeatureServer schema, including
+  exceedance-count fields, `OBJECTID`, and ArcGIS geometry service
+  fields. It validates the `ID` key and map helper fields before saving,
+  and the pipeline runner writes an export schema report for review.
 
 - Updated `map_headernames` naming support so EJAM names, current
   EJScreen export/app names, old EJScreen FTP names, and old EJScreen
-  API names can be tracked separately.
+  API names can be tracked separately. The current EJScreen export/app
+  base field name is now consolidated in `ejscreen_indicator`; the
+  separate `ejscreen_app` column was removed to avoid duplicating the
+  same names. Added explicit schema rows for EJScreen FeatureServer-only
+  fields such as `OBJECTID`, `EXCEED_COUNT_90`, `EXCEED_COUNT_90_SUP`,
+  `SYMBOLOGY_EXCEED_COUNT_80`, `Shape__Area`, and `Shape__Length`, and
+  restored current EJScreen names for `DEMOGIDX_2ST` and `DEMOGIDX_5ST`.
+  EJSCREEN map-bin and popup-text fields are now represented as their
+  own `map_headernames` rows with `rname` values like `bin.pm` and
+  `text.pm`, rather than as side columns on percentile rows. The old
+  side-name columns `ejscreen_pctile`, `ejscreen_bin`, and
+  `ejscreen_text` were retired, and the `.text` flag column was renamed
+  to `text.`. Redundant legacy metadata columns such as `apiname`,
+  `ejscreen_api`, `ejscreen_csv`, `ejscreen_gdb`, old version-specific
+  name columns, obsolete JSON/report sorting columns, and stale
+  matching/helper columns were removed; old EJScreen API names now live
+  in `ejscreen_apinames_old`.
 
 - Improved formula handling for ACS-derived indicators, including
-  dependency ordering and validation checks, and fixed the EPA Region
-  formula so it uses state FIPS rather than state abbreviations.
+  dependency ordering (i.e., if formula A’s inputs include formula B’s
+  output, formula B must be done first) and validation checks. Fixed the
+  EPA Region formula (uses state FIPS not state abbrev.).
+
+### Other changes
 
 - Reduced the exported API surface by making many pipeline-stage
   helpers, developer utilities, and thin wrapper functions internal.
@@ -103,10 +258,25 @@
   [`calc_ejscreen_dataset()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.md),
   and
   [`calc_ejscreen_export()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.md).
-
-- Updated tests, vignettes, maintainer scripts, pkgdown reference
+  Updated tests, vignettes, maintainer scripts, pkgdown reference
   indexing, and examples so internal helpers continue to work via
   `EJAM:::` where needed.
+
+- Improved the messages predicting how long it will take to run an
+  analysis. Runtime timing tools now distinguish point-buffer, FIPS, and
+  shapefile analyses. Detailed speed test CSVs include `analysis_type`
+  and `analysis_subtype`; FIPS subtypes come from `fipstype(fips)` so
+  city/place and county analyses can be modeled separately. Runtime
+  model rebuilding can keep separate
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  models by input type and subtype when scenario timing rows are
+  available, and the Shiny app now shows these scenario-aware runtime
+  estimates before starting an analysis.
+
+- Clarified “Plot Average Scores” barplot summary labels and ratio
+  wording in downloadable reports and the web app so they match report
+  semantics for the average site analyzed and average person at sites
+  analyzed.
 
 ## EJAM 2.4.0 (May 2026)
 
@@ -141,6 +311,10 @@ Other changes:
   Changed to `checkout@v4.3.0` not just `checkout@v4` in all gh action
   workflows
 - Revised/updated instructions for github copilot
+- Clarified “Plot Average Scores” barplot summary labels/ratio wording
+  to match report semantics (`Average site analyzed`,
+  `Average person at sites analyzed`) and reduce ambiguity. Closes
+  [\#128](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/128).
 
 ## EJAM 2.32.8 (April 2026)
 
@@ -261,7 +435,7 @@ cleanup, on 4/24/2026
   - Multisite report and spreadsheet download buttons now disabled until
     each is ready.
   - Spreadsheet file is now created automatically when results are done,
-    so it will be available immmediately if/when a user decides to
+    so it will be available immediately if/when a user decides to
     download it.
   - Client side user’s timezone is now used by shiny app to use the
     correct date for report footer. Otherwise a report run late in the

@@ -253,13 +253,13 @@ and related functions like
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
   EJAM:::table_xls_format(
-    testoutput_ejamit_100pts_1miles$results_overall,
-    testoutput_ejamit_100pts_1miles$results_bysite,
-    saveas =  "out1.xlsx")
+    overall = testoutput_ejamit_100pts_1miles$results_overall,
+    eachsite = testoutput_ejamit_100pts_1miles$results_bysite,
+    saveas = tempfile(fileext = ".xlsx"))
  # can just pass the whole results of ejamit(), for convenience
  wb <- EJAM:::table_xls_format(testoutput_ejamit_100pts_1miles)
- openxlsx::saveWorkbook(wb, file = "out2.xlsx", overwrite = T)
-# }
+ openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"), overwrite = TRUE)
+} # }
 ```

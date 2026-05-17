@@ -9,6 +9,7 @@ calc_ejscreen_dataset(
   yr,
   bg_envirodata = NULL,
   bg_extra_indicators = NULL,
+  bg_geodata = NULL,
   bg_acs_raw = NULL,
   bg_acsdata = NULL,
   blockgroupstats = NULL,
@@ -22,16 +23,25 @@ calc_ejscreen_dataset(
   overwrite = TRUE,
   validation_strict = TRUE,
   download_acs_raw = TRUE,
+  acs_download_fun = ACSdownload::get_acs_new,
   return_intermediate = TRUE,
   include_ejscreen_export = FALSE,
+  include_ejscreen_dataset_creator_input = FALSE,
   ejscreen_export_path = NULL,
+  ejscreen_dataset_creator_input_path = NULL,
   ejscreen_export_vars = NULL,
   ejscreen_export_required_names = NULL,
-  ejscreen_export_rename_newtype = "ejscreen_names",
+  ejscreen_export_rename_newtype = "ejscreen_indicator",
+  ejscreen_export_feature_server_fields = NULL,
   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
-  tract_tables = c("B18101", "C16001"),
+  tract_tables = c("B18101", "C16001", "B27010"),
+  tract_weight_source = c("decennial2020", "acs"),
   include_tract_data = TRUE,
   fiveorone = "5",
+  download_timeout = 3600,
+  download_retries = 2,
+  download_bg_geodata = FALSE,
+  blockgroup_universe_source = c("acs", "union"),
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tract_formulas = NULL,
   dropMOE = TRUE,
@@ -69,6 +79,11 @@ calc_ejscreen_dataset(
 
   non-ACS, non-enviro blockgroup indicators such as `lowlifex`, or NULL
   to read/reuse/create that stage.
+
+- bg_geodata:
+
+  Census/TIGER blockgroup geography stage, with square-meter `arealand`
+  and `areawater` fields.
 
 - bg_acs_raw:
 
@@ -133,6 +148,14 @@ calc_ejscreen_dataset(
   logical, whether to download raw ACS tables when neither `bg_acsdata`
   nor saved ACS stages are available.
 
+- acs_download_fun:
+
+  ACSdownload-compatible function used by
+  [`download_bg_acs_raw()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_acs_raw.md)
+  when raw ACS tables need to be downloaded. The default is
+  [`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html).
+  Supply a wrapper if you need a legacy ACS source implementation.
+
 - return_intermediate:
 
   logical. If TRUE, return key interim stage objects in addition to
@@ -143,9 +166,18 @@ calc_ejscreen_dataset(
   logical. If TRUE, also create an EJSCREEN-ready export using
   [`calc_ejscreen_export()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.md).
 
+- include_ejscreen_dataset_creator_input:
+
+  logical. If TRUE, also create the smaller pre-index input table
+  expected by EPA's `ejscreen-dataset-creator-2.3` Python tool.
+
 - ejscreen_export_path:
 
   optional file path for the EJSCREEN export.
+
+- ejscreen_dataset_creator_input_path:
+
+  optional file path for the EJScreen dataset-creator input table.
 
 - ejscreen_export_vars:
 
@@ -162,6 +194,12 @@ calc_ejscreen_dataset(
   [map_headernames](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md)
   to use when renaming the EJSCREEN export.
 
+- ejscreen_export_feature_server_fields:
+
+  optional final EJSCREEN FeatureServer field list. Defaults to the
+  current EJSCREEN v2.32 block group FeatureServer schema when an
+  EJSCREEN export is requested.
+
 - blockgroup_tables:
 
   ACS tables to download at blockgroup resolution.
@@ -171,6 +209,13 @@ calc_ejscreen_dataset(
   ACS tables to download at tract resolution for later blockgroup
   apportionment.
 
+- tract_weight_source:
+
+  source for tract-to-blockgroup apportionment weights.
+  `"decennial2020"` matches the legacy EJSCREEN method by using 2020
+  Decennial Census blockgroup population weights. `"acs"` uses
+  same-vintage ACS blockgroup population weights.
+
 - include_tract_data:
 
   logical, whether to download `tract_tables`.
@@ -178,6 +223,29 @@ calc_ejscreen_dataset(
 - fiveorone:
 
   ACS sample length, `"5"` by default.
+
+- download_timeout:
+
+  timeout in seconds to use while downloading ACS table files. This is
+  increased above R's usual 60 second default because some Census
+  table-based summary files are hundreds of MB.
+
+- download_retries:
+
+  number of times to retry a failed ACS table download after the initial
+  attempt.
+
+- download_bg_geodata:
+
+  logical, whether to download Census/TIGER blockgroup geography when
+  `bg_geodata` is not supplied or saved.
+
+- blockgroup_universe_source:
+
+  passed to
+  [`calc_ejscreen_blockgroupstats()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_blockgroupstats.md).
+  The default `"acs"` uses the ACS table rows as the authoritative
+  blockgroup universe for the requested ACS vintage.
 
 - formulas:
 
@@ -252,8 +320,10 @@ named list containing final datasets (`blockgroupstats`, `bgej`,
 
 ## Details
 
-`calc_ejscreen_dataset()` can be called from, for example, a script like
-the one in `data-raw/run_ejscreen_acs2024_pipeline.R`
+`calc_ejscreen_dataset()` can be called from a script each year. See the
+runner script `data-raw/run_ejscreen_acs2024_pipeline.R` for an example
+of how to call this function, and how it can be used to run the whole
+pipeline from start to finish with minimal manual intervention.
 
 `calc_ejscreen_dataset()` is a high-level wrapper around the staged
 annual update helpers. It is intentionally an orchestrator rather than a
@@ -272,29 +342,120 @@ The default stage order is:
 
 4.  validate/save `bg_extra_indicators` (e.g., % low life expectancy)
 
-5.  calculate demographic indexes (using % low life expectancy, etc.)
+5.  create or validate `bg_geodata`, the Census/TIGER blockgroup
+    geography attributes used for `arealand`, `areawater`, and
+    internal-point fields
 
-6.  combine those blockgroup demog., envt., and extra indicators as
+6.  calculate demographic indexes (using % low life expectancy, etc.)
+
+7.  combine those blockgroup demog., envt., extra, and geography
+    indicators as
     [blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md)
 
-7.  create intermediate percentile lookup tables `usastats_acs`,
+8.  create intermediate percentile lookup tables `usastats_acs`,
     `statestats_acs`, `usastats_envirodata`, `statestats_envirodata`
 
-8.  calculate EJ indexes (from envt. percentiles and demog. indexes) and
+9.  calculate EJ indexes (from envt. percentiles and demog. indexes) and
     save as
     [bgej](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md)
     table
 
-9.  create intermediate percentile lookup tables `usastats_ej`,
+10. create intermediate percentile lookup tables `usastats_ej`,
     `statestats_ej`
 
-10. combine those as
+11. combine those as
     [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md)
     and
     [statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md)
 
-11. create an EJScreen-ready export file (optionally)
+12. create an EJScreen-ready export file (optionally)
 
 `bg_envirodata` must include `pctpre1960`. That column may be produced
 by an upstream environmental-data step that reads the saved `bg_acsdata`
 stage.
+
+The annual pipeline creates the `bgej` stage, and the package-level
+dynamic Arrow loader obtains `bgej.arrow` from the `ejamdata` release
+that matches the EJAM package version currently in use. For example,
+when `packageVersion("EJAM")` reports `2.5.0`,
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
+and
+[`download_latest_arrow_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_latest_arrow_data.md)
+look for `bgej.arrow` in the `ejamdata` release tagged `v2.5.0`, not in
+the latest data-repository release.
+
+Note that the runner script can use several settings stored as
+environment variables:
+
+- EJAM_PIPELINE_YR
+
+- EJAM_PIPELINE_DIR: override output folder.
+
+- EJAM_PIPELINE_STORAGE: auto, local, or s3. auto treats s3:// paths as
+  S3.
+
+- EJAM_STAGE_FORMAT: primary stage format used for loading, usually csv.
+
+- EJAM_STAGE_FORMATS: comma-separated formats saved by the runner,
+  usually csv,rda.
+
+- EJAM_BLOCKGROUP_UNIVERSE_SOURCE: acs or union. acs is recommended.
+
+- EJAM_TRACT_WEIGHT_SOURCE: decennial2020 or acs. decennial2020 matches
+  legacy EJSCREEN tract-to-blockgroup apportionment.
+
+- AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
+
+- CENSUS_API_KEY: used by functions that download ACS data (or that
+  download boundaries/shapefiles for FIPS from some sources)
+
+- EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
+
+- EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
+
+- EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER
+  blockgroup geodata.
+
+- EJAM_ACS_DOWNLOAD_TIMEOUT
+
+- EJAM_ACS_DOWNLOAD_RETRIES
+
+- EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require
+  bg_envirodata.csv.
+
+- EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+
+- EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR\_\* settings control
+  prior-version comparisons.
+
+The annual runner also writes `pipeline_run_manifest.csv`, which records
+the package version, Git branch/SHA, ACS vintage, run settings, and
+whether provisional environmental or extra-indicator inputs were reused.
+
+Census/TIGER geography can occasionally include valid blockgroup
+features that are not present in the ACS summary-file tables for the
+same ACS vintage. For example, a draft ACS 2020-2024 build found 39
+Suffolk County, New York blockgroups in TIGER geography but not in the
+relevant ACS blockgroup or tract tables. The default
+`blockgroup_universe_source = "acs"` therefore treats `bg_acsdata` as
+the authoritative final blockgroup universe and uses `bg_geodata` only
+to annotate those rows.
+
+To check them:
+
+    print(
+    cbind(current_setting = Sys.getenv(c(
+      "EJAM_PIPELINE_YR",
+      "EJAM_PIPELINE_DIR", "EJAM_PIPELINE_STORAGE",
+      "EJAM_STAGE_FORMAT", "EJAM_STAGE_FORMATS",
+      "EJAM_BLOCKGROUP_UNIVERSE_SOURCE",
+      "AWS_PROFILE", "AWS_REGION",
+      "CENSUS_API_KEY",
+      "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
+      "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+      "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
+      "EJAM_INCLUDE_EJSCREEN_EXPORT",
+      "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
+      "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"
+    )))
+    )

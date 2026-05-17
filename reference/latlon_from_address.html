@@ -110,7 +110,7 @@ param as provided is ignored and set to TRUE if aoimap=TRUE</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>passed to geocode() see  <code><a href="https://rdrr.io/pkg/AOI/man/geoCode.html" class="external-link">help(geocode, package = "AOI")</a></code></p></dd>
+<dd><p>passed to <code>geocode()</code> from the optional AOI package.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -132,7 +132,7 @@ see the AOI package.</p>
 <span>  <span class="co"># #x &lt;- geocode(eg)</span></span>
 <span>  <span class="co"># out &lt;- ejamit(x, radius = 3)</span></span>
 <span>  <span class="co"># fname = system.file("testdata/address/testinput_address_table_9.xlsx", package="EJAM")</span></span>
-<span>  <span class="co">## or testdata('address_table_9', quiet = T)</span></span>
+<span>  <span class="co">## or testdata('address_table_9', quiet = TRUE)</span></span>
 <span></span>
 <span><span class="co">#x1 &lt;- read_csv_or_xl(fname)</span></span>
 <span><span class="co">#x2 &lt;- latlon_from_anything(fname)</span></span>

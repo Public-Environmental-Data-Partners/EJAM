@@ -232,13 +232,13 @@ and has side effect of launching browser to view it depending on return_html</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#out &lt;- ejamit(testpoints_10, radius = 3, include_ejindexes = T)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#out &lt;- ejamit(testpoints_10, radius = 3, include_ejindexes = TRUE)</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_10pts_1miles</span></span>
 <span></span>
-<span><span class="fu">ejam2report</span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
 <span><span class="fu"><a href="ejam2table_tall.html">ejam2table_tall</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">ejam2report</span><span class="op">(</span><span class="va">out</span>, sitenumber <span class="op">=</span> <span class="fl">1</span>, launch_browser <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span> <span class="fu">ejam2report</span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
+<span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">ejam2report</span><span class="op">(</span><span class="va">out</span>, sitenumber <span class="op">=</span> <span class="fl">1</span>, launch_browser <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="table_gt_from_ejamit_overall.html">table_gt_from_ejamit_overall</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="table_gt_from_ejamit_1site.html">table_gt_from_ejamit_1site</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>

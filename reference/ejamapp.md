@@ -76,8 +76,8 @@ ejamapp(
 ## Value
 
 An object that represents the app. Printing the object or passing it to
-[`shiny::runApp()`](https://rdrr.io/pkg/shiny/man/runApp.html) will run
-the app, as would just typing `ejamapp()` in the console.
+[`runApp()`](https://rdrr.io/pkg/shiny/man/runApp.html) will run the
+app, as would just typing `ejamapp()` in the console.
 
 ## Details
 

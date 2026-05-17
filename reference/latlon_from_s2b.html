@@ -103,11 +103,13 @@ which needs to figure out what state each site is in to use the right state perc
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">pts</span> <span class="op">=</span> <span class="va">testpoints_10</span></span>
-<span> <span class="co">#x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = T))</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span> <span class="va">pts</span> <span class="op">=</span> <span class="va">testpoints_10</span></span>
+<span> <span class="co">#x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = TRUE))</span></span>
 <span> <span class="va">x</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">latlon_from_s2b</span><span class="op">(</span><span class="va">testoutput_getblocksnearby_10pts_1miles</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="va">x</span>, <span class="va">pts</span>,</span>
 <span>   latratio <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">lat</span><span class="op">/</span><span class="va">pts</span><span class="op">$</span><span class="va">lat</span>, lonratio <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">lon</span><span class="op">/</span><span class="va">pts</span><span class="op">$</span><span class="va">lon</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

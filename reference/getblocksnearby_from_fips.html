@@ -119,9 +119,9 @@ much like output of <code><a href="getblocksnearby.html">getblocksnearby()</a></
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
 
-<ul><li><p>if return_shp=F, returns just a sites2blocks table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
+<ul><li><p>if return_shp = FALSE, returns just a sites2blocks table in <a href="https://r-datatable.com" class="external-link">data.table</a> format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
 This is like the <code><a href="getblocksnearby.html">getblocksnearby()</a></code> and <code><a href="get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code> outputs.</p></li>
-<li><p>if return_shp=T, returns a named list where pts is the table in <a href="https://r-datatable.com" class="external-link">data.table</a> format of sites2blocks,
+<li><p>if return_shp = TRUE, returns a named list where pts is the table in <a href="https://r-datatable.com" class="external-link">data.table</a> format of sites2blocks,
 and polys is the spatial data.frame with one row per input fips (including invalid ones).</p>
 <p>The ejam_uniq_id represents which of the input sites is being referred to, and the table
 will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8
@@ -134,12 +134,14 @@ were valid and had blocks identified, then the data.table here will only include
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">getblocksnearby_from_fips</span><span class="op">(</span><span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">getblocksnearby_from_fips</span><span class="op">(</span><span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="doaggregate.html">doaggregate</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="ejamit.html">ejamit</a></span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="fips_counties_from_statename.html">fips_counties_from_statename</a></span><span class="op">(</span><span class="st">"Delaware"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co"># x2 &lt;- getblocksnearby_from_fips("482011000011") # one blockgroup only</span></span>
-<span>  <span class="co"># y2 &lt;- doaggregate(x2)</span></span></code></pre></div>
+<span>  <span class="co"># y2 &lt;- doaggregate(x2)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

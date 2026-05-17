@@ -62,6 +62,7 @@ metadata_check(
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 x = EJAM:::metadata_check( which = "ejam_package_version")
 
 
@@ -71,4 +72,5 @@ x = EJAM:::metadata_check( which = "ejam_package_version")
   x <- EJAM:::metadata_check_print("EJAM")
   x[x$has_metadata == TRUE, ]
   table(x$has_metadata)
+} # }
 ```

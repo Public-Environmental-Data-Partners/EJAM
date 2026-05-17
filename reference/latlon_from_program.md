@@ -48,7 +48,7 @@ RCRAINFO (over 500k sites), NPDES, ICIS, AIR, FIS, EIS, and AIRS/AFS.
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
  x = latlon_from_program("CAMDBS")
   mapfast(x)
  program <- c("EIS", "UST")
@@ -57,5 +57,5 @@ RCRAINFO (over 500k sites), NPDES, ICIS, AIR, FIS, EIS, and AIRS/AFS.
  x = frs[grepl("RCRAINFO", PGM_SYS_ACRNMS), ] # fast
  ## x = latlon_from_regid(latlon_from_program(program)[,REGISTRY_ID])  # slower!
  mapfast(x[sample(1:nrow(x), 1000), ])
-# }
+} # }
 ```

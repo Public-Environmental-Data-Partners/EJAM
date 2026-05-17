@@ -50,7 +50,7 @@ to update only the ejam_package_version attribute of every data item:
 [`metadata_update_attr()`](https://public-environmental-data-partners.github.io/EJAM/reference/metadata_update_attr.md)
 
 This utility would be used in scripts in EJAM/data-raw/ to add metadata
-to objects like x before use_data(x, overwrite=T)
+to objects like x before use_data(x, overwrite = TRUE)
 
 Note that by adding attributes, this function changes a vector so that
 is.vector() will no longer be true!

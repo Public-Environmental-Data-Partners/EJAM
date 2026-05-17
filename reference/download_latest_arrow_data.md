@@ -1,4 +1,4 @@
-# Download latest release of arrow datasets if user doesn't have them already
+# Download package-compatible Arrow datasets if user does not have them already
 
 Used when EJAM package is attached
 
@@ -9,7 +9,8 @@ download_latest_arrow_data(
   varnames = .arrow_ds_names,
   repository = NULL,
   envir = globalenv(),
-  piggybacktag = "latest"
+  piggybacktag = "latest",
+  force = FALSE
 )
 ```
 
@@ -34,15 +35,28 @@ download_latest_arrow_data(
 
 - piggybacktag:
 
-  default is "latest" but if a different release were needed this could
-  be changed.
+  default is `"latest"` for dynamic Arrow data. Package- coupled annual
+  datasets such as `bgej` override `"latest"` internally and use
+  `paste0("v", packageVersion("EJAM"))` as their release tag.
+
+- force:
+
+  set TRUE to download requested files even if local copies exist.
 
 ## Details
 
-Checks to see what is the latest release of datasets available according
-to the data repository's latest release tag. Compares that to what
-version was last saved locally (as stored in the installed package's
-ejamdata_version.txt file).
+Checks to see what release of each requested Arrow dataset should be
+used. Facility and most geography Arrow files are treated as dynamic
+data and normally come from the latest applicable data-repository
+release, tracked with the installed package's
+`data/ejamdata_version.txt` marker.
+
+Annual EJSCREEN/EJAM data files such as `bgej.arrow` are
+package-coupled. They are obtained from the `ejamdata` release tag that
+matches the current EJAM package version as reported by
+`packageVersion("EJAM")`. For example, EJAM 2.5.0 looks for `bgej.arrow`
+in the `ejamdata` release tagged `v2.5.0`, not in the latest
+data-repository release.
 
 Relies on
 [`piggyback::pb_releases()`](https://docs.ropensci.org/piggyback/reference/pb_releases.html)

@@ -79,11 +79,11 @@ lon must be ( between -180 and -64) OR (between 172 and 180)
 ## Examples
 
 ``` r
- # \donttest{
+ if (FALSE) { # \dontrun{
  # this would only work using the EJAM package datasets frs and blockpoints:
    if (!exists("frs")) dataload_dynamic("frs")
  table(EJAM:::latlon_is.valid(lat =  frs$lat, lon =  frs$lon))
  # blockpoints may need to be downloaded using dataload_dynamic()
  table(EJAM:::latlon_is.valid(lat =  blockpoints$lat, lon =  blockpoints$lon))
-  # }
+  } # }
 ```

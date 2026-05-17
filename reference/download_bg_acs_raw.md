@@ -8,7 +8,7 @@ Download raw ACS tables for the blockgroup ACS pipeline
 download_bg_acs_raw(
   yr,
   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
-  tract_tables = c("B18101", "C16001"),
+  tract_tables = c("B18101", "C16001", "B27010"),
   include_tract_data = TRUE,
   fiveorone = "5",
   pipeline_dir = NULL,
@@ -18,7 +18,10 @@ download_bg_acs_raw(
   raw_table_format = stage_format,
   overwrite = TRUE,
   validation_strict = TRUE,
-  storage = c("auto", "local", "s3")
+  storage = c("auto", "local", "s3"),
+  download_fun = ACSdownload::get_acs_new,
+  download_timeout = 3600,
+  download_retries = 2
 )
 ```
 
@@ -82,6 +85,25 @@ download_bg_acs_raw(
 - storage:
 
   raw ACS checkpoint storage backend: `"auto"`, `"local"`, or `"s3"`.
+
+- download_fun:
+
+  ACSdownload-compatible function used to obtain a single ACS table for
+  a given `yr`, `tables`, `fips`, and `fiveorone`. Defaults to
+  [`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html).
+  Supply a wrapper if you need to pin a legacy ACS source
+  implementation.
+
+- download_timeout:
+
+  timeout in seconds to use while downloading ACS table files. This is
+  increased above R's usual 60 second default because some Census
+  table-based summary files are hundreds of MB.
+
+- download_retries:
+
+  number of times to retry a failed ACS table download after the initial
+  attempt.
 
 ## Value
 

@@ -57,6 +57,8 @@ you get closer to the site(s)
 ## Examples
 
 ``` r
-out = ejamit_compare_distances(testpoints_10, radii = 1:2, plot = F)
+if (FALSE) { # \dontrun{
+out = ejamit_compare_distances(testpoints_10, radii = 1:2, plot = FALSE)
 ejam2barplot_distances(out)
+} # }
 ```

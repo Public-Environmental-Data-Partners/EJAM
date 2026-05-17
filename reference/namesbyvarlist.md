@@ -7,7 +7,7 @@ Get indicator names within a varlist like names_d
 ``` r
 namesbyvarlist(
   varlist,
-  nametype = c("rname", "longname", "apiname")[1],
+  nametype = c("rname", "longname", "ejscreen_apinames_old")[1],
   mapping = map_headernames,
   include = NULL,
   exclude = NULL,
@@ -80,5 +80,5 @@ c(names_d, names_d_subgroups)
 
  namesbyvarlist( 'names_e_pctile', c('r', 'longname'))
  namesbyvarlist(c('names_e_pctile', 'names_e_state_pctile'),
-   c('varlist', 'rname', 'apiname', 'csvname', 'shortlabel', 'longname'))
+   c('varlist', 'rname', 'ejscreen_apinames_old', 'csvname', 'shortlabel', 'longname'))
 ```

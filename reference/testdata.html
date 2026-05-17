@@ -74,7 +74,13 @@ See list of samples of input files to try in EJAM, and output examples from EJAM
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span>pattern <span class="op">=</span> <span class="cn">NULL</span>, installed <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, folder_only <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span></span>
+<span>  pattern <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  installed <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  folder_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -100,6 +106,11 @@ without seeing all the info in console and without browsing to the folder</p></d
 <dt id="arg-folder-only">folder_only<a class="anchor" aria-label="anchor" href="#arg-folder-only"></a></dt>
 <dd><p>set TRUE to get only directories, no files</p></dd>
 
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>ignored; accepted for compatibility with callers that pass
+standard EJAM quiet/silentinteractive-style arguments.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -113,24 +124,24 @@ without seeing all the info in console and without browsing to the folder</p></d
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">testdata</span><span class="op">(</span><span class="st">'shape'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu">testdata</span><span class="op">(</span><span class="st">'shape'</span>, quiet <span class="op">=</span> <span class="cn">T</span>, folder_only<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">'shape'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, folder_only<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"id"</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"id"</span>, quiet <span class="op">=</span> <span class="cn">T</span>, folder_only<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"id"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"id"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, folder_only<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">testdata</span><span class="op">(</span><span class="st">'fips'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="fu">testdata</span><span class="op">(</span><span class="st">'registryid'</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"address"</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">'fips'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">'registryid'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">testdata</span><span class="op">(</span><span class="st">"address"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># datasets as lazyloaded objects vs. files installed with package</span></span>
 <span></span>
 <span><span class="va">topic</span> <span class="op">=</span> <span class="st">"fips"</span>  <span class="co"># or "shape" or "latlon" or "naics" or "address" etc.</span></span>
 <span></span>
 <span><span class="co"># datasets / R objects</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>data.in.package  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="va">topic</span>, <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">Item</span>, value <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>data.in.package  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="va">topic</span>, <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="pkg_data.html">pkg_data</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">Item</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># files</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>files.in.package <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu">testdata</span><span class="op">(</span><span class="va">topic</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>files.in.package <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu">testdata</span><span class="op">(</span><span class="va">topic</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

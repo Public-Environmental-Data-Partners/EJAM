@@ -80,7 +80,7 @@ mapfastej_counties(
 
 ## Value
 
-leaflet html widget (but if static_not_leaflet=T, returns just
+leaflet html widget (but if static_not_leaflet = TRUE, returns just
 shapes_counties_from_countyfips(mydf\$ejam_uniq_id))
 
 ## Details
@@ -101,9 +101,9 @@ on colorvarname).
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
 myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
 mydf = ejamit(fips = myfips )$results_bysite
 mapfastej_counties(mydf, colorvarname = "pctile.pctnhba" )
- # }
+ } # }
 ```

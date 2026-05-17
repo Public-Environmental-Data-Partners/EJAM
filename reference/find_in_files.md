@@ -1,7 +1,6 @@
-# utility to do global search/find in full text of the files in a folder, like source code files or unit tests
+# Search across files for lines matching a regular expression
 
-utility to do global search/find in full text of the files in a folder,
-like source code files or unit tests
+Search across files for lines matching a regular expression
 
 ## Usage
 
@@ -66,11 +65,14 @@ find_in_files(
 a list of named vectors, where names are file paths with hits, elements
 are vectors of text with hits.
 
-## Details
+## See also
 
-Also see (mostly undocumented) related functions
-EJAM:::found_in_N_files_T_times() and EJAM:::found_in_files() and
-EJAM:::grab_hits() and EJAM:::grepn()
+[`grep_lines()`](https://public-environmental-data-partners.github.io/EJAM/reference/grep_lines.md)
+[`grepn()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepn.md)
+[`grepns()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepns.md)
+[`grepls()`](https://public-environmental-data-partners.github.io/EJAM/reference/grepls.md)
+[`found_in_files()`](https://public-environmental-data-partners.github.io/EJAM/reference/found_in_files.md)
+[`found_in_N_files_T_times()`](https://public-environmental-data-partners.github.io/EJAM/reference/found_in_N_files_T_times.md)
 
 ## Examples
 
@@ -79,9 +81,9 @@ EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
 EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
 EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
 
-EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
-EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
-EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
+EJAM:::find_in_files("latlon_from_.{18}",    whole_line = FALSE)
+EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = FALSE)
+EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = FALSE)
 
 ## useful reminders of how to filter lines of code vs comments when using find_in_files()
 

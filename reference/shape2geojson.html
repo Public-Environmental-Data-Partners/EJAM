@@ -108,14 +108,14 @@ If FALSE, output is a vector of filenames (saves each row of input shp as a sepa
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>if txt=T, returns geojson text string(s) for the input spatial data.frame
-if txt=F, returns file path/name(s) of .geojson file(s).</p>
+    <p>if txt = TRUE, returns geojson text string(s) for the input spatial data.frame
+if txt = FALSE, returns file path/name(s) of .geojson file(s).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>helper for <code><a href="url_ejamapi.html">url_ejamapi()</a></code>
 Note it removes all spaces in the string.</p>
-<p>Note that trying to use txt=T and combine_in_one_string = T for large polygons or many polygons
+<p>Note that trying to use txt=TRUE and combine_in_one_string = TRUE for large polygons or many polygons
 would create a very long string that might exceed URL length limits for GET requests,
 if that is what you're using the text for.</p>
     </div>

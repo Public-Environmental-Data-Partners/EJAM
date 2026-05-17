@@ -114,11 +114,11 @@ minute.</p>
 <p>Some relevant EJAM functions:</p>
 <ul>
 <li><code>EJAM:::speedreport()</code></li>
-<li><code><a href="../reference/speedmessage.html">speedmessage()</a></code></li>
-<li><code><a href="../reference/speedtest.html">speedtest()</a></code></li>
-<li><code><a href="../reference/speedtest_plot.html">speedtest_plot()</a></code></li>
-<li><code><a href="../reference/speedtable_summarize.html">speedtable_summarize()</a></code></li>
-<li><code><a href="../reference/speedtable_expand.html">speedtable_expand()</a></code></li>
+<li><code>EJAM:::speedmessage()</code></li>
+<li><code>EJAM:::speedtest()</code></li>
+<li><code>EJAM:::speedtest_plot()</code></li>
+<li><code>EJAM:::speedtable_summarize()</code></li>
+<li><code>EJAM:::speedtable_expand()</code></li>
 </ul>
 <p>Note some of these are internal, not exported, so you would need to
 use EJAM::: if using them without doing load_all() first.</p>
@@ -169,7 +169,41 @@ utility:</p>
 <span><span class="co"># (note this example could take an hour to run all these scenarios)</span></span>
 <span><span class="va">point_counts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">30</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">300</span>, <span class="fl">500</span>, <span class="fl">1000</span>, <span class="fl">3000</span>, <span class="fl">5000</span>, <span class="fl">10000</span><span class="op">)</span></span>
 <span><span class="va">radii</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">6.2</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">speeds</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest.html">speedtest</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">point_counts</span>, radii <span class="op">=</span> <span class="va">radii</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">speeds</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest.html">speedtest</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">point_counts</span>, radii <span class="op">=</span> <span class="va">radii</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># If you want a CSV of detailed timings for runtime modeling, including</span></span>
+<span><span class="co"># small-point cases like 1, 2, and 10 points:</span></span>
+<span><span class="va">speeds_detailed</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest.html">speedtest</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="va">point_counts</span>,</span>
+<span>  radii <span class="op">=</span> <span class="va">radii</span>,</span>
+<span>  collect_detailed <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  detail_point_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  detailed_csv <span class="op">=</span> <span class="st">"data-raw/Analysis_timing_results_runtime_models.csv"</span>,</span>
+<span>  logging <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  honk_when_ready <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">detailed_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">speeds_detailed</span>, <span class="st">"detailed_results"</span><span class="op">)</span></span></code></pre></div>
+<p>The runtime models should be trained separately for the main input
+modes: point buffers, FIPS Census units, and uploaded polygons.
+Point-buffer runs use radius as an important predictor, but FIPS and
+polygon runs do not have the same meaning of radius. To collect one
+combined timing table with an <code>analysis_type</code> column,
+use:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">scenario_speeds</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest_runtime_scenarios.html">speedtest_runtime_scenarios</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># uses defaults</span></span>
+<span></span>
+<span><span class="va">scenario_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">scenario_speeds</span>, <span class="st">"detailed_results"</span><span class="op">)</span></span></code></pre></div>
+<p>The combined detailed table includes <code>analysis_type</code> and
+<code>analysis_subtype</code>. For FIPS runs, the subtype is based on
+<code>fipstype(fips)</code>, so city/place FIPS and county FIPS can be
+modeled separately. The default county scenario uses up to 25 California
+county FIPS codes, the default city scenario uses up to 25
+<code>censusplaces$fips</code> values, and the default polygon scenario
+uses the Portland example shapefile in
+<code>inst/testdata/shapes/portland_folder_shp/</code>. You can provide
+different FIPS vectors or a different shapefile if you want the timing
+data to reflect another expected workload.</p>
 <p>For small numbers of points, the radius and number of points do not
 have a large impact on total time, but for larger radius values the
 number of points matters more. Likewise, for larger numbers of points,
@@ -179,7 +213,7 @@ values or for the larger counts of points.</p>
 <div class="section level3">
 <h3 id="time-needed">Time Needed<a class="anchor" aria-label="anchor" href="#time-needed"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Time Needed</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">$</span><span class="va">points</span><span class="op">[</span><span class="va">speeds</span><span class="op">$</span><span class="va">miles</span> <span class="op">==</span> <span class="fl">5</span><span class="op">]</span>, <span class="va">speeds</span><span class="op">$</span><span class="va">seconds</span><span class="op">[</span><span class="va">speeds</span><span class="op">$</span><span class="va">miles</span> <span class="op">==</span> <span class="fl">5</span><span class="op">]</span><span class="op">/</span><span class="fl">60</span>, </span>
 <span>     type <span class="op">=</span> <span class="st">"b"</span>, col<span class="op">=</span><span class="st">"blue"</span>, </span>
@@ -200,7 +234,7 @@ of sites &amp; radius (distance from each point)</div>
 <div class="section level3">
 <h3 id="time-per-site">Time per Site<a class="anchor" aria-label="anchor" href="#time-per-site"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Time per Site</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest_plot.html">speedtest_plot</a></span><span class="op">(</span><span class="va">speeds</span>, secondsperthousand <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
@@ -211,7 +245,7 @@ by # of sites &amp; radius (distance from each point)</div>
 <div class="section level3">
 <h3 id="rate-sites-per-hour">Rate (Sites per Hour)<a class="anchor" aria-label="anchor" href="#rate-sites-per-hour"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Rate (Sites per Hour)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest_plot.html">speedtest_plot</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
@@ -222,7 +256,7 @@ by # of sites &amp; radius (distance from each point)</div>
 <div class="section level3">
 <h3 id="detailed-results">Detailed Results<a class="anchor" aria-label="anchor" href="#detailed-results"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">speeds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">$</span><span class="va">points</span>, <span class="va">speeds</span><span class="op">$</span><span class="va">miles</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>

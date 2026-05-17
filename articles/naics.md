@@ -35,6 +35,7 @@ for querying by code or title of category.
 Files and dataset examples related to NAICS:
 
 ``` r
+
 topic = "naics"
 cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
 cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
@@ -77,6 +78,7 @@ in the title of the NAICS – the function
 helps with those cases, e.g., compare these:
 
 ``` r
+
 naics_findwebscrape("cement")
 
 naics_from_any("cement")
@@ -117,6 +119,7 @@ listed under the 5-digit “32411” code only, some with the 6-digit
 “324110” code only, and some with both codes:
 
 ``` r
+
 hasboth = intersect(
 frs_from_naics("32411",  children = F)[,1:5]$REGISTRY_ID,
 frs_from_naics("324110", children = F)[,1:5]$REGISTRY_ID
@@ -133,6 +136,7 @@ frs_from_naics("32411",  children = F)[,1:5]$REGISTRY_ID
 
 ``` r
 
+
 length(hasonly5digit)  # Most of the FRS sites here
 #> [1] 421
 length(hasonly6digit)
@@ -144,6 +148,7 @@ length(hasboth)
 ### Examples of some NAICS/SIC functions
 
 ``` r
+
 naics_from_any(naics_categories(3))[order(name),.(name,code)][1:10,]
 naics_from_any(naics_categories(3))[order(code),.(code,name)][1:10,]
 
