@@ -43,7 +43,7 @@
 #'
 #' # API query endpoint: blockgroups where Demog.Index percentile is at least 95
 #' q_demog <- httr2::request(paste0(base, "/query")) |>
-#'   httr2::req_body_json(list(attribute = "Demog.Index", value = 0.95))
+#'   httr2::req_body_json(list(attribute = "pctile.Demog.Index", value = 95))
 #' httr2::req_perform(q_demog) |>
 #'   httr2::resp_body_json(simplifyVector = TRUE)
 #'
@@ -56,6 +56,8 @@
 #' # example matched column format: state.pctile.EJ...
 #' ej_state_cols <- grep("^state\\.pctile\\.EJ", names(x), value = TRUE)
 #' x_n_ej <- x[rowSums(x[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
+#' # alternative count_above-style approach using EJAM helper:
+#' x_n_ej_alt <- x[EJAM:::colcounter(x[, ej_state_cols, drop = FALSE], threshold = 80, or.tied = TRUE) >= N, ]
 #' ```
 #'
 #' **2) R user without EJAM installed (API-only via httr2/jsonlite)**
@@ -76,7 +78,7 @@
 #'
 #' # Demog.Index percentile >= 95 (query endpoint)
 #' req_demog <- request(paste0(base, "/query")) |>
-#'   req_body_json(list(attribute = "Demog.Index", value = 0.95))
+#'   req_body_json(list(attribute = "pctile.Demog.Index", value = 95))
 #' dat_demog <- fromJSON(resp_body_string(req_perform(req_demog)))
 #'
 #' # at least N state EJ index percentiles >= 80
@@ -105,7 +107,7 @@
 #' # Demog.Index percentile >= 95 (query endpoint)
 #' demog95 = pd.DataFrame(requests.post(
 #'     f"{base}/query",
-#'     json={"attribute": "Demog.Index", "value": 0.95}
+#'     json={"attribute": "pctile.Demog.Index", "value": 95}
 #' ).json())
 #'
 #' # at least N state EJ index percentiles >= 80
@@ -128,7 +130,7 @@
 #'
 #' # Demog.Index percentile >= 95 (query endpoint)
 #' curl -s -X POST "$BASE/query" -H "Content-Type: application/json" \
-#'   -d '{"attribute":"Demog.Index","value":0.95}' > demog95.json
+#'   -d '{"attribute":"pctile.Demog.Index","value":95}' > demog95.json
 #'
 #' # at least N state EJ index percentiles >= 80
 #' N=6
