@@ -83,6 +83,15 @@
 #'
 #' # one blockgroup
 #' xbg1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
+#'
+#' # attribute-based query endpoint examples in live EJAM API:
+#' qreq1 <- httr2::request("https://ejamapi-84652557241.us-central1.run.app/query") |>
+#'   httr2::req_body_json(list(attribute = "pctunemployed", value = 0.90))
+#' httr2::req_dry_run(qreq1)
+#'
+#' qreq2 <- httr2::request("https://ejamapi-84652557241.us-central1.run.app/query") |>
+#'   httr2::req_body_json(list(attribute = "pctlowinc", value = 0.80))
+#' httr2::req_dry_run(qreq2)
 #' if (!eg) {
 #' # all blockgroups in 1 county
 #' xcounty = ejamapi(fips="10001", scale="blockgroup", endpoint = "data", dry_run=eg)
