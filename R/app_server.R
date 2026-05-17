@@ -2982,10 +2982,10 @@ app_server <- function(input, output, session) {
       if (input$allow_median_in_barplot_indicators) {
         radioButtons('summ_bar_stat',
                      'Statistic Type',
-                     choiceNames = c("avg", "med"),
-                     choiceValues = c("Average", "Median"),
+                     choiceValues = c("avg", "med"),
+                     choiceNames = c("Average", "Median"),
                      #inline = TRUE,
-                     selected = "Average")
+                     selected = "avg")
       }
 )
     } else if (input$summ_bar_ind == 'Environmental') {
@@ -2998,10 +2998,10 @@ app_server <- function(input, output, session) {
       if (input$allow_median_in_barplot_indicators) {
           radioButtons('summ_bar_stat',
                        'Statistic Type',
-                       choiceNames = c("avg", "med"),
-                       choiceValues = c("Average", "Median"),
+                       choiceValues = c("avg", "med"),
+                       choiceNames = c("Average", "Median"),
                        #inline = TRUE,
-                       selected = "Average")
+                       selected = "avg")
       }
 )
     } else if (input$summ_bar_ind == 'EJ Index') {
