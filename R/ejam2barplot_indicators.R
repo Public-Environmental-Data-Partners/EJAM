@@ -13,8 +13,10 @@
 #'   by default depends on mybarvars.stat being "avg" or "med"
 #'   which should correspond to also specifying values of
 #'   mybarvars.sumstat equal to
-#'   c('Average site', 'Average person at these sites') or
-#'   c('Median site', 'Median person') respectively.
+#'   c('Average site analyzed', 'Average person at sites analyzed') or
+#'   c('Median site analyzed', 'Median person at sites analyzed') respectively.
+#'   Legacy inputs such as 'Median person' are accepted and normalized
+#'   to the canonical plot labels used internally.
 #'   If mybarvars.stat is specified then mybarvars.sumstat should be also
 #'   to ensure they correspond! Done in shiny, not checked here.
 #'
@@ -26,7 +28,7 @@
 #'
 ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', data_type = 'raw',
                                     mybarvars.stat = "avg",
-                                    mybarvars.sumstat = c('Average site', 'Average person at these sites')
+                                    mybarvars.sumstat = c('Average site analyzed', 'Average person at sites analyzed')
                                     ## was only using average in this version of EJAM
 ) {
 
@@ -41,17 +43,24 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
   ## set indicator group shorter names - use shortlabel
   mybarvars.friendly <- fixcolnames(mybarvars, oldtype = 'r', newtype = 'shortlabel')
 
+  ## Normalize legacy/current summary labels to canonical forms used in plots.
+  ## This keeps older inputs backward-compatible while using clearer labels.
+  standardize_summary <- function(x) {
+    dplyr::case_when(
+      x %in% c('Average site', 'Average site analyzed') ~ 'Average site analyzed',
+      x %in% c('Average person', 'Average person at these sites', 'Average person at sites analyzed') ~ 'Average person at sites analyzed',
+      x %in% c('Median site', 'Median site analyzed') ~ 'Median site analyzed',
+      x %in% c('Median person', 'Median person at these sites', 'Median person at sites analyzed') ~ 'Median person at sites analyzed',
+      TRUE ~ x
+    )
+  }
+
   ## filter to necessary parts of batch.summarize output - may need work here ***
 
     barplot_data <- ejamitout$results_summarized$rows %>%
       tibble::rownames_to_column(var = 'Summary') %>%
-      dplyr::mutate(Summary = gsub('Average person',
-                                   'Average person at these sites',
-                                   .data$Summary)) %>%
-      dplyr::mutate(Summary = gsub('Median person',
-                                   'Median person at these sites',
-                                   .data$Summary)) %>%
-      dplyr::filter(.data$Summary %in% mybarvars.sumstat)
+      dplyr::mutate(Summary = standardize_summary(.data$Summary)) %>%
+      dplyr::filter(.data$Summary %in% standardize_summary(mybarvars.sumstat))
 
   ## set ggplot theme elements for all versions of barplot
   ggplot_theme_bar <- ggplot2::theme_bw() +
@@ -107,20 +116,38 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
     ## set # of characters to wrap labels
     n_chars_wrap <- 15
 
-    barplot_input$Summary <- factor(barplot_input$Summary,
-                                    levels = c('Average person in US',
-                                               'Average site',
-                                               'Average person at these sites'))
+    if (mybarvars.stat == 'med') {
+      summary_levels <- c('Median person in US',
+                          'Median site analyzed',
+                          'Median person at sites analyzed')
+      scale_fill_manual_values <- c(
+        'Median person in US'          = 'lightgray',
+        'Median person at sites analyzed' = '#62c342',
+        'Median site analyzed'                  = '#0e6cb5'
+      )
+    } else {
+      summary_levels <- c('Average person in US',
+                          'Average site analyzed',
+                          'Average person at sites analyzed')
+      scale_fill_manual_values <- c(
+        'Average person in US'             = 'lightgray',
+        'Average person at sites analyzed' = '#62c342',
+        'Average site analyzed'            = '#0e6cb5'
+      )
+    }
+
+    barplot_input$Summary <- factor(barplot_input$Summary, levels = summary_levels)
 
     ## merge with shorter labels/ names and plot
     p_out <- barplot_input %>%
-      dplyr::left_join( data.frame(indicator = mybarvars, indicator_label = gsub(' \\(.*', '', mybarvars.friendly))) %>%
+      dplyr::left_join(
+        data.frame(indicator = mybarvars, indicator_label = gsub(' \\(.*', '', mybarvars.friendly)),
+        by = 'indicator'
+      ) %>%
       ggplot2::ggplot() +
       ggplot2::geom_bar(ggplot2::aes(x = indicator_label, y = value, fill = Summary), stat = 'identity', position = 'dodge') +
 
-      ggplot2::scale_fill_manual(values = c('Average person in US' = 'lightgray',
-                                   'Average person at these sites' = '#62c342',
-                                   'Average site' = '#0e6cb5')) +
+      ggplot2::scale_fill_manual(values = scale_fill_manual_values) +
 
       ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, n_chars_wrap)) +
       ## set y axis limits to (0, max value) but allow 5% higher on upper end
@@ -158,12 +185,12 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
       barplot_usa_avg <-  dplyr::bind_rows(
         usastats %>%
           dplyr::filter(.data$REGION == 'USA', .data$PCTILE == 'mean') %>%
-          dplyr::mutate(Summary = 'Average person at these sites') %>%
+          dplyr::mutate(Summary = 'Average person at sites analyzed') %>%
           dplyr::select(Summary, dplyr::all_of(mybarvars)) %>%
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value'),
         usastats %>%
           dplyr::filter(.data$REGION == 'USA', .data$PCTILE == 'mean') %>%
-          dplyr::mutate(Summary = 'Average site') %>%
+          dplyr::mutate(Summary = 'Average site analyzed') %>%
           dplyr::select(Summary, dplyr::all_of(mybarvars)) %>%
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value')
       )
@@ -181,13 +208,13 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
         )
       barplot_input$Summary <- factor(barplot_input$Summary, levels = c(
         'Average person in US',
-        'Average site',
-        'Average person at these sites'
+        'Average site analyzed',
+        'Average person at sites analyzed'
       ))
       scale_fill_manual_values = c(
         'Average person in US'          = 'lightgray',
-        'Average person at these sites' = '#62c342',
-        'Average site'                  = '#0e6cb5'
+        'Average person at sites analyzed' = '#62c342',
+        'Average site analyzed'            = '#0e6cb5'
       )
 
     } else {
@@ -196,17 +223,27 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
       barplot_usa_med <-  dplyr::bind_rows(
         usastats %>%
           dplyr::filter(.data$REGION == 'USA', .data$PCTILE == 50) %>%
-          dplyr::mutate(Summary = 'Median person') %>%
+          dplyr::mutate(Summary = 'Median person in US') %>%
           dplyr::select(Summary, dplyr::all_of(mybarvars)) %>%
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value'),
         usastats %>%
           dplyr::filter(.data$REGION == 'USA', .data$PCTILE == 50) %>%
-          dplyr::mutate(Summary = 'Median site') %>%
+          dplyr::mutate(Summary = 'Median site analyzed') %>%
           dplyr::select(Summary, dplyr::all_of(mybarvars)) %>%
           tidyr::pivot_longer(-Summary, names_to = 'indicator', values_to = 'usa_value')
       )
 
-      barplot_input <- dplyr::left_join(barplot_data_raw, barplot_usa_med) %>%
+      barplot_input <- barplot_data_raw %>%
+        dplyr::mutate(
+          usa_summary = dplyr::case_when(
+            ## Median person-at-sites ratios should use the US median-person baseline.
+            ## Median site rows intentionally keep "Median site analyzed" and join to US median-site.
+            .data$Summary == 'Median person at sites analyzed' ~ 'Median person in US',
+            TRUE ~ .data$Summary
+          )
+        ) %>%
+        dplyr::left_join(barplot_usa_med, by = c('usa_summary' = 'Summary', 'indicator')) %>%
+        dplyr::select(-usa_summary) %>%
         ## calc ratio
         dplyr::mutate(ratio = .data$value / .data$usa_value) %>%
         dplyr::bind_rows(
@@ -215,13 +252,13 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
 
       barplot_input$Summary <- factor(barplot_input$Summary, levels = c(
         'Median person in US',
-        'Median site',
-        'Median person at these sites'
+        'Median site analyzed',
+        'Median person at sites analyzed'
       ))
       scale_fill_manual_values = c(
         'Median person in US'          = 'lightgray',
-        'Median person at these sites' = '#62c342',
-        'Median site'                  = '#0e6cb5'
+        'Median person at sites analyzed' = '#62c342',
+        'Median site analyzed'                  = '#0e6cb5'
       )
     }
 
@@ -230,7 +267,10 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
 
     ## join and plot
     barplot_input %>%
-      dplyr::left_join( data.frame(indicator = mybarvars, indicator_label =  gsub(' \\(.*', '', mybarvars.friendly))) %>%
+      dplyr::left_join(
+        data.frame(indicator = mybarvars, indicator_label =  gsub(' \\(.*', '', mybarvars.friendly)),
+        by = 'indicator'
+      ) %>%
       ggplot2::ggplot() +
       ## add bars - position = 'dodge' places the 3 categories next to each other
       ggplot2::geom_bar(ggplot2::aes(x = indicator_label, y = ratio, fill = Summary), stat = 'identity', position = 'dodge') +
