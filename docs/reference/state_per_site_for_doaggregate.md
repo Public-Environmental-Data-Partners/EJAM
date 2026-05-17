@@ -26,10 +26,10 @@ data.table
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
 
  # cannot quickly id ST if a site spans 2+ states
- # not this is an unexported function:
+ # note this is an unexported function:
  tail(EJAM:::state_from_s2b_bysite(testoutput_getblocksnearby_100pts_1miles))
 
  # using the closest block can id the wrong state:
@@ -41,5 +41,5 @@ data.table
      testoutput_getblocksnearby_100pts_1miles,
      testpoints_100
    ))
-# }
+} # }
 ```

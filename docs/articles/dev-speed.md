@@ -13,11 +13,11 @@ minute.
 Some relevant EJAM functions:
 
 - `EJAM:::speedreport()`
-- [`speedmessage()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedmessage.md)
-- [`speedtest()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest.md)
-- [`speedtest_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtest_plot.md)
-- [`speedtable_summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtable_summarize.md)
-- [`speedtable_expand()`](https://public-environmental-data-partners.github.io/EJAM/reference/speedtable_expand.md)
+- `EJAM:::speedmessage()`
+- `EJAM:::speedtest()`
+- `EJAM:::speedtest_plot()`
+- `EJAM:::speedtable_summarize()`
+- `EJAM:::speedtable_expand()`
 
 Note some of these are internal, not exported, so you would need to use
 EJAM::: if using them without doing load_all() first.
@@ -28,6 +28,7 @@ Ten thousand sites with a radius of 5 miles at each can take about 5
 minutes.
 
 ``` r
+
 began = Sys.time()
 x = ejamit(testpoints_100, radius = 1)
 ended = Sys.time()
@@ -40,6 +41,7 @@ Analyzing all 159 counties in Georgia can take less than 10 seconds.
 Analyzing all of the 3,222 US Counties may take one to two minutes.
 
 ``` r
+
 allcounties <- fips_counties_from_state_abbrev(stateinfo$ST)
 began = Sys.time()
 y = ejamit(fips = allcounties)
@@ -54,6 +56,7 @@ Analyzing 20 cities can take 20 seconds, for example, depending on the
 cities. Analyzing 200 cities may take more than one minute.
 
 ``` r
+
 n <- 200
 set.seed(1)
 cities_sample <- sample(censusplaces$fips, n)
@@ -72,12 +75,50 @@ EJAM:::speedreport(start = began, end = ended, n = length(cities_sample))
 You can automate running various scenarios with the speedtest() utility:
 
 ``` r
+
 # Run the analysis at each distance for each count of sites
 # (note this example could take an hour to run all these scenarios)
 point_counts = c(10, 30, 50, 100, 300, 500, 1000, 3000, 5000, 10000)
 radii = c(1, 3, 5, 6.2, 10)
 speeds <- EJAM:::speedtest(n = point_counts, radii = radii)
+
+# If you want a CSV of detailed timings for runtime modeling, including
+# small-point cases like 1, 2, and 10 points:
+speeds_detailed <- EJAM:::speedtest(
+  n = point_counts,
+  radii = radii,
+  collect_detailed = TRUE,
+  detail_point_counts = c(1, 2, 10),
+  detailed_csv = "data-raw/Analysis_timing_results_runtime_models.csv",
+  logging = FALSE,
+  plot = FALSE,
+  honk_when_ready = FALSE
+)
+detailed_rows <- attr(speeds_detailed, "detailed_results")
 ```
+
+The runtime models should be trained separately for the main input
+modes: point buffers, FIPS Census units, and uploaded polygons.
+Point-buffer runs use radius as an important predictor, but FIPS and
+polygon runs do not have the same meaning of radius. To collect one
+combined timing table with an `analysis_type` column, use:
+
+``` r
+
+scenario_speeds <- EJAM:::speedtest_runtime_scenarios() # uses defaults
+
+scenario_rows <- attr(scenario_speeds, "detailed_results")
+```
+
+The combined detailed table includes `analysis_type` and
+`analysis_subtype`. For FIPS runs, the subtype is based on
+`fipstype(fips)`, so city/place FIPS and county FIPS can be modeled
+separately. The default county scenario uses up to 25 California county
+FIPS codes, the default city scenario uses up to 25 `censusplaces$fips`
+values, and the default polygon scenario uses the Portland example
+shapefile in `inst/testdata/shapes/portland_folder_shp/`. You can
+provide different FIPS vectors or a different shapefile if you want the
+timing data to reflect another expected workload.
 
 For small numbers of points, the radius and number of points do not have
 a large impact on total time, but for larger radius values the number of
@@ -89,6 +130,7 @@ for the larger counts of points.
 ### Time Needed
 
 ``` r
+
 # Time Needed
 plot(speeds$points[speeds$miles == 5], speeds$seconds[speeds$miles == 5]/60, 
      type = "b", col="blue", 
@@ -112,6 +154,7 @@ Plot of total time (duration of analysis) by \# of sites & radius
 ### Time per Site
 
 ``` r
+
 # Time per Site
 EJAM:::speedtest_plot(speeds, secondsperthousand = T)
 ```
@@ -125,6 +168,7 @@ Plot of time per site (seconds per 1,000 sites) by \# of sites & radius
 ### Rate (Sites per Hour)
 
 ``` r
+
 # Rate (Sites per Hour)
 EJAM:::speedtest_plot(speeds)
 ```
@@ -138,6 +182,7 @@ each point)
 ### Detailed Results
 
 ``` r
+
 
 speeds[order(speeds$points, speeds$miles), ]
 

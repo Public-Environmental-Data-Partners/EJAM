@@ -44,8 +44,10 @@ data.frame of info about the nearby facilities
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
   # find the one NPL site that is within half a mile of this point
+  # Calls a live EJScreen ArcGIS API, so it can fail if that service is
+  # unavailable.
 frompoints = data.frame(lat = 39.65, lon = -75.73)
 radius = 0.5
 sitecategory = "npl"
@@ -102,5 +104,5 @@ tail(cbind(frompoint_count_near_this_facility =
   # with different program id or site name variant
 cbind(frompoint = 1:NROW(pts2close),
   facility_count_near_this_point = table(facilities2close$frompoint_n))
-# }
+} # }
 ```

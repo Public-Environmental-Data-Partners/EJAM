@@ -19,6 +19,7 @@ using [`library()`](https://rdrr.io/r/base/library.html) or
 [`require()`](https://rdrr.io/r/base/library.html).
 
 ``` r
+
 library(EJAM)
 ```
 
@@ -27,6 +28,7 @@ library(EJAM)
 To quickly try EJAM in RStudio:
 
 ``` r
+
 # EJAM analysis of 100 places, for everyone within 3 miles
 out <- ejamit(testpoints_100, radius = 3)
 
@@ -38,6 +40,7 @@ To quickly try EJAM with an example input file (spreadsheet with
 latitude and longitude of each point)
 
 ``` r
+
 myfile <- system.file("testdata/latlon/testpoints_10.xlsx", package = "EJAM")
 
 out <- ejamit(myfile, radius = 3)
@@ -50,6 +53,7 @@ function without specifying the locations or radius – EJAM will prompt
 you to select the file and a radius.
 
 ``` r
+
 out <- ejamit()
 ```
 
@@ -63,6 +67,7 @@ try), you can find the ones installed with the EJAM package in your
 local folder, like this in the RStudio console:
 
 ``` r
+
 ## See where the folder is and see what files are there:
 testdata()
 
@@ -77,6 +82,7 @@ You can specify the radius in miles. EJAM will analyze all residents
 within that many miles of each point (site).
 
 ``` r
+
 radius <- 3 # radius (in miles).  5 km = 3.106856 miles, 10 km = 6.2 miles
 ```
 
@@ -84,6 +90,7 @@ Converting between miles and kilometers – If you know you want to
 analyze for 5 kilometers, for example, you can turn it into miles.
 
 ``` r
+
 5000 / meters_per_mile
 #> [1] 3.106856
 convert_units(5, 'km', 'miles')
@@ -96,6 +103,7 @@ This creates an interactive map. Click a point on the map to see a popup
 with details about that point.
 
 ``` r
+
 # input to EJAM
 pts <- testpoints_100
 mapfast(pts)
@@ -107,16 +115,18 @@ This also creates an interactive map. Click a point on the map to see a
 popup with details about people near that point.
 
 ``` r
+
 out <- testoutput_ejamit_100pts_1miles 
 ejam2map(out) 
 #> Warning in validateCoords(lng, lat, funcName): Data contains 1 rows with either
 #> missing or invalid lat/lon values and will be ignored
-#> /private/var/folders/w4/0j7n916n37q7gjt7m2vqqwk40000gn/T/RtmpvI5J9P/mapfast_155eb485c4f71.html
+#> /private/var/folders/w4/0j7n916n37q7gjt7m2vqqwk40000gn/T/RtmpMOF693/mapfast_e49b5973f026.html
 ```
 
 ### Report via `ejam2report()` (interactive html file)
 
 ``` r
+
 
 out <- testoutput_ejamit_100pts_1miles
 
@@ -134,6 +144,7 @@ As an alternative to the report provided by
 this gives you a quick, simple list of results for all the indicators:
 
 ``` r
+
 ejam2table_tall(out)
 ejam2table_tall(out, sitenumber = 1)
 ```
@@ -141,6 +152,7 @@ ejam2table_tall(out, sitenumber = 1)
 ### Barplot
 
 ``` r
+
 out <- testoutput_ejamit_100pts_1miles
 
 # Check long list of indicators for any that are elevated
@@ -173,12 +185,14 @@ ejam2barplot(testoutput_ejamit_100pts_1miles,
 ```
 
 ``` r
+
 # see more examples at ?ejam2barplot
 ```
 
 ### View Results Spreadsheet via `ejam2excel()` (to Launch Excel)
 
 ``` r
+
 out <- testoutput_ejamit_100pts_1miles
 ejam2excel(out, launchexcel = T, save_now = F)
 ```
@@ -186,6 +200,7 @@ ejam2excel(out, launchexcel = T, save_now = F)
 #### Save Results as a Spreadsheet file
 
 ``` r
+
 ejam2excel(out, save_now = T)
 ```
 
@@ -196,12 +211,14 @@ ejam2excel(out, save_now = T)
 #### Use one point
 
 ``` r
+
 pts <- data.frame(lon = -92.380556, lat = 31.316944)
 ```
 
 #### Use a few points
 
 ``` r
+
 pts <- sitepoints_from_any(c(
   "34.8799123, -92.1",
   "30.2906971, -91.8",
@@ -231,6 +248,7 @@ etc. See more details in the documentation of the function
 Create random test data points in States of LA and TX
 
 ``` r
+
 # p1k <- testpoints_n(1000)
 # mapfast(p1k)
 
@@ -242,6 +260,7 @@ mapfast(testpoints_n(300, ST = c('LA','TX'), weighting = 'bg'), radius = 0.1)
 ```
 
 ``` r
+
 # weighting = "frs" better represents regulated facilities,
 # but requires loading the (large) frs dataset
 ```
@@ -255,6 +274,7 @@ mapfast(testpoints_n(300, ST = c('LA','TX'), weighting = 'bg'), radius = 0.1)
   [`?EJAM`](https://public-environmental-data-partners.github.io/EJAM/reference/EJAM.md)
 
 ``` r
+
 ?EJAM
 # or 
 help("EJAM", package='EJAM')

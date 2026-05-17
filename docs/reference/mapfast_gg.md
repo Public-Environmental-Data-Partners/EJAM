@@ -49,7 +49,7 @@ a ggplot() object
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
   mapfast_gg(testpoints_10)
 
   pts <- read.table(textConnection(
@@ -62,5 +62,5 @@ a ggplot() object
   )
   mapfast_gg(pts)
   # str(pts) # lon, not long
-  # }
+  } # }
 ```

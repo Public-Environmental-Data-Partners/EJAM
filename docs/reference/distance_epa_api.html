@@ -103,7 +103,8 @@ as a data.frame of two rows and columns named "lat" and "lon"</p></dd>
 <dd><p>can be "miles", the default, or else "meters" to get distance in meters.
 unit is called distanceUnit in the API:
 For planar distance, if distanceUnit is not specified, the distance is in the units of the given spatial reference.
-If distanceUnit is specified, the unit must be compatible with the given spatial reference.
+If distanceUnit is specified, the unit must be compatible with the given spatial reference
+(note that crs is called sr in the API).
 That is, if sr is a PCS, distanceUnit must be linear. If sr is a GCS, distanceUnit must be angular.
 For geodesic distance, If distanceUnit is not specified, the distance is measured in meters. If distanceUnit is specified, the unit must be linear.</p></dd>
 
@@ -133,9 +134,13 @@ For a list of valid WKID values, see <a href="https://geopub.epa.gov/arcgis/help
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">pts</span> <span class="op">&lt;-</span> <span class="va">testpoints_10</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">10</span><span class="op">)</span>,<span class="op">]</span></span>
 <span><span class="fu"><a href="distances.all.html">distances.all</a></span><span class="op">(</span><span class="va">pts</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>,<span class="va">pts</span><span class="op">[</span><span class="fl">2</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="co"># Calls EPA's live ArcGIS GeometryServer API, so it can fail if that</span></span>
+<span><span class="co"># service is unavailable.</span></span>
 <span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">distance_epa_api</span><span class="op">(</span>pts <span class="op">=</span> <span class="va">pts</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
 <span><span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">pts</span>, radius <span class="op">=</span> <span class="va">d</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span>
 <span></span>
 <span></span></code></pre></div>
     </div>

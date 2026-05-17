@@ -10,7 +10,7 @@ FILES)
 metadata_update_attr(
   x,
   attr_name = "ejam_package_version",
-  newvalue = desc::desc_get("Version"),
+  newvalue = ejam_package_version_current(),
   exclude_atomic_vectors = TRUE,
   only_update_if_had_been_set = FALSE
 )

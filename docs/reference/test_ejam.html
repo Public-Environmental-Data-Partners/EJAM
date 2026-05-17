@@ -109,7 +109,7 @@ run tests of local source pkg EJAM, by group of functions, quietly, interactivel
 
 <dt id="arg-useloadall">useloadall<a class="anchor" aria-label="anchor" href="#arg-useloadall"></a></dt>
 <dd><p>logical, TRUE means use <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code>, FALSE means use <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code>.
-But useloadall=T is essential actually, for unexported functions to be found when they are tested!</p></dd>
+But useloadall = TRUE is essential actually, for unexported functions to be found when they are tested!</p></dd>
 
 
 <dt id="arg-y-skipbasic">y_skipbasic<a class="anchor" aria-label="anchor" href="#arg-y-skipbasic"></a></dt>
@@ -117,15 +117,15 @@ But useloadall=T is essential actually, for unexported functions to be found whe
 
 
 <dt id="arg-y-latlon">y_latlon<a class="anchor" aria-label="anchor" href="#arg-y-latlon"></a></dt>
-<dd><p>logical, if y_skipbasic=F, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using points</p></dd>
+<dd><p>logical, if y_skipbasic = FALSE, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using points</p></dd>
 
 
 <dt id="arg-y-shp">y_shp<a class="anchor" aria-label="anchor" href="#arg-y-shp"></a></dt>
-<dd><p>logical, if y_skipbasic=F, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using shapefile</p></dd>
+<dd><p>logical, if y_skipbasic = FALSE, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using shapefile</p></dd>
 
 
 <dt id="arg-y-fips">y_fips<a class="anchor" aria-label="anchor" href="#arg-y-fips"></a></dt>
-<dd><p>logical, if y_skipbasic=F, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using FIPS</p></dd>
+<dd><p>logical, if y_skipbasic = FALSE, whether to run the basic <code><a href="ejamit.html">ejamit()</a></code> using FIPS</p></dd>
 
 
 <dt id="arg-y-coverage-check">y_coverage_check<a class="anchor" aria-label="anchor" href="#arg-y-coverage-check"></a></dt>
@@ -143,12 +143,14 @@ which functions might not have unit tests, just based on matching source file an
 
 
 <dt id="arg-run-these">run_these<a class="anchor" aria-label="anchor" href="#arg-run-these"></a></dt>
-<dd><p>if y_runsome = T, a vector of group names to test, like 'fips', 'naics', etc.
-see source code for list</p></dd>
+<dd><p>if y_runsome = TRUE, a vector of group names to test, like
+'fips', 'naics', 'webapp', etc. The 'webapp' group runs the combined
+shinytest2 functionality suite; use 'webapp_individual' only when debugging
+one-category web app test files.</p></dd>
 
 
 <dt id="arg-skip-these">skip_these<a class="anchor" aria-label="anchor" href="#arg-skip-these"></a></dt>
-<dd><p>if y_runall = T, a vector of group names to skip, like 'fips', 'naics', etc.</p></dd>
+<dd><p>if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.</p></dd>
 
 
 <dt id="arg-y-seeresults">y_seeresults<a class="anchor" aria-label="anchor" href="#arg-y-seeresults"></a></dt>
@@ -191,9 +193,9 @@ see source code for list</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span>ask<span class="op">=</span><span class="cn">F</span>, mydir <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/file-dialogs.html" class="external-link">selectDirectory</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">F</span>,</span>
-<span>      y_runsome <span class="op">=</span> <span class="cn">T</span>, run_these <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'test'</span>, <span class="st">'maps'</span><span class="op">)</span>,</span>
+<span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span>, mydir <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/file-dialogs.html" class="external-link">selectDirectory</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">biglist</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">test_ejam</span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>      y_runsome <span class="op">=</span> <span class="cn">TRUE</span>, run_these <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'test'</span>, <span class="st">'maps'</span><span class="op">)</span>,</span>
 <span>      mydir <span class="op">=</span> <span class="st">"~/../Downloads/unit testing"</span><span class="op">)</span> <span class="co"># for example</span></span>
 <span></span>
 <span>  <span class="op">}</span> <span class="co"># }</span></span>

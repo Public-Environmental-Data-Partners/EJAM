@@ -42,9 +42,11 @@ state percentiles.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
  pts = testpoints_10
- #x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = T))
+ #x = EJAM:::latlon_from_s2b(getblocksnearby(pts, quiet = TRUE))
  x = EJAM:::latlon_from_s2b(testoutput_getblocksnearby_10pts_1miles)
  cbind(estimate = x, pts,
    latratio = x$lat/pts$lat, lonratio = x$lon/pts$lon)
+} # }
 ```

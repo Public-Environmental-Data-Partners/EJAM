@@ -43,8 +43,9 @@ shape2geojson(
 
 ## Value
 
-if txt=T, returns geojson text string(s) for the input spatial
-data.frame if txt=F, returns file path/name(s) of .geojson file(s).
+if txt = TRUE, returns geojson text string(s) for the input spatial
+data.frame if txt = FALSE, returns file path/name(s) of .geojson
+file(s).
 
 ## Details
 
@@ -52,10 +53,10 @@ helper for
 [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
 Note it removes all spaces in the string.
 
-Note that trying to use txt=T and combine_in_one_string = T for large
-polygons or many polygons would create a very long string that might
-exceed URL length limits for GET requests, if that is what you're using
-the text for.
+Note that trying to use txt=TRUE and combine_in_one_string = TRUE for
+large polygons or many polygons would create a very long string that
+might exceed URL length limits for GET requests, if that is what you're
+using the text for.
 
 ## See also
 

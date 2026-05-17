@@ -25,6 +25,7 @@ show where the center of the zip code is but will not map its bounds or
 provide a report easily via the API.
 
 ``` r
+
 # Just see where the zipcode is, not its boundaries
 browseURL(url_ejscreenmap(wherestr =  '10001'))
 ```
@@ -37,6 +38,7 @@ analyze or map them in EJAM as shown below.**
 Takes time to download!
 
 ``` r
+
 library(tigris)
 # options(tigris_use_cache=TRUE) # done by EJAM load/attach
 options(tigris_refresh=FALSE)
@@ -50,12 +52,14 @@ z = shapefile_from_any(zcta2)
 ### mapping zcta polygons
 
 ``` r
+
 mapfast(z)
 ```
 
 ### Another source of zip code polygons (esri service)
 
 ``` r
+
 
 # Download spatial bounds for all zipcodes in Delaware
 ST1 <- "DE"
@@ -81,12 +85,14 @@ browseURL(url_ejscreenmap(wherestr = ‘20019’))
 You can analyze zip codes in EJAM like this:
 
 ``` r
+
 out = ejamit(shapefile = z, radius = 0)
 ```
 
 ### summary report on zipcodes
 
 ``` r
+
 ejam2report(out, 
             analysis_title = "Zip codes",
             site_method = 'SHP', 
@@ -96,6 +102,7 @@ ejam2report(out,
 ### compare sites
 
 ``` r
+
 # put zip code in the x axis labels!
 ejam2barplot_sites(out, names.arg = z$GEOID20, sortby = FALSE) # zcta2$GEOID20
 
@@ -106,6 +113,7 @@ ejam2tableviewer(out)
 ### map of detailed results
 
 ``` r
+
 
 out_plus_shape = sf::st_as_sf(
   data.frame(out$results_bysite, z)

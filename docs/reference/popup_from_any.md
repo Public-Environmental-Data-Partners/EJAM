@@ -23,7 +23,8 @@ popup_from_any(
 - x, :
 
   a table in [data.table](https://r-datatable.com) format table or data
-  frame
+  frame. If `x` is another object type, it is coerced via
+  [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 
 - column_names:
 

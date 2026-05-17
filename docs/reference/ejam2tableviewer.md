@@ -50,5 +50,7 @@ be printed to the console or shown in the RStudio viewer pane
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 ejam2tableviewer(testoutput_ejamit_10pts_1miles)
+} # }
 ```

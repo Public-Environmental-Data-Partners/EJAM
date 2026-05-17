@@ -113,7 +113,7 @@ for a Raw indicator vs. a reference distribution.
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
   out <- testoutput_ejamit_1000pts_1miles
   # ejam2boxplot(out)
   # plot_boxplot_vs_ref(out$results_bysite)
@@ -130,5 +130,5 @@ for a Raw indicator vs. a reference distribution.
  # EJAM:::plot_vs_us(td, varname = "pctnhaa", type =  'ggplot')
  # EJAM:::plot_vs_us(td, varname = "pctnhaa", type = 'box', ylim = c(0,20))
  # EJAM:::plot_vs_us(td[td$ST %in% "DE", ], 'pcthisp', refdata = blockgroupstats[ST %in% "DE", .(pop, pcthisp)])
-  # }
+  } # }
 ```

@@ -55,6 +55,7 @@ ggplot plot
 ## Examples
 
 ``` r
+
 # Check a long list of indicators for any that are elevated
 
 out <- testoutput_ejamit_100pts_1miles

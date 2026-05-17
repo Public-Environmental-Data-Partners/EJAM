@@ -84,5 +84,5 @@ for more examples
    typeofsite <- c("A", "B", "B", "C"))
    cbind(Rows_or_length = sapply(out, NROW))
 
- ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = F)
+ ejam2barplot_sitegroups(out, "sitecount_unique", topn = 3, sortby = FALSE)
 ```

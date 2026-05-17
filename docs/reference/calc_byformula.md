@@ -5,12 +5,7 @@ DRAFT utility to use formulas provided as text, to calculate indicators
 ## Usage
 
 ``` r
-calc_byformula(
-  mydf,
-  formulas = NULL,
-  keep = calc_varname_from_formula(formulas),
-  quiet = FALSE
-)
+calc_byformula(mydf, formulas = NULL, keep = NULL, quiet = FALSE)
 ```
 
 ## Arguments
@@ -21,9 +16,11 @@ calc_byformula(
 
 - formulas:
 
-  text strings of formulas - WARNING: this should not really be used on
-  user-provided, untrusted formula strings, since the contents could
-  potentially be a security risk
+  text strings of formulas, or a data.frame with columns `"rname"` and
+  `"formula"`. Formula dependencies are sorted before evaluation.
+  WARNING: this should not really be used on user-provided, untrusted
+  formula strings, since the contents could potentially be a security
+  risk
 
 - keep:
 

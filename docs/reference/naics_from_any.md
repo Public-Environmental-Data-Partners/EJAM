@@ -92,8 +92,8 @@ complicated. See discussion of
 
  naics_from_any("plastics and rubber")[,.(name,code)]
  naics_from_any(326)
- naics_from_any(326, children = T)[,.(code,name)]
- naics_from_any("plastics", children=T)[,unique(n3)]
+ naics_from_any(326, children = TRUE)[,.(code,name)]
+ naics_from_any("plastics", children=TRUE)[,unique(n3)]
  naics_from_any("pig")
  naics_from_any("pig ") # space after g
 
@@ -106,15 +106,15 @@ complicated. See discussion of
  fintersect(a,b)[,.(name,code)] #  a AND b
  funion(a,b)[,.(name,code)]     #  a OR  b
  naics_subcodes_from_code(funion(a,b)[,code])[,.(name,code)]   #  plus children
- naics_from_any(funion(a,b)[,code], children=T)[,.(name,code)] #  same
+ naics_from_any(funion(a,b)[,code], children = TRUE)[,.(name,code)] #  same
 
  NROW(naics_from_any(325))
 #[1] 1
- NROW(naics_from_any(325, children = T))
+ NROW(naics_from_any(325, children = TRUE))
 #[1] 54
  NROW(naics_from_any("chem"))
 #[1] 20
- NROW(naics_from_any("chem", children = T))
+ NROW(naics_from_any("chem", children = TRUE))
 #[1] 104
 } # }
 ```

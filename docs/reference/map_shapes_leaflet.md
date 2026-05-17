@@ -55,7 +55,7 @@ html widget from leaflet::leaflet()
 out = testoutput_ejamit_10pts_1miles
 out$results_bysite = out$results_bysite[1:2,]
 map_shapes_leaflet(
-  ejam2shapefile(out, save=F),
+  ejam2shapefile(out, save = FALSE),
   popup = popup_from_ejscreen(out$results_bysite)
 )
 ```

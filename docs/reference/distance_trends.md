@@ -48,5 +48,7 @@ which is used by
 ## Examples
 
 ``` r
-EJAM:::distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1,3)))
+if (FALSE) { # \dontrun{
+EJAM:::distance_trends(ejamit_compare_distances(testpoints_10, radii = c(1, 3)))
+} # }
 ```

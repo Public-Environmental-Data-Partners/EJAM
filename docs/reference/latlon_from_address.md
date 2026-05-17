@@ -41,8 +41,7 @@ latlon_from_address(
 
 - ...:
 
-  passed to geocode() see
-  [`help(geocode, package = "AOI")`](https://rdrr.io/pkg/AOI/man/geoCode.html)
+  passed to `geocode()` from the optional AOI package.
 
 ## Value
 
@@ -63,7 +62,7 @@ slow? about 100 per minute?
   # #x <- geocode(eg)
   # out <- ejamit(x, radius = 3)
   # fname = system.file("testdata/address/testinput_address_table_9.xlsx", package="EJAM")
-  ## or testdata('address_table_9', quiet = T)
+  ## or testdata('address_table_9', quiet = TRUE)
 
 #x1 <- read_csv_or_xl(fname)
 #x2 <- latlon_from_anything(fname)

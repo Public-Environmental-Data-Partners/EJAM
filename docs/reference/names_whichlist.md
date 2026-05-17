@@ -7,11 +7,11 @@ See which of the lists of names a single term appears in
 ``` r
 names_whichlist(
   x,
-  exact = T,
-  grepmatching = T,
+  exact = TRUE,
+  grepmatching = TRUE,
   ignore.case.exact = FALSE,
   ignore.case.grep = FALSE,
-  keylists = F,
+  keylists = FALSE,
   exactonly = FALSE
 )
 ```
@@ -64,12 +64,12 @@ terms like "state.pctile.pcthisp", "state.pctile.pctnhba", etc.
 ## Examples
 
 ``` r
-   x <- EJAM:::names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
+   x <- EJAM:::names_whichlist("rsei", ignore.case.exact = TRUE, ignore.case.grep = TRUE)
 
    subset(x,  grepl("all", x$whichlist))
    subset(x,  grepl("state_p", x$whichlist))
    z=subset(namez, names(namez) != "all_r" & names(namez) %in%
       subset(x, x$grepmatch == "yes")$whichlist  )
    lapply(z, as.vector) # avoids showing attributes if they were set and are distracting here
-   grep("\\.eo$", namez$ej, value = T)
+   grep("\\.eo$", namez$ej, value = TRUE)
 ```

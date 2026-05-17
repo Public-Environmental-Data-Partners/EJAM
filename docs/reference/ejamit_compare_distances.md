@@ -93,6 +93,7 @@ and
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
   radii <- c(convert_units(5,"km","miles"), convert_units(50,"km","miles"))
   radii <- 1:10
   radii <- c(1, 10)
@@ -104,4 +105,5 @@ and
     "ratio.to.avg.pctlowinc", "ratio.to.avg.pcthisp", "ratio.to.avg.pctnhba"))
 
   names(bydist) <- fixcolnames(names(bydist), "r", "shortlabel")
+} # }
 ```

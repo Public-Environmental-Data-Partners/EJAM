@@ -76,8 +76,9 @@
 <span>  formulas <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="formulas_ejscreen_acs.html">formulas_ejscreen_acs</a></span><span class="op">$</span><span class="va">formula</span>,</span>
 <span>  tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="tables_ejscreen_acs.html">tables_ejscreen_acs</a></span><span class="op">)</span>,</span>
 <span>  include_tract_data <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  tract_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span><span class="op">)</span>,</span>
+<span>  tract_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span>, <span class="st">"B27010"</span><span class="op">)</span>,</span>
 <span>  tract_formulas <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tract_weight_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"decennial2020"</span>, <span class="st">"acs"</span><span class="op">)</span>,</span>
 <span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  acs_raw <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  acs_raw_stage <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -119,6 +120,13 @@ to blockgroups.</p></dd>
 <dt id="arg-tract-formulas">tract_formulas<a class="anchor" aria-label="anchor" href="#arg-tract-formulas"></a></dt>
 <dd><p>formulas used for tract-resolution ACS indicators.
 Defaults to <code><a href="calc_blockgroupstats_from_tract_data.html">calc_blockgroupstats_from_tract_data()</a></code> defaults.</p></dd>
+
+
+<dt id="arg-tract-weight-source">tract_weight_source<a class="anchor" aria-label="anchor" href="#arg-tract-weight-source"></a></dt>
+<dd><p>source for tract-to-blockgroup apportionment
+weights. <code>"decennial2020"</code> matches the legacy EJSCREEN method by using
+2020 Decennial Census blockgroup population weights. <code>"acs"</code> uses
+same-vintage ACS blockgroup population weights.</p></dd>
 
 
 <dt id="arg-dropmoe">dropMOE<a class="anchor" aria-label="anchor" href="#arg-dropmoe"></a></dt>

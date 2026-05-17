@@ -24,10 +24,12 @@ At the *OVERALL LIST of sites* as a whole, which groups are
 *over-represented* within X mile radius vs Statewide?
 
 ``` r
+
 out <- ejamit(testpoints_100, radius = 3.1)
 ```
 
 ``` r
+
 ejam2ratios(out)
 #> 
 #> 
@@ -36,18 +38,18 @@ ejam2ratios(out)
 #> Demog.Ind.                        1.2                1.3
 #> Suppl Demog.Ind.                  1.0                1.0
 #> %Low-inc.                         1.0                1.1
-#> %Limited English                  1.6                1.2
+#> %Limited English                  1.5                1.2
 #> %Unemployed                       1.1                1.1
 #> %< High School                    1.2                1.1
-#> %< age 5                          1.1                1.1
+#> %< age 5                          1.0                1.0
 #> %> age 64                         0.8                0.8
-#> %POC                              1.5                1.2
+#> %POC                              1.4                1.2
 #> %Hispanic                         1.5                1.1
 #> %Black NHA                        1.1                1.4
 #> %Asian NHA                        2.5                1.4
 #> %AmerIndian/AK NHA                0.5                0.6
-#> %Hawaiian/PI NHA                  2.4                1.1
-#> %Other race NHA                   1.3                1.1
+#> %Hawaiian/PI NHA                  2.5                1.2
+#> %Other race NHA                   1.2                1.0
 #> %multirace NH                     1.1                1.0
 #> %White NHA                        0.7                0.8
 #> PM2.5                             1.2                1.1
@@ -56,7 +58,7 @@ ejam2ratios(out)
 #> Diesel PM                         2.0                1.5
 #> Toxic Releases to Air             0.5                1.0
 #> Traffic                           2.6                1.7
-#> %pre-1960                         1.4                1.3
+#> %pre-1960                         1.4                1.2
 #> NPL                               2.8                1.8
 #> RMP                               1.3                1.2
 #> TSDF                              3.3                1.8
@@ -66,6 +68,7 @@ ejam2ratios(out)
 ```
 
 ``` r
+
 ejam2barplot(out)
 ```
 
@@ -82,11 +85,13 @@ At *JUST ONE SITE*, which groups are *over-represented* within X mile
 radius vs Statewide?
 
 ``` r
+
 out1 <- ejamit(testpoints_100[2, ], radius = 3.1)
 ejam2ratios(out1)
 ```
 
 ``` r
+
 ejam2barplot(out1)
 ```
 
@@ -104,22 +109,23 @@ Which groups are *over-represented* at *EACH SITE*, within X mile radius
 vs Statewide
 
 ``` r
+
 out <- testoutput_ejamit_10pts_1miles
 x = round(data.frame(out$results_bysite)[, c("ratio.to.state.avg.pctlowinc", "ratio.to.state.avg.pctmin")], 2)
 names(x) = fixcolnames(names(x),"r","shortlabel")
 x = data.frame(sitenumber = 1:NROW(x), x)
 x
 #>    sitenumber Ratio.to.State.avg..Low.inc. Ratio.to.State.avg..POC
-#> 1           1                         0.56                    1.41
-#> 2           2                         0.72                    0.58
-#> 3           3                         0.81                    1.19
-#> 4           4                         0.63                    0.39
-#> 5           5                         1.44                    0.64
-#> 6           6                         1.09                    0.84
-#> 7           7                         1.25                    1.17
-#> 8           8                         0.22                    0.69
-#> 9           9                         0.49                    1.18
-#> 10         10                         1.13                    1.19
+#> 1           1                         0.61                    1.33
+#> 2           2                         0.93                    1.02
+#> 3           3                         0.78                    1.19
+#> 4           4                         0.75                    0.56
+#> 5           5                         1.32                    0.67
+#> 6           6                         1.29                    0.93
+#> 7           7                         1.08                    1.14
+#> 8           8                         0.29                    0.67
+#> 9           9                         0.53                    1.36
+#> 10         10                         1.29                    1.10
 ```
 
 Plot to compare sites, for just one residential population indicator
@@ -130,6 +136,7 @@ several other sites, and is less than half the State average at sites 4
 and 10.
 
 ``` r
+
 ejam2barplot_sites(out, "ratio.to.state.avg.pctlowinc", topn = 10, sortby = F)
 ```
 
@@ -140,6 +147,7 @@ income, one bar per site, where sites 5 and 6 have ratios above
 Example of ejam2barplot_sites()
 
 ``` r
+
 
 ## For raw values at key sites:
 # ejam2barplot_sites(out, "pctlowinc")
@@ -153,6 +161,7 @@ At the *OVERALL LIST of sites* as a whole, which groups are
 *over-represented* within X mile radius vs Statewide?
 
 ``` r
+
 radii <- c(1,2,3,10)
 #radii <- c(1, 10) #  quicker example
 pts <- testpoints_100[10:12, ]
@@ -161,23 +170,25 @@ pts <- testpoints_100[10:12, ]
 See just the table
 
 ``` r
+
 x <- ejamit_compare_distances(pts, radii = radii, quiet = TRUE, plot = FALSE)
 ```
 
     #> 
     #>                                         1   2   3  10
-    #> Ratio to State avg %Hispanic          0.4 0.8 1.1 1.0
-    #> Ratio to State avg %Black NHA         4.4 2.7 1.8 0.7
+    #> Ratio to State avg %Hispanic          0.5 0.9 1.1 1.0
+    #> Ratio to State avg %Black NHA         4.3 2.6 1.7 0.7
     #> Ratio to State avg %Asian NHA         1.5 1.5 1.5 1.4
     #> Ratio to State avg %AmerIndian/AK NHA 0.2 0.2 0.4 0.5
-    #> Ratio to State avg %Hawaiian/PI NHA   0.8 1.6 1.3 1.0
-    #> Ratio to State avg %Other race NHA    0.7 0.9 0.7 0.7
-    #> Ratio to State avg %multirace NH      1.4 1.0 0.8 0.9
+    #> Ratio to State avg %Hawaiian/PI NHA   1.0 1.6 1.2 1.0
+    #> Ratio to State avg %Other race NHA    1.0 1.1 0.8 0.8
+    #> Ratio to State avg %multirace NH      1.0 0.8 0.8 0.9
     #> Ratio to State avg %White NHA         0.6 0.7 0.7 0.9
 
 See the plot
 
 ``` r
+
 # x <- ejamit_compare_distances(pts, radii = radii, quiet = TRUE) # in which default is plot=TRUE
 # or 
 ejam2barplot_distances(x)
@@ -221,6 +232,7 @@ Example of area where %Black is very high within 1 mile but drops by 3
 miles away
 
 ``` r
+
 pts <- testpoints_100[3,]
 y <- plot_distance_by_pctd(
   getblocksnearby(pts, radius = 10, quiet = T),
@@ -239,6 +251,7 @@ case)](distances_files/figure-html/plot_distance_by_pctd-1.png)
 Example of using plot_distance_by_pctd()
 
 ``` r
+
 # ejamapp(sitepoints = pts, radius_default = 0.5)
 # ejamapp(sitepoints = pts, radius_default = 3)
 
@@ -253,6 +266,7 @@ Example of area that has higher %Hispanic as you go 10 to 30 miles away
 from this specific point
 
 ``` r
+
 pts <- data.table::data.table(lat = 45.75464, lon = -94.36791)
 
 y <- plot_distance_by_pctd(pts,
@@ -269,17 +283,20 @@ Example of using plot_distance_by_pctd()
 
 ``` r
 
+
 out2 = ejamit_compare_distances(pts,radii = c(10,30))
+#> [1] "Estimated analysis time: about 30 seconds for 1 point-buffer location (upper estimate 2 minutes)."
+#> [1] "Estimated analysis time: about 2 seconds for 1 point-buffer location (upper estimate 2.4 minutes)."
 #> 
 #>                                        10  30
-#> Ratio to State avg %Hispanic          0.2 0.7
-#> Ratio to State avg %Black NHA         0.1 1.1
+#> Ratio to State avg %Hispanic          0.3 0.7
+#> Ratio to State avg %Black NHA         0.1 1.2
 #> Ratio to State avg %Asian NHA         0.1 0.4
 #> Ratio to State avg %AmerIndian/AK NHA 0.2 0.2
-#> Ratio to State avg %Hawaiian/PI NHA   2.6 0.9
-#> Ratio to State avg %Other race NHA    0.5 0.6
-#> Ratio to State avg %multirace NH      0.4 0.8
-#> Ratio to State avg %White NHA         1.2 1.1
+#> Ratio to State avg %Hawaiian/PI NHA   2.4 1.5
+#> Ratio to State avg %Other race NHA    0.4 0.5
+#> Ratio to State avg %multirace NH      0.5 0.8
+#> Ratio to State avg %White NHA         1.3 1.1
 #> 
 #>  Indicators that most strongly get larger as you get closer: 
 #> 
@@ -345,6 +362,7 @@ found:
   averages within any distance shown here.
 
 ``` r
+
 pts <- testpoints_10
 s2b <- getblocksnearby(pts, radius = 10, quiet = T)
 for (i in 1:NROW(pts)) {
@@ -374,6 +392,7 @@ circles, more of the low income residents are closer to a site than are
 the non-low income residents or all residents.
 
 ``` r
+
  # out <- ejamit(testpoints_10, radius = 10)
 plot_distance_cdf_by_group(
   out$results_bybg_people,
@@ -407,6 +426,7 @@ residential population group:
 
 ``` r
 
+
 out <- testoutput_ejamit_1000pts_1miles
 ## But try a larger radius to reveal more information:
 # out <- ejamit(testpoints_100, radius = 10)
@@ -414,22 +434,22 @@ out <- testoutput_ejamit_1000pts_1miles
 # see a table of demog indicators
 distance_mean_by_group(out$results_bybg_people)
 #>                               group nearest nearer ratio avg_distance_for_group
-#> Demog.Ind.              Demog.Index   FALSE   TRUE 0.998                   0.69
+#> Demog.Ind.              Demog.Index   FALSE   TRUE 0.997                   0.69
 #> Suppl Demog.Ind.   Demog.Index.Supp   FALSE   TRUE 0.997                   0.69
-#> %Low-inc.                 pctlowinc   FALSE   TRUE 0.996                   0.69
-#> %Limited English         pctlingiso   FALSE  FALSE 1.017                   0.70
-#> %Unemployed           pctunemployed   FALSE   TRUE 1.000                   0.69
-#> %< High School              pctlths   FALSE  FALSE 1.003                   0.69
-#> %< age 5                  pctunder5   FALSE  FALSE 1.001                   0.69
-#> %> age 64                 pctover64   FALSE  FALSE 1.007                   0.69
+#> %Low-inc.                 pctlowinc   FALSE   TRUE 0.997                   0.69
+#> %Limited English         pctlingiso   FALSE  FALSE 1.014                   0.70
+#> %Unemployed           pctunemployed   FALSE   TRUE 0.995                   0.68
+#> %< High School              pctlths   FALSE  FALSE 1.006                   0.69
+#> %< age 5                  pctunder5   FALSE   TRUE 1.000                   0.69
+#> %> age 64                 pctover64   FALSE  FALSE 1.008                   0.69
 #> %POC                         pctmin   FALSE  FALSE 1.010                   0.69
-#> %Hispanic                   pcthisp   FALSE  FALSE 1.013                   0.69
-#> %Black NHA                  pctnhba   FALSE  FALSE 1.004                   0.69
-#> %Asian NHA                  pctnhaa   FALSE   TRUE 1.000                   0.69
-#> %AmerIndian/AK NHA       pctnhaiana    TRUE   TRUE 0.954                   0.66
-#> %Hawaiian/PI NHA         pctnhnhpia   FALSE   TRUE 0.954                   0.66
-#> %Other race NHA     pctnhotheralone   FALSE  FALSE 1.015                   0.70
-#> %multirace NH            pctnhmulti   FALSE   TRUE 0.992                   0.68
+#> %Hispanic                   pcthisp   FALSE  FALSE 1.015                   0.69
+#> %Black NHA                  pctnhba   FALSE   TRUE 0.999                   0.69
+#> %Asian NHA                  pctnhaa   FALSE   TRUE 0.998                   0.69
+#> %AmerIndian/AK NHA       pctnhaiana    TRUE   TRUE 0.965                   0.66
+#> %Hawaiian/PI NHA         pctnhnhpia   FALSE   TRUE 0.990                   0.68
+#> %Other race NHA     pctnhotheralone   FALSE  FALSE 1.001                   0.69
+#> %multirace NH            pctnhmulti   FALSE   TRUE 0.997                   0.69
 #> %White NHA                  pctnhwa   FALSE   TRUE 0.990                   0.68
 #>                    avg_distance_for_nongroup
 #> Demog.Ind.                              0.69
@@ -441,7 +461,7 @@ distance_mean_by_group(out$results_bybg_people)
 #> %< age 5                                0.69
 #> %> age 64                               0.69
 #> %POC                                    0.68
-#> %Hispanic                               0.69
+#> %Hispanic                               0.68
 #> %Black NHA                              0.69
 #> %Asian NHA                              0.69
 #> %AmerIndian/AK NHA                      0.69
@@ -455,7 +475,7 @@ print(distance_mean_by_group(
   out$results_bybg_people, 
   demogvarname = 'pctlowinc', demoglabel = 'Low Income'))
 #>                group nearest nearer ratio avg_distance_for_group
-#> Low Income pctlowinc    TRUE   TRUE 0.996                   0.69
+#> Low Income pctlowinc    TRUE   TRUE 0.997                   0.69
 #>            avg_distance_for_nongroup
 #> Low Income                      0.69
 ```
@@ -463,6 +483,7 @@ print(distance_mean_by_group(
 To see a barplot, comparing just race/ethnicity groups:
 
 ``` r
+
 plot_distance_mean_by_group(out$results_bybg_people, 
                        demogvarname = names_d_subgroups,
                        demoglabel = fixcolnames(names_d_subgroups, "r", "shortlabel")
@@ -480,16 +501,16 @@ away](distances_files/figure-html/plot_distance_mean_by_group999-1.png)
 Example of using plot_distance_mean_by_group()
 
     #>                              group nearest nearer ratio avg_distance_for_group
-    #> %Hispanic                  pcthisp   FALSE  FALSE 1.013                   0.69
-    #> %Black NHA                 pctnhba   FALSE  FALSE 1.004                   0.69
-    #> %Asian NHA                 pctnhaa   FALSE   TRUE 1.000                   0.69
-    #> %AmerIndian/AK NHA      pctnhaiana    TRUE   TRUE 0.954                   0.66
-    #> %Hawaiian/PI NHA        pctnhnhpia   FALSE   TRUE 0.954                   0.66
-    #> %Other race NHA    pctnhotheralone   FALSE  FALSE 1.015                   0.70
-    #> %multirace NH           pctnhmulti   FALSE   TRUE 0.992                   0.68
+    #> %Hispanic                  pcthisp   FALSE  FALSE 1.015                   0.69
+    #> %Black NHA                 pctnhba   FALSE   TRUE 0.999                   0.69
+    #> %Asian NHA                 pctnhaa   FALSE   TRUE 0.998                   0.69
+    #> %AmerIndian/AK NHA      pctnhaiana    TRUE   TRUE 0.965                   0.66
+    #> %Hawaiian/PI NHA        pctnhnhpia   FALSE   TRUE 0.990                   0.68
+    #> %Other race NHA    pctnhotheralone   FALSE  FALSE 1.001                   0.69
+    #> %multirace NH           pctnhmulti   FALSE   TRUE 0.997                   0.69
     #> %White NHA                 pctnhwa   FALSE   TRUE 0.990                   0.68
     #>                    avg_distance_for_nongroup
-    #> %Hispanic                               0.69
+    #> %Hispanic                               0.68
     #> %Black NHA                              0.69
     #> %Asian NHA                              0.69
     #> %AmerIndian/AK NHA                      0.69
@@ -507,6 +528,7 @@ Ratios at each site, of avg dist of group / avg dist of everyone else
 near site:
 
 ``` r
+
 
 out <- testoutput_ejamit_10pts_1miles
 ## But try a larger radius to reveal more information:
@@ -662,6 +684,7 @@ nearby](#map-all-sites-with-popup-at-each-saying-how-many-blocks-were-found-near
 and therefore might have more uncertainty in counts nearby.
 
 ``` r
+
 # out <- ejamit(testpoints_1000, radius = 1)
 # out$results_bysite$blockcount_near_site
 out <- testoutput_ejamit_1000pts_1miles
@@ -687,6 +710,7 @@ under 10 blocks nearby and a similar share have only 10-29 blocks
 nearby.
 
 ``` r
+
 # (Printed information is lengthy)
 
   getblocks_diagnostics(
@@ -763,6 +787,7 @@ to quickly find residents/blocks that are within a specified distance,
 as a table of distances between sites and nearby blocks.
 
 ``` r
+
 sitepoints <- testpoints_10[1:2, ]
 
 sites2blocks <- getblocksnearby(
@@ -789,14 +814,15 @@ head(sites2blocks)
 ##### Detailed stats on blocks found near site(s)
 
 ``` r
+
 x <- getblocks_diagnostics(sites2blocks)
 #> 
 #>    DISTANCES FROM BLOCKS (AND RESIDENTS) TO SITES (AND FOR CLOSEST SITE) 
 #> 
 #>  NOTE: This only analyzes the sites that had at least 1 block, since those with zero blocks are not in the output of getblocksnearby() or related functions get_blockpoints_in_shape() or getblocksnearby_from_fips()
 #> 
-#> 3.099399 miles is max. distance to block internal point (distance_unadjusted)   
-#> 3.099399 miles is max. distance to average resident in block (distance reported)   
+#> 3.0994 miles is max. distance to block internal point (distance_unadjusted)   
+#> 3.0994 miles is max. distance to average resident in block (distance reported)   
 #> 0.02554516 miles is shortest distance to block internal point (distance_unadjusted)   
 #> 0.02554516 miles is shortest distance to average resident in block (distance reported)   
 #> 0 block distances were adjusted (these stats may count some blocks twice if adjusted at 2+ sites)
@@ -844,6 +870,7 @@ of how many blocks are within 3.1 miles of these 2 sites
 
 ``` r
 
+
 # x <- getblocks_summarize_blocks_per_site(sites2blocks) 
 # print(x) shows more info returned invisibly
 ```
@@ -869,6 +896,7 @@ such as this:
     blockcount_near_site: 219
 
 ``` r
+
 x <- plot_blocks_nearby(testpoints_10[1, ], radius = 3, returnmap = F)
 #> Analyzing 1 points, radius of 3 miles around each.
 #> Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...
@@ -901,6 +929,7 @@ on that average.
 - how many sites are near a block (residents with \> 1 site nearby)
 
 ``` r
+
 out <- testoutput_ejamit_100pts_1miles
 cat("  ", popshare_p_lives_at_what_pct(out$results_bysite$pop, p = 0.50, astext = TRUE), "\n")
 #> Warning in popshare_p_lives_at_what_pct(out$results_bysite$pop, p = 0.5, : some
@@ -909,12 +938,13 @@ cat("  ", popshare_p_lives_at_what_pct(out$results_bysite$pop, p = 0.50, astext 
 #> sites
 #>    The most-populated 13% of the 100 places can account for at least 50% of the total population of all sites as a whole.
 cat("  ", popshare_at_top_n(out$results_bysite$pop, c(1, 5, 10), astext = TRUE), "\n\n")
-#>    1, 5, 10 places account for 10%, 28%, 43% of the total population
+#>    1, 5, 10 places account for 10%, 28%, 44% of the total population
 ```
 
 Find all blocks nearby each site
 
 ``` r
+
 radius <- 3
 sitepoints <- testpoints_100
 sites2blocks <- getblocksnearby(sitepoints, radius, quadtree = localtree, quiet = TRUE)
@@ -930,7 +960,13 @@ Hundreds are often within 1 mile, but sometimes there are only a handful
 or even zero.
 
 ``` r
+
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 
 s2b_stats <- sites2blocks[ , .(
   avgDistance = round(mean(distance), 2),
@@ -964,6 +1000,7 @@ These sites have no blocks within 1 mile, but do have blocks within 1.5
 miles:
 
 ``` r
+
  getblocksnearby(testpoints_1000[c(42,186,350,401,984), ], radius = 1)[]   # these have no blocks within 1 mile
  getblocksnearby(testpoints_1000[c(42,186,350,401,984), ], radius = 1.5)[] # but all have blocks within 1.5 miles
 ```
@@ -981,6 +1018,7 @@ How many blocks are near each of these 100 facilities?
 
 ``` r
 
+
 hist(sites2blocks[,.N, by = "ejam_uniq_id"][, N], 20, 
      xlab = "How many blocks are nearby?", 
      ylab = "Frequency (# of sites)", 
@@ -997,6 +1035,7 @@ Example of Histogram and table showing how many blocks are within 3
 miles of a site
 
 ``` r
+
 DT::datatable(s2b_stats,  rownames = FALSE)
 # more summaries showing there may be only 1 block or hundreds within 1 mile
 ```
@@ -1004,6 +1043,7 @@ DT::datatable(s2b_stats,  rownames = FALSE)
 #### Summary stats on how many blocks are within each radius
 
 ``` r
+
 # Just within 1 mile
 summary(sites2blocks[distance <= 1, .N, by = "ejam_uniq_id"][, N])
 # or
@@ -1017,6 +1057,7 @@ summary(s2b_stats)
 #### Map all sites with popup at each saying how many blocks were found nearby
 
 ``` r
+
 ## done previously:
 # radius <- 3
 # sitepoints <- testpoints_100
@@ -1055,6 +1096,7 @@ Example of mapfast() for seeing how many blocks are at each site
 ##### Some places have very few – if any – blocks within 1 mile
 
 ``` r
+
 tail(s2b_stats[order(s2b_stats$blocks_within_1mile, decreasing = T), 
                c('ejam_uniq_id', 'blocks_within_1mile')], 3) 
 #>    ejam_uniq_id blocks_within_1mile
@@ -1067,6 +1109,7 @@ tail(s2b_stats[order(s2b_stats$blocks_within_1mile, decreasing = T),
 ##### Some places have hundreds nearby: a 1 mile radius is huge within a dense urban area
 
 ``` r
+
 head(s2b_stats[order(s2b_stats$blocks_within_1mile, decreasing = T), 
                c('ejam_uniq_id', 'blocks_within_1mile')], 3)
 #>    ejam_uniq_id blocks_within_1mile
@@ -1077,6 +1120,7 @@ head(s2b_stats[order(s2b_stats$blocks_within_1mile, decreasing = T),
 ```
 
 ``` r
+
 densest <- s2b_stats$ejam_uniq_id[order(
   s2b_stats$blocks_within_1mile, decreasing = T)][1]
 leastdense <- s2b_stats$ejam_uniq_id[order(
@@ -1087,9 +1131,10 @@ leastdense <- s2b_stats$ejam_uniq_id[order(
     #> Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...
     #> Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: 
     #> min distance before adjustment:  0.03130003 
-    #> max distance before adjustment:  5.053461
+    #> max distance before adjustment:  5.053462
 
 ``` r
+
 plot_blocks_nearby(sitepoints = sitepoints[densest, ])
 ```
 
@@ -1100,6 +1145,7 @@ plot_blocks_nearby(sitepoints = sitepoints[densest, ])
     #> max distance before adjustment:  4.755771
 
 ``` r
+
 plot_blocks_nearby(sitepoints = sitepoints[ leastdense, ])
 ```
 
@@ -1107,6 +1153,7 @@ Within a 1 mile radius, the blocks found tend to be about 2/3 of a mile
 from the site at the center.
 
 ``` r
+
 summary(s2b_stats$avgDistance)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #>   0.830   1.815   1.930   1.873   2.005   2.230

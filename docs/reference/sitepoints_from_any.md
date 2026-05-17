@@ -68,7 +68,7 @@ data.frame with lat,lon, and ejam_uniq_id as colnames, one row per point
  pts = data.table::data.table(Lat = testpoints_10$lat, Long = testpoints_10$lon)
  sitepoints_from_any(pts)
 
- sitepoints_from_anything(testpoints_bad, set_invalid_to_na = F, invalid_msg_table = T)
+ sitepoints_from_anything(testpoints_bad, set_invalid_to_na = FALSE, invalid_msg_table = TRUE)
 
    ## Try this in an interactive R session:
    ##

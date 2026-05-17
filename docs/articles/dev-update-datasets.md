@@ -36,6 +36,7 @@ such as `names_e`).
 See the draft utility `EJAM:::pkg_data()` for a dataset inventory:
 
 ``` r
+
 x <- EJAM:::pkg_data()
 ```
 
@@ -44,6 +45,7 @@ x <- EJAM:::pkg_data()
     ## ignoring sortbysize because simple=TRUE
 
 ``` r
+
 x$Item[!grepl("names_|^test", x$Item)]
 ```
 
@@ -60,12 +62,13 @@ x$Item[!grepl("names_|^test", x$Item)]
     ## [21] "lat_alias"                        "lon_alias"                       
     ## [23] "mact_table"                       "map_headernames"                 
     ## [25] "meters_per_mile"                  "modelDoaggregate"                
-    ## [27] "modelEjamit"                      "naics_counts"                    
-    ## [29] "naicstable"                       "namez"                           
-    ## [31] "sictable"                         "stateinfo"                       
-    ## [33] "stateinfo2"                       "states_shapefile"                
-    ## [35] "statestats"                       "tables_ejscreen_acs"             
-    ## [37] "usastats"                         "x_anyother"
+    ## [27] "modelEjamit"                      "modelEjamitByAnalysisType"       
+    ## [29] "naics_counts"                     "naicstable"                      
+    ## [31] "namez"                            "sictable"                        
+    ## [33] "stateinfo"                        "stateinfo2"                      
+    ## [35] "states_shapefile"                 "statestats"                      
+    ## [37] "tables_ejscreen_acs"              "usastats"                        
+    ## [39] "x_anyother"
 
 ### Where the datasets are stored
 
@@ -325,6 +328,36 @@ and
 
 These were the arrow files used by EJAM:
 
+### Arrow file update groups
+
+Arrow files do not all change on the same schedule. Use these groups
+when planning updates:
+
+1.  **Facility Data Updates** include `frs`, `frs_by_programid`,
+    `frs_by_naics`, `frs_by_sic`, and `frs_by_mact`. These may be
+    refreshed when EPA FRS/facility data are updated.
+
+2.  **EJSCREEN Annual Data Update** currently includes `bgej.arrow`. It
+    is calculated from the annual EJScreen/EJAM demographic and
+    environmental pipeline and must match the installed package’s
+    `blockgroupstats`, `usastats`, and `statestats`. Starting with
+    v2.5.0, `bgej.arrow` should be pinned to the EJAM/EJScreen release
+    tag rather than downloaded from the latest data-repository release.
+
+3.  **Blockgroup Geography Updates** include `bgid2fips` and `blockwts`,
+    and related `.rda` objects such as `bgpts` and `bg_cenpop2020`.
+    These need review during each annual update and regeneration when
+    blockgroup FIPS, EJAM `bgid`, internal points, or
+    blockgroup-to-block relationships change.
+
+4.  **Block Geography Updates** include `blockpoints`, `quaddata`, and
+    `blockid2fips`. These need regeneration only when block-level FIPS
+    or block internal-point geography changes.
+
+Use `EJAM:::dynamic_geography_arrow_report()` to check whether the
+current blockgroup and block geography Arrow files are compatible with
+the installed `blockgroupstats` blockgroup universe.
+
 ### Blockgroup and block-level arrow files
 
 - [`?bgid2fips`](https://public-environmental-data-partners.github.io/EJAM/reference/bgid2fips.md).arrow:
@@ -338,7 +371,9 @@ These were the arrow files used by EJAM:
   Census block population weight as share of blockgroup population, EJAM
   block and blockgroup ID
 - [`?bgej`](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md).arrow:
-  blockgroup-level statistics of EJ variables
+  blockgroup-level statistics of EJ variables. This is part of the
+  EJSCREEN Annual Data Update group and must match the package’s
+  `blockgroupstats`
 - [`?quaddata`](https://public-environmental-data-partners.github.io/EJAM/reference/quaddata.md).arrow:
   3D spherical coordinates of Census block internal points, with EJAM
   block ID
@@ -382,18 +417,27 @@ These were the arrow files used by EJAM:
 
 &nbsp;
 
-1.  Checks data repo’s latest release/version.
+1.  For facility and most geography Arrow files, checks data repo’s
+    latest release/version.
 2.  Checks user’s EJAM package’s ejamdata version, which is stored in
     `data/ejamdata_version.txt`.
 3.  If the `data/ejamdata_version.txt` file doesn’t exist, for example
     on the first EJAM install, it will be created at the end of the
     script.
-4.  If the versions are different, downloads the latest arrow from the
-    latest ejamdata release with
+4.  If the versions are different, downloads the latest Arrow files from
+    the latest ejamdata release with
     [`piggyback::pb_download()`](https://docs.ropensci.org/piggyback/reference/pb_download.html).
-    See how this function works for details:
+5.  For package-coupled annual files such as `bgej.arrow`, uses the EJAM
+    package release tag, such as `v2.5.0`, rather than the latest
+    data-repository release. This same rule is used when
+    `dataload_dynamic("bgej")` loads `bgej`: the local `bgej.arrow` must
+    match the installed package’s `blockgroupstats`, and if it does not,
+    EJAM tries to replace it from the package-pinned `ejamdata` release
+    tag, which is based on `packageVersion("EJAM")`. See how this
+    function works for details:
 
 ``` r
+
 download_latest_arrow_data()
 ```
 
@@ -439,6 +483,7 @@ follows:
 Create a new release number for the data repository
 
 ``` r
+
 library(piggyback)
 
 release_number <- "v2.5.0" # Update as needed
@@ -458,6 +503,7 @@ piggyback::pb_release_create(
 Make sure all the new data objects are available as .arrow format files.
 
 ``` r
+
 library(piggyback)
 
 release_number <- "v2.5.0" # Update as needed
@@ -485,6 +531,7 @@ if (some_not_here) {stop("Please make sure all the new .arrow data files are ava
 Upload each dataset object as a dataset file
 
 ``` r
+
 library(piggyback)
 
 release_number <- "v2.5.0" # Update as needed
@@ -503,6 +550,7 @@ for (i in seq_along(filepaths_arrow)) {
 Open browser to confirm they are there
 
 ``` r
+
 browseURL(paste0(EJAM:::url_package("data", get_full_url = T), "/releases"))
 ```
 
@@ -511,6 +559,7 @@ versions are available and will get them to store with the installed
 package.
 
 ``` r
+
 rm(list=ls())
 require(EJAM)
 

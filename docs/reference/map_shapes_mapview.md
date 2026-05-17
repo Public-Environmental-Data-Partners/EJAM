@@ -53,7 +53,7 @@ spatial object as via
 
 out = ejamit(testpoints_10[1,], radius = 20)
 map_shapes_mapview(
-  ejam2shapefile(out, save=F),
+  ejam2shapefile(out, save = FALSE),
   popup = popup_from_ejscreen(out$results_bysite)
 )
 ```

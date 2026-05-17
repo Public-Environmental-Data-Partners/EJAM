@@ -76,30 +76,25 @@
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>An object of class <code>data.frame</code> with 649 rows and 85 columns.</p>
+    <p>An object of class <code>data.frame</code> with 760 rows and 64 columns.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This is an IMPORTANT TABLE that provides information about each variable (indicator), such as the following:</p><ul><li><p>names as used in geodatabase files (original data source)</p></li>
-<li><p>names as used in the old EJSCREEN API (<code>ejscreen_apinames_old</code>,
-copied from the historical <code>apiname</code> column)</p></li>
-<li><p>names as used in the current EJAM API (<code>ejam_apinames</code>, copied from
-<code>rname</code>)</p></li>
-<li><p>names as used in old EJSCREEN staff CSV/FTP-style downloads
-(<code>ejscreen_ftp_names</code>, copied from <code>csvname</code>)</p></li>
-<li><p>names as used in current EJSCREEN download, geodatabase, and map
-application fields (<code>ejscreen_names</code>)</p></li>
-<li><p>names as used in the R code</p></li>
+    <p>This is an IMPORTANT TABLE and many functions rely on it.</p>
+<p>It provides metadata or information about each variable (indicator), such as the following:</p><ul><li><p>names as used in the R code ("rname"), which is the "canonical" name for each variable, and is used in the R code and in the EJAM API</p></li>
 <li><p>names as used in short labels of graphics</p></li>
 <li><p>names as used in table headers (long versions to provide full descriptions of the variables)</p></li>
-<li><p>category of variable, for purposes of grouping similar ones like those in names_d or names_d_pctile</p></li>
+<li><p>names as used in EJSCREEN-specific files/code/app (<code>ejscreen_indicator</code>)</p></li>
+<li><p>row-type flags that indicate if a variable is in various categories or types</p></li>
+<li><p>main category of variable or "varlist" for purposes of grouping similar ones like those in names_e, names_d, or names_d_pctile</p></li>
 <li><p>info about rounding decimal places, significant digits, percentage format, etc.</p></li>
 <li><p>method for aggregating the value across blockgroups (sum, weighted mean, what is the weight, etc.)</p></li>
-<li><p>etc.</p></li>
-</ul><p>It was created from a spreadsheet of the same name in the <code>data-raw</code>
-folder. Several helper functions are used to query it, such as
-<code><a href="fixcolnames.html">fixcolnames()</a></code>, and many functions rely on it. You can see examples of
-what it contains below.</p>
+<li><p>other information like sort order for certain purposes, etc.</p></li>
+</ul><p>It was originally created from a spreadsheet of the same name in the <code>data-raw</code>
+folder, but is now being updated or modified directly.</p>
+<p>Several helper functions are used to query it, such as
+<code><a href="fixcolnames.html">fixcolnames()</a></code> and <code><a href="varinfo.html">varinfo()</a></code>.</p>
+<p>You can see examples of what it contains below.</p>
 <p><code>data.frame(t(map_headernames[1:2, ]))</code></p>
     </div>
     <div class="section level2">
@@ -111,11 +106,10 @@ what it contains below.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="co">#   See how many variables are on each list, for example:</span></span>
 <span>  <span class="co"># \donttest{</span></span>
-<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">map_headernames</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
+<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">map_headernames</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
 <span>    variables <span class="op">=</span> <span class="va">.N</span>,</span>
-<span>    has_apiname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">apiname</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
 <span>    has_csvname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">csvname</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
-<span>    has_ejscreen_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ejscreen_names</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
+<span>    has_ejscreen_indicator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ejscreen_indicator</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
 <span>    has_ejscreen_apinames_old <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ejscreen_apinames_old</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
 <span>    has_ejam_apinames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ejam_apinames</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span>,</span>
 <span>    has_acsname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">acsname</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span></span>
@@ -128,10 +122,10 @@ what it contains below.</p>
 <span>   <span class="op">&amp;</span> <span class="va">map_headernames</span><span class="op">$</span><span class="va">varlist</span> <span class="op">!=</span> <span class="st">"x_anyother"</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="va">info</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
-<span>   <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="va">some</span>, info <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'api'</span>, <span class="st">'csv'</span>, <span class="st">'acs'</span>, <span class="st">'varlist'</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>   <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="va">some</span>, info <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ejscreen_apinames_old'</span>, <span class="st">'csv'</span>, <span class="st">'acs'</span>, <span class="st">'varlist'</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>   usastats <span class="op">=</span> <span class="va">some</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">usastats</span><span class="op">)</span>,</span>
 <span>   statestats <span class="op">=</span> <span class="va">some</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">statestats</span><span class="op">)</span><span class="op">)</span></span>
-<span> <span class="va">info</span> <span class="op">&lt;-</span> <span class="va">info</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">info</span><span class="op">$</span><span class="va">api</span>, <span class="va">info</span><span class="op">$</span><span class="va">csv</span>, <span class="va">info</span><span class="op">$</span><span class="va">acs</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
+<span> <span class="va">info</span> <span class="op">&lt;-</span> <span class="va">info</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">info</span><span class="op">$</span><span class="va">ejscreen_apinames_old</span>, <span class="va">info</span><span class="op">$</span><span class="va">csv</span>, <span class="va">info</span><span class="op">$</span><span class="va">acs</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
 <span> <span class="va">info</span></span>
 <span></span>
 <span> <span class="co"># any others</span></span>
@@ -140,10 +134,10 @@ what it contains below.</p>
 <span>   <span class="op">&amp;</span> <span class="va">map_headernames</span><span class="op">$</span><span class="va">varlist</span> <span class="op">==</span> <span class="st">"x_anyother"</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="va">info</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
-<span>   <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="va">some</span>, info <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'api'</span>, <span class="st">'csv'</span>, <span class="st">'acs'</span>, <span class="st">'varlist'</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>   <span class="fu"><a href="varinfo.html">varinfo</a></span><span class="op">(</span><span class="va">some</span>, info <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ejscreen_apinames_old'</span>, <span class="st">'csv'</span>, <span class="st">'acs'</span>, <span class="st">'varlist'</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>   usastats <span class="op">=</span> <span class="va">some</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">usastats</span><span class="op">)</span>,</span>
 <span>   statestats <span class="op">=</span> <span class="va">some</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">statestats</span><span class="op">)</span><span class="op">)</span></span>
-<span> <span class="va">info</span> <span class="op">&lt;-</span> <span class="va">info</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">info</span><span class="op">$</span><span class="va">api</span>, <span class="va">info</span><span class="op">$</span><span class="va">csv</span>, <span class="va">info</span><span class="op">$</span><span class="va">acs</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
+<span> <span class="va">info</span> <span class="op">&lt;-</span> <span class="va">info</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">info</span><span class="op">$</span><span class="va">ejscreen_apinames_old</span>, <span class="va">info</span><span class="op">$</span><span class="va">csv</span>, <span class="va">info</span><span class="op">$</span><span class="va">acs</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
 <span> <span class="va">info</span></span>
 <span>  <span class="co"># }</span></span>
 <span></span></code></pre></div>

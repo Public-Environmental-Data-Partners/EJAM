@@ -133,6 +133,7 @@ getpointsnearby().
 ## Examples
 
 ``` r
+
  ### see test data in test-proxistat.R
 
  # pts <- testpoints_1000

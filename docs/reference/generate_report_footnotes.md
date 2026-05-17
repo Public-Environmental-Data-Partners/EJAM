@@ -19,6 +19,8 @@ generate_report_footnotes(
 
 - diesel_caveat:
 
+  text
+
 ## See also
 
 used by

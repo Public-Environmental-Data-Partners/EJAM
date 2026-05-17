@@ -1,6 +1,7 @@
-# Validate an EJSCREEN/EJAM pipeline stage before saving it
+# Validate one pipeline stage before saving dataset at that stage, for EJSCREEN/EJAM data updates pipeline
 
-Validate an EJSCREEN/EJAM pipeline stage before saving it
+Validate one pipeline stage before saving dataset at that stage, for
+EJSCREEN/EJAM data updates pipeline
 
 ## Usage
 
@@ -16,13 +17,13 @@ ejscreen_pipeline_validate(x, stage, strict = TRUE)
 
 - stage:
 
-  pipeline stage name, such as `"bg_acsdata"`, `"bg_acs_raw"`,
-  `"blockgroupstats_acs"`, `"bg_envirodata"`, `"envirodata"`,
-  `"bg_extra_indicators"`, `"blockgroupstats"`, `"bgej"`,
-  `"bg_ejindexes"`, `"usastats_acs"`, `"statestats_acs"`,
-  `"usastats_envirodata"`, `"statestats_envirodata"`, `"usastats_ej"`,
-  `"statestats_ej"`, `"usastats"`, `"statestats"`, or
-  `"ejscreen_export"`.
+  pipeline stage name, must be among known stages or aliases as found in
+  `EJAM:::ejscreen_pipeline_stage_names()` with canonical names such as
+  bg_acs_raw, bg_acsdata, bg_envirodata, bg_geodata,
+  bg_extra_indicators, blockgroupstats, usastats_acs, statestats_acs,
+  usastats_envirodata, statestats_envirodata, usastats_ej,
+  statestats_ej, usastats, statestats, bgej, ejscreen_export,
+  ejscreen_dataset_creator_input
 
 - strict:
 

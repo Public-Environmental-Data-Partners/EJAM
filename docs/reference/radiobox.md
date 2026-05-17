@@ -56,8 +56,8 @@ uses
 
 \*\*\* WARNING: AS DRAFTED, CANNOT use within nontrivial scripts or
 functions because the
-[`shiny::stopApp()`](https://rdrr.io/pkg/shiny/man/stopApp.html) seems
-to interrupt other processes and cause problems - and seems related to a
+[`stopApp()`](https://rdrr.io/pkg/shiny/man/stopApp.html) seems to
+interrupt other processes and cause problems - and seems related to a
 quirk seen if a script or function calls radiobox() twice - it will work
 the first time but show a blank popup window the 2d time... e.g., if you
 try to do this: radius1 \<- radiobox() radius2 \<- radiobox() May all be

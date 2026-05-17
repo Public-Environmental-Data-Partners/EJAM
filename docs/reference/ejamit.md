@@ -97,7 +97,7 @@ ejamit(
 
   optional. A sf shapefile object or path to .zip, .gdb, .json, .kml,
   etc., or folder that has a shapefiles, to analyze polygons. e.g.,
-  `out = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)`
+  `out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)`
   If in RStudio you want it to interactively prompt you to pick a file,
   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
 
@@ -234,7 +234,7 @@ ejamit(
 - called_by_ejamit:
 
   passed to doaggregate(). Set to TRUE by `ejamit()` to suppress some
-  outputs even if ejamit(silentinteractive=F)
+  outputs even if ejamit(silentinteractive = FALSE)
 
 - testing:
 
@@ -330,6 +330,7 @@ https://public-environmental-data-partners.github.io/EJAM
 ## Examples
 
 ``` r
+
 # See examples in vignettes/ articles
 
  # All in one step, using functions not shiny app:
@@ -363,7 +364,7 @@ https://public-environmental-data-partners.github.io/EJAM
 
   # Shapefile examples
   out2 = ejamit(shapefile = testshapes_2, radius = 0)
-  out3 = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)
+  out3 = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)
 
   # FIPS examples
   out4 = ejamit(fips = testinput_fips_cities)

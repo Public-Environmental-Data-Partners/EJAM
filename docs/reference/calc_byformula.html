@@ -71,12 +71,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_byformula</span><span class="op">(</span></span>
-<span>  <span class="va">mydf</span>,</span>
-<span>  formulas <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  keep <span class="op">=</span> <span class="fu"><a href="calc_varname_from_formula.html">calc_varname_from_formula</a></span><span class="op">(</span><span class="va">formulas</span><span class="op">)</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_byformula</span><span class="op">(</span><span class="va">mydf</span>, formulas <span class="op">=</span> <span class="cn">NULL</span>, keep <span class="op">=</span> <span class="cn">NULL</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -88,8 +83,11 @@
 
 
 <dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
-<dd><p>text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
-since the contents could potentially be a security risk</p></dd>
+<dd><p>text strings of formulas, or a data.frame with columns
+<code>"rname"</code> and <code>"formula"</code>. Formula dependencies are sorted before
+evaluation. WARNING: this should not really be used on user-provided,
+untrusted formula strings, since the contents could potentially be a
+security risk</p></dd>
 
 
 <dt id="arg-keep">keep<a class="anchor" aria-label="anchor" href="#arg-keep"></a></dt>

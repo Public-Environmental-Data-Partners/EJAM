@@ -53,8 +53,8 @@ data.frame using
   ##  R user can select just the .shp file:
   # testshape <- shapefile_from_any()
   }
-  } # }
   x <- get_blockpoints_in_shape(testshape)
   leaflet::leaflet(x$polys) %>% leaflet::addTiles() %>% leaflet::addPolygons(color = "blue")
   DT::datatable(x$pts)
+  } # }
 ```

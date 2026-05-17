@@ -29,7 +29,7 @@ url_linkify(url, text, newtab = TRUE, encode = TRUE, reserved = FALSE)
 
 - reserved:
 
-  if encode=T, this parameter is passed to
+  if encode = T, this parameter is passed to
   [`utils::URLencode()`](https://rdrr.io/r/utils/URLencode.html)
 
 ## Value

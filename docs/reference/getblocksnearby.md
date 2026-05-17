@@ -119,7 +119,7 @@ This is like the output of
 [`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md),
 or
 [`getblocksnearby_from_fips()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby_from_fips.md)
-if return_shp=F.
+if return_shp = FALSE.
 
 ## Details
 

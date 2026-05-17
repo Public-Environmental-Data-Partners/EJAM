@@ -5,7 +5,7 @@ download ACS 5year data from Census API, at County resolution
 ## Usage
 
 ``` r
-acs_bycounty(myvars = "B03002_001", myst = "DE", yr = acs_endyear())
+acs_bycounty(myvars = "B03002_001", myst = "DE", yr = NULL)
 ```
 
 ## Arguments
@@ -21,20 +21,22 @@ acs_bycounty(myvars = "B03002_001", myst = "DE", yr = acs_endyear())
 
 - yr:
 
-  like 2024, end of 5 year ACS 2020-2024
+  Default is what the package is currently using as default per
+  [`acs_endyear()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_endyear.md).
+  A year like 2024, end of 5 year ACS 2020-2024
 
 ## Value
 
-tibble table from output of acs_bycounty() i.e., output of get_acs()
-from tidycensus pkg
+tibble table from output of acs_bycounty() i.e., output of
+[`tidycensus::get_acs()`](https://walker-data.com/tidycensus/reference/get_acs.html)
 
 ## Examples
 
 ``` r
 ## also see examples for acs_bybg()
 # \donttest{
-  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acs_endyear(guess_always = T, guess_census_has_published = T)) # nhwa
-  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acs_endyear(guess_always = T, guess_census_has_published = T)) # pop
+  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # nhwa
+  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # pop
   z = x
   z$estimate = x$estimate / denom$estimate
   z$moe = 0  # x$moe / denom$estimate # need to calculate using census guidance if at all

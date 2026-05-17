@@ -40,7 +40,7 @@ return an entire renamed df or dt. Just the new colnames are returned.
 YOU CAN SPECIFY A TYPE USING AN ALIAS LIKE "api" or "long" UNLIKE IN
 [`fixnames_to_type()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_to_type.md)
 where you had to specify the actual colnames of map_headernames, like
-"apiname"
+"ejscreen_apinames_old"
 
 NOTE: If you happen to pass the entire data.frame or data.table to this
 function, instead of passing just the colnames, this function will see

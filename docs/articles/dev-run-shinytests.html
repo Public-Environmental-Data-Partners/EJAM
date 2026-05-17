@@ -112,7 +112,7 @@ sources <code>testthat/setup-shinytest2.R</code> which defines
 <code>shinytest2_webapp_functionality()</code>, a function that contains
 the steps tested in the web app, and then directly uses that function
 from within test files like
-<code>/tests/testthat/test-webapp-latlon-functionality.R</code> etc.</p>
+<code>/tests/testthat/test-webapp-all-functionality.R</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="dev-environment">Dev Environment<a class="anchor" aria-label="anchor" href="#dev-environment"></a>
@@ -190,6 +190,7 @@ tests/
   └── testthat/
       ├── setup.R
       ├── setup-shinytest2.R
+      ├── test-webapp-all-functionality.R
       └── test-webapp-[DATA TYPE]-functionality.R (e.g. test-webapp-FIPS-functionality.R)</code></pre>
 <div class="section level3">
 <h3 id="file-descriptions">File Descriptions<a class="anchor" aria-label="anchor" href="#file-descriptions"></a>
@@ -206,10 +207,15 @@ auto-sourced by <code>testthat</code> because its filename starts with
 tests of web app UI interactions using the app to upload or select, and
 analyze, multiple data types (FIPS, shapefile, latlon, NAICS,
 etc.).</p></li>
+<li><p><strong><code>testthat/test-webapp-all-functionality.R</code></strong>
+– Runs the normal web app functionality suite. It launches one Shiny app
+process and runs the FIPS, FIPS picker, FRS, lat/lon, NAICS, and
+shapefile categories sequentially inside that one app session.</p></li>
 <li><p><strong><code>testthat/test-webapp-[DATA TYPE]-functionality.R</code></strong>
-– Each of these calls <code>shinytest2_webapp_functionality()</code>,
-specifying the data type to test with, after that helper has been made
-available by testthat’s automatic sourcing of the setup files.</p></li>
+– Individual category files are available for focused debugging. They
+are skipped by default in ordinary <code>testthat</code> runs; set
+<code>EJAM_SHINYTEST2_INDIVIDUAL=true</code> before running one if you
+want that file to launch and test only that category.</p></li>
 </ul>
 </div>
 </div>
@@ -258,6 +264,9 @@ EJAM uses this pattern for stable checks such as
 <p>Another way is this:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/test_ejam.html">test_ejam</a></span><span class="op">(</span>ask<span class="op">=</span><span class="cn">F</span>, run_these<span class="op">=</span><span class="st">"webapp"</span><span class="op">)</span></span></code></pre></div>
+<p>That path uses the combined web app test file, so the Shiny app is
+launched once for the full functionality suite instead of once per
+category.</p>
 <p>You can also run a test directly in an interactive R session. This is
 useful for debugging one category at a time.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -266,22 +275,36 @@ useful for debugging one category at a time.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span> <span class="co"># once. gets done automatically though, by things like testthat::test_file()</span></span>
 <span></span>
 <span><span class="co"># run a single test:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_SHINYTEST2_INDIVIDUAL <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span>
 <span><span class="fu">shinytest2_webapp_functionality</span><span class="op">(</span><span class="st">"latlon"</span><span class="op">)</span></span></code></pre></div>
 <p>It is recommended during development to use
 <code><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">remotes::install_local()</a></code> to ensure your development code is
-the one tested. This is because shinytest2 automatically references the
-installed version of a package.</p>
+the one tested. The web app tests launch the app in a separate R
+process, so by default they use the installed EJAM package. This is much
+faster than reloading the source tree for every web app test file.</p>
+<p>If you specifically need the spawned Shiny app process to use the
+current source tree without reinstalling, set this environment variable
+before running the tests:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_SHINYTEST2_USE_SOURCE <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span></code></pre></div>
+<p>For normal test runs, leave <code>EJAM_SHINYTEST2_USE_SOURCE</code>
+unset and reinstall the package from local source first. If you need
+verbose Shiny tracing or reactlog output while debugging a failure,
+set:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_SHINYTEST2_TRACE <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span></code></pre></div>
 <p>Another useful way was this (but this might be deprecated by
 shinytest2)</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># first, source `setup.R`, from the tests/testthat/ folder.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># then for one subset of tests, like just the latlon analysis features:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_SHINYTEST2_INDIVIDUAL <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span>
 <span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"latlon-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># for all the webapp functionality tests</span></span>
-<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"all-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="github-actions-integration">GitHub Actions Integration<a class="anchor" aria-label="anchor" href="#github-actions-integration"></a>
@@ -312,6 +335,16 @@ steps after setup.</li>
 shinytest2 test runs the broad report download, spreadsheet download,
 details table, and plot checks; other categories should focus on
 category-specific selection and analysis checks.</li>
+<li>Run the combined web app suite through
+<code>test-webapp-all-functionality.R</code> or
+<code>EJAM:::test_ejam(ask = FALSE, run_these = "webapp")</code>. The
+individual category files are mainly debugging entry points.</li>
+<li>Use the installed package by default for spawned Shiny app
+processes. Only set <code>EJAM_SHINYTEST2_USE_SOURCE=true</code> when
+you need to debug uninstalled source edits.</li>
+<li>Leave <code>EJAM_SHINYTEST2_TRACE</code> unset for routine test
+runs, because Shiny trace/reactlog output is mainly useful for debugging
+and can slow the app tests.</li>
 </ul>
 </div>
 </div>

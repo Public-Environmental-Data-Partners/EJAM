@@ -78,7 +78,7 @@
 <span>  mystate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  labeltype <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  acsinfo <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  yr <span class="op">=</span> <span class="fu"><a href="acs_endyear.html">acs_endyear</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  yr <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,8 +87,8 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>table that is output of acs_bycounty() i.e., output of get_acs()
-from tidycensus pkg that downloads ACS Census Bureau data via API.</p></dd>
+<dd><p>table that is output of <code><a href="acs_bycounty.html">acs_bycounty()</a></code> i.e., output of
+<code><a href="https://walker-data.com/tidycensus/reference/get_acs.html" class="external-link">tidycensus::get_acs()</a></code> that downloads ACS Census Bureau data via API.</p></dd>
 
 
 <dt id="arg-myvars">myvars<a class="anchor" aria-label="anchor" href="#arg-myvars"></a></dt>
@@ -110,12 +110,14 @@ label_parse(), label_percent(), label_pvalue(), label_scientific()</p></dd>
 
 
 <dt id="arg-acsinfo">acsinfo<a class="anchor" aria-label="anchor" href="#arg-acsinfo"></a></dt>
-<dd><p>large table of metadata as from load_variables function
-from tidycensus pkg</p></dd>
+<dd><p>large table of metadata as from load_variables() function
+from the <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package</a></p></dd>
 
 
 <dt id="arg-yr">yr<a class="anchor" aria-label="anchor" href="#arg-yr"></a></dt>
-<dd><p>like 2022, end of 5 year ACS 2018-2022</p></dd>
+<dd><p>The year that is the end of a 5 year ACS survey, such as
+2022 for the ACS covering 2018-2022.
+Default is whatever then package is currently using, per <code><a href="acs_endyear.html">acs_endyear()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

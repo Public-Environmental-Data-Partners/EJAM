@@ -50,6 +50,7 @@ follows:
 
 ``` r
 
+
 require(EJAM) # or  library(EJAM)
 
 options(shiny.launch.browser = TRUE) # so the web app uses a browser (not the RStudio viewer)

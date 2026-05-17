@@ -126,6 +126,7 @@ IDs](https://public-environmental-data-partners.github.io/EJAM/reference/index.h
 #### by Facility, using EPA Registry ID
 
 ``` r
+
 # note frs_from_regid() and latlon_from_regid() require the frs dataset, which they try to load on demand.
 
 frs_from_regid(c(110071293460, 110000333826))
@@ -148,6 +149,7 @@ y <- ejamit(x1, radius = 1)
 #### by Facility, using EPA Program System ID
 
 ``` r
+
 # latlon_from_programid() requires access to the frs_by_programid dataset, which it tries to load on demand if necessary.
 
 if (exists("frs_by_programid")) {
@@ -167,6 +169,7 @@ You can specify sites by NAICS, but it is important to note the FRS
 lacks NAICS info for many regulated facilities!
 
 ``` r
+
 naics_from_any("paint and coating", children = T) 
 #>      code     n2     n3     n4     n5     n6                            name
 #>     <num> <char> <char> <char> <char> <char>                          <char>
@@ -199,6 +202,7 @@ codes](https://public-environmental-data-partners.github.io/EJAM/reference/index
 programs](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#epa-programs)
 
 ``` r
+
 # note latlon_from_programid() requires the frs and frs_by_programid datasets, which it tries to load on demand.
 if (exists("frs_by_programid") && exists("frs")) {
   
@@ -254,6 +258,7 @@ if (exists("frs_by_programid") && exists("frs")) {
 codes](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#mact-categories)
 
 ``` r
+
 # note latlon_from_mactsubpart() requires the frs_by_mact dataset, which it tries to load on demand
 if (exists("frs_by_mact")) {
   
@@ -280,6 +285,7 @@ if (exists("frs_by_mact")) {
   head(latlon_from_mactsubpart("OOOO"), 2)
 }
 #> frs_by_mact_arrow  is loading from local folder ...done.
+#> Key: <subpart, programid>
 #>     programid subpart
 #>        <char>  <char>
 #> 1: 0500100022    OOOO
@@ -305,6 +311,7 @@ if (exists("frs_by_mact")) {
 Overview of NAICS / industry categories, at n-digit level
 
 ``` r
+
 # see NAICS categories at the top (2-digit) level
 
 naics_categories()
@@ -320,12 +327,14 @@ naics_from_any(naics_categories(3))[order(code),.(code,name)][1:10,]
 Find NAICS codes, from the name of an industry
 
 ``` r
+
 naics_from_any('paint')
 ```
 
 Find industry names, from the NAICS codes
 
 ``` r
+
 # get name from one code
 naics_from_code(336)$name
 
@@ -336,6 +345,7 @@ naics_from_code(mycode)$name
 Count facilities by NAICS code
 
 ``` r
+
 mycode = c(33611, 336111, 336112)
 
 # see counts of facilities by code (parent) and subcategories (children)
@@ -349,15 +359,18 @@ Find facilities, by name of industry
 
 ``` r
 
+
 # See a data table of facilities in one industry
 dataload_dynamic("frs")
 #> Loading specified arrow datasets: frs
+#> Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and latest-released data repository versions match.
 #> looking for frs in memory...
 #> NULL
 # if (exists("frs")) {
   industryword <- "pulp"
   
   head( frs_from_naics(naics_from_any(industryword)$code)[,1:4] )
+#> Key: <REGISTRY_ID>
 #>         lat       lon  REGISTRY_ID                       PRIMARY_NAME
 #>       <num>     <num>       <char>                             <char>
 #> 1: 42.60008 -72.37838 110000308612                 ERVING PAPER MILLS
@@ -373,6 +386,7 @@ Quick map of EPA-regulated facilities in one industrial category, which
 you can click on to see popup windows about sites.
 
 ``` r
+
 # note frs_from_naics() requires the frs dataset
 # frs_from_naics() is slow the 1st time if it has not yet loaded the frs dataset
 if (!exists("frs_arrow")) { # a more efficient format
@@ -388,6 +402,7 @@ Table of facilities in an industry, plus links to each facility in ECHO
 and EJSCREEN
 
 ``` r
+
 industryword <- "chemical manuf"
 #  industryword <- "smelt"
 # if (exists("frs") && exists("frs_by_naics")) {
@@ -422,12 +437,14 @@ Map of facilities in an industry, plus popups with links to each
 facility in ECHO and EJSCREEN
 
 ``` r
+
 mapfast(mysites)
 ```
 
 Facilities searches using industry codes or text in industry names
 
 ``` r
+
 naics_from_any("plastics and rubber") 
 #>     code     n2     n3     n4     n5     n6
 #>    <num> <char> <char> <char> <char> <char>
@@ -508,6 +525,11 @@ a = naics_from_any("plastics")
 b = naics_from_any("rubber")
 
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 data.table::fintersect(a,b)[,.(name,code)] #  a AND b
 #>                                                   name   code
 #>                                                 <char>  <num>
@@ -557,8 +579,10 @@ head(naics_from_any(funion(a,b)[,code], children = T)[,.(name,code)] ) #  same
 A NAICS code can have many “children” or subcategories under it
 
 ``` r
+
 dataload_dynamic(c("frs", "frs_by_naics"))
 #> Loading specified arrow datasets: frs, frs_by_naics
+#> Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and latest-released data repository versions match.
 #> looking for frs, frs_by_naics in memory...
 #> NULL
 if (exists("frs") & exists("frs_from_naics")) {
@@ -588,6 +612,7 @@ and other [shapefile-related
 functions](https://public-environmental-data-partners.github.io/EJAM/reference/index.html#specify-places-by-shapefile):
 
 ``` r
+
 shapefile_from_any()
 
 shapefile_from_sitepoints()
@@ -610,6 +635,7 @@ codes](https://public-environmental-data-partners.github.io/EJAM/reference/index
 Compare all Counties in a State, using EJAM indicators
 
 ``` r
+
 
 # Get FIPS of each county in Delaware
 mystate <- "Delaware"
@@ -673,6 +699,7 @@ See examples above using
 but also you can check some key findings like this:
 
 ``` r
+
 out <- testoutput_ejamit_1000pts_1miles 
 bysite <- out$results_bysite
 bysite <- setDF(copy(bysite))
@@ -688,6 +715,7 @@ tail(findings$text[findings$text != ""], 1) # the most extreme finding!
 #### The key facilities (e.g., which has the max of – or has multiple elevated – Summary Indexes?)
 
 ``` r
+
 out2 <- ejamit(
   sitepoints =  testpoints_100,
   radius = 3.1
@@ -703,49 +731,50 @@ head(x, 3)
 #### More summary findings
 
 ``` r
+
 dimnames(findings)
 #> NULL
 findings$text[2]
-#> [1] "At at least 92% of these sites, 1 of the indicators is 1.01 times the average "
+#> [1] "At at least 94% of these sites, 1 of the indicators is 1.01 times the average "
 head(findings$stats[ , , 1], 15)
 #>      cut
 #> count 1.01   2   5  10
-#>     0   78 708 977 997
-#>     1  182 171  23   3
-#>     2  154  60   0   0
-#>     3  124  31   0   0
-#>     4   96  19   0   0
-#>     5   79   7   0   0
-#>     6   89   3   0   0
-#>     7  114   1   0   0
-#>     8   83   0   0   0
-#>     9    1   0   0   0
+#>     0   63 716 977 995
+#>     1  184 142  22   5
+#>     2  169  73   1   0
+#>     3  110  28   0   0
+#>     4   82  21   0   0
+#>     5   98  17   0   0
+#>     6  113   3   0   0
+#>     7   94   0   0   0
+#>     8   85   0   0   0
+#>     9    2   0   0   0
 head(findings$stats[ , 1, ], 21)
 #>      stat
 #> count count  cum pct cum_pct
-#>     0    78 1000   8     100
-#>     1   182  922  18      92
-#>     2   154  740  15      74
-#>     3   124  586  12      59
-#>     4    96  462  10      46
-#>     5    79  366   8      37
-#>     6    89  287   9      29
-#>     7   114  198  11      20
-#>     8    83   84   8       8
-#>     9     1    1   0       0
+#>     0    63 1000   6     100
+#>     1   184  937  18      94
+#>     2   169  753  17      75
+#>     3   110  584  11      58
+#>     4    82  474   8      47
+#>     5    98  392  10      39
+#>     6   113  294  11      29
+#>     7    94  181   9      18
+#>     8    85   87   9       9
+#>     9     2    2   0       0
 x = findings$stats[ , 1, ] 
 x[x[, "cum_pct"] >= 50 & x[, "cum_pct"] <= 80, ]
 #>      stat
 #> count count cum pct cum_pct
-#>     2   154 740  15      74
-#>     3   124 586  12      59
+#>     2   169 753  17      75
+#>     3   110 584  11      58
 findings$stats[ 1, , ]
 #>       stat
 #> cut    count  cum pct cum_pct
-#>   1.01    78 1000   8     100
-#>   2      708 1000  71     100
+#>   1.01    63 1000   6     100
+#>   2      716 1000  72     100
 #>   5      977 1000  98     100
-#>   10     997 1000 100     100
+#>   10     995 1000 100     100
 ```
 
 ### Local features and special areas – schools, hospitals, nonattainment areas, etc.
@@ -777,6 +806,7 @@ from the indicators in these lists:
 **Table**
 
 ``` r
+
 ## out1k <- ejamit(testpoints_1000, radius = 1)
 out1k <- testoutput_ejamit_1000pts_1miles
 ejam2areafeatures(out1k)
@@ -792,36 +822,36 @@ ejam2areafeatures(out1k)
 #> 9                Overlapping with Housing Burden Communities
 #> 10                        Overlapping with Food Desert Areas
 #> 11                   % Households without Broadband Internet
-#> 12                     % Households without Health Insurance
+#> 12                         % People without Health Insurance
 #> 13 Overlapping with Transportation Disadvantaged Communities
 #>    Percent_of_these_Sites Percent_of_these_People
 #> 1                    76.4                    29.4
-#> 2                    75.9                    34.6
+#> 2                    75.9                    34.8
 #> 3                    30.0                     5.4
 #> 4                     2.7                     0.2
-#> 5                    89.2                    41.0
-#> 6                    57.7                    81.3
-#> 7                    50.5                    40.9
-#> 8                    65.5                    51.8
-#> 9                    27.6                    28.1
-#> 10                   50.6                    14.3
-#> 11                   12.4                    10.9
-#> 12                    2.8                     3.8
-#> 13                   89.5                    58.8
+#> 5                    89.2                    41.3
+#> 6                    57.7                    81.1
+#> 7                    50.5                    40.5
+#> 8                    65.5                    51.4
+#> 9                    27.6                    28.0
+#> 10                   50.6                    14.4
+#> 11                    9.7                     8.2
+#> 12                    8.0                     8.9
+#> 13                   89.5                    58.6
 #>    Percent_of_all_People_Nationwide ratio                rname
-#> 1                              31.3  0.94           num_school
-#> 2                              38.8  0.89           num_church
+#> 1                              31.5  0.93           num_school
+#> 2                              38.8  0.90           num_church
 #> 3                               4.6  1.17         num_hospital
-#> 4                               1.6  0.12         yesno_tribal
-#> 5                              56.7  0.72      yesno_impwaters
-#> 6                              57.2  1.42      yesno_airnonatt
-#> 7                              32.3  1.27       yesno_cejstdis
-#> 8                              42.8  1.21         yesno_iradis
-#> 9                              12.5  2.25    yesno_houseburden
-#> 10                             25.0  0.57     yesno_fooddesert
-#> 11                             11.5  0.95       pctnobroadband
-#> 12                              3.4  1.12 pctnohealthinsurance
-#> 13                             69.5  0.85       yesno_transdis
+#> 4                               1.5  0.13         yesno_tribal
+#> 5                              57.0  0.72      yesno_impwaters
+#> 6                              57.1  1.42      yesno_airnonatt
+#> 7                              32.0  1.27       yesno_cejstdis
+#> 8                              42.3  1.22         yesno_iradis
+#> 9                              12.4  2.26    yesno_houseburden
+#> 10                             25.0  0.58     yesno_fooddesert
+#> 11                              8.8  0.93       pctnobroadband
+#> 12                              8.4  1.06 pctnohealthinsurance
+#> 13                             69.6  0.84       yesno_transdis
 ```
 
 **Plots showing whether residents at the analyzed locations are more
@@ -831,6 +861,7 @@ To view these special ratios, since they are not in the main table
 `ejamit()$results_bysite`, you can reformat them for plotting like this:
 
 ``` r
+
 ## out <- ejamit(testpoints_1000, radius = 1)
 out <- testoutput_ejamit_1000pts_1miles
 
@@ -851,12 +882,14 @@ gray.](analyzing_files/figure-html/ejam2barplot_areafeatures-1.png)
 
 ``` r
 
+
 ## note the sitenumber param is not supported for these stats
 ```
 
 ### Site by site detailed results in datatable format in RStudio viewer:
 
 ``` r
+
 out2 <- testoutput_ejamit_100pts_1miles
 DT::datatable(out2$results_bysite[1:5,   ], escape = FALSE, rownames = FALSE)
 
@@ -867,6 +900,7 @@ DT::datatable(out2$results_bysite[1:5,   ], escape = FALSE, rownames = FALSE)
 #### Overall results for a few key indicators, as raw output in console:
 
 ``` r
+
 out2 <- testoutput_ejamit_100pts_1miles
 
 names(out2)
@@ -876,30 +910,31 @@ names(out2)
 #> [7] "formatted"                           "sitetype"
 cbind(overall = as.list( out2$results_overall[ , ..names_d]))
 #>                  overall   
-#> Demog.Index      1.676867  
-#> Demog.Index.Supp 1.693936  
-#> pctlowinc        0.319063  
-#> pctlingiso       0.06979021
-#> pctunemployed    0.06280622
-#> pctlths          0.1370251 
-#> pctunder5        0.05797804
-#> pctover64        0.144583  
-#> pctmin           0.5839562
+#> Demog.Index      1.70558   
+#> Demog.Index.Supp 1.705961  
+#> pctlowinc        0.3152486 
+#> pctlingiso       0.07321168
+#> pctunemployed    0.06477913
+#> pctlths          0.1295259 
+#> pctunder5        0.0563559 
+#> pctover64        0.1507945 
+#> pctmin           0.5965375
 cbind(overall = as.list( out2$results_overall[ , ..names_d_subgroups]))
 #>                 overall    
-#> pcthisp         0.2524003  
-#> pctnhba         0.1715473  
-#> pctnhaa         0.1104285  
-#> pctnhaiana      0.003836903
-#> pctnhnhpia      0.002411388
-#> pctnhotheralone 0.005859968
-#> pctnhmulti      0.0374718  
-#> pctnhwa         0.4160438
+#> pcthisp         0.260957   
+#> pctnhba         0.169189   
+#> pctnhaa         0.1099694  
+#> pctnhaiana      0.003279064
+#> pctnhnhpia      0.002279839
+#> pctnhotheralone 0.007664835
+#> pctnhmulti      0.04319833 
+#> pctnhwa         0.4034625
 ```
 
 #### Overall results for the very long list of all indicators, as raw output in console:
 
 ``` r
+
 out2 <- testoutput_ejamit_100pts_1miles
 
 head(
@@ -913,6 +948,7 @@ head(
 ### Just one site, all the indicators
 
 ``` r
+
 head(
   ejam2table_tall(out2, sitenumber = 1)
   , 20)
@@ -921,6 +957,7 @@ head(
 ##### See indicators aggregated over all people across all sites
 
 ``` r
+
 ## view output of batch run aggregation ####
 out <- testoutput_ejamit_1000pts_1miles 
 head(cbind(overall = as.list( out$results_overall)))
@@ -930,45 +967,45 @@ head(cbind(overall = as.list( out$results_overall)))
 #> ejam_uniq_id NA                                                                     
 #> valid        TRUE                                                                   
 #> invalid_msg  ""                                                                     
-#> pop          8609095
+#> pop          8633282
 
 ## To see just some subset of indicators, like Environmental only:
 cbind(overall = as.list( out$results_overall[ , ..names_e])); cat("\n")
 #>                 overall  
-#> pm              9.585876 
-#> o3              66.39456 
-#> no2             10.83491 
-#> dpm             0.33535  
-#> rsei            4536.487 
-#> traffic.score   3974228  
-#> pctpre1960      0.4124342
-#> proximity.npl   1.291201 
-#> proximity.rmp   0.8603396
-#> proximity.tsdf  10.90486 
-#> ust             8.545572 
-#> proximity.npdes 527761.8 
-#> drinking        1.65022
+#> pm              9.568195 
+#> o3              66.3299  
+#> no2             10.81867 
+#> dpm             0.3342198
+#> rsei            4586.717 
+#> traffic.score   3962589  
+#> pctpre1960      0.4005715
+#> proximity.npl   1.287661 
+#> proximity.rmp   0.8542784
+#> proximity.tsdf  10.8667  
+#> ust             8.608081 
+#> proximity.npdes 531698.7 
+#> drinking        1.644893
 cbind(overall = as.list( out$results_overall[ , ..names_d])); cat("\n")
 #>                  overall   
-#> Demog.Index      1.649779  
-#> Demog.Index.Supp 1.666516  
-#> pctlowinc        0.3107655 
-#> pctlingiso       0.07357484
-#> pctunemployed    0.06338704
-#> pctlths          0.1332822 
-#> pctunder5        0.0575535 
-#> pctover64        0.1394766 
-#> pctmin           0.5792066
+#> Demog.Index      1.668131  
+#> Demog.Index.Supp 1.671838  
+#> pctlowinc        0.3038484 
+#> pctlingiso       0.07568046
+#> pctunemployed    0.0629355 
+#> pctlths          0.1302233 
+#> pctunder5        0.05567394
+#> pctover64        0.146654  
+#> pctmin           0.5911751
 cbind(overall = as.list( out$results_overall[ , ..names_d_subgroups])); cat("\n")
 #>                 overall    
-#> pcthisp         0.2945468  
-#> pctnhba         0.1434055  
-#> pctnhaa         0.09549668 
-#> pctnhaiana      0.003141675
-#> pctnhnhpia      0.001910486
-#> pctnhotheralone 0.005492147
-#> pctnhmulti      0.0352133  
-#> pctnhwa         0.4207934
+#> pcthisp         0.3000366  
+#> pctnhba         0.1396521  
+#> pctnhaa         0.09852093 
+#> pctnhaiana      0.002710599
+#> pctnhnhpia      0.001707782
+#> pctnhotheralone 0.006793868
+#> pctnhmulti      0.04175326 
+#> pctnhwa         0.4088249
 cbind(overall = as.list( out$results_overall[ , ..names_e_pctile])); cat("\n")
 #>                        overall
 #> pctile.pm              83     
@@ -977,17 +1014,17 @@ cbind(overall = as.list( out$results_overall[ , ..names_e_pctile])); cat("\n")
 #> pctile.dpm             87     
 #> pctile.rsei            85     
 #> pctile.traffic.score   88     
-#> pctile.pctpre1960      68     
+#> pctile.pctpre1960      67     
 #> pctile.proximity.npl   93     
 #> pctile.proximity.rmp   77     
 #> pctile.proximity.tsdf  91     
 #> pctile.ust             87     
 #> pctile.proximity.npdes 99     
-#> pctile.drinking        84
+#> pctile.drinking        85
 cbind(overall = as.list( out$results_overall[ , ..names_d_pctile])); cat("\n")
 #>                         overall
 #> pctile.Demog.Index      68     
-#> pctile.Demog.Index.Supp 57     
+#> pctile.Demog.Index.Supp 58     
 #> pctile.pctlowinc        57     
 #> pctile.pctlingiso       81     
 #> pctile.pctunemployed    68     
@@ -1008,6 +1045,7 @@ functions](https://public-environmental-data-partners.github.io/EJAM/reference/i
 #### Barplot showing which indicator is most elevated overall
 
 ``` r
+
 out <- testoutput_ejamit_1000pts_1miles
 
 ejam2barplot(out,
@@ -1023,6 +1061,7 @@ supplemental demog. index.](analyzing_files/figure-html/barplot_d-1.png)
 #### Histogram of indicators distribution over all people across all sites
 
 ``` r
+
 hist(out$results_bysite$pctile.traffic.score, 10, xlab = "Local traffic scores (expressed as a percentile)", 
      ylab = "count of sites in each bin, out of 1,000 sites", freq = TRUE, 
      main = "Actual distribution of scores nearby, as percentiles, 

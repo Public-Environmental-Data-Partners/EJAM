@@ -74,21 +74,28 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_ejscreen_export</span><span class="op">(</span></span>
 <span>  blockgroupstats <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bgej <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  usastats_acs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  usastats_envirodata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  usastats_ej <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  statestats_ej <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pipeline_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pipeline_storage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"local"</span>, <span class="st">"s3"</span><span class="op">)</span>,</span>
 <span>  blockgroupstats_stage <span class="op">=</span> <span class="st">"blockgroupstats"</span>,</span>
 <span>  bgej_stage <span class="op">=</span> <span class="st">"bgej"</span>,</span>
+<span>  usastats_acs_stage <span class="op">=</span> <span class="st">"usastats_acs"</span>,</span>
+<span>  usastats_envirodata_stage <span class="op">=</span> <span class="st">"usastats_envirodata"</span>,</span>
 <span>  usastats_ej_stage <span class="op">=</span> <span class="st">"usastats_ej"</span>,</span>
 <span>  statestats_ej_stage <span class="op">=</span> <span class="st">"statestats_ej"</span>,</span>
 <span>  blockgroupstats_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bgej_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  usastats_acs_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  usastats_envirodata_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  usastats_ej_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  statestats_ej_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stage_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"csv"</span>, <span class="st">"rds"</span>, <span class="st">"rda"</span>, <span class="st">"arrow"</span><span class="op">)</span>,</span>
 <span>  by <span class="op">=</span> <span class="st">"bgfips"</span>,</span>
 <span>  output_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  rename_newtype <span class="op">=</span> <span class="st">"ejscreen_names"</span>,</span>
+<span>  rename_newtype <span class="op">=</span> <span class="st">"ejscreen_indicator"</span>,</span>
 <span>  mapping_for_names <span class="op">=</span> <span class="va">map_headernames</span>,</span>
 <span>  required_output_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  include_ej_percentiles <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -100,6 +107,7 @@
 <span>  include_ejscreen_map_fields <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  map_field_pctile_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite_ejscreen_map_fields <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  feature_server_fields <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -120,6 +128,12 @@ from a saved pipeline stage.</p></dd>
 stage.</p></dd>
 
 
+<dt id="arg-usastats-acs-usastats-envirodata">usastats_acs, usastats_envirodata<a class="anchor" aria-label="anchor" href="#arg-usastats-acs-usastats-envirodata"></a></dt>
+<dd><p>ACS and environmental percentile
+lookup tables. These are used to add <code>P_...</code> fields before creating
+EJSCREEN map helper fields.</p></dd>
+
+
 <dt id="arg-usastats-ej-statestats-ej">usastats_ej, statestats_ej<a class="anchor" aria-label="anchor" href="#arg-usastats-ej-statestats-ej"></a></dt>
 <dd><p>EJ-index percentile lookup tables. These
 are used to add <code>P_D2_...</code>/<code>P_D5_...</code> fields before creating EJSCREEN map
@@ -130,17 +144,22 @@ helper fields.</p></dd>
 <dd><p>folder for reading saved pipeline stages.</p></dd>
 
 
+<dt id="arg-pipeline-storage">pipeline_storage<a class="anchor" aria-label="anchor" href="#arg-pipeline-storage"></a></dt>
+<dd><p>stage storage backend: <code>"auto"</code>, <code>"local"</code>, or
+<code>"s3"</code>.</p></dd>
+
+
 <dt id="arg-blockgroupstats-stage-bgej-stage">blockgroupstats_stage, bgej_stage<a class="anchor" aria-label="anchor" href="#arg-blockgroupstats-stage-bgej-stage"></a></dt>
 <dd><p>stage names to read when objects are
 not supplied.</p></dd>
 
 
-<dt id="arg-usastats-ej-stage-statestats-ej-stage">usastats_ej_stage, statestats_ej_stage<a class="anchor" aria-label="anchor" href="#arg-usastats-ej-stage-statestats-ej-stage"></a></dt>
-<dd><p>stage names to read for
-EJ-index percentile lookup tables when objects are not supplied.</p></dd>
+<dt id="arg-usastats-acs-stage-usastats-envirodata-stage-usastats-ej-stage-statestats-ej-stage">usastats_acs_stage, usastats_envirodata_stage, usastats_ej_stage, statestats_ej_stage<a class="anchor" aria-label="anchor" href="#arg-usastats-acs-stage-usastats-envirodata-stage-usastats-ej-stage-statestats-ej-stage"></a></dt>
+<dd><p>stage names to read for percentile lookup tables when objects are not
+supplied.</p></dd>
 
 
-<dt id="arg-blockgroupstats-path-bgej-path-usastats-ej-path-statestats-ej-path">blockgroupstats_path, bgej_path, usastats_ej_path, statestats_ej_path<a class="anchor" aria-label="anchor" href="#arg-blockgroupstats-path-bgej-path-usastats-ej-path-statestats-ej-path"></a></dt>
+<dt id="arg-blockgroupstats-path-bgej-path-usastats-acs-path-usastats-envirodata-path-usastats-ej-path-statestats-ej-path">blockgroupstats_path, bgej_path, usastats_acs_path, usastats_envirodata_path, usastats_ej_path, statestats_ej_path<a class="anchor" aria-label="anchor" href="#arg-blockgroupstats-path-bgej-path-usastats-acs-path-usastats-envirodata-path-usastats-ej-path-statestats-ej-path"></a></dt>
 <dd><p>explicit paths to saved inputs.</p></dd>
 
 
@@ -159,7 +178,7 @@ Defaults to all available columns after the merge.</p></dd>
 
 <dt id="arg-rename-newtype">rename_newtype<a class="anchor" aria-label="anchor" href="#arg-rename-newtype"></a></dt>
 <dd><p>target naming column in <a href="map_headernames.html">map_headernames</a>. Defaults to
-<code>"ejscreen_names"</code>.</p></dd>
+<code>"ejscreen_indicator"</code>.</p></dd>
 
 
 <dt id="arg-mapping-for-names">mapping_for_names<a class="anchor" aria-label="anchor" href="#arg-mapping-for-names"></a></dt>
@@ -209,6 +228,12 @@ names start with <code>P_</code>.</p></dd>
 <code>B_...</code> and <code>T_...</code> fields from the matching percentile fields.</p></dd>
 
 
+<dt id="arg-feature-server-fields">feature_server_fields<a class="anchor" aria-label="anchor" href="#arg-feature-server-fields"></a></dt>
+<dd><p>optional final EJSCREEN FeatureServer field
+names. When supplied, missing schema fields are added when possible and the
+export is returned in exactly this field order.</p></dd>
+
+
 <dt id="arg-save-path">save_path<a class="anchor" aria-label="anchor" href="#arg-save-path"></a></dt>
 <dd><p>optional file path to save the export.</p></dd>
 
@@ -230,7 +255,7 @@ Supported values are <code>"csv"</code>, <code>"rds"</code>, <code>"rda"</code>,
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This helper prepares a tabular export by merging a
 <code>blockgroupstats</code>-like table with a <code>bgej</code>-like table and renaming available
-columns through <a href="map_headernames.html">map_headernames</a>. By default it uses <code>ejscreen_names</code>, which
+columns through <a href="map_headernames.html">map_headernames</a>. By default it uses <code>ejscreen_indicator</code>, which
 is the column intended to represent the current EJSCREEN app/export numeric
 field name. It also creates EJSCREEN app map helper fields from exported
 percentile fields: <code>B_...</code> map color-bin columns and <code>T_...</code> popup-text

@@ -123,6 +123,7 @@ for handling a table not just a vector
 ## Examples
 
 ``` r
+
  # \donttest{
 # Get some saved analysis results
 x <- testoutput_ejamit_10pts_1miles$results_overall

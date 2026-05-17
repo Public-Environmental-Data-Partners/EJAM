@@ -8,21 +8,28 @@ Combine EJAM blockgroup datasets and rename fields for EJSCREEN
 calc_ejscreen_export(
   blockgroupstats = NULL,
   bgej = NULL,
+  usastats_acs = NULL,
+  usastats_envirodata = NULL,
   usastats_ej = NULL,
   statestats_ej = NULL,
   pipeline_dir = NULL,
+  pipeline_storage = c("auto", "local", "s3"),
   blockgroupstats_stage = "blockgroupstats",
   bgej_stage = "bgej",
+  usastats_acs_stage = "usastats_acs",
+  usastats_envirodata_stage = "usastats_envirodata",
   usastats_ej_stage = "usastats_ej",
   statestats_ej_stage = "statestats_ej",
   blockgroupstats_path = NULL,
   bgej_path = NULL,
+  usastats_acs_path = NULL,
+  usastats_envirodata_path = NULL,
   usastats_ej_path = NULL,
   statestats_ej_path = NULL,
   stage_format = c("csv", "rds", "rda", "arrow"),
   by = "bgfips",
   output_vars = NULL,
-  rename_newtype = "ejscreen_names",
+  rename_newtype = "ejscreen_indicator",
   mapping_for_names = map_headernames,
   required_output_names = NULL,
   include_ej_percentiles = TRUE,
@@ -34,6 +41,7 @@ calc_ejscreen_export(
   include_ejscreen_map_fields = TRUE,
   map_field_pctile_names = NULL,
   overwrite_ejscreen_map_fields = TRUE,
+  feature_server_fields = NULL,
   save_path = NULL,
   save_format = NULL,
   overwrite = TRUE
@@ -51,6 +59,11 @@ calc_ejscreen_export(
 
   bgej-like data.frame, or NULL if reading from a saved pipeline stage.
 
+- usastats_acs, usastats_envirodata:
+
+  ACS and environmental percentile lookup tables. These are used to add
+  `P_...` fields before creating EJSCREEN map helper fields.
+
 - usastats_ej, statestats_ej:
 
   EJ-index percentile lookup tables. These are used to add
@@ -61,16 +74,22 @@ calc_ejscreen_export(
 
   folder for reading saved pipeline stages.
 
+- pipeline_storage:
+
+  stage storage backend: `"auto"`, `"local"`, or `"s3"`.
+
 - blockgroupstats_stage, bgej_stage:
 
   stage names to read when objects are not supplied.
 
-- usastats_ej_stage, statestats_ej_stage:
+- usastats_acs_stage, usastats_envirodata_stage, usastats_ej_stage,
+  statestats_ej_stage:
 
-  stage names to read for EJ-index percentile lookup tables when objects
-  are not supplied.
+  stage names to read for percentile lookup tables when objects are not
+  supplied.
 
-- blockgroupstats_path, bgej_path, usastats_ej_path, statestats_ej_path:
+- blockgroupstats_path, bgej_path, usastats_acs_path,
+  usastats_envirodata_path, usastats_ej_path, statestats_ej_path:
 
   explicit paths to saved inputs.
 
@@ -91,7 +110,7 @@ calc_ejscreen_export(
 
   target naming column in
   [map_headernames](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md).
-  Defaults to `"ejscreen_names"`.
+  Defaults to `"ejscreen_indicator"`.
 
 - mapping_for_names:
 
@@ -140,6 +159,12 @@ calc_ejscreen_export(
   logical. If TRUE, recalculate existing `B_...` and `T_...` fields from
   the matching percentile fields.
 
+- feature_server_fields:
+
+  optional final EJSCREEN FeatureServer field names. When supplied,
+  missing schema fields are added when possible and the export is
+  returned in exactly this field order.
+
 - save_path:
 
   optional file path to save the export.
@@ -163,7 +188,7 @@ This helper prepares a tabular export by merging a
 `blockgroupstats`-like table with a `bgej`-like table and renaming
 available columns through
 [map_headernames](https://public-environmental-data-partners.github.io/EJAM/reference/map_headernames.md).
-By default it uses `ejscreen_names`, which is the column intended to
+By default it uses `ejscreen_indicator`, which is the column intended to
 represent the current EJSCREEN app/export numeric field name. It also
 creates EJSCREEN app map helper fields from exported percentile fields:
 `B_...` map color-bin columns and `T_...` popup-text columns. The

@@ -142,7 +142,7 @@ Normally the map would be shown in the default RStudio viewer pane.</p></dd>
 <span><span class="co"># See in RStudio viewer pane</span></span>
 <span><span class="fu"><a href="ejam2map.html">ejam2map</a></span><span class="op">(</span><span class="va">out</span>, launch_browser <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu">mapfastej</span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>,<span class="fl">31</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># \donttest{</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span></span>
 <span><span class="co"># See in local browser instead</span></span>
 <span><span class="fu"><a href="ejam2map.html">ejam2map</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
@@ -154,7 +154,7 @@ Normally the map would be shown in the default RStudio viewer pane.</p></dd>
 <span><span class="co"># browseURL(normalizePath(dirname(fname))) # to open the temp folder</span></span>
 <span><span class="co"># file.copy(fname, "./map.html") # to copy map file to working directory</span></span>
 <span></span>
-<span><span class="co"># }</span></span></code></pre></div>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

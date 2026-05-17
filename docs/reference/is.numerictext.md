@@ -6,8 +6,7 @@ text like "01"
 ## Usage
 
 ``` r
-# S3 method for class 'text'
-is.numeric(x, na.is = c(NA, TRUE, FALSE)[1])
+is.numerictext(x, na.is = c(NA, TRUE, FALSE)[1])
 ```
 
 ## Arguments

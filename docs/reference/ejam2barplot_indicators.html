@@ -76,7 +76,7 @@
 <span>  indicator_type <span class="op">=</span> <span class="st">"Demographic"</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="st">"raw"</span>,</span>
 <span>  mybarvars.stat <span class="op">=</span> <span class="st">"avg"</span>,</span>
-<span>  mybarvars.sumstat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Average site"</span>, <span class="st">"Average person at these sites"</span><span class="op">)</span></span>
+<span>  mybarvars.sumstat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Average site analyzed"</span>, <span class="st">"Average person at sites analyzed"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -107,8 +107,10 @@ can be defined by the value of shiny input$summ_bar_stat selection</p></dd>
 by default depends on mybarvars.stat being "avg" or "med"
 which should correspond to also specifying values of
 mybarvars.sumstat equal to
-c('Average site', 'Average person at these sites') or
-c('Median site', 'Median person') respectively.
+c('Average site analyzed', 'Average person at sites analyzed') or
+c('Median site analyzed', 'Median person at sites analyzed') respectively.
+Legacy inputs such as 'Median person' are accepted and normalized
+to the canonical plot labels used internally.
 If mybarvars.stat is specified then mybarvars.sumstat should be also
 to ensure they correspond! Done in shiny, not checked here.</p></dd>
 

@@ -8,7 +8,7 @@ long versions of variable names
 ``` r
 fixnames_to_type(
   namesnow,
-  oldtype = "apiname",
+  oldtype = "ejscreen_apinames_old",
   newtype = "rname",
   mapping_for_names
 )
@@ -46,11 +46,12 @@ Vector or new column names same length as input
 
 ## Details
 
-YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like "apiname"
-or "rname", UNLIKE IN fixnames() or fixcolnames() where you specify a
-type like "long" or "api" Using lookup table mapping_for_names, finds
-each namesnow in the column specified by oldtype and replaces it with
-the corresponding string in the column specified by newtype
+YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like
+"ejscreen_apinames_old" or "rname", UNLIKE IN fixnames() or
+fixcolnames() where you specify a type like "long" or "api" Using lookup
+table mapping_for_names, finds each namesnow in the column specified by
+oldtype and replaces it with the corresponding string in the column
+specified by newtype
 
 ## See also
 

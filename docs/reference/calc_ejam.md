@@ -30,7 +30,9 @@ calc_ejam(
 
 - formulas:
 
-  text strings of formulas
+  text strings of formulas, or a data.frame with columns `"rname"` and
+  `"formula"`. Formula dependencies are sorted before evaluation so
+  intermediate variables are calculated before formulas that use them.
 
 - quiet:
 

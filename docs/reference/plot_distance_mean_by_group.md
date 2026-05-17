@@ -82,6 +82,10 @@ See `plot_distance_mean_by_group()`
 
 ## Details
 
+For block (not just block group) resolution analysis of distance by
+group, see
+[`plot_distance_by_pctd()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_by_pctd.md).
+
 Note that the ratio shown is a ratio of distance among others to
 distance of a given group, so values below 1 mean the given group lives
 closer to facilities. A value of 0.85 would mean the group is only 85%
@@ -108,3 +112,4 @@ EJAM
 
 `distance_by_group()`
 [`distance_by_group_plot()`](https://public-environmental-data-partners.github.io/EJAM/reference/distance_by_group_plot.md)
+[`plot_distance_by_pctd()`](https://public-environmental-data-partners.github.io/EJAM/reference/plot_distance_by_pctd.md).

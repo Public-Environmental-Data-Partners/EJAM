@@ -56,7 +56,7 @@ getblocksnearby_from_fips(
 
 ## Value
 
-- if return_shp=F, returns just a sites2blocks table in
+- if return_shp = FALSE, returns just a sites2blocks table in
   [data.table](https://r-datatable.com) format with colnames
   ejam_uniq_id, blockid, distance, blockwt, bgid, fips. This is like the
   [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
@@ -64,7 +64,7 @@ getblocksnearby_from_fips(
   [`get_blockpoints_in_shape()`](https://public-environmental-data-partners.github.io/EJAM/reference/get_blockpoints_in_shape.md)
   outputs.
 
-- if return_shp=T, returns a named list where pts is the table in
+- if return_shp = TRUE, returns a named list where pts is the table in
   [data.table](https://r-datatable.com) format of sites2blocks, and
   polys is the spatial data.frame with one row per input fips (including
   invalid ones).
@@ -86,10 +86,12 @@ getblocksnearby_from_fips(
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
   x <- getblocksnearby_from_fips(fips_counties_from_state_abbrev("DE"))
   y <- doaggregate(x)
   z <- ejamit(fips = fips_counties_from_statename("Delaware"))
 
   # x2 <- getblocksnearby_from_fips("482011000011") # one blockgroup only
   # y2 <- doaggregate(x2)
+} # }
 ```

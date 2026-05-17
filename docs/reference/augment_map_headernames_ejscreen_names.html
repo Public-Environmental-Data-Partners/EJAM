@@ -84,19 +84,26 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.frame with additional or completed <code>ejscreen_names</code>,
-<code>ejscreen_ftp_names</code>, <code>ejscreen_apinames_old</code>, <code>ejam_apinames</code>,
-<code>ejscreen_csv</code>, <code>ejscreen_gdb</code>, <code>ejscreen_app</code>, <code>ejscreen_api</code>,
-<code>ejscreen_pctile</code>, <code>ejscreen_bin</code>, and <code>ejscreen_text</code> columns.</p>
+    <p>A data.frame with these additional or completed columns:</p><ul><li><p><code>ejscreen_indicator</code></p></li>
+<li><p><code>ejscreen_ftp_names</code></p></li>
+<li><p><code>ejscreen_apinames_old</code></p></li>
+<li><p><code>ejam_apinames</code></p></li>
+<li><p><code>text.</code></p></li>
+</ul><p>Older <code>.text</code> input is renamed to <code>text.</code> when present. Retired sibling-name
+columns are dropped when present because <code>P_</code>, <code>B_</code>, and <code>T_</code> fields are now
+represented as ordinary metadata rows.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>map_headernames</code> has historically kept several naming systems:
-<code>rname</code> for EJAM, <code>acsname</code> for ACS-derived variables, <code>apiname</code> for the old
-offline EJSCREEN report/API names, and <code>csvname</code> for the older EJSCREEN staff
-CSV/FTP-style download fields. Current EJSCREEN map services use
-geodatabase/download field names for numeric fields, plus related <code>P_</code>,
-<code>B_</code>, and <code>T_</code> fields for percentiles, map bins, and popup text. This helper
+<code>rname</code> for EJAM, <code>acsname</code> for ACS-derived variables,
+<code>ejscreen_apinames_old</code> for the old offline EJSCREEN report/API names, and
+<code>csvname</code> for the older EJSCREEN staff CSV/FTP-style download fields. Current
+EJSCREEN map services use geodatabase/download field names for numeric
+fields, plus related <code>P_</code>,
+<code>B_</code>, and <code>T_</code> fields for percentiles, map bins, and popup text. Percentile,
+map-bin, and popup-text fields are represented as their own rows, with
+<code>rname</code> values such as <code>pctile.pm</code>, <code>bin.pm</code>, and <code>text.pm</code>. This helper
 fills explicit columns for each naming system so export code can use one
 crosswalk without confusing old EJSCREEN API names with current EJAM API
 names.</p>
@@ -105,7 +112,7 @@ in EPA's old EJSCREEN FTP/download CSV and geodatabase files, such as the
 archived 2024 v2.32 block-group files and the accompanying
 <code>EJScreen_2024_BG_Percentiles_Columns.xlsx</code> and
 <code>EJScreen_2024_BG_State_Percentiles_Columns.xlsx</code> column dictionaries. Those
-names are usually the same as <code>ejscreen_names</code>, but both columns are kept so
+names are usually the same as <code>ejscreen_indicator</code>, but both columns are kept so
 old FTP/download provenance and current app/export naming can diverge later
 if needed.</p>
     </div>

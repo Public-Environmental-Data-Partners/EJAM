@@ -29,6 +29,7 @@ report title/logo, etc., or to override caps such as limits on file
 upload size or number of points:
 
 ``` r
+
 ejamapp(
   radius=3.14,
   default_max_miles=31,
@@ -215,6 +216,7 @@ See the examples in the documentation of the function
 One such example:
 
 ``` r
+
 ejamapp(
   default_standard_analysis_title="Custom NAICS Analysis",
   default_upload_dropdown="dropdown",
@@ -257,6 +259,7 @@ Here is an example using the URL of one copy of the hosted app:
 Locally hosted app example
 
 ``` r
+
 # In 1 R session, launch locally with advanced tab disabled
 myport <- 5432
 ejamapp(isPublic=TRUE, options = list(port=myport))
@@ -274,6 +277,7 @@ browseURL(urlx)
 Using a custom URL to go to a web app with custom settings
 
 ``` r
+
 urlbase <- "https://ejam.policyinnovation.info/?_inputs_&"
 
 myparams <- c(
@@ -308,6 +312,7 @@ browseURL(urlx)
 #### \> global_defaults_xyz - compiled full list
 
 ``` r
+
 gdefs = EJAM:::get_global_defaults_or_user_options()
 #> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 #> isPublic =  FALSE
@@ -437,6 +442,7 @@ cbind(global_defaults = gdefnames)
 #### \> function params - compiled full list
 
 ``` r
+
 params = formals(ejamit) 
 # params = c(formals(getblocksnearby), formals(getblocksnearbyviaQuadTree), formals(get_blockpoints_in_shape), formals(getblocksnearby_from_fips), formals(ejamit), formals(doaggregate))
 paramnames = sort(unique(names(params)))
@@ -486,6 +492,7 @@ cbind(params = paramnames)
 Compilation of input\$ variables used in the shiny app
 
 ``` r
+
 # getwd() must be the source pkg root folder
 getwd()
 lines_with_inputnames = trimws(grep("input\\$", gsub("^(.*)(input\\$.*\\))(.*)", "\\2", readLines("./R/app_server.R") ), value=T))
@@ -507,6 +514,7 @@ dput(inputnames)
 ```
 
 ``` r
+
 
 inputnames = c("add_naics_subcategories", "all_tabs", "allow_median_in_barplot_indicators", 
 "an_map_clusters", "an_thresh_comp2", "an_threshgroup1", "an_threshgroup2", 
@@ -543,6 +551,7 @@ inputnames = c("add_naics_subcategories", "all_tabs", "allow_median_in_barplot_i
 #### \> ALL OVERLAPS/ DIFFS (compiled func params, global defaults, shiny inputs)
 
 ``` r
+
 
 gdefnames_noprefix = gsub("default_", "", gdefnames)
 
@@ -589,6 +598,7 @@ tab, and allowed by
 [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md).
 
 ``` r
+
 
 EJAM:::args2(getblocksnearby)
 #> 
@@ -700,6 +710,7 @@ EJAM:::args2(getblocksnearby_from_fips)
 #### \> function params - annotated list of most
 
 ``` r
+
 # > cbind(formals(ejamit))
 EJAM:::args2(ejamit)
 #> 
@@ -817,6 +828,7 @@ characters
 
 ``` r
 
+
 all_tabs="See Results"   # or # all_tabs="Advanced Settings"
 results_tabs="Community Report"
 details_subtabs="Site-by-Site Table"
@@ -840,12 +852,14 @@ epa_program_help=0
 ##### inputs: start analysis button
 
 ``` r
+
 bt_get_results=0
 ```
 
 ##### inputs: site selection (buttons/dropdowns)
 
 ``` r
+
 default_ss_choose_method="upload" # or "dropdown"
 ss_choose_method="upload"         # or "dropdown"
 ss_choose_method_upload="latlon"   # see global_defaults_*.R for options
@@ -883,6 +897,7 @@ fipspicker_done_button=0
 ##### inputs: radius and caps
 
 ``` r
+
 radius_now=3.1  # input from slider but not the way to bookmark /url-encode the radius
 radius_default=3.1  # works as parameter to ejamapp() or as bookmarked input$ 
 radius_default_shapefile=0
@@ -929,7 +944,7 @@ extratable_list_of_sections="pctpoor"
 # "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",
 # "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",
 # "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",
-# "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]  # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
+# "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]
 
 # thresholds - counting how many of a certain indicator type are at/above some threshold
 # see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)
@@ -960,6 +975,7 @@ circleweight_in=4
 ##### inputs: test mode
 
 ``` r
+
 testing="FALSE"
 shiny.testmode="FALSE"
 print_uploaded_points_to_log=true
@@ -968,6 +984,7 @@ print_uploaded_points_to_log=true
 ##### inputs: draft / reserved for a long word/pdf report
 
 ``` r
+
 
 # authors
 

@@ -1,8 +1,10 @@
-# Clean raw output of doaggregate() from the EJAM package
+# Clean raw output of [`doaggregate()`](https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.md) from the EJAM package
 
 Takes the raw output version of batch buffer results and cleans it up to
-make it ready for batch.summarize function Note this drops rows with no
-pop data - assumes those lack EJSCREEN batch results
+make it ready for
+[`batch.summarize()`](https://public-environmental-data-partners.github.io/EJAM/reference/batch.summarize.md)
+function Note this drops rows with no pop data - assumes those lack
+EJSCREEN batch results
 
 ## Usage
 

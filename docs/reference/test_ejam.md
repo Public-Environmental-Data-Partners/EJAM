@@ -44,8 +44,8 @@ test_ejam(
   logical, TRUE means use
   [`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html),
   FALSE means use [`library()`](https://rdrr.io/r/base/library.html).
-  But useloadall=T is essential actually, for unexported functions to be
-  found when they are tested!
+  But useloadall = TRUE is essential actually, for unexported functions
+  to be found when they are tested!
 
 - y_skipbasic:
 
@@ -55,19 +55,19 @@ test_ejam(
 
 - y_latlon:
 
-  logical, if y_skipbasic=F, whether to run the basic
+  logical, if y_skipbasic = FALSE, whether to run the basic
   [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   using points
 
 - y_shp:
 
-  logical, if y_skipbasic=F, whether to run the basic
+  logical, if y_skipbasic = FALSE, whether to run the basic
   [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   using shapefile
 
 - y_fips:
 
-  logical, if y_skipbasic=F, whether to run the basic
+  logical, if y_skipbasic = FALSE, whether to run the basic
   [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
   using FIPS
 
@@ -89,12 +89,14 @@ test_ejam(
 
 - run_these:
 
-  if y_runsome = T, a vector of group names to test, like 'fips',
-  'naics', etc. see source code for list
+  if y_runsome = TRUE, a vector of group names to test, like 'fips',
+  'naics', 'webapp', etc. The 'webapp' group runs the combined
+  shinytest2 functionality suite; use 'webapp_individual' only when
+  debugging one-category web app test files.
 
 - skip_these:
 
-  if y_runall = T, a vector of group names to skip, like 'fips',
+  if y_runall = TRUE, a vector of group names to skip, like 'fips',
   'naics', etc.
 
 - y_seeresults:
@@ -140,9 +142,9 @@ Note these require installing the package
 if (FALSE) { # \dontrun{
 biglist <- EJAM:::test_ejam()
 
-biglist <- EJAM:::test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
-biglist <- EJAM:::test_ejam(ask = F,
-      y_runsome = T, run_these = c('test', 'maps'),
+biglist <- EJAM:::test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
+biglist <- EJAM:::test_ejam(ask = FALSE,
+      y_runsome = TRUE, run_these = c('test', 'maps'),
       mydir = "~/../Downloads/unit testing") # for example
 
   } # }

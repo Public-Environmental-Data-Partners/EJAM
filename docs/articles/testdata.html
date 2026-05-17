@@ -225,7 +225,7 @@ in EJAM and related packages:</p>
 <span><span class="co">#&gt; 162    EJAM    testpoints_10000</span></span>
 <span><span class="co">#&gt; 124    EJAM        testpoints_5</span></span>
 <span><span class="co">#&gt; 129    EJAM       testpoints_50</span></span>
-<span><span class="co">#&gt; 144    EJAM      testpoints_500</span></span>
+<span><span class="co">#&gt; 143    EJAM      testpoints_500</span></span>
 <span><span class="co">#&gt; 125    EJAM      testpoints_bad</span></span>
 <span><span class="co">#&gt; 119    EJAM testpoints_overlap3</span></span>
 <span><span class="co">#&gt;                                                        Title</span></span>
@@ -236,7 +236,7 @@ in EJAM and related packages:</p>
 <span><span class="co">#&gt; 162 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 124 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 129 test points data.frame with columns sitenumber, lat, lon</span></span>
-<span><span class="co">#&gt; 144 test points data.frame with columns sitenumber, lat, lon</span></span>
+<span><span class="co">#&gt; 143 test points data.frame with columns sitenumber, lat, lon</span></span>
 <span><span class="co">#&gt; 125       test points data.frame with columns note, lat, lon</span></span>
 <span><span class="co">#&gt; 119       test points data.frame with columns note, lat, lon</span></span></code></pre></div>
 <p><strong>STREET ADDRESSES</strong> for testing geocoding in
@@ -306,30 +306,30 @@ in EJAM and related packages:</p>
 <code class="sourceCode R"><span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^testout"</span>, <span class="va">x</span><span class="op">$</span><span class="va">Item</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt;     Package                                      Item</span></span>
 <span><span class="co">#&gt; 173    EJAM     testoutput_doaggregate_1000pts_1miles</span></span>
-<span><span class="co">#&gt; 166    EJAM      testoutput_doaggregate_100pts_1miles</span></span>
-<span><span class="co">#&gt; 157    EJAM       testoutput_doaggregate_10pts_1miles</span></span>
+<span><span class="co">#&gt; 167    EJAM      testoutput_doaggregate_100pts_1miles</span></span>
+<span><span class="co">#&gt; 158    EJAM       testoutput_doaggregate_10pts_1miles</span></span>
 <span><span class="co">#&gt; 174    EJAM          testoutput_ejamit_1000pts_1miles</span></span>
-<span><span class="co">#&gt; 167    EJAM           testoutput_ejamit_100pts_1miles</span></span>
+<span><span class="co">#&gt; 168    EJAM           testoutput_ejamit_100pts_1miles</span></span>
 <span><span class="co">#&gt; 161    EJAM            testoutput_ejamit_10pts_1miles</span></span>
 <span><span class="co">#&gt; 164    EJAM             testoutput_ejamit_fips_cities</span></span>
-<span><span class="co">#&gt; 165    EJAM           testoutput_ejamit_fips_counties</span></span>
-<span><span class="co">#&gt; 156    EJAM                testoutput_ejamit_shapes_2</span></span>
-<span><span class="co">#&gt; 169    EJAM testoutput_getblocksnearby_1000pts_1miles</span></span>
-<span><span class="co">#&gt; 155    EJAM  testoutput_getblocksnearby_100pts_1miles</span></span>
-<span><span class="co">#&gt; 147    EJAM   testoutput_getblocksnearby_10pts_1miles</span></span>
+<span><span class="co">#&gt; 166    EJAM           testoutput_ejamit_fips_counties</span></span>
+<span><span class="co">#&gt; 157    EJAM                testoutput_ejamit_shapes_2</span></span>
+<span><span class="co">#&gt; 170    EJAM testoutput_getblocksnearby_1000pts_1miles</span></span>
+<span><span class="co">#&gt; 156    EJAM  testoutput_getblocksnearby_100pts_1miles</span></span>
+<span><span class="co">#&gt; 146    EJAM   testoutput_getblocksnearby_10pts_1miles</span></span>
 <span><span class="co">#&gt;                                                                  Title</span></span>
 <span><span class="co">#&gt; 173                                       test output of doaggregate()</span></span>
-<span><span class="co">#&gt; 166                                       test output of doaggregate()</span></span>
-<span><span class="co">#&gt; 157                                       test output of doaggregate()</span></span>
+<span><span class="co">#&gt; 167                                       test output of doaggregate()</span></span>
+<span><span class="co">#&gt; 158                                       test output of doaggregate()</span></span>
 <span><span class="co">#&gt; 174                                            test output of ejamit()</span></span>
-<span><span class="co">#&gt; 167                                            test output of ejamit()</span></span>
+<span><span class="co">#&gt; 168                                            test output of ejamit()</span></span>
 <span><span class="co">#&gt; 161                                            test output of ejamit()</span></span>
 <span><span class="co">#&gt; 164                              testoutput_ejamit_fips_cities dataset</span></span>
-<span><span class="co">#&gt; 165                            testoutput_ejamit_fips_counties dataset</span></span>
-<span><span class="co">#&gt; 156                                 testoutput_ejamit_shapes_2 dataset</span></span>
-<span><span class="co">#&gt; 169 test output of getblocksnearby(), and is an input to doaggregate()</span></span>
-<span><span class="co">#&gt; 155 test output of getblocksnearby(), and is an input to doaggregate()</span></span>
-<span><span class="co">#&gt; 147 test output of getblocksnearby(), and is an input to doaggregate()</span></span>
+<span><span class="co">#&gt; 166                            testoutput_ejamit_fips_counties dataset</span></span>
+<span><span class="co">#&gt; 157                                 testoutput_ejamit_shapes_2 dataset</span></span>
+<span><span class="co">#&gt; 170 test output of getblocksnearby(), and is an input to doaggregate()</span></span>
+<span><span class="co">#&gt; 156 test output of getblocksnearby(), and is an input to doaggregate()</span></span>
+<span><span class="co">#&gt; 146 test output of getblocksnearby(), and is an input to doaggregate()</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n\n"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>LARGE DATASETS USED BY THE PACKAGE</strong></p>
 <p>Note that the largest files used by the package are mostly the

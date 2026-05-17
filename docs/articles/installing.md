@@ -83,6 +83,7 @@ You can use the Build menu in RStudio, or just run the following (which
 installs all the Suggests, not just Imports)
 
 ``` r
+
 if (!require(devtools)) {install.packages("devtools")}
 
 # To do install() below, you have to say where the cloned package was saved:
@@ -116,6 +117,7 @@ Replace OWNER/REPO below with “Public-Environmental-Data-Partners/EJAM”
 including the quote marks
 
 ``` r
+
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 ref = github_release() # specifies you want the latest released version
 #ref = "v2.5.0"   # a tag identifying a specific release
@@ -144,6 +146,7 @@ Replace “URL_OF_REPO” below with
 the quote marks
 
 ``` r
+
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.5.0.zip" # or whatever the latest release is - update as needed
 
@@ -162,6 +165,7 @@ Replace “URL_OF_REPO” below with
 the quote marks
 
 ``` r
+
 options(timeout=300); if (!require(devtools)) {install.packages("devtools")}
 zipname = "v2.5.0.zip" # or whatever the latest release is - update as needed
 
@@ -209,6 +213,7 @@ store](https://usethis.r-lib.org/articles/git-credentials.html#git-credential-he
 Note Windows takes care of most of this now, in conjunction with GitHub.
 
 ``` r
+
 ##  To check for existing PATs:
 usethis::gh_token_help() # or
 usethis::git_sitrep() # git situation report

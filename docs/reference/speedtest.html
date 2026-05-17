@@ -74,6 +74,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">speedtest</span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  sitepoints <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fips <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shapefile <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  analysis_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  analysis_subtype <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  weighting <span class="op">=</span> <span class="st">"frs"</span>,</span>
 <span>  radii <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3.106856</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">31.06856</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
 <span>  avoidorphans <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -86,6 +90,9 @@
 <span>  logfilename <span class="op">=</span> <span class="st">"log_n_datetime.txt"</span>,</span>
 <span>  honk_when_ready <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  saveoutput <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  collect_detailed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  detail_point_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">10L</span><span class="op">)</span>,</span>
+<span>  detailed_csv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  getblocks_diagnostics_shown <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -104,6 +111,29 @@ set to 0 to interactively pick file of points in RStudio (n is ignored if sitepo
 <dt id="arg-sitepoints">sitepoints<a class="anchor" aria-label="anchor" href="#arg-sitepoints"></a></dt>
 <dd><p>optional,  (use if you do not want random points) data.frame of points or
 path/file with points, where columns are lat and lon in decimal degrees</p></dd>
+
+
+<dt id="arg-fips">fips<a class="anchor" aria-label="anchor" href="#arg-fips"></a></dt>
+<dd><p>optional vector of FIPS codes to time FIPS-based analysis instead
+of point-buffer analysis. If provided, <code>speedtest()</code> times whole
+<code><a href="ejamit.html">ejamit()</a></code> runs rather than the point-specific substeps.</p></dd>
+
+
+<dt id="arg-shapefile">shapefile<a class="anchor" aria-label="anchor" href="#arg-shapefile"></a></dt>
+<dd><p>optional shapefile path or object to time polygon-based
+analysis instead of point-buffer analysis. If provided, <code>speedtest()</code>
+times whole <code><a href="ejamit.html">ejamit()</a></code> runs rather than the point-specific substeps.</p></dd>
+
+
+<dt id="arg-analysis-type">analysis_type<a class="anchor" aria-label="anchor" href="#arg-analysis-type"></a></dt>
+<dd><p>optional label for the kind of analysis being timed.
+Usually inferred as <code>"points"</code>, <code>"fips"</code>, or <code>"shapefile"</code>.</p></dd>
+
+
+<dt id="arg-analysis-subtype">analysis_subtype<a class="anchor" aria-label="anchor" href="#arg-analysis-subtype"></a></dt>
+<dd><p>optional label for the subtype being timed. Usually
+inferred as <code>"point_buffer"</code>, <code>"polygon"</code>, or the FIPS type such as
+<code>"city"</code> or <code>"county"</code>.</p></dd>
 
 
 <dt id="arg-weighting">weighting<a class="anchor" aria-label="anchor" href="#arg-weighting"></a></dt>
@@ -159,6 +189,25 @@ NOTE this slows it down though.</p></dd>
 <dd><p>but this slows it down if set to TRUE to save each run as .rda file</p></dd>
 
 
+<dt id="arg-collect-detailed">collect_detailed<a class="anchor" aria-label="anchor" href="#arg-collect-detailed"></a></dt>
+<dd><p>if <code>TRUE</code>, also collect a per-run timing table in the
+schema used by legacy <code>Analysis_timing_results.csv</code> files</p></dd>
+
+
+<dt id="arg-detail-point-counts">detail_point_counts<a class="anchor" aria-label="anchor" href="#arg-detail-point-counts"></a></dt>
+<dd><p>when <code>collect_detailed = TRUE</code>, ensure runs for
+these counts are also included when possible. For random-point runs, these
+values are added to <code>n</code> if they are less than or equal to <code>max(n)</code>. For
+explicit <code>sitepoints</code>, <code>fips</code>, or <code>shapefile</code> inputs, the first <code>k</code> rows or
+codes are used for each requested <code>k</code> that is less than or equal to the
+input size.</p></dd>
+
+
+<dt id="arg-detailed-csv">detailed_csv<a class="anchor" aria-label="anchor" href="#arg-detailed-csv"></a></dt>
+<dd><p>optional path to a <code>.csv</code> file where that detailed timing
+table should be written. If provided, <code>collect_detailed</code> is forced to <code>TRUE</code>.</p></dd>
+
+
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
 <dd><p>whether to create plot of results</p></dd>
 
@@ -173,7 +222,10 @@ NOTE this slows it down though.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>EJAM results similar to as from the web app or <code><a href="ejamit.html">ejamit()</a></code> and also creates a plot</p>
+    <p>A summary timing table with one row per <code>(points, radius)</code> run. If
+<code>collect_detailed = TRUE</code>, the returned table also has an attribute called
+<code>"detailed_results"</code> containing a per-run timing table in the legacy
+<code>Analysis_timing_results.csv</code> schema.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -203,6 +255,38 @@ NOTE this slows it down though.</p></dd>
 <span>    n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e2</span>,<span class="fl">1e3</span>,<span class="fl">1e4</span><span class="op">)</span>,</span>
 <span>    radii<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3.106856</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">31.06856</span><span class="op">)</span>,</span>
 <span>    logging<span class="op">=</span><span class="cn">TRUE</span>, honk<span class="op">=</span><span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">speedtest</span><span class="op">(</span></span>
+<span>    n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span><span class="op">)</span>,</span>
+<span>    radii <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3.106856</span><span class="op">)</span>,</span>
+<span>    collect_detailed <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    detail_point_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    detailed_csv <span class="op">=</span> <span class="st">"data-raw/Analysis_timing_results_new.csv"</span>,</span>
+<span>    logging <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    honk_when_ready <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    plot <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">speedtest</span><span class="op">(</span></span>
+<span>    fips <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span>,</span>
+<span>    collect_detailed <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    detail_point_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    detailed_csv <span class="op">=</span> <span class="st">"data-raw/Analysis_timing_results_fips.csv"</span>,</span>
+<span>    plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    honk_when_ready <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">speedtest</span><span class="op">(</span></span>
+<span>    shapefile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
+<span>      <span class="st">"testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp"</span>,</span>
+<span>      package <span class="op">=</span> <span class="st">"EJAM"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    collect_detailed <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    detail_point_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">25</span><span class="op">)</span>,</span>
+<span>    detailed_csv <span class="op">=</span> <span class="st">"data-raw/Analysis_timing_results_shapefile.csv"</span>,</span>
+<span>    plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    honk_when_ready <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span> <span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>

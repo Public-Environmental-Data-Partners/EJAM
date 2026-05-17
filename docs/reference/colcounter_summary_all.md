@@ -46,6 +46,7 @@ cum_pct
 ## Examples
 
 ``` r
+
  df <- data.frame(a=rep(80,4),b=rep(93,4), col3=c(49,98,100,100))
  bench <- 5 * (0:20)
  a3 <- colcounter_summary_all(df, bench)
@@ -61,7 +62,7 @@ cum_pct
 
  pcuts <- c(80,90,95)
  dataload_dynamic("bgej")
- usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
+ usdata = EJAM:::calc_pctile_columns(mytable = bgej, varnames = names_ej,
                               varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
  EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
  xs <- 1:13
@@ -94,7 +95,7 @@ cum_pct
 
  # frequency of multiple high percentile scores, over entire US, not just analyzed places:
  dataload_dynamic("bgej")
- usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
+ usdata = EJAM:::calc_pctile_columns(mytable = bgej, varnames = names_ej,
    varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
   EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
   xs <- 1:13

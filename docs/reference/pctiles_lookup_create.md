@@ -62,6 +62,7 @@ EJSCREEN assigns each indicator in each blockgroup a percentile value
 via python script, using
 <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.percentileofscore.html>
 
+
       The way the python function is used as of 2023 is that percentileofscore is 80
       80
       are less than (NOT equal to) the indicator value

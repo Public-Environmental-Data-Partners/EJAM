@@ -74,7 +74,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">download_bg_acs_raw</span><span class="op">(</span></span>
 <span>  <span class="va">yr</span>,</span>
 <span>  blockgroup_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="tables_ejscreen_acs.html">tables_ejscreen_acs</a></span><span class="op">)</span>, <span class="va">tract_tables</span><span class="op">)</span>,</span>
-<span>  tract_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span><span class="op">)</span>,</span>
+<span>  tract_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B18101"</span>, <span class="st">"C16001"</span>, <span class="st">"B27010"</span><span class="op">)</span>,</span>
 <span>  include_tract_data <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fiveorone <span class="op">=</span> <span class="st">"5"</span>,</span>
 <span>  pipeline_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -84,7 +84,10 @@
 <span>  raw_table_format <span class="op">=</span> <span class="va">stage_format</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  validation_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  storage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"local"</span>, <span class="st">"s3"</span><span class="op">)</span></span>
+<span>  storage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"local"</span>, <span class="st">"s3"</span><span class="op">)</span>,</span>
+<span>  download_fun <span class="op">=</span> <span class="fu">ACSdownload</span><span class="fu">::</span><span class="va"><a href="https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html" class="external-link">get_acs_new</a></span>,</span>
+<span>  download_timeout <span class="op">=</span> <span class="fl">3600</span>,</span>
+<span>  download_retries <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -149,6 +152,24 @@ single <code>bg_acs_raw</code> list object.</p></dd>
 <dt id="arg-storage">storage<a class="anchor" aria-label="anchor" href="#arg-storage"></a></dt>
 <dd><p>raw ACS checkpoint storage backend: <code>"auto"</code>, <code>"local"</code>, or
 <code>"s3"</code>.</p></dd>
+
+
+<dt id="arg-download-fun">download_fun<a class="anchor" aria-label="anchor" href="#arg-download-fun"></a></dt>
+<dd><p>ACSdownload-compatible function used to obtain a single
+ACS table for a given <code>yr</code>, <code>tables</code>, <code>fips</code>, and <code>fiveorone</code>. Defaults to
+<code><a href="https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html" class="external-link">ACSdownload::get_acs_new()</a></code>. Supply a wrapper if you need to pin a legacy
+ACS source implementation.</p></dd>
+
+
+<dt id="arg-download-timeout">download_timeout<a class="anchor" aria-label="anchor" href="#arg-download-timeout"></a></dt>
+<dd><p>timeout in seconds to use while downloading ACS
+table files. This is increased above R's usual 60 second default because
+some Census table-based summary files are hundreds of MB.</p></dd>
+
+
+<dt id="arg-download-retries">download_retries<a class="anchor" aria-label="anchor" href="#arg-download-retries"></a></dt>
+<dd><p>number of times to retry a failed ACS table download
+after the initial attempt.</p></dd>
 
 </dl></div>
     <div class="section level2">

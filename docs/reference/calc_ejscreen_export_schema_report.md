@@ -9,7 +9,7 @@ calc_ejscreen_export_schema_report(
   ejscreen_export = NULL,
   export_path = NULL,
   mapping_for_names = map_headernames,
-  rename_newtype = "ejscreen_names",
+  rename_newtype = "ejscreen_indicator",
   expected_output_names = NULL,
   include_map_helper_fields = TRUE
 )

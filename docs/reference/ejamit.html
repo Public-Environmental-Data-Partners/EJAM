@@ -158,7 +158,7 @@ such as a list of US Counties or tracts. Passed to <code><a href="getblocksnearb
 
 <dt id="arg-shapefile">shapefile<a class="anchor" aria-label="anchor" href="#arg-shapefile"></a></dt>
 <dd><p>optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
-e.g., <code>out = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)</code>
+e.g., <code>out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)</code>
 If in RStudio you want it to interactively prompt you to pick a file,
 use shapefile=1 (otherwise it assumes you want to pick a latlon file).</p></dd>
 
@@ -270,7 +270,7 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 
 
 <dt id="arg-called-by-ejamit">called_by_ejamit<a class="anchor" aria-label="anchor" href="#arg-called-by-ejamit"></a></dt>
-<dd><p>passed to doaggregate(). Set to TRUE by <code>ejamit()</code> to suppress some outputs even if ejamit(silentinteractive=F)</p></dd>
+<dd><p>passed to doaggregate(). Set to TRUE by <code>ejamit()</code> to suppress some outputs even if ejamit(silentinteractive = FALSE)</p></dd>
 
 
 <dt id="arg-testing">testing<a class="anchor" aria-label="anchor" href="#arg-testing"></a></dt>
@@ -375,7 +375,7 @@ one blockgroup since it may be near two analyzed sites, for example.</p></li>
 <span></span>
 <span>  <span class="co"># Shapefile examples</span></span>
 <span>  <span class="va">out2</span> <span class="op">=</span> <span class="fu">ejamit</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">testshapes_2</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span>  <span class="va">out3</span> <span class="op">=</span> <span class="fu">ejamit</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="st">"portland.json"</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="va">out3</span> <span class="op">=</span> <span class="fu">ejamit</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="st">"portland.json"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co"># FIPS examples</span></span>
 <span>  <span class="va">out4</span> <span class="op">=</span> <span class="fu">ejamit</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_cities</span><span class="op">)</span></span>

@@ -73,11 +73,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">names_whichlist</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  exact <span class="op">=</span> <span class="cn">T</span>,</span>
-<span>  grepmatching <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>  exact <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grepmatching <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ignore.case.exact <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ignore.case.grep <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  keylists <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>  keylists <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  exactonly <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -131,14 +131,14 @@ namez$d_subgroups_state_pctile which is a vector of terms like
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>   <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">names_whichlist</span><span class="op">(</span><span class="st">"rsei"</span>, ignore.case.exact <span class="op">=</span> <span class="cn">T</span>, ignore.case.grep <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span>   <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">names_whichlist</span><span class="op">(</span><span class="st">"rsei"</span>, ignore.case.exact <span class="op">=</span> <span class="cn">TRUE</span>, ignore.case.grep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>,  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="va">x</span><span class="op">$</span><span class="va">whichlist</span><span class="op">)</span><span class="op">)</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>,  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"state_p"</span>, <span class="va">x</span><span class="op">$</span><span class="va">whichlist</span><span class="op">)</span><span class="op">)</span></span>
 <span>   <span class="va">z</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">namez</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">namez</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"all_r"</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">namez</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span></span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span><span class="op">$</span><span class="va">grepmatch</span> <span class="op">==</span> <span class="st">"yes"</span><span class="op">)</span><span class="op">$</span><span class="va">whichlist</span>  <span class="op">)</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">z</span>, <span class="va">as.vector</span><span class="op">)</span> <span class="co"># avoids showing attributes if they were set and are distracting here</span></span>
-<span>   <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"\\.eo$"</span>, <span class="va">namez</span><span class="op">$</span><span class="va">ej</span>, value <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"\\.eo$"</span>, <span class="va">namez</span><span class="op">$</span><span class="va">ej</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

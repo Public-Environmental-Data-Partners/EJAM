@@ -36,34 +36,36 @@ provides one row per block. See more below under "Value"
 ## Examples
 
 ``` r
- # compare counties within a state:
- fipsRI = fips_counties_from_state_abbrev("RI")
- x = counties_as_sites(fipsRI)
- out = doaggregate(x) # similar to ejamit()
- ejam2barplot_sites(out, "pop", names.arg = fipsRI)
+if (FALSE) { # \dontrun{
+# compare counties within a state:
+fipsRI = fips_counties_from_state_abbrev("RI")
+x = counties_as_sites(fipsRI)
+out = doaggregate(x) # similar to ejamit()
+ejam2barplot_sites(out, "pop", names.arg = fipsRI)
 
- # compare two specific counties:
- counties_as_sites(c('01001','72153'))
+# compare two specific counties:
+counties_as_sites(c("01001", "72153"))
 
- # Largest US Counties by ACS Population Totals:
- topcounties = blockgroupstats[ , .(ST = ST[1], countypop = sum(pop)),
-  by = .(FIPS = substr(bgfips,1,5))][order(-countypop),][1:20, .(
-    CountyPopulation = prettyNum(countypop, big.mark = ","), FIPS, ST)]
+# Largest US Counties by ACS Population Totals:
+topcounties = blockgroupstats[ , .(ST = ST[1], countypop = sum(pop)),
+ by = .(FIPS = substr(bgfips,1,5))][order(-countypop),][1:20, .(
+   CountyPopulation = prettyNum(countypop, big.mark = ","), FIPS, ST)]
 
- myfips = topcounties$FIPS
+myfips = topcounties$FIPS
 
- # simplest map of top counties
- map_shapes_leaflet(shapes = EJAM:::shapes_counties_from_countyfips(myfips))
+# simplest map of top counties
+map_shapes_leaflet(shapes = EJAM:::shapes_counties_from_countyfips(myfips))
 
- # simplest way to get and map results county by county
- out_c1 = ejamit(fips = myfips)
- mapfastej_counties(out_c1$results_bysite)
+# simplest way to get and map results county by county
+out_c1 = ejamit(fips = myfips)
+mapfastej_counties(out_c1$results_bysite)
 
- # another way to get and map results county by county
- s2b = counties_as_sites(myfips)
- out_c2 = doaggregate(s2b)
- # but without URLs/links to reports
- bysite = out_c2$results_bysite
- bysite$ejam_uniq_id <- myfips
- mapfastej_counties(bysite)
+# another way to get and map results county by county
+s2b = counties_as_sites(myfips)
+out_c2 = doaggregate(s2b)
+# but without URLs/links to reports
+bysite = out_c2$results_bysite
+bysite$ejam_uniq_id <- myfips
+mapfastej_counties(bysite)
+} # }
 ```

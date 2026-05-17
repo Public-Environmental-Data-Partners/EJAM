@@ -50,14 +50,14 @@ vector of paths
  #  EJAM:::dir2()
  if (FALSE) { # \dontrun{
 EJAM:::dir2()
-EJAM:::dir2("*.zip", recursive = T)
-EJAM:::dir2("*.y*",  recursive = T)
+EJAM:::dir2("*.zip", recursive = TRUE)
+EJAM:::dir2("*.y*",  recursive = TRUE)
 
-# if recursive=T, left-aligned view of paths is shown
-EJAM:::dir2("*datacreate*.*", recursive = T)
+# if recursive=TRUE, left-aligned view of paths is shown
+EJAM:::dir2("*datacreate*.*", recursive = TRUE)
 # for right-aligned view:
-data.frame(hit= EJAM:::dir2("*address*.*", recursive = T))
+data.frame(hit= EJAM:::dir2("*address*.*", recursive = TRUE))
 
-EJAM:::dir2("*.csv*", path = testdatafolder(installed = FALSE), recursive = T)
+EJAM:::dir2("*.csv*", path = testdatafolder(installed = FALSE), recursive = TRUE)
 } # }
 ```

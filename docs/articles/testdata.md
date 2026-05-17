@@ -16,6 +16,7 @@ For just one topic you can see all files and data objects like this:
 
 ``` r
 
+
 topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
 
 
@@ -67,6 +68,7 @@ testdata()
 
 ``` r
 
+
 testdata()
 
 # just shapefile examples:
@@ -84,12 +86,14 @@ To open the locally installed “testdata” folders (in Windows File
 Explorer, or MacOS Finder)
 
 ``` r
+
 browseURL(testdatafolder())
 ```
 
 **Example of using a file in EJAM**
 
 ``` r
+
 testpoint_files <- list.files(
   system.file("testdata/latlon", package = "EJAM"), 
   full.names = T
@@ -123,17 +127,20 @@ etc.
 See all files and all dataset examples related to one topic:
 
 ``` r
+
 topic = "fips"
 cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
 cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
 ```
 
 ``` r
+
 x <- EJAM:::pkg_data(simple = FALSE)
 x <- x[order(x$Package, x$Item), !grepl("size", names(x))]
 ```
 
 ``` r
+
 x[grepl("^testp", x$Item), ]
 #>     Package                Item
 #> 115    EJAM       testpoints_10
@@ -143,7 +150,7 @@ x[grepl("^testp", x$Item), ]
 #> 162    EJAM    testpoints_10000
 #> 124    EJAM        testpoints_5
 #> 129    EJAM       testpoints_50
-#> 144    EJAM      testpoints_500
+#> 143    EJAM      testpoints_500
 #> 125    EJAM      testpoints_bad
 #> 119    EJAM testpoints_overlap3
 #>                                                        Title
@@ -154,7 +161,7 @@ x[grepl("^testp", x$Item), ]
 #> 162 test points data.frame with columns sitenumber, lat, lon
 #> 124 test points data.frame with columns sitenumber, lat, lon
 #> 129 test points data.frame with columns sitenumber, lat, lon
-#> 144 test points data.frame with columns sitenumber, lat, lon
+#> 143 test points data.frame with columns sitenumber, lat, lon
 #> 125       test points data.frame with columns note, lat, lon
 #> 119       test points data.frame with columns note, lat, lon
 ```
@@ -164,6 +171,7 @@ x[grepl("^testp", x$Item), ]
 etc.
 
 ``` r
+
 x[grepl("^test_", x$Item), ]
 #> [1] Package Item    Title  
 #> <0 rows> (or 0-length row.names)
@@ -175,6 +183,7 @@ cat("\n\n")
 etc.
 
 ``` r
+
 x[grepl("^test[^op_]", x$Item), ]
 #>     Package                              Item
 #> 32     EJAM               testinput_address_2
@@ -237,33 +246,34 @@ etc., you can use as inputs to
 etc.
 
 ``` r
+
 x[grepl("^testout", x$Item), ]
 #>     Package                                      Item
 #> 173    EJAM     testoutput_doaggregate_1000pts_1miles
-#> 166    EJAM      testoutput_doaggregate_100pts_1miles
-#> 157    EJAM       testoutput_doaggregate_10pts_1miles
+#> 167    EJAM      testoutput_doaggregate_100pts_1miles
+#> 158    EJAM       testoutput_doaggregate_10pts_1miles
 #> 174    EJAM          testoutput_ejamit_1000pts_1miles
-#> 167    EJAM           testoutput_ejamit_100pts_1miles
+#> 168    EJAM           testoutput_ejamit_100pts_1miles
 #> 161    EJAM            testoutput_ejamit_10pts_1miles
 #> 164    EJAM             testoutput_ejamit_fips_cities
-#> 165    EJAM           testoutput_ejamit_fips_counties
-#> 156    EJAM                testoutput_ejamit_shapes_2
-#> 169    EJAM testoutput_getblocksnearby_1000pts_1miles
-#> 155    EJAM  testoutput_getblocksnearby_100pts_1miles
-#> 147    EJAM   testoutput_getblocksnearby_10pts_1miles
+#> 166    EJAM           testoutput_ejamit_fips_counties
+#> 157    EJAM                testoutput_ejamit_shapes_2
+#> 170    EJAM testoutput_getblocksnearby_1000pts_1miles
+#> 156    EJAM  testoutput_getblocksnearby_100pts_1miles
+#> 146    EJAM   testoutput_getblocksnearby_10pts_1miles
 #>                                                                  Title
 #> 173                                       test output of doaggregate()
-#> 166                                       test output of doaggregate()
-#> 157                                       test output of doaggregate()
+#> 167                                       test output of doaggregate()
+#> 158                                       test output of doaggregate()
 #> 174                                            test output of ejamit()
-#> 167                                            test output of ejamit()
+#> 168                                            test output of ejamit()
 #> 161                                            test output of ejamit()
 #> 164                              testoutput_ejamit_fips_cities dataset
-#> 165                            testoutput_ejamit_fips_counties dataset
-#> 156                                 testoutput_ejamit_shapes_2 dataset
-#> 169 test output of getblocksnearby(), and is an input to doaggregate()
-#> 155 test output of getblocksnearby(), and is an input to doaggregate()
-#> 147 test output of getblocksnearby(), and is an input to doaggregate()
+#> 166                            testoutput_ejamit_fips_counties dataset
+#> 157                                 testoutput_ejamit_shapes_2 dataset
+#> 170 test output of getblocksnearby(), and is an input to doaggregate()
+#> 156 test output of getblocksnearby(), and is an input to doaggregate()
+#> 146 test output of getblocksnearby(), and is an input to doaggregate()
 cat("\n\n")
 ```
 

@@ -212,7 +212,7 @@ address_from_table_goodnames <- function(x, colnames_allowed = c('address', 'str
 #'   param as provided is ignored and set to TRUE if aoimap=TRUE
 #' @param aoimap  see help for AOI pkg, create map if set to TRUE
 #' @param batchsize how many to request per geocode query, done in batches if necessary
-#' @param ...  passed to geocode() see  `help(geocode, package = "AOI")`
+#' @param ... passed to `geocode()` from the optional AOI package.
 #'
 #' @return returns NULL if you have not installed and attached the AOI package.
 #'   If AOI is attached via library() or require() or package imports,

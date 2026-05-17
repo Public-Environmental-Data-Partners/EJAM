@@ -118,6 +118,7 @@ Each is explained below:
 - To run a spell check (see terms flagged as possible problems)
 
 ``` r
+
     x <- spelling::spell_check_package()
     x <- data.frame(
       frq = sapply(x$found, function(z) {length(unlist(z))}), 
@@ -134,6 +135,7 @@ Each is explained below:
   of)
 
 ``` r
+
     # 1. Add obvious dataset names documented to the WORDLIST
     datanames = gsub('\\.R$', '', gsub('^data_', '', dir('./R', pattern = '^data_.*R')))
     datanames = datanames[!grepl('aaaaaaaaaaaaa|xxxxxxxxxx', datanames)]
@@ -163,10 +165,8 @@ updated by someone who is managing the package, as follows:
 
 - The pkgdown-based webpages should be updated by someone who is
   managing the package, and they should use the
-  [`pkgdown_update()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkgdown_update.md)
-  function mentioned in
-  `data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R` You use the
-  function pkgdown_update() so that the pages get rebuilt by the
+  `EJAM:::pkgdown_update()` function. You use the function
+  pkgdown_update() so that the pages get rebuilt by the
   [pkgdown](https://pkgdown.r-lib.org/) R package, based on the above
   files and all other documentation from .R and .md files. For more
   information about using the [pkgdown](https://pkgdown.r-lib.org/)

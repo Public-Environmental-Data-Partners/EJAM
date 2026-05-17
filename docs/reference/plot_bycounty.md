@@ -12,7 +12,7 @@ plot_bycounty(
   mystate = NULL,
   labeltype = NULL,
   acsinfo = NULL,
-  yr = acs_endyear()
+  yr = NULL
 )
 ```
 
@@ -20,8 +20,11 @@ plot_bycounty(
 
 - x:
 
-  table that is output of acs_bycounty() i.e., output of get_acs() from
-  tidycensus pkg that downloads ACS Census Bureau data via API.
+  table that is output of
+  [`acs_bycounty()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_bycounty.md)
+  i.e., output of
+  [`tidycensus::get_acs()`](https://walker-data.com/tidycensus/reference/get_acs.html)
+  that downloads ACS Census Bureau data via API.
 
 - myvars:
 
@@ -44,12 +47,15 @@ plot_bycounty(
 
 - acsinfo:
 
-  large table of metadata as from load_variables function from
-  tidycensus pkg
+  large table of metadata as from load_variables() function from the
+  [tidycensus package](https://walker-data.com/tidycensus/)
 
 - yr:
 
-  like 2022, end of 5 year ACS 2018-2022
+  The year that is the end of a 5 year ACS survey, such as 2022 for the
+  ACS covering 2018-2022. Default is whatever then package is currently
+  using, per
+  [`acs_endyear()`](https://public-environmental-data-partners.github.io/EJAM/reference/acs_endyear.md).
 
 ## Value
 

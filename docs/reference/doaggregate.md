@@ -1,7 +1,8 @@
 # Summarize environmental and residential population indicators at each location and overall
 
 Used by ejamit() and the shiny app to summarize blockgroups scores at
-each site and overall.
+each site and overall, as a key intermediate step in the overall
+analysis provided by ejamit().
 
 ## Usage
 
@@ -37,10 +38,13 @@ doaggregate(
 
   table in [data.table](https://r-datatable.com) format, of distances in
   miles between all sites (facilities) and nearby Census block internal
-  points, with columns ejam_uniq_id, blockid, distance, created by
-  getblocksnearby function. See
-  [testoutput_getblocksnearby_10pts_1miles](https://public-environmental-data-partners.github.io/EJAM/reference/testoutput_getblocksnearby_10pts_1miles.md)
-  dataset in package, as input to this function
+  points, with columns ejam_uniq_id, blockid, distance, blockwt, bgid,
+  and sometimes others, created by functions that find blocks in or near
+  specified sites, such as these examples:
+
+      s2b_latlon <- getblocksnearby(testpoints_10, radius=1) # same as [testoutput_getblocksnearby_10pts_1miles]
+      s2b_fips   <- getblocksnearby_from_fips(testinput_fips_counties)
+      s2b_shp    <- get_blockpoints_in_shape(testshapes_2)$pts # notice the $pts here
 
 - sites2states_or_latlon:
 
@@ -128,7 +132,7 @@ doaggregate(
 - called_by_ejamit:
 
   Set to TRUE by ejamit() to suppress some outputs even if
-  ejamit(silentinteractive=F)
+  ejamit(silentinteractive = FALSE)
 
 - updateProgress:
 
@@ -186,14 +190,16 @@ which are similar but provide additional info.
 ## Details
 
 [`getblocksnearby()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearby.md)
-and `doaggregate()` are the two key functions that run
+(or related functions for fips or shapefiles) and `doaggregate()` are
+the two key functions that run
 [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md).
+
 `doaggregate()` takes a set of sites like facilities and the set of
 blocks that are near each, combines those with indicator scores for
 blockgroups, and aggregates the numbers within each place and across all
 overall.
 
-For all examples, see
+Also see
 [`getblocksnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
 
 `doaggregate()` is the code run after
@@ -297,4 +303,8 @@ such as a dasymetric map approach.
 
 ``` r
 EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+
+x = testoutput_doaggregate_10pts_1miles
+names(x)
+ejam2barplot(x)
 ```

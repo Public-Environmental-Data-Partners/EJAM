@@ -97,7 +97,10 @@
 
 
 <dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
-<dd><p>text strings of formulas</p></dd>
+<dd><p>text strings of formulas, or a data.frame with columns
+<code>"rname"</code> and <code>"formula"</code>. Formula dependencies are sorted before
+evaluation so intermediate variables are calculated before formulas that
+use them.</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>

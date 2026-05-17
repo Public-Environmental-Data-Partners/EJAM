@@ -26,7 +26,7 @@ param as provided is ignored and set to TRUE if aoimap=TRUE}
 
 \item{batchsize}{how many to request per geocode query, done in batches if necessary}
 
-\item{...}{passed to geocode() see  \code{help(geocode, package = "AOI")}}
+\item{...}{passed to \code{geocode()} from the optional AOI package.}
 }
 \value{
 returns NULL if you have not installed and attached the AOI package.

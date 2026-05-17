@@ -9,14 +9,18 @@ calc_ejscreen_blockgroupstats(
   bg_acsdata = NULL,
   bg_envirodata = NULL,
   bg_extra_indicators = NULL,
+  bg_geodata = NULL,
   pipeline_dir = NULL,
   bg_acsdata_stage = "bg_acsdata",
   bg_envirodata_stage = "bg_envirodata",
   bg_extra_indicators_stage = "bg_extra_indicators",
+  bg_geodata_stage = "bg_geodata",
+  blockgroup_universe_source = c("acs", "union"),
   extra_indicator_vars = ejscreen_default_extra_indicator_vars(),
   reuse_existing_extra_if_missing = FALSE,
   existing_blockgroupstats = NULL,
   save_stage = FALSE,
+  pipeline_storage = c("auto", "local", "s3"),
   stage_format = c("csv", "rds", "rda", "arrow"),
   blockgroupstats_acs = NULL,
   blockgroupstats_acs_stage = NULL
@@ -41,6 +45,11 @@ calc_ejscreen_blockgroupstats(
   outcome rates, site/feature counts, climate indicators, and flag
   fields.
 
+- bg_geodata:
+
+  Census/TIGER blockgroup geography fields, especially `arealand` and
+  `areawater` in square meters.
+
 - pipeline_dir:
 
   folder for reading/writing pipeline stage files.
@@ -56,6 +65,18 @@ calc_ejscreen_blockgroupstats(
 - bg_extra_indicators_stage:
 
   stage name for extra-indicator input.
+
+- bg_geodata_stage:
+
+  stage name for Census/TIGER geography input.
+
+- blockgroup_universe_source:
+
+  which input defines the output blockgroup universe. The default
+  `"acs"` uses the ACS table rows as the authoritative tabulated
+  universe for the requested ACS vintage. `"union"` keeps the older
+  draft behavior of including any blockgroup present in ACS,
+  environmental, or extra-indicator inputs.
 
 - extra_indicator_vars:
 
@@ -75,6 +96,10 @@ calc_ejscreen_blockgroupstats(
 - save_stage:
 
   logical, whether to save the final `blockgroupstats` stage.
+
+- pipeline_storage:
+
+  stage storage backend: `"auto"`, `"local"`, or `"s3"`.
 
 - stage_format:
 

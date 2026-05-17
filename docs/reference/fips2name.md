@@ -79,6 +79,6 @@ name2fips("Kings County, NY")
 name2fips("Minneapolis, MN")
 
 name2fips("Anchorage, AK") # not found
-name2fips("Anchorage, AK", usegrep = T) # finds the city
+name2fips("Anchorage, AK", usegrep = TRUE) # finds the city
 name2fips("Anchorage municipality, AK") # finds the county of same name, not city
 ```

@@ -25,7 +25,7 @@ acs_endyear(
 - guess_always:
 
   optional, set TRUE to ignore metadata and just guess at year. But
-  guess_always=F is ignored if guess_census_has_published=T
+  guess_always = FALSE is ignored if guess_census_has_published = TRUE
 
 - guess_census_has_published:
 

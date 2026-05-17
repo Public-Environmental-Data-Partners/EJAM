@@ -24,4 +24,4 @@ usastats
 
 ## Format
 
-An object of class `data.frame` with 101 rows and 111 columns.
+An object of class `data.frame` with 102 rows and 107 columns.

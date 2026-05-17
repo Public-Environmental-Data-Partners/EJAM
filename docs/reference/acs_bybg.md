@@ -32,11 +32,13 @@ acs_bybg(
 
 - variables:
 
-  Vector of variables - see get_acs from tidycensus package
+  Vector of variables - see
+  [`tidycensus::get_acs()`](https://walker-data.com/tidycensus/reference/get_acs.html)
 
 - table:
 
-  see get_acs from tidycensus package.
+  see
+  [`tidycensus::get_acs()`](https://walker-data.com/tidycensus/reference/get_acs.html)
 
   EJSCREEN-relevant key tables are listed in the details section here.
 
@@ -52,7 +54,8 @@ acs_bybg(
 
 - output:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - state:
 
@@ -61,39 +64,48 @@ acs_bybg(
 
 - county:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - zcta:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - geometry:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - keep_geo_vars:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - summary_var:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - key:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - moe_level:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - survey:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - show_call:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 - geography:
 
@@ -106,7 +118,8 @@ acs_bybg(
 
 - ...:
 
-  see get_acs from tidycensus package
+  see get_acs() from the [tidycensus
+  package](https://walker-data.com/tidycensus/)
 
 ## Value
 
@@ -117,8 +130,8 @@ data.frame)
 
 See newer ACSdownload::get_acs_new() as used in
 calc_blockgroupstats_acs() etc., which will download ACS nationwide data
-by table instead of using acs_bybg(), which queryied API by
-State-by-State.
+by table instead of using acs_bybg(), which queried the API
+state-by-state.
 
 acs_bybg() probably requires [getting and specifying an API key for
 Census Bureau](https://api.census.gov/data/key_signup.html) ! (at least
@@ -143,7 +156,7 @@ NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 
      # disability is by tract only:
 
-     cbind(unique(grep("disab", x$concept, value = T, ignore.case = T) ))
+     cbind(unique(grep("disab", x$concept, value = TRUE, ignore.case = TRUE) ))
      # x[substr(x$name,1,6) %in% "B18101" & x$geography %in% "block group", ] |> print(n=50) # none
      x[substr(x$name,1,7) %in% "B18101_"  , ] |> print(n=50)
 
