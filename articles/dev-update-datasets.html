@@ -154,12 +154,13 @@ inventory:</p>
 <span><span class="co">## [21] "lat_alias"                        "lon_alias"                       </span></span>
 <span><span class="co">## [23] "mact_table"                       "map_headernames"                 </span></span>
 <span><span class="co">## [25] "meters_per_mile"                  "modelDoaggregate"                </span></span>
-<span><span class="co">## [27] "modelEjamit"                      "naics_counts"                    </span></span>
-<span><span class="co">## [29] "naicstable"                       "namez"                           </span></span>
-<span><span class="co">## [31] "sictable"                         "stateinfo"                       </span></span>
-<span><span class="co">## [33] "stateinfo2"                       "states_shapefile"                </span></span>
-<span><span class="co">## [35] "statestats"                       "tables_ejscreen_acs"             </span></span>
-<span><span class="co">## [37] "usastats"                         "x_anyother"</span></span></code></pre>
+<span><span class="co">## [27] "modelEjamit"                      "modelEjamitByAnalysisType"       </span></span>
+<span><span class="co">## [29] "naics_counts"                     "naicstable"                      </span></span>
+<span><span class="co">## [31] "namez"                            "sictable"                        </span></span>
+<span><span class="co">## [33] "stateinfo"                        "stateinfo2"                      </span></span>
+<span><span class="co">## [35] "states_shapefile"                 "statestats"                      </span></span>
+<span><span class="co">## [37] "tables_ejscreen_acs"              "usastats"                        </span></span>
+<span><span class="co">## [39] "x_anyother"</span></span></code></pre>
 <div class="section level3">
 <h3 id="where-the-datasets-are-stored">Where the datasets are stored<a class="anchor" aria-label="anchor" href="#where-the-datasets-are-stored"></a>
 </h3>
@@ -369,6 +370,39 @@ ideally get updated. For example the object called
 <p>These were the arrow files used by EJAM:</p>
 </div>
 <div class="section level3">
+<h3 id="arrow-file-update-groups">Arrow file update groups<a class="anchor" aria-label="anchor" href="#arrow-file-update-groups"></a>
+</h3>
+<p>Arrow files do not all change on the same schedule. Use these groups
+when planning updates:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Facility Data Updates</strong> include <code>frs</code>,
+<code>frs_by_programid</code>, <code>frs_by_naics</code>,
+<code>frs_by_sic</code>, and <code>frs_by_mact</code>. These may be
+refreshed when EPA FRS/facility data are updated.</p></li>
+<li><p><strong>EJSCREEN Annual Data Update</strong> currently includes
+<code>bgej.arrow</code>. It is calculated from the annual EJScreen/EJAM
+demographic and environmental pipeline and must match the installed
+package’s <code>blockgroupstats</code>, <code>usastats</code>, and
+<code>statestats</code>. Starting with v2.5.0, <code>bgej.arrow</code>
+should be pinned to the EJAM/EJScreen release tag rather than downloaded
+from the latest data-repository release.</p></li>
+<li><p><strong>Blockgroup Geography Updates</strong> include
+<code>bgid2fips</code> and <code>blockwts</code>, and related
+<code>.rda</code> objects such as <code>bgpts</code> and
+<code>bg_cenpop2020</code>. These need review during each annual update
+and regeneration when blockgroup FIPS, EJAM <code>bgid</code>, internal
+points, or blockgroup-to-block relationships change.</p></li>
+<li><p><strong>Block Geography Updates</strong> include
+<code>blockpoints</code>, <code>quaddata</code>, and
+<code>blockid2fips</code>. These need regeneration only when block-level
+FIPS or block internal-point geography changes.</p></li>
+</ol>
+<p>Use <code>EJAM:::dynamic_geography_arrow_report()</code> to check
+whether the current blockgroup and block geography Arrow files are
+compatible with the installed <code>blockgroupstats</code> blockgroup
+universe.</p>
+</div>
+<div class="section level3">
 <h3 id="blockgroup-and-block-level-arrow-files">Blockgroup and block-level arrow files<a class="anchor" aria-label="anchor" href="#blockgroup-and-block-level-arrow-files"></a>
 </h3>
 <ul>
@@ -386,7 +420,9 @@ lat-lon coordinates, EJAM block ID</li>
 share of blockgroup population, EJAM block and blockgroup ID</li>
 <li>
 <code><a href="../reference/bgej.html">?bgej</a></code>.arrow: blockgroup-level statistics of EJ
-variables</li>
+variables. This is part of the EJSCREEN Annual Data Update group and
+must match the package’s <code>blockgroupstats</code>
+</li>
 <li>
 <code><a href="../reference/quaddata.html">?quaddata</a></code>.arrow: 3D spherical coordinates of Census
 block internal points, with EJAM block ID</li>
@@ -435,15 +471,25 @@ release, to be downloaded automatically by EJAM</p></li>
 the following:</p></li>
 </ol>
 <!-- --><ol style="list-style-type: lower-alpha">
-<li>Checks data repo’s latest release/version.</li>
+<li>For facility and most geography Arrow files, checks data repo’s
+latest release/version.</li>
 <li>Checks user’s EJAM package’s ejamdata version, which is stored in
 <code>data/ejamdata_version.txt</code>.</li>
 <li>If the <code>data/ejamdata_version.txt</code> file doesn’t exist,
 for example on the first EJAM install, it will be created at the end of
 the script.</li>
-<li>If the versions are different, downloads the latest arrow from the
-latest ejamdata release with <code><a href="https://docs.ropensci.org/piggyback/reference/pb_download.html" class="external-link">piggyback::pb_download()</a></code>. See
-how this function works for details:</li>
+<li>If the versions are different, downloads the latest Arrow files from
+the latest ejamdata release with
+<code><a href="https://docs.ropensci.org/piggyback/reference/pb_download.html" class="external-link">piggyback::pb_download()</a></code>.</li>
+<li>For package-coupled annual files such as <code>bgej.arrow</code>,
+uses the EJAM package release tag, such as <code>v2.5.0</code>, rather
+than the latest data-repository release. This same rule is used when
+<code>dataload_dynamic("bgej")</code> loads <code>bgej</code>: the local
+<code>bgej.arrow</code> must match the installed package’s
+<code>blockgroupstats</code>, and if it does not, EJAM tries to replace
+it from the package-pinned <code>ejamdata</code> release tag, which is
+based on <code>packageVersion("EJAM")</code>. See how this function
+works for details:</li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
