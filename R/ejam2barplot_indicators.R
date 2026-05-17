@@ -140,7 +140,10 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
 
     ## merge with shorter labels/ names and plot
     p_out <- barplot_input %>%
-      dplyr::left_join( data.frame(indicator = mybarvars, indicator_label = gsub(' \\(.*', '', mybarvars.friendly))) %>%
+      dplyr::left_join(
+        data.frame(indicator = mybarvars, indicator_label = gsub(' \\(.*', '', mybarvars.friendly)),
+        by = 'indicator'
+      ) %>%
       ggplot2::ggplot() +
       ggplot2::geom_bar(ggplot2::aes(x = indicator_label, y = value, fill = Summary), stat = 'identity', position = 'dodge') +
 
@@ -264,7 +267,10 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
 
     ## join and plot
     barplot_input %>%
-      dplyr::left_join( data.frame(indicator = mybarvars, indicator_label =  gsub(' \\(.*', '', mybarvars.friendly))) %>%
+      dplyr::left_join(
+        data.frame(indicator = mybarvars, indicator_label =  gsub(' \\(.*', '', mybarvars.friendly)),
+        by = 'indicator'
+      ) %>%
       ggplot2::ggplot() +
       ## add bars - position = 'dodge' places the 3 categories next to each other
       ggplot2::geom_bar(ggplot2::aes(x = indicator_label, y = ratio, fill = Summary), stat = 'identity', position = 'dodge') +
