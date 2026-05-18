@@ -37,6 +37,7 @@ latlon_as.numeric()[`fixnames_aliases()`](https://public-environmental-data-part
       # left alone only if lowercase one is found
   EJAM:::latlon_infer(c('LONG', 'long', 'lat')) # case variants of a single alias are
       # converted to preferred word (if pref not found), creating dupes!  warn!
-  EJAM:::latlon_infer(c('LONG', 'LONG')) # dupes of an alias are renamed and still are dupes! warn!
+  EJAM:::latlon_infer(c('LONG', 'LONG'))
+  # dupes of an alias are renamed and still are dupes! warn!
   EJAM:::latlon_infer(c('lat', 'lat', 'Lon')) # dupes left as dupes but warn!
 ```

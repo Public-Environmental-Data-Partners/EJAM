@@ -178,7 +178,8 @@ Normally this is already in the analysis title, so not needed in this additional
 <span>   nsites <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">NROW</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">valid</span> <span class="op">==</span> <span class="cn">TRUE</span>, <span class="op">]</span><span class="op">)</span>,</span>
 <span>   area_in_square_miles <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">$</span><span class="va">area_sqmi</span>,</span>
 <span>   <span class="co"># sitenumber = 6,  # only relevant for 1-site report</span></span>
-<span>   <span class="co"># ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id], # only relevant for 1-site report</span></span>
+<span>   <span class="co"># ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id],</span></span>
+<span>   <span class="co"># only relevant for 1-site report</span></span>
 <span>   linefeed <span class="op">=</span> <span class="st">". "</span>,</span>
 <span>   lat <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">lat</span>, lon <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">lon</span></span>
 <span> <span class="op">)</span></span>

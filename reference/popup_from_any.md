@@ -73,12 +73,18 @@ row of text per column of the data.frame
    SupplementalLocation = c(NA_character_,NA_character_))
 
  ## add popups only
- leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addPopups(popup = popup_from_any(dat))
+ leaflet::leaflet(dat) |>
+   leaflet::addTiles() |>
+   leaflet::addPopups(popup = popup_from_any(dat))
 
  ## add circles with clickable popups
- leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
+ leaflet::leaflet(dat) |>
+   leaflet::addTiles() |>
+   leaflet::addCircles(popup = popup_from_any(dat))
 
  ## convert to data frame, works the same way
  dat_df <- as.data.frame(dat)
- leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
+ leaflet::leaflet(dat) |>
+   leaflet::addTiles() |>
+   leaflet::addCircles(popup = popup_from_any(dat))
 ```

@@ -143,6 +143,7 @@ getpointsnearby().
  # # analyze.stuff   pctiles(x$proximityscore)
  #
  # plot(x = x$lon, y = x$lat)
- # tops = x$proximityscore > 500 & !is.infinite(x$proximityscore) & !is.na(x$proximityscore)
+ # tops = x$proximityscore > 500 &
+ #   !is.infinite(x$proximityscore) & !is.na(x$proximityscore)
  # points(x = x$lon[tops], y = x$lat[tops], col="red")
 ```

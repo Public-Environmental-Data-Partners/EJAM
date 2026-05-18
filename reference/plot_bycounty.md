@@ -42,8 +42,9 @@ plot_bycounty(
 - labeltype:
 
   as from scales package. for continuous scales: label_bytes(),
-  label_number_auto(), label_number_si(), label_ordinal(),
-  label_parse(), label_percent(), label_pvalue(), label_scientific()
+  [`scales::label_number_auto()`](https://scales.r-lib.org/reference/label_number_auto.html),
+  label_number_si(), label_ordinal(), label_parse(), label_percent(),
+  label_pvalue(), label_scientific()
 
 - acsinfo:
 
