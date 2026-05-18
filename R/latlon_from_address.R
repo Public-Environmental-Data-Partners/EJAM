@@ -45,7 +45,7 @@
 #'
 #' \donttest{
 #'
-#' # This requires first attaching the AOI package.
+#' # This requires the optional AOI package.
 #'
 #' pts <- latlon_from_address(testinput_address_9[1:2])
 #' ## out <- ejamit(pts, radius = 1)
@@ -203,7 +203,7 @@ address_from_table_goodnames <- function(x, colnames_allowed = c('address', 'str
 ####################################################################### #
 
 
-#' geocode, but only if AOI package is installed and attached
+#' geocode, but only if AOI package is installed
 #'   and what it imports like tidygeocoder etc.
 #' @details slow? about 100 per minute?
 #' @param address vector of addresses
@@ -214,12 +214,12 @@ address_from_table_goodnames <- function(x, colnames_allowed = c('address', 'str
 #' @param batchsize how many to request per geocode query, done in batches if necessary
 #' @param ... passed to `geocode()` from the optional AOI package.
 #'
-#' @return returns NULL if you have not installed and attached the AOI package.
-#'   If AOI is attached via library() or require() or package imports,
+#' @return returns NULL if you have not installed the AOI package.
+#'   If AOI is installed,
 #'   this returns a tibble table of x,y or lat,lon values or geometries.
 #'   see the AOI package.
 #' @examples
-#'   # only works if AOI package installed already and attached too
+#'   # only works if the optional AOI package is installed.
 #'   # #eg <- c("1200 Pennsylvania Ave, NW Washington DC", "Research Triangle Park")
 #'   # #x <- geocode(eg)
 #'   # out <- ejamit(x, radius = 3)
@@ -256,21 +256,13 @@ latlon_from_address <- function(address, xy=FALSE, pt = FALSE, aoimap=FALSE, bat
   #   remotes::install_github("mikejohnson51/AOI") #
   # }
 
-  x <- try(find.package("AOI"), silent = TRUE)
-  if (inherits(x, "try-error")) {
+  if (!requireNamespace("AOI", quietly = TRUE)) {
     warning('AOI package not available. To install, run:
             devtools::install_github("https://github.com/mikejohnson51/AOI/", auth_token = NULL)')
     x <- NULL
     return(x)
     ############################################## #
   } else {
-    geocode_function_attached <- (exists("geocode") && is.function(geocode))
-    if (!geocode_function_attached) {
-      warning('for this to work you would need to use library(', 'AOI', ') first\n')
-      x <- NULL
-      return(x)
-      # how to make it attached or used without triggering renv or packrat to think we want to import or depend on it?
-    }
 
     # *** Also, clarify distinction between geocode() from the AOI package and geocode() from the tidygeocoder package -- AOI geocode() is described as a wrapper around the tidygeocoding and Wikipedia services.
     # x <- geocode(c("1200 Pennsylvania Ave, NW Washington DC", "Dupont Circle", "Research Triangle Park"))
@@ -278,14 +270,15 @@ latlon_from_address <- function(address, xy=FALSE, pt = FALSE, aoimap=FALSE, bat
     if (length(address) > batchsize) {
       message("only ", batchsize," max supported per batch in this function until decide if more ok")
       x <- latlon_from_address_batched(address = address, xy = xy, pt = aoimap, aoimap = FALSE, batchsize = batchsize, ...)
-      if (aoimap) {x |> aoi_map()} # check if it works like this here
+      if (aoimap) {x <- AOI::aoi_map(x)} # check if it works like this here
       return(x)
     }
 
     if (aoimap) {
-      x <- geocode(address, pt = TRUE, xy = xy, ...)   |> aoi_map()   # AOI:: # avoid making renv think we require it
+      x <- AOI::geocode(address, pt = TRUE, xy = xy, ...)
+      x <- AOI::aoi_map(x)
     } else {
-      x <- geocode(address, pt = pt, xy = xy, ...)
+      x <- AOI::geocode(address, pt = pt, xy = xy, ...)
     }
 
     # geocode(xy=TRUE) does not work correctly for more than just 1 address, so fix output

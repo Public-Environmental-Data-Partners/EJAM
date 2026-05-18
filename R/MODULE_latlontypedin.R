@@ -34,7 +34,7 @@ MODULE_UI_latlontypedin <- function(id) {
   EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
   ns <- NS(id)
   tagList(
-    rHandsontableOutput(outputId = ns("TYPED_IN_DATA")), # if you want to display the table output ?  needs rhandsontable pkg
+    rhandsontable::rHandsontableOutput(outputId = ns("TYPED_IN_DATA")), # if you want to display the table output ?  needs rhandsontable pkg
     # actionButton(inputId = 'latlontypedin_submit_button', label='Type in latitudes,longitudes. Click when done.', class = 'usa-button usa-button--outline'),
     shiny::br()
   )
@@ -57,15 +57,15 @@ MODULE_SERVER_latlontypedin <- function(id,
     function(input, output, session) {
       ns <- session$ns
       EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
-      output$TYPED_IN_DATA <- renderRHandsontable({ # need rhandsontable pkg
+      output$TYPED_IN_DATA <- rhandsontable::renderRHandsontable({ # need rhandsontable pkg
         tmp <- isolate(reactdat()) # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
         rownames(tmp) <- NULL
-        rhandsontable(tmp,  # need rhandsontable pkg
-                      allowRowEdit = allowRowEdit, allowColumnEdit = allowColumnEdit, manualRowMove = manualRowMove, ...)
+        rhandsontable::rhandsontable(tmp,  # need rhandsontable pkg
+                                     allowRowEdit = allowRowEdit, allowColumnEdit = allowColumnEdit, manualRowMove = manualRowMove, ...)
       })
 
       observe({
-        tmp <- hot_to_r(input$TYPED_IN_DATA) # need rhandsontable pkg # Update the reactive values for this user-manipulated data to pass back to main environment
+        tmp <- rhandsontable::hot_to_r(input$TYPED_IN_DATA) # need rhandsontable pkg # Update the reactive values for this user-manipulated data to pass back to main environment
         reactdat(tmp) # !!! update the value of reactdat()  based on new value of input$TYPED_IN_DATA
       }) %>% bindEvent(input$TYPED_IN_DATA)
       return( reactdat ) # no parentheses here - return the reactive object not just its current value

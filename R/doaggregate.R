@@ -1199,10 +1199,10 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   #  ##################################################### #
 
-  if (class(results_bysite$ejam_uniq_id) == "character") { # xxx
+  if (is.character(results_bysite$ejam_uniq_id)) { # xxx
     sites2states$ejam_uniq_id <- as.character(sites2states$ejam_uniq_id)
   }
-  if (class(sites2states$ejam_uniq_id) == "character") {
+  if (is.character(sites2states$ejam_uniq_id)) {
     results_bysite$ejam_uniq_id <- as.character(results_bysite$ejam_uniq_id)
   }
   results_bysite[sites2states, ST := ST, on = "ejam_uniq_id"] # check this, including when ST is NA ***

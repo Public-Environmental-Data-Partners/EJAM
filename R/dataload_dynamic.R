@@ -47,8 +47,9 @@ dataload_dynamic <- function(
     onAttach = FALSE,
     piggybacktag = "latest") {
 
-  message(paste0("Loading specified arrow datasets: ", paste(varnames, collapse = ", ")))
-
+  if (!silent) {
+    message(paste0("Loading specified arrow datasets: ", paste(varnames, collapse = ", ")))
+  }
   ####################################################### #
   # make sure varnames are specified correctly
   if (!all(is.character(varnames))) {
@@ -73,9 +74,9 @@ dataload_dynamic <- function(
   # try downloading datasets ####
   # download all if loading EJAM, otherwise only those requested
   # the download function will first check if they're already downloaded.
-
-  if (onAttach) message("Finding or downloading all arrow files: ", paste0(if (onAttach) .arrow_ds_names else varnames, collapse = ", "))
-
+  if (!silent) {
+    if (onAttach) message("Finding or downloading all arrow files: ", paste0(if (onAttach) .arrow_ds_names else varnames, collapse = ", "))
+  }
   download_latest_arrow_data(
     varnames = if (onAttach) .arrow_ds_names else varnames,
     envir = envir,
@@ -99,7 +100,9 @@ dataload_dynamic <- function(
 
   ####################################################### #
   # check memory
-  message(paste0("looking for ", paste(varnames, collapse = ', '), " in memory..."))
+  if (!silent) {
+    message(paste0("looking for ", paste(varnames, collapse = ', '), " in memory..."))
+  }
   files_loaded <- sapply(varnames, function(v) exists(v, envir = envir))
   if (all(files_loaded)) {
     if (return_data_table && "bgej" %in% varnames) {

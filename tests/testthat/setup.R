@@ -4,7 +4,7 @@
 ############################### #
 if (!isTRUE(getOption("EJAM.test_setup_banner_shown"))) {
   options(EJAM.test_setup_banner_shown = TRUE)
-  cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
+  message("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
 }
 
 # # This script SHOULD get run before tests, so fixtures created here will be available to all the tests.
@@ -84,13 +84,13 @@ if (!"package:EJAM" %in% search()) {
 # If you did library(EJAM) that should have access to these pkgs but would NOT actually do library() or require() on   all these.
 # If you did install_local() same.
 
-if (!require(testthat))   {cat("Need testthat package for unit tests to work \n\n")}
-if (!require(mapview))    {cat("Need mapview package for some tests of mapping to work \n\n")}
-if (!require(AOI))        {cat("Need AOI package for tests of street address handling to work \n\n")}
-if (!require(golem))        {cat("Need golem package for some tests to work \n\n")}
-if (!require(rmarkdown))        {cat("Need rmarkdown  package for some tests to work \n\n")}
-if (!require(data.table))       {cat("Need data.table package for some tests to work \n\n")}
-if (!require(magrittr))         {cat("Need magrittr   package for some tests to work \n\n")}
+if (!require(testthat))   {message("Need testthat package for unit tests to work \n\n")}
+if (!require(mapview))    {message("Need mapview package for some tests of mapping to work \n\n")}
+if (!require(AOI))        {message("Need AOI package for tests of street address handling to work \n\n")}
+if (!require(golem))        {message("Need golem package for some tests to work \n\n")}
+if (!require(rmarkdown))        {message("Need rmarkdown  package for some tests to work \n\n")}
+if (!require(data.table))       {message("Need data.table package for some tests to work \n\n")}
+if (!require(magrittr))         {message("Need magrittr   package for some tests to work \n\n")}
 ############################### #
 
 # anything that runs tests, such as testthat::test_file() done by test_ejam_bygroup()

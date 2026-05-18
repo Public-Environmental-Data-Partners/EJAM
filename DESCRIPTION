@@ -96,6 +96,7 @@ Suggests:
     pkgdown (>= 2.1.2),
     plumber,
     remotes,
+    rhandsontable,
     rnaturalearth,
     roxygen2,
     rvest,

@@ -11,7 +11,7 @@
 #'  `EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`.
 #' 
 #'  These datasets are obtained from EPA servers, reformatted for this package, and
-#'  then stored in a separate repository - see [updating data for package](../articles/dev-update-datasets.html).
+#'  then stored in a separate repository - see [updating data for package](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html")`).
 #'  The save_as_data_ parameters here are set to FALSE because the files are 
 #'  not saved in the source package or its repository like 
 #'  typical package datasets would be saved in the data folder of the source package.

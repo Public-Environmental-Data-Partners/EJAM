@@ -93,7 +93,7 @@ plot_boxplot_ratios <- function(x, selected_dvar_colname=varlist2names('names_d'
     ggplot2::geom_boxplot() +
 
     ## set limits for ratio on y axis - use hard limit at 0, make upper limit 5% higher than max limit
-    ggplot2::scale_y_continuous(limits = c(0, maxratio), expand = expansion(mult = c(0, 0.05))) +
+    ggplot2::scale_y_continuous(limits = c(0, maxratio), expand = ggplot2::expansion(mult = c(0, 0.05))) +
     # ylim(c(0, maxratio)) +  # simpler way
 
     ggplot2::aes(x = name, y = value, fill = name) +

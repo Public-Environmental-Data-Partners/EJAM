@@ -455,14 +455,11 @@ map_blockgroups_over_blocks <- function(y) {
   if (!exists("bgid2fips_arrow")) {
     dataload_dynamic("bgid2fips", return_data_table = FALSE)
   }
-  bgids_arrow <- arrow::Array$create(bgids)
+  bgid_lookup <- bgid2fips_arrow |>
+    dplyr::select("bgid", "bgfips") |>
+    dplyr::collect()
 
-  bgfips <- bgid2fips_arrow %>%
-    mutate(bgid = arrow::cast(.data$bgid, arrow::string())) %>%
-    filter(.data$bgid %in% bgids) %>%
-    select(bgfips) %>%
-    collect() %>%
-    pull(bgfips)
+  bgfips <- bgid_lookup$bgfips[as.character(bgid_lookup$bgid) %in% bgids]
 
   x <- shapes_blockgroups_from_bgfips(bgfips) # but not for 60+ fips!  SLOW
   # add those FIPS shapes to the leaflet htmlwidget map
@@ -578,6 +575,7 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
 #' @return html widget like from leaflet::leafletProxy()
 #'
 #' @export
+#' @keywords internal
 #'
 map_shapes_leaflet_proxy <- function(mymap, shapes, color = "green", popup = shapes$NAME)  {
   # *** need to confirm this default for popup is right -

@@ -710,7 +710,7 @@ app_server <- function(input, output, session) {
         colnames(read_frs) <- gsub("regid", "REGISTRY_ID", colnames(read_frs))
       }
       #converts registry id to character if not already in that class ( frs registry ids are character)
-      if (('REGISTRY_ID' %in% colnames(read_frs)) && (class(read_frs$REGISTRY_ID) != "character")) {
+      if (('REGISTRY_ID' %in% colnames(read_frs)) && !is.character(read_frs$REGISTRY_ID)) {
         read_frs$REGISTRY_ID = as.character(read_frs$REGISTRY_ID)
       }
 
@@ -849,10 +849,10 @@ app_server <- function(input, output, session) {
     }
 
     ## convert pgm_sys_id and registry_id columns to character before joining
-    if (('pgm_sys_id' %in% colnames(read_pgm)) & (class(read_pgm$pgm_sys_id) != "character")) {
+    if (('pgm_sys_id' %in% colnames(read_pgm)) & !is.character(read_pgm$pgm_sys_id)) {
       read_pgm$pgm_sys_id = as.character(read_pgm$pgm_sys_id)
     }
-    if (('registry_id' %in% colnames(read_pgm)) & (class(read_pgm$registry_id) != "character")) {
+    if (('registry_id' %in% colnames(read_pgm)) & !is.character(read_pgm$registry_id)) {
       read_pgm$registry_id = as.character(read_pgm$registry_id)
     }
     ## add check for program and pgm_sys_id

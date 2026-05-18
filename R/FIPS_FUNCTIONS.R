@@ -84,11 +84,21 @@ fips_valid <- function(fips) {
 
     fips_block_arrow <- arrow::Array$create(fips[kind %in% "block"])
 
-    matched_fips <- blockid2fips_arrow %>%
-      filter(.data$blockfips %in% fips_block_arrow) %>%
-      select(blockfips) %>%
-      collect() %>%
-      pull(blockfips)
+    matched_fips <- withCallingHandlers(
+      {
+        blockid2fips_arrow %>%
+          filter(.data$blockfips %in% fips_block_arrow) %>%
+          select(blockfips) %>%
+          collect() %>%
+          pull(blockfips)
+      },
+      warning = function(w) {
+        msg <- conditionMessage(w)
+        if (grepl("R metadata", msg, fixed = TRUE) && grepl("externalptr", msg, fixed = TRUE)) {
+          invokeRestart("muffleWarning")
+        }
+      }
+    )
 
     ok[kind %in% "block"] <- fips[kind %in% "block"] %in% matched_fips
   }
@@ -964,14 +974,14 @@ fips_place_from_placename = function(place_st, geocoding = FALSE, exact = FALSE,
   ######################################################################################## #
 
   if (geocoding) {
-    if (!exists("geocode")) {
-      warning("Need to load the AOI package for geocoding to work. Using geocoding=FALSE instead, here.")
+    if (!requireNamespace("AOI", quietly = TRUE)) {
+      warning("Need to install the AOI package for geocoding to work. Using geocoding=FALSE instead, here.")
     } else {
       # geocoding fails sometimes when CDP is part of the name (but it is unlikely query would use that here)
       # place_st_dont_say_cdp     <- gsub(" CDP,", ",", place_st)
       off <- offline_warning()
       if (!off) {
-        arcgis_address_xy <- geocode(place_st_dont_say_cdp)  # or _or_city ?
+        arcgis_address_xy <- AOI::geocode(place_st_dont_say_cdp)  # or _or_city ?
         setDT(arcgis_address_xy)
         place_st <- arcgis_address_xy[ , .(best = arcgis_address[1]), by = "request"]$best
         # now place_st are the best guesses via geocoding, ready to look for matches in table of fips and place names

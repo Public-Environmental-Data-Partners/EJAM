@@ -33,7 +33,7 @@ if (try_demo_module_here) {
   MODULE_UI_latlontypedin_DEMO <- function(id, ...) {
     ns <- NS(id)
     EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
-    rHandsontableOutput(outputId = ns("TYPED_IN_DATA"), ...) # from rhandsontable pkg
+    rhandsontable::rHandsontableOutput(outputId = ns("TYPED_IN_DATA"), ...) # from rhandsontable pkg
   } # end module ui
   ################################################ #
 
@@ -48,15 +48,15 @@ if (try_demo_module_here) {
                    function(input, output, session) {
                      ns <- session$ns
                      EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
-                     output$TYPED_IN_DATA <- renderRHandsontable({  # from rhandsontable pkg
+                     output$TYPED_IN_DATA <- rhandsontable::renderRHandsontable({  # from rhandsontable pkg
                        tmp <- isolate(reactdat())  # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
                        rownames(tmp) <- NULL
-                       rhandsontable(tmp,  # from rhandsontable pkg
-                                     allowRowEdit = allowRowEdit, allowColumnEdit = allowColumnEdit, manualRowMove = manualRowMove, ...)
+                       rhandsontable::rhandsontable(tmp,  # from rhandsontable pkg
+                                                    allowRowEdit = allowRowEdit, allowColumnEdit = allowColumnEdit, manualRowMove = manualRowMove, ...)
                      })
 
                      observe({  # seems strange to use bindEvent when event is just update of data in TYPED_IN_DATA, and could simply use observe
-                       tmp <- hot_to_r(input$TYPED_IN_DATA)  # from rhandsontable pkg # Update the reactive values for this user-manipulated data to pass back to main environment
+                       tmp <- rhandsontable::hot_to_r(input$TYPED_IN_DATA)  # from rhandsontable pkg # Update the reactive values for this user-manipulated data to pass back to main environment
                        reactdat(tmp)  # !!! update the value of reactdat()  based on new value of input$TYPED_IN_DATA
                      }) %>% bindEvent(input$TYPED_IN_DATA)
                      return( reactdat )
