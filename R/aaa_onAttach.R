@@ -47,30 +47,30 @@
       }
     }
   } else {
-  localpath <- system.file("global_defaults_package.R", package = "EJAM")
-  # if you have just used devtools::load_all(), then this will find and try to the local source version of the global_defaults_package.R
-  # if you have not done that, this will find and use the installed version.
-  # It will source the file in the global environment by using local=FALSE
-  # BUT, when this tries to source that .R file during .onAttach(), R has not yet attached all the .R files ?
-  if (!file.exists(localpath)) {
-    packageStartupMessage("EJAM package is installed or loaded but cannot find file at", localpath, "\n")
-  } else {
-    packageStartupMessage("Trying to source a local source code copy from ", localpath, " \n")
-  }
-  junk1 = try({
-    source(localpath, local = FALSE)
+    localpath <- system.file("global_defaults_package.R", package = "EJAM")
+    # if you have just used devtools::load_all(), then this will find and try to the local source version of the global_defaults_package.R
+    # if you have not done that, this will find and use the installed version.
+    # It will source the file in the global environment by using local=FALSE
+    # BUT, when this tries to source that .R file during .onAttach(), R has not yet attached all the .R files ?
+    if (!file.exists(localpath)) {
+      packageStartupMessage("EJAM package is installed or loaded but cannot find file at", localpath, "\n")
+    } else {
+      packageStartupMessage("Trying to source a local source code copy from ", localpath, " \n")
+    }
+    junk1 = try({
+      source(localpath, local = FALSE)
     }, silent = TRUE)
-  if (file.exists(localpath) && inherits(junk1, "try-error")) {
-    packageStartupMessage("in .onAttach() -- Unable to do
+    if (file.exists(localpath) && inherits(junk1, "try-error")) {
+      packageStartupMessage("in .onAttach() -- Unable to do
     source(system.file('global_defaults_package.R', package = 'EJAM')
     ")
-    # localpath <- system.file('inst/global_defaults_package.R', package = 'EJAM') # system.file() does not like starting with inst/
-    localpath <- file.path(dirname(system.file(package = "EJAM")), "inst", "global_defaults_package.R")
-    packageStartupMessage("Trying to source a local source code copy from ", localpath, " \n")
-    junk2 = try(source(localpath), silent = TRUE)
-    if (inherits(junk2, "try-error")) {
-      packageStartupMessage("Cannot source", localpath, "to create global_defaults_package object\n")
-      warning(paste0("
+      # localpath <- system.file('inst/global_defaults_package.R', package = 'EJAM') # system.file() does not like starting with inst/
+      localpath <- file.path(dirname(system.file(package = "EJAM")), "inst", "global_defaults_package.R")
+      packageStartupMessage("Trying to source a local source code copy from ", localpath, " \n")
+      junk2 = try(source(localpath), silent = TRUE)
+      if (inherits(junk2, "try-error")) {
+        packageStartupMessage("Cannot source", localpath, "to create global_defaults_package object\n")
+        warning(paste0("
     Problem in .onAttach() -- Unable to create global_defaults_package object because cannot do
        source(system.file('global_defaults_package.R', package = 'EJAM'))
        or
@@ -85,8 +85,8 @@
     Some functions can be used to generate URLs for reports like url_echo_facility() and
     if they are listed in the default_reports setting defined in global_defaults_package.R,
     they cause .onAttach() to fail if those functions are not yet recognized."))
+      }
     }
-  }
   }
   rm(notloaded_and_notinstalled)
   #################### #
@@ -95,31 +95,55 @@
 
   if (asap_download) {
 
-    if (length(try(find.package("EJAM", quiet = T))) == 1) { # if it has been installed. but that function has to have already been added to package namespace once
-      dataload_dynamic(varnames = c("blockpoints", "blockwts", "quaddata"),
-                         folder_local_source = app_sys('data'),
-                         onAttach = TRUE) # use default local folder when trying dataload_from_local()
-      # EJAM function ... but does it have to say EJAM :: here? trying to avoid having packrat see that and presume EJAM pkg must be installed for app to work. ***
-    }
+    ordinary_messages <- character()
+    stdout_messages <- utils::capture.output({
+      suppressWarnings({
+        withCallingHandlers(
+          dataload_dynamic(
+            varnames = c("blockpoints", "blockwts", "quaddata"),
+            folder_local_source = app_sys("data"),
+            onAttach = TRUE
+          ),
+          message = function(m) {
+            ordinary_messages <<- c(ordinary_messages, conditionMessage(m))
+            invokeRestart("muffleMessage")
+          }
+        )
+      })
+    })
 
-    #################### #
-    #   blockid2fips was used only in  state_from_blockid(), which is no longer used by testpoints_n(),
-    #     so not loaded unless/until needed.
-    #     Avoids loading the huge file "blockid2fips" (100MB) and just uses "bgid2fips" (3MB) as needed, that is only 3% as large in memory.
-    #     blockid2fips was roughly 600 MB in RAM because it stores 8 million block FIPS as text.
-    ######################### #
+    msg <- c(stdout_messages, ordinary_messages)
+    msg <- unlist(strsplit(msg, "\n", fixed = TRUE), use.names = FALSE)
+    msg <- msg[nzchar(msg)]
+    if (length(msg) > 0) {
+      packageStartupMessage(paste(msg, collapse = "\n"))
+    }
+    # EJAM function ... but does it have to say EJAM :: here? trying to avoid having packrat see that and presume EJAM pkg must be installed for app to work. ***
   }
+
+  #################### #
+  #   blockid2fips was used only in  state_from_blockid(), which is no longer used by testpoints_n(),
+  #     so not loaded unless/until needed.
+  #     Avoids loading the huge file "blockid2fips" (100MB) and just uses "bgid2fips" (3MB) as needed, that is only 3% as large in memory.
+  #     blockid2fips was roughly 600 MB in RAM because it stores 8 million block FIPS as text.
+  ######################### #
 
   # create index of all US block points, to enable fast queries ####
 
   if (asap_index) {
 
     if (length(try(find.package("EJAM", quiet = T))) == 1) { # if it has been installed. but that function has to have already been added to package namespace once
-
-      indexblocks()   # EJAM function works only AFTER shiny does load all/source .R files or package attached
+      msg <- utils::capture.output({
+        suppressWarnings({
+          indexblocks()   # EJAM function works only AFTER shiny does load all/source .R files or package attached
+        })
+      })
+      msg <- msg[nzchar(msg)]
+      if (length(msg) > 0) {
+        packageStartupMessage(paste(msg, collapse = "\n"))
+      }
     }
   }
-
   # load blockgroupstats etc. from package? ####
   ## This only makes sense if they cannot be lazyloaded (impossible since .onAttach() is running?),
   ##  or if you want to preload them to avoid a user waiting for them to load when they are needed,
