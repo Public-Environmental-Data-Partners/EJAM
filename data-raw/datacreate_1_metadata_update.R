@@ -40,7 +40,7 @@ rm(i)
 
 # update all metadata for datasets, and resave to ???
 
-x = download_dynamic('all')
+x = dataload_dynamic('all')
 
 stop('to be continued - NOT TESTED/TRIED OUT YET JUST DRAFTED')
 

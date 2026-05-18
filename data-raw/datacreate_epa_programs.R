@@ -8,7 +8,7 @@
 
 # get the frs_by_programid dataset (which should have been just updated via script in EJAM/datacreate_frs_.R ! )
 
-if (!exists("frs_by_programid")) download_dynamic("frs_by_programid")
+if (!exists("frs_by_programid")) dataload_dynamic("frs_by_programid")
 
 ######################################################################################################## #
 

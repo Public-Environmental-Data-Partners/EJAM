@@ -7,8 +7,8 @@
 ## allow large numbers without scientific notation
 options(scipen = 999)
 
-## load frs data 
-download_dynamic('frs')
+## load frs data
+dataload_dynamic('frs')
 
 ## set location to save test files
 test_folder <- 'inst/testdata/registryid'
@@ -23,13 +23,13 @@ for (n in nvec) {
   frs_cur <- testpoints_n(n = n, weighting = 'frs', validonly = TRUE)
   #assign(paste0('frs_', n), frs_cur)
   frs_out <- data.frame(num = 1:n, REGISTRY_ID = as.numeric(frs_cur$REGISTRY_ID))
-  
+
   write.csv(x = frs_out, file = paste0(test_folder, '/frs_testpoints_',n,'.csv'), row.names = FALSE)
   writexl::write_xlsx(x = frs_out, path = paste0(test_folder, '/frs_testpoints_',n,'.xlsx'))
 }
 
 options(scipen = 0)
-# 
+#
 # frs_10 <- testpoints_n(n = 10, weighting = 'frs', validonly = TRUE)
 # frs_100 <- testpoints_n(n = 100, weighting = 'frs', validonly = TRUE)
 # frs_1000 <- testpoints_n(n = 1000, weighting = 'frs', validonly = TRUE)
