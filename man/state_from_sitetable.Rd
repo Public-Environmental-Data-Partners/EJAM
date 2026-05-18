@@ -31,7 +31,8 @@ Identify US State that each site is in (given ST, lat/lon, or FIPS)
   EJAM:::state_from_sitetable(testpoints_10)
   EJAM:::state_from_sitetable(
     testoutput_ejamit_10pts_1miles$results_bysite[, .(ejam_uniq_id, ST, pop)])
-  EJAM:::state_from_sitetable(testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
+  EJAM:::state_from_sitetable(
+    testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, pop)])
   EJAM:::state_from_sitetable(
     testoutput_ejamit_10pts_1miles$results_bysite[, .(ST, lat, lon, pop)])
 

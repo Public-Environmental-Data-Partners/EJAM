@@ -21,8 +21,10 @@ If not a 1 row table, or colnames are not what is expected, it returns correct s
 This is a first step in formatting results in nice tables
 }
 \examples{
-  x <- EJAM:::table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_bysite[ 1, ])
-  x <- EJAM:::table_validated_ejamit_row(testoutput_ejamit_100pts_1miles$results_overall)
+  x <- EJAM:::table_validated_ejamit_row(
+    testoutput_ejamit_100pts_1miles$results_bysite[ 1, ])
+  x <- EJAM:::table_validated_ejamit_row(
+    testoutput_ejamit_100pts_1miles$results_overall)
 
 }
 \keyword{internal}

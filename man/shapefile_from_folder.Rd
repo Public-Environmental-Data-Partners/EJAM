@@ -34,7 +34,9 @@ Read shapefile from a folder
   # testshape <- shapefile_from_any()
   }
   x <- get_blockpoints_in_shape(testshape)
-  leaflet::leaflet(x$polys) \%>\% leaflet::addTiles() \%>\% leaflet::addPolygons(color = "blue")
+  leaflet::leaflet(x$polys) \%>\%
+    leaflet::addTiles() \%>\%
+    leaflet::addPolygons(color = "blue")
   DT::datatable(x$pts)
   }
 
