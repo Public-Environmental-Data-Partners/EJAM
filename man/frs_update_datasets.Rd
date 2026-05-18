@@ -69,7 +69,7 @@ It is typically run from the dataset-maintenance workflow in
 \code{EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R}.
 
 These datasets are obtained from EPA servers, reformatted for this package, and
-then stored in a separate repository - see \href{../articles/dev-update-datasets.html}{updating data for package}.
+then stored in a separate repository - see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{updating data for package}.
 The save_as_data_ parameters here are set to FALSE because the files are
 not saved in the source package or its repository like
 typical package datasets would be saved in the data folder of the source package.

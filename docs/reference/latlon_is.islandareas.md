@@ -46,6 +46,8 @@ Island Areas.
 ## Examples
 
 ``` r
-  isles <- stateinfo2[ EJAM:::latlon_is.islandareas(lat = stateinfo2$lat, lon = stateinfo2$lon) & !is.na(stateinfo2$lat), ]
+  isles <- stateinfo2[
+    EJAM:::latlon_is.islandareas(lat = stateinfo2$lat, lon = stateinfo2$lon) &
+      !is.na(stateinfo2$lat), ]
   mapfast(isles)
 ```

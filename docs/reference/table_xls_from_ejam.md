@@ -274,6 +274,7 @@ if save_now = TRUE
 
 ``` r
 if (FALSE) { # \dontrun{
-  EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles, fname = tempfile(fileext = ".xlsx"))
+  EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles,
+    fname = tempfile(fileext = ".xlsx"))
   } # }
 ```

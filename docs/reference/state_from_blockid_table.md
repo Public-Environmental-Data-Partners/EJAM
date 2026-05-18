@@ -31,6 +31,7 @@ mapfast(blockpoints[blockid %in% x, ])
 table(EJAM:::state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
 # unique(EJAM:::state_from_latlon(testpoints_10)$ST) # slow
 
-all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
+all.equal(EJAM:::state_from_blockid(x),
+  EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
 } # }
 ```

@@ -35,8 +35,10 @@ tibble table from output of acs_bycounty() i.e., output of
 ``` r
 ## also see examples for acs_bybg()
 # \donttest{
-  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY", yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # nhwa
-  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY", yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # pop
+  x     <- acs_bycounty(myvars = "B03002_003", myst = "NY",
+    yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # nhwa
+  denom <- acs_bycounty(myvars = "B03002_001", myst = "NY",
+    yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # pop
   z = x
   z$estimate = x$estimate / denom$estimate
   z$moe = 0  # x$moe / denom$estimate # need to calculate using census guidance if at all

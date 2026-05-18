@@ -28,9 +28,7 @@ getblocksnearby(
   radius_donut_lower_edge = 0,
   avoidorphans = FALSE,
   quadtree = NULL,
-  quaddatatable = NULL,
   quiet = FALSE,
-  parallel = FALSE,
   use_unadjusted_distance = TRUE,
   ...
 )
@@ -82,19 +80,11 @@ getblocksnearby(
   this each time it is needed. It can be automatically created when the
   package is attached via the .onAttach() function
 
-- quaddatatable:
-
-  Not currently used
-
 - quiet:
 
   Optional. set to TRUE to avoid message about using
   getblock_diagnostics(), which is relevant only if a user saved the
   output of this function.
-
-- parallel:
-
-  Not implemented
 
 - use_unadjusted_distance:
 

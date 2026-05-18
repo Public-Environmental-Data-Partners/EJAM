@@ -2,7 +2,7 @@
 % Please edit documentation in R/latlon_from_address.R
 \name{latlon_from_address}
 \alias{latlon_from_address}
-\title{geocode, but only if AOI package is installed and attached
+\title{geocode, but only if AOI package is installed
 and what it imports like tidygeocoder etc.}
 \usage{
 latlon_from_address(
@@ -29,20 +29,20 @@ param as provided is ignored and set to TRUE if aoimap=TRUE}
 \item{...}{passed to \code{geocode()} from the optional AOI package.}
 }
 \value{
-returns NULL if you have not installed and attached the AOI package.
-If AOI is attached via library() or require() or package imports,
+returns NULL if you have not installed the AOI package.
+If AOI is installed,
 this returns a tibble table of x,y or lat,lon values or geometries.
 see the AOI package.
 }
 \description{
-geocode, but only if AOI package is installed and attached
+geocode, but only if AOI package is installed
 and what it imports like tidygeocoder etc.
 }
 \details{
 slow? about 100 per minute?
 }
 \examples{
-  # only works if AOI package installed already and attached too
+  # only works if the optional AOI package is installed.
   # #eg <- c("1200 Pennsylvania Ave, NW Washington DC", "Research Triangle Park")
   # #x <- geocode(eg)
   # out <- ejamit(x, radius = 3)
