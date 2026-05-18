@@ -135,7 +135,7 @@
     if (length(try(find.package("EJAM", quiet = T))) == 1) { # if it has been installed. but that function has to have already been added to package namespace once
       msg <- utils::capture.output({
         suppressWarnings({
-          indexblocks()   # EJAM function works only AFTER shiny does load all/source .R files or package attached
+          invisible(indexblocks())   # EJAM function works only AFTER shiny does load all/source .R files or package attached
         })
       })
       msg <- msg[nzchar(msg)]
