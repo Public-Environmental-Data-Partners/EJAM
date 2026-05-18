@@ -92,26 +92,36 @@ metadata_add_and_use_this <- function(objectname, metadata = NULL,
                                       update_date_saved_in_package = TRUE,
                                       update_ejam_package_version = TRUE) {
   if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
+  calling_env <- parent.frame()
 
   if (missing(objectname)) {stop("must specify objectname")}
   if (!is.character(objectname)) {stop("objectname must be a character string")}
   if (length(objectname) != 1) {stop("objectname must be a single character string")}
-  if (!exists(objectname)) {stop("cannot find ", objectname)}
+  if (!exists(objectname, envir = calling_env, inherits = TRUE)) {stop("cannot find ", objectname)}
 
   cat("added metadata\n")
 
-  text_to_do <- paste0("", objectname, " = EJAM:::metadata_add(", objectname,
-                       ", metadata = ", deparse1(substitute(metadata)),
-                       ", update_date_saved_in_package = ", update_date_saved_in_package,
-                       ", update_ejam_package_version = ", update_ejam_package_version,
-                       ")")
-  eval(parse(text = text_to_do), envir = globalenv())
+  metadata_to_use <- metadata
+  if (is.null(metadata_to_use)) {
+    metadata_to_use <- get_metadata_mapping(objectname)
+  }
+
+  assign(
+    objectname,
+    metadata_add(
+      get(objectname, envir = calling_env, inherits = TRUE),
+      metadata = metadata_to_use,
+      update_date_saved_in_package = update_date_saved_in_package,
+      update_ejam_package_version = update_ejam_package_version
+    ),
+    envir = calling_env
+  )
 
   text_to_do <- paste0("usethis::use_data(", objectname, ", overwrite=TRUE)")
-  eval(parse(text = text_to_do), envir = globalenv())
+  eval(parse(text = text_to_do), envir = calling_env)
 
-  cat("did", text_to_do, "\n")
-  return( attributes2(objectname) )
+  cat("did", text_to_do, "\n which updated the attributes of the object only in the local envt, but NOT in .GlobalEnv \n")
+  return(attributes2(get(objectname, envir = calling_env, inherits = TRUE)))
   }
 #################################################### #
 
