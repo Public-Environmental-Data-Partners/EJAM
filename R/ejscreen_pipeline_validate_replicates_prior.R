@@ -80,6 +80,12 @@ ejscreen_pipeline_validate_vs_prior <- function(new_dt,
       set_equal = NA,
       order_equal = NA
     ),
+    row_alignment = list(
+      key_cols = character(),
+      set_equal = NA,
+      order_equal = NA,
+      aligned = FALSE
+    ),
     shared_data_equal = NA,
     shared_data_difference = character(),
     missing_expected = data.frame(rname = character(), varlist = character(), stringsAsFactors = FALSE),
@@ -151,26 +157,64 @@ ejscreen_pipeline_validate_vs_prior <- function(new_dt,
     warning("map_headernames is unavailable, so metadata checks were skipped", call. = FALSE)
   }
 
-  if (isTRUE(result$bgfips$has_bgfips)) {
-    result$bgfips$set_equal <- setequal(old_dt$bgfips, new_dt$bgfips)
-    bgfips_order_equal_result <- all.equal(old_dt$bgfips, new_dt$bgfips)
-    result$bgfips$order_equal <- isTRUE(bgfips_order_equal_result)
+  row_key_candidates <- list(
+    "bgfips",
+    c("REGION", "PCTILE"),
+    "PCTILE"
+  )
+  unique_key <- function(x, key_cols) {
+    all(key_cols %in% names(x)) && data.table::uniqueN(x, by = key_cols) == NROW(x)
+  }
+  key_signature <- function(x, key_cols) {
+    do.call(paste, c(x[, key_cols, with = FALSE], sep = "\r"))
+  }
+  row_key_cols <- character()
+  for (key_cols in row_key_candidates) {
+    if (unique_key(old_dt, key_cols) && unique_key(new_dt, key_cols)) {
+      row_key_cols <- key_cols
+      break
+    }
+  }
+
+  if (length(row_key_cols) > 0) {
+    old_key <- key_signature(old_dt, row_key_cols)
+    new_key <- key_signature(new_dt, row_key_cols)
+    row_key_set_equal <- setequal(old_key, new_key)
+    row_key_order_equal_result <- all.equal(old_key, new_key)
+    row_key_order_equal <- isTRUE(row_key_order_equal_result)
+
+    result$row_alignment$key_cols <- row_key_cols
+    result$row_alignment$set_equal <- row_key_set_equal
+    result$row_alignment$order_equal <- row_key_order_equal
+
+    if (identical(row_key_cols, "bgfips")) {
+      result$bgfips$set_equal <- row_key_set_equal
+      result$bgfips$order_equal <- row_key_order_equal
+    }
 
     if (verbose) {
-      cat("bgfips column found in each\n")
-      cat("Are bgfips identical ignoring sort order? ", result$bgfips$set_equal, "\n", sep = "")
-      cat("Are bgfips identical and in same order? ", if (result$bgfips$order_equal) "TRUE" else paste(bgfips_order_equal_result, collapse = "; "), "\n", sep = "")
+      if (identical(row_key_cols, "bgfips")) {
+        cat("bgfips column found in each\n")
+        cat("Are bgfips identical ignoring sort order? ", result$bgfips$set_equal, "\n", sep = "")
+        cat("Are bgfips identical and in same order? ", if (result$bgfips$order_equal) "TRUE" else paste(row_key_order_equal_result, collapse = "; "), "\n", sep = "")
+      } else {
+        cat("Using row key columns for alignment: ", paste(row_key_cols, collapse = ", "), "\n", sep = "")
+        cat("Are row keys identical ignoring sort order? ", row_key_set_equal, "\n", sep = "")
+        cat("Are row keys identical and in same order? ", if (row_key_order_equal) "TRUE" else paste(row_key_order_equal_result, collapse = "; "), "\n", sep = "")
+      }
     }
-    if (!isTRUE(result$bgfips$set_equal)) {
-      warning("different set of bgfips values in new_dt vs old_dt", call. = FALSE)
+    if (!isTRUE(row_key_set_equal)) {
+      warning("different set of row key values in new_dt vs old_dt for: ", paste(row_key_cols, collapse = ", "), call. = FALSE)
       return(invisible(result))
     }
-    if (!isTRUE(result$bgfips$order_equal)) {
-      warning("bgfips are not identical in same sort order in old_dt and new_dt, so value comparisons were skipped", call. = FALSE)
-      return(invisible(result))
+    if (!isTRUE(row_key_order_equal)) {
+      data.table::setorderv(old_dt, row_key_cols)
+      data.table::setorderv(new_dt, row_key_cols)
+      result$row_alignment$aligned <- TRUE
+      warning("row keys are not in the same order; aligned rows by: ", paste(row_key_cols, collapse = ", "), call. = FALSE)
     }
   } else {
-    warning("cannot confirm row alignment because one or both inputs lack a bgfips column", call. = FALSE)
+    warning("cannot confirm row alignment because no unique row key was found in both inputs", call. = FALSE)
   }
 
   shared_equal_result <- all.equal(old_dt[, ..sharednames], new_dt[, ..sharednames], check.attributes = FALSE)
@@ -318,6 +362,10 @@ ejscreen_pipeline_prior_validation_as_row <- function(result,
     has_bgfips = isTRUE(result$bgfips$has_bgfips),
     bgfips_set_equal = result$bgfips$set_equal,
     bgfips_order_equal = result$bgfips$order_equal,
+    row_key_cols = collapse_values(result$row_alignment$key_cols),
+    row_key_set_equal = result$row_alignment$set_equal,
+    row_key_order_equal = result$row_alignment$order_equal,
+    rows_aligned_by_key = isTRUE(result$row_alignment$aligned),
     shared_data_equal = result$shared_data_equal,
     missing_expected_n = NROW(result$missing_expected),
     missing_expected = collapse_rnames(result$missing_expected),
@@ -377,6 +425,10 @@ ejscreen_pipeline_prior_validation_text <- function(result,
     paste0("Has bgfips in both: ", isTRUE(result$bgfips$has_bgfips)),
     paste0("bgfips set equal: ", result$bgfips$set_equal),
     paste0("bgfips order equal: ", result$bgfips$order_equal),
+    paste0("Row key columns: ", collapse_values(result$row_alignment$key_cols)),
+    paste0("Row key set equal: ", result$row_alignment$set_equal),
+    paste0("Row key order equal: ", result$row_alignment$order_equal),
+    paste0("Rows aligned by key before comparison: ", isTRUE(result$row_alignment$aligned)),
     paste0("Shared data equal: ", result$shared_data_equal),
     "",
     paste0("Columns not in map_headernames: ", collapse_values(result$metadata$not_in_map_headernames)),

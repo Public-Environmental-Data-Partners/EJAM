@@ -32,7 +32,25 @@ test_that("ejscreen_pipeline_validate_vs_prior handles bgfips order mismatch", {
 
   expect_false(result$bgfips$order_equal)
   expect_true(result$bgfips$set_equal)
-  expect_true(is.na(result$shared_data_equal))
+  expect_true(result$row_alignment$aligned)
+  expect_true(result$shared_data_equal)
+})
+
+test_that("ejscreen_pipeline_validate_vs_prior aligns lookup tables by REGION and PCTILE", {
+  old_dt <- data.frame(
+    REGION = c("AL", "AL"),
+    PCTILE = c(0, 1),
+    pctlowinc = c(0.1, 0.2)
+  )
+  new_dt <- old_dt[2:1, ]
+
+  result <- suppressWarnings(
+    EJAM:::ejscreen_pipeline_validate_vs_prior(new_dt, old_dt, verbose = FALSE)
+  )
+
+  expect_equal(result$row_alignment$key_cols, c("REGION", "PCTILE"))
+  expect_true(result$row_alignment$aligned)
+  expect_true(result$shared_data_equal)
 })
 
 test_that("ejscreen_pipeline_validate_vs_prior validates inputs", {
