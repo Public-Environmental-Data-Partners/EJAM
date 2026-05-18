@@ -1,4 +1,4 @@
-#' Plot indicator values at analyzed sites against a reference area
+#' Plot distribution of indicator values at analyzed sites against a reference area
 #'
 #' @description
 #' Visualize one indicator from `ejamit()$results_bysite` against the same
