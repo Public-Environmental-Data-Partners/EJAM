@@ -4,16 +4,10 @@
 \alias{generate_report_footnotes}
 \title{helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes}
 \usage{
-generate_report_footnotes(
-  diesel_caveat =
-    paste0("Note: Diesel particulate matter index is from the EPA's Air Toxics Data Update, which is the Agency's ongoing, comprehensive evaluation of air toxics in the United States. This effort aims to prioritize air toxics, emission sources, and locations of interest for further study. It is important to remember that the air toxics data presented here provide broad estimates of health risks over geographic areas of the country, not definitive risks to specific individuals or locations. More information on the Air Toxics Data Update can be found at: ",
-    
-     url_linkify("https://www.epa.gov/haps/air-toxics-data-update",
-    "https://www.epa.gov/haps/air-toxics-data-update"))
-)
+generate_report_footnotes(diesel_caveat = NULL)
 }
 \arguments{
-\item{diesel_caveat}{text}
+\item{diesel_caveat}{text - see source code for default}
 }
 \description{
 helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes

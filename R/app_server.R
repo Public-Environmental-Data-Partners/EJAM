@@ -51,7 +51,7 @@ app_server <- function(input, output, session) {
   # testing/dev mode settings ####
   observe({
     req(input$testing)
-    if (input$testing) {cat("testing == TRUE \n ")} else {cat("testing == FALSE \n----------------------\n")}
+    if (input$testing) {message("testing == TRUE \n ")} else {message("testing == FALSE \n----------------------\n")}
   })
   observe({
     if (length(EJAM:::global_or_param("default_shiny.testmode")) > 0  ) { # allow params in ejamapp() to override default
@@ -70,11 +70,11 @@ app_server <- function(input, output, session) {
     req(input$shiny.testmode)
     if (input$shiny.testmode) {
       options(shiny.testmode = TRUE)
-      cat('shiny.testmode == TRUE\n')
+      message('shiny.testmode == TRUE\n')
     } else {
       if (!isTRUE(getOption("shiny.testmode"))) {
         options(shiny.testmode = FALSE)
-        cat('shiny.testmode == FALSE\n')
+        message('shiny.testmode == FALSE\n')
       }
     }
   }, priority = 2)
@@ -306,7 +306,7 @@ app_server <- function(input, output, session) {
                          server = TRUE)
   })
 
-  # update MACT input options ###
+  # update MACT input options in UI ###
   # observe({ ### already done in app_ui.R since not many choices so it loads faster than naics or sic
   #   updateSelectizeInput(session = session, inputId = 'default_mact', # in advanced tab
   #                        # choices =
@@ -325,7 +325,7 @@ app_server <- function(input, output, session) {
 
   output$ss_choose_method_ui <- renderUI({
     req(input$default_ss_choose_method)
-    if (input$testing) {cat("input$default_ss_choose_method is ", input$default_ss_choose_method, "\n")}
+    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method, "\n")}
     radioButtons(inputId = 'ss_choose_method',
                  label = 'How would you like to identify locations?',
                  choiceNames = c('Select a category of locations',
@@ -335,13 +335,8 @@ app_server <- function(input, output, session) {
                  # selected = "upload" # hard-coded default selection
                  selected = input$default_ss_choose_method  # flexible default selection
     )
-    if (input$testing) {cat(" and input$ss_choose_method selected is ", input$ss_choose_method, "\n")}
+    if (input$testing) {message(" and input$ss_choose_method selected is ", input$ss_choose_method, "\n")}
   })
-  # observe({
-  #   if (is.null(input$ss_choose_method) || input$ss_choose_method == "") {
-  #     updateRadioButtons(inputId = "ss_choose_method", selected = input$default_ss_choose_method)
-  #   }
-  # })
 
   # keep track of currently used method of site selection (also see submitted_upload_method reactive)
   current_upload_method <- reactive({

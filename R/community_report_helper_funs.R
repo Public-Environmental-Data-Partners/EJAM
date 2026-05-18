@@ -555,15 +555,27 @@ fill_tbl_full_subgroups <- function(output_df,
 
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
-#' @param diesel_caveat text
+#' @param diesel_caveat text - see source code for default
 #'
 #' @keywords internal
 #'
 generate_report_footnotes <- function(
-  diesel_caveat = paste0("Note: Diesel particulate matter index is from the EPA's Air Toxics Data Update, which is the Agency's ongoing, comprehensive evaluation of air toxics in the United States. This effort aims to prioritize air toxics, emission sources, and locations of interest for further study. It is important to remember that the air toxics data presented here provide broad estimates of health risks over geographic areas of the country, not definitive risks to specific individuals or locations. More information on the Air Toxics Data Update can be found at: ",
-                         url_linkify("https://www.epa.gov/haps/air-toxics-data-update", "https://www.epa.gov/haps/air-toxics-data-update"))
+    diesel_caveat = NULL
 ) {
 
+  if (is.null(diesel_caveat)) {
+    diesel_caveat <-  paste0(
+      "Note: Diesel particulate matter index is from the EPA's Air Toxics Data Update,",
+      " which is the Agency's ongoing, comprehensive evaluation of air toxics in the United States.",
+      " This effort aims to prioritize air toxics, emission sources,",
+      " and locations of interest for further study.",
+      " It is important to remember that the air toxics data presented here provide",
+      " broad estimates of health risks over geographic areas of the country,",
+      " not definitive risks to specific individuals or locations.",
+      " More information on the Air Toxics Data Update can be found at: ",
+      url_linkify("https://www.epa.gov/haps/air-toxics-data-update",
+                  "https://www.epa.gov/haps/air-toxics-data-update"))
+  }
   # This function gets called by
   # build_community_report() in
   #  app_server,
@@ -1089,7 +1101,7 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   }
   if (is.null(nsites) || any(is.na(nsites))) {
     nsites <- 99 # just makes it plural, e.g., "places"
-    }
+  }
   if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
   if (is.null(site_method)) {site_method <- sitetype}
 
@@ -1549,8 +1561,8 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   if (nchar(nsites) == 0) {
     ntxt <- ''
   } else {
-      ntxt <- paste0(nsites, ' ')
-      }
+    ntxt <- paste0(nsites, ' ')
+  }
   anyoftheplaces <- ifelse(
     nsites %in% 1,
     paste0('this', ' ', location_type, siteidtext_in_parens, ''),

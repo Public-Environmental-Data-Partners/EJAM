@@ -6,10 +6,10 @@
 \usage{
 shapes_from_fips(
   fips,
-  myservice_blockgroup =
-    "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query",
-  myservice_tract =
-    "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query",
+  myservice_blockgroup = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"),
+  myservice_tract = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
   myservice_place = "tiger",
   myservice_county = "cartographic",
   allow_multiple_fips_types = TRUE,
