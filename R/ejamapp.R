@@ -222,7 +222,7 @@
 #'  ejamapp(
 #'   isPublic = FALSE, # to allow full set of features (menus)
 #'   default_can_show_advanced_settings = FALSE, # removes user's ability to show Advanced tab
-#'   default_show_advanced_settings = FALSE, # just confirms default -- hiding Advanced tab when app launches
+#'   default_show_advanced_settings = FALSE, # the default, hide Advanced tab at app launch
 #'   default_hide_plot_histo_tab = TRUE # to hide just this feature
 #'   )
 #'

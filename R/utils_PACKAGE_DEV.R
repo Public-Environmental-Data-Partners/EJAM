@@ -288,7 +288,8 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 #'
 #' EJAM:::grep_lines("x",  c("x", "y", "has any x x xxxxx"))
 #'
-#' xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
+#' xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej",
+#'   "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
 #'
 #'  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
 #'  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
@@ -361,12 +362,20 @@ grep_lines = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, va
 #'
 #' ## useful reminders of how to filter lines of code vs comments when using find_in_files()
 #'
-#' grepl_line_not_commented_out = "^[ ]*[^# ]+.*"  ## line starts with zero or more spaces followed by a non-space non-# character, so not commented out and not blank line, but may have a comment later in the line after code
-#' grepl_line_commented_out     = "^[ |#]*#.*"     ## line starts with (zero or more spaces and then) a hash mark
-#' grepl_line_may_have_comment  = "#.*"            ## line contains a hash mark somewhere, but that may be number sign within quoted text
-#'  grepl(grepl_line_may_have_comment,  " print('The # of people is 4.')")  ## TRUE even though there is no comment here
-#'  grepl(grepl_line_may_have_comment,  " # print('The number of people is 4.')") # a commented-out line
-#'  grepl(grepl_line_may_have_comment,  "   print('The number of people is 4.')   # a comment only after the code")
+#' grepl_line_not_commented_out = "^[ ]*[^# ]+.*"
+#' # line starts with zero or more spaces followed by a non-space non-# character
+#'
+#' grepl_line_commented_out     = "^[ |#]*#.*"
+#' # line starts with zero or more spaces and then a hash mark
+#'
+#' grepl_line_may_have_comment  = "#.*"
+#' # line contains a hash mark somewhere
+#'
+#' grepl(grepl_line_may_have_comment, " print('The # of people is 4.')")
+#' # TRUE even though there is no comment here
+#' grepl(grepl_line_may_have_comment, " # print('The number of people is 4.')")
+#' grepl(grepl_line_may_have_comment,
+#'   "   print('The number of people is 4.')   # a comment only after the code")
 #'
 #' EJAM:::find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
 #' EJAM:::find_in_files(paste0(grepl_line_commented_out,     "xxx"))
@@ -656,13 +665,15 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #'   biggest = x$Item[which.max(x$sizen)]
 #'   bigp = round(100 * x$sizen[which.max(x$sizen)] / sum(x$sizen), 0)
 #'   plot(cumsum(  sort(x$sizen,decreasing = TRUE )) / sum(x$sizen),
-#'        ylim=c(0,1), ylab="Share of total size", xlab="datasets sorted large to small", type = 'b',
+#'        ylim = c(0, 1), ylab = "Share of total size",
+#'        xlab = "datasets sorted large to small", type = 'b',
 #'             main= paste0(biggest, " alone is ", bigp,"% of total"))
 #'             abline(v=0);abline(h=0);abline(h=1);abline(v=length(x$sizen))
 #'
 #'   subset(x, x$size >= 0.1) # at least 100 KB
 #'   xo <- x$Item
-#'   grep("names_", xo, value = TRUE, ignore.case = TRUE, invert = TRUE) # most were like names_d, etc.
+#'   grep("names_", xo, value = TRUE, ignore.case = TRUE, invert = TRUE)
+#'   # most were like names_d, etc.
 #'   ls()
 #'   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
 #'   ls()

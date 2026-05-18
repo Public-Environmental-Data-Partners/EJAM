@@ -25,7 +25,8 @@ how many sites account for P percent of residents?
 \examples{
  x <- testoutput_ejamit_10pts_1miles$results_bysite[4:9, ]
  # x <- testoutput_ejamit_1000pts_1miles$results_bysite
- x <- x[!is.na(x$pop), ] # set pop to zero or just remove sites where pop was NA since area too small to determine accurately
+ x <- x[!is.na(x$pop), ]
+ # set pop to zero or remove sites where pop was NA
  cbind(pctofsites = round((1:length(x$pop)) / length(x$pop), 2),
    pctofpop = round(cumsum(sort(x$pop, decreasing = TRUE)) / sum(x$pop, na.rm=TRUE), 2))
 

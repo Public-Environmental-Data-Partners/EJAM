@@ -99,7 +99,8 @@ plot_boxplot_vs_ref <- function(bysite = NULL, # ejamit()$results_bysite,
 #'  # EJAM:::plot_vs_us(td, varname = "pctlingiso", type =  'ggplot')
 #'  # EJAM:::plot_vs_us(td, varname = "pctnhaa", type =  'ggplot')
 #'  # EJAM:::plot_vs_us(td, varname = "pctnhaa", type = 'box', ylim = c(0,20))
-#'  # EJAM:::plot_vs_us(td[td$ST %in% "DE", ], 'pcthisp', refdata = blockgroupstats[ST %in% "DE", .(pop, pcthisp)])
+#'  # EJAM:::plot_vs_us(td[td$ST %in% "DE", ], 'pcthisp',
+#'  #   refdata = blockgroupstats[ST %in% "DE", .(pop, pcthisp)])
 #'   }
 #'
 #' @return plots

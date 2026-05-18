@@ -134,7 +134,8 @@ state_from_latlon <- function(lat, lon) {
 #' table(EJAM:::state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
 #' # unique(EJAM:::state_from_latlon(testpoints_10)$ST) # slow
 #'
-#' all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
+#' all.equal(EJAM:::state_from_blockid(x),
+#'   EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
 #' }
 #'
 #' @keywords internal
@@ -175,7 +176,8 @@ state_from_blockid_table <- function(dt_with_blockid) {
 #' EJAM:::state_from_blockid(x)[]
 #' mapfast(blockpoints[blockid %in% x, ])
 #'
-#' all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
+#' all.equal(EJAM:::state_from_blockid(x),
+#'   EJAM:::state_from_blockid_table(blockpoints[blockid %in% x, ]))
 #' }
 #'
 #' @keywords internal

@@ -86,13 +86,15 @@ The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
   biggest = x$Item[which.max(x$sizen)]
   bigp = round(100 * x$sizen[which.max(x$sizen)] / sum(x$sizen), 0)
   plot(cumsum(  sort(x$sizen,decreasing = TRUE )) / sum(x$sizen),
-       ylim=c(0,1), ylab="Share of total size", xlab="datasets sorted large to small", type = 'b',
+       ylim = c(0, 1), ylab = "Share of total size",
+       xlab = "datasets sorted large to small", type = 'b',
             main= paste0(biggest, " alone is ", bigp,"\% of total"))
             abline(v=0);abline(h=0);abline(h=1);abline(v=length(x$sizen))
 
   subset(x, x$size >= 0.1) # at least 100 KB
   xo <- x$Item
-  grep("names_", xo, value = TRUE, ignore.case = TRUE, invert = TRUE) # most were like names_d, etc.
+  grep("names_", xo, value = TRUE, ignore.case = TRUE, invert = TRUE)
+  # most were like names_d, etc.
   ls()
   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
   ls()

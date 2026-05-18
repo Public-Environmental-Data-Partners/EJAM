@@ -47,7 +47,8 @@ but the string does not start with zero or more spaces followed by the character
 
 EJAM:::grep_lines("x",  c("x", "y", "has any x x xxxxx"))
 
-xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
+xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej",
+  "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
 
  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))

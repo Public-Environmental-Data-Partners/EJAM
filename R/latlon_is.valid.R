@@ -122,7 +122,9 @@ latlon_is.possible   <- function(lat, lon) {
 #'   is approximately in one of the rough bounding boxes that includes the 4 Island Areas.
 #' @seealso  [is.island()] [latlon_is.usa()] [latlon_is.islandareas()] [latlon_is.available()] [latlon_is.possible()]
 #' @examples
-#'   isles <- stateinfo2[ EJAM:::latlon_is.islandareas(lat = stateinfo2$lat, lon = stateinfo2$lon) & !is.na(stateinfo2$lat), ]
+#'   isles <- stateinfo2[
+#'     EJAM:::latlon_is.islandareas(lat = stateinfo2$lat, lon = stateinfo2$lon) &
+#'       !is.na(stateinfo2$lat), ]
 #'   mapfast(isles)
 #'
 #' @keywords internal

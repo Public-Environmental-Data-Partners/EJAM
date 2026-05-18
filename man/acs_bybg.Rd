@@ -157,7 +157,9 @@ ejscreentables <-  as.vector(tables_ejscreen_acs)
 acstabs2 <- paste0(ejscreentables, "_")
 acsinfo$table = gsub("_.*", "", acsinfo$name)
 myacsinfo <- acsinfo[acsinfo$table \%in\% ejscreentables, ]
-mytables <- data.table::rbindlist(lapply(ejscreentables, function(z) {acsinfo[acsinfo$table \%in\% z, ][1,]}))
+mytables <- data.table::rbindlist(lapply(ejscreentables, function(z) {
+  acsinfo[acsinfo$table \%in\% z, ][1,]
+}))
 ejscreen_tables <-  mytables$table # same as ejscreentables
 
 myvars <- myacsinfo$name #
@@ -175,7 +177,8 @@ if ("want to run example that takes >15 minutes" == "yes") {
   data.table::setnames(newvars, "GEOID", "bgfips")
   newvars[, ST := fips2stateabbrev(bgfips)]
   names(newvars) <- gsub("E$", "", names(newvars))
-  dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
+  dim(newvars) # 239781 rows, 370 columns
+  # columns are variable estimates and margin of error values
   t(head(newvars))
   ejscreen_acs = newvars
   save(ejscreen_acs, file="ejscreen_acs.rda")
