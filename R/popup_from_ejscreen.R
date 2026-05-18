@@ -44,11 +44,11 @@
 #' @export
 #'
 popup_from_ejscreen <- function(out,
-                                linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header),
+                                linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header),
                                 verbose = FALSE,
                                 site_method = NULL) {
   # ornull = function(n) {
-  #   x <- try(EJAM:::global_or_param("default_reports")[[n]]$header)
+  #   x <- try(global_or_param("default_reports")[[n]]$header)
   #   if (inherits(x, "try-error")) {return(NULL)} else {return(x)}
   # }
   #   linkcolname1 = ornull(1)
@@ -373,7 +373,7 @@ popup_from_ejscreen <- function(out,
     # missing -- possibly because after defined in global env as pkg is loaded, then if you happen to use rm(list=ls()) that will remove them
     warning('missing default_reports that is part of the package defaults needed - possibly because rm(list=ls()) was done in console -- recreating them now')
     xdefaults <- get_global_defaults_or_user_options()
-    linkcolnames <- sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+    linkcolnames <- sapply(global_or_param("default_reports"), function(x) x$header)
   }
   pops_links <- make_pops_links(out, linkcolnames)
 

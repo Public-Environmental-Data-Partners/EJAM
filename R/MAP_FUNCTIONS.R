@@ -79,7 +79,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
     shp$ejam_uniq_id <- NULL # since it is 1:NROW there but was the fips value in out$results_bysite
     shpout <- cbind(shp, out$results_bysite) # retains "sf" class only if shp is 1st in cbind()
     names(shpout)[names(shpout) != "geometry"] <- names(out$results_bysite) #  fixes colnames where dot replaced space
-    # headers2fix = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+    # headers2fix = sapply(global_or_param("default_reports"), function(x) x$header)
   } else {
     if (NROW(shp) == 1 && NROW(out$results_bysite) == 1) {
       shpout <- cbind(shp[,"geometry"], out$results_bysite) # retains "sf" class only if shp is 1st in cbind()
@@ -104,7 +104,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   }
   shpout <- shpout[shpout$valid, ] # Drop invalid polygons, dont try to map
 
-  # linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+  # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
   pops <- popup_from_ejscreen(
     shpout %>% sf::st_drop_geometry()
   )
@@ -550,7 +550,7 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
   if (is.null(popup)) {
     # if all but 3 colnames are in both, looks like results of ejamit(), so use that type of popup formatting
     if (length(setdiff2(names(shapes), names(testoutput_ejamit_10pts_1miles$results_overall))) < 3) {
-      popup = popup_from_ejscreen(sf::st_drop_geometry(shapes))# linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+      popup = popup_from_ejscreen(sf::st_drop_geometry(shapes))# linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
     } else {
       popup <- popup_from_any(sf::st_drop_geometry(shapes))
     }

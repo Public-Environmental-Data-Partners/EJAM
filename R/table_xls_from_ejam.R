@@ -33,7 +33,7 @@ table_xls_from_ejam <- function(ejamitout,
                                 buffer_desc = "Selected Locations",
 
                                 # specify columns with URLs/links to 1-site reports, etc.
-                                reports = EJAM:::global_or_param("default_reports"),
+                                reports = global_or_param("default_reports"),
 
                                 # plot
                                 ok2plot = TRUE,

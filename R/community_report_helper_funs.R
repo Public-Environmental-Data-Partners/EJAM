@@ -689,9 +689,9 @@ resolve_report_logo_path <- function(logo_path = NULL) {
   }
 
   candidates <- c(
-    EJAM:::global_or_param("report_logo"),
+    global_or_param("report_logo"),
     system.file("report/community_report/ejamhex4.png", package = "EJAM"),
-    EJAM:::app_sys("report/community_report/ejamhex4.png")
+    app_sys("report/community_report/ejamhex4.png")
   )
   candidates <- candidates[
     !is.na(candidates) &
@@ -798,9 +798,9 @@ generate_html_header <- function(analysis_title = NULL, # defaults of NULL here 
   ########## #  ########## #  ########## #  ########## #
   if (is.null(report_title)) {
     if (shiny::isRunning() || isTRUE(in_shiny)) {
-      report_title <- EJAM:::global_or_param("report_title")
+      report_title <- global_or_param("report_title")
     } else {
-      report_title <- EJAM:::global_or_param("report_title")
+      report_title <- global_or_param("report_title")
     }
   }
   ########## #  ########## #  ########## #  ########## #

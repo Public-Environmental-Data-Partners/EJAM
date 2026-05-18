@@ -21,7 +21,7 @@ table_xls_format(
   radius_or_buffer_description =
     "Miles radius of circular buffer (or distance used if buffering around polygons)",
   buffer_desc = "Selected Locations",
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   ok2plot = TRUE,
   report_plot = NULL,
   plot_distance_by_group = FALSE,

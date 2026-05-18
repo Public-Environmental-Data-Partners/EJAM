@@ -37,9 +37,9 @@
 #' @param input_name label used in error messages when an input is missing.
 #' @seealso [calc_ejscreen_dataset()]
 #' @return
-#'   `EJAM:::ejscreen_pipeline_stage_names()` returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that `EJAM:::ejscreen_pipeline_validate()` can check if a specified stage name is valid and apply the specific validation rules for that stage
+#'   `ejscreen_pipeline_stage_names()` returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that `EJAM:::ejscreen_pipeline_validate()` can check if a specified stage name is valid and apply the specific validation rules for that stage
 #'
-#'   `EJAM:::ejscreen_pipeline_stage_canonical()` returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"
+#'   `ejscreen_pipeline_stage_canonical()` returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"
 #'
 #'   `EJAM:::ejscreen_pipeline_stage_path()` returns a path, with pipeline_dir as the folder(s) and filename based on stage and format (file extension), such as "some/temp/dir/ejscreen_acs_2024/bg_envirodata.csv"
 #'
@@ -285,7 +285,7 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
     ejscreen_python_input =          "ejscreen_python_input"
   )
   if (canonical_only) {
-    return(unique(as.vector(sapply(EJAM:::ejscreen_pipeline_stage_names(), EJAM:::ejscreen_pipeline_stage_canonical))))
+    return(unique(as.vector(sapply(ejscreen_pipeline_stage_names(), ejscreen_pipeline_stage_canonical))))
   } else {
     return(x)
   }

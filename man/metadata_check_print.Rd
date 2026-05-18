@@ -15,7 +15,7 @@ helper function in updating the package metadata, used by scripts in /data-raw/
 prints to console info about some missing metadata
 }
 \examples{
-# x = EJAM:::metadata_check( which = "ejam_package_version")
+# x = metadata_check( which = "ejam_package_version")
 
 
 }

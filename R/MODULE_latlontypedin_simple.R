@@ -32,7 +32,7 @@ if (try_demo_module_here) {
 
   MODULE_UI_latlontypedin_DEMO <- function(id, ...) {
     ns <- NS(id)
-    EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
+    pkg_available("rhandsontable", if_not_loaded = "stop")
     rhandsontable::rHandsontableOutput(outputId = ns("TYPED_IN_DATA"), ...) # from rhandsontable pkg
   } # end module ui
   ################################################ #
@@ -47,7 +47,7 @@ if (try_demo_module_here) {
       moduleServer(id,
                    function(input, output, session) {
                      ns <- session$ns
-                     EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
+                     pkg_available("rhandsontable", if_not_loaded = "stop")
                      output$TYPED_IN_DATA <- rhandsontable::renderRHandsontable({  # from rhandsontable pkg
                        tmp <- isolate(reactdat())  # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
                        rownames(tmp) <- NULL

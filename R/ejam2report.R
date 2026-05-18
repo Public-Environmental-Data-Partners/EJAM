@@ -80,11 +80,11 @@ assert_pdf_report_available <- function() {
 #'   But note that it is treated / titled like a 1-site report if only
 #'   one site was analyzed (or only one had valid results).
 #'
-#' @param analysis_title optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")
+#' @param analysis_title optional title of analysis, default is global_or_param("default_standard_analysis_title")
 #'
 #' @param report_title optional generic name of this type of report, to be shown at top,
 #'   like "EJSCREEN Multisite Report" or "EJSCREEN Community Report".
-#'   Default is EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+#'   Default is global_or_param("report_title") or global_or_param("report_title_multisite")
 #'   depending on number of sites analyzed and the sitenumber parameter.
 #'
 #' @param logo_path optional relative path to a logo for the upper right of the overall header.
@@ -161,8 +161,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         sitenumber = NULL,
                         logo_path = NULL,
                         logo_html = NULL, # defined downstream
-                        report_title = NULL, # EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
-                        analysis_title = NULL, # EJAM:::global_or_param("default_standard_analysis_title")
+                        report_title = NULL, # global_or_param("report_title") or global_or_param("report_title_multisite")
+                        analysis_title = NULL, # global_or_param("default_standard_analysis_title")
                         addlatlon = TRUE,
 
                         site_method = NULL, # c("latlon", "SHP", "FIPS")[1],
@@ -277,11 +277,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   if (sitenumber %in% 0) {
 
     if (is.null(report_title)) {
-      report_title <- EJAM:::global_or_param("report_title_multisite")
+      report_title <- global_or_param("report_title_multisite")
     }
     ## > analysis_title if multisite ####
     if (is.null(analysis_title)) {
-      analysis_title <- EJAM:::global_or_param("default_standard_analysis_title")
+      analysis_title <- global_or_param("default_standard_analysis_title")
     }
 
     ejamout1 <- ejamitout$results_overall # one row
@@ -304,7 +304,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     ## > report_title if 1-site ####
     if (is.null(report_title)) {
-      report_title <- EJAM:::global_or_param("report_title")
+      report_title <- global_or_param("report_title")
     }
     ## > analysis_title if 1-site ####
     if (is.null(analysis_title)) {

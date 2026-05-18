@@ -119,7 +119,7 @@ ejam2excel <- function(ejamitout,
                        buffer_desc = "Selected Locations",
 
                        # specify columns with URLs/links to 1-site reports, etc.
-                       reports = EJAM:::global_or_param("default_reports"), # defines which hyperlink colnames and text to use
+                       reports = global_or_param("default_reports"), # defines which hyperlink colnames and text to use
 
                        # plot
                        ok2plot = TRUE,

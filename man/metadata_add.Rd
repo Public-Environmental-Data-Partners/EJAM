@@ -45,7 +45,7 @@ Note that by adding attributes, this function changes a vector
 so that is.vector() will no longer be true!
 }
 \examples{
-  # EJAM:::metadata_check() # internal function
+  # metadata_check() # internal function
   x <- data.frame(a=1:10,b=1001:1010)
   # x <- EJAM:::metadata_add(x) # internal function
   attributes(x)

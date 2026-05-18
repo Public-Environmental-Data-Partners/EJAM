@@ -144,7 +144,7 @@ metadata_add_and_use_this <- function(objectname, metadata = NULL,
 #'
 #' @return returns x but with new or altered attributes
 #' @examples
-#'   # EJAM:::metadata_check() # internal function
+#'   # metadata_check() # internal function
 #'   x <- data.frame(a=1:10,b=1001:1010)
 #'   # x <- EJAM:::metadata_add(x) # internal function
 #'   attributes(x)
@@ -215,7 +215,7 @@ ejam_package_version_current <- function() {
 #' @inheritParams metadata_check
 #' @return same as [metadata_check()], invisibly
 #' @examples
-#' # x = EJAM:::metadata_check( which = "ejam_package_version")
+#' # x = metadata_check( which = "ejam_package_version")
 #'
 #'
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
@@ -226,7 +226,7 @@ metadata_check_print = function(...) {
 
   ## check which dataset objects have which metadata info about vintage, etc.
   if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
-  x = EJAM:::metadata_check(...)
+  x = metadata_check(...)
   cat("\n\n See what metadata is stored as attributes \n\n")
   print(t(head(x,1)))
   cat("\n\n")
@@ -305,11 +305,11 @@ metadata_check_print = function(...) {
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'   [pkg_functions_and_data()]
 #' @examples \dontrun{
-#' x = EJAM:::metadata_check( which = "ejam_package_version")
+#' x = metadata_check( which = "ejam_package_version")
 #'
 #'
-#'   # tail(EJAM:::metadata_check( ))
-#'   EJAM:::metadata_check(packages = NULL)
+#'   # tail(metadata_check( ))
+#'   metadata_check(packages = NULL)
 #'
 #'   x <- EJAM:::metadata_check_print("EJAM")
 #'   x[x$has_metadata == TRUE, ]

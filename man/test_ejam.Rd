@@ -75,7 +75,7 @@ run tests of local source pkg EJAM, by group of functions, quietly, interactivel
 \details{
 Note these require installing the package \href{https://testthat.r-lib.org}{testthat} first:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{[EJAM:::test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{[test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
 
 [devtools::test()]           is just a shortcut for [testthat::test_dir()], to run all tests in package.
 
@@ -88,10 +88,10 @@ Note these require installing the package \href{https://testthat.r-lib.org}{test
 }
 \examples{
 \dontrun{
-biglist <- EJAM:::test_ejam()
+biglist <- test_ejam()
 
-biglist <- EJAM:::test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
-biglist <- EJAM:::test_ejam(ask = FALSE,
+biglist <- test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
+biglist <- test_ejam(ask = FALSE,
       y_runsome = TRUE, run_these = c('test', 'maps'),
       mydir = "~/../Downloads/unit testing") # for example
 

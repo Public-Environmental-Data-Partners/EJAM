@@ -221,7 +221,7 @@ ejamit <- function(sitepoints = NULL,
                                       c(names_ej_supp_pctile, names_ej_supp_state_pctile)),
                    threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"),
 
-                   reports = EJAM:::global_or_param("default_reports"),
+                   reports = global_or_param("default_reports"),
 
                    updateProgress = NULL, # may be ignored now
                    updateProgress_getblocks = NULL,
@@ -795,7 +795,7 @@ ejamit <- function(sitepoints = NULL,
     radius = buffer_for_links,
     regid = regid,
     sitetype = sitetype,
-    reports = reports, # EJAM:::global_or_param("default_reports")
+    reports = reports, # global_or_param("default_reports")
     as_html = TRUE # TRUE lets them work in a webpage view of table, in ejam2tableviewer(), and in map popups, but then for excel want to delinkify them
   )
   setDT(links$results_bysite)

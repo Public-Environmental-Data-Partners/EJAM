@@ -20,11 +20,11 @@ pkgdown_update(
 \arguments{
 \item{doask}{whether to ask about each input parameter, for interactively picking settings}
 
-\item{dotests}{run unit tests first? uses EJAM:::test_ejam()}
+\item{dotests}{run unit tests first? uses test_ejam()}
 
 \item{testinteractively}{related to unit testing}
 
-\item{doyamlcheck}{report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?}
+\item{doyamlcheck}{report on the yaml file via dataset_pkgdown_yaml_check() ?}
 
 \item{dodocument}{use \code{roxygen2::roxygenise()} to regenerate documentation?
 Usually should leave TRUE.}

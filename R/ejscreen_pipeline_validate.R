@@ -8,8 +8,8 @@
 #'
 #' @param x object to validate.
 #' @param stage pipeline stage name, must be among known stages or aliases
-#' as found in `EJAM:::ejscreen_pipeline_stage_names()` with canonical names such as
-#' `r paste0(EJAM:::ejscreen_pipeline_stage_names(canonical_only = TRUE), collapse = ", ")`
+#' as found in `ejscreen_pipeline_stage_names()` with canonical names such as
+#' `r paste0(ejscreen_pipeline_stage_names(canonical_only = TRUE), collapse = ", ")`
 #'
 #' @param strict logical. If TRUE, errors stop execution. Warnings are still
 #'   emitted as warnings.

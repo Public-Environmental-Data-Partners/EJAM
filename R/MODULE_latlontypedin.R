@@ -31,7 +31,7 @@
 #'
 #'
 MODULE_UI_latlontypedin <- function(id) {
-  EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
+  pkg_available("rhandsontable", if_not_loaded = "stop")
   ns <- NS(id)
   tagList(
     rhandsontable::rHandsontableOutput(outputId = ns("TYPED_IN_DATA")), # if you want to display the table output ?  needs rhandsontable pkg
@@ -56,7 +56,7 @@ MODULE_SERVER_latlontypedin <- function(id,
     id = id,
     function(input, output, session) {
       ns <- session$ns
-      EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
+      pkg_available("rhandsontable", if_not_loaded = "stop")
       output$TYPED_IN_DATA <- rhandsontable::renderRHandsontable({ # need rhandsontable pkg
         tmp <- isolate(reactdat()) # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
         rownames(tmp) <- NULL
@@ -89,7 +89,7 @@ if (try_this_module_here) {
    # rm(list = ls())
    # golem::detach_all_attached()
   # pkgs <- 'EJAM'
-  # EJAM:::pkg_available("rhandsontable", if_not_loaded = "stop")
+  # pkg_available("rhandsontable", if_not_loaded = "stop")
    ### pkgs <- c('shiny', 'dplyr', 'rhandsontable', 'data.table', 'leaflet', 'magrittr')
   # for (pkg in pkgs) {require(pkg, character.only = TRUE)}
    ### must attach all of those for this to work when testing the app separate from EJAM package

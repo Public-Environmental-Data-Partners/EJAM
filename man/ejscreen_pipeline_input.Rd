@@ -102,9 +102,9 @@ file.}
 \item{canonical_only}{optional logical set to TRUE in ejscreen_pipeline_stage_names() to return only the canonical versions without any aliases}
 }
 \value{
-\code{EJAM:::ejscreen_pipeline_stage_names()} returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that \code{EJAM:::ejscreen_pipeline_validate()} can check if a specified stage name is valid and apply the specific validation rules for that stage
+\code{ejscreen_pipeline_stage_names()} returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that \code{EJAM:::ejscreen_pipeline_validate()} can check if a specified stage name is valid and apply the specific validation rules for that stage
 
-\code{EJAM:::ejscreen_pipeline_stage_canonical()} returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"
+\code{ejscreen_pipeline_stage_canonical()} returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"
 
 \code{EJAM:::ejscreen_pipeline_stage_path()} returns a path, with pipeline_dir as the folder(s) and filename based on stage and format (file extension), such as "some/temp/dir/ejscreen_acs_2024/bg_envirodata.csv"
 

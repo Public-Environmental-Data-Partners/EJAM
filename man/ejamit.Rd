@@ -29,7 +29,7 @@ ejamit(
   threshnames = list(c(names_ej_pctile, names_ej_state_pctile), c(names_ej_supp_pctile,
     names_ej_supp_state_pctile)),
   threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"),
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   updateProgress = NULL,
   updateProgress_getblocks = NULL,
   progress_all = NULL,

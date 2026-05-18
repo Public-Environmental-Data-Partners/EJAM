@@ -5,7 +5,7 @@
 #' @details
 #'  Note these require installing the package [testthat](https://testthat.r-lib.org) first:
 #'
-#'     [EJAM:::test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
+#'     [test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
 #'
 #'     [devtools::test()]           is just a shortcut for [testthat::test_dir()], to run all tests in package.
 #'
@@ -39,12 +39,12 @@
 #' @param mydir optional folder
 #' @examples
 #' \dontrun{
-#' biglist <- EJAM:::test_ejam()
+#' biglist <- test_ejam()
 #'
-#' biglist <- EJAM:::test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
+#' biglist <- test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
 # uses defaults, except it asks you what folder to save in
 
-#' biglist <- EJAM:::test_ejam(ask = FALSE,
+#' biglist <- test_ejam(ask = FALSE,
 #'       y_runsome = TRUE, run_these = c('test', 'maps'),
 #'       mydir = "~/../Downloads/unit testing") # for example
 #'
@@ -81,7 +81,7 @@ test_ejam <- function(ask = TRUE,
 
   # prevent warning/error in R CMD check about supposedly undefined global variables in data.table code
   total <- passed <- testgroup <- flagged <- flagged_byfile <- failed_bygroup <- seconds_bygroup <- seconds_byfile <- seconds_bygroup_predicted <- untested_cant <- untested_skipped <- warned <- NULL
-  # If done via globalVariables() would throw an error when doing EJAM:::test_ejam(),
+  # If done via globalVariables() would throw an error when doing test_ejam(),
   ## Error in registerNames(names, package, ".__global__", add) :
   ##   The namespace for package "EJAM" is locked; no changes in the global variables list may be made.
   # utils::globalVariables(c(
@@ -102,16 +102,16 @@ test_ejam <- function(ask = TRUE,
 
 # Examples of using it ####
 
-?EJAM:::test_ejam
+?test_ejam
 
-x <- EJAM:::test_ejam()   # it will ask about each parameter, by default
+x <- test_ejam()   # it will ask about each parameter, by default
 
-x <- EJAM:::test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
+x <- test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
 # uses defaults, except it asks you what folder to save in
 
-x <- EJAM:::test_ejam(F)  # no questions, just defaults, i.e. these:
+x <- test_ejam(F)  # no questions, just defaults, i.e. these:
 
-x <- EJAM:::test_ejam(
+x <- test_ejam(
   ask = TRUE,
   noquestions = TRUE, # just for shapefile folder selections
 
@@ -361,7 +361,7 @@ x <- EJAM:::test_ejam(
         "test-webapp-shp-zip-functionality.R"
       ),
       test_test = c(
-        # "test-test.R", #   fast way to check this script via  biglist <- EJAM:::test_ejam(ask = FALSE, y_runsome = T, run_these = 'test')
+        # "test-test.R", #   fast way to check this script via  biglist <- test_ejam(ask = FALSE, y_runsome = T, run_these = 'test')
         "test-test2.R",  #   fast way to check this script
         "test-test1.R"
       ),
@@ -452,7 +452,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     ## note overly long test names ####
     # report on test names that seem too long to be useful
 
-    xx = EJAM:::find_in_files(pattern = "_that[^,]*,", path = "./tests/testthat", ignorecomments = T, whole_line = FALSE, quiet = T)
+    xx = find_in_files(pattern = "_that[^,]*,", path = "./tests/testthat", ignorecomments = T, whole_line = FALSE, quiet = T)
     xx = lapply(xx, function(y) gsub("t_that\\(", "", y))
     z = (lapply(xx, function(y) cbind(y[nchar(y) > 80])))
     z = z[sapply(z, length) > 0]  ## use sapply for cleaner code

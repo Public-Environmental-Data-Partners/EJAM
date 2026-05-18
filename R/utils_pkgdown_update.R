@@ -90,9 +90,9 @@
 #'
 #' @param doask whether to ask about each input parameter, for interactively picking settings
 #'
-#' @param dotests run unit tests first? uses EJAM:::test_ejam()
+#' @param dotests run unit tests first? uses test_ejam()
 #' @param testinteractively related to unit testing
-#' @param doyamlcheck report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?
+#' @param doyamlcheck report on the yaml file via dataset_pkgdown_yaml_check() ?
 #' @param dodocument use `roxygen2::roxygenise()` to regenerate documentation?
 #'   Usually should leave TRUE.
 #' @param doinstall use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky
@@ -184,7 +184,7 @@ pkgdown_update = function(
   if (dotests) {
     cat('doing unit tests \n')
     print(Sys.time())
-    EJAM:::test_ejam(ask = doask & interactive() & testinteractively )
+    test_ejam(ask = doask & interactive() & testinteractively )
     print(Sys.time())
   }
   #################### #
@@ -236,7 +236,7 @@ pkgdown_update = function(
     #devtools::load_all(quiet = T, helpers = F, export_all = T)
     #    dataset_pkgdown_yaml_check() will not work without the unexported dataset_pkgdown_yaml_check() available
     cat('Using dataset_pkgdown_yaml_check() which includes pkgdown_sitrep(), which reports status of all checks ... \n')
-    missing_from_yml <- EJAM:::dataset_pkgdown_yaml_check() #  needs EJAM::: if haven't just done load_all(export_all=T)
+    missing_from_yml <- dataset_pkgdown_yaml_check()
     # that prints some results to console.
     # `pkgdown::pkgdown_sitrep()` does, among other things,
     #   confirm the URL for publishing the pkgdown site listed in _pkgdown.yml

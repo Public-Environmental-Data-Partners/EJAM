@@ -95,7 +95,7 @@ table_xls_format <- function(overall,
                              buffer_desc = "Selected Locations",
 
                              # specify columns with URLs/links to 1-site reports, etc.
-                             reports = EJAM:::global_or_param("default_reports"),
+                             reports = global_or_param("default_reports"),
 
                              # plot
                              ok2plot = TRUE,
@@ -167,7 +167,7 @@ table_xls_format <- function(overall,
     } else {
       eachsite <- overall$results_bysite
     }
-    if (is.null(sitetype)) {sitetype <- EJAM:::sitetype_from_dt(eachsite)}
+    if (is.null(sitetype)) {sitetype <- sitetype_from_dt(eachsite)}
 
     if (!("results_overall" %in% names(overall))) {
       overall <- NULL # unusual situation we will try to accommodate

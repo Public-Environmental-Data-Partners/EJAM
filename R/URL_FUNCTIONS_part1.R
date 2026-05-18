@@ -52,7 +52,7 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
 #' @param url the URL to check
 #' @return TRUE or FALSE (but NA if no internet connection seems to be available at all)
 #' @details
-#' Also see EJAM:::global_or_param("ejamapi_is_down")
+#' Also see global_or_param("ejamapi_is_down")
 #'    as set in global_defaults_package.R
 #'
 #' @keywords internal

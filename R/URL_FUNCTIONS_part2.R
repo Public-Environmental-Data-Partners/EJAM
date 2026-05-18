@@ -14,7 +14,7 @@
 ################################################### #################################################### #
 ## NOTES ON URL LINKS/ SITES / REPORTS:
 
-# > reportinfo = EJAM:::global_or_param("default_reports")
+# > reportinfo = global_or_param("default_reports")
 # data.frame(header = sapply(reportinfo, function(x) x$header), text = sapply(reportinfo, function(x) x$text))
 #                header         text
 # 1         EJAM Report       Report
@@ -669,7 +669,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 
   ## if new API is down, return general links to info page ### #
   if (TRUE) { # was checking old epa api now obsolete
-    if (isTRUE(EJAM:::global_or_param("ejamapi_is_down"))) {
+    if (isTRUE(global_or_param("ejamapi_is_down"))) {
       urlx <- rep('https://ejanalysis.org', length(urlx))
       if (as_html) {
         urlx <- URLencode(urlx)

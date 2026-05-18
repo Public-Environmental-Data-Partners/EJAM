@@ -18,7 +18,7 @@ ejam2excel(
   radius_or_buffer_in_miles = NULL,
   radius_or_buffer_description = NULL,
   buffer_desc = "Selected Locations",
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   ok2plot = TRUE,
   report_plot = NULL,
   plot_distance_by_group = FALSE,

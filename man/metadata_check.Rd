@@ -38,11 +38,11 @@ but it is not coded to be able to check attributes without doing that.
 }
 \examples{
 \dontrun{
-x = EJAM:::metadata_check( which = "ejam_package_version")
+x = metadata_check( which = "ejam_package_version")
 
 
-  # tail(EJAM:::metadata_check( ))
-  EJAM:::metadata_check(packages = NULL)
+  # tail(metadata_check( ))
+  metadata_check(packages = NULL)
 
   x <- EJAM:::metadata_check_print("EJAM")
   x[x$has_metadata == TRUE, ]
