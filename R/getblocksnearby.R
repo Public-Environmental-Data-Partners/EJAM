@@ -74,25 +74,14 @@ getblocksnearby <- function(sitepoints, radius = 3, maxradius = 31.07, radius_do
 
   # timed <- system.time({
   if (missing(quadtree)) {
-    if (exists("localtree")) {
-      quadtree <- localtree
-    } else {    #  SEE IF WE EVER NEED TO OR EVEN CAN CREATE THIS ON THE FLY HERE FOR SOME INTERACTIVE USERS, BUT SHOULD NOT BE AN ISSUE IF PKG LOADED
-      if (!exists("quaddata") || !exists("blockwts") || !exists("blockpoints") ) {  #| !exists("bgid2fips")
-        # should
-        cat('census block data file(s) not already loaded, so key data will now be downloaded (or loaded from a local copy if possible)...\n')
-        # loads quaddata needed to make localtree index, and several other large files pkg uses.
+    if (!exists("quaddata") || !exists("blockwts") || !exists("blockpoints") ) {  #| !exists("bgid2fips")
+      # should
+      cat('census block data file(s) not already loaded, so key data will now be downloaded (or loaded from a local copy if possible)...\n')
+      # loads quaddata needed to make localtree index, and several other large files pkg uses.
 
-        dataload_dynamic(varnames = c('quaddata', 'blockwts', 'blockpoints')) # and blockid2fips and bgid2fips and bgej are available
-      }
-      #
-      # localtree <- SearchTrees::createTree( quaddata, treeType = "quad", dataType = "point")
-      indexblocks() # not really tested yet in this context
-      quadtree <- localtree
-      # stop(paste0("Nationwide index of block locations is required but missing (quadtree parameter default is called localtree but was not found). ",
-      #             'Try this: \n\n',
-      #             'localtree <- SearchTrees::createTree( quaddata, treeType = "quad", dataType = "point") \n\n'
-      # ))
+      dataload_dynamic(varnames = c('quaddata', 'blockwts', 'blockpoints')) # and blockid2fips and bgid2fips and bgej are available
     }
+    quadtree <- indexblocks()
   }
   if (!quiet) {
     cat("Analyzing", NROW(sitepoints), "points, radius of", radius, "miles around each.\n")

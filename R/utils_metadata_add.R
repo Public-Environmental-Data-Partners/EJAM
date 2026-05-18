@@ -52,11 +52,12 @@ metadata_update_attr <- function(x,
     if (exclude_atomic_vectors && is.atomic(get(x[i])) && is.vector(get(x[i]))) {
       # ignore this object
     } else {
-    assign("newvalue", newvalue, envir = globalenv()) # so it can be in global env when eval() tries to see it there
-    src = paste0("attr(", x[i], ", '", attr_name, "') <- get('newvalue')")
-    # e.g.,   attr(avg.in.us, "ejam_package_version") <- desc::desc_get("Version")
-    print(src)
-    eval(parse(text = src), envir = globalenv())
+    expr <- substitute(
+      attr(object, attr_name) <- value,
+      list(object = as.name(x[i]), attr_name = attr_name, value = newvalue)
+    )
+    print(deparse1(expr))
+    eval(expr, envir = globalenv())
     src = paste0("usethis::use_data(", x[i], ", overwrite = TRUE)")
     print(src)
     eval(parse(text = src))

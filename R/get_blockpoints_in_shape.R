@@ -102,9 +102,10 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
 } else {
   earthRadius_miles <- 3959
   radians_per_degree <- pi / 180
+  quadtree <- localtree_get()
 
   blockpoints_filt <- lapply(bbox_polys, function(a) {
-    SearchTrees::rectLookup(localtree,
+    SearchTrees::rectLookup(quadtree,
                             xlims = c(earthRadius_miles * cos(a$ymin * radians_per_degree) * cos(a$xmin * radians_per_degree),
                                       earthRadius_miles * cos(a$ymax * radians_per_degree) * cos(a$xmax * radians_per_degree)),
                             ylims = c(earthRadius_miles * sin(a$ymin * radians_per_degree), earthRadius_miles * sin(a$ymax * radians_per_degree)))

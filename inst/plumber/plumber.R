@@ -18,7 +18,7 @@
 
 library(EJAM) #   uses installed version
 if (!exists("blockwts")) dataload_dynamic("blockwts")
-if (!exists("localtree")) indexblocks()
+if (!EJAM:::localtree_exists()) indexblocks()
 
 library(rlang)
 

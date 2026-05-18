@@ -298,11 +298,10 @@ speedtest <- function(n=10, sitepoints=NULL, fips=NULL, shapefile=NULL, analysis
   # 3.1 miles IS 5 KM ... 5*1000/ meters_per_mile
 
   # MAKE SURE localtree INDEX OF ALL US BLOCKS IS AVAILABLE FROM EJAM PACKAGE
-  if (analysis_type == "points" && !exists("localtree")) {
+  if (analysis_type == "points" && !localtree_exists()) {
     step0 <- system.time({
       cat("Creating national index of block locations (localtree) since it was not found.\n")
-      indexblocks()
-      quadtree <- localtree
+      quadtree <- indexblocks()
       cat("Finished createTree()\n")
 
       #time to create quadtree 1.116 seconds

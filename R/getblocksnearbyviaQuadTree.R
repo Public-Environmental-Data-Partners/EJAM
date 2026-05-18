@@ -147,7 +147,7 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
 
     ### * FAST SEARCH - WHICH BLOCKS ARE APPROX NEARBY ####
 
-    vec <- SearchTrees::rectLookup(localtree,
+    vec <- SearchTrees::rectLookup(quadtree,
                                    xlims = FAC_X[a] + c(-1,1) * truedistance,
                                    ylims = FAC_Z[a] + c(-1,1) * truedistance
     )
