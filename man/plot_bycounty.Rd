@@ -25,7 +25,7 @@ plot_bycounty(
 \item{mystate}{name of state}
 
 \item{labeltype}{as from scales package.  for continuous scales:
-label_bytes(), label_number_auto(), label_number_si(), label_ordinal(),
+label_bytes(), \code{\link[scales:label_number_auto]{scales::label_number_auto()}}, label_number_si(), label_ordinal(),
 label_parse(), label_percent(), label_pvalue(), label_scientific()}
 
 \item{acsinfo}{large table of metadata as from load_variables() function

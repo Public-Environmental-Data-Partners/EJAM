@@ -100,7 +100,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       shiny::observe({   # WHEN CLICK ON MAP, GET LAT LON VALUE AND SHOW IT ON THE MAP
 
         # Each kind of Incremental change to the map should be performed in its own observer.
-        leaflet::leafletProxy("mymap", session) %>% clearMarkers()
+        leaflet::leafletProxy("mymap", session) %>% leaflet::clearMarkers()
         # to remove just a specific one they click on, use its id # removeMarker("mycircle") # or input$mymap_marker_click$id
         event <- input$mymap_click
         if (is.null(event)) {return()}
@@ -125,7 +125,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       shiny::observe({   # WHEN RADIUS SLIDER MOVED, CHANGE RADIUS SHOWN ON MAP
         shiny::req(input$mymap_click)
         # Each kind of Incremental change to the map should be performed in its own observer.
-        leaflet::leafletProxy("mymap", session) %>% clearMarkers()
+        leaflet::leafletProxy("mymap", session) %>% leaflet::clearMarkers()
         event <- input$pointradius_input
         if (is.null(event)) {return()}
         shiny::isolate({

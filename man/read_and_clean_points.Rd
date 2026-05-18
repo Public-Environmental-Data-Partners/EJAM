@@ -42,8 +42,6 @@ is similar to what is done by EJAM  ::latlon_from_anything()
 
 except it also uses these functions:
 
-EJAM  ::latlon_from_siteid()
-
 EJAM  ::latlon_from_programid()  but not  _from_naics() ?
 }
 \seealso{

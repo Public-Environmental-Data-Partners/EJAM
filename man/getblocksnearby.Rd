@@ -11,9 +11,7 @@ getblocksnearby(
   radius_donut_lower_edge = 0,
   avoidorphans = FALSE,
   quadtree = NULL,
-  quaddatatable = NULL,
   quiet = FALSE,
-  parallel = FALSE,
   use_unadjusted_distance = TRUE,
   ...
 )
@@ -46,12 +44,8 @@ created using indexblocks() which uses the SearchTree package.
 Takes about 2-5 seconds to create this each time it is needed.
 It can be automatically created when the package is attached via the .onAttach() function}
 
-\item{quaddatatable}{Not currently used}
-
 \item{quiet}{Optional. set to TRUE to avoid message about using getblock_diagnostics(),
 which is relevant only if a user saved the output of this function.}
-
-\item{parallel}{Not implemented}
 
 \item{use_unadjusted_distance}{logical, whether to find points within unadjusted distance}
 

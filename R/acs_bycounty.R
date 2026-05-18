@@ -80,7 +80,7 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = NULL) {
 #' @param myvarnames optional friendlier names of myvars
 #' @param mystate name of state
 #' @param labeltype as from scales package.  for continuous scales:
-#'   label_bytes(), label_number_auto(), label_number_si(), label_ordinal(),
+#'   label_bytes(), [scales::label_number_auto()], label_number_si(), label_ordinal(),
 #'   label_parse(), label_percent(), label_pvalue(), label_scientific()
 #'
 #' @param acsinfo large table of metadata as from load_variables() function
@@ -102,7 +102,7 @@ plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate 
   }
   # if (exists("get_acs") & exists("str_remove") & exists("label_number_auto")) {  # now in Imports of DESCRIPTION file
   # see acs_bycounty() notes
-  if (is.null(labeltype)) {labeltype <- label_number_auto()} # requires scales pkg
+  if (is.null(labeltype)) {labeltype <- scales::label_number_auto()} # requires scales pkg
   if (missing(mystate) || is.null(mystate)) {
     mystate <- gsub("^.*, ", "", x$NAME[1])
   }
@@ -114,7 +114,7 @@ plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate 
   if (missing(myvarnames) || is.null(myvarnames)) {
     if (missing(acsinfo)) {
       cat("downloading acs variable information to get myvarnames (plain English names of variables) ... \n")
-      acsinfo <- load_variables(yr, "acs5")  # requires tidycensus package
+      acsinfo <- tidycensus::load_variables(yr, "acs5")  # requires tidycensus package
     }
     myvarnames <- acsinfo$label[match(myvars, acsinfo$name)]   # match is ok since each unique name should appear only once in acsinfo table.  anyDuplicated(acsinfo$name)
     shortname <- gsub(".*!!([^!]*)$", "\\1", myvarnames)  # e.g., Male:  or
@@ -128,7 +128,7 @@ plot_bycounty <- function(x, myvars = x$variable[1], myvarnames = NULL, mystate 
   plot_errorbar <- ggplot2::ggplot(x,
                                    ggplot2::aes(x = estimate,
                                                 y = reorder(NAME, estimate))) +
-    ggplot2::geom_errorbar(aes(xmin = estimate - moe, xmax = estimate + moe), #<<
+    ggplot2::geom_errorbar(ggplot2::aes(xmin = estimate - moe, xmax = estimate + moe), #<<
                            width = 0.5, linewidth = 0.5) + #<<
     ggplot2::geom_point(color = "darkblue", size = 2) +
 

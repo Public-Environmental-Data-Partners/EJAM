@@ -42,7 +42,7 @@ mod_ui_lasso <- function(id) {
   ns <- NS(id)
 
   fluidPage(
-    leafletOutput(ns("map")),
+    leaflet::leafletOutput(ns("map")),
     actionButton(inputId = ns("clear"), "Clear Selection"),
     verbatimTextOutput(ns("selected_output"))
   )

@@ -24,7 +24,7 @@ if (FALSE) { # if/when ready, make it a function
   #
   #   bysite |>
   #     filter("Demog Index State Percentile" %in% c( "High Demog.Index (at least 80th pctile in State)", "All Other Sites")) |>
-  #     # ggplot(aes(pop)) +
+  #     # ggplot2::ggplot(ggplot2::aes(pop)) +
   #     ggplot2::ggplot(ggplot2::aes(x = pop, colour = "Demog Index State Percentile")) +
   #
   #     stat_lorenz(desc = TRUE) +  # from the gglorenz package, not in Imports or Suggests for now

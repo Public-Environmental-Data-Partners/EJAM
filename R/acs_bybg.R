@@ -213,7 +213,7 @@ acs_bybg <- function(
     warning( "Specify either variables or table parameter; they cannot be combined. Using variables and ignoring table parameter")
     table = NULL
   }
-  # x <- load_variables(year, survey) # slow and requires tidycensus package
+  # x <- tidycensus::load_variables(year, survey) # slow and requires tidycensus package
   # print(x[grepl("b01001_", x$name, ignore.case = T) & grepl("Female", x$label) & grepl("group", x$geography), ], n = 25)
   allstates <- list()
 

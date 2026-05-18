@@ -458,7 +458,7 @@ map_blockgroups_over_blocks <- function(y) {
   bgids_arrow <- arrow::Array$create(bgids)
 
   bgfips <- bgid2fips_arrow %>%
-    mutate(bgid = cast(.data$bgid, arrow::string())) %>%
+    mutate(bgid = arrow::cast(.data$bgid, arrow::string())) %>%
     filter(.data$bgid %in% bgids) %>%
     select(bgfips) %>%
     collect() %>%

@@ -247,11 +247,11 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
 
   # ggplot2::ggplot(
   #   ratio.to.us.d.overall,
-  #   aes(x = indicator, y = value)
+  #   ggplot2::aes(x = indicator, y = value)
   # ) +
-  #   geom_boxplot() +
-  #   geom_hline(aes(yintercept = 1)) +
-  #   labs(x = "",
+  #   ggplot2::geom_boxplot() +
+  #   ggplot2::geom_hline(ggplot2::aes(yintercept = 1)) +
+  #   ggplot2::labs(x = "",
   #        y = "Ratio of Indicator values for avg. person in selected locations\n vs. US average value",
   #        title = 'Ratio vs. US Average for Residential Population Indicators')
 }
