@@ -109,7 +109,17 @@ test_that("plot_vs_us box type draws a base plot and returns plot data invisibly
   })
 
   expect_type(out, "list")
-  expect_named(out, c("boxplot", "data", "sampled_data", "means", "notes", "axis_mean_labels"))
+  expect_named(out, c(
+    "boxplot",
+    "data",
+    "sampled_data",
+    "means",
+    "notes",
+    "axis_mean_labels",
+    "location_fill_colors",
+    "box_fill_colors",
+    "mean_line_colors"
+  ))
   expect_match(out$notes$distribution, "not population-weighted quantiles")
   expect_match(out$notes$mean, "The white squares/lines show population")
   expect_match(out$notes$plot_note, "The boxplots")
@@ -117,6 +127,50 @@ test_that("plot_vs_us box type draws a base plot and returns plot data invisibly
   expect_true("axis_mean_labels" %in% names(out))
   expect_setequal(out$axis_mean_labels$location, c("All Blockgroups Nationwide", "At Sites Analyzed"))
   expect_true(all(grepl("^Avg\\. resident: ", out$axis_mean_labels$label)))
+})
+
+test_that("plot_vs_us aligns colors to location labels when custom reference labels sort after sites", {
+  bysite <- plot_vs_us_bysite_testdata()
+  refdata <- plot_vs_us_refdata_testdata(4)
+  colorfills <- c("lightblue", "yellow")
+  grDevices::pdf(file = tempfile(fileext = ".pdf"))
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  out <- plot_vs_us(
+    bysite,
+    refdata = refdata,
+    refarealabel = "Delaware Blockgroups",
+    type = "box",
+    nsample = 2,
+    colorfills = colorfills
+  )
+
+  expect_identical(
+    out$location_fill_colors[c("Delaware Blockgroups", "At Sites Analyzed")],
+    stats::setNames(colorfills, c("Delaware Blockgroups", "At Sites Analyzed"))
+  )
+  expect_identical(
+    out$box_fill_colors,
+    unname(out$location_fill_colors[out$boxplot$names])
+  )
+  expect_identical(
+    out$mean_line_colors,
+    out$location_fill_colors[names(out$mean_line_colors)]
+  )
+
+  p <- plot_vs_us(
+    bysite,
+    refdata = refdata,
+    refarealabel = "Delaware Blockgroups",
+    nsample = 2,
+    colorfills = colorfills
+  )
+  fill_scale <- p$scales$get_scales("fill")
+
+  expect_identical(
+    fill_scale$palette(2)[c("Delaware Blockgroups", "At Sites Analyzed")],
+    stats::setNames(colorfills, c("Delaware Blockgroups", "At Sites Analyzed"))
+  )
 })
 
 test_that("plot_vs_us ggplot includes per-location mean labels under the violins", {

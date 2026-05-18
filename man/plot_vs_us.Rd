@@ -83,7 +83,8 @@ For \code{type = "ggplot"}, a \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} ob
 a plotly htmlwidget. For \code{type = "box"}, draws a base R plot and invisibly
 returns a list containing the boxplot result, plotted data, mean values, and
 explanatory plot notes, including the per-location mean labels shown under
-the x-axis categories.
+the x-axis categories and the location-aligned color mappings used by the
+base plot.
 }
 \description{
 Visualize one indicator from \code{ejamit()$results_bysite} against the same

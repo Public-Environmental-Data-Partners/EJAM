@@ -51,7 +51,8 @@
 #' a plotly htmlwidget. For `type = "box"`, draws a base R plot and invisibly
 #' returns a list containing the boxplot result, plotted data, mean values, and
 #' explanatory plot notes, including the per-location mean labels shown under
-#' the x-axis categories.
+#' the x-axis categories and the location-aligned color mappings used by the
+#' base plot.
 #'
 #' @examples
 #' \donttest{
@@ -154,12 +155,24 @@ plot_vs_us <- function(bysite = NULL,
 
   data.table::setnames(both, varname, "literalvarname")
   data.table::setnames(both_sample, varname, "literalvarname")
+  location_fill_colors <- plot_vs_us_location_values(
+    refarealabel = refarealabel,
+    siteslabel = siteslabel,
+    values = colorfills
+  )
+  location_outline_colors <- plot_vs_us_location_values(
+    refarealabel = refarealabel,
+    siteslabel = siteslabel,
+    values = c("gray35", "black")
+  )
+  both[, Locations := factor(Locations, levels = names(location_fill_colors))]
+  both_sample[, Locations := factor(Locations, levels = names(location_fill_colors))]
 
   bothmeansinfo <- both[, .(
     mean = stats::weighted.mean(literalvarname, w = pop, na.rm = TRUE)
   ), by = "Locations"]
   data.table::setorder(bothmeansinfo, Locations)
-  bothmeans <- bothmeansinfo$mean
+  bothmeans <- stats::setNames(bothmeansinfo$mean, as.character(bothmeansinfo$Locations))
 
   varlabel <- fixcolnames(varname, "r", "shortlabel")
   title_refarealabel <- plot_vs_us_title_ref_label(refarealabel)
@@ -183,7 +196,7 @@ plot_vs_us <- function(bysite = NULL,
       siteslabel = siteslabel,
       siteidlabel = siteidlabel,
       notes = notes,
-      colorfills = colorfills,
+      location_fill_colors = location_fill_colors,
       box.cex.ref = box.cex.ref,
       box.cex.here = box.cex.here,
       box.pch.ref = box.pch.ref,
@@ -207,7 +220,8 @@ plot_vs_us <- function(bysite = NULL,
     maintitle = maintitle,
     notes = notes,
     bothmeansinfo = bothmeansinfo,
-    colorfills = colorfills
+    location_fill_colors = location_fill_colors,
+    location_outline_colors = location_outline_colors
   )
 }
 
@@ -288,7 +302,7 @@ plot_vs_us_base_boxplot <- function(both,
                                     siteslabel,
                                     siteidlabel,
                                     notes,
-                                    colorfills,
+                                    location_fill_colors,
                                     box.cex.ref,
                                     box.cex.here,
                                     box.pch.ref,
@@ -301,6 +315,7 @@ plot_vs_us_base_boxplot <- function(both,
   old_mar <- graphics::par("mar")
   graphics::par(mar = old_mar + c(4.5, 0, 1, 0))
   on.exit(graphics::par(mar = old_mar), add = TRUE)
+  box_fill_colors <- unname(location_fill_colors[levels(both$Locations)])
 
   boxresult <- do.call(
     graphics::boxplot,
@@ -309,7 +324,7 @@ plot_vs_us_base_boxplot <- function(both,
         formula = literalvarname ~ Locations,
         data = both,
         ylab = ylabel,
-        col = colorfills,
+        col = box_fill_colors,
         xlab = "",
         main = plot_vs_us_wrap_note(maintitle, width = 70),
         xaxt = "n"
@@ -355,9 +370,11 @@ plot_vs_us_base_boxplot <- function(both,
   }
   text(x = xv, y = yv, labels = siteidlabel, pos = 4, cex = 0.6)
 
-  points(1:2, bothmeans, col = "black", pch = 22, bg = "white", cex = 3)
-  abline(h = bothmeans[1], col = colorfills[1])
-  abline(h = bothmeans[2], col = colorfills[2])
+  points(seq_along(boxresult$names), bothmeans[boxresult$names], col = "black", pch = 22, bg = "white", cex = 3)
+  mean_line_colors <- location_fill_colors[names(bothmeans)]
+  for (location in names(mean_line_colors)) {
+    graphics::abline(h = bothmeans[[location]], col = mean_line_colors[[location]])
+  }
 
   list(
     boxplot = boxresult,
@@ -365,7 +382,10 @@ plot_vs_us_base_boxplot <- function(both,
     sampled_data = both_sample,
     means = bothmeansinfo,
     notes = notes,
-    axis_mean_labels = axis_mean_labels
+    axis_mean_labels = axis_mean_labels,
+    location_fill_colors = location_fill_colors,
+    box_fill_colors = unname(location_fill_colors[boxresult$names]),
+    mean_line_colors = mean_line_colors
   )
 }
 
@@ -398,14 +418,21 @@ plot_vs_us_plotly <- function(both_sample, maintitle, notes) {
     plotly::highlight("plotly_selected")
 }
 
-plot_vs_us_ggplot <- function(both, both_sample, varlabel, maintitle, notes, bothmeansinfo, colorfills) {
+plot_vs_us_ggplot <- function(both,
+                              both_sample,
+                              varlabel,
+                              maintitle,
+                              notes,
+                              bothmeansinfo,
+                              location_fill_colors,
+                              location_outline_colors) {
   axis_mean_labels <- plot_vs_us_axis_mean_labels(bothmeansinfo)
   ggplot2::ggplot(
     both,
     ggplot2::aes(x = Locations, y = literalvarname, color = Locations, fill = Locations)
   ) +
-    ggplot2::scale_color_manual(values = c("gray35", "black")) +
-    ggplot2::scale_fill_manual(values = colorfills) +
+    ggplot2::scale_color_manual(values = location_outline_colors) +
+    ggplot2::scale_fill_manual(values = location_fill_colors) +
     ggplot2::geom_violin(
       alpha = 0.15,
       trim = FALSE,
@@ -445,8 +472,13 @@ plot_vs_us_ggplot <- function(both, both_sample, varlabel, maintitle, notes, bot
 plot_vs_us_axis_mean_labels <- function(bothmeansinfo) {
   out <- data.table::as.data.table(data.table::copy(bothmeansinfo))
   out[, "label" := paste0("Avg. resident: ", format(round(mean, 1), nsmall = 1, trim = TRUE))]
-  out[, "location" := out[["Locations"]]]
+  out[, "location" := as.character(out[["Locations"]])]
+  out[, "Locations" := out[["location"]]]
   out[, c("location", "Locations", "mean", "label"), with = FALSE]
+}
+
+plot_vs_us_location_values <- function(refarealabel, siteslabel, values) {
+  stats::setNames(values, c(refarealabel, siteslabel))
 }
 
 plot_vs_us_title_ref_label <- function(refarealabel) {
