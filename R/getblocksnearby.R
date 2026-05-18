@@ -28,8 +28,6 @@
 #'    The blocks are pre-indexed for the whole USA, via the data object quadtree aka localtree
 #'
 #' @inheritParams getblocksnearbyviaQuadTree
-#' @param quaddatatable Not currently used
-#' @param parallel Not implemented
 #' @param ...  passed to [getblocksnearbyviaQuadTree()] or other such functions
 #'
 #' @return table in [data.table](https://r-datatable.com) format like testoutput_getblocksnearby_10pts_1miles, with
@@ -45,18 +43,9 @@
 #'
 getblocksnearby <- function(sitepoints, radius = 3, maxradius = 31.07, radius_donut_lower_edge = 0,
                              avoidorphans = FALSE,
-                             # indexgridsize,
                              quadtree = NULL,
-                             quaddatatable = NULL,
                              quiet = FALSE,
-                             parallel = FALSE,
                              use_unadjusted_distance = TRUE,
-                             # a new approach that just uses the distance between site and block when determining which blocks (residents) are within radius
-                             # relevant if a block is huge relative to the radius or a block contains a site
-                             # might match EJSCREEN better?
-                             # and might be a bit faster,
-                             # and might find different pop and block count nearby a site
-                             # and might give smaller estimates of distance of site to avg person, etc.
                              ...
 ) {
   ################################################################################## #
@@ -82,8 +71,6 @@ getblocksnearby <- function(sitepoints, radius = 3, maxradius = 31.07, radius_do
   # But ok if any/orall lat and/or lon are NA values
 
   ################################################################################## #
-
-  # if (is.null(quaddatatable)) {quaddatatable <- quaddata} #?
 
   # timed <- system.time({
   if (missing(quadtree)) {
@@ -113,37 +100,13 @@ getblocksnearby <- function(sitepoints, radius = 3, maxradius = 31.07, radius_do
   ################################################################################## #
   # wrapper to make it simple to (possibly later) switch between functions to use for this, clustered vs not, etc.
 
-  if (!parallel) {
     x <- getblocksnearbyviaQuadTree(sitepoints = sitepoints, radius = radius, maxradius = maxradius,
                                     radius_donut_lower_edge = radius_donut_lower_edge,
                                     avoidorphans = avoidorphans,
                                     use_unadjusted_distance = use_unadjusted_distance,
-                                    # indexgridsize = indexgridsize,
                                     quadtree = quadtree,
-                                    #quaddatatable = quaddatatable,
                                     quiet = quiet,
                                     ...)
-  } else {
-    if (shiny::isRunning()) {
-      warning('parallel processing version not implemented yet')
-      return(NULL)
-
-    } else {
-      stop('parallel processing version not implemented yet')
-    }
-    x <- getblocksnearbyviaQuadTree_Clustered(sitepoints = sitepoints, radius = radius, maxradius = maxradius,
-                                              # radius_donut_lower_edge = radius_donut_lower_edge,
-                                              avoidorphans = avoidorphans,
-                                              # indexgridsize = indexgridsize,
-                                              quadtree = quadtree,
-                                              # quaddatatable = quaddatatable,
-                                              ...)
-  }
-
-
-
-  # })
-  # print(timed)
 
   return(x)
 }
