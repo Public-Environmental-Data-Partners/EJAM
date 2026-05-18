@@ -3,26 +3,6 @@
 ########################################### #
 ########################################### #
 
-## probably functions, to check and use with ::
-
-# from_check_fun
-{
-  from_check_fun = sort( c(
-    "aoi_map", # AOI package, avoiding ::
-    "expansion",
-    "geocode", # AOI package, avoiding ::
-
-    "hot_to_r", # from rhandsontable pkg
-    "rHandsontableOutput", # from rhandsontable pkg
-    "renderRHandsontable", # from rhandsontable pkg
-    "rhandsontable", # from rhandsontable pkg
-
-    "test_coverage_check" # defined in tests folder not in R folder
-  ))
-}
-########################################### #
-########################################### #
-
 ## probably belong in globalVariables:
 
 ########################################### #
@@ -743,9 +723,8 @@ if (getRversion() >= "2.15.1") {
 ########################################### #
 rm(
   from_misc, from_misc_add,
-  from_varlist, from_varlist_add,
+  from_varlist_add,
   from_datasets, from_datasets_add,
   from_check_var, from_check_var_add
 )
 ########################################### #
-
