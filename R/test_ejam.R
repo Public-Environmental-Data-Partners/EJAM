@@ -336,6 +336,7 @@ x <- test_ejam(
         "test-grepn.R",
         "test-url_package.R",
         "test-pctile_x_is_hit_by_score.R",
+        "test-plot_vs_us.R",
 
         "test-create_interactive_table.R",
         "test-shinytest2-app-dir.R"

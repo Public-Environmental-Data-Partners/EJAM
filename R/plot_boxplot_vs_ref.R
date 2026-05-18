@@ -1,323 +1,631 @@
-
-# NOTES ON PLOT FUNCTIONS
-
-# maybe
-# ejam2plot() could be a wrapper to provide
-#    a box/violin/ridgline (or just simpler bar), or scatter  or line(s) plots?
-#    for raw, ratio, pctile for D,E,EJ
-#     in US or State,
-#   at 1overall or 1site,
-#      or comparing sites like full bysite distribution,
-#      or comparing distance / as a function of distance, etc. (overall or 1site)
-#      or comparing type of site (groups of sites) (overall stats for each group)
-#    for multiple indicators (or 1 vs reference distrib.)
-
-########################################################## #
-
-#' @export
+#' Plot distribution of indicator values at analyzed sites against a reference area
 #'
-plot_boxplot_vs_ref <- function(bysite = NULL, # ejamit()$results_bysite,
-                                varname = "pctlowinc",
-                                type = 'ggplot', # "box",
-                                refarealabel = "All Blockgroups Nationwide",
-                                siteslabel = "At Sites Analyzed",
-                                siteidlabel = NULL,
-                                # could recode to allow multiple types of sites and/or reference zones more generally like for ejamit_compare_types_of_places()
-                                refdata = NULL,
-                                nsample = 5000, fix_pctcols = TRUE,
-                                colorfills = c("lightblue",  "yellow"),
-                                box.cex.ref = 0.6, box.cex.here = 2.2,
-                                box.pch.ref = 20, box.pch.here = 2,
-                                ...) {
-
-  plot_vs_us(bysite,
-             varname ,
-             type, # "box",
-             refarealabel,
-             siteslabel,
-             siteidlabel ,
-             # could recode to allow multiple types of sites and/or reference zones more generally like for ejamit_compare_types_of_places()
-             refdata,
-             nsample , fix_pctcols,
-             colorfills ,
-             box.cex.ref, box.cex.here,
-             box.pch.ref, box.pch.here,
-             ...)
-}
-########################################################## #
-
-
-#' Plot boxplot distribution of data among residents at sites vs reference area (US, etc.)
-#' @description Visualize indicator values (scores) as distributed across places
+#' @description
+#' Visualize one indicator from `ejamit()$results_bysite` against the same
+#' indicator in a reference dataset such as `blockgroupstats`.
+#'
+#' @name plot_vs_us
 #' @aliases plot_boxplot_vs_ref
 #'
 #' @seealso
-#'   See [plot_boxplot_pctiles()] for Percentile indicators compared in one plot.
-#'   See [ejam2boxplot_ratios()]
-#'   See [ejam2barplot()]  for Ratio indicators compared in one plot.
-#'   See [plot_boxplot_vs_ref()] for a Raw indicator vs. a reference distribution.
+#'   See [plot_boxplot_pctiles()] for percentile indicators compared in one plot.
+#'   See [ejam2boxplot_ratios()] and [ejam2barplot()] for ratio indicators.
 #'
 #' @details
+#' `bysite` is expected to be `ejamit()$results_bysite` or a full `ejamit()`
+#' output list containing `results_bysite`. The table must contain `pop`,
+#' `ejam_uniq_id`, and the indicator column named by `varname`.
 #'
-#'   Not population weighted, so it is the distribution across sites not residents.
+#' `refdata` must contain `pop` and the same indicator column. When `refdata`
+#' is omitted, all rows from `blockgroupstats` with non-missing population and
+#' indicator values are used.
 #'
-#'   Could be edited to allow multiple types of sites and/or reference zones
-#'   more generally like for [ejamit_compare_types_of_places()]
+#' Percentage columns in EJAM site output and `blockgroupstats` historically use
+#' different scales for some variables. With `fix_pctcols = TRUE`, those columns
+#' are rescaled to percent units before plotting.
 #'
-#' @param bysite table of results from ejamit()$results_bysite, like testoutput_ejamit_1000pts_1miles$results_bysite
-#' @param varname name of column in bysite, like  "Demog.Index"
-#' @param type "box", "plotly", or "ggplot"
-#' @param refarealabel e.g., "All blockgroups in this State"
-#' @param siteslabel e.g., "At Avg. Site Analyzed"
-#' @param siteidlabel vector of text one per site to show if type 'box'
-#' @param refdata reference area dataset, like blockgroupstats, but must have columns
-#'   named 'pop' and varname. e.g.,
-#'   ```
-#'   refdata = blockgroupstats[ST %in% "DE", .(pop, pcthisp)]
-#'   ```
-#' @param nsample to limit dots on plot of ref area like all bg in US
-#' @param colorfills two colors for boxplot
-#' @param box.cex.ref use default
-#' @param box.cex.here use default
-#' @param box.pch.ref use default
-#' @param box.pch.here description
-#' @param ... passed to boxplot()
+#' @param bysite Table of results from `ejamit()$results_bysite`, or a full
+#'   `ejamit()` output list with a `results_bysite` element.
+#' @param varname Single column name to plot, such as `"pctlowinc"`.
+#' @param type Plot type. One of `"ggplot"`, `"box"`, or `"plotly"`.
+#' @param refarealabel Label used for the reference-area rows.
+#' @param siteslabel Label used for the analyzed-site rows.
+#' @param siteidlabel Optional vector of labels, one per analyzed site, used
+#'   only when `type = "box"`. Defaults to `ejam_uniq_id`.
+#' @param refdata Reference-area data with columns `pop` and `varname`. Defaults
+#'   to `blockgroupstats`.
+#' @param nsample Maximum number of reference rows to draw as points in sampled
+#'   plot layers. If `refdata` has fewer rows, all reference rows are used.
+#' @param fix_pctcols Whether to rescale known percent-as-fraction columns to
+#'   percent units before plotting.
+#' @param colorfills Two colors: first for the reference area, second for
+#'   analyzed sites.
+#' @param box.cex.ref Point size for sampled reference rows when `type = "box"`.
+#' @param box.cex.here Point size for analyzed-site rows when `type = "box"`.
+#' @param box.pch.ref Point symbol for sampled reference rows when `type = "box"`.
+#' @param box.pch.here Point symbol for analyzed-site rows when `type = "box"`.
+#' @param ... Additional arguments passed to [boxplot()] when `type = "box"`.
+#'
+#' @return
+#' For `type = "ggplot"`, a [ggplot2::ggplot()] object. For `type = "plotly"`,
+#' a plotly htmlwidget. For `type = "box"`, draws a base R plot and invisibly
+#' returns a list containing the boxplot result, plotted data, mean values, and
+#' explanatory plot notes, including the per-location mean labels shown under
+#' the x-axis categories and the location-aligned color mappings used by the
+#' base plot.
+#'
 #' @examples
-#' \dontrun{
-#'   out <- testoutput_ejamit_1000pts_1miles
-#'   # ejam2boxplot(out)
-#'   # plot_boxplot_vs_ref(out$results_bysite)
-#'   EJAM:::plot_vs_us(out$results_bysite, type = 'box')
-#'   EJAM:::plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'box', ylim=c(0, 20))
-#'   EJAM:::plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'ggplot')
-#'   EJAM:::plot_vs_us(out$results_bysite, varname = "pctnhaa", type =  'ggplot')
-#'   EJAM:::plot_vs_us(out$results_bysite, varname = "pctnhaa", type = 'box', ylim = c(0, 20))
+#' \donttest{
+#' out <- testoutput_ejamit_1000pts_1miles
+#' plot_vs_us(out$results_bysite, type = "ggplot")
+#' plot_vs_us(out$results_bysite, varname = "pctlingiso", type = "box", ylim = c(0, 20))
 #'
-#'  # td = testoutput_ejamit_1000pts_1miles$results_bysite
-#'  # EJAM:::plot_vs_us(, type = 'box')
-#'  # EJAM:::plot_vs_us(td, varname = "pctlingiso", type =  'box', ylim=c(0,20))
-#'  # EJAM:::plot_vs_us(td, varname = "pctlingiso", type =  'ggplot')
-#'  # EJAM:::plot_vs_us(td, varname = "pctnhaa", type =  'ggplot')
-#'  # EJAM:::plot_vs_us(td, varname = "pctnhaa", type = 'box', ylim = c(0,20))
-#'  # EJAM:::plot_vs_us(td[td$ST %in% "DE", ], 'pcthisp',
-#'  #   refdata = blockgroupstats[ST %in% "DE", .(pop, pcthisp)])
-#'   }
-#'
-#' @return plots
+#' td <- testoutput_ejamit_1000pts_1miles$results_bysite
+#' plot_vs_us(
+#'   td[td$ST %in% "DE", ],
+#'   "pcthisp",
+#'   refdata = blockgroupstats[ST %in% "DE", .(pop, pcthisp)],
+#'   refarealabel = "Delaware Blockgroups"
+#' )
+#' }
 #'
 #' @export
-#' @keywords internal
-#'
-plot_vs_us <- function(bysite = NULL, # ejamit()$results_bysite,
+plot_boxplot_vs_ref <- function(bysite = NULL,
+                                varname = "pctlowinc",
+                                type = "ggplot",
+                                refarealabel = "All Blockgroups Nationwide",
+                                siteslabel = "At Sites Analyzed",
+                                siteidlabel = NULL,
+                                refdata = NULL,
+                                nsample = 5000,
+                                fix_pctcols = TRUE,
+                                colorfills = c("lightblue", "yellow"),
+                                box.cex.ref = 0.6,
+                                box.cex.here = 2.2,
+                                box.pch.ref = 20,
+                                box.pch.here = 2,
+                                ...) {
+  plot_vs_us(
+    bysite = bysite,
+    varname = varname,
+    type = type,
+    refarealabel = refarealabel,
+    siteslabel = siteslabel,
+    siteidlabel = siteidlabel,
+    refdata = refdata,
+    nsample = nsample,
+    fix_pctcols = fix_pctcols,
+    colorfills = colorfills,
+    box.cex.ref = box.cex.ref,
+    box.cex.here = box.cex.here,
+    box.pch.ref = box.pch.ref,
+    box.pch.here = box.pch.here,
+    ...
+  )
+}
+
+#' @rdname plot_vs_us
+#' @export
+plot_vs_us <- function(bysite = NULL,
                        varname = "pctlowinc",
-                       type = 'ggplot', # "box",
+                       type = "ggplot",
                        refarealabel = "All Blockgroups Nationwide",
                        siteslabel = "At Sites Analyzed",
                        siteidlabel = NULL,
-                       # could recode to allow multiple types of sites and/or reference zones more generally like for ejamit_compare_types_of_places()
                        refdata = NULL,
-                       nsample = 5000, fix_pctcols = TRUE,
-                       colorfills = c("lightblue",  "yellow"),
-                       box.cex.ref = 0.6, box.cex.here = 2.2,
-                       box.pch.ref = 20, box.pch.here = 2,
+                       nsample = 5000,
+                       fix_pctcols = TRUE,
+                       colorfills = c("lightblue", "yellow"),
+                       box.cex.ref = 0.6,
+                       box.cex.here = 2.2,
+                       box.pch.ref = 20,
+                       box.pch.here = 2,
                        ...) {
+  type <- plot_vs_us_check_type(type)
+  plot_vs_us_check_scalar_character(varname, "varname")
+  plot_vs_us_check_scalar_character(refarealabel, "refarealabel")
+  plot_vs_us_check_scalar_character(siteslabel, "siteslabel")
+  nsample <- plot_vs_us_check_nsample(nsample)
+  plot_vs_us_check_colorfills(colorfills)
 
-  warning("draft function")
+  sites <- plot_vs_us_prepare_sites(
+    bysite = bysite,
+    varname = varname,
+    siteslabel = siteslabel
+  )
+  ref <- plot_vs_us_prepare_refdata(
+    refdata = refdata,
+    varname = varname,
+    refarealabel = refarealabel,
+    fix_pctcols = fix_pctcols
+  )
+  notes <- plot_vs_us_plot_notes(n_sites = nrow(sites), type = type)
 
-  # bysite
+  sample_n <- min(nsample, nrow(ref))
+  sample_i <- if (sample_n > 0) sample.int(nrow(ref), sample_n) else integer()
+
+  both_sample <- data.table::rbindlist(
+    list(ref[sample_i], sites),
+    use.names = TRUE
+  )
+  both <- data.table::rbindlist(
+    list(ref, sites),
+    use.names = TRUE
+  )
+
+  data.table::setnames(both, varname, "literalvarname")
+  data.table::setnames(both_sample, varname, "literalvarname")
+  location_fill_colors <- plot_vs_us_location_values(
+    refarealabel = refarealabel,
+    siteslabel = siteslabel,
+    values = colorfills
+  )
+  location_outline_colors <- plot_vs_us_location_values(
+    refarealabel = refarealabel,
+    siteslabel = siteslabel,
+    values = c("gray35", "black")
+  )
+  both[, Locations := factor(Locations, levels = names(location_fill_colors))]
+  both_sample[, Locations := factor(Locations, levels = names(location_fill_colors))]
+
+  bothmeansinfo <- both[, .(
+    mean = stats::weighted.mean(literalvarname, w = pop, na.rm = TRUE)
+  ), by = "Locations"]
+  data.table::setorder(bothmeansinfo, Locations)
+  bothmeans <- stats::setNames(bothmeansinfo$mean, as.character(bothmeansinfo$Locations))
+
+  varlabel <- fixcolnames(varname, "r", "shortlabel")
+  title_refarealabel <- plot_vs_us_title_ref_label(refarealabel)
+  maintitle <- paste0(
+    "Comparison of ",
+    varlabel,
+    ": ",
+    siteslabel,
+    " versus ",
+    title_refarealabel
+  )
+
+  if (type == "box") {
+    return(invisible(plot_vs_us_base_boxplot(
+      both = both,
+      both_sample = both_sample,
+      bothmeans = bothmeans,
+      bothmeansinfo = bothmeansinfo,
+      varlabel = varlabel,
+      maintitle = maintitle,
+      siteslabel = siteslabel,
+      siteidlabel = siteidlabel,
+      notes = notes,
+      location_fill_colors = location_fill_colors,
+      box.cex.ref = box.cex.ref,
+      box.cex.here = box.cex.here,
+      box.pch.ref = box.pch.ref,
+      box.pch.here = box.pch.here,
+      ...
+    )))
+  }
+
+  if (type == "plotly") {
+    return(plot_vs_us_plotly(
+      both_sample = both_sample,
+      maintitle = maintitle,
+      notes = notes
+    ))
+  }
+
+  plot_vs_us_ggplot(
+    both = both,
+    both_sample = both_sample,
+    varlabel = varlabel,
+    maintitle = maintitle,
+    notes = notes,
+    bothmeansinfo = bothmeansinfo,
+    location_fill_colors = location_fill_colors,
+    location_outline_colors = location_outline_colors
+  )
+}
+
+plot_vs_us_prepare_sites <- function(bysite, varname, siteslabel) {
   if (is.null(bysite)) {
-    if (interactive()) {   # request a new analysis interactively
+    if (interactive()) {
       bysite <- ejamit()$results_bysite
     } else {
-      stop("bysite is required")
+      stop("bysite is required unless running interactively.", call. = FALSE)
     }
   }
 
   if ("results_bysite" %in% names(bysite)) {
-    # looks like full output of ejamit() was provided, not just the results_bysite data.table
-    bysite <- copy(bysite$results_bysite)
-  } else {
-    bysite <- copy(bysite)
+    bysite <- bysite$results_bysite
   }
 
-  stopifnot(NCOL(varname) == 1, NROW(varname) == 1, "character" %in% class(varname), all(varname %in% colnames(bysite)))
+  bysite <- data.table::as.data.table(data.table::copy(bysite))
+  plot_vs_us_check_columns(bysite, c("pop", "ejam_uniq_id", varname), "bysite")
+  plot_vs_us_check_numeric_columns(bysite, c("pop", varname), "bysite")
 
-  # correct for different 0-1 or 0-100 scaling in blockgroupstats and ejamit()$results_bysite
   bysite <- fix_pctcols_x100(bysite, cnames = names_pct_as_fraction_ejamit)
-  data.table::setDT(bysite)
-  sites <- cbind(bysite[ , c("pop", varname, 'ejam_uniq_id'), with = FALSE], Locations = siteslabel)
-  rm(bysite)
+  bysite <- data.table::as.data.table(bysite)
+  plot_vs_us_check_numeric_columns(bysite, c("pop", varname), "bysite")
+  sites <- bysite[, c("pop", varname, "ejam_uniq_id"), with = FALSE]
+  sites[, Locations := siteslabel]
+  sites <- sites[!is.na(pop) & !is.na(get(varname))]
 
-  # refdata -- If no reference area is specified, use all US blockgroups
+  if (nrow(sites) == 0) {
+    stop("bysite has no rows with non-missing pop and ", varname, ".", call. = FALSE)
+  }
+
+  sites
+}
+
+plot_vs_us_prepare_refdata <- function(refdata,
+                                       varname,
+                                       refarealabel,
+                                       fix_pctcols) {
   if (is.null(refdata)) {
-    if (!(varname %in% names(blockgroupstats))) {stop(varname, "must be a column name in refdata (which is blockgroupstats by default)")}
-    if (is.data.table(blockgroupstats)) {
-      setDF(blockgroupstats)
-      refdata <- blockgroupstats[!is.na(blockgroupstats$pop) & !is.na(blockgroupstats[ , varname]), c("pop", varname)]
-      setDT(blockgroupstats)
-    } else {
-      refdata <- blockgroupstats[!is.na(blockgroupstats$pop) & !is.na(blockgroupstats[ , varname]), c("pop", varname)]
+    plot_vs_us_check_columns(blockgroupstats, c("pop", varname), "blockgroupstats")
+    refdata <- data.table::as.data.table(data.table::copy(blockgroupstats))
+    refdata <- refdata[!is.na(pop) & !is.na(get(varname)), c("pop", varname), with = FALSE]
+    if (!fix_pctcols) {
+      warning(
+        "fix_pctcols must be TRUE when using default blockgroupstats refdata; rescaling known percent columns anyway.",
+        call. = FALSE
+      )
     }
-    if (!fix_pctcols) {warning("if using default refdata, blockgroupstats, fix_pctcols must be TRUE and ignored if set FALSE")}
     refdata <- fix_pctcols_x100(refdata, cnames = names_pct_as_fraction_blockgroupstats)
   } else {
-    if (!(varname %in% names(refdata))) {stop(varname, "must be a column name in refdata")}
-    if (!( 'pop' %in% names(refdata))) {stop( 'pop', "must be a column name in refdata")}
+    refdata <- data.table::as.data.table(data.table::copy(refdata))
+    plot_vs_us_check_columns(refdata, c("pop", varname), "refdata")
+    refdata <- refdata[!is.na(pop) & !is.na(get(varname)), c("pop", varname), with = FALSE]
+    plot_vs_us_check_numeric_columns(refdata, c("pop", varname), "refdata")
     if (fix_pctcols) {
-      message("assuming refdata provided was a subset of blockgroupstats, so rescaling some indicators to ensure all percentages are scaled as 0-100 not 0-1")
       refdata <- fix_pctcols_x100(refdata, cnames = names_pct_as_fraction_blockgroupstats)
     }
   }
-  data.table::setDT(refdata)
-  refdata$ejam_uniq_id <- NA
-  refdata$Locations <- refarealabel
-  refdata <- refdata[!is.na(pop), ]
 
-  # Combine reference area and specified locations (e.g. near these sites)
-  # as full dataset but also a smaller sampling
-  both.sample <- rbind(refdata[sample(1:NROW(refdata), nsample), ], sites)
-  both        <- rbind(refdata, sites)
+  refdata <- data.table::as.data.table(refdata)
+  plot_vs_us_check_numeric_columns(refdata, c("pop", varname), "refdata")
+  refdata[, ejam_uniq_id := NA_integer_]
+  refdata[, Locations := refarealabel]
 
-  setnames(both,        varname, 'literalvarname')
-  setnames(both.sample, varname, 'literalvarname')
+  if (nrow(refdata) == 0) {
+    stop("refdata has no rows with non-missing pop and ", varname, ".", call. = FALSE)
+  }
 
-  bothmeansinfo <- both[ , .(
-    mean = mean(literalvarname, na.rm = T) #,
-    # both75 = quantile(literalvarname, na.rm = T, probs = 0.75, type = 1),
-    # both25 = quantile(literalvarname, na.rm = T, probs = 0.25, type = 1)
-  ), by = "Locations"]
-  setorder(bothmeansinfo, Locations) # alphabetical to match how boxplot does it
-  bothmeans = bothmeansinfo$mean
+  refdata
+}
 
-  varlabel <- fixcolnames(varname, 'r', 'shortlabel')
-  maintitle <- paste0("Comparison of ", varlabel, " among Residents ", siteslabel, " versus ", refarealabel)
+plot_vs_us_base_boxplot <- function(both,
+                                    both_sample,
+                                    bothmeans,
+                                    bothmeansinfo,
+                                    varlabel,
+                                    maintitle,
+                                    siteslabel,
+                                    siteidlabel,
+                                    notes,
+                                    location_fill_colors,
+                                    box.cex.ref,
+                                    box.cex.here,
+                                    box.pch.ref,
+                                    box.pch.here,
+                                    ...) {
+  ylabel <- varlabel
 
+  here <- siteslabel == both_sample$Locations
+  axis_mean_labels <- plot_vs_us_axis_mean_labels(bothmeansinfo)
+  old_mar <- graphics::par("mar")
+  graphics::par(mar = old_mar + c(4.5, 0, 1, 0))
+  on.exit(graphics::par(mar = old_mar), add = TRUE)
+  box_fill_colors <- unname(location_fill_colors[levels(both$Locations)])
 
-  #################################################################### #
-  if (type == 'box') {
+  boxresult <- do.call(
+    graphics::boxplot,
+    c(
+      list(
+        formula = literalvarname ~ Locations,
+        data = both,
+        ylab = ylabel,
+        col = box_fill_colors,
+        xlab = "",
+        main = plot_vs_us_wrap_note(maintitle, width = 70),
+        xaxt = "n"
+      ),
+      list(...)
+    )
+  )
+  axis_mean_labels <- axis_mean_labels[match(boxresult$names, axis_mean_labels$location), ]
+  graphics::axis(1, at = seq_along(boxresult$names), labels = boxresult$names, tick = FALSE)
+  graphics::mtext(
+    axis_mean_labels$label,
+    side = 1,
+    at = seq_along(boxresult$names),
+    line = 1.7,
+    cex = 0.6
+  )
+  graphics::mtext("Locations", side = 1, line = 3.1)
+  plot_vs_us_base_note(notes$plot_note, line = 5.2, cex = 0.55)
 
-    # y axis says what the mean values are
-    ylabel = paste0(varlabel, ': ',
-                    round(bothmeansinfo$mean[bothmeansinfo$Locations != siteslabel], 1),
-                    " in reference areas vs. ",
-                    round(bothmeansinfo$mean[bothmeansinfo$Locations == siteslabel], 1),
-                    ' at avg. site analyzed'  )
+  points(
+    jitter(1 + (siteslabel == both_sample$Locations[!here])),
+    both_sample$literalvarname[!here],
+    pch = box.pch.ref,
+    col = "darkgray",
+    cex = box.cex.ref
+  )
 
-    here <- siteslabel == both.sample$Locations
+  xv <- jitter(1 + (siteslabel == both_sample$Locations[here]))
+  yv <- both_sample$literalvarname[here]
+  points(
+    xv,
+    yv,
+    pch = box.pch.here,
+    col = "black",
+    cex = box.cex.here
+  )
 
-    boxplot(literalvarname ~ Locations, data = both, ylab = ylabel, col = colorfills,
-            xlab = "Locations (triangle size indicates population count at site & label is site ID)",
-            main = paste0(maintitle, "\n(boxplot represents a distribution over ", sum(here)," sites, not population weighted quantiles)"), ...)
+  if (is.null(siteidlabel)) {
+    siteidlabel <- both_sample$ejam_uniq_id[here]
+  } else if (length(siteidlabel) != length(xv)) {
+    warning("siteidlabel must be the same length as the list of analyzed sites; using ejam_uniq_id.", call. = FALSE)
+    siteidlabel <- both_sample$ejam_uniq_id[here]
+  }
+  text(x = xv, y = yv, labels = siteidlabel, pos = 4, cex = 0.6)
 
-    # boxplot using ~ Locations seems to sort them alphabetically, so "All Blockgroups Nationwide" is before  "At Avg. Site Analyzed"
+  points(seq_along(boxresult$names), bothmeans[boxresult$names], col = "black", pch = 22, bg = "white", cex = 3)
+  mean_line_colors <- location_fill_colors[names(bothmeans)]
+  for (location in names(mean_line_colors)) {
+    graphics::abline(h = bothmeans[[location]], col = mean_line_colors[[location]])
+  }
 
-    # draw points, one per site, and a sampling of US(reference area) blocks
+  list(
+    boxplot = boxresult,
+    data = both,
+    sampled_data = both_sample,
+    means = bothmeansinfo,
+    notes = notes,
+    axis_mean_labels = axis_mean_labels,
+    location_fill_colors = location_fill_colors,
+    box_fill_colors = unname(location_fill_colors[boxresult$names]),
+    mean_line_colors = mean_line_colors
+  )
+}
 
-    #               site population determines size of dot in plot
-    if (missing(box.cex.here)) {
-      # scale it based on pop from 1 to 5 dotsize
-      # dotsize is 1 if pop is <=100
-      # dotsize is 2.5 if pop is popmean
-      # dotsize is 5 if pop is popmax
-      # dotsize is scaled proportionately from 1 to 2.5 for pop values of 100 to popmean
-      # dotsize is scaled proportionately from 2.5 to 5 for pop values of popmean to popmax
-      popvalues <- both.sample$pop[here]
-      dotmin = 1 # 100 people ?
-      dotmean = 2.5
-      dotmax = 5 #
-      popmin = 100 # fixed
-      popmean = mean(popvalues, na.rm = T)
-      popmax =  max(popvalues, na.rm = T)
-      dotsize = rep(dotmin, length(popvalues)) # so NA pop uses that
-      dotsize[!is.na(popvalues) & popvalues <= popmean] <- dotmin + ((popvalues[!is.na(popvalues) & popvalues <= popmean] - popmin) / (popmean - popmin)) * (dotmean - dotmin)
-      dotsize[!is.na(popvalues) & popvalues > popmean] <- dotmean + ((popvalues[!is.na(popvalues) & popvalues > popmean] - popmean) / (popmax - popmean)) * (dotmax - dotmean)
-    } else {
-      # fixed
-      dotsize = box.cex.here
-    }
+plot_vs_us_plotly <- function(both_sample, maintitle, notes) {
+  plotdata <- data.table::copy(both_sample)
+  data.table::setnames(plotdata, "literalvarname", "Indicator")
+  d <- plotly::highlight_key(plotdata)
 
-    # Draw reference area points (just a random sample of them)
-    points(jitter(1 + (siteslabel == both.sample$Locations[!here])), both.sample$literalvarname[!here],
-           pch = box.pch.ref,  col = "darkgray",
-           cex = box.cex.ref) # pch = "."
+  violin <- plotly::plot_ly(d, x = ~Locations, y = ~Indicator, color = I("blue")) %>%
+    plotly::add_trace(type = "violin", name = " ")
+  plotly::subplot(violin, shareY = TRUE, titleX = TRUE, titleY = TRUE) %>%
+    plotly::layout(
+      barmode = "overlay",
+      title = list(text = maintitle),
+      showlegend = FALSE,
+      margin = list(b = 95),
+      annotations = list(list(
+        text = notes$plot_note,
+        x = 0,
+        y = -0.18,
+        xref = "paper",
+        yref = "paper",
+        xanchor = "left",
+        yanchor = "top",
+        showarrow = FALSE,
+        align = "left",
+        font = list(size = 10)
+      ))
+    ) %>%
+    plotly::highlight("plotly_selected")
+}
 
-    # Draw site points
-    xv = jitter(1 + (siteslabel == both.sample$Locations[here]))
-    yv = both.sample$literalvarname[here]
-    points(xv,  yv,
-           pch = box.pch.here, col = "black",
-           cex = dotsize)
+plot_vs_us_ggplot <- function(both,
+                              both_sample,
+                              varlabel,
+                              maintitle,
+                              notes,
+                              bothmeansinfo,
+                              location_fill_colors,
+                              location_outline_colors) {
+  axis_mean_labels <- plot_vs_us_axis_mean_labels(bothmeansinfo)
+  ggplot2::ggplot(
+    both,
+    ggplot2::aes(x = Locations, y = literalvarname, color = Locations, fill = Locations)
+  ) +
+    ggplot2::scale_color_manual(values = location_outline_colors) +
+    ggplot2::scale_fill_manual(values = location_fill_colors) +
+    ggplot2::geom_violin(
+      alpha = 0.15,
+      trim = FALSE,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_boxplot(
+      width = 0.15,
+      alpha = 0.3,
+      outlier.shape = NA,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_jitter(
+      data = both_sample,
+      size = 1,
+      width = 0.05,
+      alpha = 0.7,
+      na.rm = TRUE
+    ) +
+    plot_vs_us_ggplot_mean_line_layer(axis_mean_labels) +
+    plot_vs_us_ggplot_mean_point_layer(axis_mean_labels) +
+    plot_vs_us_ggplot_axis_mean_layer(axis_mean_labels) +
+    ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      legend.position = "none",
+      plot.caption = ggplot2::element_text(size = 7, hjust = 0, lineheight = 0.95),
+      axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 22)),
+      plot.margin = ggplot2::margin(t = 5.5, r = 5.5, b = 48, l = 5.5)
+    ) +
+    ggplot2::xlab("Locations") +
+    ggplot2::ylab(varlabel) +
+    ggplot2::ggtitle(maintitle) +
+    ggplot2::labs(caption = plot_vs_us_wrap_note(notes$plot_note, width = 145))
+}
 
-    # text label at each point with the site ID
-    if (missing(siteidlabel)) {
-      siteidlabel <- both.sample$ejam_uniq_id[here]
-    } else {
-      if (length(siteidlabel) != NROW(both.sample$ejam_uniq_id[here])) {
-        warning('siteidlabel must be same length as list of sites')
-        siteidlabel <- both.sample$ejam_uniq_id[here]
-      }
-    }
-    text(x = xv, y = yv, labels = siteidlabel, pos = 4, cex = 0.6)
+plot_vs_us_axis_mean_labels <- function(bothmeansinfo) {
+  out <- data.table::as.data.table(data.table::copy(bothmeansinfo))
+  out[, "label" := paste0("Avg. resident: ", format(round(mean, 1), nsmall = 1, trim = TRUE))]
+  out[, "location" := as.character(out[["Locations"]])]
+  out[, "Locations" := out[["location"]]]
+  out[, c("location", "Locations", "mean", "label"), with = FALSE]
+}
 
-    # Averages: draw horizontal line and point at mean value for sites and for US(ref area)
-    points(1:2, bothmeans, col = 'black', pch = 22, bg = "white", cex = 3)
-    abline(h = bothmeans[1], col = colorfills[1] )
-    abline(h = bothmeans[2], col = 'orange') # colorfills[2])
+plot_vs_us_location_values <- function(refarealabel, siteslabel, values) {
+  stats::setNames(values, c(refarealabel, siteslabel))
+}
 
+plot_vs_us_title_ref_label <- function(refarealabel) {
+  if (identical(refarealabel, "All Blockgroups Nationwide")) {
+    return("Nationwide")
+  }
+  refarealabel
+}
+
+plot_vs_us_ggplot_mean_line_layer <- function(axis_mean_labels) {
+  layer_data <- data.table::as.data.table(data.table::copy(axis_mean_labels[, c("Locations", "mean", "label"), with = FALSE]))
+  attr(layer_data, "plot_vs_us_mean_line") <- TRUE
+  ggplot2::geom_errorbar(
+    data = layer_data,
+    ggplot2::aes(x = Locations, ymin = mean, ymax = mean),
+    inherit.aes = FALSE,
+    width = 0.45,
+    linewidth = 0.5,
+    color = "black"
+  )
+}
+
+plot_vs_us_ggplot_mean_point_layer <- function(axis_mean_labels) {
+  layer_data <- data.table::as.data.table(data.table::copy(axis_mean_labels[, c("Locations", "mean", "label"), with = FALSE]))
+  attr(layer_data, "plot_vs_us_mean_point") <- TRUE
+  ggplot2::geom_point(
+    data = layer_data,
+    ggplot2::aes(x = Locations, y = mean),
+    inherit.aes = FALSE,
+    shape = 22,
+    size = 3,
+    stroke = 0.6,
+    color = "black",
+    fill = "white"
+  )
+}
+
+plot_vs_us_ggplot_axis_mean_layer <- function(axis_mean_labels) {
+  layer_data <- data.table::as.data.table(data.table::copy(axis_mean_labels[, c("Locations", "mean", "label"), with = FALSE]))
+  attr(layer_data, "plot_vs_us_axis_mean_label") <- TRUE
+  ggplot2::geom_text(
+    data = layer_data,
+    ggplot2::aes(x = Locations, y = -Inf),
+    inherit.aes = FALSE,
+    label = layer_data[["label"]],
+    size = 2.5,
+    vjust = 4.2
+  )
+}
+
+plot_vs_us_plot_notes <- function(n_sites, type) {
+  n_sites_label <- format(n_sites, big.mark = ",", scientific = FALSE)
+  distribution_prefix <- switch(
+    type,
+    box = "The boxplots and medians summarize rows",
+    ggplot = "The boxplots, violins, and medians summarize rows",
+    plotly = "The violin summarizes displayed rows"
+  )
+  distribution <- paste0(
+    distribution_prefix,
+    " (reference blockgroups and ",
+    n_sites_label,
+    " analyzed sites), not population-weighted quantiles."
+  )
+  mean <- "The white squares/lines show population-weighted average resident, not average site."
+  reference <- "Reference rows are sampled for point display."
+  plot_note <- if (type == "plotly") {
+    paste(distribution, reference)
   } else {
-    #################################################################### #
-    if (type == 'plotly') {
+    paste(distribution, mean, reference)
+  }
+  list(
+    distribution = distribution,
+    mean = mean,
+    reference = reference,
+    plot_note = plot_note
+  )
+}
 
-      setnames(both.sample, "literalvarname", "Indicator")
-      d <- plotly::highlight_key(both.sample)
-      # scatt <- plot_ly(d, x = ~Locations, y = ~Indicator) %>%
-      #   add_markers(color = I("black"))
+plot_vs_us_base_note <- function(note, line, cex, width = 120) {
+  note_lines <- strwrap(note, width = width)
+  for (i in seq_along(note_lines)) {
+    graphics::mtext(
+      note_lines[[i]],
+      side = 1,
+      line = line + ((i - 1) * 0.85),
+      adj = 0,
+      cex = cex
+    )
+  }
+}
 
-      # 'statistical trace types'
-      # hist <- plotly::plot_ly(d, x = ~factor(Locations)) %>%
-      #   plotly::add_histogram(color = I("black"))
-      # box <- plotly::plot_ly(d, x = ~Locations, y = ~Indicator, color = I("black")) %>%
-      #   plotly::add_boxplot(name = " ")
+plot_vs_us_wrap_note <- function(x, width = 85) {
+  paste(strwrap(x, width = width), collapse = "\n")
+}
 
-      violin <- plotly::plot_ly(d, x = ~Locations, y = ~Indicator, color = I("blue")) %>%
-        plotly::add_trace(type = "violin", name = " ")
-      plotly::subplot(
-        # scatt, box,
-        violin, shareY = TRUE, titleX = TRUE, titleY = TRUE) %>%
-        # subplot(hist, widths = c(.75, .25), titleX = TRUE, titleY = TRUE) %>%
-        plotly::layout(
-          barmode = "overlay",
-          title = maintitle,
-          showlegend = FALSE
-        ) %>%
-        plotly::highlight("plotly_selected")
+plot_vs_us_check_scalar_character <- function(x, name) {
+  if (!is.character(x) || length(x) != 1 || is.na(x) || !nzchar(x)) {
+    stop(name, " must be a single non-missing character value.", call. = FALSE)
+  }
+}
 
-    } else {
-      #################################################################### #
-      if (type == 'ggplot') {
+plot_vs_us_check_type <- function(type) {
+  allowed <- c("ggplot", "box", "plotly")
+  if (!is.character(type) || length(type) != 1 || is.na(type) || !(type %in% allowed)) {
+    stop(
+      "type must be one of: ",
+      paste(allowed, collapse = ", "),
+      call. = FALSE
+    )
+  }
+  type
+}
 
-        # https://r-graph-gallery.com/violin.html
+plot_vs_us_check_columns <- function(x, required, data_name) {
+  missing_cols <- setdiff(required, names(x))
+  if (length(missing_cols) > 0) {
+    stop(
+      data_name,
+      " must include column(s): ",
+      paste(missing_cols, collapse = ", "),
+      call. = FALSE
+    )
+  }
+}
 
-        ggplot2::ggplot(both.sample, ggplot2::aes(x = Locations, y = literalvarname, color = Locations, fill = Locations)) +
+plot_vs_us_check_numeric_columns <- function(x, required, data_name) {
+  non_numeric <- required[!vapply(x[, required, with = FALSE], is.numeric, logical(1))]
+  if (length(non_numeric) > 0) {
+    stop(
+      data_name,
+      " column(s) must be numeric: ",
+      paste(non_numeric, collapse = ", "),
+      call. = FALSE
+    )
+  }
+}
 
-          ggplot2::scale_color_manual(values = c( "gray", "black", "lightblue"),  aesthetics = c("color")) +
-          ggplot2::scale_color_manual(values = c(colorfills, "gray"),  aesthetics = c("fill")) +
+plot_vs_us_check_nsample <- function(nsample) {
+  if (!is.numeric(nsample) || length(nsample) != 1 || is.na(nsample) || nsample < 0) {
+    stop("nsample must be a single non-negative number.", call. = FALSE)
+  }
+  floor(nsample)
+}
 
-          ggplot2::geom_violin(ggplot2::aes(fill = Locations,
-                                   weight = pop),
-                               alpha = 0.05) +
-          ggplot2::geom_jitter(size = 1, width = 0.05) +
-          ggplot2::geom_boxplot(ggplot2::aes(x = Locations, y = literalvarname,
-                           weight = pop,
-                           alpha = 0.03, col = "gray")) +
-
-          ggplot2::theme_bw() +
-          ggplot2::theme(panel.grid = ggplot2::element_blank()) +
-          ggplot2::xlab("Locations") +
-          ggplot2::ylab(varlabel) +
-          # labs(fill = "Locations", color = "Locations") +
-          ggplot2::ggtitle(maintitle, subtitle = "Population weighted distribution (quantiles of all residents not sites)")
-      } # end ggplot
-      #################################################################### #
-    }
-  }}
+plot_vs_us_check_colorfills <- function(colorfills) {
+  if (!is.character(colorfills) || length(colorfills) != 2 || any(is.na(colorfills))) {
+    stop("colorfills must be a character vector of exactly two colors.", call. = FALSE)
+  }
+}

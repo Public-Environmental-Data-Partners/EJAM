@@ -3,8 +3,26 @@
 \name{plot_vs_us}
 \alias{plot_vs_us}
 \alias{plot_boxplot_vs_ref}
-\title{Plot boxplot distribution of data among residents at sites vs reference area (US, etc.)}
+\title{Plot indicator values at analyzed sites against a reference area}
 \usage{
+plot_boxplot_vs_ref(
+  bysite = NULL,
+  varname = "pctlowinc",
+  type = "ggplot",
+  refarealabel = "All Blockgroups Nationwide",
+  siteslabel = "At Sites Analyzed",
+  siteidlabel = NULL,
+  refdata = NULL,
+  nsample = 5000,
+  fix_pctcols = TRUE,
+  colorfills = c("lightblue", "yellow"),
+  box.cex.ref = 0.6,
+  box.cex.here = 2.2,
+  box.pch.ref = 20,
+  box.pch.here = 2,
+  ...
+)
+
 plot_vs_us(
   bysite = NULL,
   varname = "pctlowinc",
@@ -24,76 +42,84 @@ plot_vs_us(
 )
 }
 \arguments{
-\item{bysite}{table of results from ejamit()$results_bysite, like testoutput_ejamit_1000pts_1miles$results_bysite}
+\item{bysite}{Table of results from \code{ejamit()$results_bysite}, or a full
+\code{ejamit()} output list with a \code{results_bysite} element.}
 
-\item{varname}{name of column in bysite, like  "Demog.Index"}
+\item{varname}{Single column name to plot, such as \code{"pctlowinc"}.}
 
-\item{type}{"box", "plotly", or "ggplot"}
+\item{type}{Plot type. One of \code{"ggplot"}, \code{"box"}, or \code{"plotly"}.}
 
-\item{refarealabel}{e.g., "All blockgroups in this State"}
+\item{refarealabel}{Label used for the reference-area rows.}
 
-\item{siteslabel}{e.g., "At Avg. Site Analyzed"}
+\item{siteslabel}{Label used for the analyzed-site rows.}
 
-\item{siteidlabel}{vector of text one per site to show if type 'box'}
+\item{siteidlabel}{Optional vector of labels, one per analyzed site, used
+only when \code{type = "box"}. Defaults to \code{ejam_uniq_id}.}
 
-\item{refdata}{reference area dataset, like blockgroupstats, but must have columns
-named 'pop' and varname. e.g.,
+\item{refdata}{Reference-area data with columns \code{pop} and \code{varname}. Defaults
+to \code{blockgroupstats}.}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{refdata = blockgroupstats[ST \%in\% "DE", .(pop, pcthisp)]
-}\if{html}{\out{</div>}}}
+\item{nsample}{Maximum number of reference rows to draw as points in sampled
+plot layers. If \code{refdata} has fewer rows, all reference rows are used.}
 
-\item{nsample}{to limit dots on plot of ref area like all bg in US}
+\item{fix_pctcols}{Whether to rescale known percent-as-fraction columns to
+percent units before plotting.}
 
-\item{colorfills}{two colors for boxplot}
+\item{colorfills}{Two colors: first for the reference area, second for
+analyzed sites.}
 
-\item{box.cex.ref}{use default}
+\item{box.cex.ref}{Point size for sampled reference rows when \code{type = "box"}.}
 
-\item{box.cex.here}{use default}
+\item{box.cex.here}{Point size for analyzed-site rows when \code{type = "box"}.}
 
-\item{box.pch.ref}{use default}
+\item{box.pch.ref}{Point symbol for sampled reference rows when \code{type = "box"}.}
 
-\item{box.pch.here}{description}
+\item{box.pch.here}{Point symbol for analyzed-site rows when \code{type = "box"}.}
 
-\item{...}{passed to boxplot()}
+\item{...}{Additional arguments passed to \code{\link[=boxplot]{boxplot()}} when \code{type = "box"}.}
 }
 \value{
-plots
+For \code{type = "ggplot"}, a \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object. For \code{type = "plotly"},
+a plotly htmlwidget. For \code{type = "box"}, draws a base R plot and invisibly
+returns a list containing the boxplot result, plotted data, mean values, and
+explanatory plot notes, including the per-location mean labels shown under
+the x-axis categories and the location-aligned color mappings used by the
+base plot.
 }
 \description{
-Visualize indicator values (scores) as distributed across places
+Visualize one indicator from \code{ejamit()$results_bysite} against the same
+indicator in a reference dataset such as \code{blockgroupstats}.
 }
 \details{
-Not population weighted, so it is the distribution across sites not residents.
+\code{bysite} is expected to be \code{ejamit()$results_bysite} or a full \code{ejamit()}
+output list containing \code{results_bysite}. The table must contain \code{pop},
+\code{ejam_uniq_id}, and the indicator column named by \code{varname}.
 
-Could be edited to allow multiple types of sites and/or reference zones
-more generally like for \code{\link[=ejamit_compare_types_of_places]{ejamit_compare_types_of_places()}}
+\code{refdata} must contain \code{pop} and the same indicator column. When \code{refdata}
+is omitted, all rows from \code{blockgroupstats} with non-missing population and
+indicator values are used.
+
+Percentage columns in EJAM site output and \code{blockgroupstats} historically use
+different scales for some variables. With \code{fix_pctcols = TRUE}, those columns
+are rescaled to percent units before plotting.
 }
 \examples{
-\dontrun{
-  out <- testoutput_ejamit_1000pts_1miles
-  # ejam2boxplot(out)
-  # plot_boxplot_vs_ref(out$results_bysite)
-  EJAM:::plot_vs_us(out$results_bysite, type = 'box')
-  EJAM:::plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'box', ylim=c(0, 20))
-  EJAM:::plot_vs_us(out$results_bysite, varname = "pctlingiso", type =  'ggplot')
-  EJAM:::plot_vs_us(out$results_bysite, varname = "pctnhaa", type =  'ggplot')
-  EJAM:::plot_vs_us(out$results_bysite, varname = "pctnhaa", type = 'box', ylim = c(0, 20))
+\donttest{
+out <- testoutput_ejamit_1000pts_1miles
+plot_vs_us(out$results_bysite, type = "ggplot")
+plot_vs_us(out$results_bysite, varname = "pctlingiso", type = "box", ylim = c(0, 20))
 
- # td = testoutput_ejamit_1000pts_1miles$results_bysite
- # EJAM:::plot_vs_us(, type = 'box')
- # EJAM:::plot_vs_us(td, varname = "pctlingiso", type =  'box', ylim=c(0,20))
- # EJAM:::plot_vs_us(td, varname = "pctlingiso", type =  'ggplot')
- # EJAM:::plot_vs_us(td, varname = "pctnhaa", type =  'ggplot')
- # EJAM:::plot_vs_us(td, varname = "pctnhaa", type = 'box', ylim = c(0,20))
- # EJAM:::plot_vs_us(td[td$ST \%in\% "DE", ], 'pcthisp',
- #   refdata = blockgroupstats[ST \%in\% "DE", .(pop, pcthisp)])
-  }
+td <- testoutput_ejamit_1000pts_1miles$results_bysite
+plot_vs_us(
+  td[td$ST \%in\% "DE", ],
+  "pcthisp",
+  refdata = blockgroupstats[ST \%in\% "DE", .(pop, pcthisp)],
+  refarealabel = "Delaware Blockgroups"
+)
+}
 
 }
 \seealso{
-See \code{\link[=plot_boxplot_pctiles]{plot_boxplot_pctiles()}} for Percentile indicators compared in one plot.
-See \code{\link[=ejam2boxplot_ratios]{ejam2boxplot_ratios()}}
-See \code{\link[=ejam2barplot]{ejam2barplot()}}  for Ratio indicators compared in one plot.
-See \code{\link[=plot_boxplot_vs_ref]{plot_boxplot_vs_ref()}} for a Raw indicator vs. a reference distribution.
+See \code{\link[=plot_boxplot_pctiles]{plot_boxplot_pctiles()}} for percentile indicators compared in one plot.
+See \code{\link[=ejam2boxplot_ratios]{ejam2boxplot_ratios()}} and \code{\link[=ejam2barplot]{ejam2barplot()}} for ratio indicators.
 }
-\keyword{internal}
