@@ -478,61 +478,59 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       timebyfile <- data.table(
         structure(list(
           file =
-            c("test-MAP_FUNCTIONS.R", "test-ejam2map.R",
-              "test-ejamit_compare_distances.R", "test-ejamit.R", "test-ejam2barplot_sites.R",
-              "test-ejam2excel.R", "test-ejam2histogram.R", "test-ejam2report.R",
-              "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
-              "test-ejamit_sitetype_from_output.R", "test-doaggregate.R", "test-area_sqmi.R",
-              "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
-              "test-calc_ratio_columns.R", "test-pctile_from_raw_lookup.R",
-              "test-utils_flagged_FUNCTIONS.R", "test-utils_speedtest.R", "test-create_interactive_table.R",
-              "test-ejamapi.R", "test-ejamapi_local.R", "test-url_ejamapi.R",
-              "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R", "test-create_filename.R",
-              "test-grepn.R", "test-is.numericish.R", "test-pctile_x_is_hit_by_score.R",
-              "test-shinytest2-app-dir.R", "test-sites_from_input.R", "test-url_columns_bysite.R",
-              "test-url_package.R", "test-latlon_from_address.R", "test-address_xyz.R",
-              "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_anything.R",
-              "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
-              "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
-              "test-get_blockpoints_in_shape.R", "test-proxistat.R", "test-bgid_from_blockid.R",
-              "test-distances.all.R", "test-getblocks_summarize_blocks_per_site.R",
+            c("test-ejam2barplot_sites.R", "test-ejamit_compare_distances.R",
+              "test-ejam2barplot_indicators.R", "test-ejam2excel.R", "test-ejam2histogram.R",
+              "test-ejam2report.R", "test-ejamit.R", "test-ejamit_compare_types_of_places.R",
+              "test-ejamit_sitetype_from_input.R", "test-ejamit_sitetype_from_output.R",
+              "test-getblocks_summarize_blocks_per_site.R", "test-proxistat.R",
+              "test-bgid_from_blockid.R", "test-distances.all.R", "test-get_blockpoints_in_shape.R",
               "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
               "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
               "test-report_residents_within_xyz.R", "test-sitetype2text.R",
-              "test-utils_indexpoints.R", "test-webapp-ui_and_server.R", "test-webapp-all-functionality.R", "test-webapp-FIPS-functionality.R",
-              "test-webapp-FIPS-picker-functionality.R", "test-webapp-FRS-functionality.R",
-              "test-webapp-NAICS-functionality.R", "test-webapp-latlon-functionality.R",
-              "test-webapp-shp-gdb-zip-functionality.R", "test-webapp-shp-json-functionality.R",
-              "test-webapp-shp-unzip-functionality.R", "test-webapp-shp-zip-functionality.R",
-              "test-fips_bgs_in_city.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
-              "test-fips_bg_from_latlon.R", "test-fips_bgs_in_fips.R", "test-is.numerictext.R",
+              "test-utils_indexpoints.R", "test-MAP_FUNCTIONS.R", "test-ejam2map.R",
+              "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R", "test-fips_bg_from_latlon.R",
+              "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R", "test-is.numerictext.R",
               "test-latlon_from_fips.R", "test-state_from_fips_bybg.R", "test-state_from_latlon.R",
+              "test-latlon_from_address.R", "test-address_xyz.R", "test-latlon_as.numeric.R",
+              "test-latlon_df_clean.R", "test-latlon_from_anything.R", "test-latlon_from_sic.R",
+              "test-latlon_from_vectorofcsvpairs.R", "test-latlon_infer.R",
+              "test-latlon_is.valid.R", "test-state_from_sitetable.R", "test-mod_save_report.R",
+              "test-mod_specify_sites.R", "test-mod_view_results.R", "test-URL_FUNCTIONS_part2.R",
+              "test-create_interactive_table.R", "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R",
+              "test-create_filename.R", "test-ejamapi.R", "test-grepn.R", "test-is.numericish.R",
+              "test-pctile_x_is_hit_by_score.R", "test-shinytest2-app-dir.R",
+              "test-sites_from_input.R", "test-url_columns_bysite.R", "test-url_package.R",
+              "test-webapp-ui_and_server.R", "test-webapp-all-functionality.R",
               "test-acs_bybg.R", "test-acs_endyear.R", "test-calc_bg_acsdata.R",
-              "test-calc_bg_extra_indicators.R", "test-calc_byformula.R", "test-calc_ejscreen_dataset.R",
-              "test-ejscreen-export.R", "test-ejscreen-pipeline-io.R", "test-ejscreen-stats.R",
-              "test-pctiles_lookup_create.R", "test-fixcolnames.R", "test-fixcolnames_infer.R",
-              "test-fixnames.R", "test-fixnames_to_type.R", "test-utils_metadata_add.R",
-              "test-varinfo.R", "test-frs_from_naics.R", "test-frs_from_programid.R",
-              "test-frs_from_regid.R", "test-frs_from_sic.R", "test-frs_is_valid.R",
-              "test-regid_from_input.R", "test-regid_from_naics.R", "test-golem_utils_server.R",
-              "test-golem_utils_ui.R", "test-mod_save_report.R", "test-mod_specify_sites.R",
-              "test-mod_view_results.R", "test-naics2children.R", "test-naics_categories.R",
-              "test-naics_findwebscrape.R", "test-naics_from_any.R", "test-naics_from_code.R",
-              "test-naics_from_name.R", "test-naics_is.valid.R", "test-naics_subcodes_from_code.R",
-              "test-ejam2shapefile.R", "test-latlon_from_shapefile.R", "test-shape2geojson.R",
-              "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
-              "test-test1.R", "test-test2.R"),
+              "test-calc_bg_extra_indicators.R", "test-calc_bg_geodata.R",
+              "test-calc_byformula.R", "test-calc_ejscreen_dataset.R", "test-ejscreen-export.R",
+              "test-ejscreen-pipeline-io.R", "test-ejscreen-pipeline-validate-vs-prior.R",
+              "test-ejscreen-stats.R", "test-pctiles_lookup_create.R", "test-area_sqmi.R",
+              "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
+              "test-calc_ratio_columns.R", "test-doaggregate.R", "test-pctile_from_raw_lookup.R",
+              "test-utils_flagged_FUNCTIONS.R", "test-utils_speedtest.R", "test-fixcolnames.R",
+              "test-fixcolnames_infer.R", "test-fixnames.R", "test-fixnames_to_type.R",
+              "test-utils_metadata_add.R", "test-varinfo.R", "test-frs_from_naics.R",
+              "test-frs_from_programid.R", "test-frs_from_regid.R", "test-frs_from_sic.R",
+              "test-frs_is_valid.R", "test-regid_from_input.R", "test-regid_from_naics.R",
+              "test-golem_utils_server.R", "test-golem_utils_ui.R", "test-naics2children.R",
+              "test-naics_categories.R", "test-naics_findwebscrape.R", "test-naics_from_any.R",
+              "test-naics_from_code.R", "test-naics_from_name.R", "test-naics_is.valid.R",
+              "test-naics_subcodes_from_code.R", "test-ejam2shapefile.R", "test-latlon_from_shapefile.R",
+              "test-shape2geojson.R", "test-shape2zip.R", "test-shapefile_xyz.R",
+              "test-shapes_from_fips.R", "test-test1.R", "test-test2.R"),
           seconds_byfile =
-            c(11, 5, 19,
-              23, 7, 8, 0, 0, 3, 0, 3, 13, 1, 6, 0, 1, 1, 0, 5, 0, 0, 35, 18,
-              160, 0, 14, 0, 0, 0, 1, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              1, 8, 0, 0, 0, 0, 3, 32, 1, 2, 0, 0, 0, 1, 84, 20, 30, 18, 17, 42,
-              17, 16, 16, 17, 2, 10, 0, 2, 2, 0, 4, 0, 3, 1, 0, 0, 0, 1, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-              0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 0, 0)),
-          row.names = c(NA,
-                        -119L), class = "data.frame")
+            c(6,
+              21, 0, 8, 0, 0, 25, 3, 0, 4, 0, 0, 0, 0, 1, 3, 38, 1, 2, 0, 0,
+              0, 14, 5, 11, 0, 4, 4, 1, 0, 4, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 1, 0, 0, 0, 20, 0, 426, 0, 0, 30, 0, 0, 1, 0, 0, 4, 3, 1,
+              101, 1, 0, 0, 0, 0, 2, 0, 0, 0, 4, 0, 0, 1, 8, 0, 2, 2, 15, 0,
+              7, 0, 0, 0, 0, 0, 1, 0, 3, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 1,
+              0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0)),
+          row.names = c(NA, -113L
+          ), class = "data.frame")
       )
+
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
       timebyfile$seconds_byfile <- round(timebyfile$seconds_byfile, 0)
@@ -823,7 +821,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
   if (y_coverage_check) {
     cat("Also see the covr package at https://covr.r-lib.org/ \n")
-    source("tests/test_coverage_check.R")
+    test_coverage_check <- NULL
+    source("tests/test_coverage_check.R", local = TRUE)
     test_coverage_info <- test_coverage_check()
     # test_coverage_info table is not used. the function prints info.
   }

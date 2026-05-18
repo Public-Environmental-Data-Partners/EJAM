@@ -48,7 +48,7 @@ test_that("pre1960 formula uses Census B25034 pre-1960 bins", {
     )
   ]
 
-  out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
+  out <- EJAM::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
   expect_equal(out$pre1960, 120)
   expect_equal(out$pctpre1960, 120 / 300)
@@ -69,7 +69,7 @@ test_that("pctnobroadband uses the B28002 broadband subscription universe", {
     )
   ]
 
-  out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
+  out <- EJAM::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
   expect_equal(out$nobroadband, 70)
   expect_equal(out$pctnobroadband, 0.7)
@@ -94,7 +94,7 @@ test_that("pctpoor uses the ACS household poverty universe", {
     )
   ]
 
-  out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
+  out <- EJAM::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
   expect_equal(out$povknownratio, 500)
   expect_equal(out$poor, 30)
@@ -116,7 +116,7 @@ test_that("pctunemployed uses labor force while unemployedbase preserves age-16-
     )
   ]
 
-  out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
+  out <- EJAM::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
   expect_equal(out$unemployedbase, c(500, 100))  # careful about names for variables related to pctunemployed - only the correct denominator should be referred to as the base
   expect_equal(out$laborforce_universe, c(250, 0))
@@ -132,7 +132,7 @@ test_that("percapincome converts ACS sentinel and missing values to NA", {
     EJAM::formulas_ejscreen_acs$rname == "percapincome"
   ]
 
-  out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
+  out <- EJAM::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
   expect_equal(out$percapincome, c(12000, NA_real_, NA_real_))
 })
@@ -147,7 +147,7 @@ test_that("lan_other includes Arabic and other unspecified C16001 categories", {
     EJAM::formulas_ejscreen_acs$rname %in% c("lan_universe", "lan_other", "pctlan_other")
   ]
 
-  out <- EJAM:::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
+  out <- EJAM::calc_ejam(x, formulas = formulas, keep.old = "none", keep.new = "all")
 
   expect_equal(out$lan_other, 20)
   expect_equal(out$pctlan_other, 0.2)

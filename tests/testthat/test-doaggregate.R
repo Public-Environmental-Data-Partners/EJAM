@@ -231,7 +231,7 @@ stavgcols = grep("state.avg", avgcols, value = T)
 ################### #
 test_that("replicate US AVG", {
 
-  x_calculated_here = as.vector(EJAM:::usastats_means(gsub("avg.", "", usavgcols)) )
+  x_calculated_here = as.vector(EJAM::usastats_means(gsub("avg.", "", usavgcols)) )
   x_doag = as.vector(unlist(bysite[, ..usavgcols]))
   expect_equal(x_calculated_here, x_doag)
 })
@@ -239,7 +239,7 @@ test_that("replicate US AVG", {
 test_that("replicate STATE AVG", {
 
   x_calculated_here =  as.vector(unlist(statestats[statestats$PCTILE %in% "mean" & statestats$REGION  %in% "AL", gsub("state.avg.", "", stavgcols)]))
-  # x_calculated_here_approx =  as.numeric(as.vector(EJAM:::statestats_means(ST = bysite$ST, gsub("state.avg.", "", stavgcols))[gsub("state.avg.", "", stavgcols),] ))
+  # x_calculated_here_approx =  as.numeric(as.vector(EJAM::statestats_means(ST = bysite$ST, gsub("state.avg.", "", stavgcols))[gsub("state.avg.", "", stavgcols),] ))
   x_doag = as.vector(unlist(bysite[, ..stavgcols]))
   expect_equal(round(x_calculated_here, 3), round(x_doag, 3))
   # expect_equal(round(x_calculated_here_approx, 2), round(x_doag, 2))
