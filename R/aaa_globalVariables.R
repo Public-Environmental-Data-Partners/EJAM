@@ -216,6 +216,7 @@ from_check_var_add = sort(setdiff(from_check_var, union(from_varlist_add, from_d
 # from_misc
 {
   from_misc =   c(
+    ".",
     "ST",
     "REGION",
     "bgfips",
