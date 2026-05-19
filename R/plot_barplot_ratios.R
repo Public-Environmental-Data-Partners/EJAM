@@ -234,7 +234,9 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
     ggplot2::scale_y_continuous(limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, 0.05), add = c(0, 0))) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(size = 14, hjust = 0.5),
-      axis.text.x = ggplot2::element_text(size = 9, angle = 45, hjust = 1, vjust = 1),
+      axis.text.x = ggplot2::element_text(size = 12, angle = 45, hjust = 1, vjust = 1),
+      axis.text.y = ggplot2::element_text(size = 12),
+      axis.title.y = ggplot2::element_text(size = 13),
       legend.title = ggplot2::element_text(size = 12),
       legend.text = ggplot2::element_text(size = 10),
       legend.position = "bottom"

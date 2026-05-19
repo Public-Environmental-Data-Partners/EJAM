@@ -5,7 +5,6 @@
 ^Meta$
 ^data-raw$
 ^_pkgdown\.yml$
-^docs$
 ^pkgdown$
 ^\.github$
 ^\.positai$
@@ -16,3 +15,10 @@
 ^R/_disable_autoload[.]R$
 ^Rplots.pdf$
 ^app.R$
+^CITATION\.cff$
+^CONTRIBUTING\.md$
+^LICENSE\.md$
+^README\.Rmd$
+^README\.html$
+^logo\.svg$
+^shiny_bookmarks$

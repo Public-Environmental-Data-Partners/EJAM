@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: read
-  
+
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 # system libraries:
 #   libcurl -- needed to complete setup-renv
@@ -30,6 +30,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       NOT_CRAN: true
       SHINYTEST2_APP_DRIVER_TEST_ON_CRAN: 1
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v4.3.0
@@ -83,7 +84,7 @@ jobs:
         run: |
           shinytest2::test_app(".", filter="FIPS-picker-functionality", check_setup = FALSE)
         shell: Rscript {0}
-        
+
       - name: FIPS UI test
         run: |
           shinytest2::test_app(".", filter="FIPS-functionality", check_setup = FALSE)

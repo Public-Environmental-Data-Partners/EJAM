@@ -40,6 +40,8 @@ test_that("PDF footer CSS handles missing, vector, and escaped footer text", {
     ))
   )
   expect_true(grepl("<style>", footer, fixed = TRUE))
+  expect_true(grepl('class="report-running-footer-screen"', footer, fixed = TRUE))
+  expect_true(grepl("@media print.*\\.report-running-footer-screen.*display:\\s*none", footer, perl = TRUE))
   expect_true(grepl('content: " A\\\\B \\"quoted\\"\\nnext";', footer, fixed = TRUE))
 
   blank_footer <- as.character(EJAM:::generate_report_footer(footer_text = NA))
