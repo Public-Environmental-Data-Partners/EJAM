@@ -3,7 +3,7 @@
 \name{plot_vs_us}
 \alias{plot_vs_us}
 \alias{plot_boxplot_vs_ref}
-\title{Plot indicator values at analyzed sites against a reference area}
+\title{Plot distribution of indicator values at analyzed sites against a reference area}
 \usage{
 plot_boxplot_vs_ref(
   bysite = NULL,
