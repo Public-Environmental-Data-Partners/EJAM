@@ -1,3 +1,7 @@
+
+- Clarified “Plot Average Scores” barplot summary labels/ratio wording to match report semantics (`Average site analyzed`, `Average person at sites analyzed`) and reduce ambiguity. Closes #128.
+- Added ability to view medians not just averages, in the barplots on the web app details tab, via the function `ejam2barplot_indicators()`
+
 # EJAM 2.32.8.001 (May 2026)
 
 Web app features:
@@ -11,7 +15,6 @@ Other changes:
 - Revised some of unit testing setup, like setup.R etc.
 - Disabled most github actions workflows pending debugging/updates. Changed to `checkout@v4.3.0` not just `checkout@v4` in all gh action workflows
 - Revised/updated instructions for github copilot
-- Clarified “Plot Average Scores” barplot summary labels/ratio wording to match report semantics (`Average site analyzed`, `Average person at sites analyzed`) and reduce ambiguity. Closes #128.
 
 
 # EJAM 2.32.8 (April 2026)
