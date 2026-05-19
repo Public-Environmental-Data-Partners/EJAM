@@ -65,3 +65,50 @@ test_that("calc_ejscreen_stats excludes percapincome from default lookup stages"
   expect_false("percapincome" %in% names(out$usastats))
   expect_false("percapincome" %in% names(out$statestats))
 })
+
+test_that("calc_ejscreen_stats uses EJSCREEN-compatible unemployment lookup values", {
+  bgstats <- data.frame(
+    bgfips = sprintf("10001000100%s", 1:4),
+    ST = c("DE", "DE", "RI", "RI"),
+    pop = c(0, 10, 90, 110),
+    pctunemployed = c(NA_real_, NA_real_, 0.25, 0.50),
+    laborforce_universe = c(0, 0, 80, 90),
+    unemployedbase = c(0, 10, 80, 90),
+    custom_env = c(1, 2, 3, 4),
+    Demog.Index = c(0.2, 0.3, 0.4, 0.5),
+    Demog.Index.Supp = c(0.3, 0.4, 0.5, 0.6),
+    Demog.Index.State = c(0.2, 0.3, 0.4, 0.5),
+    Demog.Index.Supp.State = c(0.3, 0.4, 0.5, 0.6),
+    check.names = FALSE
+  )
+
+  out <- EJAM:::calc_ejscreen_stats(
+    bgstats = bgstats,
+    acs_vars = "pctunemployed",
+    enviro_vars = "custom_env",
+    ej_indicator_vars = "custom_env",
+    ej_indicator_pctile_vars = "pctile.custom_env",
+    ej_indicator_state_pctile_vars = "state.pctile.custom_env",
+    ej_index_vars = "EJ.custom.eo",
+    ej_index_supp_vars = "EJ.custom.supp",
+    ej_index_state_vars = "state.EJ.custom.eo",
+    ej_index_supp_state_vars = "state.EJ.custom.supp"
+  )
+
+  expect_equal(
+    out$usastats_acs$pctunemployed[out$usastats_acs$PCTILE == "0"],
+    0
+  )
+  expect_equal(
+    out$statestats_acs$pctunemployed[
+      out$statestats_acs$REGION == "DE" & out$statestats_acs$PCTILE == "0"
+    ],
+    0
+  )
+  expect_equal(
+    out$statestats_acs$pctunemployed[
+      out$statestats_acs$REGION == "DE" & out$statestats_acs$PCTILE == "100"
+    ],
+    0
+  )
+})

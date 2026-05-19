@@ -177,6 +177,40 @@ test_that("calc_ejscreen_export adds EJ percentile and map helper fields from lo
   expect_equal(out$T_D2_PM25, c("50 %ile", "100 %ile"))
 })
 
+test_that("calc_ejscreen_export uses EJSCREEN-compatible unemployment zero-denominator values", {
+  blockgroupstats <- data.frame(
+    bgfips = c("100010001001", "100010001002", "100010001003"),
+    pctunemployed = c(NA_real_, NA_real_, NA_real_),
+    laborforce_universe = c(0, 0, NA_real_),
+    unemployedbase = c(0, 10, NA_real_),
+    stringsAsFactors = FALSE
+  )
+  usastats_acs <- data.frame(
+    REGION = "USA",
+    PCTILE = c("0", "mean", "100"),
+    pctunemployed = c(0, 0.5, 1),
+    check.names = FALSE
+  )
+  mapping <- data.frame(
+    rname = c("bgfips", "pctunemployed", "pctile.pctunemployed"),
+    ejscreen_indicator = c("ID", "UNEMPPCT", "P_UNEMPPCT"),
+    `pctile.` = c(0, 0, 1),
+    stringsAsFactors = FALSE
+  )
+
+  out <- calc_ejscreen_export(
+    blockgroupstats = blockgroupstats,
+    bgej = data.frame(bgfips = blockgroupstats$bgfips, stringsAsFactors = FALSE),
+    usastats_acs = usastats_acs,
+    mapping_for_names = mapping
+  )
+
+  expect_equal(out$UNEMPPCT, c(0, NA_real_, NA_real_))
+  expect_equal(out$P_UNEMPPCT, c(0, NA_real_, NA_real_))
+  expect_equal(out$B_UNEMPPCT, c(1L, NA_integer_, NA_integer_))
+  expect_equal(out$T_UNEMPPCT, c("0 %ile", "", ""))
+})
+
 test_that("calc_ejscreen_export can produce FeatureServer percentile and schema fields", {
   blockgroupstats <- data.frame(
     bgfips = c("100010001001", "100010001002"),
@@ -383,12 +417,12 @@ test_that("ejscreen_dataset_creator_input_fields matches dataset-creator column 
 test_that("EJSCREEN map helper fields use historical bins and current text", {
   expect_equal(
     EJAM:::calc_ejscreen_map_bin(c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101)),
-    c(0L, 0L, 1L, 1L, 2L, 9L, 10L, 10L, 11L, 11L, 0L)
+    c(NA_integer_, NA_integer_, 1L, 1L, 2L, 9L, 10L, 10L, 11L, 11L, NA_integer_)
   )
   expect_equal(
     EJAM:::calc_ejscreen_map_pctile_text(c(NA, -1, 0, 9, 10, 89, 90, 94, 95, 100, 101)),
-    c(NA, NA, "0 %ile", "9 %ile", "10 %ile", "89 %ile",
-      "90 %ile", "94 %ile", "95 %ile", "100 %ile", NA)
+    c("", "", "0 %ile", "9 %ile", "10 %ile", "89 %ile",
+      "90 %ile", "94 %ile", "95 %ile", "100 %ile", "")
   )
 
   out <- EJAM:::calc_ejscreen_map_fields_added(
@@ -410,10 +444,10 @@ test_that("EJSCREEN map helper fields use historical bins and current text", {
     )
   )
 
-  expect_equal(out$B_D2_NO2, c(0L, 0L, 1L, 1L, 2L, 9L, 10L, 10L, 11L, 11L, 0L))
+  expect_equal(out$B_D2_NO2, c(NA_integer_, NA_integer_, 1L, 1L, 2L, 9L, 10L, 10L, 11L, 11L, NA_integer_))
   expect_equal(
     out$T_D2_NO2,
-    c(NA, NA, "0 %ile", "9 %ile", "10 %ile", "89 %ile",
-      "90 %ile", "94 %ile", "95 %ile", "100 %ile", NA)
+    c("", "", "0 %ile", "9 %ile", "10 %ile", "89 %ile",
+      "90 %ile", "94 %ile", "95 %ile", "100 %ile", "")
   )
 })

@@ -12,8 +12,15 @@
 #' columns. The `B_...` bins use the historical EJSCREEN/ejanalysis cutpoints:
 #' 0-9th percentile is bin 1, 10-19 is bin 2, ..., 80-89 is bin 9,
 #' 90-94 is bin 10, and 95-100 is bin 11. Missing or out-of-range percentiles
-#' are assigned bin 0. The `T_...` fields use the current EJSCREEN service text
-#' style, such as `"95 %ile"`.
+#' are left missing in `B_...` fields and blank in `T_...` fields. The `T_...`
+#' fields use the current EJSCREEN service text style, such as `"95 %ile"`.
+#'
+#' `blockgroupstats` keeps `pctunemployed` as `NA` where the civilian labor
+#' force denominator is zero. For EJSCREEN app/export compatibility, this helper
+#' reports those zero-denominator cases as `0` only when the broader
+#' unemployment-base denominator is also zero, then builds matching percentile
+#' values from those export-compatible values. Rows where unemployment is
+#' missing for other reasons remain `NA`.
 #'
 #' @param blockgroupstats blockgroupstats-like data.frame, or NULL if reading
 #'   from a saved pipeline stage.
@@ -291,12 +298,15 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
   }
   feature_server_pctile_fields <- feature_server_fields[grepl("^P_", feature_server_fields)]
 
+  bg <- ejscreen_percentile_input_compatibility_adjusted(bg)
+
   us_acs_lookup <- load_optional_lookup(
     usastats_acs,
     stage = usastats_acs_stage,
     path = usastats_acs_path,
     input_name = "usastats_acs"
   )
+  us_acs_lookup <- ejscreen_percentile_lookup_compatibility_adjusted(us_acs_lookup, bg)
   add_mapped_pctiles_from_lookup(
     lookup = us_acs_lookup,
     lookup_name = "usastats_acs",
@@ -471,6 +481,53 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     )
   }
   out
+}
+###################################################### #
+# . ####
+
+ejscreen_percentile_input_compatibility_adjusted <- function(x) {
+  out <- data.table::as.data.table(data.table::copy(x))
+  if (all(c("pctunemployed", "laborforce_universe", "unemployedbase") %in% names(out))) {
+    zero_denominator <- is.na(out$pctunemployed) &
+      !is.na(out$laborforce_universe) &
+      out$laborforce_universe == 0 &
+      !is.na(out$unemployedbase) &
+      out$unemployedbase == 0
+    if (any(zero_denominator)) {
+      out$pctunemployed[zero_denominator] <- 0
+    }
+  }
+  out
+}
+
+ejscreen_percentile_lookup_compatibility_adjusted <- function(lookup,
+                                                              bg,
+                                                              zone.vector = NULL) {
+  if (is.null(lookup) ||
+      !"pctunemployed" %in% names(lookup) ||
+      !"pctunemployed" %in% names(bg) ||
+      !all(c("REGION", "PCTILE") %in% names(lookup))) {
+    return(lookup)
+  }
+
+  lookup_dt <- data.table::as.data.table(data.table::copy(lookup))
+  replacement <- pctiles_lookup_create(
+    data.table::as.data.table(bg)[, .(pctunemployed)],
+    zone.vector = zone.vector
+  )
+  replacement <- data.table::as.data.table(replacement)
+
+  lookup_dt[, REGION := as.character(REGION)]
+  lookup_dt[, PCTILE := as.character(PCTILE)]
+  replacement[, REGION := as.character(REGION)]
+  replacement[, PCTILE := as.character(PCTILE)]
+  lookup_dt[
+    replacement[, .(REGION, PCTILE, pctunemployed)],
+    pctunemployed := i.pctunemployed,
+    on = .(REGION, PCTILE)
+  ]
+
+  data.frame(lookup_dt, check.names = FALSE)
 }
 ###################################################### #
 # . ####
@@ -1043,18 +1100,18 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
 #'  Percentiles are expected to be represented on a 0-100 scale. Bins match the
 #' historical EJSCREEN thresholds: 0-9th percentile is bin 1,
 #' 10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin 10, and 95-100 is bin 11.
-#' Missing or out-of-range percentiles are assigned bin 0.
+#' Missing or out-of-range percentiles return `NA_integer_`.
 #'
 #' @param x numeric vector of percentiles on a 0-100 scale.
 #'
-#' @return integer vector of bin numbers from 0 to 11.
+#' @return integer vector of bin numbers from 1 to 11.
 #'
 #' @keywords internal
 #'
 calc_ejscreen_map_bin <- function(x) {
 
   x_num <- suppressWarnings(as.numeric(x))
-  bins <- rep(0L, length(x_num))
+  bins <- rep(NA_integer_, length(x_num))
   valid <- !is.na(x_num) & x_num >= 0 & x_num <= 100
   bins[valid] <- findInterval(x_num[valid], c(10, 20, 30, 40, 50, 60, 70, 80, 90, 95)) + 1L
   bins
@@ -1065,7 +1122,7 @@ calc_ejscreen_map_bin <- function(x) {
 #'
 #' @details Percentiles are expected on EJSCREEN's 0-100 scale. The returned
 #' strings follow the current EJSCREEN app service style, such as `"95 %ile"`.
-#' Missing or out-of-range percentiles return `NA_character_`.
+#' Missing or out-of-range percentiles return blank strings.
 #'
 #' @param x numeric vector of percentiles on a 0-100 scale.
 #'
@@ -1076,7 +1133,7 @@ calc_ejscreen_map_bin <- function(x) {
 calc_ejscreen_map_pctile_text <- function(x) {
 
   x_num <- suppressWarnings(as.numeric(x))
-  txt <- rep(NA_character_, length(x_num))
+  txt <- rep("", length(x_num))
   valid <- !is.na(x_num) & x_num >= 0 & x_num <= 100
   txt[valid] <- paste0(floor(x_num[valid]), " %ile")
   txt

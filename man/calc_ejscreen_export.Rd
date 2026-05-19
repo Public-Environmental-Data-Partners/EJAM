@@ -140,7 +140,14 @@ percentile fields: \code{B_...} map color-bin columns and \code{T_...} popup-tex
 columns. The \code{B_...} bins use the historical EJSCREEN/ejanalysis cutpoints:
 0-9th percentile is bin 1, 10-19 is bin 2, ..., 80-89 is bin 9,
 90-94 is bin 10, and 95-100 is bin 11. Missing or out-of-range percentiles
-are assigned bin 0. The \code{T_...} fields use the current EJSCREEN service text
-style, such as \code{"95 \%ile"}.
+are left missing in \code{B_...} fields and blank in \code{T_...} fields. The \code{T_...}
+fields use the current EJSCREEN service text style, such as \code{"95 \%ile"}.
+
+\code{blockgroupstats} keeps \code{pctunemployed} as \code{NA} where the civilian labor
+force denominator is zero. For EJSCREEN app/export compatibility, this helper
+reports those zero-denominator cases as \code{0} only when the broader
+unemployment-base denominator is also zero, then builds matching percentile
+values from those export-compatible values. Rows where unemployment is
+missing for other reasons remain \code{NA}.
 }
 \keyword{internal}

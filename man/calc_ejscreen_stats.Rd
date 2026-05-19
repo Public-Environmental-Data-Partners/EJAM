@@ -76,5 +76,10 @@ tables plus \code{bgej}.
 \code{pctpre1960} is handled as an environmental indicator for EJ-index
 calculations and lookup tables. The upstream envirodata stage can create it
 from the saved ACS stage before this function is called.
+
+\code{pctunemployed} stays missing in \code{blockgroupstats} when the civilian labor
+force denominator is zero. For EJSCREEN-compatible percentile lookups, this
+helper treats those values as zero only when the broader unemployment-base
+denominator is also zero.
 }
 \keyword{internal}

@@ -12,6 +12,11 @@
 #' calculations and lookup tables. The upstream envirodata stage can create it
 #' from the saved ACS stage before this function is called.
 #'
+#' `pctunemployed` stays missing in `blockgroupstats` when the civilian labor
+#' force denominator is zero. For EJSCREEN-compatible percentile lookups, this
+#' helper treats those values as zero only when the broader unemployment-base
+#' denominator is also zero.
+#'
 #' @param bgstats data.frame or data.table like [blockgroupstats].
 #' @param bgstats_path optional path to a saved pipeline stage containing
 #'   `bgstats`.
@@ -141,8 +146,13 @@ calc_ejscreen_stats <- function(bgstats = NULL,
          paste(missing_env_for_ej, collapse = ", "))
   }
 
-  usastats_acs <- pctiles_lookup_create(bg[, ..acs_vars])
-  statestats_acs <- pctiles_lookup_create(bg[, ..acs_vars], zone.vector = bg$ST)
+  bg_for_acs_lookups <- ejscreen_percentile_input_compatibility_adjusted(bg)
+
+  usastats_acs <- pctiles_lookup_create(bg_for_acs_lookups[, ..acs_vars])
+  statestats_acs <- pctiles_lookup_create(
+    bg_for_acs_lookups[, ..acs_vars],
+    zone.vector = bg_for_acs_lookups$ST
+  )
   usastats_envirodata <- pctiles_lookup_create(bg[, ..enviro_vars])
   statestats_envirodata <- pctiles_lookup_create(bg[, ..enviro_vars], zone.vector = bg$ST)
 

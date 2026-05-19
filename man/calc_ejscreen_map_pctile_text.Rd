@@ -18,6 +18,6 @@ Calculate EJSCREEN percentile popup text
 \details{
 Percentiles are expected on EJSCREEN's 0-100 scale. The returned
 strings follow the current EJSCREEN app service style, such as \code{"95 \%ile"}.
-Missing or out-of-range percentiles return \code{NA_character_}.
+Missing or out-of-range percentiles return blank strings.
 }
 \keyword{internal}
