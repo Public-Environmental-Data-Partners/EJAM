@@ -64,6 +64,22 @@ test_that("bgej uses package-pinned release tag instead of latest", {
 })
 ########################################################## #
 
+test_that("ejamit no-block-centroid invalid messages distinguish site types", {
+  expect_equal(
+    EJAM:::ejamit_no_block_centroids_message("fips"),
+    "no block centroids (fips boundaries not obtained)"
+  )
+  expect_equal(
+    EJAM:::ejamit_no_block_centroids_message("shp"),
+    "no block centroids (polygon too small for low pop density)"
+  )
+  expect_equal(
+    EJAM:::ejamit_no_block_centroids_message("latlon"),
+    "no block centroids (radius too small for low pop density)"
+  )
+})
+########################################################## #
+
 test_that("ejamit() returns no distances greater than radius - even if maxradius parameter not specified", {
   max_specified <- 3
   suppressWarnings(
