@@ -1,1 +1,2 @@
-*.html
+.positai/settings.json
+.positai
