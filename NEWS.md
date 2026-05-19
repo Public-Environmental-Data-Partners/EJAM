@@ -126,6 +126,9 @@
   data when available, avoiding slow repeated Census API calls. The slower
   Census API fallback is cached locally after the first download and can be
   refreshed with `EJAM_REFRESH_DECENNIAL_BGWTS = "TRUE"`.
+  Limited-English household language formulas now use the canonical EJAM rnames
+  `spanish_li`, `ie_li`, `api_li`, and `other_li`, matching
+  `map_headernames` and the `names_d_languageli_count` data object.
 
 - Fixed ACS formulas for `pctpre1960` and `pctnobroadband` so they use the
   Census-defined source bins/universes. `pctpre1960` now uses B25034 pre-1960

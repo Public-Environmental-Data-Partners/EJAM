@@ -5,7 +5,7 @@
 \alias{names_d_extra_count}
 \title{a list of variable names for internal use in EJAM}
 \format{
-An object of class \code{character} of length 2.
+An object of class \code{character} of length 3.
 }
 \usage{
 names_d_extra_count

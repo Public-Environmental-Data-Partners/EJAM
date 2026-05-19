@@ -114,9 +114,10 @@ Difference thresholds:
 
 Examples of largest differences show old EPA values near `0.01` while the new
 Census-derived values can be close to `1.0` in small-universe block groups.
-Current pipeline values are based on the current B27010-derived calculation, but
-this column should remain flagged unless EJAM either intentionally accepts the
-new definition or decides to mimic EPA legacy behavior.
+Decision for EJAM v2.5.0: keep the Census-consistent B27010 formula for EJAM
+datasets. If a specific EJSCREEN export target needs a legacy-compatible field,
+that compatibility value should be created in the `ejscreen_export` stage only,
+without changing the EJAM `blockgroupstats`/`bg_acsdata` indicator definition.
 
 ### `disab_universe` And `disability`
 

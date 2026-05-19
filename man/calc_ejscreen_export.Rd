@@ -149,5 +149,11 @@ reports those zero-denominator cases as \code{0} only when the broader
 unemployment-base denominator is also zero, then builds matching percentile
 values from those export-compatible values. Rows where unemployment is
 missing for other reasons remain \code{NA}.
+
+\code{blockgroupstats} keeps \code{pctnohealthinsurance} on the Census-defined B27010
+civilian noninstitutionalized population universe. If EJSCREEN requires a
+legacy-compatible health-insurance field for a specific export target, that
+compatibility adjustment belongs in this export stage rather than in the
+EJAM ACS indicator formula.
 }
 \keyword{internal}

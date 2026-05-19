@@ -35,10 +35,13 @@ Notes:
 \item B19301  per capita income
 \item B25032  owned units vs rented units (occupied housing units, same universe as B25003)
 \item B28002  no broadband internet subscription
-\item B27010  no health insurance. B27010 is available at blockgroup resolution,
-but the annual EJSCREEN pipeline uses tract-level B27010 for
-\code{pctnohealthinsurance} to match the historical EJSCREEN-style derivation.
-\item C16002  (language category and) \% of households limited English speaking (lingiso) \url{https://data.census.gov/table/ACSDT5Y2024.C16002}
+\item B27010  no health insurance. EJAM calculates \code{pctnohealthinsurance}
+from the Census-defined B27010 civilian noninstitutionalized population
+universe. Any EJSCREEN-specific compatibility value should be handled in
+the EJSCREEN export stage, not by changing the EJAM ACS indicator.
+\item C16002  household language by household limited English speaking status;
+used for \code{lingiso} and limited-English household language breakdowns
+\url{https://data.census.gov/table/ACSDT5Y2024.C16002}
 \item B16004  (language category and) \% of residents (not hhlds) speak no English at all \url{https://data.census.gov/table/ACSDT5Y2024.B16004}
 }
 

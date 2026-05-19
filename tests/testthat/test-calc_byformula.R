@@ -118,6 +118,34 @@ test_that("formula dependencies are ordered before they are used", {
   expect_lt(match("over17", age_formulas$rname), match("pctover17", age_formulas$rname))
 })
 
+test_that("language formula outputs align with map_headernames and names vectors", {
+  language_formula_rnames <- grep("lan_|_li|lingiso", formulas_ejscreen_acs$rname, value = TRUE)
+
+  expect_equal(setdiff(language_formula_rnames, map_headernames$rname), character())
+  expect_equal(
+    grep("^lingiso(spanish|euro|asian|other)$", formulas_ejscreen_acs$rname, value = TRUE),
+    character()
+  )
+
+  expect_true(all(names_d_language %in% map_headernames$rname))
+  expect_true(all(names_d_language_count %in% map_headernames$rname))
+  expect_true(all(names_d_languageli %in% map_headernames$rname))
+  expect_true(all(names_d_languageli_count %in% map_headernames$rname))
+
+  expect_equal(
+    formulas_ejscreen_acs$formula[match("spanish_li", formulas_ejscreen_acs$rname)],
+    "spanish_li = C16002_004"
+  )
+  expect_match(
+    formulas_ejscreen_acs$formula[match("lingiso", formulas_ejscreen_acs$rname)],
+    "spanish_li \\+ ie_li \\+ api_li \\+ other_li"
+  )
+  expect_match(
+    formulas_ejscreen_acs$formula[match("pctspanish_li", formulas_ejscreen_acs$rname)],
+    "spanish_li\\) / lingiso"
+  )
+})
+
 test_that("calc_ejam() sorts formula dependencies before evaluation", {
   mydf <- data.frame(
     bgid = 1:2,
