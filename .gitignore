@@ -1,4 +1,7 @@
 
+.positai/settings.json
+.positai
+
 ################################################################################### #
 # Trickier cases of items git should ignore
 
