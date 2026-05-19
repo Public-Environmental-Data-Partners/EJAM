@@ -4,17 +4,90 @@ ejam_issues_scoring_functions.py
 Score EJAM GitHub issues on two independent dimensions (Cost and Benefit)
 and generate inst/ejam_issues_scored_by_risk_and_value.MD.
 
-Usage (standalone – re-fetch issues from GitHub and regenerate the .MD file):
-
-    python inst/ejam_issues_scoring_functions.py \
-        --token YOUR_GITHUB_TOKEN \
-        --output inst/ejam_issues_scored_by_risk_and_value.MD
-
-Or import the individual functions from another script:
-
-    from ejam_issues_scoring_functions import cost_score, benefit_score, quadrant
-
-Requires: requests (pip install requests)
+# ============================================================
+# HOW TO REUSE THESE FUNCTIONS
+# ============================================================
+#
+# ── Option 1: Run as a standalone script (re-fetch + regenerate .MD) ─────────
+#
+#   From the repository root, run:
+#
+#       python inst/ejam_issues_scoring_functions.py \
+#           --token YOUR_GITHUB_TOKEN \
+#           --output inst/ejam_issues_scored_by_risk_and_value.MD \
+#           --date 2026-05-19
+#
+#   --token   GitHub personal access token (optional, but raises rate limit
+#             from 60 to 5000 requests/hour). Generate one at
+#             https://github.com/settings/tokens  (no scopes needed for
+#             public repos).
+#   --output  Path to write the Markdown file (default shown above).
+#   --date    Date string embedded in the file header (default: today).
+#
+# ── Option 2: Import individual scoring functions ────────────────────────────
+#
+#   Place this file on your Python path (or run from the same directory),
+#   then:
+#
+#       from ejam_issues_scoring_functions import (
+#           cost_score,       # Score one issue on cost/effort dimension
+#           benefit_score,    # Score one issue on value/urgency dimension
+#           quadrant,         # Assign A/B/C/D quadrant label
+#           score_issues,     # Score a full list of GitHub issue dicts
+#           generate_markdown # Build the full 2-D ranked Markdown text
+#       )
+#
+#   Example – score a single issue manually:
+#
+#       c = cost_score(
+#           issue_title  = "Refactor spatial join to use sf package",
+#           issue_labels = ["refactor", "shapefile-related"],
+#           issue_body   = "This would require rewriting …"
+#       )
+#       b = benefit_score(
+#           issue_title  = "Refactor spatial join to use sf package",
+#           issue_labels = ["PRIORITY HIGH", "bug"],
+#           issue_body   = "This would require rewriting …"
+#       )
+#       q = quadrant(cost=c, benefit=b, cost_threshold=3, benefit_threshold=7)
+#       print(c, b, q)   # e.g.  7 14 B
+#
+# ── Option 3: Score a list of GitHub issue dicts ─────────────────────────────
+#
+#   If you already have a list of issue dicts in the GitHub REST API format
+#   (e.g. obtained via fetch_all_open_issues() or any other means):
+#
+#       from ejam_issues_scoring_functions import (
+#           fetch_all_open_issues, score_issues, generate_markdown
+#       )
+#
+#       issues = fetch_all_open_issues(token="ghp_…")   # or supply your own list
+#       scored, cost_med, benefit_med = score_issues(issues)
+#
+#       # scored is a list of dicts:
+#       #   { num, title, labels, cost, benefit, quad }
+#       # cost_med / benefit_med are the median thresholds used to split quadrants
+#
+#       md_text = generate_markdown(scored, cost_med, benefit_med,
+#                                   generated_date="2026-05-19")
+#       with open("inst/ejam_issues_scored_by_risk_and_value.MD", "w") as fh:
+#           fh.write(md_text)
+#
+# ── Extending the scoring rules ───────────────────────────────────────────────
+#
+#   All scoring logic lives in two functions:
+#     • cost_score()    – keyword checks on title / labels / body length
+#     • benefit_score() – priority label weights + keyword checks
+#
+#   Add or adjust the +/- point assignments inside those functions to tune
+#   the model for new label conventions or different priorities.
+#
+# ── Requirements ─────────────────────────────────────────────────────────────
+#
+#   Standard-library only (no pip installs needed).
+#   Python 3.10+ recommended (uses X | Y union-type hints in comments).
+#
+# ============================================================
 """
 
 import argparse
