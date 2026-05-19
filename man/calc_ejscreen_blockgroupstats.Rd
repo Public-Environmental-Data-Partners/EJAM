@@ -21,6 +21,7 @@ calc_ejscreen_blockgroupstats(
   save_stage = FALSE,
   pipeline_storage = c("auto", "local", "s3"),
   stage_format = c("csv", "rds", "rda", "arrow"),
+  yr = NULL,
   blockgroupstats_acs = NULL,
   blockgroupstats_acs_stage = NULL
 )
@@ -71,6 +72,9 @@ with a warning. The default FALSE errors on missing extra inputs.}
 
 \item{stage_format}{file format for saved/read stages: \code{"csv"}, \code{"rds"},
 \code{"rda"}, or \code{"arrow"}.}
+
+\item{yr}{optional ACS end year used to set metadata on saved R-native
+pipeline stages.}
 
 \item{blockgroupstats_acs, blockgroupstats_acs_stage}{old names retained as
 aliases for draft scripts.}

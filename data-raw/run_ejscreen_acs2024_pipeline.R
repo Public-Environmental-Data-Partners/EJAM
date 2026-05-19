@@ -496,6 +496,7 @@ save_file_stage_formats <- function(x,
       object_name = object_name,
       overwrite = TRUE,
       validate = validate,
+      yr = pipeline_yr,
       storage = pipeline_storage
     )
   }
@@ -1102,8 +1103,8 @@ if (interactive()) {
     ## could save as .rda and .arrow on s3 also,
     ## and maybe shift to getting it from there instead of from ejamdata
     ## for now save in s3 as rda and arrow.
-    EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej"  )
-    EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej"  )
+    EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
+    EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
     # [1] "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.rda"
     # noting the old bgej.arrow was still in local data folder, so
     ## replaced it and rerun the datacreate_testout scripts to use new EJ Indexes in those.

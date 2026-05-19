@@ -105,7 +105,8 @@ calc_bg_acsdata <- function(yr,
       pipeline_dir = pipeline_dir,
       format = stage_format,
       overwrite = overwrite,
-      validation_strict = validation_strict
+      validation_strict = validation_strict,
+      yr = yr
     )
   } else {
     ejscreen_pipeline_validate(bg_acsdata, stage = "bg_acsdata", strict = validation_strict)

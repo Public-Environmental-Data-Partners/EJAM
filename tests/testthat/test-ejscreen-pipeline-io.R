@@ -15,6 +15,57 @@ test_that("pipeline stage files round trip RDS and RDA formats", {
   expect_equal(as.data.frame(EJAM:::ejscreen_pipeline_load("sample_csv", pipeline_dir, format = "csv")), x)
 })
 
+test_that("pipeline R-native stage saves use the ACS vintage from the pipeline year", {
+  pipeline_dir <- file.path(tempdir(), "ejam-pipeline-metadata-test")
+  x <- data.frame(bgfips = "010010201001", pop = 100)
+
+  rds_path <- EJAM:::ejscreen_pipeline_save(
+    x,
+    "blockgroupstats",
+    pipeline_dir,
+    format = "rds",
+    yr = 2022,
+    validate = FALSE
+  )
+  rds_loaded <- EJAM:::ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "rds")
+  expect_true(file.exists(rds_path))
+  expect_equal(attr(rds_loaded, "acs_version"), "2018-2022")
+  expect_equal(attr(rds_loaded, "ejam_package_version"), as.character(utils::packageVersion("EJAM")))
+  expect_equal(attr(rds_loaded, "date_saved_in_package"), as.character(Sys.Date()))
+
+  rda_path <- EJAM:::ejscreen_pipeline_save(
+    x,
+    "blockgroupstats",
+    pipeline_dir,
+    format = "rda",
+    yr = 2024,
+    validate = FALSE
+  )
+  rda_loaded <- EJAM:::ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "rda")
+  expect_true(file.exists(rda_path))
+  expect_equal(attr(rda_loaded, "acs_version"), "2020-2024")
+})
+
+test_that("pipeline metadata does not get added to plain atomic vectors", {
+  pipeline_dir <- file.path(tempdir(), "ejam-pipeline-atomic-metadata-test")
+  x <- c("pctlowinc", "pctmin")
+
+  EJAM:::ejscreen_pipeline_save(
+    x,
+    "names_all",
+    pipeline_dir,
+    format = "rds",
+    yr = 2024,
+    validate = FALSE
+  )
+  loaded <- EJAM:::ejscreen_pipeline_load("names_all", pipeline_dir, format = "rds")
+
+  expect_equal(loaded, x)
+  expect_null(attr(loaded, "acs_version", exact = TRUE))
+  expect_null(attr(loaded, "ejam_package_version", exact = TRUE))
+  expect_null(attr(loaded, "date_saved_in_package", exact = TRUE))
+})
+
 test_that("pipeline input can use an object or a saved stage", {
   pipeline_dir <- file.path(tempdir(), "ejam-pipeline-input-test")
   x <- data.frame(a = 1:2)
@@ -133,7 +184,9 @@ test_that("bg_envirodata stage validation requires pctpre1960", {
   )
   path <- EJAM:::ejscreen_pipeline_save(bg_envirodata, "bg_envirodata", pipeline_dir, format = "rds")
   expect_true(file.exists(path))
-  expect_equal(EJAM:::ejscreen_pipeline_load("bg_envirodata", pipeline_dir, format = "rds"), bg_envirodata)
+  bg_envirodata_loaded <- EJAM:::ejscreen_pipeline_load("bg_envirodata", pipeline_dir, format = "rds")
+  expect_equal(bg_envirodata_loaded, bg_envirodata, ignore_attr = TRUE)
+  expect_equal(attr(bg_envirodata_loaded, "acs_version"), "2020-2024")
 })
 
 test_that("ejscreen_export stage validation requires usable ID and helper fields", {
@@ -178,5 +231,7 @@ test_that("ejscreen_export stage validation requires usable ID and helper fields
   good$T_D2_PM25 <- c("95 %ile", "100 %ile")
   path <- EJAM:::ejscreen_pipeline_save(good, "ejscreen_export", pipeline_dir, format = "rds")
   expect_true(file.exists(path))
-  expect_equal(EJAM:::ejscreen_pipeline_load("ejscreen_export", pipeline_dir, format = "rds"), good)
+  good_loaded <- EJAM:::ejscreen_pipeline_load("ejscreen_export", pipeline_dir, format = "rds")
+  expect_equal(good_loaded, good, ignore_attr = TRUE)
+  expect_equal(attr(good_loaded, "acs_version"), "2020-2024")
 })

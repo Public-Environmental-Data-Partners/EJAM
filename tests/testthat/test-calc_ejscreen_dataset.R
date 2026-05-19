@@ -66,10 +66,12 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
                                              existing_blockgroupstats,
                                              save_stage,
                                              pipeline_storage,
-                                             stage_format) {
+                                             stage_format,
+                                             yr) {
       expect_false(save_stage)
       expect_equal(pipeline_storage, "auto")
       expect_equal(blockgroup_universe_source, "acs")
+      expect_equal(yr, 2024)
       expect_equal(bg_acsdata$bgfips, blockgroupstats$bgfips)
       expect_true("pctpre1960" %in% names(bg_envirodata))
       expect_true("lowlifex" %in% names(bg_extra_indicators))
@@ -91,8 +93,10 @@ test_that("calc_ejscreen_dataset orchestrates supplied stage objects", {
                                    demog_index_var,
                                    demog_index_supp_var,
                                    demog_index_state_var,
-                                   demog_index_supp_state_var) {
+                                   demog_index_supp_state_var,
+                                   yr) {
       expect_false(save_stages)
+      expect_equal(yr, 2024)
       expect_equal(bgstats$bgfips, blockgroupstats$bgfips)
       stats
     },
@@ -391,7 +395,8 @@ test_that("calc_ejscreen_dataset can resume from a saved blockgroupstats stage",
     download_acs_raw = FALSE
   )
 
-  expect_equal(out$blockgroupstats, blockgroupstats)
+  expect_equal(out$blockgroupstats, blockgroupstats, ignore_attr = TRUE)
+  expect_equal(attr(out$blockgroupstats, "acs_version"), "2020-2024")
   expect_true(attr(out, "loaded_stages")[["blockgroupstats"]])
 })
 

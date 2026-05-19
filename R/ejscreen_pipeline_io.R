@@ -32,6 +32,15 @@
 #'   file.
 #' @param validate logical. If TRUE, validate known stages before saving.
 #' @param validation_strict logical passed to `EJAM:::ejscreen_pipeline_validate()`.
+#' @param yr optional ACS end year used to set metadata on R-native saved
+#'   stages. If omitted, the helper tries `EJAM_PIPELINE_YR` and then the
+#'   `ejscreen_acs_YYYY` suffix in `pipeline_dir`.
+#' @param metadata optional named list of metadata attributes to apply before
+#'   saving R-native stages.
+#' @param add_metadata logical. If TRUE, add or update metadata attributes for
+#'   known non-atomic pipeline stages and for objects that already have metadata
+#'   attributes. Atomic vectors without existing metadata attributes are left
+#'   unchanged.
 #' @param path optional explicit file path to load.
 #' @param return_data_table logical passed to Arrow reads.
 #' @param input_name label used in error messages when an input is missing.
@@ -188,6 +197,9 @@ ejscreen_pipeline_save <- function(x,
                                    overwrite = TRUE,
                                    validate = TRUE,
                                    validation_strict = TRUE,
+                                   yr = NULL,
+                                   metadata = NULL,
+                                   add_metadata = TRUE,
                                    storage = c("auto", "local", "s3")) {
   format <- match.arg(format)
   path <- ejscreen_pipeline_stage_path(stage, pipeline_dir, format)
@@ -201,6 +213,14 @@ ejscreen_pipeline_save <- function(x,
   if (validate) {
     ejscreen_pipeline_validate(x, stage = stage, strict = validation_strict)
   }
+  x_to_save <- ejscreen_pipeline_add_stage_metadata(
+    x = x,
+    stage = stage,
+    pipeline_dir = pipeline_dir,
+    yr = yr,
+    metadata = metadata,
+    add_metadata = add_metadata
+  )
   save_path <- path
   if (storage == "local") {
     dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
@@ -209,19 +229,19 @@ ejscreen_pipeline_save <- function(x,
   }
 
   if (format == "rds") {
-    saveRDS(x, file = save_path)
+    saveRDS(x_to_save, file = save_path)
 
   } else if (format == "rda") {
-    env <- list2env(setNames(list(x), object_name), parent = emptyenv())
+    env <- list2env(setNames(list(x_to_save), object_name), parent = emptyenv())
     save(list = object_name, file = save_path, envir = env)
 
   } else if (format == "csv") {
-    if (!is.data.frame(x)) {stop("CSV pipeline stages must be data.frame or data.table objects")}
-    data.table::fwrite(x, file = save_path)
+    if (!is.data.frame(x_to_save)) {stop("CSV pipeline stages must be data.frame or data.table objects")}
+    data.table::fwrite(x_to_save, file = save_path)
 
   } else { # format == "arrow"
     if (!requireNamespace("arrow", quietly = TRUE)) {stop("The arrow package is required to save pipeline stages in Arrow format")}
-    arrow::write_ipc_file(x, sink = save_path)
+    arrow::write_ipc_file(x_to_save, sink = save_path)
   }
 
   if (storage == "s3") {
@@ -229,6 +249,121 @@ ejscreen_pipeline_save <- function(x,
   }
 
   normalizePath(path, mustWork = FALSE)
+}
+################################################### #
+
+ejscreen_pipeline_add_stage_metadata <- function(x,
+                                                 stage,
+                                                 pipeline_dir = NULL,
+                                                 yr = NULL,
+                                                 metadata = NULL,
+                                                 add_metadata = TRUE) {
+  if (!isTRUE(add_metadata)) {
+    return(x)
+  }
+
+  metadata_attr_names <- c(
+    "ejam_package_version",
+    "date_saved_in_package",
+    "date_downloaded",
+    "ejscreen_version",
+    "ejscreen_releasedate",
+    "acs_releasedate",
+    "acs_version",
+    "census_version"
+  )
+  existing_metadata <- intersect(metadata_attr_names, names(attributes(x)))
+  atomic_vector_without_metadata <- is.atomic(x) && is.vector(x) && length(existing_metadata) == 0L
+  if (atomic_vector_without_metadata) {
+    return(x)
+  }
+
+  stage_canonical <- ejscreen_pipeline_stage_canonical(stage)
+  known_stage <- stage_canonical %in% ejscreen_pipeline_stage_names(canonical_only = TRUE)
+  if (!known_stage && length(existing_metadata) == 0L && is.null(metadata)) {
+    return(x)
+  }
+
+  metadata_to_use <- metadata
+  if (is.null(metadata_to_use)) {
+    metadata_to_use <- get_metadata_mapping(stage_canonical)
+  }
+  if (is.null(metadata_to_use)) {
+    metadata_to_use <- get_metadata_mapping("default")
+  }
+  if (!is.list(metadata_to_use)) {
+    stop("metadata must be a named list", call. = FALSE)
+  }
+
+  metadata_to_use$date_saved_in_package <- as.character(Sys.Date())
+  metadata_to_use$ejam_package_version <- ejam_package_version_current()
+
+  yr_for_metadata <- ejscreen_pipeline_metadata_year(yr = yr, pipeline_dir = pipeline_dir)
+  if (!is.na(yr_for_metadata)) {
+    metadata_to_use$acs_version <- ejscreen_pipeline_acs_version_from_year(yr_for_metadata)
+    metadata_to_use$acs_releasedate <- ejscreen_pipeline_acs_releasedate_from_year(
+      yr_for_metadata,
+      fallback = metadata_to_use$acs_releasedate
+    )
+  }
+
+  for (nm in names(metadata_to_use)) {
+    attr(x, nm) <- ejscreen_pipeline_scalar_metadata(metadata_to_use[[nm]])
+  }
+  x
+}
+################################################### #
+
+ejscreen_pipeline_scalar_metadata <- function(value) {
+  if (is.null(value)) {
+    return(NULL)
+  }
+  value <- unname(as.vector(value))
+  if (length(value) == 0L) {
+    return(NA_character_)
+  }
+  value[[1]]
+}
+################################################### #
+
+ejscreen_pipeline_metadata_year <- function(yr = NULL, pipeline_dir = NULL) {
+  if (!is.null(yr) && length(yr) > 0L && any(nzchar(as.character(yr)))) {
+    out <- suppressWarnings(as.integer(yr[[1]]))
+    if (!is.na(out)) {
+      return(out)
+    }
+  }
+
+  env_yr <- Sys.getenv("EJAM_PIPELINE_YR", unset = "")
+  if (nzchar(env_yr)) {
+    out <- suppressWarnings(as.integer(env_yr))
+    if (!is.na(out)) {
+      return(out)
+    }
+  }
+
+  dir_yr <- ejscreen_pipeline_dir_year(pipeline_dir)
+  if (!is.na(dir_yr)) {
+    return(as.integer(dir_yr))
+  }
+
+  NA_integer_
+}
+################################################### #
+
+ejscreen_pipeline_acs_releasedate_from_year <- function(yr, fallback = NA_character_) {
+  yr <- as.character(as.integer(yr))
+  out <- switch(
+    yr,
+    "2022" = "2023-12-07",
+    "2023" = "2024-12-12",
+    "2024" = "2026-01-29",
+    NA_character_
+  )
+  if (is.na(out) || !nzchar(out)) {
+    return(as.character(fallback)[1])
+  }
+  out
 }
 ################################################### #
 

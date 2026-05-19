@@ -11,6 +11,7 @@ calc_ejscreen_stats(
   pipeline_dir = NULL,
   save_stages = FALSE,
   stage_format = c("csv", "rds", "rda", "arrow"),
+  yr = NULL,
   acs_vars = NULL,
   enviro_vars = NULL,
   ej_indicator_vars = names_e,
@@ -40,6 +41,9 @@ calc_ejscreen_stats(
 
 \item{stage_format}{file format for saved stages: \code{"csv"}, \code{"rds"},
 \code{"rda"}, or \code{"arrow"}.}
+
+\item{yr}{optional ACS end year used to set metadata on saved R-native
+pipeline stages.}
 
 \item{acs_vars}{variables to include in the ACS-only lookup stages. Defaults
 to current EJSCREEN/EJAM ACS indicators found in \code{bgstats}.}

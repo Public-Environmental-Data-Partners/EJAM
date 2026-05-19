@@ -263,6 +263,7 @@ calc_ejscreen_dataset <- function(yr,
       object_name = object_name,
       overwrite = overwrite,
       validation_strict = validation_strict,
+      yr = yr,
       storage = pipeline_storage
     )
     invisible(saved_paths[[stage]])
@@ -288,6 +289,7 @@ calc_ejscreen_dataset <- function(yr,
         format = stage_format,
         overwrite = overwrite,
         validation_strict = validation_strict,
+        yr = yr,
         storage = pipeline_storage
       )
     }
@@ -493,7 +495,8 @@ calc_ejscreen_dataset <- function(yr,
       existing_blockgroupstats = existing_blockgroupstats,
       save_stage = FALSE,
       pipeline_storage = pipeline_storage,
-      stage_format = stage_format
+      stage_format = stage_format,
+      yr = yr
     )
 
     # save blockgroupstats ####
@@ -515,6 +518,7 @@ calc_ejscreen_dataset <- function(yr,
     pipeline_dir = pipeline_dir,
     save_stages = FALSE, # stages will be saved individually in this wrapper, in loop below
     stage_format = stage_format,
+    yr = yr,
     acs_vars = acs_vars,
     enviro_vars = enviro_vars,
     ej_indicator_vars = ej_indicator_vars,
