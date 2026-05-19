@@ -1106,24 +1106,19 @@ pkg_functions_with_keywords_internal_tag <- function(
   # but does check unexported functions with roxygen tags
   # and does check documented datasets not just functions
 
-  roclets <- NULL
-  load_code <- NULL
-  clean <- FALSE
-
   base_path <- normalizePath(package.dir)
-  is_first <- roxygen2:::roxygen_setup(base_path)
-  roxygen2:::roxy_meta_load(base_path)
-  packages <- roxygen2::roxy_meta_get("packages")
-  lapply(packages, loadNamespace)
   if (loadagain) {
-    load_code <- roxygen2:::find_load_strategy(load_code)
-    env <- load_code(base_path) # slow step
+    if (!requireNamespace("devtools", quietly = TRUE)) {
+      stop("Package 'devtools' is required when loadagain = TRUE.", call. = FALSE)
+    }
+    devtools::load_all(base_path, quiet = quiet, export_all = TRUE) # slow step
+    pkg_name <- desc::desc_get("Package", file = file.path(base_path, "DESCRIPTION"))[[1]]
+    env <- asNamespace(pkg_name)
   } else {
     env = globalenv()
   }
-  roxygen2:::local_roxy_meta_set("env", env)
 
-  blocks <- roxygen2::parse_package(base_path, env = NULL)  # slow step
+  blocks <- roxygen2::parse_package(base_path, env = env)  # slow step
 
   results <- list()
   i <- 0
