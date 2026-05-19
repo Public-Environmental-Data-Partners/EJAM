@@ -108,9 +108,9 @@ Attribute-based query examples:
 
 \strong{1) R user with EJAM installed (using API, with local-only alternatives noted)}
 
-\preformatted{base <- "https://ejamapi-84652557241.us-central1.run.app"
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{base <- "https://ejamapi-84652557241.us-central1.run.app"
 
-# API: blockgroups where raw pctlowinc is at least 50%
+# API: blockgroups where raw pctlowinc is at least 50\%
 x <- EJAM::ejamapi(fips = "10001", scale = "blockgroup", endpoint = "data")
 x_raw <- x[x$pctlowinc >= 0.50, ]
 
@@ -131,11 +131,11 @@ N <- 6L
 # example matched column format: state.pctile.EJ...
 ej_state_cols <- grep("^state\\\\.pctile\\\\.EJ", names(x), value = TRUE)
 x_n_ej <- x[rowSums(x[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
-}
+}\if{html}{\out{</div>}}
 
 \strong{2) R user without EJAM installed (API-only via httr2/jsonlite)}
 
-\preformatted{library(httr2)
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{library(httr2)
 library(jsonlite)
 
 base <- "https://ejamapi-84652557241.us-central1.run.app"
@@ -145,7 +145,7 @@ req_data <- request(paste0(base, "/data")) |>
   req_body_json(list(fips = "10001", scale = "blockgroup"))
 dat <- fromJSON(resp_body_string(req_perform(req_data)))
 
-# raw pctlowinc >= 50%
+# raw pctlowinc >= 50\%
 dat_raw <- dat[dat$pctlowinc >= 0.50, ]
 
 # Demog.Index percentile >= 95 (query endpoint)
@@ -158,49 +158,49 @@ N <- 6L
 # example matched column format: state.pctile.EJ...
 ej_state_cols <- grep("^state\\\\.pctile\\\\.EJ", names(dat), value = TRUE)
 dat_n_ej <- dat[rowSums(dat[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
-}
+}\if{html}{\out{</div>}}
 
 \strong{3) Python user (API via requests/pandas)}
 
-\preformatted{import requests
+\if{html}{\out{<div class="sourceCode python">}}\preformatted{import requests
 import pandas as pd
 
 base = "https://ejamapi-84652557241.us-central1.run.app"
 
 dat = pd.DataFrame(requests.post(
-    f"{base}/data",
-    json={"fips": "10001", "scale": "blockgroup"}
+    f"\{base\}/data",
+    json=\{"fips": "10001", "scale": "blockgroup"\}
 ).json())
 
-# raw pctlowinc >= 50%
+# raw pctlowinc >= 50\%
 dat_raw = dat[dat["pctlowinc"] >= 0.50]
 
 # Demog.Index percentile >= 95 (query endpoint)
 demog95 = pd.DataFrame(requests.post(
-    f"{base}/query",
-    json={"attribute": "pctile.Demog.Index", "value": 95}
+    f"\{base\}/query",
+    json=\{"attribute": "pctile.Demog.Index", "value": 95\}
 ).json())
 
 # at least N state EJ index percentiles >= 80
 N = 6
 ej_state_cols = [c for c in dat.columns if c.startswith("state.pctile.EJ")]
 dat_n_ej = dat[(dat[ej_state_cols] >= 80).sum(axis=1) >= N]
-}
+}\if{html}{\out{</div>}}
 
 \strong{4) Terminal user (API via curl + jq)}
 
-\preformatted{BASE="https://ejamapi-84652557241.us-central1.run.app"
+\if{html}{\out{<div class="sourceCode bash">}}\preformatted{BASE="https://ejamapi-84652557241.us-central1.run.app"
 
 # get blockgroup-level rows for one county
 curl -s -X POST "$BASE/data" -H "Content-Type: application/json" \\
-  -d '{"fips":"10001","scale":"blockgroup"}' > data.json
+  -d '\{"fips":"10001","scale":"blockgroup"\}' > data.json
 
-# raw pctlowinc >= 50%
+# raw pctlowinc >= 50\%
 jq '.[] | select(.pctlowinc >= 0.50)' data.json
 
 # Demog.Index percentile >= 95 (query endpoint)
 curl -s -X POST "$BASE/query" -H "Content-Type: application/json" \\
-  -d '{"attribute":"pctile.Demog.Index","value":95}' > demog95.json
+  -d '\{"attribute":"pctile.Demog.Index","value":95\}' > demog95.json
 
 # at least N state EJ index percentiles >= 80
 N=6
@@ -212,7 +212,7 @@ jq --argjson N "$N" '
       | select(type == "number" and . >= 80)] | length) >= $N
   )
 ' data.json
-}
+}\if{html}{\out{</div>}}
 }
 \examples{
 # also see ?EJAM::url_ejamapi()
@@ -229,7 +229,6 @@ httr2::req_dry_run(qreq1)
 qreq2 <- httr2::request("https://ejamapi-84652557241.us-central1.run.app/query") |>
   httr2::req_body_json(list(attribute = "pctlowinc", value = 0.80))
 httr2::req_dry_run(qreq2)
-
 if (!eg) {
 # all blockgroups in 1 county
 xcounty = ejamapi(fips="10001", scale="blockgroup", endpoint = "data", dry_run=eg)

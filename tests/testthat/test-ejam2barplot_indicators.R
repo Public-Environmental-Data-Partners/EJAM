@@ -52,6 +52,24 @@ test_that("ejam2barplot_indicators accepts clarified summary labels as inputs", 
   )
 })
 
+test_that("barplot statistic controls preserve selected median option", {
+  x <- summ_bar_data_controls(
+    indicator_type = "Demographic",
+    allow_median = TRUE,
+    selected_stat = "med"
+  )
+  html <- as.character(htmltools::renderTags(x)$html)
+
+  expect_match(html, 'name="summ_bar_stat"', fixed = TRUE)
+  expect_match(html, 'value="med" checked', fixed = TRUE)
+})
+
+test_that("barplot statistic defaults are safe when dynamic UI input is absent", {
+  expect_equal(valid_summ_bar_stat(NULL), "avg")
+  expect_equal(summ_bar_sumstat(NULL), c("Average site analyzed", "Average person at sites analyzed"))
+  expect_equal(summ_bar_sumstat("med"), c("Median site analyzed", "Median person at sites analyzed"))
+})
+
 test_that("ejam2barplot_indicators median ratio joins to US baselines without NAs", {
   expect_no_error({
     x <- ejam2barplot_indicators(
@@ -69,7 +87,23 @@ test_that("ejam2barplot_indicators median ratio joins to US baselines without NA
     c("Median person in US", "Median site analyzed", "Median person at sites analyzed")
   )
   expect_false(any(is.na(x$data$ratio[x$data$Summary != "Median person in US"])))
+  expect_true(all(is.finite(x$data$ratio)))
   expect_true(all(x$data$ratio[x$data$Summary == "Median person in US"] == 1))
+})
+
+test_that("ejam2barplot_indicators median environmental ratios are finite", {
+  expect_no_error({
+    x <- ejam2barplot_indicators(
+      testoutput_ejamit_1000pts_1miles,
+      indicator_type = "Environmental",
+      data_type = "ratio",
+      mybarvars.stat = "med",
+      mybarvars.sumstat = c("Median site analyzed", "Median person at sites analyzed")
+    )
+  })
+
+  expect_true("ggplot" %in% class(x))
+  expect_true(all(is.finite(x$data$ratio)))
 })
 
 test_that("ejam2barplot_indicators median raw supports analyzed median labels", {

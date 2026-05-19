@@ -198,10 +198,12 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
       ## combine raw data with US averages
       barplot_input <- dplyr::left_join(
         barplot_data_raw,
-        barplot_usa_avg
+        barplot_usa_avg,
+        by = c('Summary', 'indicator')
       ) %>%
         ## divide to get ratios
         dplyr::mutate(ratio = .data$value / .data$usa_value) %>%
+        dplyr::filter(is.finite(.data$ratio)) %>%
         ## add row of all 1s to represent US average ratio being constant at 1
         dplyr::bind_rows(
           data.frame(Summary = 'Average person in US', indicator = mybarvars, value = 1, usa_value = 1, ratio = 1)
@@ -246,6 +248,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
         dplyr::select(-usa_summary) %>%
         ## calc ratio
         dplyr::mutate(ratio = .data$value / .data$usa_value) %>%
+        dplyr::filter(is.finite(.data$ratio)) %>%
         dplyr::bind_rows(
           data.frame(Summary = 'Median person in US', indicator = mybarvars, value = 1, usa_value = 1, ratio = 1)
         )

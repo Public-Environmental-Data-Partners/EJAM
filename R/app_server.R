@@ -1,3 +1,63 @@
+################################################################### #
+# helper functions for server creating detailed results barplots
+################################################################### #
+valid_summ_bar_stat <- function(stat, default = "avg") {
+  if (length(stat) != 1 || is.na(stat) || !(stat %in% c("avg", "med"))) {
+    return(default)
+  } else {
+    return(stat)
+  }
+}
+######################## #
+summ_bar_sumstat <- function(stat) {
+  switch(valid_summ_bar_stat(stat),
+         med = c("Median site analyzed", "Median person at sites analyzed"),
+         avg = c("Average site analyzed", "Average person at sites analyzed"))
+}
+######################## #
+summ_bar_data_controls <- function(indicator_type, allow_median = FALSE, selected_stat = "avg") {
+  selected_stat <- valid_summ_bar_stat(selected_stat)
+
+  if (indicator_type %in% c("Demographic", "Environmental")) {
+    return(tagList(
+      radioButtons(inputId = "summ_bar_data",
+                   label = "Data Type",
+                   choiceValues = c("ratio", "raw"),
+                   choiceNames  = c("Ratio to US", "Raw data"),
+                   selected = "ratio"),
+      if (isTRUE(as.logical(allow_median))) {
+        radioButtons("summ_bar_stat",
+                     "Statistic Type",
+                     choiceValues = c("avg", "med"),
+                     choiceNames = c("Average", "Median"),
+                     selected = selected_stat)
+      }
+    ))
+  }
+
+  if (indicator_type == "EJ Index") {
+    return(radioButtons(inputId = "summ_bar_data",
+                        label = "Data Type",
+                        choiceValues = c("raw"),
+                        choiceNames  = c("Percentile"),
+                        selected = "raw"))
+  }
+
+  if (indicator_type == "Supplementary EJ Index") {
+    return(radioButtons(inputId = "summ_bar_data",
+                        label = "Data Type",
+                        choiceValues = c("raw"),
+                        choiceNames  = c("Percentile"),
+                        selected = "raw"))
+  }
+  NULL
+}
+######################## #
+
+################################################################### #
+################################################################### #
+
+
 #' app_server - EJAM app server
 #'
 #' @param input,output,session Internal parameters for shiny app.
@@ -15,7 +75,6 @@
 #' @importFrom utils unzip data download.file installed.packages object.size read.csv stack tail URLencode askYesNo browseURL capture.output combn edit getFromNamespace getSrcFilename glob2rx head str write.csv zip
 #'
 #' @rawNamespace import(dplyr, except = c(first, last, between))
-#'
 #' @keywords internal
 #'
 app_server <- function(input, output, session) {
@@ -2718,7 +2777,7 @@ app_server <- function(input, output, session) {
         fileextension <- ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
         temp_file <- tempfile(fileext = fileextension)
 
-         # if shapefile was used for analysis, provide it to ejam2report()
+        # if shapefile was used for analysis, provide it to ejam2report()
         if (submitted_upload_method() == 'SHP') {
           shp_for_report <- data_uploaded()
         } else {
@@ -2970,71 +3029,33 @@ app_server <- function(input, output, session) {
     }
   })
 
+  current_summ_bar_stat <- reactiveVal("avg")
+
+  observeEvent(input$summ_bar_stat, {
+    current_summ_bar_stat(valid_summ_bar_stat(input$summ_bar_stat, current_summ_bar_stat()))
+  }, ignoreNULL = TRUE)
+
   output$summ_bar_data <- renderUI({
     req(input$summ_bar_ind)
-    if (input$summ_bar_ind == 'Demographic') {
-      tagList(
-      radioButtons(inputId = 'summ_bar_data',
-                   label = 'Data Type',
-                   choiceValues = c('ratio',      'raw'),      # no 'pctile' at this time
-                   choiceNames  = c('Ratio to US','Raw data'), # no 'Percentile of population' at this time
-                   selected = 'ratio'),
-      if (isTRUE(as.logical(input$allow_median_in_barplot_indicators))) {
-        radioButtons('summ_bar_stat',
-                     'Statistic Type',
-                     choiceValues = c("avg", "med"),
-                     choiceNames = c("Average", "Median"),
-                     #inline = TRUE,
-                     selected = "avg")
-      }
-)
-    } else if (input$summ_bar_ind == 'Environmental') {
-      tagList(
-      radioButtons(inputId = 'summ_bar_data',
-                   label = 'Data Type',
-                   choiceValues = c('ratio',      'raw'),      # no 'pctile' at this time
-                   choiceNames  = c('Ratio to US','Raw data'), # no 'Percentile of population' at this time
-                   selected = 'ratio'),
-      if (isTRUE(as.logical(input$allow_median_in_barplot_indicators))) {
-          radioButtons('summ_bar_stat',
-                       'Statistic Type',
-                       choiceValues = c("avg", "med"),
-                       choiceNames = c("Average", "Median"),
-                       #inline = TRUE,
-                       selected = "avg")
-      }
-)
-    } else if (input$summ_bar_ind == 'EJ Index') {
-      radioButtons(inputId = 'summ_bar_data',
-                   label = 'Data Type',
-                   choiceValues = c('raw'),
-                   choiceNames  = c('Percentile'),
-                   selected = 'raw')
-    }
-    else if (input$summ_bar_ind == 'Supplementary EJ Index') {
-      radioButtons(inputId = 'summ_bar_data',
-                   label = 'Data Type',
-                   choiceValues = c('raw'),
-                   choiceNames  = c('Percentile'),
-                   selected = 'raw')
-    }
+    summ_bar_data_controls(
+      indicator_type = input$summ_bar_ind,
+      allow_median = input$allow_median_in_barplot_indicators,
+      selected_stat = current_summ_bar_stat()
+    )
   })
 
   output$summ_display_bar <- renderPlot({
     req(data_processed())
     req(input$summ_bar_ind)
     req(input$summ_bar_data)
-    ##  if allowing option of median ('med'), use thiS
-    if (isTRUE(as.logical(input$allow_median_in_barplot_indicators))) {
-      # if (EJAM:::global_or_param("default_allow_median_in_barplot_indicators")) {
-      mybarvars.stat <- input$summ_bar_stat
+    ##  if allowing option of median ('med'), use this
+    if (isTRUE(as.logical(input$allow_median_in_barplot_indicators)) &&
+        input$summ_bar_ind %in% c("Demographic", "Environmental")) {
+      mybarvars.stat <- valid_summ_bar_stat(input$summ_bar_stat, current_summ_bar_stat())
     } else {
       mybarvars.stat <- "avg"
     }
-    mybarvars.sumstat <- switch(mybarvars.stat,
-                                'med' =  c('Median site analyzed', 'Median person at sites analyzed'),
-                                'avg' = c('Average site analyzed', 'Average person at sites analyzed')
-    )
+    mybarvars.sumstat <- summ_bar_sumstat(mybarvars.stat)
     ejam2barplot_indicators(ejamitout = data_processed(),
                             indicator_type = input$summ_bar_ind, # D,E,EJ,EJS
                             data_type = input$summ_bar_data,     # ratio or raw
