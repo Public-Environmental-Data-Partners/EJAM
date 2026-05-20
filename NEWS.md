@@ -1,5 +1,4 @@
 
-- Clarified “Plot Average Scores” barplot summary labels/ratio wording to match report semantics (`Average site analyzed`, `Average person at sites analyzed`) and reduce ambiguity. Closes #128.
 - Added ability to view medians not just averages, in the barplots on the web app details tab, via the function `ejam2barplot_indicators()`
 
 # EJAM 2.32.8.001 (May 2026)
