@@ -136,6 +136,58 @@ test_that("Island Areas metadata labels are normalized before canonical mapping"
   expect_equal(out$ISLANDAREAS_OVER64, 2)
 })
 
+test_that("Island Areas race metadata mapping uses aggregate labels, not area-specific raw positions", {
+  bgfips <- "780100001001"
+  x <- data.table::data.table(
+    fips = bgfips,
+    bgfips = bgfips,
+    ST = "VI",
+    P5_004N = 60,
+    P5_020N = 11,
+    P5_021N = 20,
+    P5_032N = 7,
+    P3_004N = 65,
+    P3_020N = 12,
+    P3_021N = 20
+  )
+  p5_metadata <- data.table::data.table(
+    name = c("P5_004N", "P5_020N", "P5_021N", "P5_032N"),
+    label = c(
+      "!!Total:!!Not Hispanic or Latino:!!One Race:!!Black or African American:",
+      "!!Total:!!Not Hispanic or Latino:!!One Race:!!Black or African American:!!Other Black or African American",
+      "!!Total:!!Not Hispanic or Latino:!!One Race:!!White",
+      "!!Total:!!Not Hispanic or Latino:!!Two or More Races:!!All other race combinations"
+    )
+  )
+  p3_metadata <- data.table::data.table(
+    name = c("P3_004N", "P3_020N", "P3_021N"),
+    label = c(
+      "!!Total:!!One Race:!!Black or African American:",
+      "!!Total:!!One Race:!!Black or African American:!!Other Black or African American",
+      "!!Total:!!One Race:!!White"
+    )
+  )
+
+  p5 <- EJAM:::add_islandareas_canonical_columns(
+    x,
+    table = "P5",
+    endpoint = "dhcvi",
+    metadata_fun = function(endpoint, table, key) p5_metadata
+  )
+  p3 <- EJAM:::add_islandareas_canonical_columns(
+    x,
+    table = "P3",
+    endpoint = "dhcvi",
+    metadata_fun = function(endpoint, table, key) p3_metadata
+  )
+
+  expect_equal(p5$ISLANDAREAS_NHBA, 60)
+  expect_equal(p5$ISLANDAREAS_NHWA, 20)
+  expect_equal(p5$ISLANDAREAS_NHMULTI, NA_real_)
+  expect_equal(p3$ISLANDAREAS_BA, 65)
+  expect_equal(p3$ISLANDAREAS_WA, 20)
+})
+
 test_that("Island Areas rows can be appended to bg_acsdata after transformation", {
   bg_acsdata <- data.table::data.table(
     bgfips = "100010001001",
@@ -203,21 +255,33 @@ test_that("raw Island Areas DHC tables transform to bg_acsdata-compatible indica
         stats::setNames(as.list(rep(1, 38)), sprintf("PCT1_%03dN", 172:209))
       )),
       P5 = table_for(list(
-        P5_001N = 100, P5_002N = 10, P5_003N = 90, P5_005N = 20,
-        P5_017N = 10, P5_026N = 30, P5_027N = 5, P5_028N = 2,
-        P5_029N = 3, P5_030N = 20
+        ISLANDAREAS_HISP = 10,
+        ISLANDAREAS_NONHISP = 90,
+        ISLANDAREAS_NHWA = 30,
+        ISLANDAREAS_NHBA = 5,
+        ISLANDAREAS_NHAIANA = 2,
+        ISLANDAREAS_NHNHPIA = 20,
+        ISLANDAREAS_NHAA = 10,
+        ISLANDAREAS_NHOTHERALONE = 3,
+        ISLANDAREAS_NHMULTI = 20
       )),
       P3 = table_for(list(
-        P3_001N = 100, P3_003N = 25, P3_015N = 20, P3_024N = 30,
-        P3_025N = 5, P3_026N = 2, P3_027N = 3, P3_028N = 15
+        ISLANDAREAS_WA = 30,
+        ISLANDAREAS_BA = 5,
+        ISLANDAREAS_AIANA = 2,
+        ISLANDAREAS_AA = 20,
+        ISLANDAREAS_NHPIA = 25,
+        ISLANDAREAS_OTHERALONE = 3,
+        ISLANDAREAS_MULTI = 15
       )),
       PCT80 = table_for(pct80_values),
       PBG74 = table_for(pbg74_values),
       PBG78 = table_for(list(PBG78_001N = 40, PBG78_002N = 8)),
       PBG19 = table_for(list(PBG19_001N = 50, PBG19_003N = 5, PBG19_004N = 4, PBG19_010N = 3, PBG19_011N = 2)),
       PCT26 = table_for(list(
-        PCT26_001N = 90, PCT26_003N = 40, PCT26_006N = 1, PCT26_009N = 2,
-        PCT26_012N = 3, PCT26_015N = 4, PCT26_018N = 5
+        PCT26_001N = 90,
+        ISLANDAREAS_LAN_ENGLISH = 40,
+        ISLANDAREAS_LINGISO = 15
       )),
       HBG18 = table_for(list(HBG18_001N = 70, HBG18_009N = 7, HBG18_010N = 6, HBG18_011N = 1)),
       PBG32 = table_for(list(PBG32_001N = 80, PBG32_005N = 30, PBG32_007N = 3, PBG32_012N = 20, PBG32_014N = 2)),
@@ -282,6 +346,12 @@ test_that("Island Areas transformation uses P1 total population when PCT1 is una
   expect_equal(out$pop, 321)
   expect_equal(out$male, NA_real_)
   expect_equal(out$female, NA_real_)
+  expect_equal(out$under5, NA_real_)
+  expect_equal(out$under18, NA_real_)
+  expect_equal(out$over64, NA_real_)
+  expect_equal(out$pctunder5, NA_real_)
+  expect_equal(out$pctunder18, NA_real_)
+  expect_equal(out$pctover64, NA_real_)
 })
 
 test_that("calc_bg_acsdata can append transformed Island Areas data", {

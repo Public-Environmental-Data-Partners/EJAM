@@ -61,19 +61,32 @@ The annual workflow creates or reads these stages:
    Census Bureau. This is saved before EJAM renaming or formula calculations.
    The default raw ACS storage is a folder of per-table files, with a manifest.
 
-2. `bg_acsdata`: ACS-derived blockgroup indicators calculated from
-   `bg_acs_raw`, including demographic indicators and `pctpre1960`.
+2. `bg_islandareas_raw`: optional raw 2020 Island Areas Census DHC tables for
+   American Samoa, Guam, the Commonwealth of the Northern Mariana Islands, and
+   the U.S. Virgin Islands. Enable this with
+   `EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE"`. Puerto Rico is not part of this
+   stage because it is already covered by ACS. The Island Areas source is not
+   ACS 5-year data, and the DHC source does not populate detailed age-by-sex
+   values for most block groups, so Island Areas rows can have missing
+   `pctfemale`, `pctunder5`, `pctunder18`, and `pctover64`. EJAM stores those
+   unavailable values as `NA`, not zero.
 
-3. `bg_envirodata`: blockgroup environmental indicators used for EJ indexes.
+3. `bg_acsdata`: ACS-derived blockgroup indicators calculated from
+   `bg_acs_raw`, including demographic indicators and `pctpre1960`. When the
+   optional Island Areas stage is enabled, 2020 Island Areas Census DHC-derived
+   AS/GU/MP/VI rows are appended to this stage and flow into downstream
+   datasets.
+
+4. `bg_envirodata`: blockgroup environmental indicators used for EJ indexes.
    This normally comes from a separate environmental-data workflow. For draft
    builds, it can be provisionally reused from the current package data.
 
-4. `bg_extra_indicators`: other blockgroup indicators that are not ACS and not
+5. `bg_extra_indicators`: other blockgroup indicators that are not ACS and not
    the main EJ environmental indicators, such as health, life expectancy, and
    related context variables. These can also be provisionally reused from the
    current package data.
 
-5. `bg_geodata`: Census/TIGER blockgroup geography attributes. This stage
+6. `bg_geodata`: Census/TIGER blockgroup geography attributes. This stage
    stores `bgfips`, square-meter `arealand` and `areawater`, optional internal
    point fields `intptlat` and `intptlon`, and a compatibility-only `area`
    column. The pipeline uses Census TIGER/Line blockgroup shapefiles by default
@@ -85,22 +98,22 @@ The annual workflow creates or reads these stages:
    By default, the pipeline requests geography only for blockgroups found in
    the ACS tabulated rows for that vintage.
 
-6. `blockgroupstats`: combined blockgroup table with ACS indicators,
+7. `blockgroupstats`: combined blockgroup table with ACS indicators,
    environmental indicators, extra indicators, and geography fields.
 
-7. `usastats_acs`, `statestats_acs`, `usastats_envirodata`, and
+8. `usastats_acs`, `statestats_acs`, `usastats_envirodata`, and
    `statestats_envirodata`: percentile lookup tables for ACS and environmental
    inputs.
 
-8. `bgej`: blockgroup EJ index values calculated from demographic indexes and
+9. `bgej`: blockgroup EJ index values calculated from demographic indexes and
    environmental percentiles.
 
-9. `usastats_ej` and `statestats_ej`: percentile lookup tables for EJ index
+10. `usastats_ej` and `statestats_ej`: percentile lookup tables for EJ index
    columns.
 
-10. `usastats` and `statestats`: combined lookup tables used by EJAM.
+11. `usastats` and `statestats`: combined lookup tables used by EJAM.
 
-11. `ejscreen_export`: EJScreen-ready export combining `blockgroupstats` and
+12. `ejscreen_export`: EJScreen-ready export combining `blockgroupstats` and
     `bgej`, applying EJScreen-style names from `map_headernames`, and adding
     map helper fields where possible.
 
@@ -254,6 +267,7 @@ The runner is controlled by environment variables:
 | `EJAM_FORCE_BG_GEODATA` | `"TRUE"` to redownload/rebuild the Census/TIGER `bg_geodata` stage. |
 | `EJAM_ACS_DOWNLOAD_TIMEOUT` | Download timeout in seconds. Useful for large ACS tables. |
 | `EJAM_ACS_DOWNLOAD_RETRIES` | Number of retry attempts for ACS downloads. |
+| `EJAM_INCLUDE_ISLANDAREAS_DATA` | `"TRUE"` to append AS/GU/MP/VI rows from the 2020 Island Areas Census DHC to `bg_acsdata` and downstream stages. |
 | `EJAM_USE_PROVISIONAL_BG_ENVIRODATA` | `"FALSE"` to require a supplied `bg_envirodata.csv`. |
 | `EJAM_INCLUDE_EJSCREEN_EXPORT` | `"TRUE"` to create `ejscreen_export.csv`. |
 | `EJAM_VALIDATE_VS_PRIOR` | `"TRUE"` to write prior-version comparison files. |
@@ -282,6 +296,7 @@ Sys.getenv(c(
   "EJAM_FORCE_BG_GEODATA",
   "EJAM_ACS_DOWNLOAD_TIMEOUT",
   "EJAM_ACS_DOWNLOAD_RETRIES",
+  "EJAM_INCLUDE_ISLANDAREAS_DATA",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
   "EJAM_INCLUDE_EJSCREEN_EXPORT",
   "EJAM_VALIDATE_VS_PRIOR",
@@ -342,6 +357,7 @@ Sys.setenv(
   EJAM_FORCE_BG_GEODATA = "TRUE",
   EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
   EJAM_ACS_DOWNLOAD_RETRIES = "2",
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
   EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE"
 )
 
@@ -372,6 +388,7 @@ Sys.setenv(
   EJAM_FORCE_BG_GEODATA = "TRUE",
   EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
   EJAM_ACS_DOWNLOAD_RETRIES = "2",
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
   EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE"
 )
 
@@ -519,6 +536,11 @@ nrow(blockgroupstats)
 nrow(bgej)
 names(blockgroupstats)
 names(bgej)
+
+island_prefixes <- c("60", "66", "69", "78")
+for (stage in list(bg_acsdata, blockgroupstats, bgej)) {
+  print(stage[substr(bgfips, 1, 2) %in% island_prefixes, .N, by = ST])
+}
 ```
 
 Useful checks include:
@@ -536,6 +558,14 @@ Useful checks include:
 - lookup tables include `REGION`, `PCTILE`, `0`, `100`, and `mean`;
 - `usastats` has one region, `"USA"`;
 - `statestats` has expected state/territory regions.
+- when `EJAM_INCLUDE_ISLANDAREAS_DATA` is true, 412 Island Areas blockgroups
+  are present in `bg_acsdata`, `blockgroupstats`, and `bgej`, and
+  `ejscreen_export` retains the matching AS/GU/MP/VI IDs.
+
+Missing `pctfemale`, `pctunder5`, `pctunder18`, and `pctover64` are expected
+for most Island Areas blockgroups because the 2020 Island Areas Census DHC
+source does not populate those detailed age-by-sex values at block-group
+resolution. These unavailable values should remain `NA`, not zero.
 
 For example:
 

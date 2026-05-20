@@ -6,6 +6,11 @@
 #' not included in ACS, so the closest Census source is the 2020 Island Areas
 #' Census Detailed Housing Characteristics data. The returned object mirrors the
 #' `bg_acs_raw` table-list shape closely enough for later formula-mapping work.
+#' The 2020 Island Areas Census DHC source is not methodologically identical to
+#' ACS 5-year data. Some detailed age-by-sex fields are also not populated for
+#' most block groups, so `pctfemale`, `pctunder5`, `pctunder18`, and `pctover64`
+#' are stored as `NA` when the source values are unavailable for Island Areas
+#' rows.
 #'
 #' @param tables 2020 Island Areas Census DHC table groups to download, such as `"P1"`.
 #' @param areas Island Area postal abbreviations to include.
@@ -233,23 +238,24 @@ add_islandareas_canonical_columns <- function(x,
     x[, ISLANDAREAS_OVER64 := islandareas_sum(x, age[age >= 65, name])]
 
   } else if (table == "P5") {
-    x[, ISLANDAREAS_HISP := islandareas_sum_by_label(x, vars, "Hispanic or Latino \\(of any race\\)$")]
-    x[, ISLANDAREAS_NHWA := islandareas_sum_by_label(x, vars, "Not Hispanic or Latino:!!One Race:!!White$")]
-    x[, ISLANDAREAS_NHBA := islandareas_sum_by_label(x, vars, "Not Hispanic or Latino:!!One Race:!!Black or African American$")]
-    x[, ISLANDAREAS_NHAIANA := islandareas_sum_by_label(x, vars, "Not Hispanic or Latino:!!One Race:!!American Indian and Alaska Native$")]
-    x[, ISLANDAREAS_NHAA := islandareas_sum_by_label(x, vars, "Not Hispanic or Latino:!!One Race:!!Asian:$")]
-    x[, ISLANDAREAS_NHNHPIA := islandareas_sum_by_label(x, vars, "Not Hispanic or Latino:!!One Race:!!Native Hawaiian and Other Pacific Islander:$")]
-    x[, ISLANDAREAS_NHOTHERALONE := islandareas_sum_by_label(x, vars, "Not Hispanic or Latino:!!One Race:!!Some Other Race$")]
-    x[, ISLANDAREAS_NHMULTI := islandareas_sum_by_label(x, vars, "Not Hispanic or Latino:!!Two or More Races:$")]
+    x[, ISLANDAREAS_HISP := islandareas_sum_by_label(x, vars, "^!!Total:!!Hispanic or Latino:?$|Hispanic or Latino \\(of any race\\)$")]
+    x[, ISLANDAREAS_NONHISP := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:?$")]
+    x[, ISLANDAREAS_NHWA := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:!!One Race:!!White:?$")]
+    x[, ISLANDAREAS_NHBA := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:!!One Race:!!Black or African American:?$")]
+    x[, ISLANDAREAS_NHAIANA := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:!!One Race:!!American Indian and Alaska Native:?$")]
+    x[, ISLANDAREAS_NHAA := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:!!One Race:!!Asian:?$")]
+    x[, ISLANDAREAS_NHNHPIA := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:!!One Race:!!Native Hawaiian and Other Pacific Islander:?$")]
+    x[, ISLANDAREAS_NHOTHERALONE := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:!!One Race:!!Some Other Race:?$")]
+    x[, ISLANDAREAS_NHMULTI := islandareas_sum_by_label(x, vars, "^!!Total:!!Not Hispanic or Latino:!!Two or More Races:?$")]
 
   } else if (table == "P3") {
-    x[, ISLANDAREAS_WA := islandareas_sum_by_label(x, vars, "!!Total:!!One Race:!!White$")]
-    x[, ISLANDAREAS_BA := islandareas_sum_by_label(x, vars, "!!Total:!!One Race:!!Black or African American$")]
-    x[, ISLANDAREAS_AIANA := islandareas_sum_by_label(x, vars, "!!Total:!!One Race:!!American Indian and Alaska Native$")]
-    x[, ISLANDAREAS_AA := islandareas_sum_by_label(x, vars, "!!Total:!!One Race:!!Asian:$")]
-    x[, ISLANDAREAS_NHPIA := islandareas_sum_by_label(x, vars, "!!Total:!!One Race:!!Native Hawaiian and Other Pacific Islander:$")]
-    x[, ISLANDAREAS_OTHERALONE := islandareas_sum_by_label(x, vars, "!!Total:!!One Race:!!Some Other Race$")]
-    x[, ISLANDAREAS_MULTI := islandareas_sum_by_label(x, vars, "!!Total:!!Two or More Races:$")]
+    x[, ISLANDAREAS_WA := islandareas_sum_by_label(x, vars, "^!!Total:!!One Race:!!White:?$")]
+    x[, ISLANDAREAS_BA := islandareas_sum_by_label(x, vars, "^!!Total:!!One Race:!!Black or African American:?$")]
+    x[, ISLANDAREAS_AIANA := islandareas_sum_by_label(x, vars, "^!!Total:!!One Race:!!American Indian and Alaska Native:?$")]
+    x[, ISLANDAREAS_AA := islandareas_sum_by_label(x, vars, "^!!Total:!!One Race:!!Asian:?$")]
+    x[, ISLANDAREAS_NHPIA := islandareas_sum_by_label(x, vars, "^!!Total:!!One Race:!!Native Hawaiian and Other Pacific Islander:?$")]
+    x[, ISLANDAREAS_OTHERALONE := islandareas_sum_by_label(x, vars, "^!!Total:!!One Race:!!Some Other Race:?$")]
+    x[, ISLANDAREAS_MULTI := islandareas_sum_by_label(x, vars, "^!!Total:!!Two or More Races:?$")]
 
   } else if (table %in% c("PBG74", "PCT80")) {
     x[, ISLANDAREAS_POVKNOWN := islandareas_col_by_label(x, vars, "^!!Total:$")]
@@ -313,7 +319,11 @@ islandareas_col_by_label <- function(x, vars, pattern) {
 }
 
 islandareas_sum_by_label <- function(x, vars, pattern) {
-  islandareas_sum(x, vars$name[grepl(pattern, islandareas_clean_label(vars$label), perl = TRUE)])
+  cols <- vars$name[grepl(pattern, islandareas_clean_label(vars$label), perl = TRUE)]
+  if (length(cols) == 0) {
+    return(rep(NA_real_, NROW(x)))
+  }
+  islandareas_sum(x, cols)
 }
 
 islandareas_age_variable_metadata <- function(vars) {
@@ -364,15 +374,17 @@ calc_bg_islandareasdata <- function(islandareas_raw) {
   out[, pctfemale := islandareas_ratio(female, pop)]
   out[, pctmale := islandareas_ratio(male, pop)]
 
-  out[, hisp := islandareas_value_any(islandareas, c("ISLANDAREAS_HISP", "P5_002N"))]
-  out[, nonhisp := islandareas_value_any(islandareas, c("ISLANDAREAS_NONHISP", "P5_003N"))]
-  out[, nhwa := islandareas_value_any(islandareas, c("ISLANDAREAS_NHWA", "P5_026N"))]
-  out[, nhba := islandareas_value_any(islandareas, c("ISLANDAREAS_NHBA", "P5_027N"))]
-  out[, nhaiana := islandareas_value_any(islandareas, c("ISLANDAREAS_NHAIANA", "P5_028N"))]
-  out[, nhnhpia := islandareas_value_any(islandareas, c("ISLANDAREAS_NHNHPIA", "P5_005N"))]
-  out[, nhaa := islandareas_value_any(islandareas, c("ISLANDAREAS_NHAA", "P5_017N"))]
-  out[, nhotheralone := islandareas_value_any(islandareas, c("ISLANDAREAS_NHOTHERALONE", "P5_029N"))]
-  out[, nhmulti := islandareas_value_any(islandareas, c("ISLANDAREAS_NHMULTI", "P5_030N"))]
+  # P3/P5/PCT26 variable numbers differ by Island Area endpoint; use the
+  # metadata-derived canonical columns instead of raw table positions.
+  out[, hisp := islandareas_value_any(islandareas, "ISLANDAREAS_HISP", default = NA_real_)]
+  out[, nonhisp := islandareas_value_any(islandareas, "ISLANDAREAS_NONHISP", default = pop - hisp)]
+  out[, nhwa := islandareas_value_any(islandareas, "ISLANDAREAS_NHWA", default = NA_real_)]
+  out[, nhba := islandareas_value_any(islandareas, "ISLANDAREAS_NHBA", default = NA_real_)]
+  out[, nhaiana := islandareas_value_any(islandareas, "ISLANDAREAS_NHAIANA", default = NA_real_)]
+  out[, nhnhpia := islandareas_value_any(islandareas, "ISLANDAREAS_NHNHPIA", default = NA_real_)]
+  out[, nhaa := islandareas_value_any(islandareas, "ISLANDAREAS_NHAA", default = NA_real_)]
+  out[, nhotheralone := islandareas_value_any(islandareas, "ISLANDAREAS_NHOTHERALONE", default = NA_real_)]
+  out[, nhmulti := islandareas_value_any(islandareas, "ISLANDAREAS_NHMULTI", default = NA_real_)]
   out[, nonmins := nhwa]
   out[, mins := pop - nhwa]
   out[, pcthisp := islandareas_ratio(hisp, pop)]
@@ -385,13 +397,13 @@ calc_bg_islandareasdata <- function(islandareas_raw) {
   out[, pctnhmulti := islandareas_ratio(nhmulti, pop)]
   out[, pctmin := islandareas_ratio(mins, pop)]
 
-  out[, wa := islandareas_value_any(islandareas, c("ISLANDAREAS_WA", "P3_024N"))]
-  out[, ba := islandareas_value_any(islandareas, c("ISLANDAREAS_BA", "P3_025N"))]
-  out[, aiana := islandareas_value_any(islandareas, c("ISLANDAREAS_AIANA", "P3_026N"))]
-  out[, aa := islandareas_value_any(islandareas, c("ISLANDAREAS_AA", "P3_015N"))]
-  out[, nhpia := islandareas_value_any(islandareas, c("ISLANDAREAS_NHPIA", "P3_003N"))]
-  out[, otheralone := islandareas_value_any(islandareas, c("ISLANDAREAS_OTHERALONE", "P3_027N"))]
-  out[, multi := islandareas_value_any(islandareas, c("ISLANDAREAS_MULTI", "P3_028N"))]
+  out[, wa := islandareas_value_any(islandareas, "ISLANDAREAS_WA", default = NA_real_)]
+  out[, ba := islandareas_value_any(islandareas, "ISLANDAREAS_BA", default = NA_real_)]
+  out[, aiana := islandareas_value_any(islandareas, "ISLANDAREAS_AIANA", default = NA_real_)]
+  out[, aa := islandareas_value_any(islandareas, "ISLANDAREAS_AA", default = NA_real_)]
+  out[, nhpia := islandareas_value_any(islandareas, "ISLANDAREAS_NHPIA", default = NA_real_)]
+  out[, otheralone := islandareas_value_any(islandareas, "ISLANDAREAS_OTHERALONE", default = NA_real_)]
+  out[, multi := islandareas_value_any(islandareas, "ISLANDAREAS_MULTI", default = NA_real_)]
   out[, pctwa := islandareas_ratio(wa, pop)]
   out[, pctba := islandareas_ratio(ba, pop)]
   out[, pctaiana := islandareas_ratio(aiana, pop)]
@@ -414,13 +426,9 @@ calc_bg_islandareasdata <- function(islandareas_raw) {
   out[, pctlths := islandareas_ratio(lths, age25up)]
 
   out[, lan_universe := islandareas_value_any(islandareas, c("ISLANDAREAS_LAN_UNIVERSE", "PCT26_001N"))]
-  out[, lan_english := islandareas_value_any(islandareas, "ISLANDAREAS_LAN_ENGLISH", default = islandareas_sum(islandareas, c("PCT26_003N", "PCT26_020N", "PCT26_037N")))]
+  out[, lan_english := islandareas_value_any(islandareas, "ISLANDAREAS_LAN_ENGLISH", default = NA_real_)]
   out[, lan_nonenglish := lan_universe - lan_english]
-  out[, lingiso := islandareas_value_any(islandareas, "ISLANDAREAS_LINGISO", default = islandareas_sum(islandareas, c(
-    "PCT26_006N", "PCT26_009N", "PCT26_012N", "PCT26_015N", "PCT26_018N",
-    "PCT26_023N", "PCT26_026N", "PCT26_029N", "PCT26_032N", "PCT26_035N",
-    "PCT26_040N", "PCT26_043N", "PCT26_046N", "PCT26_049N", "PCT26_052N"
-  )))]
+  out[, lingiso := islandareas_value_any(islandareas, "ISLANDAREAS_LINGISO", default = NA_real_)]
   out[, pctlingiso := islandareas_ratio(lingiso, lan_universe)]
   out[, pctlan_english := islandareas_ratio(lan_english, lan_universe)]
   out[, pctlan_nonenglish := islandareas_ratio(lan_nonenglish, lan_universe)]
@@ -546,7 +554,7 @@ islandareas_value_any <- function(x, cols, default = 0) {
 islandareas_sum <- function(x, cols) {
   cols <- intersect(cols, names(x))
   if (length(cols) == 0) {
-    return(rep(0, NROW(x)))
+    return(rep(NA_real_, NROW(x)))
   }
   values <- as.data.frame(x[, cols, with = FALSE])
   out <- rowSums(values, na.rm = TRUE)

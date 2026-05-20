@@ -51,6 +51,11 @@
 #   EJAM_TIGER_BG_CACHE_DIR: optional local folder for downloaded Census TIGER/Line blockgroup zip files. Defaults to the EJAM user cache.
 #   EJAM_ACS_DOWNLOAD_TIMEOUT
 #   EJAM_ACS_DOWNLOAD_RETRIES
+#   EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to append AS/GU/MP/VI blockgroups from
+#      the 2020 Island Areas Census DHC to bg_acsdata. These rows are not ACS
+#      rows, and detailed age-by-sex fields are missing for most Island Areas
+#      blockgroups in the DHC source. EJAM stores those unavailable values as
+#      NA, not zero.
 
 #   EJAM_USE_PROVISIONAL_BG_ENVIRODATA: TRUE means reuse envt data still in EJAM::blockgroupstats. FALSE to require bg_envirodata.csv or .xyz file.
 
