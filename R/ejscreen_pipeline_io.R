@@ -32,9 +32,10 @@
 #'   file.
 #' @param validate logical. If TRUE, validate known stages before saving.
 #' @param validation_strict logical passed to `EJAM:::ejscreen_pipeline_validate()`.
-#' @param yr optional ACS end year used to set metadata on R-native saved
-#'   stages. If omitted, the helper tries `EJAM_PIPELINE_YR` and then the
-#'   `ejscreen_acs_YYYY` suffix in `pipeline_dir`.
+#' @param yr optional ACS end year used to set metadata on ACS-related
+#'   R-native saved stages. If omitted, the helper tries `EJAM_PIPELINE_YR` and
+#'   then the `ejscreen_acs_YYYY` suffix in `pipeline_dir`. Non-ACS stages such
+#'   as `bg_islandareas_raw` use source-specific metadata instead.
 #' @param metadata optional named list of metadata attributes to apply before
 #'   saving R-native stages.
 #' @param add_metadata logical. If TRUE, add or update metadata attributes for
@@ -270,7 +271,11 @@ ejscreen_pipeline_add_stage_metadata <- function(x,
     "ejscreen_releasedate",
     "acs_releasedate",
     "acs_version",
-    "census_version"
+    "census_version",
+    "islandareas_census_version",
+    "islandareas_data_product",
+    "islandareas_source",
+    "islandareas_source_url"
   )
   existing_metadata <- intersect(metadata_attr_names, names(attributes(x)))
   atomic_vector_without_metadata <- is.atomic(x) && is.vector(x) && length(existing_metadata) == 0L
@@ -284,13 +289,7 @@ ejscreen_pipeline_add_stage_metadata <- function(x,
     return(x)
   }
 
-  metadata_to_use <- metadata
-  if (is.null(metadata_to_use)) {
-    metadata_to_use <- get_metadata_mapping(stage_canonical)
-  }
-  if (is.null(metadata_to_use)) {
-    metadata_to_use <- get_metadata_mapping("default")
-  }
+  metadata_to_use <- ejscreen_pipeline_stage_metadata(stage_canonical, metadata = metadata)
   if (!is.list(metadata_to_use)) {
     stop("metadata must be a named list", call. = FALSE)
   }
@@ -298,19 +297,47 @@ ejscreen_pipeline_add_stage_metadata <- function(x,
   metadata_to_use$date_saved_in_package <- as.character(Sys.Date())
   metadata_to_use$ejam_package_version <- ejam_package_version_current()
 
-  yr_for_metadata <- ejscreen_pipeline_metadata_year(yr = yr, pipeline_dir = pipeline_dir)
-  if (!is.na(yr_for_metadata)) {
-    metadata_to_use$acs_version <- ejscreen_pipeline_acs_version_from_year(yr_for_metadata)
-    metadata_to_use$acs_releasedate <- ejscreen_pipeline_acs_releasedate_from_year(
-      yr_for_metadata,
-      fallback = metadata_to_use$acs_releasedate
-    )
+  if (ejscreen_pipeline_stage_uses_acs_metadata(stage_canonical)) {
+    yr_for_metadata <- ejscreen_pipeline_metadata_year(yr = yr, pipeline_dir = pipeline_dir)
+    if (!is.na(yr_for_metadata)) {
+      metadata_to_use$acs_version <- ejscreen_pipeline_acs_version_from_year(yr_for_metadata)
+      metadata_to_use$acs_releasedate <- ejscreen_pipeline_acs_releasedate_from_year(
+        yr_for_metadata,
+        fallback = metadata_to_use$acs_releasedate
+      )
+    }
   }
 
   for (nm in names(metadata_to_use)) {
     attr(x, nm) <- ejscreen_pipeline_scalar_metadata(metadata_to_use[[nm]])
   }
   x
+}
+################################################### #
+
+ejscreen_pipeline_stage_metadata <- function(stage, metadata = NULL) {
+  if (!is.null(metadata)) {
+    return(metadata)
+  }
+  if (identical(stage, "bg_islandareas_raw")) {
+    return(list(
+      census_version = "2020",
+      islandareas_census_version = "2020 Island Areas Census",
+      islandareas_data_product = "Detailed Housing Characteristics",
+      islandareas_source = "2020 Island Areas Census Detailed Housing Characteristics via Census API",
+      islandareas_source_url = "https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html"
+    ))
+  }
+  metadata_to_use <- get_metadata_mapping(stage)
+  if (is.null(metadata_to_use)) {
+    metadata_to_use <- get_metadata_mapping("default")
+  }
+  metadata_to_use
+}
+################################################### #
+
+ejscreen_pipeline_stage_uses_acs_metadata <- function(stage) {
+  !identical(stage, "bg_islandareas_raw")
 }
 ################################################### #
 

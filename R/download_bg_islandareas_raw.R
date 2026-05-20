@@ -16,7 +16,7 @@
 #' @param areas Island Area postal abbreviations to include.
 #' @param key optional Census API key. Defaults to `CENSUS_API_KEY`.
 #' @param download_fun function used to download one API URL. Defaults to
-#'   [census_api_json_table()].
+#'   `census_api_json_table()`.
 #'
 #' @return list with raw `blockgroup` Island Areas Census DHC table lists plus metadata.
 #'

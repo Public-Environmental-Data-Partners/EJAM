@@ -66,6 +66,35 @@ test_that("pipeline metadata does not get added to plain atomic vectors", {
   expect_null(attr(loaded, "date_saved_in_package", exact = TRUE))
 })
 
+test_that("Island Areas raw stages get Island Areas Census metadata, not ACS metadata", {
+  pipeline_dir <- file.path(tempdir(), "ejam-pipeline-islandareas-metadata-test")
+  x <- list(
+    stage = "bg_islandareas_raw",
+    yr = 2020L,
+    source = "2020 Island Areas Census Detailed Housing Characteristics via Census API",
+    blockgroup_tables = "P1",
+    blockgroup = list(
+      P1 = data.frame(fips = "660100001001", P1_001N = 100)
+    )
+  )
+
+  EJAM:::ejscreen_pipeline_save(
+    x,
+    "bg_islandareas_raw",
+    pipeline_dir,
+    format = "rds",
+    yr = 2024,
+    validate = FALSE
+  )
+  loaded <- EJAM:::ejscreen_pipeline_load("bg_islandareas_raw", pipeline_dir, format = "rds")
+
+  expect_null(attr(loaded, "acs_version", exact = TRUE))
+  expect_null(attr(loaded, "acs_releasedate", exact = TRUE))
+  expect_equal(attr(loaded, "census_version"), "2020")
+  expect_equal(attr(loaded, "islandareas_census_version"), "2020 Island Areas Census")
+  expect_match(attr(loaded, "islandareas_source"), "Detailed Housing Characteristics")
+})
+
 test_that("pipeline input can use an object or a saved stage", {
   pipeline_dir <- file.path(tempdir(), "ejam-pipeline-input-test")
   x <- data.frame(a = 1:2)

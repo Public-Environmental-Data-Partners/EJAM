@@ -102,9 +102,10 @@ file.}
 
 \item{validation_strict}{logical passed to \code{EJAM:::ejscreen_pipeline_validate()}.}
 
-\item{yr}{optional ACS end year used to set metadata on R-native saved
-stages. If omitted, the helper tries \code{EJAM_PIPELINE_YR} and then the
-\code{ejscreen_acs_YYYY} suffix in \code{pipeline_dir}.}
+\item{yr}{optional ACS end year used to set metadata on ACS-related
+R-native saved stages. If omitted, the helper tries \code{EJAM_PIPELINE_YR} and
+then the \code{ejscreen_acs_YYYY} suffix in \code{pipeline_dir}. Non-ACS stages such
+as \code{bg_islandareas_raw} use source-specific metadata instead.}
 
 \item{metadata}{optional named list of metadata attributes to apply before
 saving R-native stages.}

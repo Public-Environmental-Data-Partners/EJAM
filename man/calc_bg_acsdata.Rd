@@ -14,6 +14,9 @@ calc_bg_acsdata(
   tract_weight_source = c("decennial2020", "acs"),
   dropMOE = TRUE,
   acs_raw = NULL,
+  include_islandareas_data = FALSE,
+  islandareas_raw = NULL,
+  islandareas_tables = islandareas_tables_for_bg_acsdata(),
   acs_raw_stage = NULL,
   pipeline_dir = NULL,
   save_stage = FALSE,
@@ -47,6 +50,16 @@ same-vintage ACS blockgroup population weights.}
 \item{dropMOE}{logical, whether to drop ACS margin-of-error columns.}
 
 \item{acs_raw}{optional raw ACS pipeline object from \code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}}.}
+
+\item{include_islandareas_data}{logical, whether to append Island Areas rows derived
+from the 2020 Island Areas Census DHC. Puerto Rico is not included here
+because it is already part of ACS.}
+
+\item{islandareas_raw}{optional raw Island Areas Census DHC object from
+\code{\link[=download_bg_islandareas_raw]{download_bg_islandareas_raw()}}.}
+
+\item{islandareas_tables}{Island Areas Census DHC tables to download if \code{include_islandareas_data} is TRUE
+and \code{islandareas_raw} is not supplied.}
 
 \item{acs_raw_stage}{optional stage name to read from \code{pipeline_dir}.}
 
