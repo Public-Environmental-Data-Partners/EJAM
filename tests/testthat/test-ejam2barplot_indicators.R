@@ -64,8 +64,22 @@ test_that("barplot statistic controls preserve selected median option", {
   expect_match(html, 'value="med" checked', fixed = TRUE)
 })
 
+test_that("barplot statistic controls preserve selected data type option", {
+  x <- summ_bar_data_controls(
+    indicator_type = "Demographic",
+    allow_median = TRUE,
+    selected_stat = "med",
+    selected_data = "raw"
+  )
+  html <- as.character(htmltools::renderTags(x)$html)
+
+  expect_match(html, 'name="summ_bar_data"', fixed = TRUE)
+  expect_match(html, 'value="raw" checked', fixed = TRUE)
+})
+
 test_that("barplot statistic defaults are safe when dynamic UI input is absent", {
   expect_equal(valid_summ_bar_stat(NULL), "avg")
+  expect_equal(valid_summ_bar_data(NULL), "ratio")
   expect_equal(summ_bar_sumstat(NULL), c("Average site analyzed", "Average person at sites analyzed"))
   expect_equal(summ_bar_sumstat("med"), c("Median site analyzed", "Median person at sites analyzed"))
 })

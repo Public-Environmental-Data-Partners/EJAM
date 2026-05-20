@@ -9,14 +9,23 @@ valid_summ_bar_stat <- function(stat, default = "avg") {
   }
 }
 ######################## #
+valid_summ_bar_data <- function(data_type, default = "ratio") {
+  if (length(data_type) != 1 || is.na(data_type) || !(data_type %in% c("ratio", "raw"))) {
+    return(default)
+  } else {
+    return(data_type)
+  }
+}
+######################## #
 summ_bar_sumstat <- function(stat) {
   switch(valid_summ_bar_stat(stat),
          med = c("Median site analyzed", "Median person at sites analyzed"),
          avg = c("Average site analyzed", "Average person at sites analyzed"))
 }
 ######################## #
-summ_bar_data_controls <- function(indicator_type, allow_median = FALSE, selected_stat = "avg") {
+summ_bar_data_controls <- function(indicator_type, allow_median = FALSE, selected_stat = "avg", selected_data = "ratio") {
   selected_stat <- valid_summ_bar_stat(selected_stat)
+  selected_data <- valid_summ_bar_data(selected_data)
 
   if (indicator_type %in% c("Demographic", "Environmental")) {
     return(tagList(
@@ -24,7 +33,7 @@ summ_bar_data_controls <- function(indicator_type, allow_median = FALSE, selecte
                    label = "Data Type",
                    choiceValues = c("ratio", "raw"),
                    choiceNames  = c("Ratio to US", "Raw data"),
-                   selected = "ratio"),
+                   selected = selected_data),
       if (isTRUE(as.logical(allow_median))) {
         radioButtons("summ_bar_stat",
                      "Statistic Type",
@@ -3030,9 +3039,14 @@ app_server <- function(input, output, session) {
   })
 
   current_summ_bar_stat <- reactiveVal("avg")
+  current_summ_bar_data <- reactiveVal("ratio")
 
   observeEvent(input$summ_bar_stat, {
     current_summ_bar_stat(valid_summ_bar_stat(input$summ_bar_stat, current_summ_bar_stat()))
+  }, ignoreNULL = TRUE)
+
+  observeEvent(input$summ_bar_data, {
+    current_summ_bar_data(valid_summ_bar_data(input$summ_bar_data, current_summ_bar_data()))
   }, ignoreNULL = TRUE)
 
   output$summ_bar_data <- renderUI({
@@ -3040,7 +3054,8 @@ app_server <- function(input, output, session) {
     summ_bar_data_controls(
       indicator_type = input$summ_bar_ind,
       allow_median = input$allow_median_in_barplot_indicators,
-      selected_stat = current_summ_bar_stat()
+      selected_stat = current_summ_bar_stat(),
+      selected_data = current_summ_bar_data()
     )
   })
 
