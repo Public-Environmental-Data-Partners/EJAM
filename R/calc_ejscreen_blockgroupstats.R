@@ -41,6 +41,8 @@
 #' @param save_stage logical, whether to save the final `blockgroupstats` stage.
 #' @param stage_format file format for saved/read stages: `"csv"`, `"rds"`,
 #'   `"rda"`, or `"arrow"`.
+#' @param yr optional ACS end year used to set metadata on saved R-native
+#'   pipeline stages.
 #' @param blockgroupstats_acs,blockgroupstats_acs_stage old names retained as
 #'   aliases for draft scripts.
 #'
@@ -64,6 +66,7 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
                                           save_stage = FALSE,
                                           pipeline_storage = c("auto", "local", "s3"),
                                           stage_format = c("csv", "rds", "rda", "arrow"),
+                                          yr = NULL,
                                           blockgroupstats_acs = NULL,
                                           blockgroupstats_acs_stage = NULL) {
 
@@ -267,6 +270,7 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
       "blockgroupstats",
       pipeline_dir,
       stage_format,
+      yr = yr,
       storage = pipeline_storage
     )
   }

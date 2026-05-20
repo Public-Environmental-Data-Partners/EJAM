@@ -25,6 +25,8 @@
 #' @param save_stages logical, whether to save outputs to `pipeline_dir`.
 #' @param stage_format file format for saved stages: `"csv"`, `"rds"`,
 #'   `"rda"`, or `"arrow"`.
+#' @param yr optional ACS end year used to set metadata on saved R-native
+#'   pipeline stages.
 #' @param acs_vars variables to include in the ACS-only lookup stages. Defaults
 #'   to current EJSCREEN/EJAM ACS indicators found in `bgstats`.
 #' @param enviro_vars variables to include in the environmental lookup stages.
@@ -51,6 +53,7 @@ calc_ejscreen_stats <- function(bgstats = NULL,
                                 pipeline_dir = NULL,
                                 save_stages = FALSE,
                                 stage_format = c("csv", "rds", "rda", "arrow"),
+                                yr = NULL,
                                 acs_vars = NULL,
                                 enviro_vars = NULL,
                                 ej_indicator_vars = names_e,
@@ -210,7 +213,7 @@ calc_ejscreen_stats <- function(bgstats = NULL,
       stop("pipeline_dir must be provided when save_stages is TRUE")
     }
     for (stage in names(out)) {
-      ejscreen_pipeline_save(out[[stage]], stage, pipeline_dir, stage_format)
+      ejscreen_pipeline_save(out[[stage]], stage, pipeline_dir, stage_format, yr = yr)
     }
   }
 

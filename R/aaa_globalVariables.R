@@ -173,6 +173,7 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
     "lon_RAD", "long", "lowlifex", "meters_per_mile", "minutes_bygroup",
     "moe", "name", "nohealthinsurance", "oldname", "overall", "passed",
     "pctdisability", "pctdisability_rate", "pctlingiso", "pctlowinc",
+    "pctunemployed", "PCTILE", "i.pctunemployed",
     "pctlths", "pctmin", "pctnohealthinsurance", "pctownedunits",
     "placename", "pointid", "pop2020", "pop_nearby", "program",
     "proximityscore", "quaddata", "query", "radius", "radius.miles",

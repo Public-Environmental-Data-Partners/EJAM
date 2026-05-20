@@ -5,7 +5,7 @@
 \alias{names_d_language}
 \title{a list of variable names for internal use in EJAM}
 \format{
-An object of class \code{character} of length 14.
+An object of class \code{character} of length 17.
 }
 \usage{
 names_d_language

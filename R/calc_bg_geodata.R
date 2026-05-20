@@ -137,6 +137,7 @@ calc_bg_geodata <- function(yr,
       format = stage_format,
       overwrite = overwrite,
       validation_strict = validation_strict,
+      yr = yr,
       storage = pipeline_storage
     )
   } else {

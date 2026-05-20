@@ -5,7 +5,7 @@
 \alias{usastats}
 \title{usastats (DATA) data.frame of 100 percentiles and means}
 \format{
-An object of class \code{data.frame} with 102 rows and 107 columns.
+An object of class \code{data.frame} with 102 rows and 114 columns.
 }
 \usage{
 usastats

@@ -44,6 +44,9 @@ ejscreen_pipeline_save(
   overwrite = TRUE,
   validate = TRUE,
   validation_strict = TRUE,
+  yr = NULL,
+  metadata = NULL,
+  add_metadata = TRUE,
   storage = c("auto", "local", "s3")
 )
 
@@ -98,6 +101,18 @@ file.}
 \item{validate}{logical. If TRUE, validate known stages before saving.}
 
 \item{validation_strict}{logical passed to \code{EJAM:::ejscreen_pipeline_validate()}.}
+
+\item{yr}{optional ACS end year used to set metadata on R-native saved
+stages. If omitted, the helper tries \code{EJAM_PIPELINE_YR} and then the
+\code{ejscreen_acs_YYYY} suffix in \code{pipeline_dir}.}
+
+\item{metadata}{optional named list of metadata attributes to apply before
+saving R-native stages.}
+
+\item{add_metadata}{logical. If TRUE, add or update metadata attributes for
+known non-atomic pipeline stages and for objects that already have metadata
+attributes. Atomic vectors without existing metadata attributes are left
+unchanged.}
 
 \item{canonical_only}{optional logical set to TRUE in ejscreen_pipeline_stage_names() to return only the canonical versions without any aliases}
 }

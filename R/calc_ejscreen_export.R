@@ -22,6 +22,12 @@
 #' values from those export-compatible values. Rows where unemployment is
 #' missing for other reasons remain `NA`.
 #'
+#' `blockgroupstats` keeps `pctnohealthinsurance` on the Census-defined B27010
+#' civilian noninstitutionalized population universe. If EJSCREEN requires a
+#' legacy-compatible health-insurance field for a specific export target, that
+#' compatibility adjustment belongs in this export stage rather than in the
+#' EJAM ACS indicator formula.
+#'
 #' @param blockgroupstats blockgroupstats-like data.frame, or NULL if reading
 #'   from a saved pipeline stage.
 #' @param bgej bgej-like data.frame, or NULL if reading from a saved pipeline

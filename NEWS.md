@@ -51,6 +51,12 @@
   easy-to-inspect checkpoints, while `.rda` siblings are also written to S3 for
   R-native reuse.
 
+- R-native pipeline stage saves now update dataset metadata attributes based on
+  the pipeline year. For example, `yr = 2022` records ACS 2018-2022 metadata,
+  while `yr = 2024` records ACS 2020-2024 metadata. Plain atomic name-vector
+  objects are not given new metadata attributes unless such attributes already
+  exist.
+
 - Dynamic Arrow datasets are now classified by update group: Facility Data
   Updates, EJSCREEN Annual Data Update, Blockgroup Geography Updates, and
   Block Geography Updates. `bgej.arrow` is treated as package-coupled annual
@@ -126,6 +132,9 @@
   data when available, avoiding slow repeated Census API calls. The slower
   Census API fallback is cached locally after the first download and can be
   refreshed with `EJAM_REFRESH_DECENNIAL_BGWTS = "TRUE"`.
+  Limited-English household language formulas now use the canonical EJAM rnames
+  `spanish_li`, `ie_li`, `api_li`, and `other_li`, matching
+  `map_headernames` and the `names_d_languageli_count` data object.
 
 - Fixed ACS formulas for `pctpre1960` and `pctnobroadband` so they use the
   Census-defined source bins/universes. `pctpre1960` now uses B25034 pre-1960
