@@ -65,28 +65,35 @@ The annual workflow creates or reads these stages:
    American Samoa, Guam, the Commonwealth of the Northern Mariana Islands, and
    the U.S. Virgin Islands. Enable this with
    `EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE"`. Puerto Rico is not part of this
-   stage because it is already covered by ACS. The Island Areas source is not
-   ACS 5-year data, and the DHC source does not populate detailed age-by-sex
-   values for most block groups, so Island Areas rows can have missing
-   `pctfemale`, `pctunder5`, `pctunder18`, and `pctover64`. EJAM stores those
-   unavailable values as `NA`, not zero.
+   stage because it is already covered by ACS.
 
-3. `bg_acsdata`: ACS-derived blockgroup indicators calculated from
+3. `bg_islandareas_demographics`: optional transformed 2020 Island Areas Census
+   DHC demographics. This is saved as a separate checkpoint for review and
+   possible supplemental use. The Island Areas source is not ACS 5-year data,
+   and the legacy EPA/EJScreen file with AS/GU/MP/VI rows had no usable ACS
+   demographic values for those rows. Therefore the default EJScreen-compatible
+   pipeline does not use these DHC demographics in `bg_acsdata` or downstream
+   outputs. Set `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"` only when
+   intentionally creating a mixed-source supplemental dataset.
+
+4. `bg_acsdata`: ACS-derived blockgroup indicators calculated from
    `bg_acs_raw`, including demographic indicators and `pctpre1960`. When the
-   optional Island Areas stage is enabled, 2020 Island Areas Census DHC-derived
-   AS/GU/MP/VI rows are appended to this stage and flow into downstream
-   datasets.
+   optional Island Areas stage is enabled, AS/GU/MP/VI rows are appended with
+   no DHC-derived demographic values by default. The separate
+   `bg_islandareas_demographics` file keeps the available Island Areas Census
+   values available for review without changing the EJScreen-compatible
+   demographic calculations.
 
-4. `bg_envirodata`: blockgroup environmental indicators used for EJ indexes.
+5. `bg_envirodata`: blockgroup environmental indicators used for EJ indexes.
    This normally comes from a separate environmental-data workflow. For draft
    builds, it can be provisionally reused from the current package data.
 
-5. `bg_extra_indicators`: other blockgroup indicators that are not ACS and not
+6. `bg_extra_indicators`: other blockgroup indicators that are not ACS and not
    the main EJ environmental indicators, such as health, life expectancy, and
    related context variables. These can also be provisionally reused from the
    current package data.
 
-6. `bg_geodata`: Census/TIGER blockgroup geography attributes. This stage
+7. `bg_geodata`: Census/TIGER blockgroup geography attributes. This stage
    stores `bgfips`, square-meter `arealand` and `areawater`, optional internal
    point fields `intptlat` and `intptlon`, and a compatibility-only `area`
    column. The pipeline uses Census TIGER/Line blockgroup shapefiles by default
@@ -98,22 +105,22 @@ The annual workflow creates or reads these stages:
    By default, the pipeline requests geography only for blockgroups found in
    the ACS tabulated rows for that vintage.
 
-7. `blockgroupstats`: combined blockgroup table with ACS indicators,
+8. `blockgroupstats`: combined blockgroup table with ACS indicators,
    environmental indicators, extra indicators, and geography fields.
 
-8. `usastats_acs`, `statestats_acs`, `usastats_envirodata`, and
+9. `usastats_acs`, `statestats_acs`, `usastats_envirodata`, and
    `statestats_envirodata`: percentile lookup tables for ACS and environmental
    inputs.
 
-9. `bgej`: blockgroup EJ index values calculated from demographic indexes and
+10. `bgej`: blockgroup EJ index values calculated from demographic indexes and
    environmental percentiles.
 
-10. `usastats_ej` and `statestats_ej`: percentile lookup tables for EJ index
+11. `usastats_ej` and `statestats_ej`: percentile lookup tables for EJ index
    columns.
 
-11. `usastats` and `statestats`: combined lookup tables used by EJAM.
+12. `usastats` and `statestats`: combined lookup tables used by EJAM.
 
-12. `ejscreen_export`: EJScreen-ready export combining `blockgroupstats` and
+13. `ejscreen_export`: EJScreen-ready export combining `blockgroupstats` and
     `bgej`, applying EJScreen-style names from `map_headernames`, and adding
     map helper fields where possible.
 
@@ -267,7 +274,8 @@ The runner is controlled by environment variables:
 | `EJAM_FORCE_BG_GEODATA` | `"TRUE"` to redownload/rebuild the Census/TIGER `bg_geodata` stage. |
 | `EJAM_ACS_DOWNLOAD_TIMEOUT` | Download timeout in seconds. Useful for large ACS tables. |
 | `EJAM_ACS_DOWNLOAD_RETRIES` | Number of retry attempts for ACS downloads. |
-| `EJAM_INCLUDE_ISLANDAREAS_DATA` | `"TRUE"` to append AS/GU/MP/VI rows from the 2020 Island Areas Census DHC to `bg_acsdata` and downstream stages. |
+| `EJAM_INCLUDE_ISLANDAREAS_DATA` | `"TRUE"` to append AS/GU/MP/VI rows and save the separate `bg_islandareas_demographics` checkpoint. |
+| `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS` | `"TRUE"` only for an intentional mixed-source supplemental dataset that uses 2020 Island Areas Census DHC demographics in `bg_acsdata`. The default EJScreen-compatible path is `"FALSE"`. |
 | `EJAM_USE_PROVISIONAL_BG_ENVIRODATA` | `"FALSE"` to require a supplied `bg_envirodata.csv`. |
 | `EJAM_INCLUDE_EJSCREEN_EXPORT` | `"TRUE"` to create `ejscreen_export.csv`. |
 | `EJAM_VALIDATE_VS_PRIOR` | `"TRUE"` to write prior-version comparison files. |
@@ -562,10 +570,12 @@ Useful checks include:
   are present in `bg_acsdata`, `blockgroupstats`, and `bgej`, and
   `ejscreen_export` retains the matching AS/GU/MP/VI IDs.
 
-Missing `pctfemale`, `pctunder5`, `pctunder18`, and `pctover64` are expected
-for most Island Areas blockgroups because the 2020 Island Areas Census DHC
-source does not populate those detailed age-by-sex values at block-group
-resolution. These unavailable values should remain `NA`, not zero.
+For the default EJScreen-compatible path, Island Areas demographic columns in
+`bg_acsdata` and downstream stages are expected to be `NA` because the legacy
+EPA/EJScreen file with AS/GU/MP/VI rows had no usable ACS demographic values
+for those rows. The separate `bg_islandareas_demographics` checkpoint contains
+available 2020 Island Areas Census DHC values for review. Those values are used
+in `bg_acsdata` only when `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"`.
 
 For example:
 

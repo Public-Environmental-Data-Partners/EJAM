@@ -211,6 +211,37 @@ test_that("Island Areas rows can be appended to bg_acsdata after transformation"
   expect_equal(out$islandareas_source, c(NA_character_, "2020 Island Areas Census DHC"))
 })
 
+test_that("Island Areas demographics can be reduced to EPA-compatible placeholder rows", {
+  bg_islandareasdata <- data.table::data.table(
+    bgfips = "660100002001",
+    bgid = "660100002001",
+    ST = "GU",
+    statename = "Guam",
+    REGION = 9L,
+    countyname = NA_character_,
+    pop = 200,
+    pctmin = 0.8,
+    pctlowinc = 0.4,
+    pctlingiso = 0.1,
+    pctlths = 0.2,
+    pctdisability = 0.12,
+    islandareas_source = "2020 Island Areas Census DHC"
+  )
+
+  out <- EJAM:::calc_bg_islandareas_placeholder_data(bg_islandareasdata)
+
+  expect_s3_class(out, "data.table")
+  expect_equal(out$bgfips, "660100002001")
+  expect_equal(out$bgid, "660100002001")
+  expect_equal(out$ST, "GU")
+  expect_equal(out$statename, "Guam")
+  expect_equal(out$REGION, 9L)
+  expect_equal(out$pop, NA_real_)
+  expect_equal(out$pctmin, NA_real_)
+  expect_equal(out$pctlowinc, NA_real_)
+  expect_match(out$islandareas_source, "placeholder")
+})
+
 test_that("raw Island Areas DHC tables transform to bg_acsdata-compatible indicators", {
   bgfips <- "660100001001"
   table_for <- function(values) {
@@ -354,7 +385,7 @@ test_that("Island Areas transformation uses P1 total population when PCT1 is una
   expect_equal(out$pctover64, NA_real_)
 })
 
-test_that("calc_bg_acsdata can append transformed Island Areas data", {
+test_that("calc_bg_acsdata appends Island Areas placeholder rows by default", {
   bg_acsdata <- data.table::data.table(
     bgfips = "100010001001",
     bgid = "1",
@@ -394,6 +425,53 @@ test_that("calc_bg_acsdata can append transformed Island Areas data", {
     yr = 2024,
     include_tract_data = TRUE,
     include_islandareas_data = TRUE,
+    islandareas_raw = list(stage = "bg_islandareas_raw")
+  )
+
+  expect_equal(out$bgfips, c("100010001001", "660100001001"))
+  expect_equal(out$pop, c(100, NA_real_))
+  expect_equal(out$pctmin, c(0.2, NA_real_))
+  expect_match(out$islandareas_source[2], "placeholder")
+})
+
+test_that("calc_bg_acsdata can opt into DHC-derived Island Areas demographics", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = "100010001001",
+    bgid = "1",
+    pop = 100,
+    pctmin = 0.2,
+    pctlowinc = 0.1,
+    pctlingiso = 0.02,
+    pctlths = 0.05,
+    pctpre1960 = 0.3,
+    pctdisability = 0.09
+  )
+  bg_islandareasdata <- data.table::data.table(
+    bgfips = "660100001001",
+    bgid = "660100001001",
+    pop = 200,
+    pctmin = 0.8,
+    pctlowinc = 0.4,
+    pctlingiso = 0.1,
+    pctlths = 0.2,
+    pctpre1960 = 0.5,
+    pctdisability = 0.12
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroupstats_acs = function(yr, formulas, tables, dropMOE, acs_raw) bg_acsdata,
+    calc_blockgroupstats_from_tract_data = function(yr, tables, formulas, dropMOE, acs_raw, tract_weight_source) {
+      data.table::data.table(bgfips = bg_acsdata$bgfips)
+    },
+    calc_bg_islandareasdata = function(islandareas_raw) bg_islandareasdata,
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_bg_acsdata(
+    yr = 2024,
+    include_tract_data = TRUE,
+    include_islandareas_data = TRUE,
+    use_islandareas_demographics = TRUE,
     islandareas_raw = list(stage = "bg_islandareas_raw")
   )
 

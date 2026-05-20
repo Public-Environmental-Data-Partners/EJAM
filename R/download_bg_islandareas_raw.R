@@ -476,6 +476,57 @@ calc_bg_islandareasdata <- function(islandareas_raw) {
   out
 }
 
+calc_bg_islandareas_placeholder_data <- function(bg_islandareasdata) {
+  out <- data.table::as.data.table(data.table::copy(bg_islandareasdata))
+  if (!"bgfips" %in% names(out)) {
+    stop("bg_islandareasdata must have a bgfips column")
+  }
+
+  if (!"bgid" %in% names(out)) {
+    out[, bgid := bgfips]
+  }
+  if (!"ST" %in% names(out)) {
+    out[, ST := substr(bgfips, 1, 2)]
+  }
+  if (!"statename" %in% names(out)) {
+    out[, statename := islandareas_statename(ST)]
+  }
+  if (!"REGION" %in% names(out)) {
+    out[, REGION := islandareas_region(ST)]
+  }
+  if (!"countyname" %in% names(out)) {
+    out[, countyname := NA_character_]
+  }
+
+  identity_cols <- c("bgfips", "bgid", "ST", "statename", "REGION", "countyname")
+  for (col in setdiff(names(out), identity_cols)) {
+    empty_value <- if (is.integer(out[[col]])) {
+      NA_integer_
+    } else if (is.numeric(out[[col]])) {
+      NA_real_
+    } else if (is.character(out[[col]])) {
+      NA_character_
+    } else {
+      NA
+    }
+    out[, (col) := empty_value]
+  }
+  out[, pop := NA_real_]
+  out[, islandareas_source := paste(
+    "EPA EJScreen-compatible Island Areas placeholder;",
+    "2020 Island Areas Census DHC demographics are saved separately but not used"
+  )]
+  data.table::setcolorder(out, c(intersect(c(
+    "bgfips", "bgid", "ST", "statename", "REGION", "countyname",
+    "pop", "islandareas_source"
+  ), names(out)), setdiff(names(out), c(
+    "bgfips", "bgid", "ST", "statename", "REGION", "countyname",
+    "pop", "islandareas_source"
+  ))))
+  data.table::setorder(out, bgfips)
+  out
+}
+
 islandareas_raw_component <- function(islandareas_raw, component = "blockgroup") {
   if (is.null(islandareas_raw)) {
     return(NULL)

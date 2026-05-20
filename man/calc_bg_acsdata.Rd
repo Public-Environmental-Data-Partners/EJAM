@@ -16,7 +16,9 @@ calc_bg_acsdata(
   acs_raw = NULL,
   include_islandareas_data = FALSE,
   islandareas_raw = NULL,
+  islandareas_demographics = NULL,
   islandareas_tables = islandareas_tables_for_bg_acsdata(),
+  use_islandareas_demographics = FALSE,
   acs_raw_stage = NULL,
   pipeline_dir = NULL,
   save_stage = FALSE,
@@ -51,15 +53,22 @@ same-vintage ACS blockgroup population weights.}
 
 \item{acs_raw}{optional raw ACS pipeline object from \code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}}.}
 
-\item{include_islandareas_data}{logical, whether to append Island Areas rows derived
-from the 2020 Island Areas Census DHC. Puerto Rico is not included here
-because it is already part of ACS.}
+\item{include_islandareas_data}{logical, whether to append Island Areas rows.
+Puerto Rico is not included here because it is already part of ACS.}
 
 \item{islandareas_raw}{optional raw Island Areas Census DHC object from
 \code{\link[=download_bg_islandareas_raw]{download_bg_islandareas_raw()}}.}
 
+\item{islandareas_demographics}{optional transformed Island Areas Census DHC
+demographics table from \code{calc_bg_islandareasdata()}.}
+
 \item{islandareas_tables}{Island Areas Census DHC tables to download if \code{include_islandareas_data} is TRUE
 and \code{islandareas_raw} is not supplied.}
+
+\item{use_islandareas_demographics}{logical. Defaults to FALSE so that the
+EJSCREEN-compatible pipeline appends Island Areas blockgroup rows without
+using mixed-source Island Areas Census demographics in \code{bg_acsdata}.
+Set TRUE only for a supplemental mixed-source dataset.}
 
 \item{acs_raw_stage}{optional stage name to read from \code{pipeline_dir}.}
 
@@ -92,5 +101,10 @@ using only ACS data. "Demographic index" columns are calculated later
 by \code{\link[=calc_ejscreen_blockgroupstats]{calc_ejscreen_blockgroupstats()}}, after
 \code{bg_envirodata} and extra indicators have been joined, because the
 supplemental demographic index needs \code{lowlifex} which is not from the ACS.
+
+When Island Areas rows are requested, the default EJSCREEN-compatible path
+appends AS/GU/MP/VI rows without using the optional 2020 Island Areas Census
+DHC demographics. Those DHC values can be saved and reviewed separately, and
+are used here only when \code{use_islandareas_demographics = TRUE}.
 }
 \keyword{internal}

@@ -57,6 +57,14 @@
   objects are not given new metadata attributes unless such attributes already
   exist.
 
+- Added optional Island Areas pipeline support. The pipeline can save raw and
+  transformed 2020 Island Areas Census DHC data as `bg_islandareas_raw` and
+  `bg_islandareas_demographics`. By default, those DHC demographic values are
+  not used in `bg_acsdata` or downstream EJSCREEN-compatible outputs because
+  the legacy EPA/EJScreen Island Areas rows had no usable ACS demographic
+  values. `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS=TRUE` opts into a mixed-source
+  supplemental dataset.
+
 - Dynamic Arrow datasets are now classified by update group: Facility Data
   Updates, EJSCREEN Annual Data Update, Blockgroup Geography Updates, and
   Block Geography Updates. `bgej.arrow` is treated as package-coupled annual

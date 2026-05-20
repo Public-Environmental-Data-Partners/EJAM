@@ -105,7 +105,8 @@ file.}
 \item{yr}{optional ACS end year used to set metadata on ACS-related
 R-native saved stages. If omitted, the helper tries \code{EJAM_PIPELINE_YR} and
 then the \code{ejscreen_acs_YYYY} suffix in \code{pipeline_dir}. Non-ACS stages such
-as \code{bg_islandareas_raw} use source-specific metadata instead.}
+as \code{bg_islandareas_raw} and \code{bg_islandareas_demographics} use
+source-specific metadata instead.}
 
 \item{metadata}{optional named list of metadata attributes to apply before
 saving R-native stages.}

@@ -35,7 +35,8 @@
 #' @param yr optional ACS end year used to set metadata on ACS-related
 #'   R-native saved stages. If omitted, the helper tries `EJAM_PIPELINE_YR` and
 #'   then the `ejscreen_acs_YYYY` suffix in `pipeline_dir`. Non-ACS stages such
-#'   as `bg_islandareas_raw` use source-specific metadata instead.
+#'   as `bg_islandareas_raw` and `bg_islandareas_demographics` use
+#'   source-specific metadata instead.
 #' @param metadata optional named list of metadata attributes to apply before
 #'   saving R-native stages.
 #' @param add_metadata logical. If TRUE, add or update metadata attributes for
@@ -319,7 +320,7 @@ ejscreen_pipeline_stage_metadata <- function(stage, metadata = NULL) {
   if (!is.null(metadata)) {
     return(metadata)
   }
-  if (identical(stage, "bg_islandareas_raw")) {
+  if (stage %in% c("bg_islandareas_raw", "bg_islandareas_demographics")) {
     return(list(
       census_version = "2020",
       islandareas_census_version = "2020 Island Areas Census",
@@ -337,7 +338,7 @@ ejscreen_pipeline_stage_metadata <- function(stage, metadata = NULL) {
 ################################################### #
 
 ejscreen_pipeline_stage_uses_acs_metadata <- function(stage) {
-  !identical(stage, "bg_islandareas_raw")
+  !stage %in% c("bg_islandareas_raw", "bg_islandareas_demographics")
 }
 ################################################### #
 
@@ -408,6 +409,8 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
     bg_acs_raw = "bg_acs_raw",    # canonical
     islandareas_raw =       "islandareas_raw",
     bg_islandareas_raw = "bg_islandareas_raw",    # canonical
+    islandareas_demographics =       "islandareas_demographics",
+    bg_islandareas_demographics = "bg_islandareas_demographics",    # canonical
 
     blockgroupstats_acs = "blockgroupstats_acs",
     bg_acsdata = "bg_acsdata",    # canonical
@@ -466,6 +469,7 @@ ejscreen_pipeline_stage_canonical <- function(stage) {
   switch(stage,
          acs_raw =             "bg_acs_raw",
          islandareas_raw =             "bg_islandareas_raw",
+         islandareas_demographics =    "bg_islandareas_demographics",
          blockgroupstats_acs = "bg_acsdata",
          envirodata =          "bg_envirodata",
          area =                "bg_geodata",

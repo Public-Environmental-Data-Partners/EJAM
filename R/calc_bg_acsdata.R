@@ -14,6 +14,11 @@
 #' `bg_envirodata` and extra indicators have been joined, because the
 #' supplemental demographic index needs `lowlifex` which is not from the ACS.
 #'
+#' When Island Areas rows are requested, the default EJSCREEN-compatible path
+#' appends AS/GU/MP/VI rows without using the optional 2020 Island Areas Census
+#' DHC demographics. Those DHC values can be saved and reviewed separately, and
+#' are used here only when `use_islandareas_demographics = TRUE`.
+#'
 #' @param yr end year of the ACS 5-year survey to use.
 #' @param formulas formulas used for blockgroup-resolution ACS tables.
 #' @param tables ACS tables to inspect and download when available at
@@ -30,13 +35,18 @@
 #'   same-vintage ACS blockgroup population weights.
 #' @param dropMOE logical, whether to drop ACS margin-of-error columns.
 #' @param acs_raw optional raw ACS pipeline object from [download_bg_acs_raw()].
-#' @param include_islandareas_data logical, whether to append Island Areas rows derived
-#'   from the 2020 Island Areas Census DHC. Puerto Rico is not included here
-#'   because it is already part of ACS.
+#' @param include_islandareas_data logical, whether to append Island Areas rows.
+#'   Puerto Rico is not included here because it is already part of ACS.
 #' @param islandareas_raw optional raw Island Areas Census DHC object from
 #'   [download_bg_islandareas_raw()].
+#' @param islandareas_demographics optional transformed Island Areas Census DHC
+#'   demographics table from `calc_bg_islandareasdata()`.
 #' @param islandareas_tables Island Areas Census DHC tables to download if `include_islandareas_data` is TRUE
 #'   and `islandareas_raw` is not supplied.
+#' @param use_islandareas_demographics logical. Defaults to FALSE so that the
+#'   EJSCREEN-compatible pipeline appends Island Areas blockgroup rows without
+#'   using mixed-source Island Areas Census demographics in `bg_acsdata`.
+#'   Set TRUE only for a supplemental mixed-source dataset.
 #' @param acs_raw_stage optional stage name to read from `pipeline_dir`.
 #' @param pipeline_dir folder for saving the pipeline stage.
 #' @param save_stage logical, whether to save the `bg_acsdata` stage.
@@ -60,7 +70,9 @@ calc_bg_acsdata <- function(yr,
                             acs_raw = NULL,
                             include_islandareas_data = FALSE,
                             islandareas_raw = NULL,
+                            islandareas_demographics = NULL,
                             islandareas_tables = islandareas_tables_for_bg_acsdata(),
+                            use_islandareas_demographics = FALSE,
                             acs_raw_stage = NULL,
                             pipeline_dir = NULL,
                             save_stage = FALSE,
@@ -103,10 +115,17 @@ calc_bg_acsdata <- function(yr,
   }
 
   if (isTRUE(include_islandareas_data)) {
-    if (is.null(islandareas_raw)) {
+    if (is.null(islandareas_demographics) && is.null(islandareas_raw)) {
       islandareas_raw <- download_bg_islandareas_raw(tables = islandareas_tables)
     }
-    bg_islandareasdata <- calc_bg_islandareasdata(islandareas_raw)
+    if (is.null(islandareas_demographics)) {
+      islandareas_demographics <- calc_bg_islandareasdata(islandareas_raw)
+    }
+    bg_islandareasdata <- if (isTRUE(use_islandareas_demographics)) {
+      islandareas_demographics
+    } else {
+      calc_bg_islandareas_placeholder_data(islandareas_demographics)
+    }
     bg_acsdata <- merge_bg_acsdata_islandareas_data(bg_acsdata, bg_islandareasdata)
   }
 

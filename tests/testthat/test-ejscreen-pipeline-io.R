@@ -66,9 +66,9 @@ test_that("pipeline metadata does not get added to plain atomic vectors", {
   expect_null(attr(loaded, "date_saved_in_package", exact = TRUE))
 })
 
-test_that("Island Areas raw stages get Island Areas Census metadata, not ACS metadata", {
+test_that("Island Areas stages get Island Areas Census metadata, not ACS metadata", {
   pipeline_dir <- file.path(tempdir(), "ejam-pipeline-islandareas-metadata-test")
-  x <- list(
+  raw <- list(
     stage = "bg_islandareas_raw",
     yr = 2020L,
     source = "2020 Island Areas Census Detailed Housing Characteristics via Census API",
@@ -79,7 +79,7 @@ test_that("Island Areas raw stages get Island Areas Census metadata, not ACS met
   )
 
   EJAM:::ejscreen_pipeline_save(
-    x,
+    raw,
     "bg_islandareas_raw",
     pipeline_dir,
     format = "rds",
@@ -93,6 +93,30 @@ test_that("Island Areas raw stages get Island Areas Census metadata, not ACS met
   expect_equal(attr(loaded, "census_version"), "2020")
   expect_equal(attr(loaded, "islandareas_census_version"), "2020 Island Areas Census")
   expect_match(attr(loaded, "islandareas_source"), "Detailed Housing Characteristics")
+
+  demographics <- data.frame(
+    bgfips = "660100001001",
+    pop = 100,
+    islandareas_source = "2020 Island Areas Census DHC"
+  )
+  EJAM:::ejscreen_pipeline_save(
+    demographics,
+    "bg_islandareas_demographics",
+    pipeline_dir,
+    format = "rds",
+    yr = 2024,
+    validate = FALSE
+  )
+  loaded_demographics <- EJAM:::ejscreen_pipeline_load(
+    "bg_islandareas_demographics",
+    pipeline_dir,
+    format = "rds"
+  )
+
+  expect_null(attr(loaded_demographics, "acs_version", exact = TRUE))
+  expect_null(attr(loaded_demographics, "acs_releasedate", exact = TRUE))
+  expect_equal(attr(loaded_demographics, "census_version"), "2020")
+  expect_match(attr(loaded_demographics, "islandareas_source"), "Detailed Housing Characteristics")
 })
 
 test_that("pipeline input can use an object or a saved stage", {
@@ -172,8 +196,16 @@ test_that("pipeline CSV reader preserves blockgroup numeric ids and lookup text 
 
 test_that("pipeline stage names include preferred bg names and compatibility aliases", {
   stages <- EJAM:::ejscreen_pipeline_stage_names()
-  expect_true(all(c("bg_acsdata", "bg_islandareas_raw", "bg_envirodata", "bgej", "bg_ejindexes", "ejscreen_export", "bg_ejscreen") %in% stages))
+  expect_true(all(c(
+    "bg_acsdata", "bg_islandareas_raw", "bg_islandareas_demographics",
+    "bg_envirodata", "bgej", "bg_ejindexes", "ejscreen_export",
+    "bg_ejscreen"
+  ) %in% stages))
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("islandareas_raw"), "bg_islandareas_raw")
+  expect_equal(
+    EJAM:::ejscreen_pipeline_stage_canonical("islandareas_demographics"),
+    "bg_islandareas_demographics"
+  )
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("blockgroupstats_acs"), "bg_acsdata")
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("envirodata"), "bg_envirodata")
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("bg_ejindexes"), "bgej")
@@ -203,6 +235,23 @@ test_that("bg_islandareas_raw stage validation accepts Island Areas raw table li
   )
 
   out <- EJAM:::ejscreen_pipeline_validate(bg_islandareas_raw, stage = "bg_islandareas_raw")
+
+  expect_equal(out$errors, character())
+  expect_equal(out$warnings, character())
+})
+
+test_that("bg_islandareas_demographics stage validation accepts transformed tables", {
+  bg_islandareas_demographics <- data.frame(
+    bgfips = "660100001001",
+    bgid = "660100001001",
+    pop = 100,
+    islandareas_source = "2020 Island Areas Census DHC"
+  )
+
+  out <- EJAM:::ejscreen_pipeline_validate(
+    bg_islandareas_demographics,
+    stage = "bg_islandareas_demographics"
+  )
 
   expect_equal(out$errors, character())
   expect_equal(out$warnings, character())

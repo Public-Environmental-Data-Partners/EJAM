@@ -194,6 +194,52 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
 }
 from_check_var_add = sort(setdiff(from_check_var, union(from_varlist_add, from_datasets_add)))
 ########################################### #
+# from_islandareas_pipeline
+{
+  from_islandareas_pipeline = c(
+    "aa", "age", "age25up", "aiana", "ba", "block", "block group",
+    "broadband_universe",
+    "built1940to1949", "built1950to1959", "builtpre1940", "builtunits",
+    "county", "female", "GEO_ID", "hisp", "ISLANDAREAS_AA",
+    "ISLANDAREAS_AGE25UP", "ISLANDAREAS_AIANA", "ISLANDAREAS_BA",
+    "ISLANDAREAS_BROADBAND_UNIVERSE", "ISLANDAREAS_BROADBAND_WITH",
+    "ISLANDAREAS_BUILTUNITS", "ISLANDAREAS_DISAB_UNIVERSE",
+    "ISLANDAREAS_DISABILITY", "ISLANDAREAS_FEMALE",
+    "ISLANDAREAS_HEALTH_UNIVERSE", "ISLANDAREAS_HH_POOR",
+    "ISLANDAREAS_HH_POV_UNIVERSE", "ISLANDAREAS_HISP",
+    "ISLANDAREAS_LABORFORCE", "ISLANDAREAS_LAN_ENGLISH",
+    "ISLANDAREAS_LAN_UNIVERSE", "ISLANDAREAS_LINGISO", "ISLANDAREAS_LTHS",
+    "ISLANDAREAS_MALE", "ISLANDAREAS_MULTI", "ISLANDAREAS_NHAA",
+    "ISLANDAREAS_NHAIANA", "ISLANDAREAS_NHBA", "ISLANDAREAS_NHMULTI",
+    "ISLANDAREAS_NHNHPIA", "ISLANDAREAS_NHOTHERALONE",
+    "ISLANDAREAS_NHPIA", "ISLANDAREAS_NHWA", "ISLANDAREAS_NOHEALTH",
+    "ISLANDAREAS_NONHISP", "ISLANDAREAS_OCCUPIEDUNITS",
+    "ISLANDAREAS_OTHERALONE", "ISLANDAREAS_OVER64",
+    "ISLANDAREAS_OWNEDUNITS", "ISLANDAREAS_PERCAPINCOME",
+    "ISLANDAREAS_POP", "ISLANDAREAS_POV2PLUS", "ISLANDAREAS_POVKNOWN",
+    "ISLANDAREAS_PRE1960", "islandareas_source", "ISLANDAREAS_UNDER18",
+    "ISLANDAREAS_UNDER5", "ISLANDAREAS_UNEMPLOYED",
+    "ISLANDAREAS_UNEMPLOYEDBASE", "ISLANDAREAS_WA", "label",
+    "laborforce_universe", "lan_english", "lan_nonenglish", "lan_universe",
+    "lingiso", "lowinc", "lths", "male", "mins", "multi", "nhaa",
+    "nhaiana", "nhba", "nhmulti", "nhnhpia", "nhotheralone", "nhpia",
+    "nhwa", "nobroadband", "nonhisp", "nonmins", "occupiedunits",
+    "otheralone", "over17", "over64", "ownedunits", "pctaa", "pctaiana",
+    "pctba", "pctfemale", "pcthisp", "pctlan_english",
+    "pctlan_nonenglish", "pctmale", "pctmulti", "pctnhaa", "pctnhaiana",
+    "pctnhba", "pctnhmulti", "pctnhnhpia", "pctnhotheralone", "pctnhpia",
+    "pctnhwa", "pctnobroadband", "pctotheralone", "pctover17", "pctover64",
+    "pctpoor", "pctpre1960", "pctunder18", "pctunder5", "pctwa",
+    "percapincome", "poor", "pov2plus", "poverty_household_universe",
+    "povknownratio", "pre1960", "state", "SUMLEVEL", "tract", "under18",
+    "under5", "unemployed", "unemployedbase", "wa"
+  )
+}
+from_islandareas_pipeline_add = sort(setdiff(
+  from_islandareas_pipeline,
+  union(from_varlist_add, union(from_datasets_add, from_check_var_add))
+))
+########################################### #
 # from_misc
 {
   from_misc =   c(
@@ -222,7 +268,8 @@ if (getRversion() >= "2.15.1") {
           from_misc_add,
           from_varlist_add,
           from_datasets_add,
-          from_check_var_add
+          from_check_var_add,
+          from_islandareas_pipeline_add
         )
       )
     )

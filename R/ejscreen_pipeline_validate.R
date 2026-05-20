@@ -306,7 +306,17 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     ###################################################### #
     # bg_acsdata ####
 
-    if (canonical_stage == "bg_acsdata") {
+    if (canonical_stage == "bg_islandareas_demographics") {
+
+      has_cols(c("bgfips", "islandareas_source"))
+      check_bgfips()
+      check_nonnegative(c("pop"))
+      check_fraction_percent_cols()
+
+      ###################################################### #
+      # bg_acsdata ####
+
+    } else if (canonical_stage == "bg_acsdata") {
 
       has_cols(c("bgfips", "pop"))
       warn_missing_cols(c("pctmin", "pctlowinc", "pctlingiso", "pctlths", "pctdisability"))
