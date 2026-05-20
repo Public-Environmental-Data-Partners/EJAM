@@ -278,6 +278,7 @@ The runner is controlled by environment variables:
 | `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS` | `"TRUE"` only for an intentional mixed-source supplemental dataset that uses 2020 Island Areas Census DHC demographics in `bg_acsdata`. The default EJScreen-compatible path is `"FALSE"`. |
 | `EJAM_USE_PROVISIONAL_BG_ENVIRODATA` | `"FALSE"` to require a supplied `bg_envirodata.csv`. |
 | `EJAM_INCLUDE_EJSCREEN_EXPORT` | `"TRUE"` to create `ejscreen_export.csv`. |
+| `EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT` | `"TRUE"` to also create the smaller `ejscreen_dataset_creator_input` stage for EPA's Python dataset-creator workflow. |
 | `EJAM_VALIDATE_VS_PRIOR` | `"TRUE"` to write prior-version comparison files. |
 | `EJAM_PRIOR_PIPELINE_DIR` | Prior pipeline folder/S3 prefix to compare against. |
 | `EJAM_PRIOR_PACKAGE_REF` | Optional Git ref/tag/SHA for prior package data comparison. |
@@ -305,8 +306,10 @@ Sys.getenv(c(
   "EJAM_ACS_DOWNLOAD_TIMEOUT",
   "EJAM_ACS_DOWNLOAD_RETRIES",
   "EJAM_INCLUDE_ISLANDAREAS_DATA",
+  "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
   "EJAM_INCLUDE_EJSCREEN_EXPORT",
+  "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
   "EJAM_VALIDATE_VS_PRIOR",
   "EJAM_PRIOR_PIPELINE_YR",
   "EJAM_PRIOR_PIPELINE_DIR",
@@ -365,8 +368,10 @@ Sys.setenv(
   EJAM_FORCE_BG_GEODATA = "TRUE",
   EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
   EJAM_ACS_DOWNLOAD_RETRIES = "2",
-  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
-  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE"
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE",
+  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE",
+  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
+  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
 )
 
 source("data-raw/run_ejscreen_acs2024_pipeline.R")
@@ -396,14 +401,34 @@ Sys.setenv(
   EJAM_FORCE_BG_GEODATA = "TRUE",
   EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
   EJAM_ACS_DOWNLOAD_RETRIES = "2",
-  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
-  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE"
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE",
+  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE",
+  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
+  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
 )
 
 source("data-raw/run_ejscreen_acs2024_pipeline.R")
 ```
 
 The runner asks for confirmation in interactive sessions before continuing.
+
+To add AS/GU/MP/VI rows in the same way as the legacy EPA/EJScreen export,
+enable the optional Island Areas stage but keep the DHC demographics out of
+`bg_acsdata`:
+
+```{r, eval=FALSE}
+Sys.setenv(
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
+  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE"
+)
+
+source("data-raw/run_ejscreen_acs2024_pipeline.R")
+```
+
+Set `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"` only for an intentional
+mixed-source supplemental dataset. That uses 2020 Island Areas Census DHC
+demographic values in `bg_acsdata`, which is useful for review but is not the
+default EJScreen replication path.
 
 ## Rerun From Saved ACS Data
 

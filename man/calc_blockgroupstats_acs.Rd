@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_blockgroupstats_acs.R
 \name{calc_blockgroupstats_acs}
 \alias{calc_blockgroupstats_acs}
-\title{utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs}
+\title{Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates}
 \usage{
 calc_blockgroupstats_acs(
   yr,
@@ -32,19 +32,21 @@ is performed for blockgroup-resolution tables.}
 data.table, one row per blockgroup, columns bgfips, etc.
 }
 \description{
-utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs
+Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates
 }
 \details{
-This is meant to be used annually for updating EJScreen demographic indicators
-from the Census Bureau American Community Survey (ACS) 5-year summary file, to update the datasets in the package.
-This is now typically orchestrated by \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} and by the
-staged pipeline runner script \code{data-raw/run_ejscreen_acs2024_pipeline.R}.
+This lower-level helper calculates ACS-derived blockgroup indicators from
+the Census Bureau American Community Survey (ACS) 5-year summary file. In the
+current annual pipeline it is called through \code{\link[=calc_bg_acsdata]{calc_bg_acsdata()}}, which is in
+turn orchestrated by \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} and by the staged runner
+script \code{data-raw/run_ejscreen_acs2024_pipeline.R}.
 
 Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
 which is documented at https://ejanalysis.github.io/ACSdownload
 }
 \seealso{
-\code{\link[=calc_blockgroupstats_acs]{calc_blockgroupstats_acs()}} \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupstats_from_tract_data()}} \code{\link[=calc_bgej]{calc_bgej()}}
-\code{\link[=formulas_ejscreen_acs]{formulas_ejscreen_acs()}} \code{\link[=formulas_ejscreen_acs_disability]{formulas_ejscreen_acs_disability()}} \code{\link[=formulas_ejscreen_demog_index]{formulas_ejscreen_demog_index()}}
+\code{\link[=calc_bg_acsdata]{calc_bg_acsdata()}} \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupstats_from_tract_data()}}
+\code{\link[=calc_bgej]{calc_bgej()}} \link{formulas_ejscreen_acs}
+\link{formulas_ejscreen_acs_disability} \link{formulas_ejscreen_demog_index}
 }
 \keyword{internal}

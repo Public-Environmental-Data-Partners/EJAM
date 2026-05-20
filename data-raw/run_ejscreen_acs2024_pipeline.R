@@ -64,6 +64,9 @@
 #   EJAM_USE_PROVISIONAL_BG_ENVIRODATA: TRUE means reuse envt data still in EJAM::blockgroupstats. FALSE to require bg_envirodata.csv or .xyz file.
 
 #   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv or .xyz file.
+#   EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
+#      ejscreen_dataset_creator_input stage for EPA's Python dataset-creator
+#      workflow.
 
 #   EJAM_VALIDATE_VS_PRIOR: TRUE to compare selected outputs to a prior saved pipeline version and save prior_validation_*.txt and prior_validation_summary.csv.
 #   EJAM_PRIOR_PIPELINE_YR: prior version year to compare against. Defaults to 2022 for yr 2024, otherwise yr - 1.
@@ -124,6 +127,7 @@ set_pipeline_default("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", "FALSE")
 set_pipeline_default("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", "FALSE")
 
 set_pipeline_default("EJAM_INCLUDE_EJSCREEN_EXPORT", "TRUE")
+set_pipeline_default("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", "FALSE")
 
 set_pipeline_default("EJAM_VALIDATE_VS_PRIOR", "TRUE")
 set_pipeline_default("EJAM_PRIOR_PIPELINE_YR", prior_yr)
@@ -316,7 +320,7 @@ use_islandareas_demographics <- env_flag("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", FA
 
 use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", FALSE)
 
-### ESCREEN DATASET EXPORT settings ####
+### EJSCREEN DATASET EXPORT settings ####
 
 include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
 include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", FALSE)

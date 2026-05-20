@@ -13,7 +13,11 @@ It is a data.table with one row for every US Census blockgroup.
 \item SOURCES OF DATA:
 \itemize{
 \item Environmental indicators were obtained from a variety of sources, and their development in 2026 onward will be documented at https://github.com/Public-Environmental-Data-Partners/EJSCREEN-Data-Processing.
-\item Demographics such as percentages are calculated using EJAM scripts and functions, starting with Census Bureau data from the American Community Survey 5-year summary file. Calculations are based on formulas in []
+\item Demographics such as percentages are calculated using EJAM scripts and
+functions, starting with Census Bureau data from the American Community
+Survey 5-year summary file. ACS calculations are based primarily on
+\link{formulas_ejscreen_acs}, \link{formulas_ejscreen_acs_disability}, and
+\link{formulas_ejscreen_demog_index}.
 \item The EJ Indexes (aka Summary Indexes) are calculated by EJAM based on blockgroupstats data, and are stored in a separate table, \link{bgej}
 \item The \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html}{definition of and source of data for every indicator was originally documented by EPA for EJSCREEN}. Originally, the environmental, demographic, and EJ indicators/indexes and extra indicators all were provided by EPA for EJAM versions through v2.32.8 (early 2026).
 \item Metadata on each indicator, such as its glossary definition or long name, are stored in the EJAM package, and can be accessed with the function \code{\link[=varinfo]{varinfo()}} and the dataset \link{map_headernames}.
@@ -30,7 +34,21 @@ It is a data.table with one row for every US Census blockgroup.
 \itemize{
 \item Data here includes States, DC, and Puerto Rico (PR).
 \item Puerto Rico is included in both Census 2020 and ACS survey data, so it is in EJScreen blockgroup data, in the \code{blockgroupstats} dataset.
-\item Island Areas are not included here. The American Community Survey (ACS) does not include the Island Areas (even though EJScreen has some information on them). Although the 2020 Census did include information on AS,GU,MP,VI, the ACS does not include Island Areas. See https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html and also see \code{stateinfo2[stateinfo2$is.island.areas, ]} and see \link{islandareas}. The Island Areas include American Samoa (AS), U.S. Virgin Islands (VI), Guam (GU), and Northern Mariana Islands (MP). The U.S. Minor Outlying Islands (UM) are also Island Areas but are not included in EJScreen.
+\item The package \code{blockgroupstats} data normally include States, DC, and PR
+only. The American Community Survey (ACS) does not include the Island
+Areas, although EJScreen has used AS/GU/MP/VI rows in some exports. The
+annual pipeline can optionally append AS/GU/MP/VI placeholder rows and
+save 2020 Island Areas Census DHC demographics as a separate
+\code{bg_islandareas_demographics} checkpoint for review. Those DHC
+demographics are not used in the default EJScreen-compatible
+\code{blockgroupstats} output unless the maintainer explicitly opts into a
+mixed-source supplemental dataset. See
+https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html
+and also see \code{stateinfo2[stateinfo2$is.island.areas, ]} and
+\link{islandareas}. The Island Areas include American Samoa (AS), U.S. Virgin
+Islands (VI), Guam (GU), and Northern Mariana Islands (MP). The U.S.
+Minor Outlying Islands (UM) are also Island Areas but are not included in
+EJScreen.
 }
 \item COLUMNS / INDICATORS:
 \itemize{
@@ -49,7 +67,10 @@ rownames(x) <- NULL
 x[1:20, ]
 }\if{html}{\out{</div>}}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{- The column called "area" is not used and not documented. The columns called arealand and areawater are in square meters, not square miles. To convert units:
+\if{html}{\out{<div class="sourceCode">}}\preformatted{- The compatibility-only column called `area` is retained from older
+EJScreen/EJAM tables but should not be used for calculations. The columns
+`arealand` and `areawater` are in square meters, not square miles. To
+convert units:
 }\if{html}{\out{</div>}}
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{convert_units(sum( blockgroupstats$arealand) , "sqm", "sqmi")

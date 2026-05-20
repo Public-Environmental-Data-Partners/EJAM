@@ -12,6 +12,12 @@
 #' are stored as `NA` when the source values are unavailable for Island Areas
 #' rows.
 #'
+#' The annual EJScreen-compatible pipeline saves the transformed DHC
+#' demographics as `bg_islandareas_demographics` for review, but does not use
+#' those values in `bg_acsdata` unless `use_islandareas_demographics = TRUE`.
+#' The default path appends Island Areas rows with no DHC-derived demographic
+#' values so it remains compatible with legacy EPA/EJScreen Island Areas rows.
+#'
 #' @param tables 2020 Island Areas Census DHC table groups to download, such as `"P1"`.
 #' @param areas Island Area postal abbreviations to include.
 #' @param key optional Census API key. Defaults to `CENSUS_API_KEY`.

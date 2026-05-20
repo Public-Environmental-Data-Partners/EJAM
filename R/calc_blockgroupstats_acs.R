@@ -27,13 +27,14 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 ################################################# ################################################### #
 
 
-#' utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs
+#' Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates
 #'
 #' @details
-#' This is meant to be used annually for updating EJScreen demographic indicators
-#' from the Census Bureau American Community Survey (ACS) 5-year summary file, to update the datasets in the package.
-#' This is now typically orchestrated by [calc_ejscreen_dataset()] and by the
-#' staged pipeline runner script `data-raw/run_ejscreen_acs2024_pipeline.R`.
+#' This lower-level helper calculates ACS-derived blockgroup indicators from
+#' the Census Bureau American Community Survey (ACS) 5-year summary file. In the
+#' current annual pipeline it is called through [calc_bg_acsdata()], which is in
+#' turn orchestrated by [calc_ejscreen_dataset()] and by the staged runner
+#' script `data-raw/run_ejscreen_acs2024_pipeline.R`.
 #'
 #' Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
 #' which is documented at https://ejanalysis.github.io/ACSdownload
@@ -50,8 +51,9 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #'   is performed for blockgroup-resolution tables.
 #'
 #' @return data.table, one row per blockgroup, columns bgfips, etc.
-#' @seealso [calc_blockgroupstats_acs()] [calc_blockgroupstats_from_tract_data()] [calc_bgej()]
-#'   [formulas_ejscreen_acs()] [formulas_ejscreen_acs_disability()] [formulas_ejscreen_demog_index()]
+#' @seealso [calc_bg_acsdata()] [calc_blockgroupstats_from_tract_data()]
+#'   [calc_bgej()] [formulas_ejscreen_acs]
+#'   [formulas_ejscreen_acs_disability] [formulas_ejscreen_demog_index]
 #'
 #' @keywords internal
 #'

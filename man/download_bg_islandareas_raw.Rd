@@ -38,5 +38,11 @@ ACS 5-year data. Some detailed age-by-sex fields are also not populated for
 most block groups, so \code{pctfemale}, \code{pctunder5}, \code{pctunder18}, and \code{pctover64}
 are stored as \code{NA} when the source values are unavailable for Island Areas
 rows.
+
+The annual EJScreen-compatible pipeline saves the transformed DHC
+demographics as \code{bg_islandareas_demographics} for review, but does not use
+those values in \code{bg_acsdata} unless \code{use_islandareas_demographics = TRUE}.
+The default path appends Island Areas rows with no DHC-derived demographic
+values so it remains compatible with legacy EPA/EJScreen Island Areas rows.
 }
 \keyword{internal}
