@@ -244,6 +244,8 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
   x = c(
     acs_raw =       "acs_raw",
     bg_acs_raw = "bg_acs_raw",    # canonical
+    islandareas_raw =       "islandareas_raw",
+    bg_islandareas_raw = "bg_islandareas_raw",    # canonical
 
     blockgroupstats_acs = "blockgroupstats_acs",
     bg_acsdata = "bg_acsdata",    # canonical
@@ -301,6 +303,7 @@ ejscreen_pipeline_stage_canonical <- function(stage) {
   }
   switch(stage,
          acs_raw =             "bg_acs_raw",
+         islandareas_raw =             "bg_islandareas_raw",
          blockgroupstats_acs = "bg_acsdata",
          envirodata =          "bg_envirodata",
          area =                "bg_geodata",

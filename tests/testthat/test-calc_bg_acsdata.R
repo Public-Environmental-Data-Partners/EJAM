@@ -29,6 +29,309 @@ test_that("tract ACS indicators are merged into bg_acsdata without duplicate col
   expect_false(any(duplicated(names(out))))
 })
 
+test_that("raw Island Areas DHC downloads normalize block group identifiers", {
+  seen_urls <- character()
+  fake_download <- function(url) {
+    seen_urls <<- c(seen_urls, url)
+    if (grepl("/dhcas\\?", url)) {
+      return(data.table::data.table(
+        NAME = "Block Group 1, Census Tract 0001, Eastern District, American Samoa",
+        state = "60",
+        county = "010",
+        tract = "000100",
+        `block group` = "1",
+        P1_001N = "100"
+      ))
+    }
+    if (grepl("/dhcgu\\?", url)) {
+      return(data.table::data.table(
+        NAME = "Block Group 1, Census Tract 0002, Guam",
+        state = "66",
+        county = "010",
+        tract = "000200",
+        `block group` = "1",
+        P1_001N = "200"
+      ))
+    }
+    stop("unexpected URL: ", url)
+  }
+
+  raw <- EJAM:::download_bg_islandareas_raw(
+    tables = "P1",
+    areas = c("AS", "GU"),
+    download_fun = fake_download,
+    metadata_fun = NULL
+  )
+
+  expect_s3_class(raw, "ejam_bg_islandareas_raw")
+  expect_equal(raw$stage, "bg_islandareas_raw")
+  expect_equal(names(raw$blockgroup), "P1")
+  expect_equal(raw$blockgroup$P1$ST, c("AS", "GU"))
+  expect_equal(raw$blockgroup$P1$bgfips, c("600100001001", "660100002001"))
+  expect_equal(raw$blockgroup$P1$fips, raw$blockgroup$P1$bgfips)
+  expect_equal(raw$blockgroup$P1$SUMLEVEL, c("150", "150"))
+  expect_equal(raw$blockgroup$P1$P1_001N, c(100, 200))
+  expect_true(any(grepl("for=block%20group", seen_urls, fixed = TRUE)))
+})
+
+test_that("Island Areas metadata labels are normalized before canonical mapping", {
+  bgfips <- "660100001001"
+  x <- data.table::data.table(
+    fips = bgfips,
+    bgfips = bgfips,
+    ST = "GU",
+    PCT1_001N = 100,
+    PCT1_002N = 45,
+    PCT1_003N = 1,
+    PCT1_004N = 1,
+    PCT1_005N = 1,
+    PCT1_006N = 1,
+    PCT1_007N = 1,
+    PCT1_106N = 55,
+    PCT1_107N = 1,
+    PCT1_108N = 1,
+    PCT1_109N = 1,
+    PCT1_110N = 1,
+    PCT1_111N = 1,
+    PCT1_172N = 2
+  )
+  metadata <- data.table::data.table(
+    name = c(
+      "PCT1_001N", "PCT1_002N",
+      sprintf("PCT1_%03dN", 3:7),
+      "PCT1_106N",
+      sprintf("PCT1_%03dN", 107:111),
+      "PCT1_172N"
+    ),
+    label = c(
+      " !!Total:",
+      " !!Total:!!Male:",
+      " !!Total:!!Male:!!Under 1 year",
+      " !!Total:!!Male:!!1 year",
+      " !!Total:!!Male:!!2 years",
+      " !!Total:!!Male:!!3 years",
+      " !!Total:!!Male:!!4 years",
+      " !!Total:!!Female:",
+      " !!Total:!!Female:!!Under 1 year",
+      " !!Total:!!Female:!!1 year",
+      " !!Total:!!Female:!!2 years",
+      " !!Total:!!Female:!!3 years",
+      " !!Total:!!Female:!!4 years",
+      " !!Total:!!Female:!!65 years"
+    )
+  )
+
+  out <- EJAM:::add_islandareas_canonical_columns(
+    x,
+    table = "PCT1",
+    endpoint = "dhcgu",
+    metadata_fun = function(endpoint, table, key) metadata
+  )
+
+  expect_equal(out$ISLANDAREAS_POP, 100)
+  expect_equal(out$ISLANDAREAS_MALE, 45)
+  expect_equal(out$ISLANDAREAS_FEMALE, 55)
+  expect_equal(out$ISLANDAREAS_UNDER5, 10)
+  expect_equal(out$ISLANDAREAS_UNDER18, 10)
+  expect_equal(out$ISLANDAREAS_OVER64, 2)
+})
+
+test_that("Island Areas rows can be appended to bg_acsdata after transformation", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = "100010001001",
+    bgid = "1",
+    pop = 100,
+    pctmin = 0.2
+  )
+  bg_islandareasdata <- data.table::data.table(
+    bgfips = "660100002001",
+    bgid = "1",
+    pop = 200,
+    pctmin = 0.8,
+    islandareas_source = "2020 Island Areas Census DHC"
+  )
+
+  out <- EJAM:::merge_bg_acsdata_islandareas_data(bg_acsdata, bg_islandareasdata)
+
+  expect_s3_class(out, "data.table")
+  expect_equal(out$bgfips, c("100010001001", "660100002001"))
+  expect_equal(out$pop, c(100, 200))
+  expect_equal(out$islandareas_source, c(NA_character_, "2020 Island Areas Census DHC"))
+})
+
+test_that("raw Island Areas DHC tables transform to bg_acsdata-compatible indicators", {
+  bgfips <- "660100001001"
+  table_for <- function(values) {
+    data.table::as.data.table(c(
+      list(
+        GEO_ID = paste0("1500000US", bgfips),
+        fips = bgfips,
+        bgfips = bgfips,
+        SUMLEVEL = "150",
+        ST = "GU"
+      ),
+      values
+    ))
+  }
+  pct80_two_plus_cols <- sprintf("PCT80_%03dN", seq(13, 157, by = 12))
+  pct80_values <- as.list(stats::setNames(rep(0, length(pct80_two_plus_cols)), pct80_two_plus_cols))
+  pct80_values$PCT80_001N <- 80
+  pct80_values$PCT80_013N <- 80
+  pbg74_values <- list(
+    PBG74_001N = 80,
+    PBG74_002N = -999999999,
+    PBG74_003N = 10,
+    PBG74_004N = 10,
+    PBG74_005N = 10,
+    PBG74_006N = 10,
+    PBG74_007N = 10,
+    PBG74_008N = 5,
+    PBG74_009N = 5,
+    PBG74_010N = 20
+  )
+
+  raw <- list(
+    stage = "bg_islandareas_raw",
+    yr = 2020L,
+    blockgroup = list(
+      PCT1 = table_for(c(
+        list(PCT1_001N = 100, PCT1_002N = 45, PCT1_003N = 1, PCT1_004N = 1, PCT1_005N = 1, PCT1_006N = 1, PCT1_007N = 1),
+        stats::setNames(as.list(rep(1, 13)), sprintf("PCT1_%03dN", 8:20)),
+        list(PCT1_106N = 55, PCT1_107N = 1, PCT1_108N = 1, PCT1_109N = 1, PCT1_110N = 1, PCT1_111N = 1),
+        stats::setNames(as.list(rep(1, 13)), sprintf("PCT1_%03dN", 112:124)),
+        stats::setNames(as.list(rep(1, 38)), sprintf("PCT1_%03dN", 68:105)),
+        stats::setNames(as.list(rep(1, 38)), sprintf("PCT1_%03dN", 172:209))
+      )),
+      P5 = table_for(list(
+        P5_001N = 100, P5_002N = 10, P5_003N = 90, P5_005N = 20,
+        P5_017N = 10, P5_026N = 30, P5_027N = 5, P5_028N = 2,
+        P5_029N = 3, P5_030N = 20
+      )),
+      P3 = table_for(list(
+        P3_001N = 100, P3_003N = 25, P3_015N = 20, P3_024N = 30,
+        P3_025N = 5, P3_026N = 2, P3_027N = 3, P3_028N = 15
+      )),
+      PCT80 = table_for(pct80_values),
+      PBG74 = table_for(pbg74_values),
+      PBG78 = table_for(list(PBG78_001N = 40, PBG78_002N = 8)),
+      PBG19 = table_for(list(PBG19_001N = 50, PBG19_003N = 5, PBG19_004N = 4, PBG19_010N = 3, PBG19_011N = 2)),
+      PCT26 = table_for(list(
+        PCT26_001N = 90, PCT26_003N = 40, PCT26_006N = 1, PCT26_009N = 2,
+        PCT26_012N = 3, PCT26_015N = 4, PCT26_018N = 5
+      )),
+      HBG18 = table_for(list(HBG18_001N = 70, HBG18_009N = 7, HBG18_010N = 6, HBG18_011N = 1)),
+      PBG32 = table_for(list(PBG32_001N = 80, PBG32_005N = 30, PBG32_007N = 3, PBG32_012N = 20, PBG32_014N = 2)),
+      H4 = table_for(list(H4_001N = 60, H4_002N = 20, H4_003N = 10)),
+      HBG42 = table_for(list(HBG42_001N = 60, HBG42_004N = 45)),
+      PBG29 = table_for(list(PBG29_001N = 90, PBG29_004N = 3, PBG29_007N = 4, PBG29_010N = 2)),
+      PBG68 = table_for(list(PBG68_001N = 12345)),
+      PBG26 = table_for(list(
+        PBG26_001N = 90, PBG26_004N = 1, PBG26_007N = 2, PBG26_010N = 3,
+        PBG26_013N = 4, PBG26_016N = 5, PBG26_019N = 6
+      ))
+    )
+  )
+
+  out <- EJAM:::calc_bg_islandareasdata(raw)
+
+  expect_equal(out$bgfips, bgfips)
+  expect_equal(out$ST, "GU")
+  expect_equal(out$statename, "Guam")
+  expect_equal(out$REGION, 9)
+  expect_equal(out$pop, 100)
+  expect_equal(out$pctunder5, 0.1)
+  expect_equal(out$pctunder18, 0.36)
+  expect_equal(out$pctover64, 0.76)
+  expect_equal(out$pctfemale, 0.55)
+  expect_equal(out$pctmin, 0.7)
+  expect_equal(out$pctnhwa, 0.3)
+  expect_equal(out$pctlowinc, 0.75)
+  expect_equal(out$pctpoor, 0.2)
+  expect_equal(out$pctlths, 14 / 50)
+  expect_equal(out$pctlingiso, 15 / 90)
+  expect_equal(out$pctpre1960, 14 / 70)
+  expect_equal(out$pctunemployed, 5 / 50)
+  expect_equal(out$pctownedunits, 30 / 60)
+  expect_equal(out$pctnobroadband, 15 / 60)
+  expect_equal(out$pctnohealthinsurance, 9 / 90)
+  expect_equal(out$pctdisability, 21 / 90)
+  expect_equal(out$percapincome, 12345)
+})
+
+test_that("Island Areas transformation uses P1 total population when PCT1 is unavailable at block group", {
+  bgfips <- "660100001001"
+  table_for <- function(values) {
+    data.table::as.data.table(c(
+      list(
+        fips = bgfips,
+        bgfips = bgfips,
+        ST = "GU"
+      ),
+      values
+    ))
+  }
+  raw <- list(
+    blockgroup = list(
+      P1 = table_for(list(P1_001N = 321)),
+      PCT1 = table_for(list(PCT1_001N = NA_real_, PCT1_002N = NA_real_, PCT1_106N = NA_real_))
+    )
+  )
+
+  out <- EJAM:::calc_bg_islandareasdata(raw)
+
+  expect_equal(out$pop, 321)
+  expect_equal(out$male, NA_real_)
+  expect_equal(out$female, NA_real_)
+})
+
+test_that("calc_bg_acsdata can append transformed Island Areas data", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = "100010001001",
+    bgid = "1",
+    pop = 100,
+    pctmin = 0.2,
+    pctlowinc = 0.1,
+    pctlingiso = 0.02,
+    pctlths = 0.05,
+    pctpre1960 = 0.3,
+    pctdisability = 0.09
+  )
+  bg_islandareasdata <- data.table::data.table(
+    bgfips = "660100001001",
+    bgid = "660100001001",
+    pop = 200,
+    pctmin = 0.8,
+    pctlowinc = 0.4,
+    pctlingiso = 0.1,
+    pctlths = 0.2,
+    pctpre1960 = 0.5,
+    pctdisability = 0.12
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroupstats_acs = function(yr, formulas, tables, dropMOE, acs_raw) bg_acsdata,
+    calc_blockgroupstats_from_tract_data = function(yr, tables, formulas, dropMOE, acs_raw, tract_weight_source) {
+      data.table::data.table(bgfips = bg_acsdata$bgfips)
+    },
+    calc_bg_islandareasdata = function(islandareas_raw) {
+      expect_equal(islandareas_raw$stage, "bg_islandareas_raw")
+      bg_islandareasdata
+    },
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_bg_acsdata(
+    yr = 2024,
+    include_tract_data = TRUE,
+    include_islandareas_data = TRUE,
+    islandareas_raw = list(stage = "bg_islandareas_raw")
+  )
+
+  expect_equal(out$bgfips, c("100010001001", "660100001001"))
+  expect_equal(out$pop, c(100, 200))
+  expect_equal(out$pctmin, c(0.2, 0.8))
+})
+
 test_that("pre1960 formula uses Census B25034 pre-1960 bins", {
   x <- data.table::data.table(
     B25034_001 = 300,

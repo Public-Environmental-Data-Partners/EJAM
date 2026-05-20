@@ -207,6 +207,34 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     }
     invisible(NULL)
   }
+  check_islandareas_raw_component <- function(component) {
+    tables <- x[[component]]
+    if (is.null(tables)) {
+      add_error(paste0("missing ", component, " Island Areas Census table list"))
+      return(NULL)
+    }
+    if (!is.list(tables)) {
+      add_error(paste0(component, " Island Areas Census tables must be stored as a list"))
+      return(NULL)
+    }
+    bad <- names(tables)[!vapply(tables, is.data.frame, logical(1))]
+    if (length(bad) > 0) {
+      add_error(paste0(component, " Island Areas Census tables are not data.frames: ", paste(bad, collapse = ", ")))
+    }
+    missing_fips <- names(tables)[vapply(tables, function(tab) {
+      is.data.frame(tab) && !"fips" %in% names(tab)
+    }, logical(1))]
+    if (length(missing_fips) > 0) {
+      add_error(paste0(component, " Island Areas Census tables are missing fips: ", paste(missing_fips, collapse = ", ")))
+    }
+    zero_rows <- names(tables)[vapply(tables, function(tab) {
+      is.data.frame(tab) && NROW(tab) == 0
+    }, logical(1))]
+    if (length(zero_rows) > 0) {
+      add_warning(paste0(component, " Island Areas Census tables have zero rows: ", paste(zero_rows, collapse = ", ")))
+    }
+    invisible(NULL)
+  }
 
   # ~ ####
   ###################################################### #  ###################################################### #
@@ -221,9 +249,9 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     return(invisible(list(stage = stage, errors = errors, warnings = warnings)))
   }
   ###################################################### #
-  # basic check for all stages (except bg_acs_raw) ####
+  # basic check for all stages (except raw table-list stages) ####
 
-  if (canonical_stage != "bg_acs_raw") {
+  if (!canonical_stage %in% c("bg_acs_raw", "bg_islandareas_raw")) {
 
     if (!is.data.frame(x)) {
       add_error("stage object must be a data.frame or data.table")
@@ -253,6 +281,22 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       if (!is.null(x$tract) && length(x$tract) > 0) {
         check_acs_raw_component("tract")
       }
+    }
+  }
+  ###################################################### #
+  # bg_islandareas_raw ####
+
+  if (canonical_stage == "bg_islandareas_raw") {
+
+    if (!is.list(x)) {
+      add_error("bg_islandareas_raw must be a list")
+    } else {
+      for (required_name in c("yr", "blockgroup_tables", "blockgroup")) {
+        if (is.null(x[[required_name]])) {
+          add_error(paste0("bg_islandareas_raw is missing ", required_name))
+        }
+      }
+      check_islandareas_raw_component("blockgroup")
     }
   }
   ###################################################### #

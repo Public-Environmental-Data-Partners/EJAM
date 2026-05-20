@@ -109,6 +109,7 @@ set_pipeline_default("EJAM_FORCE_BG_GEODATA", "FALSE")
 set_pipeline_default("EJAM_TIGER_BG_CACHE_DIR", default_tiger_bg_cache_dir)
 set_pipeline_default("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600")
 set_pipeline_default("EJAM_ACS_DOWNLOAD_RETRIES", "2")
+set_pipeline_default("EJAM_INCLUDE_ISLANDAREAS_DATA", "FALSE")
 
 set_pipeline_default("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", "FALSE")
 
@@ -144,6 +145,7 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_FORCE_BG_GEODATA = FALSE,
 #            EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
 #            EJAM_ACS_DOWNLOAD_RETRIES = "2",
+#            EJAM_INCLUDE_ISLANDAREAS_DATA = FALSE,
 #      EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, # TRUE during testing not once finalized datasets - TO TRY TO REPLICATE 2022 DATA
 #      EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
 #            EJAM_VALIDATE_VS_PRIOR = TRUE,
@@ -174,6 +176,7 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_FORCE_BG_GEODATA = TRUE,
 #            EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
 #            EJAM_ACS_DOWNLOAD_RETRIES = "2",
+#            EJAM_INCLUDE_ISLANDAREAS_DATA = TRUE,
 #         EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, #  set FALSE once new envt data are available
 #         EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
 #            EJAM_VALIDATE_VS_PRIOR = TRUE,
@@ -205,6 +208,7 @@ print(
     'EJAM_TIGER_BG_CACHE_DIR',
     'EJAM_ACS_DOWNLOAD_TIMEOUT',
     'EJAM_ACS_DOWNLOAD_RETRIES',
+    'EJAM_INCLUDE_ISLANDAREAS_DATA',
     'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
     'EJAM_INCLUDE_EJSCREEN_EXPORT',
     'EJAM_VALIDATE_VS_PRIOR',
@@ -292,6 +296,7 @@ force_bg_geodata <- env_flag("EJAM_FORCE_BG_GEODATA", FALSE)
 tiger_bg_cache_dir <- Sys.getenv("EJAM_TIGER_BG_CACHE_DIR", unset = default_tiger_bg_cache_dir)
 acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
 acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
+include_islandareas_data <- env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", FALSE)
 
 ### ENVIRONMENTAL DATA settings ####
 
@@ -339,6 +344,7 @@ pipeline_setting_names <- c(
   'EJAM_TIGER_BG_CACHE_DIR',
   'EJAM_ACS_DOWNLOAD_TIMEOUT',
   'EJAM_ACS_DOWNLOAD_RETRIES',
+  'EJAM_INCLUDE_ISLANDAREAS_DATA',
   'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
   'EJAM_INCLUDE_EJSCREEN_EXPORT',
   'EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT',
@@ -373,6 +379,7 @@ print(
     tiger_bg_cache_dir=tiger_bg_cache_dir,
     acs_download_timeout=acs_download_timeout,
     acs_download_retries=acs_download_retries,
+    include_islandareas_data=include_islandareas_data,
 
     use_provisional_bg_envirodata=use_provisional_bg_envirodata,
 
@@ -563,7 +570,7 @@ write_pipeline_text <- function(lines, filename) {
 # Download ACS raw blockgroup data stage ####
 ###################################################### #
 
-need_bg_acsdata <- force_bg_acsdata || !stage_exists("bg_acsdata")
+need_bg_acsdata <- force_bg_acsdata || include_islandareas_data || !stage_exists("bg_acsdata")
 need_bg_acs_raw <- force_acs || need_bg_acsdata
 
 stagename <- "bg_acs_raw"
@@ -603,6 +610,27 @@ if (!is.null(bg_acs_raw)) {
   }
 }
 ###################################################### #
+# Download Island Areas Census raw blockgroup data stage ####
+###################################################### #
+
+bg_islandareas_raw <- NULL
+if (isTRUE(include_islandareas_data) && isTRUE(need_bg_acsdata)) {
+  stagename <- "bg_islandareas_raw"
+  message(paste0("Stage: ", stagename))
+  message("Creating bg_islandareas_raw from 2020 Island Areas Census DHC")
+  bg_islandareas_raw <- EJAM:::download_bg_islandareas_raw()
+  raw_object_formats <- intersect(stage_formats, c("rds", "rda"))
+  if (length(raw_object_formats) > 0) {
+    save_file_stage_formats(
+      x = bg_islandareas_raw,
+      stage = stagename,
+      formats = raw_object_formats,
+      object_name = stagename,
+      validate = TRUE
+    )
+  }
+}
+###################################################### #
 # Calculate ACS-based indicators, bg_acsdata stage ####
 ###################################################### #
 
@@ -617,6 +645,8 @@ if (isTRUE(need_bg_acsdata)) {
   bg_acsdata <- EJAM:::calc_bg_acsdata(
     yr = yr,
     acs_raw = bg_acs_raw,
+    include_islandareas_data = include_islandareas_data,
+    islandareas_raw = bg_islandareas_raw,
     tract_weight_source = tract_weight_source,
     pipeline_dir = pipeline_dir,
     save_stage = FALSE,
@@ -861,7 +891,6 @@ if (isTRUE(include_ejscreen_export)) {
 if (isTRUE(include_ejscreen_dataset_creator_input)) {
   stages_to_validate <- c(stages_to_validate, "ejscreen_dataset_creator_input")
 }
-
 filename <- paste0("pipeline_validation_summary.", "csv")
 
 validation_summary <- data.table::rbindlist(

@@ -30,6 +30,13 @@
 #'   same-vintage ACS blockgroup population weights.
 #' @param dropMOE logical, whether to drop ACS margin-of-error columns.
 #' @param acs_raw optional raw ACS pipeline object from [download_bg_acs_raw()].
+#' @param include_islandareas_data logical, whether to append Island Areas rows derived
+#'   from the 2020 Island Areas Census DHC. Puerto Rico is not included here
+#'   because it is already part of ACS.
+#' @param islandareas_raw optional raw Island Areas Census DHC object from
+#'   [download_bg_islandareas_raw()].
+#' @param islandareas_tables Island Areas Census DHC tables to download if `include_islandareas_data` is TRUE
+#'   and `islandareas_raw` is not supplied.
 #' @param acs_raw_stage optional stage name to read from `pipeline_dir`.
 #' @param pipeline_dir folder for saving the pipeline stage.
 #' @param save_stage logical, whether to save the `bg_acsdata` stage.
@@ -51,6 +58,9 @@ calc_bg_acsdata <- function(yr,
                             tract_weight_source = c("decennial2020", "acs"),
                             dropMOE = TRUE,
                             acs_raw = NULL,
+                            include_islandareas_data = FALSE,
+                            islandareas_raw = NULL,
+                            islandareas_tables = islandareas_tables_for_bg_acsdata(),
                             acs_raw_stage = NULL,
                             pipeline_dir = NULL,
                             save_stage = FALSE,
@@ -90,6 +100,14 @@ calc_bg_acsdata <- function(yr,
       tract_weight_source = tract_weight_source
     )
     bg_acsdata <- merge_bg_acsdata_tract_data(bg_acsdata, bg_from_tracts)
+  }
+
+  if (isTRUE(include_islandareas_data)) {
+    if (is.null(islandareas_raw)) {
+      islandareas_raw <- download_bg_islandareas_raw(tables = islandareas_tables)
+    }
+    bg_islandareasdata <- calc_bg_islandareasdata(islandareas_raw)
+    bg_acsdata <- merge_bg_acsdata_islandareas_data(bg_acsdata, bg_islandareasdata)
   }
 
   data.table::setDT(bg_acsdata)

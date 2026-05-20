@@ -92,7 +92,8 @@ test_that("pipeline CSV reader preserves blockgroup numeric ids and lookup text 
 
 test_that("pipeline stage names include preferred bg names and compatibility aliases", {
   stages <- EJAM:::ejscreen_pipeline_stage_names()
-  expect_true(all(c("bg_acsdata", "bg_envirodata", "bgej", "bg_ejindexes", "ejscreen_export", "bg_ejscreen") %in% stages))
+  expect_true(all(c("bg_acsdata", "bg_islandareas_raw", "bg_envirodata", "bgej", "bg_ejindexes", "ejscreen_export", "bg_ejscreen") %in% stages))
+  expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("islandareas_raw"), "bg_islandareas_raw")
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("blockgroupstats_acs"), "bg_acsdata")
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("envirodata"), "bg_envirodata")
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("bg_ejindexes"), "bgej")
@@ -110,6 +111,21 @@ test_that("empty raw ACS folders are not treated as reusable stages", {
 
   expect_false(EJAM:::bg_acs_raw_folder_exists(pipeline_dir))
   expect_false(EJAM:::ejscreen_pipeline_stage_exists("bg_acs_raw", pipeline_dir, format = "csv"))
+})
+
+test_that("bg_islandareas_raw stage validation accepts Island Areas raw table lists", {
+  bg_islandareas_raw <- list(
+    yr = 2020L,
+    blockgroup_tables = "P1",
+    blockgroup = list(
+      P1 = data.frame(fips = "660100001001", P1_001N = 100)
+    )
+  )
+
+  out <- EJAM:::ejscreen_pipeline_validate(bg_islandareas_raw, stage = "bg_islandareas_raw")
+
+  expect_equal(out$errors, character())
+  expect_equal(out$warnings, character())
 })
 
 test_that("bg_envirodata stage validation requires pctpre1960", {
