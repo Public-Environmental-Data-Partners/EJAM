@@ -274,7 +274,7 @@ ejamapi <- function(
   # API repo at https://github.com/edgi-govdata-archiving/EJAM-API/blob/main/rest_controller.r
 
   if (is.null(fileextension)) {fileextension <- "html"}
-  stopifnot(all(fileextension %in% c('html', 'pdf')), )
+  stopifnot(all(fileextension %in% c('html', 'pdf')))
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {
     ejam_functions_available <- !dotz$no_ejam
