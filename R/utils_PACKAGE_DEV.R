@@ -1205,7 +1205,8 @@ pkg_functions_with_keywords_internal_tag <- function(
 ################################ #
 
 # see also pkg_functions_preceding_lines() to check multiple tags
-# nlines_to_search defines how many rows above  the func definition line should be checked
+# nlines_to_search defines how many rows after each matching tag line can be
+# checked for the next function definition.
 
 pkg_functions_by_roxygen_tag <- function(
 
@@ -1227,16 +1228,15 @@ pkg_functions_by_roxygen_tag <- function(
     txt = readLines(fname[i])
     for (ii in 1:length(taglinenumbers)) {
       nextfuncname <-
-        grep(pattern = "^([^# ]*) .*function\\(",
+        grep(pattern = "^[^ #]+ *(<-|=) *function\\(",
              x = txt[   taglinenumbers[ii]:(nlines_to_search + taglinenumbers[ii]) ],
              value = TRUE)
-      nextfuncname <- gsub("^([^ #]*) .*function\\(.*", "\\1", nextfuncname)
-      if (is.null(nextfuncname)
-          # || (0 %in% length(nextfuncname) )
-      ) {
+      if (length(nextfuncname) == 0) {
         cat("no function definition found just after line ", taglinenumbers[ii], " in file ", fname[i])
         nextfuncname <- NULL
       } else {
+        nextfuncname <- nextfuncname[1]
+        nextfuncname <- gsub("^([^ #]+) *(<-|=) *function\\(.*", "\\1", nextfuncname)
         if ("" %in% nextfuncname) { nextfuncname <- NULL} else {
           if (length(nextfuncname) == 0) { nextfuncname <- NULL}
         }
@@ -1302,7 +1302,7 @@ pkg_functions_preceding_lines = function(path = "./R",
 
     textrows = readLines(filenames[thisfile])
     linenums = as.numeric(names(files_defining_functions[[thisfile]]))
-    funcnames = as.vector(gsub("^([^ ]*) .*", "\\1", files_defining_functions[[thisfile]]))
+    funcnames = as.vector(gsub("^([^ #]+) *(<-|=) *function\\(.*", "\\1", files_defining_functions[[thisfile]]))
 
     for (thisfunction in 1:length(funcnames)) {
       n = n + 1
@@ -1321,7 +1321,7 @@ pkg_functions_preceding_lines = function(path = "./R",
       # but is also what to show in console. might want to show only a few lines but still search in all/many prior rows, though.
       text2show <- textrows[priorlinenums]
       # show just the function name not that whole line
-      funcname <- gsub(" .*", "", text2show[length(text2show)])
+      funcname <- funcnames[thisfunction]
       # text2show[length(text2show)] <- paste0(funcname, " <- ")
       # drop func definition line itself
       text2show <- text2show[1:(length(text2show) - 1)]
@@ -1339,14 +1339,18 @@ pkg_functions_preceding_lines = function(path = "./R",
       }
       # summarize counts for a table of results
 
-      priorlinetext = textrows[max(priorlinenums)]
-      info_roxy_nobreak[n] <- substr(priorlinetext,1,2) == "#'" # only in the last row (?)
+      priorlinetext <- if (length(priorlinenums) > 1) {
+        textrows[priorlinenums[length(priorlinenums) - 1]]
+      } else {
+        ""
+      }
+      info_roxy_nobreak[n] <- grepl("^ *#'", priorlinetext)
       info_roxy[n] <- any(grepl("#'", text2show)) # any of last few rows
       info_func[n] <- funcname
-      info_internal[n] <- any(grepl("@keywords internal", text2show))
-      info_nord[n]     <- any(grepl("@noRd", text2show))
-      info_export[n]   <- any(grepl("@export", text2show))
-      info_return[n]   <- any(grepl("@return", text2show))
+      info_internal[n] <- any(grepl("^ *#' *@keywords +internal\\b", text2show))
+      info_nord[n]     <- any(grepl("^ *#' *@noRd\\b", text2show))
+      info_export[n]   <- any(grepl("^ *#' *@export\\b", text2show))
+      info_return[n]   <- any(grepl("^ *#' *@return\\b", text2show))
     }
   }
   info_table <- data.frame(
