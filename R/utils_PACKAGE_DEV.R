@@ -352,13 +352,13 @@ grep_lines = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, va
 #'   [found_in_N_files_T_times()]
 #'
 #' @examples
-#' find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
-#' find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
-#' find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
+#' EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
+#' EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
+#' EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
 #'
-#' find_in_files("latlon_from_.{18}",    whole_line = FALSE)
-#' find_in_files("latlon_from_s.{9}",    whole_line = FALSE)
-#' find_in_files("latlon_from_mact.{9}", whole_line = FALSE)
+#' EJAM:::find_in_files("latlon_from_.{18}",    whole_line = FALSE)
+#' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = FALSE)
+#' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = FALSE)
 #'
 #' ## useful reminders of how to filter lines of code vs comments when using find_in_files()
 #'
@@ -377,9 +377,9 @@ grep_lines = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, va
 #' grepl(grepl_line_may_have_comment,
 #'   "   print('The number of people is 4.')   # a comment only after the code")
 #'
-#' find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
-#' find_in_files(paste0(grepl_line_commented_out,     "xxx"))
-#' find_in_files(paste0(grepl_line_may_have_comment,  "xxx"))
+#' EJAM:::find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
+#' EJAM:::find_in_files(paste0(grepl_line_commented_out,     "xxx"))
+#' EJAM:::find_in_files(paste0(grepl_line_may_have_comment,  "xxx"))
 #'
 #' @return a list of named vectors,
 #'   where names are file paths with hits, elements are vectors of text with hits.

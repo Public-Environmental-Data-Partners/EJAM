@@ -49,6 +49,9 @@ frsprogramcodes <- data.frame(
 # EJAM:::
 frsprogramcodes <- metadata_add(frsprogramcodes) # here? or it might have obsolete metadata?
 
+# This small FRS program-code lookup remains package .rda data. The large FRS
+# tables such as frs, frs_by_programid, frs_by_naics, frs_by_sic, and
+# frs_by_mact are obsolete as .rda package data and are published as .arrow.
 # usethis::use_data(frsprogramcodes, overwrite = TRUE)
 EJAM:::metadata_add_and_use_this("frsprogramcodes")
 

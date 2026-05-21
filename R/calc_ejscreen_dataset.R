@@ -17,22 +17,26 @@
 #' The default stage order is:
 #'
 #' 1. download raw ACS tables of demographic data into `bg_acs_raw`
-#' 2. calculate ACS-based demographic indicators (and lead paint indicator) as `bg_acsdata`
-#' 3. validate/save `bg_envirodata` (key environmental indicators)
-#' 4. validate/save `bg_extra_indicators` (e.g., % low life expectancy)
-#' 5. create or validate `bg_geodata`, the Census/TIGER blockgroup geography
+#' 2. optionally download and save separate Island Areas Census DHC checkpoints
+#'    for AS/GU/MP/VI; these demographics are not used downstream unless
+#'    explicitly requested
+#' 3. calculate ACS-based demographic indicators (and lead paint indicator) as `bg_acsdata`
+#' 4. validate/save `bg_envirodata` (key environmental indicators)
+#' 5. validate/save `bg_extra_indicators` (e.g., % low life expectancy)
+#' 6. create or validate `bg_geodata`, the Census/TIGER blockgroup geography
 #'    attributes used for `arealand`, `areawater`, and internal-point fields
-#' 6. calculate demographic indexes (using % low life expectancy, etc.)
-#' 7. combine those blockgroup demog., envt., extra, and geography indicators
+#' 7. calculate demographic indexes (using % low life expectancy, etc.)
+#' 8. combine those blockgroup demog., envt., extra, and geography indicators
 #'    as [blockgroupstats]
-#' 8. create intermediate percentile lookup tables `usastats_acs`,
+#' 9. create intermediate percentile lookup tables `usastats_acs`,
 #'    `statestats_acs`, `usastats_envirodata`, `statestats_envirodata`
-#' 9. calculate EJ indexes (from envt. percentiles and demog. indexes) and save
+#' 10. calculate EJ indexes (from envt. percentiles and demog. indexes) and save
 #'    as [bgej] table
-#' 10. create intermediate percentile lookup tables `usastats_ej`,
+#' 11. create intermediate percentile lookup tables `usastats_ej`,
 #'     `statestats_ej`
-#' 11. combine those as [usastats] and [statestats]
-#' 12. create an EJScreen-ready export file (optionally)
+#' 12. combine those as [usastats] and [statestats]
+#' 13. create an EJScreen-ready export file and/or EPA Python dataset-creator
+#'     input file (optionally)
 #'
 #' `bg_envirodata` must include `pctpre1960`. That column may be produced by an
 #' upstream environmental-data step that reads the saved `bg_acsdata` stage.
@@ -62,10 +66,17 @@
 #'  - EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.
 #'  - EJAM_ACS_DOWNLOAD_TIMEOUT
 #'  - EJAM_ACS_DOWNLOAD_RETRIES
+#'  - EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows and a
+#'    separate `bg_islandareas_demographics` checkpoint.
+#'  - EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE only for an intentional
+#'    mixed-source supplemental dataset using 2020 Island Areas Census DHC
+#'    demographics in `bg_acsdata`.
 #'
 #'  - EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
 #'
 #'  - EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+#'  - EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
+#'    input table expected by EPA's Python dataset-creator workflow.
 #'
 #'  - EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.
 #'
@@ -93,8 +104,10 @@
 #'   "CENSUS_API_KEY",
 #'   "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
 #'   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+#'   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
 #'   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
 #'   "EJAM_INCLUDE_EJSCREEN_EXPORT",
+#'   "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
 #'   "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
 #'   "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"
 #' )))

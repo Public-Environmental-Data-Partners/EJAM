@@ -359,9 +359,9 @@ epa_programs <- setNames(epa_program_counts$program, epa_program_counts$pgm_text
 EJAM:::metadata_add_and_use_this("mact_table")
 
 ## save frs_by_mact ####
-# frs_by_mact   <- metadata_add(frs_by_mact)
-# usethis::use_data(frs_by_mact, overwrite = TRUE)    # data.table
-EJAM:::metadata_add("frs_by_mact")
+# Obsolete: frs_by_mact is no longer saved as package .rda data.
+# It is published as frs_by_mact.arrow through the data repository workflow.
+frs_by_mact <- EJAM:::metadata_add(frs_by_mact)
 
 ## save epa_programs ####
 # epa_programs <- metadata_add(epa_programs)
@@ -376,7 +376,7 @@ stop("done")
 ################################################################################################ #
 ################################################################################################ #
 
-# save(frs_by_mact, file = "frs_by_mact.rda")
+# Obsolete: save/publish frs_by_mact.arrow, not frs_by_mact.rda.
 # save(mact_table, "mact_table.rda")
 
 ################################################################################################ #

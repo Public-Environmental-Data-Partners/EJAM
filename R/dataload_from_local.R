@@ -42,7 +42,7 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
     varnames <- .arrow_ds_names
   }
 
-  fnames     <- paste0(sub("_arrow","", varnames), ".arrow") # varnames are like bgid2fips, ext is .rda, fnames are like bgid2fips.rda
+  fnames     <- paste0(sub("_arrow","", varnames), ".arrow") # dynamic datasets are stored as .arrow files, not package .rda data
 
   localpaths  <- paste0(folder_local_source, '/', fnames)
   localpaths_found <- NULL

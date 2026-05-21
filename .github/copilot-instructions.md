@@ -196,8 +196,8 @@ ejamapp(isPublic=TRUE)
 **Golem Framework:** Uses `app_ui()`/`app_server()`, best launched via `ejamapp()`. Config in `inst/golem-config.yml`.
 **Data:**
   - Some is lazy-loaded from data/
-  - Some is saved in the data folder upon package installation because some large data files must be downloaded from the ejamdata repository. This is explained in the file vignettes/dev-update-datasets.Rmd
-  - Some is loaded via `dataload_dynamic()` and some is obtained and used in .arrow format instead of .rda format in some parts of the app.
+  - Some large dynamic datasets are downloaded from the ejamdata repository as `.arrow` files and cached locally, instead of being installed as `.rda` package data. This is explained in `vignettes/dev-update-datasets.Rmd`.
+  - Some is loaded via `dataload_dynamic()` and read as `.arrow` format in the app.
 **Naming:**
   - Closely-related R functions are often grouped within a single .R file in the R folder, especially if the filename includes the phrase "_FUNCTIONS" such as in "PROXIMITY_FUNCTIONS.R"
   - Closely-related R functions often share a common prefix such as "fips_" or "frs_" or "ejamit" or "ejam2" or "calc_" or "latlon" or "plot" or "table_" or "url_" or "shape" or "state_" or "popup_" or "get"

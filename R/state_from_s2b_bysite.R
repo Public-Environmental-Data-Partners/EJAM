@@ -57,7 +57,7 @@
 #'
 #'   fname = testdata("testpoints_100_sites_", quiet = TRUE)
 #'   x = EJAM:::state_from_s2b_bysite(
-#'     getblocksnearby( latlon_from_anything(fname), quadtree = localtree))
+#'     getblocksnearby(latlon_from_anything(fname)))
 #'   y = read_csv_or_xl(fname)
 #'   x$ST == y$FacState
 #'   }
@@ -101,4 +101,3 @@ state_from_s2b_bysite <- function(sites2blocks) {
 # results_bysite = copy(testoutput_ejamit_100pts_1miles$results_bysite)[,4:9]
 #   results_bysite[, statename2 := fips2statename(fips_state_from_state_abbrev(ST))] # like
 #   results_bysite[, statename3 := stateinfo$statename[match(ST, stateinfo$ST)]]
-

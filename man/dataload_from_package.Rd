@@ -11,8 +11,8 @@ dataload_from_package(
 }
 \arguments{
 \item{olist}{vector of strings giving names of objects to load using data().
-This could also include other large datasets that are slow to lazyload but not always needed:
-"frs", "frs_by_programid ", "frs_by_naics", etc.}
+This should be limited to package \code{.rda} datasets. FRS-related datasets
+are no longer \code{.rda} package data.}
 
 \item{envir}{the environment into which they should be loaded}
 }
@@ -26,10 +26,9 @@ Utility to load a couple of datasets using data immediately instead of relying o
 See also read_builtin() function from the readr package!
 
 Default is to load some but not all the datasets into memory immediately.
-\link{blockgroupstats}, \link{usastats}, \link{statestats}, and some others are always essential to EJAM, but
-\link{frs} and \link{frs_by_programid} are huge datasets (and \link{frs_by_sic} and \link{frs_by_naics})
-and not always used - only to find regulated facilities by ID, etc.
-The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
+\link{blockgroupstats}, \link{usastats}, \link{statestats}, and some others are always essential to EJAM.
+The FRS-related datasets are huge and are loaded separately as \code{.arrow}
+files with \code{\link[=dataload_dynamic]{dataload_dynamic()}} only when needed.
 }
 \examples{
 

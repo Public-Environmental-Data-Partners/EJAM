@@ -1,4 +1,4 @@
-#
+# Some of these notes may be obsolete since v2.5.0 work started
 
 #  EJAM/data-raw/datacreate_names_of_indicators.R
 
@@ -11,12 +11,12 @@ library(usethis)
 #  the varlist column of  map_headernames
 #  in multiple objects like names_d
 #
-#  But could recode later to use namez$d instead of names_d etc.
+#  But via a major refactoring, we could recode later to use namez$d instead of names_d etc.
 
-#  and/or could recode later to use 1 big table, like A MERGED VERSION OF THESE:
+#  and/or could refacctor/recode later to use 1 big table, like A MERGED VERSION OF THESE:
 #
-#  map_headernames (which is created from .xlsx using the script in /data-raw folder)
-#  namez
+#  map_headernames (which was created from .xlsx but now will be from the csv, using the script in /data-raw folder)
+#  namez (info that really is almost all in map_headernames$varlist but some names_xyz overlap with other names_abc so a single varlist column does not work with that situation)
 #  formulas_all as a possible approach using calc_ejam()
 
 # In the short term, before some mapping file is used to track all variable names, we could simplify a bit by

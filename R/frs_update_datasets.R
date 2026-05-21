@@ -10,11 +10,12 @@
 #'  It is typically run from the dataset-maintenance workflow in
 #'  `EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`.
 #' 
-#'  These datasets are obtained from EPA servers, reformatted for this package, and
-#'  then stored in a separate repository - see [updating data for package](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html")`).
-#'  The save_as_data_ parameters here are set to FALSE because the files are 
-#'  not saved in the source package or its repository like 
-#'  typical package datasets would be saved in the data folder of the source package.
+#'  These datasets are obtained from EPA servers, reformatted for this package,
+#'  and then stored as `.arrow` files in a separate repository - see
+#'  [updating data for package](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html")`).
+#'  The `save_as_data_*` parameters are obsolete and kept only to make old
+#'  maintainer scripts fail clearly. FRS tables are no longer saved as
+#'  lazy-loaded `.rda` package data in `EJAM/data/`.
 #'  
 #'  The files later get downloaded for local use during the process
 #'  of installing the EJAM package.
@@ -31,11 +32,9 @@
 #' @param save_as_arrow_frs_by_sic Whether to save as .arrow in getwd()
 #' @param save_as_arrow_frs_by_mact Whether to save as .arrow in getwd()
 #' 
-#' @param save_as_data_frs Whether to save as .rda in ./data/
-#' @param save_as_data_frs_by_programid Whether to save as .rda in ./data/
-#' @param save_as_data_frs_by_naics Whether to save as .rda in ./data/
-#' @param save_as_data_frs_by_sic Whether to save as .rda in ./data/
-#' @param save_as_data_frs_by_mact Whether to save as .rda in ./data/
+#' @param save_as_data_frs,save_as_data_frs_by_programid,save_as_data_frs_by_naics,save_as_data_frs_by_sic,save_as_data_frs_by_mact
+#'   Obsolete. FRS tables are no longer saved as `.rda` files in `./data/`.
+#'   Leave these as `FALSE` and publish the `.arrow` files instead.
 #' 
 #' @return Creates saved copies of datasets for the R package, overwriting old ones, using
 #'   [frs_get()] and [frs_inactive_ids()] and other functions, and invisibly returns [frs].
@@ -64,6 +63,21 @@ frs_update_datasets <- function(folder = NULL,
   commas <- function(x) {
     prettyNum(x, big.mark = ",")
   }
+  save_as_data_flags <- c(
+    save_as_data_frs,
+    save_as_data_frs_by_programid,
+    save_as_data_frs_by_naics,
+    save_as_data_frs_by_sic,
+    save_as_data_frs_by_mact
+  )
+  if (any(save_as_data_flags)) {
+    stop(
+      "The save_as_data_* arguments are obsolete. ",
+      "FRS tables should be saved/published as .arrow files, not as .rda ",
+      "objects in EJAM/data/.",
+      call. = FALSE
+    )
+  }
   if (is.null(folder)) 
     folder <- tempdir()
   ###################################################### #
@@ -86,27 +100,21 @@ frs_update_datasets <- function(folder = NULL,
   bad <- sum(is.na(frs$REGISTRY_ID))
   if (bad > 0) {warning(bad, "REGISTRY_ID values appear to be NA")}
   
-  metadata_add(frs)
+  frs <- metadata_add(frs)
   cat("Saving .arrow file \n")
   if (save_as_arrow_frs) {
     arrow::write_ipc_file(frs, sink = file.path(folder_save_as_arrow, 
                                                 "frs.arrow"))
   }
-  if (save_as_data_frs) {
-    usethis::use_data(frs, overwrite = TRUE)
-  }
   ###################################################### #
   cat("\nTrying to create frs_by_programid\n")
   frs_by_programid <- frs_make_programid_lookup(x = frs)
   # dropped invalid ones, in that function.
-  metadata_add(frs_by_programid)
+  frs_by_programid <- metadata_add(frs_by_programid)
   if (save_as_arrow_frs_by_programid) {
     cat("Saving .arrow file \n")
     arrow::write_ipc_file(frs_by_programid, sink = file.path(folder_save_as_arrow, 
                                                              "frs_by_programid.arrow"))
-  }
-  if (save_as_data_frs_by_programid) {
-    usethis::use_data(frs_by_programid, overwrite = TRUE)
   }
   ###################################################### #
   cat("\nTrying to create frs_by_naics\n")
@@ -114,14 +122,11 @@ frs_update_datasets <- function(folder = NULL,
   cat("frs_by_programid rows: ", commas(NROW(frs_by_programid)), 
       "\n")
   cat("frs_by_naics rows: ", commas(NROW(frs_by_naics)), "\n")
-  metadata_add(frs_by_naics)
+  frs_by_naics <- metadata_add(frs_by_naics)
   if (save_as_arrow_frs_by_naics) {
     cat("Saving .arrow file \n")
     arrow::write_ipc_file(frs_by_naics, sink = file.path(folder_save_as_arrow, 
                                                          "frs_by_naics.arrow"))
-  }
-  if (save_as_data_frs_by_naics) {
-    usethis::use_data(frs_by_naics, overwrite = TRUE)
   }
   ###################################################### #
   
@@ -130,32 +135,26 @@ frs_update_datasets <- function(folder = NULL,
   cat("\nTrying to create frs_by_sic\n")
   frs_by_sic <- frs_clean_sic(frs)
   frs_by_sic <- frs_make_sic_lookup(frs_by_sic)
-  metadata_add(frs_by_sic)
+  frs_by_sic <- metadata_add(frs_by_sic)
   if (save_as_arrow_frs_by_sic) {
     arrow::write_ipc_file(frs_by_sic, sink = file.path(folder_save_as_arrow, 
                                                        "frs_by_sic.arrow"))
-  }
-  if (save_as_data_frs_by_sic) {
-    usethis::use_data(frs_by_sic, overwrite = TRUE)
   }
   ###################################################### #
   cat("Trying to create frs_by_mact\n")
   dataload_from_local('frs_by_programid', folder_local_source = folder)
   x <- frs_make_mact_lookup(frs_by_programid, folder = folder)
   frs_by_mact <- x$frs_by_mact
-  metadata_add(frs_by_mact)
+  frs_by_mact <- metadata_add(frs_by_mact)
   if (save_as_arrow_frs_by_mact) {
     arrow::write_ipc_file(frs_by_mact, sink = file.path(folder_save_as_arrow, 
                                                         "frs_by_mact.arrow"))
-  }
-  if (save_as_data_frs_by_mact) {
-    usethis::use_data(frs_by_mact, overwrite = TRUE)
   }
   ###################################################### #
   cat("Trying to create mact_table\n")
   mact_table <- x$mact_table
   rm(x)
-  metadata_add(mact_table)
+  mact_table <- metadata_add(mact_table)
   cat("\n\n**** HANDLE mact_table DIFFERENTLY ? \n\n")
   arrow::write_ipc_file(mact_table, sink = file.path(folder_save_as_arrow, 
                                                      "mact_table.arrow"))
@@ -171,13 +170,7 @@ frs_update_datasets <- function(folder = NULL,
   }
   ###################################################### #
   
-  if (any(save_as_data_frs, 
-          save_as_data_frs_by_programid, 
-          save_as_data_frs_by_naics, 
-          save_as_data_frs_by_sic, 
-          save_as_data_frs_by_mact)) {
-    cat("You can now rebuild/install the package from source to update it.\n")
-  }
+  cat("FRS .arrow files were written. Publish those files through the data repository release process; do not save FRS tables as package .rda data.\n")
   ############################################################# #
   
   print(Sys.time()) 
@@ -214,7 +207,8 @@ frs_update_datasets <- function(folder = NULL,
 # Rows with lat/lon:  3490113 
 # [1] "2023-12-11 10:35:00 EST"
 # 
-# To use in package,  usethis::use_data(frs, overwrite=TRUE)  
+# Obsolete: FRS tables are not saved with usethis::use_data() anymore.
+# Publish frs.arrow and related .arrow files via the data repository release.
 # Also see frs_make_naics_lookup() and frs_make_programid_lookup()
 # Downloading national dataset to temp folder... Takes a couple of minutes! 
 #   Trying to download from  https://ordsext.epa.gov/FLA/www3/state_files/national_combined.zip 
@@ -247,7 +241,7 @@ frs_update_datasets <- function(folder = NULL,
 # frs rows total:  3,490,113 
 # frs clearly inactive IDs:  1,511,111 
 # frs rows actives:  2,576,588 
-# [1] "To use in package,  usethis::use_data(frs_by_naics, overwrite=TRUE)  "
+# Obsolete: frs_by_naics is published as frs_by_naics.arrow, not as package .rda data.
 # frs_by_programid rows:  3,438,163 
 # frs_by_naics rows:  697,444 
 # Error in `[.data.table`(frs, , ..usefulcolumns) : 

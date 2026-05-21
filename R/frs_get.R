@@ -178,7 +178,8 @@ frs_get <- function(only_essential_cols=TRUE, folder=NULL, downloaded_and_unzipp
   # add metadata as attributes
   attr(frs, 'download_date') <- date
   attr(frs, 'released') <- date
-  # cat('\nTo use in package,  usethis::use_data(frs, overwrite=TRUE)  \n')
+  # Obsolete: do not save frs as package .rda data.
+  # Save/publish frs.arrow through the data repository workflow.
   # cat('Also see frs_make_naics_lookup() and frs_make_programid_lookup()\n')
   invisible(frs)
   return(frs) # should not get here
@@ -197,4 +198,3 @@ frs_get <- function(only_essential_cols=TRUE, folder=NULL, downloaded_and_unzipp
   stop('see source code ')
 
 }
-

@@ -22,7 +22,7 @@
 
   # These instead could be set in the golem-config.yml file
 
-  asap_download   <- TRUE  # download large datasets now?      Set to FALSE while Testing/Building often
+  asap_download   <- TRUE  # download large datasets now?      Set to FALSE while Testing/Building often.
   asap_index <- TRUE  # build index those now?                 Set to FALSE while Testing/Building often
   asap_bg    <- FALSE  # load now vs lazyload blockgroup data? Set to FALSE while Testing/Building often
 
@@ -99,10 +99,12 @@
     stdout_messages <- utils::capture.output({
       suppressWarnings({
         withCallingHandlers(
-          dataload_dynamic(
-            varnames = c("blockpoints", "blockwts", "quaddata"),
-            folder_local_source = app_sys("data"),
-            onAttach = TRUE
+          invisible(
+            dataload_dynamic(  # and if shift to using _arrow format for these datasets then this should be updated to use  return_data_table = FALSE
+              varnames = c("blockpoints", "blockwts", "quaddata"),
+              folder_local_source = app_sys("data"),
+              onAttach = TRUE
+            )
           ),
           message = function(m) {
             ordinary_messages <<- c(ordinary_messages, conditionMessage(m))
@@ -163,8 +165,8 @@
     # This loads some key data, while others get lazy loaded if/when needed.
     # data(list=c("blockgroupstats", "usastats", "statestats"), package="EJAM")
     # # would work after package is installed
-    # data(list=c("frs", "frs_by_programid ", "frs_by_naics"),  package="EJAM")
-    # # would be to preload some very large ones not always needed.
+    # FRS tables are obsolete here: they are .arrow dynamic datasets loaded
+    # with dataload_dynamic() when needed, not package .rda data.
   }
   options(tigris_use_cache = TRUE)
 

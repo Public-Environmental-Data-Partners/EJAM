@@ -2,7 +2,9 @@
 # SCRIPT TO READ AND CLEAN LATEST FRS (and FRS BY SIC) DATASETS
 ################################################################################## #
 
-# Note: some key frs files are not stored as part of the package in EJAM/data/ but downloaded for use
+# Note: key FRS tables are no longer stored as .rda package data in EJAM/data/.
+# They are saved as .arrow files and published through the data repository.
+# EJAM downloads/loads them with dataload_dynamic().
 
 # Note: compare frsprogramcodes, epa_programs, epa_programs_defined, etc.
 
@@ -60,8 +62,9 @@ for (varname in frs_vars) {
 cat("
 NOW, UPDATE THE DOCUMENTATION MANUALLY in relevant files like data_frs.R,
 since dataset_documenter() only works well for simple documentation and these are complicated to explain.
-REMEMBER TO USE a NULL AT THE END of the .R file that documents each,
-SINCE frs etc. are NOT dataset OBJECTS (so they are not STORED IN THE PACKAGE EJAM/data/  folder).\n")
+REMEMBER TO USE a NULL AT THE END of the .R file that documents each.
+FRS tables are documented like datasets but are not .rda package data;
+they are .arrow files loaded with dataload_dynamic().\n")
 if (rstudioapi::isAvailable()) {
   for (myvar in frs_vars) {
     rstudioapi::documentOpen(paste0('./R/data_', myvar, '.R'))

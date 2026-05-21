@@ -16,8 +16,8 @@
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating EJScreen Datasets Annually (via the Pipeline)">
-<meta name="description" content="Annual staged workflow for updating ACS-based EJScreen/EJAM datasets">
-<meta property="og:description" content="Annual staged workflow for updating ACS-based EJScreen/EJAM datasets">
+<meta name="description" content="Annual staged workflow for updating EJScreen/EJAM demographic, environmental, and related datasets">
+<meta property="og:description" content="Annual staged workflow for updating EJScreen/EJAM demographic, environmental, and related datasets">
 <meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg">
 </head>
 <body>
@@ -66,7 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -107,7 +107,7 @@ historically called <code>blockgroupstats</code>, <code>bgej</code>,
 <code>usastats</code>, and <code>statestats</code>.</p>
 <p>For general dataset maintenance outside this pipeline, such as
 FRS-related tables, NAICS/SIC tables, block-level files, Arrow releases,
-and package-data publication mechanics, see <a href="dev-update-datasets.html">Updating and Managing the Datasets used
+and package-data publication mechanics, see <a href="dev-update-datasets.html">Updating and Managing the Datasets Used
 by EJAM</a>.</p>
 <div class="section level2">
 <h2 id="scope">Scope<a class="anchor" aria-label="anchor" href="#scope"></a>
@@ -118,13 +118,16 @@ saved, and rerunnable. The main entry point is
 is:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
-<p>The runner writes pipeline checkpoints such as CSV files. It can also
-write secondary formats such as <code>.rda</code> files for the same
-table stages when <code>EJAM_STAGE_FORMATS</code> includes those
+<p>The runner writes pipeline checkpoints, by default as CSV files. It
+can also write secondary formats such as <code>.rda</code> files for the
+same table stages when <code>EJAM_STAGE_FORMATS</code> includes those
 formats. It does not, by itself, replace every installed package dataset
-in <code>data/*.rda</code>. Replacing package data objects with
-<code><a href="https://usethis.r-lib.org/reference/use_data.html" class="external-link">usethis::use_data()</a></code> or EJAM metadata helpers is a separate
-release step after the pipeline outputs have been reviewed.</p>
+in <code>data/*.rda</code>. Replacing package data objects with EJAM
+metadata helpers is a separate release step after the pipeline outputs
+have been reviewed. <code>bgej</code> is the main exception: the
+accepted annual <code>bgej</code> table should be republished as
+<code>bgej.arrow</code> in the matching <code>ejamdata</code> release
+tag rather than saved as <code>data/bgej.rda</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="pipeline-stages">Pipeline Stages<a class="anchor" aria-label="anchor" href="#pipeline-stages"></a>
@@ -135,9 +138,28 @@ release step after the pipeline outputs have been reviewed.</p>
 downloaded from the Census Bureau. This is saved before EJAM renaming or
 formula calculations. The default raw ACS storage is a folder of
 per-table files, with a manifest.</p></li>
+<li><p><code>bg_islandareas_raw</code>: optional raw 2020 Island Areas
+Census DHC tables for American Samoa, Guam, the Commonwealth of the
+Northern Mariana Islands, and the U.S. Virgin Islands. Enable this with
+<code>EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE"</code>. Puerto Rico is not
+part of this stage because it is already covered by ACS.</p></li>
+<li><p><code>bg_islandareas_demographics</code>: optional transformed
+2020 Island Areas Census DHC demographics. This is saved as a separate
+checkpoint for review and possible supplemental use. The Island Areas
+source is not ACS 5-year data, and the legacy EPA/EJScreen file with
+AS/GU/MP/VI rows had no usable ACS demographic values for those rows.
+Therefore the default EJScreen-compatible pipeline does not use these
+DHC demographics in <code>bg_acsdata</code> or downstream outputs. Set
+<code>EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"</code> only when
+intentionally creating a mixed-source supplemental dataset.</p></li>
 <li><p><code>bg_acsdata</code>: ACS-derived blockgroup indicators
 calculated from <code>bg_acs_raw</code>, including demographic
-indicators and <code>pctpre1960</code>.</p></li>
+indicators and <code>pctpre1960</code>. When the optional Island Areas
+stage is enabled, AS/GU/MP/VI rows are appended with no DHC-derived
+demographic values by default. The separate
+<code>bg_islandareas_demographics</code> file keeps the available Island
+Areas Census values available for review without changing the
+EJScreen-compatible demographic calculations.</p></li>
 <li><p><code>bg_envirodata</code>: blockgroup environmental indicators
 used for EJ indexes. This normally comes from a separate
 environmental-data workflow. For draft builds, it can be provisionally
@@ -146,12 +168,12 @@ reused from the current package data.</p></li>
 that are not ACS and not the main EJ environmental indicators, such as
 health, life expectancy, and related context variables. These can also
 be provisionally reused from the current package data.</p></li>
-<li><p><code>bg_geodata</code>: Census/TIGER blockgroup geography
+<li><p><code>bg_geodata</code>: Census/TIGER block group geography
 attributes. This stage stores <code>bgfips</code>, square-meter
 <code>arealand</code> and <code>areawater</code>, optional internal
 point fields <code>intptlat</code> and <code>intptlon</code>, and a
 compatibility-only <code>area</code> column. The pipeline uses Census
-TIGER/Line blockgroup shapefiles by default because their
+TIGER/Line block group shapefiles by default because their
 <code>ALAND</code> and <code>AWATER</code> values best match the legacy
 EJScreen tables; Census TIGERweb remains available as a lighter fallback
 source. TIGER/Line zip files are cached locally using
@@ -176,6 +198,10 @@ lookup tables used by EJAM.</p></li>
 <code>blockgroupstats</code> and <code>bgej</code>, applying
 EJScreen-style names from <code>map_headernames</code>, and adding map
 helper fields where possible.</p></li>
+<li><p><code>ejscreen_dataset_creator_input</code>: optional smaller
+input table for EPA’s Python <code>ejscreen-dataset-creator-2.3</code>
+workflow. Enable it with
+<code>EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "TRUE"</code>.</p></li>
 </ol>
 <p>The runner also writes <code>pipeline_validation_summary.csv</code>
 and <code>pipeline_run_manifest.csv</code>. If prior-version validation
@@ -250,15 +276,15 @@ line up across <code>blockwts</code>, <code>blockpoints</code>,
 <p>For a given ACS 5-year release, use the Census geography vintage
 associated with the ACS end year. For example, ACS 2020-2024 should use
 2024 Census/TIGER or TIGERweb geography attributes. The release pipeline
-prefers the downloadable Census TIGER/Line blockgroup shapefiles for
+prefers the downloadable Census TIGER/Line block group shapefiles for
 <code>arealand</code> and <code>areawater</code>, with TIGERweb as a
-fallback. Those geography sources can occasionally include blockgroups
+fallback. Those geography sources can occasionally include block groups
 that are valid geography features but that are not present in the ACS
 tabulated summary-file tables used by EJAM.</p>
 <p>That mismatch is unusual but real. In the draft ACS 2020-2024 build,
-the Census/TIGER blockgroup geography source included 39 Suffolk County,
-New York blockgroups that were not present in the relevant ACS
-blockgroup or tract tables downloaded for the pipeline. Including those
+the Census/TIGER block group geography source included 39 Suffolk
+County, New York block groups that were not present in the relevant ACS
+block group or tract tables downloaded for the pipeline. Including those
 geography-only rows would expand <code>blockgroupstats</code> beyond the
 ACS data universe and create rows with no ACS-derived indicators.</p>
 <p>For that reason, the default pipeline setting is
@@ -272,7 +298,8 @@ alternative setting
 diagnostic or special-purpose runs where the maintainer intentionally
 wants to retain blockgroups found only in other inputs.</p>
 <p>The pipeline uses the packaged <code>formulas_ejscreen_acs</code>
-object for ACS-derived indicator formulas. The old
+object for ACS-derived indicator formulas and sorts formula rows by
+dependency before calculating them. The old
 <code>data-raw/archived_datacreate_formulas_ejscreen_acs_notes.R</code>
 file is reference material only. It is not the current formula rebuild
 workflow.</p>
@@ -381,7 +408,7 @@ blockgroup weights.</td>
 </tr>
 <tr class="even">
 <td><code>EJAM_TIGER_BG_CACHE_DIR</code></td>
-<td>Optional local folder for downloaded Census TIGER/Line blockgroup
+<td>Optional local folder for downloaded Census TIGER/Line block group
 zip files. If unset, EJAM uses a durable user cache folder.</td>
 </tr>
 <tr class="odd">
@@ -421,26 +448,50 @@ raw ACS.</td>
 <td>Number of retry attempts for ACS downloads.</td>
 </tr>
 <tr class="even">
+<td><code>EJAM_INCLUDE_ISLANDAREAS_DATA</code></td>
+<td>
+<code>"TRUE"</code> to append AS/GU/MP/VI rows and save the separate
+<code>bg_islandareas_demographics</code> checkpoint.</td>
+</tr>
+<tr class="odd">
+<td><code>EJAM_USE_ISLANDAREAS_DEMOGRAPHICS</code></td>
+<td>
+<code>"TRUE"</code> only for an intentional mixed-source
+supplemental dataset that uses 2020 Island Areas Census DHC demographics
+in <code>bg_acsdata</code>. The default EJScreen-compatible path is
+<code>"FALSE"</code>.</td>
+</tr>
+<tr class="even">
 <td><code>EJAM_USE_PROVISIONAL_BG_ENVIRODATA</code></td>
 <td>
 <code>"FALSE"</code> to require a supplied
-<code>bg_envirodata.csv</code>.</td>
+<code>bg_envirodata</code> stage file, such as
+<code>bg_envirodata.csv</code> under the default stage format.</td>
 </tr>
 <tr class="odd">
 <td><code>EJAM_INCLUDE_EJSCREEN_EXPORT</code></td>
 <td>
-<code>"TRUE"</code> to create <code>ejscreen_export.csv</code>.</td>
+<code>"TRUE"</code> to create the <code>ejscreen_export</code>
+stage, such as <code>ejscreen_export.csv</code> under the default stage
+format.</td>
 </tr>
 <tr class="even">
+<td><code>EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT</code></td>
+<td>
+<code>"TRUE"</code> to also create the smaller
+<code>ejscreen_dataset_creator_input</code> stage for EPA’s Python
+dataset-creator workflow.</td>
+</tr>
+<tr class="odd">
 <td><code>EJAM_VALIDATE_VS_PRIOR</code></td>
 <td>
 <code>"TRUE"</code> to write prior-version comparison files.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>EJAM_PRIOR_PIPELINE_DIR</code></td>
 <td>Prior pipeline folder/S3 prefix to compare against.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>EJAM_PRIOR_PACKAGE_REF</code></td>
 <td>Optional Git ref/tag/SHA for prior package data comparison.</td>
 </tr>
@@ -467,8 +518,11 @@ raw ACS.</td>
 <span>  <span class="st">"EJAM_FORCE_BG_GEODATA"</span>,</span>
 <span>  <span class="st">"EJAM_ACS_DOWNLOAD_TIMEOUT"</span>,</span>
 <span>  <span class="st">"EJAM_ACS_DOWNLOAD_RETRIES"</span>,</span>
+<span>  <span class="st">"EJAM_INCLUDE_ISLANDAREAS_DATA"</span>,</span>
+<span>  <span class="st">"EJAM_USE_ISLANDAREAS_DEMOGRAPHICS"</span>,</span>
 <span>  <span class="st">"EJAM_USE_PROVISIONAL_BG_ENVIRODATA"</span>,</span>
 <span>  <span class="st">"EJAM_INCLUDE_EJSCREEN_EXPORT"</span>,</span>
+<span>  <span class="st">"EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT"</span>,</span>
 <span>  <span class="st">"EJAM_VALIDATE_VS_PRIOR"</span>,</span>
 <span>  <span class="st">"EJAM_PRIOR_PIPELINE_YR"</span>,</span>
 <span>  <span class="st">"EJAM_PRIOR_PIPELINE_DIR"</span>,</span>
@@ -491,19 +545,28 @@ downloaded weights locally.</p>
 <h3 id="map_headernames">map_headernames<a class="anchor" aria-label="anchor" href="#map_headernames"></a>
 </h3>
 <p>If new indicators are being used compared with prior version of the
-datasets and package, note that map_headernames may need to be modified
-to have metadata on those new indicators, including the variable name
-(rname column of map_headernames), longname, calculation type, weight,
-rounding information, and “varlist” which groups related indicators
-into, e.g., names_e, and demographic key indicators into names_d,
-etc.</p>
+datasets and package, <code>map_headernames</code> may need metadata
+rows for those new indicators, including the variable name
+(<code>rname</code>), <code>longname</code>, calculation type,
+calculation weight, rounding information, EJScreen export names, and
+<code>varlist</code> groups such as <code>names_e</code> and
+<code>names_d</code>. The current package data object is the
+authoritative source for release work. Older spreadsheet and
+<code>datacreate_map_headernames.R</code> workflows may still be useful
+as notes, but do not rebuild <code>map_headernames</code> from an old
+<code>.xlsx</code> file unless the generated object is audited against
+the current branch and preserves the recent ACS 2024, EJScreen export,
+bin/text, and language-indicator fixes.</p>
 </div>
 <div class="section level3">
 <h3 id="names_">names_*<a class="anchor" aria-label="anchor" href="#names_"></a>
 </h3>
-<p>Much of the code depends on the varlist info, so names_e, names_d,
-etc. need to be updated. The script in datacreate_names_of_indicators
-uses map_headernames$varlist to update these data objects.</p>
+<p>Much of the code depends on the <code>varlist</code> info, so
+<code>names_e</code>, <code>names_d</code>, and related
+<code>names_*</code> objects need to be updated when
+<code>map_headernames$varlist</code> changes. The script in
+<code>data-raw/datacreate_names_of_indicators.R</code> uses
+<code>map_headernames$varlist</code> to update those data objects.</p>
 </div>
 </div>
 <div class="section level2">
@@ -533,7 +596,10 @@ checkpoints:</p>
 <span>  EJAM_FORCE_BG_GEODATA <span class="op">=</span> <span class="st">"TRUE"</span>,</span>
 <span>  EJAM_ACS_DOWNLOAD_TIMEOUT <span class="op">=</span> <span class="st">"3600"</span>,</span>
 <span>  EJAM_ACS_DOWNLOAD_RETRIES <span class="op">=</span> <span class="st">"2"</span>,</span>
-<span>  EJAM_INCLUDE_EJSCREEN_EXPORT <span class="op">=</span> <span class="st">"TRUE"</span></span>
+<span>  EJAM_INCLUDE_ISLANDAREAS_DATA <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
+<span>  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
+<span>  EJAM_INCLUDE_EJSCREEN_EXPORT <span class="op">=</span> <span class="st">"TRUE"</span>,</span>
+<span>  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT <span class="op">=</span> <span class="st">"FALSE"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
@@ -560,19 +626,38 @@ checkpoints:</p>
 <span>  EJAM_FORCE_BG_GEODATA <span class="op">=</span> <span class="st">"TRUE"</span>,</span>
 <span>  EJAM_ACS_DOWNLOAD_TIMEOUT <span class="op">=</span> <span class="st">"3600"</span>,</span>
 <span>  EJAM_ACS_DOWNLOAD_RETRIES <span class="op">=</span> <span class="st">"2"</span>,</span>
-<span>  EJAM_INCLUDE_EJSCREEN_EXPORT <span class="op">=</span> <span class="st">"TRUE"</span></span>
+<span>  EJAM_INCLUDE_ISLANDAREAS_DATA <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
+<span>  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
+<span>  EJAM_INCLUDE_EJSCREEN_EXPORT <span class="op">=</span> <span class="st">"TRUE"</span>,</span>
+<span>  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT <span class="op">=</span> <span class="st">"FALSE"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
-<p>The runner asks for confirmation in interactive sessions before
-continuing.</p>
+<p>The runner prints the resolved settings before it starts the
+pipeline. Review those settings carefully, especially the year, storage
+backend, stage formats, force flags, Island Areas settings,
+provisional-input flags, and prior validation target.</p>
+<p>To add AS/GU/MP/VI rows in the same way as the legacy EPA/EJScreen
+export, enable the optional Island Areas stage but keep the DHC
+demographics out of <code>bg_acsdata</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span></span>
+<span>  EJAM_INCLUDE_ISLANDAREAS_DATA <span class="op">=</span> <span class="st">"TRUE"</span>,</span>
+<span>  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS <span class="op">=</span> <span class="st">"FALSE"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
+<p>Set <code>EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"</code> only for
+an intentional mixed-source supplemental dataset. That uses 2020 Island
+Areas Census DHC demographic values in <code>bg_acsdata</code>, which is
+useful for review but is not the default EJScreen replication path.</p>
 </div>
 <div class="section level2">
 <h2 id="rerun-from-saved-acs-data">Rerun From Saved ACS Data<a class="anchor" aria-label="anchor" href="#rerun-from-saved-acs-data"></a>
 </h2>
 <p>If raw ACS has already been downloaded, rerun downstream ACS
 calculations without redownloading:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span></span>
 <span>  EJAM_FORCE_ACS <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
 <span>  EJAM_FORCE_BG_ACSDATA <span class="op">=</span> <span class="st">"TRUE"</span></span>
@@ -581,7 +666,7 @@ calculations without redownloading:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
 <p>If both raw ACS and <code>bg_acsdata</code> should be reused, leave
 both force flags false:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span></span>
 <span>  EJAM_FORCE_ACS <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
 <span>  EJAM_FORCE_BG_ACSDATA <span class="op">=</span> <span class="st">"FALSE"</span></span>
@@ -596,7 +681,7 @@ area and internal-point attributes. Even with
 <code>EJAM_FORCE_BG_GEODATA = "TRUE"</code>, already-downloaded
 TIGER/Line state zip files are reused from
 <code>EJAM_TIGER_BG_CACHE_DIR</code> when present and valid.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_FORCE_BG_GEODATA <span class="op">=</span> <span class="st">"TRUE"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -604,26 +689,28 @@ TIGER/Line state zip files are reused from
 <h2 id="supplying-updated-environmental-data">Supplying Updated Environmental Data<a class="anchor" aria-label="anchor" href="#supplying-updated-environmental-data"></a>
 </h2>
 <p>The environmental stage is intentionally separate from the ACS stage.
-When updated environmental indicators are available, save them as
-<code>bg_envirodata.csv</code> in the pipeline folder.</p>
+When updated environmental indicators are available, save them in the
+pipeline folder as the stage file for <code>bg_envirodata</code>. With
+the default stage format, that file is
+<code>bg_envirodata.csv</code>.</p>
 <p>For a local pipeline:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"bg_envirodata.csv"</span><span class="op">)</span></span></code></pre></div>
 <p>For an S3 pipeline:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>s3<span class="sc">:</span><span class="er">//</span>pedp<span class="sc">-</span>data<span class="sc">-</span>preserved<span class="sc">/</span>ejscreen<span class="sc">-</span>data<span class="sc">-</span>processing<span class="sc">/</span>pipeline<span class="sc">/</span>ejscreen_acs_2024<span class="sc">/</span>bg_envirodata.csv</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>s3<span class="sc">:</span><span class="er">//</span>pedp<span class="sc">-</span>data<span class="sc">-</span>preserved<span class="sc">/</span>ejscreen<span class="sc">-</span>data<span class="sc">-</span>processing<span class="sc">/</span>pipeline<span class="sc">/</span>ejscreen_acs_2024<span class="sc">/</span>bg_envirodata.csv</span></code></pre></div>
 <p>The file must include <code>bgfips</code> and the environmental
 indicators used for EJ indexes. It should also include
 <code>pctpre1960</code>. The environmental-data workflow may create
-<code>pctpre1960</code> by reading the saved <code>bg_acsdata.csv</code>
+<code>pctpre1960</code> by reading the saved <code>bg_acsdata</code>
 stage.</p>
 <p>To force the runner to stop unless <code>bg_envirodata.csv</code> has
 been supplied:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_USE_PROVISIONAL_BG_ENVIRODATA <span class="op">=</span> <span class="st">"FALSE"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
 <p>After replacing <code>bg_envirodata.csv</code>, rerun without forcing
 ACS:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span></span>
 <span>  EJAM_FORCE_ACS <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
 <span>  EJAM_FORCE_BG_ACSDATA <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
@@ -643,19 +730,21 @@ are not the main environmental indicators. Examples include life
 expectancy, health indicators, facility-count context variables,
 climate-related fields, and other columns grouped in
 <code>map_headernames$varlist</code>.</p>
-<p>The pipeline makes these explicit in
-<code>bg_extra_indicators.csv</code>. If an updated table is not
-supplied, the runner currently creates a provisional version from the
-packaged <code><a href="../reference/blockgroupstats.html">EJAM::blockgroupstats</a></code>. That is useful for testing
-the ACS update, but it should be documented clearly as reuse of older
-non-ACS data.</p>
+<p>The pipeline makes these explicit in the
+<code>bg_extra_indicators</code> stage, usually
+<code>bg_extra_indicators.csv</code> under the default stage format. If
+an updated table is not supplied, the runner currently creates a
+provisional version from the packaged
+<code><a href="../reference/blockgroupstats.html">EJAM::blockgroupstats</a></code>. That is useful for testing the ACS
+update, but final release review should document clearly any reuse of
+older non-ACS data.</p>
 </div>
 <div class="section level2">
 <h2 id="provisional-draft-builds">Provisional Draft Builds<a class="anchor" aria-label="anchor" href="#provisional-draft-builds"></a>
 </h2>
 <p>For early pipeline testing, it is acceptable to reuse existing
 environmental and extra indicators:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_USE_PROVISIONAL_BG_ENVIRODATA <span class="op">=</span> <span class="st">"TRUE"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_acs2024_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
 <p>The runner writes source-note text files next to provisional stages,
@@ -667,7 +756,7 @@ confirm whether any provisional stage remains.</p>
 <h2 id="reviewing-outputs">Reviewing Outputs<a class="anchor" aria-label="anchor" href="#reviewing-outputs"></a>
 </h2>
 <p>Start with the validation summary:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pipeline_dir</span> <span class="op">&lt;-</span> <span class="st">"data-raw/pipeline_outputs/ejscreen_acs_2024"</span></span>
@@ -678,8 +767,9 @@ confirm whether any provisional stage remains.</p>
 <span><span class="va">validation</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">warnings</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>There should be no validation errors. Warnings should be understood
 and either fixed or explicitly accepted for a draft build.</p>
-<p>Then inspect the main outputs:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<p>Then inspect the main outputs. The example below assumes the default
+CSV stage format:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bg_acsdata</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"bg_acsdata.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">blockgroupstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"blockgroupstats.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">bgej</span>            <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"bgej.csv"</span><span class="op">)</span><span class="op">)</span></span>
@@ -690,7 +780,12 @@ and either fixed or explicitly accepted for a draft build.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bgej</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">bgej</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">bgej</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">island_prefixes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"60"</span>, <span class="st">"66"</span>, <span class="st">"69"</span>, <span class="st">"78"</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">stage</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">bg_acsdata</span>, <span class="va">blockgroupstats</span>, <span class="va">bgej</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">stage</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">bgfips</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">island_prefixes</span>, <span class="va">.N</span>, by <span class="op">=</span> <span class="va">ST</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>Useful checks include:</p>
 <ul>
 <li>expected FIPS/geography columns are present and typed as
@@ -718,9 +813,21 @@ non-missing, nonnegative <code>arealand</code> and
 <code>usastats</code> has one region, <code>"USA"</code>;</li>
 <li>
 <code>statestats</code> has expected state/territory regions.</li>
+<li>when <code>EJAM_INCLUDE_ISLANDAREAS_DATA</code> is true, 412 Island
+Areas blockgroups are present in <code>bg_acsdata</code>,
+<code>blockgroupstats</code>, and <code>bgej</code>, and
+<code>ejscreen_export</code> retains the matching AS/GU/MP/VI IDs.</li>
 </ul>
+<p>For the default EJScreen-compatible path, Island Areas demographic
+columns in <code>bg_acsdata</code> and downstream stages are expected to
+be <code>NA</code> because the legacy EPA/EJScreen file with AS/GU/MP/VI
+rows had no usable ACS demographic values for those rows. The separate
+<code>bg_islandareas_demographics</code> checkpoint contains available
+2020 Island Areas Census DHC values for review. Those values are used in
+<code>bg_acsdata</code> only when
+<code>EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"</code>.</p>
 <p>For example:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="st">"0"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">usastats</span><span class="op">$</span><span class="va">PCTILE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="st">"100"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">usastats</span><span class="op">$</span><span class="va">PCTILE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="st">"mean"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">usastats</span><span class="op">$</span><span class="va">PCTILE</span><span class="op">)</span><span class="op">)</span></span>
@@ -738,7 +845,7 @@ non-missing, nonnegative <code>arealand</code> and
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">bg_geodata</span><span class="op">$</span><span class="va">arealand</span> <span class="op">&gt;=</span> <span class="fl">0</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">bg_geodata</span><span class="op">$</span><span class="va">areawater</span> <span class="op">&gt;=</span> <span class="fl">0</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Also review the run manifest:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">manifest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"pipeline_run_manifest.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">manifest</span><span class="op">[</span><span class="va">key</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"package_version"</span>,</span>
@@ -768,11 +875,11 @@ saving both <code>.csv</code> and <code>.rda</code>;</li>
 tract-to-blockgroup calculations;</li>
 <li>
 <code>bg_geodata</code>, because it downloads and reads Census
-TIGER/Line blockgroup shapefiles for every state and Puerto Rico, with
-TIGERweb available as a fallback. Reusing
-<code>EJAM_TIGER_BG_CACHE_DIR</code> makes later <code>bg_geodata</code>
-rebuilds much faster because the state zip files do not need to be
-downloaded again;</li>
+TIGER/Line block group shapefiles for every state, the District of
+Columbia, Puerto Rico, and optional Island Areas, with TIGERweb
+available as a fallback. Reusing <code>EJAM_TIGER_BG_CACHE_DIR</code>
+makes later <code>bg_geodata</code> rebuilds much faster because the
+state or territory zip files do not need to be downloaded again;</li>
 <li>final
 <code>blockgroupstats</code>/<code>bgej</code>/statistics/export
 calculations;</li>
@@ -787,12 +894,13 @@ outputs are known to be current.</p>
 <h2 id="reviewing-the-ejscreen-export-schema">Reviewing the EJScreen Export Schema<a class="anchor" aria-label="anchor" href="#reviewing-the-ejscreen-export-schema"></a>
 </h2>
 <p>If <code>EJAM_INCLUDE_EJSCREEN_EXPORT</code> is true, the runner
-writes:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+writes the export stage and its schema report. With the default stage
+format, those files are:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ejscreen_export.csv</span></span>
 <span><span class="va">ejscreen_export_schema_report.csv</span></span></code></pre></div>
 <p>Use the schema report as a field-by-field checklist:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">schema</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"ejscreen_export_schema_report.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">schema</span><span class="op">[</span>, <span class="va">.N</span>, by <span class="op">=</span> <span class="va">status</span><span class="op">]</span></span>
@@ -822,32 +930,41 @@ but it does not automatically replace every final package dataset.</p>
 <li>
 <code>blockgroupstats</code>;</li>
 <li>
-<code>bgej</code>;</li>
-<li>
 <code>usastats</code>;</li>
 <li>
 <code>statestats</code>;</li>
 <li>any related lookup or metadata objects that changed.</li>
 </ul>
-<p>Use the established EJAM metadata helpers before saving package data.
-A typical manual pattern is:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<p>Use the established EJAM metadata helpers before saving package
+<code>.rda</code> data. When reviewing CSV stages manually, a typical
+pattern is:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">blockgroupstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"blockgroupstats.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">bgej</span>            <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"bgej.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">usastats</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"usastats.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">statestats</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"statestats.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/metadata_add_and_use_this.html">metadata_add_and_use_this</a></span><span class="op">(</span><span class="st">"blockgroupstats"</span><span class="op">)</span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/metadata_add_and_use_this.html">metadata_add_and_use_this</a></span><span class="op">(</span><span class="st">"bgej"</span><span class="op">)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/metadata_add_and_use_this.html">metadata_add_and_use_this</a></span><span class="op">(</span><span class="st">"usastats"</span><span class="op">)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/metadata_add_and_use_this.html">metadata_add_and_use_this</a></span><span class="op">(</span><span class="st">"statestats"</span><span class="op">)</span></span></code></pre></div>
 <p>Confirm the exact metadata values before saving, especially ACS
 vintage, Census vintage, EJSCREEN/EJAM version, data source notes, and
-provisional reuse notes.</p>
+provisional reuse notes. <code>bgej</code> should be checked and saved
+through the pipeline stage files, then published as
+<code>bgej.arrow</code> in the matching <code>ejamdata</code> release
+tag, such as <code>v2.5.0</code> for EJAM 2.5.0. A local
+<code>data/bgej.arrow</code> copy can be useful for testing from source,
+but it is ignored for package builds and should not be treated as normal
+package data.</p>
 <p>After those key datasets are updated, rerun the scripts that create
-and saves testoutput_* files and datasets, especially
+and save <code>testoutput_*</code> files and datasets, especially
 <code>datacreate_testpoints_testoutputs.R</code> and
-<code>datacreate_testoutput_ejamit_*</code>, etc.</p>
+<code>datacreate_testoutput_ejamit_*</code>.</p>
+<p>Then run <code>EJAM:::metadata_check()</code> and
+<code>EJAM:::metadata_check_print()</code> from the current source
+package to confirm that package datasets with metadata-style attributes
+have the expected EJAM version, ACS version, release dates, and save
+dates. Atomic name-vector objects such as many <code>names_*</code>
+datasets do not need metadata attributes.</p>
 <p>After package data are updated, reinstall the package and rerun
 release-critical tests. Also regenerate any Arrow-format files used
 outside the package build, if needed.</p>
@@ -879,7 +996,7 @@ or the data repository release process.</li>
 </ol>
 <p>The general release and large-data publication steps are covered in
 <a href="dev-update-datasets.html">Updating and Managing the Datasets
-used by EJAM</a> and <a href="dev-update-package.html">Updating the
+Used by EJAM</a> and <a href="dev-update-package.html">Updating the
 Package as a New Release</a>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

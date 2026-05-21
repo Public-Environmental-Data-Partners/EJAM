@@ -82,9 +82,10 @@ frs_by_sic <- frs_make_sic_lookup(natl_single_clean)
 
 
 #saveRDS(frs_by_sic, file = 'frs_by_sic.rds')
-# usethis::use_data(frs_by_sic)
 # attr(frs_by_sic, 'released') <- Sys.Date()
-EJAM:::metadata_add_and_use_this("frs_by_sic")
+# Obsolete: frs_by_sic is no longer saved as package .rda data.
+# Publish frs_by_sic.arrow through the data repository workflow.
+frs_by_sic <- EJAM:::metadata_add(frs_by_sic)
 
 ###################################################################################
 # create SIC ####
@@ -158,4 +159,3 @@ naics_counts <- enframe(NAICS,value = 'NAICS') %>%
 
 # usethis::use_data(naics_counts, overwrite = TRUE)
 EJAM:::metadata_add_and_use_this("naics_counts")
-

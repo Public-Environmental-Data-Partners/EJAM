@@ -41,15 +41,8 @@ and folder will be specified or can be assumed to be current working directory}
 
 \item{save_as_arrow_frs_by_mact}{Whether to save as .arrow in getwd()}
 
-\item{save_as_data_frs}{Whether to save as .rda in ./data/}
-
-\item{save_as_data_frs_by_programid}{Whether to save as .rda in ./data/}
-
-\item{save_as_data_frs_by_naics}{Whether to save as .rda in ./data/}
-
-\item{save_as_data_frs_by_sic}{Whether to save as .rda in ./data/}
-
-\item{save_as_data_frs_by_mact}{Whether to save as .rda in ./data/}
+\item{save_as_data_frs, save_as_data_frs_by_programid, save_as_data_frs_by_naics, save_as_data_frs_by_sic, save_as_data_frs_by_mact}{Obsolete. FRS tables are no longer saved as \code{.rda} files in \verb{./data/}.
+Leave these as \code{FALSE} and publish the \code{.arrow} files instead.}
 }
 \value{
 Creates saved copies of datasets for the R package, overwriting old ones, using
@@ -68,11 +61,12 @@ This function is only for a package maintainer/updater
 It is typically run from the dataset-maintenance workflow in
 \code{EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R}.
 
-These datasets are obtained from EPA servers, reformatted for this package, and
-then stored in a separate repository - see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{updating data for package}.
-The save_as_data_ parameters here are set to FALSE because the files are
-not saved in the source package or its repository like
-typical package datasets would be saved in the data folder of the source package.
+These datasets are obtained from EPA servers, reformatted for this package,
+and then stored as \code{.arrow} files in a separate repository - see
+\href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{updating data for package}.
+The \verb{save_as_data_*} parameters are obsolete and kept only to make old
+maintainer scripts fail clearly. FRS tables are no longer saved as
+lazy-loaded \code{.rda} package data in \verb{EJAM/data/}.
 
 The files later get downloaded for local use during the process
 of installing the EJAM package.

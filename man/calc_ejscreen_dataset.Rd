@@ -231,6 +231,9 @@ created and saved by this function.
 The default stage order is:
 \enumerate{
 \item download raw ACS tables of demographic data into \code{bg_acs_raw}
+\item optionally download and save separate Island Areas Census DHC checkpoints
+for AS/GU/MP/VI; these demographics are not used downstream unless
+explicitly requested
 \item calculate ACS-based demographic indicators (and lead paint indicator) as \code{bg_acsdata}
 \item validate/save \code{bg_envirodata} (key environmental indicators)
 \item validate/save \code{bg_extra_indicators} (e.g., \% low life expectancy)
@@ -246,7 +249,8 @@ as \link{bgej} table
 \item create intermediate percentile lookup tables \code{usastats_ej},
 \code{statestats_ej}
 \item combine those as \link{usastats} and \link{statestats}
-\item create an EJScreen-ready export file (optionally)
+\item create an EJScreen-ready export file and/or EPA Python dataset-creator
+input file (optionally)
 }
 
 \code{bg_envirodata} must include \code{pctpre1960}. That column may be produced by an
@@ -276,8 +280,15 @@ legacy EJSCREEN tract-to-blockgroup apportionment.
 \item EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.
 \item EJAM_ACS_DOWNLOAD_TIMEOUT
 \item EJAM_ACS_DOWNLOAD_RETRIES
+\item EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows and a
+separate \code{bg_islandareas_demographics} checkpoint.
+\item EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE only for an intentional
+mixed-source supplemental dataset using 2020 Island Areas Census DHC
+demographics in \code{bg_acsdata}.
 \item EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
 \item EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+\item EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
+input table expected by EPA's Python dataset-creator workflow.
 \item EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.
 }
 
@@ -305,8 +316,10 @@ cbind(current_setting = Sys.getenv(c(
   "CENSUS_API_KEY",
   "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+  "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
   "EJAM_INCLUDE_EJSCREEN_EXPORT",
+  "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
   "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
   "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"
 )))

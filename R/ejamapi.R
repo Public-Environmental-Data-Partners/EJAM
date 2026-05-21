@@ -506,7 +506,7 @@ ejamapi <- function(
       reports = list()
       for (i in seq_along(urlx)) {
         # handled this way while sitenumber = 1 is hard coded in API
-        # but better way to get multiple reports may be just ejam2report()
+        browser()        # but better way to get multiple reports may be just ejam2report()
         req_i <- httr2::request(urlx[i])
         response <- httr2::req_perform(req = req_i)
         html_report <- htmltools::HTML(httr2::resp_body_string(response))

@@ -382,7 +382,23 @@ if (FALSE) {
 
 # >>> cleanup after testing ####
 
+close_test_pdf_devices <- function() {
+  devs <- grDevices::dev.list()
+  if (is.null(devs)) {
+    return(invisible(NULL))
+  }
+  pdf_devs <- rev(devs[names(devs) == "pdf"])
+  for (dev in pdf_devs) {
+    try({
+      grDevices::dev.set(dev)
+      grDevices::dev.off()
+    }, silent = TRUE)
+  }
+  invisible(NULL)
+}
+
 cleanup_rplots_pdf <- function() {
+  close_test_pdf_devices()
   possible_dirs <- unique(c(
     getwd(),
     file.path(getwd(), "tests", "testthat"),
@@ -398,10 +414,16 @@ cleanup_rplots_pdf <- function() {
 }
 
 cleanup_rplots_pdf()
+test_graphics_pdf <- tempfile("ejam-test-graphics-", fileext = ".pdf")
+grDevices::pdf(file = test_graphics_pdf)
 cleanup_env <- tryCatch(
   testthat::teardown_env(),
   error = function(e) globalenv()
 )
-withr::defer(cleanup_rplots_pdf(), cleanup_env)
+withr::defer({
+  close_test_pdf_devices()
+  unlink(test_graphics_pdf, force = TRUE)
+  cleanup_rplots_pdf()
+}, cleanup_env)
 
 ################################# # ################################# #
