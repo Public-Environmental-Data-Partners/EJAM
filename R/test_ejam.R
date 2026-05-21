@@ -334,6 +334,7 @@ x <- test_ejam(
         "test-is.numericish.R",
         "test-create_filename.R",
         "test-grepn.R",
+        "test-utils_PACKAGE_DEV.R",
         "test-url_package.R",
         "test-pctile_x_is_hit_by_score.R",
         "test-plot_vs_us.R",

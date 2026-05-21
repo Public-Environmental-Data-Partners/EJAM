@@ -1312,7 +1312,7 @@ pkg_functions_preceding_lines = function(path = "./R",
       # Remove preceding rows that are unrelated to this one function
       # by searching up from func definition to 1st row encountered that is not roxygen tags
       lastunrelatedline <-  which(!grepl("^ *#'", rev( textrows[priorlinenums[1:(length(priorlinenums) - 1)]])))[1]
-      if (length(lastunrelatedline) != 0) {
+      if (length(lastunrelatedline) != 0 && !is.na(lastunrelatedline)) {
         lastunrelatedline <- length(priorlinenums) - lastunrelatedline
         priorlinenums <- priorlinenums[(1+lastunrelatedline):length(priorlinenums)]
       }
