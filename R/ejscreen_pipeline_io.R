@@ -173,7 +173,7 @@ ejscreen_read_csv_table <- function(path) {
     c(
       "bgfips", "blockid", "blockfips", "tractfips",
       "fips", "GEO_ID", "SUMLEVEL", "ST", "PCTILE",
-      "statename", "countyname"
+      "statename", "countyname", "ID", "ID_1"
     ),
     header
   )

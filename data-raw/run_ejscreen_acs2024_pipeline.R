@@ -73,6 +73,8 @@
 #   EJAM_PRIOR_PIPELINE_DIR: optional explicit prior version folder/S3 prefix. If unset, constructed from EJAM_PIPELINE_ROOT and EJAM_PRIOR_PIPELINE_YR.
 #   EJAM_PRIOR_PACKAGE_REF: optional explicit Git ref/tag/SHA holding a prior package blockgroupstats.rda, such as development or v2.32.8.1.
 #   EJAM_PRIOR_PACKAGE_PATH: optional path within EJAM_PRIOR_PACKAGE_REF. Defaults to data/blockgroupstats.rda.
+#   EJAM_EJSCREEN_EXPORT_REFERENCE_PATH: optional EPA-style EJSCREEN export CSV to compare with the ejscreen_export stage. For yr 2022, the default is the S3 copy of EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv, which is based on ACS 2018-2022.
+#   EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE: TRUE to create prior_validation_ejscreen_export_vs_epa_2024_acs2022* reports when a reference path is available.
 #   EJAM_VALIDATE_VS_PRIOR_WALDO: TRUE to include optional waldo::compare() output in prior validation detail files.
 
 #   CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
@@ -134,6 +136,8 @@ set_pipeline_default("EJAM_PRIOR_PIPELINE_YR", prior_yr)
 set_pipeline_default("EJAM_PRIOR_PIPELINE_DIR", "")
 set_pipeline_default("EJAM_PRIOR_PACKAGE_REF", "")
 set_pipeline_default("EJAM_PRIOR_PACKAGE_PATH", "data/blockgroupstats.rda")
+set_pipeline_default("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", "")
+set_pipeline_default("EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE", "TRUE")
 set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 ###################################################### #
 # USE NON-DEFAULT SETTINGS - for this run ####
@@ -168,6 +172,8 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_PRIOR_PIPELINE_DIR = "",
 #            EJAM_PRIOR_PACKAGE_REF = "development",
 #            EJAM_PRIOR_PACKAGE_PATH = "data/blockgroupstats.rda",
+#            EJAM_EJSCREEN_EXPORT_REFERENCE_PATH = "",
+#            EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE = TRUE,
 #            EJAM_VALIDATE_VS_PRIOR_WALDO = FALSE
 # )
 # ###################################################### #
@@ -200,6 +206,8 @@ set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 #            EJAM_PRIOR_PIPELINE_DIR = "",
 #            EJAM_PRIOR_PACKAGE_REF = "",
 #            EJAM_PRIOR_PACKAGE_PATH = "data/blockgroupstats.rda",
+#            EJAM_EJSCREEN_EXPORT_REFERENCE_PATH = "",
+#            EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE = FALSE,
 #            EJAM_VALIDATE_VS_PRIOR_WALDO = FALSE
 # )
 ###################################################### #
@@ -233,6 +241,8 @@ print(
     'EJAM_PRIOR_PIPELINE_DIR',
     'EJAM_PRIOR_PACKAGE_REF',
     'EJAM_PRIOR_PACKAGE_PATH',
+    'EJAM_EJSCREEN_EXPORT_REFERENCE_PATH',
+    'EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE',
     'EJAM_VALIDATE_VS_PRIOR_WALDO'
   )))
 )
@@ -329,6 +339,19 @@ include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASE
 
 validate_vs_prior <- env_flag("EJAM_VALIDATE_VS_PRIOR", TRUE)
 validate_vs_prior_waldo <- env_flag("EJAM_VALIDATE_VS_PRIOR_WALDO", FALSE)
+ejscreen_export_reference_path <- Sys.getenv("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", unset = "")
+if (!nzchar(ejscreen_export_reference_path) &&
+    identical(as.character(pipeline_yr), "2022") &&
+    identical(pipeline_storage, "s3")) {
+  ejscreen_export_reference_path <- paste0(
+    "s3://pedp-data-preserved/ejscreen-data-processing/shared/pipeline/",
+    "preprocessed_input/ejscreen/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv"
+  )
+}
+validate_ejscreen_export_reference <- env_flag(
+  "EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE",
+  nzchar(ejscreen_export_reference_path)
+)
 prior_pipeline_yr <- Sys.getenv(
   "EJAM_PRIOR_PIPELINE_YR",
   unset = if (as.integer(pipeline_yr) == 2024L) "2022" else as.character(as.integer(pipeline_yr) - 1L)
@@ -372,6 +395,8 @@ pipeline_setting_names <- c(
   'EJAM_PRIOR_PIPELINE_DIR',
   'EJAM_PRIOR_PACKAGE_REF',
   'EJAM_PRIOR_PACKAGE_PATH',
+  'EJAM_EJSCREEN_EXPORT_REFERENCE_PATH',
+  'EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE',
   'EJAM_VALIDATE_VS_PRIOR_WALDO',
   'AWS_PROFILE',
   'AWS_REGION'
@@ -411,6 +436,8 @@ print(
     prior_pipeline_dir=prior_pipeline_dir,
     prior_package_ref=prior_package_ref,
     prior_package_path=prior_package_path,
+    ejscreen_export_reference_path=ejscreen_export_reference_path,
+    validate_ejscreen_export_reference=validate_ejscreen_export_reference,
     validate_vs_prior_waldo=validate_vs_prior_waldo,
     AWS_PROFILE=Sys.getenv("AWS_PROFILE"),
     AWS_REGION=Sys.getenv("AWS_REGION")
@@ -1116,6 +1143,39 @@ if (isTRUE(validate_vs_prior)) {
     names(prior_validation_summary)
   )
   print(prior_validation_summary[, ..prior_validation_print_cols])
+}
+
+if (isTRUE(include_ejscreen_export) &&
+    isTRUE(validate_ejscreen_export_reference) &&
+    nzchar(ejscreen_export_reference_path)) {
+  message("Comparing ejscreen_export stage to reference export: ",
+          ejscreen_export_reference_path)
+  ejscreen_export_reference_prefix <- if (grepl(
+    "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI",
+    ejscreen_export_reference_path,
+    fixed = TRUE
+  )) {
+    "prior_validation_ejscreen_export_vs_epa_2024_acs2022"
+  } else {
+    "prior_validation_ejscreen_export_vs_reference"
+  }
+  ejscreen_export_reference_validation <- EJAM:::calc_ejscreen_export_reference_report(
+    ejscreen_export = out$ejscreen_export,
+    reference_path = ejscreen_export_reference_path,
+    reference_format = tools::file_ext(ejscreen_export_reference_path),
+    storage = pipeline_storage,
+    reference_label = basename(ejscreen_export_reference_path),
+    note = if (identical(as.character(pipeline_yr), "2022")) {
+      "Reference is named 2024 but treated here as ACS 2022 based on user knowledge."
+    } else {
+      NULL
+    },
+    output_dir = pipeline_dir,
+    output_prefix = ejscreen_export_reference_prefix,
+    write_files = TRUE
+  )
+  message("EJSCREEN export reference validation summary:")
+  print(ejscreen_export_reference_validation$summary)
 }
 
 manifest_status <- if (any(nzchar(validation_summary$errors))) "validation_failed" else "completed"

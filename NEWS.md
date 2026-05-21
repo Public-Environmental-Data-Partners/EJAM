@@ -79,6 +79,12 @@
   direct EJScreen export paths such as `s3://.../ejscreen_export.csv` are
   written through the same AWS CLI upload helper used by other stages.
 
+- Added an EJScreen export reference validation helper. For ACS 2018-2022
+  replication runs, the pipeline can compare `ejscreen_export` to the preserved
+  EPA-style `EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv` file and write
+  `prior_validation_ejscreen_export_vs_epa_2024_acs2022*` reports while
+  preserving leading zeroes in block group IDs.
+
 - Added `bg_envirodata` and `bg_extra_indicators` as explicit pipeline inputs.
   This makes it clear which columns come from ACS, which come from environmental
   data, and which come from other blockgroup-level sources such as low life

@@ -252,6 +252,8 @@ from_islandareas_pipeline_add = sort(setdiff(
     "lat",
     "lon",
     "meters_per_mile",
+    "compare_id",
+    "differing_rows",
     "bgfips",
     "blockid", "bgid", "blockwt", "block_radius_miles",
     "lat",     "lon"

@@ -1097,6 +1097,241 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
 ###################################################### #
 # . ####
 
+#' Compare an EJSCREEN export table to a reference export CSV
+#'
+#' @details This internal validation helper is used by the annual pipeline to
+#' compare the 2022 pipeline `ejscreen_export` stage to the EPA-style
+#' `EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv` reference file, which is named for
+#' EJSCREEN 2024 but uses ACS 2018-2022 inputs. It preserves leading zeroes in
+#' `ID` fields and reports both exact differences and substantive numeric
+#' differences above `numeric_tolerance`.
+#'
+#' @param ejscreen_export optional EJSCREEN export data.frame.
+#' @param export_path optional path to a saved EJSCREEN export stage.
+#' @param reference optional reference data.frame.
+#' @param reference_path optional path to a saved reference CSV/R data file.
+#' @param export_format file format for `export_path`.
+#' @param reference_format file format for `reference_path`.
+#' @param storage storage backend for pipeline-style paths.
+#' @param id_col preferred ID column name.
+#' @param numeric_tolerance threshold for substantive numeric differences.
+#' @param reference_label label shown in the text report.
+#' @param note optional note shown near the top of the text report.
+#' @param output_dir optional folder/S3 prefix for report files.
+#' @param output_prefix base filename for written report files.
+#' @param write_files logical. If TRUE, write `*_summary.txt`, `*_summary.csv`,
+#'   and `*.csv` report files.
+#'
+#' @return list with `summary`, `report`, and `text`.
+#'
+#' @keywords internal
+#'
+calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
+                                                  export_path = NULL,
+                                                  reference = NULL,
+                                                  reference_path = NULL,
+                                                  export_format = NULL,
+                                                  reference_format = NULL,
+                                                  storage = c("auto", "local", "s3"),
+                                                  id_col = "ID",
+                                                  numeric_tolerance = 1e-6,
+                                                  reference_label = NULL,
+                                                  note = NULL,
+                                                  output_dir = NULL,
+                                                  output_prefix = "prior_validation_ejscreen_export_vs_reference",
+                                                  write_files = FALSE) {
+
+  storage <- match.arg(storage)
+  if (is.null(ejscreen_export)) {
+    export_storage <- if (!is.null(export_path) && ejscreen_pipeline_is_s3_uri(export_path)) "s3" else storage
+    ejscreen_export <- ejscreen_pipeline_input(
+      path = export_path,
+      format = export_format,
+      storage = export_storage,
+      input_name = "ejscreen_export"
+    )
+  }
+  if (is.null(reference)) {
+    reference_storage <- if (!is.null(reference_path) && ejscreen_pipeline_is_s3_uri(reference_path)) "s3" else storage
+    reference <- ejscreen_pipeline_input(
+      path = reference_path,
+      format = reference_format,
+      storage = reference_storage,
+      input_name = "reference"
+    )
+  }
+
+  new <- data.table::as.data.table(ejscreen_export)
+  ref <- data.table::as.data.table(reference)
+  data.table::setnames(new, names(new), trimws(names(new)))
+  data.table::setnames(ref, names(ref), trimws(names(ref)))
+
+  key_ref <- if (id_col %in% names(ref)) id_col else if ("ID_1" %in% names(ref)) "ID_1" else NULL
+  key_new <- if (id_col %in% names(new)) id_col else if ("ID_1" %in% names(new)) "ID_1" else NULL
+  if (is.null(key_ref) || is.null(key_new)) {
+    stop("Both reference and ejscreen_export must have an ID or ID_1 column", call. = FALSE)
+  }
+
+  ref[, compare_id := as.character(get(key_ref))]
+  new[, compare_id := as.character(get(key_new))]
+  shared_ids <- intersect(ref$compare_id, new$compare_id)
+  ref2 <- ref[compare_id %in% shared_ids]
+  new2 <- new[compare_id %in% shared_ids]
+  data.table::setkey(ref2, compare_id)
+  data.table::setkey(new2, compare_id)
+
+  shared_cols <- setdiff(intersect(names(ref2), names(new2)), "compare_id")
+  shared_cols <- setdiff(shared_cols, c(key_ref, key_new))
+  rows <- vector("list", length(shared_cols))
+
+  for (i in seq_along(shared_cols)) {
+    col <- shared_cols[[i]]
+    a <- ref2[[col]]
+    b <- new2[[col]]
+    if (is.factor(a)) a <- as.character(a)
+    if (is.factor(b)) b <- as.character(b)
+
+    na_a <- is.na(a)
+    na_b <- is.na(b)
+    na_mismatch <- xor(na_a, na_b)
+    both_non_na <- !na_a & !na_b
+    numeric_col <- is.numeric(a) && is.numeric(b)
+
+    if (numeric_col) {
+      diff <- rep(NA_real_, length(a))
+      diff[both_non_na] <- abs(as.numeric(a[both_non_na]) - as.numeric(b[both_non_na]))
+      different <- na_mismatch | (both_non_na & diff != 0)
+      diff_gt_tolerance <- sum(both_non_na & diff > numeric_tolerance, na.rm = TRUE)
+      diff_gt_1e_9 <- sum(both_non_na & diff > 1e-9, na.rm = TRUE)
+      diff_gt_1e_12 <- sum(both_non_na & diff > 1e-12, na.rm = TRUE)
+      max_abs <- suppressWarnings(max(diff, na.rm = TRUE))
+      if (!is.finite(max_abs)) max_abs <- NA_real_
+      mean_abs <- suppressWarnings(mean(diff, na.rm = TRUE))
+      if (!is.finite(mean_abs)) mean_abs <- NA_real_
+      denom <- abs(as.numeric(a[both_non_na]))
+      denom[denom == 0] <- NA_real_
+      mean_rel <- suppressWarnings(mean(diff[both_non_na] / denom, na.rm = TRUE))
+      if (!is.finite(mean_rel)) mean_rel <- NA_real_
+    } else {
+      different <- na_mismatch | (both_non_na & as.character(a) != as.character(b))
+      diff_gt_tolerance <- NA_integer_
+      diff_gt_1e_9 <- NA_integer_
+      diff_gt_1e_12 <- NA_integer_
+      max_abs <- NA_real_
+      mean_abs <- NA_real_
+      mean_rel <- NA_real_
+    }
+
+    example_idx <- which(different)[1]
+    rows[[i]] <- data.table::data.table(
+      column = col,
+      type = if (numeric_col) "numeric" else "character",
+      rows = length(a),
+      differing_rows = sum(different, na.rm = TRUE),
+      differing_non_na_rows = sum(different & both_non_na, na.rm = TRUE),
+      diff_gt_1e_12 = diff_gt_1e_12,
+      diff_gt_1e_9 = diff_gt_1e_9,
+      diff_gt_tolerance = diff_gt_tolerance,
+      numeric_tolerance = if (numeric_col) numeric_tolerance else NA_real_,
+      na_ref = sum(na_a),
+      na_pipeline = sum(na_b),
+      na_mismatch = sum(na_mismatch),
+      max_abs_diff = max_abs,
+      mean_abs_diff = mean_abs,
+      mean_rel_diff = mean_rel,
+      example_id = if (length(example_idx)) ref2$compare_id[example_idx] else NA_character_,
+      example_ref = if (length(example_idx)) as.character(a[example_idx]) else NA_character_,
+      example_pipeline = if (length(example_idx)) as.character(b[example_idx]) else NA_character_
+    )
+  }
+
+  report <- data.table::rbindlist(rows)
+  data.table::setorder(report, -differing_rows, column)
+  summary <- data.table::data.table(
+    metric = c(
+      "reference_rows", "pipeline_rows", "shared_ids",
+      "reference_only_ids", "pipeline_only_ids",
+      "reference_cols", "pipeline_cols", "shared_cols", "compared_cols",
+      "columns_with_differences",
+      paste0("columns_with_substantive_numeric_differences_gt_", numeric_tolerance),
+      "columns_identical", "created"
+    ),
+    value = as.character(c(
+      nrow(ref), nrow(new), length(shared_ids),
+      length(setdiff(ref$compare_id, new$compare_id)),
+      length(setdiff(new$compare_id, ref$compare_id)),
+      length(names(ref)) - 1L, length(names(new)) - 1L,
+      length(shared_cols), nrow(report),
+      sum(report$differing_rows > 0),
+      sum(report$type == "numeric" & report$diff_gt_tolerance > 0, na.rm = TRUE),
+      sum(report$differing_rows == 0),
+      as.character(Sys.time())
+    ))
+  )
+
+  if (is.null(reference_label)) {
+    reference_label <- if (!is.null(reference_path)) {
+      basename(reference_path)
+    } else {
+      "reference export"
+    }
+  }
+  text <- c(
+    paste0("EJSCREEN export validation against ", reference_label),
+    paste0("Created: ", Sys.time()),
+    note,
+    "",
+    capture.output(print(summary)),
+    "",
+    "Reference-only columns:",
+    paste(setdiff(names(ref), names(new)), collapse = ", "),
+    "",
+    "Pipeline-only columns:",
+    paste(setdiff(names(new), names(ref)), collapse = ", "),
+    "",
+    "Top differing columns:",
+    capture.output(print(report[differing_rows > 0][1:min(.N, 80)])),
+    "",
+    "Reference-only IDs by state prefix:",
+    capture.output(print(table(substr(setdiff(ref$compare_id, new$compare_id), 1, 2), useNA = "ifany"))),
+    "",
+    "Pipeline-only IDs by state prefix:",
+    capture.output(print(table(substr(setdiff(new$compare_id, ref$compare_id), 1, 2), useNA = "ifany")))
+  )
+  text <- text[!is.na(text)]
+
+  paths <- NULL
+  if (isTRUE(write_files)) {
+    if (is.null(output_dir) || !nzchar(output_dir)) {
+      stop("output_dir must be supplied when write_files = TRUE", call. = FALSE)
+    }
+    paths <- c(
+      report = ejscreen_pipeline_write_text_or_csv(
+        report,
+        paste0(output_prefix, ".csv"),
+        pipeline_dir = output_dir,
+        storage = storage
+      ),
+      summary_csv = ejscreen_pipeline_write_text_or_csv(
+        summary,
+        paste0(output_prefix, "_summary.csv"),
+        pipeline_dir = output_dir,
+        storage = storage
+      ),
+      summary_txt = ejscreen_pipeline_write_text_or_csv(
+        text,
+        paste0(output_prefix, "_summary.txt"),
+        pipeline_dir = output_dir,
+        storage = storage
+      )
+    )
+  }
+
+  list(summary = summary, report = report, text = text, paths = paths)
+}
+###################################################### #
+# . ####
+
 ###################################################### #
 
 #' Calculate EJSCREEN map color bins

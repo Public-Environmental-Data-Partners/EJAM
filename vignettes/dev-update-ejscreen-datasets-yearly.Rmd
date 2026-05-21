@@ -134,6 +134,10 @@ The runner also writes `pipeline_validation_summary.csv` and
 `pipeline_run_manifest.csv`. If prior-version validation is requested, it writes
 `prior_validation_summary.csv` and per-stage prior-validation details. If the
 EJScreen export is requested, it writes `ejscreen_export_schema_report.csv`.
+For ACS 2018-2022 replication runs, the runner can also compare
+`ejscreen_export` to the EPA-style
+`EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv` reference file and write
+`prior_validation_ejscreen_export_vs_epa_2024_acs2022*` reports.
 
 The run manifest records the package version, Git branch and SHA, ACS vintage,
 pipeline location, primary stage format, selected run settings, and whether
@@ -289,6 +293,8 @@ The runner is controlled by environment variables:
 | `EJAM_VALIDATE_VS_PRIOR` | `"TRUE"` to write prior-version comparison files. |
 | `EJAM_PRIOR_PIPELINE_DIR` | Prior pipeline folder/S3 prefix to compare against. |
 | `EJAM_PRIOR_PACKAGE_REF` | Optional Git ref/tag/SHA for prior package data comparison. |
+| `EJAM_EJSCREEN_EXPORT_REFERENCE_PATH` | Optional EPA-style EJScreen export CSV to compare against `ejscreen_export`. For S3-backed 2022 runs, the runner defaults to the preserved `EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv` file, which uses ACS 2018-2022 data despite its 2024 filename. |
+| `EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE` | `"TRUE"` to write `prior_validation_ejscreen_export_vs_epa_2024_acs2022.csv`, `*_summary.csv`, and `*_summary.txt` when a reference export path is available. |
 
 To see what the runner will use:
 
@@ -320,7 +326,9 @@ Sys.getenv(c(
   "EJAM_VALIDATE_VS_PRIOR",
   "EJAM_PRIOR_PIPELINE_YR",
   "EJAM_PRIOR_PIPELINE_DIR",
-  "EJAM_PRIOR_PACKAGE_REF"
+  "EJAM_PRIOR_PACKAGE_REF",
+  "EJAM_EJSCREEN_EXPORT_REFERENCE_PATH",
+  "EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE"
 ))
 ```
 
@@ -714,6 +722,21 @@ Each missing expected field should be classified as one of:
 
 For release, the ideal schema report has no `missing_expected` rows for the
 FeatureServer fields required by the EJScreen app.
+
+For 2022 replication checks, also review the EPA-reference comparison reports
+when they are present:
+
+```{r, eval=FALSE}
+prior_validation_ejscreen_export_vs_epa_2024_acs2022.csv
+prior_validation_ejscreen_export_vs_epa_2024_acs2022_summary.csv
+prior_validation_ejscreen_export_vs_epa_2024_acs2022_summary.txt
+```
+
+Those reports use `ID` as a character field so leading zeroes in block group
+FIPS are preserved. They are meant to explain differences between EJAM's
+current export and the EPA-style reference export, not to force EJAM to
+replicate legacy behavior where the new pipeline has intentionally corrected a
+formula or missing-value rule.
 
 ## Replacing Package Data
 

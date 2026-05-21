@@ -359,6 +359,43 @@ test_that("calc_ejscreen_export_schema_report flags missing and extra fields", {
   expect_true(report$present_in_export[report$ejscreen_name == "ID"])
 })
 
+test_that("calc_ejscreen_export_reference_report preserves IDs and summarizes differences", {
+  reference <- data.frame(
+    ID = c("010010201001", "020200001001"),
+    A = c(1, 2),
+    B = c(NA_real_, 3),
+    C = c("same", "old"),
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+  ejscreen_export <- data.frame(
+    ID = reference$ID,
+    A = c(1, 2.00001),
+    B = c(0, 3),
+    C = c("same", "new"),
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+  reference_path <- tempfile(fileext = ".csv")
+  data.table::fwrite(reference, reference_path)
+
+  out <- EJAM:::calc_ejscreen_export_reference_report(
+    ejscreen_export = ejscreen_export,
+    reference_path = reference_path,
+    reference_format = "csv",
+    numeric_tolerance = 1e-6
+  )
+
+  expect_equal(out$summary$value[out$summary$metric == "shared_ids"], "2")
+  expect_equal(out$summary$value[out$summary$metric == "columns_with_differences"], "3")
+  expect_equal(
+    out$summary$value[out$summary$metric == "columns_with_substantive_numeric_differences_gt_1e-06"],
+    "1"
+  )
+  expect_equal(out$report$na_mismatch[out$report$column == "B"], 1L)
+  expect_equal(out$report$example_id[out$report$column == "A"], "020200001001")
+})
+
 test_that("calc_ejscreen_dataset_creator_input renames, orders, and reports placeholders", {
   blockgroupstats <- data.frame(
     bgfips = c("100010001001", "100010001002"),
