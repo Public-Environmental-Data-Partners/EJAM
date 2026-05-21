@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Updating and Managing the Datasets used by EJAM • EJAM</title>
+<title>Updating and Managing the Datasets Used by EJAM • EJAM</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,9 +15,9 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating and Managing the Datasets used by EJAM">
-<meta name="description" content="Managing datasets used by EJAM (including arrow files)">
-<meta property="og:description" content="Managing datasets used by EJAM (including arrow files)">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating and Managing the Datasets Used by EJAM">
+<meta name="description" content="Managing datasets used by EJAM, including Arrow files">
+<meta property="og:description" content="Managing datasets used by EJAM, including Arrow files">
 <meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg">
 </head>
 <body>
@@ -66,7 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -92,7 +92,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Updating and Managing the Datasets used by EJAM</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Updating and Managing the Datasets Used by EJAM</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-update-datasets.Rmd" class="external-link"><code>vignettes/dev-update-datasets.Rmd</code></a></small>
@@ -102,33 +102,37 @@
     
     
 <p>The EJAM package and <a href="https://shiny.posit.co" class="external-link">Shiny</a> app
-make use of many data objects, including numerous datasets stored in the
-package’s /data/ folder as well as several large tables stored in a
-separate repository specifically created for holding those large tables,
-which contain information on Census blockgroups, Census block internal
-points, Census block population weights, and EPA FRS facilities.</p>
+use many data objects, including numerous datasets stored in the
+package’s <code>/data/</code> folder and several large tables stored in
+a separate data repository. Those large tables contain information on
+Census block groups, Census block internal points, Census block
+population weights, and EPA FRS facilities.</p>
 <div class="section level2">
 <h2 id="how-to-update-datasets-in-ejam">How to Update Datasets in EJAM<a class="anchor" aria-label="anchor" href="#how-to-update-datasets-in-ejam"></a>
 </h2>
-<p>The process begins from within the EJAM code repo, using the various
-<code>datacreate_*</code> scripts to create updated arrow datasets.
-Notes and scripts are consolidated in the <code>/data-raw/</code>
-folder, and the starting point is the overarching set of scripts and
-comments in the file called
-<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em>.
-Almost all updates of data objects and their documentation are organized
-within that file in functions/scripts for the various datasets.
-Documentation of datasets via <code>/R/data_*.R</code> files is
-generally handled by those same scripts while creating/updating the
-datasets.</p>
-<p>That file covers not only the large arrow datasets that are stored in
+<p>The process begins from within the EJAM code repo. Historically, most
+data updates were coordinated from the overarching notes and script file
+<code>data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code>. That file is
+still useful as an index of older maintainer workflows, but it is no
+longer the primary path for the annual EJScreen-style blockgroup update.
+For <code>blockgroupstats</code>, <code>usastats</code>,
+<code>statestats</code>, <code>bgej</code>, and related annual pipeline
+checkpoints, use the staged pipeline documented in <a href="dev-update-ejscreen-datasets-yearly.html">Updating EJScreen
+Datasets Annually (via the Pipeline)</a>. For other datasets, the
+focused <code>datacreate_*</code> scripts in <code>data-raw/</code>
+remain the usual starting point. Documentation of datasets via
+<code>/R/data_*.R</code> files is generally handled by those same
+scripts while creating/updating the datasets.</p>
+<p>That file covers not only the large Arrow datasets that are stored in
 a separate repository, but also many smaller data objects that are
-installed along with the package in the /data/ folder. Updating all the
-package’s data objects can be complicated because there are many
-different data objects of various types and formats and locations.</p>
+installed along with the package in the <code>/data/</code> folder.
+Updating all the package’s data objects can be complicated because there
+are many different data objects of various types and formats and
+locations.</p>
 <p>The various data objects need to be updated at various frequencies –
-some only yearly (ACS data) and others when facility IDs and locations
-change (as often as possible, as when <a href="https://www.epa.gov/frs" class="external-link">EPA’s FRS</a> is updated). Some need to
+some only yearly, some as part of the broader EJSCREEN Annual Data
+Update of demographic, environmental, and other indicators, and others
+when facility IDs and locations change (as often as possible, as when <a href="https://www.epa.gov/frs" class="external-link">EPA’s FRS</a> is updated). Some need to
 be updated only when the package features/code changes, such as the
 important data object called <code>map_headernames</code> (which in turn
 is used to update objects such as <code>names_e</code>).</p>
@@ -146,39 +150,41 @@ inventory:</p>
 <span><span class="co">##  [5] "bgpts"                            "blockgroupstats"                 </span></span>
 <span><span class="co">##  [7] "censusplaces"                     "custom"                          </span></span>
 <span><span class="co">##  [9] "ejamdata_version"                 "ejampackages"                    </span></span>
-<span><span class="co">## [11] "epa_programs"                     "epa_programs_defined"            </span></span>
-<span><span class="co">## [13] "formulas_all"                     "formulas_d"                      </span></span>
-<span><span class="co">## [15] "formulas_ejscreen_acs"            "formulas_ejscreen_acs_disability"</span></span>
-<span><span class="co">## [17] "formulas_ejscreen_demog_index"    "frsprogramcodes"                 </span></span>
-<span><span class="co">## [19] "high_pctiles_tied_with_min"       "islandareas"                     </span></span>
-<span><span class="co">## [21] "lat_alias"                        "lon_alias"                       </span></span>
-<span><span class="co">## [23] "mact_table"                       "map_headernames"                 </span></span>
-<span><span class="co">## [25] "meters_per_mile"                  "modelDoaggregate"                </span></span>
-<span><span class="co">## [27] "modelEjamit"                      "modelEjamitByAnalysisType"       </span></span>
-<span><span class="co">## [29] "naics_counts"                     "naicstable"                      </span></span>
-<span><span class="co">## [31] "namez"                            "sictable"                        </span></span>
-<span><span class="co">## [33] "stateinfo"                        "stateinfo2"                      </span></span>
-<span><span class="co">## [35] "states_shapefile"                 "statestats"                      </span></span>
-<span><span class="co">## [37] "tables_ejscreen_acs"              "usastats"                        </span></span>
-<span><span class="co">## [39] "x_anyother"</span></span></code></pre>
+<span><span class="co">## [11] "ejscreen_arcgis_service_field"    "ejscreen_schema_extra"           </span></span>
+<span><span class="co">## [13] "epa_programs"                     "epa_programs_defined"            </span></span>
+<span><span class="co">## [15] "formulas_all"                     "formulas_d"                      </span></span>
+<span><span class="co">## [17] "formulas_ejscreen_acs"            "formulas_ejscreen_acs_disability"</span></span>
+<span><span class="co">## [19] "formulas_ejscreen_demog_index"    "frsprogramcodes"                 </span></span>
+<span><span class="co">## [21] "high_pctiles_tied_with_min"       "islandareas"                     </span></span>
+<span><span class="co">## [23] "lat_alias"                        "lon_alias"                       </span></span>
+<span><span class="co">## [25] "mact_table"                       "map_headernames"                 </span></span>
+<span><span class="co">## [27] "meters_per_mile"                  "modelDoaggregate"                </span></span>
+<span><span class="co">## [29] "modelEjamit"                      "modelEjamitByAnalysisType"       </span></span>
+<span><span class="co">## [31] "naics_counts"                     "naicstable"                      </span></span>
+<span><span class="co">## [33] "namez"                            "sictable"                        </span></span>
+<span><span class="co">## [35] "stateinfo"                        "stateinfo2"                      </span></span>
+<span><span class="co">## [37] "states_shapefile"                 "statestats"                      </span></span>
+<span><span class="co">## [39] "tables_ejscreen_acs"              "usastats"                        </span></span>
+<span><span class="co">## [41] "x_anyother"</span></span></code></pre>
 <div class="section level3">
 <h3 id="where-the-datasets-are-stored">Where the datasets are stored<a class="anchor" aria-label="anchor" href="#where-the-datasets-are-stored"></a>
 </h3>
 <p>EJAM relies on datasets mostly stored in the package itself or in a
 separate, data-related repository:</p>
 <ul>
-<li><p>Datasets stored within the EJAM package (.rda files): <a href="../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-">Documentation</a>
+<li><p>Datasets stored within the EJAM package (<code>.rda</code>
+files): <a href="../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-">Documentation</a>
 and <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data" class="external-link">access
 to package data files</a></p></li>
-<li><p>Datasets used by EJAM but stored separately (large .arrow files):
-<a href="../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-">Documentation</a>
+<li><p>Datasets used by EJAM but stored separately (large
+<code>.arrow</code> files): <a href="../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-">Documentation</a>
 and <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data" class="external-link">access
 to the large data files</a></p></li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="why-the-large-datasets-are-put-into-the-data-related-repository-using-piggyback-instead-of-committed-using-git-">Why the large datasets are put into the data-related repository
-using “piggyback” instead of committed using git.<a class="anchor" aria-label="anchor" href="#why-the-large-datasets-are-put-into-the-data-related-repository-using-piggyback-instead-of-committed-using-git-"></a>
+<h3 id="why-the-large-datasets-are-put-into-the-data-repository-using-piggyback-instead-of-committed-using-git">Why the large datasets are put into the data repository using
+piggyback instead of committed using Git<a class="anchor" aria-label="anchor" href="#why-the-large-datasets-are-put-into-the-data-repository-using-piggyback-instead-of-committed-using-git"></a>
 </h3>
 <p>As explained in the documentation for the <a href="https://docs.ropensci.org/piggyback/" class="external-link">piggyback R package</a>:</p>
 <p>“Because larger (&gt; 50 MB) data files cannot easily be committed to
@@ -200,31 +206,32 @@ is required to download data from public repositories.”</p>
 need to be changed ANNUALLY or more often:</p>
 <ul>
 <li><p><strong><em>Blockgroup Datasets (Demographic and Environmental
-data)</em></strong>: These include datasets included with the package
+Data)</em></strong>: These include datasets included with the package
 <code><a href="../reference/blockgroupstats.html">?blockgroupstats</a></code>, <a href="../reference/usastats.html">usastats</a>,
 <code><a href="../reference/statestats.html">?statestats</a></code>, and <code><a href="../reference/bgej.html">?bgej</a></code>. The annual staged
 workflow for updating these ACS/EJScreen-style blockgroup datasets is
 now documented separately in <a href="dev-update-ejscreen-datasets-yearly.html">Updating EJScreen
 Datasets Annually (via the Pipeline)</a>. That pipeline covers
-<code>bg_acs_raw</code>, <code>bg_acsdata</code>,
-<code>bg_envirodata</code>, <code>bg_extra_indicators</code>,
+<code>bg_acs_raw</code>, <code>bg_acsdata</code>, optional Island Areas
+checkpoints, <code>bg_envirodata</code>,
+<code>bg_extra_indicators</code>, <code>bg_geodata</code>,
 <code>blockgroupstats</code>, <code>bgej</code>, <code>usastats</code>,
-<code>statestats</code>, and the provisional
-<code>ejscreen_export</code> stage. This more general vignette focuses
-on the other datasets and storage/release mechanics used by
-EJAM.</p></li>
+<code>statestats</code>, <code>ejscreen_export</code>, and the optional
+<code>ejscreen_dataset_creator_input</code> stage. This more general
+vignette focuses on the other datasets and storage/release mechanics
+used by EJAM.</p></li>
 <li><p><strong><em>Block Datasets</em></strong>: The <em>block</em> (not
-blockgroup) tables might be updated less often, but Census fips codes do
+blockgroup) tables might be updated less often, but Census FIPS codes do
 change yearly so the <code><a href="../reference/blockwts.html">?blockwts</a></code>, <code><a href="../reference/blockpoints.html">?blockpoints</a></code>,
 <code><a href="../reference/quaddata.html">?quaddata</a></code>, <code><a href="../reference/blockid2fips.html">?blockid2fips</a></code>, and related
-additional data.tables should be updated as needed. This is also done
+additional data tables should be updated as needed. This is also done
 from within
-<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em> See
-package <code>census2020download</code> on github for the function
+<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em>. See
+the <code>census2020download</code> package on GitHub for the function
 <code>census2020_get_data()</code> that may be useful.</p></li>
 <li><p><strong><em>Facilities Datasets for creating updated proximity
 scores each year</em></strong>: Facility (and roadway) locations for key
-types of sites were used once a year to calculate updated several <a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators">environmental
+types of sites were used once a year to update several <a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators">environmental
 indicators that are proximity scores in EJSCREEN</a>. The resulting
 environmental indicators are stored with EJAM, but these facility
 location datasets are not stored in EJAM. EJSCREEN obtains their
@@ -232,10 +239,11 @@ locations for mapping purposes, via an API accessing <a href="https://geopub.epa
 datasets with facility locations</a>. In general, scripts for updating
 environmental indicators (including documentation of sources of facility
 location data, etc.) <a href="https://github.com/Public-Environmental-Data-Partners/EJSCREEN-Data-Processing" class="external-link">were
-stored by EPA</a>, and after 2025 new code for updating indicators may
-be found in the non-EPA source R package data-raw folder. Proximity
-scores in EJSCREEN as of 2024-2026 were calculated based on the
-locations of these types of sites:</p></li>
+stored by EPA</a>. After 2025, new code for updating indicators may be
+found in this package’s <code>data-raw/</code> folder or in related
+non-EPA source repositories. Proximity scores in EJSCREEN as of
+2024-2026 were calculated based on the locations of these types of
+sites:</p></li>
 <li><p><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#traffic-proximity-and-volume">Major
 roadways (traffic)</a></p></li>
 <li><p><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#environmental-burden-indicators">Superfund
@@ -248,7 +256,7 @@ bodies downstream of wastewater discharges</a></p></li>
 management plan (RMP) facilities</a></p></li>
 <li><p><a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#underground-storage-tanks-ust">Underground
 storage tanks (UST)</a> (for a facility density indicator, similar to a
-proximity indicator).</p></li>
+proximity indicator)</p></li>
 <li><p><strong><em>Facilities Datasets for a user to specify places to
 analyze/report on</em></strong>:</p></li>
 </ul>
@@ -256,28 +264,28 @@ analyze/report on</em></strong>:</p></li>
 specify sets of EPA-regulated facilities or other types of sites to
 analyze and report on in EJSCREEN reports, using their
 <em>NAICS/SIC/MACT/program</em> information and coordinates. All of that
-information may need frequent updates, ideally, since facilities open,
-close, relocate, or have their information corrected or otherwise
-updated. EPA’s FRS is the source for much of this information and the
-FRS is updated by EPA frequently and is available via an API. Through at
-least v2.32.8, EJAM (and therefore the community reports in EJSCREEN)
-used a snapshot of the EPA FRS data rather than using an API to obtain
-the latest info on demand – that is something that could be changed in a
+information may need frequent updates because facilities open, close,
+relocate, or have their information corrected or otherwise updated.
+EPA’s FRS is the source for much of this information and the FRS is
+updated by EPA frequently and is available via an API. Through at least
+v2.32.8, EJAM (and therefore the community reports in EJSCREEN) used a
+snapshot of the EPA FRS data rather than using an API to obtain the
+latest info on demand – that is something that could be changed in a
 future version. Facility-related info is stored in tables EJAM uses,
 such as these: <code><a href="../reference/frs.html">?frs</a></code>, <code><a href="../reference/frs_by_programid.html">?frs_by_programid</a></code>,
-<code><a href="../reference/frs_by_naics.html">?frs_by_naics</a></code>, <code><a href="../reference/frs_by_sic.html">?frs_by_sic</a></code>, and
+<code><a href="../reference/frs_by_naics.html">?frs_by_naics</a></code>, <code><a href="../reference/frs_by_sic.html">?frs_by_sic</a></code>,
 <code><a href="../reference/frs_by_mact.html">?frs_by_mact</a></code>, <code><a href="../reference/NAICS.html">?NAICS</a></code>, <code><a href="../reference/SIC.html">?SIC</a></code>,
 <code><a href="../reference/naics_counts.html">?naics_counts</a></code>, <code><a href="../reference/naicstable.html">?naicstable</a></code>, <code><a href="../reference/SIC.html">?SIC</a></code>,
 <code><a href="../reference/sictable.html">?sictable</a></code>, <code><a href="../reference/mact_table.html">?mact_table</a></code>, and
 <code><a href="../reference/epa_programs.html">?epa_programs</a></code>, <code><a href="../reference/frsprogramcodes.html">?frsprogramcodes</a></code>, etc. These
 FRS, MACT, and Program info tables of EPA-relevant data have been
 updated in the EJAM package from scripts within
-<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em> The
+<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em>. The
 <code><a href="../reference/NAICS.html">?NAICS</a></code>, <code><a href="../reference/naicstable.html">?naicstable</a></code>, and
 <code><a href="../reference/sictable.html">?sictable</a></code> objects (viewable using
 <code><a href="../reference/naics_categories.html">naics_categories()</a></code> and <code><a href="../reference/sic_categories.html">sic_categories()</a></code>
 utilities) have no EPA-specific data so they do not need frequent
-updates – The NAICS data object stores just the name of each NAICS code
+updates. The NAICS data object stores just the name of each NAICS code
 number, and new codes/names are published every five years, such as in
 2017 and 2022, so a new version would typically be expected in 2027. The
 tables called <code><a href="../reference/SIC.html">?SIC</a></code> (unlike the NAICS table) and
@@ -289,18 +297,22 @@ accident, not intentional, so it would be OK if refactoring later made
 them consistent or even switched entirely to more frequent automated
 updates or even reliance on the FRS API.</p>
 <ul>
-<li><p><code><a href="../reference/map_headernames.html">?map_headernames</a></code> and associated .xlsx, etc. store
-critical metadata. This needs to be updated especially if indicator
-names change or are added, for example. <code><a href="../reference/map_headernames.html">?map_headernames</a></code>
-holds most of the useful metadata about each variable (each indicator,
-like %low income) – e.g., how many digits to use in rounding, units, a
-long name of indicator, the type or category of indicator, sort order to
-use in reports, method of calculating aggregations of the indicator over
-blockgroups, etc. This is modified directly in the spreadsheet at
-data-raw/map_headernames____.xlsx (renamed for each package version),
-and then functions or scripts read that .xlsx to create the
-map_headernames dataset. See
-<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em></p></li>
+<li><p><code><a href="../reference/map_headernames.html">?map_headernames</a></code> stores critical metadata. This
+needs to be updated especially if indicator names change or are added.
+<code><a href="../reference/map_headernames.html">?map_headernames</a></code> holds most of the useful metadata about
+each variable (each indicator, like % low income) – e.g., how many
+digits to use in rounding, units, long and short indicator names, EJAM
+and EJScreen field names, the type or category of indicator, sort order
+to use in reports, and the method of calculating aggregations of the
+indicator over blockgroups. Older workflows edited an <code>.xlsx</code>
+file in <code>data-raw/</code> and rebuilt <code>map_headernames</code>
+from that spreadsheet. For the ACS 2024 release work, treat the current
+<code>map_headernames</code> object as the source of truth unless and
+until that source is deliberately refactored into a new audited
+CSV/JSON/R-data workflow. Do not rebuild it from an old spreadsheet or
+obsolete draft script without checking that all recent ACS 2024,
+EJScreen export, bin/text, and language-indicator metadata changes are
+preserved.</p></li>
 <li><p><a href="testdata.Rmd">Test data (inputs) and examples of
 outputs</a> may have to be updated (every time parameters change &amp;
 when outputs returned change). Those are generated by scripts/functions
@@ -309,25 +321,33 @@ referred to from
 <li><p>A default year is used in various functions, such as for the last
 year of the 5-year ACS dataset. These defaults like yr or year should be
 updated via global searches where relevant.</p></li>
-<li><p>metadata about vintage/ version is in attributes of most
-datasets. That is updated via scripts/functions used by
-<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em> via
-for example the helpers <code><a href="../reference/metadata_add.html">metadata_add()</a></code> and
-<code><a href="../reference/metadata_check.html">metadata_check()</a></code> and
-<code>metadata_mapping.R</code></p></li>
-<li><p>Version numbering is recorded in the DESCRIPTION file primarily,
-and note use of the <code>ejamdata_version.txt</code> file, and tags on
-releases, and the NEWS file.</p></li>
+<li><p>Metadata about vintage/version is stored in attributes of many
+datasets. That metadata is updated via scripts/functions that call
+helpers such as <code><a href="../reference/metadata_add.html">metadata_add()</a></code>,
+<code><a href="../reference/metadata_add_and_use_this.html">metadata_add_and_use_this()</a></code>, <code><a href="../reference/metadata_check.html">metadata_check()</a></code>,
+and <code>metadata_mapping.R</code>. For staged EJScreen annual outputs,
+the pipeline save helpers add the relevant metadata based on the
+requested pipeline year. After package data are replaced, run
+<code>EJAM:::metadata_check()</code> and
+<code>EJAM:::metadata_check_print()</code> to find stale attributes.
+Atomic name-vector objects such as many <code>names_*</code> datasets do
+not need metadata attributes.</p></li>
+<li><p>Version numbering is recorded primarily in the DESCRIPTION file,
+release tags, and the NEWS file. The legacy
+<code>ejamdata_version.txt</code> marker is still used for some dynamic
+Arrow data, but package-coupled annual data such as
+<code>bgej.arrow</code> are pinned to the EJAM package version/release
+tag.</p></li>
 <li><p><a href="dev-update-documentation.html">Updating
 documentation</a> - updates may be needed for the README, vignettes, and
 possibly examples in some functions in case updates to datasets alter
 how the examples would work.</p></li>
 </ul>
-<p>Again, all of those updates should be done starting from an
-understanding of the file called
-<code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code>. That script
-includes steps to update metadata and documentation and save new
-versions of data in the data folder if appropriate.</p>
+<p>Again, for non-pipeline datasets it is useful to understand
+<code>data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code>, because that
+script still points to many older focused data-creation scripts. For
+annual EJScreen-style blockgroup outputs, use the pipeline vignette and
+runner script as the current maintainer workflow.</p>
 <p>The information below focuses on the other type of data objects – the
 set of large <a href="https://github.com/apache/arrow/" class="external-link">arrow</a> files that are stored outside the
 package code repository.</p>
@@ -336,38 +356,37 @@ package code repository.</p>
 <h3 id="repository-that-stores-the-large-arrow-files">Repository that stores the large arrow files<a class="anchor" aria-label="anchor" href="#repository-that-stores-the-large-arrow-files"></a>
 </h3>
 <p>Several large <a href="https://r-datatable.com" class="external-link">data.table</a> files are not installed as
-part of the R package in the typical /data/ folder that contains .rda
-files lazyloaded by the package. Instead, they are kept in a separate
-github repository that we refer to here as the data repository.</p>
+part of the R package in the typical <code>/data/</code> folder that
+contains <code>.rda</code> files lazy-loaded by the package. Instead,
+they are kept in a separate GitHub repository that we refer to here as
+the data repository.</p>
 <p><em>IMPORTANT:</em> The name of the <em>data</em> repository (as
-distinct from the <em>package code</em> repository) must be recorded/
-updated in the EJAM package DESCRIPTION file, so that the package will
-know where to look for the data files if the datasets were moved to a
-new repository, for example. The current (either installed or loaded
-source version) of that repository is <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>
-(which can be checked via
-<code>url_package(type = "data", get_full_url = TRUE)</code>)</p>
+distinct from the <em>package code</em> repository) must be
+recorded/updated in the EJAM package <code>DESCRIPTION</code> file, so
+that the package knows where to look for the data files if the datasets
+are moved to a new repository. The current data repository for the
+installed or loaded source version is <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>,
+which can be checked with
+<code>url_package(type = "data", get_full_url = TRUE)</code>.</p>
 </div>
 <div class="section level3">
-<h3 id="arrow-package-and-arrow-file-format">arrow package and arrow file format<a class="anchor" aria-label="anchor" href="#arrow-package-and-arrow-file-format"></a>
+<h3 id="arrow-package-and-arrow-file-format">Arrow Package and Arrow File Format<a class="anchor" aria-label="anchor" href="#arrow-package-and-arrow-file-format"></a>
 </h3>
 <p>To store the large files needed by the EJAM package, we use the
 Apache arrow file format through the <a href="https://github.com/apache/arrow/" class="external-link">arrow</a> R package,
 with file extension <code>.arrow</code>. This allows us to work with
 larger-than-memory data and store it outside of the EJAM package
 itself.</p>
-<p>Earlier versions of EJAM did not use the actual Arrow format, so
-there still may be places in the code that simply use the xyz.arrow
-filename but not the actual arrow format that is faster, and those would
-ideally get updated. For example the object called
-<code>frs_arrow</code> is the faster format of what had been called the
-<code><a href="../reference/frs.html">?frs</a></code> dataset.</p>
-<p>The names of these tables should be listed in a file called
-<code>R/arrow_ds_names.R</code> and the global variable called
-.arrow_ds_names that is used by functions like
+<p>Earlier versions of EJAM used the <code>.arrow</code> filename more
+loosely. Current dynamic datasets should be real Arrow IPC files. For
+example, the object called <code>frs_arrow</code> is the Arrow-backed
+version of what had been called the <code><a href="../reference/frs.html">?frs</a></code> dataset.</p>
+<p>The names of these tables should be listed in
+<code>R/arrow_ds_names.R</code> and in the global variable called
+<code>.arrow_ds_names</code>, which is used by functions like
 <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> and
 <code><a href="../reference/dataload_from_local.html">dataload_from_local()</a></code>.</p>
-<p>These were the arrow files used by EJAM:</p>
+<p>These are the Arrow files used by EJAM:</p>
 </div>
 <div class="section level3">
 <h3 id="arrow-file-update-groups">Arrow file update groups<a class="anchor" aria-label="anchor" href="#arrow-file-update-groups"></a>
@@ -442,7 +461,7 @@ code(s) for each EPA-regulated site in Facility Registry Service</li>
 <code><a href="../reference/frs_by_sic.html">?frs_by_sic</a></code>.arrow: data.table of SIC industry code(s)
 for each EPA-regulated site in Facility Registry Service</li>
 <li>
-<code>?frs_by_programid.arrow</code>: data.table of Program System
+<code><a href="../reference/frs_by_programid.html">?frs_by_programid</a></code>.arrow: data.table of Program System
 ID code(s) for each EPA-regulated site in the Facility Registry
 Service</li>
 <li>
@@ -457,24 +476,25 @@ that categorize relevant EPA-regulated sites</a>
 <h2 id="developmentsetup">Development/Setup<a class="anchor" aria-label="anchor" href="#developmentsetup"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li><p>The arrow files are stored in a separate, public, Git-LFS-enabled
-GitHub repo (henceforth ‘ejamdata’). The owner/reponame must be
-recorded/updated in the DESCRIPTION file field called ejam_data_repo
-(which can be checked via
-<code>url_package(type = "data", get_full_url = TRUE)</code>) – that
-info is used by the package.</p></li>
-<li><p>Then, and any time the arrow datasets are updated, we update the
-ejamdata release version via the <code>.github/push_to_ejam.yaml</code>
-workflow in the ejamdata repo, thereby saving the arrow files with the
-release, to be downloaded automatically by EJAM</p></li>
+<li><p>The Arrow files are stored as release assets in a separate public
+GitHub repository (referred to here as <code>ejamdata</code>). The
+owner/repository name must be recorded/updated in the
+<code>DESCRIPTION</code> field called <code>ejam_data_repo</code>, which
+can be checked with
+<code>url_package(type = "data", get_full_url = TRUE)</code>. EJAM uses
+that information to find the dynamic data files.</p></li>
+<li><p>Any time the Arrow datasets are updated, create or update an
+<code>ejamdata</code> release and upload the <code>.arrow</code> files
+as release assets. The old <code>.github/push_to_ejam.yaml</code>
+workflow is not the current update path.</p></li>
 <li><p>EJAM’s <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code> function does
 the following:</p></li>
 </ol>
 <!-- --><ol style="list-style-type: lower-alpha">
-<li>For facility and most geography Arrow files, checks data repo’s
-latest release/version.</li>
-<li>Checks user’s EJAM package’s ejamdata version, which is stored in
-<code>data/ejamdata_version.txt</code>.</li>
+<li>For facility and most geography Arrow files, checks the data
+repository’s latest release/version.</li>
+<li>Checks the user’s EJAM package’s <code>ejamdata</code> version,
+which is stored in <code>data/ejamdata_version.txt</code>.</li>
 <li>If the <code>data/ejamdata_version.txt</code> file doesn’t exist,
 for example on the first EJAM install, it will be created at the end of
 the script.</li>
@@ -494,9 +514,9 @@ works for details:</li>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
-<li>We add a call to this function in the onAttach script (via the
-<code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> function) so it runs and ensures the
-latest arrow files are downloaded when user loads EJAM.</li>
+<li>EJAM calls this logic from the attach/startup path through
+<code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> so the needed Arrow files are available
+when a user loads EJAM or starts the app.</li>
 </ol>
 </div>
 <div class="section level2">
@@ -515,28 +535,29 @@ latest arrow files are downloaded when user loads EJAM.</li>
 </ol>
 <!-- --><ul>
 <li>
-<code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code>. This will trigger the new
-<code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code> function.</li>
+<code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code>. This triggers the dynamic-data checks
+needed for startup.</li>
 </ul>
 <!-- --><ol start="3" style="list-style-type: decimal">
 <li>User runs EJAM as usual</li>
 </ol>
 <!-- --><ul>
 <li>The <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> function will work as usual
-because the data are now stored in the <code>data</code> directory.</li>
+because the needed <code>.arrow</code> files are cached locally after
+they are downloaded.</li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="how-new-versions-of-arrow-datasets-are-republished-released">How new versions of arrow datasets are republished / released<a class="anchor" aria-label="anchor" href="#how-new-versions-of-arrow-datasets-are-republished-released"></a>
+<h2 id="how-new-versions-of-arrow-datasets-are-republished-released">How New Versions of Arrow Datasets Are Republished / Released<a class="anchor" aria-label="anchor" href="#how-new-versions-of-arrow-datasets-are-republished-released"></a>
 </h2>
-<p>First, update the key arrow files within the EJAM code repository, as
-explained above.</p>
+<p>First, create the key Arrow files locally or from the relevant
+pipeline output, as explained above.</p>
 <p>As mentioned above, we use <a href="https://docs.ropensci.org/piggyback/index.html" class="external-link">the piggyback
 package</a> to place large datasets in the assets of a new release on
 the <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>
-repository, rather than committing via git. Therefore, new datasets to
-be provided via the ejamdata repository should be submitted/updated as
-follows:</p>
+repository, rather than committing them with Git. Therefore, new
+datasets to be provided via the <code>ejamdata</code> repository should
+be submitted/updated as follows:</p>
 <p>Create a new release number for the data repository</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/piggyback" class="external-link">piggyback</a></span><span class="op">)</span></span>
@@ -547,14 +568,17 @@ follows:</p>
 <span></span>
 <span><span class="co"># You can go to the repo and manually create a new release using a web browser, </span></span>
 <span><span class="co"># or try using piggyback: </span></span>
-<span><span class="co"># Requires github token with permissions!</span></span>
+<span><span class="co"># Requires GitHub token with permissions!</span></span>
 <span><span class="fu">piggyback</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/piggyback/reference/pb_release_create.html" class="external-link">pb_release_create</a></span><span class="op">(</span></span>
 <span>  tag <span class="op">=</span> <span class="va">release_number</span>,</span>
 <span>  repo <span class="op">=</span> <span class="va">owner_repo</span></span>
 <span>  <span class="co"># and optionally a release name and description</span></span>
 <span><span class="op">)</span> </span></code></pre></div>
-<p>Make sure all the new data objects are available as .arrow format
-files.</p>
+<p>Make sure the intended new data objects are available as
+<code>.arrow</code> files. For an annual EJSCREEN data release,
+<code>bgej.arrow</code> is the critical package-coupled asset and must
+match the package version/release tag. Facility and geography Arrow
+files may be carried forward unchanged if they are still compatible.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/piggyback" class="external-link">piggyback</a></span><span class="op">)</span></span>
 <span></span>
@@ -574,11 +598,11 @@ files.</p>
 <span>    <span class="va">some_not_here</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">}</span></span>
 <span><span class="op">}</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="va">some_not_here</span><span class="op">)</span> <span class="op">{</span><span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Please make sure all the new .arrow data files are available before running this code."</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="va">some_not_here</span><span class="op">)</span> <span class="op">{</span><span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Please make sure all new .arrow data files are available before running this code."</span><span class="op">)</span><span class="op">}</span></span>
 <span><span class="co"># dput(filenames_arrow)</span></span>
 <span></span>
-<span><span class="co"># the .rda files  are NOT there as assets</span></span></code></pre></div>
-<p>Upload each dataset object as a dataset file</p>
+<span><span class="co"># The .rda files are NOT there as assets.</span></span></code></pre></div>
+<p>Upload each dataset file as a release asset:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/piggyback" class="external-link">piggyback</a></span><span class="op">)</span></span>
 <span></span>
@@ -590,30 +614,31 @@ files.</p>
 <span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="va">filepaths_arrow</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">filepaths_arrow</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"uploading "</span>, <span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span>  <span class="fu">piggyback</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/piggyback/reference/pb_upload.html" class="external-link">pb_upload</a></span><span class="op">(</span><span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, repo <span class="op">=</span> <span class="va">owner_repo</span><span class="op">)</span> </span>
-<span>  <span class="co"># that defaults to use the tag (release_number) you just created</span></span>
+<span>  <span class="fu">piggyback</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/piggyback/reference/pb_upload.html" class="external-link">pb_upload</a></span><span class="op">(</span></span>
+<span>    <span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    repo <span class="op">=</span> <span class="va">owner_repo</span>,</span>
+<span>    tag <span class="op">=</span> <span class="va">release_number</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Open browser to confirm they are there</p>
+<p>Open a browser to confirm they are there.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, <span class="st">"/releases"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Reload EJAM so it can get the updates. It should detect that new
-versions are available and will get them to store with the installed
-package.</p>
+versions are available and cache them for the installed package.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span>list<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Confirm they all can be loaded into memory now</span></span>
+<span><span class="co"># Confirm they all can be opened as Arrow-backed objects</span></span>
 <span><span class="co"># as arrow files:</span></span>
 <span><span class="fu"><a href="../reference/dataload_dynamic.html">dataload_dynamic</a></span><span class="op">(</span><span class="st">"all"</span>, return_data_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co"># as .rda files:</span></span>
+<span><span class="co"># or read into memory as data.table/data.frame objects:</span></span>
 <span><span class="fu"><a href="../reference/dataload_dynamic.html">dataload_dynamic</a></span><span class="op">(</span><span class="st">"all"</span>, return_data_table <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Note that this previously had been handled with a github actions
-workflow that tried use LFS and upon a commit of new dataset files to
-the data repo it would automatically update the release number, create a
-release, and include the new files in the release (but not as individual
-assets). It had been called <code>push_to_ejam.yaml</code> but is no
-longer used.</p>
+<p>This previously had been handled with a GitHub Actions workflow that
+tried to use Git LFS. Upon a commit of new dataset files to the data
+repository, it would automatically update the release number, create a
+release, and include the new files in the release. That workflow was
+called <code>push_to_ejam.yaml</code>, but it is no longer used.</p>
 </div>
 <div class="section level2">
 <h2 id="potential-improvements">Potential Improvements<a class="anchor" aria-label="anchor" href="#potential-improvements"></a>
@@ -621,20 +646,22 @@ longer used.</p>
 <div class="section level3">
 <h3 id="making-more-of-the-code-more-arrow-friendly">Making More of the Code More Arrow-Friendly<a class="anchor" aria-label="anchor" href="#making-more-of-the-code-more-arrow-friendly"></a>
 </h3>
-<p>Problem: loading the data as tibbles/dataframes takes a long time</p>
-<p>Solution: We may be able to modify more of our code to be more arrow
--friendly. This essentially keeps the analysis code as a sort of query,
-and only actually loads the results into memory when requested (e.g.,
-via <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::collect()</a></code>) This dramatically reduces used
-memory, which would speed up processing times and avoid potential
-crashes resulting from not enough memory. However, this would require a
-decent lift to update the code in all places.</p>
-<p>Pros: processing efficiency, significantly reduced memory usage</p>
+<p>Problem: loading the data as tibbles/data frames takes a long
+time.</p>
+<p>Solution: We may be able to modify more of our code to be more
+Arrow-friendly. This essentially keeps the analysis code as a sort of
+query, and only actually loads the results into memory when requested
+(e.g., via <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::collect()</a></code>). This dramatically reduces
+memory usage, which would speed up processing times and avoid potential
+crashes resulting from insufficient memory. However, this would require
+a decent lift to update the code in all places.</p>
+<p>Pros: processing efficiency and significantly reduced memory
+usage.</p>
 <p>Implementation: This has been mostly implemented by the
 <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> function, which contains a
 <code>return_data_table</code> parameter. If <code>FALSE</code>, the
-arrow file is loaded as an .arrow dataset, rather than a
-tibble/dataframe.</p>
+Arrow file is opened as an Arrow-backed object rather than read fully
+into a data.table/data.frame.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
