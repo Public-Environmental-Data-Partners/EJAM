@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.32.8.001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,6 +86,7 @@
 <span>  endpoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"report"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  browse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ejamit_format <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  fileextension <span class="op">=</span> <span class="st">"html"</span>,</span>
 <span>  dry_run <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -148,8 +149,9 @@ or all blockgroups in specified County fips.</p></dd>
 
 <dt id="arg-endpoint">endpoint<a class="anchor" aria-label="anchor" href="#arg-endpoint"></a></dt>
 <dd><p>"data" or "report":
-"data" will return EJAM analysis data for one or more places, and
-"report" will generate one EJAM report in HTML format for one place (until the API supports summary analysis over multiple locations)</p></dd>
+"data" will return EJAM analysis data as a data.frame for one or more places, and
+"report" will generate the EJAM report in HTML format for one place
+(or PDF format if fileextension = "pdf")</p></dd>
 
 
 <dt id="arg-browse">browse<a class="anchor" aria-label="anchor" href="#arg-browse"></a></dt>
@@ -165,6 +167,10 @@ the API does not return a summary overall across sites, so results_overall will
 be just a placeholder, for the first site, not an overall summary across all sites.</p></dd>
 
 
+<dt id="arg-fileextension">fileextension<a class="anchor" aria-label="anchor" href="#arg-fileextension"></a></dt>
+<dd><p>can be "html" or "pdf", only relevant if  endpoint = "report"</p></dd>
+
+
 <dt id="arg-dry-run">dry_run<a class="anchor" aria-label="anchor" href="#arg-dry-run"></a></dt>
 <dd><p>set to TRUE to see preview info about what the API call would look like.</p></dd>
 
@@ -176,7 +182,8 @@ and passed to <code><a href="url_ejamapi.html">url_ejamapi()</a></code> in the "
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>data.frame if using data endpoint, list of html reports if using report endpoint,
+    <p>data.frame if using data endpoint, list of html reports if using report endpoint
+and fileextension is "html" but a vector of file paths if it is "pdf",
 or if ejamit_format=TRUE and "data" is the endpoint, returns a named list somewhat like
 output of <code><a href="ejamit.html">ejamit()</a></code> so it can work in some functions like <code><a href="ejam2report.html">ejam2report()</a></code>.
 If dry_run=TRUE, for the "data" endpoint, the request itself, via the httr2 package, is returned,
@@ -196,6 +203,103 @@ the EJAM package version of this function uses <code><a href="url_ejamapi.html">
 to convert the parameters to a URL for the API as a GET request to obtain an HTML report.
 <a href="https://gist.github.com/ejanalysis/fa588f8f4cf993fe43fb03fe990176e1" class="external-link">A standalone version of this function</a>,
 for people who do not install the EJAM package, uses a copy of the necessary functions.</p>
+<p>Attribute-based query examples:</p>
+<p><strong>1) R user with EJAM installed (using API, with local-only alternatives noted)</strong></p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="st">"https://ejamapi-84652557241.us-central1.run.app"</span></span>
+<span></span>
+<span><span class="co"># API: blockgroups where raw pctlowinc is at least 50%</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/ejamapi.html">ejamapi</a></span><span class="op">(</span>fips <span class="op">=</span> <span class="st">"10001"</span>, scale <span class="op">=</span> <span class="st">"blockgroup"</span>, endpoint <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
+<span><span class="va">x_raw</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">pctlowinc</span> <span class="op">&gt;=</span> <span class="fl">0.50</span>, <span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Local alternative (no API needed): EJAM::blockgroupstats[EJAM::blockgroupstats$pctlowinc &gt;= 0.50, ]</span></span>
+<span></span>
+<span><span class="co"># API query endpoint: blockgroups where Demog.Index percentile is at least 95</span></span>
+<span><span class="va">q_demog</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"/query"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_body.html" class="external-link">req_body_json</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>attribute <span class="op">=</span> <span class="st">"pctile.Demog.Index"</span>, value <span class="op">=</span> <span class="fl">95</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="va">q_demog</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span>simplifyVector <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Local alternative (no API needed): use helper that maps percentile cutoffs to raw cutoffs</span></span>
+<span><span class="va">idx95</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/pctile_x_is_hit_by_score.html">pctile_x_is_hit_by_score</a></span><span class="op">(</span><span class="st">"Demog.Index"</span>, cutoff <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="va">local_demog95</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="../reference/blockgroupstats.html">blockgroupstats</a></span><span class="op">[</span><span class="va">idx95</span>, <span class="op">]</span></span>
+<span></span>
+<span><span class="co"># API: blockgroups where at least N of state EJ index percentiles are &gt;= 80</span></span>
+<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">6L</span></span>
+<span><span class="co"># example matched column format: state.pctile.EJ...</span></span>
+<span><span class="va">ej_state_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^state\\.pctile\\.EJ"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">x_n_ej</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="va">ej_state_cols</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span> <span class="op">&gt;=</span> <span class="fl">80</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">N</span>, <span class="op">]</span></span></code></pre><p></p></div>
+<p><strong>2) R user without EJAM installed (API-only via httr2/jsonlite)</strong></p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://httr2.r-lib.org" class="external-link">httr2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeroen.r-universe.dev/jsonlite" class="external-link">jsonlite</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">base</span> <span class="op">&lt;-</span> <span class="st">"https://ejamapi-84652557241.us-central1.run.app"</span></span>
+<span></span>
+<span><span class="co"># get blockgroup-level rows for a county</span></span>
+<span><span class="va">req_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"/data"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://httr2.r-lib.org/reference/req_body.html" class="external-link">req_body_json</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fips <span class="op">=</span> <span class="st">"10001"</span>, scale <span class="op">=</span> <span class="st">"blockgroup"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_string</a></span><span class="op">(</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="va">req_data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># raw pctlowinc &gt;= 50%</span></span>
+<span><span class="va">dat_raw</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">pctlowinc</span> <span class="op">&gt;=</span> <span class="fl">0.50</span>, <span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Demog.Index percentile &gt;= 95 (query endpoint)</span></span>
+<span><span class="va">req_demog</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"/query"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://httr2.r-lib.org/reference/req_body.html" class="external-link">req_body_json</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>attribute <span class="op">=</span> <span class="st">"pctile.Demog.Index"</span>, value <span class="op">=</span> <span class="fl">95</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dat_demog</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_string</a></span><span class="op">(</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="va">req_demog</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># at least N state EJ index percentiles &gt;= 80</span></span>
+<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">6L</span></span>
+<span><span class="co"># example matched column format: state.pctile.EJ...</span></span>
+<span><span class="va">ej_state_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^state\\.pctile\\.EJ"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">dat_n_ej</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span>, <span class="va">ej_state_cols</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span> <span class="op">&gt;=</span> <span class="fl">80</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">N</span>, <span class="op">]</span></span></code></pre><p></p></div>
+<p><strong>3) Python user (API via requests/pandas)</strong></p>
+<p></p><div class="sourceCode python"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>base <span class="op">=</span> <span class="st">"https://ejamapi-84652557241.us-central1.run.app"</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>dat <span class="op">=</span> pd.DataFrame(requests.post(</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="ss">f"</span><span class="sc">{</span>base<span class="sc">}</span><span class="ss">/data"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    json<span class="op">=</span>{<span class="st">"fips"</span>: <span class="st">"10001"</span>, <span class="st">"scale"</span>: <span class="st">"blockgroup"</span>}</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>).json())</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># raw pctlowinc &gt;= 50%</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>dat_raw <span class="op">=</span> dat[dat[<span class="st">"pctlowinc"</span>] <span class="op">&gt;=</span> <span class="fl">0.50</span>]</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co"># Demog.Index percentile &gt;= 95 (query endpoint)</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>demog95 <span class="op">=</span> pd.DataFrame(requests.post(</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="ss">f"</span><span class="sc">{</span>base<span class="sc">}</span><span class="ss">/query"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>    json<span class="op">=</span>{<span class="st">"attribute"</span>: <span class="st">"pctile.Demog.Index"</span>, <span class="st">"value"</span>: <span class="dv">95</span>}</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>).json())</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co"># at least N state EJ index percentiles &gt;= 80</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>ej_state_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> dat.columns <span class="cf">if</span> c.startswith(<span class="st">"state.pctile.EJ"</span>)]</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>dat_n_ej <span class="op">=</span> dat[(dat[ej_state_cols] <span class="op">&gt;=</span> <span class="dv">80</span>).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">&gt;=</span> N]</span></code></pre><p></p></div>
+<p><strong>4) Terminal user (API via curl + jq)</strong></p>
+<p></p><div class="sourceCode bash"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="va">BASE</span><span class="op">=</span><span class="st">"https://ejamapi-84652557241.us-central1.run.app"</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># get blockgroup-level rows for one county</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-X</span> POST <span class="st">"</span><span class="va">$BASE</span><span class="st">/data"</span> <span class="at">-H</span> <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{"fips":"10001","scale":"blockgroup"}'</span> <span class="op">&gt;</span> data.json</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># raw pctlowinc &gt;= 50%</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="ex">jq</span> <span class="st">'.[] | select(.pctlowinc &gt;= 0.50)'</span> data.json</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># Demog.Index percentile &gt;= 95 (query endpoint)</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-X</span> POST <span class="st">"</span><span class="va">$BASE</span><span class="st">/query"</span> <span class="at">-H</span> <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{"attribute":"pctile.Demog.Index","value":95}'</span> <span class="op">&gt;</span> demog95.json</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co"># at least N state EJ index percentiles &gt;= 80</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="va">N</span><span class="op">=</span>6</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="ex">jq</span> <span class="at">--argjson</span> N <span class="st">"</span><span class="va">$N</span><span class="st">"</span> <span class="st">'</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="st">  .[] | select(</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="st">    ([to_entries[]</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="st">      | select(.key | test("^state\\.pctile\\.EJ"))</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="st">      | .value</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="st">      | select(type == "number" and . &gt;= 80)] | length) &gt;= $N</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="st">  )</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="st">'</span> data.json</span></code></pre><p></p></div>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -204,60 +308,95 @@ for people who do not install the EJAM package, uses a copy of the necessary fun
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># also see ?EJAM::url_ejamapi()</span></span>
-<span><span class="va">eg</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
-<span></span>
-<span><span class="co"># one blockgroup</span></span>
-<span><span class="va">xbg1</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>fips<span class="op">=</span><span class="st">"050014801001"</span>, endpoint<span class="op">=</span><span class="st">'report'</span>, dry_run<span class="op">=</span><span class="va">eg</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">eg</span><span class="op">)</span> <span class="op">{</span></span>
-<span><span class="co"># all blockgroups in 1 county</span></span>
-<span><span class="va">xcounty</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>fips<span class="op">=</span><span class="st">"10001"</span>, scale<span class="op">=</span><span class="st">"blockgroup"</span>, endpoint <span class="op">=</span> <span class="st">"data"</span>, dry_run<span class="op">=</span><span class="va">eg</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">xcounty</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># one point</span></span>
-<span><span class="va">xpoint1</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">45</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">118</span>,</span>
-<span>  endpoint <span class="op">=</span> <span class="st">'report'</span>, buffer <span class="op">=</span> <span class="fl">3.1</span>, dry_run <span class="op">=</span> <span class="va">eg</span><span class="op">)</span></span>
-<span><span class="fu">htmltools</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/htmltools/reference/html_print.html" class="external-link">html_print</a></span><span class="op">(</span><span class="va">xpoint1</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># multiple points</span></span>
-<span><span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">44</span>,<span class="fl">45</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">117</span>,<span class="op">-</span><span class="fl">118</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">y2a</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>sites <span class="op">=</span> <span class="va">pts</span>, buffer <span class="op">=</span> <span class="fl">3.1</span>, endpoint <span class="op">=</span> <span class="st">'data'</span>, dry_run<span class="op">=</span><span class="va">eg</span><span class="op">)</span></span>
-<span><span class="va">y2a</span><span class="op">[</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">14</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co"># map the results</span></span>
-<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/mapview/reference/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
-<span> <span class="va">y2a</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">15</span><span class="op">]</span>,</span>
-<span> coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4286</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># format like ejamit() output, to be able to use ejam2xyz functions</span></span>
-<span><span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">37.64122</span>, <span class="fl">43.92249</span><span class="op">)</span>,</span>
-<span>  lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">122.41065</span>, <span class="op">-</span><span class="fl">72.663705</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">y2</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>sites<span class="op">=</span><span class="va">pts</span>, buffer<span class="op">=</span><span class="fl">3.1</span>, endpoint<span class="op">=</span><span class="st">"data"</span>, dry_run<span class="op">=</span><span class="va">eg</span>,</span>
-<span>  ejamit_format <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">y2</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># to map the results without using EJAM functions:</span></span>
-<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/mapview/reference/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
-<span>  <span class="va">y2</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">15</span><span class="op">]</span>,</span>
-<span>  coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4286</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># using EJAM functions to see a report even if data endpoint had been used:</span></span>
-<span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">y2</span>, sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">y2</span>, sitenumber <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">zz</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="ejam2table_tall.html">ejam2table_tall</a></span><span class="op">(</span><span class="va">y2</span>, sitenumber <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">zz</span>, <span class="fl">50</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># also see ?EJAM::url_ejamapi()</span></span></span>
+<span class="r-in"><span><span class="va">eg</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># one blockgroup</span></span></span>
+<span class="r-in"><span><span class="va">xbg1</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>fips<span class="op">=</span><span class="st">"050014801001"</span>, endpoint<span class="op">=</span><span class="st">'report'</span>, dry_run<span class="op">=</span><span class="va">eg</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in stopifnot(all(fileextension %in% c("html", "pdf")), ):</span> argument is missing, with no default</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># attribute-based query endpoint examples in live EJAM API:</span></span></span>
+<span class="r-in"><span><span class="va">qreq1</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="st">"https://ejamapi-84652557241.us-central1.run.app/query"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_body.html" class="external-link">req_body_json</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>attribute <span class="op">=</span> <span class="st">"pctunemployed"</span>, value <span class="op">=</span> <span class="fl">0.90</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_dry_run.html" class="external-link">req_dry_run</a></span><span class="op">(</span><span class="va">qreq1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> POST /query HTTP/1.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">accept</span>: */*</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">accept-encoding</span>: deflate, gzip</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">content-length</span>: 57</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">content-type</span>: application/json</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">host</span>: ejamapi-84652557241.us-central1.run.app</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">user-agent</span>: httr2/1.2.2 r-curl/7.1.0 libcurl/8.14.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "attribute": "pctunemployed",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "value": 0.90000000000000002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">qreq2</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="st">"https://ejamapi-84652557241.us-central1.run.app/query"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_body.html" class="external-link">req_body_json</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>attribute <span class="op">=</span> <span class="st">"pctlowinc"</span>, value <span class="op">=</span> <span class="fl">0.80</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_dry_run.html" class="external-link">req_dry_run</a></span><span class="op">(</span><span class="va">qreq2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> POST /query HTTP/1.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">accept</span>: */*</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">accept-encoding</span>: deflate, gzip</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">content-length</span>: 53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">content-type</span>: application/json</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">host</span>: ejamapi-84652557241.us-central1.run.app</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">user-agent</span>: httr2/1.2.2 r-curl/7.1.0 libcurl/8.14.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "attribute": "pctlowinc",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "value": 0.80000000000000004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">eg</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># all blockgroups in 1 county</span></span></span>
+<span class="r-in"><span><span class="va">xcounty</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>fips<span class="op">=</span><span class="st">"10001"</span>, scale<span class="op">=</span><span class="st">"blockgroup"</span>, endpoint <span class="op">=</span> <span class="st">"data"</span>, dry_run<span class="op">=</span><span class="va">eg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">xcounty</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># one point</span></span></span>
+<span class="r-in"><span><span class="va">xpoint1</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">45</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">118</span>,</span></span>
+<span class="r-in"><span>  endpoint <span class="op">=</span> <span class="st">'report'</span>, buffer <span class="op">=</span> <span class="fl">3.1</span>, dry_run <span class="op">=</span> <span class="va">eg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">htmltools</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/htmltools/reference/html_print.html" class="external-link">html_print</a></span><span class="op">(</span><span class="va">xpoint1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># multiple points</span></span></span>
+<span class="r-in"><span><span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">44</span>,<span class="fl">45</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">117</span>,<span class="op">-</span><span class="fl">118</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y2a</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>sites <span class="op">=</span> <span class="va">pts</span>, buffer <span class="op">=</span> <span class="fl">3.1</span>, endpoint <span class="op">=</span> <span class="st">'data'</span>, dry_run<span class="op">=</span><span class="va">eg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y2a</span><span class="op">[</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">14</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># map the results</span></span></span>
+<span class="r-in"><span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/mapview/reference/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="va">y2a</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">15</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span> coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4286</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># format like ejamit() output, to be able to use ejam2xyz functions</span></span></span>
+<span class="r-in"><span><span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">37.64122</span>, <span class="fl">43.92249</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">122.41065</span>, <span class="op">-</span><span class="fl">72.663705</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y2</span> <span class="op">=</span> <span class="fu">ejamapi</span><span class="op">(</span>sites<span class="op">=</span><span class="va">pts</span>, buffer<span class="op">=</span><span class="fl">3.1</span>, endpoint<span class="op">=</span><span class="st">"data"</span>, dry_run<span class="op">=</span><span class="va">eg</span>,</span></span>
+<span class="r-in"><span>  ejamit_format <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">y2</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># to map the results without using EJAM functions:</span></span></span>
+<span class="r-in"><span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/mapview/reference/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">y2</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">15</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4286</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># using EJAM functions to see a report even if data endpoint had been used:</span></span></span>
+<span class="r-in"><span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">y2</span>, sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">y2</span>, sitenumber <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">zz</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="ejam2table_tall.html">ejam2table_tall</a></span><span class="op">(</span><span class="va">y2</span>, sitenumber <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">zz</span>, <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>April 2026</p>
+  <p>May 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.32.8</p>
+  <p>EJAM Version 2.32.8.001</p>
 </div>
 
     </footer></div>
