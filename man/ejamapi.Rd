@@ -20,6 +20,7 @@ ejamapi(
   endpoint = c("data", "report")[1],
   browse = TRUE,
   ejamit_format = FALSE,
+  fileextension = "html",
   dry_run = FALSE,
   ...
 )
@@ -61,8 +62,9 @@ or all blockgroups in specified County fips.}
 \item{baseurl}{the URL and endpoint of the API}
 
 \item{endpoint}{"data" or "report":
-"data" will return EJAM analysis data for one or more places, and
-"report" will generate one EJAM report in HTML format for one place (until the API supports summary analysis over multiple locations)}
+"data" will return EJAM analysis data as a data.frame for one or more places, and
+"report" will generate the EJAM report in HTML format for one place
+(or PDF format if fileextension = "pdf")}
 
 \item{browse}{for endpoint="report", set TRUE to launch a browser to view the report
 (in addition to getting the html as output of the function)}
@@ -73,13 +75,16 @@ but importantly note (until the API supports summary analysis over multiple loca
 the API does not return a summary overall across sites, so results_overall will
 be just a placeholder, for the first site, not an overall summary across all sites.}
 
+\item{fileextension}{can be "html" or "pdf", only relevant if  endpoint = "report"}
+
 \item{dry_run}{set to TRUE to see preview info about what the API call would look like.}
 
 \item{...}{other parameters, passed to \code{\link[httr2:req_body_json]{httr2::req_body_json()}} in the "data" case,
 and passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case}
 }
 \value{
-data.frame if using data endpoint, list of html reports if using report endpoint,
+data.frame if using data endpoint, list of html reports if using report endpoint
+and fileextension is "html" but a vector of file paths if it is "pdf",
 or if ejamit_format=TRUE and "data" is the endpoint, returns a named list somewhat like
 output of \code{ejamit()} so it can work in some functions like \code{ejam2report()}.
 If dry_run=TRUE, for the "data" endpoint, the request itself, via the httr2 package, is returned,

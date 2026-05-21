@@ -177,8 +177,9 @@
 #' @param baseurl the URL and endpoint of the API
 #'
 #' @param endpoint "data" or "report":
-#'   "data" will return EJAM analysis data for one or more places, and
-#'   "report" will generate one EJAM report in HTML format for one place (until the API supports summary analysis over multiple locations)
+#'   "data" will return EJAM analysis data as a data.frame for one or more places, and
+#'   "report" will generate the EJAM report in HTML format for one place
+#'   (or PDF format if fileextension = "pdf")
 #'
 #' @param browse for endpoint="report", set TRUE to launch a browser to view the report
 #'   (in addition to getting the html as output of the function)
@@ -187,6 +188,7 @@
 #'   but importantly note (until the API supports summary analysis over multiple locations)
 #'   the API does not return a summary overall across sites, so results_overall will
 #'   be just a placeholder, for the first site, not an overall summary across all sites.
+#' @param fileextension can be "html" or "pdf", only relevant if  endpoint = "report"
 #' @param ... other parameters, passed to [httr2::req_body_json()] in the "data" case,
 #'   and passed to [EJAM::url_ejamapi()] in the "report" case
 #' @param dry_run set to TRUE to see preview info about what the API call would look like.
@@ -244,7 +246,8 @@
 #' zz = EJAM::ejam2table_tall(y2, sitenumber = 2)
 #' head(zz, 50)
 #' }
-#' @return data.frame if using data endpoint, list of html reports if using report endpoint,
+#' @return data.frame if using data endpoint, list of html reports if using report endpoint
+#'   and fileextension is "html" but a vector of file paths if it is "pdf",
 #'   or if ejamit_format=TRUE and "data" is the endpoint, returns a named list somewhat like
 #'   output of `ejamit()` so it can work in some functions like `ejam2report()`.
 #'   If dry_run=TRUE, for the "data" endpoint, the request itself, via the httr2 package, is returned,
@@ -264,11 +267,14 @@ ejamapi <- function(
     endpoint = c("data", "report")[1],
     browse = TRUE,
     ejamit_format = FALSE,
+    fileextension = "html",
     dry_run = FALSE,
     ...
 ) {
   # API repo at https://github.com/edgi-govdata-archiving/EJAM-API/blob/main/rest_controller.r
 
+  if (is.null(fileextension)) {fileextension <- "html"}
+  stopifnot(all(fileextension %in% c('html', 'pdf')), )
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {
     ejam_functions_available <- !dotz$no_ejam
@@ -420,7 +426,7 @@ ejamapi <- function(
       latlon_length_mismatch <- !is.null(lat) && !is.null(lon) && length(lat) != length(lon)
       if (length(lat) > 1 || length(lon) > 1 || latlon_length_mismatch ||
           length(fips) > 1 || NROW(shape) > 1) {
-        stop("does not yet support multiple places for endpoint='report' ")
+        warning("may not yet support multiple places for endpoint='report' ")
       }
 
       if (!ejam_functions_available) {
@@ -473,6 +479,7 @@ ejamapi <- function(
                             shapefile = shape, # EJAM::url_ejamapi() handles shape itself
                             fips = fips,
                             radius = buffer, # default was 3 miles for points
+                            fileextension = fileextension,
                             ...
         )
       }
@@ -485,7 +492,8 @@ ejamapi <- function(
                      lat = lat, lon = lon,
                      shapefile = shape, ###  change this - it prints too much to console in dry run
                      fips = fips,
-                     radius = buffer
+                     radius = buffer,
+                     fileextension = fileextension
                      ## and other params via ... not as simple to print here
           ))
           otherparams = rlang::list2(...)
@@ -498,22 +506,59 @@ ejamapi <- function(
         return(urlx)
       }
       ############### #
-      # handle request for multiple reports
+
+      # handle request for multiple reports ( or possibly 1 report on multiple places ) ***
+
       if (length(urlx) > maxreports) {
         urlx = urlx[1:maxreports]
         warning("returning only", maxreports, "reports, the current max here")
       }
       reports = list()
       for (i in seq_along(urlx)) {
-        # handled this way while sitenumber = 1 is hard coded in API
-        browser()        # but better way to get multiple reports may be just ejam2report()
-        req_i <- httr2::request(urlx[i])
-        response <- httr2::req_perform(req = req_i)
-        html_report <- htmltools::HTML(httr2::resp_body_string(response))
-        if (browse) {
-          htmltools::html_print(html_report, viewer = browseURL)
+
+        # handled this way while/if sitenumber = 1 is still hard coded in API.
+        # in url_ejamapi(), sitenumber 0 means overall combo report, -1 means N reports on 1 site each, 1 means just site #1.
+        # and note a better way to get multiple reports once EJAM is installed may be just ejam2report(ejamit())
+
+        if (fileextension %in% "pdf") {
+
+          # download the .pdf file to a temp folder
+          temp_file <- tempfile(fileext = ".pdf")
+          download.file(url = urlx[i], destfile = temp_file)
+
+          if (browse) {
+
+            if (interactive()) {
+              outcome = try(browseURL(temp_file), silent = FALSE)
+              if (inherits(outcome, "try-error")) {
+                warning("failed to view report file using browseURL() in ejamapi()")
+              }
+            } else {
+              # show the pdf file if NOT interactive ?  check if this would work
+              outcome = try(browseURL(temp_file), silent = TRUE)
+              if (inherits(outcome, "try-error")) {
+                warning("failed to view report file using browseURL() in ejamapi()")
+              }
+              # message("cannot use browse=TRUE for pdf reports currently in ejamapi() ")
+            }
+
+          }
+          reports[[i]] <- as.vector(temp_file) # vector of paths, not list of html docs,  returning pdf files probably not feasible so could at least return paths
+
+        } else {
+          if (fileextension %in% "html") {
+            req_i    <- httr2::request(urlx[i])
+            response <- httr2::req_perform(req = req_i)
+            html_report <- htmltools::HTML(httr2::resp_body_string(response))
+            if (browse) {
+              htmltools::html_print(html_report, viewer = browseURL)
+            }
+            reports[[i]] <- html_report
+          } else {
+            stop("fileextension must be 'pdf' or 'html' ")
+          }
+
         }
-        reports[[i]] <- html_report
       }
       invisible(reports)
     } else {
