@@ -187,7 +187,8 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
     "tract_disab_universe", "tract_disability",
     "tract_healthinsurance_universe", "tract_nohealthinsurance",
     "tract_pctdisability_rate", "tractfips", "tractpop", "untested_cant",
-    "untested_skipped", "urlx", "usa_summary", "use_unadjusted_distance",
+    "untested_skipped", "unsupported_block_rows", "unsupported_blockgroups",
+    "unsupported_blocks", "urlx", "usa_summary", "use_unadjusted_distance",
     "valid", "value", "warned", "wtdmean_within", "x", "x_hi", "x_low",
     "x_val", "y_val", "z_hi", "z_low", "z_val"
   )

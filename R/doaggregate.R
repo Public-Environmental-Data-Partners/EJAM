@@ -212,6 +212,80 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     warning("sites2blocks should contain a column named distance; since that is missing, now will set distance to NA which may not make sense for some types of analysis")
     sites2blocks[, distance := NA_real_]
   }
+  if ("bgid" %in% names(sites2blocks) && "bgid" %in% names(blockgroupstats)) {
+    supported_bgids <- unique(blockgroupstats$bgid[!is.na(blockgroupstats$bgid)])
+    unsupported_rows <- which(is.na(sites2blocks$bgid) | !(sites2blocks$bgid %in% supported_bgids))
+
+    if (length(unsupported_rows) > 0) {
+      unsupported <- data.table::copy(sites2blocks[unsupported_rows])
+      unsupported_bgids <- unique(stats::na.omit(unsupported$bgid))
+      unsupported_blockids <- unique(stats::na.omit(unsupported$blockid))
+      affected_ids <- unique(stats::na.omit(unsupported$ejam_uniq_id))
+
+      bg_lookup <- NULL
+      if (!exists("bgid2fips", inherits = TRUE)) {
+        suppressWarnings(suppressMessages(
+          try(dataload_dynamic("bgid2fips", silent = TRUE), silent = TRUE)
+        ))
+      }
+      if (exists("bgid2fips", inherits = TRUE)) {
+        bg_lookup <- try(data.table::as.data.table(get("bgid2fips", inherits = TRUE)), silent = TRUE)
+        if (inherits(bg_lookup, "try-error") || !all(c("bgid", "bgfips") %in% names(bg_lookup))) {
+          bg_lookup <- NULL
+        }
+      }
+
+      if (!is.null(bg_lookup)) {
+        unsupported <- merge(
+          unsupported,
+          unique(bg_lookup[bgid %in% unsupported_bgids, .(bgid, bgfips)]),
+          by = "bgid",
+          all.x = TRUE,
+          sort = FALSE
+        )
+      } else if (!("bgfips" %in% names(unsupported))) {
+        unsupported[, bgfips := NA_character_]
+      }
+      unsupported[, state := fips2state_abbrev(substr(bgfips, 1, 2))]
+      unsupported[is.na(state), state := "unknown"]
+      state_counts <- unsupported[, .(
+        unsupported_blockgroups = collapse::fnunique(bgid[!is.na(bgid)]),
+        unsupported_blocks = collapse::fnunique(blockid[!is.na(blockid)]),
+        unsupported_block_rows = .N
+      ), by = state]
+      state_text <- paste(
+        paste0(
+          state_counts$state,
+          " (", state_counts$unsupported_blockgroups, " BGs, ",
+          state_counts$unsupported_blocks, " blocks, ",
+          state_counts$unsupported_block_rows, " rows)"
+        ),
+        collapse = "; "
+      )
+      bg_example <- paste(utils::head(stats::na.omit(unique(unsupported$bgid)), 6), collapse = ", ")
+      bgfips_example <- paste(utils::head(stats::na.omit(unique(unsupported$bgfips)), 6), collapse = ", ")
+      affected_text <- paste(utils::head(affected_ids, 20), collapse = ", ")
+
+      message(
+        "Dropping ", length(unsupported_rows), " block row",
+        if (length(unsupported_rows) == 1) "" else "s",
+        " from ", length(unsupported_bgids), " unsupported blockgroup",
+        if (length(unsupported_bgids) == 1) "" else "s",
+        " not found in blockgroupstats before aggregation. ",
+        "Unsupported blocks: ", length(unsupported_blockids), ". ",
+        "Affected ejam_uniq_id count: ", length(affected_ids), "; values: ", affected_text, ". ",
+        "States: ", state_text, ". ",
+        "Example bgid: ", bg_example,
+        if (nzchar(bgfips_example)) paste0(". Example bgfips: ", bgfips_example) else ""
+      )
+
+      sites2blocks <- sites2blocks[-unsupported_rows]
+      if (NROW(sites2blocks) == 0) {
+        message("No block rows remain after dropping unsupported blockgroups; no results will be returned.")
+        return(NULL)
+      }
+    }
+  }
   ###################################################### #
   ## validate sites2states_or_latlon ####
 

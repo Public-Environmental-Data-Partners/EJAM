@@ -25,6 +25,18 @@ doaggregate_warning_messages <- function(expr) {
   list(value = value, warnings = warnings)
 }
 
+doaggregate_messages <- function(expr) {
+  messages <- character()
+  value <- withCallingHandlers(
+    expr,
+    message = function(m) {
+      messages <<- c(messages, conditionMessage(m))
+      invokeRestart("muffleMessage")
+    }
+  )
+  list(value = value, messages = messages)
+}
+
 expect_no_radius_warning <- function(expr) {
   out <- doaggregate_warning_messages(expr)
   expect_false(
@@ -42,6 +54,65 @@ state_from_sitetable <- EJAM:::state_from_sitetable
 ################# #
 # DOES IT STILL RETURN WHAT IT USED TO, OR HAS FUNCTION CHANGED SO THAT OUTPUTS NO LONGER MATCH ARCHIVED OUTPUTS? ####
 ################# #
+
+test_that("doaggregate drops unsupported blockgroups before counting and aggregating", {
+  skip_if_not(exists("bgid2fips"))
+
+  bgstats <- data.table::as.data.table(blockgroupstats)
+  valid_bg <- bgstats[!is.na(bgid) & !is.na(pop) & pop > 0][1]
+  unsupported_bg <- bgid2fips[!(bgid %in% bgstats$bgid)][1]
+  skip_if(nrow(valid_bg) == 0 || nrow(unsupported_bg) == 0)
+
+  s2b <- data.table::data.table(
+    ejam_uniq_id = c(1L, 1L),
+    blockid = c(100000001L, 100000002L),
+    bgid = c(valid_bg$bgid, unsupported_bg$bgid),
+    blockwt = c(1, 1),
+    distance = c(0, 0)
+  )
+  s2st <- data.table::data.table(ejam_uniq_id = 1L, ST = valid_bg$ST)
+
+  out <- doaggregate_messages(
+    doaggregate(s2b, sites2states_or_latlon = s2st)
+  )
+
+  expect_match(
+    paste(out$messages, collapse = "\n"),
+    "Dropping 1 block row.*1 unsupported blockgroup"
+  )
+  expect_match(paste(out$messages, collapse = "\n"), unsupported_bg$bgfips)
+  expect_equal(out$value$results_bysite$pop, valid_bg$pop)
+  expect_equal(out$value$results_bysite$blockcount_near_site, 1)
+  expect_equal(out$value$results_bysite$bgcount_near_site, 1)
+  expect_false(unsupported_bg$bgid %in% out$value$results_bybg_people$bgid)
+})
+
+test_that("doaggregate returns no normal output when every blockgroup is unsupported", {
+  skip_if_not(exists("bgid2fips"))
+
+  bgstats <- data.table::as.data.table(blockgroupstats)
+  unsupported_bg <- bgid2fips[!(bgid %in% bgstats$bgid)][1]
+  skip_if(nrow(unsupported_bg) == 0)
+
+  s2b <- data.table::data.table(
+    ejam_uniq_id = 77L,
+    blockid = 100000003L,
+    bgid = unsupported_bg$bgid,
+    blockwt = 1,
+    distance = 0
+  )
+  s2st <- data.table::data.table(ejam_uniq_id = 77L, ST = fips2state_abbrev(unsupported_bg$bgfips))
+
+  out <- doaggregate_messages(
+    doaggregate(s2b, sites2states_or_latlon = s2st)
+  )
+
+  expect_match(
+    paste(out$messages, collapse = "\n"),
+    "No block rows remain after dropping unsupported blockgroups"
+  )
+  expect_null(out$value)
+})
 
 test_that("still returns same results_overall as saved", {
 

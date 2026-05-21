@@ -178,6 +178,15 @@
   the full web app functionality suite. The older one-category web app test
   files remain available for debugging with `EJAM_SHINYTEST2_INDIVIDUAL=true`.
 
+- Added a `doaggregate()` guardrail for rare cases where block geography files
+  contain blockgroups that are not present in `blockgroupstats`. Unsupported
+  blockgroups are now dropped before aggregation and before `bgcount_near_site`
+  or `blockcount_near_site` are counted. The function emits a message, not a
+  warning, with affected `ejam_uniq_id` values, states, unsupported blockgroup
+  counts, unsupported block counts, and example `bgid`/`bgfips` values. If all
+  input block rows are unsupported, `doaggregate()` returns `NULL` instead of a
+  normal-looking all-zero result.
+
 - Because the EJScreen web app needs its blockgroup dataset to include some columns not used by EJAM,
   we have now added `calc_ejscreen_export()` support for creating an EJScreen-ready dataset
   from the EJAM datasets `blockgroupstats` and `bgej`. The transformation uses
