@@ -84,13 +84,47 @@ if (!"package:EJAM" %in% search()) {
 # If you did library(EJAM) that should have access to these pkgs but would NOT actually do library() or require() on   all these.
 # If you did install_local() same.
 
-if (!require(testthat))   {message("Need testthat package for unit tests to work \n\n")}
-if (!require(mapview))    {message("Need mapview package for some tests of mapping to work \n\n")}
-if (!require(AOI))        {message("Need AOI package for tests of street address handling to work \n\n")}
-if (!require(golem))        {message("Need golem package for some tests to work \n\n")}
-if (!require(rmarkdown))        {message("Need rmarkdown  package for some tests to work \n\n")}
-if (!require(data.table))       {message("Need data.table package for some tests to work \n\n")}
-if (!require(magrittr))         {message("Need magrittr   package for some tests to work \n\n")}
+require_for_tests <- function(pkg, why, attach = TRUE) {
+  err <- NULL
+  ok <- suppressWarnings(suppressPackageStartupMessages(tryCatch({
+    if (attach) {
+      require(pkg, character.only = TRUE, quietly = TRUE)
+    } else {
+      requireNamespace(pkg, quietly = TRUE)
+    }
+  }, error = function(e) {
+    err <<- e
+    FALSE
+  })))
+
+  if (!ok) {
+    msg <- paste0("Need ", pkg, " package ", why)
+    if (!is.null(err)) {
+      msg <- paste0(msg, " (", conditionMessage(err), ")")
+    }
+    message(msg, "\n")
+  }
+  ok
+}
+
+require_for_tests("testthat", "for unit tests to work")
+require_for_tests("mapview", "for some tests of mapping to work")
+options(EJAM.AOI_available_for_tests = require_for_tests(
+  "AOI",
+  "for tests of street address handling to work",
+  attach = FALSE
+))
+require_for_tests("golem", "for some tests to work")
+require_for_tests("rmarkdown", "for some tests to work")
+require_for_tests("data.table", "for some tests to work")
+require_for_tests("magrittr", "for some tests to work")
+
+skip_if_aoi_unavailable <- function() {
+  testthat::skip_if_not(
+    isTRUE(getOption("EJAM.AOI_available_for_tests")),
+    "AOI package cannot be loaded"
+  )
+}
 ############################### #
 
 # anything that runs tests, such as testthat::test_file() done by test_ejam_bygroup()

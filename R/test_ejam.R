@@ -478,59 +478,57 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
       timebyfile <- data.table(
-        structure(list(
-          file =
-            c("test-ejamapi.R", "test-create_interactive_table.R",
-              "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
-              "test-create_filename.R", "test-grepn.R", "test-is.numericish.R",
-              "test-pctile_x_is_hit_by_score.R", "test-plot_vs_us.R", "test-shinytest2-app-dir.R",
-              "test-sites_from_input.R", "test-url_columns_bysite.R", "test-url_package.R",
-              "test-utils_PACKAGE_DEV.R", "test-latlon_from_address.R", "test-address_xyz.R",
-              "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_anything.R",
-              "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
-              "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
-              "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
-              "test-MAP_FUNCTIONS.R", "test-ejam2map.R", "test-fips_bg_from_latlon.R",
-              "test-latlon_from_fips.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
-              "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R", "test-is.numerictext.R",
-              "test-state_from_fips_bybg.R", "test-state_from_latlon.R", "test-getblocksnearby_from_fips.R",
-              "test-proxistat.R", "test-bgid_from_blockid.R", "test-distances.all.R",
-              "test-get_blockpoints_in_shape.R", "test-getblocks_summarize_blocks_per_site.R",
-              "test-getblocksnearby.R", "test-getblocksnearbyviaQuadTree.R",
-              "test-radius_inferred.R", "test-report_residents_within_xyz.R",
-              "test-sitetype2text.R", "test-utils_indexpoints.R", "test-calc_byformula.R",
-              "test-ejscreen-pipeline-io.R", "test-acs_bybg.R", "test-acs_endyear.R",
-              "test-calc_bg_acsdata.R", "test-calc_bg_extra_indicators.R",
-              "test-calc_bg_geodata.R", "test-calc_ejscreen_dataset.R", "test-ejscreen-export.R",
-              "test-ejscreen-pipeline-validate-vs-prior.R", "test-ejscreen-stats.R",
-              "test-pctiles_lookup_create.R", "test-webapp-all-functionality.R",
-              "test-webapp-ui_and_server.R", "test-area_sqmi.R", "test-batch.summarize.R",
-              "test-calc_avg_columns.R", "test-calc_pctile_columns.R", "test-calc_ratio_columns.R",
-              "test-doaggregate.R", "test-pctile_from_raw_lookup.R", "test-utils_flagged_FUNCTIONS.R",
-              "test-utils_speedtest.R", "test-ejam2barplot_indicators.R", "test-ejam2barplot_sites.R",
-              "test-ejam2excel.R", "test-ejam2histogram.R", "test-ejam2report.R",
-              "test-ejamit.R", "test-ejamit_compare_distances.R", "test-ejamit_compare_types_of_places.R",
-              "test-ejamit_sitetype_from_input.R", "test-ejamit_sitetype_from_output.R",
-              "test-fixcolnames.R", "test-fixcolnames_infer.R", "test-fixnames.R",
-              "test-fixnames_to_type.R", "test-utils_metadata_add.R", "test-varinfo.R",
-              "test-frs_from_naics.R", "test-frs_from_programid.R", "test-frs_from_regid.R",
-              "test-frs_from_sic.R", "test-frs_is_valid.R", "test-regid_from_input.R",
-              "test-regid_from_naics.R", "test-golem_utils_server.R", "test-golem_utils_ui.R",
-              "test-naics2children.R", "test-naics_categories.R", "test-naics_findwebscrape.R",
-              "test-naics_from_any.R", "test-naics_from_code.R", "test-naics_from_name.R",
-              "test-naics_is.valid.R", "test-naics_subcodes_from_code.R", "test-ejam2shapefile.R",
-              "test-latlon_from_shapefile.R", "test-shape2geojson.R", "test-shape2zip.R",
-              "test-shapefile_xyz.R", "test-shapes_from_fips.R", "test-test1.R",
-              "test-test2.R"),
-          seconds_byfile =
-            c(0, 0, 363, 0, 25, 0, 0, 0,
-              2, 1, 0, 0, 6, 3, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 5, 0, 0, 0, 40,
-              20, 67, 6, 22, 0, 7, 3, 0, 0, 5, 74, 0, 0, 0, 6, 1, 7, 4, 4,
-              0, 0, 0, 4, 1, 1, 0, 1, 0, 0, 0, 1, 8, 0, 0, 154, 2, 3, 15, 0,
-              5, 4, 42, 0, 14, 0, 0, 20, 18, 0, 0, 61, 44, 7, 0, 7, 0, 0, 0,
-              0, 3, 0, 9, 5, 0, 1, 1, 0, 2, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 1,
-              0, 0, 0, 1, 11, 0, 0)),
-          row.names = c(NA, -115L), class = "data.frame")
+        file =
+          c("test-latlon_from_address.R", "test-address_xyz.R",
+            "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_anything.R",
+            "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
+            "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
+            "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
+            "test-MAP_FUNCTIONS.R", "test-ejam2map.R", "test-create_interactive_table.R",
+            "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
+            "test-create_filename.R", "test-ejamapi.R", "test-ejamapi_local.R",
+            "test-grepn.R", "test-is.numericish.R", "test-pctile_x_is_hit_by_score.R",
+            "test-plot_vs_us.R", "test-shinytest2-app-dir.R", "test-sites_from_input.R",
+            "test-url_columns_bysite.R", "test-url_package.R", "test-utils_PACKAGE_DEV.R",
+            "test-proxistat.R", "test-bgid_from_blockid.R", "test-distances.all.R",
+            "test-get_blockpoints_in_shape.R", "test-getblocks_summarize_blocks_per_site.R",
+            "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
+            "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
+            "test-report_residents_within_xyz.R", "test-sitetype2text.R",
+            "test-utils_indexpoints.R", "test-webapp-ui_and_server.R", "test-webapp-all-functionality.R",
+            "test-acs_bybg.R", "test-acs_endyear.R", "test-calc_bg_acsdata.R",
+            "test-calc_bg_extra_indicators.R", "test-calc_bg_geodata.R",
+            "test-calc_byformula.R", "test-calc_ejscreen_dataset.R", "test-ejscreen-export.R",
+            "test-ejscreen-pipeline-io.R", "test-ejscreen-pipeline-validate-vs-prior.R",
+            "test-ejscreen-stats.R", "test-pctiles_lookup_create.R", "test-area_sqmi.R",
+            "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
+            "test-calc_ratio_columns.R", "test-doaggregate.R", "test-pctile_from_raw_lookup.R",
+            "test-utils_flagged_FUNCTIONS.R", "test-utils_speedtest.R", "test-ejam2barplot_indicators.R",
+            "test-ejam2barplot_sites.R", "test-ejam2excel.R", "test-ejam2histogram.R",
+            "test-ejam2report.R", "test-ejamit.R", "test-ejamit_compare_distances.R",
+            "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
+            "test-ejamit_sitetype_from_output.R", "test-FIPS_FUNCTIONS.R",
+            "test-fips2countyfips.R", "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R",
+            "test-fips_bgs_in_fips.R", "test-is.numerictext.R", "test-latlon_from_fips.R",
+            "test-state_from_fips_bybg.R", "test-state_from_latlon.R", "test-fixcolnames.R",
+            "test-fixcolnames_infer.R", "test-fixnames.R", "test-fixnames_to_type.R",
+            "test-utils_metadata_add.R", "test-varinfo.R", "test-frs_from_naics.R",
+            "test-frs_from_programid.R", "test-frs_from_regid.R", "test-frs_from_sic.R",
+            "test-frs_is_valid.R", "test-regid_from_input.R", "test-regid_from_naics.R",
+            "test-golem_utils_server.R", "test-golem_utils_ui.R", "test-naics2children.R",
+            "test-naics_categories.R", "test-naics_findwebscrape.R", "test-naics_from_any.R",
+            "test-naics_from_code.R", "test-naics_from_name.R", "test-naics_is.valid.R",
+            "test-naics_subcodes_from_code.R", "test-ejam2shapefile.R", "test-latlon_from_shapefile.R",
+            "test-shape2geojson.R", "test-shape2zip.R", "test-shapefile_xyz.R",
+            "test-shapes_from_fips.R", "test-test1.R", "test-test2.R"),
+        seconds_byfile =
+          c(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 16, 5, 0, 393, 0,
+            17, 0, 28, 0, 0, 0, 1, 0, 0, 0, 4, 3, 0, 0, 0, 0, 1, 0,
+            3, 34, 2, 1, 0, 0, 0, 1, 104, 1, 0, 0, 0, 0, 2, 0, 0, 0,
+            4, 0, 0, 1, 7, 0, 2, 2, 17, 0, 5, 0, 0, 6, 9, 0, 0, 24,
+            19, 4, 0, 4, 11, 0, 4, 8, 1, 0, 8, 0, 3, 0, 0, 0, 0, 1,
+            0, 3, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 6, 0, 0)
       )
 
       ############################ #      ############################ #      ############################ #
@@ -575,11 +573,21 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
       if (y_runsome || y_runall) {
         timing_needed <- FALSE
-        missingtime_tests <- setdiff(as.vector(unlist(testlist)), timebyfile$file)
+        timing_testlist <- testlist
+        if (isTRUE(y_runsome) && !is.null(run_these)) {
+          timing_run_these <- paste0("test_", unlist(strsplit(gsub(" ", "", run_these), ",")))
+          timing_testlist <- testlist[names(testlist) %in% timing_run_these]
+        }
+        if (isTRUE(y_runall) && !isTRUE(y_runsome)) {
+          # The individual webapp files are kept for focused debugging but are
+          # intentionally omitted from the default full suite.
+          timing_testlist <- timing_testlist[names(timing_testlist) != "test_webapp_individual"]
+        }
+        missingtime_tests <- setdiff(as.vector(unlist(timing_testlist)), timebyfile$file)
         if (length(missingtime_tests) > 0) {
           cat("Missing time estimates for these test FILES:", paste0(missingtime_tests, collapse = ","), '\n')
         }
-        missingtime_groups <- setdiff(names(testlist), timebygroup$testgroup)
+        missingtime_groups <- setdiff(names(timing_testlist), timebygroup$testgroup)
         if (length(missingtime_groups) > 0) {
           cat("Missing time estimates for these GROUPS:", paste0(missingtime_groups, collapse = ","), '\n')
         }
@@ -1328,6 +1336,54 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     }) # end loggable
   } # end of big if - viewing results
   ########################### #  ########################################## #
+
+  # Build the same summary objects even when y_seeresults = FALSE.
+  if (!exists("passcount")) {
+    passcount = colSums(x[, .(total, passed, flagged, untested_cant, untested_skipped, warned, failed)])
+  }
+  if (!exists("passpercent")) {
+    passpercent = round(
+      100 * colSums(x[, .(total, passed, flagged, untested_cant, untested_skipped, warned, failed)]) /
+        sum(x$total),
+      1
+    )
+  }
+  if (!exists("bygroup")) {
+    bygroup <- x[ , .(total = sum(total), passed = sum(passed), flagged = sum(flagged),
+                      untested_cant = sum(untested_cant), untested_skipped = sum(untested_skipped),
+                      warned = sum(warned), failed = sum(failed),
+                      seconds_bygroup = seconds_bygroup[1],
+                      seconds_bygroup_predicted = seconds_bygroup_predicted[1]),
+                  by = "testgroup"]
+    bygroup[ , seconds_extra := seconds_bygroup - seconds_bygroup_predicted]
+  }
+  if (!exists("byfile")) {
+    byfile <- x[ , .(
+      flagged_byfile = flagged_byfile[1],
+      flagged_bygroup = flagged_bygroup[1],
+      failed_byfile = failed_byfile[1],
+      failed_bygroup = failed_bygroup[1],
+      testgroup = testgroup[1],
+      seconds_byfile_predicted = seconds_byfile_predicted[1],
+      seconds_byfile_actual = round(seconds_byfile[1], 1)
+    ),
+    by = "file"]
+    byfile$seconds_extra <- round(byfile$seconds_byfile_actual - byfile$seconds_byfile_predicted, 0)
+    setorder(byfile, -failed_bygroup, -flagged_bygroup, testgroup, failed_byfile, -flagged_byfile, file)
+    setcolorder(byfile, neworder = c("testgroup", "failed_bygroup", "flagged_bygroup", "file", "failed_byfile", "flagged_byfile"))
+  }
+  if (!exists("bytest_key")) {
+    bytest_key = x[order(-x$failed, -x$warned, -x$flagged), ]
+    these = bytest_key$flagged > 0
+    if (any(these)) {
+      bytest_key <- bytest_key[these, ]
+      bytest_key_niceview <- as.data.frame(bytest_key)[ , !grepl("_byfile|_bygroup|total|passed|flagged", names(bytest_key))]
+      bytest_key_niceview <- bytest_key_niceview[, c('testgroup', 'file', 'test', 'failed', 'warned', 'untested_cant', 'untested_skipped')]
+    } else {
+      bytest_key = NA
+      bytest_key_niceview = NA
+    }
+  }
 
   # COMPILE ALL RESULTS IN A LIST
 

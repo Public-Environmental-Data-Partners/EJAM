@@ -256,7 +256,11 @@ latlon_from_address <- function(address, xy=FALSE, pt = FALSE, aoimap=FALSE, bat
   #   remotes::install_github("mikejohnson51/AOI") #
   # }
 
-  if (!requireNamespace("AOI", quietly = TRUE)) {
+  aoi_available <- suppressWarnings(tryCatch(
+    requireNamespace("AOI", quietly = TRUE),
+    error = function(e) FALSE
+  ))
+  if (!aoi_available) {
     warning('AOI package not available. To install, run:
             devtools::install_github("https://github.com/mikejohnson51/AOI/", auth_token = NULL)')
     x <- NULL
