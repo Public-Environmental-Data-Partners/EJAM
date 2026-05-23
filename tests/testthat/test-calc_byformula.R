@@ -81,13 +81,16 @@ test_that("calc_byformula() ok", {
 #  calc_varname_from_formula
 
 test_that("calc_varname_from_formula() works", {
+  example_formulas <- formulas_ejscreen_acs$formula[
+    formulas_ejscreen_acs$rname %in% c("pcthisp", "pctmin", "pctlowinc")
+  ]
 
   expect_no_error({
-    x = calc_varname_from_formula(formulas_d)
+    x = calc_varname_from_formula(example_formulas)
   })
   expect_equal(
     length(x),
-    length(formulas_d)
+    length(example_formulas)
   )
   expect_equal(
     calc_varname_from_formula(c("a=10", "b<- 1", "c <- 34", " d = 1+1", "   e=2+2")),

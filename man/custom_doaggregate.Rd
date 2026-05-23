@@ -30,7 +30,8 @@ aggregated as weighted means, population weighted or with other weights}
 \item{wtcols}{vector of colnames to use as the weights for wtd means,
 same length as popmeancols, but not used yet}
 
-\item{custom_formulas}{like formulas_all,  not used yet}
+\item{custom_formulas}{character vector of formulas, like
+\code{formulas_ejscreen_acs$formula}, not used yet}
 
 \item{custom_cols}{not used yet}
 

@@ -75,8 +75,6 @@ metadata_mapping <- list(
   tables_ejscreen_acs = default_metadata,
   formulas_ejscreen_demog_index = default_metadata,
   formulas_ejscreen_acs_disability = default_metadata,
-  formulas_all = default_metadata,
-  formulas_d   = default_metadata,
 
   # datacreate_frs_by_mact.R
   mact_table = list(), ##########  just the date it was updated is what matters for this

@@ -58,8 +58,8 @@
 
     "NAICS", "SIC", "avg.in.us", "bg_cenpop2020", "bgpts", "blockgroupstats",
     "censusplaces", "custom", "ejamdata_version", "ejampackages",
-    "epa_programs", "epa_programs_defined", "formulas_all", "formulas_d",
-    "formulas_ejscreen_acs", "formulas_ejscreen_acs_disability",
+    "epa_programs", "epa_programs_defined", "formulas_ejscreen_acs",
+    "formulas_ejscreen_acs_disability",
     "formulas_ejscreen_demog_index", "frsprogramcodes", "high_pctiles_tied_with_min",
     "islandareas", "lat_alias", "lon_alias", "mact_table", "map_headernames",
     "meters_per_mile", "modelDoaggregate", "modelEjamit", "modelEjamitByAnalysisType",
@@ -407,13 +407,11 @@ if (getRversion() >= "2.15.1") {
 # [7,] "ejampackages"
 # [8,] "epa_programs"
 # [9,] "epa_programs_defined"
-# [10,] "formulas_all"
-# [11,] "formulas_d"
-# [12,] "formulas_ejscreen_acs"
-# [13,] "formulas_ejscreen_acs_disability"
-# [14,] "formulas_ejscreen_demog_index"
-# [15,] "frsprogramcodes"
-# [16,] "high_pctiles_tied_with_min"
+# [10,] "formulas_ejscreen_acs"
+# [11,] "formulas_ejscreen_acs_disability"
+# [12,] "formulas_ejscreen_demog_index"
+# [13,] "frsprogramcodes"
+# [14,] "high_pctiles_tied_with_min"
 # [17,] "islandareas"
 # [18,] "lat_alias"
 # [19,] "lon_alias"

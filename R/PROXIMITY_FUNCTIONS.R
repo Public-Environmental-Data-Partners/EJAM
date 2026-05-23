@@ -133,7 +133,8 @@
 #' @param wtcols vector of colnames to use as the weights for wtd means,
 #'   same length as popmeancols, but not used yet
 #'
-#' @param custom_formulas like formulas_all,  not used yet
+#' @param custom_formulas character vector of formulas, like
+#'   `formulas_ejscreen_acs$formula`, not used yet
 #' @param custom_cols not used yet
 #' @param custom_map_headernames like map_headernames but for the
 #'   custom indicators
@@ -141,14 +142,14 @@
 #' @return returns the output of [custom_doaggregate()]
 #'
 #' @export
-#'
+#' @keywords internal
 #'
 custom_ejamit <- function(sitepoints, radius = 3, fips = NULL, shapefile = NULL,
                           custom_blockgroupstats = blockgroupstats,
                           countcols = names_wts,
                           popmeancols = names_these,
                           wtcols = names_wts, # "pop"  or a vector exactly as long as wtdmeancols
-                          custom_formulas = NULL, # formulas_d,
+                          custom_formulas = NULL,
                           custom_cols = NULL,
                           custom_map_headernames = map_headernames) {
 
@@ -1373,7 +1374,8 @@ calc_counties_from_bg = function(childDT, score_colname, wt_colname = 'pop', bgf
 #' @param wtcols vector of colnames to use as the weights for wtd means,
 #'   same length as popmeancols, but not used yet
 #'
-#' @param custom_formulas like formulas_all,  not used yet
+#' @param custom_formulas character vector of formulas, like
+#'   `formulas_ejscreen_acs$formula`, not used yet
 #' @param custom_cols not used yet
 #' @param custom_map_headernames like map_headernames but for the
 #'   custom indicators
@@ -1388,7 +1390,7 @@ custom_doaggregate <- function(sites2blocks,
                                countcols = "pop",
                                popmeancols = names_these,
                                wtcols = "pop", # or a vector exactly as long as popmeancols
-                               custom_formulas = NULL, # formulas_d,
+                               custom_formulas = NULL,
                                custom_cols = NULL,
                                custom_map_headernames = map_headernames) {
 
@@ -1464,9 +1466,9 @@ custom_doaggregate <- function(sites2blocks,
   ## sums of counts
 
   ### started this idea but would need to apply calc_ejam() by group, and would need to include bgwt * x, etc.
-  # see datacreate_formulas_d or formulas_all
+  # see formulas_ejscreen_acs$formula for examples of formula text
   #
-  # results_overall <- calc_ejam(bybg_overall, keep.old = "", keep.new = "all", formulas = formulas_all)
+  # results_overall <- calc_ejam(bybg_overall, keep.old = "", keep.new = "all", formulas = formulas_ejscreen_acs$formula)
   # results_bysite <-
   # need to do rollup by group, so could apply calc_ejam by group here
   # or more efficiently for common formulas like sum or popwtdmean
@@ -1552,7 +1554,7 @@ custom_doaggregate <- function(sites2blocks,
       #  calc_ejam() has each formula but  does no aggregation.
       #  and just doing data.table   dt[, xyz, by = "ejam_uniq_id"]
       #   would aggregate but need the formula(s) in there.
-      #  check formulas_all, which seemed to allow for aggregation-like calculation??
+      #  check formulas_ejscreen_acs$formula for examples of formula text.
 
       results_bysite_custom[[sitenum]] <- calc_ejam(
         bybg_bysite[bybg_bysite$ejam_uniq_id == ids[sitenum], ],
@@ -1629,8 +1631,9 @@ custom_doaggregate <- function(sites2blocks,
 #'   and any other variables needed for formulas to aggregate indicators
 #'   across blockgroups in each site.
 #'
-#' @param formulas a character vector of formulas in R code (see formulas_d for
-#'   an example), that use variables in userstats to calculate any
+#' @param formulas a character vector of formulas in R code (see
+#'   `formulas_ejscreen_acs$formula` for examples), that use variables in
+#'   userstats to calculate any
 #'   derived indicators or aggregated ones, for cases where just a sum or a
 #'   population weighted mean is not the right way to aggregate some indicator.
 #'   Formulas can include intermediate steps, or can aggregate across all places.

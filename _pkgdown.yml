@@ -530,8 +530,6 @@ reference:
   - custom_ejamit
   - custom_doaggregate
   - custom
-  - formulas_all
-  - formulas_d
   - calc_varname_from_formula
   - batch.clean
   - rowMaxs2

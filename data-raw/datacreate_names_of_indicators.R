@@ -17,7 +17,7 @@ library(usethis)
 #
 #  map_headernames (which was created from .xlsx but now will be from the csv, using the script in /data-raw folder)
 #  namez (info that really is almost all in map_headernames$varlist but some names_xyz overlap with other names_abc so a single varlist column does not work with that situation)
-#  formulas_all as a possible approach using calc_ejam()
+#  formulas_ejscreen_acs$formula as a possible approach using calc_ejam()
 
 # In the short term, before some mapping file is used to track all variable names, we could simplify a bit by
 # recoding all functions to use namez$d  instead of names_d, etc.,

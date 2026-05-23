@@ -52,20 +52,24 @@ DRAFT  utility to use formulas provided as text, to calculate indicators
      "mystat2  = 100 * pctlowinc"))
 cbind(Demog.Index = bgdf$Demog.Index, newdf, pctlowinc = bgdf$pctlowinc)
 
-newdf <- calc_ejam(bgdf, formulas = formulas_d)
+acs_formula_subset <- EJAM:::calc_formulas_from_varname(
+    c("pcthisp", "pctmin", "pctlowinc")
+  )$formula
+
+newdf <- calc_ejam(bgdf, formulas = acs_formula_subset)
 newdf
 
 
 ##  example of entire US
 #
-newdf1  <- calc_ejam(as.data.frame(bgdf), formulas = formulas_d)
+newdf1  <- calc_ejam(as.data.frame(bgdf), formulas = acs_formula_subset)
   t(summary(newdf1))
 
 bgdf <- data.frame(blockgroupstats)
 newdf <- calc_ejam(bgdf,
                    keep.old = c('bgid', 'pop', 'hisp'),
                    keep.new = "all",
-                   formulas = formulas_d
+                   formulas = acs_formula_subset
 )
 round(t(newdf[1001:1002, ]), 3)
 cbind(
@@ -76,7 +80,7 @@ cbind(
 cbind(round(sapply(newdf, max, na.rm=TRUE),2),
 names(newdf) \%in\% names_pct_as_fraction_blockgroupstats)
 
-EJAM:::calc_varname_from_formula(formulas_d)
+EJAM:::calc_varname_from_formula(acs_formula_subset)
 
 rm(bgdf)
 }

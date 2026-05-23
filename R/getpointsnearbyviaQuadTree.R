@@ -54,6 +54,7 @@
 #' @import data.table
 #'
 #' @export
+#' @keywords internal
 #'
 getpointsnearbyviaQuadTree <- function(frompoints, radius = 3, maxradius = 31.07, avoidorphans = FALSE,
                                         min_distance = 100/1760, retain_unadjusted_distance = TRUE,

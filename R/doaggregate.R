@@ -499,7 +499,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   ## SUM OF COUNTS, vs WTD AVG, vs via FORMULA (usually ratio of sums of counts)
   # That info is sort of stored already in map_headernames$calculation_type and $denominator
-  # see notes in custom_doaggregate() and  calc_ejam() and formulas_d
+  # see notes in custom_doaggregate(), calc_ejam(), and formulas_ejscreen_acs$formula
 
   ##################################################### #
 
