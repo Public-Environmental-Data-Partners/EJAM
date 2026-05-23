@@ -2,6 +2,8 @@
 # Note the package here is called 'EJAM' even though a repo can be called something other than 'EJAM'
 # and still contain/offer an installable copy of a branch/version/release of the EJAM pkg.
 
+## this file is somewhat obsolete and would have to be updated to be useful
+
 ################################################################################################## #
 
 #       SCRIPT USED TO HELP REDEPLOY SHINY APP AFTER UPDATES/EDITS

@@ -233,7 +233,6 @@ export(varinfo)
 export(varlist2names)
 import(data.table)
 import(dplyr, except = c(first, last, between))
-
 import(shiny, except = c(dataTableOutput, renderDataTable))
 import(shinycssloaders)
 importFrom(data.table,":=")

@@ -52,7 +52,7 @@ Highlights:
   are reported.
 
 
-## R User Functions
+## R Package Functions
 
 - `ejamapi()` was significantly enhanced with PDF support, bug fixes, more
   error-checking, and more examples.
@@ -668,7 +668,6 @@ released on USEPA/EJAM-open.
 -   unit tests added and others updated/fixed
 -   misc helpers/utility added/updated/documented
 -   renamed .xlsx file of map_headernames info to reflect a new version and made edits/fixes
--   `reposissues()` and `repoissues2()` help record snapshot of gh issues
 -   DESCRIPTION file now has new field ejam_data_repo
 -   updated workflow action to use latest version of github-pages-deploy-action
 
