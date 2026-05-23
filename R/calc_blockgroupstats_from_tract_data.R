@@ -8,7 +8,7 @@
 #' utility to calculate annually for EJSCREEN the updated ACS data available at only tract resolution (% disability & language detail)
 #' @details
 #' This is now typically orchestrated by [calc_ejscreen_dataset()] and by the
-#' staged pipeline runner script `data-raw/run_ejscreen_acs2024_pipeline.R`.
+#' staged pipeline runner script `data-raw/run_ejscreen_dataset_pipeline.R`.
 #'
 #'  Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()
 #'

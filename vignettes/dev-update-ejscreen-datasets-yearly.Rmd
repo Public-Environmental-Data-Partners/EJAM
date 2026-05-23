@@ -43,7 +43,7 @@ rerunnable. The main entry point is `calc_ejscreen_dataset()`. The recommended
 annual runner is:
 
 ```{r, eval=FALSE}
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 The runner writes pipeline checkpoints, by default as CSV files. It can also
@@ -395,7 +395,7 @@ Sys.setenv(
   EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 For the S3-backed pipeline:
@@ -428,7 +428,7 @@ Sys.setenv(
   EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 The runner prints the resolved settings before it starts the pipeline. Review
@@ -446,7 +446,7 @@ Sys.setenv(
   EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 Set `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"` only for an intentional
@@ -465,7 +465,7 @@ Sys.setenv(
   EJAM_FORCE_BG_ACSDATA = "TRUE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 If both raw ACS and `bg_acsdata` should be reused, leave both force flags false:
@@ -476,7 +476,7 @@ Sys.setenv(
   EJAM_FORCE_BG_ACSDATA = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 If `bg_geodata` has already been created for the same ACS/TIGER vintage and
@@ -488,7 +488,7 @@ zip files are reused from `EJAM_TIGER_BG_CACHE_DIR` when present and valid.
 
 ```{r, eval=FALSE}
 Sys.setenv(EJAM_FORCE_BG_GEODATA = "TRUE")
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 ## Supplying Updated Environmental Data
@@ -518,7 +518,7 @@ To force the runner to stop unless `bg_envirodata.csv` has been supplied:
 
 ```{r, eval=FALSE}
 Sys.setenv(EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE")
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 After replacing `bg_envirodata.csv`, rerun without forcing ACS:
@@ -530,7 +530,7 @@ Sys.setenv(
   EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 This reuses the saved ACS stages and regenerates downstream
@@ -557,7 +557,7 @@ extra indicators:
 
 ```{r, eval=FALSE}
 Sys.setenv(EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "TRUE")
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 The runner writes source-note text files next to provisional stages, such as

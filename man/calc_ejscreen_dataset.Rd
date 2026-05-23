@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_ejscreen_dataset.R
 \name{calc_ejscreen_dataset}
 \alias{calc_ejscreen_dataset}
-\title{Run the staged EJSCREEN/EJAM dataset update pipeline}
+\title{Run calculations for the staged EJSCREEN/EJAM dataset update pipeline}
 \usage{
 calc_ejscreen_dataset(
   yr,
@@ -214,12 +214,10 @@ named list containing final datasets (\code{blockgroupstats}, \code{bgej},
 \code{stage_format}, and saved stage paths.
 }
 \description{
-Run the staged EJSCREEN/EJAM dataset update pipeline
+Run calculations for the staged EJSCREEN/EJAM dataset update pipeline
 }
 \details{
-\code{calc_ejscreen_dataset()} can be called from a script each year.
-See the runner script \code{data-raw/run_ejscreen_acs2024_pipeline.R}
-for an example of how to call this function, and how it can be used
+See the runner script \code{data-raw/run_ejscreen_dataset_pipeline.R}
 to run the whole pipeline from start to finish with minimal manual intervention.
 
 \code{calc_ejscreen_dataset()} is a high-level wrapper around the staged

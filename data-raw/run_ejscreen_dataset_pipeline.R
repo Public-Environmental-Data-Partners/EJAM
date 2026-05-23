@@ -1,8 +1,27 @@
 ###################################################### #
-
-# Repeatable ACS 2020-2024 EJSCREEN/EJAM pipeline runner.
-# Run via source("data-raw/run_ejscreen_acs2024_pipeline.R")
-# Relies on calc_ejscreen_dataset() as a high-level function
+# Notes ####
+#
+# *** BEFORE using this script,
+#   make sure map_headernames is updated carefully.
+#   then update names_* dataset objects using  data-raw/datacreate_names_of_indicators.R
+###### #
+#
+# Repeatable EJSCREEN/EJAM pipeline runner for data updates (ACS demographics, etc.)
+#
+# Run via
+#   source("data-raw/run_ejscreen_dataset_pipeline.R")
+#
+# The pipeline process uses these key helper functions at the various stages,
+# which are called from the script or from `calc_ejscreen_dataset()`
+#
+# - `download_bg_acs_raw()`
+# - `calc_bg_islandareasdata()`
+# - `calc_bg_acsdata()`
+# - `load_file_stage()` # or `get_reuse_blockgroupstats()` for environmental data
+# - `calc_bg_extra_indicators()`
+# - `calc_bg_geodata()`
+# - `calc_ejscreen_dataset()` # to assemble all of the above
+# - `ejscreen_pipeline_validate()`
 #
 # Depending on specified year, storage location, and directory,
 #   this writes csv (or other format) file checkpoints to a local or aws directory such as
@@ -784,7 +803,7 @@ if (stage_exists(stagename)) {
       "This file was copied from the same-vintage blockgroupstats fallback.",
       paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
       paste("Pipeline ACS version:", pipeline_acs_version),
-      "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_acs2024_pipeline.R.",
+      "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_dataset_pipeline.R.",
       paste("Created:", Sys.time())
     ),
     "bg_envirodata_SOURCE.txt"
@@ -890,7 +909,7 @@ if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
 }
 
 ###################################################### #
-# Create blockgroupstats, bgej, usastats, & statestats ####
+# * *Create blockgroupstats, bgej, usastats, & statestats ** ####
 ###################################################### #
 
 message("Creating blockgroupstats, bgej, usastats, statestats",
@@ -1279,12 +1298,6 @@ source("./data-raw/datacreate_testpoints_testoutputs.R" )
 source("./data-raw/datacreate_testoutput_ejamit_fips_.R")
 source("./data-raw/datacreate_testoutput_ejamit_shapes_2.R" )
 # restart, reinstall
-
-
-# ***
-# Need to update names_* dataset objects using  data-raw/datacreate_names_of_indicators.R
-# but first ensuring that map_headernames is cleaned up so the varlist column will work for this
-# and repeats in rname column will not cause problems or are gone.
 
 
 

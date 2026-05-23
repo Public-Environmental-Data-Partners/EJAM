@@ -34,7 +34,7 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #' the Census Bureau American Community Survey (ACS) 5-year summary file. In the
 #' current annual pipeline it is called through [calc_bg_acsdata()], which is in
 #' turn orchestrated by [calc_ejscreen_dataset()] and by the staged runner
-#' script `data-raw/run_ejscreen_acs2024_pipeline.R`.
+#' script `data-raw/run_ejscreen_dataset_pipeline.R`.
 #'
 #' Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
 #' which is documented at https://ejanalysis.github.io/ACSdownload
