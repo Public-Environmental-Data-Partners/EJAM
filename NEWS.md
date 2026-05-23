@@ -84,16 +84,32 @@ Highlights:
 - Added `calc_ejscreen_dataset()` as a high-level wrapper for the staged annual
   data update pipeline. Stages include the following:
 
-  - downloaded tables of raw data from ACS (`bg_acs_raw`)
-  - calculated ACS-based demographic indicators (`bg_acsdata`)
-  - environmental indicators (`bg_envirodata`)
-  - EJ Indexes (`bgej`)
-  - extra indicators (`bg_extra_indicators`)
-  - geography information (`bg_geodata`)
-  - a combined file for EJAM (`blockgroupstats`)
-  - a combined file for EJScreen (`ejscreen_export`)
-  - percentile tables (`usastats` and `statestats`)
-  - Island Areas demographics (optional)
+  1. Download raw ACS demographic tables at blockgroup and tract resolution
+     (`bg_acs_raw`).
+  2. Calculate ACS-based demographic indicators and the lead paint indicator
+     (`bg_acsdata`).
+  3. Optionally download and transform Island Areas Census demographics as
+     separate checkpoints (`bg_islandareas_raw` and
+     `bg_islandareas_demographics`).
+  4. Validate and save key environmental indicators, or reuse existing ones
+     (`bg_envirodata`).
+  5. Validate and save extra indicators such as low life expectancy, or reuse
+     existing ones (`bg_extra_indicators`).
+  6. Validate and save Census/TIGER blockgroup geography fields such as
+     `arealand` and `areawater` (`bg_geodata`).
+  7. Calculate demographic indexes, including supplemental demographic indexes
+     that use extra indicators such as low life expectancy.
+  8. Combine blockgroup demographic, environmental, extra-indicator, and
+     geography fields for EJAM (`blockgroupstats`).
+  9. Create percentile lookup tables for demographic and environmental
+     indicators (`usastats_acs`, `statestats_acs`, `usastats_envirodata`,
+     and `statestats_envirodata`).
+  10. Calculate EJ indexes from environmental percentiles and demographic
+      indexes (`bgej`).
+  11. Create percentile lookup tables for EJ indexes (`usastats_ej` and
+      `statestats_ej`).
+  12. Combine the percentile lookup tables (`usastats` and `statestats`).
+  13. Create an EJScreen-ready export file (`ejscreen_export`).
 - Pipeline stages can be read from or written to local folders or AWS S3, and
   can be saved as CSV and/or `.rda` files. Raw ACS data can be saved in a
   single object or in a folder-plus-manifest layout with one file per ACS table.
