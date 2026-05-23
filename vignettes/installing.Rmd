@@ -214,7 +214,7 @@ You should not have to do anything other than the instructions above, to handle 
 
 To work in the RStudio console, EJAM needs some datasets not stored as part of the package. However, they already should be downloaded (right after you first install the package) and loaded into memory automatically (or be ready for lazy-loading or otherwise loading as needed) as soon as you do require(EJAM) or library(EJAM).
 
-On first use, the package should automatically download some data files from a related repository. Each time the package is attached via library() or require(), `.onAttach()` will check for updates and also will build a spatial index of Census block points called `?localtree`, via `indexblocks()`.
+On first use, the package should automatically download some data files from a related repository. Each time the package is attached via library() or require(), `.onAttach()` will check for updates and also will build a spatial index of Census block points via `indexblocks()`. That index is stored in the package cache and is reused by functions such as `getblocksnearby()`.
 
 Typically you would not need to download any datasets yourself, because EJAM just downloads these when the app starts (technically, when the R package is attached) (or only as needed in the case of certain datasets that are not always needed). Some datasets are installed along with the package, such as the [blockgroupstats](../reference/blockgroupstats.html) data. But large files like [blockpoints](../reference/blockpoints.html) are stored in a separate data repo, and EJAM downloads them from there. You might want your own local copies, though, for these reasons:
  

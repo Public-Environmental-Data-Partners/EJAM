@@ -25,7 +25,8 @@
 #'  getblocksnearby() is a wrapper redirecting to the right version, like [getblocksnearbyviaQuadTree()]
 #'    Census block "internal points" (defined by Census Bureau) are actually what it looks for,
 #'    and they are like centroids.
-#'    The blocks are pre-indexed for the whole USA, via the data object quadtree aka localtree
+#'    The blocks are pre-indexed for the whole USA via [indexblocks()], which
+#'    stores the quadtree index in the package cache.
 #'
 #' @inheritParams getblocksnearbyviaQuadTree
 #' @param ...  passed to [getblocksnearbyviaQuadTree()] or other such functions

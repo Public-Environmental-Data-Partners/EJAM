@@ -157,7 +157,7 @@ getblocks_summarize_sites_per_block <- function(x, varname='blockid') {
 #'   data.table::setDT(x)
 #'   pts <- rbind(data.table::data.table(lat = 40.3, lon = -96.23),
 #'     x[ , .(lat, lon)])
-#'  z <- getblocksnearbyviaQuadTree(pts, 1, quadtree = localtree, quiet = TRUE)
+#'  z <- getblocksnearby(pts, 1, quiet = TRUE)
 #'  z[ , .(blocks = .N) , keyby = 'ejam_uniq_id']
 #'  plot_blocks_nearby(pts, radius = 1, sites2blocks = z)
 #'  zz <- getblocks_diagnostics(z, detailed = TRUE, see_pctiles = TRUE)
