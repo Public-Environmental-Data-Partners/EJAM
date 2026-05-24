@@ -102,8 +102,11 @@ pctile_x_is_hit_by_score <- function(raw_score_name, cutoff = 0.90, score = NULL
   # note bgej is a separate table that contains the raw EJ index scores, so this function will need to be modified to work with those
   # or you can specify score as a vector of raw EJ index scores since their percentiles are in usastats and statestats.
 
+  if (is.character(cutoff)) {
+    cutoff <- suppressWarnings(as.numeric(cutoff))
+  }
   stopifnot(!is.null(cutoff), !all(is.na(cutoff)),
-            length(cutoff) == 1, is.numeric(cutoff))
+            length(cutoff) == 1, is.numeric(cutoff), !is.na(cutoff))
   if (cutoff > 1 || cutoff < 0)  {
     stop("cutoff must be a percentile value given as a fraction from 0 to 1, e.g. 0.90 for the 90th percentile")
   }
