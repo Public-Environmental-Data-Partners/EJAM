@@ -21,7 +21,7 @@ attributes2 = function(x) {
 #' @param attr_name e.g. "ejam_package_version"
 #' @param newvalue the new value of that attribute
 #' @param exclude_atomic_vectors if TRUE, avoids updating attributes on atomic vectors like names_e,
-#'   since it is distracting when printing them to console
+#'   since it is distracting when looking at one in console, like `names_e`
 #' @param only_update_if_had_been_set set to TRUE to only update this attribute for data objects where
 #'   that object already had a value set for this attribute, to update only but not create/add attribute.
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
@@ -52,16 +52,16 @@ metadata_update_attr <- function(x,
     if (exclude_atomic_vectors && is.atomic(get(x[i])) && is.vector(get(x[i]))) {
       # ignore this object
     } else {
-    expr <- substitute(
-      attr(object, attr_name) <- value,
-      list(object = as.name(x[i]), attr_name = attr_name, value = newvalue)
-    )
-    print(deparse1(expr))
-    eval(expr, envir = globalenv())
-    src = paste0("usethis::use_data(", x[i], ", overwrite = TRUE)")
-    print(src)
-    eval(parse(text = src))
-  }
+      expr <- substitute(
+        attr(object, attr_name) <- value,
+        list(object = as.name(x[i]), attr_name = attr_name, value = newvalue)
+      )
+      print(deparse1(expr))
+      eval(expr, envir = globalenv())
+      src = paste0("usethis::use_data(", x[i], ", overwrite = TRUE)")
+      print(src)
+      eval(parse(text = src))
+    }
   }
   cat("datasets have been updated\n")
   return(NULL)
@@ -122,7 +122,7 @@ metadata_add_and_use_this <- function(objectname, metadata = NULL,
 
   cat("did", text_to_do, "\n which updated the attributes of the object only in the local envt, but NOT in .GlobalEnv \n")
   return(attributes2(get(objectname, envir = calling_env, inherits = TRUE)))
-  }
+}
 #################################################### #
 
 #' helper function for package to set metadata attributes of a dataset, used by scripts in /data-raw/
@@ -190,8 +190,8 @@ metadata_add <- function(x, metadata=NULL,
     attr(x, which = names(metadata)[i]) <- metadata[[i]]
   }
 
-cat("key attributes now: \n\n" )
-print(attributes2(x))
+  cat("key attributes now: \n\n" )
+  print(attributes2(x))
   invisible(x)
 }
 #################################################### #
@@ -236,15 +236,26 @@ metadata_check_print = function(...) {
 
   ## check which dataset objects have which metadata info about vintage, etc.
   if (!("package:EJAM" %in% search())) {stop("must first use library() or require() to attach the EJAM package")}
-  x = metadata_check(...)
-  cat("\n\n See what metadata is stored as attributes \n\n")
-  print(t(head(x,1)))
-  cat("\n\n")
-  ## see which data objects have outdated or missing metadata about ejam_package_version, etc.
+  metadata_check_console_output <- capture.output({
+    x = metadata_check(...)
+  })
+  ## large table of where there is metadata
+  cat("\nAll metadata found: \n\n")
+  print(x[x$has_metadata, ])
+
+  cat("\n  Example of metadata stored as attributes of an item \n\n")
+  example1 = cbind( t(head(x,1)) )
+  colnames(example1) <- "example"
+  print(example1)
+  cat("\n")
+
+  x$is.atomic <- as.logical(sapply(x$item, function(z) try(is.atomic(get(z)), silent = TRUE)))
+
+  ## MISSING metadata
 
   if (all("has_metadata" %in% names(x), "date_saved_in_package" %in% names(x), "ejam_package_version" %in% names(x)  )) {
-    y <- x[(x$has_metadata %in% FALSE) | is.na(x$date_saved_in_package)  |  is.na(x$ejam_package_version) | !(x$ejam_package_version %in% desc::desc_get("Version")), ]
-    y <- y[order( is.na(y$date_saved_in_package), y$ejam_package_version, y$has_metadata), ]
+    missing_or_na_or_old <- x[(x$has_metadata %in% FALSE) | is.na(x$date_saved_in_package)  |  is.na(x$ejam_package_version) | !(x$ejam_package_version %in% desc::desc_get("Version")), ]
+    missing_or_na_or_old <- missing_or_na_or_old[order( is.na(missing_or_na_or_old$date_saved_in_package), missing_or_na_or_old$ejam_package_version, missing_or_na_or_old$has_metadata), ]
   } else {
     if ("ejam_package_version" %in% names(x)) {
       cat("Not latest ejam_package_version \n\n")
@@ -252,42 +263,97 @@ metadata_check_print = function(...) {
         x[!(x$ejam_package_version %in% desc::desc_get("Version")),  ]
       )
     }
-    y <- x
+    stop("cannot find some of these after using metadata_check() :  has_metadata, date_saved_in_package, ejam_package_version")
+    missing_or_na_or_old <- x ### ????
   }
-  rownames(y) <- NULL
-  y$is.atomic <- sapply(y$item, function(z) try(is.atomic(get(z))))
+  rownames(missing_or_na_or_old) <- NULL
 
-  # y[,  ]
-  cat("\n\n See which data objects have outdated or missing metadata about ejam_package_version, etc. \n\n")
-  cat("but omit atomic vectors since adding attributes to those makes them nonvectors and messier to print \n")
-  print(y[ y$is.atomic != "TRUE", intersect(c('item', 'is.atomic', 'ejam_package_version', 'date_saved_in_package', 'has_metadata'), names(y))])
-  cat("\n\n")
-  cat("atomic: \n\n")
-  print(y$item[y$is.atomic == "TRUE"])
-  cat("\n\n")
+  ## see which data objects have outdated or missing metadata about ejam_package_version, etc.
+  cat("See which data objects have outdated or missing metadata about ejam_package_version, etc. \n")
+
   # --------------------------------------------------------------------------------- -
-  ## how many lack ejscreen_version info (maybe not always relevant)
-  print(table(How.many.have.ejscreen_info = x$ejscreen_version, useNA = "always"))
-  cat("\n\n")
+  ## ATOMIC
+
+  cat("\n")
+  cat('There are', sum(x$is.atomic, na.rm = TRUE), 'atomic objects as datasets: \n')
+  # names of some of them
+  print(head(cbind(counts.of.atomic.objects.with.most.common.prefixes = sort(table((substr(x$item[!is.na(x$is.atomic) & x$is.atomic], 1,6))), decreasing = T)), 6))
+  # print(missing_or_na_or_old$item[isTRUE(missing_or_na_or_old$is.atomic)])
+  cat("\n")
+
   # --------------------------------------------------------------------------------- -
-  ## see ACS version info and date saved
+  # MISSING or BAD or OLD metadata
+
+  cat("MISSING/BAD/OLD metadata (for non-atomic datasets)\n")
+  badnon = missing_or_na_or_old[!is.na(missing_or_na_or_old$is.atomic) & (!missing_or_na_or_old$is.atomic),
+                                intersect(c('item', 'is.atomic', 'ejam_package_version', 'date_saved_in_package', 'has_metadata'), names(missing_or_na_or_old))]
+  rownames(badnon) <- NULL
+  print(badnon)
+  cat("\n")
+
+  # # --------------------------------------------------------------------------------- -
+  # # MISSING all metadata
+
+  # cat('For all', NROW(x), 'objects: \n')
+  print(addmargins(table(
+    atomic = (!is.na(x$is.atomic) & x$is.atomic),
+    have.any.metadata = x$has_metadata,
+    useNA = "always")))
+  cat("\n")
+
+  # --------------------------------------------------------------------------------- -
+  ##  ejam_package_version
+
+  if ("ejam_package_version" %in% names(x)) {
+    # cat('For all', NROW(x), 'objects: \n')
+    print(addmargins(table(
+      atomic = (x$is.atomic & !is.na(x$is.atomic)),
+      ejam_package_version = x$ejam_package_version,
+      useNA = 'always')))
+    cat("\n")
+  }
+  # # --------------------------------------------------------------------------------- -
+  ##  ejscreen_version
+
+  if ("ejscreen_version" %in% names(x)) {
+    # cat('For all', NROW(x), 'objects: \n')
+    print(addmargins(table(
+      atomic = (!is.na(x$is.atomic) & x$is.atomic),
+      ejscreen_version = x$ejscreen_version,
+      useNA = "always")))
+    cat("\n")
+  }
+  # --------------------------------------------------------------------------------- -
+  ##  acs_version
+
   if ("acs_version" %in% names(x)) {
-  print(table(How.many.have.acs_version = x$acs_version, useNA = 'always'))
-  z = x[is.na(x$acs_version), intersect(c('item', 'date_saved_in_package', 'acs_version' ), names(x))]
-  cat("\n\n see where is ACS version info missing, and date saved \n\n")
-  z = z[order(z$item), ]
-
-  cat("where object name is names_xyz (vectors of variables or indicator names do not need metadata stored as attributes)\n\n")
-  these = z[grepl("^names_", z$item), ]
-  rownames(these) = NULL
-  print(these)
-
-  cat("\n\nwhere object name is NOT names_xyz\n\n")
-  these = z[!grepl("^names_", z$item), ]
-  rownames(these) = NULL
-  print(these)
-
+    # cat('For all', NROW(x), 'objects: \n')
+    print(addmargins(table(
+      atomic = (x$is.atomic & !is.na(x$is.atomic)),
+      acs_version = x$acs_version,
+      useNA = 'always')))
+    cat("\n")
   }
+  # --------------------------------------------------------------------------------- -
+  ## missing acs or date
+
+  cat("Missing acs_version, ejam_package_version, or date_saved_in_package:\n")
+  if (!all(c("acs_version", "date_saved_in_package", "ejam_package_version") %in% names(x))) {
+    warning( 'need to have all these column names from metadata_check() : c("acs_version", "date_saved_in_package", "ejam_package_version")')
+  } else {
+    z = x[is.na(x$acs_version) | is.na(x$date_saved_in_package) | is.na(x$ejam_package_version),
+          intersect(c('item', 'date_saved_in_package', 'acs_version', 'ejam_package_version', 'is.atomic' ), names(x))]
+    cat("(excluding where object name is names_xyz)\n\n")
+    these = z[!grepl("^names_", z$item), ]
+    these = these[order(z$is.atomic, z$ejam_package_version, z$date_saved_in_package), ]
+    these = these[!is.na(these$item), ]
+    rownames(these) = NULL
+    print(these)
+  }
+  # --------------------------------------------------------------------------------- -
+  # print info captured earlier, about tips on getting more info
+
+  cat('\n', paste0(metadata_check_console_output, collapse = "\n"), '\n')
   ## probably should have acs_version:  usastats, testoutput_*
   invisible(x)
 }
@@ -523,6 +589,10 @@ Also see \n
     rdafiles =  y$Item   # same thing as data(package = pkg)$results[ , "Item"]
     \n'
   )
+  cat("
+      Also note there are large datasets stored as .arrow files,
+      and their vintage is not recorded the same way as for datasets that are in the package.
+      See the vignette dev-update-datasets.html \n")
 
   # replace the NULL values with NA values,
   # and make each column just a vector instead of a list
@@ -534,6 +604,33 @@ Also see \n
   }
   allresults$has_metadata = as.logical(allresults$has_metadata)
   rownames(allresults) <- NULL
+
+  unique_values = function(x,
+                           which = c(
+                             "ejam_package_version",
+                             "date_saved_in_package",
+                             "date_downloaded",
+                             "ejscreen_version",
+                             "ejscreen_releasedate",
+                             "acs_releasedate",
+                             "acs_version",
+                             "census_version"
+                           )
+  ) {
+    cat("Unique values found for each type of metadata info: \n")
+    sapply( which,
+            function(z) {
+              cat("\n", z,":         ")
+              if (z %in% names(x)) {
+                cat(paste0( ( as.vector(unique(x[,z]))), collapse=", ")  )
+              } else {
+                cat("column not found")
+              }
+            })
+    invisible(NULL)
+  }
+  unique_values(x = allresults, which = which)
+  cat("\n")
 
   return(allresults)
 }
