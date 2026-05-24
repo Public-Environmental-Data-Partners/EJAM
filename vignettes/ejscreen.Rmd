@@ -81,8 +81,8 @@ EJAM-related repositories.
             files](`r paste0(EJAM::url_package(get_full_url = TRUE),"/tree/main/data")`){target="_blank"}
         -   Datasets used by EJAM but stored separately (large .arrow files):
             [Documentation](../articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files){target="_blank"}
-            and [Data
-            files](`r paste0(EJAM::url_package(type = "data", get_full_url = TRUE), "/tree/main/data")`){target="_blank"}
+            and [release assets with data
+            files](`r paste0(EJAM::url_package(type = "data", get_full_url = TRUE), "/releases")`){target="_blank"}
 
 -   Methods (development of indicators, calculations for community reports,
     etc.)

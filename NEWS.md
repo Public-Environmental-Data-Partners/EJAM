@@ -54,8 +54,9 @@ Highlights:
 
 ## R Package Functions
 
-- `ejamapi()` was significantly enhanced with PDF support, bug fixes, more
-  error-checking, and more examples.
+- `ejamapi()` was significantly enhanced with PDF support, query endpoint,
+  a new parameter to help save .html file reports, bug fixes, 
+  more error-checking, and better examples.
 - `plot_distance_by_pctd()` fix when weights are not population.
 - `acs_bycounty()` / `acs_endyear()` fixes: character year handling and renamed/standardized `acs_endyear()`.
 - App robustness fixes for NULL settings such as `bookmarking_allowed` or
@@ -170,6 +171,9 @@ Highlights:
 - Added and updated maintainer documentation for annual EJScreen dataset
   updates, staged pipeline runs, S3/local storage, validation summaries, and
   release preparation.
+- Saved future options and plans for Arrow file versioning, cache location,
+  manifests, S3/`ejamdata` storage, and related cleanup in
+  `data-raw/pipeline_validation_notes/future_arrow_versioning_and_manifest_plan.md`.
 - Refreshed test fixtures and example output datasets (testoutput* files, etc.).
 - Expanded unit testing coverage.
 - Sped up Shiny/webapp tests by allowing the web app functionality suite to run

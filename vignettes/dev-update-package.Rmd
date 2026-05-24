@@ -181,14 +181,15 @@ name as potentially modified via `global_defaults_package.R` or parameters to
     Pipeline)](dev-update-ejscreen-datasets-yearly.html). Confirm that accepted
     pipeline outputs have been copied into package data where appropriate
     (`blockgroupstats`, `usastats`, `statestats`, and related lookup/metadata
-    objects), that `bgej.arrow` has been published as an asset in the matching
-    `ejamdata` release tag for `packageVersion("EJAM")`, and that the
-    local/source package can load a `bgej` whose blockgroup universe matches
-    `blockgroupstats`.
+    objects), that `bgej.arrow` has been published as an asset in the
+    `ejamdata` release tag recorded in DESCRIPTION as `ejamdata_required_tag`,
+    and that the local/source package can load a `bgej` whose blockgroup
+    universe matches `blockgroupstats`.
 
--   If the ejamdata repository is still being used to store large arrow files
-    then make sure a new release on that repo corresponds to the new release
-    of the EJAM repo. See the [article about updating datasets]("dev-update-datasets.html").
+-   If the ejamdata repository is still being used to publish large Arrow
+    files as GitHub release assets, then make sure a release tag on that repo
+    matches the `ejamdata_required_tag` field in DESCRIPTION. See the
+    [article about updating datasets]("dev-update-datasets.html").
 
 -   Regenerate example/test output datasets after code or annual data changes.
     In particular, rerun the scripts in `data-raw/` that create

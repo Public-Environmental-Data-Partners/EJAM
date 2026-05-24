@@ -45,10 +45,10 @@
 #  for comparing the outputs of this pipeline to the prior version of the data,
 #  to help confirm that changes are as expected.
 #
-# bgej.arrow is part of the EJSCREEN Annual Data Update bundle. When EJAM later
-# obtains bgej.arrow via dataload_dynamic("bgej"), it uses the ejamdata release
-# tag that matches the current packageVersion("EJAM"), such as v2.5.0, rather
-# than the latest ejamdata release.
+# Arrow assets are part of the EJAM/EJScreen release bundle. When EJAM later
+# obtains Arrow files via dataload_dynamic(), it uses the ejamdata release tag
+# recorded in DESCRIPTION as ejamdata_required_tag, rather than whichever
+# ejamdata release GitHub currently marks as latest.
 #
 # Useful environment variables:
 

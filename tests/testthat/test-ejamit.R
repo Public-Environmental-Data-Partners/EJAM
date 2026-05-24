@@ -52,15 +52,70 @@ test_that("bgej is classified as EJSCREEN annual update data", {
 })
 ########################################################## #
 
-test_that("bgej uses package-pinned release tag instead of latest", {
+test_that("Arrow datasets use the DESCRIPTION-required ejamdata tag by default", {
+  expected_tag <- "v2.5.0"
+
+  expect_equal(EJAM:::ejamdata_required_tag(), expected_tag)
+
   expect_equal(
-    unname(EJAM:::dynamic_data_release_tag("bgej")),
-    paste0("v", as.character(utils::packageVersion("EJAM")))
+    unname(EJAM:::dynamic_data_release_tag(EJAM:::.arrow_ds_names)),
+    rep(expected_tag, length(EJAM:::.arrow_ds_names))
+  )
+})
+########################################################## #
+
+test_that("required ejamdata tag fallback handles missing package version", {
+  expect_equal(
+    EJAM:::ejamdata_required_tag(
+      package = "EJAMdefinitelyNotInstalled",
+      default = "v-test"
+    ),
+    "v-test"
+  )
+
+  expect_error(
+    EJAM:::ejamdata_required_tag(package = "EJAMdefinitelyNotInstalled"),
+    "Could not determine required ejamdata release tag"
+  )
+})
+########################################################## #
+
+test_that("Arrow release tag can be decoupled from the package version", {
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(
+      c("bgej", "frs"),
+      required_tag = "v2.32.8.001"
+    )),
+    c("v2.32.8.001", "v2.32.8.001")
+  )
+})
+########################################################## #
+
+test_that("explicit Arrow release tags override the package default", {
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(c("bgej", "frs"), piggybacktag = "v2.32.8.001")),
+    c("v2.32.8.001", "v2.32.8.001")
   )
   expect_equal(
-    unname(EJAM:::dynamic_data_release_tag("frs")),
-    "latest"
+    unname(EJAM:::dynamic_data_release_tag(c("bgej", "frs"), piggybacktag = "v2.5.0")),
+    c("v2.5.0", "v2.5.0")
   )
+})
+########################################################## #
+
+test_that("local Arrow release marker reader treats blank markers as missing", {
+  marker <- tempfile("ejamdata_version-", fileext = ".txt")
+
+  expect_null(EJAM:::ejamdata_local_arrow_tag_read(marker))
+
+  writeLines(character(0), marker)
+  expect_null(EJAM:::ejamdata_local_arrow_tag_read(marker))
+
+  writeLines(c("   ", "\t"), marker)
+  expect_null(EJAM:::ejamdata_local_arrow_tag_read(marker))
+
+  writeLines(c("  v2.5.0  ", "v2.32.8.001"), marker)
+  expect_equal(EJAM:::ejamdata_local_arrow_tag_read(marker), "v2.5.0")
 })
 ########################################################## #
 

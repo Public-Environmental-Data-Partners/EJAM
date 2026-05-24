@@ -84,7 +84,8 @@ See \code{\link[=ejamit]{ejamit()}} for examples.
 getblocksnearby() is a wrapper redirecting to the right version, like \code{\link[=getblocksnearbyviaQuadTree]{getblocksnearbyviaQuadTree()}}
 Census block "internal points" (defined by Census Bureau) are actually what it looks for,
 and they are like centroids.
-The blocks are pre-indexed for the whole USA, via the data object quadtree aka localtree
+The blocks are pre-indexed for the whole USA via \code{\link[=indexblocks]{indexblocks()}}, which
+stores the quadtree index in the package cache.
 }
 \seealso{
 \code{\link[=ejamit]{ejamit()}} \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}}

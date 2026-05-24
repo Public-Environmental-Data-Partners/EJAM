@@ -52,8 +52,9 @@ write secondary formats such as `.rda` files for the same table stages when
 every installed package dataset in `data/*.rda`. Replacing package data objects
 with EJAM metadata helpers is a separate release step after the pipeline
 outputs have been reviewed. `bgej` is the main exception: the accepted annual
-`bgej` table should be republished as `bgej.arrow` in the matching `ejamdata`
-release tag rather than saved as `data/bgej.rda`.
+`bgej` table should be republished as `bgej.arrow` in the `ejamdata` release
+tag recorded in DESCRIPTION as `ejamdata_required_tag`, rather than saved as
+`data/bgej.rda`.
 
 ## Pipeline Stages
 
@@ -162,12 +163,12 @@ these update groups to decide what must be rebuilt, validated, or only checked.
    `tables_ejscreen_acs`, `formulas_ejscreen_acs`,
    `formulas_ejscreen_acs_disability`, `formulas_ejscreen_demog_index`,
    `avg.in.us`, `high_pctiles_tied_with_min`, and `testoutput*`.
-   `bgej.arrow` belongs in this group and must be pinned to the EJAM/EJScreen
-   annual release, not treated as independently refreshable "latest" data.
-   In practice, `dataload_dynamic("bgej")` uses the installed EJAM package
-   version, as reported by `packageVersion("EJAM")`, to find the matching
-   `ejamdata` release tag, such as `v2.5.0`, and checks the loaded `bgej`
-   against the installed `blockgroupstats` blockgroup universe.
+   In practice, `dataload_dynamic()` uses the `ejamdata_required_tag` field in
+   DESCRIPTION to find the required `ejamdata` release tag, such as `v2.5.0`,
+   for Arrow assets. This tag usually matches the EJAM package version for an
+   annual data release, but can differ for patch releases. `bgej.arrow` is part
+   of this annual release bundle and is additionally checked against the
+   installed `blockgroupstats` blockgroup universe.
 
 3. **Blockgroup Geography Updates** include blockgroup-keyed geography files
    and crosswalks such as `bgid2fips`, `blockwts`, `bgpts`, and
@@ -768,10 +769,10 @@ EJAM:::metadata_add_and_use_this("statestats")
 Confirm the exact metadata values before saving, especially ACS vintage,
 Census vintage, EJSCREEN/EJAM version, data source notes, and provisional reuse
 notes. `bgej` should be checked and saved through the pipeline stage files, then
-published as `bgej.arrow` in the matching `ejamdata` release tag, such as
-`v2.5.0` for EJAM 2.5.0. A local `data/bgej.arrow` copy can be useful for
-testing from source, but it is ignored for package builds and should not be
-treated as normal package data.
+published as `bgej.arrow` in the `ejamdata` release tag recorded in
+DESCRIPTION as `ejamdata_required_tag`, such as `v2.5.0` for EJAM 2.5.0. A
+local `data/bgej.arrow` copy can be useful for testing from source, but it is
+ignored for package builds and should not be treated as normal package data.
 
 After those key datasets are updated, rerun the scripts that create and save
 `testoutput_*` files and datasets, especially

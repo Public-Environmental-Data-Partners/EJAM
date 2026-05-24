@@ -26,8 +26,8 @@
   frs_by_mact = "facility_data_update"
 )
 
-# Dynamic Arrow files follow different update cadences. Keep this categorization
-# close to .arrow_ds_names so download and validation helpers use the same source.
+# Arrow files follow different update cadences. Keep this categorization close
+# to .arrow_ds_names so validation and maintainer helpers use the same source.
 dynamic_data_group <- function(varnames = .arrow_ds_names) {
   out <- .dynamic_data_groups[varnames]
   missing_group <- is.na(out)
@@ -37,10 +37,42 @@ dynamic_data_group <- function(varnames = .arrow_ds_names) {
   out
 }
 
+ejamdata_required_tag <- function(package = "EJAM", default = NULL) {
+  if (is.null(default)) {
+    default <- tryCatch(
+      paste0("v", as.character(utils::packageVersion(package))),
+      error = function(e) NA_character_
+    )
+  }
+
+  tag <- tryCatch(
+    desc::desc(package = package)$get("ejamdata_required_tag"),
+    error = function(e) NA_character_
+  )
+  tag <- as.character(tag)[1]
+
+  if (is.na(tag) || !nzchar(tag)) {
+    if (is.na(default) || !nzchar(default)) {
+      stop(
+        "Could not determine required ejamdata release tag. ",
+        "Add ejamdata_required_tag to DESCRIPTION or pass an explicit default.",
+        call. = FALSE
+      )
+    }
+    return(default)
+  }
+  if (!startsWith(tag, "v")) {
+    tag <- paste0("v", tag)
+  }
+  tag
+}
+
 dynamic_data_release_tag <- function(varnames = .arrow_ds_names,
-                                     piggybacktag = "latest") {
-  out <- stats::setNames(rep(piggybacktag, length(varnames)), varnames)
-  ejscreen_annual <- dynamic_data_group(varnames) == "ejscreen_annual_update"
-  out[ejscreen_annual] <- paste0("v", as.character(utils::packageVersion("EJAM")))
-  out
+                                     piggybacktag = "latest",
+                                     required_tag = ejamdata_required_tag()) {
+  release_tag <- piggybacktag
+  if (identical(piggybacktag, "latest")) {
+    release_tag <- required_tag
+  }
+  stats::setNames(rep(release_tag, length(varnames)), varnames)
 }

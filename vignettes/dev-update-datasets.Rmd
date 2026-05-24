@@ -78,7 +78,7 @@ data-related repository:
 [access to package data files](`r paste0(code_reponame_url, "/tree/main/data")`)
 
 -   Datasets used by EJAM but stored separately (large `.arrow` files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and
-[access to the large data files](`r paste0(data_reponame_url, "/tree/main/data")`)
+[access to the large data files as GitHub release assets](`r paste0(data_reponame_url, "/releases")`)
 
 ### Why the large datasets are put into the data repository using piggyback instead of committed using Git
 
@@ -209,9 +209,10 @@ package data are replaced, run `EJAM:::metadata_check()` and
 objects such as many `names_*` datasets do not need metadata attributes.
 
 -   Version numbering is recorded primarily in the DESCRIPTION file, release
-tags, and the NEWS file. The legacy `ejamdata_version.txt` marker is still used
-for some dynamic Arrow data, but package-coupled annual data such as
-`bgej.arrow` are pinned to the EJAM package version/release tag.
+tags, and the NEWS file. The `ejamdata_required_tag` field in DESCRIPTION
+records which `ejamdata` release EJAM should use. The
+`ejamdata_version.txt` marker records which `ejamdata` release tag is actually
+saved in the local data folder.
 
 -   [Updating documentation](dev-update-documentation.html) - updates may be
 needed for the README, vignettes, and possibly examples in some functions in
@@ -226,12 +227,15 @@ maintainer workflow.
 The information below focuses on the other type of data objects -- the set of
 large `{arrow}` files that are stored outside the package code repository.
 
-### Repository that stores the large arrow files
+### Repository that stores the large arrow file release assets
 
 Several large `{data.table}` files are not installed as part of the R package in
 the typical `/data/` folder that contains `.rda` files lazy-loaded by the
-package. Instead, they are kept in a separate GitHub repository that we refer to here as
-the data repository.
+package. Instead, they are kept as release assets in a separate GitHub
+repository that we refer to here as the data repository. The release assets
+are the authoritative copies used by installed EJAM packages; committed files
+in a repository `data/` folder should not be treated as the source used by EJAM
+installs.
 
 *IMPORTANT:* The name of the *data* repository (as distinct from the *package
 code* repository) must be recorded/updated in the EJAM package `DESCRIPTION`
@@ -270,9 +274,7 @@ planning updates:
 2. **EJSCREEN Annual Data Update** currently includes `bgej.arrow`. It is
    calculated from the annual EJScreen/EJAM demographic and environmental
    pipeline and must match the installed package's `blockgroupstats`,
-   `usastats`, and `statestats`. Starting with v2.5.0, `bgej.arrow` should be
-   pinned to the EJAM/EJScreen release tag rather than downloaded from the
-   latest data-repository release.
+   `usastats`, and `statestats`.
 
 3. **Blockgroup Geography Updates** include `bgid2fips` and `blockwts`, and
    related `.rda` objects such as `bgpts` and `bg_cenpop2020`. These need
@@ -335,21 +337,20 @@ release and upload the `.arrow` files as release assets. The old
 
 <!-- -->
 
-a.  For facility and most geography Arrow files, checks the data repository's
-latest release/version.
-b.  Checks the user's EJAM package's `ejamdata` version, which is stored in
-`data/ejamdata_version.txt`.
+a.  Resolves the package-compatible `ejamdata` release tag from the
+`DESCRIPTION` field `ejamdata_required_tag`, unless a maintainer explicitly
+passes a different `piggybacktag`. This lets a patch release of EJAM keep using
+an earlier compatible `ejamdata` release if the Arrow files have not changed.
+b.  Checks the user's locally installed Arrow data release tag, which is stored
+in `data/ejamdata_version.txt`.
 c.  If the `data/ejamdata_version.txt` file doesn't exist, for example on the
 first EJAM install, it will be created at the end of the script.
-d.  If the versions are different, downloads the latest Arrow files from the
-latest ejamdata release with `piggyback::pb_download()`.
-e.  For package-coupled annual files such as `bgej.arrow`, uses the EJAM
-package release tag, such as `v2.5.0`, rather than the latest data-repository
-release. This same rule is used when `dataload_dynamic("bgej")` loads `bgej`:
-the local `bgej.arrow` must match the installed package's `blockgroupstats`, and
-if it does not, EJAM tries to replace it from the package-pinned `ejamdata`
-release tag, which is based on `packageVersion("EJAM")`. See how this function
-works for details:
+d.  If the versions are different, downloads Arrow files from the matching
+`ejamdata` release with `piggyback::pb_download()`.
+e.  When `dataload_dynamic("bgej")` loads `bgej`, the local `bgej.arrow` must
+also match the installed package's `blockgroupstats`; if it does not, EJAM
+tries to replace it from the package-compatible `ejamdata` release tag. See how
+this function works for details:
 
 ```{r, eval=FALSE}
 download_latest_arrow_data()

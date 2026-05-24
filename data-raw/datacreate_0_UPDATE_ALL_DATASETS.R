@@ -259,7 +259,7 @@ if (0 == 1) {  # collapsable list
   documentOpen('./data-raw/datacreate_ejampackages.R')
   documentOpen('./data-raw/datacreate_meters_per_mile.R')
 
-  ### and then SAVE TO ejamdata REPO or wherever, if those datasets were updated.
+  ### and then publish to ejamdata GitHub release assets or wherever, if those datasets were updated.
 
 } # outline/list of datacreate_ files
 
@@ -351,7 +351,7 @@ source_maybe('datacreate_blockwts.R', DOIT = FALSE) # script that can include me
 # Creates mylistoftables, a list that includes tables blockwts, blockpoints, bgid2fips, etc.,
 #   gets updated when FIPS codes or boundaries change for blocks or blockgroups
 #  such as in Connecticut
-#  and then write to ejamdata repository if those datasets were updated.
+#  and then publish to ejamdata GitHub release assets if those datasets were updated.
 # bgej  is not ready yet here... it is made when blockgroupstats is made.
 # note that 'bg_cenpop2020' and 'bgpts' are in EJAM/data/
 

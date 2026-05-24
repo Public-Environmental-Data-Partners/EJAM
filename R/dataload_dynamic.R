@@ -6,13 +6,10 @@
 #'   package is first loaded, Arrow files are downloaded from the package's data
 #'   repository, normally called `ejamdata`, into the package's data directory.
 #'
-#'   Arrow files do not all follow the same release rule. Facility and most
-#'   geography Arrow files are still treated as dynamic data and normally come
-#'   from the latest applicable `ejamdata` release, tracked with the local
-#'   `ejamdata_version.txt` marker. Annual EJSCREEN/EJAM data files such as
-#'   `bgej.arrow` are package-coupled: they are pinned to the installed EJAM
-#'   package version, so EJAM 2.5.0 looks for `bgej.arrow` in the `ejamdata`
-#'   release tagged `v2.5.0` rather than in the latest data-repository release.
+#'   By default, Arrow files are loaded from the `ejamdata` release tag recorded
+#'   in DESCRIPTION as `ejamdata_required_tag`. The local
+#'   `ejamdata_version.txt` marker records which `ejamdata` release tag is
+#'   currently saved in the installed package's data folder.
 #'
 #' @param varnames character vector of names of R objects to get from board,
 #'   or set this to "all" to load all of them
@@ -23,9 +20,9 @@
 #' @param return_data_table whether the [read_ipc_file()] should return a table in
 #'   [data.table](https://r-datatable.com) format (T, the default), or arrow (F). Passed to [dataload_from_local()]
 #' @param onAttach Indicates whether the function is being called from onAttach. IF so, it will download all arrow files if necessary
-#' @param piggybacktag default is `"latest"` for dynamic Arrow data. Package-
-#'   coupled annual datasets such as `bgej` override `"latest"` internally and
-#'   use `paste0("v", packageVersion("EJAM"))` as their release tag.
+#' @param piggybacktag default is `"latest"`, which resolves internally to the
+#'   DESCRIPTION `ejamdata_required_tag` field. Pass a specific tag such as
+#'   `"v2.32.8"` only for explicit maintenance or diagnostic work.
 #' @return
 #'
 #'   returns vector of names of objects now in memory in specified envir, either because
@@ -223,7 +220,7 @@ dataload_dynamic_validate_bgej <- function(envir = globalenv(), silent = FALSE) 
       "The loaded bgej table does not match this package's blockgroupstats;",
       mismatch_reason,
       "The bgej object was removed from memory so stale EJ indexes are not used.",
-      "This can happen after installing from source before the matching ejamdata release has been published."
+      "This can happen after installing from source before the required ejamdata release has been published."
     ),
     call. = FALSE
   )

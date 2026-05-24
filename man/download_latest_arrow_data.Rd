@@ -20,9 +20,9 @@ download_latest_arrow_data(
 
 \item{envir}{if needed to specify environment other than default, e.g., globalenv() or parent.frame()}
 
-\item{piggybacktag}{default is \code{"latest"} for dynamic Arrow data. Package-
-coupled annual datasets such as \code{bgej} override \code{"latest"} internally and
-use \code{paste0("v", packageVersion("EJAM"))} as their release tag.}
+\item{piggybacktag}{default is \code{"latest"}, which resolves internally to the
+DESCRIPTION \code{ejamdata_required_tag} field. Pass a specific tag such as
+\code{"v2.32.8"} only for explicit maintenance or diagnostic work.}
 
 \item{force}{set TRUE to download requested files even if local copies exist.}
 }
@@ -30,19 +30,17 @@ use \code{paste0("v", packageVersion("EJAM"))} as their release tag.}
 Used when EJAM package is attached
 }
 \details{
-Checks to see what release of each requested Arrow dataset should be used.
-Facility and most geography Arrow files are treated as dynamic data and
-normally come from the latest applicable data-repository release, tracked
-with the installed package's \code{data/ejamdata_version.txt} marker.
+Checks to see what \code{ejamdata} release tag should be used for requested
+Arrow datasets. By default, EJAM uses the required \code{ejamdata} release tag
+recorded in DESCRIPTION as \code{ejamdata_required_tag}. For example, EJAM 2.5.0
+currently looks for Arrow files in the \code{ejamdata} release tagged \code{v2.5.0},
+not in whichever data-repository release GitHub currently marks as latest.
 
-Annual EJSCREEN/EJAM data files such as \code{bgej.arrow} are package-coupled.
-They are obtained from the \code{ejamdata} release tag that matches the current
-EJAM package version as reported by \code{packageVersion("EJAM")}. For example,
-EJAM 2.5.0 looks for \code{bgej.arrow} in the \code{ejamdata} release tagged
-\code{v2.5.0}, not in the latest data-repository release.
+The installed package's \code{data/ejamdata_version.txt} marker records the
+release tag for locally installed Arrow files.
 
-Relies on \code{\link[piggyback:pb_releases]{piggyback::pb_releases()}} to track / update / store / download
-data files as assets of a specific release on the data repository.
+Relies on \code{\link[piggyback:pb_download]{piggyback::pb_download()}} to download data files that have been
+stored as assets of a specific release on the data repository.
 For details, see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical details of how datasets are updated}
 }
 \keyword{internal}

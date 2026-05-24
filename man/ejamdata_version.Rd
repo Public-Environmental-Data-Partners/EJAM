@@ -10,7 +10,9 @@ A one-line text file installed in the package \code{data} directory.
 \code{ejamdata} release metadata.
 }
 \description{
-Text file marker used by EJAM to record which \code{ejamdata} release supplied
-locally installed Arrow-format datasets.
+Text file marker used by EJAM to record which \code{ejamdata} release tag supplied
+the locally installed Arrow-format datasets. The required tag for a given
+EJAM package release is recorded separately in DESCRIPTION as
+\code{ejamdata_required_tag}.
 }
 \keyword{datasets}

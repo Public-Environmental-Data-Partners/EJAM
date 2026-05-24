@@ -92,7 +92,7 @@
 #'
 #'     - Datasets stored within the EJAM package (.rda files): [Documentation](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "docs"), "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and [access to installed data files](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "code"), "/tree/main/data")`)
 #'
-#'     - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "docs"), "/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files")`) and [access to downloaded data files](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "data"), "/tree/main/data")`)
+#'     - Datasets used by EJAM but stored separately (large .arrow files): [Documentation](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "docs"), "/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files")`) and [release assets with downloadable data files](`r paste0(EJAM::url_package(get_full_url = TRUE, type = "data"), "/releases")`)
 #'
 #'
 NULL
