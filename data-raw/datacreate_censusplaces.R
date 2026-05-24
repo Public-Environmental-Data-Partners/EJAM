@@ -43,6 +43,9 @@ z = table(unlist(y))
 ### z
 ### IBM420_ltr ISO-8859-1 ISO-8859-2 ISO-8859-9   UTF-16BE      UTF-8
 ###          1      39401       1758         35          8        211
+#
+# There are 78 places where encoding is an issue.
+# Converting from what appears to be ISO-8859-1
 bestguess = names(which.max(z)) # bestguess =  "ISO-8859-1"
 cat("There are", length(which(censusplaces$COUNTY !=  stringi::stri_enc_toascii(censusplaces$COUNTY))), "places where encoding is an issue.
     Converting from what appears to be", bestguess,"\n")
@@ -58,6 +61,14 @@ censusplaces$PLACENAME <- NULL
 # None of these places are Counties - they are all cities, towns, etc.
 # sum(censusplaces$fips %in% substr(blockgroupstats$bgfips,1,5))
 cbind(TYPE = table(censusplaces$TYPE))
+
+## 2025
+#                          TYPE
+# Census Designated Place  9974
+# County Subdivision      11900
+# Incorporated Place      19540
+
+# 2026
 #                          TYPE
 # Census Designated Place  9974
 # County Subdivision      11900
@@ -66,6 +77,7 @@ cbind(TYPE = table(censusplaces$TYPE))
 # 3,219 PLACE ARE LISTED TWICE, where TYPE "Incorporated Place" vs another type is the only way to distinguish them:
 ## 3/4 are in PA, WI, MN
 # sum(duplicated(censusplaces[,c(1:3,5:6)]))
+# 73
 
 #      STATE stfips               PLACENAME                    TYPE                            COUNTY    fips                   PLACE
 #
@@ -135,8 +147,11 @@ print(head(censusplaces,20))
 
 setDF(censusplaces)
 ############################ ############################# #
+# compare to already/previously-installed version:
+all.equal(EJAM::censusplaces, censusplaces, check.attributes=F)
+############################ ############################# #
 # metadata ####
-attr(censusplaces, "date_created") <- Sys.Date()
+# attr(censusplaces, "date_created") <- Sys.Date()
 # censusplaces <- metadata_add(censusplaces)
 # use_data ####
 # usethis::use_data(censusplaces, overwrite = TRUE)
