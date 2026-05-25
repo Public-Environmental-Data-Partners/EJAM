@@ -344,7 +344,7 @@ msg <- utils::capture.output({
 
     ## ------------------------ Interactive plots options ####
 
-    default_allow_median_in_barplot_indicators = FALSE,
+    default_allow_median_in_barplot_indicators = TRUE,
 
     ## ------------------------ Map formatting options ####
 
