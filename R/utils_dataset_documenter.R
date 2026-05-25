@@ -23,21 +23,29 @@ dataset_documenter = function(varname,
                               saveinpackage = TRUE) {
 
   # save very basic documentation for a dataset ####
+  roxy_field <- function(tag, value) {
+    if (identical(value, "")) {
+      return("")
+    }
+    value <- gsub("\r\n?", "\n", value)
+    value <- gsub("\n", "\n#' ", value, fixed = TRUE)
+    paste0("#' @", tag, " ", value, "\n")
+  }
 
   if (length(varname) > 1 || !is.atomic(varname)) {
     stop("you may have provided the object instead of its name as the varname parameter -- try using quotes for that argument")
   }
 
   if (missing(title)) {
-    title = paste0("#' @title ", varname,  " dataset\n" )
+    title = paste0(varname,  " dataset")
   } else{
-    title = paste0("#' @title ", title,  "\n" )
+    title = title
   }
 
-  if (description != "") {description = paste0("#' @description ", description,  "\n" )}
-
-  if (details != "") {details = paste0("#' @details ", details,  "\n" )}
-  if (seealso != "") {seealso = paste0("#' @seealso ", seealso,  "\n" )}
+  title <- roxy_field("title", title)
+  description <- roxy_field("description", description)
+  details <- roxy_field("details", details)
+  seealso <- roxy_field("seealso", seealso)
 
   # if dataset saved in pkg via use_data then the last line of the documentation file should be the name of the dataset in quotes.
   # if dataset NOT saved in pkg,  last line of doc file should be NULL without quotes,
@@ -60,7 +68,7 @@ dataset_documenter = function(varname,
   )
   fname = paste0("./R/data_", varname, ".R")
   # save the .R file, but prefix documentation file names with "data_"
-  writeChar(filecontents, con = fname)
+  writeLines(filecontents, con = fname, useBytes = TRUE)
 
   if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
     rstudioapi::documentOpen(fname)
