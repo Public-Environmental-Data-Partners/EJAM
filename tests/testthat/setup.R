@@ -18,16 +18,16 @@ if (!"package:EJAM" %in% search()) {
 ############################### #
 
 
-# do not address install_local() or load_all() in setup.R since setup.R also is used for check() /  R CMD check
+# do not address pak::local_install('.', dependencies = T, upgrade = F) or load_all() in setup.R since setup.R also is used for check() /  R CMD check
 # and you assume it is assuming installed package in that case.
 #
-# Instead handle whether to do install_local() or at least load_all() when interactively starting tests, like via test_ejam()
-
+# Instead handle whether to do pak::local_install('.', dependencies = T, upgrade = F)
+# or at least load_all() when interactively starting tests, like via test_ejam()
 
 # >>  load_all() ??? ####
 
-# message("Consider whether you want to use remotes::install_local() or devtools::load_all() before running the set of tests...
-#  It is recommended during development to use `remotes::install_local()` or `devtools::load_all()`
+# message("Consider whether you want to use `pak::local_install('.', dependencies = T, upgrade = F)`  or `devtools::load_all()` before running the set of tests...
+#  It is recommended during development to use `pak::local_install('.', dependencies = T, upgrade = F)`  or  `devtools::load_all()`
 #  to ensure your development code is the one tested.
 #  This is because test_file(), which is used by test_ejam(), uses the installed version of a package.
 #  Likewise, shinytest2 automatically references the installed version of a package.
@@ -51,7 +51,7 @@ if (!"package:EJAM" %in% search()) {
 # if (interactive()) {
 #   install_now = FALSE
 #   # cat("THIS WILL TEST THE LAST-INSTALLED VERSION - IF YOU WANT TO TEST THE LOCAL SOURCE VERSION, DO
-#   #     remotes::install_local('.', force = T, upgrade = 'never', build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#   #     pak::local_install('.', dependencies = T, upgrade = F)
 #   #     FIRST ! \n")
 # } else {
 #   install_now = FALSE
@@ -59,12 +59,12 @@ if (!"package:EJAM" %in% search()) {
 #
 # if (install_now) {
 #   if (file.exists("DESCRIPTION")) {
-#     remotes::install_local('.', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#     pak::local_install('.', dependencies = T, upgrade = F)
 #   } else {
 #     if (file.exists("../DESCRIPTION")) {
-#       remotes::install_local('..', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#       pak::local_install('.', dependencies = T, upgrade = F)
 #     } else {
-#       stop("cannot do remotes::install_local() since cannot find source directory")
+#       stop("cannot do pak::local_install('.', dependencies = T, upgrade = F) since cannot find source directory")
 #     }
 #   }
 # }
@@ -78,11 +78,11 @@ if (!"package:EJAM" %in% search()) {
 # If you start from clean R session and  just did load_all() only, then it would not do all these,
 # and would not do the .onAttach() global_defaults* etc.??
 
-# Maybe the safest in test_ejam() is to do install_local(), library(EJAM) just to be sure, and then ALSO do load_all() so ::: not needed.
+# Maybe the safest in test_ejam() is to do pak::local_install('.', dependencies = T, upgrade = F) , library(EJAM) just to be sure, and then ALSO do load_all() so ::: not needed.
 
 # # If you installed EJAM   that should have already checked all these
 # If you did library(EJAM) that should have access to these pkgs but would NOT actually do library() or require() on   all these.
-# If you did install_local() same.
+# If you did pak::local_install('.', dependencies = T, upgrade = F)  same.
 
 require_for_tests <- function(pkg, why, attach = TRUE) {
   err <- NULL

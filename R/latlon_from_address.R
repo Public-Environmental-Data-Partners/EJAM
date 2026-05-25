@@ -246,15 +246,7 @@ latlon_from_address <- function(address, xy=FALSE, pt = FALSE, aoimap=FALSE, bat
     return(NULL)
   }
   ############################################## #
-  # make AOI package only optional ####
-  ### all these are imported by AOI pkg that were not yet needed by EJAM:
-  #
-  #   c("datasets", "fipio", "htmlwidgets", "jsonlite", "leaflet.extras",
-  #   "rnaturalearth", "rvest", "shiny", "terra", "tidygeocoder", "units")
-  #
-  # if (!require("AOI")) {
-  #   remotes::install_github("mikejohnson51/AOI") #
-  # }
+  # maybe keep AOI package only optional? ####
 
   aoi_available <- suppressWarnings(tryCatch(
     requireNamespace("AOI", quietly = TRUE),
@@ -262,7 +254,7 @@ latlon_from_address <- function(address, xy=FALSE, pt = FALSE, aoimap=FALSE, bat
   ))
   if (!aoi_available) {
     warning('AOI package not available. To install, run:
-            devtools::install_github("https://github.com/mikejohnson51/AOI/", auth_token = NULL)')
+            pak::pkg_install("mikejohnson51/AOI")')
     x <- NULL
     return(x)
     ############################################## #

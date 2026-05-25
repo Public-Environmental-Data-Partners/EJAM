@@ -589,7 +589,7 @@ biglist <- EJAM:::test_ejam(ask = askquestions)
 
 document()
 
-devtools::install(quick = TRUE)
+pak::local_install(".", dependencies = TRUE, upgrade = FALSE)
 
 ######################################### ########################################## #
 # ~------------------------------------------- ####

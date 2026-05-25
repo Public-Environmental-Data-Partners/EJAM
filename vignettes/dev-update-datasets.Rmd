@@ -366,7 +366,7 @@ EJAM or starts the app.
 
 <!-- -->
 
--   `devtools::install_github("`r code_reponame_with_owner`")` (or as adjusted depending on the actual repository owner and name)
+-   `pak::pkg_install("`r code_reponame_with_owner`")` (or as adjusted depending on the actual repository owner and name)
 
 <!-- -->
 

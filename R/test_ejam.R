@@ -996,7 +996,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     junk <- capture.output({
       suppressPackageStartupMessages(    devtools::load_all()   )
 
-      ### ANOTHER OPTION IS TO DO        devtools::install_local()
+      ### ANOTHER OPTION IS TO DO       pak::local_install(".", dependencies = TRUE, upgrade = FALSE)
 
     })}
   } else {

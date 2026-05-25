@@ -95,7 +95,7 @@
 #' @param doyamlcheck report on the yaml file via dataset_pkgdown_yaml_check() ?
 #' @param dodocument use `roxygen2::roxygenise()` to regenerate documentation?
 #'   Usually should leave TRUE.
-#' @param doinstall use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky
+#' @param doinstall TRUE would mean reinstall package from local source. usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky
 #' @param doloadall_not_library use devtools::load_all() ? usually should leave this TRUE
 #' @param doclean_man delete all files in the /man/ folder ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them
 #' @param doclean_docs delete all files in /docs/ folder, essentially ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them
@@ -307,36 +307,18 @@ pkgdown_update = function(
 
       # Usually just use devtools::load_all()  during development, not re-install every time you edit source.
 
-      # BUT, using devtools::install() will ensure anything that uses the INSTALLED version will work!
+      # BUT, using a local install from source will ensure anything that uses the INSTALLED version will work!
 
       # note, If you want to build/install using RStudio buttons, not the function install(), need to
       #   1st confirm you already turned off traditional vignette-building...  see   help(vignette_roclet, package = "roxygen2")
       #   That button includes a step that is similar to roxygen2::roxygenise().
 
-      if (!requireNamespace("devtools", quietly = TRUE)) {
-        stop("Package 'devtools' is required to install the package from pkgdown_update().", call. = FALSE)
+      if (!requireNamespace("pak", quietly = TRUE)) {
+        stop("Package 'pak' is required to install the package from pkgdown_update().", call. = FALSE)
       }
-      devtools::install(
-
-        quick = TRUE,   # USUALLY LEAVE IT AS TRUE
-        # # quick=T is MUCH faster but skips docs, vignettes, etc., building 'EJAM_x.xx.xx.tar.gz' or the .zip binary, etc.
-        # # quick=F is SLOW!  takes a few minutes!
-
-        upgrade = FALSE,
-        dependencies = FALSE, # skip checking/installing all dependencies here
-
-        build_vignettes = FALSE,
-        ## old-style vignettes were in  doc folder, but pkgdown-style are in   docs folder,
-
-        build = FALSE,
-        ## build = TRUE means it converts a package source directory into a single bundled file...
-        ##   If binary = FALSE this creates a tar.gz package that can be installed on any platform, provided they have a full development environment (although packages without source code can typically be installed out of the box).
-        ##   If binary = TRUE, the package will have a platform specific extension (e.g. .zip for windows), and will only be installable on the current platform, but no development environment is needed.
-
-        quiet = FALSE
-      )
+      pak::local_install(root = ".", dependencies = TRUE, upgrade = FALSE)
       #################### #
-      cat('detaching packages - RESTART R IF THIS FAILS  \n') # got Error: lazy-load database '....EJAM/R/EJAM.rdb' is corrupt
+      cat('detaching packages - RESTART R IF THIS FAILS  \n') # when using devtools had gotten Error: lazy-load database '....EJAM/R/EJAM.rdb' is corrupt
       golem::detach_all_attached()
       # rstudioapi::restartSession() might be needed. or just relaunch R seems to help.
     })

@@ -487,7 +487,7 @@ pkg_update_testpoints_testoutputs <- function(
 
   EJAM:::metadata_update_attr() # to update attributes like package version in all datasets (other than atomic vectors, and optionally only if version attr was already set for that object)
 
-  devtools::install_local(build = FALSE, upgrade = "never")
+  pak::local_install(".", dependencies = TRUE, upgrade = FALSE)
 
   rstudioapi::restartSession(clean = TRUE)
 

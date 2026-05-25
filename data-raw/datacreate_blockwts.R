@@ -134,21 +134,21 @@ if (!do_update) {
         tryinstall = askYesNo("Requires the census2020download package, not found installed yet. Try to install now from github?")
         if (is.na(tryinstall)) {tryinstall <- FALSE}
       } else {
-        warning('Cannot update block data -- That requires the census2020download package from\n devtools::install_github("ejanalysis/census2020download") ')
+        warning('Cannot update block data -- That requires the census2020download package from\n pak::pkg_install("ejanalysis/census2020download") ')
         tryinstall <- FALSE
         cando <- FALSE
       }
       if (tryinstall) {
-        devtools::install_github("ejanalysis/census2020download")
+        pak::pkg_install("ejanalysis/census2020download")
         if (!require(census2020download)) {
           cando <- FALSE
-          warning('failed to install necessary package from  devtools::install_github("ejanalysis/census2020download")')
+          warning('failed to install necessary package from  pak::pkg_install("ejanalysis/census2020download")')
         } else {
           cat('installed and attached census2020download package\n')
           cando <- TRUE
         }
       } else {
-        warning('Not updating block data -- that requires the census2020download package from\n devtools::install_github("ejanalysis/census2020download") ')
+        warning('Not updating block data -- that requires the census2020download package from\n pak::pkg_install("ejanalysis/census2020download") ')
         cando <- FALSE
       }
     }
@@ -338,7 +338,7 @@ if (!do_update) {
 # ?blockwts
 # browseURL(paste0("https://ejanalysis", ".github.io/census2020download/reference/index.html"))
 
-# devtools::install_github("ejanalysis/census2020download")
+# pak::pkg_install("ejanalysis/census2020download") #As of devtools 2.5.0 on March 14, 2026, the devtools::install_*() family is deprecated
 # require # (census2020download)
 
 # ?census2020download   # the name of the package

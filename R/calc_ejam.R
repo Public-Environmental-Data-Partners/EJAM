@@ -23,7 +23,7 @@
 #  stored at
 #  https://github.com/ejanalysis/analyze.stuff
 #  https://github.com/ejanalysis/analyze.stuff/blob/36afe6b102cb2cef90b87a48dfea9479b1a2447a/R/calc.fields.R
-#  devtools::install_github("ejanalysis/analyze.stuff")
+#  pak::pkg_install("ejanalysis/analyze.stuff")
 #  ?analyze.stuff::calc.fields()
 ######################################### #
 # example using just 10 blockgroups from 1 county in Delaware

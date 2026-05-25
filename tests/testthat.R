@@ -78,7 +78,7 @@ test_check("EJAM")
 # build and install the package before running the tests,
 # so they will only test the last-installed version of the package, not the latest source version.
 # Assuming you want to test the latest source version, you should first
-# install it with remotes::install_local('.', force = TRUE) or similar command, and then run the tests.
+# install it with pak::local_install('.', dependencies = T, upgrade = F)  or similar command, and then run the tests.
 #
 # Also note that some of these functions may not work well with shinytest2 (??),
 # which is used for testing web app functionality, so
@@ -137,7 +137,7 @@ test_check("EJAM")
 # if (interactive()) {
 #   install_now = FALSE
 #   # cat("THIS WILL TEST THE LAST-INSTALLED VERSION - IF YOU WANT TO TEST THE LOCAL SOURCE VERSION, DO
-#   #     remotes::install_local('.', force = T, upgrade = 'never', build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#   #     pak::local_install('.', dependencies = T, upgrade = F)
 #   #     FIRST ! \n")
 # } else {
 #   install_now = FALSE
@@ -145,12 +145,12 @@ test_check("EJAM")
 #
 # if (install_now) {
 #   if (file.exists("DESCRIPTION")) {
-#     remotes::install_local('.', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#     pak::local_install('.', dependencies = T, upgrade = F)
 #   } else {
 #     if (file.exists("../DESCRIPTION")) {
-#       remotes::install_local('..', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#       pak::local_install('..', dependencies = T, upgrade = F)
 #     } else {
-#       stop("cannot do remotes::install_local() since cannot find source directory")
+#       stop("cannot do pak::local_install(dependencies = T, upgrade = F)  since cannot find source directory")
 #     }
 #   }
 # }

@@ -236,7 +236,8 @@ supported R versions, and operating system images change:
 
 2.  **R version**: latest release and some prior versions
 
-3.  **Using install_url() versus install_github()**: `remotes::install_url()` and `remotes::install_github()`
+3.  **Using install_url() or install_github()**: `remotes::install_url()` and `remotes::install_github()` 
+    or maybe the newer `pak::pkg_install()`
 
 Also note that users may need to set up a personal access token (PAT) if they
 want to install from GitHub; see the [installing article](installing.html) for
