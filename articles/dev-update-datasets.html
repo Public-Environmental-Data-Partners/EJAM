@@ -485,8 +485,8 @@ can be checked with
 that information to find the dynamic data files.</p></li>
 <li><p>Any time the Arrow datasets are updated, create or update an
 <code>ejamdata</code> release and upload the <code>.arrow</code> files
-as release assets. The old <code>.github/push_to_ejam.yaml</code>
-workflow is not the current update path.</p></li>
+as release assets. Use the maintainer helper described below rather than
+relying on an automatic GitHub Actions workflow.</p></li>
 <li><p>EJAM’s <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code> function does
 the following:</p></li>
 </ol>
@@ -555,77 +555,51 @@ pipeline output, as explained above.</p>
 <p>As mentioned above, we use <a href="https://docs.ropensci.org/piggyback/index.html" class="external-link">the piggyback
 package</a> to place large datasets in the assets of a new release on
 the <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>
-repository, rather than committing them with Git. Therefore, new
-datasets to be provided via the <code>ejamdata</code> repository should
-be submitted/updated as follows:</p>
-<p>Create a new release number for the data repository</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/piggyback" class="external-link">piggyback</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">release_number</span> <span class="op">&lt;-</span> <span class="st">"v2.5.0"</span> <span class="co"># Update as needed</span></span>
-<span><span class="va">owner_repo</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> </span>
-<span><span class="co"># e.g., "Public-Environmental-Data-Partners/ejamdata"</span></span>
-<span></span>
-<span><span class="co"># You can go to the repo and manually create a new release using a web browser, </span></span>
-<span><span class="co"># or try using piggyback: </span></span>
-<span><span class="co"># Requires GitHub token with permissions!</span></span>
-<span><span class="fu">piggyback</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/piggyback/reference/pb_release_create.html" class="external-link">pb_release_create</a></span><span class="op">(</span></span>
-<span>  tag <span class="op">=</span> <span class="va">release_number</span>,</span>
-<span>  repo <span class="op">=</span> <span class="va">owner_repo</span></span>
-<span>  <span class="co"># and optionally a release name and description</span></span>
-<span><span class="op">)</span> </span></code></pre></div>
+repository, rather than committing them with Git. The current maintainer
+path is to call <code>publish_arrow_release_assets()</code> with
+explicit local <code>.arrow</code> file paths.</p>
+<p>The helper is intentionally conservative. It defaults to
+<code>dry_run = TRUE</code>, <code>overwrite = FALSE</code>, and
+<code>mark_latest = FALSE</code>. The default release note is
+<code>"Updated datasets for EJScreen/EJAM updated as of "</code> plus
+the <code>release_date</code> parameter.</p>
 <p>Make sure the intended new data objects are available as
 <code>.arrow</code> files. For an annual EJSCREEN data release,
 <code>bgej.arrow</code> is the critical package-coupled asset and must
 match the package version/release tag. Facility and geography Arrow
-files may be carried forward unchanged if they are still compatible.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/piggyback" class="external-link">piggyback</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">release_number</span> <span class="op">&lt;-</span> <span class="st">"v2.5.0"</span> <span class="co"># Update as needed</span></span>
-<span><span class="va">owner_repo</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> </span>
-<span></span>
+files may be carried forward unchanged if they are still compatible. If
+block or blockgroup helper Arrow files such as
+<code>blockwts.arrow</code>, <code>blockpoints.arrow</code>,
+<code>blockid2fips.arrow</code>, <code>bgid2fips.arrow</code>, or
+<code>quaddata.arrow</code> are intentionally regenerated in a future
+geography update, publish those files with the same helper after a
+dry-run review.</p>
+<p>Example dry-run for a manual publish:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">release_number</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">new_datasets_folder</span> <span class="op">&lt;-</span> <span class="st">"~/Downloads"</span></span>
+<span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">new_datasets_folder</span>, <span class="st">"bgej.arrow"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">filenames_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="va">.arrow_ds_names</span>, <span class="st">".arrow"</span><span class="op">)</span></span>
-<span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">new_datasets_folder</span>, <span class="va">filenames_arrow</span><span class="op">)</span></span>
-<span><span class="va">some_not_here</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">filepaths_arrow</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"checking "</span>, <span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"file "</span>, <span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">" not found********"</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="va">some_not_here</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">}</span></span>
-<span><span class="op">}</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="va">some_not_here</span><span class="op">)</span> <span class="op">{</span><span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Please make sure all new .arrow data files are available before running this code."</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="co"># dput(filenames_arrow)</span></span>
-<span></span>
-<span><span class="co"># The .rda files are NOT there as assets.</span></span></code></pre></div>
-<p>Upload each dataset file as a release asset:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/piggyback" class="external-link">piggyback</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">release_number</span> <span class="op">&lt;-</span> <span class="st">"v2.5.0"</span> <span class="co"># Update as needed</span></span>
-<span><span class="va">owner_repo</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="co">## need authorization to do this: </span></span>
-<span></span>
-<span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="va">filepaths_arrow</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">filepaths_arrow</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"uploading "</span>, <span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span>  <span class="fu">piggyback</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/piggyback/reference/pb_upload.html" class="external-link">pb_upload</a></span><span class="op">(</span></span>
-<span>    <span class="va">filepaths_arrow</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
-<span>    repo <span class="op">=</span> <span class="va">owner_repo</span>,</span>
-<span>    tag <span class="op">=</span> <span class="va">release_number</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">publish_arrow_release_assets</span><span class="op">(</span></span>
+<span>  files <span class="op">=</span> <span class="va">filepaths_arrow</span>,</span>
+<span>  tag <span class="op">=</span> <span class="va">release_number</span>,</span>
+<span>  release_date <span class="op">=</span> <span class="fu">Sys.Date</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dry_run <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  mark_latest <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>After reviewing the dry-run output and the intended release tag, rerun
+with <code>dry_run = FALSE</code> only when ready to create/update the
+release assets. Use <code>overwrite = TRUE</code> only after confirming
+existing assets with the same names should be replaced. Use
+<code>mark_latest = TRUE</code> only when this release should be shown by
+GitHub as the latest release.</p>
 <p>Open a browser to confirm they are there.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, <span class="st">"/releases"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Reload EJAM so it can get the updates. It should detect that new
 versions are available and cache them for the installed package.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span>list<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span></span>
@@ -635,10 +609,8 @@ versions are available and cache them for the installed package.</p>
 <span><span class="co"># or read into memory as data.table/data.frame objects:</span></span>
 <span><span class="fu"><a href="../reference/dataload_dynamic.html">dataload_dynamic</a></span><span class="op">(</span><span class="st">"all"</span>, return_data_table <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>This previously had been handled with a GitHub Actions workflow that
-tried to use Git LFS. Upon a commit of new dataset files to the data
-repository, it would automatically update the release number, create a
-release, and include the new files in the release. That workflow was
-called <code>push_to_ejam.yaml</code>, but it is no longer used.</p>
+tried to use Git LFS. That automatic workflow is no longer used and
+should not be restored.</p>
 </div>
 <div class="section level2">
 <h2 id="potential-improvements">Potential Improvements<a class="anchor" aria-label="anchor" href="#potential-improvements"></a>
