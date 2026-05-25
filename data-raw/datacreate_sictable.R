@@ -73,4 +73,4 @@ datacreate_sictable <- function(SIC,
 }
 ############################################################################ #
 
-sictable <- datacreate_SIC()
+sictable <- datacreate_sictable(SIC)
