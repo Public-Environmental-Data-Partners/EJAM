@@ -358,6 +358,14 @@ epa_programs_counts$pgm_text_dropdown  <- paste0(
 # create a named vector where $program is the vector elements and $pgm_text_dropdown is the names:
 epa_programs <- setNames(epa_programs_counts$program, epa_programs_counts$pgm_text_dropdown)
 
+if (!length(epa_programs) || anyNA(epa_programs) || anyNA(names(epa_programs))) {
+  stop("epa_programs did not parse correctly; refusing to save an empty or NA dropdown choices vector")
+}
+default_epa_program_selected <- global_or_param("default_epa_program_selected")
+if (length(default_epa_program_selected) &&
+    !default_epa_program_selected %in% epa_programs) {
+  warning("default_epa_program_selected is not in epa_programs")
+}
 
 # > cbind(epa_programs)
 #                                                                                                    epa_programs

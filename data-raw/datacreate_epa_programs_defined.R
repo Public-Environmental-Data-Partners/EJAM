@@ -5,7 +5,8 @@
 ## DOWNLOAD DEFINITIONS OF ACRONYMS OF EPA PROGRAMS IN FRS (REMOVING ANY NONPUBLIC ONES)
 
 epa_programs_defined_download_update = function(urlbase = "https://www.epa.gov/sites/default/files/2021-05/",
-                                                webname = "frs_program_abbreviations_and_names.xlsx") {
+                                                webname = "frs_program_abbreviations_and_names.xlsx",
+                                                force_download = FALSE) {
 ## Definitions list is linked from
 # browseURL("https://www.epa.gov/frs/frs-data-sources")
 
@@ -23,7 +24,9 @@ localpath = file.path(localdir, localname)
 ## download saved in EJAM/data-raw/
 
 ## tried download ---------------------------------------
-download.file(webpath, localpath)
+if (force_download || !file.exists(localpath)) {
+  download.file(webpath, localpath)
+}
 if (!file.exists(localpath)) {stop("failed to download from", webpath, "to", localpath)}
 # opening after download.file() FAILS even though it seems to download and a manual download makes it work.
 ## ---------------------------------------------------
@@ -34,8 +37,16 @@ if (!is.data.frame(frsinfo)) {stop("failed to read xlsx from", localpath)}
 # colnames(frsinfo)
 # c('PGM_SYS_ACRNM',	'PGM_SYS_NAME',	'PGM_SYS_DESC', "Comments")
 # DROP INTERNAL-ONLY COLUMNS
-epa_programs_defined <- frsinfo[frsinfo$Comments != "This data set is available only on the EPA intranet.", ]
+is_internal_only <- !is.na(frsinfo$Comments) &
+  frsinfo$Comments == "This data set is available only on the EPA intranet."
+epa_programs_defined <- frsinfo[!is_internal_only, ]
 epa_programs_defined$Comments <- NULL
+
+if (!NROW(epa_programs_defined) ||
+    anyNA(epa_programs_defined$PGM_SYS_ACRNM) ||
+    anyNA(epa_programs_defined$PGM_SYS_NAME)) {
+  stop("epa_programs_defined did not parse correctly; refusing to save an empty or all-NA program lookup")
+}
 
 return(epa_programs_defined)
 }

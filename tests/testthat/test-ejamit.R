@@ -103,6 +103,20 @@ test_that("explicit Arrow release tags override the package default", {
 })
 ########################################################## #
 
+test_that("EPA program dropdown choices are available", {
+  expect_type(epa_programs, "character")
+  expect_gt(length(epa_programs), 0)
+  expect_false(anyNA(epa_programs))
+  expect_false(anyNA(names(epa_programs)))
+  expect_true("CAMDBS" %in% unname(epa_programs))
+
+  expect_s3_class(epa_programs_defined, "data.frame")
+  expect_gt(nrow(epa_programs_defined), 0)
+  expect_false(anyNA(epa_programs_defined$PGM_SYS_ACRNM))
+  expect_false(anyNA(epa_programs_defined$PGM_SYS_NAME))
+})
+########################################################## #
+
 test_that("local Arrow release marker reader treats blank markers as missing", {
   marker <- tempfile("ejamdata_version-", fileext = ".txt")
 
