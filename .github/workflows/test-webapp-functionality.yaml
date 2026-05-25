@@ -40,7 +40,7 @@ jobs:
           # The shiny UI tests only need EJAM's hard deps plus the test runners.
           dependencies: '"hard"'
           extra-packages: |
-            any::remotes
+            any::pak
             any::shinytest2
             any::testthat
 
@@ -60,7 +60,7 @@ jobs:
 
       - name: Install EJAM Package
         run: |
-          remotes::install_local(".",force=T)
+          pak::local_install(".", dependencies = FALSE, upgrade = FALSE)
         shell: Rscript {0}
 
       - name: Load EJAM Package
