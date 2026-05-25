@@ -1,4 +1,21 @@
 
+################################################################################
+# v2.5.0 release note:
+#
+# Do not run this script automatically from run_ejscreen_dataset_pipeline.R.
+# For the ACS 2020-2024 / EJAM v2.5.0 release, keep using the current
+# EPA/EJScreen adjusted 2020-to-2022 block helper Arrow files
+# (blockwts, blockpoints, blockid2fips, bgid2fips, quaddata).
+#
+# This script is retained for a future deliberate block-helper refresh only.
+# Raw Census 2020 regeneration can create block/BG FIPS differences relative
+# to the EPA/EJScreen adjusted helper universe and the ACS 2022+ Connecticut
+# planning-region geography. Before using outputs from this script for a
+# release, validate that every blockgroupstats bgid/bgfips is represented in
+# bgid2fips and blockwts, that blockpoints/blockid2fips/blockwts share the same
+# blockid universe, and that any extra helper BGs are explicitly documented.
+################################################################################
+
 # The block data.table tables
 #  'blockpoints', 'blockwts', 'quaddata', 'blockid2fips'
 # need to be updated when FIPS codes or boundaries of blockgroups or blocks change.

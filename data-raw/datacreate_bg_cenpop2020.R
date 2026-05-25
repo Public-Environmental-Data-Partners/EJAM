@@ -1,4 +1,18 @@
 
+################################################################################
+# v2.5.0 release note:
+#
+# Do not run this script automatically from run_ejscreen_dataset_pipeline.R.
+# For the ACS 2020-2024 / EJAM v2.5.0 release, keep the current block helper
+# universe and do not treat raw Census 2020 blockgroup center-of-population
+# FIPS as authoritative for the ACS 2020-2024 blockgroupstats universe.
+#
+# Raw Census 2020 BG FIPS do not fully align with ACS 2022+ Connecticut
+# planning-region geography. Running this script without a deliberate
+# reconciliation step can create thousands of CT bgfips/bgid mismatches relative
+# to blockgroupstats and the EPA/EJScreen adjusted helper files.
+################################################################################
+
 # State/state equivalent entity-based text files containing the
 # mean centers of population for each census blockgroup
 # within a state/state equivalent entity for the 2020 Census.

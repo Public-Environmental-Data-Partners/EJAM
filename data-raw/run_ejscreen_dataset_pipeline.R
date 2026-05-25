@@ -190,10 +190,24 @@ datacreate_scripts_to_run_before_pipeline <- c(
   "data-raw/datacreate_islandareas.R",  # unlikely to change, just a file with latlon info
   "data-raw/datacreate_lat_alias.R",    # unlikely to change
   ##
-  ##     block and blockgroup geo info
-  "data-raw/datacreate_bg_cenpop2020.R", ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
-  "data-raw/datacreate_bgpts.R",        ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
-  "data-raw/datacreate_blockwts.R",    ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
+  ##     block and blockgroup helper files
+  ##
+  ## Do not run these automatically for the v2.5.0 ACS 2020-2024 pipeline:
+  ##
+  ##   "data-raw/datacreate_bg_cenpop2020.R"
+  ##   "data-raw/datacreate_bgpts.R"
+  ##   "data-raw/datacreate_blockwts.R"
+  ##
+  ## For v2.5.0, keep the current EPA/EJScreen adjusted 2020-to-2022
+  ## block helper Arrow files: blockwts, blockpoints, blockid2fips,
+  ## bgid2fips, and quaddata.
+  ##
+  ## Reason: the current helper universe is an internally consistent
+  ## superset of the ACS 2020-2024 blockgroupstats universe. Raw Census
+  ## 2020 regeneration reintroduces the CT ACS 2022+ geography mismatch.
+  ## If these helper files are refreshed later, do it as a separate,
+  ## explicit geography-helper refresh with CT/NY setdiff checks and a
+  ## bgid compatibility check against blockgroupstats and bgid2fips.
 
   ## Variable names (indicators), metadata, and formulas to check/update ANNUALLY, if the set of indicators or formulas have changed.
   ##

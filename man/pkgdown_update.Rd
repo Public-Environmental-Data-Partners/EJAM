@@ -29,7 +29,7 @@ pkgdown_update(
 \item{dodocument}{use \code{roxygen2::roxygenise()} to regenerate documentation?
 Usually should leave TRUE.}
 
-\item{doinstall}{use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky}
+\item{doinstall}{TRUE would mean reinstall package from local source. usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky}
 
 \item{doloadall_not_library}{use devtools::load_all() ? usually should leave this TRUE}
 

@@ -1,4 +1,18 @@
 
+################################################################################
+# v2.5.0 release note:
+#
+# Do not run this script automatically from run_ejscreen_dataset_pipeline.R.
+# For the ACS 2020-2024 / EJAM v2.5.0 release, keep using the current bgpts and
+# block helper Arrow files that match the EPA/EJScreen adjusted 2020-to-2022
+# helper universe.
+#
+# This script depends on blockpoints, blockwts, and bgid2fips already being a
+# coherent helper universe. It should only be run after a deliberate refresh of
+# those helper files, with validation that blockgroupstats bgid values still
+# match bgid2fips and that any helper BGs outside blockgroupstats are expected.
+################################################################################
+
 #########   ONLY NEEDS TO BE DONE AFTER blockpoints or blockwts changes
 ## i.e., if there are new FIPS codes or boundaries for any blockgroups in US
 
