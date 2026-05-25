@@ -371,7 +371,7 @@ pkg_update_testpoints_testoutputs <- function(
 '",out_varname_doagg,"'"
           )
           # prefix documentation file names with "data_"
-          writeChar(filecontents, con = paste0("./R/data_", out_varname_doagg, ".R"))       ############# #
+          writeLines(filecontents, con = paste0("./R/data_", out_varname_doagg, ".R"), useBytes = TRUE)       ############# #
         }
 
       }

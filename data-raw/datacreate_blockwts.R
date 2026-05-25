@@ -329,6 +329,22 @@ if (!do_update) {
     # want to keep the objects in memory? OK - may use to run EJAM functions like recreating testoutput data
     rm(mylistoftables, blocks)
     gc()
+
+    cat("NOTE: If these block/BG helper Arrow files are intentionally regenerated,
+        publish the updated .arrow files through EJAM:::publish_arrow_release_assets()
+        after careful dry-run review. Do not publish automatically from this script.\n")
+    # block_geo_arrow_files <- file.path(
+    #   "PATH_TO_REGENERATED_ARROW_FILES",
+    #   paste0(c("bgid2fips", "blockid2fips", "blockpoints", "blockwts", "quaddata"), ".arrow")
+    # )
+    # EJAM:::publish_arrow_release_assets(
+    #   files = block_geo_arrow_files,
+    #   tag = EJAM:::ejamdata_required_tag(),
+    #   release_date = Sys.Date(),
+    #   dry_run = TRUE,
+    #   overwrite = FALSE,
+    #   mark_latest = FALSE
+    # )
   }
 }
 #################################################################################### #

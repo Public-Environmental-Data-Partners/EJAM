@@ -29,6 +29,7 @@ dataset_documenter = function(varname,
     }
     value <- gsub("\r\n?", "\n", value)
     lines <- strsplit(value, "\n", fixed = TRUE)[[1]]
+    lines <- sub("^#'[ \t]?", "", lines)
     lines <- sub("[ \t]+$", "", lines)
     lines <- ifelse(nzchar(lines), paste0("#' ", lines), "#'")
     lines[1] <- sub("^#' ", paste0("#' @", tag, " "), lines[1], fixed = FALSE)

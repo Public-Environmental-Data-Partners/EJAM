@@ -91,6 +91,21 @@ for (varname in frs_vars) {
   assign(varname, value = arrow::read_ipc_file(file = file.path(fold, fname)))
 }
 ################################################################################ #
+## Move .arrow files to new release on ejamdata repo or elsewhere ####
+
+cat("NOTE: You may now publish updated FRS .arrow files to an ejamdata release.\n")
+cat("This script does NOT publish them automatically. Use dry_run = TRUE first.\n")
+# frs_arrow_files <- file.path(folder_save_as_arrow, paste0(frs_vars, ".arrow"))
+# EJAM:::publish_arrow_release_assets(
+#   files = frs_arrow_files,
+#   tag = EJAM:::ejamdata_required_tag(),
+#   release_date = Sys.Date(),
+#   dry_run = TRUE,
+#   overwrite = FALSE,
+#   mark_latest = FALSE
+# )
+
+################################################################################ #
 ## Documentation ####
 cat("
 NOW, UPDATE THE DOCUMENTATION MANUALLY in relevant files like data_frs.R,
@@ -187,5 +202,4 @@ if (update_package_datasets) {
   }
   ######################################### ########################################## #
 }
-
 

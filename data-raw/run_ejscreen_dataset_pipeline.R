@@ -1418,6 +1418,19 @@ if (isTRUE(should_replace_package_data)) {
   ## to the pipeline folder for release/data-repository publication.
   EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = FALSE, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr)
   EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = FALSE, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr)
+
+  ## Optional maintainer step, disabled by default: publish the refreshed
+  ## bgej.arrow as an ejamdata release asset. Always dry-run first.
+  # bgej_arrow_publish_path <- file.path(tempdir(), "bgej.arrow")
+  # arrow::write_ipc_file(bgej, sink = bgej_arrow_publish_path)
+  # EJAM:::publish_arrow_release_assets(
+  #   files = bgej_arrow_publish_path,
+  #   tag = EJAM:::ejamdata_required_tag(),
+  #   release_date = Sys.Date(),
+  #   dry_run = TRUE,
+  #   overwrite = FALSE,
+  #   mark_latest = FALSE
+  # )
 } else {
   message("Skipping package-data replacement because EJAM_REPLACE_PACKAGE_DATA is FALSE.")
 }

@@ -94,6 +94,7 @@ Suggests:
     leaflet.extras,
     mapview,
     miniUI,
+    pak,
     pkgdown (>= 2.1.2),
     plumber,
     remotes,

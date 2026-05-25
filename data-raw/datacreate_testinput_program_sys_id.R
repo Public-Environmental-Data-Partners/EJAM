@@ -75,7 +75,7 @@ filecontents <- paste0(
 "
 )
 fname = paste0("./R/data_", "testinput_program_sys_id", ".R")
-writeChar(filecontents, con = fname)
+writeLines(filecontents, con = fname, useBytes = TRUE)
 stopifnot(file.exists(fname))
 
 ## write.xlsx ####
