@@ -14,7 +14,7 @@ frsprogramcodes
 \if{html}{\out{<div class="sourceCode">}}\preformatted{data.frame
 
                                                                          description     code
-                                                              
+
 1               National Pollutant Discharge Elimination System (NPDES) (ICIS-NPDES)    NPDES
 
 2             The Integrated Compliance Information System (ICIS) for Air (ICIS-Air)      AIR
@@ -39,7 +39,7 @@ frsprogramcodes
 
 12     Assessment, Cleanup and Redevelopment Exchange System (ACRES) for Brownfields    ACRES
 
-13   Biennial Reporters (BR) Hazardous Waste Treatment, Storage, Disposal Facilities       BR                      
+13   Biennial Reporters (BR) Hazardous Waste Treatment, Storage, Disposal Facilities       BR
 }\if{html}{\out{</div>}}
 }
 \details{
@@ -50,7 +50,7 @@ Also see \href{https://www.epa.gov/frs/frs-data-sources}{EPA documentation descr
 \examples{
 \dontrun{
   frs_by_programid[program \%in\% frsprogramcodes$code, .N, by=program]
-  
+
   setkey(frs_by_programid,"program")
   frs_by_programid["TRIS",]
   }

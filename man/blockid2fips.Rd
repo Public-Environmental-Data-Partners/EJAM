@@ -16,7 +16,7 @@ It also has a column
 called \code{blockid} that can join it to other block datasets.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{  dataload_dynamic('blockid2fips')
-  
+
   names(blockid2fips)
   dim(blockid2fips)
 }\if{html}{\out{</div>}}

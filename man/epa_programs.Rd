@@ -5,7 +5,7 @@
 \alias{epa_programs}
 \title{epa_programs (DATA) named vector with program counts}
 \format{
-An object of class \code{character} of length 8.
+An object of class \code{character} of length 0.
 }
 \usage{
 epa_programs

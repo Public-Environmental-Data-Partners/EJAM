@@ -5,7 +5,7 @@
 \alias{naics_counts}
 \title{naics_counts (DATA) data.frame with regulated facility counts for each industry code}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 2200 rows and 6 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 2129 rows and 6 columns.
 }
 \usage{
 naics_counts

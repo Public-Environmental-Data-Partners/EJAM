@@ -315,6 +315,7 @@ x <- test_ejam(
         "test-calc_bg_geodata.R",
         "test-calc_bg_extra_indicators.R",
         "test-calc_ejscreen_dataset.R",
+        "test-publish_arrow_release_assets.R",
         "test-ejscreen-stats.R",
         "test-ejscreen-pipeline-validate-vs-prior.R",
         "test-ejscreen-export.R"
@@ -500,7 +501,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
             "test-calc_bg_extra_indicators.R", "test-calc_bg_geodata.R",
             "test-calc_byformula.R", "test-calc_ejscreen_dataset.R", "test-ejscreen-export.R",
             "test-ejscreen-pipeline-io.R", "test-ejscreen-pipeline-validate-vs-prior.R",
-            "test-ejscreen-stats.R", "test-pctiles_lookup_create.R", "test-area_sqmi.R",
+            "test-ejscreen-stats.R", "test-publish_arrow_release_assets.R",
+            "test-pctiles_lookup_create.R", "test-area_sqmi.R",
             "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
             "test-calc_ratio_columns.R", "test-doaggregate.R", "test-pctile_from_raw_lookup.R",
             "test-utils_flagged_FUNCTIONS.R", "test-utils_speedtest.R", "test-ejam2barplot_indicators.R",
@@ -525,7 +527,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
           c(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 16, 5, 0, 393, 0,
             17, 0, 28, 0, 0, 0, 1, 0, 0, 0, 4, 3, 0, 0, 0, 0, 1, 0,
             3, 34, 2, 1, 0, 0, 0, 1, 104, 1, 0, 0, 0, 0, 2, 0, 0, 0,
-            4, 0, 0, 1, 7, 0, 2, 2, 17, 0, 5, 0, 0, 6, 9, 0, 0, 24,
+            4, 0, 0, 1, 7, 0, 2, 2, 17, 0, 5, 0, 0, 0, 6, 9, 0, 0, 24,
             19, 4, 0, 4, 11, 0, 4, 8, 1, 0, 8, 0, 3, 0, 0, 0, 0, 1,
             0, 3, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0,
             0, 0, 0, 1, 6, 0, 0)
