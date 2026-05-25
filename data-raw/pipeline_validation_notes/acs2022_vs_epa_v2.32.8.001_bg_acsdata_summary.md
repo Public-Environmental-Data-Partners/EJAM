@@ -22,7 +22,7 @@ the same `bgfips` set.
 |---|---:|---:|---:|---|
 | `percapincome` | 2,418 | 0 | 2,418 | Intentional/acceptable: old sentinel or zero-like legacy values are now missing values. |
 | `pctunemployed` | 131,991 | 424 | 2,589 | Mostly floating-point noise plus intentional zero-denominator rule. The denominator is not the issue. |
-| `pctnohealthinsurance` | 240,695 | 3,450 | 0 | Still not exact-replication resolved. Current pipeline uses the Census-consistent B27010 universe; old EPA values differ substantially and need a final accept-or-mimic decision. |
+| `pctnohealthinsurance` | 240,695 | 3,450 | 0 | Accepted intentional difference. EJAM v2.5.0 keeps the Census-consistent B27010 universe; old EPA values differ substantially and are not mimicked in `bg_acsdata`/`blockgroupstats`. |
 | `disab_universe` | 23 | 0 | 0 | Acceptable: tiny apportioned-count rounding differences. |
 | `disability` | 29 | 0 | 0 | Acceptable: tiny apportioned-count rounding differences. |
 | `pctlan_arabic` | 57,848 | 1,151 | 0 | Acceptable if using precise Census-derived values; old EPA appears rounded to 2 decimals and has legacy NAs. |
@@ -77,8 +77,10 @@ an unexplained formula mismatch.
 
 ### `pctnohealthinsurance`
 
-This one should not be described as merely floating-point or simple rounding. It
-remains the main ACS replication item that is not exactly resolved.
+This one should not be described as merely floating-point or simple rounding.
+It is a substantial exact-replication difference, but the validation decision is
+now closed for EJAM v2.5.0: keep the Census-consistent B27010 definition in
+EJAM datasets rather than mimicking the old EPA/EJAM v2.32.8.001 values.
 
 The current pipeline formula follows the Census B27010 table universe:
 
@@ -89,8 +91,9 @@ The current pipeline formula follows the Census B27010 table universe:
 That denominator is the civilian noninstitutionalized population for health
 insurance coverage status, not households. There is an older archived draft
 formula using `hhlds` as the denominator, and that would be wrong for B27010 if
-it had been used. However, the row-level comparison alone does not yet prove
-exactly what EPA or EJAM `v2.32.8.001` used to create the old released values.
+it had been used. The old released values differ too much to treat as a
+floating-point or rounding artifact, and the exact legacy method is not being
+reproduced in the main EJAM v2.5.0 blockgroup datasets.
 
 Counts and distribution:
 
@@ -173,7 +176,6 @@ the explicit goal is byte-for-byte replication of the older EPA table.
 ## Current Close/Readiness View
 
 Most `bg_acsdata` differences are now either intentional or small/acceptable.
-The only column still treated as substantively unresolved for replication is
-`pctnohealthinsurance`, unless EJAM explicitly decides that the new
-Census-derived calculation is the desired v2.5.0 behavior even though it does
-not replicate the EPA 2022 table.
+The `pctnohealthinsurance` difference is also closed as an intentional
+definition/correctness choice: EJAM v2.5.0 keeps the Census-derived B27010
+calculation even though it does not replicate the EPA 2022 table.

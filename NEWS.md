@@ -145,6 +145,10 @@ Highlights:
   for `percapincome` to `NA` rather than treating them as real income values.
 - Updated `pctunemployed` so blockgroups with a zero civilian labor-force
   denominator return `NA` in EJAM (unlike what EJScreen had been doing).
+- Kept `pctnohealthinsurance` on the Census B27010 civilian
+  noninstitutionalized population universe, accepting this as an intentional
+  difference from the old EPA ACS 2022 table rather than mimicking legacy
+  values.
 - Retained `healthinsurance_universe` and other denominator fields in the
   staged blockgroup data where they are needed for weighted aggregation.
 
