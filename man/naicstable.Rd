@@ -5,7 +5,7 @@
 \alias{naicstable}
 \title{naicstable (DATA) data.table of all possible NAICS code(s) and industry names}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 2129 rows and 8 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 2200 rows and 8 columns.
 }
 \usage{
 naicstable

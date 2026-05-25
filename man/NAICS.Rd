@@ -5,7 +5,7 @@
 \alias{NAICS}
 \title{NAICS (DATA) named vector of all NAICS code numbers and industry name for each}
 \format{
-An object of class \code{numeric} of length 2129.
+An object of class \code{numeric} of length 2200.
 }
 \usage{
 NAICS
