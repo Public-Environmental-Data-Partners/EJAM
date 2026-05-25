@@ -1,0 +1,232 @@
+name: 'Release and user install checks'
+
+on:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, SHA, or tag to test'
+        required: true
+        default: development
+      expected_version:
+        description: 'Optional DESCRIPTION version expected, e.g. 2.5.0'
+        required: false
+        default: ''
+      test_scope:
+        description: 'Which install checks should run?'
+        required: true
+        type: choice
+        default: user-style
+        options:
+          - user-style
+          - full-matrix
+          - both
+
+permissions:
+  contents: read
+
+concurrency:
+  group: install-release-${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && inputs.ref || '' }}
+  cancel-in-progress: false
+
+jobs:
+  release-matrix:
+    if: >-
+      ${{
+        github.event_name == 'push' ||
+        (github.event_name == 'workflow_dispatch' && inputs.test_scope != 'user-style')
+      }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        r-version: [oldrel-1, release]
+        install-method: [local, github-ref, url-tarball]
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ github.token }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      EJAM_INSTALL_REPO: ${{ github.repository }}
+      EJAM_INSTALL_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref_name }}
+      EXPECTED_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || '' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.3.0
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.r-version }}
+          use-public-rspm: true
+
+      - name: System libraries (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libfontconfig1-dev \
+            libudunits2-dev \
+            libcairo2-dev \
+            libcurl4-openssl-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libfreetype6-dev \
+            libpng-dev \
+            libtiff5-dev \
+            libjpeg-dev \
+            libgdal-dev \
+            libgeos-dev \
+            libproj-dev \
+            libjq-dev \
+            libprotobuf-dev \
+            libuv1-dev \
+            protobuf-compiler
+
+      - name: System libraries (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          for pkg in freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config; do
+            for i in {1..3}; do
+              if brew install "$pkg"; then
+                break
+              fi
+              echo "Attempt $i to install $pkg failed. Retrying..."
+              sleep 5
+            done
+          done
+          echo 'export PATH="/opt/homebrew/opt/jpeg/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export LDFLAGS="-L/opt/homebrew/opt/jpeg/lib"' >> $GITHUB_ENV
+          echo 'export CPPFLAGS="-I/opt/homebrew/opt/jpeg/include"' >> $GITHUB_ENV
+          echo 'export PKG_CONFIG_PATH="/opt/homebrew/opt/jpeg/lib/pkgconfig"' >> $GITHUB_ENV
+
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: true
+          extra-packages: any::remotes
+
+      - name: Check DESCRIPTION version
+        run: |
+          desc_version <- read.dcf("DESCRIPTION", fields = "Version")[1, "Version"]
+          expected <- Sys.getenv("EXPECTED_VERSION")
+          ref <- Sys.getenv("EJAM_INSTALL_REF")
+          if (!nzchar(expected) && grepl("^v[0-9]", ref)) {
+            expected <- sub("^v", "", ref)
+          }
+          if (nzchar(expected) && !identical(desc_version, expected)) {
+            stop("DESCRIPTION Version is ", desc_version, ", expected ", expected)
+          }
+          message("DESCRIPTION Version: ", desc_version)
+        shell: Rscript {0}
+
+      - name: Install EJAM (${{ matrix.install-method }})
+        run: |
+          install_opts <- c("--with-keep.source", "--install-tests")
+          method <- "${{ matrix.install-method }}"
+          repo <- Sys.getenv("EJAM_INSTALL_REPO")
+          ref <- Sys.getenv("EJAM_INSTALL_REF")
+
+          if (method == "local") {
+            install.packages(
+              ".",
+              repos = NULL,
+              type = "source",
+              INSTALL_opts = install_opts
+            )
+          } else if (method == "github-ref") {
+            remotes::install_github(
+              repo,
+              ref = ref,
+              dependencies = TRUE,
+              force = TRUE,
+              upgrade = "never",
+              build = FALSE,
+              INSTALL_opts = install_opts
+            )
+          } else if (method == "url-tarball") {
+            remotes::install_url(
+              url = sprintf("https://github.com/%s/archive/%s.tar.gz", repo, ref),
+              dependencies = TRUE,
+              force = TRUE,
+              upgrade = "never",
+              INSTALL_opts = install_opts
+            )
+          } else {
+            stop("Unknown install method: ", method)
+          }
+        shell: Rscript {0}
+
+      - name: Load EJAM
+        run: |
+          library(EJAM)
+          message("Installed EJAM ", as.character(utils::packageVersion("EJAM")))
+        shell: Rscript {0}
+
+  user-style-install:
+    if: >-
+      ${{
+        github.event_name == 'release' ||
+        (github.event_name == 'workflow_dispatch' && inputs.test_scope != 'full-matrix')
+      }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        r-version: [release]
+
+    env:
+      GITHUB_PAT: ${{ github.token }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      EJAM_INSTALL_REPO: ${{ github.repository }}
+      EJAM_INSTALL_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || '*release' }}
+      EXPECTED_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || '' }}
+      RELEASE_TAG: ${{ github.event.release.tag_name || '' }}
+
+    steps:
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.r-version }}
+
+      - name: Install EJAM like a user
+        run: |
+          options(timeout = 600)
+          install.packages("pak")
+
+          repo <- Sys.getenv("EJAM_INSTALL_REPO")
+          ref <- Sys.getenv("EJAM_INSTALL_REF")
+          pkg <- sprintf("%s@%s", repo, ref)
+
+          pak::pkg_install(
+            pkg,
+            dependencies = TRUE,
+            upgrade = FALSE
+          )
+
+          library(EJAM)
+          installed_version <- as.character(utils::packageVersion("EJAM"))
+          expected <- Sys.getenv("EXPECTED_VERSION")
+          release_tag <- Sys.getenv("RELEASE_TAG")
+          if (!nzchar(expected) && grepl("^v[0-9]", release_tag)) {
+            expected <- sub("^v", "", release_tag)
+          }
+          if (nzchar(expected) && !identical(installed_version, expected)) {
+            stop("Installed EJAM version is ", installed_version, ", expected ", expected)
+          }
+          message("Installed EJAM ", installed_version, " from ", pkg)
+        shell: Rscript {0}
