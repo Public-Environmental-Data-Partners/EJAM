@@ -26,6 +26,7 @@
 if (!(basename(getwd()) %in% "EJAM")) {stop("must do this script within the root of source package")}
 
 folder_save_as_arrow = "./data-raw/pipeline_outputs/frs" # "./data"  # where to save the new .arrow files of frs-related info
+refresh_frs_arrows <- tolower(Sys.getenv("EJAM_REFRESH_FRS_ARROWS", "TRUE")) %in% c("true", "t", "1", "yes", "y")
 
 open_package_datasets_scripts = FALSE # set TRUE to open each datacreate_ script for editing
 
@@ -48,29 +49,37 @@ if (!exists("alreadygot")) {
 
 ## >> frs_update_datasets() << ####
 
-cat("Starting frs_update_datasets(), which invisibly returns frs data.table and
+expected_frs_arrow_files <- file.path(
+  folder_save_as_arrow,
+  paste0(c("frs", "frs_by_programid", "frs_by_mact", "frs_by_naics", "frs_by_sic"), ".arrow")
+)
+if (isTRUE(refresh_frs_arrows) || !all(file.exists(expected_frs_arrow_files))) {
+  cat("Starting frs_update_datasets(), which invisibly returns frs data.table and
 all related .arrow files are saved too \n")
 
-x = EJAM:::frs_update_datasets(
+  x = EJAM:::frs_update_datasets(
 
-  folder = mytemp, # default would use a tempdir() but not return its name
-  downloaded_and_unzipped_already = alreadygot,
-  folder_save_as_arrow = folder_save_as_arrow,
+    folder = mytemp, # default would use a tempdir() but not return its name
+    downloaded_and_unzipped_already = alreadygot,
+    folder_save_as_arrow = folder_save_as_arrow,
 
-  save_as_arrow_frs              = TRUE,
-  save_as_arrow_frs_by_programid = TRUE,
-  save_as_arrow_frs_by_mact      = TRUE,
-  save_as_arrow_frs_by_naics     = TRUE,
-  save_as_arrow_frs_by_sic       = TRUE,
-  save_as_data_frs              = FALSE,
-  save_as_data_frs_by_mact      = FALSE,
-  save_as_data_frs_by_naics     = FALSE,
-  save_as_data_frs_by_programid = FALSE,
-  save_as_data_frs_by_sic       = FALSE
-)
-alreadygot <- TRUE
-# dir(folder_save_as_arrow)
-message("Finished saving .arrow files locally in", folder_save_as_arrow, "via frs_update_datasets() \n")
+    save_as_arrow_frs              = TRUE,
+    save_as_arrow_frs_by_programid = TRUE,
+    save_as_arrow_frs_by_mact      = TRUE,
+    save_as_arrow_frs_by_naics     = TRUE,
+    save_as_arrow_frs_by_sic       = TRUE,
+    save_as_data_frs              = FALSE,
+    save_as_data_frs_by_mact      = FALSE,
+    save_as_data_frs_by_naics     = FALSE,
+    save_as_data_frs_by_programid = FALSE,
+    save_as_data_frs_by_sic       = FALSE
+  )
+  alreadygot <- TRUE
+  # dir(folder_save_as_arrow)
+  message("Finished saving .arrow files locally in", folder_save_as_arrow, "via frs_update_datasets() \n")
+} else {
+  message("Skipping FRS download because EJAM_REFRESH_FRS_ARROWS is FALSE and expected .arrow files already exist in ", folder_save_as_arrow, ".")
+}
 ################################################################################ #
 
 ## to later reload datasets  (if NOT kept in memory) ####
@@ -178,6 +187,5 @@ if (update_package_datasets) {
   }
   ######################################### ########################################## #
 }
-
 
 

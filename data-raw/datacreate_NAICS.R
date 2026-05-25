@@ -45,7 +45,7 @@ cat("See ?naics_download() for examples of comparing versions \n")
 
 NAICS <- naics_download()
 
-metadata_add_and_use_this(NAICS)
+metadata_add_and_use_this("NAICS")
 
 dataset_documenter(varname = "NAICS",
                    title = "NAICS (DATA) named vector of all NAICS code numbers and industry name for each",
