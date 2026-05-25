@@ -99,6 +99,15 @@
 #   EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE: TRUE to create prior_validation_ejscreen_export_vs_epa_2024_acs2022* reports when a reference path is available.
 #   EJAM_VALIDATE_VS_PRIOR_WALDO: TRUE to include optional waldo::compare() output in prior validation detail files.
 
+#   EJAM_RUN_DATACREATE_BEFORE: TRUE to source selected datacreate_ scripts
+#      before the main pipeline stages. Set FALSE for validation-only reruns.
+#   EJAM_RUN_DATACREATE_AFTER: TRUE to source selected datacreate_ scripts
+#      after the main pipeline stages. Set FALSE for validation-only reruns.
+#   EJAM_REPLACE_PACKAGE_DATA: TRUE to replace package .rda datasets for
+#      blockgroupstats/usastats/statestats without the interactive prompt.
+#   EJAM_INCLUDE_FRS_UPDATE: TRUE to include data-raw/datacreate_frs_.R in
+#      the post-pipeline datacreate_ scripts.
+
 #   CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
 ###################################################### #
 
@@ -162,7 +171,22 @@ set_pipeline_default("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", "")
 set_pipeline_default("EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE", "TRUE")
 set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
 
+set_pipeline_default("EJAM_RUN_DATACREATE_BEFORE", "TRUE")
+set_pipeline_default("EJAM_RUN_DATACREATE_AFTER", "TRUE")
+set_pipeline_default("EJAM_REPLACE_PACKAGE_DATA", "FALSE")
+set_pipeline_default("EJAM_INCLUDE_FRS_UPDATE", "FALSE")
+
 ###################################################### ####################################################### #
+
+pipeline_env_flag <- function(name, default = FALSE) {
+  value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
+  toupper(value) %in% c("1", "TRUE", "YES", "Y")
+}
+
+run_datacreate_before <- pipeline_env_flag("EJAM_RUN_DATACREATE_BEFORE", TRUE)
+run_datacreate_after <- pipeline_env_flag("EJAM_RUN_DATACREATE_AFTER", TRUE)
+replace_package_data <- pipeline_env_flag("EJAM_REPLACE_PACKAGE_DATA", FALSE)
+include_frs_update <- pipeline_env_flag("EJAM_INCLUDE_FRS_UPDATE", FALSE)
 
 # Specifying OTHER datasets to update ####
 
@@ -241,6 +265,26 @@ datacreate_scripts_to_run_after_pipeline <- c(
   "data-raw/datacreate_testoutput_ejamit_shapes_2.R"  # must be done AFTER pipeline updates blockgroupstats, avg in us, pctiles, etc., and AFTER states_shapefile is updated, and AFTER testinputs done
 
 )
+if (isTRUE(include_frs_update)) {
+  datacreate_scripts_to_run_after_pipeline <- c(
+    "data-raw/datacreate_frs_.R",
+    datacreate_scripts_to_run_after_pipeline
+  )
+}
+###################################################### #
+
+# Load package code before sourcing datacreate_ scripts. Several datacreate_
+# scripts call EJAM helpers by unqualified name because they historically ran
+# in an attached package-development session.
+if (isTRUE(run_datacreate_before) || isTRUE(run_datacreate_after)) {
+  if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd(), "DESCRIPTION"))) {
+    pkgload::load_all(export_all = TRUE)
+  } else if (!exists("calc_ejscreen_dataset")) {
+    library(EJAM)
+  }
+  library(data.table)
+}
+
 ###################################################### #
 cat("To open script files, in case you need to check or update them, or to step through them manually, see: \n")
 for (fpath in datacreate_scripts_to_run_before_pipeline) {
@@ -255,9 +299,13 @@ for (fpath in datacreate_scripts_to_run_after_pipeline) {
 #
 #   must be done BEFORE new blockgroup datasets are created !
 
-for (fpath in datacreate_scripts_to_run_before_pipeline) {
-  cat("sourcing the script in", fpath, "...\n")
-  source(fpath)
+if (isTRUE(run_datacreate_before)) {
+  for (fpath in datacreate_scripts_to_run_before_pipeline) {
+    cat("sourcing the script in", fpath, "...\n")
+    source(fpath)
+  }
+} else {
+  message("Skipping pre-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_BEFORE is FALSE.")
 }
 ###################################################### #
 
@@ -368,7 +416,11 @@ print(
     'EJAM_PRIOR_PACKAGE_PATH',
     'EJAM_EJSCREEN_EXPORT_REFERENCE_PATH',
     'EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE',
-    'EJAM_VALIDATE_VS_PRIOR_WALDO'
+    'EJAM_VALIDATE_VS_PRIOR_WALDO',
+    'EJAM_RUN_DATACREATE_BEFORE',
+    'EJAM_RUN_DATACREATE_AFTER',
+    'EJAM_REPLACE_PACKAGE_DATA',
+    'EJAM_INCLUDE_FRS_UPDATE'
   )))
 )
 ###################################################### #
@@ -523,6 +575,10 @@ pipeline_setting_names <- c(
   'EJAM_EJSCREEN_EXPORT_REFERENCE_PATH',
   'EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE',
   'EJAM_VALIDATE_VS_PRIOR_WALDO',
+  'EJAM_RUN_DATACREATE_BEFORE',
+  'EJAM_RUN_DATACREATE_AFTER',
+  'EJAM_REPLACE_PACKAGE_DATA',
+  'EJAM_INCLUDE_FRS_UPDATE',
   'AWS_PROFILE',
   'AWS_REGION'
 )
@@ -564,6 +620,10 @@ print(
           ejscreen_export_reference_path=ejscreen_export_reference_path,
           validate_ejscreen_export_reference=validate_ejscreen_export_reference,
           validate_vs_prior_waldo=validate_vs_prior_waldo,
+          run_datacreate_before=run_datacreate_before,
+          run_datacreate_after=run_datacreate_after,
+          replace_package_data=replace_package_data,
+          include_frs_update=include_frs_update,
           AWS_PROFILE=Sys.getenv("AWS_PROFILE"),
           AWS_REGION=Sys.getenv("AWS_REGION")
         ))
@@ -1337,67 +1397,47 @@ invisible(out)
 # ~ ----------------------------------------------- ####
 ###################################################### #
 
-if (!interactive()) {
-  message("Skipping optional package-data rebuild scripts in non-interactive pipeline run.")
+should_replace_package_data <- isTRUE(replace_package_data)
+if (!should_replace_package_data && interactive()) {
+  should_replace_package_data <- isTRUE(askYesNo(
+    "ready to REPLACE data/blockgroupstats.rda, bgej.rda, usastats.rda, statestats.rda in the package ? "
+  ))
+}
+
+if (isTRUE(should_replace_package_data)) {
+  blockgroupstats <- out$blockgroupstats
+  bgej <- out$bgej
+  usastats <- out$usastats
+  statestats <- out$statestats
+
+  EJAM:::metadata_add_and_use_this("blockgroupstats")
+  EJAM:::metadata_add_and_use_this("usastats")
+  EJAM:::metadata_add_and_use_this("statestats")
+
+  ## bgej is not package .rda data. Save the refreshed bgej pipeline artifacts
+  ## to the pipeline folder for release/data-repository publication.
+  EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = FALSE, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr)
+  EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = FALSE, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr)
 } else {
+  message("Skipping package-data replacement because EJAM_REPLACE_PACKAGE_DATA is FALSE.")
+}
 
-  # REPLACE /data/blockgroupstats.rda etc. if ready  ####
+###################################################### #
+# Create OTHER datasets  ####
+#
+# mostly must be done AFTER new blockgroup datasets are created !
 
-  # when ready to actually replace the old blockgroupstats dataset entirely:
-  if (interactive()) {
-    if (askYesNo(
-      "ready to REPLACE data/blockgroupstats.rda, bgej.rda, usastats.rda, statestats.rda in the package ? ")) {
-
-      blockgroupstats <- out$blockgroupstats
-      bgej <- out$bgej
-      usastats <- out$usastats
-      statestats <- out$statestats
-
-      EJAM:::metadata_add_and_use_this("blockgroupstats")
-      EJAM:::metadata_add_and_use_this("usastats")
-      EJAM:::metadata_add_and_use_this("statestats")
-
-      ######## ######### ######### ######### ######### #
-      ## bgej file  ####
-
-      # EJAM:::metadata_add_and_use_this("bgej") # NO - this goes in ejamdata, not in the package datasets
-      ## but that does at least add the updated metadata which it needs
-      ## so do that and then delete it from data folder?
-      ### could use workaround for local testing where bgej.arrow gets saved locally in data folder
-      ### but that does not translate to anyone else installing from github.
-      ## could save as .rda and .arrow on s3 also,
-      ## and maybe shift to getting it from there instead of from ejamdata
-      ## for now save in s3 as rda and arrow.
-      EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
-      EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
-      # [1] "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.rda"
-      # noting the old bgej.arrow was still in local data folder, so
-      ## replaced it and rerun the datacreate_testout scripts to use new EJ Indexes in those.
-      # EJAM:::ejscreen_pipeline_s3_download( "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.arrow", local_path = "./data/bgej.arrow"  )
-      ## then reinstall from local or load_all so it is available via dataload_dynamic("bgej") and then can test that it is working and has the new data in it, and then can remove the local data file if want to avoid confusion.
-      # check vintage:
-      # attr(bgej, "acs_version")
-      # attr(bgej, "date_saved_in_package")
-      ######## ######### ######### ######### ######### #
-
-
-      # rm(list=ls())
-      # restart, reinstall
-    }
-  }
-  ###################################################### #
-  # Create OTHER datasets  ####
-  #
-  # mostly must be done AFTER new blockgroup datasets are created !
-
+if (isTRUE(run_datacreate_after)) {
   for (fpath in datacreate_scripts_to_run_after_pipeline) {
     cat("sourcing the script in", fpath, "...\n")
     source(fpath)
   }
-
-  # restart, reinstall
-
-  ###################################################### #
-  # cat("REBUILD/INSTALL THE PACKAGE NOW \n")
-  ###################################################### #
+} else {
+  message("Skipping post-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_AFTER is FALSE.")
 }
+
+# restart, reinstall
+
+###################################################### #
+# cat("REBUILD/INSTALL THE PACKAGE NOW \n")
+###################################################### #
