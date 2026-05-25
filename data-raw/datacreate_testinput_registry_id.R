@@ -1,6 +1,8 @@
 #################################### #
 ## script to create dataset
 
+# requires the "frs" dataset be updated first
+
 #################################### #
 # check what was in INSTALLED package so far
 

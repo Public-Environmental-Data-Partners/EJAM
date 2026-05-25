@@ -1,18 +1,30 @@
 ############################################################### #
-## Script providing an outline of some steps in how to update / create newer versions of datasets
+## older Script providing an outline of some steps in how to update / create newer versions of datasets
 
 # - For ANNUAL blockgroup data from ACS and EJSCREEN,
 # see the newer data updates pipeline as noted in NEWS.md and the vignette on annual updates,
 # for a process that is more automated and less manual than this older script.
 
-# - NON-ANNUAL (frequent, episodic, etc.) other datasets: see useful notes in this file
+# - For FRS-related NON-ANNUAL (frequent, episodic, etc.) other datasets:
+# see datacreate_frs_.R
+
 
 # also see vignettes about data updates, and EJAM pkg github issues about updates
 ############################################################### #
+# . ####
+
+
+stop("remainder of this script is a combination of notes and obsolete script")
+
 
 ######################################### ########################################## #
-######################################### ########################################## #
 
+
+
+
+
+
+# . ####
 # SETUP ####
 
 rm(list = ls())
@@ -250,9 +262,9 @@ if (0 == 1) {  # collapsable list
   # NAICS/SIC
   documentOpen('./data-raw/datacreate_naics_counts.R')    # script
   documentOpen('./data-raw/datacreate_naicstable.R')      # script. does date_saved_in_package & use_data
-  documentOpen('./data-raw/datacreate_SIC.R')
-  documentOpen('./data-raw/datacreate_sic_counts.R')
-  documentOpen('./data-raw/datacreate_sictable.R')
+  documentOpen('./data-raw/datacreate_SIC.R')        # downloaded initial SIC data
+  documentOpen('./data-raw/datacreate_sictable.R')   # use SIC to make sictable
+  documentOpen('./data-raw/datacreate_sic_counts.R') # use SIC and the sictable plus latest frs to update/add columns to SIC
 
   # misc
   documentOpen('./data-raw/datacreate_lat_alias.R')
@@ -489,7 +501,7 @@ source_maybe("datacreate_avg.in.us.R")
 # ~------------------------------------------- ####
 
 ## ** TESTDATA & TESTOUTPUTS_ - UPDATE IF RESULTS CHANGE (sample inputs & outputs) ####
- ######################################### #
+######################################### #
 
 # create several small testinput objects
 
@@ -563,7 +575,7 @@ source_maybe("datacreate_testoutput_ejamit_fips_.R")
 # Rebuild/ reinstall the package here,
 # or at least load_all()
 
-  devtools::load_all(reset = TRUE)
+devtools::load_all(reset = TRUE)
 
 # devtools::check()
 
@@ -646,12 +658,12 @@ cat('\n-------------------------\n These scripts on naics/sic may need work...--
 stop("See datacreate_NAICS.R before using these scripts!
     Must check which version of NAICS codes are recorded in EPA FRS data ")
 
-  ### every five yrs e.g. 2027:
+### every five yrs e.g. 2027:
 ### datacreate_NAICS.R ####
 # documentOpen('./data-raw/datacreate_NAICS.R')
 source_maybe('datacreate_NAICS.R')
 
-  ### when frs or NAICS changes:
+### when frs or NAICS changes:
 ### datacreate_naics_counts.R ####
 # documentOpen('./data-raw/datacreate_naics_counts.R')    # bad script
 source_maybe('datacreate_naics_counts.R')
@@ -663,15 +675,15 @@ source_maybe('datacreate_naicstable.R')
 
 ### datacreate_SIC.R ####
 # documentOpen('./data-raw/datacreate_SIC.R')
-source_maybe('datacreate_SIC.R')
-
-### datacreate_sic_counts.R ####
-# documentOpen('./data-raw/datacreate_sic_counts.R')
-source_maybe('datacreate_sic_counts.R')
+source_maybe('datacreate_SIC.R')  # download SIC data
 
 ### datacreate_sictable.R ####
 # documentOpen('./data-raw/datacreate_sictable.R')
-source_maybe('datacreate_sictable.R')
+source_maybe('datacreate_sictable.R') # use SIC to make sictable
+
+### datacreate_sic_counts.R ####
+# documentOpen('./data-raw/datacreate_sic_counts.R')
+source_maybe('datacreate_sic_counts.R')  # use SIC and sictable and latest updated frs to update SIC
 
 ######################################### ########################################## #
 
@@ -715,7 +727,7 @@ cat("\n\n You may want to use EJAM:::pkgdown_update() from EJAM/R/utils_pkgdown_
 ## note this is an internal not exported function:
 
 # EJAM:::
- pkgdown_update(
+pkgdown_update(
   doask              = TRUE,
   dotests            = FALSE,
   testinteractively  = FALSE, ## maybe we want to do this interactively even if ask=F ?

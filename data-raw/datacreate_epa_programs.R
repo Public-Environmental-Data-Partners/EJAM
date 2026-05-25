@@ -1,12 +1,13 @@
 
-# Note: compare frsprogramcodes, epa_programs, epa_programs_defined, etc.
+# Note: compare frsprogramcodes, epa_programs,
+# and epa_programs_defined (a longer list that is not currently used except here?)
 
 # This must be redone/ rebuilt whenever frs and frs_by_programid  are updated to get counts updated !! ***
 # This data object `epa_programs` is used in ui to offer a list of programs with a count of sites for each
 
 # 1st must update frs_by_programid, via script in EJAM/datacreate_frs_.R
-
 # get the frs_by_programid dataset (which should have been just updated via script in EJAM/datacreate_frs_.R ! )
+# also needs epa_programs_defined
 
 if (!exists("frs_by_programid")) dataload_dynamic("frs_by_programid")
 
@@ -144,7 +145,6 @@ maybe_keep_not_in_frsprogramcodes_echo <- c(
 #   "UST"
 )
 epa_programs_counts$fed[epa_programs_counts$program %in% maybe_keep_not_in_frsprogramcodes_echo] <- TRUE
-
 
 ######################################################### #
 
@@ -384,11 +384,10 @@ epa_programs <- epa_programs[order(epa_programs_counts$count)]
 
 # Finally, save it in the EJAM/data/ folder for use as a dataset loaded with the EJAM package:
 
-# epa_programs <- metadata_add(epa_programs)
-# usethis::use_data(epa_programs, overwrite = TRUE)
+cat("saving dataset in package, with new metadata\n")
 EJAM:::metadata_add_and_use_this("epa_programs")
 
-cat("UPDATED DOCUMENTATION OF THIS DATA SET MANUALLY - HELP DOC IS A BIT COMPLICATED\n")
+cat("MUST MANUALLY UPDATE DOCUMENTATION OF THIS DATA SET - THE HELP DOC IS A BIT COMPLICATED\n")
 if (rstudioapi::isAvailable()) {
     rstudioapi::documentOpen('./R/data_epa_programs.R')
 }

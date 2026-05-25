@@ -1,18 +1,16 @@
 ###################################################### #
-# Notes ####
-#
-# *** BEFORE using this script,
-#   make sure map_headernames is updated carefully.
-#   then update names_* dataset objects using  data-raw/datacreate_names_of_indicators.R
-###### #
 #
 # Repeatable EJSCREEN/EJAM pipeline runner for data updates (ACS demographics, etc.)
 #
-# Run via
+# First review the settings carefully, below, and specify which other datasets
+# to update via datacreate_ scripts, specified below.
+#
+# Then run this script via
 #   source("data-raw/run_ejscreen_dataset_pipeline.R")
 #
-# The pipeline process uses these key helper functions at the various stages,
-# which are called from the script or from `calc_ejscreen_dataset()`
+###################################################### #
+# The pipeline process uses the following key helper functions for various stages,
+# which are called from the script or from `calc_ejscreen_dataset()`:
 #
 # - `download_bg_acs_raw()`
 # - `calc_bg_islandareasdata()`
@@ -23,20 +21,24 @@
 # - `calc_ejscreen_dataset()` # to assemble all of the above
 # - `ejscreen_pipeline_validate()`
 #
+# It also provides an option for sourcing various datacreate_*.R files
+#   before and after the main pipeline stages, to handle some related files
+#   that might need to be updated.
+#
 # Depending on specified year, storage location, and directory,
-#   this writes csv (or other format) file checkpoints to a local or aws directory such as
-#   data-raw/pipeline_outputs/ejscreen_acs_2022
-#   (as an example of local storage of the 2022 data)
-#   or
+#   this pipeline writes csv (or other format) file checkpoints to a local folder
+#   such as data-raw/pipeline_outputs/ejscreen_acs_2022
+#   (as an example of local storage of the datasets used with 2018-2022 ACS data)
+#   or AWS directory such as
 #   s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024
-#   (as an example of S3 storage, for the 2020-2024 ACS data).
+#   (as an example of S3 storage, for the datasets used with 2020-2024 ACS data).
 #
 # To rerun after updated environmental indicators are available:
 #   1. Save the updated blockgroup-level environmental table as
 #      bg_envirodata.csv (or format specified by stage_format) in the pipeline folder.
-#      It must include columns "bgfips" and
-#      "pctpre1960", plus the rest of the environmental indicators to use for EJ indexes,
-#       as specified in EJAM::names_e.
+#      It must include columns "bgfips" and "pctpre1960",
+#      plus the rest of the environmental indicators (those used for EJ indexes),
+#       as specified in `EJAM::names_e`.
 #   2. Source this script again. Existing raw ACS and bg_acsdata checkpoints are
 #      reused, and downstream blockgroupstats/bgej/usastats/statestats are
 #      recalculated from the updated file bg_envirodata.csv (or format specified by stage_format).
@@ -49,8 +51,9 @@
 # obtains Arrow files via dataload_dynamic(), it uses the ejamdata release tag
 # recorded in DESCRIPTION as ejamdata_required_tag, rather than whichever
 # ejamdata release GitHub currently marks as latest.
-#
-# Useful environment variables:
+###################################################### #
+
+# Useful environment variables, used as settings (parameters) customizing the pipeline:
 
 #   EJAM_PIPELINE_YR: the last year of the 5-year ACS survey to use, e.g. 2022 or 2024. Default is the most recent year that is likely to be published by Census.
 
@@ -158,6 +161,95 @@ set_pipeline_default("EJAM_PRIOR_PACKAGE_PATH", "data/blockgroupstats.rda")
 set_pipeline_default("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", "")
 set_pipeline_default("EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE", "TRUE")
 set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
+
+###################################################### ####################################################### #
+
+# Specifying OTHER datasets to update ####
+
+# The pipeline is primarily focused on updating
+# blockgroupstats and bgej, percentile lookup tables, and the EJScreen file.
+# Various other datasets generally need to be checked or updated
+# just before or just after those main blockgroup datasets are updated.
+# Some shown here are optional, though.
+# To check the current list of such scripts:
+# dput( dir(pattern = "^datacreate_", recursive = TRUE) )
+# Uncomment the lines below to run selected datacreate_ scripts.
+# Any of them can be done manually and not all are essential.
+###################################################### #
+datacreate_scripts_to_run_before_pipeline <- c(
+
+  ### ANNUAL UPDATES that must be done BEFORE pipeline updates most files
+
+  ## Census Bureau data to check/update ANNUALLY, if geo data has changed
+  ##
+  ##     cities, states, island areas
+  # "data-raw/datacreate_states_shapefile.R", # census bureau data - downloads latest state boundaries that correspond to the ACS dataset.
+  # "data-raw/datacreate_stateinfo.R",    # census bureau data - table of state fips and centroids, unlikely to change but if done should do BEFORE pipeline.  makes stateinfo with a few columns
+  # "data-raw/datacreate_stateinfo2.R",   # census bureau data - table of state info, unlikely to change but if done should do BEFORE pipeline.   makes stateinfo2 with more columns
+  # "data-raw/datacreate_censusplaces.R", # census bureau data - table of cities, etc. - download from Census Bureau. Source data did not change 2025 through 5/2026. Relevant to updating testinput_fips_cities and testoutput_ejamit_fips_cities
+  # "data-raw/datacreate_islandareas.R",  # unlikely to change, just a file with latlon info
+  # "data-raw/datacreate_lat_alias.R",    # unlikely to change
+  ##
+  ##     block and blockgroup geo info
+  # "data-raw/datacreate_bg_cenpop2020.R", ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
+  # "data-raw/datacreate_bgpts.R",        ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
+  # "data-raw/datacreate_blockwts.R",    ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
+
+  ## Variable names (indicators), metadata, and formulas to check/update ANNUALLY, if the set of indicators or formulas have changed.
+  ##
+  ##     map_headernames is IMPORTANT TO CHECK/UPDATE CAREFULLY YEARLY - probably manually in csv first, then fix and run datacreate_ script when ready to use it
+  # "data-raw/datacreate_map_headernames.R",            # must be ready/done BEFORE pipeline used  ###  MAY BE OBSOLETE  / NEED TO BE FIXED ***
+  # "data-raw/datacreate_map_headernames_fix_dupes.R",   # must be ready/done BEFORE pipeline used ###   MAY BE OBSOLETE / NEED TO BE FIXED ***
+  ##
+  # "data-raw/datacreate_names_of_indicators.R",   # must do AFTER any map_headernames changes but BEFORE pipeline is done (probably), if names/varlists like names_e change
+  # "data-raw/datacreate_names_pct_as_fraction.R", # must do AFTER any map_headernames changes
+  ##
+  ##    Formulas for calculating indicators, which ACS tables are needed, etc., if that has changed.
+  ##
+  # "data-raw/datacreate_tables_ejscreen_acs.R",  # must be ready/done BEFORE pipeline used
+  # "data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R", # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
+  # "data-raw/datacreate_formulas_ejscreen_demog_index.R"        # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
+
+)
+###################################################### #
+datacreate_scripts_to_run_after_pipeline <- c(
+
+  ### ANNUAL UPDATES that must be done AFTER pipeline updates most files
+
+  "data-raw/datacreate_high_pctiles_tied_with_min.R", # may be obsolete; helped with percentile lookups
+  "data-raw/datacreate_avg.in.us.R",   # creates "avg.in.us" national averages of key indicators, for convenience
+
+  #"data-raw/datacreate_runtime_models.R", # stores info on how long it took to run ejamit or doaggregate etc. to help predict ETA of large analysis
+
+  "data-raw/datacreate_testinput_fips.R", # do AFTER updating censusplaces, pipeline (blockgroupstats), etc., in case those test fips changed
+  "data-raw/datacreate_testpoints_testoutputs.R",  # must be done AFTER pipeline changes blockgroupstats, etc.
+  "data-raw/datacreate_testoutput_ejamit_fips_.R",  # must be done AFTER pipeline updates blockgroupstats, avg in us, pctiles, etc., and AFTER states_shapefile is updated, and AFTER testinputs done
+  "data-raw/datacreate_testoutput_ejamit_shapes_2.R"  # must be done AFTER pipeline updates blockgroupstats, avg in us, pctiles, etc., and AFTER states_shapefile is updated, and AFTER testinputs done
+
+)
+###################################################### #
+cat("To open script files, in case you need to check or update them, or to step through them manually, see: \n")
+for (fpath in datacreate_scripts_to_run_before_pipeline) {
+  cat(paste0("rstudioapi::documentOpen('", fpath,"')"), '\n')
+}
+for (fpath in datacreate_scripts_to_run_after_pipeline) {
+  cat(paste0("rstudioapi::documentOpen('", fpath,"')"), '\n')
+}
+
+###################################################### #
+# Create OTHER datasets  ####
+#
+#   must be done BEFORE new blockgroup datasets are created !
+
+for (fpath in datacreate_scripts_to_run_before_pipeline) {
+  cat("sourcing the script in", fpath, "...\n")
+  source(fpath)
+}
+###################################################### #
+
+
+###################################################### ####################################################### #
+
 ###################################################### #
 # USE NON-DEFAULT SETTINGS - for this run ####
 ###################################################### #
@@ -424,43 +516,43 @@ pipeline_setting_names <- c(
 #################################################### #
 print(
   cbind(Sys.getenv = Sys.getenv(pipeline_setting_names),
-  using_here = c(
-    pipeline_yr = pipeline_yr,
-    pipeline_root=pipeline_root,
-    pipeline_dir=pipeline_dir,
-    pipeline_storage=pipeline_storage,
-    stage_format=stage_format,
-    stage_formats=paste(stage_formats, collapse = ","),
-    blockgroup_universe_source=blockgroup_universe_source,
-    tract_weight_source=tract_weight_source,
-    decennial_bgwts_cache = Sys.getenv("EJAM_DECENNIAL_BGWTS_CACHE"),
-    refresh_decennial_bgwts = Sys.getenv("EJAM_REFRESH_DECENNIAL_BGWTS"),
+        using_here = c(
+          pipeline_yr = pipeline_yr,
+          pipeline_root=pipeline_root,
+          pipeline_dir=pipeline_dir,
+          pipeline_storage=pipeline_storage,
+          stage_format=stage_format,
+          stage_formats=paste(stage_formats, collapse = ","),
+          blockgroup_universe_source=blockgroup_universe_source,
+          tract_weight_source=tract_weight_source,
+          decennial_bgwts_cache = Sys.getenv("EJAM_DECENNIAL_BGWTS_CACHE"),
+          refresh_decennial_bgwts = Sys.getenv("EJAM_REFRESH_DECENNIAL_BGWTS"),
 
-    force_acs=force_acs,
-    force_bg_acsdata=force_bg_acsdata,
-    force_bg_geodata=force_bg_geodata,
-    tiger_bg_cache_dir=tiger_bg_cache_dir,
-    acs_download_timeout=acs_download_timeout,
-    acs_download_retries=acs_download_retries,
-    include_islandareas_data=include_islandareas_data,
-    use_islandareas_demographics=use_islandareas_demographics,
+          force_acs=force_acs,
+          force_bg_acsdata=force_bg_acsdata,
+          force_bg_geodata=force_bg_geodata,
+          tiger_bg_cache_dir=tiger_bg_cache_dir,
+          acs_download_timeout=acs_download_timeout,
+          acs_download_retries=acs_download_retries,
+          include_islandareas_data=include_islandareas_data,
+          use_islandareas_demographics=use_islandareas_demographics,
 
-    use_provisional_bg_envirodata=use_provisional_bg_envirodata,
+          use_provisional_bg_envirodata=use_provisional_bg_envirodata,
 
-    include_ejscreen_export=include_ejscreen_export,
-    include_ejscreen_dataset_creator_input=include_ejscreen_dataset_creator_input,
+          include_ejscreen_export=include_ejscreen_export,
+          include_ejscreen_dataset_creator_input=include_ejscreen_dataset_creator_input,
 
-    validate_vs_prior=validate_vs_prior,
-    prior_pipeline_yr=prior_pipeline_yr,
-    prior_pipeline_dir=prior_pipeline_dir,
-    prior_package_ref=prior_package_ref,
-    prior_package_path=prior_package_path,
-    ejscreen_export_reference_path=ejscreen_export_reference_path,
-    validate_ejscreen_export_reference=validate_ejscreen_export_reference,
-    validate_vs_prior_waldo=validate_vs_prior_waldo,
-    AWS_PROFILE=Sys.getenv("AWS_PROFILE"),
-    AWS_REGION=Sys.getenv("AWS_REGION")
-  ))
+          validate_vs_prior=validate_vs_prior,
+          prior_pipeline_yr=prior_pipeline_yr,
+          prior_pipeline_dir=prior_pipeline_dir,
+          prior_package_ref=prior_package_ref,
+          prior_package_path=prior_package_path,
+          ejscreen_export_reference_path=ejscreen_export_reference_path,
+          validate_ejscreen_export_reference=validate_ejscreen_export_reference,
+          validate_vs_prior_waldo=validate_vs_prior_waldo,
+          AWS_PROFILE=Sys.getenv("AWS_PROFILE"),
+          AWS_REGION=Sys.getenv("AWS_REGION")
+        ))
 )
 # census_api_key = "(see actual key)",
 #################################################### #
@@ -1235,74 +1327,63 @@ if (!interactive()) {
   message("Skipping optional package-data rebuild scripts in non-interactive pipeline run.")
 } else {
 
-# REPLACE /data/blockgroupstats.rda etc. if ready  ####
+  # REPLACE /data/blockgroupstats.rda etc. if ready  ####
 
-# when ready to actually replace the old blockgroupstats dataset entirely:
-if (interactive()) {
-  if (askYesNo(
-    "ready to REPLACE data/blockgroupstats.rda, bgej.rda, usastats.rda, statestats.rda in the package ? ")) {
+  # when ready to actually replace the old blockgroupstats dataset entirely:
+  if (interactive()) {
+    if (askYesNo(
+      "ready to REPLACE data/blockgroupstats.rda, bgej.rda, usastats.rda, statestats.rda in the package ? ")) {
 
-    blockgroupstats <- out$blockgroupstats
-    bgej <- out$bgej
-    usastats <- out$usastats
-    statestats <- out$statestats
+      blockgroupstats <- out$blockgroupstats
+      bgej <- out$bgej
+      usastats <- out$usastats
+      statestats <- out$statestats
 
-    EJAM:::metadata_add_and_use_this("blockgroupstats")
-    EJAM:::metadata_add_and_use_this("usastats")
-    EJAM:::metadata_add_and_use_this("statestats")
+      EJAM:::metadata_add_and_use_this("blockgroupstats")
+      EJAM:::metadata_add_and_use_this("usastats")
+      EJAM:::metadata_add_and_use_this("statestats")
 
-    ######## ######### ######### ######### ######### #
-    ## bgej file  ####
+      ######## ######### ######### ######### ######### #
+      ## bgej file  ####
 
-    # EJAM:::metadata_add_and_use_this("bgej") # NO - this goes in ejamdata, not in the package datasets
-    ## but that does at least add the updated metadata which it needs
-    ## so do that and then delete it from data folder?
-    ### could use workaround for local testing where bgej.arrow gets saved locally in data folder
-    ### but that does not translate to anyone else installing from github.
-    ## could save as .rda and .arrow on s3 also,
-    ## and maybe shift to getting it from there instead of from ejamdata
-    ## for now save in s3 as rda and arrow.
-    EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
-    EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
-    # [1] "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.rda"
-    # noting the old bgej.arrow was still in local data folder, so
-    ## replaced it and rerun the datacreate_testout scripts to use new EJ Indexes in those.
-    # EJAM:::ejscreen_pipeline_s3_download( "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.arrow", local_path = "./data/bgej.arrow"  )
-## then reinstall from local or load_all so it is available via dataload_dynamic("bgej") and then can test that it is working and has the new data in it, and then can remove the local data file if want to avoid confusion.
-    # check vintage:
-    # attr(bgej, "acs_version")
-    # attr(bgej, "date_saved_in_package")
-    ######## ######### ######### ######### ######### #
+      # EJAM:::metadata_add_and_use_this("bgej") # NO - this goes in ejamdata, not in the package datasets
+      ## but that does at least add the updated metadata which it needs
+      ## so do that and then delete it from data folder?
+      ### could use workaround for local testing where bgej.arrow gets saved locally in data folder
+      ### but that does not translate to anyone else installing from github.
+      ## could save as .rda and .arrow on s3 also,
+      ## and maybe shift to getting it from there instead of from ejamdata
+      ## for now save in s3 as rda and arrow.
+      EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
+      EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = F, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr  )
+      # [1] "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.rda"
+      # noting the old bgej.arrow was still in local data folder, so
+      ## replaced it and rerun the datacreate_testout scripts to use new EJ Indexes in those.
+      # EJAM:::ejscreen_pipeline_s3_download( "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bgej.arrow", local_path = "./data/bgej.arrow"  )
+      ## then reinstall from local or load_all so it is available via dataload_dynamic("bgej") and then can test that it is working and has the new data in it, and then can remove the local data file if want to avoid confusion.
+      # check vintage:
+      # attr(bgej, "acs_version")
+      # attr(bgej, "date_saved_in_package")
+      ######## ######### ######### ######### ######### #
 
 
-    # rm(list=ls())
-# restart, reinstall
+      # rm(list=ls())
+      # restart, reinstall
+    }
   }
-}
-###################################################### #
-# Create OTHER datasets / minor items? ####
+  ###################################################### #
+  # Create OTHER datasets  ####
+  #
+  # mostly must be done AFTER new blockgroup datasets are created !
 
-## datacreate_avg.in.us.R ####
-# rstudioapi::documentOpen("./data-raw/datacreate_avg.in.us.R")
-### this creates "avg.in.us" national averages of key indicators, for convenience, but also avgs are in usastats, statestats
-# source("./data-raw/datacreate_avg.in.us.R")
+  for (fpath in datacreate_scripts_to_run_after_pipeline) {
+    cat("sourcing the script in", fpath, "...\n")
+    source(fpath)
+  }
 
-# high_pctiles_tied_with_min.rda  also in case still used
-source("./data-raw/datacreate_high_pctiles_tied_with_min.R")
+  # restart, reinstall
 
-## recreate the testoutput files via the scripts in data-raw
-## such as  data-raw/datacreate_testpoints_testoutputs.R
-# and data-raw/datacreate_testoutput_*.R
-
-source("./data-raw/datacreate_testpoints_testoutputs.R" )
-source("./data-raw/datacreate_testoutput_ejamit_fips_.R")
-source("./data-raw/datacreate_testoutput_ejamit_shapes_2.R" )
-# restart, reinstall
-
-
-
-## etc. ####
-###################################################### #
-# cat("REBUILD/INSTALL THE PACKAGE NOW \n")
-###################################################### #
+  ###################################################### #
+  # cat("REBUILD/INSTALL THE PACKAGE NOW \n")
+  ###################################################### #
 }

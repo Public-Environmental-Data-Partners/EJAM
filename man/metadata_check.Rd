@@ -5,7 +5,7 @@
 \title{helper function in updating the package metadata, used by scripts in /data-raw/}
 \usage{
 metadata_check(
-  packages = EJAM::ejampackages,
+  packages = "EJAM",
   datasets = "all",
   which = c("ejam_package_version", "date_saved_in_package", "date_downloaded",
     "ejscreen_version", "ejscreen_releasedate", "acs_releasedate", "acs_version",
@@ -15,15 +15,15 @@ metadata_check(
 )
 }
 \arguments{
-\item{packages}{Optional. e.g. 'EJAMejscreendata', or can be a vector of character strings,
-and if not specified, default is to report on EJAM::ejampackages.
+\item{packages}{Optional. Can be a vector of character strings,
+and if not specified, default is to report on EJAM.
 If set to NULL, it only reports on objects already attached.}
 
 \item{datasets}{optional, "all" means all data objects exported.
 Can be a vector of character names of the ones to check like c("bgpts", "blockpoints")}
 
 \item{which}{Optional vector (not list) of strings, the attributes.
-Default is some typical ones used in EJAM-related packages currently.}
+Default is just "EJAM".}
 
 \item{grepdatasets}{optional, if set to TRUE, datasets should be a query to use
 via grep to identify which datasets to check. It always uses ignore.case=TRUE for this.}
@@ -38,11 +38,10 @@ but it is not coded to be able to check attributes without doing that.
 }
 \examples{
 \dontrun{
-x = metadata_check( which = "ejam_package_version")
+x = EJAM:::metadata_check( which = "ejam_package_version")
 
-
-  # tail(metadata_check( ))
-  metadata_check(packages = NULL)
+  # tail(EJAM:::metadata_check( ))
+  EJAM:::metadata_check(packages = NULL)
 
   x <- EJAM:::metadata_check_print("EJAM")
   x[x$has_metadata == TRUE, ]

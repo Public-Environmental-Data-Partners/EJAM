@@ -1,4 +1,10 @@
 
+# check this against datacreate_frs_.R and the function that calls.
+
+# this seems to create/save SIC and naics_counts for the package,
+# and create frs_by_sic but not save it anywhere.
+
+###################################################################################
 frs_clean_sic <- function(frs, usefulcolumns = c("LATITUDE83", "LONGITUDE83",
                                                  "REGISTRY_ID", "PRIMARY_NAME", "SIC_CODES", "PGM_SYS_ACRNMS"))
 {
@@ -80,6 +86,7 @@ natl_single_clean <- frs_clean_sic(natl_single)
 ## create lookup table
 frs_by_sic <- frs_make_sic_lookup(natl_single_clean)
 
+# add data to frs_by_sic, but dont save in package ... just puts it in memory? ####
 
 #saveRDS(frs_by_sic, file = 'frs_by_sic.rds')
 # attr(frs_by_sic, 'released') <- Sys.Date()
@@ -87,9 +94,9 @@ frs_by_sic <- frs_make_sic_lookup(natl_single_clean)
 # Publish frs_by_sic.arrow through the data repository workflow.
 frs_by_sic <- EJAM:::metadata_add(frs_by_sic)
 
-###################################################################################
+################################################################################## #
 # create SIC ####
-###################################################################################
+################################################################################## #
 
 # list of SIC codes
 # from https://www2.census.gov/programs-surveys/cbp/technical-documentation/records-layouts/sic-code-descriptions/sic88_97.txt
@@ -114,7 +121,7 @@ SIC <- sic_cats4 %>%
   dplyr::select(code_and_desc, code) %>%
   ## turn 2-column df into named list (col1 = names, col2 = values)
   deframe()
-
+######################################### #
 ## add counts to SIC code names for shiny dropdown
 sic_counts_nosub <- frs_by_sic[, .N, by = 'SIC']
 sic_counts_names <- enframe(SIC) %>%
@@ -125,12 +132,14 @@ sic_counts_names <- enframe(SIC) %>%
   deframe()
 
 names(SIC) <- names(sic_counts_names)
+######################################### #
+# add SIC to package ####
 
 #saveRDS(SIC, file='SIC.rds')
 # usethis::use_data(SIC, overwrite = TRUE)
 EJAM:::metadata_add_and_use_this("SIC")
 
-
+######################################### #
 ## add counts to NAICS code names for shiny dropdown
 naics_counts_nosub <- frs_by_naics[, .N, by = 'NAICS']
 naics_counts_names <- enframe(NAICS) %>%
@@ -156,6 +165,8 @@ naics_counts <- enframe(NAICS,value = 'NAICS') %>%
                                 prettyNum(count_no_subs, big.mark = ','),' sites)'),
                          name)
   )
+######################################### #
+# add naics_counts to package ####
 
 # usethis::use_data(naics_counts, overwrite = TRUE)
 EJAM:::metadata_add_and_use_this("naics_counts")

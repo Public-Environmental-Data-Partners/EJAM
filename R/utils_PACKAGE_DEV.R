@@ -1448,7 +1448,7 @@ pkg_dupeRfiles <- function(folder1 = '../EJAM/R', folder2 = './R') {
 #'
 #' @keywords internal
 #'
-pkg_dupenames <- function(pkg = EJAM::ejampackages, sortbypkg=FALSE, compare.functions=TRUE) {
+pkg_dupenames <- function(pkg = "EJAM", sortbypkg=FALSE, compare.functions=TRUE) {
 
   # Get list of exported names in package1, then look in package1 to
   #   obs <- getNamespaceExports(pkg)
@@ -1548,7 +1548,7 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
   # 1) Normally it checks the first two cases of dupe named functions from 2 packages,
   # and answers with FALSE or TRUE (1 value).
   # But it returns FALSE 3 times for some?
-  # pkg_dupenames(ejampackages) # or just pkg_dupenames()
+  # pkg_dupenames()
 
   # 2) ### error when checking a package that is loaded but not attached.
   # eg doing this:

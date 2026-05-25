@@ -14,13 +14,29 @@
 # were created from the .gdb.zip file that was obtained from the EJSCREEN team
 message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI MP AS, since they lack almost all indicator data in EJSCREEN v2.32")
 
-# for later versions...
-
+# for version 2.5.0 (in May 2026)
+# created  from Census 2020 data
+# using a non-CRAN package (in github) called census2020download !
+# This script can try to install that and use it.
+# By default that downloads from
+#  "https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/"
+# Note:
+# ***  But reconcile with pipeline handling of odd FIPS discrepancies and
+#   note that downloading block data this way 5/2026 creates
+#   about 2k different block fips than the v2.32 datasets had.
 
 
 #################################################################################### #
 
 # setup ####
+
+### SETTINGS TO USE (parameters)
+
+askquestions = FALSE
+do_download_from_census = TRUE
+do_update = TRUE
+
+
 
 require(data.table)
 if (!exists("askquestions")) {askquestions <- FALSE}
@@ -44,14 +60,14 @@ if (interactive() && askquestions) {
   do_metadata <- TRUE
 }
 
-# # do_data_save = FALSE
-#
-# if (interactive() && askquestions) {
-#   do_data_save <- askYesNo("Do use_data() - (PROBABLY NO)?")
-#   if (is.na(do_data_save)) {do_data_save <- FALSE}
-# } else {
-#   do_data_save <- FALSE
-# }
+do_data_save = FALSE
+
+if (interactive() && askquestions) {
+  do_data_save <- askYesNo("Do use_data() - (PROBABLY NO)?")
+  if (is.na(do_data_save)) {do_data_save <- FALSE}
+} else {
+  do_data_save <- FALSE
+}
 ######################################### #
 
 # A) use downloads from Census Bureau? (install,load census2020download pkg) ####
@@ -142,6 +158,8 @@ if (!do_update) {
       ## census2020_get_data() ####
 
       cat('Downloading block data and preparing block tables for EJAM...')
+      # by default downloads data from
+      #  "https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/"
       blocks <- census2020download::census2020_get_data()
       cat("done downloading block tables:\n")
       print(cbind(names(blocks)))
@@ -172,7 +190,9 @@ if (!do_update) {
     # fname = "WeightTables_2020_CT2022_fix.gdb.zip" # had 19 problems
     fname = "WeightTables_2020_CT2022_09032024.gdb.zip" # new, 9/4/24
     fpath = file.path(mydir, fname)
-    fpath = rstudioapi::selectFile(path = fpath, filter = "gdb.zip (*.gdb.zip)")
+    if (interactive() && askquestions && rstudioapi::isAvailable()) {
+      fpath = rstudioapi::selectFile(path = fpath, filter = "gdb.zip (*.gdb.zip)")
+    }
     if (!file.exists(fpath)) {stop("file not found: ", fpath)}
     # library(EJAM)
     library(sf)

@@ -4,7 +4,7 @@ datacreate_sictable <- function(SIC,
                                 sic_version = "1987") {
 
   ###################################################################################
-  # create SIC or sictable ####
+  # create   sictable ####
   #
   ## SIC is a named list for use in dropdown menu
   ## sictable is a data.table with code, n2,n3,n4,name,num_name  (but used to be tibble?)

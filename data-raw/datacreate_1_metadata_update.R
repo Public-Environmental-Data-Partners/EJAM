@@ -23,6 +23,9 @@ for (i in 1:length(x$Item))  {
 
   val = metadata_add(
     get(x$Item[i]),
+
+    # however this implies or presumes every dataset was actually updated which is not usually the case all at once
+
     update_date_saved_in_package = update_date_saved_in_package
   )
   assign(x = x$Item[i], value = val)

@@ -82,7 +82,7 @@ if (ok) {
 #'
 #'   Puerto Rico is included in both Census 2020 and ACS survey data.
 #'
-#'   The 2020 Census did include information on AS,GU,MP,VI, but the ACS does not include Island Areas.
+#'   The 2020 Census (Island Areas Census) did include information on AS,GU,MP,VI, but the ACS does not include Island Areas.
 #'   See https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html
 #'
 #'   See [Census documentation](https://www.census.gov/programs-surveys/geography.html)

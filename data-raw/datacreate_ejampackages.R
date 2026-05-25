@@ -1,9 +1,15 @@
 
-## full list of possibly relevant packages
+## somewhat obsolete,
+## was a list of possibly relevant packages,
+## was used as default in some utilities for pkg maintenance, now
 
 ejampackages <- names(
-  grep("EJAM.*", installed.packages()[, 'Package'], value = TRUE)
+  grep("EJAM.*", installed.packages()[, 'Package'], value = TRUE, ignore.case = TRUE)
   )
+ejampackages <- "EJAM"
+
+## dont add  ACSdownload and census2020download, used during annual updates
+
 cat(paste0(" full list of possibly relevant packages: \n
   c('", paste0(ejampackages, collapse = "', '"), "')\n"))
 cat('\n')

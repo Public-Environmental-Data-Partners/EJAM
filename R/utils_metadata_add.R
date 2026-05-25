@@ -366,12 +366,12 @@ metadata_check_print = function(...) {
 #'   It loads unloaded packages as needed, which you might not want it to do,
 #'   but it is not coded to be able to check attributes without doing that.
 #'
-#' @param packages Optional. e.g. 'EJAMejscreendata', or can be a vector of character strings,
-#'   and if not specified, default is to report on EJAM::ejampackages.
+#' @param packages Optional. Can be a vector of character strings,
+#'   and if not specified, default is to report on EJAM.
 #'   If set to NULL, it only reports on objects already attached.
 #'
 #' @param which Optional vector (not list) of strings, the attributes.
-#'   Default is some typical ones used in EJAM-related packages currently.
+#'   Default is just "EJAM".
 #' @param datasets optional, "all" means all data objects exported.
 #'   Can be a vector of character names of the ones to check like c("bgpts", "blockpoints")
 #' @param grepdatasets optional, if set to TRUE, datasets should be a query to use
@@ -381,11 +381,10 @@ metadata_check_print = function(...) {
 #' @seealso [metadata_check_print()] [metadata_check()] [metadata_add()] [metadata_update_attr()] [metadata_add_and_use_this()] [dataset_documenter()]
 #'   [pkg_functions_and_data()]
 #' @examples \dontrun{
-#' x = metadata_check( which = "ejam_package_version")
+#' x = EJAM:::metadata_check( which = "ejam_package_version")
 #'
-#'
-#'   # tail(metadata_check( ))
-#'   metadata_check(packages = NULL)
+#'   # tail(EJAM:::metadata_check( ))
+#'   EJAM:::metadata_check(packages = NULL)
 #'
 #'   x <- EJAM:::metadata_check_print("EJAM")
 #'   x[x$has_metadata == TRUE, ]
@@ -394,7 +393,7 @@ metadata_check_print = function(...) {
 #'
 #' @keywords internal
 #'
-metadata_check <- function(packages = EJAM::ejampackages,
+metadata_check <- function(packages = "EJAM",
                            datasets = "all",
                            which = c(
                              "ejam_package_version",

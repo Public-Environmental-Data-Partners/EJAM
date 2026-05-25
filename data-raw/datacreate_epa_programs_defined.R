@@ -1,5 +1,6 @@
 
 # Note: compare frsprogramcodes, epa_programs, epa_programs_defined, etc.
+# epa_programs_defined is a longer list that is not currently used
 
 ## DOWNLOAD DEFINITIONS OF ACRONYMS OF EPA PROGRAMS IN FRS (REMOVING ANY NONPUBLIC ONES)
 
@@ -14,38 +15,31 @@ epa_programs_defined_download_update = function(urlbase = "https://www.epa.gov/s
 if (basename(getwd()) != "EJAM") {stop('must be in source package root folder')}
 localdir = "./data-raw"
 
-
 localname = webname
 webpath = paste0(urlbase, webname)
 print(webpath)
 localpath = file.path(localdir, localname)
 
-## download MANUALLY AT THIS POINT saved in EJAM/data-raw/
-
+## download saved in EJAM/data-raw/
 
 ## tried download ---------------------------------------
-# download.file(webpath, localpath)
+download.file(webpath, localpath)
 if (!file.exists(localpath)) {stop("failed to download from", webpath, "to", localpath)}
 # opening after download.file() FAILS even though it seems to download and a manual download makes it work.
 ## ---------------------------------------------------
-
 
 frsinfo = openxlsx::read.xlsx(localpath, 1)
 if (!is.data.frame(frsinfo)) {stop("failed to read xlsx from", localpath)}
 
 # colnames(frsinfo)
 # c('PGM_SYS_ACRNM',	'PGM_SYS_NAME',	'PGM_SYS_DESC', "Comments")
-
-# DROP INTERNAL-ONLY ONES
-
+# DROP INTERNAL-ONLY COLUMNS
 epa_programs_defined <- frsinfo[frsinfo$Comments != "This data set is available only on the EPA intranet.", ]
 epa_programs_defined$Comments <- NULL
 
 return(epa_programs_defined)
-
 }
 #################################### #
-
 
 epa_programs_defined <- epa_programs_defined_download_update()
 rm(epa_programs_defined_download_update) # cleanup

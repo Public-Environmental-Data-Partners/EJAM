@@ -1,7 +1,8 @@
 
 # This script can check for a newer version of NAICS data
 # only relevant every 5 years, such as in 2027 expected changes in naics codes
-# but vintage of codes must match what is used in FRS data as used in package
+# but vintage of codes must match what is used in FRS data as used in package,
+# and EPA data about NAICS of each facility in FRS may not update on same schedule!
 
 cat("NAICS and FRS-related datasets must be updated in an integrated way. \n")
 cat("Must check which version of NAICS codes are recorded in EPA FRS data \n ")
