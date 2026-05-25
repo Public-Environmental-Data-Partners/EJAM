@@ -6,7 +6,7 @@
 
 cat("NAICS and FRS-related datasets must be updated in an integrated way. \n")
 cat("Must check which version of NAICS codes are recorded in EPA FRS data \n ")
-cat("As of 10/2025, the 2017 NAICS codes were being used in EJAM because
+cat("As of 5/2026, the 2017 NAICS codes were being used in EJAM because
 the copy of EPA FRS being used by EJAM is somewhat outdated but the NAICS codes in it
 were clearly be 2017-style NAICS not 2022-style codes.\n")
 
@@ -42,8 +42,8 @@ cat("See data-raw/datacreate_naicstable.R etc. \n")
 
 cat("See ?naics_download() for examples of comparing versions \n")
 
-
-NAICS <- naics_download(year = 2017)
+vintage_naics_codes_to_get = 2017
+NAICS <- naics_download(year = vintage_naics_codes_to_get)
 
 metadata_add_and_use_this("NAICS")
 
@@ -54,8 +54,10 @@ dataset_documenter(varname = "NAICS",
 like '22132 - Sewage Treatment Facilities' or '22 - Utilities'
 Revised codes have been published every five years, such as in 2017 and 2022.
 
+", paste0("This dataset is based on the NAICS codes released in", vintage_naics_codes_to_get, ".)","
+
 The version used should match the version used in assigning codes to the EPA FRS facilities.
-As of 10/2025, the 2017 NAICS codes were being used in EJAM because
+As of 5/2026, the 2017 NAICS codes were being used in EJAM because
 the copy of EPA FRS being used by EJAM is somewhat outdated but the NAICS codes in it
 were clearly be 2017-style NAICS not 2022-style codes.
 

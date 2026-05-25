@@ -158,7 +158,7 @@ datacreate_scripts_to_source <- c(
 
   ## do these if updating the frs dataset, or if the naics universe of all codes changes
 
-  "data-raw/datacreate_NAICS.R",       # in 2027, expect changes in naics codes (every 5 years, and one update was 2022). Do this after those code changes.
+  "data-raw/datacreate_NAICS.R", # MUST CHECK THE YEAR USED IN THAT FILE SO IT MATCHES EPA FRS NAICS VINTAGE USED  # in 2027, expect changes in naics codes (every 5 years, and one update was 2022). Do this after those code changes.
   "data-raw/datacreate_naicstable.R",     # after NAICS changes
   "data-raw/datacreate_testinput_naics.R", # do this when allowable NAICS code universe changes (every 5 years)
   "data-raw/datacreate_naics_counts.R",   # do after any EPA frs update  (OR if NAICS code universe) is updated, and note NAICS codes change every 5 years but NAICS info in EPA frs dataset is not be updated on same schedule!
