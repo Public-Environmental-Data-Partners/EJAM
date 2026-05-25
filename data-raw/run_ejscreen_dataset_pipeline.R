@@ -183,17 +183,17 @@ datacreate_scripts_to_run_before_pipeline <- c(
   ## Census Bureau data to check/update ANNUALLY, if geo data has changed
   ##
   ##     cities, states, island areas
-  # "data-raw/datacreate_states_shapefile.R", # census bureau data - downloads latest state boundaries that correspond to the ACS dataset.
-  # "data-raw/datacreate_stateinfo.R",    # census bureau data - table of state fips and centroids, unlikely to change but if done should do BEFORE pipeline.  makes stateinfo with a few columns
-  # "data-raw/datacreate_stateinfo2.R",   # census bureau data - table of state info, unlikely to change but if done should do BEFORE pipeline.   makes stateinfo2 with more columns
-  # "data-raw/datacreate_censusplaces.R", # census bureau data - table of cities, etc. - download from Census Bureau. Source data did not change 2025 through 5/2026. Relevant to updating testinput_fips_cities and testoutput_ejamit_fips_cities
-  # "data-raw/datacreate_islandareas.R",  # unlikely to change, just a file with latlon info
-  # "data-raw/datacreate_lat_alias.R",    # unlikely to change
+  "data-raw/datacreate_states_shapefile.R", # census bureau data - downloads latest state boundaries that correspond to the ACS dataset.
+  "data-raw/datacreate_stateinfo.R",    # census bureau data - table of state fips and centroids, unlikely to change but if done should do BEFORE pipeline.  makes stateinfo with a few columns
+  "data-raw/datacreate_stateinfo2.R",   # census bureau data - table of state info, unlikely to change but if done should do BEFORE pipeline.   makes stateinfo2 with more columns
+  "data-raw/datacreate_censusplaces.R", # census bureau data - table of cities, etc. - download from Census Bureau. Source data did not change 2025 through 5/2026. Relevant to updating testinput_fips_cities and testoutput_ejamit_fips_cities
+  "data-raw/datacreate_islandareas.R",  # unlikely to change, just a file with latlon info
+  "data-raw/datacreate_lat_alias.R",    # unlikely to change
   ##
   ##     block and blockgroup geo info
-  # "data-raw/datacreate_bg_cenpop2020.R", ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
-  # "data-raw/datacreate_bgpts.R",        ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
-  # "data-raw/datacreate_blockwts.R",    ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
+  "data-raw/datacreate_bg_cenpop2020.R", ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
+  "data-raw/datacreate_bgpts.R",        ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
+  "data-raw/datacreate_blockwts.R",    ## NEED TO CHECK OR UPDATE THIS - would be closely connected with pipeline updates***
 
   ## Variable names (indicators), metadata, and formulas to check/update ANNUALLY, if the set of indicators or formulas have changed.
   ##
@@ -201,14 +201,14 @@ datacreate_scripts_to_run_before_pipeline <- c(
   # "data-raw/datacreate_map_headernames.R",            # must be ready/done BEFORE pipeline used  ###  MAY BE OBSOLETE  / NEED TO BE FIXED ***
   # "data-raw/datacreate_map_headernames_fix_dupes.R",   # must be ready/done BEFORE pipeline used ###   MAY BE OBSOLETE / NEED TO BE FIXED ***
   ##
-  # "data-raw/datacreate_names_of_indicators.R",   # must do AFTER any map_headernames changes but BEFORE pipeline is done (probably), if names/varlists like names_e change
-  # "data-raw/datacreate_names_pct_as_fraction.R", # must do AFTER any map_headernames changes
+  "data-raw/datacreate_names_of_indicators.R",   # must do AFTER any map_headernames changes but BEFORE pipeline is done (probably), if names/varlists like names_e change
+  "data-raw/datacreate_names_pct_as_fraction.R", # must do AFTER any map_headernames changes
   ##
   ##    Formulas for calculating indicators, which ACS tables are needed, etc., if that has changed.
   ##
-  # "data-raw/datacreate_tables_ejscreen_acs.R",  # must be ready/done BEFORE pipeline used
-  # "data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R", # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
-  # "data-raw/datacreate_formulas_ejscreen_demog_index.R"        # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
+  "data-raw/datacreate_tables_ejscreen_acs.R",  # must be ready/done BEFORE pipeline used
+  "data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R", # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
+  "data-raw/datacreate_formulas_ejscreen_demog_index.R"        # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
 
 )
 ###################################################### #

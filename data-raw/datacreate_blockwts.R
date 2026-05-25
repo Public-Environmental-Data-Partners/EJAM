@@ -12,7 +12,7 @@
 
 # for version 2.32 (in July/August 2024)
 # were created from the .gdb.zip file that was obtained from the EJSCREEN team
-message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI MP AS, since they lack almost all indicator data in EJSCREEN v2.32")
+message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI MP AS, since they lack demographic data from ACS")
 
 # for version 2.5.0 (in May 2026)
 # created  from Census 2020 data
@@ -33,15 +33,14 @@ message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI 
 ### SETTINGS TO USE (parameters)
 
 askquestions = FALSE
-do_download_from_census = TRUE
+do_download_from_census = TRUE # use ejanalysis\census2020download package for downloads, takes a few minutes
 do_update = TRUE
-
-
+do_metadata = TRUE
+do_data_save = FALSE
+tryinstall = FALSE
 
 require(data.table)
 if (!exists("askquestions")) {askquestions <- FALSE}
-
-# do_update = TRUE
 
 if (interactive() && askquestions) {
   do_update <- askYesNo("Update all block tables like blockpoints, blockwts, etc.?
@@ -51,16 +50,12 @@ if (interactive() && askquestions) {
   do_update <- TRUE
 }
 
-# do_metadata = TRUE
-
 if (interactive() && askquestions) {
   do_metadata <- askYesNo("Do metadata_add()  ?")
   if (is.na(do_metadata)) {do_metadata <- FALSE}
 } else {
   do_metadata <- TRUE
 }
-
-do_data_save = FALSE
 
 if (interactive() && askquestions) {
   do_data_save <- askYesNo("Do use_data() - (PROBABLY NO)?")
@@ -72,10 +67,8 @@ if (interactive() && askquestions) {
 
 # A) use downloads from Census Bureau? (install,load census2020download pkg) ####
 
-# tryinstall = FALSE
-
 ################################## #
-warning("Note that the file from EJSCREEN team lacks area info for blocks, while Census Bureau downloads would have that.
+cat("Note that the file from EJSCREEN team lacks area info for blocks, while Census Bureau downloads would have that.
             Relying only on the file from EJSCREEN team, we cannot calculate block_radius_miles
             as would be need to create custom nationwide proximity scores like proxistat() does.
             Also, it seems clear that EJSCREEN does not do small-distance adjustments with that in buffer analysis.")
