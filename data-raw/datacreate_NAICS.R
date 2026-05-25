@@ -43,7 +43,7 @@ cat("See data-raw/datacreate_naicstable.R etc. \n")
 cat("See ?naics_download() for examples of comparing versions \n")
 
 
-NAICS <- naics_download()
+NAICS <- naics_download(year = 2017)
 
 metadata_add_and_use_this("NAICS")
 
