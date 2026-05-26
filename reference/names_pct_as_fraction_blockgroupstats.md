@@ -11,4 +11,4 @@ names_pct_as_fraction_blockgroupstats
 
 ## Format
 
-An object of class `character` of length 51.
+An object of class `character` of length 0.

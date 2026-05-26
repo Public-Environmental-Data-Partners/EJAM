@@ -47,7 +47,8 @@ You can look up sites by REGISTRY_ID in frs, and get their location, etc."><meta
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -79,7 +80,9 @@ You can look up sites by REGISTRY_ID in frs, and get their location, etc.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This dataset can be updated by a package maintainer by using
-frs_update_datasets() (which is not an exported function)</p>
+frs_update_datasets() (which is not an exported function).
+FRS tables are dynamic <code>.arrow</code> files loaded by <code><a href="dataload_dynamic.html">dataload_dynamic()</a></code>,
+not <code>.rda</code> files installed in <code>EJAM/data/</code>.</p>
 <p>The definitions of active/inactive here are not quite the
 same as used in ECHO. See attributes(frs) to see date created, etc.</p>
 <p>Also, <a href="https://ejanalysis.com/ejscreenapp" class="external-link">EJSCREEN</a> has maps of EPA-regulated <a href="https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities">facilities</a> of a few program types
@@ -93,7 +96,7 @@ and <a href="epa_programs_defined.html">epa_programs_defined</a></p><ul><li><p>C
 <li><p>frs_by_programid rows:     Approx 3-4 million (3.5m as of 02/2025)</p></li>
 <li><p>frs_by_naics rows:         Approx 640k (541k unique regid as of 02/2025, 1858 unique NAICS)</p></li>
 <li><p>frs_by_sic rows:           Approx 764k (664k unique regid as of 02/2025, 2048 unique SIC)</p></li>
-</ul><p>Classes ‘data.table’ and 'data.frame'</p>
+</ul><p>Classes <code>data.table</code> and <code>data.frame</code></p>
 <p>colnames</p><ul><li><p>[1,] "lat"</p></li>
 <li><p>[2,] "lon"</p></li>
 <li><p>[3,] "REGISTRY_ID" like 110000343003</p></li>

@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -98,9 +99,9 @@
 
 
 <dt id="arg-piggybacktag">piggybacktag<a class="anchor" aria-label="anchor" href="#arg-piggybacktag"></a></dt>
-<dd><p>default is <code>"latest"</code> for dynamic Arrow data. Package-
-coupled annual datasets such as <code>bgej</code> override <code>"latest"</code> internally and
-use <code>paste0("v", packageVersion("EJAM"))</code> as their release tag.</p></dd>
+<dd><p>default is <code>"latest"</code>, which resolves internally to the
+DESCRIPTION <code>ejamdata_required_tag</code> field. Pass a specific tag such as
+<code>"v2.32.8"</code> only for explicit maintenance or diagnostic work.</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
@@ -109,17 +110,15 @@ use <code>paste0("v", packageVersion("EJAM"))</code> as their release tag.</p></
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Checks to see what release of each requested Arrow dataset should be used.
-Facility and most geography Arrow files are treated as dynamic data and
-normally come from the latest applicable data-repository release, tracked
-with the installed package's <code>data/ejamdata_version.txt</code> marker.</p>
-<p>Annual EJSCREEN/EJAM data files such as <code>bgej.arrow</code> are package-coupled.
-They are obtained from the <code>ejamdata</code> release tag that matches the current
-EJAM package version as reported by <code>packageVersion("EJAM")</code>. For example,
-EJAM 2.5.0 looks for <code>bgej.arrow</code> in the <code>ejamdata</code> release tagged
-<code>v2.5.0</code>, not in the latest data-repository release.</p>
-<p>Relies on <code><a href="https://docs.ropensci.org/piggyback/reference/pb_releases.html" class="external-link">piggyback::pb_releases()</a></code> to track / update / store / download
-data files as assets of a specific release on the data repository.
+    <p>Checks to see what <code>ejamdata</code> release tag should be used for requested
+Arrow datasets. By default, EJAM uses the required <code>ejamdata</code> release tag
+recorded in DESCRIPTION as <code>ejamdata_required_tag</code>. For example, EJAM 2.5.0
+currently looks for Arrow files in the <code>ejamdata</code> release tagged <code>v2.5.0</code>,
+not in whichever data-repository release GitHub currently marks as latest.</p>
+<p>The installed package's <code>data/ejamdata_version.txt</code> marker records the
+release tag for locally installed Arrow files.</p>
+<p>Relies on <code><a href="https://docs.ropensci.org/piggyback/reference/pb_download.html" class="external-link">piggyback::pb_download()</a></code> to download data files that have been
+stored as assets of a specific release on the data repository.
 For details, see <a href="https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html">technical details of how datasets are updated</a></p>
     </div>
 

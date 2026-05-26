@@ -15,6 +15,11 @@ calc_bg_acsdata(
   tract_weight_source = c("decennial2020", "acs"),
   dropMOE = TRUE,
   acs_raw = NULL,
+  include_islandareas_data = FALSE,
+  islandareas_raw = NULL,
+  islandareas_demographics = NULL,
+  islandareas_tables = islandareas_tables_for_bg_acsdata(),
+  use_islandareas_demographics = FALSE,
   acs_raw_stage = NULL,
   pipeline_dir = NULL,
   save_stage = FALSE,
@@ -70,6 +75,34 @@ calc_bg_acsdata(
   optional raw ACS pipeline object from
   [`download_bg_acs_raw()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_acs_raw.md).
 
+- include_islandareas_data:
+
+  logical, whether to append Island Areas rows. Puerto Rico is not
+  included here because it is already part of ACS.
+
+- islandareas_raw:
+
+  optional raw Island Areas Census DHC object from
+  [`download_bg_islandareas_raw()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_islandareas_raw.md).
+
+- islandareas_demographics:
+
+  optional transformed Island Areas Census DHC demographics table from
+  `calc_bg_islandareasdata()`.
+
+- islandareas_tables:
+
+  Island Areas Census DHC tables to download if
+  `include_islandareas_data` is TRUE and `islandareas_raw` is not
+  supplied.
+
+- use_islandareas_demographics:
+
+  logical. Defaults to FALSE so that the EJSCREEN-compatible pipeline
+  appends Island Areas blockgroup rows without using mixed-source Island
+  Areas Census demographics in `bg_acsdata`. Set TRUE only for a
+  supplemental mixed-source dataset.
+
 - acs_raw_stage:
 
   optional stage name to read from `pipeline_dir`.
@@ -117,3 +150,9 @@ later by
 after `bg_envirodata` and extra indicators have been joined, because the
 supplemental demographic index needs `lowlifex` which is not from the
 ACS.
+
+When Island Areas rows are requested, the default EJSCREEN-compatible
+path appends AS/GU/MP/VI rows without using the optional 2020 Island
+Areas Census DHC demographics. Those DHC values can be saved and
+reviewed separately, and are used here only when
+`use_islandareas_demographics = TRUE`.

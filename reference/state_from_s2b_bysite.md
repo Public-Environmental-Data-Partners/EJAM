@@ -89,7 +89,7 @@ EJAM:::state_from_s2b_bysite(testoutput_getblocksnearby_10pts_1miles)[]
 
   fname = testdata("testpoints_100_sites_", quiet = TRUE)
   x = EJAM:::state_from_s2b_bysite(
-    getblocksnearby( latlon_from_anything(fname), quadtree = localtree))
+    getblocksnearby(latlon_from_anything(fname)))
   y = read_csv_or_xl(fname)
   x$ST == y$FacState
   # }

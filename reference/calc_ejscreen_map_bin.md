@@ -16,7 +16,7 @@ calc_ejscreen_map_bin(x)
 
 ## Value
 
-integer vector of bin numbers from 0 to 11.
+integer vector of bin numbers from 1 to 11.
 
 ## Details
 
@@ -25,5 +25,5 @@ calculates those bin numbers so the can be stored in EJSCREEN's dataset
 of blockgroups. Percentiles are expected to be represented on a 0-100
 scale. Bins match the historical EJSCREEN thresholds: 0-9th percentile
 is bin 1, 10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin 10, and
-95-100 is bin 11. Missing or out-of-range percentiles are assigned bin
-0.
+95-100 is bin 11. Missing or out-of-range percentiles return
+`NA_integer_`.

@@ -10,7 +10,7 @@ testshapes_2
 
 ## Format
 
-An object of class `sf` (inherits from `data.frame`) with 2 rows and 18
+An object of class `sf` (inherits from `data.frame`) with 2 rows and 11
 columns.
 
 ## See also

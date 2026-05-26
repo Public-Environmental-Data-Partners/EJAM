@@ -51,7 +51,8 @@ to add new or update existing attributes."><meta property="og:image" content="ht
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -134,7 +135,7 @@ so that is.vector() will no longer be true!</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="co"># EJAM:::metadata_check() # internal function</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="co"># metadata_check() # internal function</span></span>
 <span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>a<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,b<span class="op">=</span><span class="fl">1001</span><span class="op">:</span><span class="fl">1010</span><span class="op">)</span></span>
 <span>  <span class="co"># x &lt;- EJAM:::metadata_add(x) # internal function</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>

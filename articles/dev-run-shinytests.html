@@ -66,7 +66,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -270,7 +271,7 @@ category.</p>
 <p>You can also run a test directly in an interactive R session. This is
 useful for debugging one category at a time.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># once</span></span>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/local_install.html" class="external-link">local_install</a></span><span class="op">(</span><span class="st">'.'</span>, dependencies <span class="op">=</span> <span class="cn">T</span>, upgrade <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="co"># once</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span> <span class="co"># once</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span> <span class="co"># once. gets done automatically though, by things like testthat::test_file()</span></span>
 <span></span>
@@ -278,10 +279,11 @@ useful for debugging one category at a time.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_SHINYTEST2_INDIVIDUAL <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span>
 <span><span class="fu">shinytest2_webapp_functionality</span><span class="op">(</span><span class="st">"latlon"</span><span class="op">)</span></span></code></pre></div>
 <p>It is recommended during development to use
-<code><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">remotes::install_local()</a></code> to ensure your development code is
-the one tested. The web app tests launch the app in a separate R
-process, so by default they use the installed EJAM package. This is much
-faster than reloading the source tree for every web app test file.</p>
+<code>pak::local_install('.', dependencies = T, upgrade = F)</code> to
+ensure your development code is the one tested. The web app tests launch
+the app in a separate R process, so by default they use the installed
+EJAM package. This is much faster than reloading the source tree for
+every web app test file.</p>
 <p>If you specifically need the spawned Shiny app process to use the
 current source tree without reinstalling, set this environment variable
 before running the tests:</p>

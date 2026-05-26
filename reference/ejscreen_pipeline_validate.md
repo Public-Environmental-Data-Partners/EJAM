@@ -18,8 +18,9 @@ ejscreen_pipeline_validate(x, stage, strict = TRUE)
 - stage:
 
   pipeline stage name, must be among known stages or aliases as found in
-  `EJAM:::ejscreen_pipeline_stage_names()` with canonical names such as
-  bg_acs_raw, bg_acsdata, bg_envirodata, bg_geodata,
+  [`ejscreen_pipeline_stage_names()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_input.md)
+  with canonical names such as bg_acs_raw, bg_islandareas_raw,
+  bg_islandareas_demographics, bg_acsdata, bg_envirodata, bg_geodata,
   bg_extra_indicators, blockgroupstats, usastats_acs, statestats_acs,
   usastats_envirodata, statestats_envirodata, usastats_ej,
   statestats_ej, usastats, statestats, bgej, ejscreen_export,

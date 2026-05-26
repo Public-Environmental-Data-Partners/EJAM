@@ -47,13 +47,15 @@ Notes:
 
 - B28002 no broadband internet subscription
 
-- B27010 no health insurance. B27010 is available at blockgroup
-  resolution, but the annual EJSCREEN pipeline uses tract-level B27010
-  for `pctnohealthinsurance` to match the historical EJSCREEN-style
-  derivation.
+- B27010 no health insurance. EJAM calculates `pctnohealthinsurance`
+  from the Census-defined B27010 civilian noninstitutionalized
+  population universe. Any EJSCREEN-specific compatibility value should
+  be handled in the EJSCREEN export stage, not by changing the EJAM ACS
+  indicator.
 
-- C16002 (language category and) % of households limited English
-  speaking (lingiso) <https://data.census.gov/table/ACSDT5Y2024.C16002>
+- C16002 household language by household limited English speaking
+  status; used for `lingiso` and limited-English household language
+  breakdowns <https://data.census.gov/table/ACSDT5Y2024.C16002>
 
 - B16004 (language category and) % of residents (not hhlds) speak no
   English at all <https://data.census.gov/table/ACSDT5Y2024.B16004>

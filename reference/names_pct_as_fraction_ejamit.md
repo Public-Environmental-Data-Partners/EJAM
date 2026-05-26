@@ -11,4 +11,4 @@ names_pct_as_fraction_ejamit
 
 ## Format
 
-An object of class `character` of length 82.
+An object of class `character` of length 1.

@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -271,7 +272,7 @@
           <code><a href="latlon_from_address.html">latlon_from_address()</a></code>
 
         </dt>
-        <dd>geocode, but only if AOI package is installed and attached and what it imports like tidygeocoder etc.</dd>
+        <dd>geocode, but only if AOI package is installed and what it imports like tidygeocoder etc.</dd>
 
         <dt>
 
@@ -320,7 +321,7 @@
           <code><a href="islandareas.html">islandareas</a></code>
 
         </dt>
-        <dd>islandareas (DATA) table, bounds info on lat lon of US Island Areas</dd>
+        <dd>islandareas (DATA) table, bounding boxes lat lon for US Island Areas</dd>
       </dl></div><div class="section level2">
       <h2 id="specify-facilities-by-id">Specify Facilities by ID<a class="anchor" aria-label="anchor" href="#specify-facilities-by-id"></a></h2>
 
@@ -550,7 +551,7 @@
           <code><a href="NAICS.html">NAICS</a></code>
 
         </dt>
-        <dd>NAICS (DATA) named list of all NAICS code numbers and industry name for each</dd>
+        <dd>NAICS (DATA) named vector of all NAICS code numbers and industry name for each</dd>
 
         <dt>
 
@@ -564,7 +565,7 @@
           <code><a href="naicstable.html">naicstable</a></code>
 
         </dt>
-        <dd>naicstable (DATA) data.table of NAICS code(s) and industry names for each EPA-regulated site</dd>
+        <dd>naicstable (DATA) data.table of all possible NAICS code(s) and industry names</dd>
 
         <dt>
 
@@ -608,7 +609,7 @@
           <code><a href="testinput_program_sys_id.html">testinput_program_sys_id</a></code>
 
         </dt>
-        <dd>test data, EPA program names and program system ID numbers to try using</dd>
+        <dd>test data, EPA program system ID numbers to try using</dd>
 
         <dt>
 
@@ -1152,7 +1153,7 @@
           <code><a href="indexblocks.html">indexblocks()</a></code>
 
         </dt>
-        <dd>Create localtree (a quadtree index of all US block centroids) in global environment</dd>
+        <dd>Create localtree (a quadtree index of all US block centroids) in package cache</dd>
 
         <dt>
 
@@ -2182,7 +2183,7 @@
           <code><a href="testinput_program_sys_id.html">testinput_program_sys_id</a></code>
 
         </dt>
-        <dd>test data, EPA program names and program system ID numbers to try using</dd>
+        <dd>test data, EPA program system ID numbers to try using</dd>
 
         <dt>
 

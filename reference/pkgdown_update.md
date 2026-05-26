@@ -29,7 +29,7 @@ pkgdown_update(
 
 - dotests:
 
-  run unit tests first? uses EJAM:::test_ejam()
+  run unit tests first? uses test_ejam()
 
 - testinteractively:
 
@@ -37,7 +37,7 @@ pkgdown_update(
 
 - doyamlcheck:
 
-  report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?
+  report on the yaml file via dataset_pkgdown_yaml_check() ?
 
 - dodocument:
 
@@ -47,9 +47,10 @@ pkgdown_update(
 
 - doinstall:
 
-  use devtools::install() ? usually should leave FALSE and maybe do
-  install separately before using this function; would take about 5
-  minutes and may need to restart R after installing - this is quirky
+  TRUE would mean reinstall package from local source. usually should
+  leave FALSE and maybe do install separately before using this
+  function; would take about 5 minutes and may need to restart R after
+  installing - this is quirky
 
 - doloadall_not_library:
 

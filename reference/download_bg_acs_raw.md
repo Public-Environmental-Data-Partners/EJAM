@@ -90,7 +90,7 @@ download_bg_acs_raw(
 
   ACSdownload-compatible function used to obtain a single ACS table for
   a given `yr`, `tables`, `fips`, and `fiveorone`. Defaults to
-  [`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html).
+  [`ACSdownload::get_acs_new()`](https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html).
   Supply a wrapper if you need to pin a legacy ACS source
   implementation.
 
@@ -114,7 +114,7 @@ list with raw `blockgroup` and `tract` ACS table lists plus metadata.
 This creates the raw ACS checkpoint for the annual EJSCREEN/EJAM data
 update pipeline. It downloads the Census Bureau ACS table-based summary
 file tables with
-[`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html).
+[`ACSdownload::get_acs_new()`](https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html).
 By default, the saved checkpoint uses a folder-plus-manifest layout: one
 file per ACS table in `bg_acs_raw/blockgroup/` and `bg_acs_raw/tract/`,
 plus manifest files that describe the checkpoint. That is easier to

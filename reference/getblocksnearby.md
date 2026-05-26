@@ -121,8 +121,9 @@ getblocksnearby() is a wrapper redirecting to the right version, like
 [`getblocksnearbyviaQuadTree()`](https://public-environmental-data-partners.github.io/EJAM/reference/getblocksnearbyviaQuadTree.md)
 Census block "internal points" (defined by Census Bureau) are actually
 what it looks for, and they are like centroids. The blocks are
-pre-indexed for the whole USA, via the data object quadtree aka
-localtree
+pre-indexed for the whole USA via
+[`indexblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexblocks.md),
+which stores the quadtree index in the package cache.
 
 ## See also
 

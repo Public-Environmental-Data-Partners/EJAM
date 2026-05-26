@@ -220,34 +220,33 @@ if (exists("frs_by_programid") && exists("frs")) {
   epa_programs_counts <- frs_by_programid[, .N, by = "program"][order(N), ]
   epa_programs_counts[order(-N), ][1:25, ]
 }
-#> frs_by_programid_arrow  is loading from local folder ...done.
 #>           program      N
 #>            <char>  <int>
-#>  1:      RCRAINFO 528499
-#>  2:         NPDES 401604
-#>  3:      NJ-NJEMS 244509
-#>  4: CA-ENVIROVIEW 196997
-#>  5:          ICIS 161512
-#>  6:           AIR 134028
-#>  7:      MN-TEMPO 126781
-#>  8:           FIS 122425
-#>  9:           EIS 121499
-#> 10:   TX-TCEQ ACR 108003
-#> 11:      AIRS/AFS  99353
-#> 12:      OSHA-OIS  84460
-#> 13:          NCDB  70570
-#> 14:          ACES  65202
-#> 15:      IDNR_EFD  45961
-#> 16:        OR-DEQ  42433
-#> 17:          SFDW  40302
-#> 18:      IN-TEMPO  39906
-#> 19:       WA-FSIS  39803
-#> 20:         ACRES  35596
-#> 21:       AZURITE  35169
-#> 22:       OH-CORE  34453
-#> 23:           FDM  34182
-#> 24:      MA-EPICS  34098
-#> 25:          TRIS  34092
+#>  1:      RCRAINFO 512897
+#>  2:         NPDES 455005
+#>  3:      NJ-NJEMS 243176
+#>  4: CA-ENVIROVIEW 194436
+#>  5:          ICIS 167153
+#>  6:      MN-TEMPO 150118
+#>  7:           AIR 134418
+#>  8:           EIS 122816
+#>  9:           FIS 122172
+#> 10:   TX-TCEQ ACR 107844
+#> 11:      AIRS/AFS  96263
+#> 12:      OSHA-OIS  83466
+#> 13:          NCDB  70772
+#> 14:          SFDW  69081
+#> 15:          ACES  63730
+#> 16:      IDNR_EFD  46215
+#> 17:       WA-FSIS  43721
+#> 18:        OR-DEQ  42528
+#> 19:         ACRES  42263
+#> 20:      IN-TEMPO  39598
+#> 21:          TRIS  34990
+#> 22:       AZURITE  34931
+#> 23:      MA-EPICS  34013
+#> 24:       OH-CORE  33966
+#> 25:       CA-CERS  30146
 #>           program      N
 #>            <char>  <int>
 ```
@@ -284,7 +283,6 @@ if (exists("frs_by_mact")) {
   
   head(latlon_from_mactsubpart("OOOO"), 2)
 }
-#> frs_by_mact_arrow  is loading from local folder ...done.
 #> Key: <subpart, programid>
 #>     programid subpart
 #>        <char>  <char>
@@ -363,7 +361,7 @@ Find facilities, by name of industry
 # See a data table of facilities in one industry
 dataload_dynamic("frs")
 #> Loading specified arrow datasets: frs
-#> Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and latest-released data repository versions match.
+#> Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and package-compatible data repository versions match.
 #> looking for frs in memory...
 #> NULL
 # if (exists("frs")) {
@@ -378,7 +376,7 @@ dataload_dynamic("frs")
 #> 3: 42.74216 -73.69249 110000324426       LYDALLTHERMAL/ACOUSTICAL INC
 #> 4: 43.97535 -75.90653 110000325988          KNOWLTON TECHNOLOGIES LLC
 #> 5: 44.22767 -74.99753 110000326120 NEWTON FALLS LAND RECLAMATION, LLC
-#> 6: 41.49085 -78.67752 110000330400            DOMTAR JOHNSONBURG MILL
+#> 6: 41.49085 -78.67752 110000330400    WEYERHAEUSER - JOHNSONBURG MILL
 # }
 ```
 
@@ -582,7 +580,7 @@ A NAICS code can have many “children” or subcategories under it
 
 dataload_dynamic(c("frs", "frs_by_naics"))
 #> Loading specified arrow datasets: frs, frs_by_naics
-#> Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and latest-released data repository versions match.
+#> Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and package-compatible data repository versions match.
 #> looking for frs, frs_by_naics in memory...
 #> NULL
 if (exists("frs") & exists("frs_from_naics")) {
@@ -596,7 +594,7 @@ if (exists("frs") & exists("frs_from_naics")) {
   NROW(frs_from_naics(naics_from_any("chem", children = T)$code))
   # >10,000
 }
-#> [1] 14762
+#> [1] 15345
 ```
 
 ## SHAPEFILES
@@ -739,40 +737,40 @@ findings$text[2]
 head(findings$stats[ , , 1], 15)
 #>      cut
 #> count 1.01   2   5  10
-#>     0   63 716 977 995
-#>     1  184 142  22   5
-#>     2  169  73   1   0
-#>     3  110  28   0   0
-#>     4   82  21   0   0
-#>     5   98  17   0   0
-#>     6  113   3   0   0
-#>     7   94   0   0   0
+#>     0   63 713 977 995
+#>     1  183 145  22   5
+#>     2  170  73   1   0
+#>     3  107  28   0   0
+#>     4   83  21   0   0
+#>     5  100  17   0   0
+#>     6  112   3   0   0
+#>     7   95   0   0   0
 #>     8   85   0   0   0
 #>     9    2   0   0   0
 head(findings$stats[ , 1, ], 21)
 #>      stat
 #> count count  cum pct cum_pct
 #>     0    63 1000   6     100
-#>     1   184  937  18      94
-#>     2   169  753  17      75
-#>     3   110  584  11      58
-#>     4    82  474   8      47
-#>     5    98  392  10      39
-#>     6   113  294  11      29
-#>     7    94  181   9      18
+#>     1   183  937  18      94
+#>     2   170  754  17      75
+#>     3   107  584  11      58
+#>     4    83  477   8      48
+#>     5   100  394  10      39
+#>     6   112  294  11      29
+#>     7    95  182  10      18
 #>     8    85   87   9       9
 #>     9     2    2   0       0
 x = findings$stats[ , 1, ] 
 x[x[, "cum_pct"] >= 50 & x[, "cum_pct"] <= 80, ]
 #>      stat
 #> count count cum pct cum_pct
-#>     2   169 753  17      75
-#>     3   110 584  11      58
+#>     2   170 754  17      75
+#>     3   107 584  11      58
 findings$stats[ 1, , ]
 #>       stat
 #> cut    count  cum pct cum_pct
 #>   1.01    63 1000   6     100
-#>   2      716 1000  72     100
+#>   2      713 1000  71     100
 #>   5      977 1000  98     100
 #>   10     995 1000 100     100
 ```

@@ -67,7 +67,7 @@ is.vector() will no longer be true!
 ## Examples
 
 ``` r
-  # EJAM:::metadata_check() # internal function
+  # metadata_check() # internal function
   x <- data.frame(a=1:10,b=1001:1010)
   # x <- EJAM:::metadata_add(x) # internal function
   attributes(x)

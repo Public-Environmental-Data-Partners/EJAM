@@ -120,7 +120,7 @@ out <- testoutput_ejamit_100pts_1miles
 ejam2map(out) 
 #> Warning in validateCoords(lng, lat, funcName): Data contains 1 rows with either
 #> missing or invalid lat/lon values and will be ignored
-#> /private/var/folders/w4/0j7n916n37q7gjt7m2vqqwk40000gn/T/RtmpMOF693/mapfast_e49b5973f026.html
+#> /private/var/folders/w4/0j7n916n37q7gjt7m2vqqwk40000gn/T/Rtmp15KEa5/mapfast_f9a023e5ae02.html
 ```
 
 ### Report via `ejam2report()` (interactive html file)

@@ -27,5 +27,5 @@ invisibly
 ## Examples
 
 ``` r
-# x = EJAM:::metadata_check( which = "ejam_package_version")
+# x = metadata_check( which = "ejam_package_version")
 ```

@@ -21,5 +21,5 @@ all)
 
 ## Details
 
-Also see EJAM:::global_or_param("ejamapi_is_down") as set in
+Also see global_or_param("ejamapi_is_down") as set in
 global_defaults_package.R

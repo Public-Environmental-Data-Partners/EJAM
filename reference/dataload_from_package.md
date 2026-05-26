@@ -17,8 +17,8 @@ dataload_from_package(
 - olist:
 
   vector of strings giving names of objects to load using data(). This
-  could also include other large datasets that are slow to lazyload but
-  not always needed: "frs", "frs_by_programid ", "frs_by_naics", etc.
+  should be limited to package `.rda` datasets. FRS-related datasets are
+  no longer `.rda` package data.
 
 - envir:
 
@@ -37,16 +37,10 @@ immediately.
 [blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md),
 [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md),
 [statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md),
-and some others are always essential to EJAM, but
-[frs](https://public-environmental-data-partners.github.io/EJAM/reference/frs.md)
-and
-[frs_by_programid](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_programid.md)
-are huge datasets (and
-[frs_by_sic](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_sic.md)
-and
-[frs_by_naics](https://public-environmental-data-partners.github.io/EJAM/reference/frs_by_naics.md))
-and not always used - only to find regulated facilities by ID, etc. The
-frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
+and some others are always essential to EJAM. The FRS-related datasets
+are huge and are loaded separately as `.arrow` files with
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
+only when needed.
 
 ## See also
 

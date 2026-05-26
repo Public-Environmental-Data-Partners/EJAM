@@ -47,7 +47,8 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -102,7 +103,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <span>  threshnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_ej_pctile</span>, <span class="va">names_ej_state_pctile</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_ej_supp_pctile</span>,</span>
 <span>    <span class="va">names_ej_supp_state_pctile</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  threshgroups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"EJ-US-or-ST"</span>, <span class="st">"Supp-US-or-ST"</span><span class="op">)</span>,</span>
-<span>  reports <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>,</span>
+<span>  reports <span class="op">=</span> <span class="fu"><a href="global_or_param.html">global_or_param</a></span><span class="op">(</span><span class="st">"default_reports"</span><span class="op">)</span>,</span>
 <span>  updateProgress <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  updateProgress_getblocks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  progress_all <span class="op">=</span> <span class="cn">NULL</span>,</span>

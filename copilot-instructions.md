@@ -263,15 +263,14 @@ interactively running groups of unit tests), `setup.R`,
 best launched via
 [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md).
 Config in `inst/golem-config.yml`. **Data:** - Some is lazy-loaded from
-data/ - Some is saved in the data folder upon package installation
-because some large data files must be downloaded from the ejamdata
-repository. This is explained in the file
-vignettes/dev-update-datasets.Rmd - Some is loaded via
+data/ - Some large dynamic datasets are downloaded from the ejamdata
+repository as `.arrow` files and cached locally, instead of being
+installed as `.rda` package data. This is explained in
+`vignettes/dev-update-datasets.Rmd`. - Some is loaded via
 [`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
-and some is obtained and used in .arrow format instead of .rda format in
-some parts of the app. **Naming:** - Closely-related R functions are
-often grouped within a single .R file in the R folder, especially if the
-filename includes the phrase “*FUNCTIONS” such as in
+and read as `.arrow` format in the app. **Naming:** - Closely-related R
+functions are often grouped within a single .R file in the R folder,
+especially if the filename includes the phrase “*FUNCTIONS” such as in
 ”PROXIMITY_FUNCTIONS.R” - Closely-related R functions often share a
 common prefix such as ”fips*” or “frs\_” or “ejamit” or “ejam2” or
 “calc\_” or “latlon” or “plot” or “table\_” or “url\_” or “shape” or

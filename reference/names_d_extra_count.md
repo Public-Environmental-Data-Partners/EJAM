@@ -10,7 +10,7 @@ names_d_extra_count
 
 ## Format
 
-An object of class `character` of length 2.
+An object of class `character` of length 3.
 
 ## Details
 

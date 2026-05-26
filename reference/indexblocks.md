@@ -1,7 +1,7 @@
-# Create localtree (a quadtree index of all US block centroids) in global environment
+# Create localtree (a quadtree index of all US block centroids) in package cache
 
-Create localtree (a quadtree index of all US block centroids) in global
-environment
+Create localtree (a quadtree index of all US block centroids) in package
+cache
 
 ## Usage
 
@@ -11,7 +11,8 @@ indexblocks()
 
 ## Value
 
-Returns TRUE when done. Side effect is it creates the index in memory.
+Returns the quadtree index invisibly. Side effect is it creates the
+index in the package cache.
 
 ## Details
 

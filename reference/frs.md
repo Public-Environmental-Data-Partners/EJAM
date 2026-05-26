@@ -7,7 +7,10 @@ frs, and get their location, etc.
 ## Details
 
 This dataset can be updated by a package maintainer by using
-frs_update_datasets() (which is not an exported function)
+frs_update_datasets() (which is not an exported function). FRS tables
+are dynamic `.arrow` files loaded by
+[`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md),
+not `.rda` files installed in `EJAM/data/`.
 
 The definitions of active/inactive here are not quite the same as used
 in ECHO. See attributes(frs) to see date created, etc.
@@ -38,7 +41,7 @@ and
 - frs_by_sic rows: Approx 764k (664k unique regid as of 02/2025, 2048
   unique SIC)
 
-Classes ‘data.table’ and 'data.frame'
+Classes `data.table` and `data.frame`
 
 colnames
 

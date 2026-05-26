@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -121,7 +122,7 @@ uses assumed codes and returns ids of the inactive sites.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="co"># frs &lt;- frs_get()</span></span>
 <span>  <span class="co"># closedid &lt;- frs_inactive_ids()</span></span>
 <span>  <span class="co"># frs &lt;- frs_drop_inactive(frs, closedid = closedid)</span></span>
-<span>  <span class="co"># usethis::use_data(frs, overwrite = TRUE)</span></span>
+<span>  <span class="co"># Save/publish frs.arrow through the data repository workflow.</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

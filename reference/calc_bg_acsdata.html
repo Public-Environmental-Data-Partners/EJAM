@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -81,6 +82,11 @@
 <span>  tract_weight_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"decennial2020"</span>, <span class="st">"acs"</span><span class="op">)</span>,</span>
 <span>  dropMOE <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  acs_raw <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  include_islandareas_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  islandareas_raw <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  islandareas_demographics <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  islandareas_tables <span class="op">=</span> <span class="fu">islandareas_tables_for_bg_acsdata</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  use_islandareas_demographics <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  acs_raw_stage <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pipeline_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_stage <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -137,6 +143,33 @@ same-vintage ACS blockgroup population weights.</p></dd>
 <dd><p>optional raw ACS pipeline object from <code><a href="download_bg_acs_raw.html">download_bg_acs_raw()</a></code>.</p></dd>
 
 
+<dt id="arg-include-islandareas-data">include_islandareas_data<a class="anchor" aria-label="anchor" href="#arg-include-islandareas-data"></a></dt>
+<dd><p>logical, whether to append Island Areas rows.
+Puerto Rico is not included here because it is already part of ACS.</p></dd>
+
+
+<dt id="arg-islandareas-raw">islandareas_raw<a class="anchor" aria-label="anchor" href="#arg-islandareas-raw"></a></dt>
+<dd><p>optional raw Island Areas Census DHC object from
+<code><a href="download_bg_islandareas_raw.html">download_bg_islandareas_raw()</a></code>.</p></dd>
+
+
+<dt id="arg-islandareas-demographics">islandareas_demographics<a class="anchor" aria-label="anchor" href="#arg-islandareas-demographics"></a></dt>
+<dd><p>optional transformed Island Areas Census DHC
+demographics table from <code>calc_bg_islandareasdata()</code>.</p></dd>
+
+
+<dt id="arg-islandareas-tables">islandareas_tables<a class="anchor" aria-label="anchor" href="#arg-islandareas-tables"></a></dt>
+<dd><p>Island Areas Census DHC tables to download if <code>include_islandareas_data</code> is TRUE
+and <code>islandareas_raw</code> is not supplied.</p></dd>
+
+
+<dt id="arg-use-islandareas-demographics">use_islandareas_demographics<a class="anchor" aria-label="anchor" href="#arg-use-islandareas-demographics"></a></dt>
+<dd><p>logical. Defaults to FALSE so that the
+EJSCREEN-compatible pipeline appends Island Areas blockgroup rows without
+using mixed-source Island Areas Census demographics in <code>bg_acsdata</code>.
+Set TRUE only for a supplemental mixed-source dataset.</p></dd>
+
+
 <dt id="arg-acs-raw-stage">acs_raw_stage<a class="anchor" aria-label="anchor" href="#arg-acs-raw-stage"></a></dt>
 <dd><p>optional stage name to read from <code>pipeline_dir</code>.</p></dd>
 
@@ -178,6 +211,10 @@ using only ACS data. "Demographic index" columns are calculated later
 by <code><a href="calc_ejscreen_blockgroupstats.html">calc_ejscreen_blockgroupstats()</a></code>, after
 <code>bg_envirodata</code> and extra indicators have been joined, because the
 supplemental demographic index needs <code>lowlifex</code> which is not from the ACS.</p>
+<p>When Island Areas rows are requested, the default EJSCREEN-compatible path
+appends AS/GU/MP/VI rows without using the optional 2020 Island Areas Census
+DHC demographics. Those DHC values can be saved and reviewed separately, and
+are used here only when <code>use_islandareas_demographics = TRUE</code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

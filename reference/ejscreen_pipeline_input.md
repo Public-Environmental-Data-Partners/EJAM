@@ -37,6 +37,9 @@ ejscreen_pipeline_save(
   overwrite = TRUE,
   validate = TRUE,
   validation_strict = TRUE,
+  yr = NULL,
+  metadata = NULL,
+  add_metadata = TRUE,
   storage = c("auto", "local", "s3")
 )
 
@@ -117,6 +120,26 @@ ejscreen_pipeline_storage_backend(
 
   logical passed to `EJAM:::ejscreen_pipeline_validate()`.
 
+- yr:
+
+  optional ACS end year used to set metadata on ACS-related R-native
+  saved stages. If omitted, the helper tries `EJAM_PIPELINE_YR` and then
+  the `ejscreen_acs_YYYY` suffix in `pipeline_dir`. Non-ACS stages such
+  as `bg_islandareas_raw` and `bg_islandareas_demographics` use
+  source-specific metadata instead.
+
+- metadata:
+
+  optional named list of metadata attributes to apply before saving
+  R-native stages.
+
+- add_metadata:
+
+  logical. If TRUE, add or update metadata attributes for known
+  non-atomic pipeline stages and for objects that already have metadata
+  attributes. Atomic vectors without existing metadata attributes are
+  left unchanged.
+
 - canonical_only:
 
   optional logical set to TRUE in ejscreen_pipeline_stage_names() to
@@ -124,15 +147,15 @@ ejscreen_pipeline_storage_backend(
 
 ## Value
 
-`EJAM:::ejscreen_pipeline_stage_names()` returns vector of allowed stage
-names and aliases, such as "bg_envirodata" etc., so that
+`ejscreen_pipeline_stage_names()` returns vector of allowed stage names
+and aliases, such as "bg_envirodata" etc., so that
 `EJAM:::ejscreen_pipeline_validate()` can check if a specified stage
 name is valid and apply the specific validation rules for that stage
 
-`EJAM:::ejscreen_pipeline_stage_canonical()` returns the character
-string input unchanged (if unrecognized) or returns the canonical
-version of a stage name, mapping any recognized alias like "envirodata"
-to the canonical name like "bg_envirodata"
+`ejscreen_pipeline_stage_canonical()` returns the character string input
+unchanged (if unrecognized) or returns the canonical version of a stage
+name, mapping any recognized alias like "envirodata" to the canonical
+name like "bg_envirodata"
 
 `EJAM:::ejscreen_pipeline_stage_path()` returns a path, with
 pipeline_dir as the folder(s) and filename based on stage and format

@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -135,7 +136,7 @@ and the other gets the state abbreviation of each unique BLOCK:</p>
 <span></span>
 <span>  <span class="va">fname</span> <span class="op">=</span> <span class="fu"><a href="testdata.html">testdata</a></span><span class="op">(</span><span class="st">"testpoints_100_sites_"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="va">x</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">state_from_s2b_bysite</span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span> <span class="fu"><a href="latlon_from_anything.html">latlon_from_anything</a></span><span class="op">(</span><span class="va">fname</span><span class="op">)</span>, quadtree <span class="op">=</span> <span class="va">localtree</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="fu"><a href="latlon_from_anything.html">latlon_from_anything</a></span><span class="op">(</span><span class="va">fname</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">y</span> <span class="op">=</span> <span class="fu"><a href="read_csv_or_xl.html">read_csv_or_xl</a></span><span class="op">(</span><span class="va">fname</span><span class="op">)</span></span>
 <span>  <span class="va">x</span><span class="op">$</span><span class="va">ST</span> <span class="op">==</span> <span class="va">y</span><span class="op">$</span><span class="va">FacState</span></span>
 <span>  <span class="co"># }</span></span>

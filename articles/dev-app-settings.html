@@ -66,7 +66,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -465,7 +466,6 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 </h4>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gdefs</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
 <span><span class="co">#&gt; isPublic =  FALSE</span></span>
 <span><span class="va">gdefnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gdefs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>global_defaults <span class="op">=</span> <span class="va">gdefnames</span><span class="op">)</span></span>
@@ -759,9 +759,7 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;   radius_donut_lower_edge = 0,</span></span>
 <span><span class="co">#&gt;   avoidorphans = FALSE,</span></span>
 <span><span class="co">#&gt;   quadtree = NULL,</span></span>
-<span><span class="co">#&gt;   quaddatatable = NULL,</span></span>
 <span><span class="co">#&gt;   quiet = FALSE,</span></span>
-<span><span class="co">#&gt;   parallel = FALSE,</span></span>
 <span><span class="co">#&gt;   use_unadjusted_distance = TRUE,</span></span>
 <span><span class="co">#&gt;   ...</span></span>
 <span><span class="co">#&gt; )</span></span>
@@ -770,8 +768,8 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt; What str() shows (minus the attributes)  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; function (sitepoints, radius = 3, maxradius = 31.07, radius_donut_lower_edge = 0, </span></span>
-<span><span class="co">#&gt;     avoidorphans = FALSE, quadtree = NULL, quaddatatable = NULL, quiet = FALSE, </span></span>
-<span><span class="co">#&gt;     parallel = FALSE, use_unadjusted_distance = TRUE, ...)  </span></span>
+<span><span class="co">#&gt;     avoidorphans = FALSE, quadtree = NULL, quiet = FALSE, use_unadjusted_distance = TRUE, </span></span>
+<span><span class="co">#&gt;     ...)  </span></span>
 <span><span class="co">#&gt; NULL</span></span>
 <span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">args2</span><span class="op">(</span><span class="va">getblocksnearbyviaQuadTree</span><span class="op">)</span></span>
@@ -887,7 +885,7 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;   thresholds = list(80, 80),</span></span>
 <span><span class="co">#&gt;   threshnames = list(c(names_ej_pctile, names_ej_state_pctile), c(names_ej_supp_pctile, names_ej_supp_state_pctile)),</span></span>
 <span><span class="co">#&gt;   threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"),</span></span>
-<span><span class="co">#&gt;   reports = EJAM:::global_or_param("default_reports"),</span></span>
+<span><span class="co">#&gt;   reports = global_or_param("default_reports"),</span></span>
 <span><span class="co">#&gt;   updateProgress = NULL,</span></span>
 <span><span class="co">#&gt;   updateProgress_getblocks = NULL,</span></span>
 <span><span class="co">#&gt;   progress_all = NULL,</span></span>
@@ -914,7 +912,7 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;     infer_sitepoints = FALSE, need_blockwt = TRUE, thresholds = list(80, </span></span>
 <span><span class="co">#&gt;         80), threshnames = list(c(names_ej_pctile, names_ej_state_pctile), </span></span>
 <span><span class="co">#&gt;         c(names_ej_supp_pctile, names_ej_supp_state_pctile)), threshgroups = list("EJ-US-or-ST", </span></span>
-<span><span class="co">#&gt;         "Supp-US-or-ST"), reports = EJAM:::global_or_param("default_reports"), </span></span>
+<span><span class="co">#&gt;         "Supp-US-or-ST"), reports = global_or_param("default_reports"), </span></span>
 <span><span class="co">#&gt;     updateProgress = NULL, updateProgress_getblocks = NULL, progress_all = NULL, </span></span>
 <span><span class="co">#&gt;     in_shiny = FALSE, quiet = TRUE, silentinteractive = FALSE, called_by_ejamit = TRUE, </span></span>
 <span><span class="co">#&gt;     testing = FALSE, showdrinkingwater = TRUE, showpctowned = TRUE, download_city_fips_bounds = TRUE, </span></span>

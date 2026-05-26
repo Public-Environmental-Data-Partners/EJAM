@@ -8,7 +8,7 @@ uploaded and analyzed data to create table
 ``` r
 create_interactive_table(
   out,
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   sitereport_download_buttons_colname = "Download EJAM Report",
   sitereport_download_buttons_show = TRUE,
   columns_used = NULL

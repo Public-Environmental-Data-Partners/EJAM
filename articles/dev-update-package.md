@@ -1,210 +1,238 @@
 # Updating the Package as a New Release
 
-This document outlines the general development process for updating EJAM
-(for a new release of the package) or relocating it to a different
-repository (repo name and/or github user name), or changing the full
-name of the tool (the web app). Also see the separate vignettes on
-[updating
-datasets](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md)
+This document outlines the general development process for preparing a
+new EJAM package release, relocating it to a different repository, or
+changing the full name of the web app/tool. Also see the separate
+vignettes on [updating
+datasets](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md),
+[updating EJScreen annual datasets via the
+pipeline](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-ejscreen-datasets-yearly.md),
 and [updating
 documentation](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-documentation.md).
-This document mentions the code repository, the data repository, the
-documentation pages website, and the app’s title.
+This document covers the code repository, the data repository, the
+documentation website, the app title, and the release checklist.
 
-## CODE REPOSITORY: If relevant, carefully change owner (and possibly repo name) of github code repository
+## CODE REPOSITORY: If relevant, carefully change the owner or name of the GitHub code repository
 
-If the package is renamed or relocated (if the owner of the repository
-changed, or the location of the data repository changed, or a new name
-were used for the repository), several files would need to be updated
-for everything to work correctly.
+If the package is renamed or relocated, several files need to be updated
+for the package, documentation, tests, and data-download helpers to work
+correctly.
 
-- The full URL of the repo where the R package is stored must be
-  recorded as the part of the URL parameter in the DESCRIPTION file in
-  the root folder of the source package.
+- The full URL of the repository where the R package is stored must be
+  recorded in the `URL` field of the `DESCRIPTION` file in the source
+  package root.
 
 - The full URL is currently
   <https://github.com/Public-Environmental-Data-Partners/EJAM> as found
-  in the DESCRIPTION file. It also can be checked via
-  `url_package(type = "code", get_full_url=TRUE)`
+  in the `DESCRIPTION` file. It can also be checked via
+  `url_package(type = "code", get_full_url = TRUE)`.
 
-- The \_pkgdown.yml file in the root folder should also get updated with
+- The `_pkgdown.yml` file in the root folder should also be updated with
   the new URL.
 
-- Rebuilding/installing the package should update usage of the URL where
-  relevant. Some utility functions used it for example.
+- Rebuilding and reinstalling the package should update uses of the URL
+  where relevant. Some utility functions read it from package metadata.
 
 - Rebuilding the pkgdown site via
   [`pkgdown_update()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkgdown_update.md)
-  should use that new information within documentation, including
+  should use the new information within documentation, including
   articles and function/data reference pages.
 
-### CODE REPO OWNER: owner of the github code repository
+### CODE REPO OWNER: owner of the GitHub code repository
 
 - The owner name portion is currently
   “Public-Environmental-Data-Partners” and can be found as part of the
   URL for the code repository, or via
-  `gsub("/.*", "", url_package(type = "code"))`
+  `gsub("/.*", "", url_package(type = "code"))`.
 
 - Changing the URL as explained above and transferring ownership should
-  work, but generated documentation pages and code test results and code
+  work, but generated documentation pages, code test results, and code
   comments should be carefully checked.
 
-- Note it would not make sense to simply globally replace “ejanalysis”
-  with “newowner” – There are web links within the R package (mostly in
-  documentation) that use the domain
+- It would not make sense to simply replace every instance of
+  “ejanalysis” with a new owner name. Some web links within the R
+  package, mostly in documentation, use the domain
   [ejanalysis.com](https://ejanalysis.com) or equivalently
-  [ejanalysis.org](https://ejanalysis.org), mostly used to provide
-  aliases that are convenient shortcuts to the repo, documentation,
-  datasets repo, etc. Those aliases include
+  [ejanalysis.org](https://ejanalysis.org). These are convenient
+  redirect aliases for the code repository, documentation, data
+  repository, and related resources. Those aliases include
   [ejanalysis.org/code](https://ejanalysis.org/code),
   [ejanalysis.org/data](https://ejanalysis.org/data), and
   [ejanalysis.org/docs](https://ejanalysis.org/docs). They are also
-  available via `url_package("code", desc_or_alias = "alias")` for
-  example. The redirect information at that domain would need to be
-  updated to point to any new URLs for the data, code, or docs. It
-  should not matter if that domain name is different than the owner of
-  any of the repositories, so these hard-coded URLs. Those could be
-  changed to use a format like url_package(desc_or_alias=“alias”) to
-  make them easier to update later, by just changing that one function,
-  but that is not essential.
+  available via helpers such as
+  `url_package("code", desc_or_alias = "alias")`. The redirects for
+  those domains would need to be updated to point to any new URLs for
+  the data, code, or documentation. The alias domain does not need to
+  match the owner of any GitHub repository.
 
-### CODE REPO NAME: Name of the github code repository and/or the R package
+### CODE REPO NAME: name of the GitHub code repository and/or the R package
 
-- The repo name portion is currently “EJAM” and can be found as part of
-  the URL for the code repository, or via
-  `gsub(".*/", "", url_package(type = "code"))`
+- The repository name portion is currently “EJAM” and can be found as
+  part of the URL for the code repository, or via
+  `gsub(".*/", "", url_package(type = "code"))`.
 
-- The R package and the code repository and RStudio project in theory
-  could all be different but have been the same.
+- The R package, code repository, and RStudio project could in theory
+  all have different names, but in EJAM they have usually been the same.
 
-- The name of the *R package* would NOT be easy to change, since it is
-  used in so many places in different ways, sometimes referring to the
-  github repository name and sometimes just used to refer to the R
-  package name or even the tool in general. It is assumed to be the same
-  as the name of the github *repository*, and there are many places
-  where the package name is mentioned in vignettes/ articles, etc.
-  Changing the repo name (as distinct from the owner of the repo) might
-  be feasible, as described here, but you would have to be very careful
-  about this distinction between package name, repo name, project name,
-  and tool name. You would have to globally find in files all hardcoded
-  references to the old names, urls, etc. since there still are places
-  in documentation and comments where it does not check in DESCRIPTION
-  for the repo name or assumes repo and package names are identical.
+- The name of the *R package* would not be easy to change, since it is
+  used in many places in different ways. Some references mean the GitHub
+  repository name, some mean the R package name, and some mean the tool
+  in general. The package name is often assumed to match the GitHub
+  repository name. Changing the repository name, as distinct from the
+  owner of the repository, may be feasible, but the distinction between
+  package name, repository name, project name, and tool name needs to be
+  checked carefully. Use a global search to find hard-coded references
+  to old names, URLs, and assumptions that the repository and package
+  names are identical.
 
-## DATASETS REPOSITORY: If relevant, carefully change owner and/or repo name of github repository storing the large datasets
+## DATASETS REPOSITORY: If relevant, carefully change the owner or name of the GitHub repository storing large datasets
 
-- The owner/name of the repo where datasets are stored must be recorded
-  as the ejam_data_repo parameter in the DESCRIPTION file in the root
-  folder of the source package (which can be checked via
-  `url_package(type = "data")`).
+- The owner/name of the repository where external large datasets are
+  stored must be recorded as the `ejam_data_repo` parameter in the
+  `DESCRIPTION` file in the source package root. It can be checked via
+  `url_package(type = "data")`.
 
 - The full URL is currently
   <https://github.com/Public-Environmental-Data-Partners/ejamdata>. It
-  can be checked via `url_package(type = "data", get_full_url=TRUE)`
+  can be checked via `url_package(type = "data", get_full_url = TRUE)`.
 
 - The owner name portion is currently
   “Public-Environmental-Data-Partners” and can be found as part of the
   URL for the data repository, or via
-  `gsub("/.*", "", url_package(type = "data"))`
+  `gsub("/.*", "", url_package(type = "data"))`.
 
-- The repo name portion is currently “ejamdata” and can be found as part
-  of the URL for the data repository, or via
-  `gsub(".*/", "", url_package(type = "data"))`
+- The repository name portion is currently “ejamdata” and can be found
+  as part of the URL for the data repository, or via
+  `gsub(".*/", "", url_package(type = "data"))`.
 
-- Changing the name of this repository, and/or the owner, should be
-  easier than in the case of the R package code repository, since the
-  data repo is referred to much less often and in fewer ways. A global
-  find just to check this would be important, but changing the info in
-  the DESCRIPTION file and rebuilding the package should be sufficient
-  to update the info about where the data repository is located, and
-  that should be used in all relevant places in the package and
-  documentation after reinstalling and rebuilding documentation
-  including the pkgdown site. There are some places in documentation or
-  comments where the term “ejamdata” is used to refer to the repo
-  without it being based on the info in the DESCRIPTION file, notably.
+- Changing the name or owner of this repository should be easier than
+  changing the R package code repository, since the data repository is
+  referenced less often and in fewer ways. Still, use a global search to
+  check for hard-coded references. Changing the information in the
+  `DESCRIPTION` file and rebuilding the package should update most
+  references to where the data repository is located. There may still be
+  documentation or comments where the term “ejamdata” is used directly
+  rather than read from the `DESCRIPTION` file.
 
-## DOCUMENTATION URL: If relevant, carefully change URL for where the R package documentation is published
+## DOCUMENTATION URL: If relevant, carefully change where the R package documentation is published
 
-- The name of the repo (or other domain) where webpages of package
-  documentation are published must be recorded as part of the URL
-  parameter in the DESCRIPTION file in the root folder of the source
-  package. The website providing documentation of the R package is
-  created via
+- The URL where package documentation is published must be recorded in
+  the `URL` field of the `DESCRIPTION` file in the source package root.
+  The website providing documentation for the R package is created via
   [`pkgdown_update()`](https://public-environmental-data-partners.github.io/EJAM/reference/pkgdown_update.md),
   as explained in [updating
   documentation](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-documentation.md).
 
-- This URL at least through mid-2026 was associated with the same
-  ownername as the R code repository, but it is relatively easy to
-  change where the documentation is published and it does not have to be
-  the same as the code repository owner. If the documentation is
-  published on github pages, then the URL would be something like
-  `https://OWNER.github.io/REPONAME` and the OWNER and REPONAME in that
-  URL would need to be updated if the documentation is moved to a
-  different location. If the documentation is published on a different
-  domain, then that URL would need to be updated in DESCRIPTION.
+- This URL at least through mid-2026 was associated with the same owner
+  name as the R code repository, but the documentation can be published
+  elsewhere and does not have to use the same owner as the code
+  repository. If the documentation is published on GitHub Pages, the URL
+  will look like `https://OWNER.github.io/REPONAME`; `OWNER` and
+  `REPONAME` need to be updated if the documentation is moved. If the
+  documentation is published on a different domain, update that URL in
+  `DESCRIPTION`.
 
-- This URL can be checked via `url_package(type = "docs")` which should
+- This URL can be checked via `url_package(type = "docs")`, which should
   return the full URL where documentation is published (currently
   <https://public-environmental-data-partners.github.io/EJAM>).
 
 ## APP TITLE: If relevant, carefully change the title of the web app
 
-- The full name/title of the web app / tool is used in several places
-  and all of those should be reading the full name from where it is
-  defined. The web app title is stored in the DESCRIPTION file, and is
-  available for vignettes, functions, etc. directly via
-  `as.vector(desc::desc_get("Title"))`. After the package is attached,
-  the name as potentially modified via global_defaults_package.R or
-  parameters to
+- The full name/title of the web app/tool is used in several places, and
+  those places should read the title from one authoritative source. The
+  web app title is stored in the `DESCRIPTION` file and is available to
+  vignettes and functions via `as.vector(desc::desc_get("Title"))`.
+  After the package is attached, the name as potentially modified via
+  `global_defaults_package.R` or parameters to
   [`ejamapp()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamapp.md)
-  is available as `EJAM:::global_or_param("app_title")`
+  is available as `EJAM:::global_or_param("app_title")`.
 
 ## PACKAGE RELEASES: Update the package release
 
-- Update EJAM version number in the Version: field of the *DESCRIPTION*
-  file in the development branch (e.g., 2.5.0) (& tying it to EJSCREEN
-  version numbers if relevant). Search in files globally too, as there
-  still are places where the version number is not read from
-  DESCRIPTION, like the files \*\_pkgdown.yml\* and *golem-config.yml*
-  and *CITATION* and *CITATION.cff* where the version must be updated
-  too!
+- Update the EJAM version number in the `Version` field of the
+  `DESCRIPTION` file in the release/development branch (currently
+  2.5.0). Tie it to EJScreen version numbers if relevant. Search
+  globally too, because there may still be files where the version
+  number is not read from `DESCRIPTION`, such as `_pkgdown.yml`,
+  `golem-config.yml`, `CITATION`, and `CITATION.cff`.
 
-- Update `NEWS.md` in development branch listing changes made. Use the
-  numbering x.y.z (same numbering as was put in DESCRIPTION).
+- Consider updating minimum package version requirements specified in
+  the DESCRIPTION file Imports and Suggests.
 
-- Merge development into main branch
+- If this is an annual EJScreen-style data release, first complete the
+  staged data update workflow in [Updating EJScreen Datasets Annually
+  (via the
+  Pipeline)](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-ejscreen-datasets-yearly.md).
+  Confirm that accepted pipeline outputs have been copied into package
+  data where appropriate (`blockgroupstats`, `usastats`, `statestats`,
+  and related lookup/metadata objects), that `bgej.arrow` has been
+  published as an asset in the `ejamdata` release tag recorded in
+  DESCRIPTION as `ejamdata_required_tag`, and that the local/source
+  package can load a `bgej` whose blockgroup universe matches
+  `blockgroupstats`.
 
-- Update the EJAM release/ create a new release on github.com, using the
-  `NEWS.md` as the changelog, creating a new tag like “v2.32.N”.
+- If the ejamdata repository is still being used to publish large Arrow
+  files as GitHub release assets, then make sure a release tag on that
+  repo matches the `ejamdata_required_tag` field in DESCRIPTION. See the
+  [article about updating
+  datasets](https://public-environmental-data-partners.github.io/EJAM/articles/%22dev-update-datasets.html%22).
+
+- Regenerate example/test output datasets after code or annual data
+  changes. In particular, rerun the scripts in `data-raw/` that create
+  `testoutput_getblocksnearby_*`, `testoutput_doaggregate_*`, and
+  `testoutput_ejamit_*` objects, then reinstall and rerun tests that
+  compare current output against those saved objects.
+
+- Run `EJAM:::metadata_check()` and `EJAM:::metadata_check_print()`
+  after replacing data objects. For release-critical annual datasets,
+  metadata attributes should match the DESCRIPTION version fields, such
+  as `Version`, `VersionACS`, `VersionEJSCREEN`, and `VersionCensus`.
+
+- Update `NEWS.md` in the release/development branch listing changes
+  made. Use the same version number that was put in `DESCRIPTION`, such
+  as `v2.5.0`.
+
+- Run release checks, including `devtools::check(vignettes = FALSE)` if
+  traditional vignette builds are not needed, targeted pipeline
+  validation, and the relevant
+  [`test_ejam()`](https://public-environmental-data-partners.github.io/EJAM/reference/test_ejam.md)
+  groups.
+
+- Merge the release/development branch into the target branch according
+  to the current repository workflow.
+
+- Create a new EJAM release on GitHub, using `NEWS.md` as the changelog
+  and a tag matching the `DESCRIPTION` version, such as `v2.5.0`.
 
 ### Update and run the test installation script
 
 You may want to update the test script that checks if the package can be
 installed.
 
-- Remove older versions of R from the testing and add more recent ones
-- Add new system libraries required by newly added packages
-  (e.g. certain libraries need for installation on Ubuntu)
+- Remove older versions of R from the testing matrix if they are no
+  longer supported, and add more recent ones.
+- Add new system libraries required by newly added packages (for
+  example, system libraries needed for installation on Ubuntu).
 
-To ensure that, after changes are made, the package can still be
-installed by users with various operating systems and versions of R, a
-workflow file, `.github/workflows/test-ability-to-install.yml`, is
-triggered by any push to the main branch. This file could attempt
-installation with the following matrix of options, for example, but this
-has to be updated over time and checked as dependencies and other
-factors do change making **some of these tests fail eventually**:
+To ensure that the package can still be installed by users with various
+operating systems and versions of R, a workflow file,
+`.github/workflows/test-ability-to-install.yml`, is triggered by pushes
+to the main branch. This file can attempt installation with a matrix
+like the following, but the matrix should be updated over time as
+dependencies, supported R versions, and operating system images change:
 
 1.  **OS**: Latest Ubuntu, Windows, macOS
 
 2.  **R version**: latest release and some prior versions
 
-3.  **Using install_url() versus install_github()**:
+3.  **Using install_url() or install_github()**:
     [`remotes::install_url()`](https://remotes.r-lib.org/reference/install_url.html)
     and
     [`remotes::install_github()`](https://remotes.r-lib.org/reference/install_github.html)
+    or maybe the newer
+    [`pak::pkg_install()`](https://pak.r-lib.org/reference/pkg_install.html)
 
-But also note users may need to set up a personal access token (PAT) if
-they want to install from github - [see article on installing for info
-on setting up a
-PAT](https://public-environmental-data-partners.github.io/EJAM/articles/installing.md).
+Also note that users may need to set up a personal access token (PAT) if
+they want to install from GitHub; see the [installing
+article](https://public-environmental-data-partners.github.io/EJAM/articles/installing.md)
+for information on setting up a PAT.

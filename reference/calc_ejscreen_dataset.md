@@ -1,6 +1,6 @@
-# Run the staged EJSCREEN/EJAM dataset update pipeline
+# Run calculations for the staged EJSCREEN/EJAM dataset update pipeline
 
-Run the staged EJSCREEN/EJAM dataset update pipeline
+Run calculations for the staged EJSCREEN/EJAM dataset update pipeline
 
 ## Usage
 
@@ -153,7 +153,7 @@ calc_ejscreen_dataset(
   ACSdownload-compatible function used by
   [`download_bg_acs_raw()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_acs_raw.md)
   when raw ACS tables need to be downloaded. The default is
-  [`ACSdownload::get_acs_new()`](https://github.com/ejanalysis/ACSdownload,%20https://ejanalysis.github.io/ACSdownload/,%20https://ejanalysis.org/reference/get_acs_new.html).
+  [`ACSdownload::get_acs_new()`](https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html).
   Supply a wrapper if you need a legacy ACS source implementation.
 
 - return_intermediate:
@@ -320,10 +320,9 @@ named list containing final datasets (`blockgroupstats`, `bgej`,
 
 ## Details
 
-`calc_ejscreen_dataset()` can be called from a script each year. See the
-runner script `data-raw/run_ejscreen_acs2024_pipeline.R` for an example
-of how to call this function, and how it can be used to run the whole
-pipeline from start to finish with minimal manual intervention.
+See the runner script `data-raw/run_ejscreen_dataset_pipeline.R` to run
+the whole pipeline from start to finish with minimal manual
+intervention.
 
 `calc_ejscreen_dataset()` is a high-level wrapper around the staged
 annual update helpers. It is intentionally an orchestrator rather than a
@@ -335,40 +334,45 @@ The default stage order is:
 
 1.  download raw ACS tables of demographic data into `bg_acs_raw`
 
-2.  calculate ACS-based demographic indicators (and lead paint
+2.  optionally download and save separate Island Areas Census DHC
+    checkpoints for AS/GU/MP/VI; these demographics are not used
+    downstream unless explicitly requested
+
+3.  calculate ACS-based demographic indicators (and lead paint
     indicator) as `bg_acsdata`
 
-3.  validate/save `bg_envirodata` (key environmental indicators)
+4.  validate/save `bg_envirodata` (key environmental indicators)
 
-4.  validate/save `bg_extra_indicators` (e.g., % low life expectancy)
+5.  validate/save `bg_extra_indicators` (e.g., % low life expectancy)
 
-5.  create or validate `bg_geodata`, the Census/TIGER blockgroup
+6.  create or validate `bg_geodata`, the Census/TIGER blockgroup
     geography attributes used for `arealand`, `areawater`, and
     internal-point fields
 
-6.  calculate demographic indexes (using % low life expectancy, etc.)
+7.  calculate demographic indexes (using % low life expectancy, etc.)
 
-7.  combine those blockgroup demog., envt., extra, and geography
+8.  combine those blockgroup demog., envt., extra, and geography
     indicators as
     [blockgroupstats](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md)
 
-8.  create intermediate percentile lookup tables `usastats_acs`,
+9.  create intermediate percentile lookup tables `usastats_acs`,
     `statestats_acs`, `usastats_envirodata`, `statestats_envirodata`
 
-9.  calculate EJ indexes (from envt. percentiles and demog. indexes) and
+10. calculate EJ indexes (from envt. percentiles and demog. indexes) and
     save as
     [bgej](https://public-environmental-data-partners.github.io/EJAM/reference/bgej.md)
     table
 
-10. create intermediate percentile lookup tables `usastats_ej`,
+11. create intermediate percentile lookup tables `usastats_ej`,
     `statestats_ej`
 
-11. combine those as
+12. combine those as
     [usastats](https://public-environmental-data-partners.github.io/EJAM/reference/usastats.md)
     and
     [statestats](https://public-environmental-data-partners.github.io/EJAM/reference/statestats.md)
 
-12. create an EJScreen-ready export file (optionally)
+13. create an EJScreen-ready export file and/or EPA Python
+    dataset-creator input file (optionally)
 
 `bg_envirodata` must include `pctpre1960`. That column may be produced
 by an upstream environmental-data step that reads the saved `bg_acsdata`
@@ -376,13 +380,14 @@ stage.
 
 The annual pipeline creates the `bgej` stage, and the package-level
 dynamic Arrow loader obtains `bgej.arrow` from the `ejamdata` release
-that matches the EJAM package version currently in use. For example,
-when `packageVersion("EJAM")` reports `2.5.0`,
+tag recorded in DESCRIPTION as `ejamdata_required_tag`. For EJAM 2.5.0
+this is currently `v2.5.0`, but the package version and required data
+tag can differ for patch releases.
 [`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
 and
 [`download_latest_arrow_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/download_latest_arrow_data.md)
-look for `bgej.arrow` in the `ejamdata` release tagged `v2.5.0`, not in
-the latest data-repository release.
+do not use whichever data-repository release GitHub currently marks as
+latest.
 
 Note that the runner script can use several settings stored as
 environment variables:
@@ -420,10 +425,20 @@ environment variables:
 
 - EJAM_ACS_DOWNLOAD_RETRIES
 
+- EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows and a
+  separate `bg_islandareas_demographics` checkpoint.
+
+- EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE only for an intentional
+  mixed-source supplemental dataset using 2020 Island Areas Census DHC
+  demographics in `bg_acsdata`.
+
 - EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require
   bg_envirodata.csv.
 
 - EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+
+- EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the
+  smaller input table expected by EPA's Python dataset-creator workflow.
 
 - EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR\_\* settings control
   prior-version comparisons.
@@ -453,8 +468,10 @@ To check them:
       "CENSUS_API_KEY",
       "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
       "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
+      "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
       "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
       "EJAM_INCLUDE_EJSCREEN_EXPORT",
+      "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
       "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
       "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"
     )))

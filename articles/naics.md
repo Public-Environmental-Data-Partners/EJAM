@@ -138,9 +138,9 @@ frs_from_naics("32411",  children = F)[,1:5]$REGISTRY_ID
 
 
 length(hasonly5digit)  # Most of the FRS sites here
-#> [1] 421
+#> [1] 424
 length(hasonly6digit)
-#> [1] 3
+#> [1] 2
 length(hasboth)
 #> [1] 22
 ```
