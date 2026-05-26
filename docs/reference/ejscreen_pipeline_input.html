@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -103,6 +104,9 @@
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  validation_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  yr <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  metadata <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  add_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  storage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"local"</span>, <span class="st">"s3"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -186,14 +190,34 @@ file.</p></dd>
 <dd><p>logical passed to <code>EJAM:::ejscreen_pipeline_validate()</code>.</p></dd>
 
 
+<dt id="arg-yr">yr<a class="anchor" aria-label="anchor" href="#arg-yr"></a></dt>
+<dd><p>optional ACS end year used to set metadata on ACS-related
+R-native saved stages. If omitted, the helper tries <code>EJAM_PIPELINE_YR</code> and
+then the <code>ejscreen_acs_YYYY</code> suffix in <code>pipeline_dir</code>. Non-ACS stages such
+as <code>bg_islandareas_raw</code> and <code>bg_islandareas_demographics</code> use
+source-specific metadata instead.</p></dd>
+
+
+<dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
+<dd><p>optional named list of metadata attributes to apply before
+saving R-native stages.</p></dd>
+
+
+<dt id="arg-add-metadata">add_metadata<a class="anchor" aria-label="anchor" href="#arg-add-metadata"></a></dt>
+<dd><p>logical. If TRUE, add or update metadata attributes for
+known non-atomic pipeline stages and for objects that already have metadata
+attributes. Atomic vectors without existing metadata attributes are left
+unchanged.</p></dd>
+
+
 <dt id="arg-canonical-only">canonical_only<a class="anchor" aria-label="anchor" href="#arg-canonical-only"></a></dt>
 <dd><p>optional logical set to TRUE in ejscreen_pipeline_stage_names() to return only the canonical versions without any aliases</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>EJAM:::ejscreen_pipeline_stage_names()</code> returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that <code>EJAM:::ejscreen_pipeline_validate()</code> can check if a specified stage name is valid and apply the specific validation rules for that stage</p>
-<p><code>EJAM:::ejscreen_pipeline_stage_canonical()</code> returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"</p>
+    <p><code>ejscreen_pipeline_stage_names()</code> returns vector of allowed stage names and aliases, such as "bg_envirodata" etc., so that <code>EJAM:::ejscreen_pipeline_validate()</code> can check if a specified stage name is valid and apply the specific validation rules for that stage</p>
+<p><code>ejscreen_pipeline_stage_canonical()</code> returns the character string input unchanged (if unrecognized) or returns the canonical version of a stage name, mapping any recognized alias like "envirodata" to the canonical name like "bg_envirodata"</p>
 <p><code>EJAM:::ejscreen_pipeline_stage_path()</code> returns a path, with pipeline_dir as the folder(s) and filename based on stage and format (file extension), such as "some/temp/dir/ejscreen_acs_2024/bg_envirodata.csv"</p>
 <p><code>EJAM:::ejscreen_pipeline_save()</code> writes data to files and returns the path, with many options for file format, local vs s3, validation, etc.</p>
 <p><code>EJAM:::ejscreen_pipeline_input()</code> &amp; helper <code>EJAM:::ejscreen_pipeline_load()</code> reads data from files or input, returns the data object</p>

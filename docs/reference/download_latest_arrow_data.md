@@ -35,9 +35,9 @@ download_latest_arrow_data(
 
 - piggybacktag:
 
-  default is `"latest"` for dynamic Arrow data. Package- coupled annual
-  datasets such as `bgej` override `"latest"` internally and use
-  `paste0("v", packageVersion("EJAM"))` as their release tag.
+  default is `"latest"`, which resolves internally to the DESCRIPTION
+  `ejamdata_required_tag` field. Pass a specific tag such as `"v2.32.8"`
+  only for explicit maintenance or diagnostic work.
 
 - force:
 
@@ -45,22 +45,19 @@ download_latest_arrow_data(
 
 ## Details
 
-Checks to see what release of each requested Arrow dataset should be
-used. Facility and most geography Arrow files are treated as dynamic
-data and normally come from the latest applicable data-repository
-release, tracked with the installed package's
-`data/ejamdata_version.txt` marker.
+Checks to see what `ejamdata` release tag should be used for requested
+Arrow datasets. By default, EJAM uses the required `ejamdata` release
+tag recorded in DESCRIPTION as `ejamdata_required_tag`. For example,
+EJAM 2.5.0 currently looks for Arrow files in the `ejamdata` release
+tagged `v2.5.0`, not in whichever data-repository release GitHub
+currently marks as latest.
 
-Annual EJSCREEN/EJAM data files such as `bgej.arrow` are
-package-coupled. They are obtained from the `ejamdata` release tag that
-matches the current EJAM package version as reported by
-`packageVersion("EJAM")`. For example, EJAM 2.5.0 looks for `bgej.arrow`
-in the `ejamdata` release tagged `v2.5.0`, not in the latest
-data-repository release.
+The installed package's `data/ejamdata_version.txt` marker records the
+release tag for locally installed Arrow files.
 
 Relies on
-[`piggyback::pb_releases()`](https://docs.ropensci.org/piggyback/reference/pb_releases.html)
-to track / update / store / download data files as assets of a specific
+[`piggyback::pb_download()`](https://docs.ropensci.org/piggyback/reference/pb_download.html)
+to download data files that have been stored as assets of a specific
 release on the data repository. For details, see [technical details of
 how datasets are
 updated](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html)

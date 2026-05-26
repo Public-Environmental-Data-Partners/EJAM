@@ -9,6 +9,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-future-plans.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-github-actions-install-tests.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-unit-tests.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-speed.html</loc></url>
@@ -78,6 +79,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset_creator_input.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export_reference_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_export_schema_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_bin.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_fields_added.html</loc></url>
@@ -115,6 +117,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_local.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/dataload_from_package.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/dataset_documenter.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/datasets_arrow_publish.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/dir2.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/distance_by_group1.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/distance_by_group_by_site.html</loc></url>
@@ -127,6 +130,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/doaggregate_newscores.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_acs_raw.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/download_bg_islandareas_raw.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/download_latest_arrow_data.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/dynamic_geography_arrow_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejam2areafeatures.html</loc></url>
@@ -157,6 +161,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_types_of_places.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_sitetype_from_input.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejampackages.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_arcgis_service_field.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_dataset_creator_input_fields.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_dataset_creator_placeholder_fields.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_acs_version_from_year.html</loc></url>
@@ -172,6 +177,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_validate_year_dir.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_version_dir.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_write_run_manifest.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_schema_extra.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/enurl.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs_defined.html</loc></url>
@@ -218,8 +224,6 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_aliases.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/fixnames_to_type.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/format_ejamit_columns.html</loc></url>
-<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_all.html</loc></url>
-<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_d.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs_disability.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_demog_index.html</loc></url>
@@ -369,6 +373,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/names_countabove.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/names_criticalservice.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/names_criticalservice_avg.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/names_criticalservice_count.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/names_criticalservice_pctile.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/names_criticalservice_state_avg.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/names_criticalservice_state_pctile.html</loc></url>

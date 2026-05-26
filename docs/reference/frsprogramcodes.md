@@ -56,7 +56,7 @@ code](https://www.epa.gov/frs/frs-data-sources) aka data source.
 ``` r
 if (FALSE) { # \dontrun{
   frs_by_programid[program %in% frsprogramcodes$code, .N, by=program]
-  
+
   setkey(frs_by_programid,"program")
   frs_by_programid["TRIS",]
   } # }

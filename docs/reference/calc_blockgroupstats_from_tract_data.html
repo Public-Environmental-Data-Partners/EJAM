@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -124,7 +125,7 @@ blockgroup population from <code>acs_raw</code> or downloads it when needed.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This is now typically orchestrated by <code><a href="calc_ejscreen_dataset.html">calc_ejscreen_dataset()</a></code> and by the
-staged pipeline runner script <code>data-raw/run_ejscreen_acs2024_pipeline.R</code>.</p>
+staged pipeline runner script <code>data-raw/run_ejscreen_dataset_pipeline.R</code>.</p>
 <p>Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()</p>
 <p>Needs Census API key for <code><a href="https://walker-data.com/tidycensus/reference/get_decennial.html" class="external-link">tidycensus::get_decennial()</a></code>.</p>
 <p>Takes some time to download data for every State!</p>

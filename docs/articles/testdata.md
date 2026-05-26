@@ -143,27 +143,27 @@ x <- x[order(x$Package, x$Item), !grepl("size", names(x))]
 
 x[grepl("^testp", x$Item), ]
 #>     Package                Item
-#> 115    EJAM       testpoints_10
-#> 131    EJAM      testpoints_100
-#> 133    EJAM   testpoints_100_dt
-#> 149    EJAM     testpoints_1000
-#> 162    EJAM    testpoints_10000
-#> 124    EJAM        testpoints_5
-#> 129    EJAM       testpoints_50
+#> 114    EJAM       testpoints_10
+#> 134    EJAM      testpoints_100
+#> 135    EJAM   testpoints_100_dt
+#> 150    EJAM     testpoints_1000
+#> 163    EJAM    testpoints_10000
+#> 115    EJAM        testpoints_5
+#> 131    EJAM       testpoints_50
 #> 143    EJAM      testpoints_500
-#> 125    EJAM      testpoints_bad
-#> 119    EJAM testpoints_overlap3
+#> 107    EJAM      testpoints_bad
+#> 108    EJAM testpoints_overlap3
 #>                                                        Title
+#> 114 test points data.frame with columns sitenumber, lat, lon
+#> 134 test points data.frame with columns sitenumber, lat, lon
+#> 135 test points data.frame with columns sitenumber, lat, lon
+#> 150 test points data.frame with columns sitenumber, lat, lon
+#> 163 test points data.frame with columns sitenumber, lat, lon
 #> 115 test points data.frame with columns sitenumber, lat, lon
 #> 131 test points data.frame with columns sitenumber, lat, lon
-#> 133 test points data.frame with columns sitenumber, lat, lon
-#> 149 test points data.frame with columns sitenumber, lat, lon
-#> 162 test points data.frame with columns sitenumber, lat, lon
-#> 124 test points data.frame with columns sitenumber, lat, lon
-#> 129 test points data.frame with columns sitenumber, lat, lon
 #> 143 test points data.frame with columns sitenumber, lat, lon
-#> 125       test points data.frame with columns note, lat, lon
-#> 119       test points data.frame with columns note, lat, lon
+#> 107       test points data.frame with columns note, lat, lon
+#> 108       test points data.frame with columns note, lat, lon
 ```
 
 **STREET ADDRESSES** for testing geocoding in
@@ -186,51 +186,51 @@ etc.
 
 x[grepl("^test[^op_]", x$Item), ]
 #>     Package                              Item
-#> 32     EJAM               testinput_address_2
-#> 101    EJAM               testinput_address_9
-#> 102    EJAM           testinput_address_parts
-#> 121    EJAM           testinput_address_table
-#> 130    EJAM         testinput_address_table_9
-#> 122    EJAM testinput_address_table_goodnames
-#> 123    EJAM  testinput_address_table_withfull
+#> 112    EJAM               testinput_address_2
+#> 118    EJAM               testinput_address_9
+#> 113    EJAM           testinput_address_parts
+#> 125    EJAM           testinput_address_table
+#> 133    EJAM         testinput_address_table_9
+#> 126    EJAM testinput_address_table_goodnames
+#> 127    EJAM  testinput_address_table_withfull
 #> 103    EJAM        testinput_fips_blockgroups
-#> 33     EJAM             testinput_fips_cities
-#> 34     EJAM           testinput_fips_counties
-#> 35     EJAM                testinput_fips_mix
-#> 36     EJAM             testinput_fips_states
+#> 35     EJAM             testinput_fips_cities
+#> 36     EJAM           testinput_fips_counties
+#> 37     EJAM                testinput_fips_mix
+#> 38     EJAM             testinput_fips_states
 #> 104    EJAM             testinput_fips_tracts
-#> 37     EJAM                    testinput_mact
-#> 38     EJAM                   testinput_naics
-#> 39     EJAM            testinput_program_name
-#> 114    EJAM          testinput_program_sys_id
-#> 40     EJAM                   testinput_regid
-#> 41     EJAM             testinput_registry_id
-#> 136    EJAM                testinput_shapes_2
-#> 42     EJAM                     testinput_sic
-#> 135    EJAM                      testshapes_2
-#>                                                                       Title
-#> 32                            datasets for trying address-related functions
-#> 101                           datasets for trying address-related functions
-#> 102                           datasets for trying address-related functions
-#> 121                           datasets for trying address-related functions
-#> 130                           datasets for trying address-related functions
-#> 122                           datasets for trying address-related functions
-#> 123                           datasets for trying address-related functions
-#> 103                                      testinput_fips_blockgroups dataset
-#> 33                                            testinput_fips_cities dataset
-#> 34                                          testinput_fips_counties dataset
-#> 35                                               testinput_fips_mix dataset
-#> 36                                            testinput_fips_states dataset
-#> 104                                           testinput_fips_tracts dataset
-#> 37                                                   testinput_mact dataset
-#> 38                                                  testinput_naics dataset
-#> 39                                           testinput_program_name dataset
-#> 114 test data, EPA program names and program system ID numbers to try using
-#> 40                 test data, EPA Facility Registry ID numbers to try using
-#> 41                 test data, EPA Facility Registry ID numbers to try using
-#> 136                                              testinput_shapes_2 dataset
-#> 42                                                    testinput_sic dataset
-#> 135                                                    testshapes_2 dataset
+#> 39     EJAM                    testinput_mact
+#> 40     EJAM                   testinput_naics
+#> 41     EJAM            testinput_program_name
+#> 128    EJAM          testinput_program_sys_id
+#> 42     EJAM                   testinput_regid
+#> 43     EJAM             testinput_registry_id
+#> 139    EJAM                testinput_shapes_2
+#> 44     EJAM                     testinput_sic
+#> 138    EJAM                      testshapes_2
+#>                                                        Title
+#> 112            datasets for trying address-related functions
+#> 118            datasets for trying address-related functions
+#> 113            datasets for trying address-related functions
+#> 125            datasets for trying address-related functions
+#> 133            datasets for trying address-related functions
+#> 126            datasets for trying address-related functions
+#> 127            datasets for trying address-related functions
+#> 103                       testinput_fips_blockgroups dataset
+#> 35                             testinput_fips_cities dataset
+#> 36                           testinput_fips_counties dataset
+#> 37                                testinput_fips_mix dataset
+#> 38                             testinput_fips_states dataset
+#> 104                            testinput_fips_tracts dataset
+#> 39                                    testinput_mact dataset
+#> 40                                   testinput_naics dataset
+#> 41                            testinput_program_name dataset
+#> 128    test data, EPA program system ID numbers to try using
+#> 42  test data, EPA Facility Registry ID numbers to try using
+#> 43  test data, EPA Facility Registry ID numbers to try using
+#> 139                               testinput_shapes_2 dataset
+#> 44                                     testinput_sic dataset
+#> 138                                     testshapes_2 dataset
 cat("\n\n")
 ```
 
@@ -249,31 +249,31 @@ etc.
 
 x[grepl("^testout", x$Item), ]
 #>     Package                                      Item
-#> 173    EJAM     testoutput_doaggregate_1000pts_1miles
-#> 167    EJAM      testoutput_doaggregate_100pts_1miles
-#> 158    EJAM       testoutput_doaggregate_10pts_1miles
-#> 174    EJAM          testoutput_ejamit_1000pts_1miles
-#> 168    EJAM           testoutput_ejamit_100pts_1miles
-#> 161    EJAM            testoutput_ejamit_10pts_1miles
-#> 164    EJAM             testoutput_ejamit_fips_cities
-#> 166    EJAM           testoutput_ejamit_fips_counties
-#> 157    EJAM                testoutput_ejamit_shapes_2
-#> 170    EJAM testoutput_getblocksnearby_1000pts_1miles
-#> 156    EJAM  testoutput_getblocksnearby_100pts_1miles
-#> 146    EJAM   testoutput_getblocksnearby_10pts_1miles
+#> 174    EJAM     testoutput_doaggregate_1000pts_1miles
+#> 168    EJAM      testoutput_doaggregate_100pts_1miles
+#> 159    EJAM       testoutput_doaggregate_10pts_1miles
+#> 175    EJAM          testoutput_ejamit_1000pts_1miles
+#> 169    EJAM           testoutput_ejamit_100pts_1miles
+#> 162    EJAM            testoutput_ejamit_10pts_1miles
+#> 165    EJAM             testoutput_ejamit_fips_cities
+#> 167    EJAM           testoutput_ejamit_fips_counties
+#> 158    EJAM                testoutput_ejamit_shapes_2
+#> 171    EJAM testoutput_getblocksnearby_1000pts_1miles
+#> 157    EJAM  testoutput_getblocksnearby_100pts_1miles
+#> 147    EJAM   testoutput_getblocksnearby_10pts_1miles
 #>                                                                  Title
-#> 173                                       test output of doaggregate()
-#> 167                                       test output of doaggregate()
-#> 158                                       test output of doaggregate()
-#> 174                                            test output of ejamit()
-#> 168                                            test output of ejamit()
-#> 161                                            test output of ejamit()
-#> 164                              testoutput_ejamit_fips_cities dataset
-#> 166                            testoutput_ejamit_fips_counties dataset
-#> 157                                 testoutput_ejamit_shapes_2 dataset
-#> 170 test output of getblocksnearby(), and is an input to doaggregate()
-#> 156 test output of getblocksnearby(), and is an input to doaggregate()
-#> 146 test output of getblocksnearby(), and is an input to doaggregate()
+#> 174                                       test output of doaggregate()
+#> 168                                       test output of doaggregate()
+#> 159                                       test output of doaggregate()
+#> 175                                            test output of ejamit()
+#> 169                                            test output of ejamit()
+#> 162                                            test output of ejamit()
+#> 165                              testoutput_ejamit_fips_cities dataset
+#> 167                            testoutput_ejamit_fips_counties dataset
+#> 158                                 testoutput_ejamit_shapes_2 dataset
+#> 171 test output of getblocksnearby(), and is an input to doaggregate()
+#> 157 test output of getblocksnearby(), and is an input to doaggregate()
+#> 147 test output of getblocksnearby(), and is an input to doaggregate()
 cat("\n\n")
 ```
 

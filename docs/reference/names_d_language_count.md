@@ -10,7 +10,7 @@ names_d_language_count
 
 ## Format
 
-An object of class `character` of length 7.
+An object of class `character` of length 19.
 
 ## Details
 

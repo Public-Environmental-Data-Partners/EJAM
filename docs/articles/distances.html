@@ -66,7 +66,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -140,7 +141,7 @@ later section.</p>
 <span><span class="co">#&gt; Suppl Demog.Ind.                  1.0                1.0</span></span>
 <span><span class="co">#&gt; %Low-inc.                         1.0                1.1</span></span>
 <span><span class="co">#&gt; %Limited English                  1.5                1.2</span></span>
-<span><span class="co">#&gt; %Unemployed                       1.1                1.1</span></span>
+<span><span class="co">#&gt; %Unemployed                       1.2                1.1</span></span>
 <span><span class="co">#&gt; %&lt; High School                    1.2                1.1</span></span>
 <span><span class="co">#&gt; %&lt; age 5                          1.0                1.0</span></span>
 <span><span class="co">#&gt; %&gt; age 64                         0.8                0.8</span></span>
@@ -249,7 +250,11 @@ Example of ejam2barplot_sites()
 <p>See just the table</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit_compare_distances.html">ejamit_compare_distances</a></span><span class="op">(</span><span class="va">pts</span>, radii <span class="op">=</span> <span class="va">radii</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; </span></span>
+<pre><code><span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                                         1   2   3  10</span></span>
 <span><span class="co">#&gt; Ratio to State avg %Hispanic          0.5 0.9 1.1 1.0</span></span>
 <span><span class="co">#&gt; Ratio to State avg %Black NHA         4.3 2.6 1.7 0.7</span></span>
@@ -303,7 +308,8 @@ vary as <em>a continuous function of distance</em><a class="anchor" aria-label="
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_by_pctd.html">plot_distance_by_pctd</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">pts</span>, radius <span class="op">=</span> <span class="fl">10</span>, quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
 <span>  score_colname <span class="op">=</span> <span class="st">"pctnhba"</span>,</span>
-<span>  sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<span>  sitenumber <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span></code></pre></div>
 <div class="figure">
 <img src="distances_files/figure-html/plot_distance_by_pctd-1.png" class="r-plt" alt="Example of using plot_distance_by_pctd() showing distance on x axis, indicator value within x miles on y axis, for %Black nonhispanic alone as function of distance at site 1, with striking decrease in percent from almost 80% around 0 miles away down to about 20% at 3 or 6 miles away, and showing 20% is the approx US 80th percentile (and state values overall shown as horizontal lines lower than that in this case)" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
@@ -324,7 +330,8 @@ away from this specific point</p>
 <code class="sourceCode R"><span><span class="va">pts</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">45.75464</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">94.36791</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_by_pctd.html">plot_distance_by_pctd</a></span><span class="op">(</span><span class="va">pts</span>,</span>
-<span>                      sitenumber <span class="op">=</span> <span class="fl">1</span>, score_colname <span class="op">=</span> <span class="st">"pcthisp"</span><span class="op">)</span></span></code></pre></div>
+<span>                      sitenumber <span class="op">=</span> <span class="fl">1</span>, score_colname <span class="op">=</span> <span class="st">"pcthisp"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span></code></pre></div>
 <div class="figure">
 <img src="distances_files/figure-html/plot_distance_by_pctd2-1.png" class="r-plt" alt="Example of using plot_distance_by_pctd(), showing an example where %Hispanic as a function of distance from site number 1 is very low compared to state or US overall, within any distance, but gradually rises from almost zero within 1 mile to just under 5% within about 30 miles away" width="672"><p class="caption">
 Example of using plot_distance_by_pctd()
@@ -334,7 +341,9 @@ Example of using plot_distance_by_pctd()
 <code class="sourceCode R"><span></span>
 <span><span class="va">out2</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit_compare_distances.html">ejamit_compare_distances</a></span><span class="op">(</span><span class="va">pts</span>,radii <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">30</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Estimated analysis time: about 30 seconds for 1 point-buffer location (upper estimate 2 minutes)."</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
 <span><span class="co">#&gt; [1] "Estimated analysis time: about 2 seconds for 1 point-buffer location (upper estimate 2.4 minutes)."</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                                        10  30</span></span>
 <span><span class="co">#&gt; Ratio to State avg %Hispanic          0.3 0.7</span></span>
@@ -801,6 +810,7 @@ sites and nearby blocks.</p>
 <span>  sitepoints <span class="op">=</span> <span class="va">sitepoints</span>,</span>
 <span>  radius <span class="op">=</span> <span class="fl">3.1</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
 <span><span class="co">#&gt; Analyzing 2 points, radius of 3.1 miles around each.</span></span>
 <span><span class="co">#&gt; Finding Census blocks with internal point within  3.1  miles of the site (point), for each of 2  sites (points)...</span></span>
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
@@ -896,6 +906,7 @@ such as this:</p>
 <span><span class="va">blockcount_near_site</span><span class="op">:</span> <span class="fl">219</span></span></code></pre>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_blocks_nearby.html">plot_blocks_nearby</a></span><span class="op">(</span><span class="va">testpoints_10</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, radius <span class="op">=</span> <span class="fl">3</span>, returnmap <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
 <span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
 <span><span class="co">#&gt; Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...</span></span>
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
@@ -946,7 +957,8 @@ nearby)</li>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">radius</span> <span class="op">&lt;-</span> <span class="fl">3</span></span>
 <span><span class="va">sitepoints</span> <span class="op">&lt;-</span> <span class="va">testpoints_100</span></span>
-<span><span class="va">sites2blocks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">sitepoints</span>, <span class="va">radius</span>, quadtree <span class="op">=</span> <span class="va">localtree</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">sites2blocks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">sitepoints</span>, <span class="va">radius</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
 <span><span class="co"># testoutput_getblocksnearby_10pts_1miles is also available as an example</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sites2blocks</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "ejam_uniq_id"        "blockid"             "distance"           </span></span>
@@ -1048,6 +1060,7 @@ nearby<a class="anchor" aria-label="anchor" href="#map-all-sites-with-popup-at-e
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span>, </span>
 <span>              radius <span class="op">=</span> <span class="va">radius</span>, include_ejindexes <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Finding blocks nearby.</span></span>
+<span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
 <span><span class="co">#&gt; Aggregating at each site and overall.</span></span>
 <span><span class="co">#&gt; Warning in batch.summarize(sitestats = out$results_bysite, popstats =</span></span>
 <span><span class="co">#&gt; out$results_bybg_people, : specified threshnames not all found in sitestats</span></span>
@@ -1107,14 +1120,16 @@ dense urban area<a class="anchor" aria-label="anchor" href="#some-places-have-hu
 <span>  <span class="va">s2b_stats</span><span class="op">$</span><span class="va">blocks_within_1mile</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="va">leastdense</span> <span class="op">&lt;-</span> <span class="va">s2b_stats</span><span class="op">$</span><span class="va">ejam_uniq_id</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span></span>
 <span>    <span class="va">s2b_stats</span><span class="op">$</span><span class="va">blocks_within_1mile</span>, decreasing <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
+<pre><code><span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
+<span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
 <span><span class="co">#&gt; Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...</span></span>
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
 <span><span class="co">#&gt; min distance before adjustment:  0.03130003 </span></span>
 <span><span class="co">#&gt; max distance before adjustment:  5.053462</span></span></code></pre>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_blocks_nearby.html">plot_blocks_nearby</a></span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="va">sitepoints</span><span class="op">[</span><span class="va">densest</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
+<pre><code><span><span class="co">#&gt; Checking for index of Census blocks called 'localtree' ...localtree already exists.</span></span>
+<span><span class="co">#&gt; Analyzing 1 points, radius of 3 miles around each.</span></span>
 <span><span class="co">#&gt; Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...</span></span>
 <span><span class="co">#&gt; Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: </span></span>
 <span><span class="co">#&gt; min distance before adjustment:  1.059524 </span></span>

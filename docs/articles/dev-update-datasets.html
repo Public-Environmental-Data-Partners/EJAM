@@ -66,6 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
@@ -152,20 +153,19 @@ inventory:</p>
 <span><span class="co">##  [9] "ejamdata_version"                 "ejampackages"                    </span></span>
 <span><span class="co">## [11] "ejscreen_arcgis_service_field"    "ejscreen_schema_extra"           </span></span>
 <span><span class="co">## [13] "epa_programs"                     "epa_programs_defined"            </span></span>
-<span><span class="co">## [15] "formulas_all"                     "formulas_d"                      </span></span>
-<span><span class="co">## [17] "formulas_ejscreen_acs"            "formulas_ejscreen_acs_disability"</span></span>
-<span><span class="co">## [19] "formulas_ejscreen_demog_index"    "frsprogramcodes"                 </span></span>
-<span><span class="co">## [21] "high_pctiles_tied_with_min"       "islandareas"                     </span></span>
-<span><span class="co">## [23] "lat_alias"                        "lon_alias"                       </span></span>
-<span><span class="co">## [25] "mact_table"                       "map_headernames"                 </span></span>
-<span><span class="co">## [27] "meters_per_mile"                  "modelDoaggregate"                </span></span>
-<span><span class="co">## [29] "modelEjamit"                      "modelEjamitByAnalysisType"       </span></span>
-<span><span class="co">## [31] "naics_counts"                     "naicstable"                      </span></span>
-<span><span class="co">## [33] "namez"                            "sictable"                        </span></span>
-<span><span class="co">## [35] "stateinfo"                        "stateinfo2"                      </span></span>
-<span><span class="co">## [37] "states_shapefile"                 "statestats"                      </span></span>
-<span><span class="co">## [39] "tables_ejscreen_acs"              "usastats"                        </span></span>
-<span><span class="co">## [41] "x_anyother"</span></span></code></pre>
+<span><span class="co">## [15] "formulas_ejscreen_acs"            "formulas_ejscreen_acs_disability"</span></span>
+<span><span class="co">## [17] "formulas_ejscreen_demog_index"    "frsprogramcodes"                 </span></span>
+<span><span class="co">## [19] "high_pctiles_tied_with_min"       "islandareas"                     </span></span>
+<span><span class="co">## [21] "lat_alias"                        "lon_alias"                       </span></span>
+<span><span class="co">## [23] "mact_table"                       "map_headernames"                 </span></span>
+<span><span class="co">## [25] "meters_per_mile"                  "modelDoaggregate"                </span></span>
+<span><span class="co">## [27] "modelEjamit"                      "modelEjamitByAnalysisType"       </span></span>
+<span><span class="co">## [29] "naics_counts"                     "naicstable"                      </span></span>
+<span><span class="co">## [31] "namez"                            "sictable"                        </span></span>
+<span><span class="co">## [33] "stateinfo"                        "stateinfo2"                      </span></span>
+<span><span class="co">## [35] "states_shapefile"                 "statestats"                      </span></span>
+<span><span class="co">## [37] "tables_ejscreen_acs"              "usastats"                        </span></span>
+<span><span class="co">## [39] "x_anyother"</span></span></code></pre>
 <div class="section level3">
 <h3 id="where-the-datasets-are-stored">Where the datasets are stored<a class="anchor" aria-label="anchor" href="#where-the-datasets-are-stored"></a>
 </h3>
@@ -178,8 +178,8 @@ and <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/tree/mai
 to package data files</a></p></li>
 <li><p>Datasets used by EJAM but stored separately (large
 <code>.arrow</code> files): <a href="../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-">Documentation</a>
-and <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data" class="external-link">access
-to the large data files</a></p></li>
+and <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata/releases" class="external-link">access
+to the large data files as GitHub release assets</a></p></li>
 </ul>
 </div>
 <div class="section level3">
@@ -333,11 +333,11 @@ requested pipeline year. After package data are replaced, run
 Atomic name-vector objects such as many <code>names_*</code> datasets do
 not need metadata attributes.</p></li>
 <li><p>Version numbering is recorded primarily in the DESCRIPTION file,
-release tags, and the NEWS file. The legacy
-<code>ejamdata_version.txt</code> marker is still used for some dynamic
-Arrow data, but package-coupled annual data such as
-<code>bgej.arrow</code> are pinned to the EJAM package version/release
-tag.</p></li>
+release tags, and the NEWS file. The <code>ejamdata_required_tag</code>
+field in DESCRIPTION records which <code>ejamdata</code> release EJAM
+should use. The <code>ejamdata_version.txt</code> marker records which
+<code>ejamdata</code> release tag is actually saved in the local data
+folder.</p></li>
 <li><p><a href="dev-update-documentation.html">Updating
 documentation</a> - updates may be needed for the README, vignettes, and
 possibly examples in some functions in case updates to datasets alter
@@ -353,13 +353,16 @@ set of large <a href="https://github.com/apache/arrow/" class="external-link">ar
 package code repository.</p>
 </div>
 <div class="section level3">
-<h3 id="repository-that-stores-the-large-arrow-files">Repository that stores the large arrow files<a class="anchor" aria-label="anchor" href="#repository-that-stores-the-large-arrow-files"></a>
+<h3 id="repository-that-stores-the-large-arrow-file-release-assets">Repository that stores the large arrow file release assets<a class="anchor" aria-label="anchor" href="#repository-that-stores-the-large-arrow-file-release-assets"></a>
 </h3>
 <p>Several large <a href="https://r-datatable.com" class="external-link">data.table</a> files are not installed as
 part of the R package in the typical <code>/data/</code> folder that
 contains <code>.rda</code> files lazy-loaded by the package. Instead,
-they are kept in a separate GitHub repository that we refer to here as
-the data repository.</p>
+they are kept as release assets in a separate GitHub repository that we
+refer to here as the data repository. The release assets are the
+authoritative copies used by installed EJAM packages; committed files in
+a repository <code>data/</code> folder should not be treated as the
+source used by EJAM installs.</p>
 <p><em>IMPORTANT:</em> The name of the <em>data</em> repository (as
 distinct from the <em>package code</em> repository) must be
 recorded/updated in the EJAM package <code>DESCRIPTION</code> file, so
@@ -402,9 +405,7 @@ refreshed when EPA FRS/facility data are updated.</p></li>
 <code>bgej.arrow</code>. It is calculated from the annual EJScreen/EJAM
 demographic and environmental pipeline and must match the installed
 package’s <code>blockgroupstats</code>, <code>usastats</code>, and
-<code>statestats</code>. Starting with v2.5.0, <code>bgej.arrow</code>
-should be pinned to the EJAM/EJScreen release tag rather than downloaded
-from the latest data-repository release.</p></li>
+<code>statestats</code>.</p></li>
 <li><p><strong>Blockgroup Geography Updates</strong> include
 <code>bgid2fips</code> and <code>blockwts</code>, and related
 <code>.rda</code> objects such as <code>bgpts</code> and
@@ -491,25 +492,25 @@ relying on an automatic GitHub Actions workflow.</p></li>
 the following:</p></li>
 </ol>
 <!-- --><ol style="list-style-type: lower-alpha">
-<li>For facility and most geography Arrow files, checks the data
-repository’s latest release/version.</li>
-<li>Checks the user’s EJAM package’s <code>ejamdata</code> version,
-which is stored in <code>data/ejamdata_version.txt</code>.</li>
+<li>Resolves the package-compatible <code>ejamdata</code> release tag
+from the <code>DESCRIPTION</code> field
+<code>ejamdata_required_tag</code>, unless a maintainer explicitly
+passes a different <code>piggybacktag</code>. This lets a patch release
+of EJAM keep using an earlier compatible <code>ejamdata</code> release
+if the Arrow files have not changed.</li>
+<li>Checks the user’s locally installed Arrow data release tag, which is
+stored in <code>data/ejamdata_version.txt</code>.</li>
 <li>If the <code>data/ejamdata_version.txt</code> file doesn’t exist,
 for example on the first EJAM install, it will be created at the end of
 the script.</li>
-<li>If the versions are different, downloads the latest Arrow files from
-the latest ejamdata release with
+<li>If the versions are different, downloads Arrow files from the
+matching <code>ejamdata</code> release with
 <code><a href="https://docs.ropensci.org/piggyback/reference/pb_download.html" class="external-link">piggyback::pb_download()</a></code>.</li>
-<li>For package-coupled annual files such as <code>bgej.arrow</code>,
-uses the EJAM package release tag, such as <code>v2.5.0</code>, rather
-than the latest data-repository release. This same rule is used when
-<code>dataload_dynamic("bgej")</code> loads <code>bgej</code>: the local
-<code>bgej.arrow</code> must match the installed package’s
-<code>blockgroupstats</code>, and if it does not, EJAM tries to replace
-it from the package-pinned <code>ejamdata</code> release tag, which is
-based on <code>packageVersion("EJAM")</code>. See how this function
-works for details:</li>
+<li>When <code>dataload_dynamic("bgej")</code> loads <code>bgej</code>,
+the local <code>bgej.arrow</code> must also match the installed
+package’s <code>blockgroupstats</code>; if it does not, EJAM tries to
+replace it from the package-compatible <code>ejamdata</code> release
+tag. See how this function works for details:</li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -527,7 +528,7 @@ when a user loads EJAM or starts the app.</li>
 </ol>
 <!-- --><ul>
 <li>
-<code>devtools::install_github("Public-Environmental-Data-Partners/EJAM")</code>
+<code>pak::pkg_install("Public-Environmental-Data-Partners/EJAM")</code>
 (or as adjusted depending on the actual repository owner and name)</li>
 </ul>
 <!-- --><ol start="2" style="list-style-type: decimal">
@@ -552,12 +553,16 @@ they are downloaded.</li>
 </h2>
 <p>First, create the key Arrow files locally or from the relevant
 pipeline output, as explained above.</p>
+<p>For future updates, the package may be modified to publish these
+files via the update pipeline or related script such as
+<code>run_arrow_publish_v2.5.0.R</code> but the information below is to
+describe the functions if an update is done manually.</p>
 <p>As mentioned above, we use <a href="https://docs.ropensci.org/piggyback/index.html" class="external-link">the piggyback
 package</a> to place large datasets in the assets of a new release on
 the <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>
 repository, rather than committing them with Git. The current maintainer
-path is to call <code>datasets_arrow_publish()</code> with
-explicit local <code>.arrow</code> file paths.</p>
+path is to call <code><a href="../reference/datasets_arrow_publish.html">datasets_arrow_publish()</a></code> with explicit
+local <code>.arrow</code> file paths.</p>
 <p>The helper is intentionally conservative. It defaults to
 <code>dry_run = TRUE</code>, <code>overwrite = FALSE</code>, and
 <code>mark_latest = FALSE</code>. The default release note is
@@ -574,26 +579,27 @@ block or blockgroup helper Arrow files such as
 <code>quaddata.arrow</code> are intentionally regenerated in a future
 geography update, publish those files with the same helper after a
 dry-run review.</p>
-<p>Example dry-run for a manual publish:</p>
+<p>Example dry-run for a manual publish: (also see
+run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step)</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">release_number</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">new_datasets_folder</span> <span class="op">&lt;-</span> <span class="st">"~/Downloads"</span></span>
 <span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">new_datasets_folder</span>, <span class="st">"bgej.arrow"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">datasets_arrow_publish</span><span class="op">(</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/datasets_arrow_publish.html">datasets_arrow_publish</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="va">filepaths_arrow</span>,</span>
 <span>  tag <span class="op">=</span> <span class="va">release_number</span>,</span>
-<span>  release_date <span class="op">=</span> <span class="fu">Sys.Date</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  release_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  dry_run <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  mark_latest <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>After reviewing the dry-run output and the intended release tag, rerun
-with <code>dry_run = FALSE</code> only when ready to create/update the
-release assets. Use <code>overwrite = TRUE</code> only after confirming
-existing assets with the same names should be replaced. Use
-<code>mark_latest = TRUE</code> only when this release should be shown by
-GitHub as the latest release.</p>
+<p>After reviewing the dry-run output and the intended release tag,
+rerun with <code>dry_run = FALSE</code> only when ready to create/update
+the release assets. Use <code>overwrite = TRUE</code> only after
+confirming existing assets with the same names should be replaced. Use
+<code>mark_latest = TRUE</code> only when this release should be shown
+by GitHub as the latest release.</p>
 <p>Open a browser to confirm they are there.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, <span class="st">"/releases"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -629,7 +635,7 @@ crashes resulting from insufficient memory. However, this would require
 a decent lift to update the code in all places.</p>
 <p>Pros: processing efficiency and significantly reduced memory
 usage.</p>
-<p>Implementation: This has been mostly implemented by the
+<p>Implementation: This has been enabled by the
 <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> function, which contains a
 <code>return_data_table</code> parameter. If <code>FALSE</code>, the
 Arrow file is opened as an Arrow-backed object rather than read fully

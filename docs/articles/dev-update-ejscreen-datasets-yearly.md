@@ -8,7 +8,7 @@ historically called `blockgroupstats`, `bgej`, `usastats`, and
 For general dataset maintenance outside this pipeline, such as
 FRS-related tables, NAICS/SIC tables, block-level files, Arrow releases,
 and package-data publication mechanics, see [Updating and Managing the
-Datasets used by
+Datasets Used by
 EJAM](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md).
 
 ## Scope
@@ -20,17 +20,19 @@ The recommended annual runner is:
 
 ``` r
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
-The runner writes pipeline checkpoints such as CSV files. It can also
-write secondary formats such as `.rda` files for the same table stages
-when `EJAM_STAGE_FORMATS` includes those formats. It does not, by
+The runner writes pipeline checkpoints, by default as CSV files. It can
+also write secondary formats such as `.rda` files for the same table
+stages when `EJAM_STAGE_FORMATS` includes those formats. It does not, by
 itself, replace every installed package dataset in `data/*.rda`.
-Replacing package data objects with
-[`usethis::use_data()`](https://usethis.r-lib.org/reference/use_data.html)
-or EJAM metadata helpers is a separate release step after the pipeline
-outputs have been reviewed.
+Replacing package data objects with EJAM metadata helpers is a separate
+release step after the pipeline outputs have been reviewed. `bgej` is
+the main exception: the accepted annual `bgej` table should be
+republished as `bgej.arrow` in the `ejamdata` release tag recorded in
+DESCRIPTION as `ejamdata_required_tag`, rather than saved as
+`data/bgej.rda`.
 
 ## Pipeline Stages
 
@@ -41,24 +43,45 @@ The annual workflow creates or reads these stages:
     calculations. The default raw ACS storage is a folder of per-table
     files, with a manifest.
 
-2.  `bg_acsdata`: ACS-derived blockgroup indicators calculated from
-    `bg_acs_raw`, including demographic indicators and `pctpre1960`.
+2.  `bg_islandareas_raw`: optional raw 2020 Island Areas Census DHC
+    tables for American Samoa, Guam, the Commonwealth of the Northern
+    Mariana Islands, and the U.S. Virgin Islands. Enable this with
+    `EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE"`. Puerto Rico is not part of
+    this stage because it is already covered by ACS.
 
-3.  `bg_envirodata`: blockgroup environmental indicators used for EJ
+3.  `bg_islandareas_demographics`: optional transformed 2020 Island
+    Areas Census DHC demographics. This is saved as a separate
+    checkpoint for review and possible supplemental use. The Island
+    Areas source is not ACS 5-year data, and the legacy EPA/EJScreen
+    file with AS/GU/MP/VI rows had no usable ACS demographic values for
+    those rows. Therefore the default EJScreen-compatible pipeline does
+    not use these DHC demographics in `bg_acsdata` or downstream
+    outputs. Set `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"` only when
+    intentionally creating a mixed-source supplemental dataset.
+
+4.  `bg_acsdata`: ACS-derived blockgroup indicators calculated from
+    `bg_acs_raw`, including demographic indicators and `pctpre1960`.
+    When the optional Island Areas stage is enabled, AS/GU/MP/VI rows
+    are appended with no DHC-derived demographic values by default. The
+    separate `bg_islandareas_demographics` file keeps the available
+    Island Areas Census values available for review without changing the
+    EJScreen-compatible demographic calculations.
+
+5.  `bg_envirodata`: blockgroup environmental indicators used for EJ
     indexes. This normally comes from a separate environmental-data
     workflow. For draft builds, it can be provisionally reused from the
     current package data.
 
-4.  `bg_extra_indicators`: other blockgroup indicators that are not ACS
+6.  `bg_extra_indicators`: other blockgroup indicators that are not ACS
     and not the main EJ environmental indicators, such as health, life
     expectancy, and related context variables. These can also be
     provisionally reused from the current package data.
 
-5.  `bg_geodata`: Census/TIGER blockgroup geography attributes. This
+7.  `bg_geodata`: Census/TIGER block group geography attributes. This
     stage stores `bgfips`, square-meter `arealand` and `areawater`,
     optional internal point fields `intptlat` and `intptlon`, and a
     compatibility-only `area` column. The pipeline uses Census
-    TIGER/Line blockgroup shapefiles by default because their `ALAND`
+    TIGER/Line block group shapefiles by default because their `ALAND`
     and `AWATER` values best match the legacy EJScreen tables; Census
     TIGERweb remains available as a lighter fallback source. TIGER/Line
     zip files are cached locally using `EJAM_TIGER_BG_CACHE_DIR`, or the
@@ -67,30 +90,37 @@ The annual workflow creates or reads these stages:
     geography only for blockgroups found in the ACS tabulated rows for
     that vintage.
 
-6.  `blockgroupstats`: combined blockgroup table with ACS indicators,
+8.  `blockgroupstats`: combined blockgroup table with ACS indicators,
     environmental indicators, extra indicators, and geography fields.
 
-7.  `usastats_acs`, `statestats_acs`, `usastats_envirodata`, and
+9.  `usastats_acs`, `statestats_acs`, `usastats_envirodata`, and
     `statestats_envirodata`: percentile lookup tables for ACS and
     environmental inputs.
 
-8.  `bgej`: blockgroup EJ index values calculated from demographic
+10. `bgej`: blockgroup EJ index values calculated from demographic
     indexes and environmental percentiles.
 
-9.  `usastats_ej` and `statestats_ej`: percentile lookup tables for EJ
+11. `usastats_ej` and `statestats_ej`: percentile lookup tables for EJ
     index columns.
 
-10. `usastats` and `statestats`: combined lookup tables used by EJAM.
+12. `usastats` and `statestats`: combined lookup tables used by EJAM.
 
-11. `ejscreen_export`: EJScreen-ready export combining `blockgroupstats`
+13. `ejscreen_export`: EJScreen-ready export combining `blockgroupstats`
     and `bgej`, applying EJScreen-style names from `map_headernames`,
     and adding map helper fields where possible.
+
+14. `ejscreen_dataset_creator_input`: optional smaller input table for
+    EPA’s Python `ejscreen-dataset-creator-2.3` workflow. Enable it with
+    `EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "TRUE"`.
 
 The runner also writes `pipeline_validation_summary.csv` and
 `pipeline_run_manifest.csv`. If prior-version validation is requested,
 it writes `prior_validation_summary.csv` and per-stage prior-validation
 details. If the EJScreen export is requested, it writes
-`ejscreen_export_schema_report.csv`.
+`ejscreen_export_schema_report.csv`. For ACS 2018-2022 replication runs,
+the runner can also compare `ejscreen_export` to the EPA-style
+`EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv` reference file and write
+`prior_validation_ejscreen_export_vs_epa_2024_acs2022*` reports.
 
 The run manifest records the package version, Git branch and SHA, ACS
 vintage, pipeline location, primary stage format, selected run settings,
@@ -117,13 +147,14 @@ or only checked.
     need review or regeneration, such as `map_headernames`, `names_*`,
     `namez`, `tables_ejscreen_acs`, `formulas_ejscreen_acs`,
     `formulas_ejscreen_acs_disability`, `formulas_ejscreen_demog_index`,
-    `avg.in.us`, `high_pctiles_tied_with_min`, and `testoutput*`.
-    `bgej.arrow` belongs in this group and must be pinned to the
-    EJAM/EJScreen annual release, not treated as independently
-    refreshable “latest” data. In practice, `dataload_dynamic("bgej")`
-    uses the installed EJAM package version, as reported by
-    `packageVersion("EJAM")`, to find the matching `ejamdata` release
-    tag, such as `v2.5.0`, and checks the loaded `bgej` against the
+    `avg.in.us`, `high_pctiles_tied_with_min`, and `testoutput*`. In
+    practice,
+    [`dataload_dynamic()`](https://public-environmental-data-partners.github.io/EJAM/reference/dataload_dynamic.md)
+    uses the `ejamdata_required_tag` field in DESCRIPTION to find the
+    required `ejamdata` release tag, such as `v2.5.0`, for Arrow assets.
+    This tag usually matches the EJAM package version for an annual data
+    release, but can differ for patch releases. `bgej.arrow` is part of
+    this annual release bundle and is additionally checked against the
     installed `blockgroupstats` blockgroup universe.
 
 3.  **Blockgroup Geography Updates** include blockgroup-keyed geography
@@ -151,18 +182,18 @@ blockgroups and whether block-level IDs line up across `blockwts`,
 For a given ACS 5-year release, use the Census geography vintage
 associated with the ACS end year. For example, ACS 2020-2024 should use
 2024 Census/TIGER or TIGERweb geography attributes. The release pipeline
-prefers the downloadable Census TIGER/Line blockgroup shapefiles for
+prefers the downloadable Census TIGER/Line block group shapefiles for
 `arealand` and `areawater`, with TIGERweb as a fallback. Those geography
-sources can occasionally include blockgroups that are valid geography
+sources can occasionally include block groups that are valid geography
 features but that are not present in the ACS tabulated summary-file
 tables used by EJAM.
 
 That mismatch is unusual but real. In the draft ACS 2020-2024 build, the
-Census/TIGER blockgroup geography source included 39 Suffolk County, New
-York blockgroups that were not present in the relevant ACS blockgroup or
-tract tables downloaded for the pipeline. Including those geography-only
-rows would expand `blockgroupstats` beyond the ACS data universe and
-create rows with no ACS-derived indicators.
+Census/TIGER block group geography source included 39 Suffolk County,
+New York block groups that were not present in the relevant ACS block
+group or tract tables downloaded for the pipeline. Including those
+geography-only rows would expand `blockgroupstats` beyond the ACS data
+universe and create rows with no ACS-derived indicators.
 
 For that reason, the default pipeline setting is
 `EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs"`. Under that setting,
@@ -175,7 +206,8 @@ or special-purpose runs where the maintainer intentionally wants to
 retain blockgroups found only in other inputs.
 
 The pipeline uses the packaged `formulas_ejscreen_acs` object for
-ACS-derived indicator formulas. The old
+ACS-derived indicator formulas and sorts formula rows by dependency
+before calculating them. The old
 `data-raw/archived_datacreate_formulas_ejscreen_acs_notes.R` file is
 reference material only. It is not the current formula rebuild workflow.
 
@@ -240,7 +272,7 @@ The runner is controlled by environment variables:
 | `EJAM_TRACT_WEIGHT_SOURCE` | `"decennial2020"` uses 2020 Decennial Census population weights to apportion tract-only ACS tables to blockgroups, matching legacy EJSCREEN. `"acs"` uses same-vintage ACS blockgroup population weights. |
 | `EJAM_DECENNIAL_BGWTS_CACHE` | Optional local `.rds` cache path for 2020 Decennial blockgroup-to-tract weights. If unset, EJAM uses a user cache folder. |
 | `EJAM_REFRESH_DECENNIAL_BGWTS` | `"TRUE"` to ignore and overwrite the cached decennial blockgroup weights. |
-| `EJAM_TIGER_BG_CACHE_DIR` | Optional local folder for downloaded Census TIGER/Line blockgroup zip files. If unset, EJAM uses a durable user cache folder. |
+| `EJAM_TIGER_BG_CACHE_DIR` | Optional local folder for downloaded Census TIGER/Line block group zip files. If unset, EJAM uses a durable user cache folder. |
 | `AWS_PROFILE`, `AWS_REGION` | Used by the AWS CLI for S3-backed runs. |
 | `CENSUS_API_KEY` | Used by ACS/Census download helpers where needed. |
 | `EJAM_FORCE_ACS` | `"TRUE"` to redownload raw ACS and rebuild ACS stages. |
@@ -248,11 +280,16 @@ The runner is controlled by environment variables:
 | `EJAM_FORCE_BG_GEODATA` | `"TRUE"` to redownload/rebuild the Census/TIGER `bg_geodata` stage. |
 | `EJAM_ACS_DOWNLOAD_TIMEOUT` | Download timeout in seconds. Useful for large ACS tables. |
 | `EJAM_ACS_DOWNLOAD_RETRIES` | Number of retry attempts for ACS downloads. |
-| `EJAM_USE_PROVISIONAL_BG_ENVIRODATA` | `"FALSE"` to require a supplied `bg_envirodata.csv`. |
-| `EJAM_INCLUDE_EJSCREEN_EXPORT` | `"TRUE"` to create `ejscreen_export.csv`. |
+| `EJAM_INCLUDE_ISLANDAREAS_DATA` | `"TRUE"` to append AS/GU/MP/VI rows and save the separate `bg_islandareas_demographics` checkpoint. |
+| `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS` | `"TRUE"` only for an intentional mixed-source supplemental dataset that uses 2020 Island Areas Census DHC demographics in `bg_acsdata`. The default EJScreen-compatible path is `"FALSE"`. |
+| `EJAM_USE_PROVISIONAL_BG_ENVIRODATA` | `"FALSE"` to require a supplied `bg_envirodata` stage file, such as `bg_envirodata.csv` under the default stage format. |
+| `EJAM_INCLUDE_EJSCREEN_EXPORT` | `"TRUE"` to create the `ejscreen_export` stage, such as `ejscreen_export.csv` under the default stage format. |
+| `EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT` | `"TRUE"` to also create the smaller `ejscreen_dataset_creator_input` stage for EPA’s Python dataset-creator workflow. |
 | `EJAM_VALIDATE_VS_PRIOR` | `"TRUE"` to write prior-version comparison files. |
 | `EJAM_PRIOR_PIPELINE_DIR` | Prior pipeline folder/S3 prefix to compare against. |
 | `EJAM_PRIOR_PACKAGE_REF` | Optional Git ref/tag/SHA for prior package data comparison. |
+| `EJAM_EJSCREEN_EXPORT_REFERENCE_PATH` | Optional EPA-style EJScreen export CSV to compare against `ejscreen_export`. For S3-backed 2022 runs, the runner defaults to the preserved `EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv` file, which uses ACS 2018-2022 data despite its 2024 filename. |
+| `EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE` | `"TRUE"` to write `prior_validation_ejscreen_export_vs_epa_2024_acs2022.csv`, `*_summary.csv`, and `*_summary.txt` when a reference export path is available. |
 
 To see what the runner will use:
 
@@ -277,12 +314,17 @@ Sys.getenv(c(
   "EJAM_FORCE_BG_GEODATA",
   "EJAM_ACS_DOWNLOAD_TIMEOUT",
   "EJAM_ACS_DOWNLOAD_RETRIES",
+  "EJAM_INCLUDE_ISLANDAREAS_DATA",
+  "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
   "EJAM_INCLUDE_EJSCREEN_EXPORT",
+  "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
   "EJAM_VALIDATE_VS_PRIOR",
   "EJAM_PRIOR_PIPELINE_YR",
   "EJAM_PRIOR_PIPELINE_DIR",
-  "EJAM_PRIOR_PACKAGE_REF"
+  "EJAM_PRIOR_PACKAGE_REF",
+  "EJAM_EJSCREEN_EXPORT_REFERENCE_PATH",
+  "EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE"
 ))
 ```
 
@@ -301,17 +343,24 @@ and caches the downloaded weights locally.
 ### map_headernames
 
 If new indicators are being used compared with prior version of the
-datasets and package, note that map_headernames may need to be modified
-to have metadata on those new indicators, including the variable name
-(rname column of map_headernames), longname, calculation type, weight,
-rounding information, and “varlist” which groups related indicators
-into, e.g., names_e, and demographic key indicators into names_d, etc.
+datasets and package, `map_headernames` may need metadata rows for those
+new indicators, including the variable name (`rname`), `longname`,
+calculation type, calculation weight, rounding information, EJScreen
+export names, and `varlist` groups such as `names_e` and `names_d`. The
+current package data object is the authoritative source for release
+work. Older spreadsheet and `datacreate_map_headernames.R` workflows may
+still be useful as notes, but do not rebuild `map_headernames` from an
+old `.xlsx` file unless the generated object is audited against the
+current branch and preserves the recent ACS 2024, EJScreen export,
+bin/text, and language-indicator fixes.
 
 ### names\_\*
 
-Much of the code depends on the varlist info, so names_e, names_d, etc.
-need to be updated. The script in datacreate_names_of_indicators uses
-map_headernames\$varlist to update these data objects.
+Much of the code depends on the `varlist` info, so `names_e`, `names_d`,
+and related `names_*` objects need to be updated when
+`map_headernames$varlist` changes. The script in
+`data-raw/datacreate_names_of_indicators.R` uses
+`map_headernames$varlist` to update those data objects.
 
 ## Run a Fresh ACS Update
 
@@ -340,10 +389,13 @@ Sys.setenv(
   EJAM_FORCE_BG_GEODATA = "TRUE",
   EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
   EJAM_ACS_DOWNLOAD_RETRIES = "2",
-  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE"
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE",
+  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE",
+  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
+  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 For the S3-backed pipeline:
@@ -371,14 +423,38 @@ Sys.setenv(
   EJAM_FORCE_BG_GEODATA = "TRUE",
   EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
   EJAM_ACS_DOWNLOAD_RETRIES = "2",
-  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE"
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE",
+  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE",
+  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
+  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
-The runner asks for confirmation in interactive sessions before
-continuing.
+The runner prints the resolved settings before it starts the pipeline.
+Review those settings carefully, especially the year, storage backend,
+stage formats, force flags, Island Areas settings, provisional-input
+flags, and prior validation target.
+
+To add AS/GU/MP/VI rows in the same way as the legacy EPA/EJScreen
+export, enable the optional Island Areas stage but keep the DHC
+demographics out of `bg_acsdata`:
+
+``` r
+
+Sys.setenv(
+  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
+  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE"
+)
+
+source("data-raw/run_ejscreen_dataset_pipeline.R")
+```
+
+Set `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"` only for an intentional
+mixed-source supplemental dataset. That uses 2020 Island Areas Census
+DHC demographic values in `bg_acsdata`, which is useful for review but
+is not the default EJScreen replication path.
 
 ## Rerun From Saved ACS Data
 
@@ -392,7 +468,7 @@ Sys.setenv(
   EJAM_FORCE_BG_ACSDATA = "TRUE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 If both raw ACS and `bg_acsdata` should be reused, leave both force
@@ -405,7 +481,7 @@ Sys.setenv(
   EJAM_FORCE_BG_ACSDATA = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 If `bg_geodata` has already been created for the same ACS/TIGER vintage
@@ -419,14 +495,15 @@ valid.
 ``` r
 
 Sys.setenv(EJAM_FORCE_BG_GEODATA = "TRUE")
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 ## Supplying Updated Environmental Data
 
 The environmental stage is intentionally separate from the ACS stage.
-When updated environmental indicators are available, save them as
-`bg_envirodata.csv` in the pipeline folder.
+When updated environmental indicators are available, save them in the
+pipeline folder as the stage file for `bg_envirodata`. With the default
+stage format, that file is `bg_envirodata.csv`.
 
 For a local pipeline:
 
@@ -443,7 +520,7 @@ s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/bg_
 
 The file must include `bgfips` and the environmental indicators used for
 EJ indexes. It should also include `pctpre1960`. The environmental-data
-workflow may create `pctpre1960` by reading the saved `bg_acsdata.csv`
+workflow may create `pctpre1960` by reading the saved `bg_acsdata`
 stage.
 
 To force the runner to stop unless `bg_envirodata.csv` has been
@@ -452,7 +529,7 @@ supplied:
 ``` r
 
 Sys.setenv(EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE")
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 After replacing `bg_envirodata.csv`, rerun without forcing ACS:
@@ -465,7 +542,7 @@ Sys.setenv(
   EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE"
 )
 
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 This reuses the saved ACS stages and regenerates downstream
@@ -479,12 +556,13 @@ main environmental indicators. Examples include life expectancy, health
 indicators, facility-count context variables, climate-related fields,
 and other columns grouped in `map_headernames$varlist`.
 
-The pipeline makes these explicit in `bg_extra_indicators.csv`. If an
+The pipeline makes these explicit in the `bg_extra_indicators` stage,
+usually `bg_extra_indicators.csv` under the default stage format. If an
 updated table is not supplied, the runner currently creates a
 provisional version from the packaged
 [`EJAM::blockgroupstats`](https://public-environmental-data-partners.github.io/EJAM/reference/blockgroupstats.md).
-That is useful for testing the ACS update, but it should be documented
-clearly as reuse of older non-ACS data.
+That is useful for testing the ACS update, but final release review
+should document clearly any reuse of older non-ACS data.
 
 ## Provisional Draft Builds
 
@@ -494,7 +572,7 @@ environmental and extra indicators:
 ``` r
 
 Sys.setenv(EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "TRUE")
-source("data-raw/run_ejscreen_acs2024_pipeline.R")
+source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
 The runner writes source-note text files next to provisional stages,
@@ -521,7 +599,8 @@ validation[nzchar(warnings)]
 There should be no validation errors. Warnings should be understood and
 either fixed or explicitly accepted for a draft build.
 
-Then inspect the main outputs:
+Then inspect the main outputs. The example below assumes the default CSV
+stage format:
 
 ``` r
 
@@ -536,6 +615,11 @@ nrow(blockgroupstats)
 nrow(bgej)
 names(blockgroupstats)
 names(bgej)
+
+island_prefixes <- c("60", "66", "69", "78")
+for (stage in list(bg_acsdata, blockgroupstats, bgej)) {
+  print(stage[substr(bgfips, 1, 2) %in% island_prefixes, .N, by = ST])
+}
 ```
 
 Useful checks include:
@@ -553,6 +637,17 @@ Useful checks include:
 - lookup tables include `REGION`, `PCTILE`, `0`, `100`, and `mean`;
 - `usastats` has one region, `"USA"`;
 - `statestats` has expected state/territory regions.
+- when `EJAM_INCLUDE_ISLANDAREAS_DATA` is true, 412 Island Areas
+  blockgroups are present in `bg_acsdata`, `blockgroupstats`, and
+  `bgej`, and `ejscreen_export` retains the matching AS/GU/MP/VI IDs.
+
+For the default EJScreen-compatible path, Island Areas demographic
+columns in `bg_acsdata` and downstream stages are expected to be `NA`
+because the legacy EPA/EJScreen file with AS/GU/MP/VI rows had no usable
+ACS demographic values for those rows. The separate
+`bg_islandareas_demographics` checkpoint contains available 2020 Island
+Areas Census DHC values for review. Those values are used in
+`bg_acsdata` only when `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"`.
 
 For example:
 
@@ -607,10 +702,11 @@ The longest stages are usually:
   both `.csv` and `.rda`;
 - `bg_acsdata`, because it applies ACS formulas and tract-to-blockgroup
   calculations;
-- `bg_geodata`, because it downloads and reads Census TIGER/Line
-  blockgroup shapefiles for every state and Puerto Rico, with TIGERweb
-  available as a fallback. Reusing `EJAM_TIGER_BG_CACHE_DIR` makes later
-  `bg_geodata` rebuilds much faster because the state zip files do not
+- `bg_geodata`, because it downloads and reads Census TIGER/Line block
+  group shapefiles for every state, the District of Columbia, Puerto
+  Rico, and optional Island Areas, with TIGERweb available as a
+  fallback. Reusing `EJAM_TIGER_BG_CACHE_DIR` makes later `bg_geodata`
+  rebuilds much faster because the state or territory zip files do not
   need to be downloaded again;
 - final `blockgroupstats`/`bgej`/statistics/export calculations;
 - prior-version validation when comparing large blockgroup tables.
@@ -621,7 +717,9 @@ known to be current.
 
 ## Reviewing the EJScreen Export Schema
 
-If `EJAM_INCLUDE_EJSCREEN_EXPORT` is true, the runner writes:
+If `EJAM_INCLUDE_EJSCREEN_EXPORT` is true, the runner writes the export
+stage and its schema report. With the default stage format, those files
+are:
 
 ``` r
 
@@ -651,6 +749,22 @@ Each missing expected field should be classified as one of:
 For release, the ideal schema report has no `missing_expected` rows for
 the FeatureServer fields required by the EJScreen app.
 
+For 2022 replication checks, also review the EPA-reference comparison
+reports when they are present:
+
+``` r
+
+prior_validation_ejscreen_export_vs_epa_2024_acs2022.csv
+prior_validation_ejscreen_export_vs_epa_2024_acs2022_summary.csv
+prior_validation_ejscreen_export_vs_epa_2024_acs2022_summary.txt
+```
+
+Those reports use `ID` as a character field so leading zeroes in block
+group FIPS are preserved. They are meant to explain differences between
+EJAM’s current export and the EPA-style reference export, not to force
+EJAM to replicate legacy behavior where the new pipeline has
+intentionally corrected a formula or missing-value rule.
+
 ## Replacing Package Data
 
 Pipeline stage files are review artifacts. After they are accepted,
@@ -661,35 +775,43 @@ not automatically replace every final package dataset.
 A release update should explicitly replace at least:
 
 - `blockgroupstats`;
-- `bgej`;
 - `usastats`;
 - `statestats`;
 - any related lookup or metadata objects that changed.
 
-Use the established EJAM metadata helpers before saving package data. A
-typical manual pattern is:
+Use the established EJAM metadata helpers before saving package `.rda`
+data. When reviewing CSV stages manually, a typical pattern is:
 
 ``` r
 
 blockgroupstats <- fread(file.path(pipeline_dir, "blockgroupstats.csv"))
-bgej            <- fread(file.path(pipeline_dir, "bgej.csv"))
 usastats        <- fread(file.path(pipeline_dir, "usastats.csv"))
 statestats      <- fread(file.path(pipeline_dir, "statestats.csv"))
 
 EJAM:::metadata_add_and_use_this("blockgroupstats")
-EJAM:::metadata_add_and_use_this("bgej")
 EJAM:::metadata_add_and_use_this("usastats")
 EJAM:::metadata_add_and_use_this("statestats")
 ```
 
 Confirm the exact metadata values before saving, especially ACS vintage,
 Census vintage, EJSCREEN/EJAM version, data source notes, and
-provisional reuse notes.
+provisional reuse notes. `bgej` should be checked and saved through the
+pipeline stage files, then published as `bgej.arrow` in the `ejamdata`
+release tag recorded in DESCRIPTION as `ejamdata_required_tag`, such as
+`v2.5.0` for EJAM 2.5.0. A local `data/bgej.arrow` copy can be useful
+for testing from source, but it is ignored for package builds and should
+not be treated as normal package data.
 
 After those key datasets are updated, rerun the scripts that create and
-saves testoutput\_\* files and datasets, especially
+save `testoutput_*` files and datasets, especially
 `datacreate_testpoints_testoutputs.R` and
-`datacreate_testoutput_ejamit_*`, etc.
+`datacreate_testoutput_ejamit_*`.
+
+Then run `EJAM:::metadata_check()` and `EJAM:::metadata_check_print()`
+from the current source package to confirm that package datasets with
+metadata-style attributes have the expected EJAM version, ACS version,
+release dates, and save dates. Atomic name-vector objects such as many
+`names_*` datasets do not need metadata attributes.
 
 After package data are updated, reinstall the package and rerun
 release-critical tests. Also regenerate any Arrow-format files used
@@ -717,7 +839,7 @@ Before releasing a new annual dataset build:
     or the data repository release process.
 
 The general release and large-data publication steps are covered in
-[Updating and Managing the Datasets used by
+[Updating and Managing the Datasets Used by
 EJAM](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md)
 and [Updating the Package as a New
 Release](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-package.md).

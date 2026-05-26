@@ -6,11 +6,7 @@ See what same-named objects (functions or data) are exported by some
 ## Usage
 
 ``` r
-pkg_dupenames(
-  pkg = EJAM::ejampackages,
-  sortbypkg = FALSE,
-  compare.functions = TRUE
-)
+pkg_dupenames(pkg = "EJAM", sortbypkg = FALSE, compare.functions = TRUE)
 ```
 
 ## Arguments

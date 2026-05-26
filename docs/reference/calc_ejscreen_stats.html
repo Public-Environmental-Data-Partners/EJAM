@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -78,6 +79,7 @@
 <span>  pipeline_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_stages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  stage_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"csv"</span>, <span class="st">"rds"</span>, <span class="st">"rda"</span>, <span class="st">"arrow"</span><span class="op">)</span>,</span>
+<span>  yr <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  acs_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  enviro_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ej_indicator_vars <span class="op">=</span> <span class="va">names_e</span>,</span>
@@ -122,6 +124,11 @@
 <dt id="arg-stage-format">stage_format<a class="anchor" aria-label="anchor" href="#arg-stage-format"></a></dt>
 <dd><p>file format for saved stages: <code>"csv"</code>, <code>"rds"</code>,
 <code>"rda"</code>, or <code>"arrow"</code>.</p></dd>
+
+
+<dt id="arg-yr">yr<a class="anchor" aria-label="anchor" href="#arg-yr"></a></dt>
+<dd><p>optional ACS end year used to set metadata on saved R-native
+pipeline stages.</p></dd>
 
 
 <dt id="arg-acs-vars">acs_vars<a class="anchor" aria-label="anchor" href="#arg-acs-vars"></a></dt>
@@ -169,6 +176,10 @@ tables plus <code>bgej</code>.</p>
 <p><code>pctpre1960</code> is handled as an environmental indicator for EJ-index
 calculations and lookup tables. The upstream envirodata stage can create it
 from the saved ACS stage before this function is called.</p>
+<p><code>pctunemployed</code> stays missing in <code>blockgroupstats</code> when the civilian labor
+force denominator is zero. For EJSCREEN-compatible percentile lookups, this
+helper treats those values as zero only when the broader unemployment-base
+denominator is also zero.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

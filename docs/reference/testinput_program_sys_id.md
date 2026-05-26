@@ -1,6 +1,6 @@
-# test data, EPA program names and program system ID numbers to try using
+# test data, EPA program system ID numbers to try using
 
-test data, EPA program names and program system ID numbers to try using
+test data, EPA program system ID numbers to try using
 
 ## Usage
 

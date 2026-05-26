@@ -1,7 +1,6 @@
-# utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs
+# Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates
 
-utility to calculate annually for EJSCREEN the updated blockgroupstats
-dataset, by 1st creating blockgroupstats_acs
+Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates
 
 ## Usage
 
@@ -51,13 +50,14 @@ data.table, one row per blockgroup, columns bgfips, etc.
 
 ## Details
 
-This is meant to be used annually for updating EJScreen demographic
-indicators from the Census Bureau American Community Survey (ACS) 5-year
-summary file, to update the datasets in the package. This is now
-typically orchestrated by
+This lower-level helper calculates ACS-derived blockgroup indicators
+from the Census Bureau American Community Survey (ACS) 5-year summary
+file. In the current annual pipeline it is called through
+[`calc_bg_acsdata()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_acsdata.md),
+which is in turn orchestrated by
 [`calc_ejscreen_dataset()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_dataset.md)
-and by the staged pipeline runner script
-`data-raw/run_ejscreen_acs2024_pipeline.R`.
+and by the staged runner script
+`data-raw/run_ejscreen_dataset_pipeline.R`.
 
 Requires installed package ACSdownload from
 https://github.com/ejanalysis/ACSdownload which is documented at
@@ -65,9 +65,9 @@ https://ejanalysis.github.io/ACSdownload
 
 ## See also
 
-`calc_blockgroupstats_acs()`
+[`calc_bg_acsdata()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_acsdata.md)
 [`calc_blockgroupstats_from_tract_data()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_blockgroupstats_from_tract_data.md)
 [`calc_bgej()`](https://public-environmental-data-partners.github.io/EJAM/reference/calc_bgej.md)
-[`formulas_ejscreen_acs()`](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs.md)
-[`formulas_ejscreen_acs_disability()`](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs_disability.md)
-[`formulas_ejscreen_demog_index()`](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_demog_index.md)
+[formulas_ejscreen_acs](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs.md)
+[formulas_ejscreen_acs_disability](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_acs_disability.md)
+[formulas_ejscreen_demog_index](https://public-environmental-data-partners.github.io/EJAM/reference/formulas_ejscreen_demog_index.md)

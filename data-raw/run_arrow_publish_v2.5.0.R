@@ -42,4 +42,14 @@ EJAM:::datasets_arrow_publish(
 ############################################################### #
 
 # see  EJAM/vignettes/dev-update-datasets.Rmd also
+## see the published files in assets
 # browseURL(paste0(EJAM:::url_package("data", get_full_url = T), "/releases"))
+## try downloading them from there
+# pkgload::load_all(".", export_all = TRUE)
+# EJAM:::download_latest_arrow_data(
+#   varnames = "all",
+#   piggybacktag = "v2.5.0",
+#   force = TRUE
+# )
+# EJAM:::dataload_dynamic("all")
+

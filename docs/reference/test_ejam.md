@@ -126,7 +126,7 @@ a named list of objects with tables in
 Note these require installing the package
 [testthat](https://testthat.r-lib.org) first:
 
-    [EJAM:::test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
+    [test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
 
     [devtools::test()]           is just a shortcut for [testthat::test_dir()], to run all tests in package.
 
@@ -140,10 +140,10 @@ Note these require installing the package
 
 ``` r
 if (FALSE) { # \dontrun{
-biglist <- EJAM:::test_ejam()
+biglist <- test_ejam()
 
-biglist <- EJAM:::test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
-biglist <- EJAM:::test_ejam(ask = FALSE,
+biglist <- test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
+biglist <- test_ejam(ask = FALSE,
       y_runsome = TRUE, run_these = c('test', 'maps'),
       mydir = "~/../Downloads/unit testing") # for example
 

@@ -62,25 +62,12 @@ frs_update_datasets(
 
   Whether to save as .arrow in getwd()
 
-- save_as_data_frs:
+- save_as_data_frs, save_as_data_frs_by_programid,
+  save_as_data_frs_by_naics, save_as_data_frs_by_sic,
+  save_as_data_frs_by_mact:
 
-  Whether to save as .rda in ./data/
-
-- save_as_data_frs_by_programid:
-
-  Whether to save as .rda in ./data/
-
-- save_as_data_frs_by_naics:
-
-  Whether to save as .rda in ./data/
-
-- save_as_data_frs_by_sic:
-
-  Whether to save as .rda in ./data/
-
-- save_as_data_frs_by_mact:
-
-  Whether to save as .rda in ./data/
+  Obsolete. FRS tables are no longer saved as `.rda` files in `./data/`.
+  Leave these as `FALSE` and publish the `.arrow` files instead.
 
 ## Value
 
@@ -99,18 +86,15 @@ updated Facility Registry Service (FRS) data such as the locations, IDs,
 etc. for hundreds of thousands of EPA-regulated sites.
 
 This function is only for a package maintainer/updater (or an analyst
-who wants to get the latest information). It is typically run from the
-dataset-maintenance workflow in
-`EJAM/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`.
+who wants to get the latest information).
 
 These datasets are obtained from EPA servers, reformatted for this
-package, and then stored in a separate repository - see [updating data
-for
-package](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.md).
-The save_as_data\_ parameters here are set to FALSE because the files
-are not saved in the source package or its repository like typical
-package datasets would be saved in the data folder of the source
-package.
+package, and then stored as `.arrow` files in a separate repository -
+see [updating data for
+package](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html).
+The `save_as_data_*` parameters are obsolete and kept only to make old
+maintainer scripts fail clearly. FRS tables are no longer saved as
+lazy-loaded `.rda` package data in `EJAM/data/`.
 
 The files later get downloaded for local use during the process of
 installing the EJAM package.

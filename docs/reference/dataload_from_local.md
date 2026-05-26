@@ -44,7 +44,8 @@ dataload_from_local(
 
 - silent:
 
-  set to TRUE to stop cat() printing to console like when running tests
+  set to TRUE to stop message() printing to console like when running
+  tests
 
 - return_data_table:
 

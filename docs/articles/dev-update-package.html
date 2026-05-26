@@ -66,6 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
@@ -267,15 +268,16 @@ Datasets Annually (via the Pipeline)</a>. Confirm that accepted pipeline
 outputs have been copied into package data where appropriate
 (<code>blockgroupstats</code>, <code>usastats</code>,
 <code>statestats</code>, and related lookup/metadata objects), that
-<code>bgej.arrow</code> has been published as an asset in the matching
-<code>ejamdata</code> release tag for
-<code>packageVersion("EJAM")</code>, and that the local/source package
+<code>bgej.arrow</code> has been published as an asset in the
+<code>ejamdata</code> release tag recorded in DESCRIPTION as
+<code>ejamdata_required_tag</code>, and that the local/source package
 can load a <code>bgej</code> whose blockgroup universe matches
 <code>blockgroupstats</code>.</p></li>
-<li><p>If the ejamdata repository is still being used to store large
-arrow files then make sure a new release on that repo corresponds to the
-new release of the EJAM repo. See the <a href="%22dev-update-datasets.html%22">article about updating
-datasets</a>.</p></li>
+<li><p>If the ejamdata repository is still being used to publish large
+Arrow files as GitHub release assets, then make sure a release tag on
+that repo matches the <code>ejamdata_required_tag</code> field in
+DESCRIPTION. See the <a href="%22dev-update-datasets.html%22">article
+about updating datasets</a>.</p></li>
 <li><p>Regenerate example/test output datasets after code or annual data
 changes. In particular, rerun the scripts in <code>data-raw/</code> that
 create <code>testoutput_getblocksnearby_*</code>,
@@ -323,9 +325,10 @@ change:</p>
 <li><p><strong>OS</strong>: Latest Ubuntu, Windows, macOS</p></li>
 <li><p><strong>R version</strong>: latest release and some prior
 versions</p></li>
-<li><p><strong>Using install_url() versus install_github()</strong>:
+<li><p><strong>Using install_url() or install_github()</strong>:
 <code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> and
-<code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code></p></li>
+<code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code> or maybe the newer
+<code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code></p></li>
 </ol>
 <p>Also note that users may need to set up a personal access token (PAT)
 if they want to install from GitHub; see the <a href="installing.html">installing article</a> for information on setting

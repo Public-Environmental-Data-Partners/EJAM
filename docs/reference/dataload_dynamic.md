@@ -52,9 +52,9 @@ dataload_dynamic(
 
 - piggybacktag:
 
-  default is `"latest"` for dynamic Arrow data. Package- coupled annual
-  datasets such as `bgej` override `"latest"` internally and use
-  `paste0("v", packageVersion("EJAM"))` as their release tag.
+  default is `"latest"`, which resolves internally to the DESCRIPTION
+  `ejamdata_required_tag` field. Pass a specific tag such as `"v2.32.8"`
+  only for explicit maintenance or diagnostic work.
 
 ## Value
 
@@ -74,11 +74,7 @@ package is first loaded, Arrow files are downloaded from the package's
 data repository, normally called `ejamdata`, into the package's data
 directory.
 
-Arrow files do not all follow the same release rule. Facility and most
-geography Arrow files are still treated as dynamic data and normally
-come from the latest applicable `ejamdata` release, tracked with the
-local `ejamdata_version.txt` marker. Annual EJSCREEN/EJAM data files
-such as `bgej.arrow` are package-coupled: they are pinned to the
-installed EJAM package version, so EJAM 2.5.0 looks for `bgej.arrow` in
-the `ejamdata` release tagged `v2.5.0` rather than in the latest
-data-repository release.
+By default, Arrow files are loaded from the `ejamdata` release tag
+recorded in DESCRIPTION as `ejamdata_required_tag`. The local
+`ejamdata_version.txt` marker records which `ejamdata` release tag is
+currently saved in the installed package's data folder.

@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -114,9 +115,9 @@ look in for locally saved copies</p></dd>
 
 
 <dt id="arg-piggybacktag">piggybacktag<a class="anchor" aria-label="anchor" href="#arg-piggybacktag"></a></dt>
-<dd><p>default is <code>"latest"</code> for dynamic Arrow data. Package-
-coupled annual datasets such as <code>bgej</code> override <code>"latest"</code> internally and
-use <code>paste0("v", packageVersion("EJAM"))</code> as their release tag.</p></dd>
+<dd><p>default is <code>"latest"</code>, which resolves internally to the
+DESCRIPTION <code>ejamdata_required_tag</code> field. Pass a specific tag such as
+<code>"v2.32.8"</code> only for explicit maintenance or diagnostic work.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -130,13 +131,10 @@ use <code>paste0("v", packageVersion("EJAM"))</code> as their release tag.</p></
     <p>First checks memory, then the installed package's data folder. When the
 package is first loaded, Arrow files are downloaded from the package's data
 repository, normally called <code>ejamdata</code>, into the package's data directory.</p>
-<p>Arrow files do not all follow the same release rule. Facility and most
-geography Arrow files are still treated as dynamic data and normally come
-from the latest applicable <code>ejamdata</code> release, tracked with the local
-<code>ejamdata_version.txt</code> marker. Annual EJSCREEN/EJAM data files such as
-<code>bgej.arrow</code> are package-coupled: they are pinned to the installed EJAM
-package version, so EJAM 2.5.0 looks for <code>bgej.arrow</code> in the <code>ejamdata</code>
-release tagged <code>v2.5.0</code> rather than in the latest data-repository release.</p>
+<p>By default, Arrow files are loaded from the <code>ejamdata</code> release tag recorded
+in DESCRIPTION as <code>ejamdata_required_tag</code>. The local
+<code>ejamdata_version.txt</code> marker records which <code>ejamdata</code> release tag is
+currently saved in the installed package's data folder.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

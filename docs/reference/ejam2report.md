@@ -80,14 +80,14 @@ ejam2report(
 
   optional generic name of this type of report, to be shown at top, like
   "EJSCREEN Multisite Report" or "EJSCREEN Community Report". Default is
-  EJAM:::global_or_param("report_title") or
-  EJAM:::global_or_param("report_title_multisite") depending on number
-  of sites analyzed and the sitenumber parameter.
+  global_or_param("report_title") or
+  global_or_param("report_title_multisite") depending on number of sites
+  analyzed and the sitenumber parameter.
 
 - analysis_title:
 
   optional title of analysis, default is
-  EJAM:::global_or_param("default_standard_analysis_title")
+  global_or_param("default_standard_analysis_title")
 
 - addlatlon:
 

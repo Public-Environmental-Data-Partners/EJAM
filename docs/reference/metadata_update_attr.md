@@ -34,7 +34,7 @@ metadata_update_attr(
 - exclude_atomic_vectors:
 
   if TRUE, avoids updating attributes on atomic vectors like names_e,
-  since it is distracting when printing them to console
+  since it is distracting when looking at one in console, like `names_e`
 
 - only_update_if_had_been_set:
 

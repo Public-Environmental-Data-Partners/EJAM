@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -83,8 +84,8 @@
 
 <dl><dt id="arg-olist">olist<a class="anchor" aria-label="anchor" href="#arg-olist"></a></dt>
 <dd><p>vector of strings giving names of objects to load using data().
-This could also include other large datasets that are slow to lazyload but not always needed:
-"frs", "frs_by_programid ", "frs_by_naics", etc.</p></dd>
+This should be limited to package <code>.rda</code> datasets. FRS-related datasets
+are no longer <code>.rda</code> package data.</p></dd>
 
 
 <dt id="arg-envir">envir<a class="anchor" aria-label="anchor" href="#arg-envir"></a></dt>
@@ -99,10 +100,9 @@ This could also include other large datasets that are slow to lazyload but not a
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>See also read_builtin() function from the readr package!</p>
 <p>Default is to load some but not all the datasets into memory immediately.
-<a href="blockgroupstats.html">blockgroupstats</a>, <a href="usastats.html">usastats</a>, <a href="statestats.html">statestats</a>, and some others are always essential to EJAM, but
-<a href="frs.html">frs</a> and <a href="frs_by_programid.html">frs_by_programid</a> are huge datasets (and <a href="frs_by_sic.html">frs_by_sic</a> and <a href="frs_by_naics.html">frs_by_naics</a>)
-and not always used - only to find regulated facilities by ID, etc.
-The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.</p>
+<a href="blockgroupstats.html">blockgroupstats</a>, <a href="usastats.html">usastats</a>, <a href="statestats.html">statestats</a>, and some others are always essential to EJAM.
+The FRS-related datasets are huge and are loaded separately as <code>.arrow</code>
+files with <code><a href="dataload_dynamic.html">dataload_dynamic()</a></code> only when needed.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

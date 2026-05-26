@@ -16,11 +16,13 @@ ejamapi(
   buffer = NULL,
   radius = NULL,
   geometries = FALSE,
-  scale = "blockgroup",
+  scale = c("blockgroup", "county"),
   baseurl = "https://ejamapi-84652557241.us-central1.run.app/",
-  endpoint = c("data", "report")[1],
+  endpoint = c("data", "report", "query"),
   browse = TRUE,
+  save_and_return_html = TRUE,
   ejamit_format = FALSE,
+  fileextension = c("html", "pdf"),
   dry_run = FALSE,
   ...
 )
@@ -79,19 +81,40 @@ ejamapi(
 
 - baseurl:
 
-  the URL and endpoint of the API
+  base API URL without the endpoint path
 
 - endpoint:
 
-  "data" or "report": "data" will return EJAM analysis data for one or
-  more places, and "report" will generate one EJAM report in HTML format
-  for one place (until the API supports summary analysis over multiple
-  locations)
+  "data", "report", or "query".
+
+  - "data" will return EJAM analysis data as a data.frame for one or
+    more places, and
+
+  - "report" will generate the EJAM report in HTML format for one place
+    (or PDF format if fileextension = "pdf")
+
+  - "query" returns a data.frame of blockgroups, filtered using
+    parameters such as attribute="pctlowinc" for the variable name, and
+    value=0.95 for the cutoff, filtering to only values at/above the
+    cutoff.
 
 - browse:
 
   for endpoint="report", set TRUE to launch a browser to view the report
   (in addition to getting the html as output of the function)
+
+- save_and_return_html:
+
+  For when endpoint="report" and fileextension="html".
+
+  - Setting save_and_return_html=TRUE will return htmltools::HTML() text
+    objects and
+    [`htmltools::save_html()`](https://rstudio.github.io/htmltools/reference/save_html.html)
+    can be used to save .html file(s)
+
+  - Setting save_and_return_html=FALSE will just display the report(s)
+    in the browser or RStudio viewer using
+    [`browseURL()`](https://rdrr.io/r/utils/browseURL.html).
 
 - ejamit_format:
 
@@ -104,6 +127,10 @@ ejamapi(
   overall across sites, so results_overall will be just a placeholder,
   for the first site, not an overall summary across all sites.
 
+- fileextension:
+
+  can be "html" or "pdf", only relevant if endpoint = "report"
+
 - dry_run:
 
   set to TRUE to see preview info about what the API call would look
@@ -113,21 +140,41 @@ ejamapi(
 
   other parameters, passed to
   [`httr2::req_body_json()`](https://httr2.r-lib.org/reference/req_body.html)
-  in the "data" case, and passed to
+  in the "data" case, passed to
   [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
-  in the "report" case
+  in the "report" case, and used for the required `attribute` and
+  `value` parameters in the "query" case
 
 ## Value
 
-data.frame if using data endpoint, list of html reports if using report
-endpoint, or if ejamit_format=TRUE and "data" is the endpoint, returns a
-named list somewhat like output of
-[`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
-so it can work in some functions like
-[`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md).
-If dry_run=TRUE, for the "data" endpoint, the request itself, via the
-httr2 package, is returned, and for the "report" endpoint the URL is
-returned.
+If dry_run=TRUE
+
+- for the "report" endpoint, returns the URL(s) as vector.
+
+- for the "data" or "query" endpoint, returns the (one) request itself,
+  via the httr2 package.
+
+If dry_run=FALSE
+
+- for the "data" endpoint, returns a data.frame, one row per site
+  (unless ejamit_format=TRUE, in which case it returns a named list
+  somewhat like output of
+  [`ejamit()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit.md)
+  so it can work in some functions like
+  [`ejam2report()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejam2report.md)).
+
+- for the "query" endpoint, returns a data.frame, one row per matching
+  blockgroup.
+
+- for the "report" endpoint,
+
+  - if fileextension is "html" and save_and_return_html=TRUE, invisibly
+    returns a list of html reports
+
+  - if fileextension is "html" and save_and_return_html=FALSE, invisibly
+    returns a list of URLs
+
+  - if fileextension is "pdf", invisibly returns a list of file paths
 
 ## Details
 
@@ -148,118 +195,7 @@ For the "report" endpoint, the EJAM package version of this function
 uses
 [`url_ejamapi()`](https://public-environmental-data-partners.github.io/EJAM/reference/url_ejamapi.md)
 and related helper functions to convert the parameters to a URL for the
-API as a GET request to obtain an HTML report. [A standalone version of
-this
-function](https://gist.github.com/ejanalysis/fa588f8f4cf993fe43fb03fe990176e1),
-for people who do not install the EJAM package, uses a copy of the
-necessary functions.
-
-Attribute-based query examples:
-
-**1) R user with EJAM installed (using API, with local-only alternatives
-noted)**
-
-    base <- "https://ejamapi-84652557241.us-central1.run.app"
-
-    # API: blockgroups where raw pctlowinc is at least 50%
-    x <- EJAM::ejamapi(fips = "10001", scale = "blockgroup", endpoint = "data")
-    x_raw <- x[x$pctlowinc >= 0.50, ]
-
-    # Local alternative (no API needed): EJAM::blockgroupstats[EJAM::blockgroupstats$pctlowinc >= 0.50, ]
-
-    # API query endpoint: blockgroups where Demog.Index percentile is at least 95
-    q_demog <- httr2::request(paste0(base, "/query")) |>
-      httr2::req_body_json(list(attribute = "pctile.Demog.Index", value = 95))
-    httr2::req_perform(q_demog) |>
-      httr2::resp_body_json(simplifyVector = TRUE)
-
-    # Local alternative (no API needed): use helper that maps percentile cutoffs to raw cutoffs
-    idx95 <- EJAM::pctile_x_is_hit_by_score("Demog.Index", cutoff = 0.95)
-    local_demog95 <- EJAM::blockgroupstats[idx95, ]
-
-    # API: blockgroups where at least N of state EJ index percentiles are >= 80
-    N <- 6L
-    # example matched column format: state.pctile.EJ...
-    ej_state_cols <- grep("^state\\.pctile\\.EJ", names(x), value = TRUE)
-    x_n_ej <- x[rowSums(x[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
-
-**2) R user without EJAM installed (API-only via httr2/jsonlite)**
-
-    library(httr2)
-    library(jsonlite)
-
-    base <- "https://ejamapi-84652557241.us-central1.run.app"
-
-    # get blockgroup-level rows for a county
-    req_data <- request(paste0(base, "/data")) |>
-      req_body_json(list(fips = "10001", scale = "blockgroup"))
-    dat <- fromJSON(resp_body_string(req_perform(req_data)))
-
-    # raw pctlowinc >= 50%
-    dat_raw <- dat[dat$pctlowinc >= 0.50, ]
-
-    # Demog.Index percentile >= 95 (query endpoint)
-    req_demog <- request(paste0(base, "/query")) |>
-      req_body_json(list(attribute = "pctile.Demog.Index", value = 95))
-    dat_demog <- fromJSON(resp_body_string(req_perform(req_demog)))
-
-    # at least N state EJ index percentiles >= 80
-    N <- 6L
-    # example matched column format: state.pctile.EJ...
-    ej_state_cols <- grep("^state\\.pctile\\.EJ", names(dat), value = TRUE)
-    dat_n_ej <- dat[rowSums(dat[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
-
-**3) Python user (API via requests/pandas)**
-
-    import requests
-    import pandas as pd
-
-    base = "https://ejamapi-84652557241.us-central1.run.app"
-
-    dat = pd.DataFrame(requests.post(
-        f"{base}/data",
-        json={"fips": "10001", "scale": "blockgroup"}
-    ).json())
-
-    # raw pctlowinc >= 50%
-    dat_raw = dat[dat["pctlowinc"] >= 0.50]
-
-    # Demog.Index percentile >= 95 (query endpoint)
-    demog95 = pd.DataFrame(requests.post(
-        f"{base}/query",
-        json={"attribute": "pctile.Demog.Index", "value": 95}
-    ).json())
-
-    # at least N state EJ index percentiles >= 80
-    N = 6
-    ej_state_cols = [c for c in dat.columns if c.startswith("state.pctile.EJ")]
-    dat_n_ej = dat[(dat[ej_state_cols] >= 80).sum(axis=1) >= N]
-
-**4) Terminal user (API via curl + jq)**
-
-    BASE="https://ejamapi-84652557241.us-central1.run.app"
-
-    # get blockgroup-level rows for one county
-    curl -s -X POST "$BASE/data" -H "Content-Type: application/json" \
-      -d '{"fips":"10001","scale":"blockgroup"}' > data.json
-
-    # raw pctlowinc >= 50%
-    jq '.[] | select(.pctlowinc >= 0.50)' data.json
-
-    # Demog.Index percentile >= 95 (query endpoint)
-    curl -s -X POST "$BASE/query" -H "Content-Type: application/json" \
-      -d '{"attribute":"pctile.Demog.Index","value":95}' > demog95.json
-
-    # at least N state EJ index percentiles >= 80
-    N=6
-    jq --argjson N "$N" '
-      .[] | select(
-        ([to_entries[]
-          | select(.key | test("^state\\.pctile\\.EJ"))
-          | .value
-          | select(type == "number" and . >= 80)] | length) >= $N
-      )
-    ' data.json
+API as a GET request to obtain an HTML report.
 
 ## See also
 
@@ -272,27 +208,30 @@ noted)**
 eg <- TRUE
 
 # one blockgroup
-xbg1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
+xbg1 = ejamapi(fips="050014801001", endpoint='report',
+ dry_run=eg, browse = FALSE)
+if (interactive()) {htmltools::html_print(xbg1)}
 
-# attribute-based query endpoint examples in live EJAM API:
-qreq1 <- httr2::request("https://ejamapi-84652557241.us-central1.run.app/query") |>
-  httr2::req_body_json(list(attribute = "pctunemployed", value = 0.90))
-httr2::req_dry_run(qreq1)
+# attribute-based query endpoint examples in live EJAM API
+qreq1 <- ejamapi(
+  endpoint = "query", attribute = "pctunemployed", value = 0.90,
+  dry_run = eg)
 
-qreq2 <- httr2::request("https://ejamapi-84652557241.us-central1.run.app/query") |>
-  httr2::req_body_json(list(attribute = "pctlowinc", value = 0.80))
-httr2::req_dry_run(qreq2)
+qreq2 <- ejamapi(
+  endpoint = "query", attribute = "pctlowinc", value = 0.80,
+  dry_run = eg)
 if (!eg) {
 # all blockgroups in 1 county
 xcounty = ejamapi(fips="10001", scale="blockgroup", endpoint = "data", dry_run=eg)
 t(xcounty[1:4,3:100])
 
-# one point
+# one point, report endpoint
 xpoint1 = ejamapi(lat = 45, lon = -118,
-  endpoint = 'report', buffer = 3.1, dry_run = eg)
-htmltools::html_print(xpoint1)
+  endpoint = 'report', buffer = 3.1,
+  dry_run = eg, browse=FALSE)
+htmltools::html_print(xpoint1[[1]])
 
-# multiple points
+# multiple points, data endpoint
 pts = data.frame(lat = c(44,45), lon = c(-117,-118))
 y2a = ejamapi(sites = pts, buffer = 3.1, endpoint = 'data', dry_run=eg)
 y2a[,3:14]

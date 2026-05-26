@@ -171,7 +171,7 @@ useful for debugging one category at a time.
 
 ``` r
 
-remotes::install_local() # once
+pak::local_install('.', dependencies = T, upgrade = F) # once
 library(EJAM) # once
 source(testthat::test_path("setup.R")) # once. gets done automatically though, by things like testthat::test_file()
 
@@ -181,11 +181,11 @@ shinytest2_webapp_functionality("latlon")
 ```
 
 It is recommended during development to use
-[`remotes::install_local()`](https://remotes.r-lib.org/reference/install_local.html)
-to ensure your development code is the one tested. The web app tests
-launch the app in a separate R process, so by default they use the
-installed EJAM package. This is much faster than reloading the source
-tree for every web app test file.
+`pak::local_install('.', dependencies = T, upgrade = F)` to ensure your
+development code is the one tested. The web app tests launch the app in
+a separate R process, so by default they use the installed EJAM package.
+This is much faster than reloading the source tree for every web app
+test file.
 
 If you specifically need the spawned Shiny app process to use the
 current source tree without reinstalling, set this environment variable

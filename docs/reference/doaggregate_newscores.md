@@ -42,12 +42,12 @@ doaggregate_newscores(
 
 - formulas:
 
-  a character vector of formulas in R code (see formulas_d for an
-  example), that use variables in userstats to calculate any derived
-  indicators or aggregated ones, for cases where just a sum or a
-  population weighted mean is not the right way to aggregate some
-  indicator. Formulas can include intermediate steps, or can aggregate
-  across all places.
+  a character vector of formulas in R code (see
+  `formulas_ejscreen_acs$formula` for examples), that use variables in
+  userstats to calculate any derived indicators or aggregated ones, for
+  cases where just a sum or a population weighted mean is not the right
+  way to aggregate some indicator. Formulas can include intermediate
+  steps, or can aggregate across all places.
 
   For example one formula might be
 

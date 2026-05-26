@@ -13,6 +13,7 @@ calc_ejscreen_stats(
   pipeline_dir = NULL,
   save_stages = FALSE,
   stage_format = c("csv", "rds", "rda", "arrow"),
+  yr = NULL,
   acs_vars = NULL,
   enviro_vars = NULL,
   ej_indicator_vars = names_e,
@@ -55,6 +56,11 @@ calc_ejscreen_stats(
 - stage_format:
 
   file format for saved stages: `"csv"`, `"rds"`, `"rda"`, or `"arrow"`.
+
+- yr:
+
+  optional ACS end year used to set metadata on saved R-native pipeline
+  stages.
 
 - acs_vars:
 
@@ -107,3 +113,8 @@ pipeline stage files for the ACS, environmental, EJ-index, and combined
 `pctpre1960` is handled as an environmental indicator for EJ-index
 calculations and lookup tables. The upstream envirodata stage can create
 it from the saved ACS stage before this function is called.
+
+`pctunemployed` stays missing in `blockgroupstats` when the civilian
+labor force denominator is zero. For EJSCREEN-compatible percentile
+lookups, this helper treats those values as zero only when the broader
+unemployment-base denominator is also zero.

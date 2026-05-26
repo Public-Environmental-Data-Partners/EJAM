@@ -46,7 +46,8 @@ custom_doaggregate(
 
 - custom_formulas:
 
-  like formulas_all, not used yet
+  character vector of formulas, like `formulas_ejscreen_acs$formula`,
+  not used yet
 
 - custom_cols:
 

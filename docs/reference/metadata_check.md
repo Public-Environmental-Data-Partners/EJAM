@@ -9,7 +9,7 @@ able to check attributes without doing that.
 
 ``` r
 metadata_check(
-  packages = EJAM::ejampackages,
+  packages = "EJAM",
   datasets = "all",
   which = c("ejam_package_version", "date_saved_in_package", "date_downloaded",
     "ejscreen_version", "ejscreen_releasedate", "acs_releasedate", "acs_version",
@@ -23,10 +23,9 @@ metadata_check(
 
 - packages:
 
-  Optional. e.g. 'EJAMejscreendata', or can be a vector of character
-  strings, and if not specified, default is to report on
-  EJAM::ejampackages. If set to NULL, it only reports on objects already
-  attached.
+  Optional. Can be a vector of character strings, and if not specified,
+  default is to report on EJAM. If set to NULL, it only reports on
+  objects already attached.
 
 - datasets:
 
@@ -35,8 +34,8 @@ metadata_check(
 
 - which:
 
-  Optional vector (not list) of strings, the attributes. Default is some
-  typical ones used in EJAM-related packages currently.
+  Optional vector (not list) of strings, the attributes. Default is just
+  "EJAM".
 
 - grepdatasets:
 
@@ -64,7 +63,6 @@ metadata_check(
 ``` r
 if (FALSE) { # \dontrun{
 x = EJAM:::metadata_check( which = "ejam_package_version")
-
 
   # tail(EJAM:::metadata_check( ))
   EJAM:::metadata_check(packages = NULL)

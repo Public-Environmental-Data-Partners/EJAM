@@ -22,7 +22,7 @@
 #' @param validate_arrow Logical. If `TRUE`, confirm files can be opened as
 #'   Arrow IPC files before publishing.
 #' @examples
-#'  fpaths <- file.path("data", paste0(EJAM:::.arrow_ds_names, ".arrow"), )
+#'  fpaths <- file.path("data", paste0(EJAM:::.arrow_ds_names, ".arrow"))
 #'  \dontrun{
 #'
 #'  stopifnot(all(file.exists(fpaths)))

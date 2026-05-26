@@ -194,6 +194,19 @@ creates EJSCREEN app map helper fields from exported percentile fields:
 `B_...` map color-bin columns and `T_...` popup-text columns. The
 `B_...` bins use the historical EJSCREEN/ejanalysis cutpoints: 0-9th
 percentile is bin 1, 10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin
-10, and 95-100 is bin 11. Missing or out-of-range percentiles are
-assigned bin 0. The `T_...` fields use the current EJSCREEN service text
-style, such as `"95 %ile"`.
+10, and 95-100 is bin 11. Missing or out-of-range percentiles are left
+missing in `B_...` fields and blank in `T_...` fields. The `T_...`
+fields use the current EJSCREEN service text style, such as `"95 %ile"`.
+
+`blockgroupstats` keeps `pctunemployed` as `NA` where the civilian labor
+force denominator is zero. For EJSCREEN app/export compatibility, this
+helper reports those zero-denominator cases as `0` only when the broader
+unemployment-base denominator is also zero, then builds matching
+percentile values from those export-compatible values. Rows where
+unemployment is missing for other reasons remain `NA`.
+
+`blockgroupstats` keeps `pctnohealthinsurance` on the Census-defined
+B27010 civilian noninstitutionalized population universe. If EJSCREEN
+requires a legacy-compatible health-insurance field for a specific
+export target, that compatibility adjustment belongs in this export
+stage rather than in the EJAM ACS indicator formula.

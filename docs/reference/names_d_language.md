@@ -10,7 +10,7 @@ names_d_language
 
 ## Format
 
-An object of class `character` of length 14.
+An object of class `character` of length 17.
 
 ## Details
 

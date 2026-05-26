@@ -38,6 +38,7 @@ Countyname
 Cranston
 DEJ
 DEMOG
+DHC
 DJefault
 DT
 DUyn
@@ -85,6 +86,7 @@ Hydrography
 ICIS
 INTPTLAT
 INTPTLON
+IPC
 LFS
 LQGs
 LUSTs
@@ -188,6 +190,7 @@ acsdata
 calcweight
 enviro
 envirodata
+geo
 geodata
 grepv
 hisp
@@ -373,6 +376,7 @@ facilitys
 favicons
 fid
 fieldnames
+fileextension
 fileInput
 fips
 fipscode
@@ -428,6 +432,7 @@ headernames
 hhlds
 hispanic
 htmltools
+htmlwidget
 https
 httr
 hydrologic
@@ -522,6 +527,7 @@ noRd
 nonattainment
 noncity
 nongroup
+noninstitutionalized
 nonspace
 noopener
 noreferrer
@@ -695,6 +701,7 @@ tibbles
 tidycensus
 tidygeocoder
 tigris
+tl
 tolat
 tolon
 topoint

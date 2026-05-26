@@ -49,7 +49,8 @@ This does the work actually supporting getblocksnearby()"><meta property="og:ima
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -192,7 +193,9 @@ areal apportionment of blockgroups would provide.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="co"># indexblocks() # if localtree not available yet, quadtree = localtree</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="co"># getblocksnearby() usually creates/reuses the quadtree index for you.</span></span>
+<span>  <span class="co"># To call this lower-level function directly, use:</span></span>
+<span>  <span class="co"># quadtree &lt;- indexblocks()</span></span>
 <span>  <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="getblocksnearby.html">getblocksnearby</a></span><span class="op">(</span><span class="va">testpoints_1000</span>, radius <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

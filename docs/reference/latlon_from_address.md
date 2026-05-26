@@ -1,7 +1,7 @@
-# geocode, but only if AOI package is installed and attached and what it imports like tidygeocoder etc.
+# geocode, but only if AOI package is installed and what it imports like tidygeocoder etc.
 
-geocode, but only if AOI package is installed and attached and what it
-imports like tidygeocoder etc.
+geocode, but only if AOI package is installed and what it imports like
+tidygeocoder etc.
 
 ## Usage
 
@@ -45,10 +45,9 @@ latlon_from_address(
 
 ## Value
 
-returns NULL if you have not installed and attached the AOI package. If
-AOI is attached via library() or require() or package imports, this
-returns a tibble table of x,y or lat,lon values or geometries. see the
-AOI package.
+returns NULL if you have not installed the AOI package. If AOI is
+installed, this returns a tibble table of x,y or lat,lon values or
+geometries. see the AOI package.
 
 ## Details
 
@@ -57,7 +56,7 @@ slow? about 100 per minute?
 ## Examples
 
 ``` r
-  # only works if AOI package installed already and attached too
+  # only works if the optional AOI package is installed.
   # #eg <- c("1200 Pennsylvania Ave, NW Washington DC", "Research Triangle Park")
   # #x <- geocode(eg)
   # out <- ejamit(x, radius = 3)

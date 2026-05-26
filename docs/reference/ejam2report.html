@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -138,12 +139,12 @@ If specified, it overrides logo_path. If omitted, gets created based on logo_pat
 <dt id="arg-report-title">report_title<a class="anchor" aria-label="anchor" href="#arg-report-title"></a></dt>
 <dd><p>optional generic name of this type of report, to be shown at top,
 like "EJSCREEN Multisite Report" or "EJSCREEN Community Report".
-Default is EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+Default is global_or_param("report_title") or global_or_param("report_title_multisite")
 depending on number of sites analyzed and the sitenumber parameter.</p></dd>
 
 
 <dt id="arg-analysis-title">analysis_title<a class="anchor" aria-label="anchor" href="#arg-analysis-title"></a></dt>
-<dd><p>optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")</p></dd>
+<dd><p>optional title of analysis, default is global_or_param("default_standard_analysis_title")</p></dd>
 
 
 <dt id="arg-addlatlon">addlatlon<a class="anchor" aria-label="anchor" href="#arg-addlatlon"></a></dt>

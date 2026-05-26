@@ -70,8 +70,8 @@ initiative of the Internet Archive) and by EJAM-related repositories.
       files](https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data)
     - Datasets used by EJAM but stored separately (large .arrow files):
       [Documentation](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files)
-      and [Data
-      files](https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data)
+      and [release assets with data
+      files](https://github.com/Public-Environmental-Data-Partners/ejamdata/releases)
 
 - Methods (development of indicators, calculations for community
   reports, etc.)

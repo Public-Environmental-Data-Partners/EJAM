@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -94,7 +95,7 @@
 
 
 <dt id="arg-dotests">dotests<a class="anchor" aria-label="anchor" href="#arg-dotests"></a></dt>
-<dd><p>run unit tests first? uses EJAM:::test_ejam()</p></dd>
+<dd><p>run unit tests first? uses test_ejam()</p></dd>
 
 
 <dt id="arg-testinteractively">testinteractively<a class="anchor" aria-label="anchor" href="#arg-testinteractively"></a></dt>
@@ -102,7 +103,7 @@
 
 
 <dt id="arg-doyamlcheck">doyamlcheck<a class="anchor" aria-label="anchor" href="#arg-doyamlcheck"></a></dt>
-<dd><p>report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?</p></dd>
+<dd><p>report on the yaml file via dataset_pkgdown_yaml_check() ?</p></dd>
 
 
 <dt id="arg-dodocument">dodocument<a class="anchor" aria-label="anchor" href="#arg-dodocument"></a></dt>
@@ -111,7 +112,7 @@ Usually should leave TRUE.</p></dd>
 
 
 <dt id="arg-doinstall">doinstall<a class="anchor" aria-label="anchor" href="#arg-doinstall"></a></dt>
-<dd><p>use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky</p></dd>
+<dd><p>TRUE would mean reinstall package from local source. usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky</p></dd>
 
 
 <dt id="arg-doloadall-not-library">doloadall_not_library<a class="anchor" aria-label="anchor" href="#arg-doloadall-not-library"></a></dt>

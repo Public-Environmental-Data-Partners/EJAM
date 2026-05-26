@@ -11,7 +11,7 @@ states_shapefile
 
 ## Format
 
-An object of class `sf` (inherits from `data.frame`) with 56 rows and 15
+An object of class `sf` (inherits from `data.frame`) with 56 rows and 16
 columns.
 
 ## Details
@@ -24,6 +24,11 @@ State-specific percentiles (e.g., a score that is at the 80th percentile
 within Texas). It is created by the package via a script at
 EJAM/data-raw/datacreate_states_shapefile.R which downloads the data
 from Census Bureau.
+
+It includes 50 states, DC, PR, and 4 island areas (GU, MP, VI, AS).
+
+Source:
+https://www2.census.gov/geo/tiger/TIGER2024/STATE/tl_2024_us_state.zip
 
 ## See also
 

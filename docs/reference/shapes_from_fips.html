@@ -43,7 +43,8 @@
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -73,10 +74,10 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shapes_from_fips</span><span class="op">(</span></span>
 <span>  <span class="va">fips</span>,</span>
-<span>  myservice_blockgroup <span class="op">=</span></span>
-<span>    <span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"</span>,</span>
-<span>  myservice_tract <span class="op">=</span></span>
-<span>    <span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"</span>,</span>
+<span>  myservice_blockgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/"</span>,</span>
+<span>    <span class="st">"ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"</span><span class="op">)</span>,</span>
+<span>  myservice_tract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/"</span>,</span>
+<span>    <span class="st">"ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"</span><span class="op">)</span>,</span>
 <span>  myservice_place <span class="op">=</span> <span class="st">"tiger"</span>,</span>
 <span>  myservice_county <span class="op">=</span> <span class="st">"cartographic"</span>,</span>
 <span>  allow_multiple_fips_types <span class="op">=</span> <span class="cn">TRUE</span>,</span>

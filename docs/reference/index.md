@@ -82,8 +82,8 @@ Utilities for working with latitude/ longitude or address
 - [`latlon_from_address_table()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_address_table.md)
   : get lat,lon from table that contains USPS addresses
 - [`latlon_from_address()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_address.md)
-  : geocode, but only if AOI package is installed and attached and what
-  it imports like tidygeocoder etc.
+  : geocode, but only if AOI package is installed and what it imports
+  like tidygeocoder etc.
 - [`latlon_from_shapefile()`](https://public-environmental-data-partners.github.io/EJAM/reference/latlon_from_shapefile.md)
   : Convert shapefile (class sf) to data.table of lat and lon columns
   Makes lat and lon columns, from a sfc_POINT class geometry field, or
@@ -100,7 +100,7 @@ Utilities for working with latitude/ longitude or address
 - [`lat_alias`](https://public-environmental-data-partners.github.io/EJAM/reference/lat_alias.md)
   : lat_alias, lon_alias (DATA) Synonyms for lat and lon
 - [`islandareas`](https://public-environmental-data-partners.github.io/EJAM/reference/islandareas.md)
-  : islandareas (DATA) table, bounds info on lat lon of US Island Areas
+  : islandareas (DATA) table, bounding boxes lat lon for US Island Areas
 
 ## Specify Facilities by ID
 
@@ -184,14 +184,14 @@ NAICS, SIC, MACT, or EPA Program
   : naics_counts (DATA) data.frame with regulated facility counts for
   each industry code
 - [`NAICS`](https://public-environmental-data-partners.github.io/EJAM/reference/NAICS.md)
-  : NAICS (DATA) named list of all NAICS code numbers and industry name
-  for each
+  : NAICS (DATA) named vector of all NAICS code numbers and industry
+  name for each
 - [`SIC`](https://public-environmental-data-partners.github.io/EJAM/reference/SIC.md)
   : SIC (DATA) named list of all SIC code numbers and category name for
   each
 - [`naicstable`](https://public-environmental-data-partners.github.io/EJAM/reference/naicstable.md)
-  : naicstable (DATA) data.table of NAICS code(s) and industry names for
-  each EPA-regulated site
+  : naicstable (DATA) data.table of all possible NAICS code(s) and
+  industry names
 - [`sictable`](https://public-environmental-data-partners.github.io/EJAM/reference/sictable.md)
   : sictable (DATA) data.table of SIC code(s) and industry names for
   each EPA-regulated site
@@ -207,8 +207,7 @@ NAICS, SIC, MACT, or EPA Program
 - [`testinput_program_name`](https://public-environmental-data-partners.github.io/EJAM/reference/testinput_program_name.md)
   : testinput_program_name dataset
 - [`testinput_program_sys_id`](https://public-environmental-data-partners.github.io/EJAM/reference/testinput_program_sys_id.md)
-  : test data, EPA program names and program system ID numbers to try
-  using
+  : test data, EPA program system ID numbers to try using
 - [`epa_programs`](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs.md)
   : epa_programs (DATA) named vector with program counts
 - [`epa_programs_defined`](https://public-environmental-data-partners.github.io/EJAM/reference/epa_programs_defined.md)
@@ -420,7 +419,7 @@ distances
   facilities or sites
 - [`indexblocks()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexblocks.md)
   : Create localtree (a quadtree index of all US block centroids) in
-  global environment
+  package cache
 - [`indexpoints()`](https://public-environmental-data-partners.github.io/EJAM/reference/indexpoints.md)
   : Utility to create efficient quadtree spatial index of any set of
   lat,lon
@@ -819,8 +818,7 @@ Report Percentiles or Means
 - [`testinput_registry_id`](https://public-environmental-data-partners.github.io/EJAM/reference/testinput_registry_id.md)
   : test data, EPA Facility Registry ID numbers to try using
 - [`testinput_program_sys_id`](https://public-environmental-data-partners.github.io/EJAM/reference/testinput_program_sys_id.md)
-  : test data, EPA program names and program system ID numbers to try
-  using
+  : test data, EPA program system ID numbers to try using
 - [`testinput_program_name`](https://public-environmental-data-partners.github.io/EJAM/reference/testinput_program_name.md)
   : testinput_program_name dataset
 - [`testinput_naics`](https://public-environmental-data-partners.github.io/EJAM/reference/testinput_naics.md)

@@ -39,7 +39,7 @@ ejam2ratios(out)
 #> Suppl Demog.Ind.                  1.0                1.0
 #> %Low-inc.                         1.0                1.1
 #> %Limited English                  1.5                1.2
-#> %Unemployed                       1.1                1.1
+#> %Unemployed                       1.2                1.1
 #> %< High School                    1.2                1.1
 #> %< age 5                          1.0                1.0
 #> %> age 64                         0.8                0.8
@@ -174,6 +174,10 @@ See just the table
 x <- ejamit_compare_distances(pts, radii = radii, quiet = TRUE, plot = FALSE)
 ```
 
+    #> Checking for index of Census blocks called 'localtree' ...localtree already exists.
+    #> Checking for index of Census blocks called 'localtree' ...localtree already exists.
+    #> Checking for index of Census blocks called 'localtree' ...localtree already exists.
+    #> Checking for index of Census blocks called 'localtree' ...localtree already exists.
     #> 
     #>                                         1   2   3  10
     #> Ratio to State avg %Hispanic          0.5 0.9 1.1 1.0
@@ -238,6 +242,7 @@ y <- plot_distance_by_pctd(
   getblocksnearby(pts, radius = 10, quiet = T),
   score_colname = "pctnhba",
   sitenumber = 1)
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 ```
 
 ![Example of using plot_distance_by_pctd() showing distance on x axis,
@@ -271,6 +276,7 @@ pts <- data.table::data.table(lat = 45.75464, lon = -94.36791)
 
 y <- plot_distance_by_pctd(pts,
                       sitenumber = 1, score_colname = "pcthisp")
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 ```
 
 ![Example of using plot_distance_by_pctd(), showing an example where
@@ -286,7 +292,9 @@ Example of using plot_distance_by_pctd()
 
 out2 = ejamit_compare_distances(pts,radii = c(10,30))
 #> [1] "Estimated analysis time: about 30 seconds for 1 point-buffer location (upper estimate 2 minutes)."
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 #> [1] "Estimated analysis time: about 2 seconds for 1 point-buffer location (upper estimate 2.4 minutes)."
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 #> 
 #>                                        10  30
 #> Ratio to State avg %Hispanic          0.3 0.7
@@ -794,6 +802,7 @@ sites2blocks <- getblocksnearby(
   sitepoints = sitepoints,
   radius = 3.1
 )
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 #> Analyzing 2 points, radius of 3.1 miles around each.
 #> Finding Census blocks with internal point within  3.1  miles of the site (point), for each of 2  sites (points)...
 #> Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: 
@@ -898,6 +907,7 @@ such as this:
 ``` r
 
 x <- plot_blocks_nearby(testpoints_10[1, ], radius = 3, returnmap = F)
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 #> Analyzing 1 points, radius of 3 miles around each.
 #> Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...
 #> Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: 
@@ -947,7 +957,8 @@ Find all blocks nearby each site
 
 radius <- 3
 sitepoints <- testpoints_100
-sites2blocks <- getblocksnearby(sitepoints, radius, quadtree = localtree, quiet = TRUE)
+sites2blocks <- getblocksnearby(sitepoints, radius, quiet = TRUE)
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 # testoutput_getblocksnearby_10pts_1miles is also available as an example
 names(sites2blocks)
 #> [1] "ejam_uniq_id"        "blockid"             "distance"           
@@ -1065,6 +1076,7 @@ summary(s2b_stats)
 out <- ejamit(sitepoints = sitepoints, 
               radius = radius, include_ejindexes = F)
 #> Finding blocks nearby.
+#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 #> Aggregating at each site and overall.
 #> Warning in batch.summarize(sitestats = out$results_bysite, popstats =
 #> out$results_bybg_people, : specified threshnames not all found in sitestats
@@ -1127,6 +1139,7 @@ leastdense <- s2b_stats$ejam_uniq_id[order(
     s2b_stats$blocks_within_1mile, decreasing = F)][1]
 ```
 
+    #> Checking for index of Census blocks called 'localtree' ...localtree already exists.
     #> Analyzing 1 points, radius of 3 miles around each.
     #> Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...
     #> Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: 
@@ -1138,6 +1151,7 @@ leastdense <- s2b_stats$ejam_uniq_id[order(
 plot_blocks_nearby(sitepoints = sitepoints[densest, ])
 ```
 
+    #> Checking for index of Census blocks called 'localtree' ...localtree already exists.
     #> Analyzing 1 points, radius of 3 miles around each.
     #> Finding Census blocks with internal point within  3  miles of the site (point), for each of 1  sites (points)...
     #> Stats via getblocks_diagnostics(), but NOT ADJUSTING UP FOR VERY SHORT DISTANCES: 

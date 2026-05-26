@@ -56,7 +56,7 @@ repository release assets. Defaults are intentionally conservative: dry-run
 only, do not overwrite existing assets, and do not mark the release as latest.
 }
 \examples{
- fpaths <- file.path("data", paste0(EJAM:::.arrow_ds_names, ".arrow"), )
+ fpaths <- file.path("data", paste0(EJAM:::.arrow_ds_names, ".arrow"))
  \dontrun{
 
  stopifnot(all(file.exists(fpaths)))

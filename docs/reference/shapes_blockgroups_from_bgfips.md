@@ -9,9 +9,10 @@ shapes_blockgroups_from_bgfips(
   bgfips = "010890029222",
   outFields = c("FIPS", "STATE_ABBR", "SQMI"),
   myservice =
-    c("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query",
-    "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Block_Groups/FeatureServer/0/query",
-    "cartographic", "tiger")[1]
+    c(paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+    "USA_Boundaries_2022/FeatureServer/5/query"),
+    paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+    "USA_Block_Groups/FeatureServer/0/query"), "cartographic", "tiger")[1]
 )
 ```
 

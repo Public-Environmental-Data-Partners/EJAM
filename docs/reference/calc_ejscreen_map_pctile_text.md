@@ -22,4 +22,4 @@ character vector.
 
 Percentiles are expected on EJSCREEN's 0-100 scale. The returned strings
 follow the current EJSCREEN app service style, such as `"95 %ile"`.
-Missing or out-of-range percentiles return `NA_character_`.
+Missing or out-of-range percentiles return blank strings.

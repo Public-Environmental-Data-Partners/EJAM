@@ -45,7 +45,8 @@ blockgroups (nationwide so that US percentiles make sense, or at least statewide
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -106,8 +107,9 @@ across blockgroups in each site.</p></dd>
 
 
 <dt id="arg-formulas">formulas<a class="anchor" aria-label="anchor" href="#arg-formulas"></a></dt>
-<dd><p>a character vector of formulas in R code (see formulas_d for
-an example), that use variables in userstats to calculate any
+<dd><p>a character vector of formulas in R code (see
+<code>formulas_ejscreen_acs$formula</code> for examples), that use variables in
+userstats to calculate any
 derived indicators or aggregated ones, for cases where just a sum or a
 population weighted mean is not the right way to aggregate some indicator.
 Formulas can include intermediate steps, or can aggregate across all places.</p>

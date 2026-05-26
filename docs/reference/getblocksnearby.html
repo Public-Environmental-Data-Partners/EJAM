@@ -69,7 +69,8 @@ areal apportionment of blockgroups would provide."><meta property="og:image" con
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets used by EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
@@ -193,7 +194,8 @@ This is like the output of  <code><a href="get_blockpoints_in_shape.html">get_bl
 <p>getblocksnearby() is a wrapper redirecting to the right version, like <code><a href="getblocksnearbyviaQuadTree.html">getblocksnearbyviaQuadTree()</a></code>
 Census block "internal points" (defined by Census Bureau) are actually what it looks for,
 and they are like centroids.
-The blocks are pre-indexed for the whole USA, via the data object quadtree aka localtree</p>
+The blocks are pre-indexed for the whole USA via <code><a href="indexblocks.html">indexblocks()</a></code>, which
+stores the quadtree index in the package cache.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

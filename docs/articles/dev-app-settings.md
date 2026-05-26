@@ -314,7 +314,6 @@ browseURL(urlx)
 ``` r
 
 gdefs = EJAM:::get_global_defaults_or_user_options()
-#> Checking for index of Census blocks called 'localtree' ...localtree already exists.
 #> isPublic =  FALSE
 gdefnames = sort(unique(names(gdefs)))
 cbind(global_defaults = gdefnames)
@@ -612,9 +611,7 @@ EJAM:::args2(getblocksnearby)
 #>   radius_donut_lower_edge = 0,
 #>   avoidorphans = FALSE,
 #>   quadtree = NULL,
-#>   quaddatatable = NULL,
 #>   quiet = FALSE,
-#>   parallel = FALSE,
 #>   use_unadjusted_distance = TRUE,
 #>   ...
 #> )
@@ -623,8 +620,8 @@ EJAM:::args2(getblocksnearby)
 #> What str() shows (minus the attributes)  
 #> 
 #> function (sitepoints, radius = 3, maxradius = 31.07, radius_donut_lower_edge = 0, 
-#>     avoidorphans = FALSE, quadtree = NULL, quaddatatable = NULL, quiet = FALSE, 
-#>     parallel = FALSE, use_unadjusted_distance = TRUE, ...)  
+#>     avoidorphans = FALSE, quadtree = NULL, quiet = FALSE, use_unadjusted_distance = TRUE, 
+#>     ...)  
 #> NULL
 
 EJAM:::args2(getblocksnearbyviaQuadTree)
@@ -741,7 +738,7 @@ EJAM:::args2(ejamit)
 #>   thresholds = list(80, 80),
 #>   threshnames = list(c(names_ej_pctile, names_ej_state_pctile), c(names_ej_supp_pctile, names_ej_supp_state_pctile)),
 #>   threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"),
-#>   reports = EJAM:::global_or_param("default_reports"),
+#>   reports = global_or_param("default_reports"),
 #>   updateProgress = NULL,
 #>   updateProgress_getblocks = NULL,
 #>   progress_all = NULL,
@@ -768,7 +765,7 @@ EJAM:::args2(ejamit)
 #>     infer_sitepoints = FALSE, need_blockwt = TRUE, thresholds = list(80, 
 #>         80), threshnames = list(c(names_ej_pctile, names_ej_state_pctile), 
 #>         c(names_ej_supp_pctile, names_ej_supp_state_pctile)), threshgroups = list("EJ-US-or-ST", 
-#>         "Supp-US-or-ST"), reports = EJAM:::global_or_param("default_reports"), 
+#>         "Supp-US-or-ST"), reports = global_or_param("default_reports"), 
 #>     updateProgress = NULL, updateProgress_getblocks = NULL, progress_all = NULL, 
 #>     in_shiny = FALSE, quiet = TRUE, silentinteractive = FALSE, called_by_ejamit = TRUE, 
 #>     testing = FALSE, showdrinkingwater = TRUE, showpctowned = TRUE, download_city_fips_bounds = TRUE, 
