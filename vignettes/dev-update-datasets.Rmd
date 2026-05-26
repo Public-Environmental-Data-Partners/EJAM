@@ -391,7 +391,11 @@ EJAM or starts the app.
 First, create the key Arrow files locally or from the relevant pipeline output,
 as explained above.
 
-As mentioned above, we use [the piggyback package](https://docs.ropensci.org/piggyback/index.html) to place large datasets in the assets of a new release on the `r data_reponame_url` repository, rather than committing them with Git. The current maintainer path is to call `publish_arrow_release_assets()` with explicit local `.arrow` file paths.
+For future updates, the package may be modified to publish these files
+via the update pipeline or related script such as `run_arrow_publish_v2.5.0.R`
+but the information below is to describe the functions if an update is done manually.
+
+As mentioned above, we use [the piggyback package](https://docs.ropensci.org/piggyback/index.html) to place large datasets in the assets of a new release on the `r data_reponame_url` repository, rather than committing them with Git. The current maintainer path is to call `datasets_arrow_publish()` with explicit local `.arrow` file paths.
 
 The helper is intentionally conservative. It defaults to `dry_run = TRUE`,
 `overwrite = FALSE`, and `mark_latest = FALSE`. The default release note is
@@ -408,13 +412,14 @@ regenerated in a future geography update, publish those files with the same
 helper after a dry-run review.
 
 Example dry-run for a manual publish:
+ (also see run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step)
 
 ```{r, eval=FALSE}
 release_number <- EJAM:::ejamdata_required_tag()
 new_datasets_folder <- "~/Downloads"
 filepaths_arrow <- file.path(new_datasets_folder, "bgej.arrow")
 
-EJAM:::publish_arrow_release_assets(
+EJAM:::datasets_arrow_publish(
   files = filepaths_arrow,
   tag = release_number,
   release_date = Sys.Date(),
@@ -469,7 +474,7 @@ require a decent lift to update the code in all places.
 
 Pros: processing efficiency and significantly reduced memory usage.
 
-Implementation: This has been mostly implemented by the `dataload_dynamic()`
+Implementation: This has been enabled by the `dataload_dynamic()`
 function, which contains a `return_data_table` parameter. If `FALSE`, the Arrow
 file is opened as an Arrow-backed object rather than read fully into a
 data.table/data.frame.

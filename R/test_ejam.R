@@ -315,7 +315,7 @@ x <- test_ejam(
         "test-calc_bg_geodata.R",
         "test-calc_bg_extra_indicators.R",
         "test-calc_ejscreen_dataset.R",
-        "test-publish_arrow_release_assets.R",
+        "test-datasets_arrow_publish.R",
         "test-ejscreen-stats.R",
         "test-ejscreen-pipeline-validate-vs-prior.R",
         "test-ejscreen-export.R"
@@ -501,7 +501,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
             "test-calc_bg_extra_indicators.R", "test-calc_bg_geodata.R",
             "test-calc_byformula.R", "test-calc_ejscreen_dataset.R", "test-ejscreen-export.R",
             "test-ejscreen-pipeline-io.R", "test-ejscreen-pipeline-validate-vs-prior.R",
-            "test-ejscreen-stats.R", "test-publish_arrow_release_assets.R",
+            "test-ejscreen-stats.R", "test-datasets_arrow_publish.R",
             "test-pctiles_lookup_create.R", "test-area_sqmi.R",
             "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
             "test-calc_ratio_columns.R", "test-doaggregate.R", "test-pctile_from_raw_lookup.R",

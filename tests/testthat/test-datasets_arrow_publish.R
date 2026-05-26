@@ -1,4 +1,4 @@
-test_that("publish_arrow_release_assets validates Arrow files in dry run", {
+test_that("datasets_arrow_publish validates Arrow files in dry run", {
   skip_if_not_installed("arrow")
 
   path <- tempfile(fileext = ".arrow")
@@ -11,7 +11,7 @@ test_that("publish_arrow_release_assets validates Arrow files in dry run", {
   )
 
   expect_message(
-    plan <- publish_arrow_release_assets(
+    plan <- datasets_arrow_publish(
       files = path,
       tag = "vTEST",
       repo = "Public-Environmental-Data-Partners/ejamdata",

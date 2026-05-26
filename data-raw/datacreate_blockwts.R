@@ -331,13 +331,14 @@ if (!do_update) {
     gc()
 
     cat("NOTE: If these block/BG helper Arrow files are intentionally regenerated,
-        publish the updated .arrow files through EJAM:::publish_arrow_release_assets()
+        publish the updated .arrow files through EJAM:::datasets_arrow_publish()
         after careful dry-run review. Do not publish automatically from this script.\n")
+    ## also see run_arrow_publish_v2.5.0.R or could be done via pipeline
     # block_geo_arrow_files <- file.path(
     #   "PATH_TO_REGENERATED_ARROW_FILES",
     #   paste0(c("bgid2fips", "blockid2fips", "blockpoints", "blockwts", "quaddata"), ".arrow")
     # )
-    # EJAM:::publish_arrow_release_assets(
+    # EJAM:::datasets_arrow_publish(
     #   files = block_geo_arrow_files,
     #   tag = EJAM:::ejamdata_required_tag(),
     #   release_date = Sys.Date(),

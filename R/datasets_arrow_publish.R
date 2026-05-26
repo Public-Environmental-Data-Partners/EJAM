@@ -21,12 +21,26 @@
 #'   same names. Defaults to `FALSE`.
 #' @param validate_arrow Logical. If `TRUE`, confirm files can be opened as
 #'   Arrow IPC files before publishing.
+#' @examples
+#'  fpaths <- file.path("data", paste0(EJAM:::.arrow_ds_names, ".arrow"), )
+#'  \dontrun{
 #'
+#'  stopifnot(all(file.exists(fpaths)))
+#'  EJAM:::datasets_arrow_publish(
+#'    files = fpaths,
+#'    tag = "v2.5.0",
+#'    mark_latest = FALSE,
+#'    dry_run = TRUE,
+#'    overwrite = FALSE
+#'    )
+#'
+#' }
 #' @return A data.frame describing files and planned/performed actions,
 #'   invisibly.
 #'
 #' @keywords internal
-publish_arrow_release_assets <- function(files,
+#'
+datasets_arrow_publish <- function(files,
                                          tag = ejamdata_required_tag(),
                                          repo = url_package(type = "data", get_full_url = FALSE),
                                          release_name = tag,

@@ -95,8 +95,9 @@ for (varname in frs_vars) {
 
 cat("NOTE: You may now publish updated FRS .arrow files to an ejamdata release.\n")
 cat("This script does NOT publish them automatically. Use dry_run = TRUE first.\n")
+## also see run_arrow_publish_v2.5.0.R or could be done via pipeline
 # frs_arrow_files <- file.path(folder_save_as_arrow, paste0(frs_vars, ".arrow"))
-# EJAM:::publish_arrow_release_assets(
+# EJAM:::datasets_arrow_publish(
 #   files = frs_arrow_files,
 #   tag = EJAM:::ejamdata_required_tag(),
 #   release_date = Sys.Date(),

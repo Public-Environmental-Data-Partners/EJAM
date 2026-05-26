@@ -46,6 +46,7 @@ Highlights:
 - Improved runtime prediction messages for point-buffer, FIPS, and shapefile
   analyses, including separate timing information by analysis type and subtype.
 - Fixed interactive table of sites issue: avoided by-reference mutation in Details tab.
+- Fixed EPA program dropdown choices after refreshing FRS-related lookup data.
 - Added a `doaggregate()` guardrail for rare cases where block geography files
   contain blockgroups not present in `blockgroupstats`. Unsupported blockgroups
   are now dropped before aggregation and before nearby blockgroup/block counts
@@ -64,8 +65,10 @@ Highlights:
 
 ## Data Updates
 
-- Updated the key nationwide datasets of blockgroup-resolution data and related
+- Updated the key nationwide datasets of demographic blockgroup-resolution data and related
   metadata for the ACS 2020-2024 EJScreen-style data release.
+- Updated the FRS-related datasets (covering all EPA-regulated facilities) and
+  related tables used for specifying facilities to analyze by industry.
 - Added year-aware metadata handling for R-native pipeline outputs, so pipeline
   runs for different ACS end years record the appropriate ACS version.
 - Moved to a system where each release obtains externally stored datasets tagged to
@@ -178,6 +181,8 @@ Highlights:
 - Saved future options and plans for Arrow file versioning, cache location,
   manifests, S3/`ejamdata` storage, and related cleanup in
   `data-raw/pipeline_validation_notes/future_arrow_versioning_and_manifest_plan.md`.
+- Added conservative maintainer helpers and a manual dry-run script for
+  publishing refreshed Arrow datasets to the `ejamdata` release assets.
 - Refreshed test fixtures and example output datasets (testoutput* files, etc.).
 - Expanded unit testing coverage.
 - Sped up Shiny/webapp tests by allowing the web app functionality suite to run

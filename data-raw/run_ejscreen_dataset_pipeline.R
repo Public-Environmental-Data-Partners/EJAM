@@ -1400,7 +1400,7 @@ invisible(out)
 should_replace_package_data <- isTRUE(replace_package_data)
 if (!should_replace_package_data && interactive()) {
   should_replace_package_data <- isTRUE(askYesNo(
-    "ready to REPLACE data/blockgroupstats.rda, bgej.rda, usastats.rda, statestats.rda in the package ? "
+    "ready to REPLACE data/blockgroupstats.rda, data/usastats.rda, data/statestats.rda, and any selected helper package .rda datasets ? "
   ))
 }
 
@@ -1421,15 +1421,16 @@ if (isTRUE(should_replace_package_data)) {
 
   ## Optional maintainer step, disabled by default: publish the refreshed
   ## bgej.arrow as an ejamdata release asset. Always dry-run first.
+  ## also see run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step
   # bgej_arrow_publish_path <- file.path(tempdir(), "bgej.arrow")
   # arrow::write_ipc_file(bgej, sink = bgej_arrow_publish_path)
-  # EJAM:::publish_arrow_release_assets(
+  # EJAM:::datasets_arrow_publish(
   #   files = bgej_arrow_publish_path,
   #   tag = EJAM:::ejamdata_required_tag(),
   #   release_date = Sys.Date(),
-  #   dry_run = TRUE,
-  #   overwrite = FALSE,
-  #   mark_latest = FALSE
+  #   dry_run = TRUE,    # change when ready
+  #   overwrite = FALSE,  # change when ready
+  #   mark_latest = FALSE   # change when ready
   # )
 } else {
   message("Skipping package-data replacement because EJAM_REPLACE_PACKAGE_DATA is FALSE.")

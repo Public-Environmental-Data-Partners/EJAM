@@ -556,7 +556,7 @@ pipeline output, as explained above.</p>
 package</a> to place large datasets in the assets of a new release on
 the <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>
 repository, rather than committing them with Git. The current maintainer
-path is to call <code>publish_arrow_release_assets()</code> with
+path is to call <code>datasets_arrow_publish()</code> with
 explicit local <code>.arrow</code> file paths.</p>
 <p>The helper is intentionally conservative. It defaults to
 <code>dry_run = TRUE</code>, <code>overwrite = FALSE</code>, and
@@ -580,7 +580,7 @@ dry-run review.</p>
 <span><span class="va">new_datasets_folder</span> <span class="op">&lt;-</span> <span class="st">"~/Downloads"</span></span>
 <span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">new_datasets_folder</span>, <span class="st">"bgej.arrow"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">publish_arrow_release_assets</span><span class="op">(</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">datasets_arrow_publish</span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="va">filepaths_arrow</span>,</span>
 <span>  tag <span class="op">=</span> <span class="va">release_number</span>,</span>
 <span>  release_date <span class="op">=</span> <span class="fu">Sys.Date</span><span class="op">(</span><span class="op">)</span>,</span>
