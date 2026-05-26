@@ -1,20 +1,54 @@
-# ACS2022 Pipeline Validation Against EPA EJSCREEN v2.32.8.001
+# ACS2022 Replication Status as of 5/26/26 for Remaining `bg_acsdata` Non-Replicated Columns
 
-This note summarizes the remaining differences found when comparing the ACS
-2022 `bg_acsdata` stage created by the EJAM ACS2024 pipeline to the old EPA
-EJSCREEN/EJAM dataset stored in the EJAM `v2.32.8.001` release.
+This note summarizes the remaining shared-column differences found when
+comparing the ACS 2022 `bg_acsdata` stage created by the EJAM ACS2024 pipeline
+to the old EPA EJSCREEN/EJAM dataset stored in the EJAM `v2.32.8.001` release.
+
+Status as of the current S3 validation artifact created on 2026-05-25:
+all remaining differences are either intentional or acceptable for EJAM v2.5.0.
+There is no remaining `bg_acsdata` formula issue that blocks release.
 
 Comparison inputs:
 
 - New pipeline output:
-  `s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022/bg_acsdata.rda`
+  `s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022/bg_acsdata.csv`
 - Old/reference object:
   `v2.32.8.001:data/blockgroupstats.rda`
+- Current validation text:
+  `s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022/prior_validation_bg_acsdata_vs_v2_32_8_001_blockgroupstats.txt`
 - Related GitHub issue:
   <https://github.com/Public-Environmental-Data-Partners/EJAM/issues/321>
 
 The block group universe matches exactly: 242,336 rows in both datasets, with
 the same `bgfips` set.
+
+The current validation report compares 127 new columns to 104 old columns.
+The 23 columns found only in the new pipeline output are expected helper,
+denominator, and detailed-language fields added by the pipeline. No old columns
+are missing from the new output. The only column not represented in
+`map_headernames`/varlist metadata is `bgid`, which is an identifier/helper
+field rather than an indicator.
+
+The current validation report identifies 12 remaining non-replicated shared
+columns:
+
+- `percapincome`
+- `pctnohealthinsurance`
+- `pctunemployed`
+- `pctlan_arabic`
+- `pctlan_english`
+- `pctlan_french`
+- `pctlan_other_asian`
+- `pctlan_other_ie`
+- `pctlan_rus_pol_slav`
+- `pctlan_vietnamese`
+- `disab_universe`
+- `disability`
+
+Several columns that appeared in earlier broader comparisons are no longer
+remaining problems in the current v2.32.8.001 comparison, including
+`pctnobroadband`, `pctpoor`, `poor`, broad language groups and language counts,
+`pre1960`, `unemployedbase`, `pctpre1960`, `REGION`, and `pctdisability`.
 
 ## Summary By Remaining Column
 
@@ -175,7 +209,21 @@ the explicit goal is byte-for-byte replication of the older EPA table.
 
 ## Current Close/Readiness View
 
-Most `bg_acsdata` differences are now either intentional or small/acceptable.
-The `pctnohealthinsurance` difference is also closed as an intentional
-definition/correctness choice: EJAM v2.5.0 keeps the Census-derived B27010
-calculation even though it does not replicate the EPA 2022 table.
+All remaining `bg_acsdata` differences are now classified as intentional or
+small/acceptable:
+
+- `percapincome`: closed; EJAM uses `NA` for invalid/sentinel income values.
+- `pctunemployed`: closed; EJAM uses the correct labor-force denominator and
+  returns `NA` when the denominator is zero.
+- `pctnohealthinsurance`: closed; EJAM uses the Census B27010 civilian
+  noninstitutionalized population universe rather than trying to mimic the old
+  EPA table.
+- Detailed language percentages: closed; remaining differences are legacy
+  two-decimal rounding and old missingness masks.
+- `disab_universe` and `disability`: closed; remaining differences are tiny
+  tract-to-blockgroup apportionment rounding differences.
+
+The `pctnohealthinsurance` difference is the largest substantive non-replication
+item, but the validation decision is closed for v2.5.0: EJAM keeps the
+Census-derived B27010 calculation even though it does not replicate the EPA
+2022 table.
