@@ -272,7 +272,8 @@ acs22_replication_source_inventory <- function(config) {
       "ejam_2026_v2_32_9_pipeline_bgej",
       "ejam_2026_v2_32_9_pipeline_usastats",
       "ejam_2026_v2_32_9_pipeline_statestats",
-      "ejam_2026_v2_32_9_pipeline_ejscreen_export"
+      "ejam_2026_v2_32_9_pipeline_ejscreen_export",
+      "ejam_2026_v2_32_9_pipeline_ejscreen_export_statepct"
     ),
     source_label = c(
       "EPA 2024 EJScreen v2.32 using ACS22 national blockgroup output",
@@ -287,7 +288,8 @@ acs22_replication_source_inventory <- function(config) {
       "EJAM v2.32.9 pipeline ACS22 bgej",
       "EJAM v2.32.9 pipeline ACS22 usastats",
       "EJAM v2.32.9 pipeline ACS22 statestats",
-      "EJAM v2.32.9 pipeline ACS22 ejscreen_export"
+      "EJAM v2.32.9 pipeline ACS22 ejscreen_export",
+      "EJAM v2.32.9 pipeline ACS22 ejscreen_export_statepct"
     ),
     path_or_ref = c(
       unname(config$epa["national_bg"]),
@@ -302,7 +304,8 @@ acs22_replication_source_inventory <- function(config) {
       file.path(config$pipeline_2022_dir, "bgej.csv"),
       file.path(config$pipeline_2022_dir, "usastats.csv"),
       file.path(config$pipeline_2022_dir, "statestats.csv"),
-      file.path(config$pipeline_2022_dir, "ejscreen_export.csv")
+      file.path(config$pipeline_2022_dir, "ejscreen_export.csv"),
+      file.path(config$pipeline_2022_dir, "ejscreen_export_statepct.csv")
     )
   )
 }
@@ -359,7 +362,7 @@ acs22_replication_comparison_plan <- function(config) {
       "Builds an export from v2.32.8.001 package tables plus bgej.arrow using the current export helper; useful as a diagnostic, but not a byte-for-byte run of old package code.",
       "Builds an export from v2.32.8.001 package tables plus bgej.arrow using the current export helper; useful as a diagnostic, but not a byte-for-byte run of old package code.",
       "Compares pipeline export directly to EPA national blockgroup output; EPA has national percentile fields.",
-      "Compares pipeline export directly to EPA state-percentile blockgroup output; EPA has state percentile fields.",
+      "Compares pipeline state-percentile export directly to EPA state-percentile blockgroup output; EPA has state percentile fields written into generic EPA names.",
       "Renames EPA lookup columns to EJAM rnames before comparing.",
       "Renames EPA lookup columns to EJAM rnames before comparing.",
       "Renames EPA columns to EJAM rnames and compares shared columns only.",
@@ -586,6 +589,15 @@ acs22_replication_run_reports <- function(config = acs22_replication_default_con
     statestats_ej = old_statestats,
     feature_server_fields = EJAM:::ejscreen_feature_server_fields()
   )
+  old_export_statepct <- calc_ejscreen_export(
+    blockgroupstats = old_blockgroupstats,
+    bgej = old_bgej,
+    statestats_acs = old_statestats,
+    statestats_envirodata = old_statestats,
+    statestats_ej = old_statestats,
+    export_percentile_scope = "state",
+    feature_server_fields = EJAM:::ejscreen_statepct_feature_server_fields()
+  )
   EJAM:::calc_ejscreen_export_reference_report(
     ejscreen_export = old_export,
     reference = epa_national_bg,
@@ -597,11 +609,11 @@ acs22_replication_run_reports <- function(config = acs22_replication_default_con
     write_files = TRUE
   )
   EJAM:::calc_ejscreen_export_reference_report(
-    ejscreen_export = old_export,
+    ejscreen_export = old_export_statepct,
     reference = epa_statepct_bg,
     storage = config$storage,
     reference_label = "EPA 2024 EJScreen v2.32 state-percentile BG output",
-    note = "One-time ACS22 replication diagnostic: export regenerated from EJAM v2.32.8.001 package tables plus bgej.arrow using the current export helper vs EPA v2.32 state-percentile BG output.",
+    note = "One-time ACS22 replication diagnostic: StatePct-style export regenerated from EJAM v2.32.8.001 package tables plus bgej.arrow using the current export helper vs EPA v2.32 state-percentile BG output.",
     output_dir = folder_2025_vs_2024,
     output_prefix = "replication_regenerated_ejam_v2_32_8_001_export_vs_epa_v2_32_statepct_bg",
     write_files = TRUE
@@ -621,13 +633,13 @@ acs22_replication_run_reports <- function(config = acs22_replication_default_con
     write_files = TRUE
   )
   EJAM:::calc_ejscreen_export_reference_report(
-    export_path = file.path(config$pipeline_2022_dir, "ejscreen_export.csv"),
+    export_path = file.path(config$pipeline_2022_dir, "ejscreen_export_statepct.csv"),
     reference_path = unname(config$epa["statepct_bg"]),
     export_format = "csv",
     reference_format = "csv",
     storage = config$storage,
     reference_label = "EPA 2024 EJScreen v2.32 state-percentile BG output",
-    note = "One-time ACS22 replication diagnostic: EJAM v2.32.9 pipeline ejscreen_export vs EPA v2.32 state-percentile BG output.",
+    note = "One-time ACS22 replication diagnostic: EJAM v2.32.9 pipeline ejscreen_export_statepct vs EPA v2.32 state-percentile BG output.",
     output_dir = folder_2026_vs_2024,
     output_prefix = "replication_ejscreen_export_vs_epa_v2_32_statepct_bg",
     write_files = TRUE

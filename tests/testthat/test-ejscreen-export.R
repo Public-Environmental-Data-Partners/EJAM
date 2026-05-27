@@ -296,6 +296,134 @@ test_that("calc_ejscreen_export can produce FeatureServer percentile and schema 
   expect_true(all(is.na(out$Shape__Length)))
 })
 
+test_that("calc_ejscreen_export keeps Island Areas rows visible with available environmental values", {
+  blockgroupstats <- data.frame(
+    bgfips = c("100010001001", "660100001001"),
+    ST = c("DE", "GU"),
+    pop = c(100, NA_real_),
+    pctmin = c(0.2, NA_real_),
+    pm = c(7, 9),
+    stringsAsFactors = FALSE
+  )
+  bgej <- data.frame(
+    bgfips = blockgroupstats$bgfips,
+    stringsAsFactors = FALSE
+  )
+  usastats_envirodata <- data.frame(
+    REGION = "USA",
+    PCTILE = c("0", "mean", "50", "100"),
+    pm = c(0, 6, 7, 9),
+    check.names = FALSE
+  )
+  mapping <- data.frame(
+    rname = c("bgfips", "pop", "pctmin", "pm", "pctile.pm"),
+    ejscreen_indicator = c("ID", "ACSTOTPOP", "MINORPCT", "PM25", "P_PM25"),
+    csvname = c("ID", "ACSTOTPOP", "MINORPCT", "PM25", "P_PM25"),
+    `pctile.` = c(0, 0, 0, 0, 1),
+    stringsAsFactors = FALSE
+  )
+
+  out <- calc_ejscreen_export(
+    blockgroupstats = blockgroupstats,
+    bgej = bgej,
+    usastats_envirodata = usastats_envirodata,
+    mapping_for_names = mapping
+  )
+
+  gu <- out[out$ID == "660100001001", ]
+  expect_equal(nrow(out), 2L)
+  expect_equal(gu$PM25, 9)
+  expect_equal(gu$P_PM25, 100)
+  expect_equal(gu$B_PM25, 11L)
+  expect_equal(gu$T_PM25, "100 %ile")
+  expect_true(is.na(gu$ACSTOTPOP))
+  expect_true(is.na(gu$MINORPCT))
+})
+
+test_that("calc_ejscreen_export can emulate EPA StatePct export field semantics", {
+  blockgroupstats <- data.frame(
+    bgfips = c("100010001001", "100010001002"),
+    ST = c("DE", "DE"),
+    `Demog.Index` = c(0.1, 0.2),
+    `Demog.Index.State` = c(0.7, 0.8),
+    pm = c(10, 20),
+    check.names = FALSE
+  )
+  bgej <- data.frame(
+    bgfips = blockgroupstats$bgfips,
+    `EJ.DISPARITY.pm.eo` = c(1, 2),
+    `state.EJ.DISPARITY.pm.eo` = c(5, 10),
+    check.names = FALSE
+  )
+  statestats_acs <- data.frame(
+    REGION = "DE",
+    PCTILE = c("0", "mean", "50", "100"),
+    `Demog.Index.State` = c(0, 0.75, 0.7, 0.8),
+    check.names = FALSE
+  )
+  statestats_envirodata <- data.frame(
+    REGION = "DE",
+    PCTILE = c("0", "mean", "50", "100"),
+    pm = c(0, 15, 10, 20),
+    check.names = FALSE
+  )
+  statestats_ej <- data.frame(
+    REGION = "DE",
+    PCTILE = c("0", "mean", "50", "100"),
+    `state.EJ.DISPARITY.pm.eo` = c(0, 7.5, 5, 10),
+    check.names = FALSE
+  )
+  mapping <- data.frame(
+    rname = c(
+      "bgfips", "Demog.Index", "Demog.Index.State", "pctile.Demog.Index",
+      "pm", "pctile.pm",
+      "EJ.DISPARITY.pm.eo", "state.EJ.DISPARITY.pm.eo",
+      "pctile.EJ.DISPARITY.pm.eo",
+      "bin.pm", "text.pm",
+      "bin.EJ.DISPARITY.pm.eo", "text.EJ.DISPARITY.pm.eo"
+    ),
+    ejscreen_indicator = c(
+      "ID", "DEMOGIDX_2", "DEMOGIDX_2ST", "P_DEMOGIDX_2",
+      "PM25", "P_PM25",
+      "D2_PM25", "S_D2_PM25",
+      "P_D2_PM25",
+      "B_PM25", "T_PM25",
+      "B_D2_PM25", "T_D2_PM25"
+    ),
+    `pctile.` = c(rep(0, 3), 1, 0, 1, rep(0, 2), 1, rep(0, 4)),
+    bin. = c(rep(0, 9), 1, 0, 1, 0),
+    text. = c(rep(0, 9), 0, 1, 0, 1),
+    stringsAsFactors = FALSE
+  )
+  feature_fields <- c(
+    "ID", "DEMOGIDX_2", "P_DEMOGIDX_2", "PM25", "P_PM25",
+    "D2_PM25", "P_D2_PM25", "B_PM25", "T_PM25",
+    "B_D2_PM25", "T_D2_PM25", "EXCEED_COUNT_80"
+  )
+
+  out <- calc_ejscreen_export(
+    blockgroupstats = blockgroupstats,
+    bgej = bgej,
+    statestats_acs = statestats_acs,
+    statestats_envirodata = statestats_envirodata,
+    statestats_ej = statestats_ej,
+    mapping_for_names = mapping,
+    export_percentile_scope = "state",
+    feature_server_fields = feature_fields
+  )
+
+  expect_false("DEMOGIDX_2ST" %in% names(out))
+  expect_false("S_D2_PM25" %in% names(out))
+  expect_equal(out$DEMOGIDX_2, blockgroupstats$Demog.Index.State)
+  expect_equal(out$D2_PM25, bgej$state.EJ.DISPARITY.pm.eo)
+  expect_equal(out$P_DEMOGIDX_2, c(50, 100))
+  expect_equal(out$P_PM25, c(50, 100))
+  expect_equal(out$P_D2_PM25, c(50, 100))
+  expect_equal(out$B_PM25, c(6L, 11L))
+  expect_equal(out$T_PM25, c("50 %ile", "100 %ile"))
+  expect_equal(out$EXCEED_COUNT_80, c(0L, 1L))
+})
+
 test_that("calc_ejscreen_export default output drops non-reporting placeholder names", {
   blockgroupstats <- data.frame(
     bgfips = "100010001001",

@@ -446,6 +446,9 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
 
     ejscreen_export = "ejscreen_export", # canonical
     bg_ejscreen =     "bg_ejscreen",
+    ejscreen_export_statepct = "ejscreen_export_statepct", # canonical
+    ejscreen_statepct =        "ejscreen_statepct",
+    bg_ejscreen_statepct =     "bg_ejscreen_statepct",
 
     ejscreen_dataset_creator_input = "ejscreen_dataset_creator_input", # canonical
     dataset_creator_input =          "dataset_creator_input",
@@ -479,6 +482,8 @@ ejscreen_pipeline_stage_canonical <- function(stage) {
          bg_ejindexes =        "bgej",
          bg_ej =               "bgej",
          bg_ejscreen =         "ejscreen_export",
+         ejscreen_statepct =        "ejscreen_export_statepct",
+         bg_ejscreen_statepct =     "ejscreen_export_statepct",
          dataset_creator_input = "ejscreen_dataset_creator_input",
          ejscreen_python_input = "ejscreen_dataset_creator_input",
          stage

@@ -32,9 +32,11 @@
 #'   from a saved pipeline stage.
 #' @param bgej bgej-like data.frame, or NULL if reading from a saved pipeline
 #'   stage.
-#' @param usastats_acs,usastats_envirodata ACS and environmental percentile
-#'   lookup tables. These are used to add `P_...` fields before creating
-#'   EJSCREEN map helper fields.
+#' @param usastats_acs,usastats_envirodata,statestats_acs,statestats_envirodata
+#'   ACS and environmental percentile lookup tables. National exports use the
+#'   `usastats_*` tables. EPA-style state-percentile exports use the
+#'   `statestats_*` tables and write state-percentile values into the ordinary
+#'   EPA field names, matching EPA's archived `StatePct` files.
 #' @param pipeline_dir folder for reading saved pipeline stages.
 #' @param pipeline_storage stage storage backend: `"auto"`, `"local"`, or
 #'   `"s3"`.
@@ -42,11 +44,11 @@
 #'   not supplied.
 #' @param usastats_ej,statestats_ej EJ-index percentile lookup tables. These
 #'   are used to add `P_D2_...`/`P_D5_...` fields before creating EJSCREEN map
-#'   helper fields.
-#' @param usastats_acs_stage,usastats_envirodata_stage,usastats_ej_stage,statestats_ej_stage
+#'   helper fields. EPA-style state-percentile exports use `statestats_ej`.
+#' @param usastats_acs_stage,statestats_acs_stage,usastats_envirodata_stage,statestats_envirodata_stage,usastats_ej_stage,statestats_ej_stage
 #'   stage names to read for percentile lookup tables when objects are not
 #'   supplied.
-#' @param blockgroupstats_path,bgej_path,usastats_acs_path,usastats_envirodata_path,usastats_ej_path,statestats_ej_path
+#' @param blockgroupstats_path,bgej_path,usastats_acs_path,statestats_acs_path,usastats_envirodata_path,statestats_envirodata_path,usastats_ej_path,statestats_ej_path
 #'   explicit paths to saved inputs.
 #' @param stage_format input file format when reading pipeline stages.
 #' @param by key column used to merge `blockgroupstats` and `bgej`.
@@ -55,6 +57,10 @@
 #' @param rename_newtype target naming column in [map_headernames]. Defaults to
 #'   `"ejscreen_indicator"`.
 #' @param mapping_for_names map_headernames-like crosswalk.
+#' @param export_percentile_scope `"national"` for the ordinary EPA national
+#'   percentile export, or `"state"` for the EPA `StatePct` convention where
+#'   state raw scores and state percentiles are written into the same generic
+#'   output field names used by the national export.
 #' @param required_output_names optional final EJSCREEN field names that must be
 #'   present after renaming.
 #' @param include_ej_percentiles logical. If TRUE, add missing national EJ-index
@@ -90,7 +96,9 @@
 calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  bgej = NULL,
                                  usastats_acs = NULL,
+                                 statestats_acs = NULL,
                                  usastats_envirodata = NULL,
+                                 statestats_envirodata = NULL,
                                  usastats_ej = NULL,
                                  statestats_ej = NULL,
                                  pipeline_dir = NULL,
@@ -98,13 +106,17 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  blockgroupstats_stage = "blockgroupstats",
                                  bgej_stage = "bgej",
                                  usastats_acs_stage = "usastats_acs",
+                                 statestats_acs_stage = "statestats_acs",
                                  usastats_envirodata_stage = "usastats_envirodata",
+                                 statestats_envirodata_stage = "statestats_envirodata",
                                  usastats_ej_stage = "usastats_ej",
                                  statestats_ej_stage = "statestats_ej",
                                  blockgroupstats_path = NULL,
                                  bgej_path = NULL,
                                  usastats_acs_path = NULL,
+                                 statestats_acs_path = NULL,
                                  usastats_envirodata_path = NULL,
+                                 statestats_envirodata_path = NULL,
                                  usastats_ej_path = NULL,
                                  statestats_ej_path = NULL,
                                  stage_format = c("csv", "rds", "rda", "arrow"),
@@ -112,6 +124,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  output_vars = NULL,
                                  rename_newtype = "ejscreen_indicator",
                                  mapping_for_names = map_headernames,
+                                 export_percentile_scope = c("national", "state"),
                                  required_output_names = NULL,
                                  include_ej_percentiles = TRUE,
                                  include_state_ej_percentiles = TRUE,
@@ -129,6 +142,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 
   stage_format <- match.arg(stage_format)
   pipeline_storage <- match.arg(pipeline_storage)
+  export_percentile_scope <- match.arg(export_percentile_scope)
 
   bg <- ejscreen_pipeline_input(
     x = blockgroupstats,
@@ -165,6 +179,16 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
   }
 
   mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
+
+  if (identical(export_percentile_scope, "state")) {
+    if (!"ST" %in% names(bg)) {
+      stop("State-percentile EJSCREEN export requires an ST column")
+    }
+    bg <- ejscreen_statepct_values_into_epa_fields(bg)
+    if (is.null(feature_server_fields) && is.null(output_vars)) {
+      feature_server_fields <- ejscreen_statepct_feature_server_fields()
+    }
+  }
 
   load_optional_lookup <- function(x, stage, path, input_name) {
     if (!is.null(x)) {
@@ -306,50 +330,102 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
 
   bg <- ejscreen_percentile_input_compatibility_adjusted(bg)
 
-  us_acs_lookup <- load_optional_lookup(
-    usastats_acs,
-    stage = usastats_acs_stage,
-    path = usastats_acs_path,
-    input_name = "usastats_acs"
-  )
-  us_acs_lookup <- ejscreen_percentile_lookup_compatibility_adjusted(us_acs_lookup, bg)
-  add_mapped_pctiles_from_lookup(
-    lookup = us_acs_lookup,
-    lookup_name = "usastats_acs",
-    zones = "USA",
-    pctile_fields = feature_server_pctile_fields
-  )
-
-  us_env_lookup <- load_optional_lookup(
-    usastats_envirodata,
-    stage = usastats_envirodata_stage,
-    path = usastats_envirodata_path,
-    input_name = "usastats_envirodata"
-  )
-  add_mapped_pctiles_from_lookup(
-    lookup = us_env_lookup,
-    lookup_name = "usastats_envirodata",
-    zones = "USA",
-    pctile_fields = feature_server_pctile_fields
-  )
-
-  if (isTRUE(include_ej_percentiles)) {
-    us_ej_lookup <- load_optional_lookup(
-      usastats_ej,
-      stage = usastats_ej_stage,
-      path = usastats_ej_path,
-      input_name = "usastats_ej"
+  if (identical(export_percentile_scope, "state")) {
+    state_acs_lookup <- load_optional_lookup(
+      statestats_acs,
+      stage = statestats_acs_stage,
+      path = statestats_acs_path,
+      input_name = "statestats_acs"
     )
-    add_ej_pctiles_from_lookup(
-      raw_vars = ej_percentile_vars,
-      pctile_vars = ej_percentile_output_vars,
-      lookup = us_ej_lookup,
-      lookup_name = "usastats_ej",
-      zones = "USA"
+    state_acs_lookup <- ejscreen_statepct_values_into_epa_fields(state_acs_lookup)
+    state_acs_lookup <- ejscreen_percentile_lookup_compatibility_adjusted(
+      state_acs_lookup,
+      bg,
+      zone.vector = bg$ST
+    )
+    add_mapped_pctiles_from_lookup(
+      lookup = state_acs_lookup,
+      lookup_name = "statestats_acs",
+      zones = bg$ST,
+      pctile_fields = feature_server_pctile_fields
+    )
+
+    state_env_lookup <- load_optional_lookup(
+      statestats_envirodata,
+      stage = statestats_envirodata_stage,
+      path = statestats_envirodata_path,
+      input_name = "statestats_envirodata"
+    )
+    state_env_lookup <- ejscreen_statepct_values_into_epa_fields(state_env_lookup)
+    add_mapped_pctiles_from_lookup(
+      lookup = state_env_lookup,
+      lookup_name = "statestats_envirodata",
+      zones = bg$ST,
+      pctile_fields = feature_server_pctile_fields
+    )
+  } else {
+    us_acs_lookup <- load_optional_lookup(
+      usastats_acs,
+      stage = usastats_acs_stage,
+      path = usastats_acs_path,
+      input_name = "usastats_acs"
+    )
+    us_acs_lookup <- ejscreen_percentile_lookup_compatibility_adjusted(us_acs_lookup, bg)
+    add_mapped_pctiles_from_lookup(
+      lookup = us_acs_lookup,
+      lookup_name = "usastats_acs",
+      zones = "USA",
+      pctile_fields = feature_server_pctile_fields
+    )
+
+    us_env_lookup <- load_optional_lookup(
+      usastats_envirodata,
+      stage = usastats_envirodata_stage,
+      path = usastats_envirodata_path,
+      input_name = "usastats_envirodata"
+    )
+    add_mapped_pctiles_from_lookup(
+      lookup = us_env_lookup,
+      lookup_name = "usastats_envirodata",
+      zones = "USA",
+      pctile_fields = feature_server_pctile_fields
     )
   }
 
-  if (isTRUE(include_state_ej_percentiles)) {
+  if (isTRUE(include_ej_percentiles)) {
+    if (identical(export_percentile_scope, "state")) {
+      state_ej_lookup <- load_optional_lookup(
+        statestats_ej,
+        stage = statestats_ej_stage,
+        path = statestats_ej_path,
+        input_name = "statestats_ej"
+      )
+      state_ej_lookup <- ejscreen_statepct_values_into_epa_fields(state_ej_lookup)
+      add_ej_pctiles_from_lookup(
+        raw_vars = ej_percentile_vars,
+        pctile_vars = ej_percentile_output_vars,
+        lookup = state_ej_lookup,
+        lookup_name = "statestats_ej",
+        zones = bg$ST
+      )
+    } else {
+      us_ej_lookup <- load_optional_lookup(
+        usastats_ej,
+        stage = usastats_ej_stage,
+        path = usastats_ej_path,
+        input_name = "usastats_ej"
+      )
+      add_ej_pctiles_from_lookup(
+        raw_vars = ej_percentile_vars,
+        pctile_vars = ej_percentile_output_vars,
+        lookup = us_ej_lookup,
+        lookup_name = "usastats_ej",
+        zones = "USA"
+      )
+    }
+  }
+
+  if (isTRUE(include_state_ej_percentiles) && identical(export_percentile_scope, "national")) {
     needs_state_pctiles <- any(ej_state_percentile_vars %in% names(bg) &
                                  !ej_state_percentile_output_vars %in% names(bg))
     if (!needs_state_pctiles) {
@@ -504,6 +580,59 @@ ejscreen_percentile_input_compatibility_adjusted <- function(x) {
     }
   }
   out
+}
+
+ejscreen_statepct_rname_replacements <- function() {
+  replacements <- data.frame(
+    target = c("Demog.Index", "Demog.Index.Supp"),
+    source = c("Demog.Index.State", "Demog.Index.Supp.State"),
+    stringsAsFactors = FALSE
+  )
+
+  add_pairs <- function(target, source) {
+    if (length(target) == 0 || length(source) == 0) {
+      return(invisible(NULL))
+    }
+    n <- min(length(target), length(source))
+    replacements <<- rbind(
+      replacements,
+      data.frame(
+        target = target[seq_len(n)],
+        source = source[seq_len(n)],
+        stringsAsFactors = FALSE
+      )
+    )
+    invisible(NULL)
+  }
+
+  if (exists("names_ej", inherits = TRUE) && exists("names_ej_state", inherits = TRUE)) {
+    add_pairs(names_ej, names_ej_state)
+  }
+  if (exists("names_ej_supp", inherits = TRUE) && exists("names_ej_supp_state", inherits = TRUE)) {
+    add_pairs(names_ej_supp, names_ej_supp_state)
+  }
+
+  replacements[!duplicated(replacements$target), , drop = FALSE]
+}
+
+ejscreen_statepct_values_into_epa_fields <- function(x) {
+  if (is.null(x)) {
+    return(NULL)
+  }
+  out <- data.table::as.data.table(data.table::copy(x))
+  replacements <- ejscreen_statepct_rname_replacements()
+  for (i in seq_len(NROW(replacements))) {
+    target <- replacements$target[[i]]
+    source <- replacements$source[[i]]
+    if (source %in% names(out)) {
+      out[[target]] <- out[[source]]
+    }
+  }
+  out
+}
+
+ejscreen_statepct_feature_server_fields <- function(feature_server_fields = ejscreen_feature_server_fields()) {
+  setdiff(feature_server_fields, c("DEMOGIDX_2ST", "DEMOGIDX_5ST"))
 }
 
 ejscreen_percentile_lookup_compatibility_adjusted <- function(lookup,

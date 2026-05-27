@@ -73,12 +73,13 @@ Highlights:
   runs for different ACS end years record the appropriate ACS version.
 - Moved to a system where each release obtains externally stored datasets tagged to
   that release, so an older dataset will be usable if one installs the older release of EJAM.
-- Added optional Island Areas raw and transformed demographic checkpoints.
-  Island Areas demographics remain separate from the other datasets and
-  downstream EJScreen-compatible outputs because the legacy EPA/EJScreen Island
-  Areas rows had no usable demographic values. Those areas lack ACS data but
-  have demographics available from the Island Areas Census, which this release
-  enables access to as a separate file.
+- Added Island Areas AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
+  and map-data visibility level for v2.5.0, with demographic fields kept as
+  `NA` by default and partial EPA environmental fields retained where available.
+  The separate raw and transformed Island Areas Census checkpoints are still
+  available for review. Island Area blocks are not added to the block helper
+  files for this release path, so radius/buffer analyses there return no-data
+  results rather than block-weighted estimates.
 - Note: the Census Bureau discourages using overlapping ACS 5-year datasets for
   trend comparisons. Comparisons between ACS 2018-2022 and 2020-2024, e.g.,
   should not be interpreted as valid trend estimates.
@@ -113,7 +114,9 @@ Highlights:
   11. Create percentile lookup tables for EJ indexes (`usastats_ej` and
       `statestats_ej`).
   12. Combine the percentile lookup tables (`usastats` and `statestats`).
-  13. Create an EJScreen-ready export file (`ejscreen_export`).
+  13. Create EJScreen-ready export files: the national-percentile export
+      (`ejscreen_export`) and the EPA-style state-percentile export
+      (`ejscreen_export_statepct`).
 - Pipeline stages can be read from or written to local folders or AWS S3, and
   can be saved as CSV and/or `.rda` files. Raw ACS data can be saved in a
   single object or in a folder-plus-manifest layout with one file per ACS table.
@@ -164,6 +167,9 @@ Highlights:
   and schema extras needed by the EJScreen FeatureServer-style dataset.
 - Added EJScreen export schema validation and reference validation against the
   preserved EPA ACS 2022-based EJScreen export.
+- Added an EPA `StatePct`-style EJScreen export that writes state raw scores
+  and state percentiles into the same generic EPA field names used by EPA's
+  archived state-percentile blockgroup export.
 - Significantly updated `map_headernames` naming metadata so EJAM rnames,
   current EJScreen indicator/export names, old EJScreen API names, and
   schema-only fields are tracked more clearly.

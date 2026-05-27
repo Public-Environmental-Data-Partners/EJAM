@@ -8,7 +8,9 @@ calc_ejscreen_export(
   blockgroupstats = NULL,
   bgej = NULL,
   usastats_acs = NULL,
+  statestats_acs = NULL,
   usastats_envirodata = NULL,
+  statestats_envirodata = NULL,
   usastats_ej = NULL,
   statestats_ej = NULL,
   pipeline_dir = NULL,
@@ -16,13 +18,17 @@ calc_ejscreen_export(
   blockgroupstats_stage = "blockgroupstats",
   bgej_stage = "bgej",
   usastats_acs_stage = "usastats_acs",
+  statestats_acs_stage = "statestats_acs",
   usastats_envirodata_stage = "usastats_envirodata",
+  statestats_envirodata_stage = "statestats_envirodata",
   usastats_ej_stage = "usastats_ej",
   statestats_ej_stage = "statestats_ej",
   blockgroupstats_path = NULL,
   bgej_path = NULL,
   usastats_acs_path = NULL,
+  statestats_acs_path = NULL,
   usastats_envirodata_path = NULL,
+  statestats_envirodata_path = NULL,
   usastats_ej_path = NULL,
   statestats_ej_path = NULL,
   stage_format = c("csv", "rds", "rda", "arrow"),
@@ -30,6 +36,7 @@ calc_ejscreen_export(
   output_vars = NULL,
   rename_newtype = "ejscreen_indicator",
   mapping_for_names = map_headernames,
+  export_percentile_scope = c("national", "state"),
   required_output_names = NULL,
   include_ej_percentiles = TRUE,
   include_state_ej_percentiles = TRUE,
@@ -53,13 +60,14 @@ from a saved pipeline stage.}
 \item{bgej}{bgej-like data.frame, or NULL if reading from a saved pipeline
 stage.}
 
-\item{usastats_acs, usastats_envirodata}{ACS and environmental percentile
-lookup tables. These are used to add \code{P_...} fields before creating
-EJSCREEN map helper fields.}
+\item{usastats_acs, usastats_envirodata, statestats_acs, statestats_envirodata}{ACS and environmental percentile lookup tables. National exports use the
+\verb{usastats_*} tables. EPA-style state-percentile exports use the
+\verb{statestats_*} tables and write state-percentile values into the ordinary
+EPA field names, matching EPA's archived \code{StatePct} files.}
 
 \item{usastats_ej, statestats_ej}{EJ-index percentile lookup tables. These
 are used to add \code{P_D2_...}/\code{P_D5_...} fields before creating EJSCREEN map
-helper fields.}
+helper fields. EPA-style state-percentile exports use \code{statestats_ej}.}
 
 \item{pipeline_dir}{folder for reading saved pipeline stages.}
 
@@ -69,10 +77,10 @@ helper fields.}
 \item{blockgroupstats_stage, bgej_stage}{stage names to read when objects are
 not supplied.}
 
-\item{usastats_acs_stage, usastats_envirodata_stage, usastats_ej_stage, statestats_ej_stage}{stage names to read for percentile lookup tables when objects are not
+\item{usastats_acs_stage, statestats_acs_stage, usastats_envirodata_stage, statestats_envirodata_stage, usastats_ej_stage, statestats_ej_stage}{stage names to read for percentile lookup tables when objects are not
 supplied.}
 
-\item{blockgroupstats_path, bgej_path, usastats_acs_path, usastats_envirodata_path, usastats_ej_path, statestats_ej_path}{explicit paths to saved inputs.}
+\item{blockgroupstats_path, bgej_path, usastats_acs_path, statestats_acs_path, usastats_envirodata_path, statestats_envirodata_path, usastats_ej_path, statestats_ej_path}{explicit paths to saved inputs.}
 
 \item{stage_format}{input file format when reading pipeline stages.}
 
@@ -85,6 +93,11 @@ Defaults to all available columns after the merge.}
 \code{"ejscreen_indicator"}.}
 
 \item{mapping_for_names}{map_headernames-like crosswalk.}
+
+\item{export_percentile_scope}{\code{"national"} for the ordinary EPA national
+percentile export, or \code{"state"} for the EPA \code{StatePct} convention where
+state raw scores and state percentiles are written into the same generic
+output field names used by the national export.}
 
 \item{required_output_names}{optional final EJSCREEN field names that must be
 present after renaming.}

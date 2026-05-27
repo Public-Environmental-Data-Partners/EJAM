@@ -18,6 +18,10 @@
 #' appends AS/GU/MP/VI rows without using the optional 2020 Island Areas Census
 #' DHC demographics. Those DHC values can be saved and reviewed separately, and
 #' are used here only when `use_islandareas_demographics = TRUE`.
+#' In the ACS2024/v2.5.0 annual runner, Island Area placeholder rows are enabled
+#' by default so those areas can appear in blockgroup datasets, EJSCREEN exports,
+#' and maps. This does not add point-buffer/radius support, because Island Area
+#' blocks are not added to the block helper datasets.
 #'
 #' @param yr end year of the ACS 5-year survey to use.
 #' @param formulas formulas used for blockgroup-resolution ACS tables.

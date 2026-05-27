@@ -16,9 +16,10 @@
 #' The default stage order is:
 #'
 #' 1. download raw ACS tables of demographic data into `bg_acs_raw`
-#' 2. optionally download and save separate Island Areas Census DHC checkpoints
-#'    for AS/GU/MP/VI; these demographics are not used downstream unless
-#'    explicitly requested
+#' 2. when enabled, download and save separate Island Areas Census DHC
+#'    checkpoints for AS/GU/MP/VI; the ACS2024/v2.5.0 runner enables Island
+#'    Area placeholder rows by default, but these DHC demographics are not used
+#'    downstream unless explicitly requested
 #' 3. calculate ACS-based demographic indicators (and lead paint indicator) as `bg_acsdata`
 #' 4. validate/save `bg_envirodata` (key environmental indicators)
 #' 5. validate/save `bg_extra_indicators` (e.g., % low life expectancy)
@@ -39,6 +40,13 @@
 #'
 #' `bg_envirodata` must include `pctpre1960`. That column may be produced by an
 #' upstream environmental-data step that reads the saved `bg_acsdata` stage.
+#' For EJAM v2.5.0, Island Areas are supported at the blockgroup dataset,
+#' EJSCREEN export, and map-data visibility level when
+#' `include_islandareas_data = TRUE`. The default path keeps AS/GU/MP/VI
+#' demographic fields as `NA`, preserves any environmental fields supplied in
+#' `bg_envirodata`, and does not add AS/GU/MP/VI blocks to the block helper
+#' files. Radius/buffer analyses in those areas should therefore return no-data
+#' results rather than block-weighted estimates.
 #'
 #' The annual pipeline creates the `bgej` stage, and the package-level dynamic
 #' Arrow loader obtains `bgej.arrow` from the `ejamdata` release tag recorded in
@@ -66,7 +74,8 @@
 #'  - EJAM_ACS_DOWNLOAD_TIMEOUT
 #'  - EJAM_ACS_DOWNLOAD_RETRIES
 #'  - EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows and a
-#'    separate `bg_islandareas_demographics` checkpoint.
+#'    separate `bg_islandareas_demographics` checkpoint. For v2.5.0/ACS2024
+#'    runner use this is enabled by default unless explicitly set otherwise.
 #'  - EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE only for an intentional
 #'    mixed-source supplemental dataset using 2020 Island Areas Census DHC
 #'    demographics in `bg_acsdata`.
@@ -153,12 +162,19 @@
 #'   legacy ACS source implementation.
 #' @param return_intermediate logical. If TRUE, return key interim stage objects
 #'   in addition to final datasets.
-#' @param include_ejscreen_export logical. If TRUE, also create an
-#'   EJSCREEN-ready export using [calc_ejscreen_export()].
+#' @param include_ejscreen_export logical. If TRUE, also create the ordinary
+#'   EJSCREEN-ready national-percentile export using [calc_ejscreen_export()].
+#' @param include_ejscreen_export_statepct logical or NULL. If TRUE, also
+#'   create an EPA `StatePct`-style export where state raw scores and state
+#'   percentiles are written into the generic EPA field names. When NULL, this
+#'   follows `include_ejscreen_export`.
 #' @param include_ejscreen_dataset_creator_input logical. If TRUE, also create
 #'   the smaller pre-index input table expected by EPA's
 #'   `ejscreen-dataset-creator-2.3` Python tool.
-#' @param ejscreen_export_path optional file path for the EJSCREEN export.
+#' @param ejscreen_export_path optional file path for the EJSCREEN national
+#'   percentile export.
+#' @param ejscreen_export_statepct_path optional file path for the EJSCREEN
+#'   state-percentile export.
 #' @param ejscreen_dataset_creator_input_path optional file path for the
 #'   EJScreen dataset-creator input table.
 #' @param ejscreen_export_vars optional EJAM `rname` columns to keep in the
@@ -203,8 +219,10 @@ calc_ejscreen_dataset <- function(yr,
                                   acs_download_fun = ACSdownload::get_acs_new,
                                   return_intermediate = TRUE,
                                   include_ejscreen_export = FALSE,
+                                  include_ejscreen_export_statepct = NULL,
                                   include_ejscreen_dataset_creator_input = FALSE,
                                   ejscreen_export_path = NULL,
+                                  ejscreen_export_statepct_path = NULL,
                                   ejscreen_dataset_creator_input_path = NULL,
                                   ejscreen_export_vars = NULL,
                                   ejscreen_export_required_names = NULL,
@@ -214,6 +232,11 @@ calc_ejscreen_dataset <- function(yr,
                                   tract_tables = c("B18101", "C16001", "B27010"),
                                   tract_weight_source = c("decennial2020", "acs"),
                                   include_tract_data = TRUE,
+                                  include_islandareas_data = FALSE,
+                                  islandareas_raw = NULL,
+                                  islandareas_demographics = NULL,
+                                  islandareas_tables = islandareas_tables_for_bg_acsdata(),
+                                  use_islandareas_demographics = FALSE,
                                   fiveorone = "5",
                                   download_timeout = 3600,
                                   download_retries = 2,
@@ -254,6 +277,10 @@ calc_ejscreen_dataset <- function(yr,
   }
   if (isTRUE(use_saved_stages) && is.null(pipeline_dir)) {
     use_saved_stages <- FALSE
+  }
+  if (is.null(include_ejscreen_export_statepct)) {
+    include_ejscreen_export_statepct <- isTRUE(include_ejscreen_export) ||
+      !is.null(ejscreen_export_statepct_path)
   }
   # define helpers ####
   saved_paths <- character()
@@ -401,6 +428,11 @@ calc_ejscreen_dataset <- function(yr,
           tract_weight_source = tract_weight_source,
           dropMOE = dropMOE,
           acs_raw = bg_acs_raw,
+          include_islandareas_data = include_islandareas_data,
+          islandareas_raw = islandareas_raw,
+          islandareas_demographics = islandareas_demographics,
+          islandareas_tables = islandareas_tables,
+          use_islandareas_demographics = use_islandareas_demographics,
           pipeline_dir = pipeline_dir,
           save_stage = FALSE,
           stage_format = stage_format,
@@ -603,10 +635,13 @@ calc_ejscreen_dataset <- function(yr,
   # * EJScreen dataset format for EJScreen app ####
   ## > calc_ejscreen_export ####
   # ~ ----------------------------------------- ####
-  if (isTRUE(include_ejscreen_export) || !is.null(ejscreen_export_path)) {
+  if (isTRUE(include_ejscreen_export) || !is.null(ejscreen_export_path) ||
+      isTRUE(include_ejscreen_export_statepct) || !is.null(ejscreen_export_statepct_path)) {
     if (is.null(ejscreen_export_feature_server_fields)) {
       ejscreen_export_feature_server_fields <- ejscreen_feature_server_fields()
     }
+  }
+  if (isTRUE(include_ejscreen_export) || !is.null(ejscreen_export_path)) {
     # Return 1 ejscreen_export table  ####
     out$ejscreen_export <- calc_ejscreen_export(
       blockgroupstats = blockgroupstats,
@@ -615,6 +650,7 @@ calc_ejscreen_dataset <- function(yr,
       usastats_envirodata = stats$usastats_envirodata,
       usastats_ej = stats$usastats_ej,
       statestats_ej = stats$statestats_ej,
+      export_percentile_scope = "national",
       output_vars =           ejscreen_export_vars,
       rename_newtype =        ejscreen_export_rename_newtype,
       required_output_names = ejscreen_export_required_names,
@@ -625,6 +661,27 @@ calc_ejscreen_dataset <- function(yr,
     )
     if (isTRUE(save_stages)) {
       save_stage(out$ejscreen_export, "ejscreen_export")
+    }
+  }
+  if (isTRUE(include_ejscreen_export_statepct) || !is.null(ejscreen_export_statepct_path)) {
+    # Return EPA StatePct-style export table, with state values in generic EPA fields. ####
+    out$ejscreen_export_statepct <- calc_ejscreen_export(
+      blockgroupstats = blockgroupstats,
+      bgej = stats$bgej,
+      statestats_acs = stats$statestats_acs,
+      statestats_envirodata = stats$statestats_envirodata,
+      statestats_ej = stats$statestats_ej,
+      export_percentile_scope = "state",
+      output_vars =           ejscreen_export_vars,
+      rename_newtype =        ejscreen_export_rename_newtype,
+      required_output_names = ejscreen_export_required_names,
+      feature_server_fields = ejscreen_statepct_feature_server_fields(ejscreen_export_feature_server_fields),
+      save_path =             ejscreen_export_statepct_path,
+      pipeline_storage = pipeline_storage,
+      overwrite = overwrite
+    )
+    if (isTRUE(save_stages)) {
+      save_stage(out$ejscreen_export_statepct, "ejscreen_export_statepct")
     }
   }
   # ~ ----------------------------------------- ####

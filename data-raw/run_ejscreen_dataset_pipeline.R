@@ -75,10 +75,16 @@
 #   EJAM_ACS_DOWNLOAD_RETRIES
 #   EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to append AS/GU/MP/VI blockgroups to
 #      the pipeline and save a separate bg_islandareas_demographics stage from
-#      the 2020 Island Areas Census DHC. These rows are not ACS rows. By
-#      default, DHC demographics are NOT used in bg_acsdata or downstream
-#      EJSCREEN-compatible outputs, because the legacy EPA/EJScreen Island
-#      Areas rows had no usable ACS demographic values.
+#      the 2020 Island Areas Census DHC. For the ACS2024/v2.5.0 runner path,
+#      this defaults to TRUE so Island Areas appear in blockgroupstats,
+#      ejscreen_export, ejscreen_export_statepct, and map-ready outputs. These
+#      rows are not ACS rows. By default, DHC demographics are NOT used in
+#      bg_acsdata or downstream EJSCREEN-compatible outputs, because the
+#      legacy EPA/EJScreen Island Areas rows had no usable ACS demographic
+#      values. Available environmental fields are retained from bg_envirodata.
+#      This does not enable point-buffer/radius analysis in Island Areas; that
+#      path intentionally has no Island Area blocks in blockpoints/blockwts/etc.,
+#      so reports there should return no-data results.
 #   EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE to opt into using the 2020 Island
 #      Areas Census DHC demographics in bg_acsdata. This creates a mixed-source
 #      supplemental dataset and is not the default EJSCREEN replication path.
@@ -86,6 +92,10 @@
 #   EJAM_USE_PROVISIONAL_BG_ENVIRODATA: TRUE means reuse envt data still in EJAM::blockgroupstats. FALSE to require bg_envirodata.csv or .xyz file.
 
 #   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv or .xyz file.
+#   EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT: TRUE to create
+#      ejscreen_export_statepct.csv, an EPA StatePct-style export where state
+#      raw scores and state percentiles are written into the ordinary EPA field
+#      names, matching files like EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI.csv.
 #   EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 #      ejscreen_dataset_creator_input stage for EPA's Python dataset-creator
 #      workflow.
@@ -96,6 +106,9 @@
 #   EJAM_PRIOR_PACKAGE_REF: optional explicit Git ref/tag/SHA holding a prior package blockgroupstats.rda, such as development or v2.32.8.1.
 #   EJAM_PRIOR_PACKAGE_PATH: optional path within EJAM_PRIOR_PACKAGE_REF. Defaults to data/blockgroupstats.rda.
 #   EJAM_EJSCREEN_EXPORT_REFERENCE_PATH: optional EPA-style EJSCREEN export CSV to compare with the ejscreen_export stage. For yr 2022, the default is the S3 copy of EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv, which is based on ACS 2018-2022.
+#   EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH: optional EPA-style StatePct
+#      export CSV to compare with ejscreen_export_statepct. For yr 2022, the
+#      default is the S3 copy of EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI.csv.
 #   EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE: TRUE to create prior_validation_ejscreen_export_vs_epa_2024_acs2022* reports when a reference path is available.
 #   EJAM_VALIDATE_VS_PRIOR_WALDO: TRUE to include optional waldo::compare() output in prior validation detail files.
 
@@ -154,7 +167,18 @@ set_pipeline_default("EJAM_FORCE_BG_GEODATA", "FALSE")
 set_pipeline_default("EJAM_TIGER_BG_CACHE_DIR", default_tiger_bg_cache_dir)
 set_pipeline_default("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600")
 set_pipeline_default("EJAM_ACS_DOWNLOAD_RETRIES", "2")
-set_pipeline_default("EJAM_INCLUDE_ISLANDAREAS_DATA", "FALSE")
+pipeline_yr_for_islandareas_default <- suppressWarnings(
+  as.integer(Sys.getenv("EJAM_PIPELINE_YR", unset = yr))
+)
+default_include_islandareas_env <- if (
+  !is.na(pipeline_yr_for_islandareas_default) &&
+    pipeline_yr_for_islandareas_default >= 2024L
+) {
+  "TRUE"
+} else {
+  "FALSE"
+}
+set_pipeline_default("EJAM_INCLUDE_ISLANDAREAS_DATA", default_include_islandareas_env)
 set_pipeline_default("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", "FALSE")
 
 set_pipeline_default("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", "FALSE")
@@ -229,6 +253,10 @@ datacreate_scripts_to_run_before_pipeline <- c(
   ## Reason: the current helper universe is an internally consistent
   ## superset of the ACS 2020-2024 blockgroupstats universe. Raw Census
   ## 2020 regeneration reintroduces the CT ACS 2022+ geography mismatch.
+  ## Island Areas AS/GU/MP/VI are visible only in blockgroup dataset/export/map
+  ## outputs for v2.5.0. Do not add Island Area blocks to these helper files
+  ## for this release path; radius/buffer reports there should return no-data
+  ## results rather than block-weighted estimates.
   ## If these helper files are refreshed later, do it as a separate,
   ## explicit geography-helper refresh with CT/NY setdiff checks and a
   ## bgid compatibility check against blockgroupstats and bgid2fips.
@@ -500,7 +528,8 @@ force_bg_geodata <- env_flag("EJAM_FORCE_BG_GEODATA", FALSE)
 tiger_bg_cache_dir <- Sys.getenv("EJAM_TIGER_BG_CACHE_DIR", unset = default_tiger_bg_cache_dir)
 acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
 acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
-include_islandareas_data <- env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", FALSE)
+default_include_islandareas_data <- !is.na(pipeline_yr) && pipeline_yr >= 2024L
+include_islandareas_data <- env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", default_include_islandareas_data)
 use_islandareas_demographics <- env_flag("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", FALSE)
 
 ### ENVIRONMENTAL DATA settings ####
@@ -510,6 +539,7 @@ use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", 
 ### EJSCREEN DATASET EXPORT settings ####
 
 include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
+include_ejscreen_export_statepct <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT", include_ejscreen_export)
 include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", FALSE)
 
 ### validation vs prior data  ####
@@ -517,6 +547,7 @@ include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASE
 validate_vs_prior <- env_flag("EJAM_VALIDATE_VS_PRIOR", TRUE)
 validate_vs_prior_waldo <- env_flag("EJAM_VALIDATE_VS_PRIOR_WALDO", FALSE)
 ejscreen_export_reference_path <- Sys.getenv("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", unset = "")
+ejscreen_export_statepct_reference_path <- Sys.getenv("EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH", unset = "")
 if (!nzchar(ejscreen_export_reference_path) &&
     identical(as.character(pipeline_yr), "2022") &&
     identical(pipeline_storage, "s3")) {
@@ -526,9 +557,18 @@ if (!nzchar(ejscreen_export_reference_path) &&
     "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv"
   )
 }
+if (!nzchar(ejscreen_export_statepct_reference_path) &&
+    identical(as.character(pipeline_yr), "2022") &&
+    identical(pipeline_storage, "s3")) {
+  ejscreen_export_statepct_reference_path <- paste0(
+    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
+    "ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe/",
+    "EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI.csv"
+  )
+}
 validate_ejscreen_export_reference <- env_flag(
   "EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE",
-  nzchar(ejscreen_export_reference_path)
+  nzchar(ejscreen_export_reference_path) || nzchar(ejscreen_export_statepct_reference_path)
 )
 prior_pipeline_yr <- Sys.getenv(
   "EJAM_PRIOR_PIPELINE_YR",
@@ -567,6 +607,7 @@ pipeline_setting_names <- c(
   'EJAM_USE_ISLANDAREAS_DEMOGRAPHICS',
   'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
   'EJAM_INCLUDE_EJSCREEN_EXPORT',
+  'EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT',
   'EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT',
   'EJAM_VALIDATE_VS_PRIOR',
   'EJAM_PRIOR_PIPELINE_YR',
@@ -574,6 +615,7 @@ pipeline_setting_names <- c(
   'EJAM_PRIOR_PACKAGE_REF',
   'EJAM_PRIOR_PACKAGE_PATH',
   'EJAM_EJSCREEN_EXPORT_REFERENCE_PATH',
+  'EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH',
   'EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE',
   'EJAM_VALIDATE_VS_PRIOR_WALDO',
   'EJAM_RUN_DATACREATE_BEFORE',
@@ -611,6 +653,7 @@ print(
           use_provisional_bg_envirodata=use_provisional_bg_envirodata,
 
           include_ejscreen_export=include_ejscreen_export,
+          include_ejscreen_export_statepct=include_ejscreen_export_statepct,
           include_ejscreen_dataset_creator_input=include_ejscreen_dataset_creator_input,
 
           validate_vs_prior=validate_vs_prior,
@@ -619,6 +662,7 @@ print(
           prior_package_ref=prior_package_ref,
           prior_package_path=prior_package_path,
           ejscreen_export_reference_path=ejscreen_export_reference_path,
+          ejscreen_export_statepct_reference_path=ejscreen_export_statepct_reference_path,
           validate_ejscreen_export_reference=validate_ejscreen_export_reference,
           validate_vs_prior_waldo=validate_vs_prior_waldo,
           run_datacreate_before=run_datacreate_before,
@@ -1081,7 +1125,8 @@ if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
 
 message("Creating blockgroupstats, bgej, usastats, statestats",
         if (isTRUE(include_ejscreen_dataset_creator_input)) ", ejscreen_dataset_creator_input" else "",
-        if (isTRUE(include_ejscreen_export)) ", and ejscreen_export" else "")
+        if (isTRUE(include_ejscreen_export)) ", ejscreen_export" else "",
+        if (isTRUE(include_ejscreen_export_statepct)) ", and ejscreen_export_statepct" else "")
 print(Sys.time())
 
 out <- EJAM::calc_ejscreen_dataset(
@@ -1105,6 +1150,7 @@ out <- EJAM::calc_ejscreen_dataset(
   return_intermediate = TRUE,
   include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
   include_ejscreen_export = include_ejscreen_export,
+  include_ejscreen_export_statepct = include_ejscreen_export_statepct,
   blockgroup_universe_source = blockgroup_universe_source,
   overwrite = TRUE
 )
@@ -1152,6 +1198,9 @@ if (isTRUE(include_islandareas_data)) {
 if (isTRUE(include_ejscreen_export)) {
   stages_to_validate <- c(stages_to_validate, "ejscreen_export")
 }
+if (isTRUE(include_ejscreen_export_statepct)) {
+  stages_to_validate <- c(stages_to_validate, "ejscreen_export_statepct")
+}
 if (isTRUE(include_ejscreen_dataset_creator_input)) {
   stages_to_validate <- c(stages_to_validate, "ejscreen_dataset_creator_input")
 }
@@ -1196,6 +1245,17 @@ if (isTRUE(include_ejscreen_export)) {
     ejscreen_export = out$ejscreen_export
   )
   write_pipeline_txt_or_csv(x = ejscreen_schema_report,
+                            filename = filename,
+                            pipeline_dir = pipeline_dir,
+                            pipeline_storage = pipeline_storage)
+}
+if (isTRUE(include_ejscreen_export_statepct)) {
+  filename <- paste0("ejscreen_export_statepct_schema_report.", "csv")
+  ejscreen_statepct_schema_report <- EJAM:::calc_ejscreen_export_schema_report(
+    ejscreen_export = out$ejscreen_export_statepct,
+    expected_output_names = EJAM:::ejscreen_statepct_feature_server_fields()
+  )
+  write_pipeline_txt_or_csv(x = ejscreen_statepct_schema_report,
                             filename = filename,
                             pipeline_dir = pipeline_dir,
                             pipeline_storage = pipeline_storage)
@@ -1362,6 +1422,39 @@ if (isTRUE(include_ejscreen_export) &&
   )
   message("EJSCREEN export reference validation summary:")
   print(ejscreen_export_reference_validation$summary)
+}
+
+if (isTRUE(include_ejscreen_export_statepct) &&
+    isTRUE(validate_ejscreen_export_reference) &&
+    nzchar(ejscreen_export_statepct_reference_path)) {
+  message("Comparing ejscreen_export_statepct stage to reference export: ",
+          ejscreen_export_statepct_reference_path)
+  ejscreen_export_statepct_reference_prefix <- if (grepl(
+    "EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI",
+    ejscreen_export_statepct_reference_path,
+    fixed = TRUE
+  )) {
+    "prior_validation_ejscreen_export_statepct_vs_epa_2024_acs2022"
+  } else {
+    "prior_validation_ejscreen_export_statepct_vs_reference"
+  }
+  ejscreen_export_statepct_reference_validation <- EJAM:::calc_ejscreen_export_reference_report(
+    ejscreen_export = out$ejscreen_export_statepct,
+    reference_path = ejscreen_export_statepct_reference_path,
+    reference_format = tools::file_ext(ejscreen_export_statepct_reference_path),
+    storage = pipeline_storage,
+    reference_label = basename(ejscreen_export_statepct_reference_path),
+    note = if (identical(as.character(pipeline_yr), "2022")) {
+      "Reference is named 2024 but treated here as ACS 2022 based on user knowledge. This is EPA's StatePct-style export, so state values are expected in generic EPA field names."
+    } else {
+      NULL
+    },
+    output_dir = pipeline_dir,
+    output_prefix = ejscreen_export_statepct_reference_prefix,
+    write_files = TRUE
+  )
+  message("EJSCREEN StatePct export reference validation summary:")
+  print(ejscreen_export_statepct_reference_validation$summary)
 }
 
 manifest_status <- if (any(nzchar(validation_summary$errors))) "validation_failed" else "completed"

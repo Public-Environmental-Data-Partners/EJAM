@@ -25,8 +25,10 @@ calc_ejscreen_dataset(
   acs_download_fun = ACSdownload::get_acs_new,
   return_intermediate = TRUE,
   include_ejscreen_export = FALSE,
+  include_ejscreen_export_statepct = NULL,
   include_ejscreen_dataset_creator_input = FALSE,
   ejscreen_export_path = NULL,
+  ejscreen_export_statepct_path = NULL,
   ejscreen_dataset_creator_input_path = NULL,
   ejscreen_export_vars = NULL,
   ejscreen_export_required_names = NULL,
@@ -36,6 +38,11 @@ calc_ejscreen_dataset(
   tract_tables = c("B18101", "C16001", "B27010"),
   tract_weight_source = c("decennial2020", "acs"),
   include_tract_data = TRUE,
+  include_islandareas_data = FALSE,
+  islandareas_raw = NULL,
+  islandareas_demographics = NULL,
+  islandareas_tables = islandareas_tables_for_bg_acsdata(),
+  use_islandareas_demographics = FALSE,
   fiveorone = "5",
   download_timeout = 3600,
   download_retries = 2,
@@ -121,14 +128,23 @@ legacy ACS source implementation.}
 \item{return_intermediate}{logical. If TRUE, return key interim stage objects
 in addition to final datasets.}
 
-\item{include_ejscreen_export}{logical. If TRUE, also create an
-EJSCREEN-ready export using \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}.}
+\item{include_ejscreen_export}{logical. If TRUE, also create the ordinary
+EJSCREEN-ready national-percentile export using \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}.}
+
+\item{include_ejscreen_export_statepct}{logical or NULL. If TRUE, also
+create an EPA \code{StatePct}-style export where state raw scores and state
+percentiles are written into the generic EPA field names. When NULL, this
+follows \code{include_ejscreen_export}.}
 
 \item{include_ejscreen_dataset_creator_input}{logical. If TRUE, also create
 the smaller pre-index input table expected by EPA's
 \code{ejscreen-dataset-creator-2.3} Python tool.}
 
-\item{ejscreen_export_path}{optional file path for the EJSCREEN export.}
+\item{ejscreen_export_path}{optional file path for the EJSCREEN national
+percentile export.}
+
+\item{ejscreen_export_statepct_path}{optional file path for the EJSCREEN
+state-percentile export.}
 
 \item{ejscreen_dataset_creator_input_path}{optional file path for the
 EJScreen dataset-creator input table.}
@@ -157,6 +173,23 @@ weights. \code{"decennial2020"} matches the legacy EJSCREEN method by using
 same-vintage ACS blockgroup population weights.}
 
 \item{include_tract_data}{logical, whether to download \code{tract_tables}.}
+
+\item{include_islandareas_data}{logical, whether to append Island Areas rows.
+Puerto Rico is not included here because it is already part of ACS.}
+
+\item{islandareas_raw}{optional raw Island Areas Census DHC object from
+\code{\link[=download_bg_islandareas_raw]{download_bg_islandareas_raw()}}.}
+
+\item{islandareas_demographics}{optional transformed Island Areas Census DHC
+demographics table from \code{calc_bg_islandareasdata()}.}
+
+\item{islandareas_tables}{Island Areas Census DHC tables to download if \code{include_islandareas_data} is TRUE
+and \code{islandareas_raw} is not supplied.}
+
+\item{use_islandareas_demographics}{logical. Defaults to FALSE so that the
+EJSCREEN-compatible pipeline appends Island Areas blockgroup rows without
+using mixed-source Island Areas Census demographics in \code{bg_acsdata}.
+Set TRUE only for a supplemental mixed-source dataset.}
 
 \item{fiveorone}{ACS sample length, \code{"5"} by default.}
 
@@ -229,9 +262,10 @@ created and saved by this function.
 The default stage order is:
 \enumerate{
 \item download raw ACS tables of demographic data into \code{bg_acs_raw}
-\item optionally download and save separate Island Areas Census DHC checkpoints
-for AS/GU/MP/VI; these demographics are not used downstream unless
-explicitly requested
+\item when enabled, download and save separate Island Areas Census DHC
+checkpoints for AS/GU/MP/VI; the ACS2024/v2.5.0 runner enables Island
+Area placeholder rows by default, but these DHC demographics are not used
+downstream unless explicitly requested
 \item calculate ACS-based demographic indicators (and lead paint indicator) as \code{bg_acsdata}
 \item validate/save \code{bg_envirodata} (key environmental indicators)
 \item validate/save \code{bg_extra_indicators} (e.g., \% low life expectancy)
@@ -253,6 +287,13 @@ input file (optionally)
 
 \code{bg_envirodata} must include \code{pctpre1960}. That column may be produced by an
 upstream environmental-data step that reads the saved \code{bg_acsdata} stage.
+For EJAM v2.5.0, Island Areas are supported at the blockgroup dataset,
+EJSCREEN export, and map-data visibility level when
+\code{include_islandareas_data = TRUE}. The default path keeps AS/GU/MP/VI
+demographic fields as \code{NA}, preserves any environmental fields supplied in
+\code{bg_envirodata}, and does not add AS/GU/MP/VI blocks to the block helper
+files. Radius/buffer analyses in those areas should therefore return no-data
+results rather than block-weighted estimates.
 
 The annual pipeline creates the \code{bgej} stage, and the package-level dynamic
 Arrow loader obtains \code{bgej.arrow} from the \code{ejamdata} release tag recorded in
@@ -279,7 +320,8 @@ legacy EJSCREEN tract-to-blockgroup apportionment.
 \item EJAM_ACS_DOWNLOAD_TIMEOUT
 \item EJAM_ACS_DOWNLOAD_RETRIES
 \item EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows and a
-separate \code{bg_islandareas_demographics} checkpoint.
+separate \code{bg_islandareas_demographics} checkpoint. For v2.5.0/ACS2024
+runner use this is enabled by default unless explicitly set otherwise.
 \item EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE only for an intentional
 mixed-source supplemental dataset using 2020 Island Areas Census DHC
 demographics in \code{bg_acsdata}.

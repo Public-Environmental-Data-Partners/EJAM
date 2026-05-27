@@ -94,5 +94,10 @@ calculates demographic indexes, and optionally saves the final
 The environmental input is expected to include \code{pctpre1960}. That indicator
 can be created by an upstream envirodata step from the saved ACS stage, even
 though EJAM treats it as an environmental indicator for EJ-index calculations.
+When Island Areas placeholder rows are present in \code{bg_acsdata}, demographic
+fields remain missing by default, but environmental fields supplied in
+\code{bg_envirodata} are retained for those rows. This supports dataset/export/map
+visibility for AS/GU/MP/VI without adding those areas to the block helper
+files used for radius/buffer analysis.
 }
 \keyword{internal}

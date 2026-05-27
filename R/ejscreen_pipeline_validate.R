@@ -393,7 +393,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       ###################################################### #
       # ejscreen_export ####
 
-    } else if (canonical_stage == "ejscreen_export") {
+    } else if (canonical_stage %in% c("ejscreen_export", "ejscreen_export_statepct")) {
 
       check_id()
       warn_missing_cols(c("STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))

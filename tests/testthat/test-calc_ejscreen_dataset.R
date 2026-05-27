@@ -224,6 +224,153 @@ test_that("calc_ejscreen_blockgroupstats can opt into union blockgroup universe"
   expect_equal(out$pm, c(7, 8))
 })
 
+test_that("calc_ejscreen_blockgroupstats keeps Island Areas rows and fills available environmental values", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002", "660100001001"),
+    bgid = c("1", "2", "660100001001"),
+    ST = c("DE", "DE", "GU"),
+    statename = c("Delaware", "Delaware", "Guam"),
+    REGION = c(3L, 3L, 9L),
+    pop = c(100, 200, NA_real_),
+    pctmin = c(0.2, 0.3, NA_real_),
+    pctlowinc = c(0.1, 0.4, NA_real_),
+    pctlingiso = c(0.02, 0.03, NA_real_),
+    pctlths = c(0.05, 0.06, NA_real_),
+    pctdisability = c(0.09, 0.08, NA_real_),
+    pctpre1960 = c(0.11, 0.12, NA_real_),
+    islandareas_source = c(NA_character_, NA_character_, "EPA EJScreen-compatible Island Areas placeholder")
+  )
+  bg_envirodata <- data.table::data.table(
+    bgfips = bg_acsdata$bgfips,
+    pctpre1960 = c(0.91, 0.92, 0.6),
+    pm = c(7, 8, 9)
+  )
+  bg_extra_indicators <- data.table::data.table(
+    bgfips = bg_acsdata$bgfips[1:2],
+    lowlifex = c(0.1, 0.2)
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroup_demog_index = function(bgstats) {
+      data.table::data.table(
+        bgfips = bgstats$bgfips,
+        Demog.Index = ifelse(is.na(bgstats$pctmin), NA_real_, 0.2),
+        Demog.Index.Supp = ifelse(is.na(bgstats$pctmin), NA_real_, 0.3),
+        Demog.Index.State = ifelse(is.na(bgstats$pctmin), NA_real_, 0.2),
+        Demog.Index.Supp.State = ifelse(is.na(bgstats$pctmin), NA_real_, 0.3)
+      )
+    },
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_ejscreen_blockgroupstats(
+    bg_acsdata = bg_acsdata,
+    bg_envirodata = bg_envirodata,
+    bg_extra_indicators = bg_extra_indicators,
+    bg_geodata = make_test_bg_geodata(bg_acsdata$bgfips),
+    extra_indicator_vars = "lowlifex"
+  )
+
+  gu <- out[out$ST == "GU"]
+  expect_equal(out$pctpre1960[out$ST == "DE"], c(0.11, 0.12))
+  expect_equal(gu$pctpre1960, 0.6)
+  expect_equal(gu$pm, 9)
+  expect_true(is.na(gu$pop))
+  expect_true(is.na(gu$pctmin))
+  expect_true(is.na(gu$lowlifex))
+  expect_true(is.na(gu$Demog.Index))
+  expect_match(gu$islandareas_source, "placeholder")
+})
+
+test_that("calc_ejscreen_dataset passes Island Areas settings to bg_acsdata stage", {
+  bgfips <- c("100010001001", "660100001001")
+  bg_acs_raw <- list(stage = "bg_acs_raw")
+  islandareas_raw <- list(stage = "bg_islandareas_raw")
+  islandareas_demographics <- data.table::data.table(bgfips = "660100001001")
+  bg_acsdata <- data.table::data.table(
+    bgfips = bgfips,
+    ST = c("DE", "GU"),
+    pop = c(100, NA_real_),
+    pctmin = c(0.2, NA_real_),
+    pctlowinc = c(0.1, NA_real_),
+    pctlingiso = c(0.02, NA_real_),
+    pctlths = c(0.05, NA_real_),
+    pctdisability = c(0.09, NA_real_),
+    pctpre1960 = c(0.11, NA_real_)
+  )
+  blockgroupstats <- data.table::copy(bg_acsdata)
+  blockgroupstats[, `:=`(
+    pm = c(7, 9),
+    lowlifex = c(0.1, NA_real_),
+    Demog.Index = c(0.2, NA_real_),
+    Demog.Index.Supp = c(0.3, NA_real_),
+    Demog.Index.State = c(0.2, NA_real_),
+    Demog.Index.Supp.State = c(0.3, NA_real_)
+  )]
+  stats <- list(
+    usastats_acs = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pctlowinc = c(0, 0.1, 1)),
+    statestats_acs = data.frame(REGION = c("DE", "GU"), PCTILE = "mean", pctlowinc = c(0.1, NA_real_)),
+    usastats_envirodata = data.frame(REGION = "USA", PCTILE = c("0", "mean", "100"), pm = c(0, 8, 10)),
+    statestats_envirodata = data.frame(REGION = c("DE", "GU"), PCTILE = "mean", pm = c(7, 9)),
+    bgej = data.table::data.table(bgfips = bgfips, ST = c("DE", "GU"), pop = c(100, NA_real_)),
+    usastats_ej = data.frame(REGION = "USA", PCTILE = "mean"),
+    statestats_ej = data.frame(REGION = c("DE", "GU"), PCTILE = "mean"),
+    usastats = data.frame(REGION = "USA", PCTILE = "mean", pctlowinc = 0.1, pm = 8),
+    statestats = data.frame(REGION = c("DE", "GU"), PCTILE = "mean", pctlowinc = c(0.1, NA_real_), pm = c(7, 9))
+  )
+
+  testthat::local_mocked_bindings(
+    calc_bg_acsdata = function(yr,
+                               formulas,
+                               tables,
+                               include_tract_data,
+                               tract_tables,
+                               tract_formulas,
+                               tract_weight_source,
+                               dropMOE,
+                               acs_raw,
+                               include_islandareas_data,
+                               islandareas_raw,
+                               islandareas_demographics,
+                               islandareas_tables,
+                               use_islandareas_demographics,
+                               pipeline_dir,
+                               save_stage,
+                               stage_format,
+                               overwrite,
+                               validation_strict) {
+      expect_true(include_islandareas_data)
+      expect_equal(islandareas_raw$stage, "bg_islandareas_raw")
+      expect_equal(islandareas_demographics$bgfips, "660100001001")
+      expect_false(use_islandareas_demographics)
+      bg_acsdata
+    },
+    calc_ejscreen_blockgroupstats = function(bg_acsdata, ...) {
+      expect_equal(bg_acsdata$bgfips, bgfips)
+      blockgroupstats
+    },
+    calc_ejscreen_stats = function(bgstats, ...) stats,
+    .package = "EJAM"
+  )
+
+  out <- calc_ejscreen_dataset(
+    yr = 2024,
+    bg_acs_raw = bg_acs_raw,
+    bg_envirodata = data.table::data.table(bgfips = bgfips, pctpre1960 = c(0.11, 0.6), pm = c(7, 9)),
+    bg_extra_indicators = data.table::data.table(bgfips = bgfips, lowlifex = c(0.1, NA_real_)),
+    bg_geodata = make_test_bg_geodata(bgfips),
+    include_islandareas_data = TRUE,
+    islandareas_raw = islandareas_raw,
+    islandareas_demographics = islandareas_demographics,
+    use_islandareas_demographics = FALSE,
+    extra_indicator_vars = "lowlifex",
+    validation_strict = FALSE,
+    download_acs_raw = FALSE
+  )
+
+  expect_equal(out$blockgroupstats$bgfips, bgfips)
+})
+
 test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
   pipeline_dir <- file.path(tempdir(), "ejam-calc-ejscreen-dataset-test")
   bgfips <- c("100010001001", "100010001002")
@@ -281,16 +428,21 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
     usastats = lookup("USA", c("pctlowinc", names_e, names_ej, names_ej_supp)),
     statestats = lookup("DE", c("pctlowinc", names_e, names_ej_state, names_ej_supp_state))
   )
+  export_calls <- new.env(parent = emptyenv())
+  export_calls$scope <- character()
 
   testthat::local_mocked_bindings(
     calc_ejscreen_blockgroupstats = function(...) blockgroupstats,
     calc_ejscreen_stats = function(...) stats,
     calc_ejscreen_export = function(blockgroupstats,
                                     bgej,
-                                    usastats_acs,
-                                    usastats_envirodata,
-                                    usastats_ej,
-                                    statestats_ej,
+                                    usastats_acs = NULL,
+                                    statestats_acs = NULL,
+                                    usastats_envirodata = NULL,
+                                    statestats_envirodata = NULL,
+                                    usastats_ej = NULL,
+                                    statestats_ej = NULL,
+                                    export_percentile_scope,
                                     output_vars,
                                     rename_newtype,
                                     required_output_names,
@@ -298,9 +450,16 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
 	                                    save_path,
 	                                    pipeline_storage,
 	                                    overwrite) {
+      export_calls$scope <- c(export_calls$scope, export_percentile_scope)
+      if (identical(export_percentile_scope, "national")) {
 	      expect_equal(usastats_acs, stats$usastats_acs)
 	      expect_equal(usastats_envirodata, stats$usastats_envirodata)
 	      expect_equal(usastats_ej, stats$usastats_ej)
+      } else {
+	      expect_equal(statestats_acs, stats$statestats_acs)
+	      expect_equal(statestats_envirodata, stats$statestats_envirodata)
+        expect_false("DEMOGIDX_2ST" %in% feature_server_fields)
+      }
 	      expect_equal(statestats_ej, stats$statestats_ej)
 	      expect_equal(pipeline_storage, "auto")
       expect_true(all(c("ID", "P_D2_PM25", "Shape__Area") %in% feature_server_fields))
@@ -337,10 +496,12 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
   expect_true(all(c(
     "bg_acsdata", "bg_envirodata", "bg_extra_indicators",
     "blockgroupstats", "bgej", "usastats", "statestats",
-    "ejscreen_export"
+    "ejscreen_export", "ejscreen_export_statepct"
   ) %in% names(saved)))
-  expect_true(all(grepl("\\.csv$", saved[c("bg_acsdata", "blockgroupstats", "bgej", "usastats", "statestats", "ejscreen_export")])))
+  expect_true(all(grepl("\\.csv$", saved[c("bg_acsdata", "blockgroupstats", "bgej", "usastats", "statestats", "ejscreen_export", "ejscreen_export_statepct")])))
   expect_equal(out$ejscreen_export$ID, bgfips)
+  expect_equal(out$ejscreen_export_statepct$ID, bgfips)
+  expect_equal(export_calls$scope, c("national", "state"))
   loaded_blockgroupstats <- as.data.frame(
     EJAM:::ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "csv")
   )

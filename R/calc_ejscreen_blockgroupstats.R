@@ -10,6 +10,11 @@
 #' The environmental input is expected to include `pctpre1960`. That indicator
 #' can be created by an upstream envirodata step from the saved ACS stage, even
 #' though EJAM treats it as an environmental indicator for EJ-index calculations.
+#' When Island Areas placeholder rows are present in `bg_acsdata`, demographic
+#' fields remain missing by default, but environmental fields supplied in
+#' `bg_envirodata` are retained for those rows. This supports dataset/export/map
+#' visibility for AS/GU/MP/VI without adding those areas to the block helper
+#' files used for radius/buffer analysis.
 #'
 #' @param bg_acsdata ACS-derived blockgroup table, or NULL if reading from a
 #'   saved pipeline stage.
@@ -230,7 +235,38 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
 
   # add demog index
   blockgroupstats_new <- merge(acs, blockgroup_demog_index, by = "bgfips", all.x = TRUE)
-  # add enviro columns, but only those that aren't already in the ACS+extra table to avoid overwriting any ACS-derived indicators such as pctpre1960
+  # Add enviro columns. For columns that already exist in ACS+extra, fill only
+  # missing values so Island Areas placeholders can keep available EPA
+  # environmental fields without overwriting ACS-derived mainland values.
+  overlapping_env_cols <- setdiff(intersect(names(enviro), names(blockgroupstats_new)), "bgfips")
+  if (length(overlapping_env_cols) > 0) {
+    env_overlap <- data.table::copy(enviro[, c("bgfips", overlapping_env_cols), with = FALSE])
+    env_overlap_names <- paste0(overlapping_env_cols, ".enviro")
+    data.table::setnames(env_overlap, overlapping_env_cols, env_overlap_names)
+    blockgroupstats_new <- merge(
+      blockgroupstats_new,
+      env_overlap,
+      by = "bgfips",
+      all.x = TRUE,
+      sort = FALSE
+    )
+    for (i in seq_along(overlapping_env_cols)) {
+      col <- overlapping_env_cols[[i]]
+      env_col <- env_overlap_names[[i]]
+      fill <- is.na(blockgroupstats_new[[col]]) & !is.na(blockgroupstats_new[[env_col]])
+      if (any(fill)) {
+        data.table::set(
+          blockgroupstats_new,
+          i = which(fill),
+          j = col,
+          value = blockgroupstats_new[[env_col]][fill]
+        )
+      }
+    }
+    blockgroupstats_new[, (env_overlap_names) := NULL]
+  }
+
+  # Add enviro columns that are not already in the ACS+extra table.
   cols_to_add <- setdiff(names(enviro), c("bgfips", names(blockgroupstats_new)))
   blockgroupstats_new <- merge(
     blockgroupstats_new,

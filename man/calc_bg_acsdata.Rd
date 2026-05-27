@@ -106,5 +106,9 @@ When Island Areas rows are requested, the default EJSCREEN-compatible path
 appends AS/GU/MP/VI rows without using the optional 2020 Island Areas Census
 DHC demographics. Those DHC values can be saved and reviewed separately, and
 are used here only when \code{use_islandareas_demographics = TRUE}.
+In the ACS2024/v2.5.0 annual runner, Island Area placeholder rows are enabled
+by default so those areas can appear in blockgroup datasets, EJSCREEN exports,
+and maps. This does not add point-buffer/radius support, because Island Area
+blocks are not added to the block helper datasets.
 }
 \keyword{internal}

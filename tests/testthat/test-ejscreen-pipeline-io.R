@@ -210,9 +210,14 @@ test_that("pipeline stage names include preferred bg names and compatibility ali
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("envirodata"), "bg_envirodata")
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("bg_ejindexes"), "bgej")
   expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("bg_ejscreen"), "ejscreen_export")
+  expect_equal(EJAM:::ejscreen_pipeline_stage_canonical("bg_ejscreen_statepct"), "ejscreen_export_statepct")
   expect_equal(
     basename(EJAM:::ejscreen_pipeline_stage_path("bg_ejscreen", tempdir(), format = "csv")),
     "ejscreen_export.csv"
+  )
+  expect_equal(
+    basename(EJAM:::ejscreen_pipeline_stage_path("bg_ejscreen_statepct", tempdir(), format = "csv")),
+    "ejscreen_export_statepct.csv"
   )
 })
 
@@ -328,4 +333,9 @@ test_that("ejscreen_export stage validation requires usable ID and helper fields
   good_loaded <- EJAM:::ejscreen_pipeline_load("ejscreen_export", pipeline_dir, format = "rds")
   expect_equal(good_loaded, good, ignore_attr = TRUE)
   expect_equal(attr(good_loaded, "acs_version"), "2020-2024")
+
+  statepct_path <- EJAM:::ejscreen_pipeline_save(good, "ejscreen_export_statepct", pipeline_dir, format = "rds")
+  expect_true(file.exists(statepct_path))
+  statepct_loaded <- EJAM:::ejscreen_pipeline_load("ejscreen_export_statepct", pipeline_dir, format = "rds")
+  expect_equal(statepct_loaded, good, ignore_attr = TRUE)
 })
