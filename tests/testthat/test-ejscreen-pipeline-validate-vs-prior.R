@@ -1,13 +1,13 @@
 test_that("ejscreen_pipeline_validate_vs_prior reports value differences without error", {
   old_dt <- data.frame(
-    bgfips = c("010010201001", "010010201002"),
-    pop = c(100, 200),
-    pctlowinc = c(0.1, 0.2)
+    bgfips = c("010010201001", "010010201002", "010010201003"),
+    pop = c(100, 200, NA),
+    pctlowinc = c(0.1, 0.2, 0)
   )
   new_dt <- data.frame(
-    bgfips = c("010010201001", "010010201002"),
-    pop = c(100, 250),
-    pctlowinc = c(0.1, 0.2)
+    bgfips = c("010010201001", "010010201002", "010010201003"),
+    pop = c(0, 250, NA),
+    pctlowinc = c(0.1, 0.25, 0)
   )
 
   result <- suppressWarnings(
@@ -17,6 +17,10 @@ test_that("ejscreen_pipeline_validate_vs_prior reports value differences without
   expect_s3_class(result, "ejam_pipeline_prior_validation")
   expect_false(result$shared_data_equal)
   expect_true("pop" %in% result$not_replicated$rname)
+  expect_s3_class(result$column_report, "data.table")
+  expect_true(all(c("varlist", "column", "zero_ref", "zero_pipeline") %in% names(result$column_report)))
+  expect_equal(result$column_report$zero_ref[result$column_report$column == "pop"], 0L)
+  expect_equal(result$column_report$zero_pipeline[result$column_report$column == "pop"], 1L)
 })
 
 test_that("ejscreen_pipeline_validate_vs_prior handles bgfips order mismatch", {
@@ -115,7 +119,52 @@ test_that("ejscreen_pipeline_prior_validation_text includes useful details", {
   expect_type(lines, "character")
   expect_true(any(grepl("blockgroupstats", lines, fixed = TRUE)))
   expect_true(any(grepl("Not replicated", lines, fixed = TRUE)))
+  expect_true(any(grepl("Differing columns detail", lines, fixed = TRUE)))
+  expect_true(any(grepl("zero_ref", lines, fixed = TRUE)))
   expect_true(any(grepl("example warning", lines, fixed = TRUE)))
+})
+
+test_that("ejscreen_pipeline_prior_validation_text reports common-row details when row keys differ", {
+  old_dt <- data.frame(
+    bgfips = c("010010201001", "010010201002"),
+    pop = c(100, 200)
+  )
+  new_dt <- data.frame(
+    bgfips = c("010010201001", "010010201003"),
+    pop = c(150, 250)
+  )
+
+  result <- suppressWarnings(
+    EJAM:::ejscreen_pipeline_validate_vs_prior(new_dt, old_dt, verbose = FALSE)
+  )
+  lines <- EJAM:::ejscreen_pipeline_prior_validation_text(
+    result,
+    stage = "blockgroupstats",
+    old_label = "EJAM::blockgroupstats"
+  )
+
+  expect_equal(result$row_alignment$common_rows, 1L)
+  expect_equal(result$column_report$rows[result$column_report$column == "pop"], 1L)
+  expect_equal(result$column_report$differing_rows[result$column_report$column == "pop"], 1L)
+  expect_true(any(grepl("Differing columns detail", lines, fixed = TRUE)))
+  expect_true(any(grepl("Common row key values compared: 1", lines, fixed = TRUE)))
+})
+
+test_that("ejscreen_pipeline_capture_output_wide avoids column wrapping", {
+  old_width <- getOption("width")
+  on.exit(options(width = old_width), add = TRUE)
+  options(width = 40)
+
+  wide_dt <- data.table::data.table(
+    first_column_name = 1,
+    second_column_name = 2,
+    third_column_name = 3,
+    fourth_column_name = 4
+  )
+
+  lines <- EJAM:::ejscreen_pipeline_capture_output_wide(print(wide_dt))
+
+  expect_true(any(grepl("first_column_name.*fourth_column_name", lines)))
 })
 
 test_that("ejscreen_pipeline_version_dir builds standard local and S3 version folders", {
@@ -265,6 +314,7 @@ test_that("ejscreen_pipeline_compare_stage can write summary and detail files", 
   expect_equal(out$summary$old_acs_version, "2018-2022")
   expect_true(file.exists(file.path(pipeline_dir, "prior_validation_blockgroupstats.txt")))
   expect_true(file.exists(file.path(pipeline_dir, "prior_validation_blockgroupstats.csv")))
+  expect_true(file.exists(file.path(pipeline_dir, "prior_validation_blockgroupstats_column_report.csv")))
 })
 
 test_that("ejscreen_pipeline_compare_versions compares stages by version folder", {

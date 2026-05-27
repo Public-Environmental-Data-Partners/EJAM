@@ -13,7 +13,7 @@ calc_ejscreen_export_reference_report(
   reference_format = NULL,
   storage = c("auto", "local", "s3"),
   id_col = "ID",
-  numeric_tolerance = 1e-06,
+  numeric_tolerance = 0.001,
   reference_label = NULL,
   note = NULL,
   output_dir = NULL,
@@ -38,7 +38,9 @@ calc_ejscreen_export_reference_report(
 
 \item{id_col}{preferred ID column name.}
 
-\item{numeric_tolerance}{threshold for substantive numeric differences.}
+\item{numeric_tolerance}{relative threshold for substantive numeric differences.
+The default \code{0.001} means 0.1 percent. When the reference value is zero,
+any nonzero pipeline value is counted as above tolerance.}
 
 \item{reference_label}{label shown in the text report.}
 
@@ -63,6 +65,6 @@ compare the 2022 pipeline \code{ejscreen_export} stage to the EPA-style
 \code{EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv} reference file, which is named for
 EJSCREEN 2024 but uses ACS 2018-2022 inputs. It preserves leading zeroes in
 \code{ID} fields and reports both exact differences and substantive numeric
-differences above \code{numeric_tolerance}.
+differences above \code{numeric_tolerance} as a relative fraction.
 }
 \keyword{internal}

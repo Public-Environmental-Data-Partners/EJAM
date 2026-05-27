@@ -360,6 +360,10 @@ test_that("calc_ejscreen_export_schema_report flags missing and extra fields", {
 })
 
 test_that("calc_ejscreen_export_reference_report preserves IDs and summarizes differences", {
+  old_width <- getOption("width")
+  on.exit(options(width = old_width), add = TRUE)
+  options(width = 40)
+
   reference <- data.frame(
     ID = c("010010201001", "020200001001"),
     A = c(1, 2),
@@ -370,7 +374,7 @@ test_that("calc_ejscreen_export_reference_report preserves IDs and summarizes di
   )
   ejscreen_export <- data.frame(
     ID = reference$ID,
-    A = c(1, 2.00001),
+    A = c(1, 2.01),
     B = c(0, 3),
     C = c("same", "new"),
     stringsAsFactors = FALSE,
@@ -383,16 +387,21 @@ test_that("calc_ejscreen_export_reference_report preserves IDs and summarizes di
     ejscreen_export = ejscreen_export,
     reference_path = reference_path,
     reference_format = "csv",
-    numeric_tolerance = 1e-6
+    numeric_tolerance = 0.001
   )
 
   expect_equal(out$summary$value[out$summary$metric == "shared_ids"], "2")
   expect_equal(out$summary$value[out$summary$metric == "columns_with_differences"], "3")
   expect_equal(
-    out$summary$value[out$summary$metric == "columns_with_substantive_numeric_differences_gt_1e-06"],
+    out$summary$value[out$summary$metric == "columns_with_substantive_numeric_relative_differences_gt_0.1pct"],
     "1"
   )
+  expect_true(any(grepl("varlist.*rname.*column.*example_pipeline", out$text)))
+  expect_true(all(c("varlist", "rname", "relative_tolerance") %in% names(out$report)))
+  expect_false("diff_gt_1e_12" %in% names(out$report))
   expect_equal(out$report$na_mismatch[out$report$column == "B"], 1L)
+  expect_true(all(c("zero_ref", "zero_pipeline") %in% names(out$report)))
+  expect_equal(out$report$zero_pipeline[out$report$column == "B"], 1L)
   expect_equal(out$report$example_id[out$report$column == "A"], "020200001001")
 })
 

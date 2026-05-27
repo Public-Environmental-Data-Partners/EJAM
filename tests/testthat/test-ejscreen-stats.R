@@ -112,3 +112,43 @@ test_that("calc_ejscreen_stats uses EJSCREEN-compatible unemployment lookup valu
     0
   )
 })
+
+test_that("calc_ejscreen_stats uses state demographic indexes in state lookup columns", {
+  bgstats <- data.frame(
+    bgfips = sprintf("10001000100%s", 1:6),
+    ST = c("DE", "DE", "DE", "RI", "RI", "RI"),
+    pop = c(100, 120, 140, 90, 110, 130),
+    custom_env = c(1, 2, 3, 4, 5, 6),
+    Demog.Index = c(10, 20, 30, 40, 50, 60),
+    Demog.Index.Supp = c(11, 21, 31, 41, 51, 61),
+    Demog.Index.State = c(0.1, 0.2, 0.3, 1.1, 1.2, 1.3),
+    Demog.Index.Supp.State = c(0.4, 0.5, 0.6, 1.4, 1.5, 1.6),
+    check.names = FALSE
+  )
+
+  out <- EJAM:::calc_ejscreen_stats(
+    bgstats = bgstats,
+    acs_vars = c(
+      "Demog.Index", "Demog.Index.Supp",
+      "Demog.Index.State", "Demog.Index.Supp.State"
+    ),
+    enviro_vars = "custom_env",
+    ej_indicator_vars = "custom_env",
+    ej_indicator_pctile_vars = "pctile.custom_env",
+    ej_indicator_state_pctile_vars = "state.pctile.custom_env",
+    ej_index_vars = "EJ.custom.eo",
+    ej_index_supp_vars = "EJ.custom.supp",
+    ej_index_state_vars = "state.EJ.custom.eo",
+    ej_index_supp_state_vars = "state.EJ.custom.supp"
+  )
+
+  expected_state <- EJAM:::pctiles_lookup_create(
+    bgstats[, c("Demog.Index.State", "Demog.Index.Supp.State")],
+    zone.vector = bgstats$ST
+  )
+
+  expect_equal(out$statestats_acs$Demog.Index, expected_state$Demog.Index.State)
+  expect_equal(out$statestats_acs$Demog.Index.Supp, expected_state$Demog.Index.Supp.State)
+  expect_equal(out$statestats_acs$Demog.Index.State, expected_state$Demog.Index.State)
+  expect_equal(out$statestats_acs$Demog.Index.Supp.State, expected_state$Demog.Index.Supp.State)
+})

@@ -150,11 +150,20 @@ calc_ejscreen_stats <- function(bgstats = NULL,
   }
 
   bg_for_acs_lookups <- ejscreen_percentile_input_compatibility_adjusted(bg)
+  bg_for_state_acs_lookups <- data.table::copy(bg_for_acs_lookups)
+  if (all(c(demog_index_var, demog_index_state_var) %in% names(bg_for_state_acs_lookups))) {
+    bg_for_state_acs_lookups[[demog_index_var]] <-
+      bg_for_state_acs_lookups[[demog_index_state_var]]
+  }
+  if (all(c(demog_index_supp_var, demog_index_supp_state_var) %in% names(bg_for_state_acs_lookups))) {
+    bg_for_state_acs_lookups[[demog_index_supp_var]] <-
+      bg_for_state_acs_lookups[[demog_index_supp_state_var]]
+  }
 
   usastats_acs <- pctiles_lookup_create(bg_for_acs_lookups[, ..acs_vars])
   statestats_acs <- pctiles_lookup_create(
-    bg_for_acs_lookups[, ..acs_vars],
-    zone.vector = bg_for_acs_lookups$ST
+    bg_for_state_acs_lookups[, ..acs_vars],
+    zone.vector = bg_for_state_acs_lookups$ST
   )
   usastats_envirodata <- pctiles_lookup_create(bg[, ..enviro_vars])
   statestats_envirodata <- pctiles_lookup_create(bg[, ..enviro_vars], zone.vector = bg$ST)

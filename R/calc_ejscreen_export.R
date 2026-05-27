@@ -1104,7 +1104,7 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
 #' `EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv` reference file, which is named for
 #' EJSCREEN 2024 but uses ACS 2018-2022 inputs. It preserves leading zeroes in
 #' `ID` fields and reports both exact differences and substantive numeric
-#' differences above `numeric_tolerance`.
+#' differences above `numeric_tolerance` as a relative fraction.
 #'
 #' @param ejscreen_export optional EJSCREEN export data.frame.
 #' @param export_path optional path to a saved EJSCREEN export stage.
@@ -1114,7 +1114,9 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
 #' @param reference_format file format for `reference_path`.
 #' @param storage storage backend for pipeline-style paths.
 #' @param id_col preferred ID column name.
-#' @param numeric_tolerance threshold for substantive numeric differences.
+#' @param numeric_tolerance relative threshold for substantive numeric differences.
+#'   The default `0.001` means 0.1 percent. When the reference value is zero,
+#'   any nonzero pipeline value is counted as above tolerance.
 #' @param reference_label label shown in the text report.
 #' @param note optional note shown near the top of the text report.
 #' @param output_dir optional folder/S3 prefix for report files.
@@ -1134,7 +1136,7 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
                                                   reference_format = NULL,
                                                   storage = c("auto", "local", "s3"),
                                                   id_col = "ID",
-                                                  numeric_tolerance = 1e-6,
+                                                  numeric_tolerance = 0.001,
                                                   reference_label = NULL,
                                                   note = NULL,
                                                   output_dir = NULL,
@@ -1184,8 +1186,43 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
   shared_cols <- setdiff(shared_cols, c(key_ref, key_new))
   rows <- vector("list", length(shared_cols))
 
+  column_map <- NULL
+  if (exists("map_headernames", inherits = TRUE) &&
+      exists("augment_map_headernames_ejscreen_names", inherits = TRUE)) {
+    column_map <- tryCatch({
+      mh <- data.table::as.data.table(
+        augment_map_headernames_ejscreen_names(map_headernames)
+      )
+      if (!all(c("ejscreen_indicator", "rname", "varlist") %in% names(mh))) {
+        NULL
+      } else {
+        mh <- mh[!is.na(ejscreen_indicator) & nzchar(ejscreen_indicator)]
+        mh <- mh[, .(
+          column = ejscreen_indicator,
+          rname = rname,
+          varlist = varlist
+        )]
+        mh <- mh[!duplicated(column)]
+        data.table::setkey(mh, column)
+        mh
+      }
+    }, error = function(e) NULL)
+  }
+
+  column_metadata <- function(col) {
+    if (is.null(column_map) || !(col %in% column_map$column)) {
+      return(list(varlist = "", rname = ""))
+    }
+    x <- column_map[.(col)]
+    list(
+      varlist = ifelse(is.na(x$varlist), "", x$varlist),
+      rname = ifelse(is.na(x$rname), "", x$rname)
+    )
+  }
+
   for (i in seq_along(shared_cols)) {
     col <- shared_cols[[i]]
+    col_info <- column_metadata(col)
     a <- ref2[[col]]
     b <- new2[[col]]
     if (is.factor(a)) a <- as.character(a)
@@ -1196,27 +1233,35 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
     na_mismatch <- xor(na_a, na_b)
     both_non_na <- !na_a & !na_b
     numeric_col <- is.numeric(a) && is.numeric(b)
+    zero_ref <- if (numeric_col) sum(!na_a & a == 0, na.rm = TRUE) else 0L
+    zero_pipeline <- if (numeric_col) sum(!na_b & b == 0, na.rm = TRUE) else 0L
 
     if (numeric_col) {
       diff <- rep(NA_real_, length(a))
       diff[both_non_na] <- abs(as.numeric(a[both_non_na]) - as.numeric(b[both_non_na]))
       different <- na_mismatch | (both_non_na & diff != 0)
-      diff_gt_tolerance <- sum(both_non_na & diff > numeric_tolerance, na.rm = TRUE)
+      denom <- abs(as.numeric(a))
+      relative_diff <- rep(NA_real_, length(a))
+      has_relative_denom <- both_non_na & denom > 0
+      relative_diff[has_relative_denom] <- diff[has_relative_denom] / denom[has_relative_denom]
+      diff_gt_tolerance <- sum(
+        (has_relative_denom & relative_diff > numeric_tolerance) |
+          (both_non_na & denom == 0 & diff > 0),
+        na.rm = TRUE
+      )
       diff_gt_1e_9 <- sum(both_non_na & diff > 1e-9, na.rm = TRUE)
-      diff_gt_1e_12 <- sum(both_non_na & diff > 1e-12, na.rm = TRUE)
       max_abs <- suppressWarnings(max(diff, na.rm = TRUE))
       if (!is.finite(max_abs)) max_abs <- NA_real_
       mean_abs <- suppressWarnings(mean(diff, na.rm = TRUE))
       if (!is.finite(mean_abs)) mean_abs <- NA_real_
-      denom <- abs(as.numeric(a[both_non_na]))
-      denom[denom == 0] <- NA_real_
-      mean_rel <- suppressWarnings(mean(diff[both_non_na] / denom, na.rm = TRUE))
+      denom_nonzero <- denom[both_non_na]
+      denom_nonzero[denom_nonzero == 0] <- NA_real_
+      mean_rel <- suppressWarnings(mean(diff[both_non_na] / denom_nonzero, na.rm = TRUE))
       if (!is.finite(mean_rel)) mean_rel <- NA_real_
     } else {
       different <- na_mismatch | (both_non_na & as.character(a) != as.character(b))
       diff_gt_tolerance <- NA_integer_
       diff_gt_1e_9 <- NA_integer_
-      diff_gt_1e_12 <- NA_integer_
       max_abs <- NA_real_
       mean_abs <- NA_real_
       mean_rel <- NA_real_
@@ -1224,17 +1269,20 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
 
     example_idx <- which(different)[1]
     rows[[i]] <- data.table::data.table(
+      varlist = col_info$varlist,
+      rname = col_info$rname,
       column = col,
       type = if (numeric_col) "numeric" else "character",
       rows = length(a),
       differing_rows = sum(different, na.rm = TRUE),
       differing_non_na_rows = sum(different & both_non_na, na.rm = TRUE),
-      diff_gt_1e_12 = diff_gt_1e_12,
       diff_gt_1e_9 = diff_gt_1e_9,
       diff_gt_tolerance = diff_gt_tolerance,
-      numeric_tolerance = if (numeric_col) numeric_tolerance else NA_real_,
+      relative_tolerance = if (numeric_col) numeric_tolerance else NA_real_,
       na_ref = sum(na_a),
       na_pipeline = sum(na_b),
+      zero_ref = zero_ref,
+      zero_pipeline = zero_pipeline,
       na_mismatch = sum(na_mismatch),
       max_abs_diff = max_abs,
       mean_abs_diff = mean_abs,
@@ -1247,13 +1295,14 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
 
   report <- data.table::rbindlist(rows)
   data.table::setorder(report, -differing_rows, column)
+  tolerance_label <- paste0(format(100 * numeric_tolerance, trim = TRUE, scientific = FALSE), "pct")
   summary <- data.table::data.table(
     metric = c(
       "reference_rows", "pipeline_rows", "shared_ids",
       "reference_only_ids", "pipeline_only_ids",
       "reference_cols", "pipeline_cols", "shared_cols", "compared_cols",
       "columns_with_differences",
-      paste0("columns_with_substantive_numeric_differences_gt_", numeric_tolerance),
+      paste0("columns_with_substantive_numeric_relative_differences_gt_", tolerance_label),
       "columns_identical", "created"
     ),
     value = as.character(c(
@@ -1276,12 +1325,15 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
       "reference export"
     }
   }
+  report_for_text <- data.table::copy(report)
+  round_cols <- intersect(c("max_abs_diff", "mean_abs_diff", "mean_rel_diff"), names(report_for_text))
+  report_for_text[, (round_cols) := lapply(.SD, round, digits = 3), .SDcols = round_cols]
   text <- c(
     paste0("EJSCREEN export validation against ", reference_label),
     paste0("Created: ", Sys.time()),
     note,
     "",
-    capture.output(print(summary)),
+    ejscreen_pipeline_capture_output_wide(print(summary)),
     "",
     "Reference-only columns:",
     paste(setdiff(names(ref), names(new)), collapse = ", "),
@@ -1290,13 +1342,19 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
     paste(setdiff(names(new), names(ref)), collapse = ", "),
     "",
     "Top differing columns:",
-    capture.output(print(report[differing_rows > 0][1:min(.N, 80)])),
+    ejscreen_pipeline_capture_output_wide(
+      print(report_for_text[differing_rows > 0][1:min(.N, 80)])
+    ),
     "",
     "Reference-only IDs by state prefix:",
-    capture.output(print(table(substr(setdiff(ref$compare_id, new$compare_id), 1, 2), useNA = "ifany"))),
+    ejscreen_pipeline_capture_output_wide(
+      print(table(substr(setdiff(ref$compare_id, new$compare_id), 1, 2), useNA = "ifany"))
+    ),
     "",
     "Pipeline-only IDs by state prefix:",
-    capture.output(print(table(substr(setdiff(new$compare_id, ref$compare_id), 1, 2), useNA = "ifany")))
+    ejscreen_pipeline_capture_output_wide(
+      print(table(substr(setdiff(new$compare_id, ref$compare_id), 1, 2), useNA = "ifany"))
+    )
   )
   text <- text[!is.na(text)]
 

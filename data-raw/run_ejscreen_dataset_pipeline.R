@@ -91,7 +91,7 @@
 #      workflow.
 
 #   EJAM_VALIDATE_VS_PRIOR: TRUE to compare selected outputs to a prior saved pipeline version and save prior_validation_*.txt and prior_validation_summary.csv.
-#   EJAM_PRIOR_PIPELINE_YR: prior version year to compare against. Defaults to 2022 for yr 2024, otherwise yr - 1.
+#   EJAM_PRIOR_PIPELINE_YR: prior version year to compare against. Defaults to yr - 1.
 #   EJAM_PRIOR_PIPELINE_DIR: optional explicit prior version folder/S3 prefix. If unset, constructed from EJAM_PIPELINE_ROOT and EJAM_PRIOR_PIPELINE_YR.
 #   EJAM_PRIOR_PACKAGE_REF: optional explicit Git ref/tag/SHA holding a prior package blockgroupstats.rda, such as development or v2.32.8.1.
 #   EJAM_PRIOR_PACKAGE_PATH: optional path within EJAM_PRIOR_PACKAGE_REF. Defaults to data/blockgroupstats.rda.
@@ -130,7 +130,7 @@ dir_parent_local = file.path(getwd(), "data-raw", "pipeline_outputs")
 # dir_parent_local = file.path(tempdir(), "data-raw", "pipeline") # an alternative local path that is outside the package folder
 dir_parent <- if (storage == "local") {dir_parent_local} else {dir_parent_s3}
 dir_full <- file.path(dir_parent, dir_child)
-prior_yr <- if (as.integer(yr) == 2024L) "2022" else as.character(as.integer(yr) - 1L)
+prior_yr <- as.character(as.integer(yr) - 1L)
 default_tiger_bg_cache_dir <- file.path(tools::R_user_dir("EJAM", which = "cache"), "tiger_bg")
 
 set_pipeline_default <- function(name, value) {
@@ -341,7 +341,7 @@ if (isTRUE(run_datacreate_before)) {
 #      EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, # TRUE during testing not once finalized datasets - TO TRY TO REPLICATE 2022 DATA
 #      EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
 #            EJAM_VALIDATE_VS_PRIOR = TRUE,
-#            EJAM_PRIOR_PIPELINE_YR = "2022",
+#            EJAM_PRIOR_PIPELINE_YR = "2021", # ignored when EJAM_PRIOR_PACKAGE_REF is set
 #            EJAM_PRIOR_PIPELINE_DIR = "",
 #            EJAM_PRIOR_PACKAGE_REF = "development",
 #            EJAM_PRIOR_PACKAGE_PATH = "data/blockgroupstats.rda",
@@ -375,7 +375,7 @@ if (isTRUE(run_datacreate_before)) {
 #         EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, #  set FALSE once new envt data are available
 #         EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
 #            EJAM_VALIDATE_VS_PRIOR = TRUE,
-#            EJAM_PRIOR_PIPELINE_YR = "2022",
+#            EJAM_PRIOR_PIPELINE_YR = "2023",
 #            EJAM_PRIOR_PIPELINE_DIR = "",
 #            EJAM_PRIOR_PACKAGE_REF = "",
 #            EJAM_PRIOR_PACKAGE_PATH = "data/blockgroupstats.rda",
@@ -531,7 +531,7 @@ validate_ejscreen_export_reference <- env_flag(
 )
 prior_pipeline_yr <- Sys.getenv(
   "EJAM_PRIOR_PIPELINE_YR",
-  unset = if (as.integer(pipeline_yr) == 2024L) "2022" else as.character(as.integer(pipeline_yr) - 1L)
+  unset = as.character(as.integer(pipeline_yr) - 1L)
 )
 prior_pipeline_dir <- Sys.getenv("EJAM_PRIOR_PIPELINE_DIR", unset = "")
 if (!nzchar(prior_pipeline_dir)) {

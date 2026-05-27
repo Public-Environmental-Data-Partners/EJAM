@@ -84,12 +84,14 @@ ejscreen_pipeline_validate_vs_prior <- function(new_dt,
       key_cols = character(),
       set_equal = NA,
       order_equal = NA,
+      common_rows = NA_integer_,
       aligned = FALSE
     ),
     shared_data_equal = NA,
     shared_data_difference = character(),
     missing_expected = data.frame(rname = character(), varlist = character(), stringsAsFactors = FALSE),
     not_replicated = data.frame(rname = character(), equal = logical(), problem = character(), stringsAsFactors = FALSE),
+    column_report = data.table::data.table(),
     waldo_compare = character()
   )
   class(result) <- c("ejam_pipeline_prior_validation", "list")
@@ -186,6 +188,7 @@ ejscreen_pipeline_validate_vs_prior <- function(new_dt,
     result$row_alignment$key_cols <- row_key_cols
     result$row_alignment$set_equal <- row_key_set_equal
     result$row_alignment$order_equal <- row_key_order_equal
+    result$row_alignment$common_rows <- length(intersect(old_key, new_key))
 
     if (identical(row_key_cols, "bgfips")) {
       result$bgfips$set_equal <- row_key_set_equal
@@ -204,10 +207,25 @@ ejscreen_pipeline_validate_vs_prior <- function(new_dt,
       }
     }
     if (!isTRUE(row_key_set_equal)) {
-      warning("different set of row key values in new_dt vs old_dt for: ", paste(row_key_cols, collapse = ", "), call. = FALSE)
-      return(invisible(result))
+      common_key <- intersect(old_key, new_key)
+      warning(
+        "different set of row key values in new_dt vs old_dt for: ",
+        paste(row_key_cols, collapse = ", "),
+        "; comparing shared columns for ",
+        length(common_key),
+        " common row key values only",
+        call. = FALSE
+      )
+      if (length(common_key) == 0) {
+        return(invisible(result))
+      }
+      old_dt <- old_dt[old_key %in% common_key]
+      new_dt <- new_dt[new_key %in% common_key]
+      data.table::setorderv(old_dt, row_key_cols)
+      data.table::setorderv(new_dt, row_key_cols)
+      result$row_alignment$aligned <- TRUE
     }
-    if (!isTRUE(row_key_order_equal)) {
+    if (isTRUE(row_key_set_equal) && !isTRUE(row_key_order_equal)) {
       data.table::setorderv(old_dt, row_key_cols)
       data.table::setorderv(new_dt, row_key_cols)
       result$row_alignment$aligned <- TRUE
@@ -216,6 +234,13 @@ ejscreen_pipeline_validate_vs_prior <- function(new_dt,
   } else {
     warning("cannot confirm row alignment because no unique row key was found in both inputs", call. = FALSE)
   }
+
+  result$column_report <- ejscreen_pipeline_column_report(
+    old_dt = old_dt,
+    new_dt = new_dt,
+    shared_cols = sharednames,
+    row_key_cols = result$row_alignment$key_cols
+  )
 
   shared_equal_result <- all.equal(old_dt[, ..sharednames], new_dt[, ..sharednames], check.attributes = FALSE)
   result$shared_data_equal <- isTRUE(shared_equal_result)
@@ -365,6 +390,7 @@ ejscreen_pipeline_prior_validation_as_row <- function(result,
     row_key_cols = collapse_values(result$row_alignment$key_cols),
     row_key_set_equal = result$row_alignment$set_equal,
     row_key_order_equal = result$row_alignment$order_equal,
+    row_key_common_n = result$row_alignment$common_rows,
     rows_aligned_by_key = isTRUE(result$row_alignment$aligned),
     shared_data_equal = result$shared_data_equal,
     missing_expected_n = NROW(result$missing_expected),
@@ -373,6 +399,166 @@ ejscreen_pipeline_prior_validation_as_row <- function(result,
     not_replicated = collapse_rnames(result$not_replicated),
     warnings = collapse_values(warnings)
   )
+}
+###################################################### #
+
+#' Capture printed validation output without column wrapping
+#'
+#' @noRd
+ejscreen_pipeline_capture_output_wide <- function(...,
+                                                  width = 10000) {
+  old_options <- options(
+    width = width,
+    datatable.print.nrows = 100000L,
+    datatable.print.topn = 100000L
+  )
+  on.exit(options(old_options), add = TRUE)
+  utils::capture.output(...)
+}
+###################################################### #
+
+#' Build a per-column prior-validation comparison report
+#'
+#' @noRd
+ejscreen_pipeline_column_report <- function(old_dt,
+                                            new_dt,
+                                            shared_cols,
+                                            row_key_cols = character(),
+                                            numeric_tolerance = 1e-6) {
+  old_dt <- data.table::as.data.table(data.table::copy(old_dt))
+  new_dt <- data.table::as.data.table(data.table::copy(new_dt))
+  compare_cols <- setdiff(shared_cols, row_key_cols)
+  compare_cols <- compare_cols[compare_cols %in% names(old_dt) & compare_cols %in% names(new_dt)]
+
+  empty_report <- function() {
+    data.table::data.table(
+      varlist = character(),
+      column = character(),
+      type = character(),
+      rows = integer(),
+      differing_rows = integer(),
+      differing_non_na_rows = integer(),
+      diff_gt_1e_12 = integer(),
+      diff_gt_1e_9 = integer(),
+      diff_gt_tolerance = integer(),
+      numeric_tolerance = numeric(),
+      na_ref = integer(),
+      na_pipeline = integer(),
+      zero_ref = integer(),
+      zero_pipeline = integer(),
+      na_mismatch = integer(),
+      max_abs_diff = numeric(),
+      mean_abs_diff = numeric(),
+      mean_rel_diff = numeric(),
+      example_id = character(),
+      example_ref = character(),
+      example_pipeline = character()
+    )
+  }
+  if (length(compare_cols) == 0) {
+    return(empty_report())
+  }
+
+  old_stats <- dataset_summary_stats(vars = compare_cols, dt = old_dt, print = FALSE)
+  new_stats <- dataset_summary_stats(vars = compare_cols, dt = new_dt, print = FALSE)
+  data.table::setkey(old_stats, rname)
+  data.table::setkey(new_stats, rname)
+
+  zero_count <- function(stats, col) {
+    x <- stats[.(col), on = "rname"]$zero
+    if (length(x) == 0 || is.na(x)) 0L else as.integer(x)
+  }
+  na_count <- function(stats, col) {
+    x <- stats[.(col), on = "rname"]$NA_values
+    if (length(x) == 0 || is.na(x)) 0L else as.integer(x)
+  }
+  varlist_for <- function(col) {
+    x <- old_stats[.(col), on = "rname"]$varlist
+    if (length(x) == 0 || is.na(x)) {
+      x <- new_stats[.(col), on = "rname"]$varlist
+    }
+    if (length(x) == 0 || is.na(x)) NA_character_ else as.character(x)
+  }
+  example_key <- function(idx) {
+    if (!length(idx) || is.na(idx)) {
+      return(NA_character_)
+    }
+    if ("bgfips" %in% names(old_dt)) {
+      return(as.character(old_dt$bgfips[idx]))
+    }
+    if (length(row_key_cols) > 0 && all(row_key_cols %in% names(old_dt))) {
+      key_values <- unlist(old_dt[idx, row_key_cols, with = FALSE], use.names = FALSE)
+      return(paste(as.character(key_values), collapse = "|"))
+    }
+    as.character(idx)
+  }
+
+  rows <- lapply(compare_cols, function(col) {
+    a <- old_dt[[col]]
+    b <- new_dt[[col]]
+    if (is.factor(a)) a <- as.character(a)
+    if (is.factor(b)) b <- as.character(b)
+
+    na_a <- is.na(a)
+    na_b <- is.na(b)
+    na_mismatch <- xor(na_a, na_b)
+    both_non_na <- !na_a & !na_b
+    numeric_col <- is.numeric(a) && is.numeric(b)
+
+    if (numeric_col) {
+      diff <- rep(NA_real_, length(a))
+      diff[both_non_na] <- abs(as.numeric(a[both_non_na]) - as.numeric(b[both_non_na]))
+      different <- na_mismatch | (both_non_na & diff != 0)
+      diff_gt_tolerance <- sum(both_non_na & diff > numeric_tolerance, na.rm = TRUE)
+      diff_gt_1e_9 <- sum(both_non_na & diff > 1e-9, na.rm = TRUE)
+      diff_gt_1e_12 <- sum(both_non_na & diff > 1e-12, na.rm = TRUE)
+      max_abs <- suppressWarnings(max(diff, na.rm = TRUE))
+      if (!is.finite(max_abs)) max_abs <- NA_real_
+      mean_abs <- suppressWarnings(mean(diff, na.rm = TRUE))
+      if (!is.finite(mean_abs)) mean_abs <- NA_real_
+      denom <- abs(as.numeric(a[both_non_na]))
+      denom[denom == 0] <- NA_real_
+      mean_rel <- suppressWarnings(mean(diff[both_non_na] / denom, na.rm = TRUE))
+      if (!is.finite(mean_rel)) mean_rel <- NA_real_
+    } else {
+      different <- na_mismatch | (both_non_na & as.character(a) != as.character(b))
+      diff_gt_tolerance <- NA_integer_
+      diff_gt_1e_9 <- NA_integer_
+      diff_gt_1e_12 <- NA_integer_
+      max_abs <- NA_real_
+      mean_abs <- NA_real_
+      mean_rel <- NA_real_
+    }
+
+    example_idx <- which(different)[1]
+    data.table::data.table(
+      varlist = varlist_for(col),
+      column = col,
+      type = if (numeric_col) "numeric" else "character",
+      rows = length(a),
+      differing_rows = sum(different, na.rm = TRUE),
+      differing_non_na_rows = sum(different & both_non_na, na.rm = TRUE),
+      diff_gt_1e_12 = diff_gt_1e_12,
+      diff_gt_1e_9 = diff_gt_1e_9,
+      diff_gt_tolerance = diff_gt_tolerance,
+      numeric_tolerance = if (numeric_col) numeric_tolerance else NA_real_,
+      na_ref = na_count(old_stats, col),
+      na_pipeline = na_count(new_stats, col),
+      zero_ref = zero_count(old_stats, col),
+      zero_pipeline = zero_count(new_stats, col),
+      na_mismatch = sum(na_mismatch),
+      max_abs_diff = max_abs,
+      mean_abs_diff = mean_abs,
+      mean_rel_diff = mean_rel,
+      example_id = example_key(example_idx),
+      example_ref = if (length(example_idx)) as.character(a[example_idx]) else NA_character_,
+      example_pipeline = if (length(example_idx)) as.character(b[example_idx]) else NA_character_
+    )
+  })
+
+  report <- data.table::rbindlist(rows, fill = TRUE)
+  data.table::setorder(report, -differing_rows, varlist, column)
+  report
 }
 ###################################################### #
 
@@ -397,7 +583,7 @@ ejscreen_pipeline_prior_validation_text <- function(result,
     if (is.null(x) || NROW(x) == 0) {
       return(c(label, "  none"))
     }
-    c(label, utils::capture.output(print(as.data.frame(x), row.names = FALSE)))
+    c(label, ejscreen_pipeline_capture_output_wide(print(as.data.frame(x), row.names = FALSE)))
   }
   collapse_values <- function(x) {
     x <- as.character(x)
@@ -406,6 +592,13 @@ ejscreen_pipeline_prior_validation_text <- function(result,
       return("none")
     }
     paste(x, collapse = ", ")
+  }
+  differing_column_report <- result$column_report
+  if (is.null(differing_column_report) ||
+      !"differing_rows" %in% names(differing_column_report)) {
+    differing_column_report <- data.frame()
+  } else {
+    differing_column_report <- differing_column_report[differing_rows > 0]
   }
 
   c(
@@ -428,6 +621,7 @@ ejscreen_pipeline_prior_validation_text <- function(result,
     paste0("Row key columns: ", collapse_values(result$row_alignment$key_cols)),
     paste0("Row key set equal: ", result$row_alignment$set_equal),
     paste0("Row key order equal: ", result$row_alignment$order_equal),
+    paste0("Common row key values compared: ", result$row_alignment$common_rows),
     paste0("Rows aligned by key before comparison: ", isTRUE(result$row_alignment$aligned)),
     paste0("Shared data equal: ", result$shared_data_equal),
     "",
@@ -437,6 +631,8 @@ ejscreen_pipeline_prior_validation_text <- function(result,
     add_table("Missing expected columns:", result$missing_expected),
     "",
     add_table("Not replicated columns:", result$not_replicated),
+    "",
+    add_table("Differing columns detail:", differing_column_report),
     "",
     paste0("Warnings: ", collapse_values(warnings)),
     "",
@@ -971,6 +1167,14 @@ ejscreen_pipeline_compare_stage <- function(stage,
       pipeline_dir = output_dir,
       storage = storage
     )
+    if (!is.null(result) && !is.null(result$column_report)) {
+      ejscreen_pipeline_write_text_or_csv(
+        result$column_report,
+        paste0("prior_validation_", stage_safe, "_column_report.csv"),
+        pipeline_dir = output_dir,
+        storage = storage
+      )
+    }
   }
 
   list(

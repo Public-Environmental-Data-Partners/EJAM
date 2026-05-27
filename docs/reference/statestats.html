@@ -84,6 +84,16 @@ for each US State and PR and DC
 for all the blockgroups in that zone (e.g., blockgroups in <a href="blockgroupstats.html">blockgroupstats</a>)
 for a set of indicators such as percent low income.
 Each column is one indicator (or specifies the percentile).</p>
+<p>Because every row in <code>statestats</code> is a state-specific lookup row, most
+columns use the usual indicator names even when the values are used for
+state percentiles. The demographic index columns are a special
+compatibility case: <code>Demog.Index</code> and <code>Demog.Index.Supp</code> contain
+state-specific cutoffs calculated from <code>Demog.Index.State</code> and
+<code>Demog.Index.Supp.State</code>, respectively, so code that uses <code>names_d</code> or
+older EJSCREEN-style lookup names gets the correct state lookup values.
+The explicit <code>Demog.Index.State</code> and <code>Demog.Index.Supp.State</code> columns are
+also included and contain those same state-specific cutoff values for code
+that uses the clearer state-specific names.</p>
 <p>For details on how the table was made, see source package files in data-raw folder.</p>
 <p>See also <a href="usastats.html">usastats</a> for more details.</p>
     </div>
@@ -117,4 +127,3 @@ Each column is one indicator (or specifies the percentile).</p>
 
 
   </body></html>
-
