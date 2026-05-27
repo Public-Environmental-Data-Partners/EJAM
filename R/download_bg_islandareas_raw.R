@@ -17,6 +17,10 @@
 #' those values in `bg_acsdata` unless `use_islandareas_demographics = TRUE`.
 #' The default path appends Island Areas rows with no DHC-derived demographic
 #' values so it remains compatible with legacy EPA/EJScreen Island Areas rows.
+#' That supports blockgroup dataset, EJSCREEN export, and map-data visibility
+#' for AS/GU/MP/VI. Island Area blocks are not added to the block helper
+#' datasets in the v2.5.0 release path, so point-buffer/radius analyses there
+#' should return no-data results rather than block-weighted estimates.
 #'
 #' @param tables 2020 Island Areas Census DHC table groups to download, such as `"P1"`.
 #' @param areas Island Area postal abbreviations to include.

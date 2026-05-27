@@ -684,6 +684,12 @@ ejamit <- function(sitepoints = NULL,
     #progress_doagg$close()
   } # end latlon type
   ################################################################ #
+  if (is.null(out) || is.null(out$results_bysite)) {
+    message("No block centroids were found for any valid input site; no EJAM report results will be returned.")
+    return(NULL)
+  }
+
+  ################################################################ #
 
   # * AREA CALCULATION ####
 

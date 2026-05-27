@@ -19,6 +19,9 @@
 if (!exists("setnames")) {stop("data.table package needs to be loaded, via library(data.table) or by attaching the EJAM package ")}
 
 myurl <- "https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt"
+# As checked in May 2026, this Census PLACElist source does not include
+# AS/GU/MP/VI city, town, or CDP rows. Keep fips compact as integer below;
+# multiple FIPS helpers intentionally cast inputs before matching this table.
 censusplaces <- data.table::fread(myurl, sep = "|", header = TRUE, colClasses = list(character = 1:7))
 # censusplaces
 # STATE|STATEFP|PLACEFP|PLACENAME|TYPE|FUNCSTAT|COUNTY
@@ -162,6 +165,7 @@ dataset_documenter('censusplaces',
                    title = "censusplaces (DATA) Census FIPS and other basic info on roughly 40,000 cities/towns/places",
                    description = "Table of US cities and other Census Designated Places, Incorporated Places, and County Subdivisions",
                    details = paste0("from [https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt](https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt)
+#' As checked in May 2026, this Census PLACElist source did not include AS/GU/MP/VI city, town, or CDP rows. This is a source coverage note only; it does not change how `censusplaces$fips` is stored or matched by EJAM helpers.
 #' Column names: ", paste0(colnames(censusplaces), collapse = ", "))
 )
 ############################ # ############################ # ############################ # ############################ #

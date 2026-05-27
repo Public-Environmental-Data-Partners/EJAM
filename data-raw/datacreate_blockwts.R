@@ -14,6 +14,12 @@
 # release, validate that every blockgroupstats bgid/bgfips is represented in
 # bgid2fips and blockwts, that blockpoints/blockid2fips/blockwts share the same
 # blockid universe, and that any extra helper BGs are explicitly documented.
+#
+# Island Areas AS/GU/MP/VI are included only at the blockgroup dataset,
+# EJSCREEN export, and map-data visibility level for v2.5.0. Do not add Island
+# Area blocks to these block helper files for this release path; point-buffer,
+# radius, and block-weighted polygon analyses in AS/GU/MP/VI should return
+# no-data results rather than block-weighted estimates.
 ################################################################################
 
 # The block data.table tables
@@ -29,7 +35,7 @@
 
 # for version 2.32 (in July/August 2024)
 # were created from the .gdb.zip file that was obtained from the EJSCREEN team
-message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI MP AS, since they lack demographic data from ACS")
+message("The 'datacreate_blockwts.R' script intentionally excludes Island Areas AS/GU/MP/VI. EJAM v2.5.0 supports those areas at the blockgroup dataset/export/map-data level, but block/radius analyses there should return no-data results.")
 
 # for version 2.5.0 (in May 2026)
 # created  from Census 2020 data

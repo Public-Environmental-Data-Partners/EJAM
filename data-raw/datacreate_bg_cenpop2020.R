@@ -11,6 +11,10 @@
 # planning-region geography. Running this script without a deliberate
 # reconciliation step can create thousands of CT bgfips/bgid mismatches relative
 # to blockgroupstats and the EPA/EJScreen adjusted helper files.
+#
+# Island Areas AS/GU/MP/VI are included only at the blockgroup dataset,
+# EJSCREEN export, and map-data visibility level for v2.5.0. This helper file
+# intentionally does not enable Island Area radius/buffer use.
 ################################################################################
 
 # State/state equivalent entity-based text files containing the

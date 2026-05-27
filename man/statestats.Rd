@@ -3,7 +3,7 @@
 \docType{data}
 \name{statestats}
 \alias{statestats}
-\title{statestats (DATA) data.frame of 100 percentiles and means for each US State and PR and DC.}
+\title{statestats (DATA) data.frame of 100 percentiles and means for each state/territory region}
 \format{
 An object of class \code{data.frame} with 5304 rows and 114 columns.
 }
@@ -12,10 +12,16 @@ statestats
 }
 \description{
 data.frame of 100 percentiles and means
-for each US State and PR and DC
+for each state/territory region represented in \link{blockgroupstats}
 for all the blockgroups in that zone (e.g., blockgroups in \link{blockgroupstats})
 for a set of indicators such as percent low income.
 Each column is one indicator (or specifies the percentile).
+
+For EJAM v2.5.0, \link{blockgroupstats} may include AS/GU/MP/VI at the
+blockgroup dataset, EJSCREEN export, and map-data visibility level.
+Demographic values for those Island Areas are normally \code{NA} because ACS
+does not cover them. Environmental lookup values may be present where EPA
+environmental fields are available.
 
 Because every row in \code{statestats} is a state-specific lookup row, most
 columns use the usual indicator names even when the values are used for

@@ -40,25 +40,34 @@
 #'
 #'   - GEOGRAPHIC SCOPE:
 #'
-#'     - Data here includes States, DC, and Puerto Rico (PR).
+#'     - Data here includes States, DC, Puerto Rico (PR), and, for EJAM
+#'     v2.5.0, the Island Areas AS/GU/MP/VI at the blockgroup dataset,
+#'     EJSCREEN export, and map-data visibility level.
 #'
-#'     - Puerto Rico is included in both Census 2020 and ACS survey data, so it is in EJScreen blockgroup data, in the `blockgroupstats` dataset.
+#'     - Puerto Rico is included in both Census 2020 and ACS survey data, so it
+#'     has ACS-derived demographics in the `blockgroupstats` dataset.
 #'
-#'     - The package `blockgroupstats` data normally include States, DC, and PR
-#'     only. The American Community Survey (ACS) does not include the Island
-#'     Areas, although EJScreen has used AS/GU/MP/VI rows in some exports. The
-#'     annual pipeline can optionally append AS/GU/MP/VI placeholder rows and
-#'     save 2020 Island Areas Census DHC demographics as a separate
-#'     `bg_islandareas_demographics` checkpoint for review. Those DHC
-#'     demographics are not used in the default EJScreen-compatible
-#'     `blockgroupstats` output unless the maintainer explicitly opts into a
-#'     mixed-source supplemental dataset. See
+#'     - The American Community Survey (ACS) does not include AS/GU/MP/VI. For
+#'     EJAM v2.5.0, the default EJSCREEN-compatible pipeline appends AS/GU/MP/VI
+#'     rows with demographic fields, population, and demographic indexes kept as
+#'     `NA`, while preserving partial EPA environmental fields where available.
+#'     The annual pipeline can also save 2020 Island Areas Census DHC
+#'     demographics as a separate `bg_islandareas_demographics` checkpoint for
+#'     review. Those DHC demographics are not used in the default
+#'     EJSCREEN-compatible `blockgroupstats` output unless the maintainer
+#'     explicitly opts into a mixed-source supplemental dataset. See
 #'     https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html
 #'     and also see `stateinfo2[stateinfo2$is.island.areas, ]` and
 #'     [islandareas]. The Island Areas include American Samoa (AS), U.S. Virgin
 #'     Islands (VI), Guam (GU), and Northern Mariana Islands (MP). The U.S.
 #'     Minor Outlying Islands (UM) are also Island Areas but are not included in
 #'     EJScreen.
+#'
+#'     - Island Areas are not supported by the block helper datasets used for
+#'     point-buffer/radius and block-weighted polygon analysis, such as
+#'     [blockwts], [blockpoints], [bgid2fips], [blockid2fips], [quaddata], and
+#'     [bgpts]. Radius/buffer analysis for AS/GU/MP/VI should return no-data
+#'     results rather than block-weighted estimates.
 #'
 #'   - COLUMNS / INDICATORS:
 #'

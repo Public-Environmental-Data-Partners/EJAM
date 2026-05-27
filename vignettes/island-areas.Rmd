@@ -1,0 +1,92 @@
+---
+title: "Island Areas in EJAM v2.5.0"
+description: "How EJAM v2.5.0 treats American Samoa, Guam, Northern Mariana Islands, and the U.S. Virgin Islands"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Island Areas in EJAM v2.5.0}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+
+```{r SETUP_default_eval_or_not, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+# Scope
+
+For EJAM v2.5.0, "Island Areas" means American Samoa (AS), Guam
+(GU), the Commonwealth of the Northern Mariana Islands (MP), and the
+U.S. Virgin Islands (VI). Puerto Rico is not treated as an Island Area
+for this purpose because Puerto Rico is included in both Census 2020 and ACS
+data used by EJAM. The U.S. Minor Outlying Islands (UM) are not included in
+EJSCREEN/EJAM.
+
+EJAM v2.5.0 includes AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
+and map-data visibility level. Demographic fields are kept as missing where
+ACS data are not available, and partial EPA environmental fields may be present
+where EPA provided them.
+
+EJAM v2.5.0 does not add Island Area Census blocks to the block helper files
+used for point-buffer/radius analysis. A report or radius analysis in an Island
+Area should not crash, but should normally return no-data results when no
+block centroids are available in the area analyzed.
+
+# Census Places
+
+The EJAM `censusplaces` dataset is built from the Census Bureau PLACElist
+source. As checked in May 2026, that source did not include city, town, or CDP
+rows for AS/GU/MP/VI. As a result, EJAM's city/place picker should not be
+expected to offer Island Area places unless the source data and related
+selection logic are updated and validated later.
+
+This is a coverage note only. It does not change the way `censusplaces$fips` is
+stored or used internally.
+
+# EJSCREEN Map Layers Observed in Island Areas
+
+The following notes summarize a manual check of the live EJSCREEN app in May
+2026, covering the 2024, 2025, and 2026 versions. Treat these as observed
+layer-availability notes, not as a guarantee that every mapped layer has a
+non-null score in every Island Area.
+
+## Maps Tab
+
+| Layer group | Island Area availability observed | Notes |
+|---|---|---|
+| 13 environmental indicators | No | None of the main environmental-indicator map layers appeared available in Island Areas. |
+| Climate indicators | Partial | Sea level rise indicators and extreme heat appeared available. Other climate indicators did not. |
+| Socioeconomic/key demographic indicators | No | ACS-based demographic indicators were not available. |
+| EJ Indexes and Supplementary Indexes | No | EJ Index and Supplementary Index layers were not available. |
+| Health disparities | Unclear/limited | Cancer and disabilities appeared to show map colors in at least the U.S. Virgin Islands, but with null scores. |
+| Service gaps | Unclear/limited | Housing burden appeared to show map colors in at least the U.S. Virgin Islands, but with null scores. |
+
+## Places Tab
+
+| Layer group | Island Area availability observed | Layers |
+|---|---|---|
+| EPA regulated facilities | Yes, all checked layers | Superfund, water dischargers, air pollution, hazardous waste, brownfields, Toxics Release Inventory, and Chemical Data Reporting. |
+| Other environmental data | Partial | Available: Facilities Compliance Status, Air Toxics Cancer Risk, RSEI Score, and Water Features. Not available: Nonattainment Areas and EJ Grants. Unclear: Private Drinking Water Wells and Drinking Water Service Areas. |
+| Community landmarks | Mostly available | Available: schools, hospitals, places of worship, parks, public housing, and subsidized housing. Not available: prisons. |
+| Tribal Lands and Indigenous Areas | No | Tribal Lands, Tribal Cession Boundaries, and Other Indigenous Areas were not available. |
+| Colonias | No | HUD Colonias Communities, Texas State Colonias, and New Mexico State Colonias were not available. |
+| Designated Disadvantaged Communities | Yes, all checked layers | Justice40/CEJST and EPA IRA Disadvantaged Communities. |
+
+# Practical Meaning for EJAM v2.5.0
+
+EJAM should allow Island Area blockgroups to appear in datasets, exports, and
+maps where blockgroup-level data are available. EJAM should not imply that the
+full ACS demographic indicator set, EJ Indexes, or block-based radius analysis
+are available there.
+
+For future work, Island Area block helper coverage could be revisited, but that
+would require a separate build and validation of Island Area block points,
+block weights, and block-to-blockgroup crosswalks.

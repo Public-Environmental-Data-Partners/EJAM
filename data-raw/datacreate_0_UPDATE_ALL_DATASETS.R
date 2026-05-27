@@ -201,7 +201,7 @@ if (0 == 1) {  # collapsable list
     documentOpen('./data-raw/datacreate_runtime_models.R')
 
     #   blocks
-    documentOpen('./data-raw/datacreate_blockwts.R')           # needs Island Areas added
+    documentOpen('./data-raw/datacreate_blockwts.R')           # future: add Island Areas only after block helper validation
     #    and be sure to obtain correct version either from census or directly from ejscreen team
 
     #   blockgroups
@@ -347,7 +347,7 @@ loadall()
 # . ####
 ######################################### #
 ## * BLOCKS  ####
-# documentOpen('./data-raw/datacreate_blockwts.R')           # needs Island Areas added
+# documentOpen('./data-raw/datacreate_blockwts.R')           # future: add Island Areas only after block helper validation
 
 ######################################### #
 ### datacreate_blockwts.R ####

@@ -40,6 +40,7 @@ articles:
   navbar: Overview for EJAM Users
   contents:
   - '`whatis`'
+  - '`island-areas`'
   - '`webapp`'
 - title: The EJAM R Package
   desc: For analysts using R

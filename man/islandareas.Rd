@@ -27,6 +27,16 @@ Puerto Rico is included in both Census 2020 and ACS survey data.
 The 2020 Census (Island Areas Census) did include information on AS,GU,MP,VI, but the ACS does not include Island Areas.
 See https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html
 
+For EJAM v2.5.0, AS/GU/MP/VI may appear in blockgroup datasets,
+EJSCREEN export files, and map-facing blockgroup data with demographic
+fields kept as \code{NA} and partial EPA environmental fields where available.
+Island Area blocks are not added to EJAM's block helper datasets, so
+radius/buffer analysis there should return no-data results rather than
+block-weighted estimates.
+
+See \code{vignette("island-areas", package = "EJAM")} for v2.5.0 Island Area
+coverage notes and live EJSCREEN layer availability observed in May 2026.
+
 See \href{https://www.census.gov/programs-surveys/geography.html}{Census documentation}
 
 See source package files datacreate_islandareas.R or EJAM/data-raw/datafile_islandareas.csv

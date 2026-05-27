@@ -149,6 +149,21 @@ test_that("ejamit no-block-centroid invalid messages distinguish site types", {
 })
 ########################################################## #
 
+test_that("ejamit() returns no result rather than crashing when Island Area sites have no block helpers", {
+  guam_point <- data.table::data.table(lat = 13.45, lon = 144.75)
+  out <- NULL
+
+  expect_no_error({
+    capture.output({
+      out <- suppressWarnings(suppressMessages(
+        ejamit(guam_point, radius = 3, quiet = TRUE, silentinteractive = TRUE)
+      ))
+    })
+  })
+  expect_null(out)
+})
+########################################################## #
+
 test_that("ejamit() returns no distances greater than radius - even if maxradius parameter not specified", {
   max_specified <- 3
   suppressWarnings(

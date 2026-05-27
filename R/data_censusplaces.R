@@ -7,5 +7,6 @@
 #' @title censusplaces (DATA) Census FIPS and other basic info on roughly 40,000 cities/towns/places
 #' @description Table of US cities and other Census Designated Places, Incorporated Places, and County Subdivisions
 #' @details from [https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt](https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt)
+#' As checked in May 2026, this Census PLACElist source did not include AS/GU/MP/VI city, town, or CDP rows. This is a source coverage note only; it does not change how `censusplaces$fips` is stored or matched by EJAM helpers.
 #' Column names: eparegion, ST, stfips, countyname, countyfips, placename, fips
 'censusplaces'

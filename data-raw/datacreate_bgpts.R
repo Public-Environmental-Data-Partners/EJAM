@@ -7,6 +7,12 @@
 # block helper Arrow files that match the EPA/EJScreen adjusted 2020-to-2022
 # helper universe.
 #
+# Island Areas AS/GU/MP/VI are included only at the blockgroup dataset,
+# EJSCREEN export, and map-data visibility level for v2.5.0. The bgpts and
+# block helper files intentionally do not include those areas, so point-buffer,
+# radius, and block-weighted polygon analyses in AS/GU/MP/VI should return
+# no-data results rather than block-weighted estimates.
+#
 # This script depends on blockpoints, blockwts, and bgid2fips already being a
 # coherent helper universe. It should only be run after a deliberate refresh of
 # those helper files, with validation that blockgroupstats bgid values still
@@ -55,9 +61,11 @@ bgpts[ , bgfips := bgid2fips$bgfips]
 ############################################# #
 #  THE  v2.32 block table from EJSCREEN team with weights already had PR at least,
 
-## bgid2fips has only 50 states plus DC and PR, but not AS GU MP VI, which is fine:
+## bgid2fips has only 50 states plus DC and PR, but not AS GU MP VI, which is
+## intentional for v2.5.0 helper files:
 length(fips2state_abbrev(rownames(table(substr(bgid2fips$bgfips,1,2)))))
-## AS GU MP VI were in blockgroupstats but NOT in bgpts! will drop from blockgroupstats.
+## AS GU MP VI may be in blockgroupstats but are NOT in bgpts or other block
+## helpers yet. That is OK only for BG dataset/export/map visibility.
 # unique(blockgroupstats[, .(statename, island = is.island(ST), bgcount = .N), by = "ST"])
 ## ST abbrev is in blockgroupstats and will not be stored in bgpts or bgid2fips etc.
 # blockid2fips[, ST := fips2state_abbrev(substr(blockfips,1,2))][,.N,by = "ST"]

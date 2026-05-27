@@ -4,12 +4,18 @@
 
 #' @name statestats
 #' @docType data
-#' @title statestats (DATA) data.frame of 100 percentiles and means for each US State and PR and DC.
+#' @title statestats (DATA) data.frame of 100 percentiles and means for each state/territory region
 #' @description data.frame of 100 percentiles and means
-#'   for each US State and PR and DC
+#'   for each state/territory region represented in [blockgroupstats]
 #'   for all the blockgroups in that zone (e.g., blockgroups in [blockgroupstats])
 #'   for a set of indicators such as percent low income.
 #'   Each column is one indicator (or specifies the percentile).
+#'
+#'   For EJAM v2.5.0, [blockgroupstats] may include AS/GU/MP/VI at the
+#'   blockgroup dataset, EJSCREEN export, and map-data visibility level.
+#'   Demographic values for those Island Areas are normally `NA` because ACS
+#'   does not cover them. Environmental lookup values may be present where EPA
+#'   environmental fields are available.
 #'
 #'   Because every row in `statestats` is a state-specific lookup row, most
 #'   columns use the usual indicator names even when the values are used for
