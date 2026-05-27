@@ -39,7 +39,7 @@ acs22_replication_default_config <- function(
       "EJAM_ACS22_REPLICATION_EPA_REFERENCE_DIR",
       unset = paste0(
         "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
-        "ejscreen_acs_2024/epa_original_reference/2024_2.32_August_UseMe"
+        "ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe"
       )
     ),
     ejam_2025_ref = Sys.getenv(
@@ -373,6 +373,37 @@ acs22_replication_comparison_plan <- function(config) {
   )
 }
 
+acs22_replication_epa_reference_note <- function(config) {
+  c(
+    "EPA reference files:",
+    "",
+    paste0(
+      "The archived EPA EJScreen reference datasets released in 2024 based on ",
+      "ACS2022 (2018-2022) and used as the starting point for EJAM versions ",
+      "2.32.x are saved on S3 here:"
+    ),
+    "",
+    paste0("- National blockgroup data: ", unname(config$epa["national_bg"])),
+    paste0("- State-percentile blockgroup data: ", unname(config$epa["statepct_bg"])),
+    paste0("- National percentile lookup table: ", unname(config$epa["national_lookup"])),
+    paste0("- State percentile lookup table: ", unname(config$epa["state_lookup"])),
+    "",
+    "Corresponding EJAM files:",
+    "",
+    paste0(
+      "- blockgroupstats.rda: nationwide blockgroup data without percentile ",
+      "columns, without EJ Index columns, and without popup text or map color bins."
+    ),
+    "- bgej.arrow: nationwide EJ Indexes.",
+    "- usastats.rda and statestats.rda: percentile lookup tables.",
+    paste0(
+      "- Be careful with demographic-index column names in statestats and the EPA ",
+      "state lookup table; national and state versions of demographic indexes use ",
+      "different naming conventions across sources."
+    )
+  )
+}
+
 acs22_replication_write_inventory <- function(config = acs22_replication_default_config()) {
   inventories <- list(
     sources = acs22_replication_source_inventory(config),
@@ -398,6 +429,8 @@ acs22_replication_write_inventory <- function(config = acs22_replication_default
       paste0("Created: ", Sys.time()),
       "",
       "This is a one-time replication diagnostic folder, not part of annual pipeline QA/QC.",
+      "",
+      acs22_replication_epa_reference_note(config),
       "",
       "Sources:",
       EJAM:::ejscreen_pipeline_capture_output_wide(print(inventories$sources)),

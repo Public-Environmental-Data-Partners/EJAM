@@ -7,7 +7,7 @@ The ordering here follows the current debugging priority: raw scores first, perc
 
 ## Inputs
 
-- EPA 2024 EJScreen v2.32 ACS22 reference folder: `s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024/epa_original_reference/2024_2.32_August_UseMe`
+- EPA 2024 EJScreen v2.32 ACS22 reference folder: `s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe`
 - EJAM 2025 tool reference: `v2.32.8.001` package data
 - EJAM 2026 pipeline ACS22 folder: `s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022`
 

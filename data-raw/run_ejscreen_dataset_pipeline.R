@@ -521,8 +521,9 @@ if (!nzchar(ejscreen_export_reference_path) &&
     identical(as.character(pipeline_yr), "2022") &&
     identical(pipeline_storage, "s3")) {
   ejscreen_export_reference_path <- paste0(
-    "s3://pedp-data-preserved/ejscreen-data-processing/shared/pipeline/",
-    "preprocessed_input/ejscreen/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv"
+    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
+    "ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe/",
+    "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv"
   )
 }
 validate_ejscreen_export_reference <- env_flag(
