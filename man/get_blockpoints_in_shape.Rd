@@ -26,7 +26,7 @@ or polygons}
 
 \item{blocksnearby}{optional table of blocks with blockid, etc (from which lat,lon can be looked up in blockpoints dt)}
 
-\item{dissolved}{If TRUE, use \code{\link[sf:geos_combine]{sf::st_union()}} to find unique blocks inside any one or more of polys}
+\item{dissolved}{If TRUE, use \code{\link[sf:st_union]{sf::st_union()}} to find unique blocks inside any one or more of polys}
 
 \item{safety_margin_ratio}{multiplied by addedbuffermiles, how far to search for
 blocks nearby using \code{\link[=getblocksnearby]{getblocksnearby()}}, before using those found to do the intersection via sf::}

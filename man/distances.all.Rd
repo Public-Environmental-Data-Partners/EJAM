@@ -52,7 +52,7 @@ USED ONLY FOR distance_near_eachother()
 Returns all the distances from one set of geographic points to another set of points.
 Can return a matrix of distances (m x n points) or vector or data.frame with one row per pair.
 Lets you specify units and whether you need lat/lon etc, but essentially just a wrapper for
-the \href{https://r-spatial.github.io/sf/}{sf} package for the \link[sf:geos_measures]{sf::st_distance} and \link[sf:st_as_sf]{sf::st_as_sf} functions.
+the \href{https://r-spatial.github.io/sf/}{sf} package for the \link[sf:st_distance]{sf::st_distance} and \link[sf:st_as_sf]{sf::st_as_sf} functions.
 
 \preformatted{
   *** Probably slower than it needs to be partly by using data.frame

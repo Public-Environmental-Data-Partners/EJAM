@@ -41,7 +41,7 @@ and it also can save any uploaded files.
 \item If enableBookmarking="disable", bookmarking is disabled.
 }
 
-See \code{\link[shiny:shinyApp]{shiny::shinyApp()}} \code{\link[shiny:bookmarkButton]{shiny::bookmarkButton()}} \code{\link[shiny:onBookmark]{shiny::onBookmark()}} \code{\link[shiny:onBookmark]{shiny::onBookmarked()}} \code{\link[shiny:onBookmark]{shiny::onRestore()}} \code{\link[shiny:onBookmark]{shiny::onRestored()}}
+See \code{\link[shiny:shinyApp]{shiny::shinyApp()}} \code{\link[shiny:bookmarkButton]{shiny::bookmarkButton()}} \code{\link[shiny:onBookmark]{shiny::onBookmark()}} \code{\link[shiny:onBookmarked]{shiny::onBookmarked()}} \code{\link[shiny:onRestore]{shiny::onRestore()}} \code{\link[shiny:onRestored]{shiny::onRestored()}}
 or (https://mastering-shiny.org/action-bookmark.html)}
 
 \item{options}{see \code{\link[shiny:shinyApp]{shiny::shinyApp()}}, e.g. options = list(launch.browser=TRUE) makes RStudio launch the app in a browser not the built-in viewer pane.}
@@ -52,7 +52,7 @@ or (https://mastering-shiny.org/action-bookmark.html)}
 }
 \value{
 An object that represents the app. Printing the object or
-passing it to \code{\link[shiny:runApp]{shiny::runApp()}} will run the app, as would just typing
+passing it to \code{\link[shiny:runApp]{runApp()}} will run the app, as would just typing
 \code{\link[=run_app]{run_app()}} or \code{\link[=ejamapp]{ejamapp()}} in the console.
 }
 \description{

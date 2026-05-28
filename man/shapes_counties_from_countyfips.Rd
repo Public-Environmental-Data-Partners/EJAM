@@ -30,7 +30,7 @@ spatial object via \code{\link[sf:st_read]{sf::st_read()}}
 Get Counties boundaries via API, to map them
 }
 \details{
-Used \code{\link[sf:st_read]{sf::read_sf()}}, which is an alias for \code{\link[sf:st_read]{sf::st_read()}}
+Used \code{\link[sf:read_sf]{sf::read_sf()}}, which is an alias for \code{\link[sf:st_read]{sf::st_read()}}
 but with some modified default arguments.
 read_sf is quiet by default/ does not print info about data source, and
 read_sf returns an sf-tibble rather than an sf-data.frame

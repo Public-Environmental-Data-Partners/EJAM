@@ -116,4 +116,4 @@ LazyDataCompression: gzip
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0
