@@ -436,9 +436,10 @@ reference:
   - testoutput_ejamit_fips_counties
 - title: "Utilities providing URL or API info"
   contents:
+  - url_ejscreenmap
+  - url_ejamapp
   - ejamapi
   - url_ejamapi
-  - url_ejscreenmap
   - url_enviromapper
   - url_echo_facility
   - url_frs_facility

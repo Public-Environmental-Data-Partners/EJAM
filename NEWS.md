@@ -58,6 +58,7 @@ Highlights:
 - `ejamapi()` was significantly enhanced with PDF support, query endpoint,
   a new parameter to help save .html file reports, bug fixes, 
   more error-checking, and better examples.
+- `url_ejamapp()` created as shortcut to the live web app where it is currently hosted.
 - `plot_distance_by_pctd()` fix when weights are not population.
 - `acs_bycounty()` / `acs_endyear()` fixes: character year handling and renamed/standardized `acs_endyear()`.
 - App robustness fixes for NULL settings such as `bookmarking_allowed` or

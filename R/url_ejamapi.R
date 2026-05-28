@@ -1,7 +1,7 @@
 
 
 #' Get URL(s) of HTML summary reports for use with EJAM-API
-#' @seealso [ejamapi()]
+#' @seealso [ejamapi()] [url_ejamap()]
 #' @details
 #' - This is work in progress to some extent -- this and the API may be add features in later releases.
 #'
