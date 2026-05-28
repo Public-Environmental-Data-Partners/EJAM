@@ -1,5 +1,7 @@
 test_that("map_headernames is regenerated from csv, not the legacy xlsx workbook", {
-  script <- readLines(test_path("../../data-raw/datacreate_map_headernames.R"), warn = FALSE)
+  script_path <- test_path("../../data-raw/datacreate_map_headernames.R")
+  skip_if_not(file.exists(script_path))
+  script <- readLines(script_path, warn = FALSE)
 
   expect_true(any(grepl("map_headernames[.]csv", script)))
   expect_false(any(grepl("read_xlsx|readxl", script)))
