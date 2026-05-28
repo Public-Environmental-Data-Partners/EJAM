@@ -501,6 +501,13 @@ table_xls_format <- function(overall,
     updateProgress(message_main = boldtext, value = 0.4)
   }
 
+  if ("shp" %in% sitetype && "EJAM Report" %in% names(eachsite)) {
+    eachsite[["EJAM Report"]] <- rep(shp_ejam_report_fallback_url, NROW(eachsite))
+    if ("EJAM Report" %in% names(overall)) {
+      overall[["EJAM Report"]] <- rep(shp_ejam_report_fallback_url, NROW(overall))
+    }
+  }
+
   openxlsx::writeData(wb,
                       sheet = 'Overall', x = overall,
                       xy = c(1,1), colNames = TRUE,
