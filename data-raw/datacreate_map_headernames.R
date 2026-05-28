@@ -346,7 +346,10 @@ datacreate_map_headernames <- function(rawdir = "./data-raw",
 if (!exists("fpath")) {
   map_headernames <- datacreate_map_headernames()
 } else {
-  map_headernames <- datacreate_map_headernames(fpath)
+  map_headernames <- datacreate_map_headernames(
+    rawdir = dirname(fpath),
+    fname = basename(fpath)
+  )
 }
 ## metadata ####
 # map_headernames <- metadata_add(map_headernames)
