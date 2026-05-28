@@ -229,7 +229,7 @@ test_that("ejam2excel shapefile analyses use EJAM app links in excel", {
   fname <- tempfile(fileext = ".xlsx")
 
   expect_no_error({
-    fname <- ejam2excel(
+    ejam2excel(
       testoutput_ejamit_shapes_2,
       interactive_console = FALSE,
       fname = fname,
