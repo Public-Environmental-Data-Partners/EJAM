@@ -132,6 +132,13 @@ table_xls_format <- function(overall,
     ejscreen_ejam_caveat <- "Some numbers as shown on pre-2025 EPA EJSCREEN reports using ACS 2018-2022 in some cases were very slightly different than estimates in 2025 EJSCREEN reports (as calculations were transitioned from EPA to non-EPA software based on EJAM). All numbers shown in both types of reports are estimates, and any differences are well within the range of uncertainty inherent in the American Community Survey data as used in EJSCREEN. Slight differences are inherent in very quickly calculating results for multiple locations."
   }
 
+  shp_ejam_report_fallback_url <- "https://ejanalysis.com/ejamapp"
+  shp_ejam_report_note <- paste0(
+    "This analysis used shapefile polygons, so site-level EJAM report links in this workbook open the EJAM app (",
+    shp_ejam_report_fallback_url,
+    "). To run a one-site report, provide the original shapefile polygon again in the app."
+  )
+
   if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  && isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &&
       isTRUE(all.equal(heatmap2_cuts, c(1.009, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
     color_legend <- paste0(
@@ -454,6 +461,7 @@ table_xls_format <- function(overall,
     "Population at x% of sites" =  popshare_p_lives_at_what_pct(eachsite$pop, p = 0.50, astext = TRUE),
     "Population at N sites" = popshare_at_top_n(eachsite$pop, c(1, 5, 10), astext = TRUE),
     "Note on site-specific estimates" = ejscreen_ejam_caveat,
+    "Note on shapefile-based site links" = if ("shp" %in% sitetype) shp_ejam_report_note else "",
     "Color Legend for highlighted cells" = color_legend,
 
     check.names = FALSE
@@ -491,6 +499,13 @@ table_xls_format <- function(overall,
   if (is.function(updateProgress)) {
     boldtext <- 'Writing data to sheets'
     updateProgress(message_main = boldtext, value = 0.4)
+  }
+
+  if ("shp" %in% sitetype && "EJAM Report" %in% names(eachsite)) {
+    eachsite[["EJAM Report"]] <- rep(shp_ejam_report_fallback_url, NROW(eachsite))
+    if ("EJAM Report" %in% names(overall)) {
+      overall[["EJAM Report"]] <- rep(shp_ejam_report_fallback_url, NROW(overall))
+    }
   }
 
   openxlsx::writeData(wb,
@@ -596,10 +611,18 @@ table_xls_format <- function(overall,
     for (i in 1:length(hyperlink_colnames)) {
       namedvector <- as.vector(eachsite[ , hyperlink_colnames[i]]) # vector of length NROW()
       namedvector_overall <- as.vector(overall[ , hyperlink_colnames[i]]) # vector of length 1
+      this_hyperlink_text <- hyperlink_text[i]
+      this_hyperlink_text_overall <- hyperlink_colnames[i]
+
+      if ("shp" %in% sitetype && hyperlink_colnames[i] %in% "EJAM Report") {
+        this_hyperlink_text <- "Open EJAM App"
+        this_hyperlink_text_overall <- "Open EJAM App"
+      }
+
       # add "hyperlink" class and names as text  # not NROW + 1 here !
       # url_xl_style() ALSO CONVERTS HTML TAG URLS BACK TO JUST PLAIN URLS FIRST:
-      namedvector <- url_xl_style(namedvector, urltext = rep(  hyperlink_text[i], length(namedvector)))  # , 1:(NROW(eachsite)))) # to number them to use e.g., "EJSCREEN Report 1"
-      namedvector_overall <- url_xl_style(namedvector_overall, urltext = hyperlink_colnames[i]) ## use hyperlink_colnames not text here since it is the overall summary not just 1 site
+      namedvector <- url_xl_style(namedvector, urltext = rep(this_hyperlink_text, length(namedvector)))  # , 1:(NROW(eachsite)))) # to number them to use e.g., "EJSCREEN Report 1"
+      namedvector_overall <- url_xl_style(namedvector_overall, urltext = this_hyperlink_text_overall) ## use hyperlink_colnames not text here since it is the overall summary not just 1 site
       ## write to the worksheet the revised URL
       openxlsx::writeData(wb, sheet = 'Each Site',
                           x = namedvector,
