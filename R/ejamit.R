@@ -702,7 +702,14 @@ ejamit <- function(sitepoints = NULL,
                          download_city_fips_bounds = download_city_fips_bounds, download_noncity_fips_bounds = download_noncity_fips_bounds)
     }
     if (sitetype %in% "shp") {
-      areas <- area_sqmi(shp = shp_valid) # includes any BUFFER ADDED
+      areas_by_site <- data.table(
+        ejam_uniq_id = as.character(shp_valid$ejam_uniq_id),
+        area_sqmi = area_sqmi(shp = shp_valid) # includes any BUFFER ADDED
+      )
+      areas <- areas_by_site[
+        match(as.character(out$results_bysite$ejam_uniq_id), ejam_uniq_id),
+        area_sqmi
+      ]
     }
     if (sitetype %in% "latlon") {
       # CHECK IF DONUT OPTION WAS USED !       radius_donut_lower_edge
@@ -751,10 +758,21 @@ ejamit <- function(sitepoints = NULL,
 
   data_uploaded$valid[site_in_results_pop0 | !site_in_results] <- FALSE  # NOTE this also says invalid if zero population
 
+  ejamit_no_block_centroids_message <- function(sitetype) {
+    if (sitetype %in% "fips") {
+      return("no block centroids (fips boundaries not obtained)")
+    }
+    if (sitetype %in% "shp") {
+      return("no block centroids (polygon too small for low pop density)")
+    }
+    "no block centroids (radius too small for low pop density)"
+  }
   data_uploaded$invalid_msg[!dropped_before_getblocks & !site_in_blocksfound] <-
     ejamit_no_block_centroids_message(sitetype)
-  data_uploaded$invalid_msg[site_in_blocksfound & !site_in_results] <- "blocks with residents found but unable to aggregate" # why?
-  data_uploaded$invalid_msg[site_in_results_pop0]   <- "blocks found but zero residents" # msg differs from server version
+  data_uploaded$invalid_msg[site_in_blocksfound & !site_in_results] <-
+    "blocks with residents found but unable to aggregate" # why?
+  data_uploaded$invalid_msg[site_in_results_pop0]   <-
+    "blocks found but zero residents" # msg differed from server version?
 
   # Merge invalid and valid sites and msg, so results_bysite has ALL sites originally provided for analysis.
   setDT(data_uploaded)
@@ -888,13 +906,3 @@ ejamit <- function(sitepoints = NULL,
   invisible(out)
 }
 ################################################################ #
-
-ejamit_no_block_centroids_message <- function(sitetype) {
-  if (sitetype %in% "fips") {
-    return("no block centroids (fips boundaries not obtained)")
-  }
-  if (sitetype %in% "shp") {
-    return("no block centroids (polygon too small for low pop density)")
-  }
-  "no block centroids (radius too small for low pop density)"
-}
