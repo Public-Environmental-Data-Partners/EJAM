@@ -1,7 +1,6 @@
 
 ############## # ############## # ejamit()
 
-
 # ejamit() ####
 
 ## COUNTIES ####
@@ -11,7 +10,8 @@ EJAM:::metadata_add_and_use_this("testoutput_ejamit_fips_counties")
 # data(testoutput_ejamit_fips_counties) # may be need to see the just-updated attributes
 # testoutput_ejamit_fips_counties <- metadata_add(testoutput_ejamit_fips_counties)
 # usethis::use_data(testoutput_ejamit_fips_counties, overwrite = TRUE)
-EJAM:::dataset_documenter("testoutput_ejamit_fips_counties", description = "This is the output of ejamit(fips = testinput_fips_counties)",
+EJAM:::dataset_documenter("testoutput_ejamit_fips_counties",
+                          description = "This is the output of ejamit(fips = testinput_fips_counties)",
                    seealso = "[ejamit()] [testdata()]")
 ############## # #
 
@@ -21,16 +21,15 @@ testoutput_ejamit_fips_cities <- ejamit(fips = testinput_fips_cities) #  CITIES
 EJAM:::metadata_add_and_use_this("testoutput_ejamit_fips_cities")
 # testoutput_ejamit_fips_cities <- metadata_add(testoutput_ejamit_fips_cities)
 # usethis::use_data(testoutput_ejamit_fips_cities, overwrite = TRUE)
-EJAM:::dataset_documenter("testoutput_ejamit_fips_cities", description = "This is the output of ejamit(fips = testinput_fips_cities)",
+EJAM:::dataset_documenter("testoutput_ejamit_fips_cities",
+                          description = "This is the output of ejamit(fips = testinput_fips_cities)",
                    seealso = "[ejamit()] [testdata()]")
-
 
 ############## # ############## # ejam2excel()
 
 
 # save as EXCEL via ejam2excel() COUNTIES ####
 
-# if (resaving_ejam2excel) {
 fname <- paste0("testoutput_ejamit_fips_counties" )  #  COUNTIES
 junk <- ejam2excel(
   (testoutput_ejamit_fips_counties),
@@ -43,12 +42,10 @@ junk <- ejam2excel(
   launchexcel = FALSE,
   interactive_console = FALSE
 )
-# }
 ############## # #
 
 # save as EXCEL via ejam2excel() CITIES ####
 
-# if (resaving_ejam2excel) {
   fname <- paste0("testoutput_ejam2excel_fips_cities" )  #  CITIES
   junk <- ejam2excel(
      (testoutput_ejamit_fips_cities),
@@ -61,36 +58,50 @@ junk <- ejam2excel(
     launchexcel = FALSE,
     interactive_console = FALSE
   )
-# }
-
   ############## # ############## # ejam2report()
 
 
   # save as HTML Report via ejam2report() COUNTIES ####
 
-  # if (resaving_ejam2report ) {
   fname <- paste0("testoutput_ejamit_fips_counties")  #  COUNTIES
   url_html <- ejam2report(
     (testoutput_ejamit_fips_counties),
     analysis_title = "Sample Summary Report for County FIPS",
-    launch_browser = F
+    launch_browser = F,
+    fileextension = "html"
   )
   file.copy(url_html, paste0("./inst/testdata/examples_of_output/", fname, ".html"),
             overwrite = TRUE
   )
-  # }
   ############## # #
 
 # save as HTML Report via ejam2report() CITIES ####
 
-# if (resaving_ejam2report ) {
   fname <- paste0("testoutput_ejam2report_fips_cities") #  CITIES
   url_html <- ejam2report(
      (testoutput_ejamit_fips_cities),
     analysis_title = "Sample Summary Report for City FIPS",
-    launch_browser = F
+    launch_browser = F,
+    fileextension = "html"
   )
   file.copy(url_html, paste0("./inst/testdata/examples_of_output/", fname, ".html"),
             overwrite = TRUE
   )
-# }
+  ############## # #
+
+  # save as PDF Report via ejam2report() ####
+
+  fname <- "testoutput_ejam2report_fips_counties"
+  pdf_path <- ejam2report(
+    testoutput_ejamit_fips_counties,
+    analysis_title = "Sample Summary Report for County FIPS",
+    launch_browser = F,
+    fileextension = "pdf"
+  )
+  #  SAVE IN ./inst/testdata/examples_of_output/ so it gets included in the package and can be accessed via
+  # e.g., urlx =  EJAM::url_github_preview(file = "testoutput_ejam2report_fips_counties.pdf", launch_browser = F, ver = "development")
+  www_pdf = paste0("./inst/testdata/examples_of_output/", fname, ".pdf")
+  file.copy(from = pdf_path, to = www_pdf,
+            overwrite = TRUE
+  )
+  ############## # #
