@@ -5,7 +5,7 @@
 \alias{names_all}
 \title{a list of variable names for internal use in EJAM}
 \format{
-An object of class \code{character} of length 587.
+An object of class \code{character} of length 779.
 }
 \usage{
 names_all

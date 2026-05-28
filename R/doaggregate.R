@@ -1327,11 +1327,17 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
                       both = c("names_d_subgroups_alone", "names_d_subgroups_nh"),
                       original = "names_d_subgroups")
 
-  namelists <- c('names_e','names_d',subs_list, 'names_health','names_climate')
+  namelists <- c(
+    'names_e', 'names_d', subs_list,
+    'names_health', 'names_climate', 'names_criticalservice',
+    'names_age', 'names_community', 'names_d_extra',
+    'names_d_language', 'names_d_languageli'
+  )
   varsneedpctiles <- map_headernames %>%
     ## need to pull rows in same order of name lists
     slice(unlist(sapply(namelists, function(a) which(map_headernames$varlist %in% a)))) %>%
     filter(!(.data$rname %in% c("Demog.Index.State", "Demog.Index.Supp.State"))) %>%
+    filter(!(.data$calculation_type %in% c("flag", "sum of counts"))) %>%
     distinct(rname) %>% pull(rname)
   if (is.null(subs_drop)) {
   } else {
@@ -1340,6 +1346,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   varsneedpctiles <- intersect(varsneedpctiles, names(results_bysite))
   varsneedpctiles <- setdiff(varsneedpctiles, subs_drop)
+  varsneedpctiles <- intersect(intersect(varsneedpctiles, names(usastats)), names(statestats))
   varnames.us.pctile    <- paste0(      'pctile.', varsneedpctiles) # but Summary Indexes do not follow that naming scheme and are handled with separate code
   varnames.state.pctile <- paste0('state.pctile.', varsneedpctiles) # but Summary Indexes do not follow that naming scheme and are handled with separate code
 

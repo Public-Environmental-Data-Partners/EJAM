@@ -190,7 +190,7 @@ datacreate_names_of_indicators <- function(redohelp = FALSE) {
   # and/or    just store them in a big table
 
   namesoflistsofnames = c('names_all_r', sort(vlists))
-  namez <- lapply(namesoflistsofnames, get)
+  namez <- mget(namesoflistsofnames, envir = environment(), inherits = TRUE)
   names(namez) <- gsub("^names_","", namesoflistsofnames)
   #  metadata_add & USE_DATA #
   namez <- metadata_add(namez)
