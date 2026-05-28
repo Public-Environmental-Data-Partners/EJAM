@@ -226,14 +226,13 @@ test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
 })
 
 test_that("ejam2excel shapefile analyses use EJAM app links in excel", {
-  tfile <- tempfile(fileext = ".xlsx")
-  fname <- tfile
+  fname <- tempfile(fileext = ".xlsx")
 
   expect_no_error({
     fname <- ejam2excel(
       testoutput_ejamit_shapes_2,
       interactive_console = FALSE,
-      fname = tfile,
+      fname = fname,
       community_reportadd = FALSE,
       ok2plot = FALSE
     )
