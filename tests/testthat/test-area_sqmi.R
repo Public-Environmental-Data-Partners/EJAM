@@ -81,6 +81,32 @@ junk2 <- function() {
 rm(junk1, junk2)
 ############################################# #  ############################################# #
 
+test_that("ejamit(shapefile=) handles valid polygons with no blockpoints", {
+  shp <- shape_buffered_from_shapefile_points(
+    shapefile_from_sitepoints(testpoints_100[23:25, ]),
+    radius.miles = 1
+  )
+
+  expect_no_error({
+    suppressWarnings({
+      out <- ejamit(
+        shapefile = shp,
+        quiet = TRUE,
+        silentinteractive = TRUE,
+        include_ejindexes = FALSE
+      )
+    })
+  })
+
+  expect_equal(NROW(out$results_bysite), NROW(shp))
+  expect_equal(sum(!out$results_bysite$valid), 1)
+  expect_true(any(
+    grepl("no block centroids", out$results_bysite$invalid_msg, fixed = TRUE)
+  ))
+  expect_true("area_sqmi" %in% names(out$results_bysite))
+})
+############################################# #
+
 ## to be finished possibly... ***
 
 area_sqmi_from_table <- EJAM:::area_sqmi_from_table
