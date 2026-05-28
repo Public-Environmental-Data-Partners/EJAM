@@ -110,6 +110,9 @@ EJScreen/EJAM tables and should not be used for calculations. When
 filled from \code{existing_blockgroupstats} without replacing Census \code{arealand}
 or \code{areawater}. If the fallback \code{bgfips} universe does not match, legacy
 \code{area} remains \code{NA} while Census \code{arealand} and \code{areawater} remain available
-for calculations.
+for calculations. Island Areas AS/GU/MP/VI may keep missing
+\code{arealand}/\code{areawater} when the archived EPA reference does not provide those
+values; that exception is limited to Island Area visibility rows because they
+are not used for block-weighted radius analysis in v2.5.0.
 }
 \keyword{internal}

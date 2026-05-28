@@ -332,6 +332,7 @@ test_that("calc_ejscreen_dataset passes Island Areas settings to bg_acsdata stag
                                include_islandareas_data,
                                islandareas_raw,
                                islandareas_demographics,
+                               islandareas_reference,
                                islandareas_tables,
                                use_islandareas_demographics,
                                pipeline_dir,

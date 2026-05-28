@@ -589,7 +589,7 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #' @param ... unused
 #'
 #' @return URL(s)
-#' @seealso  [url_ejamapi()]  [url_ejscreenmap()]
+#' @seealso [url_ejamapp] [url_ejamapi()]  [url_ejscreenmap()]
 #'   [url_echo_facility()] [url_frs_facility()]  [url_enviromapper()]
 #' @examples
 #' # browseURL(url_ejscreenmap(fips = '10001'))

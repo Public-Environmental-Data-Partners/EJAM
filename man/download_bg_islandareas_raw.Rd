@@ -39,14 +39,16 @@ most block groups, so \code{pctfemale}, \code{pctunder5}, \code{pctunder18}, and
 are stored as \code{NA} when the source values are unavailable for Island Areas
 rows.
 
-The annual EJScreen-compatible pipeline saves the transformed DHC
-demographics as \code{bg_islandareas_demographics} for review, but does not use
-those values in \code{bg_acsdata} unless \code{use_islandareas_demographics = TRUE}.
-The default path appends Island Areas rows with no DHC-derived demographic
-values so it remains compatible with legacy EPA/EJScreen Island Areas rows.
-That supports blockgroup dataset, EJSCREEN export, and map-data visibility
-for AS/GU/MP/VI. Island Area blocks are not added to the block helper
-datasets in the v2.5.0 release path, so point-buffer/radius analyses there
-should return no-data results rather than block-weighted estimates.
+The annual EJScreen-compatible pipeline uses the archived EPA EJScreen
+ACS2022 reference as the default source for AS/GU/MP/VI row IDs, area fields,
+and available environmental fields. The transformed DHC demographics can be
+saved as \code{bg_islandareas_demographics} for review, but are not used in
+\code{bg_acsdata} unless \code{use_islandareas_demographics = TRUE}. The default path
+appends Island Areas rows with no DHC-derived demographic values so it
+remains compatible with legacy EPA/EJScreen Island Areas rows. That supports
+blockgroup dataset, EJSCREEN export, and map-data visibility for AS/GU/MP/VI.
+Island Area blocks are not added to the block helper datasets in the v2.5.0
+release path, so point-buffer/radius analyses there should return no-data
+results rather than block-weighted estimates.
 }
 \keyword{internal}

@@ -119,6 +119,53 @@ test_that("Island Areas stages get Island Areas Census metadata, not ACS metadat
   expect_match(attr(loaded_demographics, "islandareas_source"), "Detailed Housing Characteristics")
 })
 
+make_expected_islandareas_rows_for_validation <- function() {
+  counts <- c(AS = 77L, GU = 58L, MP = 135L, VI = 416L)
+  prefixes <- c(AS = "60", GU = "66", MP = "69", VI = "78")
+  out <- data.table::rbindlist(lapply(names(counts), function(st) {
+    data.table::data.table(
+      ST = st,
+      bgfips = paste0(prefixes[[st]], sprintf("%010d", seq_len(counts[[st]])))
+    )
+  }))
+  out[, `:=`(
+    bgid = bgfips,
+    statename = EJAM:::islandareas_statename(ST),
+    REGION = EJAM:::islandareas_region(ST),
+    pop = NA_real_,
+    pctmin = NA_real_,
+    pctlowinc = NA_real_,
+    pctlingiso = NA_real_,
+    pctlths = NA_real_,
+    pctdisability = NA_real_
+  )]
+  out
+}
+
+test_that("pipeline validation enforces Island Areas row counts and missing demographics when enabled", {
+  islandareas_rows <- make_expected_islandareas_rows_for_validation()
+
+  withr::local_envvar(
+    EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
+    EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE"
+  )
+
+  expect_no_error(EJAM:::ejscreen_pipeline_validate(islandareas_rows, stage = "bg_acsdata"))
+
+  missing_one <- islandareas_rows[-1]
+  expect_error(
+    EJAM:::ejscreen_pipeline_validate(missing_one, stage = "bg_acsdata"),
+    "expected Island Areas blockgroup counts"
+  )
+
+  with_demographics <- data.table::copy(islandareas_rows)
+  with_demographics[1, pop := 1]
+  expect_error(
+    EJAM:::ejscreen_pipeline_validate(with_demographics, stage = "bg_acsdata"),
+    "Island Areas demographic columns must remain NA"
+  )
+})
+
 test_that("pipeline input can use an object or a saved stage", {
   pipeline_dir <- file.path(tempdir(), "ejam-pipeline-input-test")
   x <- data.frame(a = 1:2)

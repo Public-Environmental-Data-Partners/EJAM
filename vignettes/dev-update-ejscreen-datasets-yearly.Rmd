@@ -64,13 +64,13 @@ The annual workflow creates or reads these stages:
    Census Bureau. This is saved before EJAM renaming or formula calculations.
    The default raw ACS storage is a folder of per-table files, with a manifest.
 
-2. `bg_islandareas_raw`: raw 2020 Island Areas Census DHC tables for
+2. `bg_islandareas_raw`: optional raw 2020 Island Areas Census DHC tables for
    American Samoa, Guam, the Commonwealth of the Northern Mariana Islands, and
-   the U.S. Virgin Islands when the Island Areas stage is enabled. For
-   ACS2024/v2.5.0, `EJAM_INCLUDE_ISLANDAREAS_DATA` defaults to `"TRUE"`, so
-   this stage is created for review and traceability unless explicitly
-   disabled. Puerto Rico is not part of this stage because it is already
-   covered by ACS.
+   the U.S. Virgin Islands. The default EJScreen-compatible release path does
+   not need this stage, because AS/GU/MP/VI row IDs, area fields, and available
+   environmental fields come from the archived EPA EJScreen ACS2022 reference
+   named by `EJAM_ISLANDAREAS_REFERENCE_PATH`. Puerto Rico is not part of this
+   stage because it is already covered by ACS.
 
 3. `bg_islandareas_demographics`: optional transformed 2020 Island Areas Census
    DHC demographics. This is saved as a separate checkpoint for review and
@@ -83,11 +83,11 @@ The annual workflow creates or reads these stages:
 
 4. `bg_acsdata`: ACS-derived blockgroup indicators calculated from
    `bg_acs_raw`, including demographic indicators and `pctpre1960`. When the
-   Island Areas stage is enabled, AS/GU/MP/VI rows are appended with no
-   DHC-derived demographic values by default. The separate
-   `bg_islandareas_demographics` file keeps the available Island Areas Census
-   values available for review without changing the EJScreen-compatible
-   demographic calculations.
+   Island Areas stage is enabled, AS/GU/MP/VI rows are appended from the
+   archived EPA reference with no DHC-derived demographic values by default.
+   The separate `bg_islandareas_demographics` file keeps the available Island
+   Areas Census values available for review without changing the
+   EJScreen-compatible demographic calculations.
 
 5. `bg_envirodata`: blockgroup environmental indicators used for EJ indexes.
    This normally comes from a separate environmental-data workflow. For draft
@@ -290,7 +290,8 @@ The runner is controlled by environment variables:
 | `EJAM_FORCE_BG_GEODATA` | `"TRUE"` to redownload/rebuild the Census/TIGER `bg_geodata` stage. |
 | `EJAM_ACS_DOWNLOAD_TIMEOUT` | Download timeout in seconds. Useful for large ACS tables. |
 | `EJAM_ACS_DOWNLOAD_RETRIES` | Number of retry attempts for ACS downloads. |
-| `EJAM_INCLUDE_ISLANDAREAS_DATA` | `"TRUE"` to append AS/GU/MP/VI rows and save the separate `bg_islandareas_demographics` checkpoint. For ACS2024/v2.5.0 runner use, this defaults to `"TRUE"` unless explicitly set otherwise. |
+| `EJAM_INCLUDE_ISLANDAREAS_DATA` | `"TRUE"` to append AS/GU/MP/VI rows. The annual/release runner defaults to `"TRUE"` unless explicitly set otherwise. |
+| `EJAM_ISLANDAREAS_REFERENCE_PATH` | Archived EPA EJScreen ACS2022 reference CSV used for Island Areas row IDs, area fields, and available environmental fields. |
 | `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS` | `"TRUE"` only for an intentional mixed-source supplemental dataset that uses 2020 Island Areas Census DHC demographics in `bg_acsdata`. The default EJScreen-compatible path is `"FALSE"`. |
 | `EJAM_USE_PROVISIONAL_BG_ENVIRODATA` | `"FALSE"` to require a supplied `bg_envirodata` stage file, such as `bg_envirodata.csv` under the default stage format. |
 | `EJAM_INCLUDE_EJSCREEN_EXPORT` | `"TRUE"` to create the `ejscreen_export` stage, such as `ejscreen_export.csv` under the default stage format. |
@@ -441,9 +442,12 @@ those settings carefully, especially the year, storage backend, stage formats,
 force flags, Island Areas settings, provisional-input flags, and prior
 validation target.
 
-For ACS2024/v2.5.0, AS/GU/MP/VI rows are added by default at the blockgroup
-dataset, EJSCREEN export, and map-data visibility level, in the same general
-style as the legacy EPA/EJScreen export. Keep the DHC demographics out of
+For ACS2024/v2.5.0 and later annual/release runs, AS/GU/MP/VI rows are added by
+default at the blockgroup dataset, EJSCREEN export, and map-data visibility
+level, in the same general style as the legacy EPA/EJScreen export. The default
+source for Island Areas row IDs, area fields, and available environmental
+fields is the archived EPA EJScreen ACS2022 reference named by
+`EJAM_ISLANDAREAS_REFERENCE_PATH`. Keep the DHC demographics out of
 `bg_acsdata` unless you are intentionally creating a mixed-source supplemental
 dataset. To make the default explicit:
 
@@ -633,12 +637,13 @@ Useful checks include:
   unless `EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE"`.
 
 For the default EJScreen-compatible path, Island Areas demographic columns in
-`bg_acsdata` and downstream stages are expected to be `NA` because the legacy
-EPA/EJScreen file with AS/GU/MP/VI rows had no usable ACS demographic values
-for those rows. The separate `bg_islandareas_demographics` checkpoint contains
-available 2020 Island Areas Census DHC values for review. Those values are used
-in `bg_acsdata` only when `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"`.
-Available EPA environmental fields for AS/GU/MP/VI are retained where supplied.
+`bg_acsdata` and downstream stages are expected to be `NA` because the archived
+EPA/EJScreen reference file with AS/GU/MP/VI rows had no usable ACS demographic
+values for those rows. The separate `bg_islandareas_demographics` checkpoint is
+optional and contains available 2020 Island Areas Census DHC values for review.
+Those values are used in `bg_acsdata` only when
+`EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"`. Available EPA environmental and
+area fields for AS/GU/MP/VI are retained from the reference where supplied.
 This visibility-level support does not mean radius/buffer or block-weighted
 polygon analysis works in Island Areas. Island Area blocks are not added to
 `blockwts`, `blockpoints`, `bgid2fips`, `blockid2fips`, `quaddata`, or related

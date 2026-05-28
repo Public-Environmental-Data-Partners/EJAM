@@ -16,9 +16,10 @@
 #' The default stage order is:
 #'
 #' 1. download raw ACS tables of demographic data into `bg_acs_raw`
-#' 2. when enabled, download and save separate Island Areas Census DHC
-#'    checkpoints for AS/GU/MP/VI; the ACS2024/v2.5.0 runner enables Island
-#'    Area placeholder rows by default, but these DHC demographics are not used
+#' 2. when enabled, append Island Areas AS/GU/MP/VI placeholder rows using the
+#'    archived EPA EJScreen ACS2022 reference for row IDs, area fields, and
+#'    available environmental fields; optional Island Areas Census DHC
+#'    demographics can still be saved/reviewed separately but are not used
 #'    downstream unless explicitly requested
 #' 3. calculate ACS-based demographic indicators (and lead paint indicator) as `bg_acsdata`
 #' 4. validate/save `bg_envirodata` (key environmental indicators)
@@ -43,10 +44,10 @@
 #' For EJAM v2.5.0, Island Areas are supported at the blockgroup dataset,
 #' EJSCREEN export, and map-data visibility level when
 #' `include_islandareas_data = TRUE`. The default path keeps AS/GU/MP/VI
-#' demographic fields as `NA`, preserves any environmental fields supplied in
-#' `bg_envirodata`, and does not add AS/GU/MP/VI blocks to the block helper
-#' files. Radius/buffer analyses in those areas should therefore return no-data
-#' results rather than block-weighted estimates.
+#' demographic fields as `NA`, uses archived EPA EJScreen reference rows for
+#' row IDs and available environmental/area fields, and does not add AS/GU/MP/VI
+#' blocks to the block helper files. Radius/buffer analyses in those areas
+#' should therefore return no-data results rather than block-weighted estimates.
 #'
 #' The annual pipeline creates the `bgej` stage, and the package-level dynamic
 #' Arrow loader obtains `bgej.arrow` from the `ejamdata` release tag recorded in
@@ -73,9 +74,11 @@
 #'  - EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.
 #'  - EJAM_ACS_DOWNLOAD_TIMEOUT
 #'  - EJAM_ACS_DOWNLOAD_RETRIES
-#'  - EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows and a
-#'    separate `bg_islandareas_demographics` checkpoint. For v2.5.0/ACS2024
-#'    runner use this is enabled by default unless explicitly set otherwise.
+#'  - EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows. The
+#'    annual/release runner enables this by default unless explicitly set
+#'    otherwise.
+#'  - EJAM_ISLANDAREAS_REFERENCE_PATH: archived EPA EJScreen reference CSV used
+#'    for Island Areas row IDs, area fields, and available environmental fields.
 #'  - EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE only for an intentional
 #'    mixed-source supplemental dataset using 2020 Island Areas Census DHC
 #'    demographics in `bg_acsdata`.
@@ -112,7 +115,8 @@
 #'   "CENSUS_API_KEY",
 #'   "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
 #'   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
-#'   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
+#'   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_ISLANDAREAS_REFERENCE_PATH",
+#'   "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
 #'   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
 #'   "EJAM_INCLUDE_EJSCREEN_EXPORT",
 #'   "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
@@ -235,6 +239,7 @@ calc_ejscreen_dataset <- function(yr,
                                   include_islandareas_data = FALSE,
                                   islandareas_raw = NULL,
                                   islandareas_demographics = NULL,
+                                  islandareas_reference = NULL,
                                   islandareas_tables = islandareas_tables_for_bg_acsdata(),
                                   use_islandareas_demographics = FALSE,
                                   fiveorone = "5",
@@ -431,6 +436,7 @@ calc_ejscreen_dataset <- function(yr,
           include_islandareas_data = include_islandareas_data,
           islandareas_raw = islandareas_raw,
           islandareas_demographics = islandareas_demographics,
+          islandareas_reference = islandareas_reference,
           islandareas_tables = islandareas_tables,
           use_islandareas_demographics = use_islandareas_demographics,
           pipeline_dir = pipeline_dir,

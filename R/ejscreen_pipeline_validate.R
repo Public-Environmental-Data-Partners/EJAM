@@ -179,6 +179,83 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     }
     invisible(NULL)
   }
+  env_flag <- function(name, default = FALSE) {
+    value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
+    toupper(value) %in% c("1", "TRUE", "YES", "Y")
+  }
+  islandareas_id_col <- function() {
+    intersect(c("bgfips", "ID", "ID_1"), names(x))[1]
+  }
+  check_islandareas_contract <- function(check_demographics = FALSE) {
+    id_col <- islandareas_id_col()
+    if (is.na(id_col)) {
+      return(invisible(NULL))
+    }
+    ids <- as.character(x[[id_col]])
+    st <- islandareas_st_from_bgfips(ids)
+    if ("ST" %in% names(x)) {
+      st_from_col <- as.character(x$ST)
+      st[is.na(st) | !nzchar(st)] <- st_from_col[is.na(st) | !nzchar(st)]
+    }
+    if ("ST_ABBREV" %in% names(x)) {
+      st_from_col <- as.character(x$ST_ABBREV)
+      st[is.na(st) | !nzchar(st)] <- st_from_col[is.na(st) | !nzchar(st)]
+    }
+    expected <- islandareas_expected_bg_counts()
+    islandareas_rows <- st %in% names(expected)
+    islandareas_required <- env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", FALSE)
+    if (!isTRUE(islandareas_required)) {
+      return(invisible(NULL))
+    }
+    actual <- table(factor(st[islandareas_rows], levels = names(expected)))
+    if (!identical(as.integer(actual), as.integer(expected))) {
+      add_error(paste0(
+        "expected Island Areas blockgroup counts ",
+        paste(paste0(names(expected), "=", expected), collapse = ", "),
+        "; found ",
+        paste(paste0(names(expected), "=", as.integer(actual)), collapse = ", ")
+      ))
+    }
+
+    if (!isTRUE(check_demographics) ||
+        env_flag("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", FALSE) ||
+        !any(islandareas_rows)) {
+      return(invisible(NULL))
+    }
+    r_demog_cols <- unique(c(
+      "pop",
+      if (exists("names_d")) names_d else character(),
+      "Demog.Index", "Demog.Index.Supp",
+      "Demog.Index.State", "Demog.Index.Supp.State"
+    ))
+    export_demog_cols <- c(
+      "ACSTOTPOP", "ACSIPOVBAS", "ACSEDUCBAS", "ACSTOTHH", "ACSTOTHU",
+      "ACSUNEMPBAS", "ACSDISABBAS",
+      "PEOPCOLOR", "PEOPCOLORPCT", "LOWINCOME", "LOWINCPCT",
+      "UNEMPLOYED", "UNEMPPCT", "DISABILITY", "DISABILITYPCT",
+      "LINGISO", "LINGISOPCT", "LESSHS", "LESSHSPCT",
+      "UNDER5", "UNDER5PCT", "OVER64", "OVER64PCT",
+      "DEMOGIDX_2", "DEMOGIDX_5", "DEMOGIDX_2ST", "DEMOGIDX_5ST",
+      grep("^(D2_|D5_|P_D2_|P_D5_|B_D2_|B_D5_)", names(x), value = TRUE)
+    )
+    demog_cols <- intersect(unique(c(r_demog_cols, export_demog_cols)), names(x))
+    bad <- demog_cols[vapply(demog_cols, function(col) {
+      vals <- x[[col]][islandareas_rows]
+      if (is.numeric(vals) || is.integer(vals)) {
+        any(!is.na(vals))
+      } else {
+        any(!is.na(vals) & nzchar(as.character(vals)))
+      }
+    }, logical(1))]
+    if (length(bad) > 0) {
+      add_error(paste0(
+        "Island Areas demographic columns must remain NA by design when ",
+        "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS is FALSE: ",
+        paste(bad, collapse = ", ")
+      ))
+    }
+    invisible(NULL)
+  }
   check_acs_raw_component <- function(component) {
     tables <- x[[component]]
     if (is.null(tables)) {
@@ -323,6 +400,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       check_bgfips()
       check_nonnegative(c("pop"))
       check_fraction_percent_cols()
+      check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # bg_envirodata ####
 
@@ -330,6 +408,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
 
       has_cols(c("bgfips", "pctpre1960"))
       check_bgfips()
+      check_islandareas_contract(check_demographics = FALSE)
       expected_env <- if (exists("names_e")) names_e else character()
       if (length(intersect(expected_env, names(x))) == 0) {
         add_warning("bg_envirodata has none of the expected environmental indicator columns in names_e")
@@ -342,6 +421,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
 
       has_cols(c("bgfips", "arealand", "areawater"))
       check_bgfips()
+      check_islandareas_contract(check_demographics = FALSE)
       check_nonnegative(c("arealand", "areawater"))
       check_all_na_numeric(c("arealand", "areawater"))
       ###################################################### #
@@ -375,6 +455,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       expected_env <- if (exists("names_e")) names_e else character()
       warn_missing_cols(expected_env)
       check_fraction_percent_cols()
+      check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # bgej ####
 
@@ -390,6 +471,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       )
       warn_missing_cols(expected_ej)
       check_nonnegative(intersect(expected_ej, names(x)))
+      check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # ejscreen_export ####
 
@@ -398,6 +480,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       check_id()
       warn_missing_cols(c("STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))
       check_ejscreen_export_helpers()
+      check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # ejscreen_dataset_creator_input ####
 

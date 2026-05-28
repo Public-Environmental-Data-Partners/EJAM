@@ -15,11 +15,12 @@
 #' supplemental demographic index needs `lowlifex` which is not from the ACS.
 #'
 #' When Island Areas rows are requested, the default EJSCREEN-compatible path
-#' appends AS/GU/MP/VI rows without using the optional 2020 Island Areas Census
-#' DHC demographics. Those DHC values can be saved and reviewed separately, and
-#' are used here only when `use_islandareas_demographics = TRUE`.
-#' In the ACS2024/v2.5.0 annual runner, Island Area placeholder rows are enabled
-#' by default so those areas can appear in blockgroup datasets, EJSCREEN exports,
+#' appends AS/GU/MP/VI rows from the archived EPA EJScreen ACS2022 reference
+#' without using the optional 2020 Island Areas Census DHC demographics. Those
+#' DHC values can be saved and reviewed separately, and are used here only when
+#' `use_islandareas_demographics = TRUE`.
+#' In the annual/release runner, Island Area placeholder rows are enabled by
+#' default so those areas can appear in blockgroup datasets, EJSCREEN exports,
 #' and maps. This does not add point-buffer/radius support, because Island Area
 #' blocks are not added to the block helper datasets.
 #'
@@ -45,6 +46,10 @@
 #'   [download_bg_islandareas_raw()].
 #' @param islandareas_demographics optional transformed Island Areas Census DHC
 #'   demographics table from `calc_bg_islandareasdata()`.
+#' @param islandareas_reference optional Island Areas rows from the archived EPA
+#'   EJScreen ACS2022 reference file. When supplied and
+#'   `use_islandareas_demographics = FALSE`, these rows define the Island Areas
+#'   blockgroup IDs and labels used for placeholder rows.
 #' @param islandareas_tables Island Areas Census DHC tables to download if `include_islandareas_data` is TRUE
 #'   and `islandareas_raw` is not supplied.
 #' @param use_islandareas_demographics logical. Defaults to FALSE so that the
@@ -75,6 +80,7 @@ calc_bg_acsdata <- function(yr,
                             include_islandareas_data = FALSE,
                             islandareas_raw = NULL,
                             islandareas_demographics = NULL,
+                            islandareas_reference = NULL,
                             islandareas_tables = islandareas_tables_for_bg_acsdata(),
                             use_islandareas_demographics = FALSE,
                             acs_raw_stage = NULL,
@@ -119,16 +125,23 @@ calc_bg_acsdata <- function(yr,
   }
 
   if (isTRUE(include_islandareas_data)) {
-    if (is.null(islandareas_demographics) && is.null(islandareas_raw)) {
-      islandareas_raw <- download_bg_islandareas_raw(tables = islandareas_tables)
-    }
-    if (is.null(islandareas_demographics)) {
-      islandareas_demographics <- calc_bg_islandareasdata(islandareas_raw)
-    }
-    bg_islandareasdata <- if (isTRUE(use_islandareas_demographics)) {
-      islandareas_demographics
+    bg_islandareasdata <- if (!isTRUE(use_islandareas_demographics) &&
+                              !is.null(islandareas_reference)) {
+      calc_bg_islandareas_placeholder_data(
+        islandareas_reference_from_ejscreen_export(islandareas_reference)
+      )
     } else {
-      calc_bg_islandareas_placeholder_data(islandareas_demographics)
+      if (is.null(islandareas_demographics) && is.null(islandareas_raw)) {
+        islandareas_raw <- download_bg_islandareas_raw(tables = islandareas_tables)
+      }
+      if (is.null(islandareas_demographics)) {
+        islandareas_demographics <- calc_bg_islandareasdata(islandareas_raw)
+      }
+      if (isTRUE(use_islandareas_demographics)) {
+        islandareas_demographics
+      } else {
+        calc_bg_islandareas_placeholder_data(islandareas_demographics)
+      }
     }
     bg_acsdata <- merge_bg_acsdata_islandareas_data(bg_acsdata, bg_islandareasdata)
   }

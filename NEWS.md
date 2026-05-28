@@ -77,10 +77,13 @@ Highlights:
 - Added Island Areas AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
   and map-data visibility level for v2.5.0, with demographic fields kept as
   `NA` by default and partial EPA environmental fields retained where available.
-  The separate raw and transformed Island Areas Census checkpoints are still
-  available for review. Island Area blocks are not added to the block helper
-  files for this release path, so radius/buffer analyses there return no-data
-  results rather than block-weighted estimates.
+  The annual/release pipeline uses the archived EPA EJScreen ACS2022 reference
+  for Island Area row IDs, area fields, and available environmental fields, and
+  validates the expected 686 AS/GU/MP/VI blockgroups. The separate raw and
+  transformed Island Areas Census checkpoints are still available for optional
+  review. Island Area blocks are not added to the block helper files for this
+  release path, so radius/buffer analyses there return no-data results rather
+  than block-weighted estimates.
 - Note: the Census Bureau discourages using overlapping ACS 5-year datasets for
   trend comparisons. Comparisons between ACS 2018-2022 and 2020-2024, e.g.,
   should not be interpreted as valid trend estimates.
@@ -94,9 +97,9 @@ Highlights:
      (`bg_acs_raw`).
   2. Calculate ACS-based demographic indicators and the lead paint indicator
      (`bg_acsdata`).
-  3. Optionally download and transform Island Areas Census demographics as
-     separate checkpoints (`bg_islandareas_raw` and
-     `bg_islandareas_demographics`).
+  3. Append Island Areas AS/GU/MP/VI placeholder rows from the archived EPA
+     reference by default, with optional Island Areas Census demographics
+     available only as separate review checkpoints.
   4. Validate and save key environmental indicators, or reuse existing ones
      (`bg_envirodata`).
   5. Validate and save extra indicators such as low life expectancy, or reuse

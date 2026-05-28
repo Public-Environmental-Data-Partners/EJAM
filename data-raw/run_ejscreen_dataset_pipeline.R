@@ -74,17 +74,20 @@
 #   EJAM_ACS_DOWNLOAD_TIMEOUT
 #   EJAM_ACS_DOWNLOAD_RETRIES
 #   EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to append AS/GU/MP/VI blockgroups to
-#      the pipeline and save a separate bg_islandareas_demographics stage from
-#      the 2020 Island Areas Census DHC. For the ACS2024/v2.5.0 runner path,
-#      this defaults to TRUE so Island Areas appear in blockgroupstats,
+#      the annual/release pipeline. This defaults to TRUE so Island Areas appear
+#      in blockgroupstats,
 #      ejscreen_export, ejscreen_export_statepct, and map-ready outputs. These
 #      rows are not ACS rows. By default, DHC demographics are NOT used in
 #      bg_acsdata or downstream EJSCREEN-compatible outputs, because the
 #      legacy EPA/EJScreen Island Areas rows had no usable ACS demographic
-#      values. Available environmental fields are retained from bg_envirodata.
+#      values. Row IDs, area fields, and available environmental fields come
+#      from the archived EPA EJScreen ACS2022 reference file named by
+#      EJAM_ISLANDAREAS_REFERENCE_PATH.
 #      This does not enable point-buffer/radius analysis in Island Areas; that
 #      path intentionally has no Island Area blocks in blockpoints/blockwts/etc.,
 #      so reports there should return no-data results.
+#   EJAM_ISLANDAREAS_REFERENCE_PATH: archived EPA EJScreen reference CSV used
+#      for Island Areas row IDs, area fields, and available environmental fields.
 #   EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE to opt into using the 2020 Island
 #      Areas Census DHC demographics in bg_acsdata. This creates a mixed-source
 #      supplemental dataset and is not the default EJSCREEN replication path.
@@ -167,18 +170,8 @@ set_pipeline_default("EJAM_FORCE_BG_GEODATA", "FALSE")
 set_pipeline_default("EJAM_TIGER_BG_CACHE_DIR", default_tiger_bg_cache_dir)
 set_pipeline_default("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600")
 set_pipeline_default("EJAM_ACS_DOWNLOAD_RETRIES", "2")
-pipeline_yr_for_islandareas_default <- suppressWarnings(
-  as.integer(Sys.getenv("EJAM_PIPELINE_YR", unset = yr))
-)
-default_include_islandareas_env <- if (
-  !is.na(pipeline_yr_for_islandareas_default) &&
-    pipeline_yr_for_islandareas_default >= 2024L
-) {
-  "TRUE"
-} else {
-  "FALSE"
-}
-set_pipeline_default("EJAM_INCLUDE_ISLANDAREAS_DATA", default_include_islandareas_env)
+set_pipeline_default("EJAM_INCLUDE_ISLANDAREAS_DATA", "TRUE")
+set_pipeline_default("EJAM_ISLANDAREAS_REFERENCE_PATH", EJAM:::islandareas_epa_reference_default_path())
 set_pipeline_default("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", "FALSE")
 
 set_pipeline_default("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", "FALSE")
@@ -434,6 +427,7 @@ print(
     'EJAM_ACS_DOWNLOAD_TIMEOUT',
     'EJAM_ACS_DOWNLOAD_RETRIES',
     'EJAM_INCLUDE_ISLANDAREAS_DATA',
+    'EJAM_ISLANDAREAS_REFERENCE_PATH',
     'EJAM_USE_ISLANDAREAS_DEMOGRAPHICS',
     'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
     'EJAM_INCLUDE_EJSCREEN_EXPORT',
@@ -528,8 +522,11 @@ force_bg_geodata <- env_flag("EJAM_FORCE_BG_GEODATA", FALSE)
 tiger_bg_cache_dir <- Sys.getenv("EJAM_TIGER_BG_CACHE_DIR", unset = default_tiger_bg_cache_dir)
 acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
 acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
-default_include_islandareas_data <- !is.na(pipeline_yr) && pipeline_yr >= 2024L
-include_islandareas_data <- env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", default_include_islandareas_data)
+include_islandareas_data <- env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", TRUE)
+islandareas_reference_path <- Sys.getenv(
+  "EJAM_ISLANDAREAS_REFERENCE_PATH",
+  unset = EJAM:::islandareas_epa_reference_default_path()
+)
 use_islandareas_demographics <- env_flag("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", FALSE)
 
 ### ENVIRONMENTAL DATA settings ####
@@ -604,6 +601,7 @@ pipeline_setting_names <- c(
   'EJAM_ACS_DOWNLOAD_TIMEOUT',
   'EJAM_ACS_DOWNLOAD_RETRIES',
   'EJAM_INCLUDE_ISLANDAREAS_DATA',
+  'EJAM_ISLANDAREAS_REFERENCE_PATH',
   'EJAM_USE_ISLANDAREAS_DEMOGRAPHICS',
   'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
   'EJAM_INCLUDE_EJSCREEN_EXPORT',
@@ -648,6 +646,7 @@ print(
           acs_download_timeout=acs_download_timeout,
           acs_download_retries=acs_download_retries,
           include_islandareas_data=include_islandareas_data,
+          islandareas_reference_path=islandareas_reference_path,
           use_islandareas_demographics=use_islandareas_demographics,
 
           use_provisional_bg_envirodata=use_provisional_bg_envirodata,
@@ -888,48 +887,57 @@ if (!is.null(bg_acs_raw)) {
   }
 }
 ###################################################### #
-# Download Island Areas Census raw blockgroup data stage ####
+# Prepare Island Areas blockgroup reference / optional Census DHC stages ####
 ###################################################### #
 
 bg_islandareas_raw <- NULL
 bg_islandareas_demographics <- NULL
+bg_islandareas_reference <- NULL
 if (isTRUE(include_islandareas_data) && isTRUE(need_bg_acsdata)) {
-  stagename <- "bg_islandareas_demographics"
-  message(paste0("Stage: ", stagename))
-  if (!isTRUE(force_acs) && stage_exists(stagename)) {
-    message(paste0("Using provided/existing ", stagename))
-    bg_islandareas_demographics <- load_file_stage(stagename)
-    save_file_stage_formats(bg_islandareas_demographics, stage = stagename)
-  } else {
-    raw_stagename <- "bg_islandareas_raw"
-    message(paste0("Stage: ", raw_stagename))
-    if (!isTRUE(force_acs) && stage_exists(raw_stagename)) {
-      message(paste0("Using provided/existing ", raw_stagename))
-      bg_islandareas_raw <- load_file_stage(raw_stagename)
-    } else {
-      message("Creating bg_islandareas_raw from 2020 Island Areas Census DHC")
-      bg_islandareas_raw <- EJAM:::download_bg_islandareas_raw()
-      raw_object_formats <- intersect(stage_formats, c("rds", "rda"))
-      if (length(raw_object_formats) > 0) {
-        save_file_stage_formats(
-          x = bg_islandareas_raw,
-          stage = raw_stagename,
-          formats = raw_object_formats,
-          object_name = raw_stagename,
-          validate = TRUE
-        )
-      }
-    }
-
-    message("Creating bg_islandareas_demographics from bg_islandareas_raw")
-    bg_islandareas_demographics <- EJAM:::calc_bg_islandareasdata(bg_islandareas_raw)
-    save_file_stage_formats(
-      x = bg_islandareas_demographics,
-      stage = stagename,
-      formats = stage_formats,
-      object_name = stagename,
-      validate = TRUE
+  if (!isTRUE(use_islandareas_demographics)) {
+    message("Loading Island Areas rows from archived EPA EJScreen reference")
+    bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
+      path = islandareas_reference_path,
+      storage = pipeline_storage
     )
+  } else {
+    stagename <- "bg_islandareas_demographics"
+    message(paste0("Stage: ", stagename))
+    if (!isTRUE(force_acs) && stage_exists(stagename)) {
+      message(paste0("Using provided/existing ", stagename))
+      bg_islandareas_demographics <- load_file_stage(stagename)
+      save_file_stage_formats(bg_islandareas_demographics, stage = stagename)
+    } else {
+      raw_stagename <- "bg_islandareas_raw"
+      message(paste0("Stage: ", raw_stagename))
+      if (!isTRUE(force_acs) && stage_exists(raw_stagename)) {
+        message(paste0("Using provided/existing ", raw_stagename))
+        bg_islandareas_raw <- load_file_stage(raw_stagename)
+      } else {
+        message("Creating bg_islandareas_raw from 2020 Island Areas Census DHC")
+        bg_islandareas_raw <- EJAM:::download_bg_islandareas_raw()
+        raw_object_formats <- intersect(stage_formats, c("rds", "rda"))
+        if (length(raw_object_formats) > 0) {
+          save_file_stage_formats(
+            x = bg_islandareas_raw,
+            stage = raw_stagename,
+            formats = raw_object_formats,
+            object_name = raw_stagename,
+            validate = TRUE
+          )
+        }
+      }
+
+      message("Creating bg_islandareas_demographics from bg_islandareas_raw")
+      bg_islandareas_demographics <- EJAM:::calc_bg_islandareasdata(bg_islandareas_raw)
+      save_file_stage_formats(
+        x = bg_islandareas_demographics,
+        stage = stagename,
+        formats = stage_formats,
+        object_name = stagename,
+        validate = TRUE
+      )
+    }
   }
 }
 ###################################################### #
@@ -950,6 +958,7 @@ if (isTRUE(need_bg_acsdata)) {
     include_islandareas_data = include_islandareas_data,
     islandareas_raw = bg_islandareas_raw,
     islandareas_demographics = bg_islandareas_demographics,
+    islandareas_reference = bg_islandareas_reference,
     use_islandareas_demographics = use_islandareas_demographics,
     tract_weight_source = tract_weight_source,
     pipeline_dir = pipeline_dir,
@@ -977,7 +986,6 @@ message(paste0("Stage: ", stagename))
 if (stage_exists(stagename)) {
   message(paste0("Using provided/existing ", stagename))
   bg_envirodata <- load_file_stage(stagename)
-  save_file_stage_formats(bg_envirodata, stage = stagename)
 
 } else if (isTRUE(use_provisional_bg_envirodata)) {
   message(paste0("Creating PROVISIONAL bg_envirodata.", stage_format," from same-vintage blockgroupstats fallback"))
@@ -1007,7 +1015,6 @@ if (stage_exists(stagename)) {
     bg_envirodata[, env_cols, with = FALSE],
     check.attributes = FALSE
   ))) {stop("Provisional bg_envirodata from blockgroupstats fallback does not have the same env indicator values as the fallback source")}
-  save_file_stage_formats(bg_envirodata, stage = stagename)
   write_pipeline_text(
     c(
       paste0("PROVISIONAL bg_envirodata.", stage_format),
@@ -1022,6 +1029,22 @@ if (stage_exists(stagename)) {
 } else {
   stop("Missing bg_envirodata file and use_provisional_bg_envirodata was set FALSE. Save updated environmental indicators there or set EJAM_USE_PROVISIONAL_BG_ENVIRODATA=TRUE")
 }
+
+if (isTRUE(include_islandareas_data)) {
+  if (is.null(bg_islandareas_reference)) {
+    message("Loading Island Areas rows from archived EPA EJScreen reference")
+    bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
+      path = islandareas_reference_path,
+      storage = pipeline_storage
+    )
+  }
+  message("Adding Island Areas environmental rows from archived EPA EJScreen reference")
+  bg_envirodata <- EJAM:::merge_islandareas_stage_data(
+    bg_envirodata,
+    EJAM:::islandareas_reference_envirodata(bg_islandareas_reference)
+  )
+}
+save_file_stage_formats(bg_envirodata, stage = stagename)
 
 ###################################################### #
 # Extra indicators stage - Read new or re-use existing data ####
@@ -1090,6 +1113,19 @@ geodata_bgfips <- if (blockgroup_universe_source == "acs") {
 if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
   message(paste0("Using provided/existing ", stagename))
   bg_geodata <- load_file_stage(stagename)
+  if (isTRUE(include_islandareas_data)) {
+    if (is.null(bg_islandareas_reference)) {
+      message("Loading Island Areas rows from archived EPA EJScreen reference")
+      bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
+        path = islandareas_reference_path,
+        storage = pipeline_storage
+      )
+    }
+    bg_geodata <- EJAM:::merge_islandareas_stage_data(
+      bg_geodata,
+      EJAM:::islandareas_reference_geodata(bg_islandareas_reference)
+    )
+  }
   bg_geodata <- EJAM:::complete_bg_geodata(
     bg_geodata = bg_geodata,
     bgfips = geodata_bgfips,
@@ -1100,9 +1136,14 @@ if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
   save_file_stage_formats(bg_geodata, stage = stagename)
 } else {
   message(paste0("Creating ", stagename, " from Census/TIGER blockgroup files"))
+  geodata_download_bgfips <- if (isTRUE(include_islandareas_data)) {
+    geodata_bgfips[!EJAM:::islandareas_is_bgfips(geodata_bgfips)]
+  } else {
+    geodata_bgfips
+  }
   bg_geodata <- EJAM:::calc_bg_geodata(
     yr = yr,
-    bgfips = geodata_bgfips,
+    bgfips = geodata_download_bgfips,
     existing_blockgroupstats = get_reuse_blockgroupstats(),
     reuse_existing_if_missing = TRUE,
     allow_partial_reuse = FALSE,
@@ -1116,6 +1157,26 @@ if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
     stage_format = stage_format,
     pipeline_storage = pipeline_storage
   )
+  if (isTRUE(include_islandareas_data)) {
+    if (is.null(bg_islandareas_reference)) {
+      message("Loading Island Areas rows from archived EPA EJScreen reference")
+      bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
+        path = islandareas_reference_path,
+        storage = pipeline_storage
+      )
+    }
+    bg_geodata <- EJAM:::merge_islandareas_stage_data(
+      bg_geodata,
+      EJAM:::islandareas_reference_geodata(bg_islandareas_reference)
+    )
+    bg_geodata <- EJAM:::complete_bg_geodata(
+      bg_geodata = bg_geodata,
+      bgfips = geodata_bgfips,
+      existing_blockgroupstats = get_reuse_blockgroupstats(),
+      reuse_existing_if_missing = TRUE,
+      allow_partial_reuse = FALSE
+    )
+  }
   save_file_stage_formats(bg_geodata, stage = stagename)
 }
 
@@ -1191,7 +1252,8 @@ stages_to_validate <- c(
   "statestats" # a final product - combines the acs, enviro, and ej lookup tables for all states as 1 file
 )
 
-if (isTRUE(include_islandareas_data)) {
+if (isTRUE(include_islandareas_data) &&
+    (isTRUE(use_islandareas_demographics) || stage_exists("bg_islandareas_demographics"))) {
   stages_to_validate <- c("bg_islandareas_demographics", stages_to_validate)
 }
 

@@ -12,15 +12,17 @@
 #' are stored as `NA` when the source values are unavailable for Island Areas
 #' rows.
 #'
-#' The annual EJScreen-compatible pipeline saves the transformed DHC
-#' demographics as `bg_islandareas_demographics` for review, but does not use
-#' those values in `bg_acsdata` unless `use_islandareas_demographics = TRUE`.
-#' The default path appends Island Areas rows with no DHC-derived demographic
-#' values so it remains compatible with legacy EPA/EJScreen Island Areas rows.
-#' That supports blockgroup dataset, EJSCREEN export, and map-data visibility
-#' for AS/GU/MP/VI. Island Area blocks are not added to the block helper
-#' datasets in the v2.5.0 release path, so point-buffer/radius analyses there
-#' should return no-data results rather than block-weighted estimates.
+#' The annual EJScreen-compatible pipeline uses the archived EPA EJScreen
+#' ACS2022 reference as the default source for AS/GU/MP/VI row IDs, area fields,
+#' and available environmental fields. The transformed DHC demographics can be
+#' saved as `bg_islandareas_demographics` for review, but are not used in
+#' `bg_acsdata` unless `use_islandareas_demographics = TRUE`. The default path
+#' appends Island Areas rows with no DHC-derived demographic values so it
+#' remains compatible with legacy EPA/EJScreen Island Areas rows. That supports
+#' blockgroup dataset, EJSCREEN export, and map-data visibility for AS/GU/MP/VI.
+#' Island Area blocks are not added to the block helper datasets in the v2.5.0
+#' release path, so point-buffer/radius analyses there should return no-data
+#' results rather than block-weighted estimates.
 #'
 #' @param tables 2020 Island Areas Census DHC table groups to download, such as `"P1"`.
 #' @param areas Island Area postal abbreviations to include.
@@ -486,6 +488,162 @@ calc_bg_islandareasdata <- function(islandareas_raw) {
   out
 }
 
+islandareas_expected_bg_counts <- function() {
+  c(AS = 77L, GU = 58L, MP = 135L, VI = 416L)
+}
+
+islandareas_fips_prefix <- function() {
+  c(AS = "60", GU = "66", MP = "69", VI = "78")
+}
+
+islandareas_st_from_bgfips <- function(bgfips) {
+  prefixes <- islandareas_fips_prefix()
+  st <- names(prefixes)[match(substr(as.character(bgfips), 1, 2), prefixes)]
+  unname(st)
+}
+
+islandareas_is_bgfips <- function(bgfips) {
+  !is.na(islandareas_st_from_bgfips(bgfips))
+}
+
+islandareas_epa_reference_default_path <- function() {
+  paste0(
+    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
+    "ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe/",
+    "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv"
+  )
+}
+
+load_islandareas_epa_reference <- function(path = islandareas_epa_reference_default_path(),
+                                           storage = c("auto", "local", "s3")) {
+  storage <- match.arg(storage)
+  x <- ejscreen_pipeline_load(path = path, format = "csv", storage = storage)
+  islandareas_reference_from_ejscreen_export(x)
+}
+
+islandareas_reference_from_ejscreen_export <- function(x) {
+  x <- data.table::as.data.table(data.table::copy(x))
+  id_col <- intersect(c("ID", "ID_1", "bgfips"), names(x))[1]
+  if (is.na(id_col)) {
+    stop("Island Areas EPA reference must have ID, ID_1, or bgfips")
+  }
+
+  x[, bgfips := trimws(as.character(get(id_col)))]
+  x[, ST := islandareas_st_from_bgfips(bgfips)]
+  if ("ST_ABBREV" %in% names(x)) {
+    x[is.na(ST) | !nzchar(ST), ST := as.character(ST_ABBREV)]
+  }
+  x <- x[ST %in% names(islandareas_expected_bg_counts())]
+
+  if (!"bgid" %in% names(x)) {
+    x[, bgid := bgfips]
+  }
+  if (!"statename" %in% names(x)) {
+    if ("STATE_NAME" %in% names(x)) {
+      x[, statename := as.character(STATE_NAME)]
+    } else {
+      x[, statename := islandareas_statename(ST)]
+    }
+  }
+  if (!"countyname" %in% names(x)) {
+    if ("CNTY_NAME" %in% names(x)) {
+      x[, countyname := as.character(CNTY_NAME)]
+    } else {
+      x[, countyname := NA_character_]
+    }
+  }
+  if (!"REGION" %in% names(x)) {
+    x[, REGION := islandareas_region(ST)]
+  } else {
+    x[, REGION := suppressWarnings(as.integer(REGION))]
+    x[is.na(REGION), REGION := islandareas_region(ST)]
+  }
+
+  x[, islandareas_source := "EPA EJScreen 2024 v2.32 ACS2022 reference"]
+  data.table::setorder(x, bgfips)
+  x
+}
+
+islandareas_reference_envirodata <- function(islandareas_reference,
+                                             enviro_vars = unique(c("pctpre1960", names_e))) {
+  x <- islandareas_reference_from_ejscreen_export(islandareas_reference)
+  header_map <- data.table::as.data.table(EJAM::map_headernames)
+  header_map <- header_map[
+    !is.na(rname) &
+      !is.na(ejscreen_indicator) &
+      rname %in% enviro_vars &
+      ejscreen_indicator %in% names(x),
+    .(rname, ejscreen_indicator)
+  ]
+  header_map <- unique(header_map, by = "rname")
+
+  out <- x[, .(bgfips)]
+  for (i in seq_len(nrow(header_map))) {
+    rname <- header_map$rname[[i]]
+    source <- header_map$ejscreen_indicator[[i]]
+    out[, (rname) := suppressWarnings(as.numeric(x[[source]]))]
+  }
+  data.table::setorder(out, bgfips)
+  out
+}
+
+islandareas_reference_geodata <- function(islandareas_reference) {
+  x <- islandareas_reference_from_ejscreen_export(islandareas_reference)
+  first_present <- function(cols) {
+    cols <- intersect(cols, names(x))
+    if (length(cols) == 0) {
+      return(rep(NA_real_, nrow(x)))
+    }
+    suppressWarnings(as.numeric(x[[cols[[1]]]]))
+  }
+  out <- x[, .(bgfips)]
+  out[, arealand := first_present(c("AREALAND", "ALAND", "arealand"))]
+  out[, areawater := first_present(c("AREAWATER", "AWATER", "areawater"))]
+  out[, intptlat := NA_real_]
+  out[, intptlon := NA_real_]
+  out[, area := NA_real_]
+  data.table::setorder(out, bgfips)
+  out
+}
+
+merge_islandareas_stage_data <- function(x, islandareas_data, overwrite = FALSE) {
+  x <- data.table::as.data.table(data.table::copy(x))
+  islandareas_data <- data.table::as.data.table(data.table::copy(islandareas_data))
+  if (!"bgfips" %in% names(x)) {
+    stop("x must have a bgfips column")
+  }
+  if (!"bgfips" %in% names(islandareas_data)) {
+    stop("islandareas_data must have a bgfips column")
+  }
+
+  for (col in setdiff(names(islandareas_data), names(x))) {
+    x[, (col) := NA]
+  }
+  existing_idx <- match(x$bgfips, islandareas_data$bgfips)
+  has_reference <- !is.na(existing_idx)
+  for (col in setdiff(names(islandareas_data), "bgfips")) {
+    values <- islandareas_data[[col]][existing_idx]
+    fill <- has_reference & !is.na(values)
+    if (!isTRUE(overwrite)) {
+      fill <- fill & is.na(x[[col]])
+    }
+    if (any(fill)) {
+      data.table::set(x, i = which(fill), j = col, value = values[fill])
+    }
+  }
+
+  rows_to_add <- islandareas_data[!bgfips %in% x$bgfips]
+  if (nrow(rows_to_add) > 0) {
+    for (col in setdiff(names(x), names(rows_to_add))) {
+      rows_to_add[, (col) := NA]
+    }
+    data.table::setcolorder(rows_to_add, names(x))
+    x <- data.table::rbindlist(list(x, rows_to_add), fill = TRUE)
+  }
+  data.table::setorder(x, bgfips)
+  x
+}
+
 calc_bg_islandareas_placeholder_data <- function(bg_islandareasdata) {
   out <- data.table::as.data.table(data.table::copy(bg_islandareasdata))
   if (!"bgfips" %in% names(out)) {
@@ -509,6 +667,8 @@ calc_bg_islandareas_placeholder_data <- function(bg_islandareasdata) {
   }
 
   identity_cols <- c("bgfips", "bgid", "ST", "statename", "REGION", "countyname")
+  is_epa_reference <- "islandareas_source" %in% names(out) &&
+    any(grepl("EPA EJScreen", out$islandareas_source), na.rm = TRUE)
   for (col in setdiff(names(out), identity_cols)) {
     empty_value <- if (is.integer(out[[col]])) {
       NA_integer_
@@ -522,9 +682,14 @@ calc_bg_islandareas_placeholder_data <- function(bg_islandareasdata) {
     out[, (col) := empty_value]
   }
   out[, pop := NA_real_]
+  source_note <- if (isTRUE(is_epa_reference)) {
+    "EPA reference rows are retained for visibility; demographic fields are not used"
+  } else {
+    "2020 Island Areas Census DHC demographics are saved separately but not used"
+  }
   out[, islandareas_source := paste(
     "EPA EJScreen-compatible Island Areas placeholder;",
-    "2020 Island Areas Census DHC demographics are saved separately but not used"
+    source_note
   )]
   data.table::setcolorder(out, c(intersect(c(
     "bgfips", "bgid", "ST", "statename", "REGION", "countyname",

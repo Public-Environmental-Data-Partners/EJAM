@@ -242,6 +242,40 @@ test_that("Island Areas demographics can be reduced to EPA-compatible placeholde
   expect_match(out$islandareas_source, "placeholder")
 })
 
+test_that("EPA Island Areas reference can seed placeholders, envirodata, and geodata", {
+  epa_reference <- data.table::data.table(
+    ID = c("600100001001", "660100001001", "690100001001", "780100001001", "100010001001"),
+    STATE_NAME = c("American Samoa", "Guam", "Northern Mariana Islands", "U.S. Virgin Islands", "Delaware"),
+    ST_ABBREV = c("AS", "GU", "MP", "VI", "DE"),
+    CNTY_NAME = c("Eastern District", "Guam", "Saipan Municipality", "St. Croix", "Kent"),
+    REGION = c(9, 9, 9, 2, 3),
+    ACSTOTPOP = c(100, 200, 300, 400, 500),
+    PM25 = c(NA_real_, 7.1, NA_real_, 6.4, 8.2),
+    OZONE = c(NA_real_, 30, NA_real_, 28, 32),
+    PRE1960PCT = c(NA_real_, 0.12, NA_real_, 0.34, 0.56),
+    DWATER = c(0, 0.2, NA_real_, 0.4, 0.5),
+    AREALAND = c(11, 22, 33, 44, 55),
+    AREAWATER = c(1, 2, 3, 4, 5)
+  )
+
+  reference <- EJAM:::islandareas_reference_from_ejscreen_export(epa_reference)
+  expect_equal(reference$bgfips, epa_reference$ID[1:4])
+  expect_equal(reference$ST, c("AS", "GU", "MP", "VI"))
+
+  placeholders <- EJAM:::calc_bg_islandareas_placeholder_data(reference)
+  expect_true(all(is.na(placeholders$pop)))
+  expect_true(all(is.na(placeholders$ACSTOTPOP)))
+
+  enviro <- EJAM:::islandareas_reference_envirodata(reference)
+  expect_equal(enviro$pm, c(NA_real_, 7.1, NA_real_, 6.4))
+  expect_equal(enviro$pctpre1960, c(NA_real_, 0.12, NA_real_, 0.34))
+  expect_equal(enviro$drinking, c(0, 0.2, NA_real_, 0.4))
+
+  geodata <- EJAM:::islandareas_reference_geodata(reference)
+  expect_equal(geodata$arealand, c(11, 22, 33, 44))
+  expect_equal(geodata$areawater, c(1, 2, 3, 4))
+})
+
 test_that("raw Island Areas DHC tables transform to bg_acsdata-compatible indicators", {
   bgfips <- "660100001001"
   table_for <- function(values) {
@@ -432,6 +466,56 @@ test_that("calc_bg_acsdata appends Island Areas placeholder rows by default", {
   expect_equal(out$pop, c(100, NA_real_))
   expect_equal(out$pctmin, c(0.2, NA_real_))
   expect_match(out$islandareas_source[2], "placeholder")
+})
+
+test_that("calc_bg_acsdata can use EPA reference placeholders without DHC demographics", {
+  bg_acsdata <- data.table::data.table(
+    bgfips = "100010001001",
+    bgid = "1",
+    pop = 100,
+    pctmin = 0.2,
+    pctlowinc = 0.1,
+    pctlingiso = 0.02,
+    pctlths = 0.05,
+    pctpre1960 = 0.3,
+    pctdisability = 0.09
+  )
+  islandareas_reference <- data.table::data.table(
+    bgfips = "660100001001",
+    bgid = "660100001001",
+    ST = "GU",
+    statename = "Guam",
+    countyname = "Guam",
+    REGION = 9L,
+    pop = 200,
+    pctmin = 0.8
+  )
+
+  testthat::local_mocked_bindings(
+    calc_blockgroupstats_acs = function(yr, formulas, tables, dropMOE, acs_raw) bg_acsdata,
+    calc_blockgroupstats_from_tract_data = function(yr, tables, formulas, dropMOE, acs_raw, tract_weight_source) {
+      data.table::data.table(bgfips = bg_acsdata$bgfips)
+    },
+    download_bg_islandareas_raw = function(...) {
+      stop("DHC download should not be used when an EPA reference is supplied")
+    },
+    calc_bg_islandareasdata = function(...) {
+      stop("DHC demographics should not be used when an EPA reference is supplied")
+    },
+    .package = "EJAM"
+  )
+
+  out <- EJAM:::calc_bg_acsdata(
+    yr = 2024,
+    include_tract_data = TRUE,
+    include_islandareas_data = TRUE,
+    islandareas_reference = islandareas_reference
+  )
+
+  expect_equal(out$bgfips, c("100010001001", "660100001001"))
+  expect_equal(out$pop, c(100, NA_real_))
+  expect_equal(out$pctmin, c(0.2, NA_real_))
+  expect_match(out$islandareas_source[2], "EPA reference")
 })
 
 test_that("calc_bg_acsdata can opt into DHC-derived Island Areas demographics", {

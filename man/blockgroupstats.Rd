@@ -40,7 +40,8 @@ has ACS-derived demographics in the \code{blockgroupstats} dataset.
 \item The American Community Survey (ACS) does not include AS/GU/MP/VI. For
 EJAM v2.5.0, the default EJSCREEN-compatible pipeline appends AS/GU/MP/VI
 rows with demographic fields, population, and demographic indexes kept as
-\code{NA}, while preserving partial EPA environmental fields where available.
+\code{NA}, while using the archived EPA EJScreen ACS2022 reference for row
+IDs, area fields, and partial EPA environmental fields where available.
 The annual pipeline can also save 2020 Island Areas Census DHC
 demographics as a separate \code{bg_islandareas_demographics} checkpoint for
 review. Those DHC demographics are not used in the default

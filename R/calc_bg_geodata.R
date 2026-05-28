@@ -16,7 +16,10 @@
 #' filled from `existing_blockgroupstats` without replacing Census `arealand`
 #' or `areawater`. If the fallback `bgfips` universe does not match, legacy
 #' `area` remains `NA` while Census `arealand` and `areawater` remain available
-#' for calculations.
+#' for calculations. Island Areas AS/GU/MP/VI may keep missing
+#' `arealand`/`areawater` when the archived EPA reference does not provide those
+#' values; that exception is limited to Island Area visibility rows because they
+#' are not used for block-weighted radius analysis in v2.5.0.
 #'
 #' @param yr ACS/TIGER vintage year.
 #' @param bgfips optional vector of blockgroup FIPS codes that define the
@@ -175,14 +178,22 @@ complete_bg_geodata <- function(bg_geodata = NULL,
     out[, area := NA_real_]
   }
 
-  need_fallback <- !all(c("arealand", "areawater") %in% names(out)) ||
-    any(is.na(out$arealand) | is.na(out$areawater))
+  missing_area_cols <- setdiff(c("arealand", "areawater"), names(out))
+  missing_area_values <- if (length(missing_area_cols) == 0) {
+    is.na(out$arealand) | is.na(out$areawater)
+  } else {
+    rep(TRUE, nrow(out))
+  }
+  missing_area_values_requiring_fallback <- missing_area_values &
+    !islandareas_is_bgfips(out$bgfips)
+
+  need_fallback <- length(missing_area_cols) > 0 ||
+    any(missing_area_values_requiring_fallback)
 
   if (isTRUE(need_fallback)) {
     if (!isTRUE(reuse_existing_if_missing)) {
-      missing_cols <- setdiff(c("arealand", "areawater"), names(out))
-      if (length(missing_cols) > 0) {
-        stop("bg_geodata is missing required columns: ", paste(missing_cols, collapse = ", "))
+      if (length(missing_area_cols) > 0) {
+        stop("bg_geodata is missing required columns: ", paste(missing_area_cols, collapse = ", "))
       }
       stop("bg_geodata has missing arealand/areawater values. Set reuse_existing_if_missing = TRUE only for an intentional provisional fallback.")
     }
@@ -664,8 +675,9 @@ normalize_bg_geodata <- function(x, require_area_fields = FALSE) {
   if (!"bgfips" %in% names(x)) {
     stop("bg_geodata must include bgfips or Census GEOID")
   }
-  x[, bgfips := sprintf("%012s", as.character(bgfips))]
-  x[, bgfips := gsub(" ", "0", bgfips, fixed = TRUE)]
+  x[, bgfips := trimws(as.character(bgfips))]
+  islandareas_short <- islandareas_is_bgfips(x$bgfips) & nchar(x$bgfips) < 12L
+  x[!islandareas_short, bgfips := gsub(" ", "0", sprintf("%012s", bgfips), fixed = TRUE)]
 
   if (isTRUE(require_area_fields) && !all(c("arealand", "areawater") %in% names(x))) {
     stop("fallback blockgroupstats must include arealand and areawater")
@@ -684,8 +696,15 @@ normalize_bgfips_vector <- function(bgfips) {
   }
   bgfips <- unique(as.character(bgfips))
   bgfips <- bgfips[!is.na(bgfips) & nzchar(bgfips)]
-  bgfips <- sprintf("%012s", bgfips)
-  gsub(" ", "0", bgfips, fixed = TRUE)
+  bgfips <- trimws(bgfips)
+  islandareas_short <- islandareas_is_bgfips(bgfips) & nchar(bgfips) < 12L
+  bgfips[!islandareas_short] <- gsub(
+    " ",
+    "0",
+    sprintf("%012s", bgfips[!islandareas_short]),
+    fixed = TRUE
+  )
+  bgfips
 }
 ###################################################### #
 

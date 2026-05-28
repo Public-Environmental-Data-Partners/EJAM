@@ -17,6 +17,7 @@ calc_bg_acsdata(
   include_islandareas_data = FALSE,
   islandareas_raw = NULL,
   islandareas_demographics = NULL,
+  islandareas_reference = NULL,
   islandareas_tables = islandareas_tables_for_bg_acsdata(),
   use_islandareas_demographics = FALSE,
   acs_raw_stage = NULL,
@@ -62,6 +63,11 @@ Puerto Rico is not included here because it is already part of ACS.}
 \item{islandareas_demographics}{optional transformed Island Areas Census DHC
 demographics table from \code{calc_bg_islandareasdata()}.}
 
+\item{islandareas_reference}{optional Island Areas rows from the archived EPA
+EJScreen ACS2022 reference file. When supplied and
+\code{use_islandareas_demographics = FALSE}, these rows define the Island Areas
+blockgroup IDs and labels used for placeholder rows.}
+
 \item{islandareas_tables}{Island Areas Census DHC tables to download if \code{include_islandareas_data} is TRUE
 and \code{islandareas_raw} is not supplied.}
 
@@ -103,11 +109,12 @@ by \code{\link[=calc_ejscreen_blockgroupstats]{calc_ejscreen_blockgroupstats()}}
 supplemental demographic index needs \code{lowlifex} which is not from the ACS.
 
 When Island Areas rows are requested, the default EJSCREEN-compatible path
-appends AS/GU/MP/VI rows without using the optional 2020 Island Areas Census
-DHC demographics. Those DHC values can be saved and reviewed separately, and
-are used here only when \code{use_islandareas_demographics = TRUE}.
-In the ACS2024/v2.5.0 annual runner, Island Area placeholder rows are enabled
-by default so those areas can appear in blockgroup datasets, EJSCREEN exports,
+appends AS/GU/MP/VI rows from the archived EPA EJScreen ACS2022 reference
+without using the optional 2020 Island Areas Census DHC demographics. Those
+DHC values can be saved and reviewed separately, and are used here only when
+\code{use_islandareas_demographics = TRUE}.
+In the annual/release runner, Island Area placeholder rows are enabled by
+default so those areas can appear in blockgroup datasets, EJSCREEN exports,
 and maps. This does not add point-buffer/radius support, because Island Area
 blocks are not added to the block helper datasets.
 }

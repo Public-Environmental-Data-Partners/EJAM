@@ -41,6 +41,7 @@ calc_ejscreen_dataset(
   include_islandareas_data = FALSE,
   islandareas_raw = NULL,
   islandareas_demographics = NULL,
+  islandareas_reference = NULL,
   islandareas_tables = islandareas_tables_for_bg_acsdata(),
   use_islandareas_demographics = FALSE,
   fiveorone = "5",
@@ -183,6 +184,11 @@ Puerto Rico is not included here because it is already part of ACS.}
 \item{islandareas_demographics}{optional transformed Island Areas Census DHC
 demographics table from \code{calc_bg_islandareasdata()}.}
 
+\item{islandareas_reference}{optional Island Areas rows from the archived EPA
+EJScreen ACS2022 reference file. When supplied and
+\code{use_islandareas_demographics = FALSE}, these rows define the Island Areas
+blockgroup IDs and labels used for placeholder rows.}
+
 \item{islandareas_tables}{Island Areas Census DHC tables to download if \code{include_islandareas_data} is TRUE
 and \code{islandareas_raw} is not supplied.}
 
@@ -262,9 +268,10 @@ created and saved by this function.
 The default stage order is:
 \enumerate{
 \item download raw ACS tables of demographic data into \code{bg_acs_raw}
-\item when enabled, download and save separate Island Areas Census DHC
-checkpoints for AS/GU/MP/VI; the ACS2024/v2.5.0 runner enables Island
-Area placeholder rows by default, but these DHC demographics are not used
+\item when enabled, append Island Areas AS/GU/MP/VI placeholder rows using the
+archived EPA EJScreen ACS2022 reference for row IDs, area fields, and
+available environmental fields; optional Island Areas Census DHC
+demographics can still be saved/reviewed separately but are not used
 downstream unless explicitly requested
 \item calculate ACS-based demographic indicators (and lead paint indicator) as \code{bg_acsdata}
 \item validate/save \code{bg_envirodata} (key environmental indicators)
@@ -290,10 +297,10 @@ upstream environmental-data step that reads the saved \code{bg_acsdata} stage.
 For EJAM v2.5.0, Island Areas are supported at the blockgroup dataset,
 EJSCREEN export, and map-data visibility level when
 \code{include_islandareas_data = TRUE}. The default path keeps AS/GU/MP/VI
-demographic fields as \code{NA}, preserves any environmental fields supplied in
-\code{bg_envirodata}, and does not add AS/GU/MP/VI blocks to the block helper
-files. Radius/buffer analyses in those areas should therefore return no-data
-results rather than block-weighted estimates.
+demographic fields as \code{NA}, uses archived EPA EJScreen reference rows for
+row IDs and available environmental/area fields, and does not add AS/GU/MP/VI
+blocks to the block helper files. Radius/buffer analyses in those areas
+should therefore return no-data results rather than block-weighted estimates.
 
 The annual pipeline creates the \code{bgej} stage, and the package-level dynamic
 Arrow loader obtains \code{bgej.arrow} from the \code{ejamdata} release tag recorded in
@@ -319,9 +326,11 @@ legacy EJSCREEN tract-to-blockgroup apportionment.
 \item EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.
 \item EJAM_ACS_DOWNLOAD_TIMEOUT
 \item EJAM_ACS_DOWNLOAD_RETRIES
-\item EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows and a
-separate \code{bg_islandareas_demographics} checkpoint. For v2.5.0/ACS2024
-runner use this is enabled by default unless explicitly set otherwise.
+\item EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to save AS/GU/MP/VI rows. The
+annual/release runner enables this by default unless explicitly set
+otherwise.
+\item EJAM_ISLANDAREAS_REFERENCE_PATH: archived EPA EJScreen reference CSV used
+for Island Areas row IDs, area fields, and available environmental fields.
 \item EJAM_USE_ISLANDAREAS_DEMOGRAPHICS: TRUE only for an intentional
 mixed-source supplemental dataset using 2020 Island Areas Census DHC
 demographics in \code{bg_acsdata}.
@@ -356,7 +365,8 @@ cbind(current_setting = Sys.getenv(c(
   "CENSUS_API_KEY",
   "EJAM_FORCE_ACS", "EJAM_FORCE_BG_ACSDATA", "EJAM_FORCE_BG_GEODATA",
   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
-  "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
+  "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_ISLANDAREAS_REFERENCE_PATH",
+  "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
   "EJAM_INCLUDE_EJSCREEN_EXPORT",
   "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",

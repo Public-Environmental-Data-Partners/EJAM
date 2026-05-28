@@ -186,3 +186,27 @@ test_that("calc_bg_geodata does not require legacy compatibility area when Censu
   expect_equal(names(out), c("bgfips", "arealand", "areawater", "intptlat", "intptlon", "area"))
   expect_true(all(is.na(out$area)))
 })
+
+test_that("complete_bg_geodata allows missing area fields for Island Areas only", {
+  x <- data.table::data.table(
+    bgfips = c("100010001001", "6000100"),
+    arealand = c(1000, NA_real_),
+    areawater = c(10, NA_real_)
+  )
+
+  out <- EJAM:::complete_bg_geodata(x, bgfips = x$bgfips)
+
+  expect_equal(out$bgfips, x$bgfips)
+  expect_equal(out$arealand, x$arealand)
+  expect_equal(out$areawater, x$areawater)
+
+  mainland_missing <- data.table::data.table(
+    bgfips = c("100010001001", "100010001002"),
+    arealand = c(1000, NA_real_),
+    areawater = c(10, NA_real_)
+  )
+  expect_error(
+    EJAM:::complete_bg_geodata(mainland_missing, bgfips = mainland_missing$bgfips),
+    "missing arealand/areawater"
+  )
+})

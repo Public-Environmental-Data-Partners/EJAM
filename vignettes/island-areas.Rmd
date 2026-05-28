@@ -35,6 +35,13 @@ and map-data visibility level. Demographic fields are kept as missing where
 ACS data are not available, and partial EPA environmental fields may be present
 where EPA provided them.
 
+The annual/release pipeline uses the archived EPA EJScreen 2024 v2.32 ACS2022
+reference file as the current source for AS/GU/MP/VI blockgroup row IDs, area
+fields, and available environmental fields. The expected Island Area
+blockgroup counts are 77 for AS, 58 for GU, 135 for MP, and 416 for VI
+(686 total). By default, 2020 Island Areas Census DHC demographic values are
+not used in `bg_acsdata` or downstream EJSCREEN-compatible outputs.
+
 EJAM v2.5.0 does not add Island Area Census blocks to the block helper files
 used for point-buffer/radius analysis. A report or radius analysis in an Island
 Area should not crash, but should normally return no-data results when no
