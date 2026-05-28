@@ -1346,10 +1346,10 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   varsneedpctiles <- intersect(varsneedpctiles, names(results_bysite))
   varsneedpctiles <- setdiff(varsneedpctiles, subs_drop)
-  varsneedpctiles <- intersect(intersect(varsneedpctiles, names(usastats)), names(statestats))
-  varnames.us.pctile    <- paste0(      'pctile.', varsneedpctiles) # but Summary Indexes do not follow that naming scheme and are handled with separate code
-  varnames.state.pctile <- paste0('state.pctile.', varsneedpctiles) # but Summary Indexes do not follow that naming scheme and are handled with separate code
-
+  varsneedpctiles <- intersect(intersect(varsneedpctiles, names(usastats)), names(statestats)) # omits the EJ indexes since name state.EJ... in the statestats. Does not omit Demog Indexes but those are done later.
+  varnames.us.pctile    <- paste0(      'pctile.', varsneedpctiles) # but EJ Indexes do not follow that naming scheme and are handled with separate code
+  varnames.state.pctile <- paste0('state.pctile.', varsneedpctiles) # but EJ Indexes do not follow that naming scheme and are handled with separate code
+  # note EJ Indexes and Demog Indexes percentiles are special cases and done separately below.
   #Recoded version of the loops in the original doaggregate to make it more efficient.
   #Use data.table instead of data.frame for in place updates instead of creating and binding new data frames
   #Use vectorized operations instead of for loops
@@ -1379,7 +1379,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   if (length(valid_us_vars) > 0) {
     results_bysite[, (valid_us_pctl_names) := lapply(valid_us_vars, function(var) {
-      # but note newer vectorized calc_pctile_columns()
+      # but note newer vectorized calc_pctile_columns() ***
       pctile_from_raw_lookup(
         columns_bysite[[var]],
         varname.in.lookup.table = var,
