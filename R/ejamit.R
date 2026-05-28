@@ -665,7 +665,14 @@ ejamit <- function(sitepoints = NULL,
                          download_city_fips_bounds = download_city_fips_bounds, download_noncity_fips_bounds = download_noncity_fips_bounds)
     }
     if (sitetype %in% "shp") {
-      areas <- area_sqmi(shp = shp_valid) # includes any BUFFER ADDED
+      areas_by_site <- data.table(
+        ejam_uniq_id = as.character(shp_valid$ejam_uniq_id),
+        area_sqmi = area_sqmi(shp = shp_valid) # includes any BUFFER ADDED
+      )
+      areas <- areas_by_site[
+        match(as.character(out$results_bysite$ejam_uniq_id), ejam_uniq_id),
+        area_sqmi
+      ]
     }
     if (sitetype %in% "latlon") {
       # CHECK IF DONUT OPTION WAS USED !       radius_donut_lower_edge
@@ -849,5 +856,4 @@ ejamit <- function(sitepoints = NULL,
 
   invisible(out)
 }
-
 
