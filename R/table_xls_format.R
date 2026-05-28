@@ -615,8 +615,6 @@ table_xls_format <- function(overall,
       this_hyperlink_text_overall <- hyperlink_colnames[i]
 
       if ("shp" %in% sitetype && hyperlink_colnames[i] %in% "EJAM Report") {
-        namedvector <- rep(shp_ejam_report_fallback_url, length(namedvector))
-        namedvector_overall <- rep(shp_ejam_report_fallback_url, length(namedvector_overall))
         this_hyperlink_text <- "Open EJAM App"
         this_hyperlink_text_overall <- "Open EJAM App"
       }
