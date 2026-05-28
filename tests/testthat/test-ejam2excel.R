@@ -224,3 +224,31 @@ test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
 
 
 })
+
+test_that("ejam2excel shapefile analyses use EJAM app links in excel", {
+  expect_no_error({
+    tfile <- tempfile(fileext = ".xlsx")
+    fname <- ejam2excel(
+      testoutput_ejamit_shapes_2,
+      interactive_console = FALSE,
+      fname = tfile,
+      community_reportadd = FALSE,
+      ok2plot = FALSE
+    )
+  })
+
+  notes_tab <- readxl::read_excel(fname, sheet = "notes", col_names = FALSE) %>% as.data.frame()
+  note_row <- which(notes_tab[[1]] %in% "Note on shapefile-based site links")
+  expect_true(length(note_row) == 1)
+  expect_match(as.character(notes_tab[note_row, 2]), "https://ejanalysis\\.com/ejamapp")
+
+  unzip_dir <- tempfile("xlsx_unzip_")
+  dir.create(unzip_dir)
+  zip_entries <- unzip(fname, list = TRUE)$Name
+  xml_entries <- zip_entries[grepl("\\.xml$|\\.rels$", zip_entries)]
+  unzip(fname, files = xml_entries, exdir = unzip_dir)
+  xml_text <- unlist(lapply(file.path(unzip_dir, xml_entries), function(p) paste(readLines(p, warn = FALSE), collapse = "\n")))
+
+  expect_true(any(grepl("https://ejanalysis\\.com/ejamapp", xml_text)))
+  expect_false(any(grepl("ejamapi-84652557241\\.us-central1\\.run\\.app/report", xml_text)))
+})
