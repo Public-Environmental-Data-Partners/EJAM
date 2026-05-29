@@ -106,7 +106,7 @@
 #   EJAM_VALIDATE_VS_PRIOR: TRUE to compare selected outputs to a prior saved pipeline version and save prior_validation_*.txt and prior_validation_summary.csv.
 #   EJAM_PRIOR_PIPELINE_YR: prior version year to compare against. Defaults to yr - 1.
 #   EJAM_PRIOR_PIPELINE_DIR: optional explicit prior version folder/S3 prefix. If unset, constructed from EJAM_PIPELINE_ROOT and EJAM_PRIOR_PIPELINE_YR.
-#   EJAM_PRIOR_PACKAGE_REF: optional explicit Git ref/tag/SHA holding a prior package blockgroupstats.rda, such as development or v2.32.8.1.
+#   EJAM_PRIOR_PACKAGE_REF: optional explicit Git ref/tag/SHA holding a prior package blockgroupstats.rda, such as development or v2.32.8.001.
 #   EJAM_PRIOR_PACKAGE_PATH: optional path within EJAM_PRIOR_PACKAGE_REF. Defaults to data/blockgroupstats.rda.
 #   EJAM_EJSCREEN_EXPORT_REFERENCE_PATH: optional EPA-style EJSCREEN export CSV to compare with the ejscreen_export stage. For yr 2022, the default is the S3 copy of EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv, which is based on ACS 2018-2022.
 #   EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH: optional EPA-style StatePct

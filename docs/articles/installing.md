@@ -148,7 +148,7 @@ pkg <- "Public-Environmental-Data-Partners/EJAM@*release"
 # pkg <- "Public-Environmental-Data-Partners/EJAM@ACS2024"
 
 # a specific release (version):
-# pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.1"
+# pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"
 
 pak::pkg_install(pkg = pkg, 
                  dependencies = NA, upgrade = FALSE)

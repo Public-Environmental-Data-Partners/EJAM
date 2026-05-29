@@ -786,7 +786,7 @@ ejscreen_pipeline_load_git_data_object <- function(ref,
                                                    path = "data/blockgroupstats.rda",
                                                    object_name = NULL) {
   if (missing(ref) || is.null(ref) || !nzchar(ref)) {
-    stop("ref must be supplied, such as 'development' or 'v2.32.8.1'", call. = FALSE)
+    stop("ref must be supplied, such as 'development' or 'v2.32.8.001'", call. = FALSE)
   }
   if (missing(path) || is.null(path) || !nzchar(path)) {
     stop("path must be supplied, such as 'data/blockgroupstats.rda'", call. = FALSE)
