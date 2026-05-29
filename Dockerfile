@@ -24,7 +24,6 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
     rm -rf /tmp/awscliv2.zip /tmp/aws
 
 ARG GITHUB_PAT
-ENV GITHUB_PAT=$GITHUB_PAT
 
 RUN mkdir -p /home/epic
 WORKDIR /home/epic
@@ -103,17 +102,25 @@ ADD . /home/epic/
 RUN R -e "remotes::install_local('/home/epic/', dependencies = TRUE)" && \
     rm -rf /tmp/downloaded_packages /tmp/*.rds
 
-# Download ejamdata arrow files directly from GitHub release
-# Must run AFTER install_local to avoid being overwritten by the installer
-RUN mkdir -p /usr/local/lib/R/site-library/EJAM/data && \
+# Download ejamdata arrow files from GitHub release
+# Must run AFTER install_local so the data/ folder is not overwritten by the installer
+# EJAMDATA_VERSION: leave unset (or pass empty string) to auto-resolve to the latest
+#   release of ejamdata, or pin to a specific tag (e.g. --build-arg EJAMDATA_VERSION=v2.32.8.001)
+ARG EJAMDATA_VERSION
+RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
+      -H "Authorization: token ${GITHUB_PAT}" \
+      "https://api.github.com/repos/Public-Environmental-Data-Partners/ejamdata/releases/latest" \
+      | grep '"tag_name"' | head -1 | cut -d'"' -f4)}" && \
+    echo "==> Downloading ejamdata ${RESOLVED_VERSION}" && \
+    mkdir -p /usr/local/lib/R/site-library/EJAM/data && \
     for FILE in blockpoints blockwts quaddata bgej bgid2fips blockid2fips frs frs_by_programid frs_by_naics frs_by_sic frs_by_mact; do \
       curl -fSL \
         -H "Authorization: token ${GITHUB_PAT}" \
         -H "Accept: application/octet-stream" \
-        "https://github.com/Public-Environmental-Data-Partners/ejamdata/releases/download/v2.32.8/${FILE}.arrow" \
+        "https://github.com/Public-Environmental-Data-Partners/ejamdata/releases/download/${RESOLVED_VERSION}/${FILE}.arrow" \
         -o "/usr/local/lib/R/site-library/EJAM/data/${FILE}.arrow"; \
     done && \
-    echo "v2.32.8" > /usr/local/lib/R/site-library/EJAM/data/ejamdata_version.txt
+    echo "${RESOLVED_VERSION}" > /usr/local/lib/R/site-library/EJAM/data/ejamdata_version.txt
 
 EXPOSE 2000 2001
 
