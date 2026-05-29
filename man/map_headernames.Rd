@@ -29,8 +29,11 @@ It provides metadata or information about each variable (indicator), such as the
 \item other information like sort order for certain purposes, etc.
 }
 
-It was originally created from a spreadsheet of the same name in the \code{data-raw}
-folder, but is now being updated or modified directly.
+It was originally created from a spreadsheet of the same name in the
+\code{data-raw} folder. The current editable source is
+\code{data-raw/map_headernames.csv}; the rebuild script should read that CSV,
+validate it, and save this package data object without adding or changing
+metadata rows in code.
 
 Several helper functions are used to query it, such as
 \code{\link[=fixcolnames]{fixcolnames()}} and \code{\link[=varinfo]{varinfo()}}.
