@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libproj-dev \
     libgdal-dev \
     libmagick++-dev \
+    libnode-dev \
     texlive \
     texlive-latex-extra \
     texlive-fonts-extra \
@@ -28,66 +29,93 @@ ARG GITHUB_PAT
 RUN mkdir -p /home/epic
 WORKDIR /home/epic
 
-# TO DO: Split this up for better pushing or make smaller - its 4GBs as is.
-# Install required R packages from CRAN
+# Install R packages — sourced from DESCRIPTION Imports + runtime-relevant Suggests
+# Explicit pre-install avoids install_local having to resolve everything from scratch
+# and improves Docker layer caching (this layer only rebuilds if the list changes).
 RUN install2.r --error \
+    \
+    `# --- Spatial / geo ---` \
     s2 \
     sf \
+    geojsonio \
+    terra \
+    units \
+    sp \
+    \
+    `# --- Core data / tidyverse ---` \
     tidyverse \
     arrow \
-    attempt \
     collapse \
-    config \
     data.table \
-    DBI \
-    desc \
-    doSNOW \
     dplyr \
-    DT \
-    foreach \
-    ggplot2 \
-    ggridges \
-    glue \
-    golem \
-    htmltools \
-    leaflet \
-    leaflet.extras2 \
-    leaflet.extras \
-    magrittr \
-    methods \
-    openxlsx \
-    pdist \
-    pins \
-    piggyback \
-    pkgload \
+    tidyr \
     readxl \
-    rhandsontable \
-    rmarkdown \
-    RMySQL \
-    SearchTrees \
-    shinydisconnect \
+    writexl \
+    openxlsx \
+    \
+    `# --- HTTP / GitHub ---` \
+    curl \
+    httr2 \
+    gh \
+    piggyback \
+    \
+    `# --- Shiny / UI ---` \
     shiny \
     shinycssloaders \
+    shinydisconnect \
     shinyjs \
-    sp \
-    tidyr \
-    viridis \
-    webshot \
-    knitr \
-    spelling \
-    testthat \
-    beepr \
-    datasets \
-    fipio \
+    golem \
+    htmltools \
     htmlwidgets \
+    DT \
+    rhandsontable \
+    leaflet \
+    leaflet.extras \
+    leaflet.extras2 \
+    plotly \
+    viridis \
+    ggplot2 \
+    ggridges \
+    \
+    `# --- Reporting ---` \
+    rmarkdown \
+    knitr \
+    gt \
+    pagedown \
+    webshot \
+    webshot2 \
+    \
+    `# --- Utilities ---` \
+    fs \
+    glue \
+    magrittr \
+    methods \
     jsonlite \
-    mapview \
-    rnaturalearth \
-    rvest \
-    terra \
+    XML \
+    desc \
+    pkgload \
+    config \
+    pdist \
+    SearchTrees \
+    \
+    `# --- Census / geographic data ---` \
+    tidycensus \
+    tigris \
     tidygeocoder \
-    units \
+    rnaturalearth \
+    mapview \
+    \
+    `# --- Suggests (runtime-relevant) ---` \
+    beepr \
+    fipio \
+    rvest \
     remotes \
+    \
+    `# --- Legacy / extra (not in DESCRIPTION but kept for compatibility) ---` \
+    DBI \
+    RMySQL \
+    pins \
+    \
     && rm -rf /tmp/downloaded_packages /tmp/*.rds
 
 # GitHub packages
