@@ -347,12 +347,11 @@ datasets and package, `map_headernames` may need metadata rows for those
 new indicators, including the variable name (`rname`), `longname`,
 calculation type, calculation weight, rounding information, EJScreen
 export names, and `varlist` groups such as `names_e` and `names_d`. The
-current package data object is the authoritative source for release
-work. Older spreadsheet and `datacreate_map_headernames.R` workflows may
-still be useful as notes, but do not rebuild `map_headernames` from an
-old `.xlsx` file unless the generated object is audited against the
-current branch and preserves the recent ACS 2024, EJScreen export,
-bin/text, and language-indicator fixes.
+editable source for release work is `data-raw/map_headernames.csv`.
+Edit that CSV directly, then source
+`data-raw/datacreate_map_headernames.R` to validate and save
+`data/map_headernames.rda`. Older spreadsheet workflows are obsolete
+and should not be used to regenerate this object.
 
 ### names\_\*
 
