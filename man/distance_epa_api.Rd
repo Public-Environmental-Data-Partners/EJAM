@@ -25,7 +25,8 @@ as a data.frame of two rows and columns named "lat" and "lon"}
 \item{unit}{can be "miles", the default, or else "meters" to get distance in meters.
 unit is called distanceUnit in the API:
 For planar distance, if distanceUnit is not specified, the distance is in the units of the given spatial reference.
-If distanceUnit is specified, the unit must be compatible with the given spatial reference.
+If distanceUnit is specified, the unit must be compatible with the given spatial reference
+(note that crs is called sr in the API).
 That is, if sr is a PCS, distanceUnit must be linear. If sr is a GCS, distanceUnit must be angular.
 For geodesic distance, If distanceUnit is not specified, the distance is measured in meters. If distanceUnit is specified, the unit must be linear.}
 

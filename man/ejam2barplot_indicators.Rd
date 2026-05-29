@@ -9,7 +9,7 @@ ejam2barplot_indicators(
   indicator_type = "Demographic",
   data_type = "raw",
   mybarvars.stat = "avg",
-  mybarvars.sumstat = c("Average site", "Average person at these sites")
+  mybarvars.sumstat = c("Average site analyzed", "Average person at sites analyzed")
 )
 }
 \arguments{
@@ -27,8 +27,10 @@ can be defined by the value of shiny input$summ_bar_stat selection}
 by default depends on mybarvars.stat being "avg" or "med"
 which should correspond to also specifying values of
 mybarvars.sumstat equal to
-c('Average site', 'Average person at these sites') or
-c('Median site', 'Median person') respectively.
+c('Average site analyzed', 'Average person at sites analyzed') or
+c('Median site analyzed', 'Median person at sites analyzed') respectively.
+Legacy inputs such as 'Median person' are accepted and normalized
+to the canonical plot labels used internally.
 If mybarvars.stat is specified then mybarvars.sumstat should be also
 to ensure they correspond! Done in shiny, not checked here.}
 }

@@ -19,7 +19,7 @@ Note other columns get returned,
 and the lat,lon columns do get returned but as "lat" and "lon" even if they were provided as aliases of those
 }
 \description{
-Creates a simple feature (sf) clas spatial data.frame from points
+Creates a simple feature (sf) class spatial data.frame from points
 }
 \seealso{
 \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}} \code{\link[=shapefile_from_sitepoints]{shapefile_from_sitepoints()}} \code{\link[=shape_buffered_from_shapefile_points]{shape_buffered_from_shapefile_points()}}

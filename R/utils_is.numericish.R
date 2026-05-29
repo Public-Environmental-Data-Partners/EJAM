@@ -3,7 +3,7 @@
 #' see which columns seem numeric and could be rounded
 #' @details
 #' Reports "08" as numeric-ish
-#' @seealso [is.numeric.text()]
+#' @seealso [is.numerictext()]
 #' @param x data.table, data.frame, or vector
 #' @param only.if.already.numeric logical, if TRUE, only reports TRUE for a column (or element) if  is.numeric() is TRUE for that one
 #' @param strip.characters.before.coerce logical, if TRUE, tries to remove spaces and percentage signs before trying to coerce to numeric
