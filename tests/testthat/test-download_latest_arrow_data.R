@@ -59,3 +59,20 @@ test_that("download_latest_arrow_data downloads release asset filenames from req
     "v2.32.8.001"
   )
 })
+
+test_that("dynamic_data_release_tag canonicalizes the historical v2.32.8.1 ejamdata alias", {
+  expect_identical(
+    unname(EJAM:::dynamic_data_release_tag(
+      c("bgej", "frs"),
+      piggybacktag = "v2.32.8.1"
+    )),
+    c("v2.32.8.001", "v2.32.8.001")
+  )
+  expect_identical(
+    unname(EJAM:::dynamic_data_release_tag(
+      c("bgej", "frs"),
+      piggybacktag = "v2.32.8.001"
+    )),
+    c("v2.32.8.001", "v2.32.8.001")
+  )
+})
