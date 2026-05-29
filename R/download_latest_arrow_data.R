@@ -13,7 +13,7 @@ ejamdata_local_arrow_tag_read <- function(path) {
     return(NULL)
   }
 
-  tag[1]
+  ejamdata_tag_canonical(tag[1])
 }
 
 #' Download package-compatible Arrow datasets if user does not have them already
