@@ -1,0 +1,10 @@
+environment                    = "prod"
+task_family                    = "ejam"         # keep as "ejam" for backward compatibility with existing task definitions
+task_cpu                       = 2048           # 2 vCPU
+task_memory                    = 7168           # 7 GB
+desired_count                  = 2
+manage_ecr                     = true           # prod owns the ECR repository
+create_ecs_service_linked_role = false          # already exists; set true only on a fresh AWS account
+deletion_protection            = true
+log_retention_days             = 30
+container_insights             = "enabled"

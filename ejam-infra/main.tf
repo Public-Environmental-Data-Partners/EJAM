@@ -1,19 +1,32 @@
 ###############################################################################
-# EJAM R Shiny App — Clean AWS Infrastructure (Fargate)
+# EJAM R Shiny App — AWS Infrastructure (Fargate)
+#
+# Supports both prod and dev environments via .tfvars files.
 #
 # Resources created:
 #   - VPC + public subnets + IGW
 #   - ALB + target group + listener
-#   - ECR repository
+#   - ECR repository (prod only; dev shares prod's repo)
 #   - ECS cluster (Fargate) + service + task definition
 #   - IAM roles (execution + task)
 #   - Security groups
 #   - CloudWatch log group
 #
 # Usage:
-#   terraform init
-#   terraform plan -var="aws_account_id=123456789012"
-#   terraform apply -var="aws_account_id=123456789012"
+#   # First time setup — migrate local state to S3:
+#   terraform init \
+#     -backend-config="key=prod/terraform.tfstate" \
+#     -reconfigure
+#
+#   # Subsequent prod applies:
+#   terraform init -backend-config="key=prod/terraform.tfstate"
+#   terraform plan  -var-file=prod.tfvars -var="aws_account_id=<ACCOUNT_ID>"
+#   terraform apply -var-file=prod.tfvars -var="aws_account_id=<ACCOUNT_ID>"
+#
+#   # Dev applies (separate state, separate AWS resources):
+#   terraform init -backend-config="key=dev/terraform.tfstate" -reconfigure
+#   terraform plan  -var-file=dev.tfvars -var="aws_account_id=<ACCOUNT_ID>"
+#   terraform apply -var-file=dev.tfvars -var="aws_account_id=<ACCOUNT_ID>"
 ###############################################################################
 
 terraform {
@@ -23,6 +36,17 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+  }
+
+  # Partial backend config — supply `key` at init time via -backend-config flag.
+  # Bucket must be created manually before first init (see README.md).
+  backend "s3" {
+    bucket  = "ejam-terraform-state-716228812058"
+    region  = "us-east-1"
+    encrypt = true
+    # key is passed at init time:
+    #   prod: -backend-config="key=prod/terraform.tfstate"
+    #   dev:  -backend-config="key=dev/terraform.tfstate"
   }
 }
 
@@ -48,9 +72,14 @@ variable "app_name" {
 }
 
 variable "environment" {
-  default = "prod"
+  description = "Environment name: prod or dev"
+  default     = "prod"
 }
 
+variable "task_family" {
+  description = "ECS task definition family name. Use 'ejam' for prod (backward compat), 'ejam-dev' for dev."
+  default     = "ejam"
+}
 
 variable "app_port" {
   default = 2000
@@ -62,12 +91,12 @@ variable "health_check_port" {
 
 variable "task_cpu" {
   description = "Fargate task CPU units (1024 = 1 vCPU)"
-  default     = 2048 # 2 vCPU
+  default     = 2048
 }
 
 variable "task_memory" {
   description = "Fargate task memory in MB"
-  default     = 7168 # 7 GB
+  default     = 7168
 }
 
 variable "desired_count" {
@@ -78,9 +107,34 @@ variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
 
+variable "deletion_protection" {
+  description = "Enable ALB deletion protection. Set false for dev so it can be torn down easily."
+  default     = true
+}
+
+variable "log_retention_days" {
+  description = "CloudWatch log retention in days"
+  default     = 30
+}
+
+variable "container_insights" {
+  description = "ECS Container Insights: 'enabled' or 'disabled'. Disable for dev to save cost."
+  default     = "enabled"
+}
+
+variable "create_ecs_service_linked_role" {
+  description = "Set true only on first deploy to a fresh AWS account. The role is account-wide and only needs to be created once across all environments."
+  default     = false
+}
+
+variable "manage_ecr" {
+  description = "Set true for prod (creates and owns the ECR repo). Set false for dev (dev shares the prod ECR repo via data source)."
+  default     = true
+}
+
 locals {
-  name_prefix = "${var.app_name}-${var.environment}"
-  azs         = ["${var.aws_region}a", "${var.aws_region}b"]
+  name_prefix  = "${var.app_name}-${var.environment}"
+  azs          = ["${var.aws_region}a", "${var.aws_region}b"]
   public_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
@@ -164,7 +218,6 @@ resource "aws_security_group" "ecs_tasks" {
   name_prefix = "${local.name_prefix}-ecs-"
   vpc_id      = aws_vpc.main.id
 
-  # Allow traffic from ALB only
   ingress {
     from_port       = var.app_port
     to_port         = var.app_port
@@ -199,7 +252,7 @@ resource "aws_lb" "main" {
   load_balancer_type         = "application"
   security_groups            = [aws_security_group.alb.id]
   subnets                    = aws_subnet.public[*].id
-  enable_deletion_protection = true
+  enable_deletion_protection = var.deletion_protection
 
   tags = { Name = "${local.name_prefix}-alb" }
 }
@@ -209,7 +262,7 @@ resource "aws_lb_target_group" "app" {
   port        = var.app_port
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
-  target_type = "ip" # Required for Fargate awsvpc
+  target_type = "ip"
 
   health_check {
     path                = "/"
@@ -238,9 +291,14 @@ resource "aws_lb_listener" "http" {
 
 # -----------------------------------------------------------------------------
 # ECR
+# Prod owns and manages the ECR repository.
+# Dev shares prod's repository (manage_ecr = false) — URL is derived from
+# known values to avoid requiring ecr:DescribeRepositories/DescribeImages
+# permissions on the Terraform user.
 # -----------------------------------------------------------------------------
 
 resource "aws_ecr_repository" "app" {
+  count                = var.manage_ecr ? 1 : 0
   name                 = var.app_name
   image_tag_mutability = "IMMUTABLE"
   force_delete         = false
@@ -252,9 +310,9 @@ resource "aws_ecr_repository" "app" {
   tags = { Name = "${local.name_prefix}-ecr" }
 }
 
-# Keep only the last 10 untagged images
 resource "aws_ecr_lifecycle_policy" "app" {
-  repository = aws_ecr_repository.app.name
+  count      = var.manage_ecr ? 1 : 0
+  repository = aws_ecr_repository.app[0].name
 
   policy = jsonencode({
     rules = [{
@@ -270,22 +328,29 @@ resource "aws_ecr_lifecycle_policy" "app" {
   })
 }
 
+locals {
+  # When manage_ecr = true (prod), use the resource URL.
+  # When manage_ecr = false (dev), construct the URL from known values —
+  # avoids needing ecr:DescribeRepositories/DescribeImages on the Terraform user.
+  ecr_repository_url = var.manage_ecr ? aws_ecr_repository.app[0].repository_url : "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.app_name}"
+}
+
 # -----------------------------------------------------------------------------
 # IAM
 # -----------------------------------------------------------------------------
 
-# ECS service-linked role — required on first use in a fresh account
+# ECS service-linked role — account-wide, only needed once on a fresh account.
+# Set create_ecs_service_linked_role = true only if this is the first ECS deployment
+# in this AWS account. Leave false if the role already exists.
 resource "aws_iam_service_linked_role" "ecs" {
+  count            = var.create_ecs_service_linked_role ? 1 : 0
   aws_service_name = "ecs.amazonaws.com"
 
   lifecycle {
-    ignore_changes        = [description]
-    # If the role already exists Terraform will error — import it instead:
-    # terraform import aws_iam_service_linked_role.ecs arn:aws:iam::<account_id>:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
+    ignore_changes = [description]
   }
 }
 
-# Task Execution Role — lets ECS pull images + write logs
 resource "aws_iam_role" "ecs_execution" {
   name = "${local.name_prefix}-ecs-execution"
 
@@ -304,8 +369,6 @@ resource "aws_iam_role_policy_attachment" "ecs_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Task Role — the role your container assumes at runtime
-# Add policies here if the app needs S3, Secrets Manager, etc.
 resource "aws_iam_role" "ecs_task" {
   name = "${local.name_prefix}-ecs-task"
 
@@ -325,7 +388,7 @@ resource "aws_iam_role" "ecs_task" {
 
 resource "aws_cloudwatch_log_group" "app" {
   name              = "/ecs/${local.name_prefix}"
-  retention_in_days = 30
+  retention_in_days = var.log_retention_days
   tags              = { Name = "${local.name_prefix}-logs" }
 }
 
@@ -338,14 +401,14 @@ resource "aws_ecs_cluster" "main" {
 
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = var.container_insights
   }
 
   tags = { Name = "${local.name_prefix}-cluster" }
 }
 
 resource "aws_ecs_task_definition" "app" {
-  family                   = var.app_name
+  family                   = var.task_family
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.task_cpu
@@ -355,7 +418,7 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([{
     name      = var.app_name
-    image     = "${aws_ecr_repository.app.repository_url}:latest"
+    image     = "${local.ecr_repository_url}:latest"
     essential = true
 
     portMappings = [
@@ -398,7 +461,7 @@ resource "aws_ecs_service" "app" {
     ignore_changes = [task_definition]
   }
 
-  depends_on = [aws_lb_listener.http, aws_iam_service_linked_role.ecs]
+  depends_on = [aws_lb_listener.http]
 }
 
 # -----------------------------------------------------------------------------
@@ -412,7 +475,7 @@ output "alb_dns_name" {
 
 output "ecr_repository_url" {
   description = "ECR repo URL — use in GitHub Actions"
-  value       = aws_ecr_repository.app.repository_url
+  value       = local.ecr_repository_url
 }
 
 output "ecs_cluster_name" {

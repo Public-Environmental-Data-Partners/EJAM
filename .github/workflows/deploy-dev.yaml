@@ -1,0 +1,105 @@
+name: Build & Deploy to ECS Fargate (dev)
+
+on:
+  push:
+    branches: [dev-deploy]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: ejam           # shared with prod
+  ECS_CLUSTER: ejam-dev-cluster
+  ECS_SERVICE: ejam-dev-service
+  ECS_TASK_FAMILY: ejam-dev
+  CONTAINER_NAME: ejam
+  APP_PORT: 2000
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image
+        id: build
+        env:
+          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: dev-${{ github.sha }}
+        run: |
+          FULL_IMAGE=$REGISTRY/$ECR_REPOSITORY
+
+          docker build \
+            --build-arg GITHUB_PAT=${{ secrets.EJAMDATA_PAT }} \
+            -t $FULL_IMAGE:$IMAGE_TAG .
+
+          docker push $FULL_IMAGE:$IMAGE_TAG
+
+          echo "image=$FULL_IMAGE:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to ECS
+        env:
+          NEW_IMAGE: ${{ steps.build.outputs.image }}
+        run: |
+          set -euo pipefail
+
+          echo "▶ Fetching latest task definition for family: $ECS_TASK_FAMILY"
+          LATEST_ARN=$(aws ecs list-task-definitions \
+            --family-prefix "$ECS_TASK_FAMILY" \
+            --sort DESC \
+            --query 'taskDefinitionArns[0]' \
+            --output text)
+
+          if [[ "$LATEST_ARN" == "None" ]]; then
+            echo "❌ No task definition found for family $ECS_TASK_FAMILY"
+            echo "   Run 'terraform apply -var-file=dev.tfvars' in ejam-infra/ first."
+            exit 1
+          fi
+
+          echo "▶ Current task definition: $LATEST_ARN"
+
+          NEW_DEF=$(aws ecs describe-task-definition --task-definition "$LATEST_ARN" \
+            | jq --arg IMG "$NEW_IMAGE" --arg NAME "$CONTAINER_NAME" \
+              '.taskDefinition
+               | .containerDefinitions = [.containerDefinitions[] | if .name == $NAME then .image = $IMG else . end]
+               | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+          echo "▶ Registering new task definition..."
+          NEW_ARN=$(aws ecs register-task-definition \
+            --cli-input-json "$NEW_DEF" \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "▶ New task definition: $NEW_ARN"
+
+          echo "▶ Updating ECS service..."
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE" \
+            --task-definition "$NEW_ARN" \
+            --force-new-deployment
+
+          echo "▶ Waiting for service to stabilize..."
+          aws ecs wait services-stable \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE"
+
+          echo "✅ Dev deployment complete"
