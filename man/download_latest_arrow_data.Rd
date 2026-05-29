@@ -22,7 +22,7 @@ download_latest_arrow_data(
 
 \item{piggybacktag}{default is \code{"latest"}, which resolves internally to the
 DESCRIPTION \code{ejamdata_required_tag} field. Pass a specific tag such as
-\code{"v2.32.8"} only for explicit maintenance or diagnostic work.}
+\code{"v2.32.8.001"} only for explicit maintenance or diagnostic work.}
 
 \item{force}{set TRUE to download requested files even if local copies exist.}
 }
@@ -32,9 +32,10 @@ Used when EJAM package is attached
 \details{
 Checks to see what \code{ejamdata} release tag should be used for requested
 Arrow datasets. By default, EJAM uses the required \code{ejamdata} release tag
-recorded in DESCRIPTION as \code{ejamdata_required_tag}. For example, EJAM 2.5.0
-currently looks for Arrow files in the \code{ejamdata} release tagged \code{v2.5.0},
-not in whichever data-repository release GitHub currently marks as latest.
+recorded in DESCRIPTION as \code{ejamdata_required_tag}. For example, EJAM
+2.32.8.001 currently looks for Arrow files in the \code{ejamdata} release tagged
+\code{v2.32.8.001}, not in whichever data-repository release GitHub currently
+marks as latest.
 
 The installed package's \code{data/ejamdata_version.txt} marker records the
 release tag for locally installed Arrow files.

@@ -22,9 +22,10 @@ ejamdata_local_arrow_tag_read <- function(path) {
 #' @details
 #'   Checks to see what `ejamdata` release tag should be used for requested
 #'   Arrow datasets. By default, EJAM uses the required `ejamdata` release tag
-#'   recorded in DESCRIPTION as `ejamdata_required_tag`. For example, EJAM 2.5.0
-#'   currently looks for Arrow files in the `ejamdata` release tagged `v2.5.0`,
-#'   not in whichever data-repository release GitHub currently marks as latest.
+#'   recorded in DESCRIPTION as `ejamdata_required_tag`. For example, EJAM
+#'   2.32.8.001 currently looks for Arrow files in the `ejamdata` release tagged
+#'   `v2.32.8.001`, not in whichever data-repository release GitHub currently
+#'   marks as latest.
 #'
 #'   The installed package's `data/ejamdata_version.txt` marker records the
 #'   release tag for locally installed Arrow files.
@@ -39,7 +40,7 @@ ejamdata_local_arrow_tag_read <- function(path) {
 #' @param envir if needed to specify environment other than default, e.g., globalenv() or parent.frame()
 #' @param piggybacktag default is `"latest"`, which resolves internally to the
 #'   DESCRIPTION `ejamdata_required_tag` field. Pass a specific tag such as
-#'   `"v2.32.8"` only for explicit maintenance or diagnostic work.
+#'   `"v2.32.8.001"` only for explicit maintenance or diagnostic work.
 #' @param force set TRUE to download requested files even if local copies exist.
 #' @keywords internal
 #' @export
