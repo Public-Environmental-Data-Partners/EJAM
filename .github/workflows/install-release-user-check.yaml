@@ -114,7 +114,7 @@ jobs:
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          dependencies: true
+          dependencies: '"hard"'
           extra-packages: any::remotes
 
       - name: Check DESCRIPTION version
@@ -149,7 +149,7 @@ jobs:
             remotes::install_github(
               repo,
               ref = ref,
-              dependencies = TRUE,
+              dependencies = NA,
               force = TRUE,
               upgrade = "never",
               build = FALSE,
@@ -158,7 +158,7 @@ jobs:
           } else if (method == "url-tarball") {
             remotes::install_url(
               url = sprintf("https://github.com/%s/archive/%s.tar.gz", repo, ref),
-              dependencies = TRUE,
+              dependencies = NA,
               force = TRUE,
               upgrade = "never",
               INSTALL_opts = install_opts
@@ -214,7 +214,7 @@ jobs:
 
           pak::pkg_install(
             pkg,
-            dependencies = TRUE,
+            dependencies = NA,
             upgrade = FALSE
           )
 
