@@ -13,10 +13,14 @@ RUN apt-get update && apt-get install -y \
     libgdal-dev \
     libmagick++-dev \
     libnode-dev \
+    chromium-browser \
     texlive \
     texlive-latex-extra \
     texlive-fonts-extra \
     && rm -rf /var/lib/apt/lists/*
+
+# Point chromote/pagedown/webshot2 at the system Chromium
+ENV CHROMOTE_CHROME=/usr/bin/chromium-browser
 
 # Install AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
