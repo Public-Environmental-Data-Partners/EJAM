@@ -3,10 +3,17 @@
 #'
 #' @description This is used with a lookup table to
 #'   convert a raw indicator vector to percentiles in US or States.
-#' @details
-#'   For handling a whole table of raw indicators, see [calc_pctile_columns()]
 #'
-#'   This function can handle 2 kinds of inputs right now:
+#' @details
+#'   - To convert a vector of raw indicators to percentiles, you can use [lookup_pctile()].
+#'
+#'   - To convert an entire table of raw indicators to percentiles, see [calc_pctile_columns()].
+#'
+#'   - To check a vector of raw indicators and see which ones are at/above a specified percentile,
+#'     see [pctile_x_is_hit_by_score()].
+#'
+#'
+#'   [lookup_pctile()] can handle 2 kinds of inputs right now:
 #'
 #'   - a vector of scores and vector of corresponding indicator names, in only 1 zone (e.g. 1 State)
 #'
@@ -63,18 +70,25 @@
 #' @aliases lookup_pctile
 #' @return By default, returns numeric vector length of myvector.
 #' @seealso [calc_pctile_columns()] for handling a table not just a vector
-#' @examples \donttest{
+#' @examples
 #'
+#'  \donttest{
+#' # Get some saved analysis results
+#' x <- testoutput_ejamit_10pts_1miles$results_overall
+#' # The raw scores of demographic indicators
 #' eg <- dput(
 #'         round(as.vector(
-#'           unlist(testoutput_ejamit_10pts_1miles$results_overall[ , ..names_d] )),
+#'           unlist(x[ , ..names_d] )),
 #'           3)
 #'       )
 #'
+#' # The raw scores and percentiles from saved analysis results
 #' data.frame(value = eg,
-#'            pctile = t(testoutput_ejamit_10pts_1miles$results_overall[ , ..names_d_pctile]))
+#'            pctile = t(x[ , ..names_d_pctile]))
 #'
-#' data.frame(value = eg, pctile = lookup_pctile(eg, names_d))
+#' # Replicate those percentiles using this function
+#' data.frame(value = eg,
+#'            pctile = lookup_pctile(eg, names_d))
 #'
 #' }
 #'
@@ -326,7 +340,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
 #' @export
 #'
 lookup_pctile <- function(myvector, varname.in.lookup.table, lookup = usastats, zone = "USA") {
-
+  # this is an exported alias for the internal pctile_from_raw_lookup(), which had a more consistent naming scheme but may be harder to remember.
   pctile_from_raw_lookup(myvector = myvector, varname.in.lookup.table = varname.in.lookup.table, lookup = lookup, zone = zone)
 } #  function(...) {pctile_from_raw_lookup(...)}
 ######################################################################### #

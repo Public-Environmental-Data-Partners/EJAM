@@ -12,9 +12,6 @@ generate_report_footnotes(
     "https://www.epa.gov/haps/air-toxics-data-update"))
 )
 }
-\arguments{
-\item{diesel_caveat}{}
-}
 \description{
 helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 }

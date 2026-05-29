@@ -42,7 +42,7 @@
 # c(
 #   fipspicker_module_ui("TESTID"),
 #         footer = tagList(
-          # modalButton("Cancel"),
+# modalButton("Cancel"),
 #           actionButton(inputId = "ok", "OK")
 #         )
 #         )
@@ -156,19 +156,25 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
   default_cities_picked <- as.numeric(default_cities_picked) # remove the leading zeroes since they are matched here without those but user probably passed it WITH leading zeroes as from  name2fips(c("akutan,ak", "brooklyn,ny"), usegrep = T)
   default_cities_picked[is.na(default_cities_picked)] <- "" # convert NA back to "" as needed here, in case it was just "" which is the global_defaults setting of EJAM:::global_or_param("default_cities_picked")
 
+  fipspicker_fips_type2pick_choices_default <- EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default")
+  if (is.null(fipspicker_fips_type2pick_choices_default)) {
+    warning("unable to read global default or parameter for 'fipspicker_fips_type2pick_choices_default' in fipspicker module")
+    ### radioButtons() gives error in testing if choices is NULL because global defaults weren't loaded
+    fipspicker_fips_type2pick_choices_default <- c(
+      # `EPA Regions` = "EPA Regions",
+      States = "States",
+      Counties = "Counties",
+      `Cities/Places` = "Cities or Places"
+    )
+  }
+
   # .-------------- UI = fipspicker_ui -------------------  #
 
   pickers <- tagList(
     radioButtons(inputId = ns("fips_type2pick"), label = "What kinds of areas do you want to use?", #  compare or download
                  selected = EJAM:::global_or_param("fipspicker_fips_type2pick_default"),
                  inline = TRUE,
-                 choices = EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default")
-                 #   c(
-                 #   # `EPA Regions` = "EPA Regions",
-                 #   States = "States",
-                 #   Counties = "Counties",
-                 #   `Cities/Places` = "Cities or Places"
-                 # )
+                 choices = fipspicker_fips_type2pick_choices_default # EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default")
     ),
     actionButton(inputId = ns("reset_button"), label = "Clear all selections/ Reset"),
 
@@ -825,9 +831,9 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
                                selected = as.vector(all_counties_choices))  # BUT THIS WOULD PICK ALL WITHOUT FILTERING BY STATES/REGIONS PICKED EARLIER ***
           if (input$fips_type2pick == "Counties") {
             if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultshow")) {
-            shinyjs::show("all_counties_button")
+              shinyjs::show("all_counties_button")
             } else {
-            shinyjs::hide("counties_picked") # ALL will not be shown? even if you want all within 1 state? do not need to see in the selectize window
+              shinyjs::hide("counties_picked") # ALL will not be shown? even if you want all within 1 state? do not need to see in the selectize window
             }
           } else {
             shinyjs::hide("all_counties_button")

@@ -17,6 +17,7 @@ test_ejam_1group <- function(fnames,
   #   "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
   #   "untested_cant", "untested_skipped", "warned"
   # ))
+  fnames_with_paths <- file.path(testthat::test_path(), fnames) # should be true:  all.equal(normalizePath(file.path("./tests/testthat", fnames[i])), normalizePath(file.path(testthat::test_path(), fnames[i])))
   xtable <- list()
   for (i in 1:length(fnames)) {
     seconds_byfile <- 0
@@ -27,7 +28,7 @@ test_ejam_1group <- function(fnames,
           x <- try(
 
             testthat::test_file(
-              file.path("./tests/testthat/", fnames[i]),
+              fnames_with_paths[i],
               load_helpers = load_helpers,
               load_package = 'none',
               # or else  Helper, setup, and teardown files located in the same directory as the test will also be run. See vignette("special-files") for details.
@@ -36,13 +37,24 @@ test_ejam_1group <- function(fnames,
             )
 
           )
-          if (inherits(x, "try-error")) {cat("Stopped on failure in ", fnames[i], "\n")}
+          if (inherits(x, "try-error")) {
+            cat("Stopped on failure in ", fnames[i], "\n")
+            x <- data.frame(
+              file = fnames[i],
+              test = "test_file_error",
+              nb = 1,
+              passed = 0,
+              warning = 0,
+              skipped = FALSE,
+              error = 1
+            )
+            }
         }
         , print = print4eachfile) # here it is a useless param of capture_output_lines()
       }))
       x <- as.data.frame(x)
       if (NROW(x) == 0) {        # at one point it was having trouble around here
-        cat("\n\n ********** FAILED TO GET ANY RESULTS TRYING TO RUN TESTS IN", file.path("./tests/testthat/", fnames[i]), '\n\n')
+        cat("\n\n ********** FAILED TO GET ANY RESULTS TRYING TO RUN TESTS IN", fnames_with_paths[i], '\n\n')
         xtable[[i]] <- NULL
         next
       }

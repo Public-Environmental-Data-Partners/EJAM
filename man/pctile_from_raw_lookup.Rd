@@ -51,9 +51,14 @@ This is used with a lookup table to
 convert a raw indicator vector to percentiles in US or States.
 }
 \details{
-For handling a whole table of raw indicators, see \code{\link[=calc_pctile_columns]{calc_pctile_columns()}}
+\itemize{
+\item To convert a vector of raw indicators to percentiles, you can use \code{\link[=lookup_pctile]{lookup_pctile()}}.
+\item To convert an entire table of raw indicators to percentiles, see \code{\link[=calc_pctile_columns]{calc_pctile_columns()}}.
+\item To check a vector of raw indicators and see which ones are at/above a specified percentile,
+see \code{\link[=pctile_x_is_hit_by_score]{pctile_x_is_hit_by_score()}}.
+}
 
-This function can handle 2 kinds of inputs right now:
+\code{\link[=lookup_pctile]{lookup_pctile()}} can handle 2 kinds of inputs right now:
 \itemize{
 \item a vector of scores and vector of corresponding indicator names, in only 1 zone (e.g. 1 State)
 \item a vector of scores and vector of corresponding zones (States), for only 1 indicator (e.g., pctlowinc)
@@ -88,18 +93,24 @@ It also handles other odd cases, like where a large percent of all raw scores ar
 the minimum value, in which case it reports 0 as percentile, not that large percent.
 }
 \examples{
-\donttest{
 
+ \donttest{
+# Get some saved analysis results
+x <- testoutput_ejamit_10pts_1miles$results_overall
+# The raw scores of demographic indicators
 eg <- dput(
         round(as.vector(
-          unlist(testoutput_ejamit_10pts_1miles$results_overall[ , ..names_d] )),
+          unlist(x[ , ..names_d] )),
           3)
       )
 
+# The raw scores and percentiles from saved analysis results
 data.frame(value = eg,
-           pctile = t(testoutput_ejamit_10pts_1miles$results_overall[ , ..names_d_pctile]))
+           pctile = t(x[ , ..names_d_pctile]))
 
-data.frame(value = eg, pctile = lookup_pctile(eg, names_d))
+# Replicate those percentiles using this function
+data.frame(value = eg,
+           pctile = lookup_pctile(eg, names_d))
 
 }
 

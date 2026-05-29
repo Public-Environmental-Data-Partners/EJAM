@@ -1,0 +1,78 @@
+name: 'Quick install check'
+
+on:
+  push:
+    branches: [ "main", "development" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      install_source:
+        description: 'What source should this quick check install?'
+        required: true
+        type: choice
+        default: local
+        options:
+          - local
+          - github-sha
+
+permissions:
+  contents: read
+
+concurrency:
+  group: install-quick-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quick-install:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      GITHUB_PAT: ${{ github.token }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      EJAM_INSTALL_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+      EJAM_INSTALL_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+      INSTALL_SOURCE: ${{ github.event_name == 'workflow_dispatch' && inputs.install_source || 'github-sha' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.3.0
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - name: Install hard dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: '"hard"'
+          extra-packages: any::pak
+
+      - name: Install EJAM
+        run: |
+          source <- Sys.getenv("INSTALL_SOURCE")
+          repo <- Sys.getenv("EJAM_INSTALL_REPO")
+          ref <- Sys.getenv("EJAM_INSTALL_REF")
+
+          if (source == "local") {
+            pak::local_install(".", dependencies = FALSE, upgrade = FALSE)
+          } else if (source == "github-sha") {
+            pak::pkg_install(
+              sprintf("%s@%s", repo, ref),
+              dependencies = NA,
+              upgrade = FALSE
+            )
+          } else {
+            stop("Unknown install source: ", source)
+          }
+        shell: Rscript {0}
+
+      - name: Load EJAM
+        run: |
+          library(EJAM)
+          message("Installed EJAM ", as.character(utils::packageVersion("EJAM")))
+        shell: Rscript {0}

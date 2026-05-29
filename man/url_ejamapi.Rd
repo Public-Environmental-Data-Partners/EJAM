@@ -32,7 +32,7 @@ url_ejamapi(
 \item{shapefile}{see \code{\link[=ejamit]{ejamit()}}, but each polygon is encoded as geojson string
 which might get too long for encoding in a URL for the API using GET}
 
-\item{dTolerance}{number of meters tolerance to use in \code{\link[sf:geos_unary]{sf::st_simplify()}} to simplify polygons to fit as url-encoded text geojson}
+\item{dTolerance}{number of meters tolerance to use in \code{\link[sf:st_simplify]{sf::st_simplify()}} to simplify polygons to fit as url-encoded text geojson}
 
 \item{linktext}{used as text for hyperlinks, if supplied and as_html=TRUE}
 

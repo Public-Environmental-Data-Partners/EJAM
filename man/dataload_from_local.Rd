@@ -27,7 +27,7 @@ dataload_from_local(
 
 \item{silent}{set to TRUE to stop cat() printing to console like when running tests}
 
-\item{return_data_table}{whether the \code{\link[arrow:read_feather]{arrow::read_ipc_file()}} should return a table in \href{https://r-datatable.com}{data.table} format (T, the default), or arrow (F)}
+\item{return_data_table}{whether the \code{\link[arrow:read_ipc_file]{read_ipc_file()}} should return a table in \href{https://r-datatable.com}{data.table} format (T, the default), or arrow (F)}
 }
 \value{
 vector of paths to files (as derived from varnames) that were

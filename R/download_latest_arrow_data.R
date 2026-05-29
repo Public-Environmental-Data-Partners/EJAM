@@ -1,13 +1,14 @@
 
-#' Download latest versions of arrow datasets if user doesn't have them already
+#' Download latest release of arrow datasets if user doesn't have them already
 #'
 #' Used when EJAM package is attached
 #' @details
-#'   Checks to see what is the latest version of datasets available according to a repository's latest release tag.
-#'   Compares that to what version was last saved locally (as stored in the installed package's
-#'   ejamdata_version.txt file).
+#'   Checks to see what is the latest release of datasets available according to the data repository's latest release tag.
+#'   Compares that to what version was last saved locally (as stored in the installed package's ejamdata_version.txt file).
 #'
-#'   Relies on [piggyback::pb_releases()] to download data files from a specific release (version) of the package.
+#'   Relies on [piggyback::pb_releases()] to track / update / store / download
+#'   data files as assets of a specific release on the data repository.
+#'   For details, see [technical details of how datasets are updated](`r paste0(EJAM::url_package(type = "docs", get_full_url = TRUE), "/articles/dev-update-datasets.html")`)
 #'
 #' @param varnames use defaults, or vector of names like "bgej" or use "all" to get all available
 #' @param repository repository owner/name such as `r EJAM::url_package(type = "data", get_full_url = FALSE)` or "XYZ/ejamdata"
@@ -64,14 +65,15 @@ download_latest_arrow_data <- function(
     if (!token_is_valid) github_token = ""
   }
 
-  # get latest release to determine if user has latest versions
+  # see what is release of datasets repo according to piggyback::pb_releases()
+  # and then determine if user has latest versions as recorded in ejamdata_version.txt
 
   latestArrowVersion <- tryCatch({piggyback::pb_releases(
     repo = repository, # must be xyz/abc, not full URL
     .token = github_token
   )[1, "tag_name"]},
   error = function(e) {
-    message(paste0("\u274C Failed trying to get info from github repository ", repository, " about latest release..."))
+    message(paste0("\u274C Failed trying to get info from github repository ", repository, " about latest release according to piggyback::pb_releases()..."))
     FALSE
   })
 
