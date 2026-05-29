@@ -81,12 +81,15 @@ RStudio](https://docs.posit.co/ide/user/ide/guide/pkg-devel/writing-packages.htm
 
 You can use the “Build, Install Package” menu in RStudio.
 
-Alternatively, you could do the following (which ensures you install all
-the Suggests, not just Imports, which is useful).
+Alternatively, you could do the following. This installs the packages
+needed to load and use EJAM, without forcing every optional package used
+for development, testing, or less-common workflows.
 
 ``` r
 
-if (!require(pak)) {install.packages("pak")}
+if (!requireNamespace("pak", quietly = TRUE)) {
+  install.packages("pak")
+}
 
 # To install, you have to say where the cloned package was saved:
 # ejamroot = the root directory into which you cloned!
@@ -101,7 +104,7 @@ if (!(basename(ejamroot) == "EJAM" &&
   stop("must set ejamroot to root folder of EJAM source package")}
 
 pak::pkg_install(pkg = ejamroot, 
-                 dependencies = TRUE, upgrade = FALSE)
+                 dependencies = NA, upgrade = FALSE)
 
 library(EJAM)
 ```
@@ -115,34 +118,40 @@ to analysis the web app cannot do, or for package development).
 
 ### Installing from github
 
-If you *do have a PAT set up*, you can use
-[`pak::pkg_install()`](https://pak.r-lib.org/reference/pkg_install.html).
-(For help on PAT setup, see the last section of this article).
-
-Replace OWNER/REPO below with “Public-Environmental-Data-Partners/EJAM”
-including the quote marks
+You can use
+[`pak::pkg_install()`](https://pak.r-lib.org/reference/pkg_install.html)
+to install from GitHub. A valid GitHub PAT is recommended to avoid low
+unauthenticated rate limits. If you have an invalid PAT configured, fix
+or remove it first; invalid credentials can fail even when the public
+repository would otherwise be accessible. For help on PAT setup, see the
+last section of this article.
 
 ``` r
 
-options(timeout=300); if (!require(pak)) {install.packages("pak")}
+options(timeout = 600)
+if (!requireNamespace("pak", quietly = TRUE)) {
+  install.packages("pak")
+}
 
-# EXAMPLES
+# Choose one install target.
 
 # latest release:
-pkg = "Public-Environmental-Data-Partners/EJAM@*release" 
+pkg <- "Public-Environmental-Data-Partners/EJAM@*release"
 
 # main branch, sometimes slightly ahead of latest release:
-pkg = "Public-Environmental-Data-Partners/EJAM" 
+# pkg <- "Public-Environmental-Data-Partners/EJAM"
 
 # development branch, often well ahead of latest release:
-pkg = "Public-Environmental-Data-Partners/EJAM@development"
+# pkg <- "Public-Environmental-Data-Partners/EJAM@development"
+
+# ACS2024 branch:
+# pkg <- "Public-Environmental-Data-Partners/EJAM@ACS2024"
 
 # a specific release (version):
-pkg = "Public-Environmental-Data-Partners/EJAM@v2.32.8.1"
-pkg = "Public-Environmental-Data-Partners/EJAM@v2.5.0"
+# pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.1"
 
 pak::pkg_install(pkg = pkg, 
-                 dependencies = TRUE, upgrade = FALSE)
+                 dependencies = NA, upgrade = FALSE)
 
 library(EJAM)
 ```
@@ -160,7 +169,8 @@ You could get the name of or just download the .zip from the release
 assets, and try to install it using
 [`utils::install.packages()`](https://rdrr.io/r/utils/install.packages.html),
 but this will not work if you have a newer version of R than the .zip
-was built on!
+was built on. Installing source packages with `pak::pkg_install()` is
+usually more reliable.
 
 ------------------------------------------------------------------------
 
@@ -191,8 +201,11 @@ used by the package to get the data and build an index.
 
 You may need to set up a [personal access
 token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens)
-(PAT) for authentication to work when using a repository on GitHub.com.
-See more [about git credentials and the credential
+(PAT) for authentication to work reliably when using repositories on
+GitHub.com. Public repositories can often be installed without a PAT,
+but GitHub applies lower rate limits. A bad or expired PAT can cause
+errors such as “Bad GitHub credentials” or HTTP 401, so update or remove
+invalid credentials before retrying. See more [about git credentials and the credential
 store](https://usethis.r-lib.org/articles/git-credentials.html#git-credential-helpers-and-the-credential-store).
 Note Windows takes care of most of this now, in conjunction with GitHub.
 
@@ -214,13 +227,14 @@ gitcreds::gitcreds_set()
 
 ### Tests of installation on various platforms and R versions
 
-The package has tests of whether it can be installed on Windows, MacOS,
-and Ubuntu, with various R versions. Those tests run automatically as
-github actions in a workflow at
+The package has GitHub Actions tests of whether it can be installed. A
+quick install check runs on pushes to the main and development branches
+and on pull requests to main. A broader release/user install workflow
+runs for release tags, published releases, and on demand. The workflow
+files are at
 <https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/.github/workflows>
-and logs of the results of those tests are here:
+and logs of the results are here:
 <https://github.com/Public-Environmental-Data-Partners/EJAM/actions>.
-You can also run those tests on demand from github.com.
 
 ### Details on CRAN packages needed (dependencies)
 
@@ -228,19 +242,19 @@ You should not have to do anything other than the instructions above, to
 handle package dependencies. EJAM needs dozens of other packages to be
 installed that are (almost all) available from
 [CRAN](https://cran.r-project.org). Installing the EJAM package as
-explained above (with dependencies=TRUE) will handle obtaining those
-other packages. Cloning and building/installing and then trying to
-load/attach EJAM will also alert you to those other packages you need to
-install if you don’t already have them.
+explained above with `dependencies = NA` will handle obtaining the
+required packages. Cloning and building/installing and then trying to
+load/attach EJAM will also alert you to any required packages you need
+to install if you don’t already have them.
 
 In case it is of interest, a list of packages needed is in the
 `DESCRIPTION` file in the R package source code root folder (as can be
-found in the code repository). Note some are in Suggests and you
-probably want to install those as well since some of them were actually
-used in some less-often-used features or functions. Using dependencies=T
-will make sure they are all installed. Each of those packages in turn
-requires other packages that also get installed as needed. Future work
-may reduce the number of package dependencies to a more typical number.
+found in the code repository). Packages listed in `Suggests` are
+optional; they support development, testing, documentation, or
+less-common workflows. Installing every suggested package with
+`dependencies = TRUE` is not recommended as a first install step,
+because optional packages can fail for reasons unrelated to normal EJAM
+use.
 
 ### Details on the automatic data downloads
 
