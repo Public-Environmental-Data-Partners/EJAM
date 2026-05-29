@@ -247,14 +247,11 @@ API.
   long and short indicator names, EJAM and EJScreen field names, the
   type or category of indicator, sort order to use in reports, and the
   method of calculating aggregations of the indicator over blockgroups.
-  Older workflows edited an `.xlsx` file in `data-raw/` and rebuilt
-  `map_headernames` from that spreadsheet. For the ACS 2024 release
-  work, treat the current `map_headernames` object as the source of
-  truth unless and until that source is deliberately refactored into a
-  new audited CSV/JSON/R-data workflow. Do not rebuild it from an old
-  spreadsheet or obsolete draft script without checking that all recent
-  ACS 2024, EJScreen export, bin/text, and language-indicator metadata
-  changes are preserved.
+  The editable source is now `data-raw/map_headernames.csv`. If metadata
+  rows or values need to change, edit that CSV directly, then source
+  `data-raw/datacreate_map_headernames.R` to validate the CSV and save
+  `data/map_headernames.rda`. Older `.xlsx` workflows are obsolete and
+  should not be used to regenerate this object.
 
 - [Test data (inputs) and examples of
   outputs](https://public-environmental-data-partners.github.io/EJAM/articles/testdata.Rmd)

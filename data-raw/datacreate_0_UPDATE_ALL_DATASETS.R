@@ -283,7 +283,7 @@ if (0 == 1) {  # collapsable list
 ######################################### #
 ### datacreate_map_headernames.R ####
 # rstudioapi::documentOpen("./data-raw/datacreate_map_headernames.R")
-stop("be careful now that this will be based on the csv not .xlsx file, etc.")
+stop("Before continuing, edit data-raw/map_headernames.csv directly if needed. datacreate_map_headernames.R now validates/saves that CSV only; it does not use .xlsx or apply hard-coded edits.")
 source_maybe("datacreate_map_headernames.R", DOIT = TRUE)
 ######################################### #
 ### datacreate_names_of_indicators.R ####

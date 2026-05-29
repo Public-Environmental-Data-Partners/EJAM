@@ -92,7 +92,9 @@
 <li><p>method for aggregating the value across blockgroups (sum, weighted mean, what is the weight, etc.)</p></li>
 <li><p>other information like sort order for certain purposes, etc.</p></li>
 </ul><p>It was originally created from a spreadsheet of the same name in the <code>data-raw</code>
-folder, but is now being updated or modified directly.</p>
+folder. The current editable source is <code>data-raw/map_headernames.csv</code>; the
+rebuild script should read that CSV, validate it, and save this package data
+object without adding or changing metadata rows in code.</p>
 <p>Several helper functions are used to query it, such as
 <code><a href="fixcolnames.html">fixcolnames()</a></code> and <code><a href="varinfo.html">varinfo()</a></code>.</p>
 <p>You can see examples of what it contains below.</p>
@@ -162,4 +164,3 @@ folder, but is now being updated or modified directly.</p>
 
 
   </body></html>
-

@@ -575,13 +575,12 @@ rows for those new indicators, including the variable name
 (<code>rname</code>), <code>longname</code>, calculation type,
 calculation weight, rounding information, EJScreen export names, and
 <code>varlist</code> groups such as <code>names_e</code> and
-<code>names_d</code>. The current package data object is the
-authoritative source for release work. Older spreadsheet and
-<code>datacreate_map_headernames.R</code> workflows may still be useful
-as notes, but do not rebuild <code>map_headernames</code> from an old
-<code>.xlsx</code> file unless the generated object is audited against
-the current branch and preserves the recent ACS 2024, EJScreen export,
-bin/text, and language-indicator fixes.</p>
+<code>names_d</code>. The editable source for release work is
+<code>data-raw/map_headernames.csv</code>. Edit that CSV directly, then
+source <code>data-raw/datacreate_map_headernames.R</code> to validate
+and save <code>data/map_headernames.rda</code>. Older spreadsheet
+workflows are obsolete and should not be used to regenerate this
+object.</p>
 </div>
 <div class="section level3">
 <h3 id="names_">names_*<a class="anchor" aria-label="anchor" href="#names_"></a>

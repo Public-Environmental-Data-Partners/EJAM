@@ -209,7 +209,7 @@ acs22_replication_rename_epa_cols_to_rnames <- function(x) {
     CNTY_NAME = "countyname"
   )
 
-  mh <- EJAM:::augment_map_headernames_ejscreen_names(EJAM::map_headernames)
+  mh <- EJAM:::validate_map_headernames_ejscreen_names(EJAM::map_headernames)
   mh <- mh[!EJAM:::is_blank_string(mh$rname), , drop = FALSE]
 
   mapping <- data.frame(old = character(), new = character(), stringsAsFactors = FALSE)

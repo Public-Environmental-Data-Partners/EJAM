@@ -178,7 +178,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     bg <- merge(bg, ej[, c(by, ej_cols), with = FALSE], by = by, all.x = TRUE, sort = FALSE)
   }
 
-  mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mapping_for_names <- validate_map_headernames_ejscreen_names(mapping_for_names)
 
   if (identical(export_percentile_scope, "state")) {
     if (!"ST" %in% names(bg)) {
@@ -838,7 +838,7 @@ calc_ejscreen_dataset_creator_input <- function(blockgroupstats = NULL,
   )
   bg <- data.frame(bg, check.names = FALSE, stringsAsFactors = FALSE)
 
-  mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mapping_for_names <- validate_map_headernames_ejscreen_names(mapping_for_names)
   if (!rename_newtype %in% names(mapping_for_names)) {
     stop("rename_newtype is not a column in mapping_for_names: ", rename_newtype)
   }
@@ -1135,7 +1135,7 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
     export_names <- names(data.table::fread(export_path, nrows = 0))
   }
 
-  mh <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mh <- validate_map_headernames_ejscreen_names(mapping_for_names)
   if (!rename_newtype %in% names(mh)) {
     stop("rename_newtype is not a column in mapping_for_names: ", rename_newtype)
   }
@@ -1320,7 +1320,7 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
       exists("augment_map_headernames_ejscreen_names", inherits = TRUE)) {
     column_map <- tryCatch({
       mh <- data.table::as.data.table(
-        augment_map_headernames_ejscreen_names(map_headernames)
+        validate_map_headernames_ejscreen_names(map_headernames)
       )
       if (!all(c("ejscreen_indicator", "rname", "varlist") %in% names(mh))) {
         NULL
@@ -1599,7 +1599,7 @@ calc_ejscreen_map_fields_added <- function(x,
                                            overwrite = TRUE) {
 
   out <- as.data.frame(x, stringsAsFactors = FALSE, check.names = FALSE)
-  mh <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mh <- validate_map_headernames_ejscreen_names(mapping_for_names)
 
   if (is.null(pctile_names)) {
     pctile_names <- unique(c(

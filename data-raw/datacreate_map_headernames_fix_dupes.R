@@ -1,3 +1,14 @@
+# OBSOLETE NOTES ONLY: duplicate rname cleanup must now be done by editing
+# data-raw/map_headernames.csv directly and then running
+# data-raw/datacreate_map_headernames.R to validate/save the package dataset.
+# This script must not modify map_headernames after the CSV is read.
+stop(
+  "datacreate_map_headernames_fix_dupes.R is obsolete. ",
+  "Edit data-raw/map_headernames.csv directly, then source ",
+  "data-raw/datacreate_map_headernames.R to validate/save map_headernames.",
+  call. = FALSE
+)
+
 # FIX DUPES IN map_headernames
 
 # one big cause is that many vars are listed

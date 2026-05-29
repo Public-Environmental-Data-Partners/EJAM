@@ -1,19 +1,22 @@
 ###################################################### #
 
-#' Complete EJSCREEN name columns in map_headernames
+#' Validate EJSCREEN name columns in map_headernames
 #'
 #' @details `map_headernames` has historically kept several naming systems:
 #' `rname` for EJAM, `acsname` for ACS-derived variables,
 #' `ejscreen_apinames_old` for the old offline EJSCREEN report/API names, and
 #' `csvname` for the older EJSCREEN staff CSV/FTP-style download fields. Current
 #' EJSCREEN map services use geodatabase/download field names for numeric
-#' fields, plus related `P_`,
-#' `B_`, and `T_` fields for percentiles, map bins, and popup text. Percentile,
-#' map-bin, and popup-text fields are represented as their own rows, with
-#' `rname` values such as `pctile.pm`, `bin.pm`, and `text.pm`. This helper
-#' fills explicit columns for each naming system so export code can use one
-#' crosswalk without confusing old EJSCREEN API names with current EJAM API
-#' names.
+#' fields, plus related `P_`, `B_`, and `T_` fields for percentiles, map bins,
+#' and popup text. Percentile, map-bin, and popup-text fields are represented as
+#' their own rows, with `rname` values such as `pctile.pm`, `bin.pm`, and
+#' `text.pm`.
+#'
+#' `data-raw/map_headernames.csv` is now the authoritative editable source for
+#' this metadata. Build scripts should read that CSV, validate it, and save
+#' `data/map_headernames.rda` without creating or changing metadata rows in
+#' code. This validator exists to keep export code explicit about the metadata
+#' it requires; it should not be used as a hidden augmentation step.
 #'
 #' The `ejscreen_ftp_names` values are intended to preserve the field names used
 #' in EPA's old EJSCREEN FTP/download CSV and geodatabase files, such as the
@@ -25,210 +28,168 @@
 #' if needed.
 #'
 #' @param mapping_for_names a data.frame like [map_headernames].
+#' @param strict logical. If `TRUE`, validate the complete committed
+#'   `map_headernames` source, including required columns, schema rows, and
+#'   bin/text helper rows.
+#' @param source_name character label used in error messages.
 #'
-#' @return A data.frame with these additional or completed columns:
-#'   - `ejscreen_indicator`
-#'   - `ejscreen_ftp_names`
-#'   - `ejscreen_apinames_old`
-#'   - `ejam_apinames`
-#'   - `text.`
-#'
-#' Older `.text` input is renamed to `text.` when present. Retired sibling-name
-#' columns are dropped when present because `P_`, `B_`, and `T_` fields are now
-#' represented as ordinary metadata rows.
+#' @return The input as a plain data.frame. No metadata rows or columns are
+#'   added, removed, or changed.
 #'
 #' @keywords internal
 #'
-augment_map_headernames_ejscreen_names <- function(mapping_for_names = map_headernames) {
-
-  # note this may be the case already:  all.equal(map_headernames,   augment_map_headernames_ejscreen_names(map_headernames) )
-
-  mh <- as.data.frame(mapping_for_names, stringsAsFactors = FALSE)
-  if (!"ejscreen_indicator" %in% names(mh) && "ejscreen_names" %in% names(mh)) {
-    mh$ejscreen_indicator <- mh$ejscreen_names
-  }
-  if ("ejscreen_names" %in% names(mh)) {
-    mh$ejscreen_names <- NULL
-  }
-  if (".text" %in% names(mh)) {
-    if (!"text." %in% names(mh)) {
-      names(mh)[names(mh) == ".text"] <- "text."
-    } else {
-      mh[["text."]] <- as.integer(ejscreen_flag_true(mh[["text."]]) | ejscreen_flag_true(mh[[".text"]]))
-      mh[[".text"]] <- NULL
-    }
-  }
-  for (col in c("pctile.", "bin.", "text.")) {
-    if (!col %in% names(mh)) {
-      mh[[col]] <- 0L
-    }
-    mh[[col]] <- as.integer(ejscreen_flag_true(mh[[col]]))
-  }
-  for (col in c(
-    "rname", "csvname", "ejscreen_indicator",
-    "ejscreen_ftp_names", "ejscreen_apinames_old", "ejam_apinames",
-    "acsname"
-  )) {
-    if (!col %in% names(mh)) {
-      mh[[col]] <- ""
-    }
-    mh[[col]] <- as.character(mh[[col]])
-    mh[[col]][is.na(mh[[col]])] <- ""
-  }
-  is_non_output_marker <- function(x) {
-    grepl("***special", x, fixed = TRUE) |
-      grepl("use for pctile|do not report|don.?t report", x, ignore.case = TRUE)
-  }
-  special_marker_cols <- "ejscreen_indicator"
-  for (col in special_marker_cols) {
-    mh[[col]][is_non_output_marker(mh[[col]])] <- ""
-  }
-
-  add_default_name_row <- function(values) {
-    if (any(mh$rname == values[["rname"]])) {
-      return(invisible(NULL))
-    }
-    newrow <- as.data.frame(
-      stats::setNames(as.list(rep("", length(names(mh)))), names(mh)),
-      stringsAsFactors = FALSE,
-      check.names = FALSE
-    )
-    for (col in intersect(names(values), names(newrow))) {
-      newrow[[col]] <- values[[col]]
-    }
-    mh <<- rbind(mh, newrow)
+validate_map_headernames_ejscreen_names <- function(mapping_for_names = map_headernames,
+                                                    strict = FALSE,
+                                                    source_name = "map_headernames") {
+  mh <- as.data.frame(mapping_for_names, stringsAsFactors = FALSE, check.names = FALSE)
+  problems <- character()
+  add_problem <- function(x) {
+    problems <<- c(problems, x)
     invisible(NULL)
   }
 
-  # Keep the block-group identifier in EJSCREEN exports even if map_headernames
-  # does not carry a data row for this package-internal key field.
-  add_ejscreen_schema_extra_row <- function(field, longname, varlist = "ejscreen_schema_extra") {
-    add_default_name_row(c(
-      rname = field,
-      longname = longname,
-      varlist = varlist,
-      ejscreen_indicator = field,
-      ejscreen_ftp_names = field,
-      ejam_apinames = field
+  required_cols <- c("rname", "ejscreen_indicator")
+  if (isTRUE(strict)) {
+    required_cols <- c(
+      "rname", "longname", "varlist", "csvname", "acsname",
+      "ejscreen_indicator", "ejscreen_ftp_names",
+      "ejscreen_apinames_old", "ejam_apinames",
+      "pctile.", "bin.", "text."
+    )
+  }
+  missing_cols <- setdiff(required_cols, names(mh))
+  if (length(missing_cols) > 0) {
+    add_problem(paste0(
+      "missing required column(s): ",
+      paste(missing_cols, collapse = ", ")
     ))
   }
-
-  add_default_name_row(c(
-    rname = "bgfips",
-    longname = "Block group FIPS",
-    csvname = "ID",
-    ejscreen_indicator = "ID",
-    ejscreen_ftp_names = "ID",
-    ejam_apinames = "bgfips"
-  ))
-
-  state_demog_idx <- mh$rname == "Demog.Index.State"
-  mh$ejscreen_indicator[state_demog_idx] <- "DEMOGIDX_2ST"
-  mh$ejscreen_ftp_names[state_demog_idx] <- "DEMOGIDX_2ST"
-
-  state_demog_idx_supp <- mh$rname == "Demog.Index.Supp.State"
-  mh$ejscreen_indicator[state_demog_idx_supp] <- "DEMOGIDX_5ST"
-  mh$ejscreen_ftp_names[state_demog_idx_supp] <- "DEMOGIDX_5ST"
-
-  objectid_rows <- mh$rname == "OBJECTID"
-  mh$ejscreen_indicator[objectid_rows] <- "OBJECTID"
-  mh$ejscreen_ftp_names[objectid_rows] <- "OBJECTID"
-
-  # These are documented fields in the EJSCREEN FeatureServer schema that are
-  # not ordinary EJAM indicator names. Keep them in the name crosswalk so schema
-  # reports can distinguish expected-but-not-produced fields from true extras.
-  add_ejscreen_schema_extra_row("OBJECTID", "ArcGIS service object identifier field", "ejscreen_arcgis_service_field")
-  add_ejscreen_schema_extra_row("EXCEED_COUNT_90", "Count of EJ indexes at or above the 90th percentile")
-  add_ejscreen_schema_extra_row("EXCEED_COUNT_90_SUP", "Count of supplemental EJ indexes at or above the 90th percentile")
-  add_ejscreen_schema_extra_row("SYMBOLOGY_EXCEED_COUNT_80", "EJSCREEN symbology category for exceedance count")
-  add_ejscreen_schema_extra_row("Shape__Area", "ArcGIS service geometry area field", "ejscreen_arcgis_service_field")
-  add_ejscreen_schema_extra_row("Shape__Length", "ArcGIS service geometry length field", "ejscreen_arcgis_service_field")
-
-  fill_blank <- function(target, value) {
-    ok <- is_blank_string(mh[[target]]) & !is_blank_string(value) & !is_non_output_marker(value)
-    mh[[target]][ok] <<- value[ok]
-    invisible(NULL)
+  if (anyDuplicated(names(mh))) {
+    add_problem("column names must be unique")
   }
 
-  fill_blank("ejscreen_ftp_names", mh$csvname)
-  fill_blank("ejam_apinames", mh$rname)
-  fill_blank("ejscreen_indicator", mh$ejscreen_ftp_names)
-
-  mh[["pctile."]] <- as.integer(ejscreen_flag_true(mh[["pctile."]]) | grepl("^(pctile|state[.]pctile)[.]", mh$rname))
-  mh[["bin."]] <- as.integer(ejscreen_flag_true(mh[["bin."]]) | grepl("^bin[.]", mh$rname))
-  mh[["text."]] <- as.integer(ejscreen_flag_true(mh[["text."]]) | grepl("^text[.]", mh$rname))
-
-  add_map_helper_row <- function(source_row, helper_type, helper_field) {
-    if (is_blank_string(helper_field)) {
-      return(invisible(NULL))
+  if (isTRUE(strict)) {
+    retired_cols <- c(
+      ".text", "ejscreen_names",
+      paste0("ejscreen_", c("pctile", "bin", "text")),
+      "apiname", "ejscreen_api", "ejscreen_csv", "ejscreen_gdb"
+    )
+    retired_found <- intersect(retired_cols, names(mh))
+    if (length(retired_found) > 0) {
+      add_problem(paste0(
+        "retired column(s) are present; move any still-needed values into ",
+        "data-raw/map_headernames.csv current-schema columns: ",
+        paste(retired_found, collapse = ", ")
+      ))
     }
-    base_rname <- ejscreen_base_rname_from_pctile_rname(source_row$rname)
-    if (is_blank_string(base_rname)) {
-      return(invisible(NULL))
-    }
-    helper_rname <- paste0(helper_type, ".", base_rname)
-    if (any(mh$rname == helper_rname)) {
-      helper_i <- which(mh$rname == helper_rname)[1]
-      if (is_blank_string(mh$ejscreen_indicator[helper_i])) {
-        mh$ejscreen_indicator[helper_i] <<- helper_field
-      }
-      if (is_blank_string(mh$ejscreen_ftp_names[helper_i])) {
-        mh$ejscreen_ftp_names[helper_i] <<- helper_field
-      }
-      mh[[paste0(helper_type, ".")]][helper_i] <<- 1L
-      return(invisible(NULL))
-    }
-
-    newrow <- source_row
-    newrow[,] <- ""
-    for (flag_col in c("pctile.", "bin.", "text.")) {
-      if (flag_col %in% names(newrow)) {
-        newrow[[flag_col]] <- 0L
-      }
-    }
-    newrow$rname <- helper_rname
-    if ("longname" %in% names(newrow)) {
-      suffix <- if (helper_type == "bin") " map bin" else " popup text"
-      newrow$longname <- paste0(source_row$longname, suffix)
-    }
-    if ("varcategory" %in% names(newrow)) {
-      newrow$varcategory <- source_row$varcategory
-    }
-    if ("vartype" %in% names(newrow)) {
-      newrow$vartype <- if (helper_type == "bin") "map_bin" else "map_text"
-    }
-    if ("calculation_type" %in% names(newrow)) {
-      newrow$calculation_type <- if (helper_type == "bin") "map_bin" else "map_text"
-    }
-    newrow$ejscreen_indicator <- helper_field
-    newrow$ejscreen_ftp_names <- helper_field
-    newrow$ejam_apinames <- helper_rname
-    newrow[[paste0(helper_type, ".")]] <- 1L
-    mh <<- rbind(mh, newrow)
-    invisible(NULL)
   }
 
-  pctile_rows <- which(map_headernames_pctile_row(mh) & grepl("^P_", mh$ejscreen_indicator))
-  for (i in pctile_rows) {
-    app_code <- ejscreen_code_from_field(mh$ejscreen_indicator[i])
-    if (is_blank_string(app_code)) {
-      next
+  if ("rname" %in% names(mh)) {
+    blank_rname <- which(is_blank_string(mh$rname))
+    if (length(blank_rname) > 0) {
+      add_problem(paste0(
+        "rname must not be blank; blank row(s): ",
+        paste(utils::head(blank_rname, 10), collapse = ", ")
+      ))
     }
-    bin_field <- paste0("B_", app_code)
-    text_field <- paste0("T_", app_code)
-    add_map_helper_row(mh[i, , drop = FALSE], "bin", bin_field)
-    add_map_helper_row(mh[i, , drop = FALSE], "text", text_field)
   }
 
-  retired_sibling_cols <- c(
-    paste0("ejscreen_", c("pctile", "bin", "text")),
-    "apiname", "ejscreen_api", "ejscreen_csv", "ejscreen_gdb"
+  flag_cols <- intersect(c("pctile.", "bin.", "text."), names(mh))
+  for (col in flag_cols) {
+    x <- trimws(as.character(mh[[col]]))
+    ok <- is_blank_string(x) |
+      tolower(x) %in% c("0", "1", "false", "true", "f", "t", "no", "yes", "n", "y")
+    if (any(!ok)) {
+      add_problem(paste0(
+        col, " has non-flag value(s): ",
+        paste(utils::head(unique(x[!ok]), 10), collapse = ", ")
+      ))
+    }
+  }
+
+  if (isTRUE(strict) && length(missing_cols) == 0 && "rname" %in% names(mh)) {
+    required_rows <- c(
+      "bgfips", "OBJECTID", "EXCEED_COUNT_90", "EXCEED_COUNT_90_SUP",
+      "SYMBOLOGY_EXCEED_COUNT_80", "Shape__Area", "Shape__Length"
+    )
+    missing_rows <- setdiff(required_rows, mh$rname)
+    if (length(missing_rows) > 0) {
+      add_problem(paste0(
+        "missing required explicit row(s): ",
+        paste(missing_rows, collapse = ", ")
+      ))
+    }
+
+    expected_current_names <- c(
+      "Demog.Index.State" = "DEMOGIDX_2ST",
+      "Demog.Index.Supp.State" = "DEMOGIDX_5ST",
+      "OBJECTID" = "OBJECTID"
+    )
+    for (rname in names(expected_current_names)) {
+      idx <- which(mh$rname == rname)
+      if (length(idx) == 0) {
+        add_problem(paste0("missing required explicit row: ", rname))
+      } else if (!expected_current_names[[rname]] %in% mh$ejscreen_indicator[idx]) {
+        add_problem(paste0(
+          "row ", rname, " must carry ejscreen_indicator ",
+          expected_current_names[[rname]]
+        ))
+      }
+    }
+
+    non_output_marker <- grepl("***special", mh$ejscreen_indicator, fixed = TRUE) |
+      grepl("use for pctile|do not report|don.?t report",
+            mh$ejscreen_indicator, ignore.case = TRUE)
+    if (any(non_output_marker)) {
+      add_problem(paste0(
+        "ejscreen_indicator has old non-output marker text in row(s): ",
+        paste(utils::head(which(non_output_marker), 10), collapse = ", ")
+      ))
+    }
+
+    pctile_rows <- which(
+      map_headernames_pctile_row(mh) &
+        grepl("^P_", mh$ejscreen_indicator)
+    )
+    for (i in pctile_rows) {
+      base_rname <- ejscreen_base_rname_from_pctile_rname(mh$rname[i])
+      if (is_blank_string(base_rname)) {
+        next
+      }
+      helper_rnames <- paste0(c("bin.", "text."), base_rname)
+      missing_helpers <- setdiff(helper_rnames, mh$rname)
+      if (length(missing_helpers) > 0) {
+        add_problem(paste0(
+          "percentile row ", mh$rname[i],
+          " is missing explicit helper row(s): ",
+          paste(missing_helpers, collapse = ", ")
+        ))
+      }
+    }
+  }
+
+  if (length(problems) > 0) {
+    stop(
+      paste0(
+        source_name,
+        " validation failed:\n- ",
+        paste(problems, collapse = "\n- ")
+      ),
+      call. = FALSE
+    )
+  }
+
+  invisible(mh)
+}
+
+#' @rdname validate_map_headernames_ejscreen_names
+#' @keywords internal
+augment_map_headernames_ejscreen_names <- function(mapping_for_names = map_headernames) {
+  validate_map_headernames_ejscreen_names(
+    mapping_for_names = mapping_for_names,
+    strict = FALSE,
+    source_name = "mapping_for_names"
   )
-  for (col in intersect(retired_sibling_cols, names(mh))) {
-    mh[[col]] <- NULL
-  }
-
-  mh
 }
 
 ejscreen_flag_true <- function(x) {
@@ -242,18 +203,30 @@ ejscreen_flag_true <- function(x) {
 }
 
 map_headernames_pctile_row <- function(mh) {
-  ejscreen_flag_true(mh[["pctile."]]) |
-    grepl("^(pctile|state[.]pctile)[.]", as.character(mh$rname))
+  flag <- if ("pctile." %in% names(mh)) {
+    ejscreen_flag_true(mh[["pctile."]])
+  } else {
+    rep(FALSE, NROW(mh))
+  }
+  flag | grepl("^(pctile|state[.]pctile)[.]", as.character(mh$rname))
 }
 
 map_headernames_bin_row <- function(mh) {
-  ejscreen_flag_true(mh[["bin."]]) |
-    grepl("^bin[.]", as.character(mh$rname))
+  flag <- if ("bin." %in% names(mh)) {
+    ejscreen_flag_true(mh[["bin."]])
+  } else {
+    rep(FALSE, NROW(mh))
+  }
+  flag | grepl("^bin[.]", as.character(mh$rname))
 }
 
 map_headernames_text_row <- function(mh) {
-  ejscreen_flag_true(mh[["text."]]) |
-    grepl("^text[.]", as.character(mh$rname))
+  flag <- if ("text." %in% names(mh)) {
+    ejscreen_flag_true(mh[["text."]])
+  } else {
+    rep(FALSE, NROW(mh))
+  }
+  flag | grepl("^text[.]", as.character(mh$rname))
 }
 
 ejscreen_base_rname_from_pctile_rname <- function(rname) {

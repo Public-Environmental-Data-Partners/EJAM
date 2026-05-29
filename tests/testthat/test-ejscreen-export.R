@@ -1,7 +1,34 @@
-test_that("map_headernames augmentation fills EJSCREEN name columns", {
+test_that("map_headernames CSV is the package-data source", {
+  csv_path <- file.path("data-raw", "map_headernames.csv")
+  if (!file.exists(csv_path)) {
+    csv_path <- file.path("..", "..", "data-raw", "map_headernames.csv")
+  }
+  testthat::skip_if_not(file.exists(csv_path))
+
+  csv <- utils::read.csv(
+    csv_path,
+    check.names = FALSE,
+    stringsAsFactors = FALSE,
+    na.strings = c(""),
+    colClasses = "character"
+  )
+  csv[is.na(csv)] <- ""
+  mh <- as.data.frame(EJAM::map_headernames, stringsAsFactors = FALSE)
+  mh[is.na(mh)] <- ""
+
+  expect_identical(names(csv), names(mh))
+  expect_equal(nrow(csv), nrow(mh))
+  for (col in names(csv)) {
+    expect_equal(as.character(csv[[col]]), as.character(mh[[col]]), info = col)
+  }
+  expect_equal(csv$newsort[1], "010116162")
+})
+
+test_that("map_headernames validation does not create metadata rows", {
   mapping <- data.frame(
     rname = c("no2", "pctpre1960", "pctile.pctpre1960", "pctile.EJ.DISPARITY.no2.eo"),
     csvname = c("NO2", "PRE1960PCT", "P_LDPNT", "P_D2_NO2"),
+    ejscreen_indicator = c("NO2", "PRE1960PCT", "P_LDPNT", "P_D2_NO2"),
     ejscreen_apinames_old = c("RAW_E_NO2", "RAW_E_LEAD", "", ""),
     ejscreen_bin = c("", "", "WRONG_BIN", "WRONG_D2_BIN"),
     ejscreen_text = c("", "", "WRONG_TEXT", "WRONG_D2_TEXT"),
@@ -9,33 +36,14 @@ test_that("map_headernames augmentation fills EJSCREEN name columns", {
     stringsAsFactors = FALSE
   )
 
-  out <- EJAM:::augment_map_headernames_ejscreen_names(mapping)
-  mapped <- out[match(mapping$rname, out$rname), ]
-  expect_equal(mapped$ejscreen_indicator, mapping$csvname)
-  expect_equal(mapped$ejscreen_ftp_names, mapping$csvname)
-  expect_equal(mapped$ejscreen_apinames_old[1:2], mapping$ejscreen_apinames_old[1:2])
-  expect_equal(mapped$ejam_apinames, mapping$rname)
-  expect_equal(out$ejscreen_indicator[out$rname == "bgfips"], "ID")
-  expect_false("ejscreen_app" %in% names(out))
-  expect_false("ejscreen_pctile" %in% names(out))
-  expect_false("ejscreen_bin" %in% names(out))
-  expect_false("ejscreen_text" %in% names(out))
-  expect_false(".text" %in% names(out))
-  expect_true("text." %in% names(out))
-  expect_true(all(c(
-    "EXCEED_COUNT_90",
-    "EXCEED_COUNT_90_SUP",
-    "SYMBOLOGY_EXCEED_COUNT_80",
-    "Shape__Area",
-    "Shape__Length"
-  ) %in% out$ejscreen_indicator))
-  expect_equal(out$ejscreen_indicator[out$rname == "bin.pctpre1960"], "B_LDPNT")
-  expect_equal(out$ejscreen_indicator[out$rname == "text.EJ.DISPARITY.no2.eo"], "T_D2_NO2")
-  expect_equal(out$bin.[out$rname == "bin.pctpre1960"], 1)
-  expect_equal(out$text.[out$rname == "text.EJ.DISPARITY.no2.eo"], 1)
+  out <- EJAM:::validate_map_headernames_ejscreen_names(mapping)
+  expect_identical(out, mapping)
+  expect_false("bgfips" %in% out$rname)
+  expect_false("bin.pctpre1960" %in% out$rname)
+  expect_false("text.EJ.DISPARITY.no2.eo" %in% out$rname)
 })
 
-test_that("map_headernames augmentation removes legacy special markers from current EJSCREEN name columns", {
+test_that("strict map_headernames validation rejects legacy generated-schema inputs", {
   mapping <- data.frame(
     rname = c("state.pctile.Demog.Index", "internal_for_pctile"),
     csvname = c("S_P_DEMOGIDX_2ST", "use for pctile and avg but don't report"),
@@ -44,15 +52,10 @@ test_that("map_headernames augmentation removes legacy special markers from curr
     stringsAsFactors = FALSE
   )
 
-  out <- EJAM:::augment_map_headernames_ejscreen_names(mapping)
-  current_name_cols <- c(
-    "ejscreen_indicator"
+  expect_error(
+    EJAM:::validate_map_headernames_ejscreen_names(mapping, strict = TRUE),
+    "validation failed"
   )
-
-  expect_false(any(grepl("***special", unlist(out[current_name_cols]), fixed = TRUE)))
-  expect_false(any(grepl("use for pctile", unlist(out[current_name_cols]), ignore.case = TRUE)))
-  expect_equal(out$ejscreen_ftp_names[out$rname == "state.pctile.Demog.Index"], "S_P_DEMOGIDX_2ST")
-  expect_equal(out$ejscreen_apinames_old[out$rname == "state.pctile.Demog.Index"], "S_D_DEMOGIDX2ST_PER")
 })
 
 test_that("calc_ejscreen_export combines bgej and renames through map_headernames", {
@@ -433,9 +436,9 @@ test_that("calc_ejscreen_export default output drops non-reporting placeholder n
     stringsAsFactors = FALSE
   )
   mapping <- data.frame(
-    rname = c("keepme", "internal_a", "internal_b"),
-    ejscreen_indicator = c("KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
-    csvname = c("KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
+    rname = c("bgfips", "keepme", "internal_a", "internal_b"),
+    ejscreen_indicator = c("ID", "KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
+    csvname = c("ID", "KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
     ejscreen_apinames_old = "",
     stringsAsFactors = FALSE
   )

@@ -46,7 +46,10 @@ such as the following:
 - other information like sort order for certain purposes, etc.
 
 It was originally created from a spreadsheet of the same name in the
-`data-raw` folder, but is now being updated or modified directly.
+`data-raw` folder. The current editable source is
+`data-raw/map_headernames.csv`; the rebuild script should read that CSV,
+validate it, and save this package data object without adding or
+changing metadata rows in code.
 
 Several helper functions are used to query it, such as
 [`fixcolnames()`](https://public-environmental-data-partners.github.io/EJAM/reference/fixcolnames.md)

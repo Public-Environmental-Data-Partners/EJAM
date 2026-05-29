@@ -256,9 +256,13 @@ datacreate_scripts_to_run_before_pipeline <- c(
 
   ## Variable names (indicators), metadata, and formulas to check/update ANNUALLY, if the set of indicators or formulas have changed.
   ##
-  ##     map_headernames is IMPORTANT TO CHECK/UPDATE CAREFULLY YEARLY - probably manually in csv first, then fix and run datacreate_ script when ready to use it
-  # "data-raw/datacreate_map_headernames.R",            # must be ready/done BEFORE pipeline used  ###  MAY BE OBSOLETE  / NEED TO BE FIXED ***
-  # "data-raw/datacreate_map_headernames_fix_dupes.R",   # must be ready/done BEFORE pipeline used ###   MAY BE OBSOLETE / NEED TO BE FIXED ***
+  ##     map_headernames is IMPORTANT TO CHECK/UPDATE CAREFULLY YEARLY.
+  ##     Edit data-raw/map_headernames.csv directly, then run
+  ##     data-raw/datacreate_map_headernames.R to validate/save the package data
+  ##     before running the annual pipeline. Do not use the old .xlsx workflow
+  ##     or one-off scripts that modify map_headernames after the CSV is read.
+  # "data-raw/datacreate_map_headernames.R",            # run manually after CSV edits, before pipeline use
+  # "data-raw/datacreate_map_headernames_fix_dupes.R",   # obsolete notes only; do not source
   ##
   "data-raw/datacreate_names_of_indicators.R",   # must do AFTER any map_headernames changes but BEFORE pipeline is done (probably), if names/varlists like names_e change
   "data-raw/datacreate_names_pct_as_fraction.R", # must do AFTER any map_headernames changes
