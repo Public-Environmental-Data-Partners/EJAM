@@ -2,7 +2,7 @@ name: 'Quick install check'
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [ "main", "development" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       EJAM_INSTALL_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
       EJAM_INSTALL_REF: ${{ github.event.pull_request.head.sha || github.sha }}
-      INSTALL_SOURCE: ${{ github.event_name == 'workflow_dispatch' && inputs.install_source || 'local' }}
+      INSTALL_SOURCE: ${{ github.event_name == 'workflow_dispatch' && inputs.install_source || 'github-sha' }}
 
     steps:
       - name: Checkout repository
