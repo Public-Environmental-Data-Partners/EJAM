@@ -132,5 +132,5 @@ Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejam
 
 }
 \seealso{
-\code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamap]{url_ejamap()}}
+\code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}}
 }
