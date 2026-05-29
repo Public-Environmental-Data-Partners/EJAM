@@ -222,6 +222,23 @@ specified_sitenumber = TRUE
 do_url_tests("url_ejamapi", url_ejamapi, sitenumber = 2)
 rm(specified_sitenumber)
 
+test_that("url_ejamapi falls back to app URL for polygon one-site report links", {
+  fallback_url <- "https://ejanalysis.com/ejamapp"
+
+  expect_equal(
+    url_ejamapi(shapefile = testinput_shapes_2[1, ], as_html = FALSE),
+    fallback_url
+  )
+  expect_equal(
+    url_ejamapi(shapefile = testinput_shapes_2, as_html = FALSE),
+    rep(fallback_url, NROW(testinput_shapes_2))
+  )
+  expect_match(
+    url_ejamapi(shapefile = testinput_shapes_2, sitenumber = "overall", as_html = FALSE),
+    "^https://ejamapi-84652557241\\.us-central1\\.run\\.app/report\\?"
+  )
+})
+
 # sitenumber (overall vs 1-site) ####
 
 # N  means Nth site report
@@ -268,4 +285,3 @@ if (FALSE) {
 # ejam2report(ejamit(shapefile=shp1, radius=0))
 
 }
-
