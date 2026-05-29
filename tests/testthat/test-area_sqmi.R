@@ -82,8 +82,14 @@ rm(junk1, junk2)
 ############################################# #  ############################################# #
 
 test_that("ejamit(shapefile=) handles valid polygons with no blockpoints", {
+  no_block_fixture <- data.frame(
+    site_name = c("new_york_city", "los_angeles", "pacific_ocean"),
+    lat = c(40.7128, 34.0522, 38),
+    lon = c(-74.0060, -118.2437, -145)
+  )
+
   shp <- shape_buffered_from_shapefile_points(
-    shapefile_from_sitepoints(testpoints_100[23:25, ]),
+    shapefile_from_sitepoints(no_block_fixture),
     radius.miles = 1
   )
 

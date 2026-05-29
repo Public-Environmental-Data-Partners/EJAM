@@ -73,7 +73,8 @@ pkg_update_testpoints_testoutputs <- function(
   resaving_ejamit_rda           = TRUE,
   resaving_ejamit_helpdocs      = TRUE,
   resaving_ejam2excel         = TRUE,
-  resaving_ejam2report        = TRUE
+  resaving_ejam2report        = TRUE,
+  resaving_ejam2report_pdf    = TRUE
 
   # and  there are these:  5, 50, 500  ## handled by a separate file
 
@@ -103,7 +104,7 @@ pkg_update_testpoints_testoutputs <- function(
 
   if (file.exists("./inst/global_defaults_package.R")) {source("./inst/global_defaults_package.R")} else {stop('need path to logo file')}
 
-###################################################### #
+  ###################################################### #
   # Create and save datasets  ####
   # _ ####
   # >_____testpoints_   _____________________####
@@ -449,23 +450,43 @@ pkg_update_testpoints_testoutputs <- function(
       }
 
       # save as HTML Report via ejam2report() ####
+
       if (resaving_ejam2report ) {
         fname <- paste0("testoutput_ejam2report_", n, "pts_", myrad, "miles")
         url_html <- ejam2report(
           get(out_varname_ejamit),
           # analysis_title = "Sample Summary Report",
-          launch_browser = F
+          launch_browser = F,
+          fileextension = "html"
         )
         file.copy(url_html, paste0("./inst/testdata/examples_of_output/", fname, ".html"),
                   overwrite = TRUE
         )
       }
-    }
+
+      # save as PDF Report via ejam2report() ####
+if (n == 100) {
+      if (resaving_ejam2report_pdf) {
+        fname <- paste0("testoutput_ejam2report_", n, "pts_", myrad, "miles")
+        pdf_path <- ejam2report(
+          get(out_varname_ejamit),
+          # analysis_title = "Sample Summary Report",
+          launch_browser = F,
+          fileextension = "pdf"
+        )
+        #  SAVE IN ./inst/testdata/examples_of_output/ so it gets included in the package and can be accessed via
+        # e.g., urlx =  EJAM::url_github_preview(file = fname, launch_browser = F, ver = "development")
+        www_pdf = paste0("./inst/testdata/examples_of_output/", fname, ".pdf")
+        file.copy(from = pdf_path, to = www_pdf,
+                  overwrite = TRUE
+        )
+      }
+    }}
     ################################## #   ################################## #   ################################## #
 
   } # end of loop over point counts
 
-############################################# #
+  ############################################# #
 
   cat('
   REMEMBER TO UPDATE .Rd files PACKAGE DOCUMENTATION:
