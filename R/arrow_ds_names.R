@@ -64,6 +64,12 @@ ejamdata_required_tag <- function(package = "EJAM", default = NULL) {
   if (!startsWith(tag, "v")) {
     tag <- paste0("v", tag)
   }
+  ejamdata_tag_canonical(tag)
+}
+
+ejamdata_tag_canonical <- function(tag) {
+  tag <- as.character(tag)
+  tag[!is.na(tag) & tag == "v2.32.8.1"] <- "v2.32.8.001"
   tag
 }
 
@@ -74,5 +80,6 @@ dynamic_data_release_tag <- function(varnames = .arrow_ds_names,
   if (identical(piggybacktag, "latest")) {
     release_tag <- required_tag
   }
+  release_tag <- ejamdata_tag_canonical(release_tag)
   stats::setNames(rep(release_tag, length(varnames)), varnames)
 }
