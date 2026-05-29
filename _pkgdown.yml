@@ -61,6 +61,7 @@ articles:
   - dev-deploy-app
   - dev-run-shinytests
   - dev-run-unit-tests
+  - dev-github-actions-install-tests
   - dev-update-datasets
   - dev-update-documentation
   - dev-update-package

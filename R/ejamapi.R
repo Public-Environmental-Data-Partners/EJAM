@@ -28,6 +28,120 @@
 #' [A standalone version of this function](https://gist.github.com/ejanalysis/fa588f8f4cf993fe43fb03fe990176e1),
 #' for people who do not install the EJAM package, uses a copy of the necessary functions.
 #'
+#' Attribute-based query examples:
+#'
+#' **1) R user with EJAM installed (using API, with local-only alternatives noted)**
+#'
+#' ```r
+#' base <- "https://ejamapi-84652557241.us-central1.run.app"
+#'
+#' # API: blockgroups where raw pctlowinc is at least 50%
+#' x <- EJAM::ejamapi(fips = "10001", scale = "blockgroup", endpoint = "data")
+#' x_raw <- x[x$pctlowinc >= 0.50, ]
+#'
+#' # Local alternative (no API needed): EJAM::blockgroupstats[EJAM::blockgroupstats$pctlowinc >= 0.50, ]
+#'
+#' # API query endpoint: blockgroups where Demog.Index percentile is at least 95
+#' q_demog <- httr2::request(paste0(base, "/query")) |>
+#'   httr2::req_body_json(list(attribute = "pctile.Demog.Index", value = 95))
+#' httr2::req_perform(q_demog) |>
+#'   httr2::resp_body_json(simplifyVector = TRUE)
+#'
+#' # Local alternative (no API needed): use helper that maps percentile cutoffs to raw cutoffs
+#' idx95 <- EJAM::pctile_x_is_hit_by_score("Demog.Index", cutoff = 0.95)
+#' local_demog95 <- EJAM::blockgroupstats[idx95, ]
+#'
+#' # API: blockgroups where at least N of state EJ index percentiles are >= 80
+#' N <- 6L
+#' # example matched column format: state.pctile.EJ...
+#' ej_state_cols <- grep("^state\\.pctile\\.EJ", names(x), value = TRUE)
+#' x_n_ej <- x[rowSums(x[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
+#' ```
+#'
+#' **2) R user without EJAM installed (API-only via httr2/jsonlite)**
+#'
+#' ```r
+#' library(httr2)
+#' library(jsonlite)
+#'
+#' base <- "https://ejamapi-84652557241.us-central1.run.app"
+#'
+#' # get blockgroup-level rows for a county
+#' req_data <- request(paste0(base, "/data")) |>
+#'   req_body_json(list(fips = "10001", scale = "blockgroup"))
+#' dat <- fromJSON(resp_body_string(req_perform(req_data)))
+#'
+#' # raw pctlowinc >= 50%
+#' dat_raw <- dat[dat$pctlowinc >= 0.50, ]
+#'
+#' # Demog.Index percentile >= 95 (query endpoint)
+#' req_demog <- request(paste0(base, "/query")) |>
+#'   req_body_json(list(attribute = "pctile.Demog.Index", value = 95))
+#' dat_demog <- fromJSON(resp_body_string(req_perform(req_demog)))
+#'
+#' # at least N state EJ index percentiles >= 80
+#' N <- 6L
+#' # example matched column format: state.pctile.EJ...
+#' ej_state_cols <- grep("^state\\.pctile\\.EJ", names(dat), value = TRUE)
+#' dat_n_ej <- dat[rowSums(dat[, ej_state_cols, drop = FALSE] >= 80, na.rm = TRUE) >= N, ]
+#' ```
+#'
+#' **3) Python user (API via requests/pandas)**
+#'
+#' ```python
+#' import requests
+#' import pandas as pd
+#'
+#' base = "https://ejamapi-84652557241.us-central1.run.app"
+#'
+#' dat = pd.DataFrame(requests.post(
+#'     f"{base}/data",
+#'     json={"fips": "10001", "scale": "blockgroup"}
+#' ).json())
+#'
+#' # raw pctlowinc >= 50%
+#' dat_raw = dat[dat["pctlowinc"] >= 0.50]
+#'
+#' # Demog.Index percentile >= 95 (query endpoint)
+#' demog95 = pd.DataFrame(requests.post(
+#'     f"{base}/query",
+#'     json={"attribute": "pctile.Demog.Index", "value": 95}
+#' ).json())
+#'
+#' # at least N state EJ index percentiles >= 80
+#' N = 6
+#' ej_state_cols = [c for c in dat.columns if c.startswith("state.pctile.EJ")]
+#' dat_n_ej = dat[(dat[ej_state_cols] >= 80).sum(axis=1) >= N]
+#' ```
+#'
+#' **4) Terminal user (API via curl + jq)**
+#'
+#' ```bash
+#' BASE="https://ejamapi-84652557241.us-central1.run.app"
+#'
+#' # get blockgroup-level rows for one county
+#' curl -s -X POST "$BASE/data" -H "Content-Type: application/json" \
+#'   -d '{"fips":"10001","scale":"blockgroup"}' > data.json
+#'
+#' # raw pctlowinc >= 50%
+#' jq '.[] | select(.pctlowinc >= 0.50)' data.json
+#'
+#' # Demog.Index percentile >= 95 (query endpoint)
+#' curl -s -X POST "$BASE/query" -H "Content-Type: application/json" \
+#'   -d '{"attribute":"pctile.Demog.Index","value":95}' > demog95.json
+#'
+#' # at least N state EJ index percentiles >= 80
+#' N=6
+#' jq --argjson N "$N" '
+#'   .[] | select(
+#'     ([to_entries[]
+#'       | select(.key | test("^state\\.pctile\\.EJ"))
+#'       | .value
+#'       | select(type == "number" and . >= 80)] | length) >= $N
+#'   )
+#' ' data.json
+#' ```
+#'
 #' @seealso [EJAM::url_ejamapi()]
 #'
 #' @param lat,lon Coordinates of point(s) for analysis of residents nearby.
@@ -63,8 +177,9 @@
 #' @param baseurl the URL and endpoint of the API
 #'
 #' @param endpoint "data" or "report":
-#'   "data" will return EJAM analysis data for one or more places, and
-#'   "report" will generate one EJAM report in HTML format for one place (until the API supports summary analysis over multiple locations)
+#'   "data" will return EJAM analysis data as a data.frame for one or more places, and
+#'   "report" will generate the EJAM report in HTML format for one place
+#'   (or PDF format if fileextension = "pdf")
 #'
 #' @param browse for endpoint="report", set TRUE to launch a browser to view the report
 #'   (in addition to getting the html as output of the function)
@@ -73,6 +188,7 @@
 #'   but importantly note (until the API supports summary analysis over multiple locations)
 #'   the API does not return a summary overall across sites, so results_overall will
 #'   be just a placeholder, for the first site, not an overall summary across all sites.
+#' @param fileextension can be "html" or "pdf", only relevant if  endpoint = "report"
 #' @param ... other parameters, passed to [httr2::req_body_json()] in the "data" case,
 #'   and passed to [EJAM::url_ejamapi()] in the "report" case
 #' @param dry_run set to TRUE to see preview info about what the API call would look like.
@@ -83,6 +199,15 @@
 #'
 #' # one blockgroup
 #' xbg1 = ejamapi(fips="050014801001", endpoint='report', dry_run=eg)
+#'
+#' # attribute-based query endpoint examples in live EJAM API:
+#' qreq1 <- httr2::request("https://ejamapi-84652557241.us-central1.run.app/query") |>
+#'   httr2::req_body_json(list(attribute = "pctunemployed", value = 0.90))
+#' httr2::req_dry_run(qreq1)
+#'
+#' qreq2 <- httr2::request("https://ejamapi-84652557241.us-central1.run.app/query") |>
+#'   httr2::req_body_json(list(attribute = "pctlowinc", value = 0.80))
+#' httr2::req_dry_run(qreq2)
 #' if (!eg) {
 #' # all blockgroups in 1 county
 #' xcounty = ejamapi(fips="10001", scale="blockgroup", endpoint = "data", dry_run=eg)
@@ -121,7 +246,8 @@
 #' zz = EJAM::ejam2table_tall(y2, sitenumber = 2)
 #' head(zz, 50)
 #' }
-#' @return data.frame if using data endpoint, list of html reports if using report endpoint,
+#' @return data.frame if using data endpoint, list of html reports if using report endpoint
+#'   and fileextension is "html" but a vector of file paths if it is "pdf",
 #'   or if ejamit_format=TRUE and "data" is the endpoint, returns a named list somewhat like
 #'   output of `ejamit()` so it can work in some functions like `ejam2report()`.
 #'   If dry_run=TRUE, for the "data" endpoint, the request itself, via the httr2 package, is returned,
@@ -141,11 +267,14 @@ ejamapi <- function(
     endpoint = c("data", "report")[1],
     browse = TRUE,
     ejamit_format = FALSE,
+    fileextension = "html",
     dry_run = FALSE,
     ...
 ) {
   # API repo at https://github.com/edgi-govdata-archiving/EJAM-API/blob/main/rest_controller.r
 
+  if (is.null(fileextension)) {fileextension <- "html"}
+  stopifnot(all(fileextension %in% c('html', 'pdf')))
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {
     ejam_functions_available <- !dotz$no_ejam
@@ -297,7 +426,7 @@ ejamapi <- function(
       latlon_length_mismatch <- !is.null(lat) && !is.null(lon) && length(lat) != length(lon)
       if (length(lat) > 1 || length(lon) > 1 || latlon_length_mismatch ||
           length(fips) > 1 || NROW(shape) > 1) {
-        stop("does not yet support multiple places for endpoint='report' ")
+        warning("may not yet support multiple places for endpoint='report' ")
       }
 
       if (!ejam_functions_available) {
@@ -350,6 +479,7 @@ ejamapi <- function(
                             shapefile = shape, # EJAM::url_ejamapi() handles shape itself
                             fips = fips,
                             radius = buffer, # default was 3 miles for points
+                            fileextension = fileextension,
                             ...
         )
       }
@@ -362,7 +492,8 @@ ejamapi <- function(
                      lat = lat, lon = lon,
                      shapefile = shape, ###  change this - it prints too much to console in dry run
                      fips = fips,
-                     radius = buffer
+                     radius = buffer,
+                     fileextension = fileextension
                      ## and other params via ... not as simple to print here
           ))
           otherparams = rlang::list2(...)
@@ -375,22 +506,57 @@ ejamapi <- function(
         return(urlx)
       }
       ############### #
-      # handle request for multiple reports
+
+      # handle request for multiple reports ( or possibly 1 report on multiple places ) ***
+
       if (length(urlx) > maxreports) {
         urlx = urlx[1:maxreports]
         warning("returning only", maxreports, "reports, the current max here")
       }
       reports = list()
       for (i in seq_along(urlx)) {
-        # handled this way while sitenumber = 1 is hard coded in API
-        # but better way to get multiple reports may be just ejam2report()
-        req_i <- httr2::request(urlx[i])
-        response <- httr2::req_perform(req = req_i)
-        html_report <- htmltools::HTML(httr2::resp_body_string(response))
-        if (browse) {
-          htmltools::html_print(html_report, viewer = browseURL)
+        # handled this way while/if sitenumber = 1 is still hard coded in API.
+        # in url_ejamapi(), sitenumber 0 means overall combo report, -1 means N reports on 1 site each, 1 means just site #1.
+        # and note a better way to get multiple reports once EJAM is installed may be just ejam2report(ejamit())
+
+        if (fileextension %in% "pdf") {
+
+          # download the .pdf file to a temp folder
+          temp_file <- tempfile(fileext = ".pdf")
+          download.file(url = urlx[i], destfile = temp_file)
+
+          if (browse) {
+
+            if (interactive()) {
+              outcome = try(browseURL(temp_file), silent = FALSE)
+              if (inherits(outcome, "try-error")) {
+                warning("failed to view report file using browseURL() in ejamapi()")
+              }
+            } else {
+              # show the pdf file if NOT interactive ?  check if this would work
+              outcome = try(browseURL(temp_file), silent = TRUE)
+              if (inherits(outcome, "try-error")) {
+                warning("failed to view report file using browseURL() in ejamapi()")
+              }
+              # message("cannot use browse=TRUE for pdf reports currently in ejamapi() ")
+            }
+
+          }
+          reports[[i]] <- as.vector(temp_file) # vector of paths, not list of html docs,  returning pdf files probably not feasible so could at least return paths
+
+        } else {
+          if (fileextension %in% "html") {
+            req_i    <- httr2::request(urlx[i])
+            response <- httr2::req_perform(req = req_i)
+            html_report <- htmltools::HTML(httr2::resp_body_string(response))
+            if (browse) {
+              htmltools::html_print(html_report, viewer = browseURL)
+            }
+            reports[[i]] <- html_report
+          } else {
+            stop("fileextension must be 'pdf' or 'html' ")
+          }
         }
-        reports[[i]] <- html_report
       }
       invisible(reports)
     } else {

@@ -10,7 +10,8 @@ dataload_dynamic(
   folder_local_source = NULL,
   silent = FALSE,
   return_data_table = TRUE,
-  onAttach = FALSE
+  onAttach = FALSE,
+  piggybacktag = "latest"
 )
 }
 \arguments{
@@ -28,6 +29,10 @@ look in for locally saved copies}
 \href{https://r-datatable.com}{data.table} format (T, the default), or arrow (F). Passed to \code{\link[=dataload_from_local]{dataload_from_local()}}}
 
 \item{onAttach}{Indicates whether the function is being called from onAttach. IF so, it will download all arrow files if necessary}
+
+\item{piggybacktag}{default is \code{"latest"}, which resolves internally to the
+DESCRIPTION \code{ejamdata_required_tag} field. Pass a specific tag such as
+\code{"v2.32.8.001"} only for explicit maintenance or diagnostic work.}
 }
 \value{
 returns vector of names of objects now in memory in specified envir, either because
