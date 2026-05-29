@@ -1,7 +1,7 @@
 ---
 title: "Installing the EJAM R package"
 description: "1. Installing the EJAM R package"
-output: 
+output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
@@ -51,7 +51,7 @@ The package is on GitHub.com, not CRAN (so `install.packages('EJAM')` would _not
 
 To use EJAM in RStudio, you have two options:
 
-  1. You can clone (or fork) the repo as a new RStudio Project, and then install from that source. Cloning (or forking) is easy and allows you to explore or contribute to source code. This is the recommended option. 
+  1. You can clone (or fork) the repo as a new RStudio Project, and then install from that source. Cloning (or forking) is easy and allows you to explore or contribute to source code. This is the recommended option.
   2. Option 2 is to avoid cloning. That is easier if you only want to run the web app locally, but may not work if you want to use certain R functions directly.
 
 ## Option 1. Install _with_ cloning (preferred approach)
@@ -60,13 +60,13 @@ To use EJAM in RStudio, you have two options:
 
 Here are three ways, but any of them should work -- The first one is probably the simplest:
 
-method A. start in **RStudio**: 
+method A. start in **RStudio**:
 Click **File**, **New Project**, **Version Control**, **Git**, and for the repository URL, enter ``r paste0("https://github.com/", owner_repo)``. For help: [How to create a new RStudio project by cloning a remote Git repo](https://docs.posit.co/ide/user/ide/guide/tools/version-control.html#creating-a-new-project-based-on-a-remote-git-or-subversion-repository){.uri target="_blank" rel="noreferrer noopener"}. Then add it to GitHub Desktop if that is a tool you use.
 
-method B. start in **GitHub Desktop**: 
+method B. start in **GitHub Desktop**:
 Click **File**, **Clone**, **URL**, and for the repository URL, enter ``r paste0("https://github.com/", owner_repo)``. For help: [How to clone a repo using GitHub Desktop](https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop){.uri target="_blank" rel="noreferrer noopener"}. Then in **RStudio**: Click **File**, **New Project**, **Existing Directory**, and specify the folder you just cloned into.
 
-method C. start at **GitHub.com**: 
+method C. start at **GitHub.com**:
 Go to [the EJAM repository page](https://github.com/`r owner_repo` `r paste0("'github.com/", owner_repo, "'")`){.uri target="_blank" rel="noreferrer noopener"}, click the green **Code** button, **Download Zip**, then unzip the zip file that contains the package. For help: [How to clone a repo from GitHub.com](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository){.uri target="_blank" rel="noreferrer noopener"}. Then in **RStudio**: Click **File**, **New Project**, **Existing Directory**, and specify the folder you just cloned into.
 
 #### Configure Build Tools in RStudio (optional)
@@ -152,7 +152,7 @@ pkg <- "Public-Environmental-Data-Partners/EJAM@*release"
 # a specific release (version):
 # pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"
 
-pak::pkg_install(pkg = pkg, 
+pak::pkg_install(pkg = pkg,
                  dependencies = NA, upgrade = FALSE)
 
 library(EJAM)
@@ -194,7 +194,7 @@ Just in case you need more details on how installing and attaching the package w
 You may need to set up a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens){.uri target="_blank" rel="noreferrer noopener"} (PAT) for authentication to work reliably when using repositories on GitHub.com. Public repositories can often be installed without a PAT, but GitHub applies lower rate limits. A bad or expired PAT can cause errors such as "Bad GitHub credentials" or HTTP 401, so update or remove invalid credentials before retrying. See more [about git credentials and the credential store](https://usethis.r-lib.org/articles/git-credentials.html#git-credential-helpers-and-the-credential-store). Note Windows takes care of most of this now, in conjunction with GitHub.
 ```{r PAT, echo=TRUE, eval=FALSE}
 ##  To check for existing PATs:
-usethis::gh_token_help() 
+usethis::gh_token_help()
 # or
 usethis::git_sitrep()  # git situation report
 
@@ -203,7 +203,7 @@ usethis::create_github_token()
 
 #  To register a PAT:
 credentials::set_github_pat()
-# or 
+# or
 gitcreds::gitcreds_set()
 ```
 

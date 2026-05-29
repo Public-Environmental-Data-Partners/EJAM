@@ -22,7 +22,8 @@
 #' @param onAttach Indicates whether the function is being called from onAttach. IF so, it will download all arrow files if necessary
 #' @param piggybacktag default is `"latest"`, which resolves internally to the
 #'   DESCRIPTION `ejamdata_required_tag` field. Pass a specific tag such as
-#'   `"v2.32.8"` only for explicit maintenance or diagnostic work.
+#'   `"v2.32.8.001"` only for explicit maintenance or diagnostic work.
+#'
 #' @return
 #'
 #'   returns vector of names of objects now in memory in specified envir, either because

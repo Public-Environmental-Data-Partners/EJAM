@@ -98,12 +98,12 @@ if (!requireNamespace("pak", quietly = TRUE)) {
 parentfolder <- rstudioapi::readRStudioPreference(
   "default_open_project_location", ".")
 ejamroot <- file.path(parentfolder, "EJAM")
-# or maybe ejamroot <- "." 
-if (!(basename(ejamroot) == "EJAM" && 
+# or maybe ejamroot <- "."
+if (!(basename(ejamroot) == "EJAM" &&
       file.exists(file.path(ejamroot, "DESCRIPTION")))) {
   stop("must set ejamroot to root folder of EJAM source package")}
 
-pak::pkg_install(pkg = ejamroot, 
+pak::pkg_install(pkg = ejamroot,
                  dependencies = NA, upgrade = FALSE)
 
 library(EJAM)
@@ -150,7 +150,7 @@ pkg <- "Public-Environmental-Data-Partners/EJAM@*release"
 # a specific release (version):
 # pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"
 
-pak::pkg_install(pkg = pkg, 
+pak::pkg_install(pkg = pkg,
                  dependencies = NA, upgrade = FALSE)
 
 library(EJAM)
@@ -212,7 +212,7 @@ Note Windows takes care of most of this now, in conjunction with GitHub.
 ``` r
 
 ##  To check for existing PATs:
-usethis::gh_token_help() 
+usethis::gh_token_help()
 # or
 usethis::git_sitrep()  # git situation report
 
@@ -221,7 +221,7 @@ usethis::create_github_token()
 
 #  To register a PAT:
 credentials::set_github_pat()
-# or 
+# or
 gitcreds::gitcreds_set()
 ```
 
