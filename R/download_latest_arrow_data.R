@@ -102,7 +102,7 @@ download_latest_arrow_data <- function(
     # If user installs for the first time, they won't have any arrow datasets or
     # the txt with the version, which is added at the end of this program
 
-    missing_files <- varnames
+    missing_files <- paste0(varnames, ".arrow")
     if (is.null(usersArrowVersions)) {
       message("Downloading latest arrow-format datasets (blocks, etc.)")
     } else {
