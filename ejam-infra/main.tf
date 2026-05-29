@@ -132,6 +132,11 @@ variable "manage_ecr" {
   default     = true
 }
 
+variable "domain_name" {
+  description = "Custom domain for the app (e.g. ejam.yourdomain.com). Leave empty until domain is confirmed. When set, an ACM certificate is requested and an HTTPS listener is added to the ALB. HTTP traffic is redirected to HTTPS."
+  default     = ""
+}
+
 locals {
   name_prefix  = "${var.app_name}-${var.environment}"
   azs          = ["${var.aws_region}a", "${var.aws_region}b"]
@@ -282,6 +287,67 @@ resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = 80
   protocol          = "HTTP"
+
+  # When a domain is configured, redirect HTTP → HTTPS.
+  # Otherwise forward directly to the app.
+  default_action {
+    type = var.domain_name != "" ? "redirect" : "forward"
+
+    dynamic "redirect" {
+      for_each = var.domain_name != "" ? [1] : []
+      content {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+
+    target_group_arn = var.domain_name != "" ? null : aws_lb_target_group.app.arn
+  }
+}
+
+# -----------------------------------------------------------------------------
+# ACM + HTTPS — only created when domain_name is set
+# -----------------------------------------------------------------------------
+
+resource "aws_acm_certificate" "app" {
+  count             = var.domain_name != "" ? 1 : 0
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = { Name = "${local.name_prefix}-cert" }
+}
+
+# Output the DNS validation records so they can be added to Squarespace
+output "acm_validation_cnames" {
+  description = "Add these CNAME records in Squarespace DNS to validate the ACM certificate. Only populated when domain_name is set."
+  value = var.domain_name != "" ? {
+    for dvo in aws_acm_certificate.app[0].domain_validation_options : dvo.domain_name => {
+      name  = dvo.resource_record_name
+      type  = dvo.resource_record_type
+      value = dvo.resource_record_value
+    }
+  } : {}
+}
+
+resource "aws_acm_certificate_validation" "app" {
+  count           = var.domain_name != "" ? 1 : 0
+  certificate_arn = aws_acm_certificate.app[0].arn
+  # DNS validation — add the CNAME records from acm_validation_cnames output
+  # to Squarespace, then re-run terraform apply to complete validation.
+}
+
+resource "aws_lb_listener" "https" {
+  count             = var.domain_name != "" ? 1 : 0
+  load_balancer_arn = aws_lb.main.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = aws_acm_certificate_validation.app[0].certificate_arn
 
   default_action {
     type             = "forward"

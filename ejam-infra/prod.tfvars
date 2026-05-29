@@ -1,4 +1,5 @@
 environment                    = "prod"
+domain_name                    = ""             # set to custom domain when ready (e.g. "ejam.yourdomain.com")
 task_family                    = "ejam"         # keep as "ejam" for backward compatibility with existing task definitions
 task_cpu                       = 2048           # 2 vCPU
 task_memory                    = 7168           # 7 GB
