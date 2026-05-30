@@ -1317,7 +1317,7 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
 
   column_map <- NULL
   if (exists("map_headernames", inherits = TRUE) &&
-      exists("augment_map_headernames_ejscreen_names", inherits = TRUE)) {
+      exists("validate_map_headernames_ejscreen_names", inherits = TRUE)) {
     column_map <- tryCatch({
       mh <- data.table::as.data.table(
         validate_map_headernames_ejscreen_names(map_headernames)

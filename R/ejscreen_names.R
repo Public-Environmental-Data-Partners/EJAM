@@ -182,16 +182,6 @@ validate_map_headernames_ejscreen_names <- function(mapping_for_names = map_head
   invisible(mh)
 }
 
-#' @rdname validate_map_headernames_ejscreen_names
-#' @keywords internal
-augment_map_headernames_ejscreen_names <- function(mapping_for_names = map_headernames) {
-  validate_map_headernames_ejscreen_names(
-    mapping_for_names = mapping_for_names,
-    strict = FALSE,
-    source_name = "mapping_for_names"
-  )
-}
-
 ejscreen_flag_true <- function(x) {
   if (is.null(x)) {
     return(logical(0))
