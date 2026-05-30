@@ -272,6 +272,8 @@ acs22_replication_source_inventory <- function(config) {
       "ejam_2026_v2_32_9_pipeline_bgej",
       "ejam_2026_v2_32_9_pipeline_usastats",
       "ejam_2026_v2_32_9_pipeline_statestats",
+      "ejam_2026_v2_32_9_pipeline_ejscreen_us_pctile_lookup",
+      "ejam_2026_v2_32_9_pipeline_ejscreen_state_pctile_lookup",
       "ejam_2026_v2_32_9_pipeline_ejscreen_export",
       "ejam_2026_v2_32_9_pipeline_ejscreen_export_statepct"
     ),
@@ -288,6 +290,8 @@ acs22_replication_source_inventory <- function(config) {
       "EJAM v2.32.9 pipeline ACS22 bgej",
       "EJAM v2.32.9 pipeline ACS22 usastats",
       "EJAM v2.32.9 pipeline ACS22 statestats",
+      "EJAM v2.32.9 pipeline ACS22 EJScreen-style national percentile lookup export",
+      "EJAM v2.32.9 pipeline ACS22 EJScreen-style state percentile lookup export",
       "EJAM v2.32.9 pipeline ACS22 ejscreen_export",
       "EJAM v2.32.9 pipeline ACS22 ejscreen_export_statepct"
     ),
@@ -304,6 +308,8 @@ acs22_replication_source_inventory <- function(config) {
       file.path(config$pipeline_2022_dir, "bgej.csv"),
       file.path(config$pipeline_2022_dir, "usastats.csv"),
       file.path(config$pipeline_2022_dir, "statestats.csv"),
+      file.path(config$pipeline_2022_dir, "ejscreen_us_pctile_lookup.csv"),
+      file.path(config$pipeline_2022_dir, "ejscreen_state_pctile_lookup.csv"),
       file.path(config$pipeline_2022_dir, "ejscreen_export.csv"),
       file.path(config$pipeline_2022_dir, "ejscreen_export_statepct.csv")
     )
@@ -315,16 +321,16 @@ acs22_replication_comparison_plan <- function(config) {
     output_folder = rep(unname(config$folders), c(7, 7, 4)),
     comparison = c(
       "ejam_v2_32_8_001_blockgroupstats_vs_epa_v2_32_national_bg_shared_rnames",
-      "ejam_v2_32_8_001_usastats_vs_epa_v2_32_national_lookup",
-      "ejam_v2_32_8_001_statestats_vs_epa_v2_32_state_lookup",
+      "ejam_v2_32_8_001_ejscreen_us_pctile_lookup_vs_epa_v2_32_national_lookup",
+      "ejam_v2_32_8_001_ejscreen_state_pctile_lookup_vs_epa_v2_32_state_lookup",
       "ejam_v2_32_8_001_bgej_vs_epa_v2_32_national_bg_shared_rnames",
       "ejam_v2_32_8_001_bgej_vs_epa_v2_32_statepct_bg_shared_rnames",
       "ejam_v2_32_8_001_regenerated_export_vs_epa_v2_32_national_bg",
       "ejam_v2_32_8_001_regenerated_export_vs_epa_v2_32_statepct_bg",
       "ejam_v2_32_9_pipeline_ejscreen_export_vs_epa_v2_32_national_bg",
       "ejam_v2_32_9_pipeline_ejscreen_export_vs_epa_v2_32_statepct_bg",
-      "ejam_v2_32_9_pipeline_usastats_vs_epa_v2_32_national_lookup",
-      "ejam_v2_32_9_pipeline_statestats_vs_epa_v2_32_state_lookup",
+      "ejam_v2_32_9_pipeline_ejscreen_us_pctile_lookup_vs_epa_v2_32_national_lookup",
+      "ejam_v2_32_9_pipeline_ejscreen_state_pctile_lookup_vs_epa_v2_32_state_lookup",
       "ejam_v2_32_9_pipeline_blockgroupstats_vs_epa_v2_32_national_bg_shared_rnames",
       "ejam_v2_32_9_pipeline_bgej_vs_epa_v2_32_national_bg_shared_rnames",
       "ejam_v2_32_9_pipeline_bgej_vs_epa_v2_32_statepct_bg_shared_rnames",
@@ -355,16 +361,16 @@ acs22_replication_comparison_plan <- function(config) {
     ),
     note = c(
       "Renames EPA columns to EJAM rnames and compares shared columns only.",
-      "Renames EPA lookup columns to EJAM rnames before comparing.",
-      "Renames EPA lookup columns to EJAM rnames before comparing.",
+      "Regenerates an EJScreen-style lookup export from EJAM v2.32.8.001 usastats and compares directly to EPA field names.",
+      "Regenerates an EJScreen-style lookup export from EJAM v2.32.8.001 statestats and compares directly to EPA field names.",
       "Loads bgej.arrow from the matching ejamdata release and compares shared national EJ-index columns.",
       "Loads bgej.arrow from the matching ejamdata release and compares shared state EJ-index columns.",
       "Builds an export from v2.32.8.001 package tables plus bgej.arrow using the current export helper; useful as a diagnostic, but not a byte-for-byte run of old package code.",
       "Builds an export from v2.32.8.001 package tables plus bgej.arrow using the current export helper; useful as a diagnostic, but not a byte-for-byte run of old package code.",
       "Compares pipeline export directly to EPA national blockgroup output; EPA has national percentile fields.",
       "Compares pipeline state-percentile export directly to EPA state-percentile blockgroup output; EPA has state percentile fields written into generic EPA names.",
-      "Renames EPA lookup columns to EJAM rnames before comparing.",
-      "Renames EPA lookup columns to EJAM rnames before comparing.",
+      "Compares pipeline ejscreen_us_pctile_lookup directly to EPA national lookup field names.",
+      "Compares pipeline ejscreen_state_pctile_lookup directly to EPA state lookup field names.",
       "Renames EPA columns to EJAM rnames and compares shared columns only.",
       "Compares current pipeline bgej to EPA national BG output after EPA column renaming.",
       "Compares current pipeline bgej to EPA state-percentile BG output after EPA column renaming.",
@@ -399,6 +405,11 @@ acs22_replication_epa_reference_note <- function(config) {
     ),
     "- bgej.arrow: nationwide EJ Indexes.",
     "- usastats.rda and statestats.rda: percentile lookup tables.",
+    paste0(
+      "- ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv: ",
+      "EJScreen-style lookup exports derived from usastats/statestats, with ",
+      "EJScreen field names and std rows for comparison to EPA lookup tables."
+    ),
     paste0(
       "- Be careful with demographic-index column names in statestats and the EPA ",
       "state lookup table; national and state versions of demographic indexes use ",
@@ -499,6 +510,41 @@ acs22_replication_compare_lookup_to_epa <- function(config,
   )
 }
 
+acs22_replication_compare_ejscreen_lookup_to_epa <- function(config,
+                                                             output_dir,
+                                                             stage,
+                                                             new_dt,
+                                                             epa_path,
+                                                             epa_label) {
+  epa <- acs22_replication_load_table(epa_path, storage = config$storage)
+  epa <- data.table::as.data.table(data.table::copy(epa))
+  data.table::setnames(epa, names(epa), gsub("^\ufeff", "", trimws(names(epa))))
+  acs22_replication_compare_stage_objects(
+    new_dt = new_dt,
+    old_dt = epa,
+    stage = stage,
+    old_label = epa_label,
+    output_dir = output_dir,
+    config = config,
+    shared_only = TRUE,
+    id_cols = c("PCTILE", "REGION")
+  )
+}
+
+acs22_replication_lookup_values <- function(blockgroupstats, bgej) {
+  values <- data.table::as.data.table(data.table::copy(blockgroupstats))
+  bgej_dt <- data.table::as.data.table(data.table::copy(bgej))
+  if (!all(c("bgfips") %in% names(values)) || !"bgfips" %in% names(bgej_dt)) {
+    return(values)
+  }
+  bgej_extra_cols <- setdiff(names(bgej_dt), names(values))
+  if (length(bgej_extra_cols) == 0) {
+    return(values)
+  }
+  bgej_extra <- bgej_dt[, c("bgfips", bgej_extra_cols), with = FALSE]
+  merge(values, bgej_extra, by = "bgfips", all.x = TRUE, sort = FALSE)
+}
+
 acs22_replication_run_reports <- function(config = acs22_replication_default_config()) {
   acs22_replication_write_inventory(config)
 
@@ -526,12 +572,25 @@ acs22_replication_run_reports <- function(config = acs22_replication_default_con
   new_bgej <- acs22_replication_load_pipeline_stage(config, "bgej")
   new_usastats <- acs22_replication_load_pipeline_stage(config, "usastats")
   new_statestats <- acs22_replication_load_pipeline_stage(config, "statestats")
+  new_ejscreen_us_pctile_lookup <- acs22_replication_load_pipeline_stage(config, "ejscreen_us_pctile_lookup")
+  new_ejscreen_state_pctile_lookup <- acs22_replication_load_pipeline_stage(config, "ejscreen_state_pctile_lookup")
 
   message("Comparing 2025 EJAM package objects to EPA v2.32 references")
   epa_national_bg <- acs22_replication_load_table(unname(config$epa["national_bg"]), storage = config$storage)
   epa_national_bg_r <- acs22_replication_rename_epa_cols_to_rnames(epa_national_bg)
   epa_statepct_bg <- acs22_replication_load_table(unname(config$epa["statepct_bg"]), storage = config$storage)
   epa_statepct_bg_r <- acs22_replication_rename_epa_statepct_cols_to_rnames(epa_statepct_bg)
+  old_lookup_values <- acs22_replication_lookup_values(old_blockgroupstats, old_bgej)
+  old_ejscreen_us_pctile_lookup <- EJAM:::calc_ejscreen_pctile_lookup_export(
+    lookup = old_usastats,
+    values = old_lookup_values,
+    scope = "national"
+  )
+  old_ejscreen_state_pctile_lookup <- EJAM:::calc_ejscreen_pctile_lookup_export(
+    lookup = old_statestats,
+    values = old_lookup_values,
+    scope = "state"
+  )
   acs22_replication_compare_stage_objects(
     new_dt = old_blockgroupstats,
     old_dt = epa_national_bg_r,
@@ -542,21 +601,21 @@ acs22_replication_run_reports <- function(config = acs22_replication_default_con
     shared_only = TRUE,
     id_cols = "bgfips"
   )
-  acs22_replication_compare_lookup_to_epa(
+  acs22_replication_compare_ejscreen_lookup_to_epa(
     config = config,
     output_dir = folder_2025_vs_2024,
-    stage = "ejam_v2_32_8_001_usastats_vs_epa_v2_32_national_lookup",
-    new_dt = old_usastats,
+    stage = "ejam_v2_32_8_001_ejscreen_us_pctile_lookup_vs_epa_v2_32_national_lookup",
+    new_dt = old_ejscreen_us_pctile_lookup,
     epa_path = unname(config$epa["national_lookup"]),
-    epa_label = "EPA 2024 EJScreen v2.32 national lookup, renamed to EJAM rnames"
+    epa_label = "EPA 2024 EJScreen v2.32 national lookup"
   )
-  acs22_replication_compare_lookup_to_epa(
+  acs22_replication_compare_ejscreen_lookup_to_epa(
     config = config,
     output_dir = folder_2025_vs_2024,
-    stage = "ejam_v2_32_8_001_statestats_vs_epa_v2_32_state_lookup",
-    new_dt = old_statestats,
+    stage = "ejam_v2_32_8_001_ejscreen_state_pctile_lookup_vs_epa_v2_32_state_lookup",
+    new_dt = old_ejscreen_state_pctile_lookup,
     epa_path = unname(config$epa["state_lookup"]),
-    epa_label = "EPA 2024 EJScreen v2.32 state lookup, renamed to EJAM rnames"
+    epa_label = "EPA 2024 EJScreen v2.32 state lookup"
   )
   acs22_replication_compare_stage_objects(
     new_dt = old_bgej,
@@ -644,21 +703,21 @@ acs22_replication_run_reports <- function(config = acs22_replication_default_con
     output_prefix = "replication_ejscreen_export_vs_epa_v2_32_statepct_bg",
     write_files = TRUE
   )
-  acs22_replication_compare_lookup_to_epa(
+  acs22_replication_compare_ejscreen_lookup_to_epa(
     config = config,
     output_dir = folder_2026_vs_2024,
-    stage = "ejam_v2_32_9_pipeline_usastats_vs_epa_v2_32_national_lookup",
-    new_dt = new_usastats,
+    stage = "ejam_v2_32_9_pipeline_ejscreen_us_pctile_lookup_vs_epa_v2_32_national_lookup",
+    new_dt = new_ejscreen_us_pctile_lookup,
     epa_path = unname(config$epa["national_lookup"]),
-    epa_label = "EPA 2024 EJScreen v2.32 national lookup, renamed to EJAM rnames"
+    epa_label = "EPA 2024 EJScreen v2.32 national lookup"
   )
-  acs22_replication_compare_lookup_to_epa(
+  acs22_replication_compare_ejscreen_lookup_to_epa(
     config = config,
     output_dir = folder_2026_vs_2024,
-    stage = "ejam_v2_32_9_pipeline_statestats_vs_epa_v2_32_state_lookup",
-    new_dt = new_statestats,
+    stage = "ejam_v2_32_9_pipeline_ejscreen_state_pctile_lookup_vs_epa_v2_32_state_lookup",
+    new_dt = new_ejscreen_state_pctile_lookup,
     epa_path = unname(config$epa["state_lookup"]),
-    epa_label = "EPA 2024 EJScreen v2.32 state lookup, renamed to EJAM rnames"
+    epa_label = "EPA 2024 EJScreen v2.32 state lookup"
   )
   acs22_replication_compare_stage_objects(
     new_dt = new_blockgroupstats,

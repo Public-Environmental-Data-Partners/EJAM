@@ -109,7 +109,18 @@ The annual workflow creates or reads these stages:
     and `bgej`, applying EJScreen-style names from `map_headernames`,
     and adding map helper fields where possible.
 
-14. `ejscreen_dataset_creator_input`: optional smaller input table for
+14. `ejscreen_export_statepct`: EJScreen-ready export matching EPA’s
+    StatePct convention, where state raw scores and state percentiles
+    are written into the generic EJScreen field names.
+
+15. `ejscreen_us_pctile_lookup` and
+    `ejscreen_state_pctile_lookup`: EJScreen-style percentile lookup
+    CSVs created from `usastats` and `statestats`. These use EJScreen
+    field names and add `std` rows to match EPA lookup tables such as
+    `EJScreen_2024_BG_National_Lookup.csv` and
+    `EJScreen_2024_BG_State_Lookup.csv`.
+
+16. `ejscreen_dataset_creator_input`: optional smaller input table for
     EPA’s Python `ejscreen-dataset-creator-2.3` workflow. Enable it with
     `EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "TRUE"`.
 
@@ -546,7 +557,8 @@ source("data-raw/run_ejscreen_dataset_pipeline.R")
 
 This reuses the saved ACS stages and regenerates downstream
 `blockgroupstats`, `bgej`, `usastats`, `statestats`, and
-`ejscreen_export`.
+`ejscreen_export`, `ejscreen_export_statepct`, and the EJScreen-style
+lookup exports.
 
 ## Extra Indicators
 
@@ -608,6 +620,8 @@ blockgroupstats <- fread(file.path(pipeline_dir, "blockgroupstats.csv"))
 bgej            <- fread(file.path(pipeline_dir, "bgej.csv"))
 usastats        <- fread(file.path(pipeline_dir, "usastats.csv"))
 statestats      <- fread(file.path(pipeline_dir, "statestats.csv"))
+ejscreen_us_pctile_lookup <- fread(file.path(pipeline_dir, "ejscreen_us_pctile_lookup.csv"))
+ejscreen_state_pctile_lookup <- fread(file.path(pipeline_dir, "ejscreen_state_pctile_lookup.csv"))
 bg_geodata      <- fread(file.path(pipeline_dir, "bg_geodata.csv"))
 
 nrow(blockgroupstats)
@@ -636,9 +650,13 @@ Useful checks include:
 - lookup tables include `REGION`, `PCTILE`, `0`, `100`, and `mean`;
 - `usastats` has one region, `"USA"`;
 - `statestats` has expected state/territory regions.
-- when `EJAM_INCLUDE_ISLANDAREAS_DATA` is true, 412 Island Areas
-  blockgroups are present in `bg_acsdata`, `blockgroupstats`, and
-  `bgej`, and `ejscreen_export` retains the matching AS/GU/MP/VI IDs.
+- EJScreen-style lookup exports include `PCTILE`, `REGION`, `0`, `100`,
+  `mean`, and `std`, with EJScreen field names rather than EJAM `rname`
+  columns.
+- for ACS2024/v2.5.0, Island Areas AS/GU/MP/VI are present in
+  `bg_acsdata`, `blockgroupstats`, `bgej`, `ejscreen_export`, and
+  `ejscreen_export_statepct` unless
+  `EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE"`.
 
 For the default EJScreen-compatible path, Island Areas demographic
 columns in `bg_acsdata` and downstream stages are expected to be `NA`
@@ -659,6 +677,11 @@ stopifnot("mean" %in% as.character(usastats$PCTILE))
 stopifnot("0" %in% as.character(statestats$PCTILE))
 stopifnot("100" %in% as.character(statestats$PCTILE))
 stopifnot("mean" %in% as.character(statestats$PCTILE))
+
+stopifnot("std" %in% as.character(ejscreen_us_pctile_lookup$PCTILE))
+stopifnot("std" %in% as.character(ejscreen_state_pctile_lookup$PCTILE))
+stopifnot(all(c("PCTILE", "REGION", "DEMOGIDX_2", "LOWINCPCT", "D2_PM25") %in%
+                names(ejscreen_us_pctile_lookup)))
 
 stopifnot(!anyDuplicated(blockgroupstats$bgfips))
 stopifnot(!anyDuplicated(bgej$bgfips))

@@ -449,6 +449,8 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
     ejscreen_export_statepct = "ejscreen_export_statepct", # canonical
     ejscreen_statepct =        "ejscreen_statepct",
     bg_ejscreen_statepct =     "bg_ejscreen_statepct",
+    ejscreen_us_pctile_lookup =    "ejscreen_us_pctile_lookup", # canonical
+    ejscreen_state_pctile_lookup = "ejscreen_state_pctile_lookup", # canonical
 
     ejscreen_dataset_creator_input = "ejscreen_dataset_creator_input", # canonical
     dataset_creator_input =          "dataset_creator_input",

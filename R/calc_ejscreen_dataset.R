@@ -86,6 +86,10 @@
 #'  - EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
 #'
 #'  - EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+#'  - EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT: TRUE to create
+#'    ejscreen_export_statepct.csv.
+#'  - EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS: TRUE to create
+#'    ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv.
 #'  - EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 #'    input table expected by EPA's Python dataset-creator workflow.
 #'
@@ -118,7 +122,8 @@
 #'   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_ISLANDAREAS_REFERENCE_PATH",
 #'   "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
 #'   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
-#'   "EJAM_INCLUDE_EJSCREEN_EXPORT",
+#'   "EJAM_INCLUDE_EJSCREEN_EXPORT", "EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT",
+#'   "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS",
 #'   "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
 #'   "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
 #'   "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"
@@ -172,6 +177,12 @@
 #'   create an EPA `StatePct`-style export where state raw scores and state
 #'   percentiles are written into the generic EPA field names. When NULL, this
 #'   follows `include_ejscreen_export`.
+#' @param include_ejscreen_pctile_lookup_exports logical or NULL. If TRUE,
+#'   create EJScreen-style national and state percentile lookup CSV stages,
+#'   `ejscreen_us_pctile_lookup` and `ejscreen_state_pctile_lookup`, from
+#'   `usastats` and `statestats`. These use EJScreen field names and append a
+#'   `std` row for each region. When NULL, this follows
+#'   `include_ejscreen_export`.
 #' @param include_ejscreen_dataset_creator_input logical. If TRUE, also create
 #'   the smaller pre-index input table expected by EPA's
 #'   `ejscreen-dataset-creator-2.3` Python tool.
@@ -179,6 +190,9 @@
 #'   percentile export.
 #' @param ejscreen_export_statepct_path optional file path for the EJSCREEN
 #'   state-percentile export.
+#' @param ejscreen_us_pctile_lookup_path,ejscreen_state_pctile_lookup_path
+#'   optional file paths for the EJScreen-style national and state percentile
+#'   lookup exports.
 #' @param ejscreen_dataset_creator_input_path optional file path for the
 #'   EJScreen dataset-creator input table.
 #' @param ejscreen_export_vars optional EJAM `rname` columns to keep in the
@@ -190,6 +204,9 @@
 #' @param ejscreen_export_feature_server_fields optional final EJSCREEN
 #'   FeatureServer field list. Defaults to the current EJSCREEN v2.32 block
 #'   group FeatureServer schema when an EJSCREEN export is requested.
+#' @param ejscreen_pctile_lookup_output_fields optional EJScreen lookup-table
+#'   field names. Defaults to the fields used by EPA's archived national/state
+#'   lookup CSVs.
 #' @inheritParams download_bg_acs_raw
 #' @inheritParams calc_bg_acsdata
 #' @inheritParams calc_bg_extra_indicators
@@ -224,14 +241,18 @@ calc_ejscreen_dataset <- function(yr,
                                   return_intermediate = TRUE,
                                   include_ejscreen_export = FALSE,
                                   include_ejscreen_export_statepct = NULL,
+                                  include_ejscreen_pctile_lookup_exports = NULL,
                                   include_ejscreen_dataset_creator_input = FALSE,
                                   ejscreen_export_path = NULL,
                                   ejscreen_export_statepct_path = NULL,
+                                  ejscreen_us_pctile_lookup_path = NULL,
+                                  ejscreen_state_pctile_lookup_path = NULL,
                                   ejscreen_dataset_creator_input_path = NULL,
                                   ejscreen_export_vars = NULL,
                                   ejscreen_export_required_names = NULL,
                                   ejscreen_export_rename_newtype = "ejscreen_indicator",
                                   ejscreen_export_feature_server_fields = NULL,
+                                  ejscreen_pctile_lookup_output_fields = ejscreen_pctile_lookup_fields(),
                                   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
                                   tract_tables = c("B18101", "C16001", "B27010"),
                                   tract_weight_source = c("decennial2020", "acs"),
@@ -286,6 +307,11 @@ calc_ejscreen_dataset <- function(yr,
   if (is.null(include_ejscreen_export_statepct)) {
     include_ejscreen_export_statepct <- isTRUE(include_ejscreen_export) ||
       !is.null(ejscreen_export_statepct_path)
+  }
+  if (is.null(include_ejscreen_pctile_lookup_exports)) {
+    include_ejscreen_pctile_lookup_exports <- isTRUE(include_ejscreen_export) ||
+      !is.null(ejscreen_us_pctile_lookup_path) ||
+      !is.null(ejscreen_state_pctile_lookup_path)
   }
   # define helpers ####
   saved_paths <- character()
@@ -688,6 +714,48 @@ calc_ejscreen_dataset <- function(yr,
     )
     if (isTRUE(save_stages)) {
       save_stage(out$ejscreen_export_statepct, "ejscreen_export_statepct")
+    }
+  }
+  # ~ ----------------------------------------- ####
+  # EJSCREEN PERCENTILE LOOKUP FILES ####
+  # * EPA-shaped lookup files corresponding to usastats/statestats ####
+  # ~ ----------------------------------------- ####
+  if (isTRUE(include_ejscreen_pctile_lookup_exports) ||
+      !is.null(ejscreen_us_pctile_lookup_path) ||
+      !is.null(ejscreen_state_pctile_lookup_path)) {
+    lookup_values <- data.table::as.data.table(data.table::copy(blockgroupstats))
+    bgej_for_lookup <- data.table::as.data.table(data.table::copy(stats$bgej))
+    if ("bgfips" %in% names(lookup_values) && "bgfips" %in% names(bgej_for_lookup)) {
+      bgej_extra_cols <- setdiff(names(bgej_for_lookup), names(lookup_values))
+      if (length(bgej_extra_cols) > 0) {
+        bgej_extra <- bgej_for_lookup[, c("bgfips", bgej_extra_cols), with = FALSE]
+        lookup_values <- merge(lookup_values, bgej_extra, by = "bgfips", all.x = TRUE, sort = FALSE)
+      }
+    }
+
+    out$ejscreen_us_pctile_lookup <- calc_ejscreen_pctile_lookup_export(
+      lookup = stats$usastats,
+      values = lookup_values,
+      scope = "national",
+      output_fields = ejscreen_pctile_lookup_output_fields,
+      rename_newtype = ejscreen_export_rename_newtype,
+      save_path = ejscreen_us_pctile_lookup_path,
+      pipeline_storage = pipeline_storage,
+      overwrite = overwrite
+    )
+    out$ejscreen_state_pctile_lookup <- calc_ejscreen_pctile_lookup_export(
+      lookup = stats$statestats,
+      values = lookup_values,
+      scope = "state",
+      output_fields = ejscreen_pctile_lookup_output_fields,
+      rename_newtype = ejscreen_export_rename_newtype,
+      save_path = ejscreen_state_pctile_lookup_path,
+      pipeline_storage = pipeline_storage,
+      overwrite = overwrite
+    )
+    if (isTRUE(save_stages)) {
+      save_stage(out$ejscreen_us_pctile_lookup, "ejscreen_us_pctile_lookup")
+      save_stage(out$ejscreen_state_pctile_lookup, "ejscreen_state_pctile_lookup")
     }
   }
   # ~ ----------------------------------------- ####
