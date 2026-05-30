@@ -490,26 +490,6 @@ acs22_replication_compare_stage_objects <- function(new_dt,
   )
 }
 
-acs22_replication_compare_lookup_to_epa <- function(config,
-                                                    output_dir,
-                                                    stage,
-                                                    new_dt,
-                                                    epa_path,
-                                                    epa_label) {
-  epa <- acs22_replication_load_table(epa_path, storage = config$storage)
-  epa <- acs22_replication_rename_epa_cols_to_rnames(epa)
-  acs22_replication_compare_stage_objects(
-    new_dt = new_dt,
-    old_dt = epa,
-    stage = stage,
-    old_label = epa_label,
-    output_dir = output_dir,
-    config = config,
-    shared_only = TRUE,
-    id_cols = c("REGION", "PCTILE")
-  )
-}
-
 acs22_replication_compare_ejscreen_lookup_to_epa <- function(config,
                                                              output_dir,
                                                              stage,
