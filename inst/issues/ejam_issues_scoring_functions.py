@@ -15,14 +15,17 @@ and generate inst/issues/ejam_issues_scored_by_risk_and_value.MD.
 #       python inst/issues/ejam_issues_scoring_functions.py \
 #           --token YOUR_GITHUB_TOKEN \
 #           --output inst/issues/ejam_issues_scored_by_risk_and_value.MD \
-#           --date 2026-05-29
+#           --scores-output inst/issues/ejam_issues_scored_by_risk_and_value.json \
+#           --date 2026-05-30
 #
 #   --token   GitHub personal access token (optional, but raises rate limit
 #             from 60 to 5000 requests/hour). Generate one at
 #             https://github.com/settings/tokens  (no scopes needed for
 #             public repos).
-#   --output  Path to write the Markdown file (default shown above).
-#   --date    Date string embedded in the file header (default: today).
+#   --output         Path to write the Markdown report (default shown above).
+#   --scores-output  Path to write a JSON score payload for a later GitHub
+#                    update task. This script never mutates GitHub issues.
+#   --date           Date string embedded in the file header (default: today).
 #
 # ── Option 2: Import individual scoring functions ────────────────────────────
 #
@@ -85,21 +88,35 @@ and generate inst/issues/ejam_issues_scored_by_risk_and_value.MD.
 # ── Requirements ─────────────────────────────────────────────────────────────
 #
 #   Standard-library only (no pip installs needed).
-#   Python 3.10+ recommended (uses X | Y union-type hints in comments).
+#   Python 3.9+.
 #
 # ============================================================
 """
+
+from __future__ import annotations
 
 import argparse
 import json
 import re
 from collections import Counter
+from datetime import date
+from pathlib import Path
 
 # ── GitHub API helpers ────────────────────────────────────────────────────────
 
 OWNER = "Public-Environmental-Data-Partners"
 REPO  = "EJAM"
 URL_BASE = f"https://github.com/{OWNER}/{REPO}/issues/"
+REPORT_SOURCE = f"Live GitHub REST API open issues ({OWNER}/{REPO})"
+DEFAULT_MARKDOWN_OUTPUT = "inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+DEFAULT_SCORES_OUTPUT = "inst/issues/ejam_issues_scored_by_risk_and_value.json"
+
+RANK_LABELS = {
+    "A": "rank:A-high-value-low-cost",
+    "B": "rank:B-high-value-high-cost",
+    "C": "rank:C-low-value-low-cost",
+    "D": "rank:D-defer",
+}
 
 
 def fetch_all_open_issues(token: str | None = None) -> list[dict]:
@@ -342,6 +359,121 @@ def get_priority_label(labels: list[str]) -> str:
     return "—"
 
 
+def rank_comment_body(issue: dict, generated_date: str,
+                      report_path: str) -> str:
+    return "\n".join([
+        f"Last ranked: {generated_date}",
+        f"Cost score: {issue['cost']}",
+        f"Benefit score: {issue['benefit']}",
+        f"Quadrant: {issue['quad']}",
+        f"Run report: {report_path}",
+    ])
+
+
+def empty_run_changes() -> dict:
+    return {
+        "previous_run": None,
+        "opened_count": None,
+        "closed_count": None,
+        "quadrant_changed_count": None,
+        "opened_issue_numbers": [],
+        "closed_issue_numbers": [],
+        "quadrant_changed_issue_numbers": [],
+    }
+
+
+def load_previous_score_payload(path: str) -> dict | None:
+    score_path = Path(path)
+    if not score_path.exists():
+        return None
+    with score_path.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def _issue_number(issue: dict) -> int:
+    return int(issue.get("number", issue.get("num")))
+
+
+def _issue_quadrant(issue: dict) -> str | None:
+    return issue.get("quadrant", issue.get("quad"))
+
+
+def summarize_run_changes(scored_issues: list[dict],
+                          previous_payload: dict | None) -> dict:
+    if not previous_payload:
+        return empty_run_changes()
+
+    previous_issues = {
+        _issue_number(issue): issue
+        for issue in previous_payload.get("issues", [])
+    }
+    current_issues = {
+        _issue_number(issue): issue
+        for issue in scored_issues
+    }
+
+    previous_numbers = set(previous_issues)
+    current_numbers = set(current_issues)
+    opened = sorted(current_numbers - previous_numbers)
+    closed = sorted(previous_numbers - current_numbers)
+    still_open = previous_numbers & current_numbers
+    changed_quadrants = sorted(
+        num for num in still_open
+        if _issue_quadrant(previous_issues[num]) != _issue_quadrant(current_issues[num])
+    )
+
+    return {
+        "previous_run": previous_payload.get("metadata", {}).get("generated"),
+        "opened_count": len(opened),
+        "closed_count": len(closed),
+        "quadrant_changed_count": len(changed_quadrants),
+        "opened_issue_numbers": opened,
+        "closed_issue_numbers": closed,
+        "quadrant_changed_issue_numbers": changed_quadrants,
+    }
+
+
+def build_score_payload(scored_issues: list[dict],
+                        cost_med: int, benefit_med: int,
+                        generated_date: str,
+                        report_path: str,
+                        run_changes: dict | None = None) -> dict:
+    run_changes = run_changes or empty_run_changes()
+    issues = []
+    for r in scored_issues:
+        rank_label = RANK_LABELS[r["quad"]]
+        issues.append({
+            "number": r["num"],
+            "title": r["title"],
+            "url": f"{URL_BASE}{r['num']}",
+            "existing_labels": r["labels"],
+            "cost": r["cost"],
+            "benefit": r["benefit"],
+            "quadrant": r["quad"],
+            "rank_label": rank_label,
+            "rank_labels_to_remove": [
+                label for quad, label in RANK_LABELS.items()
+                if quad != r["quad"]
+            ],
+            "rank_comment": rank_comment_body(r, generated_date, report_path),
+        })
+
+    return {
+        "metadata": {
+            "generated": generated_date,
+            "source": REPORT_SOURCE,
+            "repository": f"{OWNER}/{REPO}",
+            "open_issue_count": len(scored_issues),
+            "cost_median": cost_med,
+            "benefit_median": benefit_med,
+            "rank_labels": RANK_LABELS,
+            "report_path": report_path,
+            "run_changes": run_changes,
+        },
+        "issues": issues,
+    }
+
+
 def cost_tier(c: int) -> str:
     if c <= 1:    return "🟢 Very Low"
     elif c <= 3:  return "🔵 Low"
@@ -398,7 +530,9 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
 
 def generate_markdown(scored_issues: list[dict],
                       cost_med: int, benefit_med: int,
-                      generated_date: str = "2026-05-29") -> str:
+                      generated_date: str = "2026-05-30",
+                      score_output_path: str | None = DEFAULT_SCORES_OUTPUT,
+                      run_changes: dict | None = None) -> str:
     """
     Build and return the full Markdown text for
     inst/issues/ejam_issues_scored_by_risk_and_value.MD.
@@ -409,7 +543,10 @@ def generate_markdown(scored_issues: list[dict],
     cost_med       : median cost score (split threshold)
     benefit_med    : median benefit score (split threshold)
     generated_date : date string for the header
+    score_output_path : JSON score payload path for later GitHub updates
+    run_changes    : optional previous-run comparison counts
     """
+    run_changes = run_changes or empty_run_changes()
     n = len(scored_issues)
     quads: dict[str, list[dict]] = {"A": [], "B": [], "C": [], "D": []}
     for r in scored_issues:
@@ -425,8 +562,11 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append(
         f"**Total open issues:** {n}  |  **Generated:** {generated_date}  |  "
-        f"**Source:** inst/issues/ejam_issues_ranked_by_risk.md rescore"
+        f"**Source:** {REPORT_SOURCE}"
     )
+    if score_output_path:
+        lines.append("")
+        lines.append(f"**Score payload:** `{score_output_path}`")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -460,6 +600,38 @@ def generate_markdown(scored_issues: list[dict],
         "Issues at or above the median are **High**; below are **Low** "
         "for that dimension."
     )
+    lines.append("")
+    lines.append("### Previous-run comparison")
+    lines.append("")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
+    lines.append(
+        f"| Previous run | {run_changes['previous_run'] or 'not available'} |"
+    )
+    opened = (
+        "not available" if run_changes["opened_count"] is None
+        else str(run_changes["opened_count"])
+    )
+    closed = (
+        "not available" if run_changes["closed_count"] is None
+        else str(run_changes["closed_count"])
+    )
+    changed = (
+        "not available" if run_changes["quadrant_changed_count"] is None
+        else str(run_changes["quadrant_changed_count"])
+    )
+    lines.append(f"| Issues opened since previous run | {opened} |")
+    lines.append(f"| Issues closed since previous run | {closed} |")
+    lines.append(f"| Issues whose quadrant changed | {changed} |")
+    lines.append("")
+    lines.append("### GitHub rank labels for a later update task")
+    lines.append("")
+    lines.append("This scoring script writes the labels below into the JSON payload, but it does not apply them to GitHub.")
+    lines.append("")
+    lines.append("| Quadrant | Label |")
+    lines.append("|----------|-------|")
+    for quad in ("A", "B", "C", "D"):
+        lines.append(f"| {quad} | `{RANK_LABELS[quad]}` |")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -610,14 +782,21 @@ def main() -> None:
     )
     parser.add_argument(
         "--output",
-        default="inst/issues/ejam_issues_scored_by_risk_and_value.MD",
+        default=DEFAULT_MARKDOWN_OUTPUT,
         help="Path for the output .MD file"
     )
     parser.add_argument(
-        "--date", default="2026-05-19",
+        "--scores-output",
+        default=DEFAULT_SCORES_OUTPUT,
+        help="Path for the output JSON score payload"
+    )
+    parser.add_argument(
+        "--date", default=date.today().isoformat(),
         help="Generated-date string to embed in the header"
     )
     args = parser.parse_args()
+
+    previous_payload = load_previous_score_payload(args.scores_output)
 
     print("Fetching open issues from GitHub …")
     issues = fetch_all_open_issues(token=args.token)
@@ -633,11 +812,30 @@ def main() -> None:
         f"{max(r['benefit'] for r in scored)}, median={benefit_med}"
     )
 
-    md = generate_markdown(scored, cost_med, benefit_med, generated_date=args.date)
+    run_changes = summarize_run_changes(scored, previous_payload)
+    md = generate_markdown(
+        scored, cost_med, benefit_med,
+        generated_date=args.date,
+        score_output_path=args.scores_output,
+        run_changes=run_changes,
+    )
+    score_payload = build_score_payload(
+        scored, cost_med, benefit_med,
+        generated_date=args.date,
+        report_path=args.output,
+        run_changes=run_changes,
+    )
 
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     with open(args.output, "w", encoding="utf-8") as fh:
         fh.write(md)
     print(f"Written: {args.output}  ({len(md):,} bytes)")
+
+    Path(args.scores_output).parent.mkdir(parents=True, exist_ok=True)
+    with open(args.scores_output, "w", encoding="utf-8") as fh:
+        json.dump(score_payload, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
+    print(f"Written: {args.scores_output}")
 
 
 if __name__ == "__main__":
