@@ -26,14 +26,18 @@ calc_ejscreen_dataset(
   return_intermediate = TRUE,
   include_ejscreen_export = FALSE,
   include_ejscreen_export_statepct = NULL,
+  include_ejscreen_pctile_lookup_exports = NULL,
   include_ejscreen_dataset_creator_input = FALSE,
   ejscreen_export_path = NULL,
   ejscreen_export_statepct_path = NULL,
+  ejscreen_us_pctile_lookup_path = NULL,
+  ejscreen_state_pctile_lookup_path = NULL,
   ejscreen_dataset_creator_input_path = NULL,
   ejscreen_export_vars = NULL,
   ejscreen_export_required_names = NULL,
   ejscreen_export_rename_newtype = "ejscreen_indicator",
   ejscreen_export_feature_server_fields = NULL,
+  ejscreen_pctile_lookup_output_fields = ejscreen_pctile_lookup_fields(),
   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
   tract_tables = c("B18101", "C16001", "B27010"),
   tract_weight_source = c("decennial2020", "acs"),
@@ -137,6 +141,13 @@ create an EPA \code{StatePct}-style export where state raw scores and state
 percentiles are written into the generic EPA field names. When NULL, this
 follows \code{include_ejscreen_export}.}
 
+\item{include_ejscreen_pctile_lookup_exports}{logical or NULL. If TRUE,
+create EJScreen-style national and state percentile lookup CSV stages,
+\code{ejscreen_us_pctile_lookup} and \code{ejscreen_state_pctile_lookup}, from
+\code{usastats} and \code{statestats}. These use EJScreen field names and append a
+\code{std} row for each region. When NULL, this follows
+\code{include_ejscreen_export}.}
+
 \item{include_ejscreen_dataset_creator_input}{logical. If TRUE, also create
 the smaller pre-index input table expected by EPA's
 \code{ejscreen-dataset-creator-2.3} Python tool.}
@@ -146,6 +157,9 @@ percentile export.}
 
 \item{ejscreen_export_statepct_path}{optional file path for the EJSCREEN
 state-percentile export.}
+
+\item{ejscreen_us_pctile_lookup_path, ejscreen_state_pctile_lookup_path}{optional file paths for the EJScreen-style national and state percentile
+lookup exports.}
 
 \item{ejscreen_dataset_creator_input_path}{optional file path for the
 EJScreen dataset-creator input table.}
@@ -162,6 +176,10 @@ use when renaming the EJSCREEN export.}
 \item{ejscreen_export_feature_server_fields}{optional final EJSCREEN
 FeatureServer field list. Defaults to the current EJSCREEN v2.32 block
 group FeatureServer schema when an EJSCREEN export is requested.}
+
+\item{ejscreen_pctile_lookup_output_fields}{optional EJScreen lookup-table
+field names. Defaults to the fields used by EPA's archived national/state
+lookup CSVs.}
 
 \item{blockgroup_tables}{ACS tables to download at blockgroup resolution.}
 
@@ -288,8 +306,9 @@ as \link{bgej} table
 \item create intermediate percentile lookup tables \code{usastats_ej},
 \code{statestats_ej}
 \item combine those as \link{usastats} and \link{statestats}
-\item create an EJScreen-ready export file and/or EPA Python dataset-creator
-input file (optionally)
+\item create EJScreen-ready blockgroup export files and EJScreen-style
+percentile lookup exports (optionally)
+\item create EPA Python dataset-creator input file (optionally)
 }
 
 \code{bg_envirodata} must include \code{pctpre1960}. That column may be produced by an
@@ -336,6 +355,10 @@ mixed-source supplemental dataset using 2020 Island Areas Census DHC
 demographics in \code{bg_acsdata}.
 \item EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
 \item EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+\item EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT: TRUE to create
+ejscreen_export_statepct.csv.
+\item EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS: TRUE to create
+ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv.
 \item EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 input table expected by EPA's Python dataset-creator workflow.
 \item EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.
@@ -368,7 +391,8 @@ cbind(current_setting = Sys.getenv(c(
   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_ISLANDAREAS_REFERENCE_PATH",
   "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
-  "EJAM_INCLUDE_EJSCREEN_EXPORT",
+  "EJAM_INCLUDE_EJSCREEN_EXPORT", "EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT",
+  "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS",
   "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
   "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
   "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"

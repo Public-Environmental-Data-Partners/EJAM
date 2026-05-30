@@ -99,6 +99,12 @@
 #      ejscreen_export_statepct.csv, an EPA StatePct-style export where state
 #      raw scores and state percentiles are written into the ordinary EPA field
 #      names, matching files like EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI.csv.
+#   EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS: TRUE to create
+#      ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv,
+#      EJScreen-style lookup tables corresponding to usastats/statestats and
+#      files like EJScreen_2024_BG_National_Lookup.csv and
+#      EJScreen_2024_BG_State_Lookup.csv. Defaults to
+#      EJAM_INCLUDE_EJSCREEN_EXPORT.
 #   EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 #      ejscreen_dataset_creator_input stage for EPA's Python dataset-creator
 #      workflow.
@@ -541,6 +547,7 @@ use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", 
 
 include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
 include_ejscreen_export_statepct <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT", include_ejscreen_export)
+include_ejscreen_pctile_lookup_exports <- env_flag("EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS", include_ejscreen_export)
 include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", FALSE)
 
 ### validation vs prior data  ####
@@ -657,6 +664,7 @@ print(
 
           include_ejscreen_export=include_ejscreen_export,
           include_ejscreen_export_statepct=include_ejscreen_export_statepct,
+          include_ejscreen_pctile_lookup_exports=include_ejscreen_pctile_lookup_exports,
           include_ejscreen_dataset_creator_input=include_ejscreen_dataset_creator_input,
 
           validate_vs_prior=validate_vs_prior,
@@ -1191,7 +1199,8 @@ if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
 message("Creating blockgroupstats, bgej, usastats, statestats",
         if (isTRUE(include_ejscreen_dataset_creator_input)) ", ejscreen_dataset_creator_input" else "",
         if (isTRUE(include_ejscreen_export)) ", ejscreen_export" else "",
-        if (isTRUE(include_ejscreen_export_statepct)) ", and ejscreen_export_statepct" else "")
+        if (isTRUE(include_ejscreen_export_statepct)) ", ejscreen_export_statepct" else "",
+        if (isTRUE(include_ejscreen_pctile_lookup_exports)) ", and EJScreen lookup exports" else "")
 print(Sys.time())
 
 out <- EJAM::calc_ejscreen_dataset(
@@ -1216,6 +1225,7 @@ out <- EJAM::calc_ejscreen_dataset(
   include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
   include_ejscreen_export = include_ejscreen_export,
   include_ejscreen_export_statepct = include_ejscreen_export_statepct,
+  include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
   blockgroup_universe_source = blockgroup_universe_source,
   overwrite = TRUE
 )
@@ -1266,6 +1276,9 @@ if (isTRUE(include_ejscreen_export)) {
 }
 if (isTRUE(include_ejscreen_export_statepct)) {
   stages_to_validate <- c(stages_to_validate, "ejscreen_export_statepct")
+}
+if (isTRUE(include_ejscreen_pctile_lookup_exports)) {
+  stages_to_validate <- c(stages_to_validate, "ejscreen_us_pctile_lookup", "ejscreen_state_pctile_lookup")
 }
 if (isTRUE(include_ejscreen_dataset_creator_input)) {
   stages_to_validate <- c(stages_to_validate, "ejscreen_dataset_creator_input")

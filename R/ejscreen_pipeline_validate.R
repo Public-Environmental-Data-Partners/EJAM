@@ -179,6 +179,18 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
     }
     invisible(NULL)
   }
+  check_ejscreen_lookup_export <- function(expect_usa = NULL) {
+    check_lookup(expect_usa = expect_usa)
+    if (!all(c("PCTILE", "REGION") %in% names(x))) {
+      return(NULL)
+    }
+    if (!"std" %in% as.character(x$PCTILE)) {
+      add_warning("EJScreen lookup export does not include a std row")
+    }
+    expected_fields <- if (exists("ejscreen_pctile_lookup_fields")) ejscreen_pctile_lookup_fields() else character()
+    warn_missing_cols(expected_fields)
+    invisible(NULL)
+  }
   env_flag <- function(name, default = FALSE) {
     value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
     toupper(value) %in% c("1", "TRUE", "YES", "Y")
@@ -322,6 +334,8 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
   canonical_stage <- ejscreen_pipeline_stage_canonical(stage)
   us_lookup_stages <- c("usastats_acs", "usastats_envirodata", "usastats_ej", "usastats")
   state_lookup_stages <- c("statestats_acs", "statestats_envirodata", "statestats_ej", "statestats")
+  ejscreen_us_lookup_export_stages <- c("ejscreen_us_pctile_lookup")
+  ejscreen_state_lookup_export_stages <- c("ejscreen_state_pctile_lookup")
   if (!stage %in% known_stages) {
     return(invisible(list(stage = stage, errors = errors, warnings = warnings)))
   }
@@ -481,6 +495,16 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       warn_missing_cols(c("STATE_NAME", "ST_ABBREV", "CNTY_NAME", "REGION"))
       check_ejscreen_export_helpers()
       check_islandareas_contract(check_demographics = TRUE)
+      ###################################################### #
+      # ejscreen lookup export stages ####
+
+    } else if (canonical_stage %in% ejscreen_us_lookup_export_stages) {
+
+      check_ejscreen_lookup_export(expect_usa = TRUE)
+
+    } else if (canonical_stage %in% ejscreen_state_lookup_export_stages) {
+
+      check_ejscreen_lookup_export(expect_usa = FALSE)
       ###################################################### #
       # ejscreen_dataset_creator_input ####
 
