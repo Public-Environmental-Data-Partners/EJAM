@@ -382,7 +382,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
         "
           var el = document.getElementById(%s);
           if (el && el.selectize) {
-            el.selectize.clear(true);
+            el.selectize.clear();
             el.selectize.blur();
           }
         ",
