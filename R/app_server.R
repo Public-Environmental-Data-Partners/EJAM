@@ -755,18 +755,18 @@ app_server <- function(input, output, session) {
 
   data_up_naics <- reactive({
 
-    ## check if anything has been selected or entered
-    req(isTruthy(input$ss_select_naics))
     placetype = 'NAICS'
-    naics_user_picked_from_list <- input$ss_select_naics
+    naics_user_picked_from_list <- unique(as.character(input$ss_select_naics))
+    naics_user_picked_from_list <- naics_user_picked_from_list[
+      !is.na(naics_user_picked_from_list) & nzchar(naics_user_picked_from_list)
+    ]
     add_naics_subcategories <- input$add_naics_subcategories
 
     # check for non empty NAICS inputs
     #  naics_is.valid() could be used here too but if picked from valid list all should be valid (unlike if using uploaded info)
-    if (!is.null(naics_user_picked_from_list) && length(naics_user_picked_from_list) > 0) {
+    if (length(naics_user_picked_from_list) > 0) {
 
       inputnaics <- naics_user_picked_from_list
-      inputnaics <- unique(inputnaics[inputnaics != ""])
       cat("selected NAICS:  ")
       cat(paste0(inputnaics, collapse = ", "), "\n")
 
@@ -800,7 +800,10 @@ app_server <- function(input, output, session) {
         }
     } else {
 
-      errmsg    = 'Invalid NAICS Input'
+      errmsg    = 'No NAICS category selected.'
+      cat("selected NAICS: none\n")
+      cat("COUNT OF SITES BY NAICS SELECTED, from frs_from_naics: 0\n")
+      cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean with valid lat/lon: 0\n")
 
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
@@ -961,17 +964,14 @@ app_server <- function(input, output, session) {
 
   data_up_sic <- reactive({
 
-    ## check if anything has been selected or entered
-    req(isTruthy(input$ss_select_sic))
-
     placetype = 'SIC'
     add_sic_subcategories <- FALSE #input$add_naics_subcategories
+    inputsic <- unique(as.character(input$ss_select_sic))
+    inputsic <- inputsic[!is.na(inputsic) & nzchar(inputsic)]
 
     # check SIC inputs
-    if (!is.null(input$ss_select_sic) && length(input$ss_select_sic) > 0) {
+    if (length(inputsic) > 0) {
 
-      inputsic <- input$ss_select_sic
-      inputsic <- unique(inputsic[inputsic != ""])
       cat("selected SIC:  ")
       cat(paste0(inputsic, collapse = ", "), "\n")
 
@@ -1023,7 +1023,10 @@ app_server <- function(input, output, session) {
 
       # }
     } else {
-      errmsg    = 'Invalid SIC Input'
+      errmsg    = 'No SIC category selected.'
+      cat("selected SIC: none\n")
+      cat("COUNT OF SITES BY SIC: 0\n")
+      cat("COUNT OF SITES BY SIC with lat lon values: 0\n")
 
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites

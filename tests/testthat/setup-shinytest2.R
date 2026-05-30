@@ -377,6 +377,19 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       ))
     }
     ################## #
+    selectize_clear_values <- function(input_id) {
+      app$run_js(sprintf(
+        "
+          var el = document.getElementById(%s);
+          if (el && el.selectize) {
+            el.selectize.clear(true);
+            el.selectize.blur();
+          }
+        ",
+        jsonlite::toJSON(input_id, auto_unbox = TRUE)
+      ))
+    }
+    ################## #
     picker_values_are_selected <- function(input_id, values) {
       picked <- app$get_value(input = input_id)
       setequal(as.character(picked), as.character(values))
@@ -422,6 +435,10 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
         expect_input_value("ss_choose_method", "dropdown")
         expect_input_value("ss_choose_method_drop", "NAICS")
         expect_input_value("ss_select_naics", "114")
+      } else if (test_category == "SIC") {
+        expect_input_value("ss_choose_method", "dropdown")
+        expect_input_value("ss_choose_method_drop", "SIC")
+        expect_input_value("ss_select_sic", "2015")
       } else if (test_category == "FIPS-picker") {
         expect_input_value("ss_choose_method", "dropdown")
         expect_input_value("ss_choose_method_drop", "FIPS_PLACE")
@@ -566,6 +583,28 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
         timeout = timeout
       )
     }
+    ################## #
+    wait_for_start_analysis_disabled <- function(timeout = 60 * 1000) {
+      app$wait_for_js(
+        "document.getElementById('bt_get_results') !== null && document.getElementById('bt_get_results').disabled",
+        timeout = timeout
+      )
+    }
+    ################## #
+    exercise_category_clear_behavior <- function(input_id, value, dropdown_value) {
+      wait_for_start_analysis_enabled()
+      shinytestLogMessage(paste0("clearing ", dropdown_value, " selection"))
+      selectize_clear_values(input_id)
+      wait_for_start_analysis_disabled()
+
+      shinytestLogMessage(paste0("re-selecting ", dropdown_value, " value ", value))
+      app$set_inputs(ss_choose_method = "dropdown", wait_ = FALSE)
+      app$set_inputs(ss_choose_method_drop = dropdown_value, wait_ = FALSE)
+      args <- c(setNames(list(value), input_id), list(wait_ = FALSE))
+      do.call(app$set_inputs, args)
+      app$wait_for_idle(timeout = 10 * 1000)
+      wait_for_start_analysis_enabled()
+    }
     ########################################################################### #
     # ~ ------------------------------------------------ ####
     # SCREEN RECORDING / SCRIPT: ####
@@ -626,6 +665,13 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       # cannot do 111 - too large for shiny. Gets a memory issue and crashes
       app$set_inputs(ss_select_naics = "114", wait_ = FALSE) #, timeout_ = 10000)
     }
+    if (test_category == "SIC") {
+      ### > SIC ####
+      shinytestLogMessage("selecting 2015 for SIC")
+      app$set_inputs(ss_choose_method = "dropdown", wait_ = FALSE)
+      app$set_inputs(ss_choose_method_drop = "SIC", wait_ = FALSE)
+      app$set_inputs(ss_select_sic = "2015", wait_ = FALSE)
+    }
     ########################################################################### #
 
     if (test_category == "FIPS-picker") {
@@ -640,6 +686,22 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     ########################################################################### #
 
     expect_category_selection()
+
+    if (test_category == "NAICS") {
+      exercise_category_clear_behavior(
+        input_id = "ss_select_naics",
+        value = "114",
+        dropdown_value = "NAICS"
+      )
+      expect_category_selection()
+    } else if (test_category == "SIC") {
+      exercise_category_clear_behavior(
+        input_id = "ss_select_sic",
+        value = "2015",
+        dropdown_value = "SIC"
+      )
+      expect_category_selection()
+    }
 
     ########################################################################### #
     #  TESTS FOR FIPS PICKER
