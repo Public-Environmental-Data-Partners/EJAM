@@ -83,6 +83,12 @@
 #' @param feature_server_fields optional final EJSCREEN FeatureServer field
 #'   names. When supplied, missing schema fields are added when possible and the
 #'   export is returned in exactly this field order.
+#' @param ejscreen_reference_pctile_signif_digits optional named integer vector
+#'   that gives raw EJAM indicator names and significant digits to use when
+#'   looking up EJSCREEN export percentiles. The default applies 12 significant
+#'   digits to `pctdisability`, which avoids tiny floating-point boundary
+#'   differences seen when replicating EPA's archived ACS22 `P_DISABILITYPCT`
+#'   fields. Set to NULL to use ordinary lookup precision for all fields.
 #' @param save_path optional file path to save the export.
 #' @param save_format optional save format. Guessed from `save_path` when NULL.
 #'   Supported values are `"csv"`, `"rds"`, `"rda"`, and `"arrow"`.
@@ -136,6 +142,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  map_field_pctile_names = NULL,
                                  overwrite_ejscreen_map_fields = TRUE,
                                  feature_server_fields = NULL,
+                                 ejscreen_reference_pctile_signif_digits = c(pctdisability = 12L),
                                  save_path = NULL,
                                  save_format = NULL,
                                  overwrite = TRUE) {
@@ -311,12 +318,17 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
       }
 
       raw_var <- raw_rows$rname[1]
+      signif_digits <- ejscreen_reference_pctile_signif_digits_for_raw(
+        raw_var,
+        ejscreen_reference_pctile_signif_digits
+      )
       bg[[pctile_rname]] <<- pctile_from_raw_lookup(
         myvector = bg[[raw_var]],
         varname.in.lookup.table = raw_var,
         lookup = lookup,
         zone = zones,
-        quiet = TRUE
+        quiet = TRUE,
+        signif_digits = signif_digits
       )
     }
     invisible(NULL)
@@ -663,6 +675,25 @@ ejscreen_percentile_lookup_compatibility_adjusted <- function(lookup,
   ]
 
   data.frame(lookup_dt, check.names = FALSE)
+}
+
+ejscreen_reference_pctile_signif_digits_for_raw <- function(raw_var, digits) {
+  if (is.null(digits) || length(digits) == 0L) {
+    return(NULL)
+  }
+  if (is.null(names(digits))) {
+    return(NULL)
+  }
+  raw_var <- as.character(raw_var)[1]
+  matched <- which(names(digits) == raw_var)
+  if (length(matched) == 0L) {
+    return(NULL)
+  }
+  out <- digits[[matched[1]]]
+  if (is.na(out) || out <= 0) {
+    return(NULL)
+  }
+  as.integer(out)
 }
 ###################################################### #
 # . ####
@@ -1060,15 +1091,20 @@ calc_ejscreen_feature_server_fields_added <- function(x, feature_server_fields =
   }
 
   add_exceed_count <- function(output_field, pattern, threshold) {
-    if (!output_field %in% feature_server_fields || output_field %in% names(out)) {
+    if (!output_field %in% feature_server_fields) {
       return(invisible(NULL))
     }
     pctile_fields <- grep(pattern, names(out), value = TRUE)
     if (length(pctile_fields) == 0) {
-      out[[output_field]] <<- rep(NA_integer_, n)
+      if (!output_field %in% names(out)) {
+        out[[output_field]] <<- rep(NA_integer_, n)
+      }
     } else {
       vals <- as.data.frame(lapply(out[pctile_fields], function(z) suppressWarnings(as.numeric(z))))
-      out[[output_field]] <<- as.integer(rowSums(!is.na(vals) & vals >= threshold))
+      has_value <- rowSums(!is.na(vals)) > 0
+      counts <- as.integer(rowSums(!is.na(vals) & vals >= threshold))
+      counts[!has_value] <- NA_integer_
+      out[[output_field]] <<- counts
     }
     invisible(NULL)
   }
@@ -1081,11 +1117,10 @@ calc_ejscreen_feature_server_fields_added <- function(x, feature_server_fields =
   if ("SYMBOLOGY_EXCEED_COUNT_80" %in% feature_server_fields &&
       !"SYMBOLOGY_EXCEED_COUNT_80" %in% names(out)) {
     count80 <- suppressWarnings(as.numeric(out$EXCEED_COUNT_80))
-    out$SYMBOLOGY_EXCEED_COUNT_80 <- ifelse(
-      !is.na(count80) & count80 > 0,
-      "1-13 EJ Indexes over 80th %tile",
-      "0 EJ Indexes over 80th %tile"
-    )
+    symbology <- rep(NA_character_, length(count80))
+    symbology[!is.na(count80) & count80 == 0] <- "0 EJ Indexes over 80th %tile"
+    symbology[!is.na(count80) & count80 > 0] <- "1-13 EJ Indexes over 80th %tile"
+    out$SYMBOLOGY_EXCEED_COUNT_80 <- symbology
   }
 
   missing_fields <- setdiff(feature_server_fields, names(out))

@@ -69,14 +69,12 @@ calc_ejscreen_pctile_lookup_export <- function(lookup,
     values_dt <- data.table::as.data.table(data.table::copy(values))
     if (identical(scope, "state")) {
       values_dt <- ejscreen_statepct_values_into_epa_fields(values_dt)
-      if (!"REGION" %in% names(values_dt)) {
-        if ("ST" %in% names(values_dt)) {
-          data.table::set(values_dt, j = "REGION", value = as.character(values_dt$ST))
-        } else {
-          stop("state lookup std rows require values with ST or REGION")
-        }
-      } else {
+      if ("ST" %in% names(values_dt)) {
+        data.table::set(values_dt, j = "REGION", value = as.character(values_dt$ST))
+      } else if ("REGION" %in% names(values_dt)) {
         data.table::set(values_dt, j = "REGION", value = as.character(values_dt$REGION))
+      } else {
+        stop("state lookup std rows require values with ST or REGION")
       }
     }
   }
@@ -158,30 +156,54 @@ ejscreen_pctile_lookup_mapping <- function(lookup,
     stop("rename_newtype is not a column in mapping_for_names: ", rename_newtype)
   }
 
-  source_names_available <- unique(c(
-    names(lookup),
-    if (!is.null(values)) names(values) else character()
-  ))
+  lookup_names <- names(lookup)
+  values_names <- if (!is.null(values)) names(values) else character()
 
-  source_for_field <- function(field) {
-    if (field %in% source_names_available) {
-      return(field)
-    }
+  mapped_source_for_field <- function(field, available_names) {
     candidates <- mh$rname[
       !is_blank_string(mh[[rename_newtype]]) &
         mh[[rename_newtype]] == field &
         !is_blank_string(mh$rname)
     ]
-    candidates <- candidates[candidates %in% source_names_available]
+    candidates <- candidates[candidates %in% available_names]
     if (length(candidates) == 0) {
       return(NA_character_)
     }
     candidates[[1]]
   }
 
+  lookup_source_for_field <- function(field) {
+    lookup_source <- mapped_source_for_field(field, lookup_names)
+    if (!is.na(lookup_source)) {
+      return(lookup_source)
+    }
+    if (field %in% lookup_names) {
+      return(field)
+    }
+    NA_character_
+  }
+
+  value_source_for_field <- function(field) {
+    value_source <- mapped_source_for_field(field, values_names)
+    if (!is.na(value_source)) {
+      return(value_source)
+    }
+    if (field %in% values_names) {
+      return(field)
+    }
+    NA_character_
+  }
+
+  lookup_source_name <- vapply(output_fields, lookup_source_for_field, character(1))
+  value_source_name <- vapply(output_fields, value_source_for_field, character(1))
+  source_name <- lookup_source_name
+  source_name[is.na(source_name)] <- value_source_name[is.na(source_name)]
+
   data.frame(
     output_field = output_fields,
-    source_name = vapply(output_fields, source_for_field, character(1)),
+    source_name = source_name,
+    lookup_source_name = lookup_source_name,
+    value_source_name = value_source_name,
     stringsAsFactors = FALSE
   )
 }
@@ -205,7 +227,11 @@ ejscreen_pctile_lookup_std_rows_added <- function(out,
         values
       }
       for (i in seq_len(NROW(mapping))) {
-        source <- mapping$source_name[[i]]
+        source <- if ("value_source_name" %in% names(mapping)) {
+          mapping$value_source_name[[i]]
+        } else {
+          mapping$source_name[[i]]
+        }
         field <- mapping$output_field[[i]]
         if (!is.na(source) && source %in% names(value_subset)) {
           x <- suppressWarnings(as.numeric(value_subset[[source]]))

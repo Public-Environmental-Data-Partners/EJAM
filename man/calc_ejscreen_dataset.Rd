@@ -306,9 +306,8 @@ as \link{bgej} table
 \item create intermediate percentile lookup tables \code{usastats_ej},
 \code{statestats_ej}
 \item combine those as \link{usastats} and \link{statestats}
-\item create EJScreen-ready blockgroup export files and EJScreen-style
-percentile lookup exports (optionally)
-\item create EPA Python dataset-creator input file (optionally)
+\item create an EJScreen-ready export file and/or EPA Python dataset-creator
+input file (optionally)
 }
 
 \code{bg_envirodata} must include \code{pctpre1960}. That column may be produced by an
@@ -354,6 +353,14 @@ for Island Areas row IDs, area fields, and available environmental fields.
 mixed-source supplemental dataset using 2020 Island Areas Census DHC
 demographics in \code{bg_acsdata}.
 \item EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
+\item EJAM_BG_ENVIRODATA_REFERENCE_PATH and
+EJAM_BG_ENVIRODATA_REFERENCE_VARS: optional runner-only settings for
+deliberately creating or repairing a \code{bg_envirodata} source stage from an
+EJSCREEN-style reference CSV. Normal annual and replication runs should use
+corrected \code{bg_envirodata} as-is. Missing reference values are preserved as
+\code{NA}, not converted to zero. This matters for drinking water: EJAM versions
+after v2.32.8.001 should not convert missing drinking-water scores to zero
+unless the source explicitly reports zero.
 \item EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
 \item EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT: TRUE to create
 ejscreen_export_statepct.csv.
@@ -390,6 +397,7 @@ cbind(current_setting = Sys.getenv(c(
   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_ISLANDAREAS_REFERENCE_PATH",
   "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
+  "EJAM_BG_ENVIRODATA_REFERENCE_PATH", "EJAM_BG_ENVIRODATA_REFERENCE_VARS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
   "EJAM_INCLUDE_EJSCREEN_EXPORT", "EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT",
   "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS",

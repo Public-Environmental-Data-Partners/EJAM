@@ -93,6 +93,17 @@
 #      supplemental dataset and is not the default EJSCREEN replication path.
 
 #   EJAM_USE_PROVISIONAL_BG_ENVIRODATA: TRUE means reuse envt data still in EJAM::blockgroupstats. FALSE to require bg_envirodata.csv or .xyz file.
+#   EJAM_BG_ENVIRODATA_REFERENCE_PATH: optional EJSCREEN-style reference CSV
+#      used only when deliberately creating or repairing a bg_envirodata source
+#      stage. Normal annual and replication runs should use bg_envirodata as-is
+#      after that source stage has been corrected. Missing values in the
+#      reference are preserved as missing values.
+#      This is important for drinking water: EJAM versions after v2.32.8.001
+#      should not convert missing drinking-water scores to zero unless the
+#      source explicitly reports zero.
+#   EJAM_BG_ENVIRODATA_REFERENCE_VARS: comma-separated rname or EJSCREEN field
+#      names to replace from EJAM_BG_ENVIRODATA_REFERENCE_PATH, e.g. "drinking"
+#      or "DWATER".
 
 #   EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv or .xyz file.
 #   EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT: TRUE to create
@@ -134,6 +145,16 @@
 ###################################################### #
 
 # DEFAULT SETTINGS  ####
+
+# Load the package source before any pipeline helpers are called. This runner is
+# often used before reinstalling EJAM, so relying on the installed namespace can
+# silently use stale code when validation-only settings skip datacreate_ scripts.
+if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd(), "DESCRIPTION"))) {
+  pkgload::load_all(export_all = TRUE)
+} else {
+  library(EJAM)
+}
+library(data.table)
 
 run_started_at <- Sys.time()
 
@@ -181,6 +202,8 @@ set_pipeline_default("EJAM_ISLANDAREAS_REFERENCE_PATH", EJAM:::islandareas_epa_r
 set_pipeline_default("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", "FALSE")
 
 set_pipeline_default("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", "FALSE")
+set_pipeline_default("EJAM_BG_ENVIRODATA_REFERENCE_PATH", "")
+set_pipeline_default("EJAM_BG_ENVIRODATA_REFERENCE_VARS", "")
 
 set_pipeline_default("EJAM_INCLUDE_EJSCREEN_EXPORT", "TRUE")
 set_pipeline_default("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", "FALSE")
@@ -303,18 +326,6 @@ if (isTRUE(include_frs_update)) {
   )
 }
 ###################################################### #
-
-# Load package code before sourcing datacreate_ scripts. Several datacreate_
-# scripts call EJAM helpers by unqualified name because they historically ran
-# in an attached package-development session.
-if (isTRUE(run_datacreate_before) || isTRUE(run_datacreate_after)) {
-  if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd(), "DESCRIPTION"))) {
-    pkgload::load_all(export_all = TRUE)
-  } else if (!exists("calc_ejscreen_dataset")) {
-    library(EJAM)
-  }
-  library(data.table)
-}
 
 ###################################################### #
 cat("To open script files, in case you need to check or update them, or to step through them manually, see: \n")
@@ -465,21 +476,20 @@ print(
 
 ###################################################### #
 
-# load packages ####
-
-if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd(), "DESCRIPTION"))) {
-  pkgload::load_all(export_all = TRUE)
-} else if (!exists("calc_ejscreen_dataset")) {
-  library(EJAM)
-}
-
-library(data.table)
-
 # get settings ####
 
 env_flag <- function(name, default = FALSE) {
   value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
   toupper(value) %in% c("1", "TRUE", "YES", "Y")
+}
+
+env_csv <- function(name) {
+  value <- Sys.getenv(name, unset = "")
+  if (!nzchar(value)) {
+    return(character())
+  }
+  out <- trimws(strsplit(value, ",", fixed = TRUE)[[1]])
+  out[nzchar(out)]
 }
 
 ### year ####
@@ -542,6 +552,8 @@ use_islandareas_demographics <- env_flag("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", FA
 ### ENVIRONMENTAL DATA settings ####
 
 use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", FALSE)
+bg_envirodata_reference_path <- Sys.getenv("EJAM_BG_ENVIRODATA_REFERENCE_PATH", unset = "")
+bg_envirodata_reference_vars <- env_csv("EJAM_BG_ENVIRODATA_REFERENCE_VARS")
 
 ### EJSCREEN DATASET EXPORT settings ####
 
@@ -615,6 +627,8 @@ pipeline_setting_names <- c(
   'EJAM_ISLANDAREAS_REFERENCE_PATH',
   'EJAM_USE_ISLANDAREAS_DEMOGRAPHICS',
   'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
+  'EJAM_BG_ENVIRODATA_REFERENCE_PATH',
+  'EJAM_BG_ENVIRODATA_REFERENCE_VARS',
   'EJAM_INCLUDE_EJSCREEN_EXPORT',
   'EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT',
   'EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS',
@@ -662,6 +676,8 @@ print(
           use_islandareas_demographics=use_islandareas_demographics,
 
           use_provisional_bg_envirodata=use_provisional_bg_envirodata,
+          bg_envirodata_reference_path=bg_envirodata_reference_path,
+          bg_envirodata_reference_vars=paste(bg_envirodata_reference_vars, collapse = ","),
 
           include_ejscreen_export=include_ejscreen_export,
           include_ejscreen_export_statepct=include_ejscreen_export_statepct,
@@ -1041,6 +1057,43 @@ if (stage_exists(stagename)) {
   )
 } else {
   stop("Missing bg_envirodata file and use_provisional_bg_envirodata was set FALSE. Save updated environmental indicators there or set EJAM_USE_PROVISIONAL_BG_ENVIRODATA=TRUE")
+}
+
+if (nzchar(bg_envirodata_reference_path)) {
+  if (length(bg_envirodata_reference_vars) == 0) {
+    stop(
+      "EJAM_BG_ENVIRODATA_REFERENCE_PATH was provided, but ",
+      "EJAM_BG_ENVIRODATA_REFERENCE_VARS is empty. Specify the selected ",
+      "rname or EJSCREEN field names to replace, such as drinking or DWATER."
+    )
+  }
+  message("Applying selected EJSCREEN reference values to bg_envirodata: ",
+          paste(bg_envirodata_reference_vars, collapse = ", "))
+  bg_envirodata_reference <- EJAM:::ejscreen_pipeline_load(
+    path = bg_envirodata_reference_path,
+    format = tools::file_ext(bg_envirodata_reference_path),
+    storage = "auto"
+  )
+  bg_envirodata <- EJAM:::ejscreen_reference_bg_envirodata_adjusted(
+    bg_envirodata = bg_envirodata,
+    reference = bg_envirodata_reference,
+    vars = bg_envirodata_reference_vars
+  )
+  reference_adjustment <- attr(bg_envirodata, "ejscreen_reference_adjustment", exact = TRUE)
+  write_pipeline_text(
+    c(
+      "EJSCREEN reference adjustment applied to bg_envirodata.",
+      "Use this only when the reference file is the intended authoritative source for the selected fields.",
+      "Missing reference values are preserved as NA values, not converted to zero.",
+      paste("Reference path:", bg_envirodata_reference_path),
+      paste("Requested vars:", paste(bg_envirodata_reference_vars, collapse = ", ")),
+      "",
+      EJAM:::ejscreen_pipeline_capture_output_wide(print(reference_adjustment)),
+      "",
+      paste("Created:", Sys.time())
+    ),
+    "bg_envirodata_REFERENCE_ADJUSTMENT.txt"
+  )
 }
 
 if (isTRUE(include_islandareas_data)) {

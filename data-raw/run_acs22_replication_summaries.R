@@ -17,6 +17,15 @@
 # The reports are read-only diagnostics. Do not change tied-zero handling,
 # interpolation, rounding, PR inclusion, or missing-value percentile behavior
 # here. Use these reports to decide later whether a code/data change is justified.
+#
+# Important provenance note:
+# - The 2025-vs-2024 comparisons use EJAM v2.32.8.001 package data as-is. That
+#   reference intentionally remains uncorrected for diagnostics, so it should
+#   expose the historical drinking-water NA-to-zero problem.
+# - The 2026-vs-2024 comparisons use saved ACS22 pipeline outputs. Those outputs
+#   should have been built from the corrected bg_envirodata stage, with
+#   drinking-water NA values preserved in bg_envirodata itself rather than
+#   patched during the replication comparison.
 
 if (interactive() || identical(Sys.getenv("EJAM_RUN_ACS22_REPLICATION"), "TRUE")) {
   if (requireNamespace("pkgload", quietly = TRUE)) {
@@ -286,14 +295,14 @@ acs22_replication_source_inventory <- function(config) {
       "EJAM v2.32.8.001 package usastats",
       "EJAM v2.32.8.001 package statestats",
       "EJAM v2.32.8.001 bgej external Arrow asset from ejamdata release",
-      "EJAM v2.32.9 pipeline ACS22 blockgroupstats",
-      "EJAM v2.32.9 pipeline ACS22 bgej",
-      "EJAM v2.32.9 pipeline ACS22 usastats",
-      "EJAM v2.32.9 pipeline ACS22 statestats",
-      "EJAM v2.32.9 pipeline ACS22 EJScreen-style national percentile lookup export",
-      "EJAM v2.32.9 pipeline ACS22 EJScreen-style state percentile lookup export",
-      "EJAM v2.32.9 pipeline ACS22 ejscreen_export",
-      "EJAM v2.32.9 pipeline ACS22 ejscreen_export_statepct"
+      "EJAM v2.32.9 pipeline ACS22 blockgroupstats from corrected bg_envirodata",
+      "EJAM v2.32.9 pipeline ACS22 bgej from corrected bg_envirodata",
+      "EJAM v2.32.9 pipeline ACS22 usastats from corrected bg_envirodata",
+      "EJAM v2.32.9 pipeline ACS22 statestats from corrected bg_envirodata",
+      "EJAM v2.32.9 pipeline ACS22 EJScreen-style national percentile lookup export from corrected bg_envirodata",
+      "EJAM v2.32.9 pipeline ACS22 EJScreen-style state percentile lookup export from corrected bg_envirodata",
+      "EJAM v2.32.9 pipeline ACS22 ejscreen_export from corrected bg_envirodata",
+      "EJAM v2.32.9 pipeline ACS22 ejscreen_export_statepct from corrected bg_envirodata"
     ),
     path_or_ref = c(
       unname(config$epa["national_bg"]),
@@ -367,18 +376,55 @@ acs22_replication_comparison_plan <- function(config) {
       "Loads bgej.arrow from the matching ejamdata release and compares shared state EJ-index columns.",
       "Builds an export from v2.32.8.001 package tables plus bgej.arrow using the current export helper; useful as a diagnostic, but not a byte-for-byte run of old package code.",
       "Builds an export from v2.32.8.001 package tables plus bgej.arrow using the current export helper; useful as a diagnostic, but not a byte-for-byte run of old package code.",
-      "Compares pipeline export directly to EPA national blockgroup output; EPA has national percentile fields.",
-      "Compares pipeline state-percentile export directly to EPA state-percentile blockgroup output; EPA has state percentile fields written into generic EPA names.",
-      "Compares pipeline ejscreen_us_pctile_lookup directly to EPA national lookup field names.",
-      "Compares pipeline ejscreen_state_pctile_lookup directly to EPA state lookup field names.",
-      "Renames EPA columns to EJAM rnames and compares shared columns only.",
-      "Compares current pipeline bgej to EPA national BG output after EPA column renaming.",
-      "Compares current pipeline bgej to EPA state-percentile BG output after EPA column renaming.",
-      "Uses EJAM package Git tag data/blockgroupstats.rda as reference.",
+      "Compares pipeline export directly to EPA national blockgroup output; this should use corrected ACS22 bg_envirodata with EPA-style drinking-water NA values preserved.",
+      "Compares pipeline state-percentile export directly to EPA state-percentile blockgroup output; this should use corrected ACS22 bg_envirodata with EPA-style drinking-water NA values preserved.",
+      "Compares pipeline ejscreen_us_pctile_lookup directly to EPA national lookup field names; this should use corrected ACS22 bg_envirodata with EPA-style drinking-water NA values preserved.",
+      "Compares pipeline ejscreen_state_pctile_lookup directly to EPA state lookup field names; this should use corrected ACS22 bg_envirodata with EPA-style drinking-water NA values preserved.",
+      "Renames EPA columns to EJAM rnames and compares shared columns only; pipeline output should reflect corrected bg_envirodata, not a comparison-time patch.",
+      "Compares current pipeline bgej to EPA national BG output after EPA column renaming; pipeline output should reflect corrected bg_envirodata.",
+      "Compares current pipeline bgej to EPA state-percentile BG output after EPA column renaming; pipeline output should reflect corrected bg_envirodata.",
+      "Uses EJAM package Git tag data/blockgroupstats.rda as reference. Drinking differences against corrected pipeline output are expected because v2.32.8.001 converted missing drinking values to zero.",
       "Uses EJAM package Git tag data/usastats.rda as reference.",
       "Uses EJAM package Git tag data/statestats.rda as reference.",
       "Uses bgej.arrow from the matching ejamdata release asset as reference."
     )
+  )
+}
+
+acs22_replication_folder_context_note <- function(folder_key) {
+  switch(
+    folder_key,
+    ejam2025_vs_epa2024 = c(
+      "Provenance note for this folder:",
+      "",
+      "These comparisons use EJAM v2.32.8.001 package data as-is, without correcting",
+      "historical drinking-water missingness. EJAM v2.32.8.001 converted missing EPA",
+      "`DWATER` values to `drinking = 0` in blockgroupstats, so drinking-related raw",
+      "scores and regenerated exports that depend on blockgroupstats are expected to",
+      "show the historical problem when compared with the archived EPA v2.32 files.",
+      "Stored lookup tables or bgej assets can still replicate EPA where those older",
+      "objects already carried EPA-style missingness/percentile behavior."
+    ),
+    ejam2026_vs_epa2024 = c(
+      "Provenance note for this folder:",
+      "",
+      "These comparisons use the saved EJAM v2.32.9 ACS22 pipeline outputs. Those",
+      "outputs should be built from the corrected `bg_envirodata` stage, with EPA-style",
+      "drinking-water `NA` values preserved in `bg_envirodata` before blockgroupstats,",
+      "lookup tables, bgej, and ejscreen_export files are created. Replication code",
+      "does not patch drinking values during comparison. If drinking-related fields do",
+      "not replicate EPA here, rerun the ACS22 pipeline after confirming corrected",
+      "`bg_envirodata.csv` is saved in the pipeline folder."
+    ),
+    ejam2026_vs_ejam2025 = c(
+      "Provenance note for this folder:",
+      "",
+      "These comparisons are expected to show a deliberate source-data difference for",
+      "drinking-water: the EJAM v2.32.9 pipeline should use corrected `bg_envirodata`",
+      "with missing values preserved, while EJAM v2.32.8.001 package blockgroupstats",
+      "stored those missing drinking values as zero."
+    ),
+    character()
   )
 }
 
@@ -443,6 +489,8 @@ acs22_replication_write_inventory <- function(config = acs22_replication_default
       paste0("Created: ", Sys.time()),
       "",
       "This is a one-time replication diagnostic folder, not part of annual pipeline QA/QC.",
+      "",
+      acs22_replication_folder_context_note(folder_key),
       "",
       acs22_replication_epa_reference_note(config),
       "",

@@ -78,6 +78,45 @@ test_that('equal to cutpoint rounds up',{
   expect_equal(val, c(80, 80, 85, 90))
 })
 
+test_that("significant-digit comparison can match near-boundary reference values", {
+  lookup <- data.frame(
+    PCTILE = c(0, 86, 87, 100),
+    pctdisability = c(0,
+                      0.244066047471620,
+                      0.2469572914361584659027,
+                      1),
+    REGION = "USA"
+  )
+  raw_value <- 0.2469572914361584103915
+
+  expect_equal(
+    EJAM:::pctile_from_raw_lookup(raw_value, "pctdisability", lookup = lookup),
+    86
+  )
+  expect_equal(
+    EJAM:::pctile_from_raw_lookup(
+      raw_value,
+      "pctdisability",
+      lookup = lookup,
+      signif_digits = 13
+    ),
+    87
+  )
+})
+
+test_that("summary rows are ignored when looking up percentile cutoffs", {
+  lookup <- data.frame(
+    PCTILE = c("0", "mean", "50", "std", "100"),
+    traffic.score = c(0, 50, 50, 9, 100),
+    REGION = "USA"
+  )
+
+  expect_equal(
+    EJAM:::pctile_from_raw_lookup(75, "traffic.score", lookup = lookup),
+    50
+  )
+})
+
 #   If the value is exactly the same as the minimum in the lookup table and multiple percentiles
 #   in that lookup are listed as tied for having the same threshold value defining the percentile
 #    (i.e., a large % of places have the same score and it is the minimum score),

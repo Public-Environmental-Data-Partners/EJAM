@@ -5,6 +5,15 @@ Created: 2026-05-26 19:54:25.422507
 This is a one-time diagnostic note. It does not change annual pipeline behavior.
 The ordering here follows the current debugging priority: raw scores first, percentile lookup behavior second, EJ indexes last.
 
+Important provenance distinction: 2025-vs-2024 comparisons use EJAM
+v2.32.8.001 package data as-is and should show the historical drinking-water
+NA-to-zero problem. 2026-vs-2024 comparisons should use ACS22 pipeline outputs
+built from corrected `bg_envirodata`, where EPA-style drinking-water `NA`
+values are preserved before blockgroupstats, lookup tables, bgej, and EJScreen
+exports are created. If older rows below show the 2026 pipeline still using
+zero-filled drinking values, those rows predate the corrected `bg_envirodata`
+refresh and should be regenerated before being used as current evidence.
+
 ## Inputs
 
 - EPA 2024 EJScreen v2.32 ACS22 reference folder: `s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe`
@@ -367,7 +376,9 @@ These checks were run after the initial inventory above, using the archived EPA 
 ### Raw-score status
 
 - The large raw-score issues are now narrow and mostly characterized.
-- `drinking` is the main EPA-vs-current raw mismatch: EPA has 19,208 missing `DWATER` rows where the current ACS22 pipeline `blockgroupstats` has `drinking == 0`. The current ACS22 `bg_envirodata.csv` source file is provisional and was copied from packaged `EJAM::blockgroupstats`, so this mismatch was inherited rather than newly created by the May 2026 pipeline code.
+- `drinking` is the main historical EPA-vs-EJAM v2.32.8.001 raw mismatch: EPA has 19,208 missing `DWATER` rows where EJAM v2.32.8.001 has `drinking == 0`. The historical package-data script explicitly converted missing `drinking` values to zero before saving `blockgroupstats`.
+- That historical zero-fill is no longer the intended EJAM behavior. For EJAM versions after v2.32.8.001, environmental-indicator `NA` values should remain `NA`; specifically, missing drinking-water scores should not be converted to zero unless the source explicitly reports a valid zero score.
+- Current 2026-vs-2024 replication should use the corrected ACS22 pipeline `bg_envirodata` stage as-is. The replication code should not patch drinking values during comparison; if current pipeline outputs show a drinking NA/zero mismatch against EPA, the ACS22 pipeline output is stale or was built from an uncorrected `bg_envirodata` stage.
 - `pctunemployed` differs only by zero-denominator handling: 2,165 rows are EPA zero and current pipeline `NA`; finite nonmissing values match to floating-point tolerance.
 - `disability` and `disab_universe` differ only by +/-1 count in a few dozen rows.
 - `proximity.npdes` differences are only tiny floating-point drift in 29 Louisiana rows, max about `5.25e-06` on very large values.
@@ -437,7 +448,62 @@ The `bgej` dataset should not be skipped in ACS22 replication diagnostics. The o
 
 ### Current working interpretation
 
-- For raw scores, the only large ACS22 EPA replication issue still needing a policy decision is `drinking` missing-vs-zero.
-- For lookup tables, setting EPA-missing drinking rows to `NA` is enough to replicate old/EPA raw drinking lookup cutoffs.
-- For per-blockgroup percentile/EJ-index replication, exact EPA replication may require EPA-provided per-BG percentile fields as the reference, because the public raw and lookup CSVs do not contain enough precision to reproduce every state percentile assignment exactly.
-- No tied-zero, upper-tie, rounding, interpolation, PR-inclusion, or missing-value behavior should be changed yet based on these diagnostics.
+- For raw scores, the large ACS22 EPA replication issue is `drinking` missing-vs-zero, not a percentile-function defect.
+- The ACS22 pipeline should use corrected `bg_envirodata` as the source for `drinking`, with EPA-style `DWATER` missingness already present in that stage before `blockgroupstats`, `bgej`, lookup tables, and exports are rebuilt.
+- An earlier local real-data check demonstrated the needed source-data correction: applying the EPA `DWATER` reference matched 242,336 ACS22 rows, changed `drinking` in 26,843 rows, and increased missing `drinking` from 0 to the EPA count of 19,208 rows. It left `proximity.npl` unchanged.
+- After that source-data correction and a no-save recomputation, national `DWATER`/`PNPL` raw, percentile, and EJ-index export fields matched EPA to the 0.1% tolerance used in the export reports. State `DWATER` fields also matched to that tolerance.
+- State `PNPL` raw values and state `PNPL` lookup cutoffs match EPA; the remaining state `P_PNPL` and derived state NPL EJ-index differences are per-blockgroup percentile-assignment precision artifacts. In the direct EPA-public-file lookup check, only 99 non-Island-Area rows mismatched EPA `P_PNPL`; the dominant cases were Nebraska and Idaho rows where the public BG CSV shows tied-looking `PNPL == 11` but EPA reported different state percentiles.
+- No tied-zero, upper-tie, rounding, interpolation, Puerto Rico inclusion, or global missing-value percentile behavior should be changed based on the NPL diagnostics. The public EPA raw and lookup CSVs do not preserve enough precision to reproduce every state `PNPL` percentile assignment exactly.
+
+## 2026-05-30 Post-Repair ACS22 Replication Status
+
+The ACS2022 pipeline and the three special replication comparison folders were
+rerun after the lookup-export and FeatureServer export repairs.
+
+Concrete repairs now reflected in S3 outputs:
+
+- EJScreen lookup export files now use the lookup-table rname source columns
+  instead of accidentally choosing all-`NA` EJScreen alias columns from the
+  value table.
+- State lookup export `std` rows now use `ST` as the state key when `ST` is
+  present, rather than the numeric Census `REGION` column in `blockgroupstats`.
+- FeatureServer `EXCEED_COUNT_*` fields are recomputed from exported
+  `P_D2_*`/`P_D5_*` fields, and rows with no EJ index percentile data remain
+  missing rather than being converted to zero.
+
+Current 2026 pipeline vs EPA v2.32 export status:
+
+- National BG export: only 5 substantive columns remain above the 0.1 percent
+  tolerance: `P_DISABILITYPCT`, `DISABILITY`, `ACSDISABBAS`,
+  `B_DISABILITYPCT`, and one-row `P_D2_RSEI_AIR`.
+- StatePct BG export: 14 substantive columns remain. The meaningful residual
+  groups are disability count/percentile/bin, state `PNPL` and derived NPL
+  EJ-index percentile/bin fields, one-row `P_D5_PM25`, and one-row
+  `P_D5_PTRAF`.
+- `EXCEED_COUNT_80` no longer has substantive numeric differences. Its
+  remaining StatePct mismatch is the Island Areas design difference: EPA has
+  some state-percentile count values for Island Areas, while the current EJAM
+  pipeline keeps EJ-index-dependent fields missing when demographics are not
+  available by design.
+- National `EXCEED_COUNT_80` and `EXCEED_COUNT_80_SUP` now match EPA
+  missingness for the 686 Island Areas rows.
+
+Current lookup export status:
+
+- National lookup export has only two one-row substantive differences above
+  tolerance: `PWDIS` and `UNEMPPCT`.
+- State lookup export residuals are `D5_PNPL` (54 rows), `D2_PNPL` (50 rows),
+  `UNEMPPCT` (50 rows), and `PWDIS` (1 row). The `D2_PNPL`/`D5_PNPL`
+  differences are consistent with the previously documented state NPL
+  precision/tie artifacts.
+
+Current interpretation:
+
+- Do not change global percentile tie, interpolation, missing-value, or Puerto
+  Rico inclusion rules based on the remaining NPL rows.
+- Treat the disability rows as acceptable tract-to-BG apportionment rounding
+  unless a stricter byte-for-byte EPA replication mode is explicitly needed.
+- Treat the Island Areas `EXCEED_COUNT_80` mismatch in StatePct as expected
+  under the v2.5.0 design: Island Areas are visible in BG/export/map outputs,
+  but demographic-dependent EJ-index fields should remain unavailable until a
+  later, validated Island Areas demographics/block-helper phase.

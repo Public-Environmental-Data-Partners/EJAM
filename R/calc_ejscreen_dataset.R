@@ -84,6 +84,14 @@
 #'    demographics in `bg_acsdata`.
 #'
 #'  - EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
+#'  - EJAM_BG_ENVIRODATA_REFERENCE_PATH and
+#'    EJAM_BG_ENVIRODATA_REFERENCE_VARS: optional runner-only settings for
+#'    deliberately creating or repairing a `bg_envirodata` source stage from an
+#'    EJSCREEN-style reference CSV. Normal annual and replication runs should use
+#'    corrected `bg_envirodata` as-is. Missing reference values are preserved as
+#'    `NA`, not converted to zero. This matters for drinking water: EJAM versions
+#'    after v2.32.8.001 should not convert missing drinking-water scores to zero
+#'    unless the source explicitly reports zero.
 #'
 #'  - EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
 #'  - EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT: TRUE to create
@@ -121,6 +129,7 @@
 #'   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
 #'   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_ISLANDAREAS_REFERENCE_PATH",
 #'   "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
+#'   "EJAM_BG_ENVIRODATA_REFERENCE_PATH", "EJAM_BG_ENVIRODATA_REFERENCE_VARS",
 #'   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
 #'   "EJAM_INCLUDE_EJSCREEN_EXPORT", "EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT",
 #'   "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS",

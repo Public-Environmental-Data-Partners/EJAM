@@ -214,6 +214,47 @@ test_that("calc_ejscreen_export uses EJSCREEN-compatible unemployment zero-denom
   expect_equal(out$T_UNEMPPCT, c("0 %ile", "", ""))
 })
 
+test_that("calc_ejscreen_export applies EPA reference rounding only where configured", {
+  blockgroupstats <- data.frame(
+    bgfips = "100010001001",
+    ST = "DE",
+    pctdisability = 0.2469572914361584103915,
+    pctlowinc = 0.2469572914361584103915,
+    stringsAsFactors = FALSE
+  )
+  statestats_acs <- data.frame(
+    REGION = "DE",
+    PCTILE = c("0", "mean", "86", "87", "100"),
+    pctdisability = c(0, 0.2, 0.244066047471620, 0.2469572914361584659027, 1),
+    pctlowinc = c(0, 0.2, 0.244066047471620, 0.2469572914361584659027, 1),
+    check.names = FALSE
+  )
+  mapping <- data.frame(
+    rname = c(
+      "bgfips", "pctdisability", "pctile.pctdisability",
+      "pctlowinc", "pctile.pctlowinc"
+    ),
+    ejscreen_indicator = c(
+      "ID", "DISABILITYPCT", "P_DISABILITYPCT",
+      "LOWINCPCT", "P_LOWINCPCT"
+    ),
+    `pctile.` = c(0, 0, 1, 0, 1),
+    stringsAsFactors = FALSE
+  )
+
+  out <- calc_ejscreen_export(
+    blockgroupstats = blockgroupstats,
+    bgej = data.frame(bgfips = blockgroupstats$bgfips, stringsAsFactors = FALSE),
+    statestats_acs = statestats_acs,
+    mapping_for_names = mapping,
+    export_percentile_scope = "state",
+    include_ejscreen_map_fields = FALSE
+  )
+
+  expect_equal(out$P_DISABILITYPCT, 87)
+  expect_equal(out$P_LOWINCPCT, 86)
+})
+
 test_that("calc_ejscreen_export can produce FeatureServer percentile and schema fields", {
   blockgroupstats <- data.frame(
     bgfips = c("100010001001", "100010001002"),
@@ -297,6 +338,50 @@ test_that("calc_ejscreen_export can produce FeatureServer percentile and schema 
   ))
   expect_true(all(is.na(out$Shape__Area)))
   expect_true(all(is.na(out$Shape__Length)))
+})
+
+test_that("FeatureServer exceed-count fields are recomputed from exported percentile fields", {
+  x <- data.frame(
+    P_D2_PM25 = c(79, 80, 90, NA),
+    P_D2_NO2 = c(NA, 79, 80, NA),
+    P_D5_PM25 = c(80, 79, 90, NA),
+    P_D5_NO2 = c(79, 80, NA, NA),
+    EXCEED_COUNT_80 = c(99, 99, 99, 99),
+    EXCEED_COUNT_80_SUP = c(99, 99, 99, 99),
+    stringsAsFactors = FALSE
+  )
+
+  out <- EJAM:::calc_ejscreen_feature_server_fields_added(
+    x,
+    feature_server_fields = c(
+      "EXCEED_COUNT_80", "EXCEED_COUNT_80_SUP",
+      "EXCEED_COUNT_90", "EXCEED_COUNT_90_SUP"
+    )
+  )
+
+  expect_equal(out$EXCEED_COUNT_80, c(0L, 1L, 2L, NA_integer_))
+  expect_equal(out$EXCEED_COUNT_80_SUP, c(1L, 1L, 1L, NA_integer_))
+  expect_equal(out$EXCEED_COUNT_90, c(0L, 0L, 1L, NA_integer_))
+  expect_equal(out$EXCEED_COUNT_90_SUP, c(0L, 0L, 1L, NA_integer_))
+})
+
+test_that("FeatureServer symbology stays missing when exceed count cannot be computed", {
+  x <- data.frame(
+    P_D2_PM25 = c(NA, 79, 80),
+    stringsAsFactors = FALSE
+  )
+
+  out <- EJAM:::calc_ejscreen_feature_server_fields_added(
+    x,
+    feature_server_fields = c("EXCEED_COUNT_80", "SYMBOLOGY_EXCEED_COUNT_80")
+  )
+
+  expect_equal(out$EXCEED_COUNT_80, c(NA_integer_, 0L, 1L))
+  expect_equal(out$SYMBOLOGY_EXCEED_COUNT_80, c(
+    NA_character_,
+    "0 EJ Indexes over 80th %tile",
+    "1-13 EJ Indexes over 80th %tile"
+  ))
 })
 
 test_that("calc_ejscreen_export keeps Island Areas rows visible with available environmental values", {

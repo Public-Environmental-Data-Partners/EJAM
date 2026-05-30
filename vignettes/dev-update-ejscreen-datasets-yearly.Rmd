@@ -536,6 +536,14 @@ The file must include `bgfips` and the environmental indicators used for EJ
 indexes. It should also include `pctpre1960`. The environmental-data workflow
 may create `pctpre1960` by reading the saved `bg_acsdata` stage.
 
+Environmental indicator missing values should be preserved as missing values.
+Do not convert `NA` values to zero unless the source explicitly reports a valid
+zero score. This is especially important for the drinking-water
+non-compliance indicator. EJAM versions through v2.32.8.001 converted missing
+EPA `DWATER` values to `drinking = 0` in `blockgroupstats`; later EJAM releases
+should preserve the distinction between missing/no valid score and a valid zero
+score.
+
 To force the runner to stop unless `bg_envirodata.csv` has been supplied:
 
 ```{r, eval=FALSE}

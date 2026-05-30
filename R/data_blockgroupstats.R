@@ -24,6 +24,14 @@
 #'
 #'     - Metadata on each indicator, such as its glossary definition or long name, are stored in the EJAM package, and can be accessed with the function [varinfo()] and the dataset [map_headernames].
 #'
+#'     - EJAM versions through v2.32.8.001 converted missing values of the
+#'     drinking-water non-compliance indicator to zero when creating
+#'     `blockgroupstats`. Starting with later EJAM releases, environmental
+#'     indicator `NA` values should remain `NA` unless the source explicitly
+#'     reports a valid zero score. In particular, `drinking = NA` means the
+#'     source had no valid drinking-water score for that blockgroup, while
+#'     `drinking = 0` means the source reported a valid score of zero.
+#'
 #'
 #'   - VINTAGE:
 #'

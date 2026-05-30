@@ -48,6 +48,7 @@ calc_ejscreen_export(
   map_field_pctile_names = NULL,
   overwrite_ejscreen_map_fields = TRUE,
   feature_server_fields = NULL,
+  ejscreen_reference_pctile_signif_digits = c(pctdisability = 12L),
   save_path = NULL,
   save_format = NULL,
   overwrite = TRUE
@@ -129,6 +130,13 @@ names start with \code{P_}.}
 \item{feature_server_fields}{optional final EJSCREEN FeatureServer field
 names. When supplied, missing schema fields are added when possible and the
 export is returned in exactly this field order.}
+
+\item{ejscreen_reference_pctile_signif_digits}{optional named integer vector
+that gives raw EJAM indicator names and significant digits to use when
+looking up EJSCREEN export percentiles. The default applies 12 significant
+digits to \code{pctdisability}, which avoids tiny floating-point boundary
+differences seen when replicating EPA's archived ACS22 \code{P_DISABILITYPCT}
+fields. Set to NULL to use ordinary lookup precision for all fields.}
 
 \item{save_path}{optional file path to save the export.}
 

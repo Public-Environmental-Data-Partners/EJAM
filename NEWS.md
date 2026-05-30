@@ -84,6 +84,11 @@ Highlights:
   review. Island Area blocks are not added to the block helper files for this
   release path, so radius/buffer analyses there return no-data results rather
   than block-weighted estimates.
+- Preserved environmental-indicator missing values as missing values in the
+  annual/release pipeline. In particular, later EJAM releases should not repeat
+  the historical v2.32.8.001-and-earlier behavior that converted missing EPA
+  drinking-water non-compliance (`DWATER`) values to `drinking = 0`; `NA` now
+  means no valid source score, while zero means a valid reported score of zero.
 - Note: the Census Bureau discourages using overlapping ACS 5-year datasets for
   trend comparisons. Comparisons between ACS 2018-2022 and 2020-2024, e.g.,
   should not be interpreted as valid trend estimates.
