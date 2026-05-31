@@ -274,6 +274,29 @@ test_that("pipeline_config_exports_only enables exports without annual side effe
   expect_false(cfg$replace_package_data)
 })
 
+test_that("ejscreen_pipeline_config_recipe_from_env applies common script env settings", {
+  clear_pipeline_config_envvars()
+  root <- file.path(tempdir(), "ejam-pipeline-recipe-env-root")
+  withr::local_envvar(c(
+    EJAM_PIPELINE_YR = "2023",
+    EJAM_PIPELINE_ROOT = root,
+    EJAM_PIPELINE_STORAGE = "local",
+    EJAM_STAGE_FORMAT = "rda",
+    EJAM_STAGE_FORMATS = "csv,rda"
+  ))
+
+  cfg <- EJAM:::ejscreen_pipeline_config_recipe_from_env(EJAM:::pipeline_config_validation_only)
+
+  expect_equal(cfg$yr, 2023L)
+  expect_equal(cfg$pipeline_root, root)
+  expect_equal(cfg$pipeline_dir, file.path(root, "ejscreen_acs_2023"))
+  expect_equal(cfg$pipeline_storage, "local")
+  expect_equal(cfg$stage_format, "rda")
+  expect_equal(cfg$stage_formats, c("csv", "rda"))
+  expect_false(cfg$run_datacreate_before)
+  expect_true(cfg$validate_vs_prior)
+})
+
 test_that("ejscreen_pipeline_apply_config_env applies recipe settings for runner compatibility", {
   clear_pipeline_config_envvars()
   withr::local_envvar(c(

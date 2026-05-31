@@ -543,6 +543,28 @@ ejscreen_pipeline_config_from_env <- function() {
   )
 }
 
+ejscreen_pipeline_config_recipe_from_env <- function(recipe, ...) {
+  if (!is.function(recipe)) {
+    stop("recipe must be a pipeline config recipe function", call. = FALSE)
+  }
+
+  pipeline_yr <- ejscreen_pipeline_env_value("EJAM_PIPELINE_YR", NULL)
+  if (is.null(pipeline_yr)) {
+    pipeline_yr <- suppressMessages(acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE))
+  }
+
+  args <- list(
+    yr = as.integer(pipeline_yr),
+    pipeline_root = ejscreen_pipeline_env_value("EJAM_PIPELINE_ROOT", NULL),
+    pipeline_dir = ejscreen_pipeline_env_value("EJAM_PIPELINE_DIR", NULL),
+    pipeline_storage = ejscreen_pipeline_env_value("EJAM_PIPELINE_STORAGE", "s3"),
+    stage_format = ejscreen_pipeline_env_value("EJAM_STAGE_FORMAT", "csv"),
+    stage_formats = ejscreen_pipeline_env_value("EJAM_STAGE_FORMATS", "csv,rda")
+  )
+  args <- utils::modifyList(args, list(...), keep.null = TRUE)
+  do.call(recipe, args)
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)

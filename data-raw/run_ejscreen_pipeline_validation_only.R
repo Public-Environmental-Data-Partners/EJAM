@@ -10,20 +10,6 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd()
   library(EJAM)
 }
 
-pipeline_yr <- as.integer(Sys.getenv(
-  "EJAM_PIPELINE_YR",
-  unset = EJAM:::acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE)
-))
-pipeline_root <- Sys.getenv("EJAM_PIPELINE_ROOT", unset = "")
-pipeline_dir <- Sys.getenv("EJAM_PIPELINE_DIR", unset = "")
-
-cfg <- EJAM:::pipeline_config_validation_only(
-  yr = pipeline_yr,
-  pipeline_root = if (nzchar(pipeline_root)) pipeline_root else NULL,
-  pipeline_dir = if (nzchar(pipeline_dir)) pipeline_dir else NULL,
-  pipeline_storage = Sys.getenv("EJAM_PIPELINE_STORAGE", unset = "s3"),
-  stage_format = Sys.getenv("EJAM_STAGE_FORMAT", unset = "csv"),
-  stage_formats = Sys.getenv("EJAM_STAGE_FORMATS", unset = "csv,rda")
-)
+cfg <- EJAM:::ejscreen_pipeline_config_recipe_from_env(EJAM:::pipeline_config_validation_only)
 
 EJAM:::ejscreen_pipeline_run_script(cfg)
