@@ -56,12 +56,17 @@ source("data-raw/run_ejscreen_pipeline_validation_only.R")
 
 # Recreate EJScreen-facing export files from saved pipeline stages.
 source("data-raw/run_ejscreen_pipeline_exports_only.R")
+
+# Run a release-oriented recipe after outputs and settings have been reviewed.
+source("data-raw/run_ejscreen_pipeline_release.R")
 ```
 
 These wrappers build a validated pipeline config first and then delegate to the
 same underlying runner script. They are meant for review and release-maintenance
 passes after the main annual run has already created the needed intermediate
-stages.
+stages. The release wrapper also keeps package-data replacement opt-in; set
+`EJAM_REPLACE_PACKAGE_DATA = "TRUE"` explicitly only when reviewed outputs
+should replace package `.rda` objects.
 
 The runner writes pipeline checkpoints, by default as CSV files. It can also
 write secondary formats such as `.rda` files for the same table stages when

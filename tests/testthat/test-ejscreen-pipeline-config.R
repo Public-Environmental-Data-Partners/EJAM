@@ -425,6 +425,7 @@ test_that("recipe runner scripts exist and point to expected config recipes", {
   }
   script_rel <- c(
     annual = "data-raw/run_ejscreen_pipeline_annual.R",
+    release = "data-raw/run_ejscreen_pipeline_release.R",
     validation_only = "data-raw/run_ejscreen_pipeline_validation_only.R",
     exports_only = "data-raw/run_ejscreen_pipeline_exports_only.R"
   )
@@ -439,11 +440,14 @@ test_that("recipe runner scripts exist and point to expected config recipes", {
   validation_lines <- readLines(scripts[["validation_only"]], warn = FALSE)
   exports_lines <- readLines(scripts[["exports_only"]], warn = FALSE)
   annual_lines <- readLines(scripts[["annual"]], warn = FALSE)
+  release_lines <- readLines(scripts[["release"]], warn = FALSE)
 
   expect_true(any(grepl("pipeline_config_annual", annual_lines, fixed = TRUE)))
+  expect_true(any(grepl("pipeline_config_release", release_lines, fixed = TRUE)))
   expect_true(any(grepl("pipeline_config_validation_only", validation_lines, fixed = TRUE)))
   expect_true(any(grepl("pipeline_config_exports_only", exports_lines, fixed = TRUE)))
   expect_true(any(grepl("ejscreen_pipeline_run_recipe_script", annual_lines, fixed = TRUE)))
+  expect_true(any(grepl("ejscreen_pipeline_run_recipe_script", release_lines, fixed = TRUE)))
   expect_true(any(grepl("ejscreen_pipeline_run_recipe_script", validation_lines, fixed = TRUE)))
   expect_true(any(grepl("ejscreen_pipeline_run_recipe_script", exports_lines, fixed = TRUE)))
 })
