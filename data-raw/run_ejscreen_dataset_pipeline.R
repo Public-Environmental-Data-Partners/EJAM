@@ -51,8 +51,8 @@
 #   EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to append AS/GU/MP/VI blockgroups to
 #      the annual/release pipeline. This defaults to TRUE so Island Areas appear
 #      in blockgroupstats, ejscreen_export, ejscreen_export_statepct, and
-#      map-ready outputs. These
-#      rows are not ACS rows. By default, DHC demographics are NOT used in
+#      map-ready outputs. These rows are not ACS rows. By default, DHC
+#      demographics are NOT used in
 #      bg_acsdata or downstream EJSCREEN-compatible outputs, because the
 #      legacy EPA/EJScreen Island Areas rows had no usable ACS demographic
 #      values. Row IDs, area fields, and available environmental fields come
@@ -146,7 +146,7 @@ run_started_at <- Sys.time()
 # Specifying OTHER datasets to update ####
 
 # The pipeline is primarily focused on updating
-# blockgroupstats and bgej, percentile lookup tables, and the EJScreen file.
+# blockgroupstats, bgej, usastats/statestats, and EJScreen export files.
 # Various other datasets generally need to be checked or updated
 # just before or just after those main blockgroup datasets are updated.
 # Some shown here are optional, though.
