@@ -1057,14 +1057,11 @@ validation_summary <- EJAM:::ejscreen_pipeline_validation_summary(
 )
 
 message("Validating dynamic geography Arrow files and saving report.")
-dynamic_geography_arrow_report <- EJAM:::dynamic_geography_arrow_report(
-  blockgroupstats_ref = out$blockgroupstats,
-  silent = TRUE
+EJAM:::ejscreen_pipeline_dynamic_geography_report(
+  blockgroupstats = out$blockgroupstats,
+  pipeline_dir = pipeline_dir,
+  pipeline_storage = pipeline_storage
 )
-write_pipeline_txt_or_csv(x = dynamic_geography_arrow_report,
-                          filename = "dynamic_geography_arrow_report.csv",
-                          pipeline_dir = pipeline_dir,
-                          pipeline_storage = pipeline_storage)
 
 EJAM:::ejscreen_pipeline_export_schema_reports(
   outputs = out,

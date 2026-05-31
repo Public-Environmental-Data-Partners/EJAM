@@ -763,6 +763,25 @@ ejscreen_pipeline_dataset_creator_report <- function(outputs,
   dataset_creator_report
 }
 
+ejscreen_pipeline_dynamic_geography_report <- function(blockgroupstats,
+                                                       pipeline_dir,
+                                                       pipeline_storage = c("auto", "local", "s3"),
+                                                       report_fun = dynamic_geography_arrow_report,
+                                                       write_fun = ejscreen_pipeline_write_text_or_csv) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  dynamic_geography_report <- report_fun(
+    blockgroupstats_ref = blockgroupstats,
+    silent = TRUE
+  )
+  write_fun(
+    dynamic_geography_report,
+    "dynamic_geography_arrow_report.csv",
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage
+  )
+  dynamic_geography_report
+}
+
 ejscreen_pipeline_prior_validation_stages <- function() {
   c(
     "bg_acsdata",

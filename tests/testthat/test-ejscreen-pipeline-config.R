@@ -644,6 +644,44 @@ test_that("ejscreen_pipeline_dataset_creator_report writes optional report attri
   expect_null(written)
 })
 
+test_that("ejscreen_pipeline_dynamic_geography_report writes arrow validation report", {
+  report <- data.frame(dataset = "blockpoints", status = "ok")
+  report_calls <- list()
+  written <- NULL
+  fake_report <- function(blockgroupstats_ref, silent) {
+    report_calls[[length(report_calls) + 1L]] <<- list(
+      blockgroupstats_ref = blockgroupstats_ref,
+      silent = silent
+    )
+    report
+  }
+  fake_write <- function(x, filename, pipeline_dir, storage) {
+    written <<- list(
+      x = x,
+      filename = filename,
+      pipeline_dir = pipeline_dir,
+      storage = storage
+    )
+    invisible(filename)
+  }
+
+  result <- EJAM:::ejscreen_pipeline_dynamic_geography_report(
+    blockgroupstats = data.frame(bgfips = "010010201001"),
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    report_fun = fake_report,
+    write_fun = fake_write
+  )
+
+  expect_equal(result, report)
+  expect_equal(length(report_calls), 1L)
+  expect_true(report_calls[[1]]$silent)
+  expect_equal(written$x, report)
+  expect_equal(written$filename, "dynamic_geography_arrow_report.csv")
+  expect_equal(written$pipeline_dir, "pipe")
+  expect_equal(written$storage, "local")
+})
+
 test_that("ejscreen_pipeline_prior_validation_stages keeps annual comparison stages ordered", {
   expect_equal(
     EJAM:::ejscreen_pipeline_prior_validation_stages(),
