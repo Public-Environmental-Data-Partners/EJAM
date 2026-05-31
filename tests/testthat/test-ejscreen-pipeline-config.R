@@ -273,6 +273,54 @@ test_that("ejscreen_pipeline_stage_io_from_config passes resolved config values"
   expect_equal(stage_io_call$prior_package_path, "data/blockgroupstats.rda")
 })
 
+test_that("ejscreen_pipeline_prepare_run_context coordinates setup helpers", {
+  dir_call <- NULL
+  settings_call <- NULL
+  print_settings_call <- NULL
+  datacreate_call <- NULL
+  stage_io_call <- NULL
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    pipeline_storage = "local",
+    pipeline_root = file.path(tempdir(), "ejam-pipeline-context")
+  )
+
+  result <- EJAM:::ejscreen_pipeline_prepare_run_context(
+    cfg,
+    setting_names_fun = function() {
+      settings_call <<- TRUE
+      c("A", "B")
+    },
+    print_settings_fun = function(config, setting_names) {
+      print_settings_call <<- list(config = config, setting_names = setting_names)
+      list(settings_report = TRUE)
+    },
+    prepare_datacreate_fun = function(config) {
+      datacreate_call <<- config
+      list(before = "before.R", after = "after.R", pre_datacreate_scripts = character())
+    },
+    stage_io_fun = function(config) {
+      stage_io_call <<- config
+      list(stage_io = TRUE)
+    },
+    ensure_output_dir_fun = function(path) {
+      dir_call <<- path
+      TRUE
+    }
+  )
+
+  expect_true(settings_call)
+  expect_equal(dir_call, cfg$pipeline_dir)
+  expect_identical(print_settings_call$config, cfg)
+  expect_equal(print_settings_call$setting_names, c("A", "B"))
+  expect_identical(datacreate_call, cfg)
+  expect_identical(stage_io_call, cfg)
+  expect_equal(result$pipeline_setting_names, c("A", "B"))
+  expect_identical(result$pipeline_settings_report, list(settings_report = TRUE))
+  expect_equal(result$datacreate_scripts$before, "before.R")
+  expect_identical(result$stage_io, list(stage_io = TRUE))
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(

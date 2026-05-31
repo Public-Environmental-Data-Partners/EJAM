@@ -1432,6 +1432,34 @@ ejscreen_pipeline_stage_io_from_config <- function(config,
   )
 }
 
+ejscreen_pipeline_prepare_run_context <- function(config,
+                                                  setting_names_fun = ejscreen_pipeline_setting_names,
+                                                  print_settings_fun = ejscreen_pipeline_print_run_settings,
+                                                  prepare_datacreate_fun = ejscreen_pipeline_prepare_datacreate_scripts,
+                                                  stage_io_fun = ejscreen_pipeline_stage_io_from_config,
+                                                  ensure_output_dir_fun = function(path) {
+                                                    dir.create(path, recursive = TRUE, showWarnings = FALSE)
+                                                  }) {
+  if (identical(config$pipeline_storage, "local")) {
+    ensure_output_dir_fun(config$pipeline_dir)
+  }
+
+  pipeline_setting_names <- setting_names_fun()
+  pipeline_settings_report <- print_settings_fun(
+    config,
+    setting_names = pipeline_setting_names
+  )
+  datacreate_scripts <- prepare_datacreate_fun(config)
+  stage_io <- stage_io_fun(config)
+
+  list(
+    pipeline_setting_names = pipeline_setting_names,
+    pipeline_settings_report = pipeline_settings_report,
+    datacreate_scripts = datacreate_scripts,
+    stage_io = stage_io
+  )
+}
+
 ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
                                                force_acs = FALSE,
                                                force_bg_acsdata = FALSE,

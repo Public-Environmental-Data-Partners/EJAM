@@ -272,30 +272,24 @@ EJAM:::ejscreen_pipeline_set_env_defaults()
 # get settings ####
 
 pipeline_config <- EJAM:::ejscreen_pipeline_config_from_env()
-pipeline_setting_names <- EJAM:::ejscreen_pipeline_setting_names()
+pipeline_context <- EJAM:::ejscreen_pipeline_prepare_run_context(pipeline_config)
+pipeline_setting_names <- pipeline_context$pipeline_setting_names
+pipeline_settings_report <- pipeline_context$pipeline_settings_report
+datacreate_scripts <- pipeline_context$datacreate_scripts
+datacreate_scripts_to_run_before_pipeline <- datacreate_scripts$before
+datacreate_scripts_to_run_after_pipeline <- datacreate_scripts$after
+pre_datacreate_scripts <- datacreate_scripts$pre_datacreate_scripts
+stage_io <- pipeline_context$stage_io
 
 yr <- pipeline_config$yr
 pipeline_yr <- pipeline_config$yr
 pipeline_root <- pipeline_config$pipeline_root
 pipeline_dir <- pipeline_config$pipeline_dir
 pipeline_storage <- pipeline_config$pipeline_storage
-if (pipeline_storage == "local") {
-  dir.create(pipeline_dir, recursive = TRUE, showWarnings = FALSE)
-}
 stage_format <- pipeline_config$stage_format
 stage_formats <- pipeline_config$stage_formats
 blockgroup_universe_source <- pipeline_config$blockgroup_universe_source
 tract_weight_source <- pipeline_config$tract_weight_source
-
-pipeline_settings_report <- EJAM:::ejscreen_pipeline_print_run_settings(
-  pipeline_config,
-  setting_names = pipeline_setting_names
-)
-
-datacreate_scripts <- EJAM:::ejscreen_pipeline_prepare_datacreate_scripts(pipeline_config)
-datacreate_scripts_to_run_before_pipeline <- datacreate_scripts$before
-datacreate_scripts_to_run_after_pipeline <- datacreate_scripts$after
-pre_datacreate_scripts <- datacreate_scripts$pre_datacreate_scripts
 
 ### ACS DEMOGRAPHIC DATA settings ####
 
@@ -346,7 +340,6 @@ prior_package_path <- pipeline_config$prior_package_path
 # ~ ####
 # helper functions ####
 
-stage_io <- EJAM:::ejscreen_pipeline_stage_io_from_config(pipeline_config)
 load_file_stage <- stage_io$load_stage
 stage_exists <- stage_io$stage_exists
 get_reuse_blockgroupstats <- stage_io$get_reuse_blockgroupstats
