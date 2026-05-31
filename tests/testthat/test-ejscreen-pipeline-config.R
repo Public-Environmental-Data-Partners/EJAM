@@ -454,6 +454,43 @@ test_that("ejscreen_pipeline_source_scripts sources enabled scripts and reports 
   expect_false(file.exists(disabled_marker))
 })
 
+test_that("ejscreen_pipeline_validation_stages keeps core and optional stages ordered", {
+  core <- EJAM:::ejscreen_pipeline_validation_stages(
+    include_ejscreen_export = FALSE,
+    include_ejscreen_export_statepct = FALSE
+  )
+
+  expect_equal(
+    core[1:4],
+    c("bg_acsdata", "bg_envirodata", "bg_geodata", "bg_extra_indicators")
+  )
+  expect_true(all(c("blockgroupstats", "bgej", "usastats", "statestats") %in% core))
+  expect_false("bg_islandareas_demographics" %in% core)
+  expect_false("ejscreen_export" %in% core)
+
+  expanded <- EJAM:::ejscreen_pipeline_validation_stages(
+    include_islandareas_data = TRUE,
+    use_islandareas_demographics = FALSE,
+    has_bg_islandareas_demographics = TRUE,
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = TRUE,
+    include_ejscreen_pctile_lookup_exports = TRUE,
+    include_ejscreen_dataset_creator_input = TRUE
+  )
+
+  expect_equal(expanded[1], "bg_islandareas_demographics")
+  expect_equal(
+    tail(expanded, 5),
+    c(
+      "ejscreen_export",
+      "ejscreen_export_statepct",
+      "ejscreen_us_pctile_lookup",
+      "ejscreen_state_pctile_lookup",
+      "ejscreen_dataset_creator_input"
+    )
+  )
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {

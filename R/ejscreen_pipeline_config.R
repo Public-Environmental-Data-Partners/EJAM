@@ -613,6 +613,49 @@ ejscreen_pipeline_source_scripts <- function(scripts,
   invisible(scripts)
 }
 
+ejscreen_pipeline_validation_stages <- function(include_islandareas_data = TRUE,
+                                                use_islandareas_demographics = FALSE,
+                                                has_bg_islandareas_demographics = FALSE,
+                                                include_ejscreen_export = TRUE,
+                                                include_ejscreen_export_statepct = TRUE,
+                                                include_ejscreen_pctile_lookup_exports = FALSE,
+                                                include_ejscreen_dataset_creator_input = FALSE) {
+  stages <- c(
+    "bg_acsdata",
+    "bg_envirodata",
+    "bg_geodata",
+    "bg_extra_indicators",
+    "blockgroupstats",
+    "bgej",
+    "usastats_acs",
+    "statestats_acs",
+    "usastats_envirodata",
+    "statestats_envirodata",
+    "usastats_ej",
+    "statestats_ej",
+    "usastats",
+    "statestats"
+  )
+
+  if (isTRUE(include_islandareas_data) &&
+      (isTRUE(use_islandareas_demographics) || isTRUE(has_bg_islandareas_demographics))) {
+    stages <- c("bg_islandareas_demographics", stages)
+  }
+  if (isTRUE(include_ejscreen_export)) {
+    stages <- c(stages, "ejscreen_export")
+  }
+  if (isTRUE(include_ejscreen_export_statepct)) {
+    stages <- c(stages, "ejscreen_export_statepct")
+  }
+  if (isTRUE(include_ejscreen_pctile_lookup_exports)) {
+    stages <- c(stages, "ejscreen_us_pctile_lookup", "ejscreen_state_pctile_lookup")
+  }
+  if (isTRUE(include_ejscreen_dataset_creator_input)) {
+    stages <- c(stages, "ejscreen_dataset_creator_input")
+  }
+  stages
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)

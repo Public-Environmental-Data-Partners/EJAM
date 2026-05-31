@@ -1039,50 +1039,15 @@ save_secondary_stage_formats(out, stages = names(out))
 message("Validating key stages and saving summary.")
 print(Sys.time())
 
-stages_to_validate <- c(
-
-  # note this list of stages is not quite the same as the stages in
-  # ejscreen_pipeline_stage_names(), a longer list, or in
-  # EJAM:::ejscreen_pipeline_stage_canonical(), a shorter list
-
-  # inputs or early stages
-  "bg_acsdata",    # demographics as calculated from bg_acs_raw (the downloaded survey data)
-  "bg_envirodata", # environmental indicators (the key ones, 13 as of 2026)
-  "bg_geodata", # Census/TIGER blockgroup area and internal-point fields
-  "bg_extra_indicators", # many other indicators, like % low life expectancy, etc.
-
-  # key indicators dataset
-  "blockgroupstats", # a final product - includes acs, enviro, and extra_indicators, not EJ Indexes
-  "bgej",            # a final product - includes just EJ Indexes, 1 for each of the 13 environmental indicators, but each in 4 forms: US basic, US supplementary, State basic, State supplementary
-
-  # percentile lookup tables:
-  "usastats_acs",
-  "statestats_acs",
-  "usastats_envirodata",
-  "statestats_envirodata",
-  "usastats_ej",
-  "statestats_ej",
-  "usastats",  # a final product - combines the acs, enviro, and ej lookup tables for USA as 1 file
-  "statestats" # a final product - combines the acs, enviro, and ej lookup tables for all states as 1 file
+stages_to_validate <- EJAM:::ejscreen_pipeline_validation_stages(
+  include_islandareas_data = include_islandareas_data,
+  use_islandareas_demographics = use_islandareas_demographics,
+  has_bg_islandareas_demographics = stage_exists("bg_islandareas_demographics"),
+  include_ejscreen_export = include_ejscreen_export,
+  include_ejscreen_export_statepct = include_ejscreen_export_statepct,
+  include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
+  include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input
 )
-
-if (isTRUE(include_islandareas_data) &&
-    (isTRUE(use_islandareas_demographics) || stage_exists("bg_islandareas_demographics"))) {
-  stages_to_validate <- c("bg_islandareas_demographics", stages_to_validate)
-}
-
-if (isTRUE(include_ejscreen_export)) {
-  stages_to_validate <- c(stages_to_validate, "ejscreen_export")
-}
-if (isTRUE(include_ejscreen_export_statepct)) {
-  stages_to_validate <- c(stages_to_validate, "ejscreen_export_statepct")
-}
-if (isTRUE(include_ejscreen_pctile_lookup_exports)) {
-  stages_to_validate <- c(stages_to_validate, "ejscreen_us_pctile_lookup", "ejscreen_state_pctile_lookup")
-}
-if (isTRUE(include_ejscreen_dataset_creator_input)) {
-  stages_to_validate <- c(stages_to_validate, "ejscreen_dataset_creator_input")
-}
 filename <- paste0("pipeline_validation_summary.", "csv")
 
 validation_summary <- data.table::rbindlist(
