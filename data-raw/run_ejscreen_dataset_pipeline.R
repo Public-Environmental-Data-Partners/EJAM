@@ -369,15 +369,7 @@ prior_package_path <- pipeline_config$prior_package_path
 # ~ ####
 # helper functions ####
 
-stage_io <- EJAM:::ejscreen_pipeline_stage_io(
-  pipeline_dir = pipeline_dir,
-  stage_format = stage_format,
-  stage_formats = stage_formats,
-  pipeline_yr = pipeline_yr,
-  storage = pipeline_storage,
-  prior_package_ref = prior_package_ref,
-  prior_package_path = prior_package_path
-)
+stage_io <- EJAM:::ejscreen_pipeline_stage_io_from_config(pipeline_config)
 load_file_stage <- stage_io$load_stage
 stage_exists <- stage_io$stage_exists
 get_reuse_blockgroupstats <- stage_io$get_reuse_blockgroupstats

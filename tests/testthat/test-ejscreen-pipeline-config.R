@@ -243,6 +243,36 @@ test_that("ejscreen_pipeline_print_run_settings reports env and config summaries
   expect_identical(result$config_summary, printed[[2L]])
 })
 
+test_that("ejscreen_pipeline_stage_io_from_config passes resolved config values", {
+  stage_io_call <- NULL
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    pipeline_dir = "s3://example/pipeline/ejscreen_acs_2024",
+    pipeline_storage = "s3",
+    stage_format = "csv",
+    stage_formats = c("csv", "rda"),
+    prior_package_ref = "v2_32_8_001",
+    prior_package_path = "data/blockgroupstats.rda"
+  )
+
+  result <- EJAM:::ejscreen_pipeline_stage_io_from_config(
+    cfg,
+    stage_io_fun = function(...) {
+      stage_io_call <<- list(...)
+      list(stage_io = TRUE)
+    }
+  )
+
+  expect_identical(result, list(stage_io = TRUE))
+  expect_equal(stage_io_call$pipeline_dir, cfg$pipeline_dir)
+  expect_equal(stage_io_call$stage_format, "csv")
+  expect_equal(stage_io_call$stage_formats, c("csv", "rda"))
+  expect_equal(stage_io_call$pipeline_yr, 2024)
+  expect_equal(stage_io_call$storage, "s3")
+  expect_equal(stage_io_call$prior_package_ref, "v2_32_8_001")
+  expect_equal(stage_io_call$prior_package_path, "data/blockgroupstats.rda")
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(

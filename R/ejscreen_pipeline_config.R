@@ -1391,6 +1391,19 @@ ejscreen_pipeline_stage_io <- function(pipeline_dir,
   )
 }
 
+ejscreen_pipeline_stage_io_from_config <- function(config,
+                                                   stage_io_fun = ejscreen_pipeline_stage_io) {
+  stage_io_fun(
+    pipeline_dir = config$pipeline_dir,
+    stage_format = config$stage_format,
+    stage_formats = config$stage_formats,
+    pipeline_yr = config$yr,
+    storage = config$pipeline_storage,
+    prior_package_ref = config$prior_package_ref,
+    prior_package_path = config$prior_package_path
+  )
+}
+
 ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
                                                force_acs = FALSE,
                                                force_bg_acsdata = FALSE,
