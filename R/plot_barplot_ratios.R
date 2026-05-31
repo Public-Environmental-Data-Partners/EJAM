@@ -167,7 +167,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
     ratio.to.us.d.overall[, sapply(ratio.to.us.d.overall, is.infinite)] <- 0
   }
   # use yellow/orange/red for ratio >= 1x, 2x, 3x  #  work in progress
-  mycolors <- mycolorsavailable[1 + findInterval(ratio.to.us.d.overall, c(1.01, 2, 3))]
+  mycolors <- mycolorsavailable[1 + findInterval(ratio.to.us.d.overall, c(1.05, 2, 3))]
 
   # barplot(ratio.to.us.d.overall,
   #         main = 'Ratio vs. US Average for Residential Population Indicators',

@@ -35,7 +35,7 @@ table_xls_format(
   heatmap_cuts = c(80, 90, 95),
   heatmap_colors = c("yellow", "orange", "red"),
   heatmap2_colnames = NULL,
-  heatmap2_cuts = c(1.009, 2, 3),
+  heatmap2_cuts = c(1.05, 2, 3),
   heatmap2_colors = c("yellow", "orange", "red"),
   graycolnames = NULL,
   graycolor = "gray",

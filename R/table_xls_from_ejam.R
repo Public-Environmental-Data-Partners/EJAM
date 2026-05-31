@@ -55,7 +55,7 @@ table_xls_from_ejam <- function(ejamitout,
 
                                 # column formatting
                                 heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
-                                heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                                heatmap2_colnames = NULL, heatmap2_cuts = c(1.05, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
                                 graycolnames = NULL, graycolor = 'gray',
                                 narrowcolnames = NULL, narrow6 = 6,
 
