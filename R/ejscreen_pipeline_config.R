@@ -1859,12 +1859,36 @@ ejscreen_pipeline_run_aliases <- function(config, pipeline_context) {
   )
 }
 
+ejscreen_pipeline_run_result <- function(config,
+                                         pipeline_context,
+                                         pipeline_data_stages,
+                                         pipeline_validation_and_finish,
+                                         aliases_fun = ejscreen_pipeline_run_aliases) {
+  pipeline_aliases <- aliases_fun(config, pipeline_context)
+
+  result <- c(
+    list(
+      pipeline_config = config,
+      pipeline_context = pipeline_context,
+      pipeline_data_stages = pipeline_data_stages,
+      pipeline_validation_and_finish = pipeline_validation_and_finish,
+      pipeline_aliases = pipeline_aliases
+    ),
+    pipeline_aliases,
+    pipeline_data_stages,
+    pipeline_validation_and_finish
+  )
+  class(result) <- c("ejam_ejscreen_pipeline_run", class(result))
+  result
+}
+
 run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
                                   run_started_at = Sys.time(),
                                   package_data_pipeline_dir = NULL,
                                   context_fun = ejscreen_pipeline_prepare_run_context,
                                   data_stages_fun = ejscreen_pipeline_run_data_stages,
-                                  validation_and_finish_fun = ejscreen_pipeline_run_validation_and_finish) {
+                                  validation_and_finish_fun = ejscreen_pipeline_run_validation_and_finish,
+                                  result_fun = ejscreen_pipeline_run_result) {
   if (!inherits(config, "ejam_ejscreen_pipeline_config")) {
     stop("config must be an ejscreen pipeline config object", call. = FALSE)
   }
@@ -1888,22 +1912,13 @@ run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
     run_started_at = run_started_at,
     package_data_pipeline_dir = package_data_pipeline_dir
   )
-  pipeline_aliases <- ejscreen_pipeline_run_aliases(config, pipeline_context)
 
-  result <- c(
-    list(
-      pipeline_config = config,
-      pipeline_context = pipeline_context,
-      pipeline_data_stages = pipeline_data_stages,
-      pipeline_validation_and_finish = pipeline_validation_and_finish,
-      pipeline_aliases = pipeline_aliases
-    ),
-    pipeline_aliases,
-    pipeline_data_stages,
-    pipeline_validation_and_finish
+  result_fun(
+    config = config,
+    pipeline_context = pipeline_context,
+    pipeline_data_stages = pipeline_data_stages,
+    pipeline_validation_and_finish = pipeline_validation_and_finish
   )
-  class(result) <- c("ejam_ejscreen_pipeline_run", class(result))
-  result
 }
 
 ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
