@@ -505,14 +505,6 @@ ejamit <- function(sitepoints = NULL,
       progress_doagg$close() # closes the progress bar
     }
 
-    # If user requested a buffer around FIPS boundaries, update radius.miles in results
-    # (doaggregate() always returns 0 for fips analysis, but we want to show the actual buffer)
-    # radius = 999 is a legacy signal meaning "FIPS analysis, no buffer"; do not treat as a real buffer radius
-    if (!is.null(user_radius) && !is.na(user_radius) && user_radius > 0 && user_radius != 999) {
-      if (!is.null(out$results_bysite))  out$results_bysite[ , radius.miles := user_radius]
-      if (!is.null(out$results_overall)) out$results_overall[, radius.miles := user_radius]
-    }
-
   } # end fips type
   ######################## #
 
