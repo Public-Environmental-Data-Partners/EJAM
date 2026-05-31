@@ -348,6 +348,16 @@ test_that("ejscreen_pipeline_prepare_run_context coordinates setup helpers", {
   expect_identical(result$stage_io, list(stage_io = TRUE))
 })
 
+test_that("ejscreen_pipeline_require_stage_io reports missing helpers", {
+  stage_io <- list(load_stage = function(stage) stage)
+
+  expect_invisible(EJAM:::ejscreen_pipeline_require_stage_io(stage_io, "load_stage"))
+  expect_error(
+    EJAM:::ejscreen_pipeline_require_stage_io(stage_io, c("load_stage", "stage_exists")),
+    "stage_exists"
+  )
+})
+
 test_that("ejscreen_pipeline_run_data_stages coordinates stage sequence", {
   calls <- character()
   output_call <- NULL
@@ -360,7 +370,13 @@ test_that("ejscreen_pipeline_run_data_stages coordinates stage sequence", {
     include_ejscreen_pctile_lookup_exports = FALSE,
     include_ejscreen_dataset_creator_input = TRUE
   )
-  stage_io <- list(save_secondary_stage_formats = function(...) list(saved = TRUE))
+  stage_io <- list(
+    load_stage = function(stage) stage,
+    stage_exists = function(stage) FALSE,
+    get_reuse_blockgroupstats = function() data.frame(bgfips = "010010201001"),
+    save_stage_formats = function(...) list(saved = TRUE),
+    save_secondary_stage_formats = function(...) list(saved = TRUE)
+  )
   fake_outputs <- list(blockgroupstats = data.frame(bgfips = "010010201001"))
 
   result <- EJAM:::ejscreen_pipeline_run_data_stages(

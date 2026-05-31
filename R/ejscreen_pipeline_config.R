@@ -1514,6 +1514,26 @@ ejscreen_pipeline_stage_io_from_config <- function(config,
   )
 }
 
+ejscreen_pipeline_require_stage_io <- function(stage_io, helpers) {
+  helper_exists <- helpers %in% names(stage_io)
+  helper_is_null <- rep(TRUE, length(helpers))
+  helper_is_null[helper_exists] <- vapply(
+    stage_io[helpers[helper_exists]],
+    is.null,
+    logical(1)
+  )
+  missing_helpers <- helpers[!helper_exists | helper_is_null]
+  if (length(missing_helpers) > 0) {
+    stop(
+      "stage_io must provide helper(s): ",
+      paste(missing_helpers, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  invisible(stage_io)
+}
+
 ejscreen_pipeline_prepare_run_context <- function(config,
                                                   setting_names_fun = ejscreen_pipeline_setting_names,
                                                   print_settings_fun = ejscreen_pipeline_print_run_settings,
@@ -1554,6 +1574,16 @@ ejscreen_pipeline_run_data_stages <- function(pipeline_config,
   if (!inherits(pipeline_config, "ejam_ejscreen_pipeline_config")) {
     stop("pipeline_config must be an ejscreen pipeline config object", call. = FALSE)
   }
+  ejscreen_pipeline_require_stage_io(
+    stage_io,
+    c(
+      "load_stage",
+      "stage_exists",
+      "get_reuse_blockgroupstats",
+      "save_stage_formats",
+      "save_secondary_stage_formats"
+    )
+  )
 
   bg_acs_raw_stage <- bg_acs_raw_fun(
     yr = pipeline_config$yr,
@@ -1706,9 +1736,7 @@ ejscreen_pipeline_run_validation_and_finish <- function(pipeline_config,
   }
 
   stage_io <- pipeline_context$stage_io
-  if (is.null(stage_io$stage_exists) || is.null(stage_io$load_stage)) {
-    stop("pipeline_context$stage_io must provide stage_exists and load_stage helpers", call. = FALSE)
-  }
+  ejscreen_pipeline_require_stage_io(stage_io, c("stage_exists", "load_stage"))
   datacreate_scripts_after <- character()
   if (!is.null(pipeline_context$datacreate_scripts) &&
       !is.null(pipeline_context$datacreate_scripts$after)) {
