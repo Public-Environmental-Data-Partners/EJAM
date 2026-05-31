@@ -63,7 +63,7 @@ fill_tbl_row <- function(output_df, Rname, longname, show_ratios_in_report) {
           "red"
         } else if (num_val > 1.9) {
           "orange"
-        } else if (num_val > .9) {
+        } else if (num_val >= 1.05) {
           "yellow"
         } else {
           NULL
@@ -373,7 +373,7 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
           "red"
         } else if (val > 1.9) {
           "orange"
-        } else if (val > 0.9) {
+        } else if (val >= 1.05) {
           "yellow"
         } else {
           NULL
