@@ -1,56 +1,31 @@
 ###################################################### #
 #
-# Repeatable EJSCREEN/EJAM pipeline runner for data updates (ACS demographics, etc.)
+# Compatibility runner for the staged EJSCREEN/EJAM dataset pipeline.
 #
-# First review the settings carefully, below, and specify which other datasets
-# to update via datacreate_ scripts, specified below.
+# Preferred entry points for routine work are the recipe scripts:
+#   source("data-raw/run_ejscreen_pipeline_annual.R")
+#   source("data-raw/run_ejscreen_pipeline_release.R")
+#   source("data-raw/run_ejscreen_pipeline_validation_only.R")
+#   source("data-raw/run_ejscreen_pipeline_exports_only.R")
 #
-# Then run this script via
-#   source("data-raw/run_ejscreen_dataset_pipeline.R")
+# Or call the validated config helpers directly:
+#   cfg <- EJAM:::pipeline_config_annual(yr = 2024)
+#   pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 #
-###################################################### #
-# The pipeline process uses the following key helper functions for various stages,
-# which are called from the script or from `calc_ejscreen_dataset()`:
+# This file remains as the long-standing source() compatibility runner. It
+# reads environment-variable settings, builds a validated pipeline config, runs
+# the package runner, and exposes the same script-level objects that older
+# interactive workflows expected.
 #
-# - `download_bg_acs_raw()`
-# - `calc_bg_islandareasdata()`
-# - `calc_bg_acsdata()`
-# - `load_file_stage()` # or `get_reuse_blockgroupstats()` for environmental data
-# - `calc_bg_extra_indicators()`
-# - `calc_bg_geodata()`
-# - `calc_ejscreen_dataset()` # to assemble all of the above
-# - `ejscreen_pipeline_validate()`
-#
-# It also provides an option for sourcing various datacreate_*.R files
-#   before and after the main pipeline stages, to handle some related files
-#   that might need to be updated.
-#
-# Depending on specified year, storage location, and directory,
-#   this pipeline writes csv (or other format) file checkpoints to a local folder
-#   such as data-raw/pipeline_outputs/ejscreen_acs_2022
-#   (as an example of local storage of the datasets used with 2018-2022 ACS data)
-#   or AWS directory such as
+# The pipeline writes csv/rda checkpoints to the configured local folder or S3
+# prefix, such as:
+#   data-raw/pipeline_outputs/ejscreen_acs_2022
 #   s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024
-#   (as an example of S3 storage, for the datasets used with 2020-2024 ACS data).
 #
-# To rerun after updated environmental indicators are available:
-#   1. Save the updated blockgroup-level environmental table as
-#      bg_envirodata.csv (or format specified by stage_format) in the pipeline folder.
-#      It must include columns "bgfips" and "pctpre1960",
-#      plus the rest of the environmental indicators (those used for EJ indexes),
-#       as specified in `EJAM::names_e`.
-#   2. Source this script again. Existing raw ACS and bg_acsdata checkpoints are
-#      reused, and downstream blockgroupstats/bgej/usastats/statestats are
-#      recalculated from the updated file bg_envirodata.csv (or format specified by stage_format).
+# Related package-data and Arrow release assets remain explicit opt-in steps.
+# Arrow assets later load through dataload_dynamic() using DESCRIPTION field
+# ejamdata_required_tag, not whichever ejamdata release GitHub marks as latest.
 #
-#  Also see ejscreen_pipeline_validate_vs_prior()
-#  for comparing the outputs of this pipeline to the prior version of the data,
-#  to help confirm that changes are as expected.
-#
-# Arrow assets are part of the EJAM/EJScreen release bundle. When EJAM later
-# obtains Arrow files via dataload_dynamic(), it uses the ejamdata release tag
-# recorded in DESCRIPTION as ejamdata_required_tag, rather than whichever
-# ejamdata release GitHub currently marks as latest.
 ###################################################### #
 
 # Useful environment variables, used as settings (parameters) customizing the pipeline:
@@ -163,10 +138,8 @@ library(data.table)
 
 run_started_at <- Sys.time()
 
-# Leave these defaults here, and then
-# Override by setting environment variables further BELOW before sourcing this script.
-# note that right here the EJAM_PIPELINE_DIR is based on type of EJAM_PIPELINE_STORAGE but
-# if EJAM_PIPELINE_STORAGE is set to "auto" here, then it gets figured out later based on EJAM_PIPELINE_DIR
+# Environment variables can be set before sourcing this file. If a setting is
+# unset, ejscreen_pipeline_config_from_env() applies the current package default.
 
 EJAM:::ejscreen_pipeline_set_env_defaults()
 
@@ -190,86 +163,7 @@ EJAM:::ejscreen_pipeline_set_env_defaults()
 
 ###################################################### ####################################################### #
 
-###################################################### #
-# USE NON-DEFAULT SETTINGS - for this run ####
-###################################################### #
-
-## uncomment this block to use these settings (instead of defaults)
-# # to recreate datasets using ACS 2018-2022 survey data
-#
-# yr = "2022"
-#
-# Sys.setenv(
-#            EJAM_PIPELINE_YR = yr,
-#            EJAM_PIPELINE_DIR = paste0("s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_", yr),
-#            EJAM_PIPELINE_STORAGE = "s3",
-#         # or #   EJAM_PIPELINE_STORAGE = "local",
-#         #    #   EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
-#            EJAM_STAGE_FORMAT = "csv",  # primary format for loading/validation
-#            EJAM_STAGE_FORMATS = "csv,rda",  # formats to save
-#            EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
-#            EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
-#            EJAM_FORCE_ACS = FALSE,    # FALSE means reuse if already had downloaded.
-#            EJAM_FORCE_BG_ACSDATA = FALSE, # or as needed
-#            EJAM_FORCE_BG_GEODATA = FALSE,
-#            EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
-#            EJAM_ACS_DOWNLOAD_RETRIES = "2",
-#            EJAM_INCLUDE_ISLANDAREAS_DATA = FALSE,
-#            EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = FALSE,
-#      EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, # TRUE during testing not once finalized datasets - TO TRY TO REPLICATE 2022 DATA
-#      EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
-#            EJAM_VALIDATE_VS_PRIOR = TRUE,
-#            EJAM_PRIOR_PIPELINE_YR = "2021", # ignored when EJAM_PRIOR_PACKAGE_REF is set
-#            EJAM_PRIOR_PIPELINE_DIR = "",
-#            EJAM_PRIOR_PACKAGE_REF = "development",
-#            EJAM_PRIOR_PACKAGE_PATH = "data/blockgroupstats.rda",
-#            EJAM_EJSCREEN_EXPORT_REFERENCE_PATH = "",
-#            EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE = TRUE,
-#            EJAM_VALIDATE_VS_PRIOR_WALDO = FALSE
-# )
-# ###################################################### #
-## uncomment this block to use these settings (instead of defaults)
-# # to specify using ACS 2020-2024 survey data
-#
-# yr = "2024"
-#
-# Sys.setenv(
-#            EJAM_PIPELINE_YR = yr,
-#            EJAM_PIPELINE_DIR = paste0("s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_", yr),
-#            EJAM_PIPELINE_STORAGE = "s3",
-#         # or #   EJAM_PIPELINE_DIR = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr)),
-#            EJAM_STAGE_FORMAT = "csv",  # primary format for loading/validation
-#            EJAM_STAGE_FORMATS = "csv,rda",  # formats to save
-#            EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
-#            EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
-#         #    #   EJAM_PIPELINE_STORAGE = "local",
-#            EJAM_FORCE_ACS = TRUE,    # FALSE means reuse if already had downloaded.
-#            EJAM_FORCE_BG_ACSDATA = TRUE, # or as needed
-#            EJAM_FORCE_BG_GEODATA = TRUE,
-#            EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
-#            EJAM_ACS_DOWNLOAD_RETRIES = "2",
-#            EJAM_INCLUDE_ISLANDAREAS_DATA = TRUE,
-#            EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = FALSE,
-#         EJAM_USE_PROVISIONAL_BG_ENVIRODATA = TRUE, #  set FALSE once new envt data are available
-#         EJAM_INCLUDE_EJSCREEN_EXPORT = TRUE,
-#            EJAM_VALIDATE_VS_PRIOR = TRUE,
-#            EJAM_PRIOR_PIPELINE_YR = "2023",
-#            EJAM_PRIOR_PIPELINE_DIR = "",
-#            EJAM_PRIOR_PACKAGE_REF = "",
-#            EJAM_PRIOR_PACKAGE_PATH = "data/blockgroupstats.rda",
-#            EJAM_EJSCREEN_EXPORT_REFERENCE_PATH = "",
-#            EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE = FALSE,
-#            EJAM_VALIDATE_VS_PRIOR_WALDO = FALSE
-# )
-# VALIDATION VS A SPECIFIC PRIOR DATASET ####
-#
-# If EJAM_VALIDATE_VS_PRIOR is TRUE, this script compares the new saved pipeline
-# stages to a prior saved pipeline version. Use EJAM_PRIOR_PIPELINE_YR or
-# EJAM_PRIOR_PIPELINE_DIR to control the comparison target.
-
-###################################################### #
-
-# get settings ####
+# Run from resolved settings ####
 
 pipeline_config <- EJAM:::ejscreen_pipeline_config_from_env()
 pipeline_run <- EJAM:::run_ejscreen_pipeline(
