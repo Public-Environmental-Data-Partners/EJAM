@@ -521,51 +521,9 @@ ejscreen_pipeline_config <- function(yr = NULL,
 }
 
 ejscreen_pipeline_config_from_env <- function() {
-  force_acs <- ejscreen_pipeline_env_flag("EJAM_FORCE_ACS", FALSE)
-  include_ejscreen_export <- ejscreen_pipeline_env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
-
-  ejscreen_pipeline_config(
-    yr = ejscreen_pipeline_env_value("EJAM_PIPELINE_YR", NULL),
-    pipeline_root = ejscreen_pipeline_env_value("EJAM_PIPELINE_ROOT", NULL),
-    pipeline_dir = ejscreen_pipeline_env_value("EJAM_PIPELINE_DIR", NULL),
-    pipeline_storage = ejscreen_pipeline_env_value("EJAM_PIPELINE_STORAGE", "s3"),
-    stage_format = ejscreen_pipeline_env_value("EJAM_STAGE_FORMAT", "csv"),
-    stage_formats = ejscreen_pipeline_env_value("EJAM_STAGE_FORMATS", "csv,rda"),
-    blockgroup_universe_source = ejscreen_pipeline_env_value("EJAM_BLOCKGROUP_UNIVERSE_SOURCE", "acs"),
-    tract_weight_source = ejscreen_pipeline_env_value("EJAM_TRACT_WEIGHT_SOURCE", "decennial2020"),
-    decennial_bgwts_cache = ejscreen_pipeline_env_value("EJAM_DECENNIAL_BGWTS_CACHE", ""),
-    refresh_decennial_bgwts = ejscreen_pipeline_env_flag("EJAM_REFRESH_DECENNIAL_BGWTS", FALSE),
-    force_acs = force_acs,
-    force_bg_acsdata = ejscreen_pipeline_env_flag("EJAM_FORCE_BG_ACSDATA", force_acs),
-    force_bg_geodata = ejscreen_pipeline_env_flag("EJAM_FORCE_BG_GEODATA", FALSE),
-    tiger_bg_cache_dir = ejscreen_pipeline_env_value("EJAM_TIGER_BG_CACHE_DIR", NULL),
-    acs_download_timeout = ejscreen_pipeline_env_value("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600"),
-    acs_download_retries = ejscreen_pipeline_env_value("EJAM_ACS_DOWNLOAD_RETRIES", "2"),
-    include_islandareas_data = ejscreen_pipeline_env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", TRUE),
-    islandareas_reference_path = ejscreen_pipeline_env_value("EJAM_ISLANDAREAS_REFERENCE_PATH", NULL),
-    use_islandareas_demographics = ejscreen_pipeline_env_flag("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", FALSE),
-    use_provisional_bg_envirodata = ejscreen_pipeline_env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", FALSE),
-    bg_envirodata_reference_path = ejscreen_pipeline_env_value("EJAM_BG_ENVIRODATA_REFERENCE_PATH", ""),
-    bg_envirodata_reference_vars = ejscreen_pipeline_env_value("EJAM_BG_ENVIRODATA_REFERENCE_VARS", ""),
-    include_ejscreen_export = include_ejscreen_export,
-    include_ejscreen_export_statepct = ejscreen_pipeline_env_flag_optional("EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT") %||% include_ejscreen_export,
-    include_ejscreen_pctile_lookup_exports = ejscreen_pipeline_env_flag("EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS", FALSE),
-    include_ejscreen_dataset_creator_input = ejscreen_pipeline_env_flag("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", FALSE),
-    validate_vs_prior = ejscreen_pipeline_env_flag("EJAM_VALIDATE_VS_PRIOR", TRUE),
-    prior_pipeline_yr = ejscreen_pipeline_env_value("EJAM_PRIOR_PIPELINE_YR", NULL),
-    prior_pipeline_dir = ejscreen_pipeline_env_value("EJAM_PRIOR_PIPELINE_DIR", NULL),
-    prior_package_ref = ejscreen_pipeline_env_value("EJAM_PRIOR_PACKAGE_REF", ""),
-    prior_package_path = ejscreen_pipeline_env_value("EJAM_PRIOR_PACKAGE_PATH", "data/blockgroupstats.rda"),
-    ejscreen_export_reference_path = ejscreen_pipeline_env_value("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", ""),
-    ejscreen_export_statepct_reference_path = ejscreen_pipeline_env_value("EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH", ""),
-    validate_ejscreen_export_reference = ejscreen_pipeline_env_flag_optional("EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE"),
-    validate_vs_prior_waldo = ejscreen_pipeline_env_flag("EJAM_VALIDATE_VS_PRIOR_WALDO", FALSE),
-    run_datacreate_before = ejscreen_pipeline_env_flag("EJAM_RUN_DATACREATE_BEFORE", TRUE),
-    run_datacreate_after = ejscreen_pipeline_env_flag("EJAM_RUN_DATACREATE_AFTER", TRUE),
-    replace_package_data = ejscreen_pipeline_env_flag("EJAM_REPLACE_PACKAGE_DATA", FALSE),
-    include_frs_update = ejscreen_pipeline_env_flag("EJAM_INCLUDE_FRS_UPDATE", FALSE),
-    aws_profile = Sys.getenv("AWS_PROFILE", unset = ""),
-    aws_region = Sys.getenv("AWS_REGION", unset = "")
+  do.call(
+    ejscreen_pipeline_config,
+    ejscreen_pipeline_config_env_override_args(include_yr = TRUE)
   )
 }
 
