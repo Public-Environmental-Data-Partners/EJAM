@@ -353,3 +353,29 @@ test_that("ejscreen_pipeline_run_script applies config before sourcing runner", 
   expect_equal(Sys.getenv("EJAM_PIPELINE_YR", unset = NA_character_), NA_character_)
   expect_named(result, c("config", "applied_env", "source_result"))
 })
+
+test_that("recipe runner scripts exist and point to expected config recipes", {
+  repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
+  if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {
+    repo_root <- getwd()
+  }
+  script_rel <- c(
+    validation_only = "data-raw/run_ejscreen_pipeline_validation_only.R",
+    exports_only = "data-raw/run_ejscreen_pipeline_exports_only.R"
+  )
+  scripts <- file.path(repo_root, script_rel)
+  names(scripts) <- names(script_rel)
+
+  expect_true(all(file.exists(scripts)))
+  for (script in scripts) {
+    expect_silent(parse(script))
+  }
+
+  validation_lines <- readLines(scripts[["validation_only"]], warn = FALSE)
+  exports_lines <- readLines(scripts[["exports_only"]], warn = FALSE)
+
+  expect_true(any(grepl("pipeline_config_validation_only", validation_lines, fixed = TRUE)))
+  expect_true(any(grepl("pipeline_config_exports_only", exports_lines, fixed = TRUE)))
+  expect_true(any(grepl("ejscreen_pipeline_run_script", validation_lines, fixed = TRUE)))
+  expect_true(any(grepl("ejscreen_pipeline_run_script", exports_lines, fixed = TRUE)))
+})
