@@ -10,6 +10,4 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd()
   library(EJAM)
 }
 
-cfg <- EJAM:::ejscreen_pipeline_config_recipe_from_env(EJAM:::pipeline_config_annual)
-
-EJAM:::ejscreen_pipeline_run_script(cfg)
+EJAM:::ejscreen_pipeline_run_recipe_script(EJAM:::pipeline_config_annual)

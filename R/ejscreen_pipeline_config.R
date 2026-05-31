@@ -565,6 +565,26 @@ ejscreen_pipeline_config_recipe_from_env <- function(recipe, ...) {
   do.call(recipe, args)
 }
 
+ejscreen_pipeline_run_recipe_script <- function(recipe,
+                                                ...,
+                                                script = file.path("data-raw", "run_ejscreen_dataset_pipeline.R"),
+                                                overwrite_env = TRUE,
+                                                include_aws = FALSE,
+                                                restore_env = FALSE,
+                                                envir = parent.frame(),
+                                                chdir = FALSE) {
+  config <- ejscreen_pipeline_config_recipe_from_env(recipe, ...)
+  ejscreen_pipeline_run_script(
+    config = config,
+    script = script,
+    overwrite_env = overwrite_env,
+    include_aws = include_aws,
+    restore_env = restore_env,
+    envir = envir,
+    chdir = chdir
+  )
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)

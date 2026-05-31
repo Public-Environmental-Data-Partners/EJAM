@@ -377,6 +377,44 @@ test_that("ejscreen_pipeline_run_script applies config before sourcing runner", 
   expect_named(result, c("config", "applied_env", "source_result"))
 })
 
+test_that("ejscreen_pipeline_run_recipe_script builds recipe config before sourcing runner", {
+  clear_pipeline_config_envvars()
+  root <- file.path(tempdir(), "ejam-pipeline-run-recipe-root")
+  withr::local_envvar(c(
+    EJAM_PIPELINE_YR = "2024",
+    EJAM_PIPELINE_ROOT = root,
+    EJAM_PIPELINE_STORAGE = "local"
+  ))
+  stub_script <- tempfile(fileext = ".R")
+  observed_path <- tempfile(fileext = ".rds")
+  writeLines(
+    c(
+      "observed <- list(",
+      "  yr = Sys.getenv('EJAM_PIPELINE_YR'),",
+      "  pipeline_dir = Sys.getenv('EJAM_PIPELINE_DIR'),",
+      "  include_ejscreen_export = Sys.getenv('EJAM_INCLUDE_EJSCREEN_EXPORT'),",
+      "  validate_vs_prior = Sys.getenv('EJAM_VALIDATE_VS_PRIOR')",
+      ")",
+      paste0("saveRDS(observed, ", deparse(observed_path), ")")
+    ),
+    con = stub_script
+  )
+
+  result <- EJAM:::ejscreen_pipeline_run_recipe_script(
+    recipe = EJAM:::pipeline_config_exports_only,
+    script = stub_script,
+    restore_env = TRUE
+  )
+  observed <- readRDS(observed_path)
+
+  expect_equal(observed$yr, "2024")
+  expect_equal(observed$pipeline_dir, file.path(root, "ejscreen_acs_2024"))
+  expect_equal(observed$include_ejscreen_export, "TRUE")
+  expect_equal(observed$validate_vs_prior, "FALSE")
+  expect_equal(Sys.getenv("EJAM_PIPELINE_YR", unset = NA_character_), "2024")
+  expect_named(result, c("config", "applied_env", "source_result"))
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {
@@ -402,7 +440,7 @@ test_that("recipe runner scripts exist and point to expected config recipes", {
   expect_true(any(grepl("pipeline_config_annual", annual_lines, fixed = TRUE)))
   expect_true(any(grepl("pipeline_config_validation_only", validation_lines, fixed = TRUE)))
   expect_true(any(grepl("pipeline_config_exports_only", exports_lines, fixed = TRUE)))
-  expect_true(any(grepl("ejscreen_pipeline_run_script", annual_lines, fixed = TRUE)))
-  expect_true(any(grepl("ejscreen_pipeline_run_script", validation_lines, fixed = TRUE)))
-  expect_true(any(grepl("ejscreen_pipeline_run_script", exports_lines, fixed = TRUE)))
+  expect_true(any(grepl("ejscreen_pipeline_run_recipe_script", annual_lines, fixed = TRUE)))
+  expect_true(any(grepl("ejscreen_pipeline_run_recipe_script", validation_lines, fixed = TRUE)))
+  expect_true(any(grepl("ejscreen_pipeline_run_recipe_script", exports_lines, fixed = TRUE)))
 })
