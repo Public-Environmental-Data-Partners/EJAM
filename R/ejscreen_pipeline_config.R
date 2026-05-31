@@ -669,6 +669,26 @@ ejscreen_pipeline_prior_validation_stages <- function() {
   )
 }
 
+ejscreen_pipeline_validation_error_index <- function(validation_summary) {
+  if (!"errors" %in% names(validation_summary)) {
+    stop("validation_summary must include an errors column", call. = FALSE)
+  }
+  errors <- as.character(validation_summary$errors)
+  !is.na(errors) & nzchar(errors)
+}
+
+ejscreen_pipeline_validation_has_errors <- function(validation_summary) {
+  any(ejscreen_pipeline_validation_error_index(validation_summary))
+}
+
+ejscreen_pipeline_manifest_status <- function(validation_summary) {
+  if (ejscreen_pipeline_validation_has_errors(validation_summary)) {
+    "validation_failed"
+  } else {
+    "completed"
+  }
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)

@@ -507,6 +507,29 @@ test_that("ejscreen_pipeline_prior_validation_stages keeps annual comparison sta
   )
 })
 
+test_that("ejscreen_pipeline validation status helpers detect error rows", {
+  validation_summary <- data.frame(
+    stage = c("ok", "missing", "bad"),
+    errors = c("", NA_character_, "problem")
+  )
+
+  expect_equal(
+    EJAM:::ejscreen_pipeline_validation_error_index(validation_summary),
+    c(FALSE, FALSE, TRUE)
+  )
+  expect_true(EJAM:::ejscreen_pipeline_validation_has_errors(validation_summary))
+  expect_equal(EJAM:::ejscreen_pipeline_manifest_status(validation_summary), "validation_failed")
+
+  validation_summary$errors <- c("", NA_character_, "")
+  expect_false(EJAM:::ejscreen_pipeline_validation_has_errors(validation_summary))
+  expect_equal(EJAM:::ejscreen_pipeline_manifest_status(validation_summary), "completed")
+  expect_error(
+    EJAM:::ejscreen_pipeline_validation_error_index(data.frame(stage = "ok")),
+    "validation_summary must include an errors column",
+    fixed = TRUE
+  )
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {

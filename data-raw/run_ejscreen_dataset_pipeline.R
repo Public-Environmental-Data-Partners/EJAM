@@ -1292,7 +1292,7 @@ if (isTRUE(include_ejscreen_export_statepct) &&
   print(ejscreen_export_statepct_reference_validation$summary)
 }
 
-manifest_status <- if (any(nzchar(validation_summary$errors))) "validation_failed" else "completed"
+manifest_status <- EJAM:::ejscreen_pipeline_manifest_status(validation_summary)
 pipeline_run_manifest_path <- EJAM:::ejscreen_pipeline_write_run_manifest(
   pipeline_dir = pipeline_dir,
   storage = pipeline_storage,
@@ -1311,8 +1311,8 @@ pipeline_run_manifest_path <- EJAM:::ejscreen_pipeline_write_run_manifest(
 )
 message("Pipeline run manifest: ", pipeline_run_manifest_path)
 
-if (any(nzchar(validation_summary$errors))) {
-  print(validation_summary[nzchar(errors)])
+if (EJAM:::ejscreen_pipeline_validation_has_errors(validation_summary)) {
+  print(validation_summary[EJAM:::ejscreen_pipeline_validation_error_index(validation_summary)])
   stop(paste0("Pipeline validation errors found. See pipeline_validation_summary file"))
 }
 
