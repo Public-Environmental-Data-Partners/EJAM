@@ -568,43 +568,6 @@ save_secondary_stage_formats <- function(out, stages, primary_format = stage_for
 used_provisional_bg_envirodata <- FALSE
 used_provisional_bg_extra_indicators <- FALSE
 ####################### #
-# to save validation summary, use csv format always, even if stage_format is something else, to make it easy to open and read those files.
-# to save schema info, use .txt format always, even if stage_format is something else, to make it easy to open and read those files.
-## see also # EJAM:::ejscreen_pipeline_save(x=, stage=, pipeline_dir=, format = "txt", overwrite = T, storage=)
-
-write_pipeline_txt_or_csv <- function(x, filename, pipeline_dir, pipeline_storage) {
-
-  # get file extension aka format from filename
-  format <- tools::file_ext(filename)
-  if (format == "txt") {
-    FUN <- writeLines
-  } else {
-    if (format == "csv") {
-      FUN <- data.table::fwrite
-    } else {
-      stop("format must be csv or txt here")
-    }
-  }
-  path <- file.path(pipeline_dir, filename)
-  if (pipeline_storage == "s3") {
-    tmp <- tempfile(fileext = paste0(".", format)) ###
-    FUN(x, tmp)
-    EJAM:::ejscreen_pipeline_s3_upload(tmp, path)
-  } else {
-    FUN(x, path)
-  }
-  invisible(path)
-}
-####################### #
-write_pipeline_text <- function(lines, filename) {
-  write_pipeline_txt_or_csv(
-    x = lines,
-    filename = filename,
-    pipeline_dir = pipeline_dir,
-    pipeline_storage = pipeline_storage
-  )
-}
-####################### #
 # ~ ----------------------------------------------- ####
 ###################################################### #
 # Download ACS raw blockgroup data stage ####
@@ -778,8 +741,8 @@ if (stage_exists(stagename)) {
     bg_envirodata[, env_cols, with = FALSE],
     check.attributes = FALSE
   ))) {stop("Provisional bg_envirodata from blockgroupstats fallback does not have the same env indicator values as the fallback source")}
-  write_pipeline_text(
-    c(
+  EJAM:::ejscreen_pipeline_write_text(
+    lines = c(
       paste0("PROVISIONAL bg_envirodata.", stage_format),
       "This file was copied from the same-vintage blockgroupstats fallback.",
       paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
@@ -787,7 +750,9 @@ if (stage_exists(stagename)) {
       "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_dataset_pipeline.R.",
       paste("Created:", Sys.time())
     ),
-    "bg_envirodata_SOURCE.txt"
+    filename = "bg_envirodata_SOURCE.txt",
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage
   )
 } else {
   stop("Missing bg_envirodata file and use_provisional_bg_envirodata was set FALSE. Save updated environmental indicators there or set EJAM_USE_PROVISIONAL_BG_ENVIRODATA=TRUE")
@@ -814,8 +779,8 @@ if (nzchar(bg_envirodata_reference_path)) {
     vars = bg_envirodata_reference_vars
   )
   reference_adjustment <- attr(bg_envirodata, "ejscreen_reference_adjustment", exact = TRUE)
-  write_pipeline_text(
-    c(
+  EJAM:::ejscreen_pipeline_write_text(
+    lines = c(
       "EJSCREEN reference adjustment applied to bg_envirodata.",
       "Use this only when the reference file is the intended authoritative source for the selected fields.",
       "Missing reference values are preserved as NA values, not converted to zero.",
@@ -826,7 +791,9 @@ if (nzchar(bg_envirodata_reference_path)) {
       "",
       paste("Created:", Sys.time())
     ),
-    "bg_envirodata_REFERENCE_ADJUSTMENT.txt"
+    filename = "bg_envirodata_REFERENCE_ADJUSTMENT.txt",
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage
   )
 }
 
@@ -885,8 +852,8 @@ if (stage_exists(stagename)) {
     overwrite = TRUE
   )
   save_file_stage_formats(x = bg_extra_indicators, stage = stagename)
-  write_pipeline_text(
-    c(
+  EJAM:::ejscreen_pipeline_write_text(
+    lines = c(
       paste0("PROVISIONAL bg_extra_indicators.", stage_format),
       "This file was copied from the same-vintage blockgroupstats fallback.",
       paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
@@ -894,7 +861,9 @@ if (stage_exists(stagename)) {
       "Replace it with updated non-ACS, non-environmental blockgroup indicators if available, then rerun.",
       paste("Created:", Sys.time())
     ),
-    "bg_extra_indicators_SOURCE.txt"
+    filename = "bg_extra_indicators_SOURCE.txt",
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage
   )
 }
 

@@ -1041,6 +1041,33 @@ test_that("ejscreen_pipeline_save_stage_formats saves requested formats and seco
   expect_equal(vapply(save_calls, `[[`, character(1), "stage"), c("stage_a", "stage_a"))
 })
 
+test_that("ejscreen_pipeline_write_text delegates to the pipeline writer", {
+  write_call <- NULL
+  fake_write <- function(x, filename, pipeline_dir, storage) {
+    write_call <<- list(
+      x = x,
+      filename = filename,
+      pipeline_dir = pipeline_dir,
+      storage = storage
+    )
+    file.path(pipeline_dir, filename)
+  }
+
+  path <- EJAM:::ejscreen_pipeline_write_text(
+    lines = c("one", "two"),
+    filename = "note.txt",
+    pipeline_dir = "pipe",
+    storage = "local",
+    write_fun = fake_write
+  )
+
+  expect_equal(path, "pipe/note.txt")
+  expect_equal(write_call$x, c("one", "two"))
+  expect_equal(write_call$filename, "note.txt")
+  expect_equal(write_call$pipeline_dir, "pipe")
+  expect_equal(write_call$storage, "local")
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

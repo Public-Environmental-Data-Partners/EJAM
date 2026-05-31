@@ -1112,6 +1112,20 @@ ejscreen_pipeline_save_secondary_stage_formats <- function(outputs,
   out
 }
 
+ejscreen_pipeline_write_text <- function(lines,
+                                         filename,
+                                         pipeline_dir,
+                                         storage = c("auto", "local", "s3"),
+                                         write_fun = ejscreen_pipeline_write_text_or_csv) {
+  storage <- match.arg(storage)
+  write_fun(
+    x = lines,
+    filename = filename,
+    pipeline_dir = pipeline_dir,
+    storage = storage
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",
