@@ -1803,6 +1803,74 @@ test_that("ejscreen_pipeline_stage_bg_geodata loads or creates geography data", 
   expect_equal(save_call$stage, "bg_geodata")
 })
 
+test_that("ejscreen_pipeline_stage_outputs calculates and saves pipeline outputs", {
+  messages <- character()
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+  printed <- NULL
+  calc_call <- NULL
+  save_call <- NULL
+
+  out <- EJAM:::ejscreen_pipeline_stage_outputs(
+    yr = 2024,
+    bg_acsdata = data.frame(bgfips = "010010201001"),
+    bg_envirodata = data.frame(bgfips = "010010201001"),
+    bg_extra_indicators = data.frame(bgfips = "010010201001"),
+    bg_geodata = data.frame(bgfips = "010010201001"),
+    pipeline_dir = "pipe",
+    pipeline_storage = "s3",
+    stage_format = "csv",
+    acs_download_timeout = 10,
+    acs_download_retries = 1,
+    include_ejscreen_dataset_creator_input = TRUE,
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = TRUE,
+    include_ejscreen_pctile_lookup_exports = FALSE,
+    blockgroup_universe_source = "combined",
+    calc_fun = function(...) {
+      calc_call <<- list(...)
+      list(
+        blockgroupstats = data.frame(bgfips = "010010201001"),
+        bgej = data.frame(bgfips = "010010201001")
+      )
+    },
+    save_secondary_fun = function(outputs, stages) {
+      save_call <<- list(outputs = outputs, stages = stages)
+      list(saved = stages)
+    },
+    message_fun = fake_message,
+    print_fun = function(x) {
+      printed <<- x
+      invisible(x)
+    },
+    time_fun = function() as.POSIXct("2026-05-30 12:00:00", tz = "UTC")
+  )
+
+  expect_named(out, c("blockgroupstats", "bgej"))
+  expect_equal(calc_call$yr, 2024)
+  expect_equal(calc_call$pipeline_dir, "pipe")
+  expect_equal(calc_call$pipeline_storage, "s3")
+  expect_true(calc_call$save_stages)
+  expect_false(calc_call$use_saved_stages)
+  expect_equal(calc_call$stage_format, "csv")
+  expect_equal(calc_call$raw_acs_storage, "folder")
+  expect_equal(calc_call$raw_table_format, "csv")
+  expect_false(calc_call$download_acs_raw)
+  expect_equal(calc_call$download_timeout, 10)
+  expect_equal(calc_call$download_retries, 1)
+  expect_true(calc_call$return_intermediate)
+  expect_true(calc_call$include_ejscreen_dataset_creator_input)
+  expect_true(calc_call$include_ejscreen_export)
+  expect_true(calc_call$include_ejscreen_export_statepct)
+  expect_false(calc_call$include_ejscreen_pctile_lookup_exports)
+  expect_equal(calc_call$blockgroup_universe_source, "combined")
+  expect_true(calc_call$overwrite)
+  expect_equal(save_call$stages, c("blockgroupstats", "bgej"))
+  expect_true(any(grepl("Creating blockgroupstats", messages)))
+  expect_s3_class(printed, "POSIXct")
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

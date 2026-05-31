@@ -1796,6 +1796,65 @@ ejscreen_pipeline_stage_bg_geodata <- function(yr,
   )
 }
 
+ejscreen_pipeline_stage_outputs <- function(yr,
+                                            bg_acsdata,
+                                            bg_envirodata,
+                                            bg_extra_indicators,
+                                            bg_geodata,
+                                            pipeline_dir,
+                                            pipeline_storage = c("auto", "local", "s3"),
+                                            stage_format,
+                                            acs_download_timeout = 3600,
+                                            acs_download_retries = 2,
+                                            include_ejscreen_dataset_creator_input = FALSE,
+                                            include_ejscreen_export = TRUE,
+                                            include_ejscreen_export_statepct = TRUE,
+                                            include_ejscreen_pctile_lookup_exports = FALSE,
+                                            blockgroup_universe_source = c("acs", "combined"),
+                                            calc_fun = EJAM::calc_ejscreen_dataset,
+                                            save_secondary_fun,
+                                            message_fun = message,
+                                            print_fun = print,
+                                            time_fun = Sys.time) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  blockgroup_universe_source <- match.arg(blockgroup_universe_source)
+  message_fun(
+    "Creating blockgroupstats, bgej, usastats, statestats",
+    if (isTRUE(include_ejscreen_dataset_creator_input)) ", ejscreen_dataset_creator_input" else "",
+    if (isTRUE(include_ejscreen_export)) ", ejscreen_export" else "",
+    if (isTRUE(include_ejscreen_export_statepct)) ", ejscreen_export_statepct" else "",
+    if (isTRUE(include_ejscreen_pctile_lookup_exports)) ", and EJScreen lookup exports" else ""
+  )
+  print_fun(time_fun())
+
+  out <- calc_fun(
+    yr = yr,
+    bg_acsdata = bg_acsdata,
+    bg_envirodata = bg_envirodata,
+    bg_extra_indicators = bg_extra_indicators,
+    bg_geodata = bg_geodata,
+    pipeline_dir = pipeline_dir,
+    pipeline_storage = pipeline_storage,
+    save_stages = TRUE,
+    use_saved_stages = FALSE,
+    stage_format = stage_format,
+    raw_acs_storage = "folder",
+    raw_table_format = "csv",
+    download_acs_raw = FALSE,
+    download_timeout = acs_download_timeout,
+    download_retries = acs_download_retries,
+    return_intermediate = TRUE,
+    include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
+    include_ejscreen_export = include_ejscreen_export,
+    include_ejscreen_export_statepct = include_ejscreen_export_statepct,
+    include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
+    blockgroup_universe_source = blockgroup_universe_source,
+    overwrite = TRUE
+  )
+  save_secondary_fun(out, stages = names(out))
+  out
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

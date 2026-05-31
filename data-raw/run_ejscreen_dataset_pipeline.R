@@ -607,41 +607,24 @@ bg_islandareas_reference <- bg_geodata_stage$bg_islandareas_reference
 # * *Create blockgroupstats, bgej, usastats, & statestats ** ####
 ###################################################### #
 
-message("Creating blockgroupstats, bgej, usastats, statestats",
-        if (isTRUE(include_ejscreen_dataset_creator_input)) ", ejscreen_dataset_creator_input" else "",
-        if (isTRUE(include_ejscreen_export)) ", ejscreen_export" else "",
-        if (isTRUE(include_ejscreen_export_statepct)) ", ejscreen_export_statepct" else "",
-        if (isTRUE(include_ejscreen_pctile_lookup_exports)) ", and EJScreen lookup exports" else "")
-print(Sys.time())
-
-out <- EJAM::calc_ejscreen_dataset(
-
+out <- EJAM:::ejscreen_pipeline_stage_outputs(
   yr = yr,
   bg_acsdata = bg_acsdata,
   bg_envirodata = bg_envirodata,
   bg_extra_indicators = bg_extra_indicators,
   bg_geodata = bg_geodata,
-
   pipeline_dir = pipeline_dir,
   pipeline_storage = pipeline_storage,
-  save_stages = TRUE,
-  use_saved_stages = FALSE,
   stage_format = stage_format,
-  raw_acs_storage = "folder",
-  raw_table_format = "csv",
-  download_acs_raw = FALSE,
-  download_timeout = acs_download_timeout,
-  download_retries = acs_download_retries,
-  return_intermediate = TRUE,
+  acs_download_timeout = acs_download_timeout,
+  acs_download_retries = acs_download_retries,
   include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
   include_ejscreen_export = include_ejscreen_export,
   include_ejscreen_export_statepct = include_ejscreen_export_statepct,
   include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
   blockgroup_universe_source = blockgroup_universe_source,
-  overwrite = TRUE
+  save_secondary_fun = save_secondary_stage_formats
 )
-
-save_secondary_stage_formats(out, stages = names(out))
 
 ###################################################### #
 # Validation summary ####
