@@ -2051,6 +2051,83 @@ test_that("ejscreen_pipeline_stage_prior_validation skips or prints prior valida
   expect_equal(names(printed[[1L]]), c("stage", "problems"))
 })
 
+test_that("ejscreen_pipeline_finish_run coordinates final side effects", {
+  export_call <- NULL
+  finalize_call <- NULL
+  replace_call <- NULL
+  source_call <- NULL
+  settings_call <- NULL
+  outputs <- list(blockgroupstats = data.frame(bgfips = "010010201001"))
+  validation_summary <- data.frame(stage = "blockgroupstats", errors = "")
+  pipeline_config <- list(
+    yr = 2024,
+    pipeline_dir = "pipe",
+    pipeline_storage = "s3",
+    stage_format = "csv",
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = TRUE,
+    validate_ejscreen_export_reference = TRUE,
+    ejscreen_export_reference_path = "national.csv",
+    ejscreen_export_statepct_reference_path = "state.csv",
+    replace_package_data = FALSE,
+    run_datacreate_after = TRUE
+  )
+
+  result <- EJAM:::ejscreen_pipeline_finish_run(
+    outputs = outputs,
+    validation_summary = validation_summary,
+    pipeline_config = pipeline_config,
+    pipeline_setting_names = c("A", "B"),
+    provisional_inputs = c(bg_envirodata = FALSE),
+    run_started_at = as.POSIXct("2026-05-30 12:00:00", tz = "UTC"),
+    datacreate_scripts_after = c("after.R"),
+    package_data_pipeline_dir = "package-pipe",
+    export_reference_fun = function(...) {
+      export_call <<- list(...)
+      list(export = TRUE)
+    },
+    finalize_fun = function(...) {
+      finalize_call <<- list(...)
+      list(finalized = TRUE)
+    },
+    replace_package_data_fun = function(...) {
+      replace_call <<- list(...)
+      list(replaced = FALSE)
+    },
+    source_scripts_fun = function(...) {
+      source_call <<- list(...)
+      c("after.R")
+    },
+    settings_fun = function(names) {
+      settings_call <<- names
+      stats::setNames(c("one", "two"), names)
+    }
+  )
+
+  expect_named(
+    result,
+    c("ejscreen_export_reference_validations", "pipeline_finalization", "package_data_replacement", "post_datacreate_scripts")
+  )
+  expect_equal(export_call$outputs, outputs)
+  expect_true(export_call$include_ejscreen_export)
+  expect_true(export_call$include_ejscreen_export_statepct)
+  expect_true(export_call$validate_ejscreen_export_reference)
+  expect_equal(export_call$ejscreen_export_reference_path, "national.csv")
+  expect_equal(export_call$ejscreen_export_statepct_reference_path, "state.csv")
+  expect_equal(export_call$pipeline_yr, 2024)
+  expect_equal(finalize_call$validation_summary, validation_summary)
+  expect_equal(finalize_call$pipeline_dir, "pipe")
+  expect_equal(finalize_call$settings, c(A = "one", B = "two"))
+  expect_equal(finalize_call$provisional_inputs, c(bg_envirodata = FALSE))
+  expect_equal(replace_call$outputs, outputs)
+  expect_false(replace_call$replace_package_data)
+  expect_equal(replace_call$pipeline_dir, "package-pipe")
+  expect_equal(replace_call$pipeline_yr, 2024)
+  expect_equal(source_call$scripts, "after.R")
+  expect_true(source_call$enabled)
+  expect_equal(settings_call, c("A", "B"))
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

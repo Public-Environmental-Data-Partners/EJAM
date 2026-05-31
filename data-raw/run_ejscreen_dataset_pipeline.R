@@ -586,59 +586,30 @@ prior_validation <- EJAM:::ejscreen_pipeline_stage_prior_validation(
   validate_vs_prior_waldo = validate_vs_prior_waldo
 )
 
-ejscreen_export_reference_validations <- EJAM:::ejscreen_pipeline_export_reference_validations(
+# Finish the run with reference validation, manifest/failure handling, optional
+# package-data replacement, and optional post-pipeline datacreate_ scripts.
+pipeline_finish <- EJAM:::ejscreen_pipeline_finish_run(
   outputs = out,
-  include_ejscreen_export = include_ejscreen_export,
-  include_ejscreen_export_statepct = include_ejscreen_export_statepct,
-  validate_ejscreen_export_reference = validate_ejscreen_export_reference,
-  ejscreen_export_reference_path = ejscreen_export_reference_path,
-  ejscreen_export_statepct_reference_path = ejscreen_export_statepct_reference_path,
-  pipeline_yr = pipeline_yr,
-  pipeline_dir = pipeline_dir,
-  pipeline_storage = pipeline_storage
-)
-
-pipeline_finalization <- EJAM:::ejscreen_pipeline_finalize_run(
   validation_summary = validation_summary,
-  pipeline_dir = pipeline_dir,
-  pipeline_storage = pipeline_storage,
-  pipeline_yr = pipeline_yr,
-  stage_format = stage_format,
-  settings = Sys.getenv(pipeline_setting_names),
+  pipeline_config = pipeline_config,
+  pipeline_setting_names = pipeline_setting_names,
   provisional_inputs = c(
     bg_envirodata = used_provisional_bg_envirodata,
     bg_extra_indicators = used_provisional_bg_extra_indicators,
     bg_islandareas_demographics_used_in_bg_acsdata = use_islandareas_demographics
   ),
-  run_started_at = run_started_at
+  run_started_at = run_started_at,
+  datacreate_scripts_after = datacreate_scripts_to_run_after_pipeline,
+  package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR")
 )
-
-invisible(out)
-
-# ~ ----------------------------------------------- ####
-###################################################### #
-
-# Package-data replacement remains opt-in. bgej is not package .rda data, so
-# the helper saves refreshed bgej pipeline artifacts for release-asset publishing.
-package_data_replacement <- EJAM:::ejscreen_pipeline_replace_package_data(
-  outputs = out,
-  replace_package_data = replace_package_data,
-  pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
-  pipeline_yr = pipeline_yr
-)
-
-###################################################### #
-# Create OTHER datasets  ####
-#
-# mostly must be done AFTER new blockgroup datasets are created !
-
-EJAM:::ejscreen_pipeline_source_scripts(
-  datacreate_scripts_to_run_after_pipeline,
-  enabled = run_datacreate_after,
-  skip_message = "Skipping post-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_AFTER is FALSE."
-)
+ejscreen_export_reference_validations <- pipeline_finish$ejscreen_export_reference_validations
+pipeline_finalization <- pipeline_finish$pipeline_finalization
+package_data_replacement <- pipeline_finish$package_data_replacement
+post_datacreate_scripts <- pipeline_finish$post_datacreate_scripts
 
 # restart, reinstall
+
+invisible(out)
 
 ###################################################### #
 # cat("REBUILD/INSTALL THE PACKAGE NOW \n")

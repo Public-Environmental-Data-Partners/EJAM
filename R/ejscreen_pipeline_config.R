@@ -1092,6 +1092,63 @@ ejscreen_pipeline_replace_package_data <- function(outputs,
   )
 }
 
+ejscreen_pipeline_finish_run <- function(outputs,
+                                         validation_summary,
+                                         pipeline_config,
+                                         pipeline_setting_names = ejscreen_pipeline_setting_names(),
+                                         provisional_inputs,
+                                         run_started_at,
+                                         datacreate_scripts_after = character(),
+                                         package_data_pipeline_dir = pipeline_config$pipeline_dir,
+                                         export_reference_fun = ejscreen_pipeline_export_reference_validations,
+                                         finalize_fun = ejscreen_pipeline_finalize_run,
+                                         replace_package_data_fun = ejscreen_pipeline_replace_package_data,
+                                         source_scripts_fun = ejscreen_pipeline_source_scripts,
+                                         settings_fun = Sys.getenv) {
+  ejscreen_export_reference_validations <- export_reference_fun(
+    outputs = outputs,
+    include_ejscreen_export = pipeline_config$include_ejscreen_export,
+    include_ejscreen_export_statepct = pipeline_config$include_ejscreen_export_statepct,
+    validate_ejscreen_export_reference = pipeline_config$validate_ejscreen_export_reference,
+    ejscreen_export_reference_path = pipeline_config$ejscreen_export_reference_path,
+    ejscreen_export_statepct_reference_path = pipeline_config$ejscreen_export_statepct_reference_path,
+    pipeline_yr = pipeline_config$yr,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    pipeline_storage = pipeline_config$pipeline_storage
+  )
+
+  pipeline_finalization <- finalize_fun(
+    validation_summary = validation_summary,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    pipeline_storage = pipeline_config$pipeline_storage,
+    pipeline_yr = pipeline_config$yr,
+    stage_format = pipeline_config$stage_format,
+    settings = settings_fun(pipeline_setting_names),
+    provisional_inputs = provisional_inputs,
+    run_started_at = run_started_at
+  )
+
+  package_data_replacement <- replace_package_data_fun(
+    outputs = outputs,
+    replace_package_data = pipeline_config$replace_package_data,
+    pipeline_dir = package_data_pipeline_dir,
+    pipeline_yr = pipeline_config$yr
+  )
+
+  post_datacreate_scripts <- source_scripts_fun(
+    scripts = datacreate_scripts_after,
+    enabled = pipeline_config$run_datacreate_after,
+    skip_message = "Skipping post-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_AFTER is FALSE."
+  )
+
+  list(
+    ejscreen_export_reference_validations = ejscreen_export_reference_validations,
+    pipeline_finalization = pipeline_finalization,
+    package_data_replacement = package_data_replacement,
+    post_datacreate_scripts = post_datacreate_scripts
+  )
+}
+
 ejscreen_pipeline_save_stage_formats <- function(x,
                                                  stage,
                                                  formats,
