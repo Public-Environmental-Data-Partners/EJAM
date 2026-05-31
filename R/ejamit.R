@@ -412,6 +412,12 @@ ejamit <- function(sitepoints = NULL,
     # Save user's specified buffer radius (if radius was not provided, default to no buffer for fips)
     if (missing(radius)) radius <- 0
     user_radius <- radius  # preserve actual user radius before overriding with fips-analysis signal
+    fips_has_real_buffer <- !is.null(user_radius) &&
+      length(user_radius) > 0 &&
+      !is.na(user_radius[1]) &&
+      user_radius[1] > 0 &&
+      user_radius[1] != 999
+    fips_buffer_polys <- NULL
     radius <- 999 # use this value when analyzing by fips not by circular buffers, as input to doaggregate().
     # doaggregate() detects all(distances == 0) and returns radius.miles = 0 in both results_bysite and results_overall.
     # Actual buffer (if any) is applied in getblocksnearby_from_fips() via user_radius.
@@ -425,8 +431,13 @@ ejamit <- function(sitepoints = NULL,
       fips = fips,  # these get retained as a column, but inside getblocksnearby_from_fips(), ejam_uniq_id numbers the sites 1,2,3,etc.
       in_shiny = in_shiny,
       need_blockwt = need_blockwt,
+      return_shp = fips_has_real_buffer,
       radius = user_radius  # pass actual user radius; buffer applied when > 0
     )
+    if (isTRUE(fips_has_real_buffer)) {
+      fips_buffer_polys <- mysites2blocks$polys
+      mysites2blocks <- mysites2blocks$pts
+    }
     if (nrow(mysites2blocks) == 0) {
       return(NULL)
     }
@@ -663,8 +674,21 @@ ejamit <- function(sitepoints = NULL,
     # done
   } else {
     if (sitetype %in% "fips") {
-      areas <- area_sqmi(fips = out$results_bysite$ejam_uniq_id,
-                         download_city_fips_bounds = download_city_fips_bounds, download_noncity_fips_bounds = download_noncity_fips_bounds)
+      if (exists("fips_buffer_polys", inherits = FALSE) &&
+          !is.null(fips_buffer_polys) &&
+          "FIPS" %in% names(fips_buffer_polys)) {
+        areas_by_site <- data.table(
+          ejam_uniq_id = as.character(fips_buffer_polys$FIPS),
+          area_sqmi = area_sqmi(shp = fips_buffer_polys)
+        )
+        areas <- areas_by_site[
+          match(as.character(out$results_bysite$ejam_uniq_id), ejam_uniq_id),
+          area_sqmi
+        ]
+      } else {
+        areas <- area_sqmi(fips = out$results_bysite$ejam_uniq_id,
+                           download_city_fips_bounds = download_city_fips_bounds, download_noncity_fips_bounds = download_noncity_fips_bounds)
+      }
     }
     if (sitetype %in% "shp") {
       areas_by_site <- data.table(
@@ -759,11 +783,7 @@ ejamit <- function(sitepoints = NULL,
     # FIPS output should expose a real user-requested buffer radius so
     # downstream map/report functions can recreate buffered FIPS polygons.
     radius_for_output <- NA_real_
-    if (!is.null(user_radius) &&
-        length(user_radius) > 0 &&
-        !is.na(user_radius[1]) &&
-        user_radius[1] > 0 &&
-        user_radius[1] != 999) {
+    if (isTRUE(fips_has_real_buffer)) {
       radius_for_output <- user_radius[1]
     }
   } else {
