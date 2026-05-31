@@ -472,6 +472,25 @@ test_that("ejscreen_pipeline_datacreate_scripts returns annual before and after 
   expect_equal(with_frs$after[-1L], scripts$after)
 })
 
+test_that("ejscreen_pipeline_print_script_open_commands prints RStudio open helpers", {
+  output <- character()
+  result <- EJAM:::ejscreen_pipeline_print_script_open_commands(
+    before_scripts = c("data-raw/before.R"),
+    after_scripts = c("data-raw/after.R"),
+    cat_fun = function(...) output <<- c(output, paste0(...))
+  )
+
+  expect_equal(result, c("data-raw/before.R", "data-raw/after.R"))
+  expect_equal(
+    output,
+    c(
+      "To open script files, in case you need to check or update them, or to step through them manually, see: \n",
+      "rstudioapi::documentOpen('data-raw/before.R')\n",
+      "rstudioapi::documentOpen('data-raw/after.R')\n"
+    )
+  )
+})
+
 test_that("ejscreen_pipeline_validation_stages keeps core and optional stages ordered", {
   core <- EJAM:::ejscreen_pipeline_validation_stages(
     include_ejscreen_export = FALSE,

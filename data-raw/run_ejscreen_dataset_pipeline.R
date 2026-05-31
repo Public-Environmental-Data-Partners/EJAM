@@ -198,13 +198,10 @@ datacreate_scripts_to_run_after_pipeline <- datacreate_scripts$after
 ###################################################### #
 
 ###################################################### #
-cat("To open script files, in case you need to check or update them, or to step through them manually, see: \n")
-for (fpath in datacreate_scripts_to_run_before_pipeline) {
-  cat(paste0("rstudioapi::documentOpen('", fpath,"')"), '\n')
-}
-for (fpath in datacreate_scripts_to_run_after_pipeline) {
-  cat(paste0("rstudioapi::documentOpen('", fpath,"')"), '\n')
-}
+EJAM:::ejscreen_pipeline_print_script_open_commands(
+  before_scripts = datacreate_scripts_to_run_before_pipeline,
+  after_scripts = datacreate_scripts_to_run_after_pipeline
+)
 
 ###################################################### #
 # Create OTHER datasets  ####

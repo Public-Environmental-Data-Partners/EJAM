@@ -643,6 +643,17 @@ ejscreen_pipeline_datacreate_scripts <- function(include_frs_update = FALSE) {
   )
 }
 
+ejscreen_pipeline_print_script_open_commands <- function(before_scripts = character(),
+                                                        after_scripts = character(),
+                                                        cat_fun = cat) {
+  scripts <- c(as.character(before_scripts), as.character(after_scripts))
+  cat_fun("To open script files, in case you need to check or update them, or to step through them manually, see: \n")
+  for (fpath in scripts) {
+    cat_fun(paste0("rstudioapi::documentOpen('", fpath, "')"), "\n")
+  }
+  invisible(scripts)
+}
+
 ejscreen_pipeline_validation_stages <- function(include_islandareas_data = TRUE,
                                                 use_islandareas_demographics = FALSE,
                                                 has_bg_islandareas_demographics = FALSE,
