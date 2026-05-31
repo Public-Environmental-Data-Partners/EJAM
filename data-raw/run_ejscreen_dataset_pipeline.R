@@ -1116,12 +1116,11 @@ ejscreen_export_reference_validations <- EJAM:::ejscreen_pipeline_export_referen
   pipeline_storage = pipeline_storage
 )
 
-manifest_status <- EJAM:::ejscreen_pipeline_manifest_status(validation_summary)
-pipeline_run_manifest_path <- EJAM:::ejscreen_pipeline_write_run_manifest(
+pipeline_finalization <- EJAM:::ejscreen_pipeline_finalize_run(
+  validation_summary = validation_summary,
   pipeline_dir = pipeline_dir,
-  storage = pipeline_storage,
-  pipeline_yr = pipeline_yr,
   pipeline_storage = pipeline_storage,
+  pipeline_yr = pipeline_yr,
   stage_format = stage_format,
   settings = Sys.getenv(pipeline_setting_names),
   provisional_inputs = c(
@@ -1129,21 +1128,8 @@ pipeline_run_manifest_path <- EJAM:::ejscreen_pipeline_write_run_manifest(
     bg_extra_indicators = used_provisional_bg_extra_indicators,
     bg_islandareas_demographics_used_in_bg_acsdata = use_islandareas_demographics
   ),
-  run_started_at = run_started_at,
-  run_finished_at = Sys.time(),
-  status = manifest_status
+  run_started_at = run_started_at
 )
-message("Pipeline run manifest: ", pipeline_run_manifest_path)
-
-if (EJAM:::ejscreen_pipeline_validation_has_errors(validation_summary)) {
-  print(validation_summary[EJAM:::ejscreen_pipeline_validation_error_index(validation_summary)])
-  stop(paste0("Pipeline validation errors found. See pipeline_validation_summary file"))
-}
-
-message("Pipeline completed. Validation summary:")
-print(validation_summary[, .(stage, rows, columns, warnings)])
-message("Output folder: ", pipeline_dir)
-print(Sys.time())
 
 invisible(out)
 

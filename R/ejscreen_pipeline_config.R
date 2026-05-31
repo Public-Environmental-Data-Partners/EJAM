@@ -948,6 +948,53 @@ ejscreen_pipeline_manifest_status <- function(validation_summary) {
   }
 }
 
+ejscreen_pipeline_finalize_run <- function(validation_summary,
+                                           pipeline_dir,
+                                           pipeline_storage,
+                                           pipeline_yr,
+                                           stage_format,
+                                           settings,
+                                           provisional_inputs,
+                                           run_started_at,
+                                           write_manifest_fun = ejscreen_pipeline_write_run_manifest,
+                                           print_fun = print,
+                                           message_fun = message,
+                                           now_fun = Sys.time) {
+  manifest_status <- ejscreen_pipeline_manifest_status(validation_summary)
+  pipeline_run_manifest_path <- write_manifest_fun(
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage,
+    pipeline_yr = pipeline_yr,
+    pipeline_storage = pipeline_storage,
+    stage_format = stage_format,
+    settings = settings,
+    provisional_inputs = provisional_inputs,
+    run_started_at = run_started_at,
+    run_finished_at = now_fun(),
+    status = manifest_status
+  )
+  message_fun("Pipeline run manifest: ", pipeline_run_manifest_path)
+
+  if (ejscreen_pipeline_validation_has_errors(validation_summary)) {
+    print_fun(validation_summary[ejscreen_pipeline_validation_error_index(validation_summary), ])
+    stop("Pipeline validation errors found. See pipeline_validation_summary file", call. = FALSE)
+  }
+
+  message_fun("Pipeline completed. Validation summary:")
+  validation_print_cols <- intersect(
+    c("stage", "rows", "columns", "warnings"),
+    names(validation_summary)
+  )
+  print_fun(as.data.frame(validation_summary)[, validation_print_cols, drop = FALSE])
+  message_fun("Output folder: ", pipeline_dir)
+  print_fun(now_fun())
+
+  list(
+    manifest_path = pipeline_run_manifest_path,
+    status = manifest_status
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

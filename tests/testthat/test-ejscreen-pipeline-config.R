@@ -844,6 +844,82 @@ test_that("ejscreen_pipeline validation status helpers detect error rows", {
   )
 })
 
+test_that("ejscreen_pipeline_finalize_run writes manifest and enforces validation errors", {
+  validation_summary <- data.frame(
+    stage = c("bg_acsdata", "blockgroupstats"),
+    rows = c(2L, 3L),
+    columns = c(4L, 5L),
+    warnings = c("", "minor"),
+    errors = c("", NA_character_)
+  )
+  manifest_calls <- list()
+  printed <- list()
+  messages <- character()
+  fake_manifest <- function(...) {
+    args <- list(...)
+    manifest_calls[[length(manifest_calls) + 1L]] <<- args
+    "pipeline_run_manifest.json"
+  }
+  fake_print <- function(x) {
+    printed[[length(printed) + 1L]] <<- x
+  }
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+  fake_now <- function() {
+    as.POSIXct("2026-05-30 12:34:56", tz = "UTC")
+  }
+
+  result <- EJAM:::ejscreen_pipeline_finalize_run(
+    validation_summary = validation_summary,
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    pipeline_yr = 2024,
+    stage_format = "csv",
+    settings = c(EJAM_PIPELINE_YR = "2024"),
+    provisional_inputs = c(bg_envirodata = FALSE),
+    run_started_at = as.POSIXct("2026-05-30 12:00:00", tz = "UTC"),
+    write_manifest_fun = fake_manifest,
+    print_fun = fake_print,
+    message_fun = fake_message,
+    now_fun = fake_now
+  )
+
+  expect_named(result, c("manifest_path", "status"))
+  expect_equal(result$status, "completed")
+  expect_equal(result$manifest_path, "pipeline_run_manifest.json")
+  expect_length(manifest_calls, 1)
+  expect_equal(manifest_calls[[1]]$status, "completed")
+  expect_equal(manifest_calls[[1]]$pipeline_dir, "pipe")
+  expect_equal(manifest_calls[[1]]$settings, c(EJAM_PIPELINE_YR = "2024"))
+  expect_equal(manifest_calls[[1]]$provisional_inputs, c(bg_envirodata = FALSE))
+  expect_equal(length(printed), 2)
+  expect_equal(names(printed[[1]]), c("stage", "rows", "columns", "warnings"))
+  expect_true(any(grepl("Pipeline run manifest: pipeline_run_manifest.json", messages, fixed = TRUE)))
+  expect_true(any(grepl("Output folder: pipe", messages, fixed = TRUE)))
+
+  validation_summary$errors <- c("", "bad")
+  expect_error(
+    EJAM:::ejscreen_pipeline_finalize_run(
+      validation_summary = validation_summary,
+      pipeline_dir = "pipe",
+      pipeline_storage = "local",
+      pipeline_yr = 2024,
+      stage_format = "csv",
+      settings = character(),
+      provisional_inputs = character(),
+      run_started_at = as.POSIXct("2026-05-30 12:00:00", tz = "UTC"),
+      write_manifest_fun = fake_manifest,
+      print_fun = fake_print,
+      message_fun = fake_message,
+      now_fun = fake_now
+    ),
+    "Pipeline validation errors found. See pipeline_validation_summary file",
+    fixed = TRUE
+  )
+  expect_equal(manifest_calls[[2]]$status, "validation_failed")
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {
