@@ -1,4 +1,5 @@
 test_that("download_latest_arrow_data downloads release asset filenames from required tag", {
+  required_tag <- EJAM:::ejamdata_required_tag()
   package_root <- tempfile("ejam-package-")
   installed_data_folder <- file.path(package_root, "data")
   dir.create(installed_data_folder, recursive = TRUE)
@@ -51,12 +52,12 @@ test_that("download_latest_arrow_data downloads release asset filenames from req
   expect_true(isTRUE(result))
   expect_false(calls$pb_releases_called)
   expect_identical(calls$pb_download$file, c("blockpoints.arrow", "quaddata.arrow"))
-  expect_identical(calls$pb_download$tag, "v2.32.8.001")
+  expect_identical(calls$pb_download$tag, required_tag)
   expect_true(isTRUE(calls$pb_download$overwrite))
   expect_false(calls$pb_download$use_timestamps)
   expect_identical(
     readLines(file.path(installed_data_folder, "ejamdata_version.txt")),
-    "v2.32.8.001"
+    required_tag
   )
 })
 
