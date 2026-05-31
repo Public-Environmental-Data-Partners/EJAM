@@ -409,6 +409,9 @@ app_server <- function(input, output, session) {
   ## initialize SHP file extension error message
   error_message <- reactiveVal(NULL)
 
+  ## initialize lat/lon upload error message (e.g. point cap exceeded)
+  latlon_upload_error <- reactiveVal(NULL)
+
   data_up_shp <- reactive({
 
     if (is.null(input$ss_upload_shp)) {
@@ -487,6 +490,13 @@ app_server <- function(input, output, session) {
     if (!is.null(error_message())) {
       cat(error_message(), "\n") # for console / server log
       error_message()
+    }
+  })
+  ## show error message in UI when lat/lon upload exceeds the point cap
+  output$latlon_upload_error <- renderText({
+    if (!is.null(latlon_upload_error())) {
+      cat(latlon_upload_error(), "\n") # for console / server log
+      latlon_upload_error()
     }
   })
   #############################################################################  #
@@ -641,6 +651,7 @@ app_server <- function(input, output, session) {
 
       ## if acceptable file type, read in; if not, send warning text
       input_file_path <- input$ss_upload_latlon$datapath
+      latlon_upload_error(NULL)             # clear any previous upload error before parsing this upload
       # ideally would quickly check file size here before actually trying to read the entire file in case it is > cap.
 
       ## this part could be replaced each time it happens, by the function sitepoints_from_any
@@ -653,12 +664,17 @@ app_server <- function(input, output, session) {
 
         cat("ROW COUNT TOO HIGH IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
 
-        errmsg    = paste0('Max allowed upload of points is ', as.character(input$max_pts_upload))
+        errmsg    = paste0('Too many points: your file has ',
+                           prettyNum(NROW(sitepoints), big.mark = ','),
+                           ' rows, but the maximum allowed upload is ',
+                           prettyNum(input$max_pts_upload, big.mark = ','),
+                           ' points. Please upload a smaller file.')
         placetype = 'latlon'
 
         invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
         an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
         disable_buttons[[placetype]] <- TRUE
+        latlon_upload_error(errmsg)           # show visible error message in UI
         shiny::validate(errmsg)
 
       } else {

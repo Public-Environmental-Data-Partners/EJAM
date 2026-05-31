@@ -185,6 +185,56 @@ test_that(
   }
 )
 ################################################# #
+
+test_that("app_server clears stale lat/lon upload cap error before reading new file", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c(
+        "default_hide_about_tab",
+        "default_hide_written_report",
+        "default_hide_plot_barplot_tab",
+        "default_hide_plot_histo_tab"
+      )) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    read_csv_or_xl = function(fname, ...) {
+      if (identical(fname, "too-many-points.csv")) {
+        return(data.frame(lat = c(38, 39), lon = c(-77, -78)))
+      }
+      if (identical(fname, "unreadable.csv")) {
+        stop("cannot read uploaded file", call. = FALSE)
+      }
+      data.frame(lat = numeric(), lon = numeric())
+    },
+    .package = "EJAM"
+  )
+
+  testServer(app = app_server, expr = {
+    session$setInputs(
+      max_pts_upload = 1,
+      testing = FALSE,
+      ss_choose_method = "upload",
+      ss_choose_method_upload = "latlon",
+      ss_upload_latlon = data.frame(datapath = "too-many-points.csv")
+    )
+
+    expect_error(data_up_latlon(), "Too many points")
+    expect_match(latlon_upload_error(), "Too many points")
+
+    session$setInputs(
+      ss_upload_latlon = data.frame(datapath = "unreadable.csv")
+    )
+
+    expect_error(data_up_latlon(), "cannot read uploaded file")
+    expect_null(latlon_upload_error())
+  })
+})
+################################################# #
 #
 
 # do tests of MODULES? ####
