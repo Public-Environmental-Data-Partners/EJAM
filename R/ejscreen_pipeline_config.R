@@ -795,6 +795,56 @@ ejscreen_pipeline_prior_validation_stages <- function() {
   )
 }
 
+ejscreen_pipeline_prior_validation <- function(validate_vs_prior = TRUE,
+                                               prior_package_ref = "",
+                                               prior_package_path = "data/blockgroupstats.rda",
+                                               pipeline_yr,
+                                               prior_pipeline_yr,
+                                               pipeline_root,
+                                               pipeline_dir,
+                                               prior_pipeline_dir,
+                                               stage_format,
+                                               pipeline_storage = c("auto", "local", "s3"),
+                                               validate_vs_prior_waldo = FALSE,
+                                               package_validation_fun = ejscreen_pipeline_prior_package_validation,
+                                               compare_versions_fun = ejscreen_pipeline_compare_versions,
+                                               stages_fun = ejscreen_pipeline_prior_validation_stages) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  if (!isTRUE(validate_vs_prior)) {
+    return(NULL)
+  }
+
+  if (nzchar(prior_package_ref)) {
+    message("Comparing selected stages to explicit prior package Git object: ",
+            prior_package_ref, ":", prior_package_path)
+    return(package_validation_fun(
+      new_pipeline_dir = pipeline_dir,
+      prior_package_ref = prior_package_ref,
+      prior_package_path = prior_package_path,
+      format = stage_format,
+      storage = pipeline_storage,
+      output_dir = pipeline_dir,
+      write_files = TRUE,
+      use_waldo = validate_vs_prior_waldo
+    ))
+  }
+
+  message("Comparing selected stages to prior saved pipeline version: ", prior_pipeline_dir)
+  compare_versions_fun(
+    new_yr = pipeline_yr,
+    old_yr = prior_pipeline_yr,
+    stages = stages_fun(),
+    pipeline_root = pipeline_root,
+    new_pipeline_dir = pipeline_dir,
+    old_pipeline_dir = prior_pipeline_dir,
+    format = stage_format,
+    storage = pipeline_storage,
+    output_dir = pipeline_dir,
+    write_files = TRUE,
+    use_waldo = validate_vs_prior_waldo
+  )
+}
+
 ejscreen_pipeline_validation_error_index <- function(validation_summary) {
   if (!"errors" %in% names(validation_summary)) {
     stop("validation_summary must include an errors column", call. = FALSE)

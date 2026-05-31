@@ -1085,35 +1085,19 @@ print(Sys.time())
 
 if (isTRUE(validate_vs_prior)) {
 
-  if (nzchar(prior_package_ref)) {
-    message("Comparing selected stages to explicit prior package Git object: ",
-            prior_package_ref, ":", prior_package_path)
-    prior_validation <- EJAM:::ejscreen_pipeline_prior_package_validation(
-      new_pipeline_dir = pipeline_dir,
-      prior_package_ref = prior_package_ref,
-      prior_package_path = prior_package_path,
-      format = stage_format,
-      storage = pipeline_storage,
-      output_dir = pipeline_dir,
-      write_files = TRUE,
-      use_waldo = validate_vs_prior_waldo
-    )
-  } else {
-    message("Comparing selected stages to prior saved pipeline version: ", prior_pipeline_dir)
-    prior_validation <- EJAM:::ejscreen_pipeline_compare_versions(
-      new_yr = pipeline_yr,
-      old_yr = prior_pipeline_yr,
-      stages = EJAM:::ejscreen_pipeline_prior_validation_stages(),
-      pipeline_root = pipeline_root,
-      new_pipeline_dir = pipeline_dir,
-      old_pipeline_dir = prior_pipeline_dir,
-      format = stage_format,
-      storage = pipeline_storage,
-      output_dir = pipeline_dir,
-      write_files = TRUE,
-      use_waldo = validate_vs_prior_waldo
-    )
-  }
+  prior_validation <- EJAM:::ejscreen_pipeline_prior_validation(
+    validate_vs_prior = validate_vs_prior,
+    prior_package_ref = prior_package_ref,
+    prior_package_path = prior_package_path,
+    pipeline_yr = pipeline_yr,
+    prior_pipeline_yr = prior_pipeline_yr,
+    pipeline_root = pipeline_root,
+    pipeline_dir = pipeline_dir,
+    prior_pipeline_dir = prior_pipeline_dir,
+    stage_format = stage_format,
+    pipeline_storage = pipeline_storage,
+    validate_vs_prior_waldo = validate_vs_prior_waldo
+  )
   prior_validation_summary <- prior_validation$summary
   message("Prior-version validation summary:")
   prior_validation_print_cols <- EJAM:::ejscreen_pipeline_prior_validation_print_columns(prior_validation_summary)

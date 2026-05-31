@@ -698,6 +698,83 @@ test_that("ejscreen_pipeline_prior_validation_stages keeps annual comparison sta
   )
 })
 
+test_that("ejscreen_pipeline_prior_validation dispatches package and pipeline comparisons", {
+  package_calls <- list()
+  version_calls <- list()
+  fake_package_validation <- function(...) {
+    args <- list(...)
+    package_calls[[length(package_calls) + 1L]] <<- args
+    list(summary = data.frame(kind = "package"))
+  }
+  fake_compare_versions <- function(...) {
+    args <- list(...)
+    version_calls[[length(version_calls) + 1L]] <<- args
+    list(summary = data.frame(kind = "versions"))
+  }
+
+  skipped <- EJAM:::ejscreen_pipeline_prior_validation(
+    validate_vs_prior = FALSE,
+    pipeline_yr = 2024,
+    prior_pipeline_yr = "2023",
+    pipeline_root = "root",
+    pipeline_dir = "new-dir",
+    prior_pipeline_dir = "old-dir",
+    stage_format = "csv",
+    pipeline_storage = "local",
+    package_validation_fun = fake_package_validation,
+    compare_versions_fun = fake_compare_versions
+  )
+  expect_null(skipped)
+  expect_length(package_calls, 0)
+  expect_length(version_calls, 0)
+
+  by_package <- EJAM:::ejscreen_pipeline_prior_validation(
+    validate_vs_prior = TRUE,
+    prior_package_ref = "v2_32_8_001",
+    prior_package_path = "data/blockgroupstats.rda",
+    pipeline_yr = 2022,
+    prior_pipeline_yr = "2021",
+    pipeline_root = "root",
+    pipeline_dir = "new-dir",
+    prior_pipeline_dir = "old-dir",
+    stage_format = "csv",
+    pipeline_storage = "local",
+    validate_vs_prior_waldo = TRUE,
+    package_validation_fun = fake_package_validation,
+    compare_versions_fun = fake_compare_versions
+  )
+  expect_equal(by_package$summary$kind, "package")
+  expect_length(package_calls, 1)
+  expect_equal(package_calls[[1]]$new_pipeline_dir, "new-dir")
+  expect_equal(package_calls[[1]]$prior_package_ref, "v2_32_8_001")
+  expect_equal(package_calls[[1]]$storage, "local")
+  expect_true(package_calls[[1]]$use_waldo)
+  expect_length(version_calls, 0)
+
+  by_pipeline <- EJAM:::ejscreen_pipeline_prior_validation(
+    validate_vs_prior = TRUE,
+    prior_package_ref = "",
+    pipeline_yr = 2024,
+    prior_pipeline_yr = "2023",
+    pipeline_root = "root",
+    pipeline_dir = "new-dir",
+    prior_pipeline_dir = "old-dir",
+    stage_format = "csv",
+    pipeline_storage = "local",
+    validate_vs_prior_waldo = FALSE,
+    package_validation_fun = fake_package_validation,
+    compare_versions_fun = fake_compare_versions,
+    stages_fun = function() c("stage_a", "stage_b")
+  )
+  expect_equal(by_pipeline$summary$kind, "versions")
+  expect_length(version_calls, 1)
+  expect_equal(version_calls[[1]]$new_yr, 2024)
+  expect_equal(version_calls[[1]]$old_yr, "2023")
+  expect_equal(version_calls[[1]]$stages, c("stage_a", "stage_b"))
+  expect_equal(version_calls[[1]]$old_pipeline_dir, "old-dir")
+  expect_false(version_calls[[1]]$use_waldo)
+})
+
 test_that("ejscreen_pipeline validation status helpers detect error rows", {
   validation_summary <- data.frame(
     stage = c("ok", "missing", "bad"),
