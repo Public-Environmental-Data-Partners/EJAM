@@ -1445,7 +1445,7 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     if (length(radius) > 1) {stop("radius must be a single value")}
     if (is.na(radius) || radius == "") {
       # Only warn in point-buffer (e.g., latlon) or unknown/NA contexts; FIPS/shapefile analyses have no radius by design.
-      # When sitetype is NA or an unrecognised value, %in% returns FALSE, so the warning is preserved for those cases.
+      # isTRUE() preserves the warning when sitetype is NA or an unrecognised value.
       if (!isTRUE(sitetype[1] %in% c("fips", "shp"))) {
         warning("radius should not be NA or '' ")
       }
