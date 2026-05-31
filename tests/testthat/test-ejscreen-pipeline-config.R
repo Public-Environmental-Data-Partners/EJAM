@@ -491,6 +491,64 @@ test_that("ejscreen_pipeline_validation_stages keeps core and optional stages or
   )
 })
 
+test_that("ejscreen_pipeline_validation_summary writes stage validation rows", {
+  loaded <- character()
+  validated <- character()
+  written <- NULL
+
+  fake_load <- function(stage) {
+    loaded <<- c(loaded, stage)
+    if (identical(stage, "stage_one")) {
+      data.frame(a = 1:2, b = 3:4)
+    } else {
+      data.frame(a = 1)
+    }
+  }
+  fake_validate <- function(x, stage, strict) {
+    validated <<- c(validated, paste(stage, strict))
+    if (identical(stage, "stage_one")) {
+      list(errors = character(), warnings = "warn one")
+    } else {
+      list(errors = "bad two", warnings = character())
+    }
+  }
+  fake_path <- function(stage, pipeline_dir, format) {
+    paste(pipeline_dir, stage, format, sep = "/")
+  }
+  fake_write <- function(x, filename, pipeline_dir, storage) {
+    written <<- list(
+      x = x,
+      filename = filename,
+      pipeline_dir = pipeline_dir,
+      storage = storage
+    )
+    invisible(filename)
+  }
+
+  result <- EJAM:::ejscreen_pipeline_validation_summary(
+    stages = c("stage_one", "stage_two"),
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    pipeline_storage = "local",
+    load_stage_fun = fake_load,
+    validate_fun = fake_validate,
+    stage_path_fun = fake_path,
+    write_fun = fake_write
+  )
+
+  expect_equal(loaded, c("stage_one", "stage_two"))
+  expect_equal(validated, c("stage_one FALSE", "stage_two FALSE"))
+  expect_equal(result$stage, c("stage_one", "stage_two"))
+  expect_equal(result$path, c("pipe/stage_one/csv", "pipe/stage_two/csv"))
+  expect_equal(result$rows, c(2L, 1L))
+  expect_equal(result$columns, c(2L, 1L))
+  expect_equal(result$errors, c("", "bad two"))
+  expect_equal(result$warnings, c("warn one", ""))
+  expect_equal(written$filename, "pipeline_validation_summary.csv")
+  expect_equal(written$pipeline_dir, "pipe")
+  expect_equal(written$storage, "local")
+})
+
 test_that("ejscreen_pipeline_prior_validation_stages keeps annual comparison stages ordered", {
   expect_equal(
     EJAM:::ejscreen_pipeline_prior_validation_stages(),

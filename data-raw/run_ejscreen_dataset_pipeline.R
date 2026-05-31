@@ -1048,30 +1048,13 @@ stages_to_validate <- EJAM:::ejscreen_pipeline_validation_stages(
   include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
   include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input
 )
-filename <- paste0("pipeline_validation_summary.", "csv")
-
-validation_summary <- data.table::rbindlist(
-  lapply(stages_to_validate, function(stagename) {
-    x <- load_file_stage(stagename)
-    result <- EJAM:::ejscreen_pipeline_validate(x, stage = stagename, strict = FALSE)
-    data.table::data.table(
-      stage = stagename,
-      path = EJAM:::ejscreen_pipeline_stage_path(stage = stagename,
-                                                 pipeline_dir = pipeline_dir,
-                                                 format = stage_format),
-      rows = NROW(x),
-      columns = NCOL(x),
-      errors = paste(result$errors, collapse = " | "),
-      warnings = paste(result$warnings, collapse = " | ")
-    )
-  }),
-  fill = TRUE
+validation_summary <- EJAM:::ejscreen_pipeline_validation_summary(
+  stages = stages_to_validate,
+  pipeline_dir = pipeline_dir,
+  stage_format = stage_format,
+  pipeline_storage = pipeline_storage,
+  load_stage_fun = load_file_stage
 )
-
-write_pipeline_txt_or_csv(x = validation_summary,
-                          filename = filename,
-                          pipeline_dir = pipeline_dir,
-                          pipeline_storage = pipeline_storage)
 
 message("Validating dynamic geography Arrow files and saving report.")
 dynamic_geography_arrow_report <- EJAM:::dynamic_geography_arrow_report(

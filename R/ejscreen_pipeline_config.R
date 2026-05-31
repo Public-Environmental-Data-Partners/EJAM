@@ -656,6 +656,46 @@ ejscreen_pipeline_validation_stages <- function(include_islandareas_data = TRUE,
   stages
 }
 
+ejscreen_pipeline_validation_summary <- function(stages,
+                                                 pipeline_dir,
+                                                 stage_format,
+                                                 pipeline_storage = c("auto", "local", "s3"),
+                                                 load_stage_fun,
+                                                 validate_fun = ejscreen_pipeline_validate,
+                                                 stage_path_fun = ejscreen_pipeline_stage_path,
+                                                 write_fun = ejscreen_pipeline_write_text_or_csv,
+                                                 strict = FALSE,
+                                                 filename = "pipeline_validation_summary.csv") {
+  pipeline_storage <- match.arg(pipeline_storage)
+  validation_summary <- data.table::rbindlist(
+    lapply(stages, function(stagename) {
+      x <- load_stage_fun(stagename)
+      result <- validate_fun(x, stage = stagename, strict = strict)
+      data.table::data.table(
+        stage = stagename,
+        path = stage_path_fun(
+          stage = stagename,
+          pipeline_dir = pipeline_dir,
+          format = stage_format
+        ),
+        rows = NROW(x),
+        columns = NCOL(x),
+        errors = paste(result$errors, collapse = " | "),
+        warnings = paste(result$warnings, collapse = " | ")
+      )
+    }),
+    fill = TRUE
+  )
+
+  write_fun(
+    validation_summary,
+    filename,
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage
+  )
+  validation_summary
+}
+
 ejscreen_pipeline_prior_validation_stages <- function() {
   c(
     "bg_acsdata",
