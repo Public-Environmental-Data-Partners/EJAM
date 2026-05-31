@@ -1265,6 +1265,70 @@ ejscreen_pipeline_stage_io <- function(pipeline_dir,
   )
 }
 
+ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
+                                               force_acs = FALSE,
+                                               force_bg_acsdata = FALSE,
+                                               include_islandareas_data = FALSE,
+                                               stage_io,
+                                               pipeline_dir,
+                                               stage_format,
+                                               stage_formats,
+                                               pipeline_storage = c("auto", "local", "s3"),
+                                               acs_download_timeout = 3600,
+                                               acs_download_retries = 2,
+                                               download_fun = EJAM::download_bg_acs_raw,
+                                               message_fun = message) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  need_bg_acsdata <- force_bg_acsdata ||
+    include_islandareas_data ||
+    !stage_io$stage_exists("bg_acsdata")
+  need_bg_acs_raw <- force_acs || need_bg_acsdata
+
+  stagename <- "bg_acs_raw"
+  message_fun(paste0("Stage: ", stagename))
+
+  bg_acs_raw <- NULL
+  if (!isTRUE(need_bg_acs_raw)) {
+    message_fun("Skipping bg_acs_raw because saved bg_acsdata exists and ACS rebuild was not requested")
+  } else if (force_acs || !stage_io$stage_exists(stagename)) {
+    message_fun("Creating bg_acs_raw from ACSdownload/Census files")
+    bg_acs_raw <- download_fun(
+      yr = yr,
+      pipeline_dir = pipeline_dir,
+      save_stage = TRUE,
+      stage_format = stage_format,
+      raw_acs_storage = "folder",
+      raw_table_format = "csv",
+      overwrite = TRUE,
+      storage = pipeline_storage,
+      download_timeout = acs_download_timeout,
+      download_retries = acs_download_retries
+    )
+  } else {
+    message_fun(paste0("Using provided/existing ", stagename))
+    bg_acs_raw <- stage_io$load_stage(stagename)
+  }
+
+  if (!is.null(bg_acs_raw)) {
+    raw_object_formats <- setdiff(stage_formats, "csv")
+    if (length(raw_object_formats) > 0) {
+      stage_io$save_stage_formats(
+        x = bg_acs_raw,
+        stage = stagename,
+        formats = raw_object_formats,
+        object_name = stagename,
+        validate = FALSE
+      )
+    }
+  }
+
+  list(
+    bg_acs_raw = bg_acs_raw,
+    need_bg_acsdata = need_bg_acsdata,
+    need_bg_acs_raw = need_bg_acs_raw
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

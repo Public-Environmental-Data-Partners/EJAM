@@ -483,45 +483,22 @@ used_provisional_bg_extra_indicators <- FALSE
 # Download ACS raw blockgroup data stage ####
 ###################################################### #
 
-need_bg_acsdata <- force_bg_acsdata || include_islandareas_data || !stage_exists("bg_acsdata")
-need_bg_acs_raw <- force_acs || need_bg_acsdata
-
-stagename <- "bg_acs_raw"
-message(paste0("Stage: ", stagename))
-
-bg_acs_raw <- NULL
-if (!isTRUE(need_bg_acs_raw)) {
-  message("Skipping bg_acs_raw because saved bg_acsdata exists and ACS rebuild was not requested")
-} else if (force_acs || !stage_exists(stagename)) {
-  message("Creating bg_acs_raw from ACSdownload/Census files")
-  bg_acs_raw <- EJAM::download_bg_acs_raw(
-    yr = yr,
-    pipeline_dir = pipeline_dir,
-    save_stage = TRUE,
-    stage_format = stage_format,
-    raw_acs_storage = "folder",
-    raw_table_format = "csv",
-    overwrite = TRUE,
-    storage = pipeline_storage,
-    download_timeout = acs_download_timeout,
-    download_retries = acs_download_retries
-  )
-} else {
-  message(paste0("Using provided/existing ", stagename))
-  bg_acs_raw <- load_file_stage(stagename)
-}
-if (!is.null(bg_acs_raw)) {
-  raw_object_formats <- setdiff(stage_formats, "csv")
-  if (length(raw_object_formats) > 0) {
-    save_file_stage_formats(
-      x = bg_acs_raw,
-      stage = stagename,
-      formats = raw_object_formats,
-      object_name = stagename,
-      validate = FALSE
-    )
-  }
-}
+bg_acs_raw_stage <- EJAM:::ejscreen_pipeline_stage_bg_acs_raw(
+  yr = yr,
+  force_acs = force_acs,
+  force_bg_acsdata = force_bg_acsdata,
+  include_islandareas_data = include_islandareas_data,
+  stage_io = stage_io,
+  pipeline_dir = pipeline_dir,
+  stage_format = stage_format,
+  stage_formats = stage_formats,
+  pipeline_storage = pipeline_storage,
+  acs_download_timeout = acs_download_timeout,
+  acs_download_retries = acs_download_retries
+)
+bg_acs_raw <- bg_acs_raw_stage$bg_acs_raw
+need_bg_acsdata <- bg_acs_raw_stage$need_bg_acsdata
+need_bg_acs_raw <- bg_acs_raw_stage$need_bg_acs_raw
 ###################################################### #
 # Prepare Island Areas blockgroup reference / optional Census DHC stages ####
 ###################################################### #

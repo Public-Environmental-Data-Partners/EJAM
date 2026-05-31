@@ -1200,6 +1200,107 @@ test_that("ejscreen_pipeline_stage_io builds bound stage helpers and caches fall
   expect_equal(reuse_calls, 1L)
 })
 
+test_that("ejscreen_pipeline_stage_bg_acs_raw skips, loads, or downloads as needed", {
+  messages <- character()
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+
+  stage_io_skip <- list(
+    stage_exists = function(stage) identical(stage, "bg_acsdata"),
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) stop("should not save")
+  )
+  skipped <- EJAM:::ejscreen_pipeline_stage_bg_acs_raw(
+    yr = 2024,
+    force_acs = FALSE,
+    force_bg_acsdata = FALSE,
+    include_islandareas_data = FALSE,
+    stage_io = stage_io_skip,
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    stage_formats = c("csv", "rda"),
+    pipeline_storage = "local",
+    acs_download_timeout = 1,
+    acs_download_retries = 0,
+    download_fun = function(...) stop("should not download"),
+    message_fun = fake_message
+  )
+  expect_false(skipped$need_bg_acsdata)
+  expect_false(skipped$need_bg_acs_raw)
+  expect_null(skipped$bg_acs_raw)
+  expect_true(any(grepl("Skipping bg_acs_raw", messages, fixed = TRUE)))
+
+  load_calls <- character()
+  save_calls <- list()
+  stage_io_load <- list(
+    stage_exists = function(stage) TRUE,
+    load_stage = function(stage) {
+      load_calls <<- c(load_calls, stage)
+      data.frame(raw = 1)
+    },
+    save_stage_formats = function(...) {
+      save_calls[[length(save_calls) + 1L]] <<- list(...)
+      c(rda = "saved.rda")
+    }
+  )
+  loaded <- EJAM:::ejscreen_pipeline_stage_bg_acs_raw(
+    yr = 2024,
+    force_acs = FALSE,
+    force_bg_acsdata = TRUE,
+    include_islandareas_data = FALSE,
+    stage_io = stage_io_load,
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    stage_formats = c("csv", "rda"),
+    pipeline_storage = "local",
+    acs_download_timeout = 1,
+    acs_download_retries = 0,
+    download_fun = function(...) stop("should not download"),
+    message_fun = fake_message
+  )
+  expect_true(loaded$need_bg_acsdata)
+  expect_equal(loaded$bg_acs_raw$raw, 1)
+  expect_equal(load_calls, "bg_acs_raw")
+  expect_equal(save_calls[[1]]$formats, "rda")
+  expect_false(save_calls[[1]]$validate)
+
+  download_call <- NULL
+  stage_io_download <- list(
+    stage_exists = function(stage) FALSE,
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) {
+      save_calls[[length(save_calls) + 1L]] <<- list(...)
+      c(rda = "saved.rda")
+    }
+  )
+  downloaded <- EJAM:::ejscreen_pipeline_stage_bg_acs_raw(
+    yr = 2024,
+    force_acs = TRUE,
+    force_bg_acsdata = FALSE,
+    include_islandareas_data = FALSE,
+    stage_io = stage_io_download,
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    stage_formats = c("csv", "rda"),
+    pipeline_storage = "s3",
+    acs_download_timeout = 3600,
+    acs_download_retries = 2,
+    download_fun = function(...) {
+      download_call <<- list(...)
+      data.frame(raw = 2)
+    },
+    message_fun = fake_message
+  )
+  expect_equal(downloaded$bg_acs_raw$raw, 2)
+  expect_equal(download_call$yr, 2024)
+  expect_equal(download_call$pipeline_dir, "pipe")
+  expect_equal(download_call$storage, "s3")
+  expect_true(download_call$save_stage)
+  expect_equal(download_call$download_timeout, 3600)
+  expect_equal(download_call$download_retries, 2)
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {
