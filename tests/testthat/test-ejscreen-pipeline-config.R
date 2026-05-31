@@ -122,7 +122,7 @@ test_that("ejscreen_pipeline_config_from_env honors environment overrides", {
   expect_equal(cfg$stage_format, "rda")
   expect_equal(cfg$stage_formats, c("rda", "csv"))
   expect_true(cfg$force_acs)
-  expect_false(cfg$force_bg_acsdata)
+  expect_true(cfg$force_bg_acsdata)
   expect_false(cfg$include_ejscreen_export)
   expect_false(cfg$include_ejscreen_export_statepct)
   expect_equal(cfg$bg_envirodata_reference_vars, c("drinking", "DWATER"))

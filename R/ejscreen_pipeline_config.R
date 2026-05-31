@@ -268,7 +268,7 @@ ejscreen_pipeline_config_from_env <- function() {
     decennial_bgwts_cache = ejscreen_pipeline_env_value("EJAM_DECENNIAL_BGWTS_CACHE", ""),
     refresh_decennial_bgwts = ejscreen_pipeline_env_flag("EJAM_REFRESH_DECENNIAL_BGWTS", FALSE),
     force_acs = force_acs,
-    force_bg_acsdata = ejscreen_pipeline_env_flag("EJAM_FORCE_BG_ACSDATA", FALSE),
+    force_bg_acsdata = ejscreen_pipeline_env_flag("EJAM_FORCE_BG_ACSDATA", force_acs),
     force_bg_geodata = ejscreen_pipeline_env_flag("EJAM_FORCE_BG_GEODATA", FALSE),
     tiger_bg_cache_dir = ejscreen_pipeline_env_value("EJAM_TIGER_BG_CACHE_DIR", NULL),
     acs_download_timeout = ejscreen_pipeline_env_value("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600"),

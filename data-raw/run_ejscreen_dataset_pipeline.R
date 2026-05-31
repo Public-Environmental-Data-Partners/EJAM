@@ -480,55 +480,22 @@ print(
 
 # get settings ####
 
-env_flag <- function(name, default = FALSE) {
-  value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
-  toupper(value) %in% c("1", "TRUE", "YES", "Y")
-}
+pipeline_config <- EJAM:::ejscreen_pipeline_config_from_env()
 
-env_csv <- function(name) {
-  value <- Sys.getenv(name, unset = "")
-  if (!nzchar(value)) {
-    return(character())
-  }
-  out <- trimws(strsplit(value, ",", fixed = TRUE)[[1]])
-  out[nzchar(out)]
-}
-
-### year ####
-
-default_yr <- suppressMessages({EJAM:::acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE)})
-yr <- as.integer(Sys.getenv("EJAM_PIPELINE_YR", unset = default_yr))
-pipeline_yr <- yr
-message("Year: ", pipeline_yr)
-
-### storage / folders / file format settings ####
-
-pipeline_dir <- Sys.getenv(
-  "EJAM_PIPELINE_DIR",
-  unset = file.path(getwd(), "data-raw", "pipeline_outputs", paste0("ejscreen_acs_", yr))
-)
-pipeline_root <- Sys.getenv(
-  "EJAM_PIPELINE_ROOT",
-  unset = if (grepl("/ejscreen_acs_[0-9]+/?$", pipeline_dir)) dirname(pipeline_dir) else "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
-)
-pipeline_storage <- Sys.getenv("EJAM_PIPELINE_STORAGE", unset = "auto")
-pipeline_storage <- match.arg(pipeline_storage, c("auto", "local", "s3"))
-pipeline_storage <- EJAM:::ejscreen_pipeline_storage_backend(pipeline_dir, storage = pipeline_storage)
+yr <- pipeline_config$yr
+pipeline_yr <- pipeline_config$yr
+pipeline_root <- pipeline_config$pipeline_root
+pipeline_dir <- pipeline_config$pipeline_dir
+pipeline_storage <- pipeline_config$pipeline_storage
 if (pipeline_storage == "local") {
   dir.create(pipeline_dir, recursive = TRUE, showWarnings = FALSE)
 }
-stage_format <- Sys.getenv("EJAM_STAGE_FORMAT", unset = "csv")
-stage_formats <- trimws(strsplit(Sys.getenv("EJAM_STAGE_FORMATS", unset = stage_format), ",", fixed = TRUE)[[1]])
-stage_formats <- unique(stage_formats[nzchar(stage_formats)])
-stage_formats <- intersect(stage_formats, c("csv", "rds", "rda", "arrow"))
-if (!stage_format %in% stage_formats) {
-  stage_formats <- c(stage_format, stage_formats)
-}
-blockgroup_universe_source <- Sys.getenv("EJAM_BLOCKGROUP_UNIVERSE_SOURCE", unset = "acs")
-blockgroup_universe_source <- match.arg(blockgroup_universe_source, c("acs", "union"))
-tract_weight_source <- Sys.getenv("EJAM_TRACT_WEIGHT_SOURCE", unset = "decennial2020")
-tract_weight_source <- match.arg(tract_weight_source, c("decennial2020", "acs"))
+stage_format <- pipeline_config$stage_format
+stage_formats <- pipeline_config$stage_formats
+blockgroup_universe_source <- pipeline_config$blockgroup_universe_source
+tract_weight_source <- pipeline_config$tract_weight_source
 
+message("Year: ", pipeline_yr)
 message("Pipeline folder: ", pipeline_dir)
 message("Pipeline storage: ", pipeline_storage)
 message("File format aka stage_format: ", stage_format)
@@ -538,75 +505,40 @@ message("Tract apportionment weight source: ", tract_weight_source)
 
 ### ACS DEMOGRAPHIC DATA settings ####
 
-force_acs <- env_flag("EJAM_FORCE_ACS", FALSE)
-force_bg_acsdata <- env_flag("EJAM_FORCE_BG_ACSDATA", force_acs)
-force_bg_geodata <- env_flag("EJAM_FORCE_BG_GEODATA", FALSE)
-tiger_bg_cache_dir <- Sys.getenv("EJAM_TIGER_BG_CACHE_DIR", unset = default_tiger_bg_cache_dir)
-acs_download_timeout <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_TIMEOUT", unset = "3600"))
-acs_download_retries <- as.integer(Sys.getenv("EJAM_ACS_DOWNLOAD_RETRIES", unset = "2"))
-include_islandareas_data <- env_flag("EJAM_INCLUDE_ISLANDAREAS_DATA", TRUE)
-islandareas_reference_path <- Sys.getenv(
-  "EJAM_ISLANDAREAS_REFERENCE_PATH",
-  unset = EJAM:::islandareas_epa_reference_default_path()
-)
-use_islandareas_demographics <- env_flag("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", FALSE)
+force_acs <- pipeline_config$force_acs
+force_bg_acsdata <- pipeline_config$force_bg_acsdata
+force_bg_geodata <- pipeline_config$force_bg_geodata
+tiger_bg_cache_dir <- pipeline_config$tiger_bg_cache_dir
+acs_download_timeout <- pipeline_config$acs_download_timeout
+acs_download_retries <- pipeline_config$acs_download_retries
+include_islandareas_data <- pipeline_config$include_islandareas_data
+islandareas_reference_path <- pipeline_config$islandareas_reference_path
+use_islandareas_demographics <- pipeline_config$use_islandareas_demographics
 
 ### ENVIRONMENTAL DATA settings ####
 
-use_provisional_bg_envirodata <- env_flag("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", FALSE)
-bg_envirodata_reference_path <- Sys.getenv("EJAM_BG_ENVIRODATA_REFERENCE_PATH", unset = "")
-bg_envirodata_reference_vars <- env_csv("EJAM_BG_ENVIRODATA_REFERENCE_VARS")
+use_provisional_bg_envirodata <- pipeline_config$use_provisional_bg_envirodata
+bg_envirodata_reference_path <- pipeline_config$bg_envirodata_reference_path
+bg_envirodata_reference_vars <- pipeline_config$bg_envirodata_reference_vars
 
 ### EJSCREEN DATASET EXPORT settings ####
 
-include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
-include_ejscreen_export_statepct <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT", include_ejscreen_export)
-include_ejscreen_pctile_lookup_exports <- env_flag("EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS", FALSE)
-include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", FALSE)
+include_ejscreen_export <- pipeline_config$include_ejscreen_export
+include_ejscreen_export_statepct <- pipeline_config$include_ejscreen_export_statepct
+include_ejscreen_pctile_lookup_exports <- pipeline_config$include_ejscreen_pctile_lookup_exports
+include_ejscreen_dataset_creator_input <- pipeline_config$include_ejscreen_dataset_creator_input
 
 ### validation vs prior data  ####
 
-validate_vs_prior <- env_flag("EJAM_VALIDATE_VS_PRIOR", TRUE)
-validate_vs_prior_waldo <- env_flag("EJAM_VALIDATE_VS_PRIOR_WALDO", FALSE)
-ejscreen_export_reference_path <- Sys.getenv("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", unset = "")
-ejscreen_export_statepct_reference_path <- Sys.getenv("EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH", unset = "")
-if (!nzchar(ejscreen_export_reference_path) &&
-    identical(as.character(pipeline_yr), "2022") &&
-    identical(pipeline_storage, "s3")) {
-  ejscreen_export_reference_path <- paste0(
-    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
-    "ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe/",
-    "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv"
-  )
-}
-if (!nzchar(ejscreen_export_statepct_reference_path) &&
-    identical(as.character(pipeline_yr), "2022") &&
-    identical(pipeline_storage, "s3")) {
-  ejscreen_export_statepct_reference_path <- paste0(
-    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/",
-    "ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe/",
-    "EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI.csv"
-  )
-}
-validate_ejscreen_export_reference <- env_flag(
-  "EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE",
-  nzchar(ejscreen_export_reference_path) || nzchar(ejscreen_export_statepct_reference_path)
-)
-prior_pipeline_yr <- Sys.getenv(
-  "EJAM_PRIOR_PIPELINE_YR",
-  unset = as.character(as.integer(pipeline_yr) - 1L)
-)
-prior_pipeline_dir <- Sys.getenv("EJAM_PRIOR_PIPELINE_DIR", unset = "")
-if (!nzchar(prior_pipeline_dir)) {
-  prior_pipeline_dir <- EJAM:::ejscreen_pipeline_version_dir(prior_pipeline_yr, root = pipeline_root)
-}
-prior_package_ref <- Sys.getenv("EJAM_PRIOR_PACKAGE_REF", unset = "")
-prior_package_path <- Sys.getenv("EJAM_PRIOR_PACKAGE_PATH", unset = "data/blockgroupstats.rda")
-
-EJAM:::ejscreen_pipeline_validate_year_dir(pipeline_yr, pipeline_dir)
-if (!nzchar(prior_package_ref)) {
-  EJAM:::ejscreen_pipeline_validate_year_dir(prior_pipeline_yr, prior_pipeline_dir)
-}
+validate_vs_prior <- pipeline_config$validate_vs_prior
+validate_vs_prior_waldo <- pipeline_config$validate_vs_prior_waldo
+ejscreen_export_reference_path <- pipeline_config$ejscreen_export_reference_path
+ejscreen_export_statepct_reference_path <- pipeline_config$ejscreen_export_statepct_reference_path
+validate_ejscreen_export_reference <- pipeline_config$validate_ejscreen_export_reference
+prior_pipeline_yr <- pipeline_config$prior_pipeline_yr
+prior_pipeline_dir <- pipeline_config$prior_pipeline_dir
+prior_package_ref <- pipeline_config$prior_package_ref
+prior_package_path <- pipeline_config$prior_package_path
 
 pipeline_setting_names <- c(
   'EJAM_PIPELINE_YR',
