@@ -1301,6 +1301,127 @@ test_that("ejscreen_pipeline_stage_bg_acs_raw skips, loads, or downloads as need
   expect_equal(download_call$download_retries, 2)
 })
 
+test_that("ejscreen_pipeline_prepare_islandareas loads reference or optional demographics", {
+  messages <- character()
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+
+  stage_io_none <- list(
+    stage_exists = function(stage) stop("should not check stages"),
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) stop("should not save")
+  )
+  skipped <- EJAM:::ejscreen_pipeline_prepare_islandareas(
+    include_islandareas_data = FALSE,
+    need_bg_acsdata = TRUE,
+    use_islandareas_demographics = FALSE,
+    force_acs = FALSE,
+    stage_io = stage_io_none,
+    islandareas_reference_path = "ref.csv",
+    stage_formats = c("csv", "rda"),
+    pipeline_storage = "local",
+    load_reference_fun = function(...) stop("should not load reference"),
+    download_raw_fun = function(...) stop("should not download"),
+    calc_demographics_fun = function(...) stop("should not calculate"),
+    message_fun = fake_message
+  )
+  expect_null(skipped$bg_islandareas_raw)
+  expect_null(skipped$bg_islandareas_demographics)
+  expect_null(skipped$bg_islandareas_reference)
+
+  reference_call <- NULL
+  reference <- EJAM:::ejscreen_pipeline_prepare_islandareas(
+    include_islandareas_data = TRUE,
+    need_bg_acsdata = TRUE,
+    use_islandareas_demographics = FALSE,
+    force_acs = FALSE,
+    stage_io = stage_io_none,
+    islandareas_reference_path = "ref.csv",
+    stage_formats = c("csv", "rda"),
+    pipeline_storage = "s3",
+    load_reference_fun = function(...) {
+      reference_call <<- list(...)
+      data.frame(bgfips = "780309611001")
+    },
+    download_raw_fun = function(...) stop("should not download"),
+    calc_demographics_fun = function(...) stop("should not calculate"),
+    message_fun = fake_message
+  )
+  expect_equal(reference$bg_islandareas_reference$bgfips, "780309611001")
+  expect_equal(reference_call$path, "ref.csv")
+  expect_equal(reference_call$storage, "s3")
+
+  load_calls <- character()
+  save_calls <- list()
+  stage_io_demographics <- list(
+    stage_exists = function(stage) identical(stage, "bg_islandareas_demographics"),
+    load_stage = function(stage) {
+      load_calls <<- c(load_calls, stage)
+      data.frame(bgfips = "660109501001")
+    },
+    save_stage_formats = function(...) {
+      save_calls[[length(save_calls) + 1L]] <<- list(...)
+      c(csv = "saved.csv")
+    }
+  )
+  demographics <- EJAM:::ejscreen_pipeline_prepare_islandareas(
+    include_islandareas_data = TRUE,
+    need_bg_acsdata = TRUE,
+    use_islandareas_demographics = TRUE,
+    force_acs = FALSE,
+    stage_io = stage_io_demographics,
+    islandareas_reference_path = "ref.csv",
+    stage_formats = c("csv", "rda"),
+    pipeline_storage = "local",
+    load_reference_fun = function(...) stop("should not load reference"),
+    download_raw_fun = function(...) stop("should not download"),
+    calc_demographics_fun = function(...) stop("should not calculate"),
+    message_fun = fake_message
+  )
+  expect_equal(demographics$bg_islandareas_demographics$bgfips, "660109501001")
+  expect_equal(load_calls, "bg_islandareas_demographics")
+  expect_equal(save_calls[[1]]$stage, "bg_islandareas_demographics")
+
+  download_calls <- 0L
+  calc_input <- NULL
+  stage_io_download <- list(
+    stage_exists = function(stage) FALSE,
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) {
+      save_calls[[length(save_calls) + 1L]] <<- list(...)
+      c(rda = "saved.rda")
+    }
+  )
+  created <- EJAM:::ejscreen_pipeline_prepare_islandareas(
+    include_islandareas_data = TRUE,
+    need_bg_acsdata = TRUE,
+    use_islandareas_demographics = TRUE,
+    force_acs = TRUE,
+    stage_io = stage_io_download,
+    islandareas_reference_path = "ref.csv",
+    stage_formats = c("csv", "rda", "arrow"),
+    pipeline_storage = "local",
+    load_reference_fun = function(...) stop("should not load reference"),
+    download_raw_fun = function(...) {
+      download_calls <<- download_calls + 1L
+      list(raw = "islandareas")
+    },
+    calc_demographics_fun = function(x) {
+      calc_input <<- x
+      data.frame(bgfips = "690851001001")
+    },
+    message_fun = fake_message
+  )
+  expect_equal(download_calls, 1L)
+  expect_equal(calc_input$raw, "islandareas")
+  expect_equal(created$bg_islandareas_demographics$bgfips, "690851001001")
+  expect_equal(save_calls[[2]]$stage, "bg_islandareas_raw")
+  expect_equal(save_calls[[2]]$formats, "rda")
+  expect_equal(save_calls[[3]]$stage, "bg_islandareas_demographics")
+  expect_equal(save_calls[[3]]$formats, c("csv", "rda", "arrow"))
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

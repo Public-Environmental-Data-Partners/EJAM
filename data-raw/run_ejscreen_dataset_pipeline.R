@@ -503,56 +503,19 @@ need_bg_acs_raw <- bg_acs_raw_stage$need_bg_acs_raw
 # Prepare Island Areas blockgroup reference / optional Census DHC stages ####
 ###################################################### #
 
-bg_islandareas_raw <- NULL
-bg_islandareas_demographics <- NULL
-bg_islandareas_reference <- NULL
-if (isTRUE(include_islandareas_data) && isTRUE(need_bg_acsdata)) {
-  if (!isTRUE(use_islandareas_demographics)) {
-    message("Loading Island Areas rows from archived EPA EJScreen reference")
-    bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
-      path = islandareas_reference_path,
-      storage = pipeline_storage
-    )
-  } else {
-    stagename <- "bg_islandareas_demographics"
-    message(paste0("Stage: ", stagename))
-    if (!isTRUE(force_acs) && stage_exists(stagename)) {
-      message(paste0("Using provided/existing ", stagename))
-      bg_islandareas_demographics <- load_file_stage(stagename)
-      save_file_stage_formats(bg_islandareas_demographics, stage = stagename)
-    } else {
-      raw_stagename <- "bg_islandareas_raw"
-      message(paste0("Stage: ", raw_stagename))
-      if (!isTRUE(force_acs) && stage_exists(raw_stagename)) {
-        message(paste0("Using provided/existing ", raw_stagename))
-        bg_islandareas_raw <- load_file_stage(raw_stagename)
-      } else {
-        message("Creating bg_islandareas_raw from 2020 Island Areas Census DHC")
-        bg_islandareas_raw <- EJAM:::download_bg_islandareas_raw()
-        raw_object_formats <- intersect(stage_formats, c("rds", "rda"))
-        if (length(raw_object_formats) > 0) {
-          save_file_stage_formats(
-            x = bg_islandareas_raw,
-            stage = raw_stagename,
-            formats = raw_object_formats,
-            object_name = raw_stagename,
-            validate = TRUE
-          )
-        }
-      }
-
-      message("Creating bg_islandareas_demographics from bg_islandareas_raw")
-      bg_islandareas_demographics <- EJAM:::calc_bg_islandareasdata(bg_islandareas_raw)
-      save_file_stage_formats(
-        x = bg_islandareas_demographics,
-        stage = stagename,
-        formats = stage_formats,
-        object_name = stagename,
-        validate = TRUE
-      )
-    }
-  }
-}
+islandareas_stage <- EJAM:::ejscreen_pipeline_prepare_islandareas(
+  include_islandareas_data = include_islandareas_data,
+  need_bg_acsdata = need_bg_acsdata,
+  use_islandareas_demographics = use_islandareas_demographics,
+  force_acs = force_acs,
+  stage_io = stage_io,
+  islandareas_reference_path = islandareas_reference_path,
+  stage_formats = stage_formats,
+  pipeline_storage = pipeline_storage
+)
+bg_islandareas_raw <- islandareas_stage$bg_islandareas_raw
+bg_islandareas_demographics <- islandareas_stage$bg_islandareas_demographics
+bg_islandareas_reference <- islandareas_stage$bg_islandareas_reference
 ###################################################### #
 # Calculate ACS-based indicators, bg_acsdata stage ####
 ###################################################### #

@@ -1329,6 +1329,90 @@ ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
   )
 }
 
+ejscreen_pipeline_prepare_islandareas <- function(include_islandareas_data = FALSE,
+                                                  need_bg_acsdata = FALSE,
+                                                  use_islandareas_demographics = FALSE,
+                                                  force_acs = FALSE,
+                                                  stage_io,
+                                                  islandareas_reference_path,
+                                                  stage_formats,
+                                                  pipeline_storage = c("auto", "local", "s3"),
+                                                  load_reference_fun = load_islandareas_epa_reference,
+                                                  download_raw_fun = download_bg_islandareas_raw,
+                                                  calc_demographics_fun = calc_bg_islandareasdata,
+                                                  message_fun = message) {
+  pipeline_storage <- match.arg(pipeline_storage)
+
+  bg_islandareas_raw <- NULL
+  bg_islandareas_demographics <- NULL
+  bg_islandareas_reference <- NULL
+
+  if (!isTRUE(include_islandareas_data) || !isTRUE(need_bg_acsdata)) {
+    return(list(
+      bg_islandareas_raw = bg_islandareas_raw,
+      bg_islandareas_demographics = bg_islandareas_demographics,
+      bg_islandareas_reference = bg_islandareas_reference
+    ))
+  }
+
+  if (!isTRUE(use_islandareas_demographics)) {
+    message_fun("Loading Island Areas rows from archived EPA EJScreen reference")
+    bg_islandareas_reference <- load_reference_fun(
+      path = islandareas_reference_path,
+      storage = pipeline_storage
+    )
+    return(list(
+      bg_islandareas_raw = bg_islandareas_raw,
+      bg_islandareas_demographics = bg_islandareas_demographics,
+      bg_islandareas_reference = bg_islandareas_reference
+    ))
+  }
+
+  stagename <- "bg_islandareas_demographics"
+  message_fun(paste0("Stage: ", stagename))
+  if (!isTRUE(force_acs) && stage_io$stage_exists(stagename)) {
+    message_fun(paste0("Using provided/existing ", stagename))
+    bg_islandareas_demographics <- stage_io$load_stage(stagename)
+    stage_io$save_stage_formats(bg_islandareas_demographics, stage = stagename)
+  } else {
+    raw_stagename <- "bg_islandareas_raw"
+    message_fun(paste0("Stage: ", raw_stagename))
+    if (!isTRUE(force_acs) && stage_io$stage_exists(raw_stagename)) {
+      message_fun(paste0("Using provided/existing ", raw_stagename))
+      bg_islandareas_raw <- stage_io$load_stage(raw_stagename)
+    } else {
+      message_fun("Creating bg_islandareas_raw from 2020 Island Areas Census DHC")
+      bg_islandareas_raw <- download_raw_fun()
+      raw_object_formats <- intersect(stage_formats, c("rds", "rda"))
+      if (length(raw_object_formats) > 0) {
+        stage_io$save_stage_formats(
+          x = bg_islandareas_raw,
+          stage = raw_stagename,
+          formats = raw_object_formats,
+          object_name = raw_stagename,
+          validate = TRUE
+        )
+      }
+    }
+
+    message_fun("Creating bg_islandareas_demographics from bg_islandareas_raw")
+    bg_islandareas_demographics <- calc_demographics_fun(bg_islandareas_raw)
+    stage_io$save_stage_formats(
+      x = bg_islandareas_demographics,
+      stage = stagename,
+      formats = stage_formats,
+      object_name = stagename,
+      validate = TRUE
+    )
+  }
+
+  list(
+    bg_islandareas_raw = bg_islandareas_raw,
+    bg_islandareas_demographics = bg_islandareas_demographics,
+    bg_islandareas_reference = bg_islandareas_reference
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",
