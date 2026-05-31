@@ -761,16 +761,33 @@ ejamit <- function(sitepoints = NULL,
 
   ################################################################ #  ################################################################ #
 
+  ## * radius.miles ####
+
+  if (sitetype == "fips") {
+    # FIPS output should expose a real user-requested buffer radius so
+    # downstream map/report functions can recreate buffered FIPS polygons.
+    radius_for_output <- NA_real_
+    if (!is.null(user_radius) &&
+        length(user_radius) > 0 &&
+        !is.na(user_radius[1]) &&
+        user_radius[1] > 0 &&
+        user_radius[1] != 999) {
+      radius_for_output <- user_radius[1]
+    }
+  } else {
+    radius_for_output <- radius
+  }
+
   ## * URLs/HYPERLINKS ####
 
   # now using url_columns_bysite() in server & ejamit - had duplicated ejamit() code in app_server but used reactives there.
 
   if ("REGISTRY_ID" %in% names(out$results_bysite)) {regid <- out$results_bysite$REGISTRY_ID} else {regid <- NULL}
 
-  if (999 %in% radius || is.na(radius)) {
+  if (999 %in% radius_for_output || any(is.na(radius_for_output))) {
     buffer_for_links <- 0
   } else {
-    buffer_for_links <- radius
+    buffer_for_links <- radius_for_output
   }
 
   links <- url_columns_bysite(
@@ -803,16 +820,10 @@ ejamit <- function(sitepoints = NULL,
 
   ################################################################ #  ################################################################ #
 
-  ## * radius.miles ####
-
-  if (sitetype == "fips") {
-    # Analyzed by FIPS so reporting a radius does not make sense here.
-    radius <- NA
-  }
   # ( doaggregate already provided this but ok to do again)
-  out$results_bysite[      , radius.miles := radius]
-  out$results_overall[     , radius.miles := radius]
-  out$results_bybg_people[ , radius.miles := radius]
+  out$results_bysite[      , radius.miles := radius_for_output]
+  out$results_overall[     , radius.miles := radius_for_output]
+  out$results_bybg_people[ , radius.miles := radius_for_output]
 
   ## * sort output (results_bysite) like input was sorted ####
 
@@ -866,4 +877,3 @@ ejamit <- function(sitepoints = NULL,
 
   invisible(out)
 }
-
