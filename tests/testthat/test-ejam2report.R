@@ -76,3 +76,42 @@ test_that("local logo_html image sources are embedded for standalone reports", {
   expect_true(grepl("data:image", normalized_logo, fixed = TRUE))
   expect_false(grepl(logo_path, normalized_logo, fixed = TRUE))
 })
+
+test_that("ejam2report() returns an absolute path when filename has no directory or uses './'", {
+  skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
+
+  tmpdir <- tempdir()
+  outfile_bare   <- file.path(tmpdir, "bare_filename_test.html")
+  outfile_dotslash <- file.path(tmpdir, "dotslash_filename_test.html")
+  on.exit({
+    unlink(outfile_bare)
+    unlink(outfile_dotslash)
+  }, add = TRUE)
+
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(tmpdir)
+
+  # filename with no directory component (just a bare name)
+  result_bare <- ejam2report(
+    ejamitout = testoutput_ejamit_10pts_1miles,
+    filename = "bare_filename_test.html",
+    return_html = FALSE,
+    launch_browser = FALSE
+  )
+  expect_true(file.exists(result_bare))
+  expect_true(!is.na(result_bare))
+  # The returned path must be absolute (not relative)
+  expect_true(startsWith(result_bare, "/") || grepl("^[A-Za-z]:", result_bare))
+
+  # filename using "./" prefix
+  result_dotslash <- ejam2report(
+    ejamitout = testoutput_ejamit_10pts_1miles,
+    filename = "./dotslash_filename_test.html",
+    return_html = FALSE,
+    launch_browser = FALSE
+  )
+  expect_true(file.exists(result_dotslash))
+  expect_true(!is.na(result_dotslash))
+  expect_true(startsWith(result_dotslash, "/") || grepl("^[A-Za-z]:", result_dotslash))
+})

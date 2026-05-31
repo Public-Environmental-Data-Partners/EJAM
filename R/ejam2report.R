@@ -407,7 +407,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       )
       temp_comm_report <- file.path(tempdir(), filename)
     } else {
-      temp_comm_report <- filename
+      temp_comm_report <- normalizePath(filename, mustWork = FALSE)
     }
     output_file      <- temp_comm_report
 
