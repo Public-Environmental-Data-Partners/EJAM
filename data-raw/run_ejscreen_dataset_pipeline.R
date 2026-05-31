@@ -582,83 +582,26 @@ used_provisional_bg_extra_indicators <- bg_extra_indicators_stage$used_provision
 # Census/TIGER blockgroup geography stage ####
 ###################################################### #
 
-stagename <- "bg_geodata"
-message(paste0("Stage: ", stagename))
-geodata_bgfips <- if (blockgroup_universe_source == "acs") {
-  unique(bg_acsdata$bgfips)
-} else {
-  unique(c(bg_acsdata$bgfips, bg_envirodata$bgfips, bg_extra_indicators$bgfips))
-}
-
-if (!isTRUE(force_bg_geodata) && stage_exists(stagename)) {
-  message(paste0("Using provided/existing ", stagename))
-  bg_geodata <- load_file_stage(stagename)
-  if (isTRUE(include_islandareas_data)) {
-    if (is.null(bg_islandareas_reference)) {
-      message("Loading Island Areas rows from archived EPA EJScreen reference")
-      bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
-        path = islandareas_reference_path,
-        storage = pipeline_storage
-      )
-    }
-    bg_geodata <- EJAM:::merge_islandareas_stage_data(
-      bg_geodata,
-      EJAM:::islandareas_reference_geodata(bg_islandareas_reference)
-    )
-  }
-  bg_geodata <- EJAM:::complete_bg_geodata(
-    bg_geodata = bg_geodata,
-    bgfips = geodata_bgfips,
-    existing_blockgroupstats = get_reuse_blockgroupstats(),
-    reuse_existing_if_missing = TRUE,
-    allow_partial_reuse = FALSE
-  )
-  save_file_stage_formats(bg_geodata, stage = stagename)
-} else {
-  message(paste0("Creating ", stagename, " from Census/TIGER blockgroup files"))
-  geodata_download_bgfips <- if (isTRUE(include_islandareas_data)) {
-    geodata_bgfips[!EJAM:::islandareas_is_bgfips(geodata_bgfips)]
-  } else {
-    geodata_bgfips
-  }
-  bg_geodata <- EJAM:::calc_bg_geodata(
-    yr = yr,
-    bgfips = geodata_download_bgfips,
-    existing_blockgroupstats = get_reuse_blockgroupstats(),
-    reuse_existing_if_missing = TRUE,
-    allow_partial_reuse = FALSE,
-    download = TRUE,
-    geodata_source = "tiger",
-    download_dir = tiger_bg_cache_dir,
-    download_timeout = acs_download_timeout,
-    download_retries = acs_download_retries,
-    pipeline_dir = pipeline_dir,
-    save_stage = FALSE,
-    stage_format = stage_format,
-    pipeline_storage = pipeline_storage
-  )
-  if (isTRUE(include_islandareas_data)) {
-    if (is.null(bg_islandareas_reference)) {
-      message("Loading Island Areas rows from archived EPA EJScreen reference")
-      bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
-        path = islandareas_reference_path,
-        storage = pipeline_storage
-      )
-    }
-    bg_geodata <- EJAM:::merge_islandareas_stage_data(
-      bg_geodata,
-      EJAM:::islandareas_reference_geodata(bg_islandareas_reference)
-    )
-    bg_geodata <- EJAM:::complete_bg_geodata(
-      bg_geodata = bg_geodata,
-      bgfips = geodata_bgfips,
-      existing_blockgroupstats = get_reuse_blockgroupstats(),
-      reuse_existing_if_missing = TRUE,
-      allow_partial_reuse = FALSE
-    )
-  }
-  save_file_stage_formats(bg_geodata, stage = stagename)
-}
+bg_geodata_stage <- EJAM:::ejscreen_pipeline_stage_bg_geodata(
+  yr = yr,
+  bg_acsdata = bg_acsdata,
+  bg_envirodata = bg_envirodata,
+  bg_extra_indicators = bg_extra_indicators,
+  blockgroup_universe_source = blockgroup_universe_source,
+  force_bg_geodata = force_bg_geodata,
+  include_islandareas_data = include_islandareas_data,
+  bg_islandareas_reference = bg_islandareas_reference,
+  islandareas_reference_path = islandareas_reference_path,
+  stage_io = stage_io,
+  tiger_bg_cache_dir = tiger_bg_cache_dir,
+  acs_download_timeout = acs_download_timeout,
+  acs_download_retries = acs_download_retries,
+  pipeline_dir = pipeline_dir,
+  stage_format = stage_format,
+  pipeline_storage = pipeline_storage
+)
+bg_geodata <- bg_geodata_stage$bg_geodata
+bg_islandareas_reference <- bg_geodata_stage$bg_islandareas_reference
 
 ###################################################### #
 # * *Create blockgroupstats, bgej, usastats, & statestats ** ####

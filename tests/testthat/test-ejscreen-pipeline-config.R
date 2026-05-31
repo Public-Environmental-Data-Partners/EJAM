@@ -1697,6 +1697,112 @@ test_that("ejscreen_pipeline_stage_bg_extra_indicators loads or builds from fall
   expect_equal(write_call$storage, "s3")
 })
 
+test_that("ejscreen_pipeline_stage_bg_geodata loads or creates geography data", {
+  messages <- character()
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+
+  save_call <- NULL
+  load_reference_call <- NULL
+  complete_call <- NULL
+  stage_io_existing <- list(
+    stage_exists = function(stage) identical(stage, "bg_geodata"),
+    load_stage = function(stage) data.frame(bgfips = "010010201001", area = 1),
+    save_stage_formats = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    },
+    get_reuse_blockgroupstats = function() data.frame(bgfips = "010010201001", old = 1)
+  )
+  existing <- EJAM:::ejscreen_pipeline_stage_bg_geodata(
+    yr = 2024,
+    bg_acsdata = data.frame(bgfips = c("010010201001", "780309611001")),
+    bg_envirodata = data.frame(bgfips = "020200001001"),
+    bg_extra_indicators = data.frame(bgfips = "040130001001"),
+    blockgroup_universe_source = "acs",
+    force_bg_geodata = FALSE,
+    include_islandareas_data = TRUE,
+    bg_islandareas_reference = NULL,
+    islandareas_reference_path = "island-ref.csv",
+    stage_io = stage_io_existing,
+    tiger_bg_cache_dir = "tiger-cache",
+    acs_download_timeout = 10,
+    acs_download_retries = 1,
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    pipeline_storage = "local",
+    load_islandareas_reference_fun = function(...) {
+      load_reference_call <<- list(...)
+      data.frame(bgfips = "780309611001", area = 2)
+    },
+    islandareas_geodata_fun = function(reference) reference,
+    merge_fun = function(x, islandareas_data) rbind(x, islandareas_data),
+    complete_fun = function(...) {
+      complete_call <<- list(...)
+      data.frame(bgfips = complete_call$bgfips, area = seq_along(complete_call$bgfips))
+    },
+    calc_fun = function(...) stop("should not calculate"),
+    message_fun = fake_message
+  )
+  expect_equal(existing$geodata_bgfips, c("010010201001", "780309611001"))
+  expect_equal(load_reference_call$path, "island-ref.csv")
+  expect_equal(complete_call$bgfips, c("010010201001", "780309611001"))
+  expect_equal(save_call$stage, "bg_geodata")
+
+  calc_call <- NULL
+  complete_call <- NULL
+  stage_io_create <- list(
+    stage_exists = function(stage) FALSE,
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    },
+    get_reuse_blockgroupstats = function() data.frame(bgfips = "010010201001", old = 1)
+  )
+  created <- EJAM:::ejscreen_pipeline_stage_bg_geodata(
+    yr = 2024,
+    bg_acsdata = data.frame(bgfips = "010010201001"),
+    bg_envirodata = data.frame(bgfips = c("020200001001", "780309611001")),
+    bg_extra_indicators = data.frame(bgfips = "040130001001"),
+    blockgroup_universe_source = "combined",
+    force_bg_geodata = TRUE,
+    include_islandareas_data = TRUE,
+    bg_islandareas_reference = data.frame(bgfips = "780309611001", area = 4),
+    islandareas_reference_path = "island-ref.csv",
+    stage_io = stage_io_create,
+    tiger_bg_cache_dir = "tiger-cache",
+    acs_download_timeout = 10,
+    acs_download_retries = 1,
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    pipeline_storage = "s3",
+    islandareas_is_bgfips_fun = function(bgfips) substr(bgfips, 1, 2) == "78",
+    islandareas_geodata_fun = function(reference) reference,
+    merge_fun = function(x, islandareas_data) rbind(x, islandareas_data),
+    complete_fun = function(...) {
+      complete_call <<- list(...)
+      data.frame(bgfips = complete_call$bgfips, area = seq_along(complete_call$bgfips))
+    },
+    calc_fun = function(...) {
+      calc_call <<- list(...)
+      data.frame(bgfips = calc_call$bgfips, area = seq_along(calc_call$bgfips))
+    },
+    message_fun = fake_message
+  )
+  expect_equal(
+    created$geodata_bgfips,
+    c("010010201001", "020200001001", "780309611001", "040130001001")
+  )
+  expect_equal(calc_call$bgfips, c("010010201001", "020200001001", "040130001001"))
+  expect_equal(calc_call$download_dir, "tiger-cache")
+  expect_equal(calc_call$download_timeout, 10)
+  expect_equal(calc_call$download_retries, 1)
+  expect_equal(complete_call$bgfips, created$geodata_bgfips)
+  expect_equal(save_call$stage, "bg_geodata")
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

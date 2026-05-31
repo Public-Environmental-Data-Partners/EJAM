@@ -1681,6 +1681,121 @@ ejscreen_pipeline_stage_bg_extra_indicators <- function(pipeline_yr,
   )
 }
 
+ejscreen_pipeline_stage_bg_geodata <- function(yr,
+                                               bg_acsdata,
+                                               bg_envirodata,
+                                               bg_extra_indicators,
+                                               blockgroup_universe_source = c("acs", "combined"),
+                                               force_bg_geodata = FALSE,
+                                               include_islandareas_data = FALSE,
+                                               bg_islandareas_reference = NULL,
+                                               islandareas_reference_path = "",
+                                               stage_io,
+                                               tiger_bg_cache_dir,
+                                               acs_download_timeout = 3600,
+                                               acs_download_retries = 2,
+                                               pipeline_dir,
+                                               stage_format,
+                                               pipeline_storage = c("auto", "local", "s3"),
+                                               islandareas_is_bgfips_fun = islandareas_is_bgfips,
+                                               load_islandareas_reference_fun = load_islandareas_epa_reference,
+                                               islandareas_geodata_fun = islandareas_reference_geodata,
+                                               merge_fun = merge_islandareas_stage_data,
+                                               complete_fun = complete_bg_geodata,
+                                               calc_fun = calc_bg_geodata,
+                                               message_fun = message) {
+  blockgroup_universe_source <- match.arg(blockgroup_universe_source)
+  pipeline_storage <- match.arg(pipeline_storage)
+  stagename <- "bg_geodata"
+  message_fun(paste0("Stage: ", stagename))
+  geodata_bgfips <- if (identical(blockgroup_universe_source, "acs")) {
+    unique(bg_acsdata$bgfips)
+  } else {
+    unique(c(bg_acsdata$bgfips, bg_envirodata$bgfips, bg_extra_indicators$bgfips))
+  }
+
+  if (!isTRUE(force_bg_geodata) && stage_io$stage_exists(stagename)) {
+    message_fun(paste0("Using provided/existing ", stagename))
+    bg_geodata <- stage_io$load_stage(stagename)
+    if (isTRUE(include_islandareas_data)) {
+      if (is.null(bg_islandareas_reference)) {
+        message_fun("Loading Island Areas rows from archived EPA EJScreen reference")
+        bg_islandareas_reference <- load_islandareas_reference_fun(
+          path = islandareas_reference_path,
+          storage = pipeline_storage
+        )
+      }
+      bg_geodata <- merge_fun(
+        bg_geodata,
+        islandareas_geodata_fun(bg_islandareas_reference)
+      )
+    }
+    bg_geodata <- complete_fun(
+      bg_geodata = bg_geodata,
+      bgfips = geodata_bgfips,
+      existing_blockgroupstats = stage_io$get_reuse_blockgroupstats(),
+      reuse_existing_if_missing = TRUE,
+      allow_partial_reuse = FALSE
+    )
+    stage_io$save_stage_formats(bg_geodata, stage = stagename)
+    return(list(
+      bg_geodata = bg_geodata,
+      bg_islandareas_reference = bg_islandareas_reference,
+      geodata_bgfips = geodata_bgfips
+    ))
+  }
+
+  message_fun(paste0("Creating ", stagename, " from Census/TIGER blockgroup files"))
+  geodata_download_bgfips <- if (isTRUE(include_islandareas_data)) {
+    geodata_bgfips[!islandareas_is_bgfips_fun(geodata_bgfips)]
+  } else {
+    geodata_bgfips
+  }
+  bg_geodata <- calc_fun(
+    yr = yr,
+    bgfips = geodata_download_bgfips,
+    existing_blockgroupstats = stage_io$get_reuse_blockgroupstats(),
+    reuse_existing_if_missing = TRUE,
+    allow_partial_reuse = FALSE,
+    download = TRUE,
+    geodata_source = "tiger",
+    download_dir = tiger_bg_cache_dir,
+    download_timeout = acs_download_timeout,
+    download_retries = acs_download_retries,
+    pipeline_dir = pipeline_dir,
+    save_stage = FALSE,
+    stage_format = stage_format,
+    pipeline_storage = pipeline_storage
+  )
+  if (isTRUE(include_islandareas_data)) {
+    if (is.null(bg_islandareas_reference)) {
+      message_fun("Loading Island Areas rows from archived EPA EJScreen reference")
+      bg_islandareas_reference <- load_islandareas_reference_fun(
+        path = islandareas_reference_path,
+        storage = pipeline_storage
+      )
+    }
+    bg_geodata <- merge_fun(
+      bg_geodata,
+      islandareas_geodata_fun(bg_islandareas_reference)
+    )
+    bg_geodata <- complete_fun(
+      bg_geodata = bg_geodata,
+      bgfips = geodata_bgfips,
+      existing_blockgroupstats = stage_io$get_reuse_blockgroupstats(),
+      reuse_existing_if_missing = TRUE,
+      allow_partial_reuse = FALSE
+    )
+  }
+  stage_io$save_stage_formats(bg_geodata, stage = stagename)
+
+  list(
+    bg_geodata = bg_geodata,
+    bg_islandareas_reference = bg_islandareas_reference,
+    geodata_bgfips = geodata_bgfips
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",
