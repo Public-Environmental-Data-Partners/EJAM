@@ -1625,6 +1625,78 @@ test_that("ejscreen_pipeline_stage_bg_envirodata loads, builds provisional data,
                c("bg_envirodata_SOURCE.txt", "bg_envirodata_REFERENCE_ADJUSTMENT.txt"))
 })
 
+test_that("ejscreen_pipeline_stage_bg_extra_indicators loads or builds from fallback", {
+  messages <- character()
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+
+  save_call <- NULL
+  stage_io_existing <- list(
+    stage_exists = function(stage) identical(stage, "bg_extra_indicators"),
+    load_stage = function(stage) data.frame(bgfips = "010010201001", extra = 1),
+    save_stage_formats = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    },
+    get_reuse_blockgroupstats = function() stop("should not reuse")
+  )
+  existing <- EJAM:::ejscreen_pipeline_stage_bg_extra_indicators(
+    pipeline_yr = 2024,
+    stage_io = stage_io_existing,
+    stage_format = "csv",
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    message_fun = fake_message
+  )
+  expect_equal(existing$bg_extra_indicators$extra, 1)
+  expect_false(existing$used_provisional_bg_extra_indicators)
+  expect_equal(save_call$stage, "bg_extra_indicators")
+
+  calc_call <- NULL
+  write_call <- NULL
+  stage_io_fallback <- list(
+    stage_exists = function(stage) FALSE,
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    },
+    get_reuse_blockgroupstats = function() data.frame(bgfips = "010010201001", extra = 2)
+  )
+  fallback <- EJAM:::ejscreen_pipeline_stage_bg_extra_indicators(
+    pipeline_yr = 2024,
+    stage_io = stage_io_fallback,
+    stage_format = "csv",
+    pipeline_dir = "pipe",
+    pipeline_storage = "s3",
+    detect_acs_version_fun = function(x) "ACS 2020-2024",
+    acs_version_fun = function(yr) "ACS 2020-2024",
+    calc_fun = function(...) {
+      calc_call <<- list(...)
+      data.frame(bgfips = "010010201001", extra = 3)
+    },
+    write_text_fun = function(lines, filename, pipeline_dir, storage) {
+      write_call <<- list(
+        lines = lines,
+        filename = filename,
+        pipeline_dir = pipeline_dir,
+        storage = storage
+      )
+      filename
+    },
+    message_fun = fake_message
+  )
+  expect_true(fallback$used_provisional_bg_extra_indicators)
+  expect_equal(fallback$bg_extra_indicators$extra, 3)
+  expect_true(calc_call$reuse_existing_if_missing)
+  expect_false(calc_call$save_stage)
+  expect_equal(calc_call$stage_format, "csv")
+  expect_equal(save_call$stage, "bg_extra_indicators")
+  expect_equal(write_call$filename, "bg_extra_indicators_SOURCE.txt")
+  expect_equal(write_call$storage, "s3")
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

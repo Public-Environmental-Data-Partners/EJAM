@@ -1602,6 +1602,85 @@ ejscreen_pipeline_stage_bg_envirodata <- function(pipeline_yr,
   )
 }
 
+ejscreen_pipeline_stage_bg_extra_indicators <- function(pipeline_yr,
+                                                        stage_io,
+                                                        stage_format,
+                                                        pipeline_dir,
+                                                        pipeline_storage = c("auto", "local", "s3"),
+                                                        detect_acs_version_fun = ejscreen_pipeline_detect_acs_version,
+                                                        acs_version_fun = ejscreen_pipeline_acs_version_from_year,
+                                                        calc_fun = calc_bg_extra_indicators,
+                                                        write_text_fun = ejscreen_pipeline_write_text,
+                                                        message_fun = message,
+                                                        warning_fun = warning) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  stagename <- "bg_extra_indicators"
+  message_fun(paste0("Stage: ", stagename))
+
+  used_provisional_bg_extra_indicators <- FALSE
+
+  if (stage_io$stage_exists(stagename)) {
+    message_fun(paste0("Using provided/existing ", stagename))
+    bg_extra_indicators <- stage_io$load_stage(stagename)
+    stage_io$save_stage_formats(bg_extra_indicators, stage = stagename)
+    return(list(
+      bg_extra_indicators = bg_extra_indicators,
+      used_provisional_bg_extra_indicators = used_provisional_bg_extra_indicators
+    ))
+  }
+
+  message_fun(paste0(
+    "Creating ",
+    stagename,
+    ".",
+    stage_format,
+    " from same-vintage blockgroupstats fallback"
+  ))
+  used_provisional_bg_extra_indicators <- TRUE
+  reusable_blockgroupstats <- stage_io$get_reuse_blockgroupstats()
+  package_blockgroupstats_acs_version <- detect_acs_version_fun(x = reusable_blockgroupstats)
+  pipeline_acs_version <- acs_version_fun(pipeline_yr)
+  if (!is.na(package_blockgroupstats_acs_version) &&
+      !identical(package_blockgroupstats_acs_version, pipeline_acs_version)) {
+    warning_fun(
+      "Provisional bg_extra_indicators is being copied from packaged EJAM::blockgroupstats with ACS version ",
+      package_blockgroupstats_acs_version,
+      ", while this pipeline run is for ACS version ",
+      pipeline_acs_version,
+      ". Replace this provisional file before final release use.",
+      call. = FALSE
+    )
+  }
+
+  bg_extra_indicators <- calc_fun(
+    existing_blockgroupstats = reusable_blockgroupstats,
+    reuse_existing_if_missing = TRUE,
+    pipeline_dir = pipeline_dir,
+    save_stage = FALSE,
+    stage_format = stage_format,
+    overwrite = TRUE
+  )
+  stage_io$save_stage_formats(x = bg_extra_indicators, stage = stagename)
+  write_text_fun(
+    lines = c(
+      paste0("PROVISIONAL bg_extra_indicators.", stage_format),
+      "This file was copied from the same-vintage blockgroupstats fallback.",
+      paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
+      paste("Pipeline ACS version:", pipeline_acs_version),
+      "Replace it with updated non-ACS, non-environmental blockgroup indicators if available, then rerun.",
+      paste("Created:", Sys.time())
+    ),
+    filename = "bg_extra_indicators_SOURCE.txt",
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage
+  )
+
+  list(
+    bg_extra_indicators = bg_extra_indicators,
+    used_provisional_bg_extra_indicators = used_provisional_bg_extra_indicators
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

@@ -568,55 +568,15 @@ bg_islandareas_reference <- bg_envirodata_stage$bg_islandareas_reference
 # Extra indicators stage - Read new or re-use existing data ####
 ###################################################### #
 
-stagename <- "bg_extra_indicators"
-message(paste0("Stage: ", stagename))
-
-if (stage_exists(stagename)) {
-  message(paste0("Using provided/existing ", stagename))
-  bg_extra_indicators <- load_file_stage(stagename)
-  save_file_stage_formats(bg_extra_indicators, stage = stagename)
-} else {
-  message(paste0("Creating ", stagename, ".", stage_format," from same-vintage blockgroupstats fallback"))
-  used_provisional_bg_extra_indicators <- TRUE
-  reusable_blockgroupstats <- get_reuse_blockgroupstats()
-  package_blockgroupstats_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(x = reusable_blockgroupstats)
-  pipeline_acs_version <- EJAM:::ejscreen_pipeline_acs_version_from_year(pipeline_yr)
-  if (!is.na(package_blockgroupstats_acs_version) &&
-      !identical(package_blockgroupstats_acs_version, pipeline_acs_version)) {
-    warning(
-      "Provisional bg_extra_indicators is being copied from packaged EJAM::blockgroupstats with ACS version ",
-      package_blockgroupstats_acs_version,
-      ", while this pipeline run is for ACS version ",
-      pipeline_acs_version,
-      ". Replace this provisional file before final release use.",
-      call. = FALSE
-    )
-  }
-
-  bg_extra_indicators <- EJAM:::calc_bg_extra_indicators(
-
-    existing_blockgroupstats = reusable_blockgroupstats,
-    reuse_existing_if_missing = TRUE,
-    pipeline_dir = pipeline_dir,
-    save_stage = FALSE,
-    stage_format = stage_format,
-    overwrite = TRUE
-  )
-  save_file_stage_formats(x = bg_extra_indicators, stage = stagename)
-  EJAM:::ejscreen_pipeline_write_text(
-    lines = c(
-      paste0("PROVISIONAL bg_extra_indicators.", stage_format),
-      "This file was copied from the same-vintage blockgroupstats fallback.",
-      paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
-      paste("Pipeline ACS version:", pipeline_acs_version),
-      "Replace it with updated non-ACS, non-environmental blockgroup indicators if available, then rerun.",
-      paste("Created:", Sys.time())
-    ),
-    filename = "bg_extra_indicators_SOURCE.txt",
-    pipeline_dir = pipeline_dir,
-    storage = pipeline_storage
-  )
-}
+bg_extra_indicators_stage <- EJAM:::ejscreen_pipeline_stage_bg_extra_indicators(
+  pipeline_yr = pipeline_yr,
+  stage_io = stage_io,
+  stage_format = stage_format,
+  pipeline_dir = pipeline_dir,
+  pipeline_storage = pipeline_storage
+)
+bg_extra_indicators <- bg_extra_indicators_stage$bg_extra_indicators
+used_provisional_bg_extra_indicators <- bg_extra_indicators_stage$used_provisional_bg_extra_indicators
 
 ###################################################### #
 # Census/TIGER blockgroup geography stage ####
