@@ -1104,71 +1104,17 @@ if (isTRUE(validate_vs_prior)) {
   print(prior_validation_summary[, ..prior_validation_print_cols])
 }
 
-if (isTRUE(include_ejscreen_export) &&
-    isTRUE(validate_ejscreen_export_reference) &&
-    nzchar(ejscreen_export_reference_path)) {
-  message("Comparing ejscreen_export stage to reference export: ",
-          ejscreen_export_reference_path)
-  ejscreen_export_reference_prefix <- if (grepl(
-    "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI",
-    ejscreen_export_reference_path,
-    fixed = TRUE
-  )) {
-    "prior_validation_ejscreen_export_vs_epa_2024_acs2022"
-  } else {
-    "prior_validation_ejscreen_export_vs_reference"
-  }
-  ejscreen_export_reference_validation <- EJAM:::calc_ejscreen_export_reference_report(
-    ejscreen_export = out$ejscreen_export,
-    reference_path = ejscreen_export_reference_path,
-    reference_format = tools::file_ext(ejscreen_export_reference_path),
-    storage = pipeline_storage,
-    reference_label = basename(ejscreen_export_reference_path),
-    note = if (identical(as.character(pipeline_yr), "2022")) {
-      "Reference is named 2024 but treated here as ACS 2022 based on user knowledge."
-    } else {
-      NULL
-    },
-    output_dir = pipeline_dir,
-    output_prefix = ejscreen_export_reference_prefix,
-    write_files = TRUE
-  )
-  message("EJSCREEN export reference validation summary:")
-  print(ejscreen_export_reference_validation$summary)
-}
-
-if (isTRUE(include_ejscreen_export_statepct) &&
-    isTRUE(validate_ejscreen_export_reference) &&
-    nzchar(ejscreen_export_statepct_reference_path)) {
-  message("Comparing ejscreen_export_statepct stage to reference export: ",
-          ejscreen_export_statepct_reference_path)
-  ejscreen_export_statepct_reference_prefix <- if (grepl(
-    "EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI",
-    ejscreen_export_statepct_reference_path,
-    fixed = TRUE
-  )) {
-    "prior_validation_ejscreen_export_statepct_vs_epa_2024_acs2022"
-  } else {
-    "prior_validation_ejscreen_export_statepct_vs_reference"
-  }
-  ejscreen_export_statepct_reference_validation <- EJAM:::calc_ejscreen_export_reference_report(
-    ejscreen_export = out$ejscreen_export_statepct,
-    reference_path = ejscreen_export_statepct_reference_path,
-    reference_format = tools::file_ext(ejscreen_export_statepct_reference_path),
-    storage = pipeline_storage,
-    reference_label = basename(ejscreen_export_statepct_reference_path),
-    note = if (identical(as.character(pipeline_yr), "2022")) {
-      "Reference is named 2024 but treated here as ACS 2022 based on user knowledge. This is EPA's StatePct-style export, so state values are expected in generic EPA field names."
-    } else {
-      NULL
-    },
-    output_dir = pipeline_dir,
-    output_prefix = ejscreen_export_statepct_reference_prefix,
-    write_files = TRUE
-  )
-  message("EJSCREEN StatePct export reference validation summary:")
-  print(ejscreen_export_statepct_reference_validation$summary)
-}
+ejscreen_export_reference_validations <- EJAM:::ejscreen_pipeline_export_reference_validations(
+  outputs = out,
+  include_ejscreen_export = include_ejscreen_export,
+  include_ejscreen_export_statepct = include_ejscreen_export_statepct,
+  validate_ejscreen_export_reference = validate_ejscreen_export_reference,
+  ejscreen_export_reference_path = ejscreen_export_reference_path,
+  ejscreen_export_statepct_reference_path = ejscreen_export_statepct_reference_path,
+  pipeline_yr = pipeline_yr,
+  pipeline_dir = pipeline_dir,
+  pipeline_storage = pipeline_storage
+)
 
 manifest_status <- EJAM:::ejscreen_pipeline_manifest_status(validation_summary)
 pipeline_run_manifest_path <- EJAM:::ejscreen_pipeline_write_run_manifest(

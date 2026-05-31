@@ -845,6 +845,89 @@ ejscreen_pipeline_prior_validation <- function(validate_vs_prior = TRUE,
   )
 }
 
+ejscreen_pipeline_export_reference_validations <- function(outputs,
+                                                           include_ejscreen_export = TRUE,
+                                                           include_ejscreen_export_statepct = TRUE,
+                                                           validate_ejscreen_export_reference = TRUE,
+                                                           ejscreen_export_reference_path = "",
+                                                           ejscreen_export_statepct_reference_path = "",
+                                                           pipeline_yr,
+                                                           pipeline_dir,
+                                                           pipeline_storage = c("auto", "local", "s3"),
+                                                           report_fun = calc_ejscreen_export_reference_report,
+                                                           print_fun = print) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  validations <- list()
+
+  if (isTRUE(include_ejscreen_export) &&
+      isTRUE(validate_ejscreen_export_reference) &&
+      nzchar(ejscreen_export_reference_path)) {
+    message("Comparing ejscreen_export stage to reference export: ",
+            ejscreen_export_reference_path)
+    ejscreen_export_reference_prefix <- if (grepl(
+      "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI",
+      ejscreen_export_reference_path,
+      fixed = TRUE
+    )) {
+      "prior_validation_ejscreen_export_vs_epa_2024_acs2022"
+    } else {
+      "prior_validation_ejscreen_export_vs_reference"
+    }
+    validations$ejscreen_export_reference_validation <- report_fun(
+      ejscreen_export = outputs$ejscreen_export,
+      reference_path = ejscreen_export_reference_path,
+      reference_format = tools::file_ext(ejscreen_export_reference_path),
+      storage = pipeline_storage,
+      reference_label = basename(ejscreen_export_reference_path),
+      note = if (identical(as.character(pipeline_yr), "2022")) {
+        "Reference is named 2024 but treated here as ACS 2022 based on user knowledge."
+      } else {
+        NULL
+      },
+      output_dir = pipeline_dir,
+      output_prefix = ejscreen_export_reference_prefix,
+      write_files = TRUE
+    )
+    message("EJSCREEN export reference validation summary:")
+    print_fun(validations$ejscreen_export_reference_validation$summary)
+  }
+
+  if (isTRUE(include_ejscreen_export_statepct) &&
+      isTRUE(validate_ejscreen_export_reference) &&
+      nzchar(ejscreen_export_statepct_reference_path)) {
+    message("Comparing ejscreen_export_statepct stage to reference export: ",
+            ejscreen_export_statepct_reference_path)
+    ejscreen_export_statepct_reference_prefix <- if (grepl(
+      "EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI",
+      ejscreen_export_statepct_reference_path,
+      fixed = TRUE
+    )) {
+      "prior_validation_ejscreen_export_statepct_vs_epa_2024_acs2022"
+    } else {
+      "prior_validation_ejscreen_export_statepct_vs_reference"
+    }
+    validations$ejscreen_export_statepct_reference_validation <- report_fun(
+      ejscreen_export = outputs$ejscreen_export_statepct,
+      reference_path = ejscreen_export_statepct_reference_path,
+      reference_format = tools::file_ext(ejscreen_export_statepct_reference_path),
+      storage = pipeline_storage,
+      reference_label = basename(ejscreen_export_statepct_reference_path),
+      note = if (identical(as.character(pipeline_yr), "2022")) {
+        "Reference is named 2024 but treated here as ACS 2022 based on user knowledge. This is EPA's StatePct-style export, so state values are expected in generic EPA field names."
+      } else {
+        NULL
+      },
+      output_dir = pipeline_dir,
+      output_prefix = ejscreen_export_statepct_reference_prefix,
+      write_files = TRUE
+    )
+    message("EJSCREEN StatePct export reference validation summary:")
+    print_fun(validations$ejscreen_export_statepct_reference_validation$summary)
+  }
+
+  validations
+}
+
 ejscreen_pipeline_validation_error_index <- function(validation_summary) {
   if (!"errors" %in% names(validation_summary)) {
     stop("validation_summary must include an errors column", call. = FALSE)

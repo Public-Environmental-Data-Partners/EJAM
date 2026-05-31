@@ -775,6 +775,52 @@ test_that("ejscreen_pipeline_prior_validation dispatches package and pipeline co
   expect_false(version_calls[[1]]$use_waldo)
 })
 
+test_that("ejscreen_pipeline_export_reference_validations writes national and statepct comparisons", {
+  report_calls <- list()
+  printed <- list()
+  fake_report <- function(...) {
+    args <- list(...)
+    report_calls[[length(report_calls) + 1L]] <<- args
+    list(summary = data.frame(output_prefix = args$output_prefix))
+  }
+  fake_print <- function(x) {
+    printed[[length(printed) + 1L]] <<- x
+  }
+
+  result <- EJAM:::ejscreen_pipeline_export_reference_validations(
+    outputs = list(
+      ejscreen_export = data.frame(national = 1),
+      ejscreen_export_statepct = data.frame(statepct = 1)
+    ),
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = TRUE,
+    validate_ejscreen_export_reference = TRUE,
+    ejscreen_export_reference_path = "EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv",
+    ejscreen_export_statepct_reference_path = "EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI.csv",
+    pipeline_yr = 2022,
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    report_fun = fake_report,
+    print_fun = fake_print
+  )
+
+  expect_named(
+    result,
+    c("ejscreen_export_reference_validation", "ejscreen_export_statepct_reference_validation")
+  )
+  expect_equal(length(report_calls), 2)
+  expect_equal(report_calls[[1]]$output_prefix, "prior_validation_ejscreen_export_vs_epa_2024_acs2022")
+  expect_equal(report_calls[[2]]$output_prefix, "prior_validation_ejscreen_export_statepct_vs_epa_2024_acs2022")
+  expect_equal(report_calls[[1]]$reference_format, "csv")
+  expect_equal(report_calls[[2]]$reference_label, "EJSCREEN_2024_BG_StatePct_with_AS_CNMI_GU_VI.csv")
+  expect_match(report_calls[[1]]$note, "ACS 2022", fixed = TRUE)
+  expect_match(report_calls[[2]]$note, "StatePct-style export", fixed = TRUE)
+  expect_equal(report_calls[[1]]$storage, "local")
+  expect_equal(report_calls[[2]]$output_dir, "pipe")
+  expect_true(report_calls[[1]]$write_files)
+  expect_equal(length(printed), 2)
+})
+
 test_that("ejscreen_pipeline validation status helpers detect error rows", {
   validation_summary <- data.frame(
     stage = c("ok", "missing", "bad"),
