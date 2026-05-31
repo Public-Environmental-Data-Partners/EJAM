@@ -477,62 +477,11 @@ get_reuse_blockgroupstats <- function() {
     return(reuse_blockgroupstats)
   }
 
-  pipeline_acs_version <- EJAM:::ejscreen_pipeline_acs_version_from_year(pipeline_yr)
-  current <- data.table::as.data.table(data.table::copy(EJAM::blockgroupstats))
-  current_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(current)
-
-  if (!is.na(current_acs_version) &&
-      identical(current_acs_version, pipeline_acs_version)) {
-    reuse_blockgroupstats <<- current
-    return(reuse_blockgroupstats)
-  }
-
-  if (nzchar(prior_package_ref)) {
-    prior <- tryCatch(
-      EJAM:::ejscreen_pipeline_load_git_data_object(
-        ref = prior_package_ref,
-        path = prior_package_path
-      ),
-      error = function(e) {
-        warning(
-          "Could not load prior package blockgroupstats from ",
-          prior_package_ref,
-          ":",
-          prior_package_path,
-          " for same-vintage provisional reuse: ",
-          conditionMessage(e),
-          call. = FALSE
-        )
-        NULL
-      }
-    )
-    if (!is.null(prior)) {
-      prior_data <- data.table::as.data.table(data.table::copy(prior$data))
-      if (!is.na(prior$acs_version) &&
-          identical(prior$acs_version, pipeline_acs_version)) {
-        reuse_blockgroupstats <<- prior_data
-        return(reuse_blockgroupstats)
-      }
-      warning(
-        "Prior package blockgroupstats ACS version is ",
-        prior$acs_version,
-        ", while this pipeline run is for ",
-        pipeline_acs_version,
-        "; not using that prior object for provisional reuse.",
-        call. = FALSE
-      )
-    }
-  }
-
-  warning(
-    "Using currently packaged EJAM::blockgroupstats for provisional reuse even though its ACS version is ",
-    current_acs_version,
-    " and this pipeline run is for ",
-    pipeline_acs_version,
-    ". Prefer a matching saved stage or set EJAM_PRIOR_PACKAGE_REF to a same-vintage package tag.",
-    call. = FALSE
+  reuse_blockgroupstats <<- EJAM:::ejscreen_pipeline_reusable_blockgroupstats(
+    pipeline_yr = pipeline_yr,
+    prior_package_ref = prior_package_ref,
+    prior_package_path = prior_package_path
   )
-  reuse_blockgroupstats <<- current
   reuse_blockgroupstats
 }
 ####################### #

@@ -1068,6 +1068,67 @@ test_that("ejscreen_pipeline_write_text delegates to the pipeline writer", {
   expect_equal(write_call$storage, "local")
 })
 
+test_that("ejscreen_pipeline_reusable_blockgroupstats chooses same-vintage fallback data", {
+  target_acs <- "ACS 2020-2024"
+  old_acs <- "ACS 2019-2023"
+  current <- data.frame(id = 1L)
+  current_old <- data.frame(id = 10L)
+  prior_data <- data.frame(id = 2L)
+  detect_current <- function(x) attr(x, "acs_version", exact = TRUE)
+  acs_version <- function(yr) target_acs
+  warnings <- character()
+  fake_warning <- function(..., call. = TRUE) {
+    warnings <<- c(warnings, paste0(...))
+  }
+
+  attr(current, "acs_version") <- target_acs
+  result_current <- EJAM:::ejscreen_pipeline_reusable_blockgroupstats(
+    pipeline_yr = 2024,
+    prior_package_ref = "",
+    prior_package_path = "data/blockgroupstats.rda",
+    current_blockgroupstats = current,
+    detect_acs_version_fun = detect_current,
+    acs_version_fun = acs_version,
+    load_git_data_fun = function(...) stop("should not load prior ref"),
+    warning_fun = fake_warning
+  )
+  expect_s3_class(result_current, "data.table")
+  expect_equal(result_current$id, 1L)
+  expect_equal(warnings, character())
+
+  attr(current_old, "acs_version") <- old_acs
+  result_prior <- EJAM:::ejscreen_pipeline_reusable_blockgroupstats(
+    pipeline_yr = 2024,
+    prior_package_ref = "v2.5.0",
+    prior_package_path = "data/blockgroupstats.rda",
+    current_blockgroupstats = current_old,
+    detect_acs_version_fun = detect_current,
+    acs_version_fun = acs_version,
+    load_git_data_fun = function(ref, path) {
+      list(data = prior_data, acs_version = target_acs)
+    },
+    warning_fun = fake_warning
+  )
+  expect_equal(result_prior$id, 2L)
+  expect_equal(warnings, character())
+
+  result_fallback <- EJAM:::ejscreen_pipeline_reusable_blockgroupstats(
+    pipeline_yr = 2024,
+    prior_package_ref = "v2.5.0",
+    prior_package_path = "data/blockgroupstats.rda",
+    current_blockgroupstats = current_old,
+    detect_acs_version_fun = detect_current,
+    acs_version_fun = acs_version,
+    load_git_data_fun = function(ref, path) {
+      list(data = prior_data, acs_version = old_acs)
+    },
+    warning_fun = fake_warning
+  )
+  expect_equal(result_fallback$id, 10L)
+  expect_true(any(grepl("Prior package blockgroupstats ACS version", warnings, fixed = TRUE)))
+  expect_true(any(grepl("Using currently packaged EJAM::blockgroupstats", warnings, fixed = TRUE)))
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

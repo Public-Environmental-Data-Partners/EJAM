@@ -1126,6 +1126,70 @@ ejscreen_pipeline_write_text <- function(lines,
   )
 }
 
+ejscreen_pipeline_reusable_blockgroupstats <- function(pipeline_yr,
+                                                       prior_package_ref = "",
+                                                       prior_package_path = "data/blockgroupstats.rda",
+                                                       current_blockgroupstats = EJAM::blockgroupstats,
+                                                       detect_acs_version_fun = ejscreen_pipeline_detect_acs_version,
+                                                       acs_version_fun = ejscreen_pipeline_acs_version_from_year,
+                                                       load_git_data_fun = ejscreen_pipeline_load_git_data_object,
+                                                       warning_fun = warning) {
+  pipeline_acs_version <- acs_version_fun(pipeline_yr)
+  current <- data.table::as.data.table(data.table::copy(current_blockgroupstats))
+  current_acs_version <- detect_acs_version_fun(current)
+
+  if (!is.na(current_acs_version) &&
+      identical(current_acs_version, pipeline_acs_version)) {
+    return(current)
+  }
+
+  if (nzchar(prior_package_ref)) {
+    prior <- tryCatch(
+      load_git_data_fun(
+        ref = prior_package_ref,
+        path = prior_package_path
+      ),
+      error = function(e) {
+        warning_fun(
+          "Could not load prior package blockgroupstats from ",
+          prior_package_ref,
+          ":",
+          prior_package_path,
+          " for same-vintage provisional reuse: ",
+          conditionMessage(e),
+          call. = FALSE
+        )
+        NULL
+      }
+    )
+    if (!is.null(prior)) {
+      prior_data <- data.table::as.data.table(data.table::copy(prior$data))
+      if (!is.na(prior$acs_version) &&
+          identical(prior$acs_version, pipeline_acs_version)) {
+        return(prior_data)
+      }
+      warning_fun(
+        "Prior package blockgroupstats ACS version is ",
+        prior$acs_version,
+        ", while this pipeline run is for ",
+        pipeline_acs_version,
+        "; not using that prior object for provisional reuse.",
+        call. = FALSE
+      )
+    }
+  }
+
+  warning_fun(
+    "Using currently packaged EJAM::blockgroupstats for provisional reuse even though its ACS version is ",
+    current_acs_version,
+    " and this pipeline run is for ",
+    pipeline_acs_version,
+    ". Prefer a matching saved stage or set EJAM_PRIOR_PACKAGE_REF to a same-vintage package tag.",
+    call. = FALSE
+  )
+  current
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",
