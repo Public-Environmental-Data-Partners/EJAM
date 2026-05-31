@@ -100,7 +100,7 @@ test_that("ejam2report() returns an absolute path when filename has no directory
     launch_browser = FALSE
   )
   expect_true(file.exists(result_bare))
-  expect_true(!is.na(result_bare))
+  expect_false(is.na(result_bare))
   # The returned path must be absolute (not relative)
   expect_true(startsWith(result_bare, "/") || grepl("^[A-Za-z]:", result_bare))
 
@@ -112,6 +112,6 @@ test_that("ejam2report() returns an absolute path when filename has no directory
     launch_browser = FALSE
   )
   expect_true(file.exists(result_dotslash))
-  expect_true(!is.na(result_dotslash))
+  expect_false(is.na(result_dotslash))
   expect_true(startsWith(result_dotslash, "/") || grepl("^[A-Za-z]:", result_dotslash))
 })
