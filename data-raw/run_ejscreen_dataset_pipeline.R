@@ -169,15 +169,10 @@ EJAM:::ejscreen_pipeline_set_env_defaults()
 
 ###################################################### ####################################################### #
 
-pipeline_env_flag <- function(name, default = FALSE) {
-  value <- Sys.getenv(name, unset = if (isTRUE(default)) "TRUE" else "FALSE")
-  toupper(value) %in% c("1", "TRUE", "YES", "Y")
-}
-
-run_datacreate_before <- pipeline_env_flag("EJAM_RUN_DATACREATE_BEFORE", TRUE)
-run_datacreate_after <- pipeline_env_flag("EJAM_RUN_DATACREATE_AFTER", TRUE)
-replace_package_data <- pipeline_env_flag("EJAM_REPLACE_PACKAGE_DATA", FALSE)
-include_frs_update <- pipeline_env_flag("EJAM_INCLUDE_FRS_UPDATE", FALSE)
+run_datacreate_before <- EJAM:::ejscreen_pipeline_env_flag("EJAM_RUN_DATACREATE_BEFORE", TRUE)
+run_datacreate_after <- EJAM:::ejscreen_pipeline_env_flag("EJAM_RUN_DATACREATE_AFTER", TRUE)
+replace_package_data <- EJAM:::ejscreen_pipeline_env_flag("EJAM_REPLACE_PACKAGE_DATA", FALSE)
+include_frs_update <- EJAM:::ejscreen_pipeline_env_flag("EJAM_INCLUDE_FRS_UPDATE", FALSE)
 
 # Specifying OTHER datasets to update ####
 
@@ -374,42 +369,7 @@ if (isTRUE(run_datacreate_before)) {
 ## To check them:
 #
 print(
-  cbind(current_setting = Sys.getenv(c(
-    'EJAM_PIPELINE_YR',
-    'EJAM_PIPELINE_ROOT',
-    'EJAM_PIPELINE_DIR',
-    'EJAM_PIPELINE_STORAGE',
-    'EJAM_STAGE_FORMAT',
-    'EJAM_STAGE_FORMATS',
-    'EJAM_BLOCKGROUP_UNIVERSE_SOURCE',
-    'EJAM_TRACT_WEIGHT_SOURCE',
-    'EJAM_DECENNIAL_BGWTS_CACHE',
-    'EJAM_REFRESH_DECENNIAL_BGWTS',
-
-    'EJAM_FORCE_ACS',
-    'EJAM_FORCE_BG_ACSDATA',
-    'EJAM_FORCE_BG_GEODATA',
-    'EJAM_TIGER_BG_CACHE_DIR',
-    'EJAM_ACS_DOWNLOAD_TIMEOUT',
-    'EJAM_ACS_DOWNLOAD_RETRIES',
-    'EJAM_INCLUDE_ISLANDAREAS_DATA',
-    'EJAM_ISLANDAREAS_REFERENCE_PATH',
-    'EJAM_USE_ISLANDAREAS_DEMOGRAPHICS',
-    'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
-    'EJAM_INCLUDE_EJSCREEN_EXPORT',
-    'EJAM_VALIDATE_VS_PRIOR',
-    'EJAM_PRIOR_PIPELINE_YR',
-    'EJAM_PRIOR_PIPELINE_DIR',
-    'EJAM_PRIOR_PACKAGE_REF',
-    'EJAM_PRIOR_PACKAGE_PATH',
-    'EJAM_EJSCREEN_EXPORT_REFERENCE_PATH',
-    'EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE',
-    'EJAM_VALIDATE_VS_PRIOR_WALDO',
-    'EJAM_RUN_DATACREATE_BEFORE',
-    'EJAM_RUN_DATACREATE_AFTER',
-    'EJAM_REPLACE_PACKAGE_DATA',
-    'EJAM_INCLUDE_FRS_UPDATE'
-  )))
+  cbind(current_setting = Sys.getenv(EJAM:::ejscreen_pipeline_setting_names()))
 )
 ###################################################### #
 #
