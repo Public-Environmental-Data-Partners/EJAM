@@ -24,14 +24,9 @@ tests/testthat/_snaps/**/*.png
 # as explained in the "Testing EJAM App with shinytest2" vignette/article
 # at https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.html
 
-# /docs/
-# These are NOT ignored, currently, although perhaps that could be reconsidered.
-# The html etc. created by pkgdown for documentation of the package are in the /docs/ folders.
-# The whole docs folder is only about 12 MB, but has thousands of files (which to be fair can be distracting to have git track and to commit change to).
-# The repository was configured to deploy and publish the gh pages website from the docs folder,
-# in which case we presumably do not want to ignore changes in it, despite defaults in pkgdown package?
-# (The default is that use_pkgdown(): creates a pkgdown config file and adds relevant files or directories to .Rbuildignore and .gitignore to ignore the docs folder?)
-# However, maybe gh actions can create and deploy the site (from a docs folder on github.com?) without one having to run EJAM:::pkgdown_update() locally and committing the local docs folders.
+/docs/
+# Generated pkgdown HTML belongs on the gh-pages branch, not on source
+# branches. Local docs builds and previews can still write to /docs/.
 
 ################################################################################### #
 # Standard or obvious items to ignore
