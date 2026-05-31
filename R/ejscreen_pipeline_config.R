@@ -59,6 +59,17 @@ ejscreen_pipeline_normalize_stage_formats <- function(stage_format, stage_format
   stage_formats
 }
 
+ejscreen_pipeline_normalize_blockgroup_universe_source <- function(blockgroup_universe_source) {
+  blockgroup_universe_source <- match.arg(
+    blockgroup_universe_source,
+    c("acs", "union", "combined")
+  )
+  if (identical(blockgroup_universe_source, "combined")) {
+    return("union")
+  }
+  blockgroup_universe_source
+}
+
 ejscreen_pipeline_default_root <- function(pipeline_storage) {
   if (identical(pipeline_storage, "local")) {
     return(file.path(getwd(), "data-raw", "pipeline_outputs"))
@@ -371,7 +382,7 @@ ejscreen_pipeline_config <- function(yr = NULL,
                                      pipeline_storage = c("s3", "local", "auto"),
                                      stage_format = c("csv", "rds", "rda", "arrow"),
                                      stage_formats = c("csv", "rda"),
-                                     blockgroup_universe_source = c("acs", "union"),
+                                     blockgroup_universe_source = c("acs", "union", "combined"),
                                      tract_weight_source = c("decennial2020", "acs"),
                                      decennial_bgwts_cache = "",
                                      refresh_decennial_bgwts = FALSE,
@@ -424,7 +435,7 @@ ejscreen_pipeline_config <- function(yr = NULL,
     error = function(e) stop("stage_format must be one of csv, rds, rda, or arrow", call. = FALSE)
   )
   blockgroup_universe_source <- tryCatch(
-    match.arg(blockgroup_universe_source),
+    ejscreen_pipeline_normalize_blockgroup_universe_source(blockgroup_universe_source),
     error = function(e) stop("blockgroup_universe_source must be one of acs or union", call. = FALSE)
   )
   tract_weight_source <- tryCatch(
@@ -2287,7 +2298,7 @@ ejscreen_pipeline_stage_bg_geodata <- function(yr,
                                                bg_acsdata,
                                                bg_envirodata,
                                                bg_extra_indicators,
-                                               blockgroup_universe_source = c("acs", "combined"),
+                                               blockgroup_universe_source = c("acs", "union", "combined"),
                                                force_bg_geodata = FALSE,
                                                include_islandareas_data = FALSE,
                                                bg_islandareas_reference = NULL,
@@ -2306,7 +2317,7 @@ ejscreen_pipeline_stage_bg_geodata <- function(yr,
                                                complete_fun = complete_bg_geodata,
                                                calc_fun = calc_bg_geodata,
                                                message_fun = message) {
-  blockgroup_universe_source <- match.arg(blockgroup_universe_source)
+  blockgroup_universe_source <- ejscreen_pipeline_normalize_blockgroup_universe_source(blockgroup_universe_source)
   pipeline_storage <- match.arg(pipeline_storage)
   stagename <- "bg_geodata"
   message_fun(paste0("Stage: ", stagename))
@@ -2412,14 +2423,14 @@ ejscreen_pipeline_stage_outputs <- function(yr,
                                             include_ejscreen_export = TRUE,
                                             include_ejscreen_export_statepct = TRUE,
                                             include_ejscreen_pctile_lookup_exports = FALSE,
-                                            blockgroup_universe_source = c("acs", "combined"),
+                                            blockgroup_universe_source = c("acs", "union", "combined"),
                                             calc_fun = EJAM::calc_ejscreen_dataset,
                                             save_secondary_fun,
                                             message_fun = message,
                                             print_fun = print,
                                             time_fun = Sys.time) {
   pipeline_storage <- match.arg(pipeline_storage)
-  blockgroup_universe_source <- match.arg(blockgroup_universe_source)
+  blockgroup_universe_source <- ejscreen_pipeline_normalize_blockgroup_universe_source(blockgroup_universe_source)
   message_fun(
     "Creating blockgroupstats, bgej, usastats, statestats",
     if (isTRUE(include_ejscreen_dataset_creator_input)) ", ejscreen_dataset_creator_input" else "",

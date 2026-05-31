@@ -152,6 +152,12 @@ test_that("ejscreen_pipeline_config normalizes stage formats and validates choic
     EJAM:::ejscreen_pipeline_config(yr = 2024, blockgroup_universe_source = "tiger"),
     "blockgroup_universe_source"
   )
+
+  legacy_cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    blockgroup_universe_source = "combined"
+  )
+  expect_equal(legacy_cfg$blockgroup_universe_source, "union")
 })
 
 test_that("ejscreen_pipeline_config_from_env honors environment overrides", {
@@ -2474,7 +2480,7 @@ test_that("ejscreen_pipeline_stage_outputs calculates and saves pipeline outputs
   expect_true(calc_call$include_ejscreen_export)
   expect_true(calc_call$include_ejscreen_export_statepct)
   expect_false(calc_call$include_ejscreen_pctile_lookup_exports)
-  expect_equal(calc_call$blockgroup_universe_source, "combined")
+  expect_equal(calc_call$blockgroup_universe_source, "union")
   expect_true(calc_call$overwrite)
   expect_equal(save_call$stages, c("blockgroupstats", "bgej"))
   expect_true(any(grepl("Creating blockgroupstats", messages)))
