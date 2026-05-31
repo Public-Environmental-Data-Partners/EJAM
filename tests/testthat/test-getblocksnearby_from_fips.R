@@ -548,3 +548,54 @@ test_that("getblocksnearby_from_fips() returns NA, handles mix of city & noncity
 })
 ################# #  ################# #  ################# #
 
+# radius parameter tests ####
+
+test_that("getblocksnearby_from_fips() radius=999 is legacy no-buffer signal, not a 999-mile buffer", {
+  # radius=999 must be treated identically to the default (no buffer):
+  # all blocks returned should be strictly inside FIPS boundaries (distance==0).
+  suppressMessages(suppressWarnings({
+    s2b_default <- getblocksnearby_from_fips(testinput_fips_counties[1])
+    s2b_999     <- getblocksnearby_from_fips(testinput_fips_counties[1], radius = 999)
+  }))
+  # Both should yield the same blocks (no extra blocks from a 999-mile buffer)
+  expect_equal(sort(s2b_default$blockid), sort(s2b_999$blockid))
+  expect_equal(unique(s2b_999$distance), 0)
+})
+################# #  ################# #  ################# #
+
+test_that("getblocksnearby_from_fips() radius>0 and !=999 uses buffered path (distance still 0)", {
+  # A small radius should return at least as many blocks as the unbuffered case.
+  suppressMessages(suppressWarnings({
+    s2b_none   <- getblocksnearby_from_fips(testinput_fips_counties[1])
+    s2b_radius <- getblocksnearby_from_fips(testinput_fips_counties[1], radius = 1)
+  }))
+  expect_setequal(
+    names(s2b_radius),
+    c("ejam_uniq_id", "blockid", "distance", "blockwt", "bgid", "fips")
+  )
+  # distance is kept at 0 for compatibility with doaggregate() FIPS-mode detection
+  expect_equal(unique(s2b_radius$distance), 0)
+  # buffer should include at least as many blocks as the unbuffered result
+  expect_gte(NROW(s2b_radius), NROW(s2b_none))
+})
+################# #  ################# #  ################# #
+
+test_that("getblocksnearby_from_fips() return_shp=TRUE with radius preserves one row per input", {
+  # polys must have exactly one row per input fips even in the buffered path,
+  # matching the non-buffered function contract.
+  fips_input <- testinput_fips_counties[1:2]
+  suppressMessages(suppressWarnings({
+    result_no_buf <- getblocksnearby_from_fips(fips_input, return_shp = TRUE)
+    result_buf    <- getblocksnearby_from_fips(fips_input, radius = 1, return_shp = TRUE)
+  }))
+  # Row count and id preserved (one row per input)
+  expect_true("sf" %in% class(result_buf$polys))
+  expect_equal(NROW(result_buf$polys), length(fips_input))
+  expect_equal(result_buf$polys$ejam_uniq_id, seq_along(fips_input))
+  # Buffered geometry should be larger than original for valid-geometry rows
+  area_orig <- suppressWarnings(sf::st_area(result_no_buf$polys))
+  area_buf  <- suppressWarnings(sf::st_area(result_buf$polys))
+  valid_rows <- !sf::st_is_empty(sf::st_geometry(result_no_buf$polys))
+  expect_true(all(area_buf[valid_rows] >= area_orig[valid_rows]))
+})
+################# #  ################# #  ################# #
