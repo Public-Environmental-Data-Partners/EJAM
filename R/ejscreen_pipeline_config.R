@@ -1901,6 +1901,25 @@ ejscreen_pipeline_run_result <- function(config,
   result
 }
 
+#' Run the staged EJScreen annual-update pipeline from a validated config
+#'
+#' @description
+#' Maintainer-facing entry point used by the thin recipe scripts in
+#' `data-raw/run_ejscreen_pipeline_*.R`. It applies a validated config to the
+#' process environment for the duration of the run, prepares stage I/O, runs the
+#' saved pipeline stages, writes validation/finalization outputs, and returns a
+#' structured pipeline run result.
+#'
+#' @param config Pipeline config object from `pipeline_config_annual()`,
+#'   `pipeline_config_release()`, `pipeline_config_validation_only()`,
+#'   `pipeline_config_exports_only()`, or `ejscreen_pipeline_config_from_env()`.
+#' @param run_started_at timestamp used in run manifests and reports.
+#' @param package_data_pipeline_dir optional pipeline directory used when
+#'   package-data replacement is explicitly enabled.
+#' @return An object with class `ejam_ejscreen_pipeline_run`, containing the
+#'   resolved config, stage context, stage outputs, validation results, and
+#'   compatibility aliases for older interactive workflows.
+#' @noRd
 run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
                                   run_started_at = Sys.time(),
                                   package_data_pipeline_dir = NULL,
@@ -2201,7 +2220,7 @@ ejscreen_pipeline_stage_bg_envirodata <- function(pipeline_yr,
         "This file was copied from the same-vintage blockgroupstats fallback.",
         paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
         paste("Pipeline ACS version:", pipeline_acs_version),
-        "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_dataset_pipeline.R.",
+        "Replace it with updated environmental indicators and rerun the annual pipeline recipe or compatibility runner.",
         paste("Created:", Sys.time())
       ),
       filename = "bg_envirodata_SOURCE.txt",
@@ -2757,15 +2776,41 @@ ejscreen_pipeline_prior_validation_print_columns <- function(prior_validation_su
   )
 }
 
+#' Build a standard EJScreen pipeline config recipe
+#'
+#' @description
+#' Shared internal builder for the maintainer config helpers that configure
+#' routine annual, release, validation-only, and exports-only pipeline runs.
+#' Each helper returns a validated config object for `run_ejscreen_pipeline()`.
+#' Environment variables remain supported through
+#' `ejscreen_pipeline_config_from_env()` and the compatibility runner script.
+#'
+#' @param defaults named list of recipe defaults used by the internal shared
+#'   recipe builder.
+#' @param ... explicit config overrides.
+#' @return An object with class `ejam_ejscreen_pipeline_config`.
+#' @noRd
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)
 }
 
+#' Build the standard annual EJScreen pipeline config
+#'
+#' @param yr ACS 5-year end year, such as `2024` for ACS 2020-2024.
+#' @param ... explicit config overrides.
+#' @return An object with class `ejam_ejscreen_pipeline_config`.
+#' @noRd
 pipeline_config_annual <- function(yr, ...) {
   ejscreen_pipeline_config_recipe(list(yr = yr), ...)
 }
 
+#' Build the standard release EJScreen pipeline config
+#'
+#' @param yr ACS 5-year end year, such as `2024` for ACS 2020-2024.
+#' @param ... explicit config overrides.
+#' @return An object with class `ejam_ejscreen_pipeline_config`.
+#' @noRd
 pipeline_config_release <- function(yr, ...) {
   ejscreen_pipeline_config_recipe(
     list(
@@ -2785,6 +2830,12 @@ pipeline_config_release <- function(yr, ...) {
   )
 }
 
+#' Build a validation-only EJScreen pipeline config
+#'
+#' @param yr ACS 5-year end year, such as `2024` for ACS 2020-2024.
+#' @param ... explicit config overrides.
+#' @return An object with class `ejam_ejscreen_pipeline_config`.
+#' @noRd
 pipeline_config_validation_only <- function(yr, ...) {
   ejscreen_pipeline_config_recipe(
     list(
@@ -2802,6 +2853,12 @@ pipeline_config_validation_only <- function(yr, ...) {
   )
 }
 
+#' Build an exports-only EJScreen pipeline config
+#'
+#' @param yr ACS 5-year end year, such as `2024` for ACS 2020-2024.
+#' @param ... explicit config overrides.
+#' @return An object with class `ejam_ejscreen_pipeline_config`.
+#' @noRd
 pipeline_config_exports_only <- function(yr, ...) {
   ejscreen_pipeline_config_recipe(
     list(

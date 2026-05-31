@@ -335,6 +335,8 @@ RStudio/source-based workflows and GitHub Actions. The main settings are:
 | `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS` | `"TRUE"` only for an intentional mixed-source supplemental dataset that uses 2020 Island Areas Census DHC demographics in `bg_acsdata`. The default EJScreen-compatible path is `"FALSE"`. |
 | `EJAM_USE_PROVISIONAL_BG_ENVIRODATA` | `"FALSE"` to require a supplied `bg_envirodata` stage file, such as `bg_envirodata.csv` under the default stage format. |
 | `EJAM_INCLUDE_EJSCREEN_EXPORT` | `"TRUE"` to create the `ejscreen_export` stage, such as `ejscreen_export.csv` under the default stage format. |
+| `EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT` | `"TRUE"` to create the `ejscreen_export_statepct` stage. |
+| `EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS` | `"TRUE"` only when intentionally refreshing EJScreen-style lookup CSVs. These are not created by default. |
 | `EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT` | `"TRUE"` to also create the smaller `ejscreen_dataset_creator_input` stage for EPA's Python dataset-creator workflow. |
 | `EJAM_VALIDATE_VS_PRIOR` | `"TRUE"` to write prior-version comparison files. |
 | `EJAM_PRIOR_PIPELINE_DIR` | Prior pipeline folder/S3 prefix to compare against. |
@@ -368,6 +370,8 @@ Sys.getenv(c(
   "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
   "EJAM_INCLUDE_EJSCREEN_EXPORT",
+  "EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT",
+  "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS",
   "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
   "EJAM_VALIDATE_VS_PRIOR",
   "EJAM_PRIOR_PIPELINE_YR",
@@ -466,12 +470,13 @@ fields is the archived EPA EJScreen ACS2022 reference named by
 dataset. To make the default explicit:
 
 ```{r, eval=FALSE}
-Sys.setenv(
-  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
-  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE"
+cfg <- EJAM:::pipeline_config_annual(
+  yr = 2024,
+  include_islandareas_data = TRUE,
+  use_islandareas_demographics = FALSE
 )
 
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 Set `EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "TRUE"` only for an intentional
@@ -487,23 +492,25 @@ If raw ACS has already been downloaded, rerun downstream ACS calculations
 without redownloading:
 
 ```{r, eval=FALSE}
-Sys.setenv(
-  EJAM_FORCE_ACS = "FALSE",
-  EJAM_FORCE_BG_ACSDATA = "TRUE"
+cfg <- EJAM:::pipeline_config_annual(
+  yr = 2024,
+  force_acs = FALSE,
+  force_bg_acsdata = TRUE
 )
 
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 If both raw ACS and `bg_acsdata` should be reused, leave both force flags false:
 
 ```{r, eval=FALSE}
-Sys.setenv(
-  EJAM_FORCE_ACS = "FALSE",
-  EJAM_FORCE_BG_ACSDATA = "FALSE"
+cfg <- EJAM:::pipeline_config_annual(
+  yr = 2024,
+  force_acs = FALSE,
+  force_bg_acsdata = FALSE
 )
 
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 If `bg_geodata` has already been created for the same ACS/TIGER vintage and
@@ -514,8 +521,14 @@ Even with `EJAM_FORCE_BG_GEODATA = "TRUE"`, already-downloaded TIGER/Line state
 zip files are reused from `EJAM_TIGER_BG_CACHE_DIR` when present and valid.
 
 ```{r, eval=FALSE}
-Sys.setenv(EJAM_FORCE_BG_GEODATA = "TRUE")
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+cfg <- EJAM:::pipeline_config_annual(
+  yr = 2024,
+  force_acs = FALSE,
+  force_bg_acsdata = FALSE,
+  force_bg_geodata = TRUE
+)
+
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 ## Supplying Updated Environmental Data
@@ -552,26 +565,34 @@ score.
 To force the runner to stop unless `bg_envirodata.csv` has been supplied:
 
 ```{r, eval=FALSE}
-Sys.setenv(EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE")
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+cfg <- EJAM:::pipeline_config_annual(
+  yr = 2024,
+  use_provisional_bg_envirodata = FALSE
+)
+
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 After replacing `bg_envirodata.csv`, rerun without forcing ACS:
 
 ```{r, eval=FALSE}
-Sys.setenv(
-  EJAM_FORCE_ACS = "FALSE",
-  EJAM_FORCE_BG_ACSDATA = "FALSE",
-  EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE"
+cfg <- EJAM:::pipeline_config_annual(
+  yr = 2024,
+  force_acs = FALSE,
+  force_bg_acsdata = FALSE,
+  force_bg_geodata = FALSE,
+  use_provisional_bg_envirodata = FALSE
 )
 
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 This reuses the saved ACS stages and regenerates downstream
 `blockgroupstats`, `bgej`, `usastats`, `statestats`, `ejscreen_export`,
 and `ejscreen_export_statepct`. EJScreen-style lookup exports are created only
-when `EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS = "TRUE"`.
+when `include_ejscreen_pctile_lookup_exports = TRUE` in the config, or
+`EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS = "TRUE"` in compatibility-runner
+workflows.
 
 ## Extra Indicators
 
@@ -593,8 +614,12 @@ For early pipeline testing, it is acceptable to reuse existing environmental and
 extra indicators:
 
 ```{r, eval=FALSE}
-Sys.setenv(EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "TRUE")
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+cfg <- EJAM:::pipeline_config_annual(
+  yr = 2024,
+  use_provisional_bg_envirodata = TRUE
+)
+
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 The runner writes source-note text files next to provisional stages, such as

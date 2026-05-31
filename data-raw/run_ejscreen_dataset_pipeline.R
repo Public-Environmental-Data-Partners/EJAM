@@ -28,7 +28,7 @@
 #
 ###################################################### #
 
-# Useful environment variables, used as settings (parameters) customizing the pipeline:
+# Useful environment variables for compatibility-runner workflows:
 
 #   EJAM_PIPELINE_YR: the last year of the 5-year ACS survey to use, e.g. 2022 or 2024. Default is the most recent year that is likely to be published by Census.
 
@@ -50,8 +50,8 @@
 #   EJAM_ACS_DOWNLOAD_RETRIES
 #   EJAM_INCLUDE_ISLANDAREAS_DATA: TRUE to append AS/GU/MP/VI blockgroups to
 #      the annual/release pipeline. This defaults to TRUE so Island Areas appear
-#      in blockgroupstats,
-#      ejscreen_export, ejscreen_export_statepct, and map-ready outputs. These
+#      in blockgroupstats, ejscreen_export, ejscreen_export_statepct, and
+#      map-ready outputs. These
 #      rows are not ACS rows. By default, DHC demographics are NOT used in
 #      bg_acsdata or downstream EJSCREEN-compatible outputs, because the
 #      legacy EPA/EJScreen Island Areas rows had no usable ACS demographic
@@ -121,7 +121,7 @@
 #   CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
 ###################################################### #
 
-# DEFAULT SETTINGS  ####
+# Load package source ####
 
 # Load the package source before any pipeline helpers are called. This runner is
 # often used before reinstalling EJAM, so relying on the installed namespace can
@@ -171,10 +171,4 @@ pipeline_config <- pipeline_env_run$pipeline_config
 pipeline_run <- pipeline_env_run$pipeline_run
 list2env(pipeline_run, envir = environment())
 
-# restart, reinstall
-
 invisible(out)
-
-###################################################### #
-# cat("REBUILD/INSTALL THE PACKAGE NOW \n")
-###################################################### #

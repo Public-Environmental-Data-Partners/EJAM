@@ -274,8 +274,12 @@ named list containing final datasets (\code{blockgroupstats}, \code{bgej},
 Run calculations for the staged EJSCREEN/EJAM dataset update pipeline
 }
 \details{
-See the runner script \code{data-raw/run_ejscreen_dataset_pipeline.R}
-to run the whole pipeline from start to finish with minimal manual intervention.
+For routine annual, validation-only, exports-only, and release runs, prefer
+the recipe scripts in \code{data-raw/run_ejscreen_pipeline_*.R}, or build a
+validated config with \code{pipeline_config_annual()} and pass it to
+\code{run_ejscreen_pipeline()}. The long-standing
+\code{data-raw/run_ejscreen_dataset_pipeline.R} file remains available as an
+environment-variable compatibility runner for older \code{source()} workflows.
 
 \code{calc_ejscreen_dataset()} is a high-level wrapper around the staged
 annual update helpers. It is intentionally an orchestrator rather than a
@@ -327,7 +331,9 @@ DESCRIPTION as \code{ejamdata_required_tag}. For EJAM 2.5.0 this is currently
 releases. \code{\link[=dataload_dynamic]{dataload_dynamic()}} and \code{\link[=download_latest_arrow_data]{download_latest_arrow_data()}} do not use
 whichever data-repository release GitHub currently marks as latest.
 
-Note that the runner script can use several settings stored as environment variables:
+Recipe config helpers are the preferred interface for maintainers. The
+compatibility runner can still use several settings stored as environment
+variables:
 \itemize{
 \item EJAM_PIPELINE_YR
 \item EJAM_PIPELINE_DIR: override output folder.
