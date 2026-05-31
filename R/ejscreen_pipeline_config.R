@@ -81,6 +81,72 @@ ejscreen_pipeline_reference_path <- function(kind) {
   )
 }
 
+ejscreen_pipeline_default_env_values <- function(yr = NULL, storage = "s3") {
+  if (is.null(yr)) {
+    yr <- suppressMessages(acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE))
+  }
+  yr <- as.integer(yr)
+  if (is.na(yr)) {
+    stop("yr must be an ACS end year such as 2024", call. = FALSE)
+  }
+
+  storage <- match.arg(storage, c("s3", "local", "auto"))
+  dir_parent_s3 <- "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
+  dir_parent_local <- file.path(getwd(), "data-raw", "pipeline_outputs")
+  dir_parent <- if (identical(storage, "local")) dir_parent_local else dir_parent_s3
+
+  c(
+    EJAM_PIPELINE_YR = yr,
+    EJAM_PIPELINE_ROOT = dir_parent,
+    EJAM_PIPELINE_STORAGE = storage,
+    EJAM_PIPELINE_DIR = file.path(dir_parent, paste0("ejscreen_acs_", yr)),
+    EJAM_STAGE_FORMAT = "csv",
+    EJAM_STAGE_FORMATS = "csv,rda",
+    EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
+    EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
+    EJAM_FORCE_ACS = "FALSE",
+    EJAM_FORCE_BG_ACSDATA = "FALSE",
+    EJAM_FORCE_BG_GEODATA = "FALSE",
+    EJAM_TIGER_BG_CACHE_DIR = file.path(tools::R_user_dir("EJAM", which = "cache"), "tiger_bg"),
+    EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
+    EJAM_ACS_DOWNLOAD_RETRIES = "2",
+    EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
+    EJAM_ISLANDAREAS_REFERENCE_PATH = islandareas_epa_reference_default_path(),
+    EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE",
+    EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "FALSE",
+    EJAM_BG_ENVIRODATA_REFERENCE_PATH = "",
+    EJAM_BG_ENVIRODATA_REFERENCE_VARS = "",
+    EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
+    EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE",
+    EJAM_VALIDATE_VS_PRIOR = "TRUE",
+    EJAM_PRIOR_PIPELINE_YR = as.character(yr - 1L),
+    EJAM_PRIOR_PIPELINE_DIR = "",
+    EJAM_PRIOR_PACKAGE_REF = "",
+    EJAM_PRIOR_PACKAGE_PATH = "data/blockgroupstats.rda",
+    EJAM_EJSCREEN_EXPORT_REFERENCE_PATH = "",
+    EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE = "TRUE",
+    EJAM_VALIDATE_VS_PRIOR_WALDO = "FALSE",
+    EJAM_RUN_DATACREATE_BEFORE = "TRUE",
+    EJAM_RUN_DATACREATE_AFTER = "TRUE",
+    EJAM_REPLACE_PACKAGE_DATA = "FALSE",
+    EJAM_INCLUDE_FRS_UPDATE = "FALSE"
+  )
+}
+
+ejscreen_pipeline_set_env_defaults <- function(defaults = ejscreen_pipeline_default_env_values()) {
+  if (is.null(names(defaults)) || any(!nzchar(names(defaults)))) {
+    stop("defaults must be a named vector", call. = FALSE)
+  }
+
+  for (name in names(defaults)) {
+    if (!nzchar(Sys.getenv(name, unset = ""))) {
+      do.call(Sys.setenv, as.list(stats::setNames(as.character(defaults[[name]]), name)))
+    }
+  }
+
+  invisible(defaults)
+}
+
 ejscreen_pipeline_setting_names <- function() {
   c(
     "EJAM_PIPELINE_YR",

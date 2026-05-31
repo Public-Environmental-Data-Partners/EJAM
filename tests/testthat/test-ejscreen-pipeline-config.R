@@ -47,6 +47,42 @@ clear_pipeline_config_envvars <- function() {
   )
 }
 
+test_that("ejscreen_pipeline_default_env_values captures runner defaults", {
+  root <- "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
+
+  defaults <- EJAM:::ejscreen_pipeline_default_env_values(yr = 2024)
+
+  expect_equal(defaults[["EJAM_PIPELINE_YR"]], "2024")
+  expect_equal(defaults[["EJAM_PIPELINE_ROOT"]], root)
+  expect_equal(defaults[["EJAM_PIPELINE_STORAGE"]], "s3")
+  expect_equal(defaults[["EJAM_PIPELINE_DIR"]], file.path(root, "ejscreen_acs_2024"))
+  expect_equal(defaults[["EJAM_STAGE_FORMATS"]], "csv,rda")
+  expect_equal(defaults[["EJAM_INCLUDE_ISLANDAREAS_DATA"]], "TRUE")
+  expect_equal(defaults[["EJAM_USE_ISLANDAREAS_DEMOGRAPHICS"]], "FALSE")
+  expect_equal(defaults[["EJAM_PRIOR_PIPELINE_YR"]], "2023")
+  expect_equal(defaults[["EJAM_REPLACE_PACKAGE_DATA"]], "FALSE")
+
+  local_defaults <- EJAM:::ejscreen_pipeline_default_env_values(yr = 2024, storage = "local")
+  expect_equal(local_defaults[["EJAM_PIPELINE_STORAGE"]], "local")
+  expect_match(local_defaults[["EJAM_PIPELINE_DIR"]], "data-raw/pipeline_outputs/ejscreen_acs_2024", fixed = TRUE)
+})
+
+test_that("ejscreen_pipeline_set_env_defaults preserves explicit overrides", {
+  clear_pipeline_config_envvars()
+  withr::local_envvar(c(
+    EJAM_PIPELINE_YR = "2023",
+    EJAM_STAGE_FORMAT = "rda"
+  ))
+
+  defaults <- EJAM:::ejscreen_pipeline_default_env_values(yr = 2024)
+  EJAM:::ejscreen_pipeline_set_env_defaults(defaults)
+
+  expect_equal(Sys.getenv("EJAM_PIPELINE_YR"), "2023")
+  expect_equal(Sys.getenv("EJAM_STAGE_FORMAT"), "rda")
+  expect_equal(Sys.getenv("EJAM_PIPELINE_STORAGE"), "s3")
+  expect_equal(Sys.getenv("EJAM_PRIOR_PACKAGE_PATH"), "data/blockgroupstats.rda")
+})
+
 test_that("ejscreen_pipeline_config builds annual defaults without reading env vars", {
   clear_pipeline_config_envvars()
   withr::local_envvar(EJAM_PIPELINE_DIR = "s3://wrong/place")

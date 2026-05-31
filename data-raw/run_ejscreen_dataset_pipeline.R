@@ -165,64 +165,7 @@ run_started_at <- Sys.time()
 # note that right here the EJAM_PIPELINE_DIR is based on type of EJAM_PIPELINE_STORAGE but
 # if EJAM_PIPELINE_STORAGE is set to "auto" here, then it gets figured out later based on EJAM_PIPELINE_DIR
 
-# infer latest likely published ACS end year for default
-default_yr <- suppressMessages({EJAM:::acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE)})
-yr = default_yr
-storage = "s3" # or "local" or "auto"
-dir_child = paste0("ejscreen_acs_", yr)
-dir_parent_s3 = "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
-dir_parent_local = file.path(getwd(), "data-raw", "pipeline_outputs")
-# dir_parent_local = file.path(tempdir(), "data-raw", "pipeline") # an alternative local path that is outside the package folder
-dir_parent <- if (storage == "local") {dir_parent_local} else {dir_parent_s3}
-dir_full <- file.path(dir_parent, dir_child)
-prior_yr <- as.character(as.integer(yr) - 1L)
-default_tiger_bg_cache_dir <- file.path(tools::R_user_dir("EJAM", which = "cache"), "tiger_bg")
-
-set_pipeline_default <- function(name, value) {
-  if (!nzchar(Sys.getenv(name, unset = ""))) {
-    do.call(Sys.setenv, as.list(stats::setNames(as.character(value), name)))
-  }
-}
-
-set_pipeline_default("EJAM_PIPELINE_YR", yr)
-set_pipeline_default("EJAM_PIPELINE_ROOT", dir_parent)
-set_pipeline_default("EJAM_PIPELINE_STORAGE", storage)
-set_pipeline_default("EJAM_PIPELINE_DIR", dir_full)
-set_pipeline_default("EJAM_STAGE_FORMAT", "csv") # options are c("csv", "rds", "rda", "arrow")
-set_pipeline_default("EJAM_STAGE_FORMATS", "csv,rda") # comma-separated list of formats to save
-set_pipeline_default("EJAM_BLOCKGROUP_UNIVERSE_SOURCE", "acs")
-set_pipeline_default("EJAM_TRACT_WEIGHT_SOURCE", "decennial2020")
-
-set_pipeline_default("EJAM_FORCE_ACS", "FALSE")
-set_pipeline_default("EJAM_FORCE_BG_ACSDATA", "FALSE")
-set_pipeline_default("EJAM_FORCE_BG_GEODATA", "FALSE")
-set_pipeline_default("EJAM_TIGER_BG_CACHE_DIR", default_tiger_bg_cache_dir)
-set_pipeline_default("EJAM_ACS_DOWNLOAD_TIMEOUT", "3600")
-set_pipeline_default("EJAM_ACS_DOWNLOAD_RETRIES", "2")
-set_pipeline_default("EJAM_INCLUDE_ISLANDAREAS_DATA", "TRUE")
-set_pipeline_default("EJAM_ISLANDAREAS_REFERENCE_PATH", EJAM:::islandareas_epa_reference_default_path())
-set_pipeline_default("EJAM_USE_ISLANDAREAS_DEMOGRAPHICS", "FALSE")
-
-set_pipeline_default("EJAM_USE_PROVISIONAL_BG_ENVIRODATA", "FALSE")
-set_pipeline_default("EJAM_BG_ENVIRODATA_REFERENCE_PATH", "")
-set_pipeline_default("EJAM_BG_ENVIRODATA_REFERENCE_VARS", "")
-
-set_pipeline_default("EJAM_INCLUDE_EJSCREEN_EXPORT", "TRUE")
-set_pipeline_default("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", "FALSE")
-
-set_pipeline_default("EJAM_VALIDATE_VS_PRIOR", "TRUE")
-set_pipeline_default("EJAM_PRIOR_PIPELINE_YR", prior_yr)
-set_pipeline_default("EJAM_PRIOR_PIPELINE_DIR", "")
-set_pipeline_default("EJAM_PRIOR_PACKAGE_REF", "")
-set_pipeline_default("EJAM_PRIOR_PACKAGE_PATH", "data/blockgroupstats.rda")
-set_pipeline_default("EJAM_EJSCREEN_EXPORT_REFERENCE_PATH", "")
-set_pipeline_default("EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE", "TRUE")
-set_pipeline_default("EJAM_VALIDATE_VS_PRIOR_WALDO", "FALSE")
-
-set_pipeline_default("EJAM_RUN_DATACREATE_BEFORE", "TRUE")
-set_pipeline_default("EJAM_RUN_DATACREATE_AFTER", "TRUE")
-set_pipeline_default("EJAM_REPLACE_PACKAGE_DATA", "FALSE")
-set_pipeline_default("EJAM_INCLUDE_FRS_UPDATE", "FALSE")
+EJAM:::ejscreen_pipeline_set_env_defaults()
 
 ###################################################### ####################################################### #
 
