@@ -1699,6 +1699,67 @@ ejscreen_pipeline_run_validation_and_finish <- function(pipeline_config,
   )
 }
 
+ejscreen_pipeline_run_aliases <- function(config, pipeline_context) {
+  datacreate_scripts <- pipeline_context$datacreate_scripts
+  if (is.null(datacreate_scripts)) {
+    datacreate_scripts <- list(
+      before = character(),
+      after = character(),
+      pre_datacreate_scripts = character()
+    )
+  }
+  stage_io <- pipeline_context$stage_io
+
+  list(
+    pipeline_setting_names = pipeline_context$pipeline_setting_names,
+    pipeline_settings_report = pipeline_context$pipeline_settings_report,
+    datacreate_scripts = datacreate_scripts,
+    datacreate_scripts_to_run_before_pipeline = datacreate_scripts$before,
+    datacreate_scripts_to_run_after_pipeline = datacreate_scripts$after,
+    pre_datacreate_scripts = datacreate_scripts$pre_datacreate_scripts,
+    stage_io = stage_io,
+    yr = config$yr,
+    pipeline_yr = config$yr,
+    pipeline_root = config$pipeline_root,
+    pipeline_dir = config$pipeline_dir,
+    pipeline_storage = config$pipeline_storage,
+    stage_format = config$stage_format,
+    stage_formats = config$stage_formats,
+    blockgroup_universe_source = config$blockgroup_universe_source,
+    tract_weight_source = config$tract_weight_source,
+    force_acs = config$force_acs,
+    force_bg_acsdata = config$force_bg_acsdata,
+    force_bg_geodata = config$force_bg_geodata,
+    tiger_bg_cache_dir = config$tiger_bg_cache_dir,
+    acs_download_timeout = config$acs_download_timeout,
+    acs_download_retries = config$acs_download_retries,
+    include_islandareas_data = config$include_islandareas_data,
+    islandareas_reference_path = config$islandareas_reference_path,
+    use_islandareas_demographics = config$use_islandareas_demographics,
+    use_provisional_bg_envirodata = config$use_provisional_bg_envirodata,
+    bg_envirodata_reference_path = config$bg_envirodata_reference_path,
+    bg_envirodata_reference_vars = config$bg_envirodata_reference_vars,
+    include_ejscreen_export = config$include_ejscreen_export,
+    include_ejscreen_export_statepct = config$include_ejscreen_export_statepct,
+    include_ejscreen_pctile_lookup_exports = config$include_ejscreen_pctile_lookup_exports,
+    include_ejscreen_dataset_creator_input = config$include_ejscreen_dataset_creator_input,
+    validate_vs_prior = config$validate_vs_prior,
+    validate_vs_prior_waldo = config$validate_vs_prior_waldo,
+    ejscreen_export_reference_path = config$ejscreen_export_reference_path,
+    ejscreen_export_statepct_reference_path = config$ejscreen_export_statepct_reference_path,
+    validate_ejscreen_export_reference = config$validate_ejscreen_export_reference,
+    prior_pipeline_yr = config$prior_pipeline_yr,
+    prior_pipeline_dir = config$prior_pipeline_dir,
+    prior_package_ref = config$prior_package_ref,
+    prior_package_path = config$prior_package_path,
+    load_file_stage = stage_io$load_stage,
+    stage_exists = stage_io$stage_exists,
+    get_reuse_blockgroupstats = stage_io$get_reuse_blockgroupstats,
+    save_file_stage_formats = stage_io$save_stage_formats,
+    save_secondary_stage_formats = stage_io$save_secondary_stage_formats
+  )
+}
+
 run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
                                   run_started_at = Sys.time(),
                                   package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
@@ -1721,14 +1782,17 @@ run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
     run_started_at = run_started_at,
     package_data_pipeline_dir = package_data_pipeline_dir
   )
+  pipeline_aliases <- ejscreen_pipeline_run_aliases(config, pipeline_context)
 
   result <- c(
     list(
       pipeline_config = config,
       pipeline_context = pipeline_context,
       pipeline_data_stages = pipeline_data_stages,
-      pipeline_validation_and_finish = pipeline_validation_and_finish
+      pipeline_validation_and_finish = pipeline_validation_and_finish,
+      pipeline_aliases = pipeline_aliases
     ),
+    pipeline_aliases,
     pipeline_data_stages,
     pipeline_validation_and_finish
   )

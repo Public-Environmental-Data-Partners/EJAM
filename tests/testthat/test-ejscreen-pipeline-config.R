@@ -498,7 +498,23 @@ test_that("run_ejscreen_pipeline coordinates the full runner sequence", {
   data_call <- NULL
   finish_call <- NULL
   cfg <- EJAM:::ejscreen_pipeline_config(yr = 2024)
-  pipeline_context <- list(stage_io = list(stage_io = TRUE))
+  pipeline_context <- list(
+    pipeline_setting_names = c("A", "B"),
+    pipeline_settings_report = data.frame(setting = "A"),
+    datacreate_scripts = list(
+      before = "before.R",
+      after = "after.R",
+      pre_datacreate_scripts = "pre.R"
+    ),
+    stage_io = list(
+      stage_io = TRUE,
+      load_stage = function(stage) stage,
+      stage_exists = function(stage) TRUE,
+      get_reuse_blockgroupstats = function() data.frame(bgfips = "010010201001"),
+      save_stage_formats = function(...) TRUE,
+      save_secondary_stage_formats = function(...) TRUE
+    )
+  )
   pipeline_data_stages <- list(
     out = list(blockgroupstats = data.frame(bgfips = "010010201001")),
     used_provisional_bg_envirodata = FALSE,
@@ -540,6 +556,16 @@ test_that("run_ejscreen_pipeline coordinates the full runner sequence", {
   expect_identical(result$pipeline_context, pipeline_context)
   expect_identical(result$pipeline_data_stages, pipeline_data_stages)
   expect_identical(result$pipeline_validation_and_finish, validation_and_finish)
+  expect_equal(result$yr, 2024L)
+  expect_equal(result$pipeline_yr, 2024L)
+  expect_equal(result$pipeline_dir, cfg$pipeline_dir)
+  expect_identical(result$pipeline_setting_names, c("A", "B"))
+  expect_equal(result$datacreate_scripts_to_run_before_pipeline, "before.R")
+  expect_equal(result$datacreate_scripts_to_run_after_pipeline, "after.R")
+  expect_equal(result$pre_datacreate_scripts, "pre.R")
+  expect_true(result$stage_io$stage_io)
+  expect_equal(result$load_file_stage("x"), "x")
+  expect_true(result$stage_exists("x"))
   expect_identical(result$out, pipeline_data_stages$out)
   expect_identical(result$validation_summary, validation_and_finish$validation_summary)
 })
