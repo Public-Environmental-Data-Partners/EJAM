@@ -574,6 +574,16 @@ ejscreen_pipeline_run_recipe_script <- function(recipe,
                                                 envir = parent.frame(),
                                                 chdir = FALSE) {
   config <- ejscreen_pipeline_config_recipe_from_env(recipe, ...)
+  old_skip_package_load <- Sys.getenv("EJAM_PIPELINE_SKIP_PACKAGE_LOAD", unset = NA_character_)
+  on.exit({
+    if (is.na(old_skip_package_load)) {
+      Sys.unsetenv("EJAM_PIPELINE_SKIP_PACKAGE_LOAD")
+    } else {
+      Sys.setenv(EJAM_PIPELINE_SKIP_PACKAGE_LOAD = old_skip_package_load)
+    }
+  }, add = TRUE)
+  Sys.setenv(EJAM_PIPELINE_SKIP_PACKAGE_LOAD = "TRUE")
+
   ejscreen_pipeline_run_script(
     config = config,
     script = script,

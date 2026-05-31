@@ -151,10 +151,13 @@
 # Load the package source before any pipeline helpers are called. This runner is
 # often used before reinstalling EJAM, so relying on the installed namespace can
 # silently use stale code when validation-only settings skip datacreate_ scripts.
-if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd(), "DESCRIPTION"))) {
-  pkgload::load_all(export_all = TRUE)
-} else {
-  library(EJAM)
+skip_package_load <- toupper(Sys.getenv("EJAM_PIPELINE_SKIP_PACKAGE_LOAD", unset = "FALSE")) %in% c("1", "TRUE", "YES", "Y")
+if (!skip_package_load) {
+  if (requireNamespace("pkgload", quietly = TRUE) && file.exists(file.path(getwd(), "DESCRIPTION"))) {
+    pkgload::load_all(export_all = TRUE)
+  } else {
+    library(EJAM)
+  }
 }
 library(data.table)
 

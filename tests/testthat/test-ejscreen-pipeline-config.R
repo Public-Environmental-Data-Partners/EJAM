@@ -393,7 +393,8 @@ test_that("ejscreen_pipeline_run_recipe_script builds recipe config before sourc
       "  yr = Sys.getenv('EJAM_PIPELINE_YR'),",
       "  pipeline_dir = Sys.getenv('EJAM_PIPELINE_DIR'),",
       "  include_ejscreen_export = Sys.getenv('EJAM_INCLUDE_EJSCREEN_EXPORT'),",
-      "  validate_vs_prior = Sys.getenv('EJAM_VALIDATE_VS_PRIOR')",
+      "  validate_vs_prior = Sys.getenv('EJAM_VALIDATE_VS_PRIOR'),",
+      "  skip_package_load = Sys.getenv('EJAM_PIPELINE_SKIP_PACKAGE_LOAD')",
       ")",
       paste0("saveRDS(observed, ", deparse(observed_path), ")")
     ),
@@ -411,7 +412,9 @@ test_that("ejscreen_pipeline_run_recipe_script builds recipe config before sourc
   expect_equal(observed$pipeline_dir, file.path(root, "ejscreen_acs_2024"))
   expect_equal(observed$include_ejscreen_export, "TRUE")
   expect_equal(observed$validate_vs_prior, "FALSE")
+  expect_equal(observed$skip_package_load, "TRUE")
   expect_equal(Sys.getenv("EJAM_PIPELINE_YR", unset = NA_character_), "2024")
+  expect_equal(Sys.getenv("EJAM_PIPELINE_SKIP_PACKAGE_LOAD", unset = NA_character_), NA_character_)
   expect_named(result, c("config", "applied_env", "source_result"))
 })
 
