@@ -243,6 +243,30 @@ ejscreen_pipeline_config_using_here <- function(config) {
   )
 }
 
+ejscreen_pipeline_config_env_values <- function(config, include_aws = FALSE) {
+  using_here <- ejscreen_pipeline_config_using_here(config)
+  values <- stats::setNames(as.character(using_here), names(using_here))
+  if (!isTRUE(include_aws)) {
+    values <- values[grepl("^EJAM_", names(values))]
+  }
+  values
+}
+
+ejscreen_pipeline_apply_config_env <- function(config, overwrite = TRUE, include_aws = FALSE) {
+  values <- ejscreen_pipeline_config_env_values(config, include_aws = include_aws)
+
+  if (!isTRUE(overwrite)) {
+    existing_values <- Sys.getenv(names(values), unset = "")
+    values <- values[!nzchar(existing_values)]
+  }
+
+  if (length(values) > 0) {
+    do.call(Sys.setenv, as.list(values))
+  }
+
+  invisible(values)
+}
+
 ejscreen_pipeline_config_summary <- function(config, setting_names = ejscreen_pipeline_setting_names()) {
   using_here <- ejscreen_pipeline_config_using_here(config)
   missing_settings <- setdiff(setting_names, names(using_here))

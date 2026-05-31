@@ -273,3 +273,45 @@ test_that("pipeline_config_exports_only enables exports without annual side effe
   expect_false(cfg$run_datacreate_after)
   expect_false(cfg$replace_package_data)
 })
+
+test_that("ejscreen_pipeline_apply_config_env applies recipe settings for runner compatibility", {
+  clear_pipeline_config_envvars()
+  withr::local_envvar(c(
+    AWS_PROFILE = "keep-existing-profile",
+    AWS_REGION = "keep-existing-region"
+  ))
+  root <- file.path(tempdir(), "ejam-pipeline-apply-env-root")
+  cfg <- EJAM:::pipeline_config_validation_only(
+    yr = 2024,
+    pipeline_root = root,
+    pipeline_storage = "local"
+  )
+
+  applied <- EJAM:::ejscreen_pipeline_apply_config_env(cfg)
+
+  expect_equal(applied[["EJAM_PIPELINE_YR"]], "2024")
+  expect_equal(Sys.getenv("EJAM_PIPELINE_DIR"), file.path(root, "ejscreen_acs_2024"))
+  expect_equal(Sys.getenv("EJAM_VALIDATE_VS_PRIOR"), "TRUE")
+  expect_equal(Sys.getenv("EJAM_RUN_DATACREATE_BEFORE"), "FALSE")
+  expect_equal(Sys.getenv("EJAM_RUN_DATACREATE_AFTER"), "FALSE")
+  expect_equal(Sys.getenv("EJAM_REPLACE_PACKAGE_DATA"), "FALSE")
+  expect_equal(Sys.getenv("AWS_PROFILE"), "keep-existing-profile")
+  expect_false("AWS_PROFILE" %in% names(applied))
+})
+
+test_that("ejscreen_pipeline_apply_config_env can preserve existing env vars", {
+  clear_pipeline_config_envvars()
+  withr::local_envvar(c(
+    EJAM_PIPELINE_YR = "2023",
+    EJAM_STAGE_FORMAT = "rda"
+  ))
+  cfg <- EJAM:::pipeline_config_annual(yr = 2024)
+
+  applied <- EJAM:::ejscreen_pipeline_apply_config_env(cfg, overwrite = FALSE)
+
+  expect_equal(Sys.getenv("EJAM_PIPELINE_YR"), "2023")
+  expect_equal(Sys.getenv("EJAM_STAGE_FORMAT"), "rda")
+  expect_equal(Sys.getenv("EJAM_PIPELINE_STORAGE"), "s3")
+  expect_false("EJAM_PIPELINE_YR" %in% names(applied))
+  expect_true("EJAM_PIPELINE_STORAGE" %in% names(applied))
+})
