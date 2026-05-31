@@ -682,6 +682,34 @@ ejscreen_pipeline_print_script_open_commands <- function(before_scripts = charac
   invisible(scripts)
 }
 
+ejscreen_pipeline_prepare_datacreate_scripts <- function(config,
+                                                         datacreate_scripts_fun = ejscreen_pipeline_datacreate_scripts,
+                                                         print_open_commands_fun = ejscreen_pipeline_print_script_open_commands,
+                                                         source_scripts_fun = ejscreen_pipeline_source_scripts) {
+  datacreate_scripts <- datacreate_scripts_fun(
+    include_frs_update = config$include_frs_update
+  )
+  before_scripts <- datacreate_scripts$before
+  after_scripts <- datacreate_scripts$after
+
+  print_open_commands_fun(
+    before_scripts = before_scripts,
+    after_scripts = after_scripts
+  )
+
+  pre_datacreate_scripts <- source_scripts_fun(
+    scripts = before_scripts,
+    enabled = config$run_datacreate_before,
+    skip_message = "Skipping pre-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_BEFORE is FALSE."
+  )
+
+  list(
+    before = before_scripts,
+    after = after_scripts,
+    pre_datacreate_scripts = pre_datacreate_scripts
+  )
+}
+
 ejscreen_pipeline_validation_stages <- function(include_islandareas_data = TRUE,
                                                 use_islandareas_demographics = FALSE,
                                                 has_bg_islandareas_demographics = FALSE,

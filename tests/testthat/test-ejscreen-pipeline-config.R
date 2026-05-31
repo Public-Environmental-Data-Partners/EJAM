@@ -568,6 +568,44 @@ test_that("ejscreen_pipeline_print_script_open_commands prints RStudio open help
   )
 })
 
+test_that("ejscreen_pipeline_prepare_datacreate_scripts uses config flags", {
+  recipe_call <- NULL
+  open_call <- NULL
+  source_call <- NULL
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    include_frs_update = TRUE,
+    run_datacreate_before = FALSE,
+    run_datacreate_after = TRUE
+  )
+
+  result <- EJAM:::ejscreen_pipeline_prepare_datacreate_scripts(
+    cfg,
+    datacreate_scripts_fun = function(include_frs_update) {
+      recipe_call <<- include_frs_update
+      list(before = c("before.R"), after = c("after.R"))
+    },
+    print_open_commands_fun = function(before_scripts, after_scripts) {
+      open_call <<- list(before_scripts = before_scripts, after_scripts = after_scripts)
+      c(before_scripts, after_scripts)
+    },
+    source_scripts_fun = function(scripts, enabled, skip_message) {
+      source_call <<- list(scripts = scripts, enabled = enabled, skip_message = skip_message)
+      character()
+    }
+  )
+
+  expect_true(recipe_call)
+  expect_equal(open_call$before_scripts, "before.R")
+  expect_equal(open_call$after_scripts, "after.R")
+  expect_equal(source_call$scripts, "before.R")
+  expect_false(source_call$enabled)
+  expect_match(source_call$skip_message, "pre-pipeline datacreate_", fixed = TRUE)
+  expect_equal(result$before, "before.R")
+  expect_equal(result$after, "after.R")
+  expect_equal(result$pre_datacreate_scripts, character())
+})
+
 test_that("ejscreen_pipeline_validation_stages keeps core and optional stages ordered", {
   core <- EJAM:::ejscreen_pipeline_validation_stages(
     include_ejscreen_export = FALSE,

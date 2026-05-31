@@ -172,11 +172,6 @@ EJAM:::ejscreen_pipeline_set_env_defaults()
 
 ###################################################### ####################################################### #
 
-run_datacreate_before <- EJAM:::ejscreen_pipeline_env_flag("EJAM_RUN_DATACREATE_BEFORE", TRUE)
-run_datacreate_after <- EJAM:::ejscreen_pipeline_env_flag("EJAM_RUN_DATACREATE_AFTER", TRUE)
-replace_package_data <- EJAM:::ejscreen_pipeline_env_flag("EJAM_REPLACE_PACKAGE_DATA", FALSE)
-include_frs_update <- EJAM:::ejscreen_pipeline_env_flag("EJAM_INCLUDE_FRS_UPDATE", FALSE)
-
 # Specifying OTHER datasets to update ####
 
 # The pipeline is primarily focused on updating
@@ -189,30 +184,7 @@ include_frs_update <- EJAM:::ejscreen_pipeline_env_flag("EJAM_INCLUDE_FRS_UPDATE
 # The default annual recipe intentionally excludes block helper refreshes
 # (blockwts/blockpoints/bgid2fips/blockid2fips/quaddata) and map_headernames
 # regeneration. Do those manually and review carefully when needed.
-###################################################### #
-datacreate_scripts <- EJAM:::ejscreen_pipeline_datacreate_scripts(
-  include_frs_update = include_frs_update
-)
-datacreate_scripts_to_run_before_pipeline <- datacreate_scripts$before
-datacreate_scripts_to_run_after_pipeline <- datacreate_scripts$after
-###################################################### #
-
-###################################################### #
-EJAM:::ejscreen_pipeline_print_script_open_commands(
-  before_scripts = datacreate_scripts_to_run_before_pipeline,
-  after_scripts = datacreate_scripts_to_run_after_pipeline
-)
-
-###################################################### #
-# Create OTHER datasets  ####
-#
-#   must be done BEFORE new blockgroup datasets are created !
-
-EJAM:::ejscreen_pipeline_source_scripts(
-  datacreate_scripts_to_run_before_pipeline,
-  enabled = run_datacreate_before,
-  skip_message = "Skipping pre-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_BEFORE is FALSE."
-)
+# The resolved pipeline config below controls whether those scripts run.
 ###################################################### #
 
 
@@ -319,6 +291,11 @@ pipeline_settings_report <- EJAM:::ejscreen_pipeline_print_run_settings(
   pipeline_config,
   setting_names = pipeline_setting_names
 )
+
+datacreate_scripts <- EJAM:::ejscreen_pipeline_prepare_datacreate_scripts(pipeline_config)
+datacreate_scripts_to_run_before_pipeline <- datacreate_scripts$before
+datacreate_scripts_to_run_after_pipeline <- datacreate_scripts$after
+pre_datacreate_scripts <- datacreate_scripts$pre_datacreate_scripts
 
 ### ACS DEMOGRAPHIC DATA settings ####
 
