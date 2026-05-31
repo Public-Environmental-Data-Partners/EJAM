@@ -651,6 +651,7 @@ app_server <- function(input, output, session) {
 
       ## if acceptable file type, read in; if not, send warning text
       input_file_path <- input$ss_upload_latlon$datapath
+      latlon_upload_error(NULL)             # clear any previous upload error before parsing this upload
       # ideally would quickly check file size here before actually trying to read the entire file in case it is > cap.
 
       ## this part could be replaced each time it happens, by the function sitepoints_from_any
@@ -677,7 +678,6 @@ app_server <- function(input, output, session) {
         shiny::validate(errmsg)
 
       } else {
-        latlon_upload_error(NULL)             # clear any previous upload error
         if (input$testing) {cat("ROW COUNT IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")}
         ## if column names are found in lat/long alias comparison, process
         if (any(tolower(colnames(sitepoints)) %in% lat_alias) & any(tolower(colnames(sitepoints)) %in% lon_alias)) {
