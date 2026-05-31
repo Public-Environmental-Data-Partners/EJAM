@@ -97,7 +97,11 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
     pts[, distance := 0]
 
     if (return_shp) {
-      return(list(pts = pts, polys = shp_buffered))
+      # Merge buffered geometry back into shp so polys preserves one row per input fips,
+      # including invalid/empty rows (function contract matches the non-buffered path).
+      shp_out <- shp
+      sf::st_geometry(shp_out)[valid_geom] <- sf::st_geometry(shp_buffered)
+      return(list(pts = pts, polys = shp_out))
     } else {
       return(pts)
     }

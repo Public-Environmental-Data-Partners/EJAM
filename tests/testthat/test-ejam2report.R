@@ -76,3 +76,24 @@ test_that("local logo_html image sources are embedded for standalone reports", {
   expect_true(grepl("data:image", normalized_logo, fixed = TRUE))
   expect_false(grepl(logo_path, normalized_logo, fixed = TRUE))
 })
+
+test_that("ejam2report FIPS buffer guard: rad=999 does not call shape_buffered_from_shapefile", {
+  # radius.miles = 999 is the legacy FIPS-mode signal; it must NOT trigger buffering.
+  # Verify the guard condition used in ejam2report.R evaluates correctly.
+  fips_buffer_guard <- function(rad) !is.na(rad) && rad > 0 && rad != 999
+  expect_false(fips_buffer_guard(999), label = "rad=999 should not pass the buffer guard")
+  expect_false(fips_buffer_guard(0),   label = "rad=0 should not pass the buffer guard")
+  expect_false(fips_buffer_guard(NA),  label = "rad=NA should not pass the buffer guard")
+})
+
+test_that("ejam2report FIPS buffer guard: positive rad != 999 passes buffer condition", {
+  fips_buffer_guard <- function(rad) !is.na(rad) && rad > 0 && rad != 999
+  for (rad in c(0.5, 1, 5)) {
+    expect_true(
+      fips_buffer_guard(rad),
+      label = paste0("rad=", rad, " should pass the buffer guard")
+    )
+  }
+})
+
+

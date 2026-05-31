@@ -293,7 +293,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > fips polygons ####
     if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
-      if (!is.na(rad) && rad > 0) {
+      if (!is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
       }
     }
@@ -325,7 +325,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > fips polygons ####
     if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
-      if (!is.na(rad) && rad > 0) {
+      if (!is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
       }
     } else {
