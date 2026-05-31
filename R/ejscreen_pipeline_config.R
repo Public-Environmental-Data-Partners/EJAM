@@ -267,6 +267,45 @@ ejscreen_pipeline_apply_config_env <- function(config, overwrite = TRUE, include
   invisible(values)
 }
 
+ejscreen_pipeline_run_script <- function(config,
+                                         script = file.path("data-raw", "run_ejscreen_dataset_pipeline.R"),
+                                         overwrite_env = TRUE,
+                                         include_aws = FALSE,
+                                         restore_env = FALSE,
+                                         envir = parent.frame(),
+                                         chdir = FALSE) {
+  if (!file.exists(script)) {
+    stop("Pipeline runner script not found: ", script, call. = FALSE)
+  }
+
+  env_names <- names(ejscreen_pipeline_config_env_values(config, include_aws = include_aws))
+  old_values <- Sys.getenv(env_names, unset = NA_character_)
+  if (isTRUE(restore_env)) {
+    on.exit({
+      missing_old <- is.na(old_values)
+      if (any(missing_old)) {
+        Sys.unsetenv(names(old_values)[missing_old])
+      }
+      if (any(!missing_old)) {
+        do.call(Sys.setenv, as.list(old_values[!missing_old]))
+      }
+    }, add = TRUE)
+  }
+
+  applied_env <- ejscreen_pipeline_apply_config_env(
+    config,
+    overwrite = overwrite_env,
+    include_aws = include_aws
+  )
+  source_result <- source(script, local = envir, chdir = chdir)
+
+  invisible(list(
+    config = config,
+    applied_env = applied_env,
+    source_result = source_result
+  ))
+}
+
 ejscreen_pipeline_config_summary <- function(config, setting_names = ejscreen_pipeline_setting_names()) {
   using_here <- ejscreen_pipeline_config_using_here(config)
   missing_settings <- setdiff(setting_names, names(using_here))

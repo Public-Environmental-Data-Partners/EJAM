@@ -315,3 +315,41 @@ test_that("ejscreen_pipeline_apply_config_env can preserve existing env vars", {
   expect_false("EJAM_PIPELINE_YR" %in% names(applied))
   expect_true("EJAM_PIPELINE_STORAGE" %in% names(applied))
 })
+
+test_that("ejscreen_pipeline_run_script applies config before sourcing runner", {
+  clear_pipeline_config_envvars()
+  root <- file.path(tempdir(), "ejam-pipeline-run-script-root")
+  cfg <- EJAM:::pipeline_config_validation_only(
+    yr = 2024,
+    pipeline_root = root,
+    pipeline_storage = "local"
+  )
+  stub_script <- tempfile(fileext = ".R")
+  observed_path <- tempfile(fileext = ".rds")
+  writeLines(
+    c(
+      "observed <- list(",
+      "  yr = Sys.getenv('EJAM_PIPELINE_YR'),",
+      "  pipeline_dir = Sys.getenv('EJAM_PIPELINE_DIR'),",
+      "  run_datacreate_before = Sys.getenv('EJAM_RUN_DATACREATE_BEFORE'),",
+      "  validate_vs_prior = Sys.getenv('EJAM_VALIDATE_VS_PRIOR')",
+      ")",
+      paste0("saveRDS(observed, ", deparse(observed_path), ")")
+    ),
+    con = stub_script
+  )
+
+  result <- EJAM:::ejscreen_pipeline_run_script(
+    config = cfg,
+    script = stub_script,
+    restore_env = TRUE
+  )
+  observed <- readRDS(observed_path)
+
+  expect_equal(observed$yr, "2024")
+  expect_equal(observed$pipeline_dir, file.path(root, "ejscreen_acs_2024"))
+  expect_equal(observed$run_datacreate_before, "FALSE")
+  expect_equal(observed$validate_vs_prior, "TRUE")
+  expect_equal(Sys.getenv("EJAM_PIPELINE_YR", unset = NA_character_), NA_character_)
+  expect_named(result, c("config", "applied_env", "source_result"))
+})
