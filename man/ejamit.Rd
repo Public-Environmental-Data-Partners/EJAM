@@ -48,7 +48,9 @@ ejamit(
 \arguments{
 \item{sitepoints}{data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
 
-\item{radius}{in miles, defining circular buffer around a site point (assumes zero in fips or shapefile cases)}
+\item{radius}{in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
+For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
+before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).}
 
 \item{radius_donut_lower_edge}{radius of lower edge of donut ring if analyzing a ring not circle}
 
