@@ -1955,6 +1955,65 @@ test_that("ejscreen_pipeline_stage_validation_reports writes stage and output re
   expect_length(printed, 2)
 })
 
+test_that("ejscreen_pipeline_stage_prior_validation skips or prints prior validation", {
+  validation_call <- NULL
+  print_columns_call <- NULL
+  messages <- character()
+  printed <- list()
+
+  skipped <- EJAM:::ejscreen_pipeline_stage_prior_validation(
+    validate_vs_prior = FALSE,
+    prior_validation_fun = function(...) stop("should not validate")
+  )
+  expect_null(skipped)
+
+  prior_validation <- list(
+    summary = data.table::data.table(
+      stage = "blockgroupstats",
+      problems = 0,
+      extra = "not printed"
+    )
+  )
+  result <- EJAM:::ejscreen_pipeline_stage_prior_validation(
+    validate_vs_prior = TRUE,
+    prior_package_ref = "v2_32_8_001",
+    prior_package_path = "data/blockgroupstats.rda",
+    pipeline_yr = "2024",
+    prior_pipeline_yr = "2023",
+    pipeline_root = "root",
+    pipeline_dir = "pipe",
+    prior_pipeline_dir = "prior-pipe",
+    stage_format = "csv",
+    pipeline_storage = "s3",
+    validate_vs_prior_waldo = FALSE,
+    prior_validation_fun = function(...) {
+      validation_call <<- list(...)
+      prior_validation
+    },
+    print_columns_fun = function(prior_validation_summary) {
+      print_columns_call <<- prior_validation_summary
+      c("stage", "problems")
+    },
+    message_fun = function(...) messages <<- c(messages, paste0(...)),
+    print_fun = function(x) {
+      printed[[length(printed) + 1L]] <<- x
+      invisible(x)
+    }
+  )
+
+  expect_identical(result, prior_validation)
+  expect_equal(validation_call$prior_package_ref, "v2_32_8_001")
+  expect_equal(validation_call$pipeline_yr, "2024")
+  expect_equal(validation_call$prior_pipeline_yr, "2023")
+  expect_equal(validation_call$pipeline_dir, "pipe")
+  expect_equal(validation_call$prior_pipeline_dir, "prior-pipe")
+  expect_equal(validation_call$pipeline_storage, "s3")
+  expect_false(validation_call$validate_vs_prior_waldo)
+  expect_identical(print_columns_call, prior_validation$summary)
+  expect_true(any(grepl("Prior-version validation summary", messages)))
+  expect_equal(names(printed[[1L]]), c("stage", "problems"))
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

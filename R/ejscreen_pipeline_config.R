@@ -1922,6 +1922,51 @@ ejscreen_pipeline_stage_validation_reports <- function(outputs,
   validation_summary
 }
 
+ejscreen_pipeline_stage_prior_validation <- function(validate_vs_prior = TRUE,
+                                                    prior_package_ref = "",
+                                                    prior_package_path = "data/blockgroupstats.rda",
+                                                    pipeline_yr,
+                                                    prior_pipeline_yr = "",
+                                                    pipeline_root,
+                                                    pipeline_dir,
+                                                    prior_pipeline_dir = "",
+                                                    stage_format,
+                                                    pipeline_storage = c("auto", "local", "s3"),
+                                                    validate_vs_prior_waldo = FALSE,
+                                                    prior_validation_fun = ejscreen_pipeline_prior_validation,
+                                                    print_columns_fun = ejscreen_pipeline_prior_validation_print_columns,
+                                                    message_fun = message,
+                                                    print_fun = print) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  if (!isTRUE(validate_vs_prior)) {
+    return(NULL)
+  }
+
+  prior_validation <- prior_validation_fun(
+    validate_vs_prior = validate_vs_prior,
+    prior_package_ref = prior_package_ref,
+    prior_package_path = prior_package_path,
+    pipeline_yr = pipeline_yr,
+    prior_pipeline_yr = prior_pipeline_yr,
+    pipeline_root = pipeline_root,
+    pipeline_dir = pipeline_dir,
+    prior_pipeline_dir = prior_pipeline_dir,
+    stage_format = stage_format,
+    pipeline_storage = pipeline_storage,
+    validate_vs_prior_waldo = validate_vs_prior_waldo
+  )
+  prior_validation_summary <- prior_validation$summary
+  message_fun("Prior-version validation summary:")
+  prior_validation_print_cols <- print_columns_fun(prior_validation_summary)
+  prior_validation_print <- if (inherits(prior_validation_summary, "data.table")) {
+    prior_validation_summary[, prior_validation_print_cols, with = FALSE]
+  } else {
+    prior_validation_summary[, prior_validation_print_cols, drop = FALSE]
+  }
+  print_fun(prior_validation_print)
+  prior_validation
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

@@ -648,26 +648,19 @@ validation_summary <- EJAM:::ejscreen_pipeline_stage_validation_reports(
 # > Optional validation versus prior or currently packaged datasets ####
 ###################################################### #
 
-if (isTRUE(validate_vs_prior)) {
-
-  prior_validation <- EJAM:::ejscreen_pipeline_prior_validation(
-    validate_vs_prior = validate_vs_prior,
-    prior_package_ref = prior_package_ref,
-    prior_package_path = prior_package_path,
-    pipeline_yr = pipeline_yr,
-    prior_pipeline_yr = prior_pipeline_yr,
-    pipeline_root = pipeline_root,
-    pipeline_dir = pipeline_dir,
-    prior_pipeline_dir = prior_pipeline_dir,
-    stage_format = stage_format,
-    pipeline_storage = pipeline_storage,
-    validate_vs_prior_waldo = validate_vs_prior_waldo
-  )
-  prior_validation_summary <- prior_validation$summary
-  message("Prior-version validation summary:")
-  prior_validation_print_cols <- EJAM:::ejscreen_pipeline_prior_validation_print_columns(prior_validation_summary)
-  print(prior_validation_summary[, ..prior_validation_print_cols])
-}
+prior_validation <- EJAM:::ejscreen_pipeline_stage_prior_validation(
+  validate_vs_prior = validate_vs_prior,
+  prior_package_ref = prior_package_ref,
+  prior_package_path = prior_package_path,
+  pipeline_yr = pipeline_yr,
+  prior_pipeline_yr = prior_pipeline_yr,
+  pipeline_root = pipeline_root,
+  pipeline_dir = pipeline_dir,
+  prior_pipeline_dir = prior_pipeline_dir,
+  stage_format = stage_format,
+  pipeline_storage = pipeline_storage,
+  validate_vs_prior_waldo = validate_vs_prior_waldo
+)
 
 ejscreen_export_reference_validations <- EJAM:::ejscreen_pipeline_export_reference_validations(
   outputs = out,
