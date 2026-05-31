@@ -735,6 +735,34 @@ ejscreen_pipeline_export_schema_reports <- function(outputs,
   reports
 }
 
+ejscreen_pipeline_dataset_creator_report <- function(outputs,
+                                                     include_ejscreen_dataset_creator_input = FALSE,
+                                                     pipeline_dir,
+                                                     pipeline_storage = c("auto", "local", "s3"),
+                                                     write_fun = ejscreen_pipeline_write_text_or_csv) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  if (!isTRUE(include_ejscreen_dataset_creator_input)) {
+    return(NULL)
+  }
+
+  dataset_creator_report <- attr(
+    outputs$ejscreen_dataset_creator_input,
+    "ejscreen_dataset_creator_input_report",
+    exact = TRUE
+  )
+  if (is.null(dataset_creator_report)) {
+    return(NULL)
+  }
+
+  write_fun(
+    dataset_creator_report,
+    "ejscreen_dataset_creator_input_report.csv",
+    pipeline_dir = pipeline_dir,
+    storage = pipeline_storage
+  )
+  dataset_creator_report
+}
+
 ejscreen_pipeline_prior_validation_stages <- function() {
   c(
     "bg_acsdata",

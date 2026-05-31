@@ -603,6 +603,47 @@ test_that("ejscreen_pipeline_export_schema_reports writes requested schema repor
   expect_true(all(vapply(written, `[[`, character(1), "storage") == "local"))
 })
 
+test_that("ejscreen_pipeline_dataset_creator_report writes optional report attribute", {
+  written <- NULL
+  report <- data.frame(field = "x", status = "ok")
+  creator_input <- data.frame(x = 1)
+  attr(creator_input, "ejscreen_dataset_creator_input_report") <- report
+  fake_write <- function(x, filename, pipeline_dir, storage) {
+    written <<- list(
+      x = x,
+      filename = filename,
+      pipeline_dir = pipeline_dir,
+      storage = storage
+    )
+    invisible(filename)
+  }
+
+  result <- EJAM:::ejscreen_pipeline_dataset_creator_report(
+    outputs = list(ejscreen_dataset_creator_input = creator_input),
+    include_ejscreen_dataset_creator_input = TRUE,
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    write_fun = fake_write
+  )
+
+  expect_equal(result, report)
+  expect_equal(written$x, report)
+  expect_equal(written$filename, "ejscreen_dataset_creator_input_report.csv")
+  expect_equal(written$pipeline_dir, "pipe")
+  expect_equal(written$storage, "local")
+
+  written <- NULL
+  skipped <- EJAM:::ejscreen_pipeline_dataset_creator_report(
+    outputs = list(ejscreen_dataset_creator_input = creator_input),
+    include_ejscreen_dataset_creator_input = FALSE,
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    write_fun = fake_write
+  )
+  expect_null(skipped)
+  expect_null(written)
+})
+
 test_that("ejscreen_pipeline_prior_validation_stages keeps annual comparison stages ordered", {
   expect_equal(
     EJAM:::ejscreen_pipeline_prior_validation_stages(),

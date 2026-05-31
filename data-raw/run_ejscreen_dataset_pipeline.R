@@ -1074,19 +1074,13 @@ EJAM:::ejscreen_pipeline_export_schema_reports(
   pipeline_storage = pipeline_storage
 )
 
-if (isTRUE(include_ejscreen_dataset_creator_input)) {
-  dataset_creator_report <- attr(
-    out$ejscreen_dataset_creator_input,
-    "ejscreen_dataset_creator_input_report",
-    exact = TRUE
-  )
-  if (!is.null(dataset_creator_report)) {
-    write_pipeline_txt_or_csv(x = dataset_creator_report,
-                              filename = "ejscreen_dataset_creator_input_report.csv",
-                              pipeline_dir = pipeline_dir,
-                              pipeline_storage = pipeline_storage)
-  }
-}
+EJAM:::ejscreen_pipeline_dataset_creator_report(
+  outputs = out,
+  include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
+  pipeline_dir = pipeline_dir,
+  pipeline_storage = pipeline_storage
+)
+
 print(Sys.time())
 ###################################################### #
 # > Optional validation versus prior or currently packaged datasets ####
