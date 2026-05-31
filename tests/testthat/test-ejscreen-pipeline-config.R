@@ -401,6 +401,98 @@ test_that("ejscreen_pipeline_run_data_stages coordinates stage sequence", {
   expect_equal(result$bg_islandareas_reference, "island-ref-3")
 })
 
+test_that("ejscreen_pipeline_run_validation_and_finish coordinates final stages", {
+  validation_call <- NULL
+  prior_call <- NULL
+  finish_call <- NULL
+  outputs <- list(blockgroupstats = data.frame(bgfips = "010010201001"))
+  validation_summary <- data.frame(stage = "blockgroupstats", errors = "")
+  prior_validation <- list(summary = data.frame(stage = "prior"))
+  pipeline_finish <- list(
+    ejscreen_export_reference_validations = list(reference = TRUE),
+    pipeline_finalization = list(finalized = TRUE),
+    package_data_replacement = list(replaced = FALSE),
+    post_datacreate_scripts = c("after.R")
+  )
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    include_islandareas_data = TRUE,
+    use_islandareas_demographics = FALSE,
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = TRUE,
+    include_ejscreen_pctile_lookup_exports = FALSE,
+    include_ejscreen_dataset_creator_input = TRUE,
+    validate_vs_prior = TRUE,
+    prior_pipeline_yr = "2023",
+    prior_pipeline_dir = "prior-pipe",
+    prior_package_ref = "v2_32_8_001",
+    prior_package_path = "data/blockgroupstats.rda",
+    validate_vs_prior_waldo = FALSE
+  )
+  stage_io <- list(
+    stage_exists = function(stage) identical(stage, "bg_islandareas_demographics"),
+    load_stage = function(stage) data.frame(stage = stage)
+  )
+  pipeline_context <- list(
+    stage_io = stage_io,
+    pipeline_setting_names = c("A", "B"),
+    datacreate_scripts = list(after = c("after.R"))
+  )
+  data_stages <- list(
+    out = outputs,
+    used_provisional_bg_envirodata = TRUE,
+    used_provisional_bg_extra_indicators = FALSE
+  )
+
+  result <- EJAM:::ejscreen_pipeline_run_validation_and_finish(
+    pipeline_config = cfg,
+    pipeline_context = pipeline_context,
+    data_stages = data_stages,
+    run_started_at = as.POSIXct("2026-05-30 12:00:00", tz = "UTC"),
+    package_data_pipeline_dir = "package-pipe",
+    validation_reports_fun = function(...) {
+      validation_call <<- list(...)
+      validation_summary
+    },
+    prior_validation_fun = function(...) {
+      prior_call <<- list(...)
+      prior_validation
+    },
+    finish_run_fun = function(...) {
+      finish_call <<- list(...)
+      pipeline_finish
+    }
+  )
+
+  expect_identical(result$validation_summary, validation_summary)
+  expect_identical(result$prior_validation, prior_validation)
+  expect_identical(result$pipeline_finish, pipeline_finish)
+  expect_identical(result$pipeline_finalization, pipeline_finish$pipeline_finalization)
+  expect_equal(validation_call$outputs, outputs)
+  expect_true(validation_call$include_islandareas_data)
+  expect_true(validation_call$include_ejscreen_dataset_creator_input)
+  expect_true(validation_call$stage_exists_fun("bg_islandareas_demographics"))
+  expect_equal(validation_call$load_stage_fun("blockgroupstats")$stage, "blockgroupstats")
+  expect_true(prior_call$validate_vs_prior)
+  expect_equal(prior_call$prior_package_ref, "v2_32_8_001")
+  expect_equal(prior_call$pipeline_yr, 2024)
+  expect_equal(prior_call$prior_pipeline_yr, "2023")
+  expect_equal(prior_call$prior_pipeline_dir, "prior-pipe")
+  expect_equal(finish_call$outputs, outputs)
+  expect_identical(finish_call$validation_summary, validation_summary)
+  expect_identical(finish_call$pipeline_setting_names, c("A", "B"))
+  expect_equal(
+    finish_call$provisional_inputs,
+    c(
+      bg_envirodata = TRUE,
+      bg_extra_indicators = FALSE,
+      bg_islandareas_demographics_used_in_bg_acsdata = FALSE
+    )
+  )
+  expect_equal(finish_call$datacreate_scripts_after, "after.R")
+  expect_equal(finish_call$package_data_pipeline_dir, "package-pipe")
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(

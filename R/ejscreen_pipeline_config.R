@@ -1608,6 +1608,83 @@ ejscreen_pipeline_run_data_stages <- function(pipeline_config,
   )
 }
 
+ejscreen_pipeline_run_validation_and_finish <- function(pipeline_config,
+                                                        pipeline_context,
+                                                        data_stages,
+                                                        run_started_at,
+                                                        package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
+                                                        validation_reports_fun = ejscreen_pipeline_stage_validation_reports,
+                                                        prior_validation_fun = ejscreen_pipeline_stage_prior_validation,
+                                                        finish_run_fun = ejscreen_pipeline_finish_run) {
+  if (!inherits(pipeline_config, "ejam_ejscreen_pipeline_config")) {
+    stop("pipeline_config must be an ejscreen pipeline config object", call. = FALSE)
+  }
+
+  stage_io <- pipeline_context$stage_io
+  if (is.null(stage_io$stage_exists) || is.null(stage_io$load_stage)) {
+    stop("pipeline_context$stage_io must provide stage_exists and load_stage helpers", call. = FALSE)
+  }
+  datacreate_scripts_after <- character()
+  if (!is.null(pipeline_context$datacreate_scripts) &&
+      !is.null(pipeline_context$datacreate_scripts$after)) {
+    datacreate_scripts_after <- pipeline_context$datacreate_scripts$after
+  }
+
+  validation_summary <- validation_reports_fun(
+    outputs = data_stages$out,
+    include_islandareas_data = pipeline_config$include_islandareas_data,
+    use_islandareas_demographics = pipeline_config$use_islandareas_demographics,
+    include_ejscreen_export = pipeline_config$include_ejscreen_export,
+    include_ejscreen_export_statepct = pipeline_config$include_ejscreen_export_statepct,
+    include_ejscreen_pctile_lookup_exports = pipeline_config$include_ejscreen_pctile_lookup_exports,
+    include_ejscreen_dataset_creator_input = pipeline_config$include_ejscreen_dataset_creator_input,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    stage_format = pipeline_config$stage_format,
+    pipeline_storage = pipeline_config$pipeline_storage,
+    stage_exists_fun = stage_io$stage_exists,
+    load_stage_fun = stage_io$load_stage
+  )
+
+  prior_validation <- prior_validation_fun(
+    validate_vs_prior = pipeline_config$validate_vs_prior,
+    prior_package_ref = pipeline_config$prior_package_ref,
+    prior_package_path = pipeline_config$prior_package_path,
+    pipeline_yr = pipeline_config$yr,
+    prior_pipeline_yr = pipeline_config$prior_pipeline_yr,
+    pipeline_root = pipeline_config$pipeline_root,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    prior_pipeline_dir = pipeline_config$prior_pipeline_dir,
+    stage_format = pipeline_config$stage_format,
+    pipeline_storage = pipeline_config$pipeline_storage,
+    validate_vs_prior_waldo = pipeline_config$validate_vs_prior_waldo
+  )
+
+  pipeline_finish <- finish_run_fun(
+    outputs = data_stages$out,
+    validation_summary = validation_summary,
+    pipeline_config = pipeline_config,
+    pipeline_setting_names = pipeline_context$pipeline_setting_names,
+    provisional_inputs = c(
+      bg_envirodata = isTRUE(data_stages$used_provisional_bg_envirodata),
+      bg_extra_indicators = isTRUE(data_stages$used_provisional_bg_extra_indicators),
+      bg_islandareas_demographics_used_in_bg_acsdata = pipeline_config$use_islandareas_demographics
+    ),
+    run_started_at = run_started_at,
+    datacreate_scripts_after = datacreate_scripts_after,
+    package_data_pipeline_dir = package_data_pipeline_dir
+  )
+
+  list(
+    validation_summary = validation_summary,
+    prior_validation = prior_validation,
+    pipeline_finish = pipeline_finish,
+    ejscreen_export_reference_validations = pipeline_finish$ejscreen_export_reference_validations,
+    pipeline_finalization = pipeline_finish$pipeline_finalization,
+    package_data_replacement = pipeline_finish$package_data_replacement,
+    post_datacreate_scripts = pipeline_finish$post_datacreate_scripts
+  )
+}
+
 ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
                                                force_acs = FALSE,
                                                force_bg_acsdata = FALSE,

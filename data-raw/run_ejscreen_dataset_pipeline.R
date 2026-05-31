@@ -352,62 +352,14 @@ pipeline_data_stages <- EJAM:::ejscreen_pipeline_run_data_stages(
 )
 list2env(pipeline_data_stages, envir = environment())
 
-###################################################### #
-# Validation summary ####
-###################################################### #
-
-validation_summary <- EJAM:::ejscreen_pipeline_stage_validation_reports(
-  outputs = out,
-  include_islandareas_data = include_islandareas_data,
-  use_islandareas_demographics = use_islandareas_demographics,
-  include_ejscreen_export = include_ejscreen_export,
-  include_ejscreen_export_statepct = include_ejscreen_export_statepct,
-  include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
-  include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
-  pipeline_dir = pipeline_dir,
-  stage_format = stage_format,
-  pipeline_storage = pipeline_storage,
-  stage_exists_fun = stage_exists,
-  load_stage_fun = load_file_stage
-)
-###################################################### #
-# > Optional validation versus prior or currently packaged datasets ####
-###################################################### #
-
-prior_validation <- EJAM:::ejscreen_pipeline_stage_prior_validation(
-  validate_vs_prior = validate_vs_prior,
-  prior_package_ref = prior_package_ref,
-  prior_package_path = prior_package_path,
-  pipeline_yr = pipeline_yr,
-  prior_pipeline_yr = prior_pipeline_yr,
-  pipeline_root = pipeline_root,
-  pipeline_dir = pipeline_dir,
-  prior_pipeline_dir = prior_pipeline_dir,
-  stage_format = stage_format,
-  pipeline_storage = pipeline_storage,
-  validate_vs_prior_waldo = validate_vs_prior_waldo
-)
-
-# Finish the run with reference validation, manifest/failure handling, optional
-# package-data replacement, and optional post-pipeline datacreate_ scripts.
-pipeline_finish <- EJAM:::ejscreen_pipeline_finish_run(
-  outputs = out,
-  validation_summary = validation_summary,
+pipeline_validation_and_finish <- EJAM:::ejscreen_pipeline_run_validation_and_finish(
   pipeline_config = pipeline_config,
-  pipeline_setting_names = pipeline_setting_names,
-  provisional_inputs = c(
-    bg_envirodata = used_provisional_bg_envirodata,
-    bg_extra_indicators = used_provisional_bg_extra_indicators,
-    bg_islandareas_demographics_used_in_bg_acsdata = use_islandareas_demographics
-  ),
+  pipeline_context = pipeline_context,
+  data_stages = pipeline_data_stages,
   run_started_at = run_started_at,
-  datacreate_scripts_after = datacreate_scripts_to_run_after_pipeline,
   package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR")
 )
-ejscreen_export_reference_validations <- pipeline_finish$ejscreen_export_reference_validations
-pipeline_finalization <- pipeline_finish$pipeline_finalization
-package_data_replacement <- pipeline_finish$package_data_replacement
-post_datacreate_scripts <- pipeline_finish$post_datacreate_scripts
+list2env(pipeline_validation_and_finish, envir = environment())
 
 # restart, reinstall
 
