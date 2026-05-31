@@ -24,6 +24,17 @@ ejscreen_pipeline_csv <- function(x) {
   out[nzchar(out)]
 }
 
+ejscreen_pipeline_integer <- function(x, name) {
+  if (is.null(x) || length(x) == 0) {
+    stop(name, " must be an integer", call. = FALSE)
+  }
+  value <- trimws(as.character(x)[1])
+  if (is.na(value) || !grepl("^-?[0-9]+$", value)) {
+    stop(name, " must be an integer", call. = FALSE)
+  }
+  as.integer(value)
+}
+
 ejscreen_pipeline_env_value <- function(name, default = NULL) {
   value <- Sys.getenv(name, unset = NA_character_)
   if (is.na(value) || !nzchar(value)) {
@@ -77,8 +88,24 @@ ejscreen_pipeline_default_root <- function(pipeline_storage) {
   "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
 }
 
+ejscreen_pipeline_path <- function(...) {
+  pieces <- unlist(list(...), use.names = FALSE)
+  pieces <- as.character(pieces)
+  pieces <- pieces[!is.na(pieces) & nzchar(pieces)]
+  if (!length(pieces)) {
+    return("")
+  }
+  if (grepl("^s3://", pieces[[1]])) {
+    root <- sub("/+$", "", pieces[[1]])
+    rest <- gsub("^/+|/+$", "", pieces[-1])
+    rest <- rest[nzchar(rest)]
+    return(paste(c(root, rest), collapse = "/"))
+  }
+  do.call(file.path, as.list(pieces))
+}
+
 ejscreen_pipeline_reference_path <- function(kind) {
-  file.path(
+  ejscreen_pipeline_path(
     "s3://pedp-data-preserved/ejscreen-data-processing/pipeline",
     "ejscreen_acs_2022",
     "epa_original_reference",
@@ -110,7 +137,7 @@ ejscreen_pipeline_default_env_values <- function(yr = NULL, storage = "s3") {
     EJAM_PIPELINE_YR = yr,
     EJAM_PIPELINE_ROOT = dir_parent,
     EJAM_PIPELINE_STORAGE = storage,
-    EJAM_PIPELINE_DIR = file.path(dir_parent, paste0("ejscreen_acs_", yr)),
+    EJAM_PIPELINE_DIR = ejscreen_pipeline_path(dir_parent, paste0("ejscreen_acs_", yr)),
     EJAM_STAGE_FORMAT = "csv",
     EJAM_STAGE_FORMATS = "csv,rda",
     EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
@@ -451,7 +478,7 @@ ejscreen_pipeline_config <- function(yr = NULL,
     }
   }
   if (is.null(pipeline_dir)) {
-    pipeline_dir <- file.path(pipeline_root, paste0("ejscreen_acs_", yr))
+    pipeline_dir <- ejscreen_pipeline_path(pipeline_root, paste0("ejscreen_acs_", yr))
   }
   pipeline_storage <- ejscreen_pipeline_storage_backend(
     path = pipeline_dir,
@@ -507,8 +534,8 @@ ejscreen_pipeline_config <- function(yr = NULL,
     force_bg_acsdata = ejscreen_pipeline_bool(force_bg_acsdata),
     force_bg_geodata = ejscreen_pipeline_bool(force_bg_geodata),
     tiger_bg_cache_dir = tiger_bg_cache_dir,
-    acs_download_timeout = as.integer(acs_download_timeout),
-    acs_download_retries = as.integer(acs_download_retries),
+    acs_download_timeout = ejscreen_pipeline_integer(acs_download_timeout, "acs_download_timeout"),
+    acs_download_retries = ejscreen_pipeline_integer(acs_download_retries, "acs_download_retries"),
     include_islandareas_data = ejscreen_pipeline_bool(include_islandareas_data),
     islandareas_reference_path = islandareas_reference_path,
     use_islandareas_demographics = ejscreen_pipeline_bool(use_islandareas_demographics),

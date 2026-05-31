@@ -171,4 +171,4 @@ pipeline_config <- pipeline_env_run$pipeline_config
 pipeline_run <- pipeline_env_run$pipeline_run
 list2env(pipeline_run, envir = environment())
 
-invisible(out)
+invisible(pipeline_run)

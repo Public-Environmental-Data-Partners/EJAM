@@ -55,7 +55,10 @@ test_that("ejscreen_pipeline_default_env_values captures runner defaults", {
   expect_equal(defaults[["EJAM_PIPELINE_YR"]], "2024")
   expect_equal(defaults[["EJAM_PIPELINE_ROOT"]], root)
   expect_equal(defaults[["EJAM_PIPELINE_STORAGE"]], "s3")
-  expect_equal(defaults[["EJAM_PIPELINE_DIR"]], file.path(root, "ejscreen_acs_2024"))
+  expect_equal(
+    defaults[["EJAM_PIPELINE_DIR"]],
+    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2024"
+  )
   expect_equal(defaults[["EJAM_STAGE_FORMATS"]], "csv,rda")
   expect_equal(defaults[["EJAM_INCLUDE_ISLANDAREAS_DATA"]], "TRUE")
   expect_equal(defaults[["EJAM_USE_ISLANDAREAS_DEMOGRAPHICS"]], "FALSE")
@@ -134,6 +137,22 @@ test_that("ejscreen_pipeline_config builds annual defaults without reading env v
   expect_true(cfg$validate_vs_prior)
 })
 
+test_that("ejscreen_pipeline_path preserves S3 URI separators", {
+  expect_equal(
+    EJAM:::ejscreen_pipeline_path(
+      "s3://pedp-data-preserved/ejscreen-data-processing/pipeline",
+      "ejscreen_acs_2022",
+      "epa_original_reference",
+      "file.csv"
+    ),
+    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022/epa_original_reference/file.csv"
+  )
+  expect_equal(
+    EJAM:::ejscreen_pipeline_reference_path("national"),
+    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_2022/epa_original_reference/2024_2.32_August_UseMe/EJSCREEN_2024_BG_with_AS_CNMI_GU_VI.csv"
+  )
+})
+
 test_that("ejscreen_pipeline_config normalizes stage formats and validates choices", {
   cfg <- EJAM:::ejscreen_pipeline_config(
     yr = 2024,
@@ -192,6 +211,35 @@ test_that("ejscreen_pipeline_config_from_env honors environment overrides", {
   expect_false(cfg$run_datacreate_before)
   expect_true(cfg$run_datacreate_after)
   expect_true(cfg$include_frs_update)
+})
+
+test_that("ejscreen_pipeline_config_from_env rejects invalid ACS download integers", {
+  clear_pipeline_config_envvars()
+  root <- file.path(tempdir(), "ejam-pipeline-bad-int-root")
+  withr::local_envvar(c(
+    EJAM_PIPELINE_YR = "2024",
+    EJAM_PIPELINE_ROOT = root,
+    EJAM_PIPELINE_STORAGE = "local",
+    EJAM_ACS_DOWNLOAD_TIMEOUT = "not-a-number"
+  ))
+
+  expect_error(
+    EJAM:::ejscreen_pipeline_config_from_env(),
+    "EJAM_ACS_DOWNLOAD_TIMEOUT|acs_download_timeout"
+  )
+
+  clear_pipeline_config_envvars()
+  withr::local_envvar(c(
+    EJAM_PIPELINE_YR = "2024",
+    EJAM_PIPELINE_ROOT = root,
+    EJAM_PIPELINE_STORAGE = "local",
+    EJAM_ACS_DOWNLOAD_RETRIES = "not-a-number"
+  ))
+
+  expect_error(
+    EJAM:::ejscreen_pipeline_config_from_env(),
+    "EJAM_ACS_DOWNLOAD_RETRIES|acs_download_retries"
+  )
 })
 
 test_that("ejscreen_pipeline_config_summary reports env and resolved settings", {
@@ -1003,6 +1051,37 @@ test_that("ejscreen_pipeline_run_from_env builds config and runs compatibility p
     run_call$run_started_at,
     as.POSIXct("2026-05-30 12:00:00", tz = "UTC")
   )
+})
+
+test_that("run_ejscreen_dataset_pipeline.R returns the pipeline run object", {
+  runner <- test_path("../../data-raw/run_ejscreen_dataset_pipeline.R")
+  skip_if_not(file.exists(runner))
+  clear_pipeline_config_envvars()
+  withr::local_envvar(c(
+    EJAM_PIPELINE_SKIP_PACKAGE_LOAD = "TRUE",
+    EJAM_PIPELINE_DIR = "test-pipeline-dir"
+  ))
+  cfg <- EJAM:::ejscreen_pipeline_config(yr = 2024, validate_year_dirs = FALSE)
+  pipeline_run <- structure(
+    list(
+      out = list(blockgroupstats = data.frame(bgfips = "010010201001")),
+      marker = "pipeline-run"
+    ),
+    class = "ejam_ejscreen_pipeline_run"
+  )
+  local_mocked_bindings(
+    ejscreen_pipeline_run_from_env = function(...) {
+      list(pipeline_config = cfg, pipeline_run = pipeline_run)
+    },
+    .package = "EJAM"
+  )
+
+  env <- new.env(parent = globalenv())
+  sourced <- source(runner, local = env)
+
+  expect_identical(sourced$value, pipeline_run)
+  expect_identical(env$pipeline_run, pipeline_run)
+  expect_identical(env$out, pipeline_run$out)
 })
 
 test_that("ejscreen_pipeline_source_scripts sources enabled scripts and reports disabled scripts", {
