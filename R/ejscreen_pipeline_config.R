@@ -1775,6 +1775,18 @@ run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
   if (is.null(package_data_pipeline_dir) || !nzchar(package_data_pipeline_dir)) {
     package_data_pipeline_dir <- config$pipeline_dir
   }
+  env_names <- names(ejscreen_pipeline_config_env_values(config, include_aws = TRUE))
+  old_env_values <- Sys.getenv(env_names, unset = NA_character_)
+  on.exit({
+    missing_old <- is.na(old_env_values)
+    if (any(missing_old)) {
+      Sys.unsetenv(names(old_env_values)[missing_old])
+    }
+    if (any(!missing_old)) {
+      do.call(Sys.setenv, as.list(old_env_values[!missing_old]))
+    }
+  }, add = TRUE)
+  ejscreen_pipeline_apply_config_env(config, overwrite = TRUE, include_aws = TRUE)
 
   pipeline_context <- context_fun(config)
   pipeline_data_stages <- data_stages_fun(

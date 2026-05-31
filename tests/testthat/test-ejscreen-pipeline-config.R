@@ -611,6 +611,63 @@ test_that("run_ejscreen_pipeline defaults package-data input to config pipeline 
   expect_equal(finish_call$package_data_pipeline_dir, cfg$pipeline_dir)
 })
 
+test_that("run_ejscreen_pipeline applies config env vars only during direct run", {
+  withr::local_envvar(c(
+    EJAM_DECENNIAL_BGWTS_CACHE = "old-cache.rds",
+    EJAM_TIGER_BG_CACHE_DIR = "old-tiger-cache",
+    AWS_PROFILE = "old-profile"
+  ))
+  root <- file.path(tempdir(), "ejam-pipeline-run-env-scope")
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    pipeline_root = root,
+    pipeline_storage = "local",
+    decennial_bgwts_cache = "new-cache.rds",
+    tiger_bg_cache_dir = "new-tiger-cache",
+    aws_profile = "new-profile"
+  )
+  observed_env <- NULL
+  pipeline_context <- list(
+    pipeline_setting_names = c("A", "B"),
+    pipeline_settings_report = data.frame(setting = "A"),
+    datacreate_scripts = list(before = character(), after = character(), pre_datacreate_scripts = character()),
+    stage_io = list(
+      load_stage = function(stage) stage,
+      stage_exists = function(stage) TRUE,
+      get_reuse_blockgroupstats = function() data.frame(bgfips = "010010201001"),
+      save_stage_formats = function(...) TRUE,
+      save_secondary_stage_formats = function(...) TRUE
+    )
+  )
+
+  EJAM:::run_ejscreen_pipeline(
+    cfg,
+    context_fun = function(config) pipeline_context,
+    data_stages_fun = function(...) {
+      observed_env <<- Sys.getenv(c(
+        "EJAM_DECENNIAL_BGWTS_CACHE",
+        "EJAM_TIGER_BG_CACHE_DIR",
+        "AWS_PROFILE"
+      ))
+      list(
+        out = list(blockgroupstats = data.frame(bgfips = "010010201001")),
+        used_provisional_bg_envirodata = FALSE,
+        used_provisional_bg_extra_indicators = FALSE
+      )
+    },
+    validation_and_finish_fun = function(...) {
+      list(validation_summary = data.frame(stage = "blockgroupstats"))
+    }
+  )
+
+  expect_equal(observed_env[["EJAM_DECENNIAL_BGWTS_CACHE"]], "new-cache.rds")
+  expect_equal(observed_env[["EJAM_TIGER_BG_CACHE_DIR"]], "new-tiger-cache")
+  expect_equal(observed_env[["AWS_PROFILE"]], "new-profile")
+  expect_equal(Sys.getenv("EJAM_DECENNIAL_BGWTS_CACHE"), "old-cache.rds")
+  expect_equal(Sys.getenv("EJAM_TIGER_BG_CACHE_DIR"), "old-tiger-cache")
+  expect_equal(Sys.getenv("AWS_PROFILE"), "old-profile")
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(
