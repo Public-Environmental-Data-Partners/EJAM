@@ -621,6 +621,20 @@ ejscreen_pipeline_run_recipe_script <- function(recipe,
   )
 }
 
+ejscreen_pipeline_run_recipe <- function(recipe,
+                                         ...,
+                                         package_data_pipeline_dir = NULL,
+                                         run_fun = run_ejscreen_pipeline) {
+  config <- ejscreen_pipeline_config_recipe_from_env(recipe, ...)
+  if (is.null(package_data_pipeline_dir) || !nzchar(package_data_pipeline_dir)) {
+    package_data_pipeline_dir <- config$pipeline_dir
+  }
+  run_fun(
+    config = config,
+    package_data_pipeline_dir = package_data_pipeline_dir
+  )
+}
+
 ejscreen_pipeline_source_scripts <- function(scripts,
                                              enabled = TRUE,
                                              skip_message = NULL) {
