@@ -8,7 +8,9 @@
 #' @details See examples in vignettes/ articles at `r EJAM::url_package(type = "docs", get_full_url = TRUE)`
 #'
 #' @param sitepoints data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers
-#' @param radius in miles, defining circular buffer around a site point (assumes zero in fips or shapefile cases)
+#' @param radius in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
+#'   For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
+#'   before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
 #' @param avoidorphans logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
@@ -406,15 +408,16 @@ ejamit <- function(sitepoints = NULL,
     data_uploaded$invalid_msg = ifelse(data_uploaded$valid, "",  "invalid FIPS")
     data_uploaded$ejam_uniq_id = as.character(data_uploaded$ejam_uniq_id) # for merge or join below to work, must match class (integer vs character) of output of doaggregate() and before that output of getblocksnearby_from_fips(fips_counties_from_state_abbrev('DE'))  #  1:length(fips))
 
-    # . radius is ignored for fips ####
+    # . radius for fips ####
+    # Save user's specified buffer radius (if radius was not provided, default to no buffer for fips)
+    if (missing(radius)) {
+      user_radius <- 0  # default: no buffer around FIPS boundaries
+    } else {
+      user_radius <- radius  # use user-specified buffer radius when > 0
+    }
     radius <- 999 # use this value when analyzing by fips not by circular buffers, as input to doaggregate(),
     # then in output of doaggregate()$results_bysite$radius.miles is returned as 0 for every fips, as in _overall.
-
-    ## ONCE WE IMPLEMENT BUFFERING radius IN FIPS CASE,   we have to downloaded bounds, we have to add the buffering
-    if (!is.null(radius) && radius > 0 && radius != 999) {
-      warning("adding buffer around fips is not yet implemented")
-      # shp <- shape_buffered_from_shapefile(shp, radius.miles = radius)
-    }
+    # Buffer (if any) is applied in getblocksnearby_from_fips() via user_radius.
 
     # . getblocksnearby_from_fips() ####
 
@@ -424,7 +427,8 @@ ejamit <- function(sitepoints = NULL,
 
       fips = fips,  # these get retained as a column, but inside getblocksnearby_from_fips(), ejam_uniq_id numbers the sites 1,2,3,etc.
       in_shiny = in_shiny,
-      need_blockwt = need_blockwt
+      need_blockwt = need_blockwt,
+      radius = user_radius  # pass actual user radius; buffer applied when > 0
     )
     if (nrow(mysites2blocks) == 0) {
       return(NULL)
@@ -503,6 +507,15 @@ ejamit <- function(sitepoints = NULL,
     if (exists("progress_doagg")) {
       progress_doagg$close() # closes the progress bar
     }
+
+    # If user requested a buffer around FIPS boundaries, update radius.miles in results
+    # (doaggregate() always returns 0 for fips analysis, but we want to show the actual buffer)
+    # radius = 999 is a legacy signal meaning "FIPS analysis, no buffer"; do not treat as a real buffer radius
+    if (!is.null(user_radius) && !is.na(user_radius) && user_radius > 0 && user_radius != 999) {
+      if (!is.null(out$results_bysite))  out$results_bysite[ , radius.miles := user_radius]
+      if (!is.null(out$results_overall)) out$results_overall[, radius.miles := user_radius]
+    }
+
   } # end fips type
   ######################## #
 
