@@ -200,6 +200,19 @@ lookup tables used by EJAM.</p></li>
 <code>blockgroupstats</code> and <code>bgej</code>, applying
 EJScreen-style names from <code>map_headernames</code>, and adding map
 helper fields where possible.</p></li>
+<li><p><code>ejscreen_export_statepct</code>: EJScreen-ready export
+matching EPA’s StatePct convention, where state raw scores and state
+percentiles are written into the generic EJScreen field names.</p></li>
+<li><p><code>ejscreen_us_pctile_lookup</code> and
+<code>ejscreen_state_pctile_lookup</code>: optional EJScreen-style
+percentile lookup CSVs created from <code>usastats</code> and
+<code>statestats</code>. These are not created by default because the
+current live EJScreen app maps from blockgroup export files that already
+contain percentile, bin, and popup-text fields, and reports are generated
+through EJAM-API/EJAM. Enable them with
+<code>EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS = "TRUE"</code> when
+explicitly needed for one-time diagnostics or compatibility checks
+against EPA lookup tables.</p></li>
 <li><p><code>ejscreen_dataset_creator_input</code>: optional smaller
 input table for EPA’s Python <code>ejscreen-dataset-creator-2.3</code>
 workflow. Enable it with
@@ -744,7 +757,10 @@ ACS:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/run_ejscreen_dataset_pipeline.R"</span><span class="op">)</span></span></code></pre></div>
 <p>This reuses the saved ACS stages and regenerates downstream
 <code>blockgroupstats</code>, <code>bgej</code>, <code>usastats</code>,
-<code>statestats</code>, and <code>ejscreen_export</code>.</p>
+<code>statestats</code>, <code>ejscreen_export</code>, and
+<code>ejscreen_export_statepct</code>. EJScreen-style lookup exports are
+created only when
+<code>EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS = "TRUE"</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="extra-indicators">Extra Indicators<a class="anchor" aria-label="anchor" href="#extra-indicators"></a>
@@ -839,8 +855,9 @@ non-missing, nonnegative <code>arealand</code> and
 <code>statestats</code> has expected state/territory regions.</li>
 <li>when <code>EJAM_INCLUDE_ISLANDAREAS_DATA</code> is true, 412 Island
 Areas blockgroups are present in <code>bg_acsdata</code>,
-<code>blockgroupstats</code>, and <code>bgej</code>, and
-<code>ejscreen_export</code> retains the matching AS/GU/MP/VI IDs.</li>
+<code>blockgroupstats</code>, <code>bgej</code>,
+<code>ejscreen_export</code>, and <code>ejscreen_export_statepct</code>
+unless <code>EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE"</code>.</li>
 </ul>
 <p>For the default EJScreen-compatible path, Island Areas demographic
 columns in <code>bg_acsdata</code> and downstream stages are expected to

@@ -37,6 +37,15 @@ targeted_diagnostics_script <- file.path(
   "data-raw/run_acs22_replication_targeted_diagnostics.R"
 )
 
+load_local_ejam <- function() {
+  if (requireNamespace("pkgload", quietly = TRUE)) {
+    pkgload::load_all(repo_dir, quiet = TRUE)
+  } else {
+    library(EJAM)
+  }
+  invisible(TRUE)
+}
+
 pipeline_env_names <- c(
   "EJAM_PIPELINE_YR",
   "EJAM_PIPELINE_ROOT",
@@ -120,10 +129,12 @@ common_pipeline_env <- function(year) {
     EJAM_BG_ENVIRODATA_REFERENCE_PATH = "",
     EJAM_BG_ENVIRODATA_REFERENCE_VARS = "",
 
-    # Refresh the EJScreen-friendly exports and lookup exports.
+    # Refresh the EJScreen-friendly blockgroup exports. EJScreen-formatted
+    # lookup-table exports are not created by default because the live app maps
+    # from the blockgroup exports and reports are served through EJAM-API/EJAM.
     EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
     EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT = "TRUE",
-    EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS = "TRUE",
+    EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS = "FALSE",
     EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE",
 
     # Annual update validation.
@@ -183,6 +194,7 @@ run_acs22_replication <- function() {
   old_wd <- getwd()
   on.exit(setwd(old_wd), add = TRUE)
   setwd(repo_dir)
+  load_local_ejam()
 
   Sys.setenv(
     EJAM_ACS22_REPLICATION_ROOT = s3_pipeline_root,
@@ -194,6 +206,7 @@ run_acs22_replication <- function() {
     EJAM_ACS22_REPLICATION_EJAM_2025_REF = "v2.32.8.001",
     EJAM_ACS22_REPLICATION_EJAMDATA_REPO =
       "Public-Environmental-Data-Partners/ejamdata",
+    EJAM_ACS22_REPLICATION_INCLUDE_LOOKUP_EXPORTS = "FALSE",
     EJAM_ACS22_REPLICATION_STORAGE = "s3"
   )
 

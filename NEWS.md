@@ -126,9 +126,10 @@ Highlights:
   13. Create EJScreen-ready export files: the national-percentile export
       (`ejscreen_export`) and the EPA-style state-percentile export
       (`ejscreen_export_statepct`).
-  14. Create EJScreen-ready percentile lookup exports
+  14. Optionally create EJScreen-ready percentile lookup exports
       (`ejscreen_us_pctile_lookup` and `ejscreen_state_pctile_lookup`) from
-      `usastats` and `statestats`, including EPA-style `std` rows.
+      `usastats` and `statestats`, including EPA-style `std` rows, only when
+      explicitly requested.
 - Pipeline stages can be read from or written to local folders or AWS S3, and
   can be saved as CSV and/or `.rda` files. Raw ACS data can be saved in a
   single object or in a folder-plus-manifest layout with one file per ACS table.

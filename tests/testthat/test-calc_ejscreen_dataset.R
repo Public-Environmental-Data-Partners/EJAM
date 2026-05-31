@@ -497,19 +497,19 @@ test_that("calc_ejscreen_dataset saves key stages created by the wrapper", {
   expect_true(all(c(
     "bg_acsdata", "bg_envirodata", "bg_extra_indicators",
     "blockgroupstats", "bgej", "usastats", "statestats",
-    "ejscreen_export", "ejscreen_export_statepct",
+    "ejscreen_export", "ejscreen_export_statepct"
+  ) %in% names(saved)))
+  expect_false(any(c(
     "ejscreen_us_pctile_lookup", "ejscreen_state_pctile_lookup"
   ) %in% names(saved)))
   expect_true(all(grepl("\\.csv$", saved[c(
     "bg_acsdata", "blockgroupstats", "bgej", "usastats", "statestats",
-    "ejscreen_export", "ejscreen_export_statepct",
-    "ejscreen_us_pctile_lookup", "ejscreen_state_pctile_lookup"
+    "ejscreen_export", "ejscreen_export_statepct"
   )])))
   expect_equal(out$ejscreen_export$ID, bgfips)
   expect_equal(out$ejscreen_export_statepct$ID, bgfips)
-  expect_true("std" %in% out$ejscreen_us_pctile_lookup$PCTILE)
-  expect_true("std" %in% out$ejscreen_state_pctile_lookup$PCTILE)
-  expect_true(all(c("PCTILE", "REGION", "LOWINCPCT", "PM25") %in% names(out$ejscreen_us_pctile_lookup)))
+  expect_null(out$ejscreen_us_pctile_lookup)
+  expect_null(out$ejscreen_state_pctile_lookup)
   expect_equal(export_calls$scope, c("national", "state"))
   loaded_blockgroupstats <- as.data.frame(
     EJAM:::ejscreen_pipeline_load("blockgroupstats", pipeline_dir, format = "csv")

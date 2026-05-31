@@ -126,8 +126,8 @@ to be changed ANNUALLY or more often:
   That pipeline covers `bg_acs_raw`, `bg_acsdata`, optional Island Areas
   checkpoints, `bg_envirodata`, `bg_extra_indicators`, `bg_geodata`,
   `blockgroupstats`, `bgej`, `usastats`, `statestats`,
-  `ejscreen_export`, `ejscreen_export_statepct`, EJScreen-style lookup
-  exports (`ejscreen_us_pctile_lookup` and
+  `ejscreen_export`, `ejscreen_export_statepct`, optional EJScreen-style
+  lookup exports (`ejscreen_us_pctile_lookup` and
   `ejscreen_state_pctile_lookup`), and the optional
   `ejscreen_dataset_creator_input` stage. This more general vignette
   focuses on the other datasets and storage/release mechanics used by

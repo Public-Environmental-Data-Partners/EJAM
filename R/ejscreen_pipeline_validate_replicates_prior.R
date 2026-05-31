@@ -417,6 +417,269 @@ ejscreen_pipeline_capture_output_wide <- function(...,
 }
 ###################################################### #
 
+#' Identify Island Area blockgroup rows in a validation table
+#'
+#' @noRd
+ejscreen_pipeline_island_area_row <- function(x,
+                                              id_cols = c("bgfips", "ID", "ID_1", "compare_id")) {
+  x <- data.table::as.data.table(x)
+  id_col <- id_cols[id_cols %in% names(x)][1]
+  if (is.na(id_col)) {
+    return(rep(FALSE, NROW(x)))
+  }
+  substr(as.character(x[[id_col]]), 1, 2) %in% c("60", "66", "69", "78")
+}
+###################################################### #
+
+#' Calculate a relative-difference vector for validation reports
+#'
+#' @noRd
+ejscreen_pipeline_relative_diff <- function(diff,
+                                            ref,
+                                            both_non_na) {
+  out <- rep(NA_real_, length(diff))
+  denom <- abs(as.numeric(ref))
+  has_denom <- both_non_na & denom > 0
+  out[has_denom] <- diff[has_denom] / denom[has_denom]
+  out[both_non_na & denom == 0 & diff == 0] <- 0
+  out[both_non_na & denom == 0 & diff > 0] <- Inf
+  out
+}
+###################################################### #
+
+#' Classify a validation column by rough pipeline stage
+#'
+#' @noRd
+ejscreen_pipeline_difference_stage <- function(column,
+                                               rname = column,
+                                               varlist = NA_character_) {
+  column_upper <- toupper(as.character(column))
+  rname <- as.character(rname)
+  varlist <- as.character(varlist)
+
+  in_known <- function(x) {
+    exists(x, inherits = TRUE) && rname %in% get(x, inherits = TRUE)
+  }
+
+  if (grepl("^(ID|ID_1|BGFIPS|ST|ST_ABBREV|STATE_NAME|CNTY_NAME|COUNTYNAME|STATENAME|REGION)$", column_upper) ||
+      grepl("AREA|SHAPE|LENGTH|LAT|LON|FIPS", column_upper)) {
+    return("01 row id / geography")
+  }
+  if (grepl("^(B_|T_|TEXT_|TXT_|SYMBOLOGY|EXCEED_COUNT)", column_upper) ||
+      grepl("^(bin|text)\\.", rname)) {
+    return("08 map bins / popup text")
+  }
+  if (in_known("names_ej_pctile") ||
+      in_known("names_ej_supp_pctile") ||
+      in_known("names_ej_state_pctile") ||
+      in_known("names_ej_supp_state_pctile") ||
+      grepl("^pctile\\.EJ\\.", rname) ||
+      grepl("^P_D[25]_", column_upper)) {
+    return("07 EJ index percentiles")
+  }
+  if (in_known("names_ej") ||
+      in_known("names_ej_supp") ||
+      in_known("names_ej_state") ||
+      in_known("names_ej_supp_state") ||
+      grepl("^EJ\\.", rname) ||
+      grepl("^D[25]_", column_upper)) {
+    return("06 EJ index raw scores")
+  }
+  if (in_known("names_e_pctile") ||
+      grepl("^pctile\\.(air|cancer|diesel|drinking|leadpaint|ozone|pm|proximity|rsei|traffic|ust|waste)", rname) ||
+      grepl("^P_(PNPL|PRMP|PTSDF|UST|PWDIS|DWATER|NO2|DSLPM|PTRAF|PRE1960|PNPL|OZONE|PM25|RSEI|NPL|RMP)", column_upper)) {
+    return("05 environmental percentiles")
+  }
+  if (in_known("names_d_pctile") ||
+      grepl("^pctile\\.(lowinc|lingiso|lths|under|over|minority|unemploy|disab|nohealth)", rname) ||
+      grepl("^P_(LOWINC|LINGISO|LESSHS|UNDER|OVER|MINOR|UNEMP|DISABILITY|NOHEALTH)", column_upper)) {
+    return("04 demographic percentiles")
+  }
+  if (in_known("names_e") ||
+      grepl("names_e", varlist) ||
+      grepl("^(PNPL|PRMP|PTSDF|UST|PWDIS|DWATER|NO2|DSLPM|PTRAF|PRE1960|OZONE|PM25|RSEI|NPL|RMP|TSDF)", column_upper)) {
+    return("03 environmental raw scores")
+  }
+  if (in_known("names_d") ||
+      grepl("names_d|names_age|names_race|names_health|names_countabove", varlist) ||
+      grepl("^(ACS|LOWINC|LINGISO|LESSHS|UNDER|OVER|MINOR|UNEMP|DISABILITY|NOHEALTH|POP|PCT)", column_upper)) {
+    return("02 demographic / ACS raw values")
+  }
+  "09 other / diagnostic"
+}
+###################################################### #
+
+#' Add stage and display-helper columns to validation reports
+#'
+#' @noRd
+ejscreen_pipeline_annotate_column_report <- function(report) {
+  report <- data.table::as.data.table(data.table::copy(report))
+  if (NROW(report) == 0) {
+    return(report)
+  }
+  if (!"rname" %in% names(report)) {
+    report[, rname := column]
+  }
+  if (!"varlist" %in% names(report)) {
+    report[, varlist := NA_character_]
+  }
+  report[, difference_stage := mapply(
+    ejscreen_pipeline_difference_stage,
+    column = column,
+    rname = rname,
+    varlist = varlist,
+    USE.NAMES = FALSE
+  )]
+  stage_levels <- c(
+    "01 row id / geography",
+    "02 demographic / ACS raw values",
+    "03 environmental raw scores",
+    "04 demographic percentiles",
+    "05 environmental percentiles",
+    "06 EJ index raw scores",
+    "07 EJ index percentiles",
+    "08 map bins / popup text",
+    "09 other / diagnostic"
+  )
+  report[, difference_stage_order := match(difference_stage, stage_levels)]
+  report[is.na(difference_stage_order), difference_stage_order := length(stage_levels)]
+
+  if ("max_rel_diff" %in% names(report)) {
+    report[, max_rel_diff_pct := 100 * max_rel_diff]
+  }
+  if ("mean_rel_diff" %in% names(report)) {
+    report[, mean_rel_diff_pct := 100 * mean_rel_diff]
+  }
+  if ("max_rel_diff_non_island" %in% names(report)) {
+    report[, max_rel_diff_non_island_pct := 100 * max_rel_diff_non_island]
+  }
+  if ("mean_rel_diff_non_island" %in% names(report)) {
+    report[, mean_rel_diff_non_island_pct := 100 * mean_rel_diff_non_island]
+  }
+
+  preferred <- c(
+    "difference_stage", "varlist", "rname", "column", "type",
+    "rows", "non_island_rows",
+    "differing_rows", "differing_rows_non_island",
+    "differing_non_na_rows", "differing_non_na_rows_non_island",
+    "diff_gt_tolerance", "diff_gt_tolerance_non_island",
+    "numeric_tolerance", "relative_tolerance",
+    "na_ref", "na_pipeline", "zero_ref", "zero_pipeline",
+    "na_mismatch", "na_mismatch_non_island",
+    "max_abs_diff", "max_abs_diff_non_island",
+    "mean_abs_diff", "mean_abs_diff_non_island",
+    "max_rel_diff", "max_rel_diff_non_island",
+    "mean_rel_diff", "mean_rel_diff_non_island",
+    "max_rel_diff_pct", "max_rel_diff_non_island_pct",
+    "mean_rel_diff_pct", "mean_rel_diff_non_island_pct",
+    "example_id", "example_ref", "example_pipeline"
+  )
+  data.table::setcolorder(report, c(intersect(preferred, names(report)), setdiff(names(report), preferred)))
+  report
+}
+###################################################### #
+
+#' Build display tables for validation text reports
+#'
+#' @noRd
+ejscreen_pipeline_difference_tables <- function(report,
+                                                relative_diff_deemphasis = 0.0001,
+                                                max_rows = 80) {
+  report <- ejscreen_pipeline_annotate_column_report(report)
+  if (NROW(report) == 0) {
+    return(list(
+      important = report,
+      island_area_only = report,
+      small_numeric = report,
+      exact = report
+    ))
+  }
+
+  has_non_island <- "differing_rows_non_island" %in% names(report)
+  diff_non_island <- if (has_non_island) report$differing_rows_non_island else report$differing_rows
+  na_non_island <- if ("na_mismatch_non_island" %in% names(report)) report$na_mismatch_non_island else report$na_mismatch
+  max_rel <- if ("max_rel_diff_non_island" %in% names(report)) report$max_rel_diff_non_island else report$max_rel_diff
+  max_rel[is.na(max_rel) & "max_rel_diff" %in% names(report)] <- report$max_rel_diff[is.na(max_rel) & "max_rel_diff" %in% names(report)]
+
+  is_numeric <- report$type == "numeric"
+  is_small_numeric <- is_numeric &
+    !is.na(max_rel) &
+    is.finite(max_rel) &
+    max_rel < relative_diff_deemphasis &
+    na_non_island == 0
+  is_island_only <- has_non_island & report$differing_rows > 0 & report$differing_rows_non_island == 0
+  is_important <- report$differing_rows > 0 & !is_small_numeric & !is_island_only
+
+  sort_cols <- intersect(
+    c(
+      "difference_stage_order",
+      "diff_gt_tolerance_non_island", "diff_gt_tolerance",
+      "na_mismatch_non_island", "na_mismatch",
+      "differing_rows_non_island", "differing_rows",
+      "max_abs_diff_non_island", "max_abs_diff",
+      "column"
+    ),
+    names(report)
+  )
+  sort_report <- function(x) {
+    if (NROW(x) == 0) {
+      return(x)
+    }
+    sort_cols_available <- sort_cols[sort_cols %in% names(x)]
+    if (length(sort_cols_available) == 0) {
+      return(x)
+    }
+    sort_orders <- rep(-1, length(sort_cols_available))
+    sort_orders[sort_cols_available == "difference_stage_order"] <- 1
+    sort_orders[sort_cols_available == "column"] <- 1
+    data.table::setorderv(x, cols = sort_cols_available, order = sort_orders, na.last = TRUE)
+    x
+  }
+
+  display_cols <- intersect(
+    c(
+      "difference_stage", "varlist", "rname", "column", "type",
+      "rows", "non_island_rows",
+      "differing_rows", "differing_rows_non_island",
+      "diff_gt_tolerance", "diff_gt_tolerance_non_island",
+      "na_mismatch", "na_mismatch_non_island",
+      "max_abs_diff", "max_abs_diff_non_island",
+      "max_rel_diff_pct", "max_rel_diff_non_island_pct",
+      "mean_abs_diff", "mean_abs_diff_non_island",
+      "mean_rel_diff_pct", "mean_rel_diff_non_island_pct",
+      "example_id", "example_ref", "example_pipeline"
+    ),
+    names(report)
+  )
+  format_display <- function(x) {
+    x <- sort_report(data.table::copy(x))
+    if (NROW(x) > max_rows) {
+      x <- x[seq_len(max_rows)]
+    }
+    round_cols <- intersect(
+      c(
+        "max_abs_diff", "max_abs_diff_non_island",
+        "mean_abs_diff", "mean_abs_diff_non_island",
+        "max_rel_diff_pct", "max_rel_diff_non_island_pct",
+        "mean_rel_diff_pct", "mean_rel_diff_non_island_pct"
+      ),
+      names(x)
+    )
+    if (length(round_cols) > 0) {
+      x[, (round_cols) := lapply(.SD, function(v) round(v, digits = 3)), .SDcols = round_cols]
+    }
+    x[, ..display_cols]
+  }
+
+  list(
+    important = format_display(report[is_important]),
+    island_area_only = format_display(report[is_island_only]),
+    small_numeric = format_display(report[is_small_numeric & differing_rows > 0]),
+    exact = format_display(report[differing_rows > 0])
+  )
+}
+###################################################### #
+
 #' Build a per-column prior-validation comparison report
 #'
 #' @noRd
@@ -442,14 +705,24 @@ ejscreen_pipeline_column_report <- function(old_dt,
       diff_gt_1e_9 = integer(),
       diff_gt_tolerance = integer(),
       numeric_tolerance = numeric(),
+      non_island_rows = integer(),
+      differing_rows_non_island = integer(),
+      differing_non_na_rows_non_island = integer(),
+      diff_gt_tolerance_non_island = integer(),
       na_ref = integer(),
       na_pipeline = integer(),
       zero_ref = integer(),
       zero_pipeline = integer(),
       na_mismatch = integer(),
+      na_mismatch_non_island = integer(),
       max_abs_diff = numeric(),
+      max_abs_diff_non_island = numeric(),
       mean_abs_diff = numeric(),
+      mean_abs_diff_non_island = numeric(),
+      max_rel_diff = numeric(),
+      max_rel_diff_non_island = numeric(),
       mean_rel_diff = numeric(),
+      mean_rel_diff_non_island = numeric(),
       example_id = character(),
       example_ref = character(),
       example_pipeline = character()
@@ -492,6 +765,7 @@ ejscreen_pipeline_column_report <- function(old_dt,
     }
     as.character(idx)
   }
+  island_area_row <- ejscreen_pipeline_island_area_row(old_dt)
 
   rows <- lapply(compare_cols, function(col) {
     a <- old_dt[[col]]
@@ -504,35 +778,60 @@ ejscreen_pipeline_column_report <- function(old_dt,
     na_mismatch <- xor(na_a, na_b)
     both_non_na <- !na_a & !na_b
     numeric_col <- is.numeric(a) && is.numeric(b)
+    non_island <- !island_area_row
 
     if (numeric_col) {
       diff <- rep(NA_real_, length(a))
       diff[both_non_na] <- abs(as.numeric(a[both_non_na]) - as.numeric(b[both_non_na]))
+      relative_diff <- ejscreen_pipeline_relative_diff(diff, a, both_non_na)
       different <- na_mismatch | (both_non_na & diff != 0)
       diff_gt_tolerance <- sum(both_non_na & diff > numeric_tolerance, na.rm = TRUE)
+      diff_gt_tolerance_non_island <- sum(
+        non_island & both_non_na & diff > numeric_tolerance,
+        na.rm = TRUE
+      )
       diff_gt_1e_9 <- sum(both_non_na & diff > 1e-9, na.rm = TRUE)
       diff_gt_1e_12 <- sum(both_non_na & diff > 1e-12, na.rm = TRUE)
       max_abs <- suppressWarnings(max(diff, na.rm = TRUE))
       if (!is.finite(max_abs)) max_abs <- NA_real_
+      max_abs_non_island <- suppressWarnings(max(diff[non_island], na.rm = TRUE))
+      if (!is.finite(max_abs_non_island)) max_abs_non_island <- NA_real_
       mean_abs <- suppressWarnings(mean(diff, na.rm = TRUE))
       if (!is.finite(mean_abs)) mean_abs <- NA_real_
+      mean_abs_non_island <- suppressWarnings(mean(diff[non_island], na.rm = TRUE))
+      if (!is.finite(mean_abs_non_island)) mean_abs_non_island <- NA_real_
+      max_rel <- suppressWarnings(max(relative_diff, na.rm = TRUE))
+      if (is.infinite(max_rel) && max_rel < 0) max_rel <- NA_real_
+      if (is.nan(max_rel)) max_rel <- NA_real_
+      max_rel_non_island <- suppressWarnings(max(relative_diff[non_island], na.rm = TRUE))
+      if (is.infinite(max_rel_non_island) && max_rel_non_island < 0) max_rel_non_island <- NA_real_
+      if (is.nan(max_rel_non_island)) max_rel_non_island <- NA_real_
       denom <- abs(as.numeric(a[both_non_na]))
       denom[denom == 0] <- NA_real_
       mean_rel <- suppressWarnings(mean(diff[both_non_na] / denom, na.rm = TRUE))
       if (!is.finite(mean_rel)) mean_rel <- NA_real_
+      mean_rel_non_island <- suppressWarnings(mean(relative_diff[non_island], na.rm = TRUE))
+      if (!is.finite(mean_rel_non_island)) mean_rel_non_island <- NA_real_
     } else {
       different <- na_mismatch | (both_non_na & as.character(a) != as.character(b))
       diff_gt_tolerance <- NA_integer_
+      diff_gt_tolerance_non_island <- NA_integer_
       diff_gt_1e_9 <- NA_integer_
       diff_gt_1e_12 <- NA_integer_
       max_abs <- NA_real_
+      max_abs_non_island <- NA_real_
       mean_abs <- NA_real_
+      mean_abs_non_island <- NA_real_
+      max_rel <- NA_real_
+      max_rel_non_island <- NA_real_
       mean_rel <- NA_real_
+      mean_rel_non_island <- NA_real_
     }
 
     example_idx <- which(different)[1]
     data.table::data.table(
       varlist = varlist_for(col),
+      rname = col,
       column = col,
       type = if (numeric_col) "numeric" else "character",
       rows = length(a),
@@ -542,14 +841,24 @@ ejscreen_pipeline_column_report <- function(old_dt,
       diff_gt_1e_9 = diff_gt_1e_9,
       diff_gt_tolerance = diff_gt_tolerance,
       numeric_tolerance = if (numeric_col) numeric_tolerance else NA_real_,
+      non_island_rows = sum(non_island),
+      differing_rows_non_island = sum(different & non_island, na.rm = TRUE),
+      differing_non_na_rows_non_island = sum(different & both_non_na & non_island, na.rm = TRUE),
+      diff_gt_tolerance_non_island = diff_gt_tolerance_non_island,
       na_ref = na_count(old_stats, col),
       na_pipeline = na_count(new_stats, col),
       zero_ref = zero_count(old_stats, col),
       zero_pipeline = zero_count(new_stats, col),
       na_mismatch = sum(na_mismatch),
+      na_mismatch_non_island = sum(na_mismatch & non_island),
       max_abs_diff = max_abs,
+      max_abs_diff_non_island = max_abs_non_island,
       mean_abs_diff = mean_abs,
+      mean_abs_diff_non_island = mean_abs_non_island,
+      max_rel_diff = max_rel,
+      max_rel_diff_non_island = max_rel_non_island,
       mean_rel_diff = mean_rel,
+      mean_rel_diff_non_island = mean_rel_non_island,
       example_id = example_key(example_idx),
       example_ref = if (length(example_idx)) as.character(a[example_idx]) else NA_character_,
       example_pipeline = if (length(example_idx)) as.character(b[example_idx]) else NA_character_
@@ -557,7 +866,19 @@ ejscreen_pipeline_column_report <- function(old_dt,
   })
 
   report <- data.table::rbindlist(rows, fill = TRUE)
-  data.table::setorder(report, -differing_rows, varlist, column)
+  report <- ejscreen_pipeline_annotate_column_report(report)
+  data.table::setorder(
+    report,
+    difference_stage_order,
+    -diff_gt_tolerance_non_island,
+    -na_mismatch_non_island,
+    -differing_rows_non_island,
+    -diff_gt_tolerance,
+    -na_mismatch,
+    -differing_rows,
+    varlist,
+    column
+  )
   report
 }
 ###################################################### #
@@ -600,6 +921,10 @@ ejscreen_pipeline_prior_validation_text <- function(result,
   } else {
     differing_column_report <- differing_column_report[differing_rows > 0]
   }
+  difference_tables <- ejscreen_pipeline_difference_tables(
+    result$column_report,
+    relative_diff_deemphasis = 0.0001
+  )
 
   c(
     paste0("Prior-version validation for stage: ", stage),
@@ -607,6 +932,20 @@ ejscreen_pipeline_prior_validation_text <- function(result,
     paste0("Created: ", Sys.time()),
     paste0("New ACS version: ", paste(as.character(new_acs_version), collapse = "; ")),
     paste0("Reference ACS version: ", paste(as.character(old_acs_version), collapse = "; ")),
+    "",
+    "Comparison type: package/internal shared-table diagnostic.",
+    paste0(
+      "How to read this report: the first difference table is sorted by rough ",
+      "pipeline stage so upstream/raw-score issues appear before downstream ",
+      "percentile, EJ-index, bin, and popup-text consequences. Numeric-only ",
+      "differences with maximum relative difference below 0.01% are moved to a ",
+      "de-emphasized table unless they also involve missingness."
+    ),
+    paste0(
+      "When bgfips-like row IDs are available, *_non_island columns exclude ",
+      "AS/GU/MP/VI rows so Island Area policy/coverage differences do not hide ",
+      "mainland replication results."
+    ),
     "",
     paste0("Rows: new=", unname(result$row_count["new"]), ", old=", unname(result$row_count["old"])),
     paste0("Columns: new=", unname(result$column_count["new"]), ", old=", unname(result$column_count["old"])),
@@ -630,9 +969,15 @@ ejscreen_pipeline_prior_validation_text <- function(result,
     "",
     add_table("Missing expected columns:", result$missing_expected),
     "",
-    add_table("Not replicated columns:", result$not_replicated),
+    add_table("Important differing columns, sorted upstream to downstream:", difference_tables$important),
     "",
-    add_table("Differing columns detail:", differing_column_report),
+    add_table("Island-Area-only differing columns:", difference_tables$island_area_only),
+    "",
+    add_table("De-emphasized small numeric differences (<0.01% max relative difference):", difference_tables$small_numeric),
+    "",
+    add_table("Not replicated columns (exact diagnostic; includes tiny numeric and structural differences):", result$not_replicated),
+    "",
+    add_table("Differing columns detail (all exact differences):", differing_column_report),
     "",
     paste0("Warnings: ", collapse_values(warnings)),
     "",

@@ -613,7 +613,14 @@ test_that("calc_ejscreen_export_reference_report preserves IDs and summarizes di
     "1"
   )
   expect_true(any(grepl("varlist.*rname.*column.*example_pipeline", out$text)))
-  expect_true(all(c("varlist", "rname", "relative_tolerance") %in% names(out$report)))
+  expect_true(any(grepl("Comparison type: user-facing EJScreen export replication", out$text, fixed = TRUE)))
+  expect_true(any(grepl("Important differing columns", out$text, fixed = TRUE)))
+  expect_true(any(grepl("De-emphasized small numeric differences", out$text, fixed = TRUE)))
+  expect_true(all(c(
+    "varlist", "rname", "relative_tolerance",
+    "difference_stage", "non_island_rows", "differing_rows_non_island",
+    "max_rel_diff", "max_rel_diff_non_island"
+  ) %in% names(out$report)))
   expect_false("diff_gt_1e_12" %in% names(out$report))
   expect_equal(out$report$na_mismatch[out$report$column == "B"], 1L)
   expect_true(all(c("zero_ref", "zero_pipeline") %in% names(out$report)))

@@ -114,8 +114,10 @@
 #      ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv,
 #      EJScreen-style lookup tables corresponding to usastats/statestats and
 #      files like EJScreen_2024_BG_National_Lookup.csv and
-#      EJScreen_2024_BG_State_Lookup.csv. Defaults to
-#      EJAM_INCLUDE_EJSCREEN_EXPORT.
+#      EJScreen_2024_BG_State_Lookup.csv. This is off by default because the
+#      live EJScreen app maps from blockgroup exports that already contain
+#      percentile, bin, and popup fields, while reports are served through
+#      EJAM-API/EJAM rather than these exported lookup tables.
 #   EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 #      ejscreen_dataset_creator_input stage for EPA's Python dataset-creator
 #      workflow.
@@ -559,7 +561,7 @@ bg_envirodata_reference_vars <- env_csv("EJAM_BG_ENVIRODATA_REFERENCE_VARS")
 
 include_ejscreen_export <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
 include_ejscreen_export_statepct <- env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT", include_ejscreen_export)
-include_ejscreen_pctile_lookup_exports <- env_flag("EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS", include_ejscreen_export)
+include_ejscreen_pctile_lookup_exports <- env_flag("EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS", FALSE)
 include_ejscreen_dataset_creator_input <- env_flag("EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT", FALSE)
 
 ### validation vs prior data  ####

@@ -98,6 +98,9 @@
 #'    ejscreen_export_statepct.csv.
 #'  - EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS: TRUE to create
 #'    ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv.
+#'    This is off by default because current EJScreen maps use the blockgroup
+#'    exports that already contain percentile, bin, and popup fields, while
+#'    reports are served through EJAM-API/EJAM.
 #'  - EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 #'    input table expected by EPA's Python dataset-creator workflow.
 #'
@@ -190,8 +193,8 @@
 #'   create EJScreen-style national and state percentile lookup CSV stages,
 #'   `ejscreen_us_pctile_lookup` and `ejscreen_state_pctile_lookup`, from
 #'   `usastats` and `statestats`. These use EJScreen field names and append a
-#'   `std` row for each region. When NULL, this follows
-#'   `include_ejscreen_export`.
+#'   `std` row for each region. When NULL, these stages are created only when
+#'   an explicit lookup-export save path is supplied.
 #' @param include_ejscreen_dataset_creator_input logical. If TRUE, also create
 #'   the smaller pre-index input table expected by EPA's
 #'   `ejscreen-dataset-creator-2.3` Python tool.
@@ -318,8 +321,7 @@ calc_ejscreen_dataset <- function(yr,
       !is.null(ejscreen_export_statepct_path)
   }
   if (is.null(include_ejscreen_pctile_lookup_exports)) {
-    include_ejscreen_pctile_lookup_exports <- isTRUE(include_ejscreen_export) ||
-      !is.null(ejscreen_us_pctile_lookup_path) ||
+    include_ejscreen_pctile_lookup_exports <- !is.null(ejscreen_us_pctile_lookup_path) ||
       !is.null(ejscreen_state_pctile_lookup_path)
   }
   # define helpers ####

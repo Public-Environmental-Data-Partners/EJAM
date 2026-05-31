@@ -145,8 +145,8 @@ follows \code{include_ejscreen_export}.}
 create EJScreen-style national and state percentile lookup CSV stages,
 \code{ejscreen_us_pctile_lookup} and \code{ejscreen_state_pctile_lookup}, from
 \code{usastats} and \code{statestats}. These use EJScreen field names and append a
-\code{std} row for each region. When NULL, this follows
-\code{include_ejscreen_export}.}
+\code{std} row for each region. When NULL, these stages are created only when
+an explicit lookup-export save path is supplied.}
 
 \item{include_ejscreen_dataset_creator_input}{logical. If TRUE, also create
 the smaller pre-index input table expected by EPA's
@@ -366,6 +366,9 @@ unless the source explicitly reports zero.
 ejscreen_export_statepct.csv.
 \item EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS: TRUE to create
 ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv.
+This is off by default because current EJScreen maps use the blockgroup
+exports that already contain percentile, bin, and popup fields, while
+reports are served through EJAM-API/EJAM.
 \item EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 input table expected by EPA's Python dataset-creator workflow.
 \item EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.

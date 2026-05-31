@@ -233,7 +233,7 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
   epa_state_r <- acs22_replication_rename_epa_cols_to_rnames(epa_state_lookup)
 
   demog4 <- c("Demog.Index", "Demog.Index.Supp", "Demog.Index.State", "Demog.Index.Supp.State")
-  raw_focus <- unique(c(names_these, demog4))
+  raw_focus <- unique(c(EJAM::names_these, demog4))
   raw_priority <- unique(c(
     demog4,
     "drinking",
@@ -326,8 +326,8 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
     fill = TRUE
   )
 
-  lookup_raw_vars <- unique(c(raw_priority, names_e, names_d, names_d_demogindexstate))
-  lookup_ej_vars <- unique(c(names_ej, names_ej_supp, names_ej_state, names_ej_supp_state))
+  lookup_raw_vars <- unique(c(raw_priority, EJAM::names_e, EJAM::names_d, EJAM::names_d_demogindexstate))
+  lookup_ej_vars <- unique(c(EJAM::names_ej, EJAM::names_ej_supp, EJAM::names_ej_state, EJAM::names_ej_supp_state))
   lookup_all_vars <- unique(c(lookup_raw_vars, lookup_ej_vars))
   lookup_reports <- data.table::rbindlist(
     list(
@@ -451,7 +451,7 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
 
   recomputed_statestats_demog <- data.table::data.table()
   if (isTRUE(recompute_statestats_check)) {
-    stats_now <- calc_ejscreen_stats(bgstats = new_bg, save_stages = FALSE)
+    stats_now <- EJAM:::calc_ejscreen_stats(bgstats = new_bg, save_stages = FALSE)
     recomputed_statestats_demog <- acs22_diag_compare_vars(
       old_st,
       stats_now$statestats,

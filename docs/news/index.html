@@ -121,7 +121,13 @@
 <li>Calculate EJ indexes from environmental percentiles and demographic indexes (<code>bgej</code>).</li>
 <li>Create percentile lookup tables for EJ indexes (<code>usastats_ej</code> and <code>statestats_ej</code>).</li>
 <li>Combine the percentile lookup tables (<code>usastats</code> and <code>statestats</code>).</li>
-<li>Create an EJScreen-ready export file (<code>ejscreen_export</code>).</li>
+<li>Create EJScreen-ready export files: the national-percentile export
+(<code>ejscreen_export</code>) and the state-percentile export
+(<code>ejscreen_export_statepct</code>).</li>
+<li>Optionally create EJScreen-ready percentile lookup exports
+(<code>ejscreen_us_pctile_lookup</code> and
+<code>ejscreen_state_pctile_lookup</code>) from <code>usastats</code>
+and <code>statestats</code>, only when explicitly requested.</li>
 </ol></li>
 <li><p>Pipeline stages can be read from or written to local folders or AWS S3, and can be saved as CSV and/or <code>.rda</code> files. Raw ACS data can be saved in a single object or in a folder-plus-manifest layout with one file per ACS table. Revised vignettes explain updates and the data pipeline and how to customize it.</p></li>
 <li><p>Added explicit <code>bg_envirodata</code> and <code>bg_extra_indicators</code> inputs, with intentional reuse paths for provisional or unchanged inputs.</p></li>
@@ -858,4 +864,3 @@
 
 
   </body></html>
-
