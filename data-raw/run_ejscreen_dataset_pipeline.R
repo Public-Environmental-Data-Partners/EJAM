@@ -541,40 +541,28 @@ save_file_stage_formats <- function(x,
                                     formats = stage_formats,
                                     object_name = stage,
                                     validate = TRUE) {
-  saved <- stats::setNames(character(), character())
-  for (fmt in formats) {
-    if (is.null(x)) {
-      next
-    }
-    saved[[fmt]] <- EJAM:::ejscreen_pipeline_save(
-      x = x,
-      stage = stage,
-      pipeline_dir = pipeline_dir,
-      format = fmt,
-      object_name = object_name,
-      overwrite = TRUE,
-      validate = validate,
-      yr = pipeline_yr,
-      storage = pipeline_storage
-    )
-  }
-  invisible(saved)
+  invisible(EJAM:::ejscreen_pipeline_save_stage_formats(
+    x = x,
+    stage = stage,
+    formats = formats,
+    pipeline_dir = pipeline_dir,
+    pipeline_yr = pipeline_yr,
+    storage = pipeline_storage,
+    object_name = object_name,
+    validate = validate
+  ))
 }
 ####################### #
 save_secondary_stage_formats <- function(out, stages, primary_format = stage_format) {
-  secondary_formats <- setdiff(stage_formats, primary_format)
-  if (length(secondary_formats) == 0) {
-    return(invisible(NULL))
-  }
-  for (stagename in intersect(stages, names(out))) {
-    save_file_stage_formats(
-      x = out[[stagename]],
-      stage = stagename,
-      formats = secondary_formats,
-      validate = TRUE
-    )
-  }
-  invisible(NULL)
+  invisible(EJAM:::ejscreen_pipeline_save_secondary_stage_formats(
+    outputs = out,
+    stages = stages,
+    stage_formats = stage_formats,
+    primary_format = primary_format,
+    pipeline_dir = pipeline_dir,
+    pipeline_yr = pipeline_yr,
+    storage = pipeline_storage
+  ))
 }
 ####################### #
 used_provisional_bg_envirodata <- FALSE

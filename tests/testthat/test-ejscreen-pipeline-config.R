@@ -984,6 +984,63 @@ test_that("ejscreen_pipeline_replace_package_data is explicit and saves bgej art
   expect_equal(save_calls[[2]]$yr, 2024)
 })
 
+test_that("ejscreen_pipeline_save_stage_formats saves requested formats and secondary stages", {
+  save_calls <- list()
+  fake_save <- function(...) {
+    args <- list(...)
+    save_calls[[length(save_calls) + 1L]] <<- args
+    paste0(args$pipeline_dir, "/", args$stage, ".", args$format)
+  }
+
+  paths <- EJAM:::ejscreen_pipeline_save_stage_formats(
+    x = data.frame(a = 1),
+    stage = "bg_acsdata",
+    formats = c("csv", "rda"),
+    object_name = "custom_object",
+    validate = FALSE,
+    pipeline_dir = "pipe",
+    pipeline_yr = 2024,
+    storage = "local",
+    save_fun = fake_save
+  )
+
+  expect_equal(paths, c(csv = "pipe/bg_acsdata.csv", rda = "pipe/bg_acsdata.rda"))
+  expect_equal(vapply(save_calls, `[[`, character(1), "format"), c("csv", "rda"))
+  expect_equal(save_calls[[1]]$object_name, "custom_object")
+  expect_false(save_calls[[1]]$validate)
+  expect_true(save_calls[[2]]$overwrite)
+  expect_equal(save_calls[[2]]$yr, 2024)
+  expect_equal(save_calls[[2]]$storage, "local")
+
+  empty <- EJAM:::ejscreen_pipeline_save_stage_formats(
+    x = NULL,
+    stage = "missing",
+    formats = c("csv", "rda"),
+    pipeline_dir = "pipe",
+    pipeline_yr = 2024,
+    storage = "local",
+    save_fun = fake_save
+  )
+  expect_equal(empty, stats::setNames(character(), character()))
+
+  save_calls <- list()
+  secondary <- EJAM:::ejscreen_pipeline_save_secondary_stage_formats(
+    outputs = list(stage_a = data.frame(a = 1), stage_b = data.frame(b = 2)),
+    stages = c("stage_a", "missing"),
+    stage_formats = c("csv", "rda", "arrow"),
+    primary_format = "csv",
+    pipeline_dir = "pipe",
+    pipeline_yr = 2024,
+    storage = "s3",
+    save_fun = fake_save
+  )
+
+  expect_named(secondary, "stage_a")
+  expect_equal(secondary$stage_a, c(rda = "pipe/stage_a.rda", arrow = "pipe/stage_a.arrow"))
+  expect_equal(vapply(save_calls, `[[`, character(1), "format"), c("rda", "arrow"))
+  expect_equal(vapply(save_calls, `[[`, character(1), "stage"), c("stage_a", "stage_a"))
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

@@ -1051,6 +1051,67 @@ ejscreen_pipeline_replace_package_data <- function(outputs,
   )
 }
 
+ejscreen_pipeline_save_stage_formats <- function(x,
+                                                 stage,
+                                                 formats,
+                                                 pipeline_dir,
+                                                 pipeline_yr,
+                                                 storage = c("auto", "local", "s3"),
+                                                 object_name = stage,
+                                                 validate = TRUE,
+                                                 save_fun = ejscreen_pipeline_save) {
+  storage <- match.arg(storage)
+  saved <- stats::setNames(character(), character())
+  if (is.null(x)) {
+    return(saved)
+  }
+
+  for (fmt in formats) {
+    saved[[fmt]] <- save_fun(
+      x = x,
+      stage = stage,
+      pipeline_dir = pipeline_dir,
+      format = fmt,
+      object_name = object_name,
+      overwrite = TRUE,
+      validate = validate,
+      yr = pipeline_yr,
+      storage = storage
+    )
+  }
+  saved
+}
+
+ejscreen_pipeline_save_secondary_stage_formats <- function(outputs,
+                                                           stages,
+                                                           stage_formats,
+                                                           primary_format,
+                                                           pipeline_dir,
+                                                           pipeline_yr,
+                                                           storage = c("auto", "local", "s3"),
+                                                           save_fun = ejscreen_pipeline_save) {
+  storage <- match.arg(storage)
+  secondary_formats <- setdiff(stage_formats, primary_format)
+  if (length(secondary_formats) == 0) {
+    return(list())
+  }
+
+  out <- list()
+  for (stagename in intersect(stages, names(outputs))) {
+    out[[stagename]] <- ejscreen_pipeline_save_stage_formats(
+      x = outputs[[stagename]],
+      stage = stagename,
+      formats = secondary_formats,
+      pipeline_dir = pipeline_dir,
+      pipeline_yr = pipeline_yr,
+      storage = storage,
+      validate = TRUE,
+      save_fun = save_fun
+    )
+  }
+  out
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",
