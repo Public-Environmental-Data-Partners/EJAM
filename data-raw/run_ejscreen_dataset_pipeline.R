@@ -1205,16 +1205,7 @@ if (isTRUE(validate_vs_prior)) {
     prior_validation <- EJAM:::ejscreen_pipeline_compare_versions(
       new_yr = pipeline_yr,
       old_yr = prior_pipeline_yr,
-      stages = c(
-        "bg_acsdata",
-        "bg_envirodata",
-        "bg_geodata",
-        "bg_extra_indicators",
-        "blockgroupstats",
-        "bgej",
-        "usastats",
-        "statestats"
-      ),
+      stages = EJAM:::ejscreen_pipeline_prior_validation_stages(),
       pipeline_root = pipeline_root,
       new_pipeline_dir = pipeline_dir,
       old_pipeline_dir = prior_pipeline_dir,

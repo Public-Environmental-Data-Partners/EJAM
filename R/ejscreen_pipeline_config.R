@@ -656,6 +656,19 @@ ejscreen_pipeline_validation_stages <- function(include_islandareas_data = TRUE,
   stages
 }
 
+ejscreen_pipeline_prior_validation_stages <- function() {
+  c(
+    "bg_acsdata",
+    "bg_envirodata",
+    "bg_geodata",
+    "bg_extra_indicators",
+    "blockgroupstats",
+    "bgej",
+    "usastats",
+    "statestats"
+  )
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)

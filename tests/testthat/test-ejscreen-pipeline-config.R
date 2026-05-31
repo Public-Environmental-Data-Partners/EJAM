@@ -491,6 +491,22 @@ test_that("ejscreen_pipeline_validation_stages keeps core and optional stages or
   )
 })
 
+test_that("ejscreen_pipeline_prior_validation_stages keeps annual comparison stages ordered", {
+  expect_equal(
+    EJAM:::ejscreen_pipeline_prior_validation_stages(),
+    c(
+      "bg_acsdata",
+      "bg_envirodata",
+      "bg_geodata",
+      "bg_extra_indicators",
+      "blockgroupstats",
+      "bgej",
+      "usastats",
+      "statestats"
+    )
+  )
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {
