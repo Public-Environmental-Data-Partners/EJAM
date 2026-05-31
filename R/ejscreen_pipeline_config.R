@@ -689,6 +689,62 @@ ejscreen_pipeline_manifest_status <- function(validation_summary) {
   }
 }
 
+ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
+                                                           prior_package_ref,
+                                                           prior_package_path = "data/blockgroupstats.rda",
+                                                           format = "csv",
+                                                           storage = c("auto", "local", "s3"),
+                                                           output_dir = new_pipeline_dir,
+                                                           write_files = TRUE,
+                                                           use_waldo = FALSE,
+                                                           compare_fun = ejscreen_pipeline_compare_stage_to_git_ref) {
+  storage <- match.arg(storage)
+  specs <- list(
+    bg_acsdata_vs_prior_package_blockgroupstats = list(
+      stage = paste0("bg_acsdata_vs_", prior_package_ref, "_blockgroupstats"),
+      new_stage = "bg_acsdata",
+      git_path = prior_package_path,
+      shared_only = TRUE
+    ),
+    blockgroupstats_vs_prior_package_blockgroupstats = list(
+      stage = paste0("blockgroupstats_vs_", prior_package_ref, "_blockgroupstats"),
+      new_stage = "blockgroupstats",
+      git_path = prior_package_path,
+      shared_only = FALSE
+    ),
+    usastats_vs_prior_package_usastats = list(
+      stage = paste0("usastats_vs_", prior_package_ref, "_usastats"),
+      new_stage = "usastats",
+      git_path = "data/usastats.rda",
+      shared_only = FALSE
+    ),
+    statestats_vs_prior_package_statestats = list(
+      stage = paste0("statestats_vs_", prior_package_ref, "_statestats"),
+      new_stage = "statestats",
+      git_path = "data/statestats.rda",
+      shared_only = FALSE
+    )
+  )
+
+  out <- lapply(specs, function(spec) {
+    compare_fun(
+      stage = spec$stage,
+      new_pipeline_dir = new_pipeline_dir,
+      new_stage = spec$new_stage,
+      git_ref = prior_package_ref,
+      git_path = spec$git_path,
+      format = format,
+      storage = storage,
+      shared_only = spec$shared_only,
+      output_dir = output_dir,
+      write_files = write_files,
+      use_waldo = use_waldo
+    )
+  })
+  names(out) <- names(specs)
+  out
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)

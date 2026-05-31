@@ -530,6 +530,53 @@ test_that("ejscreen_pipeline validation status helpers detect error rows", {
   )
 })
 
+test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
+  calls <- list()
+  fake_compare <- function(...) {
+    args <- list(...)
+    calls[[length(calls) + 1L]] <<- args
+    list(
+      summary = data.frame(
+        stage = args$stage,
+        new_stage = args$new_stage,
+        git_path = args$git_path,
+        shared_only = args$shared_only
+      )
+    )
+  }
+
+  result <- EJAM:::ejscreen_pipeline_compare_prior_package_stages(
+    new_pipeline_dir = "new-dir",
+    prior_package_ref = "v2_32_8_001",
+    prior_package_path = "data/blockgroupstats.rda",
+    format = "csv",
+    storage = "local",
+    output_dir = "out-dir",
+    write_files = FALSE,
+    use_waldo = TRUE,
+    compare_fun = fake_compare
+  )
+
+  expect_named(
+    result,
+    c(
+      "bg_acsdata_vs_prior_package_blockgroupstats",
+      "blockgroupstats_vs_prior_package_blockgroupstats",
+      "usastats_vs_prior_package_usastats",
+      "statestats_vs_prior_package_statestats"
+    )
+  )
+  expect_length(calls, 4)
+  expect_equal(calls[[1]]$stage, "bg_acsdata_vs_v2_32_8_001_blockgroupstats")
+  expect_equal(calls[[1]]$new_stage, "bg_acsdata")
+  expect_true(calls[[1]]$shared_only)
+  expect_equal(calls[[2]]$new_stage, "blockgroupstats")
+  expect_false(calls[[2]]$shared_only)
+  expect_equal(calls[[3]]$git_path, "data/usastats.rda")
+  expect_equal(calls[[4]]$stage, "statestats_vs_v2_32_8_001_statestats")
+  expect_equal(calls[[4]]$use_waldo, TRUE)
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {
