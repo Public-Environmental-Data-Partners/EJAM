@@ -696,6 +696,45 @@ ejscreen_pipeline_validation_summary <- function(stages,
   validation_summary
 }
 
+ejscreen_pipeline_export_schema_reports <- function(outputs,
+                                                    include_ejscreen_export = TRUE,
+                                                    include_ejscreen_export_statepct = TRUE,
+                                                    pipeline_dir,
+                                                    pipeline_storage = c("auto", "local", "s3"),
+                                                    schema_report_fun = calc_ejscreen_export_schema_report,
+                                                    statepct_fields_fun = ejscreen_statepct_feature_server_fields,
+                                                    write_fun = ejscreen_pipeline_write_text_or_csv) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  reports <- list()
+
+  if (isTRUE(include_ejscreen_export)) {
+    reports$ejscreen_export_schema_report <- schema_report_fun(
+      ejscreen_export = outputs$ejscreen_export
+    )
+    write_fun(
+      reports$ejscreen_export_schema_report,
+      "ejscreen_export_schema_report.csv",
+      pipeline_dir = pipeline_dir,
+      storage = pipeline_storage
+    )
+  }
+
+  if (isTRUE(include_ejscreen_export_statepct)) {
+    reports$ejscreen_export_statepct_schema_report <- schema_report_fun(
+      ejscreen_export = outputs$ejscreen_export_statepct,
+      expected_output_names = statepct_fields_fun()
+    )
+    write_fun(
+      reports$ejscreen_export_statepct_schema_report,
+      "ejscreen_export_statepct_schema_report.csv",
+      pipeline_dir = pipeline_dir,
+      storage = pipeline_storage
+    )
+  }
+
+  reports
+}
+
 ejscreen_pipeline_prior_validation_stages <- function() {
   c(
     "bg_acsdata",

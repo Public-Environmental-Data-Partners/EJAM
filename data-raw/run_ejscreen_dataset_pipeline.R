@@ -1066,27 +1066,14 @@ write_pipeline_txt_or_csv(x = dynamic_geography_arrow_report,
                           pipeline_dir = pipeline_dir,
                           pipeline_storage = pipeline_storage)
 
-if (isTRUE(include_ejscreen_export)) {
-  filename <- paste0("ejscreen_export_schema_report.", "csv")
-  ejscreen_schema_report <- EJAM:::calc_ejscreen_export_schema_report(
-    ejscreen_export = out$ejscreen_export
-  )
-  write_pipeline_txt_or_csv(x = ejscreen_schema_report,
-                            filename = filename,
-                            pipeline_dir = pipeline_dir,
-                            pipeline_storage = pipeline_storage)
-}
-if (isTRUE(include_ejscreen_export_statepct)) {
-  filename <- paste0("ejscreen_export_statepct_schema_report.", "csv")
-  ejscreen_statepct_schema_report <- EJAM:::calc_ejscreen_export_schema_report(
-    ejscreen_export = out$ejscreen_export_statepct,
-    expected_output_names = EJAM:::ejscreen_statepct_feature_server_fields()
-  )
-  write_pipeline_txt_or_csv(x = ejscreen_statepct_schema_report,
-                            filename = filename,
-                            pipeline_dir = pipeline_dir,
-                            pipeline_storage = pipeline_storage)
-}
+EJAM:::ejscreen_pipeline_export_schema_reports(
+  outputs = out,
+  include_ejscreen_export = include_ejscreen_export,
+  include_ejscreen_export_statepct = include_ejscreen_export_statepct,
+  pipeline_dir = pipeline_dir,
+  pipeline_storage = pipeline_storage
+)
+
 if (isTRUE(include_ejscreen_dataset_creator_input)) {
   dataset_creator_report <- attr(
     out$ejscreen_dataset_creator_input,

@@ -549,6 +549,60 @@ test_that("ejscreen_pipeline_validation_summary writes stage validation rows", {
   expect_equal(written$storage, "local")
 })
 
+test_that("ejscreen_pipeline_export_schema_reports writes requested schema reports", {
+  schema_calls <- list()
+  written <- list()
+  fake_schema_report <- function(ejscreen_export, expected_output_names = NULL) {
+    schema_calls[[length(schema_calls) + 1L]] <<- list(
+      ejscreen_export = ejscreen_export,
+      expected_output_names = expected_output_names
+    )
+    data.frame(
+      rows = NROW(ejscreen_export),
+      has_expected = !is.null(expected_output_names)
+    )
+  }
+  fake_write <- function(x, filename, pipeline_dir, storage) {
+    written[[length(written) + 1L]] <<- list(
+      x = x,
+      filename = filename,
+      pipeline_dir = pipeline_dir,
+      storage = storage
+    )
+    invisible(filename)
+  }
+
+  result <- EJAM:::ejscreen_pipeline_export_schema_reports(
+    outputs = list(
+      ejscreen_export = data.frame(x = 1:2),
+      ejscreen_export_statepct = data.frame(y = 1:3)
+    ),
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = TRUE,
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    schema_report_fun = fake_schema_report,
+    statepct_fields_fun = function() c("STATE_FIELD"),
+    write_fun = fake_write
+  )
+
+  expect_named(
+    result,
+    c("ejscreen_export_schema_report", "ejscreen_export_statepct_schema_report")
+  )
+  expect_equal(length(schema_calls), 2)
+  expect_equal(NROW(schema_calls[[1]]$ejscreen_export), 2L)
+  expect_null(schema_calls[[1]]$expected_output_names)
+  expect_equal(NROW(schema_calls[[2]]$ejscreen_export), 3L)
+  expect_equal(schema_calls[[2]]$expected_output_names, "STATE_FIELD")
+  expect_equal(
+    vapply(written, `[[`, character(1), "filename"),
+    c("ejscreen_export_schema_report.csv", "ejscreen_export_statepct_schema_report.csv")
+  )
+  expect_true(all(vapply(written, `[[`, character(1), "pipeline_dir") == "pipe"))
+  expect_true(all(vapply(written, `[[`, character(1), "storage") == "local"))
+})
+
 test_that("ejscreen_pipeline_prior_validation_stages keeps annual comparison stages ordered", {
   expect_equal(
     EJAM:::ejscreen_pipeline_prior_validation_stages(),
