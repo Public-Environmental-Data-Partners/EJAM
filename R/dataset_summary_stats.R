@@ -77,7 +77,15 @@ dataset_summary_stats = function(vars = NULL,
   }
 
   varlists <- rep(NA_character_, length(vars))
-  if (exists("varinfo", inherits = TRUE)) {
+  mh <- NULL
+  if (exists("map_headernames", inherits = TRUE)) {
+    mh <- get("map_headernames", inherits = TRUE)
+  } else if (requireNamespace("EJAM", quietly = TRUE)) {
+    mh <- tryCatch(EJAM::map_headernames, error = function(e) NULL)
+  }
+  if (!is.null(mh) && all(c("rname", "varlist") %in% names(mh))) {
+    varlists <- mh$varlist[match(vars, mh$rname)]
+  } else if (exists("varinfo", inherits = TRUE)) {
     varlists <- suppressWarnings(varinfo(vars)$varlist)
   }
 

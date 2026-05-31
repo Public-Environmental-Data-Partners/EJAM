@@ -122,6 +122,9 @@ if (FALSE) {
   # all.equal(bgej_new, bgej_old, check.attributes=FALSE )
   ## [1] "Column 'EJ.DISPARITY.no2.eo': Mean relative difference: 7.250982e-05"
   all.equal(bgej_new, bgej_old, check.attributes=FALSE, tolerance = 0.001)
+  # Historical validation note: EJAM versions through v2.32.8.001 converted
+  # missing drinking-water scores to zero in blockgroupstats. Later releases
+  # should preserve missing environmental scores as NA.
   ## [1] "Column 'EJ.DISPARITY.drinking.eo': 'is.NA' value mismatch: 285 in current 0 in target"
 
   EJAM:::nacounts(bgej_old)

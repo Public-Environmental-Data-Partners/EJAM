@@ -1,7 +1,7 @@
 
 
 #' Get URL(s) of HTML summary reports for use with EJAM-API
-#' @seealso [ejamapi()] [url_ejamap()]
+#' @seealso [ejamapi()] [url_ejamapp()]
 #' @details
 #' - This is work in progress to some extent -- this and the API may be add features in later releases.
 #'
@@ -209,6 +209,7 @@ url_ejamapi = function(
   if (is.null(ifna)) {
     ifna <- "https://ejanalysis.com"
   }
+  shp_one_site_fallback_url <- "https://ejanalysis.com/ejamapp"
   # see https://github.com/edgi-govdata-archiving/EJAM-API/tree/main
   # baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?"
   # e.g.,
@@ -276,6 +277,7 @@ url_ejamapi = function(
     if ("shp" %in% sitetype) {
       # if (!is.null(shapefile)) {
       bad <-  (sf::st_is_empty(shapefile))
+      url_of_report <- NULL
 
       if (sitenumber == 0) {
         # overall 1 URL: provide all the sites in one URL, and pass sitenumber=0 to the API
@@ -287,15 +289,20 @@ url_ejamapi = function(
         } else {
           geotxt <- NA
         }
+        url_of_report <- paste0(
+          urls_from_keylists(
+            baseurl = baseurl,
+            keylist_bysite = list(shape=geotxt, buffer=radius, sitenumber=sitenumber)
+          ), and_other_query_terms
+        )
+        url_of_report[is.na(geotxt)] <- NA # later will convert to ifna
       }
       if (sitenumber > 0) {
         # 1 site's URL:  return only 1 URL, 1 of the sites, and do not pass any sitenumber parameter to the API (since we only send site N to the API so it would be confusing to pass site 3 and have to tell the API it is site 1 of what was passed)
         if (bad[sitenumber]) {
-          geotxt <- NA
+          url_of_report <- NA_character_
         } else {
-          geotxt <- shape2geojson(
-            sf::st_simplify(shapefile[sitenumber, ], dTolerance = dTolerance), # SIMPLIFY POLYGONS to fit as url-encoded text
-            combine_in_one_string = FALSE) # 1-site report
+          url_of_report <- shp_one_site_fallback_url
         }
         sitenumber <- "" # now omit this from the URL used in API
       }
@@ -304,29 +311,12 @@ url_ejamapi = function(
         # and either do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
         # or use sitenumber 1:n for a vector of URLs? that would be useful in the table of API links for map popups, if it could tell the API what to say about the site# in the report header without trying to pick that row from a table of results...
         # e.g., but problematic when API passes it to ejam2report() which tries to use sitenumber to pick 1 site from a table of multisite results
-        geotxt <- shape2geojson(
-          sf::st_simplify(shapefile, dTolerance = dTolerance), # SIMPLIFY POLYGONS to fit as url-encoded text
-          combine_in_one_string = FALSE) # 1-site reports as a vector
+        url_of_report <- rep(shp_one_site_fallback_url, NROW(shapefile))
         if (any(bad)) {
-        geotxt[bad] <- NA
+        url_of_report[bad] <- NA_character_
         }
         sitenumber <- NULL # now omit this from the URL used in API ?
       }
-
-      url_of_report <- paste0(
-        urls_from_keylists(
-          baseurl = baseurl,
-          keylist_bysite = list(shape=geotxt, buffer=radius, sitenumber=sitenumber)
-        ), and_other_query_terms
-      )
-      # url_of_report <- paste0(
-      #   baseurl,
-      #   "shape=", geotxt, "&",
-      #   "buffer=", radius, "&",
-      #   "sitenumber=", sitenumber, #
-      #   and_other_query_terms
-      # )
-      url_of_report[is.na(geotxt)] <- NA # later will convert to ifna
     } else {
       url_of_report <- NA # later will convert to ifna
     }

@@ -86,6 +86,181 @@
 # . ####
 
 
+#' Configure Pandoc for local pkgdown rendering
+#'
+#' @return TRUE, invisibly.
+#'
+#' @keywords internal
+#'
+pkgdown_configure_pandoc = function() {
+  if (!requireNamespace("rmarkdown", quietly = TRUE)) {
+    stop("Package 'rmarkdown' is required to render pkgdown articles.", call. = FALSE)
+  }
+  if (rmarkdown::pandoc_available()) {
+    return(invisible(TRUE))
+  }
+
+  rstudio_pandoc_dirs <- c(
+    Sys.getenv("RSTUDIO_PANDOC", unset = NA_character_),
+    "/Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64",
+    "/Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/x86_64"
+  )
+  rstudio_pandoc_dirs <- rstudio_pandoc_dirs[!is.na(rstudio_pandoc_dirs)]
+  rstudio_pandoc_dirs <- rstudio_pandoc_dirs[
+    file.exists(file.path(rstudio_pandoc_dirs, "pandoc"))
+  ]
+
+  if (length(rstudio_pandoc_dirs) > 0) {
+    Sys.setenv(RSTUDIO_PANDOC = rstudio_pandoc_dirs[[1]])
+  }
+
+  if (!rmarkdown::pandoc_available()) {
+    stop(
+      "Pandoc was not found. Open RStudio and retry, or set RSTUDIO_PANDOC ",
+      "to the folder containing the pandoc executable.",
+      call. = FALSE
+    )
+  }
+
+  invisible(TRUE)
+}
+
+#' Preview one pkgdown article without publishing the site
+#'
+#' @param article Article name such as `"installing"` or a path such as
+#'   `"vignettes/installing.Rmd"`.
+#' @param pkg Package root.
+#' @param destination Local output folder. Defaults to a temporary preview
+#'   folder so source branches do not accumulate generated HTML.
+#' @param preview Open the rendered article in a browser?
+#' @param clean Delete the preview folder before rendering?
+#' @param lazy Passed to `pkgdown::build_article()`.
+#' @param quiet Passed to `pkgdown::build_article()`.
+#'
+#' @return The rendered article HTML path, invisibly.
+#'
+#' @keywords internal
+#'
+pkgdown_preview_article = function(
+    article,
+    pkg = ".",
+    destination = file.path(tempdir(), "EJAM-pkgdown-preview"),
+    preview = interactive(),
+    clean = FALSE,
+    lazy = FALSE,
+    quiet = FALSE
+) {
+  if (!requireNamespace("pkgdown", quietly = TRUE)) {
+    stop("Package 'pkgdown' is required to preview pkgdown articles.", call. = FALSE)
+  }
+  pkgdown_configure_pandoc()
+
+  article_name <- tools::file_path_sans_ext(basename(article))
+  pkg <- normalizePath(pkg, mustWork = TRUE)
+  destination <- normalizePath(destination, mustWork = FALSE)
+
+  if (clean && dir.exists(destination)) {
+    unlink(destination, recursive = TRUE)
+  }
+  dir.create(destination, recursive = TRUE, showWarnings = FALSE)
+
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(pkg)
+
+  pkgdown::build_article(
+    article_name,
+    pkg = pkg,
+    lazy = lazy,
+    new_process = FALSE,
+    override = list(destination = destination),
+    quiet = quiet
+  )
+
+  html_path <- file.path(destination, "articles", paste0(article_name, ".html"))
+  if (preview && file.exists(html_path)) {
+    utils::browseURL(html_path)
+  }
+
+  invisible(normalizePath(html_path, mustWork = FALSE))
+}
+
+#' Preview the pkgdown site locally without publishing it
+#'
+#' @param pkg Package root.
+#' @param destination Local output folder. Defaults to a temporary preview
+#'   folder so source branches do not accumulate generated HTML.
+#' @param pkgdown_dev_mode Use `"release"` for the main site or `"devel"` for
+#'   the development site under `dev/`.
+#' @param preview Open the rendered site in a browser?
+#' @param clean Delete the preview folder before rendering?
+#' @param lazy Passed to `pkgdown::build_site()`.
+#' @param quiet Passed to `pkgdown::build_site()`.
+#'
+#' @return The rendered site index path, invisibly.
+#'
+#' @keywords internal
+#'
+pkgdown_preview_site = function(
+    pkg = ".",
+    destination = file.path(tempdir(), "EJAM-pkgdown-preview"),
+    pkgdown_dev_mode = c("release", "devel"),
+    preview = interactive(),
+    clean = FALSE,
+    lazy = TRUE,
+    quiet = FALSE
+) {
+  if (!requireNamespace("pkgdown", quietly = TRUE)) {
+    stop("Package 'pkgdown' is required to preview the pkgdown site.", call. = FALSE)
+  }
+  pkgdown_configure_pandoc()
+
+  pkgdown_dev_mode <- match.arg(pkgdown_dev_mode)
+  pkg <- normalizePath(pkg, mustWork = TRUE)
+  destination <- normalizePath(destination, mustWork = FALSE)
+
+  if (clean && dir.exists(destination)) {
+    unlink(destination, recursive = TRUE)
+  }
+  dir.create(destination, recursive = TRUE, showWarnings = FALSE)
+
+  old_mode <- Sys.getenv("PKGDOWN_DEV_MODE", unset = NA_character_)
+  on.exit({
+    if (is.na(old_mode)) {
+      Sys.unsetenv("PKGDOWN_DEV_MODE")
+    } else {
+      Sys.setenv(PKGDOWN_DEV_MODE = old_mode)
+    }
+  }, add = TRUE)
+  Sys.setenv(PKGDOWN_DEV_MODE = pkgdown_dev_mode)
+
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(pkg)
+
+  pkgdown::build_site(
+    pkg = pkg,
+    examples = FALSE,
+    lazy = lazy,
+    override = list(destination = destination),
+    preview = FALSE,
+    devel = TRUE,
+    new_process = FALSE,
+    install = FALSE,
+    quiet = quiet
+  )
+
+  html_path <- file.path(destination, "index.html")
+  if (pkgdown_dev_mode == "devel") {
+    html_path <- file.path(destination, "dev", "index.html")
+  }
+  if (preview && file.exists(html_path)) {
+    utils::browseURL(html_path)
+  }
+
+  invisible(normalizePath(html_path, mustWork = FALSE))
+}
+
 #' Package-maintainer utility - Rebuilds website of package help docs and vignettes (articles) using pkgdown
 #'
 #' @param doask whether to ask about each input parameter, for interactively picking settings
@@ -99,7 +274,8 @@
 #' @param doloadall_not_library use devtools::load_all() ? usually should leave this TRUE
 #' @param doclean_man delete all files in the /man/ folder ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them
 #' @param doclean_docs delete all files in /docs/ folder, essentially ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them
-#' @param dobuild_site should leave this TRUE
+#' @param dobuild_site should leave this TRUE for a local preview build, not
+#'   for publishing the public site. Publishing is handled by GitHub Actions.
 #'
 #' @examples
 #'   # EJAM:::pkgdown_update(doask = TRUE)
@@ -131,6 +307,7 @@ pkgdown_update = function(
 
   if (!interactive()) {doask <- FALSE}
   golem::detach_all_attached()
+  pkgdown_configure_pandoc()
   ############################################################# #
 
   # ask what to do ####
@@ -415,7 +592,8 @@ pkgdown_update = function(
   # remember to push so gh actions publish it ####
   if (TRUE) {
     cat( '\n\n NOW COMMIT AND PUSH THE NEW FILES \n\n')
-    cat("Github actions in the repo will deploy from the docs folder to gh pages. \n")
+    cat("GitHub Actions publishes the public site to the gh-pages branch. \n")
+    cat("Local files in docs/ are previews only and should not be committed from source branches. \n")
   }
   ################################################################## #
   # note on build() - how to build pkg as a single file ####

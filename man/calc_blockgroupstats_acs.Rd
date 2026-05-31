@@ -38,8 +38,8 @@ Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates
 This lower-level helper calculates ACS-derived blockgroup indicators from
 the Census Bureau American Community Survey (ACS) 5-year summary file. In the
 current annual pipeline it is called through \code{\link[=calc_bg_acsdata]{calc_bg_acsdata()}}, which is in
-turn orchestrated by \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} and by the staged runner
-script \code{data-raw/run_ejscreen_dataset_pipeline.R}.
+turn orchestrated by \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} and the staged pipeline
+recipe/config helpers documented in \code{data-raw/run_ejscreen_pipeline_*.R}.
 
 Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
 which is documented at https://ejanalysis.github.io/ACSdownload

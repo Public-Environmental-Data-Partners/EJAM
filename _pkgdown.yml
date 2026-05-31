@@ -21,7 +21,7 @@ footer:
     versionmsg: Version 2.5.0
 development:
   mode: release
-  destination:
+  destination: dev
   version_label: warning
 home:
   title: EJAM Environmental Justice Analysis Multisite tool
@@ -461,7 +461,7 @@ reference:
   - ejamdata_version
   - calc_avg_columns
   - acs_table_info
-  - augment_map_headernames_ejscreen_names
+  - validate_map_headernames_ejscreen_names
   - attributes2
   - calc_bg_acsdata
   - calc_bg_extra_indicators

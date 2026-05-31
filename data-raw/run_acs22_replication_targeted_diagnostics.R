@@ -233,7 +233,7 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
   epa_state_r <- acs22_replication_rename_epa_cols_to_rnames(epa_state_lookup)
 
   demog4 <- c("Demog.Index", "Demog.Index.Supp", "Demog.Index.State", "Demog.Index.Supp.State")
-  raw_focus <- unique(c(names_these, demog4))
+  raw_focus <- unique(c(EJAM::names_these, demog4))
   raw_priority <- unique(c(
     demog4,
     "drinking",
@@ -326,8 +326,8 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
     fill = TRUE
   )
 
-  lookup_raw_vars <- unique(c(raw_priority, names_e, names_d, names_d_demogindexstate))
-  lookup_ej_vars <- unique(c(names_ej, names_ej_supp, names_ej_state, names_ej_supp_state))
+  lookup_raw_vars <- unique(c(raw_priority, EJAM::names_e, EJAM::names_d, EJAM::names_d_demogindexstate))
+  lookup_ej_vars <- unique(c(EJAM::names_ej, EJAM::names_ej_supp, EJAM::names_ej_state, EJAM::names_ej_supp_state))
   lookup_all_vars <- unique(c(lookup_raw_vars, lookup_ej_vars))
   lookup_reports <- data.table::rbindlist(
     list(
@@ -451,7 +451,7 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
 
   recomputed_statestats_demog <- data.table::data.table()
   if (isTRUE(recompute_statestats_check)) {
-    stats_now <- calc_ejscreen_stats(bgstats = new_bg, save_stages = FALSE)
+    stats_now <- EJAM:::calc_ejscreen_stats(bgstats = new_bg, save_stages = FALSE)
     recomputed_statestats_demog <- acs22_diag_compare_vars(
       old_st,
       stats_now$statestats,
@@ -614,6 +614,8 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
     "",
     "This is a one-time diagnostic note. It does not change annual pipeline behavior.",
     "The ordering here follows the current debugging priority: raw scores first, percentile lookup behavior second, EJ indexes last.",
+    "",
+    "Important provenance distinction: 2025-vs-2024 comparisons use EJAM v2.32.8.001 package data as-is and should show the historical drinking-water NA-to-zero problem. 2026-vs-2024 comparisons should use ACS22 pipeline outputs built from corrected `bg_envirodata`, where EPA-style drinking-water `NA` values are preserved before blockgroupstats, lookup tables, bgej, and EJScreen exports are created.",
     "",
     "## Inputs",
     "",
@@ -782,8 +784,8 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
     "",
     "- `usastats` and `statestats` from EJAM v2.32.8.001 replicate the EPA lookup tables exactly on shared lookup columns, so the old package lookup tables are a valid proxy for EPA shared lookup behavior.",
     "- The raw blockgroup demographic index fields replicate at blockgroup level to floating-point tolerance. Large demographic-index lookup differences, if present, are therefore lookup-table semantics or stale-output issues rather than raw blockgroup formula failures.",
-    "- Drinking-water is the main raw-score difference against EPA: EPA has missing raw values in many block groups where EJAM stores zero. That propagates into lookup tables and drinking EJ-index columns.",
-    "- In the state drinking lookup table, PR is the all-missing special case: EPA/old have 102 missing drinking lookup rows for PR, while the current pipeline has zero-valued rows. Other state drinking lookup differences are cutoff shifts from adding zero-valued raw rows that EPA treated as missing.",
+    "- Drinking-water is the main historical raw-score difference against EPA: EPA has missing raw values in many block groups where EJAM v2.32.8.001 stores zero. That historical zero-fill should not be repeated in later EJAM releases.",
+    "- Current ACS22 pipeline outputs should be built from corrected `bg_envirodata`, not patched during replication comparison. With corrected `bg_envirodata`, the 2026-vs-2024 replication should preserve EPA-style drinking-water missingness and no longer show the v2.32.8.001 raw-score problem.",
     "- The national EPA export percentiles for the four demographic index fields match the pipeline exactly. The state-percentile EPA export file should not be compared by same-named demographic columns without a crosswalk, because the state file uses `DEMOGIDX_2`/`DEMOGIDX_5` where the pipeline uses explicit `DEMOGIDX_2ST`/`DEMOGIDX_5ST` fields.",
     "- A current-code recomputation of `statestats` from the saved ACS2022 `blockgroupstats` makes the legacy `Demog.Index` and `Demog.Index.Supp` lookup columns match the old/EPA state-specific values to tolerance. The S3 ACS2022 `statestats.csv` demographic-index lookup difference is therefore stale saved output, not a remaining code defect.",
     "- `pctunemployed` and disability raw differences are small or already characterized: unemployment is mostly denominator-zero NA handling, and disability count/universe differences are +/-1 apportionment rounding.",
@@ -791,7 +793,7 @@ acs22_diag_report <- function(output_file = acs22_diag_default_output(),
     "",
     "## Decision Points Before Any Code Change",
     "",
-    "- Confirm whether ACS22 replication should preserve EPA missing `drinking` values or keep EJAM zero values where the current pipeline produces zero.",
+    "- For EJAM versions after v2.32.8.001, preserve environmental-indicator `NA` values as `NA`; specifically, preserve EPA-style drinking-water missingness in `bg_envirodata` rather than converting missing `drinking`/`DWATER` scores to zero.",
     "- Confirm whether current ACS22 pipeline `statestats` output was regenerated after the `Demog.Index`/`Demog.Index.State` compatibility fix; if not, rerun before considering a code change.",
     "- Confirm whether state lookup differences should target exact EPA lookup-table replication or only acceptable downstream percentile behavior in current EJAM outputs.",
     "- Do not change tied-zero, interpolation, rounding, Puerto Rico inclusion, or missing-value percentile behavior until the specific upstream cause is confirmed."

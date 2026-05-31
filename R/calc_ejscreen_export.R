@@ -83,6 +83,12 @@
 #' @param feature_server_fields optional final EJSCREEN FeatureServer field
 #'   names. When supplied, missing schema fields are added when possible and the
 #'   export is returned in exactly this field order.
+#' @param ejscreen_reference_pctile_signif_digits optional named integer vector
+#'   that gives raw EJAM indicator names and significant digits to use when
+#'   looking up EJSCREEN export percentiles. The default applies 12 significant
+#'   digits to `pctdisability`, which avoids tiny floating-point boundary
+#'   differences seen when replicating EPA's archived ACS22 `P_DISABILITYPCT`
+#'   fields. Set to NULL to use ordinary lookup precision for all fields.
 #' @param save_path optional file path to save the export.
 #' @param save_format optional save format. Guessed from `save_path` when NULL.
 #'   Supported values are `"csv"`, `"rds"`, `"rda"`, and `"arrow"`.
@@ -136,6 +142,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
                                  map_field_pctile_names = NULL,
                                  overwrite_ejscreen_map_fields = TRUE,
                                  feature_server_fields = NULL,
+                                 ejscreen_reference_pctile_signif_digits = c(pctdisability = 12L),
                                  save_path = NULL,
                                  save_format = NULL,
                                  overwrite = TRUE) {
@@ -178,7 +185,7 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
     bg <- merge(bg, ej[, c(by, ej_cols), with = FALSE], by = by, all.x = TRUE, sort = FALSE)
   }
 
-  mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mapping_for_names <- validate_map_headernames_ejscreen_names(mapping_for_names)
 
   if (identical(export_percentile_scope, "state")) {
     if (!"ST" %in% names(bg)) {
@@ -311,12 +318,17 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
       }
 
       raw_var <- raw_rows$rname[1]
+      signif_digits <- ejscreen_reference_pctile_signif_digits_for_raw(
+        raw_var,
+        ejscreen_reference_pctile_signif_digits
+      )
       bg[[pctile_rname]] <<- pctile_from_raw_lookup(
         myvector = bg[[raw_var]],
         varname.in.lookup.table = raw_var,
         lookup = lookup,
         zone = zones,
-        quiet = TRUE
+        quiet = TRUE,
+        signif_digits = signif_digits
       )
     }
     invisible(NULL)
@@ -664,6 +676,25 @@ ejscreen_percentile_lookup_compatibility_adjusted <- function(lookup,
 
   data.frame(lookup_dt, check.names = FALSE)
 }
+
+ejscreen_reference_pctile_signif_digits_for_raw <- function(raw_var, digits) {
+  if (is.null(digits) || length(digits) == 0L) {
+    return(NULL)
+  }
+  if (is.null(names(digits))) {
+    return(NULL)
+  }
+  raw_var <- as.character(raw_var)[1]
+  matched <- which(names(digits) == raw_var)
+  if (length(matched) == 0L) {
+    return(NULL)
+  }
+  out <- digits[[matched[1]]]
+  if (is.na(out) || out <= 0) {
+    return(NULL)
+  }
+  as.integer(out)
+}
 ###################################################### #
 # . ####
 
@@ -838,7 +869,7 @@ calc_ejscreen_dataset_creator_input <- function(blockgroupstats = NULL,
   )
   bg <- data.frame(bg, check.names = FALSE, stringsAsFactors = FALSE)
 
-  mapping_for_names <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mapping_for_names <- validate_map_headernames_ejscreen_names(mapping_for_names)
   if (!rename_newtype %in% names(mapping_for_names)) {
     stop("rename_newtype is not a column in mapping_for_names: ", rename_newtype)
   }
@@ -1060,15 +1091,20 @@ calc_ejscreen_feature_server_fields_added <- function(x, feature_server_fields =
   }
 
   add_exceed_count <- function(output_field, pattern, threshold) {
-    if (!output_field %in% feature_server_fields || output_field %in% names(out)) {
+    if (!output_field %in% feature_server_fields) {
       return(invisible(NULL))
     }
     pctile_fields <- grep(pattern, names(out), value = TRUE)
     if (length(pctile_fields) == 0) {
-      out[[output_field]] <<- rep(NA_integer_, n)
+      if (!output_field %in% names(out)) {
+        out[[output_field]] <<- rep(NA_integer_, n)
+      }
     } else {
       vals <- as.data.frame(lapply(out[pctile_fields], function(z) suppressWarnings(as.numeric(z))))
-      out[[output_field]] <<- as.integer(rowSums(!is.na(vals) & vals >= threshold))
+      has_value <- rowSums(!is.na(vals)) > 0
+      counts <- as.integer(rowSums(!is.na(vals) & vals >= threshold))
+      counts[!has_value] <- NA_integer_
+      out[[output_field]] <<- counts
     }
     invisible(NULL)
   }
@@ -1081,11 +1117,10 @@ calc_ejscreen_feature_server_fields_added <- function(x, feature_server_fields =
   if ("SYMBOLOGY_EXCEED_COUNT_80" %in% feature_server_fields &&
       !"SYMBOLOGY_EXCEED_COUNT_80" %in% names(out)) {
     count80 <- suppressWarnings(as.numeric(out$EXCEED_COUNT_80))
-    out$SYMBOLOGY_EXCEED_COUNT_80 <- ifelse(
-      !is.na(count80) & count80 > 0,
-      "1-13 EJ Indexes over 80th %tile",
-      "0 EJ Indexes over 80th %tile"
-    )
+    symbology <- rep(NA_character_, length(count80))
+    symbology[!is.na(count80) & count80 == 0] <- "0 EJ Indexes over 80th %tile"
+    symbology[!is.na(count80) & count80 > 0] <- "1-13 EJ Indexes over 80th %tile"
+    out$SYMBOLOGY_EXCEED_COUNT_80 <- symbology
   }
 
   missing_fields <- setdiff(feature_server_fields, names(out))
@@ -1135,7 +1170,7 @@ calc_ejscreen_export_schema_report <- function(ejscreen_export = NULL,
     export_names <- names(data.table::fread(export_path, nrows = 0))
   }
 
-  mh <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mh <- validate_map_headernames_ejscreen_names(mapping_for_names)
   if (!rename_newtype %in% names(mh)) {
     stop("rename_newtype is not a column in mapping_for_names: ", rename_newtype)
   }
@@ -1314,13 +1349,15 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
   shared_cols <- setdiff(intersect(names(ref2), names(new2)), "compare_id")
   shared_cols <- setdiff(shared_cols, c(key_ref, key_new))
   rows <- vector("list", length(shared_cols))
+  island_area_row <- ejscreen_pipeline_island_area_row(ref2, id_cols = c("compare_id", key_ref, key_new, "ID", "ID_1", "bgfips"))
+  non_island_row <- !island_area_row
 
   column_map <- NULL
   if (exists("map_headernames", inherits = TRUE) &&
-      exists("augment_map_headernames_ejscreen_names", inherits = TRUE)) {
+      exists("validate_map_headernames_ejscreen_names", inherits = TRUE)) {
     column_map <- tryCatch({
       mh <- data.table::as.data.table(
-        augment_map_headernames_ejscreen_names(map_headernames)
+        validate_map_headernames_ejscreen_names(map_headernames)
       )
       if (!all(c("ejscreen_indicator", "rname", "varlist") %in% names(mh))) {
         NULL
@@ -1373,27 +1410,55 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
       relative_diff <- rep(NA_real_, length(a))
       has_relative_denom <- both_non_na & denom > 0
       relative_diff[has_relative_denom] <- diff[has_relative_denom] / denom[has_relative_denom]
+      relative_diff[both_non_na & denom == 0 & diff == 0] <- 0
+      relative_diff[both_non_na & denom == 0 & diff > 0] <- Inf
       diff_gt_tolerance <- sum(
         (has_relative_denom & relative_diff > numeric_tolerance) |
           (both_non_na & denom == 0 & diff > 0),
         na.rm = TRUE
       )
+      diff_gt_tolerance_non_island <- sum(
+        non_island_row &
+          (
+            (has_relative_denom & relative_diff > numeric_tolerance) |
+              (both_non_na & denom == 0 & diff > 0)
+          ),
+        na.rm = TRUE
+      )
       diff_gt_1e_9 <- sum(both_non_na & diff > 1e-9, na.rm = TRUE)
       max_abs <- suppressWarnings(max(diff, na.rm = TRUE))
       if (!is.finite(max_abs)) max_abs <- NA_real_
+      max_abs_non_island <- suppressWarnings(max(diff[non_island_row], na.rm = TRUE))
+      if (!is.finite(max_abs_non_island)) max_abs_non_island <- NA_real_
       mean_abs <- suppressWarnings(mean(diff, na.rm = TRUE))
       if (!is.finite(mean_abs)) mean_abs <- NA_real_
+      mean_abs_non_island <- suppressWarnings(mean(diff[non_island_row], na.rm = TRUE))
+      if (!is.finite(mean_abs_non_island)) mean_abs_non_island <- NA_real_
+      max_rel <- suppressWarnings(max(relative_diff, na.rm = TRUE))
+      if (is.infinite(max_rel) && max_rel < 0) max_rel <- NA_real_
+      if (is.nan(max_rel)) max_rel <- NA_real_
+      max_rel_non_island <- suppressWarnings(max(relative_diff[non_island_row], na.rm = TRUE))
+      if (is.infinite(max_rel_non_island) && max_rel_non_island < 0) max_rel_non_island <- NA_real_
+      if (is.nan(max_rel_non_island)) max_rel_non_island <- NA_real_
       denom_nonzero <- denom[both_non_na]
       denom_nonzero[denom_nonzero == 0] <- NA_real_
       mean_rel <- suppressWarnings(mean(diff[both_non_na] / denom_nonzero, na.rm = TRUE))
       if (!is.finite(mean_rel)) mean_rel <- NA_real_
+      mean_rel_non_island <- suppressWarnings(mean(relative_diff[non_island_row], na.rm = TRUE))
+      if (!is.finite(mean_rel_non_island)) mean_rel_non_island <- NA_real_
     } else {
       different <- na_mismatch | (both_non_na & as.character(a) != as.character(b))
       diff_gt_tolerance <- NA_integer_
+      diff_gt_tolerance_non_island <- NA_integer_
       diff_gt_1e_9 <- NA_integer_
       max_abs <- NA_real_
+      max_abs_non_island <- NA_real_
       mean_abs <- NA_real_
+      mean_abs_non_island <- NA_real_
+      max_rel <- NA_real_
+      max_rel_non_island <- NA_real_
       mean_rel <- NA_real_
+      mean_rel_non_island <- NA_real_
     }
 
     example_idx <- which(different)[1]
@@ -1407,15 +1472,25 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
       differing_non_na_rows = sum(different & both_non_na, na.rm = TRUE),
       diff_gt_1e_9 = diff_gt_1e_9,
       diff_gt_tolerance = diff_gt_tolerance,
+      diff_gt_tolerance_non_island = diff_gt_tolerance_non_island,
       relative_tolerance = if (numeric_col) numeric_tolerance else NA_real_,
+      non_island_rows = sum(non_island_row),
+      differing_rows_non_island = sum(different & non_island_row, na.rm = TRUE),
+      differing_non_na_rows_non_island = sum(different & both_non_na & non_island_row, na.rm = TRUE),
       na_ref = sum(na_a),
       na_pipeline = sum(na_b),
       zero_ref = zero_ref,
       zero_pipeline = zero_pipeline,
       na_mismatch = sum(na_mismatch),
+      na_mismatch_non_island = sum(na_mismatch & non_island_row),
       max_abs_diff = max_abs,
+      max_abs_diff_non_island = max_abs_non_island,
       mean_abs_diff = mean_abs,
+      mean_abs_diff_non_island = mean_abs_non_island,
+      max_rel_diff = max_rel,
+      max_rel_diff_non_island = max_rel_non_island,
       mean_rel_diff = mean_rel,
+      mean_rel_diff_non_island = mean_rel_non_island,
       example_id = if (length(example_idx)) ref2$compare_id[example_idx] else NA_character_,
       example_ref = if (length(example_idx)) as.character(a[example_idx]) else NA_character_,
       example_pipeline = if (length(example_idx)) as.character(b[example_idx]) else NA_character_
@@ -1423,7 +1498,18 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
   }
 
   report <- data.table::rbindlist(rows)
-  data.table::setorder(report, -differing_rows, column)
+  report <- ejscreen_pipeline_annotate_column_report(report)
+  data.table::setorder(
+    report,
+    difference_stage_order,
+    -diff_gt_tolerance_non_island,
+    -na_mismatch_non_island,
+    -differing_rows_non_island,
+    -diff_gt_tolerance,
+    -na_mismatch,
+    -differing_rows,
+    column
+  )
   tolerance_label <- paste0(format(100 * numeric_tolerance, trim = TRUE, scientific = FALSE), "pct")
   summary <- data.table::data.table(
     metric = c(
@@ -1454,13 +1540,34 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
       "reference export"
     }
   }
-  report_for_text <- data.table::copy(report)
-  round_cols <- intersect(c("max_abs_diff", "mean_abs_diff", "mean_rel_diff"), names(report_for_text))
-  report_for_text[, (round_cols) := lapply(.SD, round, digits = 3), .SDcols = round_cols]
+  difference_tables <- ejscreen_pipeline_difference_tables(
+    report,
+    relative_diff_deemphasis = 0.0001
+  )
+  add_table <- function(label, x) {
+    if (is.null(x) || NROW(x) == 0) {
+      return(c(label, "  none"))
+    }
+    c(label, ejscreen_pipeline_capture_output_wide(print(as.data.frame(x), row.names = FALSE)))
+  }
   text <- c(
     paste0("EJSCREEN export validation against ", reference_label),
     paste0("Created: ", Sys.time()),
     note,
+    "",
+    "Comparison type: user-facing EJScreen export replication.",
+    paste0(
+      "How to read this report: the important-difference table is sorted by ",
+      "rough pipeline stage so upstream/raw-score issues appear before ",
+      "downstream percentile, EJ-index, bin, and popup-text consequences. ",
+      "Numeric-only differences with maximum relative difference below 0.01% ",
+      "are moved to a de-emphasized table unless they also involve missingness."
+    ),
+    paste0(
+      "When bgfips-like row IDs are available, *_non_island columns exclude ",
+      "AS/GU/MP/VI rows so Island Area policy/coverage differences do not hide ",
+      "mainland replication results."
+    ),
     "",
     ejscreen_pipeline_capture_output_wide(print(summary)),
     "",
@@ -1470,10 +1577,13 @@ calc_ejscreen_export_reference_report <- function(ejscreen_export = NULL,
     "Pipeline-only columns:",
     paste(setdiff(names(new), names(ref)), collapse = ", "),
     "",
-    "Top differing columns:",
-    ejscreen_pipeline_capture_output_wide(
-      print(report_for_text[differing_rows > 0][1:min(.N, 80)])
-    ),
+    add_table("Important differing columns, sorted upstream to downstream:", difference_tables$important),
+    "",
+    add_table("Island-Area-only differing columns:", difference_tables$island_area_only),
+    "",
+    add_table("De-emphasized small numeric differences (<0.01% max relative difference):", difference_tables$small_numeric),
+    "",
+    add_table("Differing columns detail (all exact differences):", difference_tables$exact),
     "",
     "Reference-only IDs by state prefix:",
     ejscreen_pipeline_capture_output_wide(
@@ -1599,7 +1709,7 @@ calc_ejscreen_map_fields_added <- function(x,
                                            overwrite = TRUE) {
 
   out <- as.data.frame(x, stringsAsFactors = FALSE, check.names = FALSE)
-  mh <- augment_map_headernames_ejscreen_names(mapping_for_names)
+  mh <- validate_map_headernames_ejscreen_names(mapping_for_names)
 
   if (is.null(pctile_names)) {
     pctile_names <- unique(c(

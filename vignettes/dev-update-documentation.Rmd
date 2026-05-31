@@ -92,7 +92,7 @@ Each is explained below:
     (but not all helper functions are in files named that way).
 
 -   It can be useful to check generated help files with
-    `tools::checkDocFiles(".")` after running `devtools::document()`.
+    `tools::checkDocFiles(".")` after running `roxygen2::roxygenise()`.
 
 ### Datasets: reference docs explaining the datasets
 
@@ -116,8 +116,20 @@ Each is explained below:
 ### Articles: vignettes helping R users with the package
 
 -   Articles (called vignettes here) are written and edited as `.Rmd` files in
-    the `vignettes` folder. You can test one using
-    `pkgdown::build_article()` before rebuilding the whole pkgdown site.
+    the `vignettes` folder. Edit the `.Rmd` source file, not the generated HTML
+    article.
+
+-   Preview one article after editing it, before rebuilding the whole site:
+
+```{r, eval=FALSE}
+EJAM:::pkgdown_preview_article("installing")
+EJAM:::pkgdown_preview_article("vignettes/dev-update-documentation.Rmd")
+```
+
+These preview helpers build into a temporary folder by default, so they do not
+publish anything and do not require committing generated HTML. They also try to
+use the Pandoc bundled with RStudio if a terminal R session cannot find Pandoc
+on its own.
 
 -   New articles or renamed files also require edits to `_pkgdown.yml`.
 
@@ -160,9 +172,35 @@ Each is explained below:
 
 ### Website: web pages providing all of the above in HTML format
 
-The web-based documentation pages should be updated right after any of the above
-are edited or created. These pkgdown-based web pages should be updated by someone
-who is managing the package, as follows:
+The web-based documentation pages are built from source files by `{pkgdown}` and
+published by GitHub Actions. The public site should be served from the root of
+the `gh-pages` branch. Source branches such as `main`, `development`, and
+release branches should not publish from `main/docs` and should not commit
+generated `docs/` HTML.
+
+In normal documentation work, edit and commit source files such as `.R`, `.Rmd`,
+`README.Rmd`, `NEWS.md`, `DESCRIPTION`, `man/*.Rd` inputs generated from
+roxygen comments, and `_pkgdown.yml`. Do not edit `docs/` or the `gh-pages`
+branch by hand; those are generated deployment outputs.
+
+#### Normal workflow for a vignette edit
+
+1.  Edit the relevant `.Rmd` file in `vignettes/`.
+
+2.  Preview just that article:
+
+```{r, eval=FALSE}
+EJAM:::pkgdown_preview_article("installing")
+```
+
+3.  If the article is new, renamed, removed, or moved in the navigation, update
+    `_pkgdown.yml`.
+
+4.  Commit and push the source files only. Do not add generated `docs/` files.
+
+5.  Let GitHub Actions build and publish the public site after the source branch
+    is pushed or merged into the branch that controls the desired documentation
+    version.
 
 -   The first step in updating those web pages is updating the YAML file. The
     web-based documentation pages are organized by a file called `_pkgdown.yml`
@@ -173,35 +211,51 @@ who is managing the package, as follows:
     functions, vignettes, datasets, or changes in what is exported may require
     edits to `_pkgdown.yml`.
 
--   The pkgdown-based web pages should be updated by someone who is managing the
-    package, and they should use the `EJAM:::pkgdown_update()` function.
-    Use `pkgdown_update()` so that the pages get rebuilt by the `{pkgdown}` R
-    package, based on the above files and all other documentation from `.R` and
-    `.md` files. For more
-    information about using the `{pkgdown}` package to create documentation in
-    the form of web pages, see [pkgdown
-    articles](https://pkgdown.r-lib.org/articles/pkgdown.html). The
-    documentation is created and updated using the `{roxygen2}` and `{pkgdown}` R
-    packages, which read information from the `.R` files in the R folder, from
-    `.Rmd` file vignettes (also called articles) in the vignettes folder, and from the
-    `_pkgdown.yml` file in the root folder of the source package. The
-    `{roxygen2}` package reads the `.R` files to create the `.Rd` files in the
-    `man/` directory. The `{pkgdown}` package uses all those files as well as
-    `DESCRIPTION` and others, to generate a website for the package, first
-    created as files in the `docs/` folder, which are then published via GitHub
-    Actions and the GitHub repository settings to be hosted on GitHub Pages.
-    The packages `{devtools}` and `{usethis}` are also relevant.
+-   For local checks, `EJAM:::pkgdown_update()` is still available as a
+    maintainer utility. Treat it as a local preview/check workflow, not the
+    publishing workflow. It can still be useful when you want broader local
+    checks around roxygen documentation, README rendering, pkgdown site
+    structure, or stale `.Rd` files.
 
--   The package's GitHub repository settings define which branch and folder
-    hold the HTML files for deployment. See the GitHub Pages and pkgdown
-    documentation for details.
+-   For a faster local site preview without publishing:
 
--   The package's GitHub Actions can be used to deploy the web pages when
-    triggered by an event such as a push to the main branch.
+```{r, eval=FALSE}
+EJAM:::pkgdown_preview_site()
+EJAM:::pkgdown_preview_site(pkgdown_dev_mode = "devel")
+```
 
--   Depending on which folder you publish/deploy from, you might have to remove
-    that folder from `.gitignore` in case it was listed there via some
-    `{pkgdown}` or `{usethis}` function.
+-   Public publishing is handled by `.github/workflows/pkgdown.yaml`. GitHub
+    Pages should be configured to publish from the root of the `gh-pages`
+    branch. The workflow builds the site in a runner and deploys generated HTML
+    to `gh-pages`.
+
+-   The normal publishing paths are:
+    - `main` builds the current release documentation at the site root.
+    - `development` builds development documentation under `dev/`.
+    - version tags and GitHub releases build historical documentation under the
+      tag name, such as `v2.5.0/`.
+    - manual workflow dispatch can build a chosen ref into a chosen folder.
+
+-   The workflow file must exist on the branch that GitHub Actions uses for the
+    event being triggered. For normal public updates, make sure the workflow
+    change has reached the default branch before expecting future `main` pushes
+    to rebuild the root documentation site.
+
+-   To publish historical docs for an older release, use a tag or release such
+    as `v2.5.0` and deploy it to the same folder name. The resulting URLs should
+    look like:
+
+```{r, eval=FALSE}
+https://public-environmental-data-partners.github.io/EJAM/
+https://public-environmental-data-partners.github.io/EJAM/dev/
+https://public-environmental-data-partners.github.io/EJAM/v2.5.0/
+```
+
+-   The documentation is created and updated using the `{roxygen2}` and
+    `{pkgdown}` R packages, which read information from the `.R` files in the R
+    folder, from `.Rmd` file vignettes (also called articles) in the `vignettes`
+    folder, and from `_pkgdown.yml`. `{roxygen2}` creates `.Rd` files in `man/`;
+    `{pkgdown}` creates HTML files for GitHub Pages.
 
 -   The URL where documentation is published at any given time should be
     recorded in the `URL` field of the `DESCRIPTION` file in the source package

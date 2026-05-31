@@ -1,16 +1,15 @@
-#
+
+# save as dataset .rda file via ejamit() ####
 
 testoutput_ejamit_shapes_2 <- ejamit(shapefile = testinput_shapes_2, radius = 0)
 EJAM:::metadata_add_and_use_this("testoutput_ejamit_shapes_2")
-# testoutput_ejamit_shapes_2 <- metadata_add(testoutput_ejamit_shapes_2)
-# usethis::use_data(testoutput_ejamit_shapes_2, overwrite = TRUE)
-EJAM:::dataset_documenter("testoutput_ejamit_shapes_2", description = "This is the output of ejamit(shapefile = testinput_shapes_2, radius = 0)",
+EJAM:::dataset_documenter("testoutput_ejamit_shapes_2",
+                          description = "This is the output of ejamit(shapefile = testinput_shapes_2, radius = 0)",
                    seealso = "[ejamit()] [testdata()]")
 
 
-
 # save as EXCEL via ejam2excel() ####
-# if (resaving_ejam2excel) {
+
 fname <- paste0("testoutput_ejam2excel_shapes" )
 junk <- ejam2excel(
   testoutput_ejamit_shapes_2,
@@ -24,18 +23,37 @@ junk <- ejam2excel(
   launchexcel = FALSE,
   interactive_console = FALSE
 )
-# }
+
 
 # save as HTML Report via ejam2report() ####
+
 # if (resaving_ejam2report ) {
 fname <- paste0("testoutput_ejam2report_shapes_2")
 url_html <- ejam2report(
   (testoutput_ejamit_shapes_2),
   shp = testinput_shapes_2,
   analysis_title = "Sample Summary Report for Polygons",
-  launch_browser = F
+  launch_browser = F,
+  fileextension = "html"
 )
 file.copy(url_html, paste0("./inst/testdata/examples_of_output/", fname, ".html"),
           overwrite = TRUE
 )
-# }
+
+
+# save as PDF Report via ejam2report() ####
+
+  fname <- "testoutput_ejam2report_shapes_2"
+  pdf_path <- ejam2report(
+    testoutput_ejamit_shapes_2,
+    shp = testinput_shapes_2,
+    analysis_title = "Sample Summary Report for Polygons",
+    launch_browser = F,
+    fileextension = "pdf"
+  )
+  #  SAVE IN ./inst/testdata/examples_of_output/ so it gets included in the package and can be accessed via
+  # e.g., urlx =  EJAM::url_github_preview(file = "testoutput_ejam2report_shapes_2.pdf", launch_browser = F, ver = "development")
+  www_pdf = paste0("./inst/testdata/examples_of_output/", fname, ".pdf")
+  file.copy(from = pdf_path, to = www_pdf,
+            overwrite = TRUE
+  )

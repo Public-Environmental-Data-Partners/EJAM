@@ -37,7 +37,8 @@ Usually should leave TRUE.}
 
 \item{doclean_docs}{delete all files in /docs/ folder, essentially ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them}
 
-\item{dobuild_site}{should leave this TRUE}
+\item{dobuild_site}{should leave this TRUE for a local preview build, not
+for publishing the public site. Publishing is handled by GitHub Actions.}
 }
 \description{
 Package-maintainer utility - Rebuilds website of package help docs and vignettes (articles) using pkgdown

@@ -84,6 +84,11 @@ Highlights:
   review. Island Area blocks are not added to the block helper files for this
   release path, so radius/buffer analyses there return no-data results rather
   than block-weighted estimates.
+- Preserved environmental-indicator missing values as missing values in the
+  annual/release pipeline. In particular, later EJAM releases should not repeat
+  the historical v2.32.8.001-and-earlier behavior that converted missing EPA
+  drinking-water non-compliance (`DWATER`) values to `drinking = 0`; `NA` now
+  means no valid source score, while zero means a valid reported score of zero.
 - Note: the Census Bureau discourages using overlapping ACS 5-year datasets for
   trend comparisons. Comparisons between ACS 2018-2022 and 2020-2024, e.g.,
   should not be interpreted as valid trend estimates.
@@ -121,6 +126,10 @@ Highlights:
   13. Create EJScreen-ready export files: the national-percentile export
       (`ejscreen_export`) and the EPA-style state-percentile export
       (`ejscreen_export_statepct`).
+  14. Optionally create EJScreen-ready percentile lookup exports
+      (`ejscreen_us_pctile_lookup` and `ejscreen_state_pctile_lookup`) from
+      `usastats` and `statestats`, including EPA-style `std` rows, only when
+      explicitly requested.
 - Pipeline stages can be read from or written to local folders or AWS S3, and
   can be saved as CSV and/or `.rda` files. Raw ACS data can be saved in a
   single object or in a folder-plus-manifest layout with one file per ACS table.

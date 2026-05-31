@@ -150,6 +150,67 @@ test_that("ejscreen_pipeline_prior_validation_text reports common-row details wh
   expect_true(any(grepl("Common row key values compared: 1", lines, fixed = TRUE)))
 })
 
+test_that("column reports include non-Island counts and stage classifications", {
+  old_dt <- data.frame(
+    bgfips = c("600010001001", "010010201001"),
+    pop = c(10, 100),
+    proximity.npl = c(0.1, 0.2),
+    check.names = FALSE
+  )
+  new_dt <- data.frame(
+    bgfips = old_dt$bgfips,
+    pop = c(11, 100),
+    proximity.npl = c(0.1, 0.3),
+    check.names = FALSE
+  )
+
+  result <- suppressWarnings(
+    EJAM:::ejscreen_pipeline_validate_vs_prior(new_dt, old_dt, verbose = FALSE)
+  )
+
+  expect_true(all(c(
+    "difference_stage", "non_island_rows", "differing_rows_non_island",
+    "max_rel_diff", "max_rel_diff_non_island"
+  ) %in% names(result$column_report)))
+  expect_equal(
+    result$column_report$differing_rows_non_island[result$column_report$column == "pop"],
+    0L
+  )
+  expect_equal(
+    result$column_report$differing_rows_non_island[result$column_report$column == "proximity.npl"],
+    1L
+  )
+})
+
+test_that("validation text de-emphasizes small numeric relative differences", {
+  old_dt <- data.frame(
+    bgfips = "010010201001",
+    tiny = 10000,
+    big = 10000,
+    check.names = FALSE
+  )
+  new_dt <- data.frame(
+    bgfips = old_dt$bgfips,
+    tiny = 10000.5,
+    big = 10020,
+    check.names = FALSE
+  )
+
+  result <- suppressWarnings(
+    EJAM:::ejscreen_pipeline_validate_vs_prior(new_dt, old_dt, verbose = FALSE)
+  )
+  lines <- EJAM:::ejscreen_pipeline_prior_validation_text(
+    result,
+    stage = "blockgroupstats",
+    old_label = "reference"
+  )
+
+  expect_true(any(grepl("Important differing columns", lines, fixed = TRUE)))
+  expect_true(any(grepl("De-emphasized small numeric differences", lines, fixed = TRUE)))
+  expect_true(any(grepl("big", lines, fixed = TRUE)))
+  expect_true(any(grepl("tiny", lines, fixed = TRUE)))
+})
+
 test_that("ejscreen_pipeline_capture_output_wide avoids column wrapping", {
   old_width <- getOption("width")
   on.exit(options(width = old_width), add = TRUE)

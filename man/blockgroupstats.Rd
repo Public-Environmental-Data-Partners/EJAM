@@ -21,6 +21,13 @@ Survey 5-year summary file. ACS calculations are based primarily on
 \item The EJ Indexes (aka Summary Indexes) are calculated by EJAM based on blockgroupstats data, and are stored in a separate table, \link{bgej}
 \item The \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html}{definition of and source of data for every indicator was originally documented by EPA for EJSCREEN}. Originally, the environmental, demographic, and EJ indicators/indexes and extra indicators all were provided by EPA for EJAM versions through v2.32.8 (early 2026).
 \item Metadata on each indicator, such as its glossary definition or long name, are stored in the EJAM package, and can be accessed with the function \code{\link[=varinfo]{varinfo()}} and the dataset \link{map_headernames}.
+\item EJAM versions through v2.32.8.001 converted missing values of the
+drinking-water non-compliance indicator to zero when creating
+\code{blockgroupstats}. Starting with later EJAM releases, environmental
+indicator \code{NA} values should remain \code{NA} unless the source explicitly
+reports a valid zero score. In particular, \code{drinking = NA} means the
+source had no valid drinking-water score for that blockgroup, while
+\code{drinking = 0} means the source reported a valid score of zero.
 }
 \item VINTAGE:
 \itemize{

@@ -1,7 +1,34 @@
-test_that("map_headernames augmentation fills EJSCREEN name columns", {
+test_that("map_headernames CSV is the package-data source", {
+  csv_path <- file.path("data-raw", "map_headernames.csv")
+  if (!file.exists(csv_path)) {
+    csv_path <- file.path("..", "..", "data-raw", "map_headernames.csv")
+  }
+  testthat::skip_if_not(file.exists(csv_path))
+
+  csv <- utils::read.csv(
+    csv_path,
+    check.names = FALSE,
+    stringsAsFactors = FALSE,
+    na.strings = c(""),
+    colClasses = "character"
+  )
+  csv[is.na(csv)] <- ""
+  mh <- as.data.frame(EJAM::map_headernames, stringsAsFactors = FALSE)
+  mh[is.na(mh)] <- ""
+
+  expect_identical(names(csv), names(mh))
+  expect_equal(nrow(csv), nrow(mh))
+  for (col in names(csv)) {
+    expect_equal(as.character(csv[[col]]), as.character(mh[[col]]), info = col)
+  }
+  expect_equal(csv$newsort[1], "010116162")
+})
+
+test_that("map_headernames validation does not create metadata rows", {
   mapping <- data.frame(
     rname = c("no2", "pctpre1960", "pctile.pctpre1960", "pctile.EJ.DISPARITY.no2.eo"),
     csvname = c("NO2", "PRE1960PCT", "P_LDPNT", "P_D2_NO2"),
+    ejscreen_indicator = c("NO2", "PRE1960PCT", "P_LDPNT", "P_D2_NO2"),
     ejscreen_apinames_old = c("RAW_E_NO2", "RAW_E_LEAD", "", ""),
     ejscreen_bin = c("", "", "WRONG_BIN", "WRONG_D2_BIN"),
     ejscreen_text = c("", "", "WRONG_TEXT", "WRONG_D2_TEXT"),
@@ -9,33 +36,14 @@ test_that("map_headernames augmentation fills EJSCREEN name columns", {
     stringsAsFactors = FALSE
   )
 
-  out <- EJAM:::augment_map_headernames_ejscreen_names(mapping)
-  mapped <- out[match(mapping$rname, out$rname), ]
-  expect_equal(mapped$ejscreen_indicator, mapping$csvname)
-  expect_equal(mapped$ejscreen_ftp_names, mapping$csvname)
-  expect_equal(mapped$ejscreen_apinames_old[1:2], mapping$ejscreen_apinames_old[1:2])
-  expect_equal(mapped$ejam_apinames, mapping$rname)
-  expect_equal(out$ejscreen_indicator[out$rname == "bgfips"], "ID")
-  expect_false("ejscreen_app" %in% names(out))
-  expect_false("ejscreen_pctile" %in% names(out))
-  expect_false("ejscreen_bin" %in% names(out))
-  expect_false("ejscreen_text" %in% names(out))
-  expect_false(".text" %in% names(out))
-  expect_true("text." %in% names(out))
-  expect_true(all(c(
-    "EXCEED_COUNT_90",
-    "EXCEED_COUNT_90_SUP",
-    "SYMBOLOGY_EXCEED_COUNT_80",
-    "Shape__Area",
-    "Shape__Length"
-  ) %in% out$ejscreen_indicator))
-  expect_equal(out$ejscreen_indicator[out$rname == "bin.pctpre1960"], "B_LDPNT")
-  expect_equal(out$ejscreen_indicator[out$rname == "text.EJ.DISPARITY.no2.eo"], "T_D2_NO2")
-  expect_equal(out$bin.[out$rname == "bin.pctpre1960"], 1)
-  expect_equal(out$text.[out$rname == "text.EJ.DISPARITY.no2.eo"], 1)
+  out <- EJAM:::validate_map_headernames_ejscreen_names(mapping)
+  expect_identical(out, mapping)
+  expect_false("bgfips" %in% out$rname)
+  expect_false("bin.pctpre1960" %in% out$rname)
+  expect_false("text.EJ.DISPARITY.no2.eo" %in% out$rname)
 })
 
-test_that("map_headernames augmentation removes legacy special markers from current EJSCREEN name columns", {
+test_that("strict map_headernames validation rejects legacy generated-schema inputs", {
   mapping <- data.frame(
     rname = c("state.pctile.Demog.Index", "internal_for_pctile"),
     csvname = c("S_P_DEMOGIDX_2ST", "use for pctile and avg but don't report"),
@@ -44,15 +52,10 @@ test_that("map_headernames augmentation removes legacy special markers from curr
     stringsAsFactors = FALSE
   )
 
-  out <- EJAM:::augment_map_headernames_ejscreen_names(mapping)
-  current_name_cols <- c(
-    "ejscreen_indicator"
+  expect_error(
+    EJAM:::validate_map_headernames_ejscreen_names(mapping, strict = TRUE),
+    "validation failed"
   )
-
-  expect_false(any(grepl("***special", unlist(out[current_name_cols]), fixed = TRUE)))
-  expect_false(any(grepl("use for pctile", unlist(out[current_name_cols]), ignore.case = TRUE)))
-  expect_equal(out$ejscreen_ftp_names[out$rname == "state.pctile.Demog.Index"], "S_P_DEMOGIDX_2ST")
-  expect_equal(out$ejscreen_apinames_old[out$rname == "state.pctile.Demog.Index"], "S_D_DEMOGIDX2ST_PER")
 })
 
 test_that("calc_ejscreen_export combines bgej and renames through map_headernames", {
@@ -211,6 +214,47 @@ test_that("calc_ejscreen_export uses EJSCREEN-compatible unemployment zero-denom
   expect_equal(out$T_UNEMPPCT, c("0 %ile", "", ""))
 })
 
+test_that("calc_ejscreen_export applies EPA reference rounding only where configured", {
+  blockgroupstats <- data.frame(
+    bgfips = "100010001001",
+    ST = "DE",
+    pctdisability = 0.2469572914361584103915,
+    pctlowinc = 0.2469572914361584103915,
+    stringsAsFactors = FALSE
+  )
+  statestats_acs <- data.frame(
+    REGION = "DE",
+    PCTILE = c("0", "mean", "86", "87", "100"),
+    pctdisability = c(0, 0.2, 0.244066047471620, 0.2469572914361584659027, 1),
+    pctlowinc = c(0, 0.2, 0.244066047471620, 0.2469572914361584659027, 1),
+    check.names = FALSE
+  )
+  mapping <- data.frame(
+    rname = c(
+      "bgfips", "pctdisability", "pctile.pctdisability",
+      "pctlowinc", "pctile.pctlowinc"
+    ),
+    ejscreen_indicator = c(
+      "ID", "DISABILITYPCT", "P_DISABILITYPCT",
+      "LOWINCPCT", "P_LOWINCPCT"
+    ),
+    `pctile.` = c(0, 0, 1, 0, 1),
+    stringsAsFactors = FALSE
+  )
+
+  out <- calc_ejscreen_export(
+    blockgroupstats = blockgroupstats,
+    bgej = data.frame(bgfips = blockgroupstats$bgfips, stringsAsFactors = FALSE),
+    statestats_acs = statestats_acs,
+    mapping_for_names = mapping,
+    export_percentile_scope = "state",
+    include_ejscreen_map_fields = FALSE
+  )
+
+  expect_equal(out$P_DISABILITYPCT, 87)
+  expect_equal(out$P_LOWINCPCT, 86)
+})
+
 test_that("calc_ejscreen_export can produce FeatureServer percentile and schema fields", {
   blockgroupstats <- data.frame(
     bgfips = c("100010001001", "100010001002"),
@@ -294,6 +338,50 @@ test_that("calc_ejscreen_export can produce FeatureServer percentile and schema 
   ))
   expect_true(all(is.na(out$Shape__Area)))
   expect_true(all(is.na(out$Shape__Length)))
+})
+
+test_that("FeatureServer exceed-count fields are recomputed from exported percentile fields", {
+  x <- data.frame(
+    P_D2_PM25 = c(79, 80, 90, NA),
+    P_D2_NO2 = c(NA, 79, 80, NA),
+    P_D5_PM25 = c(80, 79, 90, NA),
+    P_D5_NO2 = c(79, 80, NA, NA),
+    EXCEED_COUNT_80 = c(99, 99, 99, 99),
+    EXCEED_COUNT_80_SUP = c(99, 99, 99, 99),
+    stringsAsFactors = FALSE
+  )
+
+  out <- EJAM:::calc_ejscreen_feature_server_fields_added(
+    x,
+    feature_server_fields = c(
+      "EXCEED_COUNT_80", "EXCEED_COUNT_80_SUP",
+      "EXCEED_COUNT_90", "EXCEED_COUNT_90_SUP"
+    )
+  )
+
+  expect_equal(out$EXCEED_COUNT_80, c(0L, 1L, 2L, NA_integer_))
+  expect_equal(out$EXCEED_COUNT_80_SUP, c(1L, 1L, 1L, NA_integer_))
+  expect_equal(out$EXCEED_COUNT_90, c(0L, 0L, 1L, NA_integer_))
+  expect_equal(out$EXCEED_COUNT_90_SUP, c(0L, 0L, 1L, NA_integer_))
+})
+
+test_that("FeatureServer symbology stays missing when exceed count cannot be computed", {
+  x <- data.frame(
+    P_D2_PM25 = c(NA, 79, 80),
+    stringsAsFactors = FALSE
+  )
+
+  out <- EJAM:::calc_ejscreen_feature_server_fields_added(
+    x,
+    feature_server_fields = c("EXCEED_COUNT_80", "SYMBOLOGY_EXCEED_COUNT_80")
+  )
+
+  expect_equal(out$EXCEED_COUNT_80, c(NA_integer_, 0L, 1L))
+  expect_equal(out$SYMBOLOGY_EXCEED_COUNT_80, c(
+    NA_character_,
+    "0 EJ Indexes over 80th %tile",
+    "1-13 EJ Indexes over 80th %tile"
+  ))
 })
 
 test_that("calc_ejscreen_export keeps Island Areas rows visible with available environmental values", {
@@ -433,9 +521,9 @@ test_that("calc_ejscreen_export default output drops non-reporting placeholder n
     stringsAsFactors = FALSE
   )
   mapping <- data.frame(
-    rname = c("keepme", "internal_a", "internal_b"),
-    ejscreen_indicator = c("KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
-    csvname = c("KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
+    rname = c("bgfips", "keepme", "internal_a", "internal_b"),
+    ejscreen_indicator = c("ID", "KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
+    csvname = c("ID", "KEEP", "use for pctile and avg but don’t report", "use for pctile and avg but don’t report"),
     ejscreen_apinames_old = "",
     stringsAsFactors = FALSE
   )
@@ -525,7 +613,14 @@ test_that("calc_ejscreen_export_reference_report preserves IDs and summarizes di
     "1"
   )
   expect_true(any(grepl("varlist.*rname.*column.*example_pipeline", out$text)))
-  expect_true(all(c("varlist", "rname", "relative_tolerance") %in% names(out$report)))
+  expect_true(any(grepl("Comparison type: user-facing EJScreen export replication", out$text, fixed = TRUE)))
+  expect_true(any(grepl("Important differing columns", out$text, fixed = TRUE)))
+  expect_true(any(grepl("De-emphasized small numeric differences", out$text, fixed = TRUE)))
+  expect_true(all(c(
+    "varlist", "rname", "relative_tolerance",
+    "difference_stage", "non_island_rows", "differing_rows_non_island",
+    "max_rel_diff", "max_rel_diff_non_island"
+  ) %in% names(out$report)))
   expect_false("diff_gt_1e_12" %in% names(out$report))
   expect_equal(out$report$na_mismatch[out$report$column == "B"], 1L)
   expect_true(all(c("zero_ref", "zero_pipeline") %in% names(out$report)))

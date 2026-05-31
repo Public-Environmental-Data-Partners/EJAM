@@ -26,14 +26,18 @@ calc_ejscreen_dataset(
   return_intermediate = TRUE,
   include_ejscreen_export = FALSE,
   include_ejscreen_export_statepct = NULL,
+  include_ejscreen_pctile_lookup_exports = NULL,
   include_ejscreen_dataset_creator_input = FALSE,
   ejscreen_export_path = NULL,
   ejscreen_export_statepct_path = NULL,
+  ejscreen_us_pctile_lookup_path = NULL,
+  ejscreen_state_pctile_lookup_path = NULL,
   ejscreen_dataset_creator_input_path = NULL,
   ejscreen_export_vars = NULL,
   ejscreen_export_required_names = NULL,
   ejscreen_export_rename_newtype = "ejscreen_indicator",
   ejscreen_export_feature_server_fields = NULL,
+  ejscreen_pctile_lookup_output_fields = ejscreen_pctile_lookup_fields(),
   blockgroup_tables = setdiff(as.vector(EJAM::tables_ejscreen_acs), tract_tables),
   tract_tables = c("B18101", "C16001", "B27010"),
   tract_weight_source = c("decennial2020", "acs"),
@@ -137,6 +141,13 @@ create an EPA \code{StatePct}-style export where state raw scores and state
 percentiles are written into the generic EPA field names. When NULL, this
 follows \code{include_ejscreen_export}.}
 
+\item{include_ejscreen_pctile_lookup_exports}{logical or NULL. If TRUE,
+create EJScreen-style national and state percentile lookup CSV stages,
+\code{ejscreen_us_pctile_lookup} and \code{ejscreen_state_pctile_lookup}, from
+\code{usastats} and \code{statestats}. These use EJScreen field names and append a
+\code{std} row for each region. When NULL, these stages are created only when
+an explicit lookup-export save path is supplied.}
+
 \item{include_ejscreen_dataset_creator_input}{logical. If TRUE, also create
 the smaller pre-index input table expected by EPA's
 \code{ejscreen-dataset-creator-2.3} Python tool.}
@@ -146,6 +157,9 @@ percentile export.}
 
 \item{ejscreen_export_statepct_path}{optional file path for the EJSCREEN
 state-percentile export.}
+
+\item{ejscreen_us_pctile_lookup_path, ejscreen_state_pctile_lookup_path}{optional file paths for the EJScreen-style national and state percentile
+lookup exports.}
 
 \item{ejscreen_dataset_creator_input_path}{optional file path for the
 EJScreen dataset-creator input table.}
@@ -162,6 +176,10 @@ use when renaming the EJSCREEN export.}
 \item{ejscreen_export_feature_server_fields}{optional final EJSCREEN
 FeatureServer field list. Defaults to the current EJSCREEN v2.32 block
 group FeatureServer schema when an EJSCREEN export is requested.}
+
+\item{ejscreen_pctile_lookup_output_fields}{optional EJScreen lookup-table
+field names. Defaults to the fields used by EPA's archived national/state
+lookup CSVs.}
 
 \item{blockgroup_tables}{ACS tables to download at blockgroup resolution.}
 
@@ -256,8 +274,12 @@ named list containing final datasets (\code{blockgroupstats}, \code{bgej},
 Run calculations for the staged EJSCREEN/EJAM dataset update pipeline
 }
 \details{
-See the runner script \code{data-raw/run_ejscreen_dataset_pipeline.R}
-to run the whole pipeline from start to finish with minimal manual intervention.
+For routine annual, validation-only, exports-only, and release runs, prefer
+the recipe scripts in \code{data-raw/run_ejscreen_pipeline_*.R}, or build a
+validated config with \code{pipeline_config_annual()} and pass it to
+\code{run_ejscreen_pipeline()}. The long-standing
+\code{data-raw/run_ejscreen_dataset_pipeline.R} file remains available as an
+environment-variable compatibility runner for older \code{source()} workflows.
 
 \code{calc_ejscreen_dataset()} is a high-level wrapper around the staged
 annual update helpers. It is intentionally an orchestrator rather than a
@@ -309,7 +331,9 @@ DESCRIPTION as \code{ejamdata_required_tag}. For EJAM 2.5.0 this is currently
 releases. \code{\link[=dataload_dynamic]{dataload_dynamic()}} and \code{\link[=download_latest_arrow_data]{download_latest_arrow_data()}} do not use
 whichever data-repository release GitHub currently marks as latest.
 
-Note that the runner script can use several settings stored as environment variables:
+Recipe config helpers are the preferred interface for maintainers. The
+compatibility runner can still use several settings stored as environment
+variables:
 \itemize{
 \item EJAM_PIPELINE_YR
 \item EJAM_PIPELINE_DIR: override output folder.
@@ -335,7 +359,22 @@ for Island Areas row IDs, area fields, and available environmental fields.
 mixed-source supplemental dataset using 2020 Island Areas Census DHC
 demographics in \code{bg_acsdata}.
 \item EJAM_USE_PROVISIONAL_BG_ENVIRODATA: FALSE to require bg_envirodata.csv.
+\item EJAM_BG_ENVIRODATA_REFERENCE_PATH and
+EJAM_BG_ENVIRODATA_REFERENCE_VARS: optional runner-only settings for
+deliberately creating or repairing a \code{bg_envirodata} source stage from an
+EJSCREEN-style reference CSV. Normal annual and replication runs should use
+corrected \code{bg_envirodata} as-is. Missing reference values are preserved as
+\code{NA}, not converted to zero. This matters for drinking water: EJAM versions
+after v2.32.8.001 should not convert missing drinking-water scores to zero
+unless the source explicitly reports zero.
 \item EJAM_INCLUDE_EJSCREEN_EXPORT: TRUE to create ejscreen_export.csv.
+\item EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT: TRUE to create
+ejscreen_export_statepct.csv.
+\item EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS: TRUE to create
+ejscreen_us_pctile_lookup.csv and ejscreen_state_pctile_lookup.csv.
+This is off by default because current EJScreen maps use the blockgroup
+exports that already contain percentile, bin, and popup fields, while
+reports are served through EJAM-API/EJAM.
 \item EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT: TRUE to create the smaller
 input table expected by EPA's Python dataset-creator workflow.
 \item EJAM_VALIDATE_VS_PRIOR and related EJAM_PRIOR_* settings control prior-version comparisons.
@@ -367,8 +406,10 @@ cbind(current_setting = Sys.getenv(c(
   "EJAM_ACS_DOWNLOAD_TIMEOUT", "EJAM_ACS_DOWNLOAD_RETRIES",
   "EJAM_INCLUDE_ISLANDAREAS_DATA", "EJAM_ISLANDAREAS_REFERENCE_PATH",
   "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
+  "EJAM_BG_ENVIRODATA_REFERENCE_PATH", "EJAM_BG_ENVIRODATA_REFERENCE_VARS",
   "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
-  "EJAM_INCLUDE_EJSCREEN_EXPORT",
+  "EJAM_INCLUDE_EJSCREEN_EXPORT", "EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT",
+  "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS",
   "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
   "EJAM_VALIDATE_VS_PRIOR", "EJAM_PRIOR_PIPELINE_YR",
   "EJAM_PRIOR_PIPELINE_DIR", "EJAM_PRIOR_PACKAGE_REF"

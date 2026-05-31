@@ -93,6 +93,10 @@ test_that("Arrow release tag can be decoupled from the package version", {
 
 test_that("explicit Arrow release tags override the package default", {
   expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(c("bgej", "frs"), piggybacktag = "v2.32.8.1")),
+    c("v2.32.8.001", "v2.32.8.001")
+  )
+  expect_equal(
     unname(EJAM:::dynamic_data_release_tag(c("bgej", "frs"), piggybacktag = "v2.32.8.001")),
     c("v2.32.8.001", "v2.32.8.001")
   )
@@ -130,6 +134,9 @@ test_that("local Arrow release marker reader treats blank markers as missing", {
 
   writeLines(c("  v2.5.0  ", "v2.32.8.001"), marker)
   expect_equal(EJAM:::ejamdata_local_arrow_tag_read(marker), "v2.5.0")
+
+  writeLines("v2.32.8.1", marker)
+  expect_equal(EJAM:::ejamdata_local_arrow_tag_read(marker), "v2.32.8.001")
 })
 ########################################################## #
 

@@ -1738,12 +1738,13 @@ url_naics.com <- function(query = "",
 
 #' utility to view rendered .html file stored in a github repo
 #'
-#' @param ghurl URL of HTML file in a github repository,
+#' @param ghurl URL of HTML (or other type) file in a github repository,
 #'   inferred by default from parameters repo, ver, fold, and file
-#' @param repo URL of github repository
-#' @param ver name of branch or tag of a released version
+#' @param repo URL of github repository, optional
+#' @param ver name of branch or tag of a released version, like "main" or "development" or "v2.32.8.001"
 #' @param fold path to the repository subfolder containing the HTML file,
 #'   relative to the selected branch or tag, such as `"docs/reference"`
+#'   or `"inst/testdata/examples_of_output"` or `"inst/app/www"`
 #' @param file name of the HTML file within `fold`, such as `"index.html"`
 #'   or `"ejam2excel.html"`
 #' @param launch_browser set FALSE to get URL but not launch a browser
@@ -1798,8 +1799,11 @@ url_github_preview = function(ghurl = NULL,
 
     ghurl <- paste(repo, blob, ver, fold, file, sep = "/")
   }
+  if (all(tools::file_ext(file) %in% "html")) {
   urlx <- paste0("https://htmlpreview.github.io/?", ghurl)
-
+  } else {
+    urlx <- ghurl
+  }
   if (launch_browser) {browseURL(urlx[1])}
   return(urlx)
 

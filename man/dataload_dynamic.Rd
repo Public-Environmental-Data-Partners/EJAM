@@ -32,7 +32,7 @@ look in for locally saved copies}
 
 \item{piggybacktag}{default is \code{"latest"}, which resolves internally to the
 DESCRIPTION \code{ejamdata_required_tag} field. Pass a specific tag such as
-\code{"v2.32.8"} only for explicit maintenance or diagnostic work.}
+\code{"v2.32.8.001"} only for explicit maintenance or diagnostic work.}
 }
 \value{
 returns vector of names of objects now in memory in specified envir, either because

@@ -117,7 +117,7 @@ table_xls_format <- function(overall,
 
                              # column formatting
                              heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
-                             heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                             heatmap2_colnames = NULL, heatmap2_cuts = c(1.05, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
                              graycolnames = NULL, graycolor = 'gray',
                              narrowcolnames = NULL, narrow6 = 6,
 
@@ -140,10 +140,10 @@ table_xls_format <- function(overall,
   )
 
   if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  && isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &&
-      isTRUE(all.equal(heatmap2_cuts, c(1.009, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
+      isTRUE(all.equal(heatmap2_cuts, c(1.05, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
     color_legend <- paste0(
       "PERCENTILES \n  Red: at least 95th, Orange: 90-95th, Yellow: 80-90th \n",
-      "RATIOS      \n  Red: at least 3x average, Orange: 2-3x average, Yellow: 1-2x average"
+      "RATIOS      \n  Red: at least 3x average, Orange: 2-3x average, Yellow: above 1.0 to 2x average"
     )
   } else {
     if (missing(heatmap_colnames))  {h1names <- "PERCENTILES "} else {h1names <- paste0("Group 1 columns ", paste0("(", fixcolnames(heatmap_colnames[1], 'r', 'long'), ", etc.)"))}
