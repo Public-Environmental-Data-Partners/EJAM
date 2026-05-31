@@ -745,6 +745,48 @@ ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
   out
 }
 
+ejscreen_pipeline_prior_package_validation <- function(new_pipeline_dir,
+                                                       prior_package_ref,
+                                                       prior_package_path = "data/blockgroupstats.rda",
+                                                       format = "csv",
+                                                       storage = c("auto", "local", "s3"),
+                                                       output_dir = new_pipeline_dir,
+                                                       write_files = TRUE,
+                                                       use_waldo = FALSE,
+                                                       compare_fun = ejscreen_pipeline_compare_stage_to_git_ref,
+                                                       write_fun = ejscreen_pipeline_write_text_or_csv) {
+  storage <- match.arg(storage)
+  prior_validation_comparisons <- ejscreen_pipeline_compare_prior_package_stages(
+    new_pipeline_dir = new_pipeline_dir,
+    prior_package_ref = prior_package_ref,
+    prior_package_path = prior_package_path,
+    format = format,
+    storage = storage,
+    output_dir = output_dir,
+    write_files = write_files,
+    use_waldo = use_waldo,
+    compare_fun = compare_fun
+  )
+  prior_validation_summary <- data.table::rbindlist(
+    lapply(prior_validation_comparisons, function(x) x$summary),
+    fill = TRUE
+  )
+  write_fun(
+    prior_validation_summary,
+    "prior_validation_summary.csv",
+    pipeline_dir = output_dir,
+    storage = storage
+  )
+  list(
+    summary = prior_validation_summary,
+    comparisons = prior_validation_comparisons,
+    new_pipeline_dir = new_pipeline_dir,
+    old_git_ref = prior_package_ref,
+    old_git_path = prior_package_path,
+    output_dir = output_dir
+  )
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)

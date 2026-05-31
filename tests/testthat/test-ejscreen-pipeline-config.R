@@ -577,6 +577,54 @@ test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git co
   expect_equal(calls[[4]]$use_waldo, TRUE)
 })
 
+test_that("ejscreen_pipeline_prior_package_validation writes summary and metadata", {
+  written <- NULL
+  fake_compare <- function(...) {
+    args <- list(...)
+    list(
+      summary = data.frame(
+        stage = args$stage,
+        new_stage = args$new_stage
+      )
+    )
+  }
+  fake_write <- function(x, filename, pipeline_dir, storage) {
+    written <<- list(
+      x = x,
+      filename = filename,
+      pipeline_dir = pipeline_dir,
+      storage = storage
+    )
+    invisible(filename)
+  }
+
+  result <- EJAM:::ejscreen_pipeline_prior_package_validation(
+    new_pipeline_dir = "new-dir",
+    prior_package_ref = "v2_32_8_001",
+    prior_package_path = "data/blockgroupstats.rda",
+    format = "csv",
+    storage = "local",
+    output_dir = "out-dir",
+    write_files = TRUE,
+    use_waldo = FALSE,
+    compare_fun = fake_compare,
+    write_fun = fake_write
+  )
+
+  expect_named(
+    result,
+    c("summary", "comparisons", "new_pipeline_dir", "old_git_ref", "old_git_path", "output_dir")
+  )
+  expect_equal(nrow(result$summary), 4)
+  expect_equal(result$new_pipeline_dir, "new-dir")
+  expect_equal(result$old_git_ref, "v2_32_8_001")
+  expect_equal(result$old_git_path, "data/blockgroupstats.rda")
+  expect_equal(written$filename, "prior_validation_summary.csv")
+  expect_equal(written$pipeline_dir, "out-dir")
+  expect_equal(written$storage, "local")
+  expect_equal(nrow(written$x), 4)
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {

@@ -1127,7 +1127,7 @@ if (isTRUE(validate_vs_prior)) {
   if (nzchar(prior_package_ref)) {
     message("Comparing selected stages to explicit prior package Git object: ",
             prior_package_ref, ":", prior_package_path)
-    prior_validation_comparisons <- EJAM:::ejscreen_pipeline_compare_prior_package_stages(
+    prior_validation <- EJAM:::ejscreen_pipeline_prior_package_validation(
       new_pipeline_dir = pipeline_dir,
       prior_package_ref = prior_package_ref,
       prior_package_path = prior_package_path,
@@ -1136,24 +1136,6 @@ if (isTRUE(validate_vs_prior)) {
       output_dir = pipeline_dir,
       write_files = TRUE,
       use_waldo = validate_vs_prior_waldo
-    )
-    prior_validation_summary <- data.table::rbindlist(
-      lapply(prior_validation_comparisons, function(x) x$summary),
-      fill = TRUE
-    )
-    EJAM:::ejscreen_pipeline_write_text_or_csv(
-      prior_validation_summary,
-      "prior_validation_summary.csv",
-      pipeline_dir = pipeline_dir,
-      storage = pipeline_storage
-    )
-    prior_validation <- list(
-      summary = prior_validation_summary,
-      comparisons = prior_validation_comparisons,
-      new_pipeline_dir = pipeline_dir,
-      old_git_ref = prior_package_ref,
-      old_git_path = prior_package_path,
-      output_dir = pipeline_dir
     )
   } else {
     message("Comparing selected stages to prior saved pipeline version: ", prior_pipeline_dir)
