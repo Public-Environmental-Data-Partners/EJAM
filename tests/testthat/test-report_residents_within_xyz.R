@@ -426,6 +426,39 @@ test_that("NA values warn", {
 })
 ############################## #   ############################## #
 
+test_that("no radius warning for fips or shp sitetype with NA radius", {
+
+  # FIPS analyses have no point-buffer radius by design; NA radius should not warn
+  expect_no_warning({
+    report_residents_within_xyz(sitetype = 'fips', radius = NA, nsites = 5)
+  })
+
+  # shp analyses also have no mandatory point-buffer radius
+  expect_no_warning({
+    report_residents_within_xyz(sitetype = 'shp', radius = NA, nsites = 5)
+  })
+
+  # latlon with NA radius should still warn (point-buffer context requires a radius)
+  expect_warning({
+    report_residents_within_xyz(sitetype = 'latlon', radius = NA, nsites = 2)
+  }, regexp = 'radius should not be NA')
+
+})
+############################## #   ############################## #
+
+test_that("no radius warning from report_residents_within_xyz_from_ejamit for FIPS output", {
+
+  expect_no_warning({
+    report_residents_within_xyz_from_ejamit(testoutput_ejamit_fips_cities)
+  })
+
+  expect_no_warning({
+    report_residents_within_xyz_from_ejamit(testoutput_ejamit_fips_cities, sitenumber = 2)
+  })
+
+})
+############################## #   ############################## #
+
 ########################################################################### #
 ## check the function  report_residents_within_xyz_from_ejamit()
 ########################################################################### #
