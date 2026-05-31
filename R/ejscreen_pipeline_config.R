@@ -81,6 +81,119 @@ ejscreen_pipeline_reference_path <- function(kind) {
   )
 }
 
+ejscreen_pipeline_setting_names <- function() {
+  c(
+    "EJAM_PIPELINE_YR",
+    "EJAM_PIPELINE_ROOT",
+    "EJAM_PIPELINE_DIR",
+    "EJAM_PIPELINE_STORAGE",
+    "EJAM_STAGE_FORMAT",
+    "EJAM_STAGE_FORMATS",
+    "EJAM_BLOCKGROUP_UNIVERSE_SOURCE",
+    "EJAM_TRACT_WEIGHT_SOURCE",
+    "EJAM_DECENNIAL_BGWTS_CACHE",
+    "EJAM_REFRESH_DECENNIAL_BGWTS",
+    "EJAM_FORCE_ACS",
+    "EJAM_FORCE_BG_ACSDATA",
+    "EJAM_FORCE_BG_GEODATA",
+    "EJAM_TIGER_BG_CACHE_DIR",
+    "EJAM_ACS_DOWNLOAD_TIMEOUT",
+    "EJAM_ACS_DOWNLOAD_RETRIES",
+    "EJAM_INCLUDE_ISLANDAREAS_DATA",
+    "EJAM_ISLANDAREAS_REFERENCE_PATH",
+    "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS",
+    "EJAM_USE_PROVISIONAL_BG_ENVIRODATA",
+    "EJAM_BG_ENVIRODATA_REFERENCE_PATH",
+    "EJAM_BG_ENVIRODATA_REFERENCE_VARS",
+    "EJAM_INCLUDE_EJSCREEN_EXPORT",
+    "EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT",
+    "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS",
+    "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT",
+    "EJAM_VALIDATE_VS_PRIOR",
+    "EJAM_PRIOR_PIPELINE_YR",
+    "EJAM_PRIOR_PIPELINE_DIR",
+    "EJAM_PRIOR_PACKAGE_REF",
+    "EJAM_PRIOR_PACKAGE_PATH",
+    "EJAM_EJSCREEN_EXPORT_REFERENCE_PATH",
+    "EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH",
+    "EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE",
+    "EJAM_VALIDATE_VS_PRIOR_WALDO",
+    "EJAM_RUN_DATACREATE_BEFORE",
+    "EJAM_RUN_DATACREATE_AFTER",
+    "EJAM_REPLACE_PACKAGE_DATA",
+    "EJAM_INCLUDE_FRS_UPDATE",
+    "AWS_PROFILE",
+    "AWS_REGION"
+  )
+}
+
+ejscreen_pipeline_config_using_here <- function(config) {
+  if (!inherits(config, "ejam_ejscreen_pipeline_config")) {
+    stop("config must be an ejscreen pipeline config object", call. = FALSE)
+  }
+
+  c(
+    EJAM_PIPELINE_YR = config$yr,
+    EJAM_PIPELINE_ROOT = config$pipeline_root,
+    EJAM_PIPELINE_DIR = config$pipeline_dir,
+    EJAM_PIPELINE_STORAGE = config$pipeline_storage,
+    EJAM_STAGE_FORMAT = config$stage_format,
+    EJAM_STAGE_FORMATS = paste(config$stage_formats, collapse = ","),
+    EJAM_BLOCKGROUP_UNIVERSE_SOURCE = config$blockgroup_universe_source,
+    EJAM_TRACT_WEIGHT_SOURCE = config$tract_weight_source,
+    EJAM_DECENNIAL_BGWTS_CACHE = config$decennial_bgwts_cache,
+    EJAM_REFRESH_DECENNIAL_BGWTS = config$refresh_decennial_bgwts,
+    EJAM_FORCE_ACS = config$force_acs,
+    EJAM_FORCE_BG_ACSDATA = config$force_bg_acsdata,
+    EJAM_FORCE_BG_GEODATA = config$force_bg_geodata,
+    EJAM_TIGER_BG_CACHE_DIR = config$tiger_bg_cache_dir,
+    EJAM_ACS_DOWNLOAD_TIMEOUT = config$acs_download_timeout,
+    EJAM_ACS_DOWNLOAD_RETRIES = config$acs_download_retries,
+    EJAM_INCLUDE_ISLANDAREAS_DATA = config$include_islandareas_data,
+    EJAM_ISLANDAREAS_REFERENCE_PATH = config$islandareas_reference_path,
+    EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = config$use_islandareas_demographics,
+    EJAM_USE_PROVISIONAL_BG_ENVIRODATA = config$use_provisional_bg_envirodata,
+    EJAM_BG_ENVIRODATA_REFERENCE_PATH = config$bg_envirodata_reference_path,
+    EJAM_BG_ENVIRODATA_REFERENCE_VARS = paste(config$bg_envirodata_reference_vars, collapse = ","),
+    EJAM_INCLUDE_EJSCREEN_EXPORT = config$include_ejscreen_export,
+    EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT = config$include_ejscreen_export_statepct,
+    EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS = config$include_ejscreen_pctile_lookup_exports,
+    EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = config$include_ejscreen_dataset_creator_input,
+    EJAM_VALIDATE_VS_PRIOR = config$validate_vs_prior,
+    EJAM_PRIOR_PIPELINE_YR = config$prior_pipeline_yr,
+    EJAM_PRIOR_PIPELINE_DIR = config$prior_pipeline_dir,
+    EJAM_PRIOR_PACKAGE_REF = config$prior_package_ref,
+    EJAM_PRIOR_PACKAGE_PATH = config$prior_package_path,
+    EJAM_EJSCREEN_EXPORT_REFERENCE_PATH = config$ejscreen_export_reference_path,
+    EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH = config$ejscreen_export_statepct_reference_path,
+    EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE = config$validate_ejscreen_export_reference,
+    EJAM_VALIDATE_VS_PRIOR_WALDO = config$validate_vs_prior_waldo,
+    EJAM_RUN_DATACREATE_BEFORE = config$run_datacreate_before,
+    EJAM_RUN_DATACREATE_AFTER = config$run_datacreate_after,
+    EJAM_REPLACE_PACKAGE_DATA = config$replace_package_data,
+    EJAM_INCLUDE_FRS_UPDATE = config$include_frs_update,
+    AWS_PROFILE = config$aws_profile,
+    AWS_REGION = config$aws_region
+  )
+}
+
+ejscreen_pipeline_config_summary <- function(config, setting_names = ejscreen_pipeline_setting_names()) {
+  using_here <- ejscreen_pipeline_config_using_here(config)
+  missing_settings <- setdiff(setting_names, names(using_here))
+  if (length(missing_settings) > 0) {
+    stop(
+      "No config summary value for setting(s): ",
+      paste(missing_settings, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  cbind(
+    Sys.getenv = Sys.getenv(setting_names),
+    using_here = unname(using_here[setting_names])
+  )
+}
+
 ejscreen_pipeline_config <- function(yr = NULL,
                                      pipeline_root = NULL,
                                      pipeline_dir = NULL,

@@ -540,101 +540,10 @@ prior_pipeline_dir <- pipeline_config$prior_pipeline_dir
 prior_package_ref <- pipeline_config$prior_package_ref
 prior_package_path <- pipeline_config$prior_package_path
 
-pipeline_setting_names <- c(
-  'EJAM_PIPELINE_YR',
-  'EJAM_PIPELINE_ROOT',
-  'EJAM_PIPELINE_DIR',
-  'EJAM_PIPELINE_STORAGE',
-  'EJAM_STAGE_FORMAT',
-  'EJAM_STAGE_FORMATS',
-  'EJAM_BLOCKGROUP_UNIVERSE_SOURCE',
-  'EJAM_TRACT_WEIGHT_SOURCE',
-  'EJAM_DECENNIAL_BGWTS_CACHE',
-  'EJAM_REFRESH_DECENNIAL_BGWTS',
-  'EJAM_FORCE_ACS',
-  'EJAM_FORCE_BG_ACSDATA',
-  'EJAM_FORCE_BG_GEODATA',
-  'EJAM_TIGER_BG_CACHE_DIR',
-  'EJAM_ACS_DOWNLOAD_TIMEOUT',
-  'EJAM_ACS_DOWNLOAD_RETRIES',
-  'EJAM_INCLUDE_ISLANDAREAS_DATA',
-  'EJAM_ISLANDAREAS_REFERENCE_PATH',
-  'EJAM_USE_ISLANDAREAS_DEMOGRAPHICS',
-  'EJAM_USE_PROVISIONAL_BG_ENVIRODATA',
-  'EJAM_BG_ENVIRODATA_REFERENCE_PATH',
-  'EJAM_BG_ENVIRODATA_REFERENCE_VARS',
-  'EJAM_INCLUDE_EJSCREEN_EXPORT',
-  'EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT',
-  'EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS',
-  'EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT',
-  'EJAM_VALIDATE_VS_PRIOR',
-  'EJAM_PRIOR_PIPELINE_YR',
-  'EJAM_PRIOR_PIPELINE_DIR',
-  'EJAM_PRIOR_PACKAGE_REF',
-  'EJAM_PRIOR_PACKAGE_PATH',
-  'EJAM_EJSCREEN_EXPORT_REFERENCE_PATH',
-  'EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH',
-  'EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE',
-  'EJAM_VALIDATE_VS_PRIOR_WALDO',
-  'EJAM_RUN_DATACREATE_BEFORE',
-  'EJAM_RUN_DATACREATE_AFTER',
-  'EJAM_REPLACE_PACKAGE_DATA',
-  'EJAM_INCLUDE_FRS_UPDATE',
-  'AWS_PROFILE',
-  'AWS_REGION'
-)
+pipeline_setting_names <- EJAM:::ejscreen_pipeline_setting_names()
 
 #################################################### #
-print(
-  cbind(Sys.getenv = Sys.getenv(pipeline_setting_names),
-        using_here = c(
-          pipeline_yr = pipeline_yr,
-          pipeline_root=pipeline_root,
-          pipeline_dir=pipeline_dir,
-          pipeline_storage=pipeline_storage,
-          stage_format=stage_format,
-          stage_formats=paste(stage_formats, collapse = ","),
-          blockgroup_universe_source=blockgroup_universe_source,
-          tract_weight_source=tract_weight_source,
-          decennial_bgwts_cache = Sys.getenv("EJAM_DECENNIAL_BGWTS_CACHE"),
-          refresh_decennial_bgwts = Sys.getenv("EJAM_REFRESH_DECENNIAL_BGWTS"),
-
-          force_acs=force_acs,
-          force_bg_acsdata=force_bg_acsdata,
-          force_bg_geodata=force_bg_geodata,
-          tiger_bg_cache_dir=tiger_bg_cache_dir,
-          acs_download_timeout=acs_download_timeout,
-          acs_download_retries=acs_download_retries,
-          include_islandareas_data=include_islandareas_data,
-          islandareas_reference_path=islandareas_reference_path,
-          use_islandareas_demographics=use_islandareas_demographics,
-
-          use_provisional_bg_envirodata=use_provisional_bg_envirodata,
-          bg_envirodata_reference_path=bg_envirodata_reference_path,
-          bg_envirodata_reference_vars=paste(bg_envirodata_reference_vars, collapse = ","),
-
-          include_ejscreen_export=include_ejscreen_export,
-          include_ejscreen_export_statepct=include_ejscreen_export_statepct,
-          include_ejscreen_pctile_lookup_exports=include_ejscreen_pctile_lookup_exports,
-          include_ejscreen_dataset_creator_input=include_ejscreen_dataset_creator_input,
-
-          validate_vs_prior=validate_vs_prior,
-          prior_pipeline_yr=prior_pipeline_yr,
-          prior_pipeline_dir=prior_pipeline_dir,
-          prior_package_ref=prior_package_ref,
-          prior_package_path=prior_package_path,
-          ejscreen_export_reference_path=ejscreen_export_reference_path,
-          ejscreen_export_statepct_reference_path=ejscreen_export_statepct_reference_path,
-          validate_ejscreen_export_reference=validate_ejscreen_export_reference,
-          validate_vs_prior_waldo=validate_vs_prior_waldo,
-          run_datacreate_before=run_datacreate_before,
-          run_datacreate_after=run_datacreate_after,
-          replace_package_data=replace_package_data,
-          include_frs_update=include_frs_update,
-          AWS_PROFILE=Sys.getenv("AWS_PROFILE"),
-          AWS_REGION=Sys.getenv("AWS_REGION")
-        ))
-)
+print(EJAM:::ejscreen_pipeline_config_summary(pipeline_config))
 # census_api_key = "(see actual key)",
 #################################################### #
 ## to insert a pause here to confirm settings, could use this:

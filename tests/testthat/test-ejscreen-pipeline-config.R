@@ -131,6 +131,35 @@ test_that("ejscreen_pipeline_config_from_env honors environment overrides", {
   expect_true(cfg$include_frs_update)
 })
 
+test_that("ejscreen_pipeline_config_summary reports env and resolved settings", {
+  clear_pipeline_config_envvars()
+  root <- file.path(tempdir(), "ejam-pipeline-summary-root")
+  withr::local_envvar(c(
+    EJAM_PIPELINE_YR = "2024",
+    EJAM_PIPELINE_ROOT = root,
+    EJAM_PIPELINE_STORAGE = "local",
+    EJAM_STAGE_FORMAT = "rda",
+    EJAM_STAGE_FORMATS = "csv",
+    EJAM_FORCE_ACS = "1",
+    EJAM_BG_ENVIRODATA_REFERENCE_VARS = "drinking,DWATER",
+    AWS_PROFILE = "test-profile",
+    AWS_REGION = "us-east-1"
+  ))
+
+  cfg <- EJAM:::ejscreen_pipeline_config_from_env()
+  summary <- EJAM:::ejscreen_pipeline_config_summary(cfg)
+
+  expect_equal(rownames(summary), EJAM:::ejscreen_pipeline_setting_names())
+  expect_equal(colnames(summary), c("Sys.getenv", "using_here"))
+  expect_equal(summary["EJAM_PIPELINE_YR", "Sys.getenv"], "2024")
+  expect_equal(summary["EJAM_PIPELINE_YR", "using_here"], "2024")
+  expect_equal(summary["EJAM_PIPELINE_DIR", "using_here"], file.path(root, "ejscreen_acs_2024"))
+  expect_equal(summary["EJAM_STAGE_FORMATS", "using_here"], "rda,csv")
+  expect_equal(summary["EJAM_FORCE_BG_ACSDATA", "using_here"], "TRUE")
+  expect_equal(summary["EJAM_BG_ENVIRODATA_REFERENCE_VARS", "using_here"], "drinking,DWATER")
+  expect_equal(summary["AWS_PROFILE", "using_here"], "test-profile")
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(
