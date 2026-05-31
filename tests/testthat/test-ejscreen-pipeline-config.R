@@ -454,6 +454,24 @@ test_that("ejscreen_pipeline_source_scripts sources enabled scripts and reports 
   expect_false(file.exists(disabled_marker))
 })
 
+test_that("ejscreen_pipeline_datacreate_scripts returns annual before and after recipes", {
+  scripts <- EJAM:::ejscreen_pipeline_datacreate_scripts()
+
+  expect_named(scripts, c("before", "after"))
+  expect_true("data-raw/datacreate_states_shapefile.R" %in% scripts$before)
+  expect_true("data-raw/datacreate_names_of_indicators.R" %in% scripts$before)
+  expect_true("data-raw/datacreate_high_pctiles_tied_with_min.R" %in% scripts$after)
+  expect_true("data-raw/datacreate_testoutput_ejamit_shapes_2.R" %in% scripts$after)
+  expect_false("data-raw/datacreate_frs_.R" %in% scripts$after)
+  expect_false(any(grepl("datacreate_blockwts|datacreate_bgpts|datacreate_bg_cenpop2020", scripts$before)))
+  expect_false(any(grepl("datacreate_map_headernames", scripts$before)))
+
+  with_frs <- EJAM:::ejscreen_pipeline_datacreate_scripts(include_frs_update = TRUE)
+  expect_equal(with_frs$before, scripts$before)
+  expect_equal(with_frs$after[1L], "data-raw/datacreate_frs_.R")
+  expect_equal(with_frs$after[-1L], scripts$after)
+})
+
 test_that("ejscreen_pipeline_validation_stages keeps core and optional stages ordered", {
   core <- EJAM:::ejscreen_pipeline_validation_stages(
     include_ejscreen_export = FALSE,

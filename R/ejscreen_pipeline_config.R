@@ -266,7 +266,6 @@ ejscreen_pipeline_apply_config_env <- function(config, overwrite = TRUE, include
 
   invisible(values)
 }
-
 ejscreen_pipeline_run_script <- function(config,
                                          script = file.path("data-raw", "run_ejscreen_dataset_pipeline.R"),
                                          overwrite_env = TRUE,
@@ -305,7 +304,6 @@ ejscreen_pipeline_run_script <- function(config,
     source_result = source_result
   ))
 }
-
 ejscreen_pipeline_config_summary <- function(config, setting_names = ejscreen_pipeline_setting_names()) {
   using_here <- ejscreen_pipeline_config_using_here(config)
   missing_settings <- setdiff(setting_names, names(using_here))
@@ -611,6 +609,38 @@ ejscreen_pipeline_source_scripts <- function(scripts,
     source(fpath)
   }
   invisible(scripts)
+}
+
+ejscreen_pipeline_datacreate_scripts <- function(include_frs_update = FALSE) {
+  before <- c(
+    "data-raw/datacreate_states_shapefile.R",
+    "data-raw/datacreate_stateinfo.R",
+    "data-raw/datacreate_stateinfo2.R",
+    "data-raw/datacreate_censusplaces.R",
+    "data-raw/datacreate_islandareas.R",
+    "data-raw/datacreate_lat_alias.R",
+    "data-raw/datacreate_names_of_indicators.R",
+    "data-raw/datacreate_names_pct_as_fraction.R",
+    "data-raw/datacreate_tables_ejscreen_acs.R",
+    "data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R",
+    "data-raw/datacreate_formulas_ejscreen_demog_index.R"
+  )
+  after <- c(
+    "data-raw/datacreate_high_pctiles_tied_with_min.R",
+    "data-raw/datacreate_avg.in.us.R",
+    "data-raw/datacreate_testinput_fips.R",
+    "data-raw/datacreate_testpoints_testoutputs.R",
+    "data-raw/datacreate_testoutput_ejamit_fips_.R",
+    "data-raw/datacreate_testoutput_ejamit_shapes_2.R"
+  )
+  if (isTRUE(include_frs_update)) {
+    after <- c("data-raw/datacreate_frs_.R", after)
+  }
+
+  list(
+    before = before,
+    after = after
+  )
 }
 
 ejscreen_pipeline_validation_stages <- function(include_islandareas_data = TRUE,

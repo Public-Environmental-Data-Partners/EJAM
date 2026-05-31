@@ -186,88 +186,15 @@ include_frs_update <- EJAM:::ejscreen_pipeline_env_flag("EJAM_INCLUDE_FRS_UPDATE
 # Some shown here are optional, though.
 # To check the current list of such scripts:
 # dput( dir(pattern = "^datacreate_", recursive = TRUE) )
-# Uncomment the lines below to run selected datacreate_ scripts.
-# Any of them can be done manually and not all are essential.
+# The default annual recipe intentionally excludes block helper refreshes
+# (blockwts/blockpoints/bgid2fips/blockid2fips/quaddata) and map_headernames
+# regeneration. Do those manually and review carefully when needed.
 ###################################################### #
-datacreate_scripts_to_run_before_pipeline <- c(
-
-  ### ANNUAL UPDATES that must be done BEFORE pipeline updates most files
-
-  ## Census Bureau data to check/update ANNUALLY, if geo data has changed
-  ##
-  ##     cities, states, island areas
-  "data-raw/datacreate_states_shapefile.R", # census bureau data - downloads latest state boundaries that correspond to the ACS dataset.
-  "data-raw/datacreate_stateinfo.R",    # census bureau data - table of state fips and centroids, unlikely to change but if done should do BEFORE pipeline.  makes stateinfo with a few columns
-  "data-raw/datacreate_stateinfo2.R",   # census bureau data - table of state info, unlikely to change but if done should do BEFORE pipeline.   makes stateinfo2 with more columns
-  "data-raw/datacreate_censusplaces.R", # census bureau data - table of cities, etc. - download from Census Bureau. Source data did not change 2025 through 5/2026. Relevant to updating testinput_fips_cities and testoutput_ejamit_fips_cities
-  "data-raw/datacreate_islandareas.R",  # unlikely to change, just a file with latlon info
-  "data-raw/datacreate_lat_alias.R",    # unlikely to change
-  ##
-  ##     block and blockgroup helper files
-  ##
-  ## Do not run these automatically for the v2.5.0 ACS 2020-2024 pipeline:
-  ##
-  ##   "data-raw/datacreate_bg_cenpop2020.R"
-  ##   "data-raw/datacreate_bgpts.R"
-  ##   "data-raw/datacreate_blockwts.R"
-  ##
-  ## For v2.5.0, keep the current EPA/EJScreen adjusted 2020-to-2022
-  ## block helper Arrow files: blockwts, blockpoints, blockid2fips,
-  ## bgid2fips, and quaddata.
-  ##
-  ## Reason: the current helper universe is an internally consistent
-  ## superset of the ACS 2020-2024 blockgroupstats universe. Raw Census
-  ## 2020 regeneration reintroduces the CT ACS 2022+ geography mismatch.
-  ## Island Areas AS/GU/MP/VI are visible only in blockgroup dataset/export/map
-  ## outputs for v2.5.0. Do not add Island Area blocks to these helper files
-  ## for this release path; radius/buffer reports there should return no-data
-  ## results rather than block-weighted estimates.
-  ## If these helper files are refreshed later, do it as a separate,
-  ## explicit geography-helper refresh with CT/NY setdiff checks and a
-  ## bgid compatibility check against blockgroupstats and bgid2fips.
-
-  ## Variable names (indicators), metadata, and formulas to check/update ANNUALLY, if the set of indicators or formulas have changed.
-  ##
-  ##     map_headernames is IMPORTANT TO CHECK/UPDATE CAREFULLY YEARLY.
-  ##     Edit data-raw/map_headernames.csv directly, then run
-  ##     data-raw/datacreate_map_headernames.R to validate/save the package data
-  ##     before running the annual pipeline. Do not use the old .xlsx workflow
-  ##     or one-off scripts that modify map_headernames after the CSV is read.
-  # "data-raw/datacreate_map_headernames.R",            # run manually after CSV edits, before pipeline use
-  # "data-raw/datacreate_map_headernames_fix_dupes.R",   # obsolete notes only; do not source
-  ##
-  "data-raw/datacreate_names_of_indicators.R",   # must do AFTER any map_headernames changes but BEFORE pipeline is done (probably), if names/varlists like names_e change
-  "data-raw/datacreate_names_pct_as_fraction.R", # must do AFTER any map_headernames changes
-  ##
-  ##    Formulas for calculating indicators, which ACS tables are needed, etc., if that has changed.
-  ##
-  "data-raw/datacreate_tables_ejscreen_acs.R",  # must be ready/done BEFORE pipeline used
-  "data-raw/datacreate_formulas_ejscreen_acs_pctdisability.R", # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
-  "data-raw/datacreate_formulas_ejscreen_demog_index.R"        # might not change in a given year, but if census variable names or tables change, use this and it must be done BEFORE the pipeline is run if formulas have been changed.
-
+datacreate_scripts <- EJAM:::ejscreen_pipeline_datacreate_scripts(
+  include_frs_update = include_frs_update
 )
-###################################################### #
-datacreate_scripts_to_run_after_pipeline <- c(
-
-  ### ANNUAL UPDATES that must be done AFTER pipeline updates most files
-
-  "data-raw/datacreate_high_pctiles_tied_with_min.R", # may be obsolete; helped with percentile lookups
-  "data-raw/datacreate_avg.in.us.R",   # creates "avg.in.us" national averages of key indicators, for convenience
-
-  #"data-raw/datacreate_runtime_models.R", # stores info on how long it took to run ejamit or doaggregate etc. to help predict ETA of large analysis
-
-  "data-raw/datacreate_testinput_fips.R", # do AFTER updating censusplaces, pipeline (blockgroupstats), etc., in case those test fips changed
-  "data-raw/datacreate_testpoints_testoutputs.R",  # must be done AFTER pipeline changes blockgroupstats, etc.
-  "data-raw/datacreate_testoutput_ejamit_fips_.R",  # must be done AFTER pipeline updates blockgroupstats, avg in us, pctiles, etc., and AFTER states_shapefile is updated, and AFTER testinputs done
-  "data-raw/datacreate_testoutput_ejamit_shapes_2.R"  # must be done AFTER pipeline updates blockgroupstats, avg in us, pctiles, etc., and AFTER states_shapefile is updated, and AFTER testinputs done
-
-)
-if (isTRUE(include_frs_update)) {
-  datacreate_scripts_to_run_after_pipeline <- c(
-    "data-raw/datacreate_frs_.R",
-    datacreate_scripts_to_run_after_pipeline
-  )
-}
+datacreate_scripts_to_run_before_pipeline <- datacreate_scripts$before
+datacreate_scripts_to_run_after_pipeline <- datacreate_scripts$after
 ###################################################### #
 
 ###################################################### #
