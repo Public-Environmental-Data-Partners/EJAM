@@ -1136,44 +1136,14 @@ invisible(out)
 # ~ ----------------------------------------------- ####
 ###################################################### #
 
-should_replace_package_data <- isTRUE(replace_package_data)
-if (!should_replace_package_data && interactive()) {
-  should_replace_package_data <- isTRUE(askYesNo(
-    "ready to REPLACE data/blockgroupstats.rda, data/usastats.rda, data/statestats.rda, and any selected helper package .rda datasets ? "
-  ))
-}
-
-if (isTRUE(should_replace_package_data)) {
-  blockgroupstats <- out$blockgroupstats
-  bgej <- out$bgej
-  usastats <- out$usastats
-  statestats <- out$statestats
-
-  EJAM:::metadata_add_and_use_this("blockgroupstats")
-  EJAM:::metadata_add_and_use_this("usastats")
-  EJAM:::metadata_add_and_use_this("statestats")
-
-  ## bgej is not package .rda data. Save the refreshed bgej pipeline artifacts
-  ## to the pipeline folder for release/data-repository publication.
-  EJAM:::ejscreen_pipeline_save(x = bgej, format = "rda", validate = FALSE, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr)
-  EJAM:::ejscreen_pipeline_save(x = bgej, format = "arrow", validate = FALSE, storage = "s3", pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"), stage = "bgej", yr = pipeline_yr)
-
-  ## Optional maintainer step, disabled by default: publish the refreshed
-  ## bgej.arrow as an ejamdata release asset. Always dry-run first.
-  ## also see run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step
-  # bgej_arrow_publish_path <- file.path(tempdir(), "bgej.arrow")
-  # arrow::write_ipc_file(bgej, sink = bgej_arrow_publish_path)
-  # EJAM:::datasets_arrow_publish(
-  #   files = bgej_arrow_publish_path,
-  #   tag = EJAM:::ejamdata_required_tag(),
-  #   release_date = Sys.Date(),
-  #   dry_run = TRUE,    # change when ready
-  #   overwrite = FALSE,  # change when ready
-  #   mark_latest = FALSE   # change when ready
-  # )
-} else {
-  message("Skipping package-data replacement because EJAM_REPLACE_PACKAGE_DATA is FALSE.")
-}
+# Package-data replacement remains opt-in. bgej is not package .rda data, so
+# the helper saves refreshed bgej pipeline artifacts for release-asset publishing.
+package_data_replacement <- EJAM:::ejscreen_pipeline_replace_package_data(
+  outputs = out,
+  replace_package_data = replace_package_data,
+  pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
+  pipeline_yr = pipeline_yr
+)
 
 ###################################################### #
 # Create OTHER datasets  ####

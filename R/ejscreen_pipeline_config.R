@@ -995,6 +995,62 @@ ejscreen_pipeline_finalize_run <- function(validation_summary,
   )
 }
 
+ejscreen_pipeline_replace_package_data <- function(outputs,
+                                                   replace_package_data = FALSE,
+                                                   pipeline_dir,
+                                                   pipeline_yr,
+                                                   interactive_fun = interactive,
+                                                   ask_fun = utils::askYesNo,
+                                                   metadata_fun = metadata_add_and_use_this,
+                                                   save_fun = ejscreen_pipeline_save,
+                                                   message_fun = message) {
+  should_replace_package_data <- isTRUE(replace_package_data)
+  if (!should_replace_package_data && isTRUE(interactive_fun())) {
+    should_replace_package_data <- isTRUE(ask_fun(
+      "ready to REPLACE data/blockgroupstats.rda, data/usastats.rda, data/statestats.rda, and any selected helper package .rda datasets ? "
+    ))
+  }
+
+  if (!isTRUE(should_replace_package_data)) {
+    message_fun("Skipping package-data replacement because EJAM_REPLACE_PACKAGE_DATA is FALSE.")
+    return(list(replaced = FALSE))
+  }
+
+  blockgroupstats <- outputs$blockgroupstats
+  bgej <- outputs$bgej
+  usastats <- outputs$usastats
+  statestats <- outputs$statestats
+
+  metadata_fun("blockgroupstats")
+  metadata_fun("usastats")
+  metadata_fun("statestats")
+
+  bgej_rda_path <- save_fun(
+    x = bgej,
+    format = "rda",
+    validate = FALSE,
+    storage = "s3",
+    pipeline_dir = pipeline_dir,
+    stage = "bgej",
+    yr = pipeline_yr
+  )
+  bgej_arrow_path <- save_fun(
+    x = bgej,
+    format = "arrow",
+    validate = FALSE,
+    storage = "s3",
+    pipeline_dir = pipeline_dir,
+    stage = "bgej",
+    yr = pipeline_yr
+  )
+
+  list(
+    replaced = TRUE,
+    package_datasets = c("blockgroupstats", "usastats", "statestats"),
+    bgej_paths = c(rda = bgej_rda_path, arrow = bgej_arrow_path)
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

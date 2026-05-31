@@ -920,6 +920,70 @@ test_that("ejscreen_pipeline_finalize_run writes manifest and enforces validatio
   expect_equal(manifest_calls[[2]]$status, "validation_failed")
 })
 
+test_that("ejscreen_pipeline_replace_package_data is explicit and saves bgej artifacts", {
+  outputs <- list(
+    blockgroupstats = data.frame(bgfips = "1"),
+    usastats = data.frame(pctile = 1),
+    statestats = data.frame(ST = "CA"),
+    bgej = data.frame(bgfips = "1", D2_PM25 = 2)
+  )
+  metadata_calls <- character()
+  save_calls <- list()
+  messages <- character()
+  fake_metadata <- function(objectname) {
+    metadata_calls <<- c(metadata_calls, objectname)
+    TRUE
+  }
+  fake_save <- function(...) {
+    args <- list(...)
+    save_calls[[length(save_calls) + 1L]] <<- args
+    paste0(args$stage, ".", args$format)
+  }
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+
+  skipped <- EJAM:::ejscreen_pipeline_replace_package_data(
+    outputs = outputs,
+    replace_package_data = FALSE,
+    pipeline_dir = "pipe",
+    pipeline_yr = 2024,
+    interactive_fun = function() FALSE,
+    ask_fun = function(...) stop("should not ask"),
+    metadata_fun = fake_metadata,
+    save_fun = fake_save,
+    message_fun = fake_message
+  )
+
+  expect_false(skipped$replaced)
+  expect_equal(metadata_calls, character())
+  expect_equal(length(save_calls), 0)
+  expect_true(any(grepl("Skipping package-data replacement", messages, fixed = TRUE)))
+
+  replaced <- EJAM:::ejscreen_pipeline_replace_package_data(
+    outputs = outputs,
+    replace_package_data = TRUE,
+    pipeline_dir = "pipe",
+    pipeline_yr = 2024,
+    interactive_fun = function() FALSE,
+    ask_fun = function(...) stop("should not ask"),
+    metadata_fun = fake_metadata,
+    save_fun = fake_save,
+    message_fun = fake_message
+  )
+
+  expect_true(replaced$replaced)
+  expect_equal(
+    metadata_calls,
+    c("blockgroupstats", "usastats", "statestats")
+  )
+  expect_equal(vapply(save_calls, `[[`, character(1), "format"), c("rda", "arrow"))
+  expect_equal(vapply(save_calls, `[[`, character(1), "stage"), c("bgej", "bgej"))
+  expect_equal(save_calls[[1]]$pipeline_dir, "pipe")
+  expect_equal(save_calls[[2]]$storage, "s3")
+  expect_equal(save_calls[[2]]$yr, 2024)
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {
