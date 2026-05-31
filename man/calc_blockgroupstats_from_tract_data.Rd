@@ -41,8 +41,9 @@ data.table, one row per blockgroup (not tract)
 utility to calculate annually for EJSCREEN the updated ACS data available at only tract resolution (\% disability & language detail)
 }
 \details{
-This is now typically orchestrated by \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} and by the
-staged pipeline runner script \code{data-raw/run_ejscreen_dataset_pipeline.R}.
+This is now typically orchestrated by \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} and the
+staged pipeline recipe/config helpers documented in
+\code{data-raw/run_ejscreen_pipeline_*.R}.
 
 Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()
 

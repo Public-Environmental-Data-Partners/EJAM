@@ -1013,7 +1013,7 @@ ejscreen_pipeline_version_dir <- function(yr,
     stop("yr must be supplied, such as 2024", call. = FALSE)
   }
   root <- sub("/+$", "", root)
-  file.path(root, paste0(prefix, yr))
+  ejscreen_pipeline_path(root, paste0(prefix, yr))
 }
 ###################################################### #
 
