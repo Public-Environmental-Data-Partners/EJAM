@@ -2,7 +2,6 @@
 % Please edit documentation in R/ejscreen_names.R
 \name{validate_map_headernames_ejscreen_names}
 \alias{validate_map_headernames_ejscreen_names}
-\alias{augment_map_headernames_ejscreen_names}
 \title{Validate EJSCREEN name columns in map_headernames}
 \usage{
 validate_map_headernames_ejscreen_names(
@@ -10,8 +9,6 @@ validate_map_headernames_ejscreen_names(
   strict = FALSE,
   source_name = "map_headernames"
 )
-
-augment_map_headernames_ejscreen_names(mapping_for_names = map_headernames)
 }
 \arguments{
 \item{mapping_for_names}{a data.frame like \link{map_headernames}.}
