@@ -27,7 +27,7 @@ knitr::opts_chunk$set(eval = FALSE)
 # https://r-pkgs.org/vignettes.html
 ```
 
-```{r libraryEJAM, eval = TRUE, echo= FALSE, include= FALSE}
+```{r libraryEJAM, eval = TRUE, echo= FALSE, include= FALSE, warning=FALSE, message=FALSE}
 # rm(list = ls()); golem::detach_all_attached(); devtools::load_all()
 
 if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if pkg not yet attached
@@ -115,7 +115,7 @@ radius <- 3 # radius (in miles).  5 km = 3.106856 miles, 10 km = 6.2 miles
 Converting between miles and kilometers -- If you know you want to analyze for 5
 kilometers, for example, you can turn it into miles.
 
-```{r convert units, eval=TRUE}
+```{r convert_units, eval=TRUE}
 5000 / meters_per_mile
 convert_units(5, 'km', 'miles')
 ```
@@ -138,7 +138,7 @@ with details about people near that point.
 
 ```{r map100, eval = TRUE}
 out <- testoutput_ejamit_100pts_1miles 
-ejam2map(out) 
+ejam2map(out, launch_browser = FALSE) 
 ```
 
 ## Report via `ejam2report()` (interactive html file)
@@ -213,7 +213,7 @@ out <- testoutput_ejamit_100pts_1miles
 
 ejam2barplot(out,
              varnames = names_these_ratio_to_avg,
-             main = "Envt & Demog Indicators at Selected Sites Compared to State Averages")
+             main = "Envt & Demog Indicators at Selected Sites Compared to US Averages")
 
 ejam2barplot(out,
              varnames = names_these_ratio_to_state_avg,
