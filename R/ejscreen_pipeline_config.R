@@ -1855,6 +1855,73 @@ ejscreen_pipeline_stage_outputs <- function(yr,
   out
 }
 
+ejscreen_pipeline_stage_validation_reports <- function(outputs,
+                                                       include_islandareas_data = TRUE,
+                                                       use_islandareas_demographics = FALSE,
+                                                       include_ejscreen_export = TRUE,
+                                                       include_ejscreen_export_statepct = TRUE,
+                                                       include_ejscreen_pctile_lookup_exports = FALSE,
+                                                       include_ejscreen_dataset_creator_input = FALSE,
+                                                       pipeline_dir,
+                                                       stage_format,
+                                                       pipeline_storage = c("auto", "local", "s3"),
+                                                       stage_exists_fun,
+                                                       load_stage_fun,
+                                                       validation_stages_fun = ejscreen_pipeline_validation_stages,
+                                                       validation_summary_fun = ejscreen_pipeline_validation_summary,
+                                                       dynamic_geography_fun = ejscreen_pipeline_dynamic_geography_report,
+                                                       export_schema_fun = ejscreen_pipeline_export_schema_reports,
+                                                       dataset_creator_fun = ejscreen_pipeline_dataset_creator_report,
+                                                       message_fun = message,
+                                                       print_fun = print,
+                                                       time_fun = Sys.time) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  message_fun("Validating key stages and saving summary.")
+  print_fun(time_fun())
+
+  stages_to_validate <- validation_stages_fun(
+    include_islandareas_data = include_islandareas_data,
+    use_islandareas_demographics = use_islandareas_demographics,
+    has_bg_islandareas_demographics = stage_exists_fun("bg_islandareas_demographics"),
+    include_ejscreen_export = include_ejscreen_export,
+    include_ejscreen_export_statepct = include_ejscreen_export_statepct,
+    include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
+    include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input
+  )
+  validation_summary <- validation_summary_fun(
+    stages = stages_to_validate,
+    pipeline_dir = pipeline_dir,
+    stage_format = stage_format,
+    pipeline_storage = pipeline_storage,
+    load_stage_fun = load_stage_fun
+  )
+
+  message_fun("Validating dynamic geography Arrow files and saving report.")
+  dynamic_geography_fun(
+    blockgroupstats = outputs$blockgroupstats,
+    pipeline_dir = pipeline_dir,
+    pipeline_storage = pipeline_storage
+  )
+
+  export_schema_fun(
+    outputs = outputs,
+    include_ejscreen_export = include_ejscreen_export,
+    include_ejscreen_export_statepct = include_ejscreen_export_statepct,
+    pipeline_dir = pipeline_dir,
+    pipeline_storage = pipeline_storage
+  )
+
+  dataset_creator_fun(
+    outputs = outputs,
+    include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
+    pipeline_dir = pipeline_dir,
+    pipeline_storage = pipeline_storage
+  )
+
+  print_fun(time_fun())
+  validation_summary
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

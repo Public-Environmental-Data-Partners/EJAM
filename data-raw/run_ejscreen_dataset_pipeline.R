@@ -630,49 +630,20 @@ out <- EJAM:::ejscreen_pipeline_stage_outputs(
 # Validation summary ####
 ###################################################### #
 
-message("Validating key stages and saving summary.")
-print(Sys.time())
-
-stages_to_validate <- EJAM:::ejscreen_pipeline_validation_stages(
+validation_summary <- EJAM:::ejscreen_pipeline_stage_validation_reports(
+  outputs = out,
   include_islandareas_data = include_islandareas_data,
   use_islandareas_demographics = use_islandareas_demographics,
-  has_bg_islandareas_demographics = stage_exists("bg_islandareas_demographics"),
   include_ejscreen_export = include_ejscreen_export,
   include_ejscreen_export_statepct = include_ejscreen_export_statepct,
   include_ejscreen_pctile_lookup_exports = include_ejscreen_pctile_lookup_exports,
-  include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input
-)
-validation_summary <- EJAM:::ejscreen_pipeline_validation_summary(
-  stages = stages_to_validate,
+  include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
   pipeline_dir = pipeline_dir,
   stage_format = stage_format,
   pipeline_storage = pipeline_storage,
+  stage_exists_fun = stage_exists,
   load_stage_fun = load_file_stage
 )
-
-message("Validating dynamic geography Arrow files and saving report.")
-EJAM:::ejscreen_pipeline_dynamic_geography_report(
-  blockgroupstats = out$blockgroupstats,
-  pipeline_dir = pipeline_dir,
-  pipeline_storage = pipeline_storage
-)
-
-EJAM:::ejscreen_pipeline_export_schema_reports(
-  outputs = out,
-  include_ejscreen_export = include_ejscreen_export,
-  include_ejscreen_export_statepct = include_ejscreen_export_statepct,
-  pipeline_dir = pipeline_dir,
-  pipeline_storage = pipeline_storage
-)
-
-EJAM:::ejscreen_pipeline_dataset_creator_report(
-  outputs = out,
-  include_ejscreen_dataset_creator_input = include_ejscreen_dataset_creator_input,
-  pipeline_dir = pipeline_dir,
-  pipeline_storage = pipeline_storage
-)
-
-print(Sys.time())
 ###################################################### #
 # > Optional validation versus prior or currently packaged datasets ####
 ###################################################### #

@@ -1871,6 +1871,90 @@ test_that("ejscreen_pipeline_stage_outputs calculates and saves pipeline outputs
   expect_s3_class(printed, "POSIXct")
 })
 
+test_that("ejscreen_pipeline_stage_validation_reports writes stage and output reports", {
+  messages <- character()
+  printed <- list()
+  validation_stages_call <- NULL
+  validation_summary_call <- NULL
+  dynamic_call <- NULL
+  schema_call <- NULL
+  dataset_creator_call <- NULL
+
+  outputs <- list(
+    blockgroupstats = data.frame(bgfips = "010010201001"),
+    ejscreen_export = data.frame(ID = "010010201001")
+  )
+  validation_summary <- data.frame(
+    stage = c("blockgroupstats", "ejscreen_export"),
+    rows = c(1, 1),
+    errors = c("", "")
+  )
+
+  result <- EJAM:::ejscreen_pipeline_stage_validation_reports(
+    outputs = outputs,
+    include_islandareas_data = TRUE,
+    use_islandareas_demographics = FALSE,
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = FALSE,
+    include_ejscreen_pctile_lookup_exports = FALSE,
+    include_ejscreen_dataset_creator_input = TRUE,
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    pipeline_storage = "s3",
+    stage_exists_fun = function(stage) identical(stage, "bg_islandareas_demographics"),
+    load_stage_fun = function(stage) data.frame(stage = stage),
+    validation_stages_fun = function(...) {
+      validation_stages_call <<- list(...)
+      c("blockgroupstats", "ejscreen_export")
+    },
+    validation_summary_fun = function(...) {
+      validation_summary_call <<- list(...)
+      validation_summary
+    },
+    dynamic_geography_fun = function(...) {
+      dynamic_call <<- list(...)
+      invisible(TRUE)
+    },
+    export_schema_fun = function(...) {
+      schema_call <<- list(...)
+      invisible(TRUE)
+    },
+    dataset_creator_fun = function(...) {
+      dataset_creator_call <<- list(...)
+      invisible(TRUE)
+    },
+    message_fun = function(...) messages <<- c(messages, paste0(...)),
+    print_fun = function(x) {
+      printed[[length(printed) + 1L]] <<- x
+      invisible(x)
+    },
+    time_fun = function() as.POSIXct("2026-05-30 12:00:00", tz = "UTC")
+  )
+
+  expect_equal(result, validation_summary)
+  expect_true(validation_stages_call$include_islandareas_data)
+  expect_false(validation_stages_call$use_islandareas_demographics)
+  expect_true(validation_stages_call$has_bg_islandareas_demographics)
+  expect_true(validation_stages_call$include_ejscreen_export)
+  expect_false(validation_stages_call$include_ejscreen_export_statepct)
+  expect_false(validation_stages_call$include_ejscreen_pctile_lookup_exports)
+  expect_true(validation_stages_call$include_ejscreen_dataset_creator_input)
+  expect_equal(validation_summary_call$stages, c("blockgroupstats", "ejscreen_export"))
+  expect_equal(validation_summary_call$pipeline_dir, "pipe")
+  expect_equal(validation_summary_call$stage_format, "csv")
+  expect_equal(validation_summary_call$pipeline_storage, "s3")
+  expect_equal(validation_summary_call$load_stage_fun("x")$stage, "x")
+  expect_equal(dynamic_call$blockgroupstats, outputs$blockgroupstats)
+  expect_equal(schema_call$outputs, outputs)
+  expect_true(schema_call$include_ejscreen_export)
+  expect_false(schema_call$include_ejscreen_export_statepct)
+  expect_equal(dataset_creator_call$outputs, outputs)
+  expect_true(dataset_creator_call$include_ejscreen_dataset_creator_input)
+  expect_true(any(grepl("Validating key stages", messages)))
+  expect_true(any(grepl("Validating dynamic geography", messages)))
+  expect_length(printed, 2)
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {
