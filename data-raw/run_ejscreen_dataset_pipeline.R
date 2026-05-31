@@ -1155,11 +1155,7 @@ if (isTRUE(validate_vs_prior)) {
   }
   prior_validation_summary <- prior_validation$summary
   message("Prior-version validation summary:")
-  prior_validation_print_cols <- intersect(
-    c("stage", "rows_new", "rows_old", "columns_new", "columns_old",
-      "bgfips_set_equal", "shared_data_equal", "not_replicated_n", "error"),
-    names(prior_validation_summary)
-  )
+  prior_validation_print_cols <- EJAM:::ejscreen_pipeline_prior_validation_print_columns(prior_validation_summary)
   print(prior_validation_summary[, ..prior_validation_print_cols])
 }
 

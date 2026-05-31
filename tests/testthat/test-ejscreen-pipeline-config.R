@@ -625,6 +625,21 @@ test_that("ejscreen_pipeline_prior_package_validation writes summary and metadat
   expect_equal(nrow(written$x), 4)
 })
 
+test_that("ejscreen_pipeline_prior_validation_print_columns keeps available display columns ordered", {
+  prior_validation_summary <- data.frame(
+    error = "",
+    stage = "blockgroupstats",
+    ignored = TRUE,
+    rows_new = 1L,
+    not_replicated_n = 0L
+  )
+
+  expect_equal(
+    EJAM:::ejscreen_pipeline_prior_validation_print_columns(prior_validation_summary),
+    c("stage", "rows_new", "not_replicated_n", "error")
+  )
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {

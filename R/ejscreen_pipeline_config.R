@@ -787,6 +787,23 @@ ejscreen_pipeline_prior_package_validation <- function(new_pipeline_dir,
   )
 }
 
+ejscreen_pipeline_prior_validation_print_columns <- function(prior_validation_summary) {
+  intersect(
+    c(
+      "stage",
+      "rows_new",
+      "rows_old",
+      "columns_new",
+      "columns_old",
+      "bgfips_set_equal",
+      "shared_data_equal",
+      "not_replicated_n",
+      "error"
+    ),
+    names(prior_validation_summary)
+  )
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)
