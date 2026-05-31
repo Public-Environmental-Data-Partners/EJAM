@@ -1460,6 +1460,154 @@ ejscreen_pipeline_prepare_run_context <- function(config,
   )
 }
 
+ejscreen_pipeline_run_data_stages <- function(pipeline_config,
+                                              stage_io,
+                                              bg_acs_raw_fun = ejscreen_pipeline_stage_bg_acs_raw,
+                                              prepare_islandareas_fun = ejscreen_pipeline_prepare_islandareas,
+                                              bg_acsdata_fun = ejscreen_pipeline_stage_bg_acsdata,
+                                              bg_envirodata_fun = ejscreen_pipeline_stage_bg_envirodata,
+                                              bg_extra_indicators_fun = ejscreen_pipeline_stage_bg_extra_indicators,
+                                              bg_geodata_fun = ejscreen_pipeline_stage_bg_geodata,
+                                              outputs_fun = ejscreen_pipeline_stage_outputs) {
+  if (!inherits(pipeline_config, "ejam_ejscreen_pipeline_config")) {
+    stop("pipeline_config must be an ejscreen pipeline config object", call. = FALSE)
+  }
+
+  bg_acs_raw_stage <- bg_acs_raw_fun(
+    yr = pipeline_config$yr,
+    force_acs = pipeline_config$force_acs,
+    force_bg_acsdata = pipeline_config$force_bg_acsdata,
+    include_islandareas_data = pipeline_config$include_islandareas_data,
+    stage_io = stage_io,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    stage_format = pipeline_config$stage_format,
+    stage_formats = pipeline_config$stage_formats,
+    pipeline_storage = pipeline_config$pipeline_storage,
+    acs_download_timeout = pipeline_config$acs_download_timeout,
+    acs_download_retries = pipeline_config$acs_download_retries
+  )
+  bg_acs_raw <- bg_acs_raw_stage$bg_acs_raw
+  need_bg_acsdata <- bg_acs_raw_stage$need_bg_acsdata
+  need_bg_acs_raw <- bg_acs_raw_stage$need_bg_acs_raw
+
+  islandareas_stage <- prepare_islandareas_fun(
+    include_islandareas_data = pipeline_config$include_islandareas_data,
+    need_bg_acsdata = need_bg_acsdata,
+    use_islandareas_demographics = pipeline_config$use_islandareas_demographics,
+    force_acs = pipeline_config$force_acs,
+    stage_io = stage_io,
+    islandareas_reference_path = pipeline_config$islandareas_reference_path,
+    stage_formats = pipeline_config$stage_formats,
+    pipeline_storage = pipeline_config$pipeline_storage
+  )
+  bg_islandareas_raw <- islandareas_stage$bg_islandareas_raw
+  bg_islandareas_demographics <- islandareas_stage$bg_islandareas_demographics
+  bg_islandareas_reference <- islandareas_stage$bg_islandareas_reference
+
+  bg_acsdata <- bg_acsdata_fun(
+    yr = pipeline_config$yr,
+    need_bg_acsdata = need_bg_acsdata,
+    bg_acs_raw = bg_acs_raw,
+    bg_islandareas_raw = bg_islandareas_raw,
+    bg_islandareas_demographics = bg_islandareas_demographics,
+    bg_islandareas_reference = bg_islandareas_reference,
+    include_islandareas_data = pipeline_config$include_islandareas_data,
+    use_islandareas_demographics = pipeline_config$use_islandareas_demographics,
+    tract_weight_source = pipeline_config$tract_weight_source,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    stage_format = pipeline_config$stage_format,
+    stage_io = stage_io
+  )
+
+  bg_envirodata_stage <- bg_envirodata_fun(
+    pipeline_yr = pipeline_config$yr,
+    use_provisional_bg_envirodata = pipeline_config$use_provisional_bg_envirodata,
+    stage_io = stage_io,
+    stage_format = pipeline_config$stage_format,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    pipeline_storage = pipeline_config$pipeline_storage,
+    bg_envirodata_reference_path = pipeline_config$bg_envirodata_reference_path,
+    bg_envirodata_reference_vars = pipeline_config$bg_envirodata_reference_vars,
+    include_islandareas_data = pipeline_config$include_islandareas_data,
+    bg_islandareas_reference = bg_islandareas_reference,
+    islandareas_reference_path = pipeline_config$islandareas_reference_path
+  )
+  bg_envirodata <- bg_envirodata_stage$bg_envirodata
+  used_provisional_bg_envirodata <- bg_envirodata_stage$used_provisional_bg_envirodata
+  bg_islandareas_reference <- bg_envirodata_stage$bg_islandareas_reference
+
+  bg_extra_indicators_stage <- bg_extra_indicators_fun(
+    pipeline_yr = pipeline_config$yr,
+    stage_io = stage_io,
+    stage_format = pipeline_config$stage_format,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    pipeline_storage = pipeline_config$pipeline_storage
+  )
+  bg_extra_indicators <- bg_extra_indicators_stage$bg_extra_indicators
+  used_provisional_bg_extra_indicators <- bg_extra_indicators_stage$used_provisional_bg_extra_indicators
+
+  bg_geodata_stage <- bg_geodata_fun(
+    yr = pipeline_config$yr,
+    bg_acsdata = bg_acsdata,
+    bg_envirodata = bg_envirodata,
+    bg_extra_indicators = bg_extra_indicators,
+    blockgroup_universe_source = pipeline_config$blockgroup_universe_source,
+    force_bg_geodata = pipeline_config$force_bg_geodata,
+    include_islandareas_data = pipeline_config$include_islandareas_data,
+    bg_islandareas_reference = bg_islandareas_reference,
+    islandareas_reference_path = pipeline_config$islandareas_reference_path,
+    stage_io = stage_io,
+    tiger_bg_cache_dir = pipeline_config$tiger_bg_cache_dir,
+    acs_download_timeout = pipeline_config$acs_download_timeout,
+    acs_download_retries = pipeline_config$acs_download_retries,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    stage_format = pipeline_config$stage_format,
+    pipeline_storage = pipeline_config$pipeline_storage
+  )
+  bg_geodata <- bg_geodata_stage$bg_geodata
+  bg_islandareas_reference <- bg_geodata_stage$bg_islandareas_reference
+
+  out <- outputs_fun(
+    yr = pipeline_config$yr,
+    bg_acsdata = bg_acsdata,
+    bg_envirodata = bg_envirodata,
+    bg_extra_indicators = bg_extra_indicators,
+    bg_geodata = bg_geodata,
+    pipeline_dir = pipeline_config$pipeline_dir,
+    pipeline_storage = pipeline_config$pipeline_storage,
+    stage_format = pipeline_config$stage_format,
+    acs_download_timeout = pipeline_config$acs_download_timeout,
+    acs_download_retries = pipeline_config$acs_download_retries,
+    include_ejscreen_dataset_creator_input = pipeline_config$include_ejscreen_dataset_creator_input,
+    include_ejscreen_export = pipeline_config$include_ejscreen_export,
+    include_ejscreen_export_statepct = pipeline_config$include_ejscreen_export_statepct,
+    include_ejscreen_pctile_lookup_exports = pipeline_config$include_ejscreen_pctile_lookup_exports,
+    blockgroup_universe_source = pipeline_config$blockgroup_universe_source,
+    save_secondary_fun = stage_io$save_secondary_stage_formats
+  )
+
+  list(
+    bg_acs_raw_stage = bg_acs_raw_stage,
+    bg_acs_raw = bg_acs_raw,
+    need_bg_acsdata = need_bg_acsdata,
+    need_bg_acs_raw = need_bg_acs_raw,
+    islandareas_stage = islandareas_stage,
+    bg_islandareas_raw = bg_islandareas_raw,
+    bg_islandareas_demographics = bg_islandareas_demographics,
+    bg_islandareas_reference = bg_islandareas_reference,
+    bg_acsdata = bg_acsdata,
+    bg_envirodata_stage = bg_envirodata_stage,
+    bg_envirodata = bg_envirodata,
+    used_provisional_bg_envirodata = used_provisional_bg_envirodata,
+    bg_extra_indicators_stage = bg_extra_indicators_stage,
+    bg_extra_indicators = bg_extra_indicators,
+    used_provisional_bg_extra_indicators = used_provisional_bg_extra_indicators,
+    bg_geodata_stage = bg_geodata_stage,
+    bg_geodata = bg_geodata,
+    out = out
+  )
+}
+
 ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
                                                force_acs = FALSE,
                                                force_bg_acsdata = FALSE,

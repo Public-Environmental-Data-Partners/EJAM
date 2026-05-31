@@ -321,6 +321,86 @@ test_that("ejscreen_pipeline_prepare_run_context coordinates setup helpers", {
   expect_identical(result$stage_io, list(stage_io = TRUE))
 })
 
+test_that("ejscreen_pipeline_run_data_stages coordinates stage sequence", {
+  calls <- character()
+  output_call <- NULL
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    include_islandareas_data = TRUE,
+    use_islandareas_demographics = FALSE,
+    include_ejscreen_export = TRUE,
+    include_ejscreen_export_statepct = TRUE,
+    include_ejscreen_pctile_lookup_exports = FALSE,
+    include_ejscreen_dataset_creator_input = TRUE
+  )
+  stage_io <- list(save_secondary_stage_formats = function(...) list(saved = TRUE))
+  fake_outputs <- list(blockgroupstats = data.frame(bgfips = "010010201001"))
+
+  result <- EJAM:::ejscreen_pipeline_run_data_stages(
+    pipeline_config = cfg,
+    stage_io = stage_io,
+    bg_acs_raw_fun = function(...) {
+      calls <<- c(calls, "raw")
+      list(bg_acs_raw = "raw-data", need_bg_acsdata = TRUE, need_bg_acs_raw = FALSE)
+    },
+    prepare_islandareas_fun = function(need_bg_acsdata, ...) {
+      calls <<- c(calls, "islandareas")
+      expect_true(need_bg_acsdata)
+      list(
+        bg_islandareas_raw = "island-raw",
+        bg_islandareas_demographics = "island-demographics",
+        bg_islandareas_reference = "island-ref-1"
+      )
+    },
+    bg_acsdata_fun = function(bg_acs_raw, bg_islandareas_reference, ...) {
+      calls <<- c(calls, "acsdata")
+      expect_equal(bg_acs_raw, "raw-data")
+      expect_equal(bg_islandareas_reference, "island-ref-1")
+      "acsdata"
+    },
+    bg_envirodata_fun = function(bg_islandareas_reference, ...) {
+      calls <<- c(calls, "envirodata")
+      expect_equal(bg_islandareas_reference, "island-ref-1")
+      list(
+        bg_envirodata = "envirodata",
+        used_provisional_bg_envirodata = TRUE,
+        bg_islandareas_reference = "island-ref-2"
+      )
+    },
+    bg_extra_indicators_fun = function(...) {
+      calls <<- c(calls, "extra")
+      list(
+        bg_extra_indicators = "extra",
+        used_provisional_bg_extra_indicators = FALSE
+      )
+    },
+    bg_geodata_fun = function(bg_islandareas_reference, ...) {
+      calls <<- c(calls, "geodata")
+      expect_equal(bg_islandareas_reference, "island-ref-2")
+      list(bg_geodata = "geodata", bg_islandareas_reference = "island-ref-3")
+    },
+    outputs_fun = function(...) {
+      calls <<- c(calls, "outputs")
+      output_call <<- list(...)
+      fake_outputs
+    }
+  )
+
+  expect_equal(
+    calls,
+    c("raw", "islandareas", "acsdata", "envirodata", "extra", "geodata", "outputs")
+  )
+  expect_equal(output_call$bg_acsdata, "acsdata")
+  expect_equal(output_call$bg_envirodata, "envirodata")
+  expect_equal(output_call$bg_extra_indicators, "extra")
+  expect_equal(output_call$bg_geodata, "geodata")
+  expect_true(output_call$include_ejscreen_export)
+  expect_identical(result$out, fake_outputs)
+  expect_true(result$used_provisional_bg_envirodata)
+  expect_false(result$used_provisional_bg_extra_indicators)
+  expect_equal(result$bg_islandareas_reference, "island-ref-3")
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(
