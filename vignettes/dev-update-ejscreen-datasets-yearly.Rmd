@@ -47,8 +47,8 @@ source("data-raw/run_ejscreen_pipeline_annual.R")
 ```
 
 That wrapper builds a validated annual pipeline config and then delegates to the
-long-standing compatibility runner, `data-raw/run_ejscreen_dataset_pipeline.R`.
-The repository also provides smaller runner wrappers for common rerun modes:
+package pipeline runner, `EJAM:::run_ejscreen_pipeline()`. The repository also
+provides smaller runner wrappers for common rerun modes:
 
 ```{r, eval=FALSE}
 # Recheck saved outputs and prior-version comparisons without rebuilding stages.
@@ -61,10 +61,13 @@ source("data-raw/run_ejscreen_pipeline_exports_only.R")
 source("data-raw/run_ejscreen_pipeline_release.R")
 ```
 
-These wrappers build a validated pipeline config first and then delegate to the
-same underlying runner script. They are meant for review and release-maintenance
+These wrappers build a validated pipeline config first and then call the same
+underlying package runner. They are meant for review and release-maintenance
 passes after the main annual run has already created the needed intermediate
-stages. The release wrapper also keeps package-data replacement opt-in; set
+stages. The long-standing compatibility script,
+`data-raw/run_ejscreen_dataset_pipeline.R`, remains available for older
+interactive workflows that set environment variables and then call `source()`.
+The release wrapper also keeps package-data replacement opt-in; set
 `EJAM_REPLACE_PACKAGE_DATA = "TRUE"` explicitly only when reviewed outputs
 should replace package `.rda` objects.
 
@@ -303,7 +306,10 @@ Sys.setenv(
 
 ## Key Settings
 
-The runner is controlled by environment variables:
+The preferred interface is a validated config object, usually built by one of
+the recipe helpers such as `pipeline_config_annual()` or
+`pipeline_config_release()`. Environment variables remain supported for
+RStudio/source-based workflows and GitHub Actions. The main settings are:
 
 | Variable | Purpose |
 |---|---|
@@ -407,67 +413,42 @@ changes. The script in `data-raw/datacreate_names_of_indicators.R` uses
 Start from a clean branch. For ACS 2020-2024 using local checkpoints:
 
 ```{r, eval=FALSE}
-yr <- "2024"
+yr <- 2024
 
-Sys.setenv(
-  EJAM_PIPELINE_YR = yr,
-  EJAM_PIPELINE_DIR = file.path(
+cfg <- EJAM:::pipeline_config_annual(
+  yr = yr,
+  pipeline_dir = file.path(
     getwd(),
     "data-raw",
     "pipeline_outputs",
     paste0("ejscreen_acs_", yr)
   ),
-  EJAM_PIPELINE_STORAGE = "local",
-  EJAM_STAGE_FORMAT = "csv",
-  EJAM_STAGE_FORMATS = "csv,rda",
-  EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
-  EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
-  EJAM_TIGER_BG_CACHE_DIR = file.path(tools::R_user_dir("EJAM", "cache"), "tiger_bg"),
-  EJAM_FORCE_ACS = "TRUE",
-  EJAM_FORCE_BG_ACSDATA = "TRUE",
-  EJAM_FORCE_BG_GEODATA = "TRUE",
-  EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
-  EJAM_ACS_DOWNLOAD_RETRIES = "2",
-  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
-  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE",
-  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
-  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
+  pipeline_storage = "local",
+  force_acs = TRUE,
+  force_bg_acsdata = TRUE,
+  force_bg_geodata = TRUE
 )
 
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 For the S3-backed pipeline:
 
 ```{r, eval=FALSE}
-yr <- "2024"
+yr <- 2024
 
-Sys.setenv(
-  AWS_PROFILE = "ejam",
-  AWS_REGION = "us-east-1",
-  EJAM_PIPELINE_YR = yr,
-  EJAM_PIPELINE_DIR = paste0(
-    "s3://pedp-data-preserved/ejscreen-data-processing/pipeline/ejscreen_acs_",
-    yr
-  ),
-  EJAM_PIPELINE_STORAGE = "s3",
-  EJAM_STAGE_FORMAT = "csv",
-  EJAM_STAGE_FORMATS = "csv,rda",
-  EJAM_BLOCKGROUP_UNIVERSE_SOURCE = "acs",
-  EJAM_TRACT_WEIGHT_SOURCE = "decennial2020",
-  EJAM_TIGER_BG_CACHE_DIR = file.path(tools::R_user_dir("EJAM", "cache"), "tiger_bg"),
-  EJAM_FORCE_ACS = "TRUE",
-  EJAM_FORCE_BG_ACSDATA = "TRUE",
-  EJAM_FORCE_BG_GEODATA = "TRUE",
-  EJAM_ACS_DOWNLOAD_TIMEOUT = "3600",
-  EJAM_ACS_DOWNLOAD_RETRIES = "2",
-  EJAM_INCLUDE_ISLANDAREAS_DATA = "TRUE",
-  EJAM_USE_ISLANDAREAS_DEMOGRAPHICS = "FALSE",
-  EJAM_INCLUDE_EJSCREEN_EXPORT = "TRUE",
-  EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "FALSE"
+cfg <- EJAM:::pipeline_config_annual(
+  yr = yr,
+  pipeline_root = "s3://pedp-data-preserved/ejscreen-data-processing/pipeline",
+  pipeline_storage = "s3",
+  force_acs = TRUE,
+  force_bg_acsdata = TRUE,
+  force_bg_geodata = TRUE,
+  aws_profile = "ejam",
+  aws_region = "us-east-1"
 )
 
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+pipeline_run <- EJAM:::run_ejscreen_pipeline(cfg)
 ```
 
 The runner prints the resolved settings before it starts the pipeline. Review
