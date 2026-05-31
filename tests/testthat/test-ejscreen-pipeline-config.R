@@ -570,6 +570,47 @@ test_that("run_ejscreen_pipeline coordinates the full runner sequence", {
   expect_identical(result$validation_summary, validation_and_finish$validation_summary)
 })
 
+test_that("run_ejscreen_pipeline defaults package-data input to config pipeline dir", {
+  withr::local_envvar(EJAM_PIPELINE_DIR = "wrong-env-pipeline-dir")
+  root <- file.path(tempdir(), "ejam-pipeline-run-default-package-dir")
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    pipeline_root = root,
+    pipeline_storage = "local"
+  )
+  finish_call <- NULL
+  pipeline_context <- list(
+    pipeline_setting_names = c("A", "B"),
+    pipeline_settings_report = data.frame(setting = "A"),
+    datacreate_scripts = list(before = character(), after = character(), pre_datacreate_scripts = character()),
+    stage_io = list(
+      load_stage = function(stage) stage,
+      stage_exists = function(stage) TRUE,
+      get_reuse_blockgroupstats = function() data.frame(bgfips = "010010201001"),
+      save_stage_formats = function(...) TRUE,
+      save_secondary_stage_formats = function(...) TRUE
+    )
+  )
+
+  EJAM:::run_ejscreen_pipeline(
+    cfg,
+    context_fun = function(config) pipeline_context,
+    data_stages_fun = function(...) {
+      list(
+        out = list(blockgroupstats = data.frame(bgfips = "010010201001")),
+        used_provisional_bg_envirodata = FALSE,
+        used_provisional_bg_extra_indicators = FALSE
+      )
+    },
+    validation_and_finish_fun = function(...) {
+      finish_call <<- list(...)
+      list(validation_summary = data.frame(stage = "blockgroupstats"))
+    }
+  )
+
+  expect_equal(finish_call$package_data_pipeline_dir, cfg$pipeline_dir)
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(

@@ -1626,12 +1626,15 @@ ejscreen_pipeline_run_validation_and_finish <- function(pipeline_config,
                                                         pipeline_context,
                                                         data_stages,
                                                         run_started_at,
-                                                        package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
+                                                        package_data_pipeline_dir = NULL,
                                                         validation_reports_fun = ejscreen_pipeline_stage_validation_reports,
                                                         prior_validation_fun = ejscreen_pipeline_stage_prior_validation,
                                                         finish_run_fun = ejscreen_pipeline_finish_run) {
   if (!inherits(pipeline_config, "ejam_ejscreen_pipeline_config")) {
     stop("pipeline_config must be an ejscreen pipeline config object", call. = FALSE)
+  }
+  if (is.null(package_data_pipeline_dir) || !nzchar(package_data_pipeline_dir)) {
+    package_data_pipeline_dir <- pipeline_config$pipeline_dir
   }
 
   stage_io <- pipeline_context$stage_io
@@ -1762,12 +1765,15 @@ ejscreen_pipeline_run_aliases <- function(config, pipeline_context) {
 
 run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
                                   run_started_at = Sys.time(),
-                                  package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
+                                  package_data_pipeline_dir = NULL,
                                   context_fun = ejscreen_pipeline_prepare_run_context,
                                   data_stages_fun = ejscreen_pipeline_run_data_stages,
                                   validation_and_finish_fun = ejscreen_pipeline_run_validation_and_finish) {
   if (!inherits(config, "ejam_ejscreen_pipeline_config")) {
     stop("config must be an ejscreen pipeline config object", call. = FALSE)
+  }
+  if (is.null(package_data_pipeline_dir) || !nzchar(package_data_pipeline_dir)) {
+    package_data_pipeline_dir <- config$pipeline_dir
   }
 
   pipeline_context <- context_fun(config)
