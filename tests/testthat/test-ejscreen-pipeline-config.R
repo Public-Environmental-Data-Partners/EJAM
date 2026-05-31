@@ -975,6 +975,36 @@ test_that("ejscreen_pipeline_run_recipe builds recipe config and runs directly",
   expect_equal(run_call$package_data_pipeline_dir, file.path(root, "ejscreen_acs_2024"))
 })
 
+test_that("ejscreen_pipeline_run_from_env builds config and runs compatibility path", {
+  defaults_called <- FALSE
+  run_call <- NULL
+  cfg <- EJAM:::ejscreen_pipeline_config(yr = 2024)
+
+  result <- EJAM:::ejscreen_pipeline_run_from_env(
+    run_started_at = as.POSIXct("2026-05-30 12:00:00", tz = "UTC"),
+    package_data_pipeline_dir = "package-data-dir",
+    set_env_defaults_fun = function() {
+      defaults_called <<- TRUE
+      invisible(TRUE)
+    },
+    config_fun = function() cfg,
+    run_fun = function(...) {
+      run_call <<- list(...)
+      list(ran = TRUE)
+    }
+  )
+
+  expect_true(defaults_called)
+  expect_identical(result$pipeline_config, cfg)
+  expect_true(result$pipeline_run$ran)
+  expect_identical(run_call$config, cfg)
+  expect_equal(run_call$package_data_pipeline_dir, "package-data-dir")
+  expect_equal(
+    run_call$run_started_at,
+    as.POSIXct("2026-05-30 12:00:00", tz = "UTC")
+  )
+})
+
 test_that("ejscreen_pipeline_source_scripts sources enabled scripts and reports disabled scripts", {
   marker <- tempfile()
   script <- tempfile(fileext = ".R")

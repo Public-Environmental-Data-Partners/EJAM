@@ -138,10 +138,8 @@ library(data.table)
 
 run_started_at <- Sys.time()
 
-# Environment variables can be set before sourcing this file. If a setting is
-# unset, ejscreen_pipeline_config_from_env() applies the current package default.
-
-EJAM:::ejscreen_pipeline_set_env_defaults()
+# Environment variables can be set before sourcing this file. The helper below
+# fills unset values with current package defaults before building the config.
 
 ###################################################### ####################################################### #
 
@@ -165,12 +163,12 @@ EJAM:::ejscreen_pipeline_set_env_defaults()
 
 # Run from resolved settings ####
 
-pipeline_config <- EJAM:::ejscreen_pipeline_config_from_env()
-pipeline_run <- EJAM:::run_ejscreen_pipeline(
-  config = pipeline_config,
+pipeline_env_run <- EJAM:::ejscreen_pipeline_run_from_env(
   run_started_at = run_started_at,
   package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR")
 )
+pipeline_config <- pipeline_env_run$pipeline_config
+pipeline_run <- pipeline_env_run$pipeline_run
 list2env(pipeline_run, envir = environment())
 
 # restart, reinstall

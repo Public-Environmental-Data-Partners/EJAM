@@ -703,6 +703,25 @@ ejscreen_pipeline_run_recipe <- function(recipe,
   )
 }
 
+ejscreen_pipeline_run_from_env <- function(run_started_at = Sys.time(),
+                                           package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
+                                           set_env_defaults_fun = ejscreen_pipeline_set_env_defaults,
+                                           config_fun = ejscreen_pipeline_config_from_env,
+                                           run_fun = run_ejscreen_pipeline) {
+  set_env_defaults_fun()
+  pipeline_config <- config_fun()
+  pipeline_run <- run_fun(
+    config = pipeline_config,
+    run_started_at = run_started_at,
+    package_data_pipeline_dir = package_data_pipeline_dir
+  )
+
+  list(
+    pipeline_config = pipeline_config,
+    pipeline_run = pipeline_run
+  )
+}
+
 ejscreen_pipeline_source_scripts <- function(scripts,
                                              enabled = TRUE,
                                              skip_message = NULL) {
