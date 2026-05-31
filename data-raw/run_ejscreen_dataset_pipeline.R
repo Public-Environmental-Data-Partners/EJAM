@@ -272,94 +272,12 @@ EJAM:::ejscreen_pipeline_set_env_defaults()
 # get settings ####
 
 pipeline_config <- EJAM:::ejscreen_pipeline_config_from_env()
-pipeline_context <- EJAM:::ejscreen_pipeline_prepare_run_context(pipeline_config)
-pipeline_setting_names <- pipeline_context$pipeline_setting_names
-pipeline_settings_report <- pipeline_context$pipeline_settings_report
-datacreate_scripts <- pipeline_context$datacreate_scripts
-datacreate_scripts_to_run_before_pipeline <- datacreate_scripts$before
-datacreate_scripts_to_run_after_pipeline <- datacreate_scripts$after
-pre_datacreate_scripts <- datacreate_scripts$pre_datacreate_scripts
-stage_io <- pipeline_context$stage_io
-
-yr <- pipeline_config$yr
-pipeline_yr <- pipeline_config$yr
-pipeline_root <- pipeline_config$pipeline_root
-pipeline_dir <- pipeline_config$pipeline_dir
-pipeline_storage <- pipeline_config$pipeline_storage
-stage_format <- pipeline_config$stage_format
-stage_formats <- pipeline_config$stage_formats
-blockgroup_universe_source <- pipeline_config$blockgroup_universe_source
-tract_weight_source <- pipeline_config$tract_weight_source
-
-### ACS DEMOGRAPHIC DATA settings ####
-
-force_acs <- pipeline_config$force_acs
-force_bg_acsdata <- pipeline_config$force_bg_acsdata
-force_bg_geodata <- pipeline_config$force_bg_geodata
-tiger_bg_cache_dir <- pipeline_config$tiger_bg_cache_dir
-acs_download_timeout <- pipeline_config$acs_download_timeout
-acs_download_retries <- pipeline_config$acs_download_retries
-include_islandareas_data <- pipeline_config$include_islandareas_data
-islandareas_reference_path <- pipeline_config$islandareas_reference_path
-use_islandareas_demographics <- pipeline_config$use_islandareas_demographics
-
-### ENVIRONMENTAL DATA settings ####
-
-use_provisional_bg_envirodata <- pipeline_config$use_provisional_bg_envirodata
-bg_envirodata_reference_path <- pipeline_config$bg_envirodata_reference_path
-bg_envirodata_reference_vars <- pipeline_config$bg_envirodata_reference_vars
-
-### EJSCREEN DATASET EXPORT settings ####
-
-include_ejscreen_export <- pipeline_config$include_ejscreen_export
-include_ejscreen_export_statepct <- pipeline_config$include_ejscreen_export_statepct
-include_ejscreen_pctile_lookup_exports <- pipeline_config$include_ejscreen_pctile_lookup_exports
-include_ejscreen_dataset_creator_input <- pipeline_config$include_ejscreen_dataset_creator_input
-
-### validation vs prior data  ####
-
-validate_vs_prior <- pipeline_config$validate_vs_prior
-validate_vs_prior_waldo <- pipeline_config$validate_vs_prior_waldo
-ejscreen_export_reference_path <- pipeline_config$ejscreen_export_reference_path
-ejscreen_export_statepct_reference_path <- pipeline_config$ejscreen_export_statepct_reference_path
-validate_ejscreen_export_reference <- pipeline_config$validate_ejscreen_export_reference
-prior_pipeline_yr <- pipeline_config$prior_pipeline_yr
-prior_pipeline_dir <- pipeline_config$prior_pipeline_dir
-prior_package_ref <- pipeline_config$prior_package_ref
-prior_package_path <- pipeline_config$prior_package_path
-
-#################################################### #
-## to insert a pause here to confirm settings, could use this:
-# if (interactive()) {
-#   ready <- FALSE
-#   ready <- askYesNo("Ready to run the pipeline with those settings?")
-#   if (!isTRUE(ready)) {stop("halted until ready")}
-# }
-#################################################### #
-#################################################### #
-# ~ ####
-# helper functions ####
-
-load_file_stage <- stage_io$load_stage
-stage_exists <- stage_io$stage_exists
-get_reuse_blockgroupstats <- stage_io$get_reuse_blockgroupstats
-save_file_stage_formats <- stage_io$save_stage_formats
-save_secondary_stage_formats <- stage_io$save_secondary_stage_formats
-####################### #
-pipeline_data_stages <- EJAM:::ejscreen_pipeline_run_data_stages(
-  pipeline_config = pipeline_config,
-  stage_io = stage_io
-)
-list2env(pipeline_data_stages, envir = environment())
-
-pipeline_validation_and_finish <- EJAM:::ejscreen_pipeline_run_validation_and_finish(
-  pipeline_config = pipeline_config,
-  pipeline_context = pipeline_context,
-  data_stages = pipeline_data_stages,
+pipeline_run <- EJAM:::run_ejscreen_pipeline(
+  config = pipeline_config,
   run_started_at = run_started_at,
   package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR")
 )
-list2env(pipeline_validation_and_finish, envir = environment())
+list2env(pipeline_run, envir = environment())
 
 # restart, reinstall
 

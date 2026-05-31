@@ -493,6 +493,57 @@ test_that("ejscreen_pipeline_run_validation_and_finish coordinates final stages"
   expect_equal(finish_call$package_data_pipeline_dir, "package-pipe")
 })
 
+test_that("run_ejscreen_pipeline coordinates the full runner sequence", {
+  context_call <- NULL
+  data_call <- NULL
+  finish_call <- NULL
+  cfg <- EJAM:::ejscreen_pipeline_config(yr = 2024)
+  pipeline_context <- list(stage_io = list(stage_io = TRUE))
+  pipeline_data_stages <- list(
+    out = list(blockgroupstats = data.frame(bgfips = "010010201001")),
+    used_provisional_bg_envirodata = FALSE,
+    used_provisional_bg_extra_indicators = FALSE
+  )
+  validation_and_finish <- list(
+    validation_summary = data.frame(stage = "blockgroupstats"),
+    prior_validation = list(summary = data.frame(stage = "prior")),
+    pipeline_finish = list(finalized = TRUE)
+  )
+
+  result <- EJAM:::run_ejscreen_pipeline(
+    cfg,
+    run_started_at = as.POSIXct("2026-05-30 12:00:00", tz = "UTC"),
+    package_data_pipeline_dir = "package-pipe",
+    context_fun = function(config) {
+      context_call <<- config
+      pipeline_context
+    },
+    data_stages_fun = function(...) {
+      data_call <<- list(...)
+      pipeline_data_stages
+    },
+    validation_and_finish_fun = function(...) {
+      finish_call <<- list(...)
+      validation_and_finish
+    }
+  )
+
+  expect_s3_class(result, "ejam_ejscreen_pipeline_run")
+  expect_identical(context_call, cfg)
+  expect_identical(data_call$pipeline_config, cfg)
+  expect_identical(data_call$stage_io, pipeline_context$stage_io)
+  expect_identical(finish_call$pipeline_config, cfg)
+  expect_identical(finish_call$pipeline_context, pipeline_context)
+  expect_identical(finish_call$data_stages, pipeline_data_stages)
+  expect_equal(finish_call$package_data_pipeline_dir, "package-pipe")
+  expect_identical(result$pipeline_config, cfg)
+  expect_identical(result$pipeline_context, pipeline_context)
+  expect_identical(result$pipeline_data_stages, pipeline_data_stages)
+  expect_identical(result$pipeline_validation_and_finish, validation_and_finish)
+  expect_identical(result$out, pipeline_data_stages$out)
+  expect_identical(result$validation_summary, validation_and_finish$validation_summary)
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(

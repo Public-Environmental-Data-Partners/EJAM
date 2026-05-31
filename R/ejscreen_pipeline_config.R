@@ -1685,6 +1685,43 @@ ejscreen_pipeline_run_validation_and_finish <- function(pipeline_config,
   )
 }
 
+run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
+                                  run_started_at = Sys.time(),
+                                  package_data_pipeline_dir = Sys.getenv("EJAM_PIPELINE_DIR"),
+                                  context_fun = ejscreen_pipeline_prepare_run_context,
+                                  data_stages_fun = ejscreen_pipeline_run_data_stages,
+                                  validation_and_finish_fun = ejscreen_pipeline_run_validation_and_finish) {
+  if (!inherits(config, "ejam_ejscreen_pipeline_config")) {
+    stop("config must be an ejscreen pipeline config object", call. = FALSE)
+  }
+
+  pipeline_context <- context_fun(config)
+  pipeline_data_stages <- data_stages_fun(
+    pipeline_config = config,
+    stage_io = pipeline_context$stage_io
+  )
+  pipeline_validation_and_finish <- validation_and_finish_fun(
+    pipeline_config = config,
+    pipeline_context = pipeline_context,
+    data_stages = pipeline_data_stages,
+    run_started_at = run_started_at,
+    package_data_pipeline_dir = package_data_pipeline_dir
+  )
+
+  result <- c(
+    list(
+      pipeline_config = config,
+      pipeline_context = pipeline_context,
+      pipeline_data_stages = pipeline_data_stages,
+      pipeline_validation_and_finish = pipeline_validation_and_finish
+    ),
+    pipeline_data_stages,
+    pipeline_validation_and_finish
+  )
+  class(result) <- c("ejam_ejscreen_pipeline_run", class(result))
+  result
+}
+
 ejscreen_pipeline_stage_bg_acs_raw <- function(yr,
                                                force_acs = FALSE,
                                                force_bg_acsdata = FALSE,
