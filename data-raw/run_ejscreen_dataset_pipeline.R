@@ -284,14 +284,11 @@ for (fpath in datacreate_scripts_to_run_after_pipeline) {
 #
 #   must be done BEFORE new blockgroup datasets are created !
 
-if (isTRUE(run_datacreate_before)) {
-  for (fpath in datacreate_scripts_to_run_before_pipeline) {
-    cat("sourcing the script in", fpath, "...\n")
-    source(fpath)
-  }
-} else {
-  message("Skipping pre-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_BEFORE is FALSE.")
-}
+EJAM:::ejscreen_pipeline_source_scripts(
+  datacreate_scripts_to_run_before_pipeline,
+  enabled = run_datacreate_before,
+  skip_message = "Skipping pre-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_BEFORE is FALSE."
+)
 ###################################################### #
 
 
@@ -1417,14 +1414,11 @@ if (isTRUE(should_replace_package_data)) {
 #
 # mostly must be done AFTER new blockgroup datasets are created !
 
-if (isTRUE(run_datacreate_after)) {
-  for (fpath in datacreate_scripts_to_run_after_pipeline) {
-    cat("sourcing the script in", fpath, "...\n")
-    source(fpath)
-  }
-} else {
-  message("Skipping post-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_AFTER is FALSE.")
-}
+EJAM:::ejscreen_pipeline_source_scripts(
+  datacreate_scripts_to_run_after_pipeline,
+  enabled = run_datacreate_after,
+  skip_message = "Skipping post-pipeline datacreate_ scripts because EJAM_RUN_DATACREATE_AFTER is FALSE."
+)
 
 # restart, reinstall
 

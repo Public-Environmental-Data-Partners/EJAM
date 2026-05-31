@@ -418,6 +418,42 @@ test_that("ejscreen_pipeline_run_recipe_script builds recipe config before sourc
   expect_named(result, c("config", "applied_env", "source_result"))
 })
 
+test_that("ejscreen_pipeline_source_scripts sources enabled scripts and reports disabled scripts", {
+  marker <- tempfile()
+  script <- tempfile(fileext = ".R")
+  writeLines(
+    paste0("writeLines('ran', ", deparse(marker), ")"),
+    con = script
+  )
+
+  result <- NULL
+  expect_output(
+    result <- EJAM:::ejscreen_pipeline_source_scripts(script, enabled = TRUE),
+    paste0("sourcing the script in ", script),
+    fixed = TRUE
+  )
+  expect_equal(result, script)
+  expect_equal(readLines(marker, warn = FALSE), "ran")
+
+  disabled_marker <- tempfile()
+  disabled_script <- tempfile(fileext = ".R")
+  writeLines(
+    paste0("writeLines('ran', ", deparse(disabled_marker), ")"),
+    con = disabled_script
+  )
+  expect_message(
+    result <- EJAM:::ejscreen_pipeline_source_scripts(
+      disabled_script,
+      enabled = FALSE,
+      skip_message = "Skipping test scripts."
+    ),
+    "Skipping test scripts.",
+    fixed = TRUE
+  )
+  expect_equal(result, character())
+  expect_false(file.exists(disabled_marker))
+})
+
 test_that("recipe runner scripts exist and point to expected config recipes", {
   repo_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = FALSE)
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {

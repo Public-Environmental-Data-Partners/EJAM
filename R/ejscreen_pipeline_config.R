@@ -595,6 +595,24 @@ ejscreen_pipeline_run_recipe_script <- function(recipe,
   )
 }
 
+ejscreen_pipeline_source_scripts <- function(scripts,
+                                             enabled = TRUE,
+                                             skip_message = NULL) {
+  scripts <- as.character(scripts)
+  if (!isTRUE(enabled)) {
+    if (!is.null(skip_message) && nzchar(skip_message)) {
+      message(skip_message)
+    }
+    return(invisible(character()))
+  }
+
+  for (fpath in scripts) {
+    cat("sourcing the script in", fpath, "...\n")
+    source(fpath)
+  }
+  invisible(scripts)
+}
+
 ejscreen_pipeline_config_recipe <- function(defaults, ...) {
   args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
   do.call(ejscreen_pipeline_config, args)
