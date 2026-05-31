@@ -43,9 +43,11 @@ rerunnable. The main entry point is `calc_ejscreen_dataset()`. The recommended
 annual runner is:
 
 ```{r, eval=FALSE}
-source("data-raw/run_ejscreen_dataset_pipeline.R")
+source("data-raw/run_ejscreen_pipeline_annual.R")
 ```
 
+That wrapper builds a validated annual pipeline config and then delegates to the
+long-standing compatibility runner, `data-raw/run_ejscreen_dataset_pipeline.R`.
 The repository also provides smaller runner wrappers for common rerun modes:
 
 ```{r, eval=FALSE}
