@@ -83,6 +83,27 @@ test_that("ejscreen_pipeline_set_env_defaults preserves explicit overrides", {
   expect_equal(Sys.getenv("EJAM_PRIOR_PACKAGE_PATH"), "data/blockgroupstats.rda")
 })
 
+test_that("ejscreen_pipeline env snapshot restores set and unset values", {
+  withr::local_envvar(c(
+    EJAM_TEST_RESTORE_PRESENT = "before",
+    EJAM_TEST_RESTORE_MISSING = NA_character_
+  ))
+
+  old_values <- EJAM:::ejscreen_pipeline_capture_env(c(
+    "EJAM_TEST_RESTORE_PRESENT",
+    "EJAM_TEST_RESTORE_MISSING"
+  ))
+  Sys.setenv(
+    EJAM_TEST_RESTORE_PRESENT = "after",
+    EJAM_TEST_RESTORE_MISSING = "after"
+  )
+
+  EJAM:::ejscreen_pipeline_restore_env(old_values)
+
+  expect_equal(Sys.getenv("EJAM_TEST_RESTORE_PRESENT"), "before")
+  expect_equal(Sys.getenv("EJAM_TEST_RESTORE_MISSING", unset = NA_character_), NA_character_)
+})
+
 test_that("ejscreen_pipeline_config builds annual defaults without reading env vars", {
   clear_pipeline_config_envvars()
   withr::local_envvar(EJAM_PIPELINE_DIR = "s3://wrong/place")

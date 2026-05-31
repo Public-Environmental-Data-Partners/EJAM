@@ -266,6 +266,30 @@ ejscreen_pipeline_apply_config_env <- function(config, overwrite = TRUE, include
 
   invisible(values)
 }
+
+ejscreen_pipeline_capture_env <- function(names) {
+  stats::setNames(
+    Sys.getenv(names, unset = NA_character_),
+    names
+  )
+}
+
+ejscreen_pipeline_restore_env <- function(values) {
+  if (length(values) == 0) {
+    return(invisible(values))
+  }
+
+  missing_values <- is.na(values)
+  if (any(missing_values)) {
+    Sys.unsetenv(names(values)[missing_values])
+  }
+  if (any(!missing_values)) {
+    do.call(Sys.setenv, as.list(values[!missing_values]))
+  }
+
+  invisible(values)
+}
+
 ejscreen_pipeline_run_script <- function(config,
                                          script = file.path("data-raw", "run_ejscreen_dataset_pipeline.R"),
                                          overwrite_env = TRUE,
@@ -278,17 +302,9 @@ ejscreen_pipeline_run_script <- function(config,
   }
 
   env_names <- names(ejscreen_pipeline_config_env_values(config, include_aws = include_aws))
-  old_values <- Sys.getenv(env_names, unset = NA_character_)
+  old_values <- ejscreen_pipeline_capture_env(env_names)
   if (isTRUE(restore_env)) {
-    on.exit({
-      missing_old <- is.na(old_values)
-      if (any(missing_old)) {
-        Sys.unsetenv(names(old_values)[missing_old])
-      }
-      if (any(!missing_old)) {
-        do.call(Sys.setenv, as.list(old_values[!missing_old]))
-      }
-    }, add = TRUE)
+    on.exit(ejscreen_pipeline_restore_env(old_values), add = TRUE)
   }
 
   applied_env <- ejscreen_pipeline_apply_config_env(
@@ -647,14 +663,8 @@ ejscreen_pipeline_run_recipe_script <- function(recipe,
                                                 envir = parent.frame(),
                                                 chdir = FALSE) {
   config <- ejscreen_pipeline_config_recipe_from_env(recipe, ...)
-  old_skip_package_load <- Sys.getenv("EJAM_PIPELINE_SKIP_PACKAGE_LOAD", unset = NA_character_)
-  on.exit({
-    if (is.na(old_skip_package_load)) {
-      Sys.unsetenv("EJAM_PIPELINE_SKIP_PACKAGE_LOAD")
-    } else {
-      Sys.setenv(EJAM_PIPELINE_SKIP_PACKAGE_LOAD = old_skip_package_load)
-    }
-  }, add = TRUE)
+  old_skip_package_load <- ejscreen_pipeline_capture_env("EJAM_PIPELINE_SKIP_PACKAGE_LOAD")
+  on.exit(ejscreen_pipeline_restore_env(old_skip_package_load), add = TRUE)
   Sys.setenv(EJAM_PIPELINE_SKIP_PACKAGE_LOAD = "TRUE")
 
   ejscreen_pipeline_run_script(
@@ -1823,16 +1833,8 @@ run_ejscreen_pipeline <- function(config = ejscreen_pipeline_config_from_env(),
     package_data_pipeline_dir <- config$pipeline_dir
   }
   env_names <- names(ejscreen_pipeline_config_env_values(config, include_aws = TRUE))
-  old_env_values <- Sys.getenv(env_names, unset = NA_character_)
-  on.exit({
-    missing_old <- is.na(old_env_values)
-    if (any(missing_old)) {
-      Sys.unsetenv(names(old_env_values)[missing_old])
-    }
-    if (any(!missing_old)) {
-      do.call(Sys.setenv, as.list(old_env_values[!missing_old]))
-    }
-  }, add = TRUE)
+  old_env_values <- ejscreen_pipeline_capture_env(env_names)
+  on.exit(ejscreen_pipeline_restore_env(old_env_values), add = TRUE)
   ejscreen_pipeline_apply_config_env(config, overwrite = TRUE, include_aws = TRUE)
 
   pipeline_context <- context_fun(config)
