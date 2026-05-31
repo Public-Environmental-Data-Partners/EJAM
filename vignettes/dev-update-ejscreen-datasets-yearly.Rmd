@@ -46,6 +46,21 @@ annual runner is:
 source("data-raw/run_ejscreen_dataset_pipeline.R")
 ```
 
+The repository also provides smaller runner wrappers for common rerun modes:
+
+```{r, eval=FALSE}
+# Recheck saved outputs and prior-version comparisons without rebuilding stages.
+source("data-raw/run_ejscreen_pipeline_validation_only.R")
+
+# Recreate EJScreen-facing export files from saved pipeline stages.
+source("data-raw/run_ejscreen_pipeline_exports_only.R")
+```
+
+These wrappers build a validated pipeline config first and then delegate to the
+same underlying runner script. They are meant for review and release-maintenance
+passes after the main annual run has already created the needed intermediate
+stages.
+
 The runner writes pipeline checkpoints, by default as CSV files. It can also
 write secondary formats such as `.rda` files for the same table stages when
 `EJAM_STAGE_FORMATS` includes those formats. It does not, by itself, replace
