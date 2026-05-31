@@ -1454,6 +1454,154 @@ ejscreen_pipeline_stage_bg_acsdata <- function(yr,
   stage_io$load_stage(stagename)
 }
 
+ejscreen_pipeline_stage_bg_envirodata <- function(pipeline_yr,
+                                                  use_provisional_bg_envirodata = FALSE,
+                                                  stage_io,
+                                                  stage_format,
+                                                  pipeline_dir,
+                                                  pipeline_storage = c("auto", "local", "s3"),
+                                                  bg_envirodata_reference_path = "",
+                                                  bg_envirodata_reference_vars = character(),
+                                                  include_islandareas_data = FALSE,
+                                                  bg_islandareas_reference = NULL,
+                                                  islandareas_reference_path = "",
+                                                  names_e = EJAM::names_e,
+                                                  detect_acs_version_fun = ejscreen_pipeline_detect_acs_version,
+                                                  acs_version_fun = ejscreen_pipeline_acs_version_from_year,
+                                                  load_stage_fun = ejscreen_pipeline_load,
+                                                  adjust_fun = ejscreen_reference_bg_envirodata_adjusted,
+                                                  load_islandareas_reference_fun = load_islandareas_epa_reference,
+                                                  islandareas_envirodata_fun = islandareas_reference_envirodata,
+                                                  merge_fun = merge_islandareas_stage_data,
+                                                  write_text_fun = ejscreen_pipeline_write_text,
+                                                  capture_output_fun = ejscreen_pipeline_capture_output_wide,
+                                                  message_fun = message,
+                                                  warning_fun = warning) {
+  pipeline_storage <- match.arg(pipeline_storage)
+  stagename <- "bg_envirodata"
+  message_fun(paste0("Stage: ", stagename))
+
+  used_provisional_bg_envirodata <- FALSE
+
+  if (stage_io$stage_exists(stagename)) {
+    message_fun(paste0("Using provided/existing ", stagename))
+    bg_envirodata <- stage_io$load_stage(stagename)
+  } else if (isTRUE(use_provisional_bg_envirodata)) {
+    message_fun(paste0(
+      "Creating PROVISIONAL bg_envirodata.",
+      stage_format,
+      " from same-vintage blockgroupstats fallback"
+    ))
+    used_provisional_bg_envirodata <- TRUE
+    reusable_blockgroupstats <- stage_io$get_reuse_blockgroupstats()
+    package_blockgroupstats_acs_version <- detect_acs_version_fun(x = reusable_blockgroupstats)
+    pipeline_acs_version <- acs_version_fun(pipeline_yr)
+    if (!is.na(package_blockgroupstats_acs_version) &&
+        !identical(package_blockgroupstats_acs_version, pipeline_acs_version)) {
+      warning_fun(
+        "Provisional bg_envirodata is being copied from packaged EJAM::blockgroupstats with ACS version ",
+        package_blockgroupstats_acs_version,
+        ", while this pipeline run is for ACS version ",
+        pipeline_acs_version,
+        ". Replace this provisional file before final release use.",
+        call. = FALSE
+      )
+    }
+    if (!all(names_e %in% names(reusable_blockgroupstats))) {
+      warning_fun("Provisional blockgroupstats fallback does not have all of expected env indicator columns as specified in EJAM::names_e")
+    }
+    env_cols <- intersect(names_e, names(reusable_blockgroupstats))
+    reusable_blockgroupstats_dt <- data.table::as.data.table(reusable_blockgroupstats)
+    bg_envirodata <- reusable_blockgroupstats_dt[, c("bgfips", env_cols), with = FALSE]
+    if (!isTRUE(all.equal(
+      reusable_blockgroupstats_dt[, env_cols, with = FALSE],
+      bg_envirodata[, env_cols, with = FALSE],
+      check.attributes = FALSE
+    ))) {
+      stop("Provisional bg_envirodata from blockgroupstats fallback does not have the same env indicator values as the fallback source")
+    }
+    write_text_fun(
+      lines = c(
+        paste0("PROVISIONAL bg_envirodata.", stage_format),
+        "This file was copied from the same-vintage blockgroupstats fallback.",
+        paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
+        paste("Pipeline ACS version:", pipeline_acs_version),
+        "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_dataset_pipeline.R.",
+        paste("Created:", Sys.time())
+      ),
+      filename = "bg_envirodata_SOURCE.txt",
+      pipeline_dir = pipeline_dir,
+      storage = pipeline_storage
+    )
+  } else {
+    stop("Missing bg_envirodata file and use_provisional_bg_envirodata was set FALSE. Save updated environmental indicators there or set EJAM_USE_PROVISIONAL_BG_ENVIRODATA=TRUE")
+  }
+
+  if (length(bg_envirodata_reference_path) > 0 && nzchar(bg_envirodata_reference_path)) {
+    if (length(bg_envirodata_reference_vars) == 0) {
+      stop(
+        "EJAM_BG_ENVIRODATA_REFERENCE_PATH was provided, but ",
+        "EJAM_BG_ENVIRODATA_REFERENCE_VARS is empty. Specify the selected ",
+        "rname or EJSCREEN field names to replace, such as drinking or DWATER."
+      )
+    }
+    message_fun(
+      "Applying selected EJSCREEN reference values to bg_envirodata: ",
+      paste(bg_envirodata_reference_vars, collapse = ", ")
+    )
+    bg_envirodata_reference <- load_stage_fun(
+      path = bg_envirodata_reference_path,
+      format = tools::file_ext(bg_envirodata_reference_path),
+      storage = "auto"
+    )
+    bg_envirodata <- adjust_fun(
+      bg_envirodata = bg_envirodata,
+      reference = bg_envirodata_reference,
+      vars = bg_envirodata_reference_vars
+    )
+    reference_adjustment <- attr(bg_envirodata, "ejscreen_reference_adjustment", exact = TRUE)
+    write_text_fun(
+      lines = c(
+        "EJSCREEN reference adjustment applied to bg_envirodata.",
+        "Use this only when the reference file is the intended authoritative source for the selected fields.",
+        "Missing reference values are preserved as NA values, not converted to zero.",
+        paste("Reference path:", bg_envirodata_reference_path),
+        paste("Requested vars:", paste(bg_envirodata_reference_vars, collapse = ", ")),
+        "",
+        capture_output_fun(print(reference_adjustment)),
+        "",
+        paste("Created:", Sys.time())
+      ),
+      filename = "bg_envirodata_REFERENCE_ADJUSTMENT.txt",
+      pipeline_dir = pipeline_dir,
+      storage = pipeline_storage
+    )
+  }
+
+  if (isTRUE(include_islandareas_data)) {
+    if (is.null(bg_islandareas_reference)) {
+      message_fun("Loading Island Areas rows from archived EPA EJScreen reference")
+      bg_islandareas_reference <- load_islandareas_reference_fun(
+        path = islandareas_reference_path,
+        storage = pipeline_storage
+      )
+    }
+    message_fun("Adding Island Areas environmental rows from archived EPA EJScreen reference")
+    bg_envirodata <- merge_fun(
+      bg_envirodata,
+      islandareas_envirodata_fun(bg_islandareas_reference)
+    )
+  }
+
+  stage_io$save_stage_formats(bg_envirodata, stage = stagename)
+
+  list(
+    bg_envirodata = bg_envirodata,
+    used_provisional_bg_envirodata = used_provisional_bg_envirodata,
+    bg_islandareas_reference = bg_islandareas_reference
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

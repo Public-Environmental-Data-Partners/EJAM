@@ -547,112 +547,22 @@ bg_acsdata <- EJAM:::ejscreen_pipeline_stage_bg_acsdata(
 ## unused?
 # bg_envirodata_path <- EJAM:::ejscreen_pipeline_stage_path(stage = "bg_envirodata", pipeline_dir, format = stage_format)
 
-stagename <- "bg_envirodata"
-message(paste0("Stage: ", stagename))
-
-if (stage_exists(stagename)) {
-  message(paste0("Using provided/existing ", stagename))
-  bg_envirodata <- load_file_stage(stagename)
-
-} else if (isTRUE(use_provisional_bg_envirodata)) {
-  message(paste0("Creating PROVISIONAL bg_envirodata.", stage_format," from same-vintage blockgroupstats fallback"))
-  used_provisional_bg_envirodata <- TRUE
-  reusable_blockgroupstats <- get_reuse_blockgroupstats()
-  package_blockgroupstats_acs_version <- EJAM:::ejscreen_pipeline_detect_acs_version(x = reusable_blockgroupstats)
-  pipeline_acs_version <- EJAM:::ejscreen_pipeline_acs_version_from_year(pipeline_yr)
-  if (!is.na(package_blockgroupstats_acs_version) &&
-      !identical(package_blockgroupstats_acs_version, pipeline_acs_version)) {
-    warning(
-      "Provisional bg_envirodata is being copied from packaged EJAM::blockgroupstats with ACS version ",
-      package_blockgroupstats_acs_version,
-      ", while this pipeline run is for ACS version ",
-      pipeline_acs_version,
-      ". Replace this provisional file before final release use.",
-      call. = FALSE
-    )
-  }
-  if (!all(EJAM::names_e %in% names(reusable_blockgroupstats))) {
-    warning("Provisional blockgroupstats fallback does not have all of expected env indicator columns as specified in EJAM::names_e")
-  }
-  env_cols <- intersect(EJAM::names_e, names(reusable_blockgroupstats))
-  bg_envirodata <- as.data.table(reusable_blockgroupstats)[, c("bgfips", env_cols), with = FALSE]
-  # validate the provisional copy
-  if (!isTRUE(all.equal(
-    as.data.table(reusable_blockgroupstats)[, env_cols, with = FALSE],
-    bg_envirodata[, env_cols, with = FALSE],
-    check.attributes = FALSE
-  ))) {stop("Provisional bg_envirodata from blockgroupstats fallback does not have the same env indicator values as the fallback source")}
-  EJAM:::ejscreen_pipeline_write_text(
-    lines = c(
-      paste0("PROVISIONAL bg_envirodata.", stage_format),
-      "This file was copied from the same-vintage blockgroupstats fallback.",
-      paste("Fallback blockgroupstats ACS version:", package_blockgroupstats_acs_version),
-      paste("Pipeline ACS version:", pipeline_acs_version),
-      "Replace it with updated environmental indicators and rerun data-raw/run_ejscreen_dataset_pipeline.R.",
-      paste("Created:", Sys.time())
-    ),
-    filename = "bg_envirodata_SOURCE.txt",
-    pipeline_dir = pipeline_dir,
-    storage = pipeline_storage
-  )
-} else {
-  stop("Missing bg_envirodata file and use_provisional_bg_envirodata was set FALSE. Save updated environmental indicators there or set EJAM_USE_PROVISIONAL_BG_ENVIRODATA=TRUE")
-}
-
-if (nzchar(bg_envirodata_reference_path)) {
-  if (length(bg_envirodata_reference_vars) == 0) {
-    stop(
-      "EJAM_BG_ENVIRODATA_REFERENCE_PATH was provided, but ",
-      "EJAM_BG_ENVIRODATA_REFERENCE_VARS is empty. Specify the selected ",
-      "rname or EJSCREEN field names to replace, such as drinking or DWATER."
-    )
-  }
-  message("Applying selected EJSCREEN reference values to bg_envirodata: ",
-          paste(bg_envirodata_reference_vars, collapse = ", "))
-  bg_envirodata_reference <- EJAM:::ejscreen_pipeline_load(
-    path = bg_envirodata_reference_path,
-    format = tools::file_ext(bg_envirodata_reference_path),
-    storage = "auto"
-  )
-  bg_envirodata <- EJAM:::ejscreen_reference_bg_envirodata_adjusted(
-    bg_envirodata = bg_envirodata,
-    reference = bg_envirodata_reference,
-    vars = bg_envirodata_reference_vars
-  )
-  reference_adjustment <- attr(bg_envirodata, "ejscreen_reference_adjustment", exact = TRUE)
-  EJAM:::ejscreen_pipeline_write_text(
-    lines = c(
-      "EJSCREEN reference adjustment applied to bg_envirodata.",
-      "Use this only when the reference file is the intended authoritative source for the selected fields.",
-      "Missing reference values are preserved as NA values, not converted to zero.",
-      paste("Reference path:", bg_envirodata_reference_path),
-      paste("Requested vars:", paste(bg_envirodata_reference_vars, collapse = ", ")),
-      "",
-      EJAM:::ejscreen_pipeline_capture_output_wide(print(reference_adjustment)),
-      "",
-      paste("Created:", Sys.time())
-    ),
-    filename = "bg_envirodata_REFERENCE_ADJUSTMENT.txt",
-    pipeline_dir = pipeline_dir,
-    storage = pipeline_storage
-  )
-}
-
-if (isTRUE(include_islandareas_data)) {
-  if (is.null(bg_islandareas_reference)) {
-    message("Loading Island Areas rows from archived EPA EJScreen reference")
-    bg_islandareas_reference <- EJAM:::load_islandareas_epa_reference(
-      path = islandareas_reference_path,
-      storage = pipeline_storage
-    )
-  }
-  message("Adding Island Areas environmental rows from archived EPA EJScreen reference")
-  bg_envirodata <- EJAM:::merge_islandareas_stage_data(
-    bg_envirodata,
-    EJAM:::islandareas_reference_envirodata(bg_islandareas_reference)
-  )
-}
-save_file_stage_formats(bg_envirodata, stage = stagename)
+bg_envirodata_stage <- EJAM:::ejscreen_pipeline_stage_bg_envirodata(
+  pipeline_yr = pipeline_yr,
+  use_provisional_bg_envirodata = use_provisional_bg_envirodata,
+  stage_io = stage_io,
+  stage_format = stage_format,
+  pipeline_dir = pipeline_dir,
+  pipeline_storage = pipeline_storage,
+  bg_envirodata_reference_path = bg_envirodata_reference_path,
+  bg_envirodata_reference_vars = bg_envirodata_reference_vars,
+  include_islandareas_data = include_islandareas_data,
+  bg_islandareas_reference = bg_islandareas_reference,
+  islandareas_reference_path = islandareas_reference_path
+)
+bg_envirodata <- bg_envirodata_stage$bg_envirodata
+used_provisional_bg_envirodata <- bg_envirodata_stage$used_provisional_bg_envirodata
+bg_islandareas_reference <- bg_envirodata_stage$bg_islandareas_reference
 
 ###################################################### #
 # Extra indicators stage - Read new or re-use existing data ####

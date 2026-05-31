@@ -1493,6 +1493,138 @@ test_that("ejscreen_pipeline_stage_bg_acsdata creates or loads the stage", {
   expect_equal(load_calls, "bg_acsdata")
 })
 
+test_that("ejscreen_pipeline_stage_bg_envirodata loads, builds provisional data, and applies additions", {
+  messages <- character()
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+
+  save_call <- NULL
+  stage_io_existing <- list(
+    stage_exists = function(stage) identical(stage, "bg_envirodata"),
+    load_stage = function(stage) data.frame(bgfips = "010010201001", drinking = 1),
+    save_stage_formats = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    },
+    get_reuse_blockgroupstats = function() stop("should not reuse")
+  )
+  existing <- EJAM:::ejscreen_pipeline_stage_bg_envirodata(
+    pipeline_yr = 2024,
+    use_provisional_bg_envirodata = FALSE,
+    stage_io = stage_io_existing,
+    stage_format = "csv",
+    pipeline_dir = "pipe",
+    pipeline_storage = "local",
+    include_islandareas_data = FALSE,
+    names_e = "drinking",
+    message_fun = fake_message
+  )
+  expect_equal(existing$bg_envirodata$drinking, 1)
+  expect_false(existing$used_provisional_bg_envirodata)
+  expect_equal(save_call$stage, "bg_envirodata")
+
+  stage_io_missing <- list(
+    stage_exists = function(stage) FALSE,
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) stop("should not save"),
+    get_reuse_blockgroupstats = function() stop("should not reuse")
+  )
+  expect_error(
+    EJAM:::ejscreen_pipeline_stage_bg_envirodata(
+      pipeline_yr = 2024,
+      use_provisional_bg_envirodata = FALSE,
+      stage_io = stage_io_missing,
+      stage_format = "csv",
+      pipeline_dir = "pipe",
+      pipeline_storage = "local",
+      include_islandareas_data = FALSE,
+      names_e = "drinking",
+      message_fun = fake_message
+    ),
+    "Missing bg_envirodata file"
+  )
+
+  write_calls <- list()
+  load_reference_call <- NULL
+  adjustment_call <- NULL
+  islandareas_loaded <- NULL
+  merge_call <- NULL
+  stage_io_provisional <- list(
+    stage_exists = function(stage) FALSE,
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    },
+    get_reuse_blockgroupstats = function() {
+      data.frame(
+        bgfips = "010010201001",
+        drinking = 0,
+        npl = 2,
+        unrelated = 10
+      )
+    }
+  )
+  provisional <- EJAM:::ejscreen_pipeline_stage_bg_envirodata(
+    pipeline_yr = 2024,
+    use_provisional_bg_envirodata = TRUE,
+    stage_io = stage_io_provisional,
+    stage_format = "csv",
+    pipeline_dir = "pipe",
+    pipeline_storage = "s3",
+    bg_envirodata_reference_path = "reference.csv",
+    bg_envirodata_reference_vars = "drinking",
+    include_islandareas_data = TRUE,
+    bg_islandareas_reference = NULL,
+    islandareas_reference_path = "island-ref.csv",
+    names_e = c("drinking", "npl"),
+    detect_acs_version_fun = function(x) "ACS 2020-2024",
+    acs_version_fun = function(yr) "ACS 2020-2024",
+    load_stage_fun = function(...) {
+      load_reference_call <<- list(...)
+      data.frame(bgfips = "010010201001", drinking = 3)
+    },
+    adjust_fun = function(bg_envirodata, reference, vars) {
+      adjustment_call <<- list(bg_envirodata = bg_envirodata, reference = reference, vars = vars)
+      bg_envirodata$drinking <- reference$drinking
+      attr(bg_envirodata, "ejscreen_reference_adjustment") <- data.frame(var = vars)
+      bg_envirodata
+    },
+    load_islandareas_reference_fun = function(...) {
+      islandareas_loaded <<- list(...)
+      data.frame(bgfips = "780309611001", drinking = 4, npl = 5)
+    },
+    islandareas_envirodata_fun = function(reference) reference,
+    merge_fun = function(x, islandareas_data) {
+      merge_call <<- list(x = x, islandareas_data = islandareas_data)
+      rbind(x, islandareas_data)
+    },
+    write_text_fun = function(lines, filename, pipeline_dir, storage) {
+      write_calls[[length(write_calls) + 1L]] <<- list(
+        lines = lines,
+        filename = filename,
+        pipeline_dir = pipeline_dir,
+        storage = storage
+      )
+      filename
+    },
+    capture_output_fun = function(expr) "adjustment summary",
+    message_fun = fake_message
+  )
+  expect_true(provisional$used_provisional_bg_envirodata)
+  expect_equal(provisional$bg_envirodata$bgfips, c("010010201001", "780309611001"))
+  expect_equal(provisional$bg_envirodata$drinking, c(3, 4))
+  expect_equal(load_reference_call$path, "reference.csv")
+  expect_equal(load_reference_call$format, "csv")
+  expect_equal(adjustment_call$vars, "drinking")
+  expect_equal(islandareas_loaded$path, "island-ref.csv")
+  expect_equal(merge_call$islandareas_data$bgfips, "780309611001")
+  expect_equal(save_call$stage, "bg_envirodata")
+  expect_equal(vapply(write_calls, `[[`, character(1), "filename"),
+               c("bg_envirodata_SOURCE.txt", "bg_envirodata_REFERENCE_ADJUSTMENT.txt"))
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {
