@@ -524,29 +524,20 @@ bg_islandareas_reference <- islandareas_stage$bg_islandareas_reference
 # This is a separate stage because it can be time consuming to download ACS in the prior stage and you may want to manually add other raw scores here,
 # but if you have already calculated it and saved it, you can reuse it even if you want to recalculate downstream stages like blockgroupstats or bgej.
 
-stagename <- "bg_acsdata"
-message(paste0("Stage: ", stagename))
-if (isTRUE(need_bg_acsdata)) {
-  message("Creating bg_acsdata from bg_acs_raw")
-  bg_acsdata <- EJAM:::calc_bg_acsdata(
-    yr = yr,
-    acs_raw = bg_acs_raw,
-    include_islandareas_data = include_islandareas_data,
-    islandareas_raw = bg_islandareas_raw,
-    islandareas_demographics = bg_islandareas_demographics,
-    islandareas_reference = bg_islandareas_reference,
-    use_islandareas_demographics = use_islandareas_demographics,
-    tract_weight_source = tract_weight_source,
-    pipeline_dir = pipeline_dir,
-    save_stage = FALSE,
-    stage_format = stage_format,
-    overwrite = TRUE
-  )
-  save_file_stage_formats(bg_acsdata, stage = stagename)
-} else {
-  message(paste0("Using provided/existing ", stagename))
-  bg_acsdata <- load_file_stage(stagename)
-}
+bg_acsdata <- EJAM:::ejscreen_pipeline_stage_bg_acsdata(
+  yr = yr,
+  need_bg_acsdata = need_bg_acsdata,
+  bg_acs_raw = bg_acs_raw,
+  bg_islandareas_raw = bg_islandareas_raw,
+  bg_islandareas_demographics = bg_islandareas_demographics,
+  bg_islandareas_reference = bg_islandareas_reference,
+  include_islandareas_data = include_islandareas_data,
+  use_islandareas_demographics = use_islandareas_demographics,
+  tract_weight_source = tract_weight_source,
+  pipeline_dir = pipeline_dir,
+  stage_format = stage_format,
+  stage_io = stage_io
+)
 ###################################################### #
 
 ###################################################### #

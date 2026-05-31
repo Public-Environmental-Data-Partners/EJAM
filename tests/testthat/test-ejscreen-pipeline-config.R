@@ -1422,6 +1422,77 @@ test_that("ejscreen_pipeline_prepare_islandareas loads reference or optional dem
   expect_equal(save_calls[[3]]$formats, c("csv", "rda", "arrow"))
 })
 
+test_that("ejscreen_pipeline_stage_bg_acsdata creates or loads the stage", {
+  messages <- character()
+  fake_message <- function(...) {
+    messages <<- c(messages, paste0(...))
+  }
+
+  calc_call <- NULL
+  save_call <- NULL
+  stage_io_create <- list(
+    load_stage = function(stage) stop("should not load"),
+    save_stage_formats = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    }
+  )
+  created <- EJAM:::ejscreen_pipeline_stage_bg_acsdata(
+    yr = 2024,
+    need_bg_acsdata = TRUE,
+    bg_acs_raw = list(raw = "acs"),
+    bg_islandareas_raw = list(raw = "ia"),
+    bg_islandareas_demographics = data.frame(bgfips = "660109501001"),
+    bg_islandareas_reference = data.frame(bgfips = "780309611001"),
+    include_islandareas_data = TRUE,
+    use_islandareas_demographics = FALSE,
+    tract_weight_source = "decennial2020",
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    stage_io = stage_io_create,
+    calc_fun = function(...) {
+      calc_call <<- list(...)
+      data.frame(bgfips = "010010201001")
+    },
+    message_fun = fake_message
+  )
+  expect_equal(created$bgfips, "010010201001")
+  expect_equal(calc_call$yr, 2024)
+  expect_equal(calc_call$acs_raw$raw, "acs")
+  expect_true(calc_call$include_islandareas_data)
+  expect_false(calc_call$use_islandareas_demographics)
+  expect_equal(calc_call$tract_weight_source, "decennial2020")
+  expect_false(calc_call$save_stage)
+  expect_equal(save_call$stage, "bg_acsdata")
+
+  load_calls <- character()
+  stage_io_load <- list(
+    load_stage = function(stage) {
+      load_calls <<- c(load_calls, stage)
+      data.frame(bgfips = "020200001001")
+    },
+    save_stage_formats = function(...) stop("should not save")
+  )
+  loaded <- EJAM:::ejscreen_pipeline_stage_bg_acsdata(
+    yr = 2024,
+    need_bg_acsdata = FALSE,
+    bg_acs_raw = NULL,
+    bg_islandareas_raw = NULL,
+    bg_islandareas_demographics = NULL,
+    bg_islandareas_reference = NULL,
+    include_islandareas_data = FALSE,
+    use_islandareas_demographics = FALSE,
+    tract_weight_source = "decennial2020",
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    stage_io = stage_io_load,
+    calc_fun = function(...) stop("should not calculate"),
+    message_fun = fake_message
+  )
+  expect_equal(loaded$bgfips, "020200001001")
+  expect_equal(load_calls, "bg_acsdata")
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

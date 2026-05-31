@@ -1413,6 +1413,47 @@ ejscreen_pipeline_prepare_islandareas <- function(include_islandareas_data = FAL
   )
 }
 
+ejscreen_pipeline_stage_bg_acsdata <- function(yr,
+                                               need_bg_acsdata = FALSE,
+                                               bg_acs_raw = NULL,
+                                               bg_islandareas_raw = NULL,
+                                               bg_islandareas_demographics = NULL,
+                                               bg_islandareas_reference = NULL,
+                                               include_islandareas_data = FALSE,
+                                               use_islandareas_demographics = FALSE,
+                                               tract_weight_source = "decennial2020",
+                                               pipeline_dir,
+                                               stage_format,
+                                               stage_io,
+                                               calc_fun = calc_bg_acsdata,
+                                               message_fun = message) {
+  stagename <- "bg_acsdata"
+  message_fun(paste0("Stage: ", stagename))
+
+  if (isTRUE(need_bg_acsdata)) {
+    message_fun("Creating bg_acsdata from bg_acs_raw")
+    bg_acsdata <- calc_fun(
+      yr = yr,
+      acs_raw = bg_acs_raw,
+      include_islandareas_data = include_islandareas_data,
+      islandareas_raw = bg_islandareas_raw,
+      islandareas_demographics = bg_islandareas_demographics,
+      islandareas_reference = bg_islandareas_reference,
+      use_islandareas_demographics = use_islandareas_demographics,
+      tract_weight_source = tract_weight_source,
+      pipeline_dir = pipeline_dir,
+      save_stage = FALSE,
+      stage_format = stage_format,
+      overwrite = TRUE
+    )
+    stage_io$save_stage_formats(bg_acsdata, stage = stagename)
+    return(bg_acsdata)
+  }
+
+  message_fun(paste0("Using provided/existing ", stagename))
+  stage_io$load_stage(stagename)
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",
