@@ -410,14 +410,11 @@ ejamit <- function(sitepoints = NULL,
 
     # . radius for fips ####
     # Save user's specified buffer radius (if radius was not provided, default to no buffer for fips)
-    if (missing(radius)) {
-      user_radius <- 0  # default: no buffer around FIPS boundaries
-    } else {
-      user_radius <- radius  # use user-specified buffer radius when > 0
-    }
-    radius <- 999 # use this value when analyzing by fips not by circular buffers, as input to doaggregate(),
-    # then in output of doaggregate()$results_bysite$radius.miles is returned as 0 for every fips, as in _overall.
-    # Buffer (if any) is applied in getblocksnearby_from_fips() via user_radius.
+    if (missing(radius)) radius <- 0
+    user_radius <- radius  # preserve actual user radius before overriding with fips-analysis signal
+    radius <- 999 # use this value when analyzing by fips not by circular buffers, as input to doaggregate().
+    # doaggregate() detects all(distances == 0) and returns radius.miles = 0 in both results_bysite and results_overall.
+    # Actual buffer (if any) is applied in getblocksnearby_from_fips() via user_radius.
 
     # . getblocksnearby_from_fips() ####
 

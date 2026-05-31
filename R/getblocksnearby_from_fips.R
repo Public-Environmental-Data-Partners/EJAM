@@ -92,6 +92,8 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
       if ("lat" %in% names(pts)) pts[, lat := NULL]
       if ("lon" %in% names(pts)) pts[, lon := NULL]
     })
+    # Set distance to 0 for consistency with the non-buffered FIPS case (where all blocks are
+    # inside the boundary). doaggregate() uses all(distances == 0) to detect FIPS analysis mode.
     pts[, distance := 0]
 
     if (return_shp) {
