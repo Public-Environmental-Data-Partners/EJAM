@@ -196,6 +196,53 @@ test_that("ejscreen_pipeline_config_summary reports env and resolved settings", 
   expect_equal(summary["AWS_PROFILE", "using_here"], "test-profile")
 })
 
+test_that("ejscreen_pipeline_print_run_settings reports env and config summaries", {
+  printed <- list()
+  messages <- character()
+  current_settings_call <- NULL
+  summary_call <- NULL
+  cfg <- EJAM:::ejscreen_pipeline_config(
+    yr = 2024,
+    pipeline_storage = "s3",
+    stage_format = "csv",
+    stage_formats = c("csv", "rda"),
+    blockgroup_universe_source = "acs",
+    tract_weight_source = "decennial2020"
+  )
+
+  result <- EJAM:::ejscreen_pipeline_print_run_settings(
+    cfg,
+    setting_names = c("A", "B"),
+    current_settings_fun = function(setting_names) {
+      current_settings_call <<- setting_names
+      cbind(current_setting = c(A = "one", B = "two"))
+    },
+    summary_fun = function(config, setting_names) {
+      summary_call <<- list(config = config, setting_names = setting_names)
+      cbind(Sys.getenv = c(A = "one", B = "two"), using_here = c(A = "alpha", B = "beta"))
+    },
+    print_fun = function(x) {
+      printed[[length(printed) + 1L]] <<- x
+    },
+    message_fun = function(...) {
+      messages <<- c(messages, paste0(...))
+    }
+  )
+
+  expect_equal(current_settings_call, c("A", "B"))
+  expect_equal(summary_call$setting_names, c("A", "B"))
+  expect_identical(summary_call$config, cfg)
+  expect_equal(length(printed), 2)
+  expect_equal(colnames(printed[[1L]]), "current_setting")
+  expect_equal(colnames(printed[[2L]]), c("Sys.getenv", "using_here"))
+  expect_true(any(grepl("Year: 2024", messages, fixed = TRUE)))
+  expect_true(any(grepl("Pipeline folder:", messages, fixed = TRUE)))
+  expect_true(any(grepl("Saved stage formats: csv, rda", messages, fixed = TRUE)))
+  expect_true(any(grepl("Blockgroup universe source: acs", messages, fixed = TRUE)))
+  expect_identical(result$current_settings, printed[[1L]])
+  expect_identical(result$config_summary, printed[[2L]])
+})
+
 test_that("pipeline_config_annual provides a concise annual recipe", {
   root <- file.path(tempdir(), "ejam-pipeline-annual-root")
   cfg <- EJAM:::pipeline_config_annual(

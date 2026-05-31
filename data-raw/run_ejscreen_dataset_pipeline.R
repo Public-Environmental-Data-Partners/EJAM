@@ -289,14 +289,6 @@ EJAM:::ejscreen_pipeline_source_scripts(
 #            EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE = FALSE,
 #            EJAM_VALIDATE_VS_PRIOR_WALDO = FALSE
 # )
-###################################################### #
-## To check them:
-#
-print(
-  cbind(current_setting = Sys.getenv(EJAM:::ejscreen_pipeline_setting_names()))
-)
-###################################################### #
-#
 # VALIDATION VS A SPECIFIC PRIOR DATASET ####
 #
 # If EJAM_VALIDATE_VS_PRIOR is TRUE, this script compares the new saved pipeline
@@ -308,6 +300,7 @@ print(
 # get settings ####
 
 pipeline_config <- EJAM:::ejscreen_pipeline_config_from_env()
+pipeline_setting_names <- EJAM:::ejscreen_pipeline_setting_names()
 
 yr <- pipeline_config$yr
 pipeline_yr <- pipeline_config$yr
@@ -322,13 +315,10 @@ stage_formats <- pipeline_config$stage_formats
 blockgroup_universe_source <- pipeline_config$blockgroup_universe_source
 tract_weight_source <- pipeline_config$tract_weight_source
 
-message("Year: ", pipeline_yr)
-message("Pipeline folder: ", pipeline_dir)
-message("Pipeline storage: ", pipeline_storage)
-message("File format aka stage_format: ", stage_format)
-message("Saved stage formats: ", paste(stage_formats, collapse = ", "))
-message("Blockgroup universe source: ", blockgroup_universe_source)
-message("Tract apportionment weight source: ", tract_weight_source)
+pipeline_settings_report <- EJAM:::ejscreen_pipeline_print_run_settings(
+  pipeline_config,
+  setting_names = pipeline_setting_names
+)
 
 ### ACS DEMOGRAPHIC DATA settings ####
 
@@ -367,11 +357,6 @@ prior_pipeline_dir <- pipeline_config$prior_pipeline_dir
 prior_package_ref <- pipeline_config$prior_package_ref
 prior_package_path <- pipeline_config$prior_package_path
 
-pipeline_setting_names <- EJAM:::ejscreen_pipeline_setting_names()
-
-#################################################### #
-print(EJAM:::ejscreen_pipeline_config_summary(pipeline_config))
-# census_api_key = "(see actual key)",
 #################################################### #
 ## to insert a pause here to confirm settings, could use this:
 # if (interactive()) {

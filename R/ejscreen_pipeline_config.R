@@ -321,6 +321,34 @@ ejscreen_pipeline_config_summary <- function(config, setting_names = ejscreen_pi
   )
 }
 
+ejscreen_pipeline_print_run_settings <- function(config,
+                                                 setting_names = ejscreen_pipeline_setting_names(),
+                                                 current_settings_fun = function(setting_names) {
+                                                   cbind(current_setting = Sys.getenv(setting_names))
+                                                 },
+                                                 summary_fun = ejscreen_pipeline_config_summary,
+                                                 print_fun = print,
+                                                 message_fun = message) {
+  current_settings <- current_settings_fun(setting_names)
+  print_fun(current_settings)
+
+  message_fun("Year: ", config$yr)
+  message_fun("Pipeline folder: ", config$pipeline_dir)
+  message_fun("Pipeline storage: ", config$pipeline_storage)
+  message_fun("File format aka stage_format: ", config$stage_format)
+  message_fun("Saved stage formats: ", paste(config$stage_formats, collapse = ", "))
+  message_fun("Blockgroup universe source: ", config$blockgroup_universe_source)
+  message_fun("Tract apportionment weight source: ", config$tract_weight_source)
+
+  config_summary <- summary_fun(config, setting_names = setting_names)
+  print_fun(config_summary)
+
+  invisible(list(
+    current_settings = current_settings,
+    config_summary = config_summary
+  ))
+}
+
 ejscreen_pipeline_config <- function(yr = NULL,
                                      pipeline_root = NULL,
                                      pipeline_dir = NULL,
