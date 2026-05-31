@@ -212,3 +212,64 @@ test_that("pipeline_config_annual provides a concise annual recipe", {
   expect_true(cfg$include_ejscreen_export_statepct)
   expect_false(cfg$include_ejscreen_pctile_lookup_exports)
 })
+
+test_that("pipeline_config_release keeps release defaults explicit and overridable", {
+  root <- file.path(tempdir(), "ejam-pipeline-release-root")
+  cfg <- EJAM:::pipeline_config_release(
+    yr = 2024,
+    pipeline_root = root,
+    pipeline_storage = "local",
+    replace_package_data = TRUE
+  )
+
+  expect_equal(cfg$pipeline_dir, file.path(root, "ejscreen_acs_2024"))
+  expect_equal(cfg$stage_format, "csv")
+  expect_equal(cfg$stage_formats, c("csv", "rda"))
+  expect_true(cfg$include_ejscreen_export)
+  expect_true(cfg$include_ejscreen_export_statepct)
+  expect_false(cfg$include_ejscreen_pctile_lookup_exports)
+  expect_true(cfg$validate_vs_prior)
+  expect_true(cfg$run_datacreate_before)
+  expect_true(cfg$run_datacreate_after)
+  expect_true(cfg$replace_package_data)
+})
+
+test_that("pipeline_config_validation_only avoids update side effects", {
+  root <- file.path(tempdir(), "ejam-pipeline-validation-root")
+  cfg <- EJAM:::pipeline_config_validation_only(
+    yr = 2024,
+    pipeline_root = root,
+    pipeline_storage = "local"
+  )
+
+  expect_false(cfg$force_acs)
+  expect_false(cfg$force_bg_acsdata)
+  expect_false(cfg$force_bg_geodata)
+  expect_true(cfg$validate_vs_prior)
+  expect_false(cfg$run_datacreate_before)
+  expect_false(cfg$run_datacreate_after)
+  expect_false(cfg$replace_package_data)
+  expect_false(cfg$include_frs_update)
+})
+
+test_that("pipeline_config_exports_only enables exports without annual side effects", {
+  root <- file.path(tempdir(), "ejam-pipeline-exports-root")
+  cfg <- EJAM:::pipeline_config_exports_only(
+    yr = 2024,
+    pipeline_root = root,
+    pipeline_storage = "local",
+    include_ejscreen_dataset_creator_input = TRUE
+  )
+
+  expect_false(cfg$force_acs)
+  expect_false(cfg$force_bg_acsdata)
+  expect_false(cfg$force_bg_geodata)
+  expect_true(cfg$include_ejscreen_export)
+  expect_true(cfg$include_ejscreen_export_statepct)
+  expect_false(cfg$include_ejscreen_pctile_lookup_exports)
+  expect_true(cfg$include_ejscreen_dataset_creator_input)
+  expect_false(cfg$validate_vs_prior)
+  expect_false(cfg$run_datacreate_before)
+  expect_false(cfg$run_datacreate_after)
+  expect_false(cfg$replace_package_data)
+})

@@ -480,6 +480,68 @@ ejscreen_pipeline_config_from_env <- function() {
   )
 }
 
+ejscreen_pipeline_config_recipe <- function(defaults, ...) {
+  args <- utils::modifyList(defaults, list(...), keep.null = TRUE)
+  do.call(ejscreen_pipeline_config, args)
+}
+
 pipeline_config_annual <- function(yr, ...) {
-  ejscreen_pipeline_config(yr = yr, ...)
+  ejscreen_pipeline_config_recipe(list(yr = yr), ...)
+}
+
+pipeline_config_release <- function(yr, ...) {
+  ejscreen_pipeline_config_recipe(
+    list(
+      yr = yr,
+      stage_format = "csv",
+      stage_formats = c("csv", "rda"),
+      include_ejscreen_export = TRUE,
+      include_ejscreen_export_statepct = TRUE,
+      include_ejscreen_pctile_lookup_exports = FALSE,
+      include_ejscreen_dataset_creator_input = FALSE,
+      validate_vs_prior = TRUE,
+      run_datacreate_before = TRUE,
+      run_datacreate_after = TRUE,
+      replace_package_data = FALSE
+    ),
+    ...
+  )
+}
+
+pipeline_config_validation_only <- function(yr, ...) {
+  ejscreen_pipeline_config_recipe(
+    list(
+      yr = yr,
+      force_acs = FALSE,
+      force_bg_acsdata = FALSE,
+      force_bg_geodata = FALSE,
+      validate_vs_prior = TRUE,
+      run_datacreate_before = FALSE,
+      run_datacreate_after = FALSE,
+      replace_package_data = FALSE,
+      include_frs_update = FALSE
+    ),
+    ...
+  )
+}
+
+pipeline_config_exports_only <- function(yr, ...) {
+  ejscreen_pipeline_config_recipe(
+    list(
+      yr = yr,
+      force_acs = FALSE,
+      force_bg_acsdata = FALSE,
+      force_bg_geodata = FALSE,
+      include_ejscreen_export = TRUE,
+      include_ejscreen_export_statepct = TRUE,
+      include_ejscreen_pctile_lookup_exports = FALSE,
+      include_ejscreen_dataset_creator_input = FALSE,
+      validate_vs_prior = FALSE,
+      run_datacreate_before = FALSE,
+      run_datacreate_after = FALSE,
+      replace_package_data = FALSE,
+      include_frs_update = FALSE
+    ),
+    ...
+  )
 }
