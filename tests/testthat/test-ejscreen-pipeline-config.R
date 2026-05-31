@@ -1129,6 +1129,77 @@ test_that("ejscreen_pipeline_reusable_blockgroupstats chooses same-vintage fallb
   expect_true(any(grepl("Using currently packaged EJAM::blockgroupstats", warnings, fixed = TRUE)))
 })
 
+test_that("ejscreen_pipeline_stage_io builds bound stage helpers and caches fallback data", {
+  load_call <- NULL
+  exists_call <- NULL
+  save_call <- NULL
+  secondary_call <- NULL
+  reuse_calls <- 0L
+  io <- EJAM:::ejscreen_pipeline_stage_io(
+    pipeline_dir = "pipe",
+    stage_format = "csv",
+    stage_formats = c("csv", "rda"),
+    pipeline_yr = 2024,
+    storage = "local",
+    prior_package_ref = "v2.5.0",
+    prior_package_path = "data/blockgroupstats.rda",
+    load_fun = function(stage, pipeline_dir, format, storage) {
+      load_call <<- list(
+        stage = stage,
+        pipeline_dir = pipeline_dir,
+        format = format,
+        storage = storage
+      )
+      data.frame(stage = stage)
+    },
+    stage_exists_fun = function(stage, pipeline_dir, format, storage) {
+      exists_call <<- list(
+        stage = stage,
+        pipeline_dir = pipeline_dir,
+        format = format,
+        storage = storage
+      )
+      TRUE
+    },
+    save_stage_formats_fun = function(...) {
+      save_call <<- list(...)
+      c(csv = "saved.csv")
+    },
+    save_secondary_stage_formats_fun = function(...) {
+      secondary_call <<- list(...)
+      list(stage_a = c(rda = "stage_a.rda"))
+    },
+    reusable_blockgroupstats_fun = function(...) {
+      reuse_calls <<- reuse_calls + 1L
+      data.frame(bgfips = "1")
+    }
+  )
+
+  expect_named(
+    io,
+    c(
+      "load_stage",
+      "stage_exists",
+      "save_stage_formats",
+      "save_secondary_stage_formats",
+      "get_reuse_blockgroupstats"
+    )
+  )
+  expect_equal(io$load_stage("bg_acsdata")$stage, "bg_acsdata")
+  expect_equal(load_call, list(stage = "bg_acsdata", pipeline_dir = "pipe", format = "csv", storage = "local"))
+  expect_true(io$stage_exists("bg_envirodata"))
+  expect_equal(exists_call$format, "csv")
+  io$save_stage_formats(data.frame(a = 1), stage = "stage_a", validate = FALSE)
+  expect_equal(save_call$stage, "stage_a")
+  expect_equal(save_call$formats, c("csv", "rda"))
+  expect_false(save_call$validate)
+  io$save_secondary_stage_formats(list(stage_a = data.frame(a = 1)), stages = "stage_a")
+  expect_equal(secondary_call$primary_format, "csv")
+  expect_equal(io$get_reuse_blockgroupstats()$bgfips, "1")
+  expect_equal(io$get_reuse_blockgroupstats()$bgfips, "1")
+  expect_equal(reuse_calls, 1L)
+})
+
 test_that("ejscreen_pipeline_compare_prior_package_stages builds expected git comparisons", {
   calls <- list()
   fake_compare <- function(...) {

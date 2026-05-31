@@ -1190,6 +1190,81 @@ ejscreen_pipeline_reusable_blockgroupstats <- function(pipeline_yr,
   current
 }
 
+ejscreen_pipeline_stage_io <- function(pipeline_dir,
+                                       stage_format,
+                                       stage_formats,
+                                       pipeline_yr,
+                                       storage = c("auto", "local", "s3"),
+                                       prior_package_ref = "",
+                                       prior_package_path = "data/blockgroupstats.rda",
+                                       load_fun = ejscreen_pipeline_load,
+                                       stage_exists_fun = ejscreen_pipeline_stage_exists,
+                                       save_stage_formats_fun = ejscreen_pipeline_save_stage_formats,
+                                       save_secondary_stage_formats_fun = ejscreen_pipeline_save_secondary_stage_formats,
+                                       reusable_blockgroupstats_fun = ejscreen_pipeline_reusable_blockgroupstats) {
+  storage <- match.arg(storage)
+  reuse_blockgroupstats <- NULL
+
+  list(
+    load_stage = function(stage) {
+      load_fun(
+        stage,
+        pipeline_dir = pipeline_dir,
+        format = stage_format,
+        storage = storage
+      )
+    },
+    stage_exists = function(stage) {
+      stage_exists_fun(
+        stage,
+        pipeline_dir = pipeline_dir,
+        format = stage_format,
+        storage = storage
+      )
+    },
+    save_stage_formats = function(x,
+                                  stage,
+                                  formats = stage_formats,
+                                  object_name = stage,
+                                  validate = TRUE) {
+      invisible(save_stage_formats_fun(
+        x = x,
+        stage = stage,
+        formats = formats,
+        pipeline_dir = pipeline_dir,
+        pipeline_yr = pipeline_yr,
+        storage = storage,
+        object_name = object_name,
+        validate = validate
+      ))
+    },
+    save_secondary_stage_formats = function(outputs,
+                                            stages,
+                                            primary_format = stage_format) {
+      invisible(save_secondary_stage_formats_fun(
+        outputs = outputs,
+        stages = stages,
+        stage_formats = stage_formats,
+        primary_format = primary_format,
+        pipeline_dir = pipeline_dir,
+        pipeline_yr = pipeline_yr,
+        storage = storage
+      ))
+    },
+    get_reuse_blockgroupstats = function() {
+      if (!is.null(reuse_blockgroupstats)) {
+        return(reuse_blockgroupstats)
+      }
+      reuse_blockgroupstats <<- reusable_blockgroupstats_fun(
+        pipeline_yr = pipeline_yr,
+        prior_package_ref = prior_package_ref,
+        prior_package_path = prior_package_path
+      )
+      reuse_blockgroupstats
+    }
+  )
+}
+
 ejscreen_pipeline_compare_prior_package_stages <- function(new_pipeline_dir,
                                                            prior_package_ref,
                                                            prior_package_path = "data/blockgroupstats.rda",

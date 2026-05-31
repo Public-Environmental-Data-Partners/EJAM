@@ -460,59 +460,20 @@ print(EJAM:::ejscreen_pipeline_config_summary(pipeline_config))
 # ~ ####
 # helper functions ####
 
-####################### #
-load_file_stage <- function(stage) {
-  # this helper is shorthand, and presumes that pipeline_dir, stage_format, and pipeline_storage are defined in the environment (as they are in this script), so that you can just call load_file_stage("bg_acsdata") for example, and it will know where to look for it and what format to expect.
-  EJAM:::ejscreen_pipeline_load(stage, pipeline_dir = pipeline_dir, format = stage_format, storage = pipeline_storage)
-}
-####################### #
-stage_exists <- function(stage) {
-  # this helper is shorthand, and presumes that pipeline_dir, stage_format, and pipeline_storage are defined in the environment (as they are in this script), so that you can just call load_file_stage("bg_acsdata") for example, and it will know where to look for it and what format to expect.
-  EJAM:::ejscreen_pipeline_stage_exists(stage, pipeline_dir = pipeline_dir, format = stage_format, storage = pipeline_storage)
-}
-####################### #
-reuse_blockgroupstats <- NULL
-get_reuse_blockgroupstats <- function() {
-  if (!is.null(reuse_blockgroupstats)) {
-    return(reuse_blockgroupstats)
-  }
-
-  reuse_blockgroupstats <<- EJAM:::ejscreen_pipeline_reusable_blockgroupstats(
-    pipeline_yr = pipeline_yr,
-    prior_package_ref = prior_package_ref,
-    prior_package_path = prior_package_path
-  )
-  reuse_blockgroupstats
-}
-####################### #
-save_file_stage_formats <- function(x,
-                                    stage,
-                                    formats = stage_formats,
-                                    object_name = stage,
-                                    validate = TRUE) {
-  invisible(EJAM:::ejscreen_pipeline_save_stage_formats(
-    x = x,
-    stage = stage,
-    formats = formats,
-    pipeline_dir = pipeline_dir,
-    pipeline_yr = pipeline_yr,
-    storage = pipeline_storage,
-    object_name = object_name,
-    validate = validate
-  ))
-}
-####################### #
-save_secondary_stage_formats <- function(out, stages, primary_format = stage_format) {
-  invisible(EJAM:::ejscreen_pipeline_save_secondary_stage_formats(
-    outputs = out,
-    stages = stages,
-    stage_formats = stage_formats,
-    primary_format = primary_format,
-    pipeline_dir = pipeline_dir,
-    pipeline_yr = pipeline_yr,
-    storage = pipeline_storage
-  ))
-}
+stage_io <- EJAM:::ejscreen_pipeline_stage_io(
+  pipeline_dir = pipeline_dir,
+  stage_format = stage_format,
+  stage_formats = stage_formats,
+  pipeline_yr = pipeline_yr,
+  storage = pipeline_storage,
+  prior_package_ref = prior_package_ref,
+  prior_package_path = prior_package_path
+)
+load_file_stage <- stage_io$load_stage
+stage_exists <- stage_io$stage_exists
+get_reuse_blockgroupstats <- stage_io$get_reuse_blockgroupstats
+save_file_stage_formats <- stage_io$save_stage_formats
+save_secondary_stage_formats <- stage_io$save_secondary_stage_formats
 ####################### #
 used_provisional_bg_envirodata <- FALSE
 used_provisional_bg_extra_indicators <- FALSE
