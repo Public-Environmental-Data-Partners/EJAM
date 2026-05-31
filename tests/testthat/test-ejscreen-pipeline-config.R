@@ -754,7 +754,15 @@ test_that("ejscreen_pipeline_config_recipe_from_env applies common script env se
     EJAM_PIPELINE_ROOT = root,
     EJAM_PIPELINE_STORAGE = "local",
     EJAM_STAGE_FORMAT = "rda",
-    EJAM_STAGE_FORMATS = "csv,rda"
+    EJAM_STAGE_FORMATS = "csv,rda",
+    EJAM_FORCE_ACS = "TRUE",
+    EJAM_FORCE_BG_GEODATA = "TRUE",
+    EJAM_USE_PROVISIONAL_BG_ENVIRODATA = "TRUE",
+    EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT = "TRUE",
+    EJAM_VALIDATE_VS_PRIOR = "FALSE",
+    EJAM_RUN_DATACREATE_BEFORE = "TRUE",
+    EJAM_REPLACE_PACKAGE_DATA = "TRUE",
+    EJAM_INCLUDE_FRS_UPDATE = "TRUE"
   ))
 
   cfg <- EJAM:::ejscreen_pipeline_config_recipe_from_env(EJAM:::pipeline_config_validation_only)
@@ -765,8 +773,15 @@ test_that("ejscreen_pipeline_config_recipe_from_env applies common script env se
   expect_equal(cfg$pipeline_storage, "local")
   expect_equal(cfg$stage_format, "rda")
   expect_equal(cfg$stage_formats, c("csv", "rda"))
-  expect_false(cfg$run_datacreate_before)
-  expect_true(cfg$validate_vs_prior)
+  expect_true(cfg$force_acs)
+  expect_true(cfg$force_bg_acsdata)
+  expect_true(cfg$force_bg_geodata)
+  expect_true(cfg$use_provisional_bg_envirodata)
+  expect_true(cfg$include_ejscreen_dataset_creator_input)
+  expect_false(cfg$validate_vs_prior)
+  expect_true(cfg$run_datacreate_before)
+  expect_true(cfg$replace_package_data)
+  expect_true(cfg$include_frs_update)
 })
 
 test_that("ejscreen_pipeline_apply_config_env applies recipe settings for runner compatibility", {

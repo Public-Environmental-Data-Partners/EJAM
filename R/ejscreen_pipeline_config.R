@@ -569,24 +569,113 @@ ejscreen_pipeline_config_from_env <- function() {
   )
 }
 
+ejscreen_pipeline_env_is_set <- function(name) {
+  value <- Sys.getenv(name, unset = NA_character_)
+  length(value) == 1L && !is.na(value) && nzchar(value)
+}
+
+ejscreen_pipeline_config_env_override_args <- function(include_yr = TRUE) {
+  args <- list()
+  add <- function(arg, value) {
+    if (!is.null(value)) {
+      args[[arg]] <<- value
+    }
+  }
+  add_value <- function(arg, env) {
+    if (ejscreen_pipeline_env_is_set(env)) {
+      add(arg, ejscreen_pipeline_env_value(env, NULL))
+    }
+  }
+  add_flag <- function(arg, env) {
+    if (ejscreen_pipeline_env_is_set(env)) {
+      add(arg, ejscreen_pipeline_env_flag(env, FALSE))
+    }
+  }
+
+  if (isTRUE(include_yr)) {
+    pipeline_yr <- ejscreen_pipeline_env_value("EJAM_PIPELINE_YR", NULL)
+    if (is.null(pipeline_yr)) {
+      pipeline_yr <- suppressMessages(acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE))
+    }
+    add("yr", as.integer(pipeline_yr))
+  }
+
+  add_value("pipeline_root", "EJAM_PIPELINE_ROOT")
+  add_value("pipeline_dir", "EJAM_PIPELINE_DIR")
+  add_value("pipeline_storage", "EJAM_PIPELINE_STORAGE")
+  add_value("stage_format", "EJAM_STAGE_FORMAT")
+  add_value("stage_formats", "EJAM_STAGE_FORMATS")
+  add_value("blockgroup_universe_source", "EJAM_BLOCKGROUP_UNIVERSE_SOURCE")
+  add_value("tract_weight_source", "EJAM_TRACT_WEIGHT_SOURCE")
+  add_value("decennial_bgwts_cache", "EJAM_DECENNIAL_BGWTS_CACHE")
+  add_flag("refresh_decennial_bgwts", "EJAM_REFRESH_DECENNIAL_BGWTS")
+
+  force_acs_set <- ejscreen_pipeline_env_is_set("EJAM_FORCE_ACS")
+  force_acs <- if (force_acs_set) {
+    ejscreen_pipeline_env_flag("EJAM_FORCE_ACS", FALSE)
+  } else {
+    NULL
+  }
+  add("force_acs", force_acs)
+  if (ejscreen_pipeline_env_is_set("EJAM_FORCE_BG_ACSDATA")) {
+    add("force_bg_acsdata", ejscreen_pipeline_env_flag("EJAM_FORCE_BG_ACSDATA", FALSE))
+  } else if (force_acs_set) {
+    add("force_bg_acsdata", force_acs)
+  }
+  add_flag("force_bg_geodata", "EJAM_FORCE_BG_GEODATA")
+
+  add_value("tiger_bg_cache_dir", "EJAM_TIGER_BG_CACHE_DIR")
+  add_value("acs_download_timeout", "EJAM_ACS_DOWNLOAD_TIMEOUT")
+  add_value("acs_download_retries", "EJAM_ACS_DOWNLOAD_RETRIES")
+  add_flag("include_islandareas_data", "EJAM_INCLUDE_ISLANDAREAS_DATA")
+  add_value("islandareas_reference_path", "EJAM_ISLANDAREAS_REFERENCE_PATH")
+  add_flag("use_islandareas_demographics", "EJAM_USE_ISLANDAREAS_DEMOGRAPHICS")
+  add_flag("use_provisional_bg_envirodata", "EJAM_USE_PROVISIONAL_BG_ENVIRODATA")
+  add_value("bg_envirodata_reference_path", "EJAM_BG_ENVIRODATA_REFERENCE_PATH")
+  add_value("bg_envirodata_reference_vars", "EJAM_BG_ENVIRODATA_REFERENCE_VARS")
+
+  include_export_set <- ejscreen_pipeline_env_is_set("EJAM_INCLUDE_EJSCREEN_EXPORT")
+  include_export <- if (include_export_set) {
+    ejscreen_pipeline_env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT", TRUE)
+  } else {
+    NULL
+  }
+  add("include_ejscreen_export", include_export)
+  if (ejscreen_pipeline_env_is_set("EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT")) {
+    add(
+      "include_ejscreen_export_statepct",
+      ejscreen_pipeline_env_flag("EJAM_INCLUDE_EJSCREEN_EXPORT_STATEPCT", FALSE)
+    )
+  } else if (include_export_set) {
+    add("include_ejscreen_export_statepct", include_export)
+  }
+  add_flag("include_ejscreen_pctile_lookup_exports", "EJAM_INCLUDE_EJSCREEN_PCTILE_LOOKUP_EXPORTS")
+  add_flag("include_ejscreen_dataset_creator_input", "EJAM_INCLUDE_EJSCREEN_DATASET_CREATOR_INPUT")
+  add_flag("validate_vs_prior", "EJAM_VALIDATE_VS_PRIOR")
+  add_value("prior_pipeline_yr", "EJAM_PRIOR_PIPELINE_YR")
+  add_value("prior_pipeline_dir", "EJAM_PRIOR_PIPELINE_DIR")
+  add_value("prior_package_ref", "EJAM_PRIOR_PACKAGE_REF")
+  add_value("prior_package_path", "EJAM_PRIOR_PACKAGE_PATH")
+  add_value("ejscreen_export_reference_path", "EJAM_EJSCREEN_EXPORT_REFERENCE_PATH")
+  add_value("ejscreen_export_statepct_reference_path", "EJAM_EJSCREEN_EXPORT_STATEPCT_REFERENCE_PATH")
+  add_flag("validate_ejscreen_export_reference", "EJAM_VALIDATE_EJSCREEN_EXPORT_REFERENCE")
+  add_flag("validate_vs_prior_waldo", "EJAM_VALIDATE_VS_PRIOR_WALDO")
+  add_flag("run_datacreate_before", "EJAM_RUN_DATACREATE_BEFORE")
+  add_flag("run_datacreate_after", "EJAM_RUN_DATACREATE_AFTER")
+  add_flag("replace_package_data", "EJAM_REPLACE_PACKAGE_DATA")
+  add_flag("include_frs_update", "EJAM_INCLUDE_FRS_UPDATE")
+  add_value("aws_profile", "AWS_PROFILE")
+  add_value("aws_region", "AWS_REGION")
+
+  args
+}
+
 ejscreen_pipeline_config_recipe_from_env <- function(recipe, ...) {
   if (!is.function(recipe)) {
     stop("recipe must be a pipeline config recipe function", call. = FALSE)
   }
 
-  pipeline_yr <- ejscreen_pipeline_env_value("EJAM_PIPELINE_YR", NULL)
-  if (is.null(pipeline_yr)) {
-    pipeline_yr <- suppressMessages(acs_endyear(guess_census_has_published = TRUE, guess_always = TRUE))
-  }
-
-  args <- list(
-    yr = as.integer(pipeline_yr),
-    pipeline_root = ejscreen_pipeline_env_value("EJAM_PIPELINE_ROOT", NULL),
-    pipeline_dir = ejscreen_pipeline_env_value("EJAM_PIPELINE_DIR", NULL),
-    pipeline_storage = ejscreen_pipeline_env_value("EJAM_PIPELINE_STORAGE", "s3"),
-    stage_format = ejscreen_pipeline_env_value("EJAM_STAGE_FORMAT", "csv"),
-    stage_formats = ejscreen_pipeline_env_value("EJAM_STAGE_FORMATS", "csv,rda")
-  )
+  args <- ejscreen_pipeline_config_env_override_args(include_yr = TRUE)
   args <- utils::modifyList(args, list(...), keep.null = TRUE)
   do.call(recipe, args)
 }
