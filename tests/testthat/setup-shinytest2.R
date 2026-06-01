@@ -312,20 +312,58 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       as.character(unlist(uploaded, recursive = TRUE, use.names = FALSE))
     }
     ################## #
+    wait_for_condition <- function(condition, timeout = 60 * 1000, interval = 0.5, label = "condition") {
+      started <- proc.time()[["elapsed"]]
+      repeat {
+        is_ready <- tryCatch(
+          isTRUE(condition()),
+          error = function(e) FALSE
+        )
+        if (is_ready) {
+          return(invisible(TRUE))
+        }
+        if (((proc.time()[["elapsed"]] - started) * 1000) >= timeout) {
+          stop(label, " was not true within ", timeout / 1000, " seconds", call. = FALSE)
+        }
+        Sys.sleep(interval)
+      }
+    }
+    ################## #
+    upload_log_has_files <- function(input_id, expected_names) {
+      logs <- tryCatch(app$get_logs(), error = function(e) NULL)
+      if (is.null(logs) || !"message" %in% names(logs)) {
+        return(FALSE)
+      }
+      messages <- as.character(logs$message)
+      upload_init_messages <- messages[grepl("uploadInit", messages, fixed = TRUE)]
+      upload_end_messages <- messages[grepl("uploadEnd", messages, fixed = TRUE)]
+
+      files_seen <- all(vapply(
+        as.character(expected_names),
+        function(expected_name) {
+          any(grepl(expected_name, upload_init_messages, fixed = TRUE))
+        },
+        logical(1)
+      ))
+      input_seen <- any(grepl(input_id, upload_end_messages, fixed = TRUE))
+
+      files_seen && input_seen
+    }
+    ################## #
     expect_uploaded_file <- function(input_id, expected_names) {
-      app$wait_for_value(
-        input = input_id,
-        ignore = list(NULL),
-        timeout = 60 * 1000
+      wait_for_condition(
+        function() upload_log_has_files(input_id, expected_names),
+        timeout = 60 * 1000,
+        label = paste0(input_id, " upload log")
       )
-      actual_names <- uploaded_file_names(app$get_value(input = input_id))
       testthat::expect_true(
-        all(expected_names %in% actual_names),
+        upload_log_has_files(input_id, expected_names),
         info = paste0(
-          input_id, " uploaded files were: ",
-          paste(actual_names, collapse = ", ")
+          input_id, " upload log did not show expected files: ",
+          paste(expected_names, collapse = ", ")
         )
       )
+      wait_for_start_analysis_enabled()
     }
     ################## #
     wait_for_upload_input_ready <- function(input_id, timeout = 60 * 1000) {

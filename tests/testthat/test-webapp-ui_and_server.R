@@ -309,6 +309,41 @@ test_that("shinytest category selection waits for input values and saves failure
   )
   expect_match(
     setup_text,
+    "upload_log_has_files <- function\\(input_id, expected_names\\)",
+    perl = TRUE
+  )
+  upload_helper_match <- regexpr(
+    paste0(
+      "(?s)expect_uploaded_file <- function\\(input_id, expected_names\\).*?",
+      "wait_for_upload_input_ready <- function"
+    ),
+    setup_text,
+    perl = TRUE
+  )
+  expect_gt(upload_helper_match[1], 0)
+  upload_helper_text <- regmatches(setup_text, upload_helper_match)
+  expect_match(
+    upload_helper_text,
+    "upload_log_has_files(input_id, expected_names)",
+    fixed = TRUE
+  )
+  expect_match(
+    upload_helper_text,
+    "wait_for_start_analysis_enabled()",
+    fixed = TRUE
+  )
+  expect_false(grepl(
+    "app\\$wait_for_value\\(",
+    upload_helper_text,
+    perl = TRUE
+  ))
+  expect_false(grepl(
+    "shinyapp\\.\\$inputValues\\[id\\]",
+    upload_helper_text,
+    perl = TRUE
+  ))
+  expect_match(
+    setup_text,
     "ejam_shinytest2_make_app_dir <- function\\(sourcefolder",
     perl = TRUE
   )
