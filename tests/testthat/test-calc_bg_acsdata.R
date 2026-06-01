@@ -966,6 +966,48 @@ test_that("download_bg_acs_raw saves a folder-plus-manifest raw ACS checkpoint",
   expect_equal(names(loaded$blockgroup), c("B01001", "B03002"))
 })
 
+test_that("raw ACS S3 folder upload deletes stale objects from prior runs", {
+  raw <- list(
+    stage = "bg_acs_raw",
+    yr = 2024,
+    fiveorone = "5",
+    downloaded_at = "test",
+    source = "test",
+    raw_acs_storage = "folder",
+    blockgroup_tables = "B01001",
+    tract_tables = character(),
+    blockgroup = list(B01001 = data.table::data.table(
+      GEO_ID = "1500000US100010001001",
+      fips = "100010001001",
+      SUMLEVEL = "150",
+      B01001_001 = 1
+    )),
+    tract = list()
+  )
+  class(raw) <- c("ejam_bg_acs_raw", class(raw))
+  aws_args <- NULL
+
+  testthat::local_mocked_bindings(
+    bg_acs_raw_folder_exists = function(...) FALSE,
+    ejscreen_pipeline_aws = function(args, stdout = TRUE, stderr = TRUE) {
+      aws_args <<- args
+      character()
+    },
+    .package = "EJAM"
+  )
+
+  path <- EJAM:::save_bg_acs_raw_folder(
+    raw,
+    pipeline_dir = "s3://bucket/ejam",
+    table_format = "csv",
+    storage = "s3"
+  )
+
+  expect_equal(path, "s3://bucket/ejam/bg_acs_raw")
+  expect_equal(aws_args[1:2], c("s3", "sync"))
+  expect_true("--delete" %in% aws_args)
+})
+
 test_that("raw ACS folder load includes user-added table files", {
   pipeline_dir <- file.path(tempdir(), "ejam-bg-acs-raw-manual-table-test")
   raw_dir <- file.path(pipeline_dir, "bg_acs_raw")

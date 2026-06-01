@@ -298,7 +298,7 @@ save_bg_acs_raw_folder <- function(acs_raw,
       validation_strict = validation_strict,
       storage = "local"
     )
-    ejscreen_pipeline_aws(c("s3", "cp", local_dir, raw_dir, "--recursive"), stdout = FALSE, stderr = TRUE)
+    ejscreen_pipeline_aws(c("s3", "sync", local_dir, raw_dir, "--delete"), stdout = FALSE, stderr = TRUE)
     return(raw_dir)
   }
 
