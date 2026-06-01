@@ -11,6 +11,10 @@
 - Fixed interactive-table regression in report details table
 - Improved popup handling for edge cases with empty FIPS geometries (with regression tests) (closes #267)
 - Increased barplot height in the live app view report (400px -> 600px) (closes #160)
+- Improved GitHub release-asset download handling so deployed web app sessions can pass a GitHub token through EJAM's `.arrow` dataset download checks.
+- Treated `leaflet.extras` as a required dependency because the web app uses it directly.
+- Fixed invalid registry-ID upload handling so the web app stops cleanly after showing the validation message.
+- Stopped exporting incomplete draft Lorenz plotting helpers until those functions are ready for public use.
 
 
 
