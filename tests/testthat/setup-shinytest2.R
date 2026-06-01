@@ -662,7 +662,6 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       shinytestLogMessage("About to upload frs_testpoints_10.xlsx for FRS")
       app$set_inputs(ss_choose_method_upload = "FRS", wait_ = FALSE)
       app$upload_file(ss_upload_frs = EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
-      app$wait_for_idle(timeout = 60 * 1000)
     }
 
     ## by CATEGORY IN DROPDOWN MENU ####

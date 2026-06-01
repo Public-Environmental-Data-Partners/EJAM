@@ -292,6 +292,14 @@ test_that("shinytest category selection waits for input values and saves failure
     "save_log\\(paste0\\(test_category, \"-category-selection-log\\.txt\"\\)\\)",
     fixed = FALSE
   )
+  expect_false(grepl(
+    paste0(
+      "ss_upload_frs = EJAM:::app_sys\\(\"testdata/registryid/frs_testpoints_10\\.xlsx\"\\)\\)",
+      "\\s*\\n\\s*app\\$wait_for_idle\\(timeout = 60 \\* 1000\\)"
+    ),
+    setup_text,
+    perl = TRUE
+  ))
 })
 ################################################# #
 #
