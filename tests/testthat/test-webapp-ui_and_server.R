@@ -284,7 +284,22 @@ test_that("shinytest category selection waits for input values and saves failure
 
   expect_match(
     setup_text,
-    "app\\$wait_for_value\\(\\s*input = input_id",
+    "wait_for_input_value <- function\\(input_id, expected = NULL",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "wait_for_input_value\\(input_id, expected = expected\\)",
+    fixed = TRUE
+  )
+  expect_match(
+    setup_text,
+    "select_upload_method <- function\\(upload_method\\)",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "select_upload_method\\(\"FRS\"\\)\\s*\\n\\s*app\\$upload_file\\(ss_upload_frs",
     perl = TRUE
   )
   expect_match(
