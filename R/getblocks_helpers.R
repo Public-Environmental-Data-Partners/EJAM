@@ -111,9 +111,10 @@ if (FALSE) {
 getblocksrowsinbox = function(bb) {
 
   bb_yx_list = bboxdf_latlon2yxlist(bb)
+  quadtree <- localtree_get()
   blks <- lapply(bb_yx_list, FUN = function(bb1)  {
     SearchTrees::rectLookup(
-      localtree,
+      quadtree,
       xlims = c(bb1[,"xmin"], bb1[,"xmax"]),
       ylims = c(bb1[,"ymin"], bb1[,"ymax"])
     )

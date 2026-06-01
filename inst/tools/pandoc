@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import glob
+import os
+import platform
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+
+def _candidate_pandoc_paths() -> list[Path]:
+    candidates: list[Path] = []
+
+    env = os.environ.get("RSTUDIO_PANDOC")
+    if env:
+        p = Path(env).expanduser()
+        if p.is_dir():
+            candidates.append(p / "pandoc")
+        else:
+            candidates.append(p)
+
+    # Common RStudio.app locations (RStudio bundles pandoc via Quarto)
+    app_roots = []
+    for root in ("/Applications", str(Path.home() / "Applications")):
+        app_roots.extend(glob.glob(str(Path(root) / "RStudio*.app")))
+
+    for app in sorted(set(app_roots)):
+        base = Path(app) / "Contents" / "Resources" / "app"
+        arch = platform.machine().lower()
+        candidates.extend(
+            [
+                base / "quarto" / "bin" / "pandoc",
+                base / "bin" / "quarto" / "bin" / "pandoc",
+                base / "bin" / "pandoc",
+                base / "quarto" / "bin" / "tools" / arch / "pandoc",
+            ]
+        )
+        # Some RStudio builds put pandoc under tools/<arch>/pandoc
+        candidates.extend(
+            sorted(
+                (base / "quarto" / "bin" / "tools").glob("*/pandoc")
+            )
+        )
+
+    return candidates
+
+
+def _find_pandoc() -> str | None:
+    for p in _candidate_pandoc_paths():
+        try:
+            if p.is_file() and os.access(p, os.X_OK):
+                return str(p)
+        except OSError:
+            continue
+    return shutil.which("pandoc")
+
+
+def main() -> None:
+    pandoc = _find_pandoc()
+    if not pandoc:
+        msg = (
+            "pandoc not found.\n"
+            "- If you have RStudio installed, set RSTUDIO_PANDOC to the directory "
+            "that contains pandoc (or to the pandoc binary path).\n"
+            "- Otherwise install pandoc and ensure it's on PATH.\n"
+        )
+        raise SystemExit(msg)
+
+    proc = subprocess.run([pandoc, *sys.argv[1:]])
+    raise SystemExit(proc.returncode)
+
+
+if __name__ == "__main__":
+    main()

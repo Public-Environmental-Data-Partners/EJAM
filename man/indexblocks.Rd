@@ -2,15 +2,16 @@
 % Please edit documentation in R/utils_indexblocks.R
 \name{indexblocks}
 \alias{indexblocks}
-\title{Create localtree (a quadtree index of all US block centroids) in global environment}
+\title{Create localtree (a quadtree index of all US block centroids) in package cache}
 \usage{
 indexblocks()
 }
 \value{
-Returns TRUE when done. Side effect is it creates the index in memory.
+Returns the quadtree index invisibly. Side effect is it creates the
+index in the package cache.
 }
 \description{
-Create localtree (a quadtree index of all US block centroids) in global environment
+Create localtree (a quadtree index of all US block centroids) in package cache
 }
 \details{
 Note this is duplicated code in .onAttach() and also in global_defaults_*.R

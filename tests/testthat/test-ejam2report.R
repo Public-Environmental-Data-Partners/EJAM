@@ -41,7 +41,7 @@ test_that("PDF footer CSS handles missing, vector, and escaped footer text", {
   )
   expect_true(grepl("<style>", footer, fixed = TRUE))
   expect_true(grepl('class="report-running-footer-screen"', footer, fixed = TRUE))
-  expect_true(grepl("@media print.*\\.report-running-footer-screen.*display:\\s*none", footer, perl = TRUE))
+  expect_true(grepl("@media print[\\s\\S]*\\.report-running-footer-screen[\\s\\S]*display:\\s*none", footer, perl = TRUE))
   expect_true(grepl('content: " A\\\\B \\"quoted\\"\\nnext";', footer, fixed = TRUE))
 
   blank_footer <- as.character(EJAM:::generate_report_footer(footer_text = NA))
@@ -75,4 +75,109 @@ test_that("local logo_html image sources are embedded for standalone reports", {
 
   expect_true(grepl("data:image", normalized_logo, fixed = TRUE))
   expect_false(grepl(logo_path, normalized_logo, fixed = TRUE))
+})
+
+fips_report_test_output <- function(radius) {
+  list(
+    sitetype = "fips",
+    results_bysite = data.table::data.table(
+      ejam_uniq_id = c("10001", "10003"),
+      valid = c(TRUE, TRUE),
+      pop = c(10, 20),
+      radius.miles = radius,
+      statename = c("Delaware", "Delaware")
+    ),
+    results_overall = data.table::data.table(
+      ejam_uniq_id = "overall",
+      valid = TRUE,
+      pop = 30,
+      radius.miles = radius,
+      statename = "Delaware"
+    )
+  )
+}
+
+local_ejam2report_fips_mocks <- function(buffer_state, .env = parent.frame()) {
+  local_mocked_bindings(
+    shapes_from_fips = function(fips) {
+      data.frame(fips = fips)
+    },
+    shape_buffered_from_shapefile = function(shapefile, radius.miles, ...) {
+      buffer_state$radii <- c(buffer_state$radii, radius.miles)
+      shapefile
+    },
+    fips2name = function(fips) paste("FIPS", fips),
+    report_residents_within_xyz_from_ejamit = function(...) "residents",
+    report_setup_temp_files = function(...) "template.Rmd",
+    create_filename = function(...) "report.html",
+    build_community_report = function(...) "<section>report</section>",
+    plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
+    ejam2map = function(...) "map",
+    ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
+    .package = "EJAM",
+    .env = .env
+  )
+  local_mocked_bindings(
+    pandoc_available = function(...) TRUE,
+    render = function(input, output_format, output_file, params, envir, quiet, ...) {
+      writeLines("<html>report</html>", output_file)
+      output_file
+    },
+    .package = "rmarkdown",
+    .env = .env
+  )
+}
+
+test_that("ejam2report buffers FIPS shapes for positive radius in production paths", {
+  buffer_state <- new.env(parent = emptyenv())
+  buffer_state$radii <- numeric()
+  local_ejam2report_fips_mocks(buffer_state)
+
+  expect_no_error(
+    ejam2report(
+      fips_report_test_output(radius = 1),
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = TRUE,
+      launch_browser = FALSE
+    )
+  )
+  expect_no_error(
+    ejam2report(
+      fips_report_test_output(radius = 1),
+      sitenumber = 1,
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = TRUE,
+      launch_browser = FALSE
+    )
+  )
+  expect_equal(buffer_state$radii, c(1, 1))
+})
+
+test_that("ejam2report does not buffer FIPS shapes for legacy radius 999", {
+  buffer_state <- new.env(parent = emptyenv())
+  buffer_state$radii <- numeric()
+  local_ejam2report_fips_mocks(buffer_state)
+
+  expect_no_error(
+    ejam2report(
+      fips_report_test_output(radius = 999),
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = TRUE,
+      launch_browser = FALSE
+    )
+  )
+  expect_no_error(
+    ejam2report(
+      fips_report_test_output(radius = 999),
+      sitenumber = 1,
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = TRUE,
+      launch_browser = FALSE
+    )
+  )
+  expect_length(buffer_state$radii, 0)
 })
