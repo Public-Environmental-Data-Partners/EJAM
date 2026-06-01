@@ -5,17 +5,114 @@
 
 ---
 
+## Stack Overview
+
+| Layer | Technology |
+|---|---|
+| App | R Shiny (rocker/rstudio base image) |
+| PDF generation | Google Chrome stable + chromote/pagedown |
+| Containerization | Docker (multi-layer build) |
+| Container registry | AWS ECR (shared repo `ejam`, owned by prod) |
+| Hosting | AWS ECS Fargate |
+| Load balancing | AWS ALB (Application Load Balancer) |
+| HTTPS / TLS | AWS ACM (DNS-validated via Squarespace) |
+| Infrastructure-as-code | Terraform (S3 backend, per-env state) |
+| CI/CD | GitHub Actions |
+| DNS | Squarespace (CNAME → ALB) |
+
+---
+
+## Stack Wireframe
+
+```
+                        ┌─────────────────────────────────────────────────────────────────┐
+  LOCAL DEV             │  GITHUB                                                         │
+                        │                                                                 │
+  ejam-infra/           │   branches:                                                     │
+  ├── main.tf           │   ┌──────────┐   PR    ┌────────────┐  push  ┌────────────────┐ │
+  ├── prod.tfvars  ─────┼──►│   main   │ ──────► │ dev-deploy │ ─────► │ deploy-dev.yaml│ │
+  ├── dev.tfvars        │   │ (default)│ ──────► │prod-deploy │ ─────► │ deploy.yaml    │ │
+  └── terraform CLI     │   └──────────┘   PR    └────────────┘  push  └───────┬────────┘ │
+                        │                                                      │          │
+  Terraform state       │   secrets (Settings → Actions):                      │          │
+  S3 bucket:            │   • AWS_ACCESS_KEY_ID                                │          │
+  ejam-terraform-state  │   • AWS_SECRET_ACCESS_KEY                            │          │
+  -716228812058         │   • GITHUB_TOKEN (auto)                              │          │
+  ├── prod/terraform    │   • PIGGYBACK_TOKEN (→ ejamdata releases)            │          │
+  │   .tfstate          │                                                      │          │
+  └── dev/terraform     └──────────────────────────────────────────────────────┼──────────┘
+      .tfstate                                                                   │
+                                                                                 │ build + push image
+                                                                                 ▼
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│  AWS  (us-east-1, account [acount_id]  )                                                   │
+│                                                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────────────────────┐   │
+│  │  ECR  (ejam)                                                                        │   │
+│  │  [acount_id].dkr.ecr.us-east-1.amazonaws.com/ejam                                   │   │
+│  │  tags: prod-<sha>  /  dev-<sha>                                                     │   │
+│  └───────────────────────────────────┬─────────────────────────────────────────────────┘   │
+│                                      │ pull image                                          │
+│            ┌─────────────────────────┼──────────────────────────┐                          │
+│            │                         │                          │                          │
+│            ▼  PROD                   │              DEV          ▼                         │
+│  ┌─────────────────────┐             │  ┌─────────────────────────────┐                    │
+│  │  VPC  10.0.0.0/16   │             │  │  VPC  10.0.0.0/16           │                    │
+│  │  ├ subnet us-east-1a│             │  │  ├ subnet us-east-1a        │                    │
+│  │  └ subnet us-east-1b│             │  │  └ subnet us-east-1b        │                    │
+│  │                     │             │  │                             │                    │
+│  │  ALB  ejam-prod-alb │             │  │  ALB  ejam-dev-alb          │                    │
+│  │  :80  → redirect    │             │  │  :80  → forward             │                    │
+│  │  :443 → TG          │             │  │                             │                    │
+│  │                     │             │  │  ECS Cluster ejam-dev       │                    │
+│  │  ACM cert           │             │  │  Service  ejam-dev-service  │                    │
+│  │  ejam.public        │             │  │  Task     1×(1vCPU / 6GB)   │                    │
+│  │  envirodata.org     │             │  │  Port 3838                  │                    │
+│  │                     │             │  └─────────────────────────────┘                    │
+│  │  ECS Cluster        │             │                                                     │
+│  │  ejam-prod-cluster  │             │  IAM roles (per env)                                │
+│  │  Service            │             │  • ejam-{env}-ecs-execution                         │
+│  │  ejam-prod-service  │             │  • ejam-{env}-ecs-task                              │
+│  │  Task               │             │                                                     │
+│  │  2×(2vCPU / 7GB)    │             │  CloudWatch log groups                              │
+│  │  Port 3838          │             │  • /ecs/ejam-prod  (30d retention)                  │
+│  └─────────────────────┘             │  • /ecs/ejam-dev   (7d retention)                   │
+│                                      │                                                     │
+└──────────────────────────────────────┼─────────────────────────────────────────────────────┘
+                                       │
+                        ┌──────────────┴──────────────┐
+                        │  DNS  (Squarespace)         │
+                        │  ejam.publicenvirodata.org  │
+                        │  CNAME → ejam-prod-alb-     │
+                        │  833585434.us-east-1.elb.   │
+                        │  amazonaws.com              │
+                        └─────────────────────────────┘
+```
+
+---
+
+## URLs
+
+| Environment | URL |
+|---|---|
+| Production | https://ejam.publicenvirodata.org |
+| Production (direct) | http://ejam-prod-alb-833585434.us-east-1.elb.amazonaws.com |
+| Dev | http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com |
+
+---
+
 ## Deploying Changes
 
 ### Branching model
 
 ```
-feature / fix branch  ──── PR ────►  dev-deploy   (validate here)
-        │                                  
-        │             ──── PR ────►  prod-deploy  (production)
+feature / fix branch  ──── PR ────►  dev-deploy
+                      
+                      HUMAN REVIEW / STABILITY CHECK
+        │
+        │             ──── PR ────►  prod-deploy  
         ▼
-      main            ──── PR ────►  dev-deploy   (validate here)
-                      ──── PR ────►  prod-deploy  (production)
+      main            
 ```
 
 Changes go to `dev-deploy` and `prod-deploy` via **separate PRs** from the same source (`main` or a feature branch) — not from `dev-deploy` into `prod-deploy`.
@@ -36,28 +133,7 @@ Test at the dev URL. A human must green-light before promoting to prod.
 Open a separate PR from `main` (or the same feature branch) → `prod-deploy`.
 Once merged, GitHub Actions deploys to production automatically.
 
-> **Branch protections:** Both `dev-deploy` and `prod-deploy` require a PR — direct pushes are blocked for all users including admins. See [Setting up branch protections](#branch-protections) below.
-
----
-
-## URLs
-
-| Environment | URL |
-|---|---|
-| Production | http://ejam-prod-alb-833585434.us-east-1.elb.amazonaws.com |
-| Dev | http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com |
-
----
-
-## Branch Protections
-
-Both `dev-deploy` and `prod-deploy` should be protected in GitHub:
-
-**Settings → Branches → Add rule** for each branch:
-- ✅ Require a pull request before merging
-- ✅ Required approvals: 1 (restrict to repo admins via CODEOWNERS or team)
-- ✅ Do not allow bypassing the above settings (applies to admins too)
-- ✅ Require status checks to pass (optional but recommended)
+> **Branch protections:** Both `dev-deploy` and `prod-deploy` require a PR — direct pushes are blocked for all users including admins.
 
 ---
 
@@ -76,13 +152,23 @@ terraform apply -var-file=prod.tfvars -var="aws_account_id=716228812058"
 
 # Dev
 terraform init -backend-config="key=dev/terraform.tfstate" -reconfigure
-terraform apply -var-file=dev.tfvars  -var="aws_account_id=716228812058"
+terraform apply -var-file=dev.tfvars -var="aws_account_id=716228812058"
 ```
 
 ### Adding a custom domain (HTTPS)
-Set `domain_name = "ejam.yourdomain.com"` in `prod.tfvars`, run `terraform apply`.
+Set `domain_name = "ejam.yourdomain.com"` in the relevant `.tfvars`, run `terraform apply`.
 Terraform outputs the CNAME records to add in Squarespace DNS for cert validation.
 Run `terraform apply` once more after adding them — HTTP will redirect to HTTPS automatically.
+
+---
+
+## Branch Protections
+
+Both `dev-deploy` and `prod-deploy` are protected in GitHub:
+
+- ✅ Require a pull request before merging
+- ✅ No required approvals (any team member can merge their own PR)
+- ✅ Applies to admins too (no bypass)
 
 ---
 
