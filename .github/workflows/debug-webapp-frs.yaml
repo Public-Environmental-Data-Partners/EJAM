@@ -21,6 +21,7 @@ jobs:
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ github.token }}
       GH_TOKEN: ${{ github.token }}
       NOT_CRAN: true
       SHINYTEST2_APP_DRIVER_TEST_ON_CRAN: 1
