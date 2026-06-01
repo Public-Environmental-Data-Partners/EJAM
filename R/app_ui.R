@@ -188,9 +188,8 @@ app_ui <- function(request) {
                                 )
                       ),
 
-                      ### include error msg here?? ***
-                      # textOutput("error_message"),
-                      # tags$style(HTML("#error_message { color: red; }")),
+                      textOutput("latlon_upload_error"),
+                      tags$style(HTML("#latlon_upload_error { color: red; font-weight: bold; }")),
                       actionButton(inputId = 'latlon_help', label = 'More Info', class = 'usa-button usa-button--outline'), # HTML(latlon_help_msg)
                       br()
                     ), # end latlong conditionalPanel

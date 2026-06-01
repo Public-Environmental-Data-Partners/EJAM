@@ -106,10 +106,9 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     fips <- ejamitout$results_bysite$ejam_uniq_id # fips should be stored here in this case
     shp <- shapes_from_fips(fips)
 
-    ## ONCE WE IMPLEMENT BUFFERING radius IN FIPS CASE, since we just downloaded bounds, we have to add the buffering
+    # Apply buffer around FIPS boundaries if a buffer radius was used during analysis
     if (!is.null(radius) && !is.na(radius) && radius > 0 && radius != 999) {
-      warning("adding buffer around fips is not yet implemented")
-      # shp <- shape_buffered_from_shapefile(shp, radius.miles = radius)
+      shp <- shape_buffered_from_shapefile(shp, radius.miles = radius)
     }
   }
   ################################################## #

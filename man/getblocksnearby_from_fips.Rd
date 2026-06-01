@@ -31,7 +31,11 @@ much like output of \code{\link[=getblocksnearby]{getblocksnearby()}} or  \code{
 
 \item{allow_multiple_fips_types}{if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips}
 
-\item{radius}{CURRENTLY NOT IMPLEMENTED - NO BUFFER IS ADDED}
+\item{radius}{miles of buffer to add around each FIPS boundary before finding blocks.
+Default is 0 (no buffer: only blocks within the FIPS boundaries are analyzed).
+When radius > 0, the FIPS boundaries are downloaded, a buffer of that size is added
+around each boundary, and blocks within the buffered area are analyzed.
+Use 999 to signal FIPS analysis mode without a buffer (same as 0 for buffering purposes).}
 }
 \value{
 \itemize{

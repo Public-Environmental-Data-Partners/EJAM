@@ -203,6 +203,158 @@ test_that('ejamit() output has names the same as it used to return, i.e. names(t
 })
 ########################################################## #
 
+test_that("ejamit() preserves a real FIPS buffer radius in final outputs", {
+  fips_radius_passed_to_block_lookup <- NULL
+  local_mocked_bindings(
+    fips_lead_zero = function(fips) as.character(fips),
+    fips_valid = function(fips) rep(TRUE, length(fips)),
+    fips2stateabbrev = function(fips) rep("DE", length(fips)),
+    getblocksnearby_from_fips = function(fips, radius, return_shp = FALSE, ...) {
+      fips_radius_passed_to_block_lookup <<- radius
+      pts <- data.table::data.table(
+        ejam_uniq_id = as.character(fips),
+        blockid = "100010401001000",
+        distance = 0,
+        blockwt = 1,
+        bgid = "100010401001",
+        fips = as.character(fips)
+      )
+      if (isTRUE(return_shp)) {
+        return(list(
+          pts = pts,
+          polys = data.frame(FIPS = as.character(fips), ejam_uniq_id = seq_along(fips))
+        ))
+      }
+      pts
+    },
+    doaggregate = function(...) {
+      list(
+        results_bysite = data.table::data.table(
+          ejam_uniq_id = "10001",
+          pop = 10,
+          radius.miles = 0
+        ),
+        results_overall = data.table::data.table(
+          ejam_uniq_id = "10001",
+          pop = 10,
+          radius.miles = 0
+        ),
+        results_bybg_people = data.table::data.table(
+          ejam_uniq_id = "10001",
+          bgid = "100010401001",
+          pop = 10,
+          radius.miles = 0
+        ),
+        longnames = character()
+      )
+    },
+    area_sqmi = function(...) 1,
+    url_columns_bysite = function(...) {
+      list(
+        results_bysite = data.table::data.table(`EJAM Report` = "report"),
+        results_overall = data.table::data.table(`EJAM Report` = "report")
+      )
+    },
+    fixcolnames = function(x, ...) x,
+    batch.summarize = function(...) list(),
+    table_tall_from_overall = function(...) data.table::data.table(),
+    .package = "EJAM"
+  )
+
+  out <- ejamit(
+    fips = "10001",
+    radius = 1,
+    reports = list(),
+    quiet = TRUE,
+    silentinteractive = TRUE
+  )
+
+  expect_equal(fips_radius_passed_to_block_lookup, 1)
+  expect_equal(out$results_bysite$radius.miles, 1)
+  expect_equal(out$results_overall$radius.miles, 1)
+  expect_equal(unique(out$results_bybg_people$radius.miles), 1)
+})
+########################################################## #
+
+test_that("ejamit() calculates real FIPS buffer area from buffered polygons", {
+  fips_return_shp_requested <- FALSE
+  area_call_type <- NULL
+  local_mocked_bindings(
+    fips_lead_zero = function(fips) as.character(fips),
+    fips_valid = function(fips) rep(TRUE, length(fips)),
+    fips2stateabbrev = function(fips) rep("DE", length(fips)),
+    getblocksnearby_from_fips = function(fips, radius, return_shp = FALSE, ...) {
+      fips_return_shp_requested <<- isTRUE(return_shp)
+      pts <- data.table::data.table(
+        ejam_uniq_id = seq_along(fips),
+        blockid = "100010401001000",
+        distance = 0,
+        blockwt = 1,
+        bgid = "100010401001",
+        fips = as.character(fips)
+      )
+      if (isTRUE(return_shp)) {
+        return(list(
+          pts = pts,
+          polys = data.frame(FIPS = as.character(fips), ejam_uniq_id = seq_along(fips))
+        ))
+      }
+      pts
+    },
+    doaggregate = function(...) {
+      list(
+        results_bysite = data.table::data.table(
+          ejam_uniq_id = "10001",
+          pop = 10,
+          radius.miles = 0
+        ),
+        results_overall = data.table::data.table(
+          ejam_uniq_id = "10001",
+          pop = 10,
+          radius.miles = 0
+        ),
+        results_bybg_people = data.table::data.table(
+          ejam_uniq_id = "10001",
+          bgid = "100010401001",
+          pop = 10,
+          radius.miles = 0
+        ),
+        longnames = character()
+      )
+    },
+    area_sqmi = function(df = NULL, radius.miles = NULL, shp = NULL, fips = NULL, ...) {
+      area_call_type <<- if (!is.null(shp)) "shp" else if (!is.null(fips)) "fips" else "other"
+      if (!is.null(shp)) return(42)
+      if (!is.null(fips)) return(1)
+      0
+    },
+    url_columns_bysite = function(...) {
+      list(
+        results_bysite = data.table::data.table(`EJAM Report` = "report"),
+        results_overall = data.table::data.table(`EJAM Report` = "report")
+      )
+    },
+    fixcolnames = function(x, ...) x,
+    batch.summarize = function(...) list(),
+    table_tall_from_overall = function(...) data.table::data.table(),
+    .package = "EJAM"
+  )
+
+  out <- ejamit(
+    fips = "10001",
+    radius = 1,
+    reports = list(),
+    quiet = TRUE,
+    silentinteractive = TRUE
+  )
+
+  expect_true(fips_return_shp_requested)
+  expect_equal(area_call_type, "shp")
+  expect_equal(out$results_bysite$area_sqmi, 42)
+  expect_equal(out$results_overall$area_sqmi, 42)
+})
+########################################################## #
+
 test_that("ejamit() still returns results_overall identical to what it used to return
           (saved as testoutput_ejamit_10pts_1miles$results_overall)", {
             testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
