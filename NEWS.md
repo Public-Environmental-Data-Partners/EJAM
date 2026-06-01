@@ -1,3 +1,19 @@
+# EJAM (development)
+
+- Enabled adding buffer distance around FIPS unit like a city (closes #139)
+- Improved warning/handling if upload exceeds max points (closes #347)
+- Disable "Start Analysis" when NAICS/SIC selections are cleared (closes #365)
+- Fixed shapefile area assignment for no-block polygons (closes #340)
+- Fixed radius warnings in FIPS/shapefile report headers (closes #368)
+- Fixed downloadable report footer duplication on PDF barplot page (closes #325)
+- Fixed shapefile-based report links (in excel) to point to the EJAM app (closes #336)
+- Fixed polygon one-site report links to avoid broken EJAM API URLs (closes #360)
+- Fixed interactive-table regression in report details table
+- Improved popup handling for edge cases with empty FIPS geometries (with regression tests)
+- Increased barplot height in the live app view report (400px -> 600px)
+
+
+
 # EJAM 2.32.8.001 (May 2026)
 
 Web app features:
