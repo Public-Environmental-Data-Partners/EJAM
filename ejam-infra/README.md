@@ -10,27 +10,30 @@
 ### Branching model
 
 ```
-feature / fix branch
-        │
+feature / fix branch  ──── PR ────►  dev-deploy   (validate here)
+        │                                  
+        │             ──── PR ────►  prod-deploy  (production)
         ▼
-      main  ──── PR ────►  dev-deploy  ──── PR ────►  prod-deploy
-                          (validate here)              (production)
+      main            ──── PR ────►  dev-deploy   (validate here)
+                      ──── PR ────►  prod-deploy  (production)
 ```
+
+Changes go to `dev-deploy` and `prod-deploy` via **separate PRs** from the same source (`main` or a feature branch) — not from `dev-deploy` into `prod-deploy`.
 
 ### Step-by-step
 
-**1. Get your changes into `main`**
-Open a PR from your feature/fix branch → `main` and merge as normal.
+**1. Develop your changes**
+Work on a feature/fix branch and merge to `main` via PR, or keep on a feature branch ready to deploy.
 
 **2. Deploy to dev**
-Open a PR from `main` → `dev-deploy`. Requires approval from a repo admin.
-Once merged, GitHub Actions builds the Docker image and deploys to the dev environment automatically (~15 min build).
+Open a PR from `main` (or your feature branch) → `dev-deploy`.
+Once merged, GitHub Actions builds and deploys to dev automatically (~15 min).
 
 **3. Validate on dev**
-Test your changes at the dev URL. Green-light from a human required before promoting to prod.
+Test at the dev URL. A human must green-light before promoting to prod.
 
 **4. Deploy to prod**
-Open a PR from `dev-deploy` → `prod-deploy` (or `main` → `prod-deploy` for urgent fixes). Requires approval from a repo admin.
+Open a separate PR from `main` (or the same feature branch) → `prod-deploy`.
 Once merged, GitHub Actions deploys to production automatically.
 
 > **Branch protections:** Both `dev-deploy` and `prod-deploy` require a PR — direct pushes are blocked for all users including admins. See [Setting up branch protections](#branch-protections) below.
