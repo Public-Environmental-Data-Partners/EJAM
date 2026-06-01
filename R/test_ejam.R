@@ -346,7 +346,8 @@ x <- test_ejam(
         "test-plot_vs_us.R",
 
         "test-create_interactive_table.R",
-        "test-shinytest2-app-dir.R"
+        "test-shinytest2-app-dir.R",
+        "test-map_headernames-report-ratio-metadata.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",
