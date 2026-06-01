@@ -37,7 +37,7 @@
   Terraform state       │   secrets (Settings → Actions):                      │          │
   S3 bucket:            │   • AWS_ACCESS_KEY_ID                                │          │
   ejam-terraform-state  │   • AWS_SECRET_ACCESS_KEY                            │          │
-  -716228812058         │   • GITHUB_TOKEN (auto)                              │          │
+  -<ACCOUNT_ID>        │   • GITHUB_TOKEN (auto)                              │          │
   ├── prod/terraform    │   • PIGGYBACK_TOKEN (→ ejamdata releases)            │          │
   │   .tfstate          │                                                      │          │
   └── dev/terraform     └──────────────────────────────────────────────────────┼──────────┘
@@ -45,7 +45,7 @@
                                                                                  │ build + push image
                                                                                  ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│  AWS  (us-east-1, account [acount_id]  )                                                   │
+│  AWS  (us-east-1)                                                                          │
 │                                                                                            │
 │  ┌─────────────────────────────────────────────────────────────────────────────────────┐   │
 │  │  ECR  (ejam)                                                                        │   │
@@ -141,18 +141,18 @@ Once merged, GitHub Actions deploys to production automatically.
 
 App code deploys happen via GitHub Actions. AWS infrastructure changes (resize tasks, add HTTPS, etc.) require Terraform run locally from `ejam-infra/`.
 
-State is stored in S3 bucket `ejam-terraform-state-716228812058`.
+State is stored in S3 bucket `ejam-terraform-state-<ACCOUNT_ID>`.
 
 ```bash
 cd ejam-infra
 
 # Prod
 terraform init -backend-config="key=prod/terraform.tfstate"
-terraform apply -var-file=prod.tfvars -var="aws_account_id=716228812058"
+terraform apply -var-file=prod.tfvars -var="aws_account_id=<ACCOUNT_ID>"
 
 # Dev
 terraform init -backend-config="key=dev/terraform.tfstate" -reconfigure
-terraform apply -var-file=dev.tfvars -var="aws_account_id=716228812058"
+terraform apply -var-file=dev.tfvars -var="aws_account_id=<ACCOUNT_ID>"
 ```
 
 ### Adding a custom domain (HTTPS)
