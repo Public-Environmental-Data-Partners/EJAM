@@ -189,8 +189,12 @@ Highlights:
 - Represented EJScreen map-bin and popup-text fields as their own
   `map_headernames` rows, and removed several redundant legacy name and helper
   columns.
-- Saved a CSV copy of `map_headernames` in `data-raw` as a future
-  authoritative-source candidate, instead of the old .xlsx file.
+- Made `data-raw/map_headernames.csv` the authoritative source used to
+  regenerate `map_headernames.rda`, rather than relying on the old .xlsx file.
+- Expanded `map_headernames` and the generated `names_*` metadata so report
+  average, percentile, and ratio columns cover the health, climate, critical
+  services, language, age, poverty, and community-report groups needed for
+  report rounding and ratio-to-average outputs.
 
 ## Documentation, Testing, and Maintenance
 
