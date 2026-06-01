@@ -215,52 +215,43 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     }
     ################## #
     wait_for_input_value <- function(input_id, expected = NULL, timeout = 60 * 1000, interval = 0.5) {
-      deadline <- Sys.time() + timeout / 1000
-      last_value <- NULL
-      last_error <- NULL
-
-      repeat {
-        value <- tryCatch(
-          app$get_value(input = input_id),
-          error = function(e) {
-            last_error <<- e
-            NULL
-          }
+      if (is.null(expected)) {
+        app$wait_for_value(
+          input = input_id,
+          ignore = list(NULL),
+          timeout = timeout
         )
-        if (!is.null(value)) {
-          last_value <- value
-          if (is.null(expected) || identical(as.character(value), as.character(expected))) {
-            return(invisible(value))
-          }
-        }
-        if (Sys.time() >= deadline) {
-          if (!is.null(expected)) {
-            testthat::fail(
-              paste0(
-                "timeout reached when waiting for input: ",
-                input_id,
-                " to equal ",
-                paste(as.character(expected), collapse = ", "),
-                "; last value was ",
-                paste(as.character(last_value), collapse = ", ")
-              )
-            )
-          }
-          if (!is.null(last_error)) {
-            stop(last_error)
-          }
-          testthat::fail(paste0("timeout reached when waiting for input: ", input_id))
-        }
-        Sys.sleep(interval)
+        return(invisible(TRUE))
       }
+      input_id_json <- jsonlite::toJSON(input_id, auto_unbox = TRUE)
+      expected_json <- jsonlite::toJSON(as.character(expected), auto_unbox = FALSE)
+      app$wait_for_js(
+        sprintf(
+          paste(
+            "(() => {",
+            "const id = %s;",
+            "const expected = %s.map(String);",
+            "const shinyapp = window.Shiny && window.Shiny.shinyapp;",
+            "if (!shinyapp || !shinyapp.$inputValues) return false;",
+            "let value = shinyapp.$inputValues[id];",
+            "if (value === undefined || value === null) return false;",
+            "if (!Array.isArray(value)) value = [value];",
+            "value = value.map(String);",
+            "return value.length === expected.length && value.every((v, i) => v === expected[i]);",
+            "})()",
+            sep = "\n"
+          ),
+          input_id_json,
+          expected_json
+        ),
+        timeout = timeout,
+        interval = interval * 1000
+      )
+      invisible(TRUE)
     }
     ################## #
     expect_input_value <- function(input_id, expected) {
       wait_for_input_value(input_id, expected = expected)
-      testthat::expect_equal(
-        as.character(app$get_value(input = input_id)),
-        as.character(expected)
-      )
     }
     ################## #
     uploaded_file_names <- function(uploaded) {
