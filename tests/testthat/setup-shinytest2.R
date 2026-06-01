@@ -271,7 +271,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       app$wait_for_value(
         input = input_id,
         ignore = list(NULL),
-        timeout = 20 * 1000
+        timeout = 60 * 1000
       )
       actual_names <- uploaded_file_names(app$get_value(input = input_id))
       testthat::expect_true(
@@ -281,6 +281,36 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
           paste(actual_names, collapse = ", ")
         )
       )
+    }
+    ################## #
+    wait_for_upload_input_ready <- function(input_id, timeout = 60 * 1000) {
+      input_id_json <- jsonlite::toJSON(input_id, auto_unbox = TRUE)
+      app$wait_for_js(
+        sprintf(
+          paste(
+            "(() => {",
+            "const el = document.getElementById(%s);",
+            "if (!el || el.disabled) return false;",
+            "let node = el.parentElement;",
+            "while (node) {",
+            "const style = window.getComputedStyle(node);",
+            "if (style.display === 'none' || style.visibility === 'hidden') return false;",
+            "node = node.parentElement;",
+            "}",
+            "return true;",
+            "})()",
+            sep = "\n"
+          ),
+          input_id_json
+        ),
+        timeout = timeout
+      )
+    }
+    ################## #
+    upload_test_file <- function(input_id, paths, timeout = 60 * 1000) {
+      wait_for_upload_input_ready(input_id, timeout = timeout)
+      args <- c(setNames(list(paths), input_id), list(timeout_ = timeout))
+      do.call(app$upload_file, args)
     }
     ################## #
     expect_dom_output_present <- function(output_id) {
@@ -658,40 +688,40 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       ### > latlon ####
       shinytestLogMessage("About to upload latlon testpoints_10.xlsx")
       select_upload_method("latlon")
-      app$upload_file(ss_upload_latlon = EJAM:::app_sys("testdata/latlon/testpoints_10.xlsx"))
+      upload_test_file("ss_upload_latlon", EJAM:::app_sys("testdata/latlon/testpoints_10.xlsx"))
     } else if(test_category == "FIPS") {
       ### > FIPS ####
       shinytestLogMessage("About to upload counties_in_Delaware.xlsx for FIPS")
       select_upload_method("FIPS")
-      app$upload_file(ss_upload_fips = EJAM:::app_sys("testdata/fips/counties_in_Delaware.xlsx"))
+      upload_test_file("ss_upload_fips", EJAM:::app_sys("testdata/fips/counties_in_Delaware.xlsx"))
     } else if(test_category == "shp-zip") {
       ### > shp-zip ####
       shinytestLogMessage("About to upload portland_shp.zip for SHP")
       select_upload_method("SHP")
-      app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland_shp.zip"))
+      upload_test_file("ss_upload_shp", EJAM:::app_sys("testdata/shapes/portland_shp.zip"))
     } else if(test_category == "shp-gdb-zip") {
       ### > shp-gdb-zip ####
       shinytestLogMessage("About to upload portland.gdp.zip for SHP")
       select_upload_method("SHP")
-      app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland.gdb.zip"))
+      upload_test_file("ss_upload_shp", EJAM:::app_sys("testdata/shapes/portland.gdb.zip"))
     } else if(test_category == "shp-json") {
       ### > shp-json ####
       shinytestLogMessage("About to upload portland.json for SHP")
       select_upload_method("SHP")
-      app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland.json"))
+      upload_test_file("ss_upload_shp", EJAM:::app_sys("testdata/shapes/portland.json"))
     } else if(test_category == "shp-unzip") {
       ### > shp-unzip ####
       shinytestLogMessage("About to upload individual shapefiles for SHP")
       select_upload_method("SHP")
-      app$upload_file(ss_upload_shp = c(EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.dbf"),
-                                        EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.prj"),
-                                        EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp"),
-                                        EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shx")))
+      upload_test_file("ss_upload_shp", c(EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.dbf"),
+                                          EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.prj"),
+                                          EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp"),
+                                          EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shx")))
     } else if(test_category == "FRS") {
       ### > FRS ####
       shinytestLogMessage("About to upload frs_testpoints_10.xlsx for FRS")
       select_upload_method("FRS")
-      app$upload_file(ss_upload_frs = EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
+      upload_test_file("ss_upload_frs", EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
     }
 
     ## by CATEGORY IN DROPDOWN MENU ####
