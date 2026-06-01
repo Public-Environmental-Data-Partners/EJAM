@@ -214,7 +214,17 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       testthat::expect_true(output_value_is_present(outputs_now[[output_id]]))
     }
     ################## #
+    wait_for_input_value <- function(input_id, timeout = 60 * 1000) {
+      app$wait_for_value(
+        input = input_id,
+        ignore = list(NULL),
+        timeout = timeout
+      )
+      invisible(TRUE)
+    }
+    ################## #
     expect_input_value <- function(input_id, expected) {
+      wait_for_input_value(input_id)
       testthat::expect_equal(
         as.character(app$get_value(input = input_id)),
         as.character(expected)
@@ -652,6 +662,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       shinytestLogMessage("About to upload frs_testpoints_10.xlsx for FRS")
       app$set_inputs(ss_choose_method_upload = "FRS", wait_ = FALSE)
       app$upload_file(ss_upload_frs = EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
+      app$wait_for_idle(timeout = 60 * 1000)
     }
 
     ## by CATEGORY IN DROPDOWN MENU ####
@@ -685,7 +696,13 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     }
     ########################################################################### #
 
-    expect_category_selection()
+    tryCatch(
+      expect_category_selection(),
+      error = function(e) {
+        try(save_log(paste0(test_category, "-category-selection-log.txt")), silent = TRUE)
+        stop(e)
+      }
+    )
 
     if (test_category == "NAICS") {
       exercise_category_clear_behavior(

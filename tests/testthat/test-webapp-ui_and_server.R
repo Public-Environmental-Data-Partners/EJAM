@@ -235,6 +235,65 @@ test_that("app_server clears stale lat/lon upload cap error before reading new f
   })
 })
 ################################################# #
+
+test_that("app_server validates invalid FRS uploads without falling through to sitepoints", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c(
+        "default_hide_about_tab",
+        "default_hide_written_report",
+        "default_hide_plot_barplot_tab",
+        "default_hide_plot_histo_tab"
+      )) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    read_csv_or_xl = function(fname, ...) {
+      data.frame(id = "not-a-registry-id")
+    },
+    frs_is_valid = function(frs_upload) {
+      FALSE
+    },
+    .package = "EJAM"
+  )
+
+  testServer(app = app_server, expr = {
+    session$setInputs(
+      testing = FALSE,
+      ss_choose_method = "upload",
+      ss_choose_method_upload = "FRS",
+      ss_upload_frs = data.frame(datapath = "bad-frs.xlsx")
+    )
+
+    expect_error(data_up_frs(), "Records with invalid Registry IDs")
+    expect_true(isTRUE(disable_buttons[["FRS"]]))
+    expect_identical(invalid_alert[["FRS"]], 0)
+    expect_null(an_map_text_pts[["FRS"]])
+  })
+})
+################################################# #
+
+test_that("shinytest category selection waits for input values and saves failure logs", {
+  setup_file <- testthat::test_path("setup-shinytest2.R")
+  setup_lines <- readLines(setup_file, warn = FALSE)
+  setup_text <- paste(setup_lines, collapse = "\n")
+
+  expect_match(
+    setup_text,
+    "app\\$wait_for_value\\(\\s*input = input_id",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "save_log\\(paste0\\(test_category, \"-category-selection-log\\.txt\"\\)\\)",
+    fixed = FALSE
+  )
+})
+################################################# #
 #
 
 # do tests of MODULES? ####
