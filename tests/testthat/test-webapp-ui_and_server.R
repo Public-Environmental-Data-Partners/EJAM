@@ -309,6 +309,21 @@ test_that("shinytest category selection waits for input values and saves failure
   )
   expect_match(
     setup_text,
+    "ejam_shinytest2_make_app_dir <- function\\(sourcefolder",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "# Use installed EJAM by default; set EJAM_SHINYTEST2_USE_SOURCE=true to use source-tree loading.",
+    fixed = TRUE
+  )
+  expect_match(
+    setup_text,
+    "use_source <- ejam_shinytest2_truthy_env\\(\"EJAM_SHINYTEST2_USE_SOURCE\"\\)",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
     "select_upload_method\\(\"FRS\"\\)\\s*\\n\\s*upload_test_file\\(\"ss_upload_frs\"",
     perl = TRUE
   )
