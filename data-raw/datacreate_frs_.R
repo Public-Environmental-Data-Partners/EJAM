@@ -22,8 +22,8 @@
 # Note: EPA ECHO database info on how often it gets updated with new FRS data:
 # https://echo.epa.gov/resources/echo-data/about-the-data#sources
 ################################################################################## #
-
-if (!(basename(getwd()) %in% "EJAM")) {stop("must do this script within the root of source package")}
+if (!file.exists(file.path(getwd(), "DESCRIPTION")) || desc::desc_get(file = "DESCRIPTION", keys = "Package") != "EJAM") {stop('do this from EJAM source package folder')}
+# if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')} # fails if you put the source in a worktree like one named after a branch
 
 folder_save_as_arrow = "./data-raw/pipeline_outputs/frs" # "./data"  # where to save the new .arrow files of frs-related info
 refresh_frs_arrows <- tolower(Sys.getenv("EJAM_REFRESH_FRS_ARROWS", "TRUE")) %in% c("true", "t", "1", "yes", "y")
