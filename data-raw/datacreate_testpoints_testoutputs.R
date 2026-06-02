@@ -81,8 +81,8 @@ pkg_update_testpoints_testoutputs <- function(
 ) {
   ######################################################## ######################################################### #
   if (recreating_doaggregate_output) {recreating_getblocksnearby <- TRUE}  # needed in that case
-
-  if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')}
+  if (!file.exists(file.path(getwd(), "DESCRIPTION")) || desc::desc_get(file = "DESCRIPTION", keys = "Package") != "EJAM") {stop('do this from EJAM source package folder')}
+  # if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')} # fails if you put the source in a worktree like one named after a branch
   # library(EJAM) # does this need to be here? will it possibly be a problem in some situation like before the package is installed but source can be loaded, or while changes are being made and not yet reinstalled with updates, etc.?
   #  EJAM package must be loaded or at least the functions available
 
