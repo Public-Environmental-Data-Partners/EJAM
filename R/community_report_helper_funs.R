@@ -633,7 +633,7 @@ generate_report_footnotes <- function(
 generate_report_footer <- function(footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL) {
 
   if (missing(footer_version_number) || is.null(footer_version_number)) {
-    footer_version_number <- as.vector(global_or_param("app_version"))
+    footer_version_number <- as.vector(global_or_param("app_version_info"))
   }
 
   if (isTRUE(getOption("shiny.testmode"))) {
@@ -646,7 +646,7 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
   }
 
   if (missing(footer_text) || is.null(footer_text)) {
-    footer_text <- paste0('Report created by EJAM version ', footer_version_number, ' on ', footer_date)
+    footer_text <- paste0('Report created on ', footer_date, ' (by ', footer_version_number, ')')
   }
 
   if (missing(footer_html) || is.null(footer_html)) {
