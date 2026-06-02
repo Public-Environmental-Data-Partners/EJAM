@@ -11,6 +11,12 @@
 # get saved in the data folder when a user installs the package, but they are not part of the package itself per se.
 # seee https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html
 
+/data-raw/pipeline_outputs/
+# Generated annual data-update pipeline checkpoints can include many large CSV
+# files, such as raw ACS tables and derived blockgroupstats/bgej/usastats files.
+# If a checkpoint folder should be committed temporarily, force-add it so the
+# .gitattributes Git LFS rules apply.
+
 tests/testthat/_snaps/
 tests/testthat/_snaps/**/*.png
 # Try ignoring the _snaps folders entirely, since they can
@@ -18,14 +24,9 @@ tests/testthat/_snaps/**/*.png
 # as explained in the "Testing EJAM App with shinytest2" vignette/article
 # at https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.html
 
-# /docs/
-# These are NOT ignored, currently, although perhaps that could be reconsidered.
-# The html etc. created by pkgdown for documentation of the package are in the /docs/ folders.
-# The whole docs folder is only about 12 MB, but has thousands of files (which to be fair can be distracting to have git track and to commit change to).
-# The repository was configured to deploy and publish the gh pages website from the docs folder,
-# in which case we presumably do not want to ignore changes in it, despite defaults in pkgdown package?
-# (The default is that use_pkgdown(): creates a pkgdown config file and adds relevant files or directories to .Rbuildignore and .gitignore to ignore the docs folder?)
-# However, maybe gh actions can create and deploy the site (from a docs folder on github.com?) without one having to run EJAM:::pkgdown_update() locally and committing the local docs folders.
+/docs/
+# Generated pkgdown HTML belongs on the gh-pages branch, not on source
+# branches. Local docs builds and previews can still write to /docs/.
 
 ################################################################################### #
 # Standard or obvious items to ignore
@@ -82,10 +83,17 @@ packrat/lib*/
 # such as EJAM/rsconnect/rstudio-connect.dmap-stage.aws.epa.gov/..../ejam.dcf  configuration file for deplying to RStudio Connect server
 /Meta/
 
+
+# .DS_Store files are created by macOS to store Finder metadata/settings
+.DS_Store
+**/.DS_Store
+
 # Ignore any bookmarks a developer might have created while using the app locally.
 /shiny_bookmarks
 
 # Ignore artifacts created while trying out plumber-based API locally
 inst/plumber/log_api_usage*.txt
+
+# Ignore Posit AI settings
 .positai/settings.json
 .positai
