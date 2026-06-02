@@ -750,7 +750,7 @@ app_server <- function(input, output, session) {
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
       disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
+      return(shiny::validate(errmsg))
 
     }
     ## return merged dataset
@@ -1905,7 +1905,9 @@ app_server <- function(input, output, session) {
                     download_city_fips_bounds = global_or_param("default_download_city_fips_bounds"),
                     download_noncity_fips_bounds = global_or_param("default_download_noncity_fips_bounds"),
 
-                    radius = 999, # because FIPS analysis
+                    # Allow user-selected buffer radius for FIPS/FIPS_PLACE.
+                    # (Previously hard-coded to 999, which prevented the new buffering support from being reachable via the web app.)
+                    radius = submitted_radius_val(),
 
                     maxradius = input$maxradius,
                     avoidorphans = isTRUE(as.logical(input$avoidorphans)),

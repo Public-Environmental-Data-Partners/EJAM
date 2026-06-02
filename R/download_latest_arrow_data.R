@@ -121,7 +121,17 @@ download_latest_arrow_data <- function(
   if (nzchar(github_token)) {
     token_is_valid <- tryCatch(
       {
-        gh::gh("GET /user", .token = github_token)
+        repository_parts <- strsplit(repository, "/", fixed = TRUE)[[1]]
+        if (length(repository_parts) == 2) {
+          gh::gh(
+            "GET /repos/{owner}/{repo}",
+            owner = repository_parts[1],
+            repo = repository_parts[2],
+            .token = github_token
+          )
+        } else {
+          gh::gh("GET /rate_limit", .token = github_token)
+        }
         message("\u2705 Token is valid!")
         TRUE
       },
