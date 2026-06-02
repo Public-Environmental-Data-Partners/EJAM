@@ -871,6 +871,47 @@ After package data are updated, reinstall the package and rerun release-critical
 tests. Also regenerate any Arrow-format files used outside the package build,
 if needed.
 
+## Comparing Two Vintages Side by Side
+
+While testing an annual update it is useful to run two vintages/releases at once
+(for example the new `ACS2024` / `v3.2024.0` build and the prior `ACS2023` /
+`v3.2023.0` build) and compare the same sites in each. Each EJAM release pins its
+own `ejamdata_required_tag` in DESCRIPTION, so each pulls the matching vintage of
+the large Arrow datasets (`bgej`, etc.) from its tagged `ejamdata` release.
+
+The cleanest approach is one **git worktree per vintage**, so each checkout has its
+own `data/` folder and Arrow cache and there is no cross-vintage collision:
+
+```{r, eval=FALSE}
+# from the main checkout, create a worktree per release branch/tag:
+# (run in a terminal)
+# git worktree add ../EJAM-2024 ACS2024
+# git worktree add ../EJAM-2023 ACS2023
+
+# then, in a SEPARATE R session per folder:
+devtools::load_all(".")             # first load downloads this vintage's bgej (~90 MB)
+EJAM:::ejamdata_required_tag()      # confirm: "v3.2024.0" (or v3.2023.0, ...)
+attr(blockgroupstats, "acs_version")# confirm: "2020-2024" (or "2019-2023", ...)
+out_new <- ejamit(testpoints_10, radius = 1)   # run the SAME input in each session
+# compare out_new$results_overall across the two sessions / vintages
+```
+
+If instead you stay in **one checkout and switch branches**, the downloaded
+`data/bgej.arrow` is gitignored and persists across `git switch`, while the version
+marker `data/ejamdata_version.txt` is tracked and changes with the branch. To be
+sure you are testing the right vintage's EJ indexes, remove the cached file so it is
+re-downloaded for the new vintage:
+
+```{r, eval=FALSE}
+# after: git switch ACS2023
+file.remove("data/bgej.arrow")   # force re-download of the v3.2023.0 bgej
+devtools::load_all(".")
+```
+
+As a safeguard, `dataload_dynamic_validate_bgej()` compares the loaded `bgej` to the
+package's `blockgroupstats` and drops it if they do not match, so a stale `bgej` is
+rejected rather than silently used.
+
 ## Release Checklist
 
 Before releasing a new annual dataset build:
