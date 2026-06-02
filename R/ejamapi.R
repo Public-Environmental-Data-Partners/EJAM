@@ -174,6 +174,10 @@
 #'
 #'    - if fileextension is "pdf", invisibly returns a list of file paths
 #'
+#' @param version optional EJAM version tag (e.g. "3.2024.0") passed to the API as
+#'   version=<ver> via [url_ejamapi()] so it can serve the matching data vintage.
+#'   Default NULL resolves to the installed package Version (from DESCRIPTION).
+#'
 #' @export
 #'
 ejamapi <- function(
@@ -191,6 +195,7 @@ ejamapi <- function(
     ejamit_format = FALSE,
     fileextension = c("html", "pdf"),
     dry_run = FALSE,
+    version = NULL,
     ...
 ) {
   # API repo at https://github.com/edgi-govdata-archiving/EJAM-API/blob/main/rest_controller.r
@@ -210,6 +215,12 @@ ejamapi <- function(
     scale <- "blockgroup"
   }
   scale <- match.arg(scale)
+
+  # EJAM version tag passed to the API as version=<ver> so it can serve the matching
+  # data vintage. Default = the package Version from DESCRIPTION (NULL/omitted standalone).
+  if (is.null(version)) {
+    version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)
+  }
 
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {
@@ -414,7 +425,8 @@ ejamapi <- function(
           lat = lat, lon = lon,
           shape = shape, # ok now as geojson string
           fips = fips,
-          buffer = buffer  # standalone version differed here
+          buffer = buffer,  # standalone version differed here
+          version = version  # EJAM version tag so API can serve the matching data vintage
         )
         urlx <- url_from_keylist(baseurl = paste0( baseurl, "?"),  # standalone version differed here!
                                  keylist = params  # standalone version differed here
@@ -447,6 +459,7 @@ ejamapi <- function(
                             fips = fips,
                             radius = buffer, # default was 3 miles for points
                             fileextension = fileextension,
+                            version = version,
                             ...
         )
       }
