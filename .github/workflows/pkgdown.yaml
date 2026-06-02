@@ -2,9 +2,11 @@
 name: 'build and deploy documentation website on github pages'
 
 on:
+  # development push -> /dev/ ; release published -> /<tag>/ ; root is deployed only
+  # via an explicit workflow_dispatch (target_folder ".") for the latest release, so
+  # pushing main does not overwrite the live docs root.
   push:
-    branches: [ "main", "development" ]
-    tags: [ "v*" ]
+    branches: [ "development" ]
   release:
     types: [published]
   workflow_dispatch:
@@ -90,6 +92,15 @@ jobs:
             build_dir="docs/dev"
           fi
 
+          # Versioned base URL so internal links + url_package() resolve within the
+          # version/subfolder being built (root, /dev/, /v3.2024.0/, etc.).
+          root_url="https://public-environmental-data-partners.github.io/EJAM"
+          case "$target_folder" in
+            "."|"") base_url="$root_url" ;;
+            *) base_url="$root_url/$target_folder" ;;
+          esac
+
+          echo "base_url=$base_url" >> "$GITHUB_OUTPUT"
           echo "build_ref=$build_ref" >> "$GITHUB_OUTPUT"
           echo "target_folder=$target_folder" >> "$GITHUB_OUTPUT"
           echo "pkgdown_dev_mode=$pkgdown_dev_mode" >> "$GITHUB_OUTPUT"
@@ -116,8 +127,19 @@ jobs:
         # this large site and not currently part of the publishing contract.
         env:
           PKGDOWN_DEV_MODE: ${{ steps.deploy.outputs.pkgdown_dev_mode }}
+          EJAM_DOCS_BASE_URL: ${{ steps.deploy.outputs.base_url }}
         run: |
-          pkg <- pkgdown::as_pkgdown(".")
+          dev_mode <- Sys.getenv("PKGDOWN_DEV_MODE")
+          base_url <- Sys.getenv("EJAM_DOCS_BASE_URL")
+          # For release/version/root builds, pin pkgdown's url to the versioned base so
+          # internal absolute links resolve within the version. In devel mode let pkgdown
+          # add the /dev subpath itself (avoid doubling it); EJAM_DOCS_BASE_URL stays set
+          # so url_package() in rendered examples still points within /dev/.
+          if (nzchar(base_url) && !identical(dev_mode, "devel")) {
+            pkg <- pkgdown::as_pkgdown(".", override = list(url = base_url))
+          } else {
+            pkg <- pkgdown::as_pkgdown(".")
+          }
           pkgdown::init_site(pkg)
           pkgdown::build_favicons(pkg)
           pkgdown::build_home(pkg)
