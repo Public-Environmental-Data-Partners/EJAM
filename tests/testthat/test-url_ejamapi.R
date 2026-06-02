@@ -208,7 +208,10 @@ skip_if(TRUE, "test fails until API can handle combo of 2 types of fips like cou
       shapefile = rbind(testinput_shapes_2,testinput_shapes_2,testinput_shapes_2), ...,
       regid = testinput_regid[1:6])
       })})
-    expect_equal(length(x), 6)
+    # A multi-polygon shapefile yields one report link per polygon by default,
+    # but a specific sitenumber selects a single site (one URL: the per-site or
+    # app-fallback link). See do_url_tests(..., sitenumber = 2) below.
+    expect_equal(length(x), if (isTRUE(specified_sitenumber)) 1L else 6L)
     expect_true(substr(x[1], 1, 5) == "https")
   }))
 
