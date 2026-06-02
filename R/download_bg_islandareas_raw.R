@@ -369,7 +369,7 @@ calc_bg_islandareasdata <- function(islandareas_raw) {
   islandareas[, bgfips := fips]
 
   out <- islandareas[, .(bgfips)]
-  out[, bgid := bgfips]
+  out[, bgid := as.numeric(bgfips)]
   out[, islandareas_source := "2020 Island Areas Census DHC"]
 
   out[, pop := islandareas_value_any(islandareas, c("ISLANDAREAS_POP", "PCT1_001N", "P1_001N"))]
@@ -536,7 +536,7 @@ islandareas_reference_from_ejscreen_export <- function(x) {
   x <- x[ST %in% names(islandareas_expected_bg_counts())]
 
   if (!"bgid" %in% names(x)) {
-    x[, bgid := bgfips]
+    x[, bgid := as.numeric(bgfips)]
   }
   if (!"statename" %in% names(x)) {
     if ("STATE_NAME" %in% names(x)) {
@@ -651,7 +651,7 @@ calc_bg_islandareas_placeholder_data <- function(bg_islandareasdata) {
   }
 
   if (!"bgid" %in% names(out)) {
-    out[, bgid := bgfips]
+    out[, bgid := as.numeric(bgfips)]
   }
   if (!"ST" %in% names(out)) {
     out[, ST := substr(bgfips, 1, 2)]

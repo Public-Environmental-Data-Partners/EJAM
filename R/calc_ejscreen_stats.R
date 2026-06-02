@@ -185,6 +185,16 @@ calc_ejscreen_stats <- function(bgstats = NULL,
     statestats_lookup = statestats_envirodata
   )
 
+  # Keep bgid as double, consistent with blockgroupstats and the geography arrow files
+  # (Island Areas FIPS-derived bgid overflow 32-bit integer; double is exact + fast for joins).
+  if ("bgid" %in% names(bgej_new)) {
+    if (data.table::is.data.table(bgej_new)) {
+      bgej_new[, bgid := as.numeric(bgid)]
+    } else {
+      bgej_new$bgid <- as.numeric(bgej_new$bgid)
+    }
+  }
+
   myvars_us_ej <- intersect(c(ej_index_vars, ej_index_supp_vars), names(bgej_new))
   myvars_state_ej <- intersect(c(ej_index_state_vars, ej_index_supp_state_vars), names(bgej_new))
   if (length(myvars_us_ej) == 0 || length(myvars_state_ej) == 0) {

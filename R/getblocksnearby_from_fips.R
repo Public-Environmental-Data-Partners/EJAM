@@ -68,7 +68,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
 
     empty_pts <- data.table(ejam_uniq_id = integer(0), blockid = character(0),
                             distance = numeric(0), blockwt = numeric(0),
-                            bgid = character(0), fips = character(0))
+                            bgid = numeric(0), fips = character(0))
 
     if (NROW(shp_valid) == 0) {
       if (return_shp) {
@@ -191,7 +191,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
     ##  2. combine city & noncity ####
     if (is.null(output_city) && is.null(output_noncity)) {
       pts = data.table(ejam_uniq_id = integer(0), blockid = character(0),
-                       distance = numeric(0), blockwt = numeric(0), bgid = character(0), fips = character(0))
+                       distance = numeric(0), blockwt = numeric(0), bgid = numeric(0), fips = character(0))
       polys = sf::st_as_sf(data.frame(FIPS = original_order$fips, fipstype=fipstype(original_order$fips),
                                       NAME=NA, STATE_ABBR=NA, STATE_NAME=NA,  pop= NA,   SQMI=NA, POP_SQMI=NA, n = 1:length(original_order$fips),
                                       ejam_uniq_id = original_order$ejam_uniq_id,
@@ -240,7 +240,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
     ##  2. combine city & noncity ####
     if (is.null(output_city) && is.null(output_noncity)) {
       output <- data.table(ejam_uniq_id = integer(0), blockid = character(0),
-                           distance = numeric(0), blockwt = numeric(0), bgid = character(0), fips = character(0))
+                           distance = numeric(0), blockwt = numeric(0), bgid = numeric(0), fips = character(0))
     } else {
       ##    use rbindlist() to combine spatial data.frames that do not all have the same columns:
       output <- data.table::rbindlist(list(output_city, output_noncity), fill = TRUE,

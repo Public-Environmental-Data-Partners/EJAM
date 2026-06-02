@@ -294,6 +294,14 @@ calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
   preferred_first <- preferred_first[preferred_first %in% names(blockgroupstats_new)]
   data.table::setcolorder(blockgroupstats_new, preferred_first)
   data.table::setorder(blockgroupstats_new, bgfips)
+
+  # Store bgid as double, not integer. Island Areas (AS/GU/MP/VI) use FIPS-derived
+  # bgid values that overflow 32-bit integer, so integer cannot hold the full set and
+  # character is slow/large. bgid is only ever used as a join key (never indexed into
+  # or used in arithmetic), so double represents every value exactly and joins fast.
+  if ("bgid" %in% names(blockgroupstats_new)) {
+    blockgroupstats_new[, bgid := as.numeric(bgid)]
+  }
   ###################################################### #
   # save ####
 
