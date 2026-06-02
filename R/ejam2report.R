@@ -409,6 +409,14 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       )
       temp_comm_report <- file.path(tempdir(), filename)
     } else {
+      # Make a relative or "./"-prefixed filename absolute (relative to the working
+      # directory) before rendering. normalizePath(mustWork = FALSE) does not
+      # absolutize a path whose file does not exist yet on all platforms, which left
+      # rmarkdown::render() writing to an unexpected location and returning a relative
+      # path (incomplete #370 fix).
+      if (!grepl("^(/|[A-Za-z]:)", filename)) {
+        filename <- file.path(getwd(), filename)
+      }
       temp_comm_report <- normalizePath(filename, mustWork = FALSE)
     }
     output_file      <- temp_comm_report
