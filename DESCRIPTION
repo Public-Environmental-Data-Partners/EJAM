@@ -1,8 +1,8 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
-Version: 2.5.0
-ejamdata_required_tag: v2.5.0
-VersionDate: May 2026
+Version: 3.2024.0
+ejamdata_required_tag: v3.2024.0
+VersionDate: June 2026
 Description: Actively maintained non-EPA version of EJAM, the web app
     and set of tools that supported the EJSCREEN multisite capability.
     EJAM lets you easily summarize demographic and environmental indicators
@@ -19,8 +19,8 @@ ejam_data_repo: Public-Environmental-Data-Partners/ejamdata
 Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-1696-5638"))
 Author: Mark A. Corrales <ejam@ejanalysis.com>
 Maintainer: Mark A. Corrales <ejam@ejanalysis.com>
-VersionEJSCREEN: 2.5.0
-ReleaseDateEJSCREEN: 2026-05-14
+VersionEJSCREEN: 3.2024.0
+ReleaseDateEJSCREEN: 2026-06-15
 VersionACS: 2020-2024
 ReleaseDateACS: 2026-01-29
 VersionCensus: 2020

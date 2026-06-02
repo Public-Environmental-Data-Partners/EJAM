@@ -1,6 +1,9 @@
-# EJAM 2.5.0 (May 2026)
+# EJAM 3.2024.0 (June 2026)
 
-EJAM 2.5.0 is a very significant release because it provides long-overdue
+EJAM 3.2024.0 (developed under the interim version number 2.5.0) is the ACS
+2020-2024 vintage in the new annual-vintage release line (v3.YYYY.0).
+
+It is a very significant release because it provides long-overdue
 updates in demographics and other data, as well as some useful improvements to
 EJScreen reports and multisite analysis.
 
@@ -75,7 +78,7 @@ Highlights:
 - Moved to a system where each release obtains externally stored datasets tagged to
   that release, so an older dataset will be usable if one installs the older release of EJAM.
 - Added Island Areas AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
-  and map-data visibility level for v2.5.0, with demographic fields kept as
+  and map-data visibility level for v3.2024.0, with demographic fields kept as
   `NA` by default and partial EPA environmental fields retained where available.
   The annual/release pipeline uses the archived EPA EJScreen ACS2022 reference
   for Island Area row IDs, area fields, and available environmental fields, and
