@@ -556,11 +556,14 @@ fill_tbl_full_subgroups <- function(output_df,
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
 #' @param diesel_caveat text - see source code for default
+#' @param show_diesel_caveat logical, default FALSE so the diesel particulate-matter
+#'   caveat is suppressed in reports; set TRUE to include it in the footnotes.
 #'
 #' @keywords internal
 #'
 generate_report_footnotes <- function(
-    diesel_caveat = NULL
+    diesel_caveat = NULL,
+    show_diesel_caveat = FALSE
 ) {
 
   if (is.null(diesel_caveat)) {
@@ -582,11 +585,16 @@ generate_report_footnotes <- function(
   #  ejam2report(), and
   #  community_report_template.Rmd
 
-  dieselnote = paste0("
+  # Diesel PM caveat is suppressed by default; pass show_diesel_caveat = TRUE to include it.
+  if (isTRUE(show_diesel_caveat)) {
+    dieselnote = paste0("
   <span style= 'font-size: 9pt'>
   <p tabindex=\'13\' style='font-size: 9pt'><small>", diesel_caveat, "</small></p>
   </span>"
-  )
+    )
+  } else {
+    dieselnote = ""
+  }
 
   ejamnote = ""
   # ejamnote <- paste0("
