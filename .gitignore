@@ -97,3 +97,6 @@ inst/plumber/log_api_usage*.txt
 # Ignore Posit AI settings
 .positai/settings.json
 .positai
+
+# Ignore scratch report render artifact created during report rendering
+inst/report/community_report/junk.html
