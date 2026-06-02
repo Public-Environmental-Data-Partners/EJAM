@@ -1,19 +1,14 @@
-# EJAM 3.2024.0 (June 2026)
+# EJAM 3.2023.0 (June 2026)
 
-EJAM 3.2024.0 (developed under the interim version number 2.5.0) is the ACS
-2020-2024 vintage in the new annual-vintage release line (v3.YYYY.0).
+EJAM 3.2023.0 is the ACS 2019-2023 vintage in the new annual-vintage release
+line (v3.YYYY.0). It provides EJAM and EJScreen-compatible outputs using
+demographics from the 2019-2023 American Community Survey.
 
-It is a very significant release because it provides long-overdue
-updates in demographics and other data, as well as some useful improvements to
-EJScreen reports and multisite analysis.
-
-From August 2024 until May 2026, EJScreen/EJAM continued to rely on
-American Community Survey (ACS) data from the 2018-2022 survey period.
-Normally EJScreen would have had an annual update in mid-2025, but
-EPA discontinued EJScreen updates and support in January 2025.
-This EJAM release provides EJAM and EJScreen-compatible outputs with
-demographics from 2020-2024, which is significantly more up-to-date than what
-EJScreen had been using.
+It shares all functionality with the rest of the v3.YYYY.0 line; the only
+difference from v3.2024.0 and v3.2022.0 is the ACS data vintage. The 2019-2023
+ACS data were published by the Census Bureau on 2024-12-12, between the
+2018-2022 vintage EJScreen last used (v3.2022.0) and the 2020-2024 vintage
+(v3.2024.0).
 
 This release also provides an entirely new process, or "data pipeline" for
 data updates, from downloading data to calculating indicators to packaging
@@ -78,7 +73,7 @@ Highlights:
 - Moved to a system where each release obtains externally stored datasets tagged to
   that release, so an older dataset will be usable if one installs the older release of EJAM.
 - Added Island Areas AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
-  and map-data visibility level for v3.2024.0, with demographic fields kept as
+  and map-data visibility level for v3.2023.0, with demographic fields kept as
   `NA` by default and partial EPA environmental fields retained where available.
   The annual/release pipeline uses the archived EPA EJScreen ACS2022 reference
   for Island Area row IDs, area fields, and available environmental fields, and
