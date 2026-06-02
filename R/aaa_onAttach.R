@@ -170,6 +170,20 @@
   }
   options(tigris_use_cache = TRUE)
 
+  # Loud banner of which data vintage/release is active, so users always know which
+  # ACS vintage they are running (and are not confused by cached vs. current data).
+  tryCatch({
+    ej_ver <- utils::packageDescription("EJAM", fields = "Version")
+    ej_acs <- utils::packageDescription("EJAM", fields = "VersionACS")
+    ej_tag <- tryCatch(ejamdata_required_tag(), error = function(e) NA_character_)
+    packageStartupMessage(
+      "\n========================================================\n",
+      "  EJAM v", ej_ver, "  —  ACS ", ej_acs, " data",
+      if (!is.na(ej_tag) && nzchar(ej_tag)) paste0("  (ejamdata ", ej_tag, ")") else "",
+      "\n========================================================"
+    )
+  }, error = function(e) invisible(NULL))
+
   packageStartupMessage('For help using the EJAM package in RStudio:
                           ?EJAM
                         To launch shiny app locally:

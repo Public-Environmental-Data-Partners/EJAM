@@ -217,11 +217,19 @@ dataload_dynamic_validate_bgej <- function(envir = globalenv(), silent = FALSE) 
            pop_mismatch_n, " blockgroups.")
   }
   warning(
-    paste(
-      "The loaded bgej table does not match this package's blockgroupstats;",
-      mismatch_reason,
-      "The bgej object was removed from memory so stale EJ indexes are not used.",
-      "This can happen after installing from source before the required ejamdata release has been published."
+    paste0(
+      "\n",
+      "!!! ============================================================ !!!\n",
+      "!!!  EJAM DATA MISMATCH                                          !!!\n",
+      "!!! ============================================================ !!!\n",
+      "The loaded bgej (EJ-index) table does NOT match this package's ",
+      "blockgroupstats; ", mismatch_reason, "\n",
+      "The bgej object was REMOVED from memory so stale EJ indexes are not used.\n",
+      "This can happen after installing from source before the required ejamdata ",
+      "release has been published, or after switching ACS vintages without ",
+      "refreshing the cached data/bgej.arrow. Reload EJAM (or remove data/bgej.arrow) ",
+      "to fetch the bgej that matches this package's ACS vintage.\n",
+      "!!! ============================================================ !!!"
     ),
     call. = FALSE
   )
