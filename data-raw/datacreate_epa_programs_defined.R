@@ -13,7 +13,7 @@ epa_programs_defined_download_update = function(urlbase = "https://www.epa.gov/s
 ## For frequency of update and if updated via API/etc. see
 # browseURL("https://frs-public.epa.gov/ords/frs_public2/frs_html_public_pages.frs_refresh_stats")
 
-if (basename(getwd()) != "EJAM") {stop('must be in source package root folder')}
+if (!file.exists(file.path(getwd(), "DESCRIPTION")) || desc::desc_get(file = "DESCRIPTION", keys = "Package") != "EJAM") {stop('must be in source package root folder')}
 localdir = "./data-raw"
 
 localname = webname

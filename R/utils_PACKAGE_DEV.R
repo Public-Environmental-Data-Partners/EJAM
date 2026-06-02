@@ -1012,8 +1012,9 @@ pkg_functions_and_sourcefiles <- function(pkg = "EJAM",
   }
   # does not work:
   ## funcnames <- paste0(pkg, ":::", funcnames) # to be able to find them if load_all() not done
-
-  if (basename(getwd()) != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
+  if (!file.exists(file.path(getwd(), "DESCRIPTION")) || desc::desc_get(file = "DESCRIPTION", keys = "Package") != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
+  # if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')} # fails if you put the source in a worktree like one named after a branch
+  # if (basename(getwd()) != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
   if (loadagain) {
     devtools::load_all()
     envt <- globalenv()
