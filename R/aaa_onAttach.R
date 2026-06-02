@@ -178,7 +178,7 @@
     ej_tag <- tryCatch(ejamdata_required_tag(), error = function(e) NA_character_)
     packageStartupMessage(
       "\n========================================================\n",
-      "  EJAM v", ej_ver, "  —  ACS ", ej_acs, " data",
+      "  EJAM v", ej_ver, "  \u2014  ACS ", ej_acs, " data",
       if (!is.na(ej_tag) && nzchar(ej_tag)) paste0("  (ejamdata ", ej_tag, ")") else "",
       "\n========================================================"
     )
