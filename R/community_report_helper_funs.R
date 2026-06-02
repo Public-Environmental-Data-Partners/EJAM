@@ -645,7 +645,7 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
   }
 
   if (isTRUE(getOption("shiny.testmode"))) {
-    footer_date <- "[SHINYTEST DATE]" # so the snapshot of the report is consistent, not diff date each time tested
+    footer_date <- "[SHINYTEST DATE]" # fixed placeholder date in shiny.testmode so app test runs are deterministic (not date-dependent)
   } else {
     if (missing(footer_date) || is.null(footer_date)) {
       # if footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be
