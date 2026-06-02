@@ -53,9 +53,10 @@ test_that("bgej is classified as EJSCREEN annual update data", {
 ########################################################## #
 
 test_that("Arrow datasets use the DESCRIPTION-required ejamdata tag by default", {
-  expected_tag <- "v2.5.0"
-
-  expect_equal(EJAM:::ejamdata_required_tag(), expected_tag)
+  # Derive from DESCRIPTION rather than hardcoding, so this stays correct across
+  # the annual-vintage release branches (v3.2024.0 / v3.2023.0 / v3.2022.0).
+  expected_tag <- EJAM:::ejamdata_required_tag()
+  expect_match(expected_tag, "^v[0-9]")
 
   expect_equal(
     unname(EJAM:::dynamic_data_release_tag(EJAM:::.arrow_ds_names)),
