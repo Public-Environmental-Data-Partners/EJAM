@@ -9,6 +9,7 @@ url_package(
   type = c("code", "data", "docs")[1],
   get_full_url = FALSE,
   desc_or_alias = c("desc", "alias")[1],
+  docs_version = NULL,
   domain = NULL
 )
 }
@@ -30,6 +31,14 @@ or the URL based on a redirect from the aliases at
 \item https://ejanalysis.org/data
 \item https://ejanalysis.org/docs
 }}
+
+\item{docs_version}{optional, only used when type = "docs". A docs subpath such as
+"dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
+\code{EJAM_DOCS_BASE_URL} is set (as the pkgdown CI workflow does while building a
+given version), that value overrides everything so rendered Rd/Rmd links stay
+within the version being built. \code{desc_or_alias = "alias"} shortcuts always point
+to the root docs site only.}
 
 \item{domain}{obsolete parameter - do not use}
 }
