@@ -2,19 +2,37 @@
 name: 'build and deploy documentation website on github pages'
 
 on:
+  # development push -> /dev/ ; release published -> /<tag>/ ; root is deployed only
+  # via an explicit workflow_dispatch (target_folder ".") for the latest release, so
+  # pushing main does not overwrite the live docs root.
   push:
-    branches: [ "main" ]
-  # pull_request:
-  #   branches: [ "main" ]
+    branches: [ "development" ]
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Optional branch, tag, or SHA to build'
+        required: false
+        type: string
+      target_folder:
+        description: 'Optional folder on gh-pages, e.g. dev or v2.5.0'
+        required: false
+        type: string
+      pkgdown_dev_mode:
+        description: 'pkgdown mode; auto infers release except for dev'
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - release
+          - devel
 
 permissions: read-all
 
-# a) The "pages-build-deployment" workflow gh action is able to publish from the docs folder of main branch if you already locally built the pkgdown site in development and main branches.
-# b) alternatively, the workflow called 'build and deploy documentation website on github pages' in pkgdown.yaml, would be the approach to use if building the site via gh actions, not locally, and deploying from the gh-pages branch, \ (root) folder.
-# Do not need both, so disable or delete the one not being used and configure the repo to publish from the correct branch and folder.
+# GitHub Pages should be configured to publish from the root of the gh-pages
+# branch. Source branches should not commit generated pkgdown HTML.
 
 # This Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
@@ -23,16 +41,75 @@ jobs:
   build-deploy-pkgdown:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    # Only restrict concurrency for non-PR jobs
     concurrency:
-      group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
+      group: pkgdown-gh-pages
+      cancel-in-progress: false
     env:
       GITHUB_PAT: ${{ github.token }}
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: write
     steps:
+      - name: Configure deployment
+        id: deploy
+        env:
+          INPUT_REF: ${{ inputs.ref }}
+          INPUT_TARGET_FOLDER: ${{ inputs.target_folder }}
+          INPUT_PKGDOWN_DEV_MODE: ${{ inputs.pkgdown_dev_mode }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          build_ref="${INPUT_REF:-$GITHUB_REF}"
+          ref_name="$GITHUB_REF_NAME"
+          if [ -n "$INPUT_REF" ]; then
+            ref_name="${INPUT_REF#refs/heads/}"
+            ref_name="${ref_name#refs/tags/}"
+          fi
+
+          target_folder="$INPUT_TARGET_FOLDER"
+          if [ -z "$target_folder" ]; then
+            if [ -n "$RELEASE_TAG" ]; then
+              target_folder="$RELEASE_TAG"
+            elif [ "$ref_name" = "development" ]; then
+              target_folder="dev"
+            elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
+              target_folder="$GITHUB_REF_NAME"
+            else
+              target_folder="."
+            fi
+          fi
+
+          pkgdown_dev_mode="$INPUT_PKGDOWN_DEV_MODE"
+          if [ -z "$pkgdown_dev_mode" ] || [ "$pkgdown_dev_mode" = "auto" ]; then
+            if [ "$target_folder" = "dev" ]; then
+              pkgdown_dev_mode="devel"
+            else
+              pkgdown_dev_mode="release"
+            fi
+          fi
+
+          build_dir="docs"
+          if [ "$pkgdown_dev_mode" = "devel" ]; then
+            build_dir="docs/dev"
+          fi
+
+          # Versioned base URL so internal links + url_package() resolve within the
+          # version/subfolder being built (root, /dev/, /v3.2024.0/, etc.).
+          root_url="https://public-environmental-data-partners.github.io/EJAM"
+          case "$target_folder" in
+            "."|"") base_url="$root_url" ;;
+            *) base_url="$root_url/$target_folder" ;;
+          esac
+
+          echo "base_url=$base_url" >> "$GITHUB_OUTPUT"
+          echo "build_ref=$build_ref" >> "$GITHUB_OUTPUT"
+          echo "target_folder=$target_folder" >> "$GITHUB_OUTPUT"
+          echo "pkgdown_dev_mode=$pkgdown_dev_mode" >> "$GITHUB_OUTPUT"
+          echo "build_dir=$build_dir" >> "$GITHUB_OUTPUT"
+          echo "Building $build_ref as $pkgdown_dev_mode; deploying $build_dir to gh-pages/$target_folder"
+
       - uses: actions/checkout@v4.3.0
+        with:
+          ref: ${{ steps.deploy.outputs.build_ref }}
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -46,23 +123,47 @@ jobs:
           needs: website
 
       - name: Build site
-      # do specific steps here to avoid build_llms(), since the pkgdown:: wrapper function now also includes build_llms() which takes much too long for this large website.
+        # Do specific steps here to avoid build_llm_docs(), which is slow for
+        # this large site and not currently part of the publishing contract.
+        env:
+          PKGDOWN_DEV_MODE: ${{ steps.deploy.outputs.pkgdown_dev_mode }}
+          EJAM_DOCS_BASE_URL: ${{ steps.deploy.outputs.base_url }}
         run: |
-          pkg <- pkgdown::as_pkgdown(".")
+          dev_mode <- Sys.getenv("PKGDOWN_DEV_MODE")
+          base_url <- Sys.getenv("EJAM_DOCS_BASE_URL")
+          # For release/version/root builds, pin pkgdown's url to the versioned base so
+          # internal absolute links resolve within the version. In devel mode let pkgdown
+          # add the /dev subpath itself (avoid doubling it); EJAM_DOCS_BASE_URL stays set
+          # so url_package() in rendered examples still points within /dev/.
+          if (nzchar(base_url) && !identical(dev_mode, "devel")) {
+            pkg <- pkgdown::as_pkgdown(".", override = list(url = base_url))
+          } else {
+            pkg <- pkgdown::as_pkgdown(".")
+          }
           pkgdown::init_site(pkg)
+          pkgdown::build_favicons(pkg)
           pkgdown::build_home(pkg)
           pkgdown::build_reference(pkg)
           pkgdown::build_articles(pkg)
+          pkgdown::build_tutorials(pkg)
           pkgdown::build_news(pkg)
-          pkgdown::build_sitemap(pkg)
+          pkgdown:::build_sitemap(pkg)
+          pkgdown::build_redirects(pkg)
+          pkgdown::build_search(pkg)
+          pkgdown:::check_built_site(pkg)
 
         shell: Rscript {0}
 
-      - name: Deploy to GitHub pages 🚀
-        # if: github.event_name != 'pull_request'
+      - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           clean: true
+          clean-exclude: |
+            dev/**
+            v*/**
+            .nojekyll
+          folder: ${{ steps.deploy.outputs.build_dir }}
           branch: gh-pages
-          target-folder: \
-
+          target-folder: ${{ steps.deploy.outputs.target_folder }}
+          force: false
+          attempt-limit: 5
