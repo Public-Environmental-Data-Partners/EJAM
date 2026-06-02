@@ -1,6 +1,38 @@
 
 .ejam_cache <- new.env(parent = emptyenv())
 
+ejam_cached_data_exists <- function(name) {
+  exists(name, envir = .ejam_cache, inherits = FALSE) ||
+    exists(name, inherits = TRUE) ||
+    exists(name, envir = globalenv(), inherits = FALSE)
+}
+
+ejam_cached_data_get <- function(name) {
+  if (exists(name, envir = .ejam_cache, inherits = FALSE)) {
+    return(get(name, envir = .ejam_cache, inherits = FALSE))
+  }
+  if (exists(name, inherits = TRUE)) {
+    return(get(name, inherits = TRUE))
+  }
+  if (exists(name, envir = globalenv(), inherits = FALSE)) {
+    return(get(name, envir = globalenv(), inherits = FALSE))
+  }
+
+  dataload_dynamic(name)
+
+  if (exists(name, envir = .ejam_cache, inherits = FALSE)) {
+    return(get(name, envir = .ejam_cache, inherits = FALSE))
+  }
+  if (exists(name, inherits = TRUE)) {
+    return(get(name, inherits = TRUE))
+  }
+  if (exists(name, envir = globalenv(), inherits = FALSE)) {
+    return(get(name, envir = globalenv(), inherits = FALSE))
+  }
+
+  stop("Unable to load required EJAM dataset: ", name, call. = FALSE)
+}
+
 localtree_exists <- function() {
   exists("localtree", envir = .ejam_cache, inherits = FALSE)
 }
@@ -30,27 +62,22 @@ indexblocks <- function() {
   cat("Checking for index of Census blocks called 'localtree' ...")
   if (!localtree_exists()) {
     cat('not found...')
-    if (!exists("quaddata")) {
+    if (!ejam_cached_data_exists("quaddata")) {
       cat(    "\n index cannot be created until quaddata is loaded ... Trying dataload_dynamic() ... \n")
       message("The index of Census blockgroups (localtree) cannot be created until quaddata is loaded. Trying dataload_dynamic()")
-      dataload_dynamic("quaddata")
     }
-    if (exists("quaddata")) {
-      cat("Building index...")
-      .ejam_cache$localtree <- SearchTrees::createTree(
-        quaddata,
-        treeType = "quad",
-        dataType = "point"
-      )
-      if (localtree_exists()) {
-        cat("  Done building index.\n")
-      } else {
-        cat("  Failed to build index.\n")
-        warning("indexblocks() failed to build index of Census blocks, 'localtree' ")
-      }
+    quaddata_now <- ejam_cached_data_get("quaddata")
+    cat("Building index...")
+    .ejam_cache$localtree <- SearchTrees::createTree(
+      quaddata_now,
+      treeType = "quad",
+      dataType = "point"
+    )
+    if (localtree_exists()) {
+      cat("  Done building index.\n")
     } else {
-      cat("  Failed to load quaddata.\n")
-      warning("indexblocks() failed because quaddata could not be loaded")
+      cat("  Failed to build index.\n")
+      warning("indexblocks() failed to build index of Census blocks, 'localtree' ")
     }
   } else {
     cat('localtree already exists.\n')

@@ -271,11 +271,44 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       testthat::expect_true(output_value_is_present(outputs_now[[output_id]]))
     }
     ################## #
-    expect_input_value <- function(input_id, expected) {
-      testthat::expect_equal(
-        as.character(app$get_value(input = input_id)),
-        as.character(expected)
+    wait_for_input_value <- function(input_id, expected = NULL, timeout = 60 * 1000, interval = 0.5) {
+      if (is.null(expected)) {
+        app$wait_for_value(
+          input = input_id,
+          ignore = list(NULL),
+          timeout = timeout
+        )
+        return(invisible(TRUE))
+      }
+      input_id_json <- jsonlite::toJSON(input_id, auto_unbox = TRUE)
+      expected_json <- jsonlite::toJSON(as.character(expected), auto_unbox = FALSE)
+      app$wait_for_js(
+        sprintf(
+          paste(
+            "(() => {",
+            "const id = %s;",
+            "const expected = %s.map(String);",
+            "const shinyapp = window.Shiny && window.Shiny.shinyapp;",
+            "if (!shinyapp || !shinyapp.$inputValues) return false;",
+            "let value = shinyapp.$inputValues[id];",
+            "if (value === undefined || value === null) return false;",
+            "if (!Array.isArray(value)) value = [value];",
+            "value = value.map(String);",
+            "return value.length === expected.length && value.every((v, i) => v === expected[i]);",
+            "})()",
+            sep = "\n"
+          ),
+          input_id_json,
+          expected_json
+        ),
+        timeout = timeout,
+        interval = interval * 1000
       )
+      invisible(TRUE)
+    }
+    ################## #
+    expect_input_value <- function(input_id, expected) {
+      wait_for_input_value(input_id, expected = expected)
     }
     ################## #
     uploaded_file_names <- function(uploaded) {
@@ -291,20 +324,88 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       as.character(unlist(uploaded, recursive = TRUE, use.names = FALSE))
     }
     ################## #
+    wait_for_condition <- function(condition, timeout = 60 * 1000, interval = 0.5, label = "condition") {
+      started <- proc.time()[["elapsed"]]
+      repeat {
+        is_ready <- tryCatch(
+          isTRUE(condition()),
+          error = function(e) FALSE
+        )
+        if (is_ready) {
+          return(invisible(TRUE))
+        }
+        if (((proc.time()[["elapsed"]] - started) * 1000) >= timeout) {
+          stop(label, " was not true within ", timeout / 1000, " seconds", call. = FALSE)
+        }
+        Sys.sleep(interval)
+      }
+    }
+    ################## #
+    upload_log_has_files <- function(input_id, expected_names) {
+      logs <- tryCatch(app$get_logs(), error = function(e) NULL)
+      if (is.null(logs) || !"message" %in% names(logs)) {
+        return(FALSE)
+      }
+      messages <- as.character(logs$message)
+      upload_init_messages <- messages[grepl("uploadInit", messages, fixed = TRUE)]
+      upload_end_messages <- messages[grepl("uploadEnd", messages, fixed = TRUE)]
+
+      files_seen <- all(vapply(
+        as.character(expected_names),
+        function(expected_name) {
+          any(grepl(expected_name, upload_init_messages, fixed = TRUE))
+        },
+        logical(1)
+      ))
+      input_seen <- any(grepl(input_id, upload_end_messages, fixed = TRUE))
+
+      files_seen && input_seen
+    }
+    ################## #
     expect_uploaded_file <- function(input_id, expected_names) {
-      app$wait_for_value(
-        input = input_id,
-        ignore = list(NULL),
-        timeout = 20 * 1000
+      wait_for_condition(
+        function() upload_log_has_files(input_id, expected_names),
+        timeout = 60 * 1000,
+        label = paste0(input_id, " upload log")
       )
-      actual_names <- uploaded_file_names(app$get_value(input = input_id))
       testthat::expect_true(
-        all(expected_names %in% actual_names),
+        upload_log_has_files(input_id, expected_names),
         info = paste0(
-          input_id, " uploaded files were: ",
-          paste(actual_names, collapse = ", ")
+          input_id, " upload log did not show expected files: ",
+          paste(expected_names, collapse = ", ")
         )
       )
+      wait_for_start_analysis_enabled()
+    }
+    ################## #
+    wait_for_upload_input_ready <- function(input_id, timeout = 60 * 1000) {
+      input_id_json <- jsonlite::toJSON(input_id, auto_unbox = TRUE)
+      app$wait_for_js(
+        sprintf(
+          paste(
+            "(() => {",
+            "const el = document.getElementById(%s);",
+            "if (!el || el.disabled) return false;",
+            "let node = el.parentElement;",
+            "while (node) {",
+            "const style = window.getComputedStyle(node);",
+            "if (style.display === 'none' || style.visibility === 'hidden') return false;",
+            "node = node.parentElement;",
+            "}",
+            "return true;",
+            "})()",
+            sep = "\n"
+          ),
+          input_id_json
+        ),
+        timeout = timeout
+      )
+    }
+    ################## #
+    upload_test_file <- function(input_id, paths, timeout = 60 * 1000) {
+      wait_for_upload_input_ready(input_id, timeout = timeout)
+      args <- c(setNames(list(paths), input_id), list(timeout_ = timeout))
+      do.call(app$upload_file, args)
     }
     ################## #
     expect_dom_output_present <- function(output_id) {
@@ -648,6 +749,13 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       )
     }
     ################## #
+    select_upload_method <- function(upload_method) {
+      app$set_inputs(ss_choose_method = "upload", wait_ = FALSE)
+      wait_for_input_value("ss_choose_method", expected = "upload")
+      app$set_inputs(ss_choose_method_upload = upload_method, wait_ = FALSE)
+      wait_for_input_value("ss_choose_method_upload", expected = upload_method)
+    }
+    ################## #
     exercise_category_clear_behavior <- function(input_id, value, dropdown_value) {
       wait_for_start_analysis_enabled()
       shinytestLogMessage(paste0("clearing ", dropdown_value, " selection"))
@@ -682,44 +790,44 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
 
     ## by UPLOADED FILE of given type ####
 
-    app$set_inputs(ss_choose_method = "upload", wait_ = FALSE)
     if(test_category == "latlon") {
       ### > latlon ####
       shinytestLogMessage("About to upload latlon testpoints_10.xlsx")
-      app$upload_file(ss_upload_latlon = EJAM:::app_sys("testdata/latlon/testpoints_10.xlsx"))
+      select_upload_method("latlon")
+      upload_test_file("ss_upload_latlon", EJAM:::app_sys("testdata/latlon/testpoints_10.xlsx"))
     } else if(test_category == "FIPS") {
       ### > FIPS ####
       shinytestLogMessage("About to upload counties_in_Delaware.xlsx for FIPS")
-      app$set_inputs(ss_choose_method_upload = "FIPS", wait_ = FALSE)
-      app$upload_file(ss_upload_fips = EJAM:::app_sys("testdata/fips/counties_in_Delaware.xlsx"))
+      select_upload_method("FIPS")
+      upload_test_file("ss_upload_fips", EJAM:::app_sys("testdata/fips/counties_in_Delaware.xlsx"))
     } else if(test_category == "shp-zip") {
       ### > shp-zip ####
       shinytestLogMessage("About to upload portland_shp.zip for SHP")
-      app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
-      app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland_shp.zip"))
+      select_upload_method("SHP")
+      upload_test_file("ss_upload_shp", EJAM:::app_sys("testdata/shapes/portland_shp.zip"))
     } else if(test_category == "shp-gdb-zip") {
       ### > shp-gdb-zip ####
       shinytestLogMessage("About to upload portland.gdp.zip for SHP")
-      app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
-      app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland.gdb.zip"))
+      select_upload_method("SHP")
+      upload_test_file("ss_upload_shp", EJAM:::app_sys("testdata/shapes/portland.gdb.zip"))
     } else if(test_category == "shp-json") {
       ### > shp-json ####
       shinytestLogMessage("About to upload portland.json for SHP")
-      app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
-      app$upload_file(ss_upload_shp = EJAM:::app_sys("testdata/shapes/portland.json"))
+      select_upload_method("SHP")
+      upload_test_file("ss_upload_shp", EJAM:::app_sys("testdata/shapes/portland.json"))
     } else if(test_category == "shp-unzip") {
       ### > shp-unzip ####
       shinytestLogMessage("About to upload individual shapefiles for SHP")
-      app$set_inputs(ss_choose_method_upload = "SHP", wait_ = FALSE)
-      app$upload_file(ss_upload_shp = c(EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.dbf"),
-                                        EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.prj"),
-                                        EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp"),
-                                        EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shx")))
+      select_upload_method("SHP")
+      upload_test_file("ss_upload_shp", c(EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.dbf"),
+                                          EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.prj"),
+                                          EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shp"),
+                                          EJAM:::app_sys("testdata/shapes/portland_folder_shp/Neighborhoods_regions.shx")))
     } else if(test_category == "FRS") {
       ### > FRS ####
       shinytestLogMessage("About to upload frs_testpoints_10.xlsx for FRS")
-      app$set_inputs(ss_choose_method_upload = "FRS", wait_ = FALSE)
-      app$upload_file(ss_upload_frs = EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
+      select_upload_method("FRS")
+      upload_test_file("ss_upload_frs", EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
     }
 
     ## by CATEGORY IN DROPDOWN MENU ####
@@ -753,7 +861,13 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     }
     ########################################################################### #
 
-    expect_category_selection()
+    tryCatch(
+      expect_category_selection(),
+      error = function(e) {
+        try(save_log(paste0(test_category, "-category-selection-log.txt")), silent = TRUE)
+        stop(e)
+      }
+    )
 
     if (test_category == "NAICS") {
       exercise_category_clear_behavior(

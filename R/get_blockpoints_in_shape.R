@@ -121,7 +121,8 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
     updateProgress(message_main = boldtext, value = 0.3)
   }
 
-  blockpoints_sf <- sf::st_as_sf(blockpoints[blockpoints_filt,], coords = c('lon','lat'), crs = crs)
+  blockpoints_now <- ejam_cached_data_get("blockpoints")
+  blockpoints_sf <- sf::st_as_sf(blockpoints_now[blockpoints_filt,], coords = c('lon','lat'), crs = crs)
   if (!exists("blockpoints_sf")) {
     warning("requires the blockpoints   called blockpoints_sf  you can make like this: \n blockpoints_sf <-  blockpoints |> sf::st_as_sf(coords = c('lon', 'lat'), crs= 4269) \n # Geodetic CRS:  NAD83 ")
     return(NULL)
@@ -163,7 +164,7 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
     # get blockid of each nearby block
     blocksnearby <- getblocksnearby(pts, addedbuffermiles * safety_margin_ratio)  # blockid, distance, ejam_uniq_id # don't care which site  was how this block got included in the filtered list
     # get lat,lon of each nearby block
-    blocksnearby <- (blockpoints[blocksnearby, .(lat,lon,blockid), on = "blockid"])  # blockid,      lat ,      lon
+    blocksnearby <- (blockpoints_now[blocksnearby, .(lat,lon,blockid), on = "blockid"])  # blockid,      lat ,      lon
 
     # is this needed here??
     if (dissolved) {

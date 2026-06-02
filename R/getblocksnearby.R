@@ -75,7 +75,9 @@ getblocksnearby <- function(sitepoints, radius = 3, maxradius = 31.07, radius_do
 
   # timed <- system.time({
   if (missing(quadtree)) {
-    if (!exists("quaddata") || !exists("blockwts") || !exists("blockpoints") ) {  #| !exists("bgid2fips")
+    if (!ejam_cached_data_exists("quaddata") ||
+        !ejam_cached_data_exists("blockwts") ||
+        !ejam_cached_data_exists("blockpoints")) {  #| !exists("bgid2fips")
       # should
       cat('census block data file(s) not already loaded, so key data will now be downloaded (or loaded from a local copy if possible)...\n')
       # loads quaddata needed to make localtree index, and several other large files pkg uses.

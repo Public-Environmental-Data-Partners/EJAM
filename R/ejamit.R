@@ -1,4 +1,21 @@
 
+#' Message describing why no block centroids were found near a site
+#'
+#' Internal helper used by [ejamit()] to explain empty results by site type.
+#' @param sitetype one of "fips", "shp", or the default point/radius case
+#' @return a character string describing why no block centroids were found
+#' @noRd
+#'
+ejamit_no_block_centroids_message <- function(sitetype) {
+  if (sitetype %in% "fips") {
+    return("no block centroids (fips boundaries not obtained)")
+  }
+  if (sitetype %in% "shp") {
+    return("no block centroids (polygon too small for low pop density)")
+  }
+  "no block centroids (radius too small for low pop density)"
+}
+
 #' Get an EJ analysis (residential population and environmental indicators) in or near a list of locations
 #'
 #' @description This is the main function in EJAM that runs the analysis.
@@ -194,16 +211,6 @@
 #'
 #' @export
 #'
-ejamit_no_block_centroids_message <- function(sitetype) {
-  if (sitetype %in% "fips") {
-    return("no block centroids (fips boundaries not obtained)")
-  }
-  if (sitetype %in% "shp") {
-    return("no block centroids (polygon too small for low pop density)")
-  }
-  "no block centroids (radius too small for low pop density)"
-}
-
 ejamit <- function(sitepoints = NULL,
                    radius = 3,
                    radius_donut_lower_edge = 0,
