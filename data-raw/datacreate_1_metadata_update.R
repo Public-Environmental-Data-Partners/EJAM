@@ -6,9 +6,8 @@
 ############################################################ #
 
 #   see EJAM:::metadata_check()
-
-# then
-#   see metadata_update_attr()
+#   see EJAM:::metadata_update_attr()
+#   see EJAM:::metadata_add_and_use_this()
 
 ############################################################ #
 
@@ -24,6 +23,9 @@ for (i in 1:length(x$Item))  {
 
   val = metadata_add(
     get(x$Item[i]),
+
+    # however this implies or presumes every dataset was actually updated which is not usually the case all at once
+
     update_date_saved_in_package = update_date_saved_in_package
   )
   assign(x = x$Item[i], value = val)
@@ -41,7 +43,7 @@ rm(i)
 
 # update all metadata for datasets, and resave to ???
 
-x = download_dynamic('all')
+x = dataload_dynamic('all')
 
 stop('to be continued - NOT TESTED/TRIED OUT YET JUST DRAFTED')
 

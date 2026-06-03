@@ -5,7 +5,7 @@
 \alias{testinput_shapes_2}
 \title{testinput_shapes_2 dataset}
 \format{
-An object of class \code{sf} (inherits from \code{data.frame}) with 2 rows and 18 columns.
+An object of class \code{sf} (inherits from \code{data.frame}) with 2 rows and 11 columns.
 }
 \usage{
 testinput_shapes_2

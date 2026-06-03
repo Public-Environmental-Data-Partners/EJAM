@@ -21,7 +21,7 @@ description_file <- desc::description$new("DESCRIPTION")
 default_metadata <- list(
 
   ###note this field in DESCRIPTION file cant have text.
-  #   "2.32.0" ok, but not "2.32.0-ejscreen2.32"
+  #
   ejam_package_version          = description_file$get("Version"),
 
   ejscreen_version      = description_file$get("VersionEJSCREEN"),
@@ -30,6 +30,9 @@ default_metadata <- list(
   acs_version           = description_file$get("VersionACS"),
   census_version        = description_file$get("VersionCensus")
 )
+
+##    ## "https://www.census.gov/programs-surveys/acs/news/data-releases/2024/release-schedule.html"
+##    ## "https://www.census.gov/programs-surveys/acs/news/data-releases/2023/release-schedule.html"
 
 # > dput(default_metadata)
 
@@ -49,11 +52,11 @@ metadata_mapping <- list(
     census_version = description_file$get("VersionCensus")
   ),
 
-  # datacreate_blockgroupstats2.32.R
-  # rstudioapi::documentOpen("./data-raw/datacreate_blockgroupstats2.32.R")
+
+
   blockgroupstats =	default_metadata,
 
-  # datacreate_usastats2.32.R  and others
+  #  others
   avg.in.us       =	default_metadata,
   statestats      = default_metadata,
   usastats        = default_metadata,
@@ -68,9 +71,10 @@ metadata_mapping <- list(
     ejscreen_releasedate  = description_file$get("ReleaseDateEJSCREEN")
   ),
 
-  # datacreate_formulas.R
-  formulas_all = default_metadata,
-  formulas_d   = default_metadata,
+  # datacreate_tables_ejscreen_acs.R etc.
+  tables_ejscreen_acs = default_metadata,
+  formulas_ejscreen_demog_index = default_metadata,
+  formulas_ejscreen_acs_disability = default_metadata,
 
   # datacreate_frs_by_mact.R
   mact_table = list(), ##########  just the date it was updated is what matters for this

@@ -81,18 +81,183 @@ test_that("calc_byformula() ok", {
 #  calc_varname_from_formula
 
 test_that("calc_varname_from_formula() works", {
+  example_formulas <- formulas_ejscreen_acs$formula[
+    formulas_ejscreen_acs$rname %in% c("pcthisp", "pctmin", "pctlowinc")
+  ]
 
   expect_no_error({
-    x = calc_varname_from_formula(formulas_d)
+    x = calc_varname_from_formula(example_formulas)
   })
   expect_equal(
     length(x),
-    length(formulas_d)
+    length(example_formulas)
   )
   expect_equal(
     calc_varname_from_formula(c("a=10", "b<- 1", "c <- 34", " d = 1+1", "   e=2+2")),
     c('a','b','c','d','e')
   )
+})
+
+test_that("formula dependencies are ordered before they are used", {
+  expect_equal(anyDuplicated(formulas_ejscreen_acs$rname), 0L)
+
+  output_names <- formulas_ejscreen_acs$rname
+  prior <- character()
+  out_of_order <- character()
+  for (i in seq_len(nrow(formulas_ejscreen_acs))) {
+    deps <- intersect(calc_formulas_rhs_names(formulas_ejscreen_acs$formula[i]), output_names)
+    deps <- setdiff(deps, formulas_ejscreen_acs$rname[i])
+    missing_prior <- setdiff(deps, prior)
+    if (length(missing_prior) > 0) {
+      out_of_order <- c(out_of_order, formulas_ejscreen_acs$rname[i])
+    }
+    prior <- c(prior, formulas_ejscreen_acs$rname[i])
+  }
+
+  expect_equal(out_of_order, character())
+
+  age_formulas <- EJAM:::calc_formulas_from_varname(c("pctunder18", "pctover17"))
+  expect_lt(match("under18", age_formulas$rname), match("pctunder18", age_formulas$rname))
+  expect_lt(match("over17", age_formulas$rname), match("pctover17", age_formulas$rname))
+})
+
+test_that("language formula outputs align with map_headernames and names vectors", {
+  language_formula_rnames <- grep("lan_|_li|lingiso", formulas_ejscreen_acs$rname, value = TRUE)
+
+  expect_equal(setdiff(language_formula_rnames, map_headernames$rname), character())
+  expect_equal(
+    grep("^lingiso(spanish|euro|asian|other)$", formulas_ejscreen_acs$rname, value = TRUE),
+    character()
+  )
+
+  expect_true(all(names_d_language %in% map_headernames$rname))
+  expect_true(all(names_d_language_count %in% map_headernames$rname))
+  expect_true(all(names_d_languageli %in% map_headernames$rname))
+  expect_true(all(names_d_languageli_count %in% map_headernames$rname))
+
+  expect_equal(
+    formulas_ejscreen_acs$formula[match("spanish_li", formulas_ejscreen_acs$rname)],
+    "spanish_li = C16002_004"
+  )
+  expect_match(
+    formulas_ejscreen_acs$formula[match("lingiso", formulas_ejscreen_acs$rname)],
+    "spanish_li \\+ ie_li \\+ api_li \\+ other_li"
+  )
+  expect_match(
+    formulas_ejscreen_acs$formula[match("pctspanish_li", formulas_ejscreen_acs$rname)],
+    "spanish_li\\) / lingiso"
+  )
+})
+
+test_that("calc_ejam() sorts formula dependencies before evaluation", {
+  mydf <- data.frame(
+    bgid = 1:2,
+    numer_a = c(2, 4),
+    numer_b = c(3, 6),
+    denom = c(10, 20)
+  )
+  formulas <- c(
+    "pct_custom <- ifelse(denom == 0, 0, numer / denom)",
+    "numer <- numer_a + numer_b"
+  )
+
+  out <- calc_ejam(
+    mydf,
+    formulas = formulas,
+    keep.old = "bgid",
+    keep.new = "all"
+  )
+
+  expect_equal(out$numer, c(5, 10))
+  expect_equal(out$pct_custom, c(0.5, 0.5))
+})
+
+test_that("calc_ejam() sorts formula-table dependencies before evaluation", {
+  mydf <- data.frame(
+    bgid = 1:2,
+    numer_a = c(2, 4),
+    numer_b = c(3, 6),
+    denom = c(10, 20)
+  )
+  formulas <- data.frame(
+    rname = c("pct_custom", "numer"),
+    formula = c(
+      "pct_custom <- ifelse(denom == 0, 0, numer / denom)",
+      "numer <- numer_a + numer_b"
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  out <- calc_ejam(
+    mydf,
+    formulas = formulas,
+    keep.old = "bgid",
+    keep.new = "all"
+  )
+
+  expect_equal(out$numer, c(5, 10))
+  expect_equal(out$pct_custom, c(0.5, 0.5))
+})
+
+test_that("supplemental demographic index omits missing low life expectancy", {
+  mydf <- data.frame(
+    bgfips = c("100010001001", "100010001002"),
+    lowlifex = c(NA_real_, 5),
+    pctmin = c(1, 1),
+    pctlowinc = c(2, 2),
+    pctlingiso = c(4, 4),
+    pctlths = c(6, 6),
+    pctdisability = c(8, 8),
+    avg.pctlowlifex = 0,
+    avg.pctmin = 0,
+    avg.pctlowinc = 0,
+    avg.pctlingiso = 0,
+    avg.pctlths = 0,
+    avg.pctdisability = 0,
+    sd.pctlowlifex = 1,
+    sd.pctmin = 1,
+    sd.pctlowinc = 1,
+    sd.pctlingiso = 1,
+    sd.pctlths = 1,
+    sd.pctdisability = 1
+  )
+
+  out <- calc_ejam(
+    mydf,
+    formulas = formulas_ejscreen_demog_index,
+    keep.old = "bgfips",
+    keep.new = c("Demog.Index.Supp", "Demog.Index.Supp.State")
+  )
+
+  expect_equal(out$Demog.Index.Supp[1], (2 + 4 + 6 + 8) / 4)
+  expect_equal(out$Demog.Index.Supp[2], (2 + 4 + 6 + 5 + 8) / 5)
+  expect_equal(out$Demog.Index.Supp.State[1], (2 + 4 + 6 + 8) / 4)
+  expect_equal(out$Demog.Index.Supp.State[2], (2 + 4 + 6 + 5 + 8) / 5)
+})
+
+test_that("calc_byformula() sorts formula dependencies before evaluation", {
+  mydf <- data.frame(
+    numer_a = c(2, 4),
+    numer_b = c(3, 6),
+    denom = c(10, 20)
+  )
+  formulas <- c(
+    "pct_custom <- ifelse(denom == 0, 0, numer / denom)",
+    "numer <- numer_a + numer_b"
+  )
+
+  out <- calc_byformula(mydf, formulas = formulas)
+
+  expect_equal(out$numer, c(5, 10))
+  expect_equal(out$pct_custom, c(0.5, 0.5))
+})
+
+test_that("formula dependency sorting rejects cycles", {
+  cyclic_formulas <- data.frame(
+    rname = c("x", "y"),
+    formula = c("x <- y + 1", "y <- x + 1")
+  )
+  expect_error(calc_formulas_sort_by_dependency(cyclic_formulas), "unresolved or circular dependencies")
 })
 
 ## might not want this to return 1 ?

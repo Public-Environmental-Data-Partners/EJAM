@@ -1,4 +1,230 @@
-# EJAM (development)
+# EJAM 3.2022.0 (June 2026)
+
+EJAM 3.2022.0 is the ACS 2018-2022 vintage in the new annual-vintage release
+line (v3.YYYY.0). It provides EJAM and EJScreen-compatible outputs using
+demographics from the 2018-2022 American Community Survey -- the same vintage
+EPA's EJScreen used through its final update -- now delivered through the new
+EJAM annual data pipeline with the v3 functionality.
+
+It shares all functionality with the rest of the v3.YYYY.0 line; the only
+difference from v3.2024.0 and v3.2023.0 is the ACS data vintage. The 2018-2022
+ACS data were published by the Census Bureau on 2023-12-07.
+
+This release also provides an entirely new process, or "data pipeline" for
+data updates, from downloading data to calculating indicators to packaging
+the results for both EJAM and EJScreen. The pipeline is fully documented and
+reusable, and it saves files at each stage.
+Validation included comparing against and replicating key parts of the old
+dataset.
+
+Highlights:
+
+- Web App Improvements: Added PDF-format report downloads. Improved Community
+  Report barplot legibility, and added more barplot options in the Details tab.
+
+- Data Updates: Updated EJScreen-style ACS demographic data to ACS 2020-2024.
+  Refreshed the related package datasets and metadata, so that EJScreen community
+  reports and EJAM summary reports will be based on the newer data.
+
+- Data Pipeline: Added a staged annual data pipeline for demographics,
+  environmental indicators, extra indicators, geography info, EJ indexes,
+  percentile lookup tables, and EJScreen-ready outputs. Using the pipeline,
+  updated environmental data or extra indicators can easily be incorporated
+  when available.
+  Improved ACS formula handling, tract-to-blockgroup processing, Census/TIGER
+  geography handling, dynamic Arrow dataset handling, and release checks.
+
+## Web App Improvements
+
+- Enabled PDF download of EJScreen community report, with better page breaks, footers, and rendering reliability.
+- Community Report barplot text is now easier to read.
+- "Plot Average Scores" barplots in the Details tab are greatly improved, with more options.
+- Invalid-site messages column now explains more clearly why a site has no results.
+- Fixed issue where map popups could be for the wrong site if some FIPS bounds could not be downloaded.
+- Improved runtime prediction messages for point-buffer, FIPS, and shapefile
+  analyses, including separate timing information by analysis type and subtype.
+- Fixed interactive table of sites issue: avoided by-reference mutation in Details tab.
+- Fixed EPA program dropdown choices after refreshing FRS-related lookup data.
+- Added a `doaggregate()` guardrail for rare cases where block geography files
+  contain blockgroups not present in `blockgroupstats`. Unsupported blockgroups
+  are now dropped before aggregation and before nearby blockgroup/block counts
+  are reported.
+
+
+## R Package Functions
+
+- `ejamapi()` was significantly enhanced with PDF support, query endpoint,
+  a new parameter to help save .html file reports, bug fixes, 
+  more error-checking, and better examples.
+- `url_ejamapp()` created as shortcut to the live web app where it is currently hosted.
+- `plot_distance_by_pctd()` fix when weights are not population.
+- `acs_bycounty()` / `acs_endyear()` fixes: character year handling and renamed/standardized `acs_endyear()`.
+- App robustness fixes for NULL settings such as `bookmarking_allowed` or
+  `default_hide_about_tab`.
+
+## Data Updates
+
+- Updated the key nationwide datasets of demographic blockgroup-resolution data and related
+  metadata for the ACS 2020-2024 EJScreen-style data release.
+- Updated the FRS-related datasets (covering all EPA-regulated facilities) and
+  related tables used for specifying facilities to analyze by industry.
+- Added year-aware metadata handling for R-native pipeline outputs, so pipeline
+  runs for different ACS end years record the appropriate ACS version.
+- Moved to a system where each release obtains externally stored datasets tagged to
+  that release, so an older dataset will be usable if one installs the older release of EJAM.
+- Added Island Areas AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
+  and map-data visibility level for v3.2022.0, with demographic fields kept as
+  `NA` by default and partial EPA environmental fields retained where available.
+  The annual/release pipeline uses the archived EPA EJScreen ACS2022 reference
+  for Island Area row IDs, area fields, and available environmental fields, and
+  validates the expected 686 AS/GU/MP/VI blockgroups. The separate raw and
+  transformed Island Areas Census checkpoints are still available for optional
+  review. Island Area blocks are not added to the block helper files for this
+  release path, so radius/buffer analyses there return no-data results rather
+  than block-weighted estimates.
+- Preserved environmental-indicator missing values as missing values in the
+  annual/release pipeline. In particular, later EJAM releases should not repeat
+  the historical v2.32.8.001-and-earlier behavior that converted missing EPA
+  drinking-water non-compliance (`DWATER`) values to `drinking = 0`; `NA` now
+  means no valid source score, while zero means a valid reported score of zero.
+- Note: the Census Bureau discourages using overlapping ACS 5-year datasets for
+  trend comparisons. Comparisons between ACS 2018-2022 and 2020-2024, e.g.,
+  should not be interpreted as valid trend estimates.
+
+## Annual Data Pipeline
+
+- Added `calc_ejscreen_dataset()` as a high-level wrapper for the staged annual
+  data update pipeline. Stages include the following:
+
+  1. Download raw ACS demographic tables at blockgroup and tract resolution
+     (`bg_acs_raw`).
+  2. Calculate ACS-based demographic indicators and the lead paint indicator
+     (`bg_acsdata`).
+  3. Append Island Areas AS/GU/MP/VI placeholder rows from the archived EPA
+     reference by default, with optional Island Areas Census demographics
+     available only as separate review checkpoints.
+  4. Validate and save key environmental indicators, or reuse existing ones
+     (`bg_envirodata`).
+  5. Validate and save extra indicators such as low life expectancy, or reuse
+     existing ones (`bg_extra_indicators`).
+  6. Validate and save Census/TIGER blockgroup geography fields such as
+     `arealand` and `areawater` (`bg_geodata`).
+  7. Calculate demographic indexes, including supplemental demographic indexes
+     that use extra indicators such as low life expectancy.
+  8. Combine blockgroup demographic, environmental, extra-indicator, and
+     geography fields for EJAM (`blockgroupstats`).
+  9. Create percentile lookup tables for demographic and environmental
+     indicators (`usastats_acs`, `statestats_acs`, `usastats_envirodata`,
+     and `statestats_envirodata`).
+  10. Calculate EJ indexes from environmental percentiles and demographic
+      indexes (`bgej`).
+  11. Create percentile lookup tables for EJ indexes (`usastats_ej` and
+      `statestats_ej`).
+  12. Combine the percentile lookup tables (`usastats` and `statestats`).
+  13. Create EJScreen-ready export files: the national-percentile export
+      (`ejscreen_export`) and the EPA-style state-percentile export
+      (`ejscreen_export_statepct`).
+  14. Optionally create EJScreen-ready percentile lookup exports
+      (`ejscreen_us_pctile_lookup` and `ejscreen_state_pctile_lookup`) from
+      `usastats` and `statestats`, including EPA-style `std` rows, only when
+      explicitly requested.
+- Pipeline stages can be read from or written to local folders or AWS S3, and
+  can be saved as CSV and/or `.rda` files. Raw ACS data can be saved in a
+  single object or in a folder-plus-manifest layout with one file per ACS table.
+  Revised vignettes explain updates and the data pipeline and how to customize
+  it.
+- Added explicit `bg_envirodata` and `bg_extra_indicators` inputs, with
+  intentional reuse paths for provisional or unchanged inputs.
+- Added manifest and validation outputs for pipeline runs, including comparison
+  helpers for prior package releases, S3 pipeline folders, and EJScreen export
+  reference files.
+- Added `bg_geodata` as an explicit Census/TIGER geography stage for
+  `arealand`, `areawater`, internal points, and area-derived checks. TIGER/Line
+  state zip files are cached for faster repeated rebuilds.
+- Added a dynamic geography Arrow report to check whether block and blockgroup
+  helper datasets are compatible with the current blockgroup universe.
+
+## ACS Formulas and Calculations
+
+- Improved formula dependency ordering and validation for ACS-derived
+  indicators, including formulas that depend on intermediate calculated fields.
+- Corrected or clarified formulas for lead paint (`pctpre1960`), broadband
+  access (`pctnobroadband`), unemployment (`pctunemployed`), health insurance
+  (`pctnohealthinsurance`), disability, and detailed language indicators.
+- Updated tract-to-blockgroup allocation for tract-only ACS indicators. The
+  default tract weighting now uses 2020 Decennial blockgroup-to-tract
+  population weights, with special handling for Connecticut ACS 2022+ planning
+  region FIPS changes.
+- Corrected supplemental demographic index formulas so
+  `Demog.Index.Supp` and `Demog.Index.Supp.State` average the four available
+  supplemental components where low life expectancy is missing.
+- Converted ACS negative sentinel values (that EJScreen had been using)
+  for `percapincome` to `NA` rather than treating them as real income values.
+- Updated `pctunemployed` so blockgroups with a zero civilian labor-force
+  denominator return `NA` in EJAM (unlike what EJScreen had been doing).
+- Kept `pctnohealthinsurance` on the Census B27010 civilian
+  noninstitutionalized population universe, accepting this as an intentional
+  difference from the old EPA ACS 2022 table rather than mimicking legacy
+  values.
+- Retained `healthinsurance_universe` and other denominator fields in the
+  staged blockgroup data where they are needed for weighted aggregation.
+
+## EJScreen Export and Metadata
+
+- Added `calc_ejscreen_export()` for creating an EJScreen-ready blockgroup
+  export from EJAM pipeline outputs, since EJScreen uses different column names
+  than EJAM and has other differences as well. The export uses EJScreen field names,
+  percentile fields, map-bin fields (for color-coded maps), map popup text fields,
+  and schema extras needed by the EJScreen FeatureServer-style dataset.
+- Added EJScreen export schema validation and reference validation against the
+  preserved EPA ACS 2022-based EJScreen export.
+- Added an EPA `StatePct`-style EJScreen export that writes state raw scores
+  and state percentiles into the same generic EPA field names used by EPA's
+  archived state-percentile blockgroup export.
+- Significantly updated `map_headernames` naming metadata so EJAM rnames,
+  current EJScreen indicator/export names, old EJScreen API names, and
+  schema-only fields are tracked more clearly.
+- Represented EJScreen map-bin and popup-text fields as their own
+  `map_headernames` rows, and removed several redundant legacy name and helper
+  columns.
+- Made `data-raw/map_headernames.csv` the authoritative source used to
+  regenerate `map_headernames.rda`, rather than relying on the old .xlsx file.
+- Expanded `map_headernames` and the generated `names_*` metadata so report
+  average, percentile, and ratio columns cover the health, climate, critical
+  services, language, age, poverty, and community-report groups needed for
+  report rounding and ratio-to-average outputs.
+
+## Documentation, Testing, and Maintenance
+
+- Added and updated maintainer documentation for annual EJScreen dataset
+  updates, staged pipeline runs, S3/local storage, validation summaries, and
+  release preparation.
+- Saved future options and plans for Arrow file versioning, cache location,
+  manifests, S3/`ejamdata` storage, and related cleanup in
+  `data-raw/pipeline_validation_notes/future_arrow_versioning_and_manifest_plan.md`.
+- Added conservative maintainer helpers and a manual dry-run script for
+  publishing refreshed Arrow datasets to the `ejamdata` release assets.
+- Refreshed test fixtures and example output datasets (testoutput* files, etc.).
+- Expanded unit testing coverage.
+- Sped up Shiny/webapp tests by allowing the web app functionality suite to run
+  in one app process and by using the installed package by default.
+- Reduced the exported API surface by making many pipeline-stage helpers,
+  developer utilities, and thin wrapper functions internal. Public workflows
+  now center more clearly on higher-level entry points such as `ejamapp()`,
+  `calc_ejscreen_dataset()`, and `calc_ejscreen_export()`.
+- Cleaned up package-check issues, optional dependency handling, startup
+  message suppression, generated documentation, and test artifacts.
+- Made numerous improvements where `check()` had been reporting errors, warnings, or notes.
+
+
+# EJAM 2.4.0 (May 2026)
+
+## Updated Demographic Data from ACS
+
+- A release tagged as v2.4.0 was a placeholder for a way to provide 2019-2023 ACS for the EJSCREEN demographics indicators (and lead paint indicator), in case those are useful.
+
+
+## Additional Fixes Merged from the development Branch
 
 - Enabled adding buffer distance around FIPS unit like a city (closes #139)
 - Improved warning/handling if upload exceeds max points (closes #347)
@@ -15,7 +241,6 @@
 - Treated `leaflet.extras` as a required dependency because the web app uses it directly.
 - Fixed invalid registry-ID upload handling so the web app stops cleanly after showing the validation message.
 - Stopped exporting incomplete draft Lorenz plotting helpers until those functions are ready for public use.
-
 
 
 # EJAM 2.32.8.001 (May 2026)
@@ -496,7 +721,6 @@ released on USEPA/EJAM-open.
 -   unit tests added and others updated/fixed
 -   misc helpers/utility added/updated/documented
 -   renamed .xlsx file of map_headernames info to reflect a new version and made edits/fixes
--   `reposissues()` and `repoissues2()` help record snapshot of gh issues
 -   DESCRIPTION file now has new field ejam_data_repo
 -   updated workflow action to use latest version of github-pages-deploy-action
 

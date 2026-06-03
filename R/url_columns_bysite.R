@@ -68,7 +68,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                                regid = NULL, # see details
                                radius = NULL,
 
-                               reports = EJAM:::global_or_param("default_reports"),
+                               reports = global_or_param("default_reports"),
 
                                sitetype = NULL,
                                as_html = TRUE,
@@ -120,7 +120,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   if ("shp" %in% sitetype)    {rowcount <- NROW(shapefile)}
   if ("latlon" %in% sitetype) {rowcount <- NROW(sitepoints)}
 
-  # reports <- EJAM:::global_or_param("default_reports") # list of reports, each a named lists of info like header, text, & FUN.
+  # reports <- global_or_param("default_reports") # list of reports, each a named lists of info like header, text, & FUN.
   if (is.null(reports)) { # e.g., if user loads pkg but subsequently does rm(list=ls()) the global defaults are removed
     reports <-  list(
       list(header = "EJAM Report",     text = "Report",   FUN = url_ejamapi)      # EJAM summary report (HTML via API)

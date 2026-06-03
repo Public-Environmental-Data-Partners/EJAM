@@ -25,14 +25,15 @@ how many sites account for P percent of residents?
 \examples{
  x <- testoutput_ejamit_10pts_1miles$results_bysite[4:9, ]
  # x <- testoutput_ejamit_1000pts_1miles$results_bysite
- x <- x[!is.na(x$pop), ] # set pop to zero or just remove sites where pop was NA since area too small to determine accurately
+ x <- x[!is.na(x$pop), ]
+ # set pop to zero or remove sites where pop was NA
  cbind(pctofsites = round((1:length(x$pop)) / length(x$pop), 2),
-   pctofpop = round(cumsum(sort(x$pop, decreasing = T)) / sum(x$pop, na.rm=T), 2))
+   pctofpop = round(cumsum(sort(x$pop, decreasing = TRUE)) / sum(x$pop, na.rm=TRUE), 2))
 
  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE)
  popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=TRUE, atleast_not_exact=FALSE)
- popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F)
- popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=F, atleast_not_exact=FALSE)
+ popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=FALSE)
+ popshare_p_lives_at_what_pct(x$pop, p = 0.50, astext=FALSE, atleast_not_exact=FALSE)
 
  ## for more than one p
  popshare_p_lives_at_what_pct(x$pop, p = c(0.50, 0.67, 0.80, 0.95) )

@@ -27,7 +27,7 @@ s2b = getblocksnearby(sitepoints=pts, radius = rad)
 # bgid_from_blockid(s2b$blockid) # vector of unique ids
 # bgid_from_blockid(s2b$blockid, asdt = TRUE) # data.table
 
-# plot_blocks_nearby(pts, radius = rad, overlay_blockgroups = T)
+# plot_blocks_nearby(pts, radius = rad, overlay_blockgroups = TRUE)
 
 }
 \keyword{internal}

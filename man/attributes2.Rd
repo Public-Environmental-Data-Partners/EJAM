@@ -10,7 +10,7 @@ attributes2(x)
 \item{x}{R object}
 }
 \value{
-attributes of x, excluding row.names
+attributes of x, excluding "row.names" and "names"
 }
 \description{
 utility to see all attributes other than row.names

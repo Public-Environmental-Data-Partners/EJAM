@@ -87,11 +87,11 @@
 #'
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Add purple to flag indicators at 99th percentile
 #' ejam2excel(testoutput_ejamit_10pts_1miles,
 #'   # View spreadsheet 1st without saving it as a file
-#'   launchexcel = T, save_now = F,
+#'   launchexcel = TRUE, save_now = FALSE,
 #'   heatmap_cuts = c(80, 90, 95, 99),
 #'   heatmap_colors  = c("yellow", "orange", "red", "purple"),
 #'   # Apply heatmap to only a few of the ratio columns
@@ -119,7 +119,7 @@ ejam2excel <- function(ejamitout,
                        buffer_desc = "Selected Locations",
 
                        # specify columns with URLs/links to 1-site reports, etc.
-                       reports = EJAM:::global_or_param("default_reports"), # defines which hyperlink colnames and text to use
+                       reports = global_or_param("default_reports"), # defines which hyperlink colnames and text to use
 
                        # plot
                        ok2plot = TRUE,
@@ -141,7 +141,7 @@ ejam2excel <- function(ejamitout,
 
                        # column formatting
                        heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
-                       heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                       heatmap2_colnames = NULL, heatmap2_cuts = c(1.05, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
                        graycolnames = NULL, graycolor = 'gray',
                        narrowcolnames = NULL, narrow6 = 6,
 

@@ -180,7 +180,7 @@ ejam2barplot_sites <- function(ejamitout, varname = "pctlowinc", names.arg = NUL
 #'    typeofsite <- c("A", "B", "B", "C"))
 #'    cbind(Rows_or_length = sapply(out, NROW))
 #'
-#'  ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = F)
+#'  ejam2barplot_sitegroups(out, "sitecount_unique", topn = 3, sortby = FALSE)
 #'
 #' @return same as [barplot()]
 #'

@@ -57,12 +57,20 @@
 ## 6. funcs to AGGREGATE &/or CALC CUSTOM SCORES? ####
 
 ##################################################### #
-#### Need to separately Create vs. Aggregate scores:
+
+#### NOTES on how to CREATE (UPDATED or CUSTOM) indicators  vs.  AGGREGATE (REPORT ON) indicators:
+
+## A. CREATE updated or custom nationwide indicators, in all blockgroups, for
 ##
-## A. CREATE custom indicator scores via FORMULAS, for each BG, from BG ACS raw counts etc.
+##     i. ANNUAL UPDATE of EJScreen/EJAM indicators, from ACS variables and standard FORMULAS specifying how those translate into derived indicators like % low-income as used in EJScreen/EJAM
+##     or maybe
+##     ii. A USER'S CUSTOM INDICATOR to be calculated on the fly, like a proximity score for uploaded points or based on user-specified ACS variables and custom FORMULAS a user provides.
+##
 ##    calc_ejam() has each formula but  does no aggregation.  proxistat() and related funcs sort of do both but mostly create a score.
 ##
-## B. AGGREGATE across blocks, bgs, sites, etc. like these:
+## B. AGGREGATE across blocks, bgs, sites, etc.
+##   (for a Community Report, 1-site or summary report) like these:
+##
 ##   i. Aggregate scores via count or mean, etc. for each BG, from BG scores & BLOCK WEIGHTS to use in each BG (each included partial or whole BG)
 ##  ii. Aggregate scores via count or mean, etc. for each SITE, from BG scores (2&3 might be combined but might want #2 separately as bybg_people)
 ##      see doaggregate_newscores() ?
@@ -72,16 +80,15 @@
 ##     using maybe the same functions? or dedicated ones like
 ##    calc_counties_from_bg() ?
 
-# NEED A WAY TO DO AGGREGATION BYSITE AND FORMULAS AT THE SAME TIME OR CORRECTLY SEPARATELY.
+# Is there a WAY TO DO CREATING SCORES AND AGGREGATING SCORES in the same general system, OR is it more appropriate to keep those functions separated? Probably separate.
 #
-#  and just doing data.table   dt[, xyz, by = "ejam_uniq_id"]
+#  e.g., just doing data.table   dt[, xyz, by = "ejam_uniq_id"]
 #   would aggregate but need the formula(s) in there.
-#  check formulas_all, which seemed to be work towards aggregation-like calculation??
 
 #   R/utils_calc_ejam.R   (left in that file)  has
 # calc_ejam()
 # calc_byformula()
-# formula_varname()
+# calc_varname_from_formula()
 
 # R/doaggregate_newscores.R had  doaggregate_newscores()
 
@@ -92,9 +99,8 @@
 # calcweight()
 
 # See doaggregate() for all the notes on aggregation, sums/wtdmeans/etc. and proxistat code that were
-# within  doaggregate()  lines 470-770, especially after line 607, but
-#  really just lines 640-770 did the aggregations:
-#
+# within  doaggregate()  had been approx lines 470-770, especially after line 607, but
+#  really just lines 640-770 did the aggregations,
 #   sums & wtdmeans of BG scores, by site
 ##################################################### #
 
@@ -127,7 +133,8 @@
 #' @param wtcols vector of colnames to use as the weights for wtd means,
 #'   same length as popmeancols, but not used yet
 #'
-#' @param custom_formulas like formulas_all,  not used yet
+#' @param custom_formulas character vector of formulas, like
+#'   `formulas_ejscreen_acs$formula`, not used yet
 #' @param custom_cols not used yet
 #' @param custom_map_headernames like map_headernames but for the
 #'   custom indicators
@@ -135,13 +142,14 @@
 #' @return returns the output of [custom_doaggregate()]
 #'
 #' @export
+#' @keywords internal
 #'
 custom_ejamit <- function(sitepoints, radius = 3, fips = NULL, shapefile = NULL,
                           custom_blockgroupstats = blockgroupstats,
                           countcols = names_wts,
                           popmeancols = names_these,
                           wtcols = names_wts, # "pop"  or a vector exactly as long as wtdmeancols
-                          custom_formulas = NULL, # formulas_d,
+                          custom_formulas = NULL,
                           custom_cols = NULL,
                           custom_map_headernames = map_headernames) {
 
@@ -670,17 +678,19 @@ countpoints_nearby <- function(frompoints, topoints, radius = 3) {
 }
 ################################################################# #
 
+#' @keywords internal
 countpoints_in_shape <- function(shp, topoints) {
 
-  stop('to be done')
+  return('to be done')
 
 
 }
 ################################################################# #
 
+#' @keywords internal
 countpoints_in_fips <- function(fips, topoints) {
 
-  stop('to be done')
+  return('to be done')
 
 
 }
@@ -759,7 +769,7 @@ if (1 == 0) {
 #'
 #' @return [data.table](https://r-datatable.com) of blockgroups, with proximityscore, bgfips, lat, lon, etc.
 #'
-#' @export
+#' @keywords internal
 #'
 proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 
@@ -945,10 +955,12 @@ proxistat_via_getblocks <- function(pts, countradius=5, maxradius=31) {
 #'  # # analyze.stuff   pctiles(x$proximityscore)
 #'  #
 #'  # plot(x = x$lon, y = x$lat)
-#'  # tops = x$proximityscore > 500 & !is.infinite(x$proximityscore) & !is.na(x$proximityscore)
+#'  # tops = x$proximityscore > 500 &
+#'  #   !is.infinite(x$proximityscore) & !is.na(x$proximityscore)
 #'  # points(x = x$lon[tops], y = x$lat[tops], col="red")
 #'
-#' @export
+#' @keywords internal
+#'
 #'
 proxistat <- function(topoints, bpoints = NULL,
                       blocks_per_batch=1000, countradius = 3.106856, maxradius = 621.3712,
@@ -977,7 +989,7 @@ proxistat <- function(topoints, bpoints = NULL,
   km_per_mile <- meters_per_mile / 1000  # km_per_mile = 1.609344  # meters_per_mile #   [1] 1609.344
 
   warning("dataset for most but not all blocks -
-          PR and Island Area lacked block area data in source used as of 2023 for EJAM")
+          PR and Island Area lacked block area data in source originally used in EJAM")
 
   warning("if none found within radius of 5km, this proximity score function does not yet create score based on single nearest - see source code for notes")
 
@@ -1145,6 +1157,7 @@ proxistat <- function(topoints, bpoints = NULL,
 #'   but not traffic.score or npdes one since those are weighted and not just count per km
 #'
 #' @export
+#' @keywords internal
 #'
 proximity.score.in.miles <- function(scoresdf=NULL) {
   if (is.null(scoresdf)) {
@@ -1361,21 +1374,23 @@ calc_counties_from_bg = function(childDT, score_colname, wt_colname = 'pop', bgf
 #' @param wtcols vector of colnames to use as the weights for wtd means,
 #'   same length as popmeancols, but not used yet
 #'
-#' @param custom_formulas like formulas_all,  not used yet
+#' @param custom_formulas character vector of formulas, like
+#'   `formulas_ejscreen_acs$formula`, not used yet
 #' @param custom_cols not used yet
 #' @param custom_map_headernames like map_headernames but for the
 #'   custom indicators
 #'
 #' @return list of tables similar to what [doaggregate()] returns
 #'
-#' @export
+#' @keywords internal
+#'
 #'
 custom_doaggregate <- function(sites2blocks,
                                custom_blockgroupstats = blockgroupstats,
                                countcols = "pop",
                                popmeancols = names_these,
                                wtcols = "pop", # or a vector exactly as long as popmeancols
-                               custom_formulas = NULL, # formulas_d,
+                               custom_formulas = NULL,
                                custom_cols = NULL,
                                custom_map_headernames = map_headernames) {
 
@@ -1451,9 +1466,9 @@ custom_doaggregate <- function(sites2blocks,
   ## sums of counts
 
   ### started this idea but would need to apply calc_ejam() by group, and would need to include bgwt * x, etc.
-  # see datacreate_formulas_d or formulas_all
+  # see formulas_ejscreen_acs$formula for examples of formula text
   #
-  # results_overall <- calc_ejam(bybg_overall, keep.old = "", keep.new = "all", formulas = formulas_all)
+  # results_overall <- calc_ejam(bybg_overall, keep.old = "", keep.new = "all", formulas = formulas_ejscreen_acs$formula)
   # results_bysite <-
   # need to do rollup by group, so could apply calc_ejam by group here
   # or more efficiently for common formulas like sum or popwtdmean
@@ -1517,7 +1532,7 @@ custom_doaggregate <- function(sites2blocks,
     #
     #
     #   if (is.null(custom_cols)) {
-    #     custom_cols = EJAM:::formula_varname(custom_formulas)
+    #     custom_cols = EJAM:::calc_varname_from_formula(custom_formulas)
     #   }
     #
     # results_bysite_custom  <-  bybg_bysite[ , calc_ejam( ..???? ), by = "ejam_uniq_id"]
@@ -1539,7 +1554,7 @@ custom_doaggregate <- function(sites2blocks,
       #  calc_ejam() has each formula but  does no aggregation.
       #  and just doing data.table   dt[, xyz, by = "ejam_uniq_id"]
       #   would aggregate but need the formula(s) in there.
-      #  check formulas_all, which seemed to allow for aggregation-like calculation??
+      #  check formulas_ejscreen_acs$formula for examples of formula text.
 
       results_bysite_custom[[sitenum]] <- calc_ejam(
         bybg_bysite[bybg_bysite$ejam_uniq_id == ids[sitenum], ],
@@ -1616,8 +1631,9 @@ custom_doaggregate <- function(sites2blocks,
 #'   and any other variables needed for formulas to aggregate indicators
 #'   across blockgroups in each site.
 #'
-#' @param formulas a character vector of formulas in R code (see formulas_d for
-#'   an example), that use variables in userstats to calculate any
+#' @param formulas a character vector of formulas in R code (see
+#'   `formulas_ejscreen_acs$formula` for examples), that use variables in
+#'   userstats to calculate any
 #'   derived indicators or aggregated ones, for cases where just a sum or a
 #'   population weighted mean is not the right way to aggregate some indicator.
 #'   Formulas can include intermediate steps, or can aggregate across all places.
@@ -1676,7 +1692,7 @@ doaggregate_newscores <- function(
 
   # assumed "pop" is the only count column, ie needing to be summed, unless params indicate otherwise
   # assume anything created by a formula in formulas list is a calculated column
-  if (is.null(calculatedcols)) calculatedcols <- formula_varname(formulas)
+  if (is.null(calculatedcols)) calculatedcols <- calc_varname_from_formula(formulas)
   # assume all other columns get aggregated as population weighted averages (except pop ST bgid etc.)
   if (is.null(popmeancols)) popmeancols <- setdiff(names(userstats), c("pop", calculatedcols, "bgid", "bgfips", "ST"))
 
@@ -1790,7 +1806,10 @@ doaggregate_newscores <- function(
   ################################################################################# #
   # WHAT STATE IS EACH SITE IN? (TO ENABLE STATE PERCENTILE LOOKUP) ####
   if (missing(sites2states_or_latlon) || !("ST" %in% names(sites2states_or_latlon))) { # must or should figure out state based on blockid -> blockfips -> ST
-    sites2states <- ST_by_site_from_sites2blocks(sites2blocks)
+
+    stop("ST_by_site_from_sites2blocks() was removed - cannot find state of each site this way")
+    # sites2states <- ST_by_site_from_sites2blocks(sites2blocks) # OBSOLETE- DELETED THE FUNCTION
+
     # returns a data.table with these columns:  siteid, ST  (and only 1 row per siteid! It is just to know the ST of each unique siteid)
     if (!missing(sites2states_or_latlon)) {
       # add in the lat,lon columns - this is always available if ejamit() called this since it passes the pts as sites2states_or_latlon
@@ -1805,7 +1824,10 @@ doaggregate_newscores <- function(
       # maybe get latlon of closest block?? no, just omit lat,lon in this case
     }
   } else { # hope it has ST, which is best, or latlon which is slowest, but in between was via blockid, done above!
-    sites2states <- states_infer(sites2states_or_latlon)
+
+    stop("states_infer() is not implemented - cannot find what state each is in")
+    # sites2states <- states_infer(sites2states_or_latlon)
+
     # returns a data.FRAME with these columns (plus others in input):  lat,lon, ejam_uniq_id, ST, statename, FIPS.ST, REGION,  n
   }
   # sites2states  is df or dt with just 1 row/site, and columns= ejam_uniq_id, ST ; and MIGHT have lat,lon and other info.
@@ -1925,4 +1947,3 @@ doaggregate_newscores <- function(
 ################################################################################################################ #
 ################################################################################################################ #
 # ~ ----------------------------------------------------------------- ####
-

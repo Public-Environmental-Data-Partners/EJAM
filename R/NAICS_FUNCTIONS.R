@@ -42,8 +42,8 @@
 #'
 #'  naics_from_any("plastics and rubber")[,.(name,code)]
 #'  naics_from_any(326)
-#'  naics_from_any(326, children = T)[,.(code,name)]
-#'  naics_from_any("plastics", children=T)[,unique(n3)]
+#'  naics_from_any(326, children = TRUE)[,.(code,name)]
+#'  naics_from_any("plastics", children=TRUE)[,unique(n3)]
 #'  naics_from_any("pig")
 #'  naics_from_any("pig ") # space after g
 #'
@@ -56,15 +56,15 @@
 #'  fintersect(a,b)[,.(name,code)] #  a AND b
 #'  funion(a,b)[,.(name,code)]     #  a OR  b
 #'  naics_subcodes_from_code(funion(a,b)[,code])[,.(name,code)]   #  plus children
-#'  naics_from_any(funion(a,b)[,code], children=T)[,.(name,code)] #  same
+#'  naics_from_any(funion(a,b)[,code], children = TRUE)[,.(name,code)] #  same
 #'
 #'  NROW(naics_from_any(325))
 #' #[1] 1
-#'  NROW(naics_from_any(325, children = T))
+#'  NROW(naics_from_any(325, children = TRUE))
 #' #[1] 54
 #'  NROW(naics_from_any("chem"))
 #' #[1] 20
-#'  NROW(naics_from_any("chem", children = T))
+#'  NROW(naics_from_any("chem", children = TRUE))
 #' #[1] 104
 #' }
 #'
@@ -389,7 +389,7 @@ naics_findwebscrape <- function(query) {
 #'
 #'  naics_v6 = EJAM::NAICS
 #'
-#'  all.equal( naics_v6, naics17, check.attributes = F)
+#'  all.equal( naics_v6, naics17, check.attributes = FALSE)
 #'
 #'  length(naics22); length(naics17)
 #'
@@ -533,7 +533,7 @@ naics_download <- function(year = NULL,
 #' NAICS - Try to extract which NAICS could be affected by a rule published in the Federal Register
 #' by reading the NAICS listed near the top of the preamble - DRAFT WORK IN PROGRESS
 #'
-#' @param naics_text_copy_from_fr text copied from the Federal Register notice, which often lists NAICS codes and industry names that are affected by the rule. This is often in a section near the top of the preamble, but formatting is likely inconsistent across FR notices, so this is a work in progress.
+#' @param naics_text_copy_from_fr text copied from the Federal Register notice, which often lists NAICS codes and industry names that are affected by the rule. This is often in a section near the top of the preamble, but formatting is likely inconsistent across FR notices.
 #'
 #' @keywords internal
 #'

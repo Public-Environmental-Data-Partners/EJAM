@@ -10,7 +10,7 @@ See data-raw/datacreate_0_UPDATE_ALL_DATASETS.R
     \n")
 
 
-naicstable <- data.table(code = as.vector(NAICS), name = names(NAICS))
+naicstable <- data.table::data.table(code = as.vector(NAICS), name = names(NAICS))
 naicstable[ , num_name := trimws(name)]
 naicstable[ , name := trimws(gsub(".* - ", "", name))]
 
@@ -23,17 +23,23 @@ naicstable[ , n6 := substr(code,1,6)]
 # data.table::setcolorder(naicstable, neworder = c(""))
 naicstable <- naicstable[ , .(code, n2, n3, n4, n5, n6, name, num_name)]
 
-attr(naicstable, "date_saved_in_package") <- as.character(Sys.Date())
+# attr(naicstable, "date_saved_in_package") <- as.character(Sys.Date())
+# usethis::use_data(naicstable, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("naicstable")
 
-usethis::use_data(naicstable, overwrite = TRUE)
-
-dataset_documenter("naicstable",
-                   title = "naicstable (DATA) data.table of NAICS code(s) and industry names for each EPA-regulated site",
-                   description = "data.table of NAICS code(s) and industry names for each EPA-regulated site in Facility Registry Service
-#' Also has the 2,3,4,5,and 6-digit NAICS that this code falls under, where relevant for given length",
-                   seealso = "[EJAM::naics_from_any()] [EJAM::NAICS]  [EJAM::naics_categories()]  [EJAM::naics_findwebscrape()]",
-                   details = "This is similar to the data file EJAM::NAICS but in a more useful format and newer functions work with it.
-#' see [NAICS.com](https://naics.com)")
+EJAM:::dataset_documenter("naicstable",
+                   title = "naicstable (DATA) data.table of all possible NAICS code(s) and industry names",
+                   details = "data.table of all possible NAICS code(s) and industry names
+#' (which get used to classify EPA-regulated sites in Facility Registry Service (FRS))
+#' Also has the 2,3,4,5,and 6-digit NAICS (categories and subcategories)
+#' that this code falls under, where relevant for given length.
+#' Code universe was updated in 2022, but EPA FRS as of 2025
+#' was still using NAICS codes from the 2017 update of industry codes and names.
+#'
+#' This is similar to the data file EJAM::NAICS but in a more useful format and newer functions work with it.
+#' see [NAICS.com](https://naics.com)",
+                   seealso = "[EJAM::naics_from_any()] [EJAM::NAICS]  [EJAM::naics_categories()]  [EJAM::naics_findwebscrape()]"
+                    )
 
 # table(nchar(naicstable$code))
 #

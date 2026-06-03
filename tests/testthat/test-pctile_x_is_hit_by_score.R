@@ -37,6 +37,16 @@ test_that("pctile_x_is_hit_by_score() matches lookup_pctile()", {
     ),
     state_expected
   )
+
+  expect_identical(
+    pctile_x_is_hit_by_score(
+      "pctlowinc",
+      cutoff = "0.80",
+      score = state_scores,
+      ST = state_zones
+    ),
+    state_expected
+  )
 })
 ############################# #
 

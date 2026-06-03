@@ -5,7 +5,7 @@
 \alias{tables_ejscreen_acs}
 \title{tables_ejscreen_acs dataset}
 \format{
-An object of class \code{character} of length 15.
+An object of class \code{character} of length 16.
 }
 \usage{
 tables_ejscreen_acs
@@ -16,7 +16,11 @@ tables_ejscreen_acs dataset
 \details{
 See
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{yr = 2023
+The same ACS tables are used for every vintage; the survey end year \code{yr}
+depends on the installed EJAM release (see \code{attributes(blockgroupstats)$acs_version}
+or DESCRIPTION \code{VersionACS}), e.g. 2022, 2023, or 2024.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{yr = acs_endyear()  # ACS 5-year end year of the installed vintage
 urls = paste0('https://data.census.gov/table/ACSDT5Y', yr, '.', tables_ejscreen_acs)
 sapply(urls, browseURL)
 acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), 'acs5')
@@ -30,18 +34,24 @@ Notes:
 \item B02001  race without hispanic ethnicity
 \item B15002  education
 \item B23025  unemployed
-\item C17002  low income, poor, etc.
+\item C17002  low income, poverty ratio population universe, etc.
+\item B17017  households below poverty level
 \item B19301  per capita income
 \item B25032  owned units vs rented units (occupied housing units, same universe as B25003)
-\item B28003  no broadband
-\item B27010  no health insurance
-\item C16002  (language category and) \% of households limited English speaking (lingiso) \url{https://data.census.gov/table/ACSDT5Y2023.C16002}
-\item B16004  (language category and) \% of residents (not hhlds) speak no English at all \url{https://data.census.gov/table/ACSDT5Y2023.B16004}
+\item B28002  no broadband internet subscription
+\item B27010  no health insurance. EJAM calculates \code{pctnohealthinsurance}
+from the Census-defined B27010 civilian noninstitutionalized population
+universe. Any EJSCREEN-specific compatibility value should be handled in
+the EJSCREEN export stage, not by changing the EJAM ACS indicator.
+\item C16002  household language by household limited English speaking status;
+used for \code{lingiso} and limited-English household language breakdowns
+\url{https://data.census.gov/table/ACSDT5Y2024.C16002}
+\item B16004  (language category and) \% of residents (not hhlds) speak no English at all \url{https://data.census.gov/table/ACSDT5Y2024.B16004}
 }
 
 TRACT ONLY, but also used by EJSCREEN:
 \itemize{
-\item C16001   languages detailed list: \% of residents (not hhlds) IN TRACT speak Chinese, etc. \url{https://data.census.gov/table/ACSDT5Y2023.C16001}
+\item C16001   languages detailed list: \% of residents (not hhlds) IN TRACT speak Chinese, etc.; EJSCREEN repeats these tract-level values on each blockgroup in the tract \url{https://data.census.gov/table/ACSDT5Y2024.C16001}
 \item B18101   disability
 }
 }

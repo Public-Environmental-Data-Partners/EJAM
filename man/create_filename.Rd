@@ -54,7 +54,7 @@ parameters_table = expand.grid(
   buffer_dist = c(0, 3.2),
   site_method = c("", "latlon"),
   ext = c(NULL, ".html"),
-  stringsAsFactors = F
+  stringsAsFactors = FALSE
 )
 cbind(output_filename =
   cbind(

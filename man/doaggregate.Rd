@@ -29,10 +29,17 @@ doaggregate(
 )
 }
 \arguments{
-\item{sites2blocks}{table in \href{https://r-datatable.com}{data.table} format, of distances in miles between all sites (facilities) and
-nearby Census block internal points, with columns ejam_uniq_id, blockid, distance,
-created by getblocksnearby  function.
-See \link{testoutput_getblocksnearby_10pts_1miles} dataset in package, as input to this function}
+\item{sites2blocks}{table in \href{https://r-datatable.com}{data.table} format,
+of distances in miles between all sites (facilities) and
+nearby Census block internal points, with columns
+ejam_uniq_id, blockid, distance, blockwt, bgid, and sometimes others,
+created by functions that find blocks in or near specified sites,
+such as these examples:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{s2b_latlon <- getblocksnearby(testpoints_10, radius=1) # same as [testoutput_getblocksnearby_10pts_1miles]
+s2b_fips   <- getblocksnearby_from_fips(testinput_fips_counties)
+s2b_shp    <- get_blockpoints_in_shape(testshapes_2)$pts # notice the $pts here
+}\if{html}{\out{</div>}}}
 
 \item{sites2states_or_latlon}{data.table or just data.frame,
 with columns ejam_uniq_id (each unique one in sites2blocks) and
@@ -83,7 +90,7 @@ on language, more age groups, sex, percent with disability, poverty, etc.}
 lat,lon of each site will be approximated as average of nearby blocks, although a more accurate slower way would
 be to use reported distance of each of 3 of the furthest block points and triangulate}
 
-\item{called_by_ejamit}{Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive=F)}
+\item{called_by_ejamit}{Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive = FALSE)}
 
 \item{updateProgress}{progress bar function used for shiny app}
 
@@ -114,16 +121,19 @@ indicator across everyone within each residential population group. table in \hr
 Also see outputs of \code{\link[=ejamit]{ejamit()}} which are similar but provide additional info.
 }
 \description{
-Used by ejamit() and the shiny app to summarize blockgroups scores at each site and overall.
+Used by ejamit() and the shiny app to summarize blockgroups scores at each site and overall,
+as a key intermediate step in the overall analysis provided by ejamit().
 }
 \details{
-\code{\link[=getblocksnearby]{getblocksnearby()}} and \code{\link[=doaggregate]{doaggregate()}} are the two key functions that run \code{\link[=ejamit]{ejamit()}}.
+\code{\link[=getblocksnearby]{getblocksnearby()}} (or related functions for fips or shapefiles) and
+\code{\link[=doaggregate]{doaggregate()}} are the two key functions that run \code{\link[=ejamit]{ejamit()}}.
+
 \code{\link[=doaggregate]{doaggregate()}} takes a set of sites like facilities and the
 set of blocks that are near each,
 combines those with indicator scores for blockgroups, and
 aggregates the numbers within each place and across all overall.
 
-For all examples, see \code{\link[=getblocksnearbyviaQuadTree]{getblocksnearbyviaQuadTree()}}
+Also see \code{\link[=getblocksnearbyviaQuadTree]{getblocksnearbyviaQuadTree()}}
 
 \code{\link[=doaggregate]{doaggregate()}} is the code run after \code{\link[=getblocksnearby]{getblocksnearby()}} (or a related function for
 polygons or FIPS Census units) has identified which blocks are nearby.
@@ -153,7 +163,8 @@ This function requires the following datasets:
 \section{\strong{Identification of nearby residents -- methodology:}}{
 EJAM uses the same approach as EJSCREEN does to identify the count and residential population of nearby residents,
 so EJSCREEN technical documentation should be consulted on the approach,
-at \href{https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads}{EJSCREEN Technical Info}.
+at \href{http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html}{EJSCREEN Technical Info}
+or \href{https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads}{as archived}.
 EJAM implements that approach using faster code and data formats, but it
 still uses the same high-resolution approach as described in EJSCREEN documentation
 and summarized below.
@@ -192,6 +203,10 @@ the Decennial census blocks can provide, such as a dasymetric map approach.
 
 \examples{
 EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+
+x = testoutput_doaggregate_10pts_1miles
+names(x)
+ejam2barplot(x)
 
 }
 \seealso{

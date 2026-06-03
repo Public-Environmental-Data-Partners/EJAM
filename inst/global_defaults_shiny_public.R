@@ -139,7 +139,33 @@ global_defaults_shiny_public <- list(
   ## ------------------------ Short report options ####
 
   default_show_ratios_in_report = !isTRUE(isPublic), # used by app_ui to affect input$show_ratios_in_report which server uses in ejam2report(), etc.
-  default_extratable_show_ratios_in_report = !isTRUE(isPublic) # same
+
+  default_extratable_show_ratios_in_report = !isTRUE(isPublic), # same
+
+  ## normally would be the same as the defaults in ejam2report() or defaults in build_community_report()
+
+  default_extratable_list_of_sections = list(
+    # see build_community_report defaults and see global_defaults_*.R
+    `Breakdown by Population Group` = names_d_subgroups,
+    `Language Spoken at Home` = names_d_language,
+    `Language in Limited English Speaking Households` = names_d_languageli,
+    `Breakdown by Sex` = c('pctmale','pctfemale'),
+    `Health` = names_health,
+    `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
+    `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
+    `Poverty` = names_d_extra,
+    `Features and Location Information` = c(
+      names_e_other,
+      names_sitesinarea,
+      names_featuresinarea,
+      names_flag
+    ),
+    `Climate` = names_climate,
+    `Critical Services` = names_criticalservice,
+    `Other` = names_d_other_count
+    # , `Count above threshold` = names_countabove  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
+  )
+
 )
 ######################################################################################################## #
 

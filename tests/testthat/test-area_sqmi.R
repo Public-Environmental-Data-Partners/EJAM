@@ -115,6 +115,13 @@ test_that("ejamit(shapefile=) handles valid polygons with no blockpoints", {
 
 ## to be finished possibly... ***
 
+area_sqmi_from_table <- EJAM:::area_sqmi_from_table
+area_sqmi_from_pts <- EJAM:::area_sqmi_from_pts
+area_sqmi_from_shp <- EJAM:::area_sqmi_from_shp
+area_sqmi_from_fips <- EJAM:::area_sqmi_from_fips
+area_sqmi_from_fips_made_of_bgs <- EJAM:::area_sqmi_from_fips_made_of_bgs
+fips_bgs_in_fips1 <- EJAM:::fips_bgs_in_fips1
+
 # test_that("area_sqmi ok within ejamit", {
 #   expect_no_error({
 #
@@ -313,3 +320,11 @@ test_that("area_sqmi now handles 2+ types of fips", {
   expect_true(length(x) == 2)
 })
 ########################## #
+rm(
+  area_sqmi_from_table ,
+  area_sqmi_from_pts,
+  area_sqmi_from_shp ,
+  area_sqmi_from_fips ,
+  area_sqmi_from_fips_made_of_bgs,
+  fips_bgs_in_fips1
+)

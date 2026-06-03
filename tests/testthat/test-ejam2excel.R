@@ -29,6 +29,10 @@
 # )
 
 test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
+  testthat::skip_if_not(
+    EJAM:::ensure_pandoc_available_for_ejam(),
+    message = "Pandoc is required to render the community report sheet"
+  )
 
   expect_no_error({
     junk <- capture.output({

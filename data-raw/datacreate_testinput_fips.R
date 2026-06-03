@@ -1,10 +1,12 @@
 # datacreate_testinput_fips.R
 
+# cannot do until AFTER have updated censusplaces, blockgroupstats, etc.
+
 ################################## #
 
 # 2 states
 
-testinput_fips_states <- fips_state_from_state_abbrev(c("DE", "RI"))
+testinput_fips_states <- fips_state_from_state_abbrev(c("DE", "RI")) # relies on stateinfo2
 
 ## DO NOT ADD METADATA SINCE IT WILL NO LONGER BE A VECTOR PER is.vector() and
 ## shapes_from_fips() wil not work if we used metadata_add() !
@@ -38,6 +40,7 @@ testinput_fips_cities <- c("2743000", "2743306")
 
 # confirm it works in key functions
 x <- testinput_fips_cities
+stopifnot(all(x %in%   censusplaces$fips))
 stopifnot(is.vector(x))
 stopifnot(all(fips_valid(x)))
 y = getblocksnearby_from_fips(x)

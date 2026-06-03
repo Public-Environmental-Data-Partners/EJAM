@@ -11,7 +11,9 @@
 #'
 #' @return a datatable object using [DT::datatable()]
 #'   that can be printed to the console or shown in the RStudio viewer pane
-#' @examples ejam2tableviewer(testoutput_ejamit_10pts_1miles)
+#' @examples \dontrun{
+#' ejam2tableviewer(testoutput_ejamit_10pts_1miles)
+#' }
 #'
 #' @export
 #'

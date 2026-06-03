@@ -53,10 +53,17 @@ test_ejam_1group <- function(fnames,
         , print = print4eachfile) # here it is a useless param of capture_output_lines()
       }))
       x <- as.data.frame(x)
-      if (NROW(x) == 0) {        # at one point it was having trouble around here
-        cat("\n\n ********** FAILED TO GET ANY RESULTS TRYING TO RUN TESTS IN", fnames_with_paths[i], '\n\n')
-        xtable[[i]] <- NULL
-        next
+      if (NROW(x) == 0) {
+        cat("\nNo testthat result rows for ", fnames[i], "; treating file as skipped.\n", sep = "")
+        x <- data.frame(
+          file = fnames[i],
+          test = "all tests skipped or no test_that blocks",
+          nb = 1,
+          passed = 0,
+          warning = 0,
+          skipped = TRUE,
+          error = 0
+        )
       }
       x$tests <- x$nb
       x$nb <- NULL
@@ -131,7 +138,7 @@ test_ejam_bygroup <- function(testlist,
   #   "untested_cant", "untested_skipped", "warned"
   # ))
   # probably cannot now, but used to be able to use  reporter=default_compact_reporter()
-  try({suppressWarnings(suppressMessages({beepr_available <- require(beepr)}))}, silent = TRUE)
+  beepr_available <- requireNamespace("beepr", quietly = TRUE)
   xtable <- list()
   i <- 0
   for (tgroupname in names(testlist)) {

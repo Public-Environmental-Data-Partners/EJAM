@@ -22,7 +22,7 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
   if (!file.exists(app_sys(paste0(Rmd_folder, Rmd_name))) ||
       !file.exists(app_sys(paste0(Rmd_folder, 'communityreport.css'))) ||
       !file.exists(app_sys(file.path(Rmd_folder, 'main.css'))) ||
-      !file.exists(app_sys(file.path(Rmd_folder, basename(EJAM:::global_or_param("report_logo")))))
+      !file.exists(app_sys(file.path(Rmd_folder, basename(global_or_param("report_logo")))))
 
       ## does not check for or handle logo .png
   ) {
@@ -33,11 +33,11 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
   # Using to = tempdir() (a directory) ensures the file keeps its original name so
   # the .Rmd template can reference it.  Also guard against the case where
   # report_logo_file is empty, which would make app_sys() resolve to a directory.
-  logo_src <- app_sys(paste0(Rmd_folder, EJAM:::global_or_param("report_logo_file")))
+  logo_src <- app_sys(paste0(Rmd_folder, global_or_param("report_logo_file")))
   if (nzchar(logo_src) && file.exists(logo_src) && !dir.exists(logo_src)) {
     file.copy(from = logo_src, to = tempdir(), overwrite = TRUE)
   } else {
-    logo_alt <- EJAM:::global_or_param("report_logo")
+    logo_alt <- global_or_param("report_logo")
     if (nzchar(logo_alt) && file.exists(logo_alt) && !dir.exists(logo_alt)) {
       file.copy(from = logo_alt, to = tempdir(), overwrite = TRUE)
     }
@@ -115,8 +115,8 @@ build_community_report <- function(
 
     logo_path      = NULL, # NULL means default logo, "" means omit logo
     logo_html      = NULL, # if missing, derived from logo_path
-    report_title   = NULL, # if missing, EJAM:::global_or_param("report_title") or _multisite
-    analysis_title = NULL, # if missing, EJAM:::global_or_param("default_standard_analysis_title")
+    report_title   = NULL, # if missing, global_or_param("report_title") or _multisite
+    analysis_title = NULL, # if missing, global_or_param("default_standard_analysis_title")
     locationstr    = "",
     totalpop,      # if missing, prettyNum(round(output_df_rounded$pop, 0), big.mark = ',')
 
@@ -127,7 +127,7 @@ build_community_report <- function(
     extratable_title            = '',   # 'Additional Information', # above the table
     extratable_title_top_row    = 'ADDITIONAL INFORMATION', # inside the table, top left cell
     extratable_list_of_sections = list(
-      # see ejam2report defaults and see global_defaults_*.R; EJAM:::global_or_param("default_extratable_list_of_sections")
+      # see ejam2report defaults and see global_defaults_*.R; global_or_param("default_extratable_list_of_sections")
       `Breakdown by Population Group` = names_d_subgroups,
       `Language Spoken at Home` = names_d_language,
       `Language in Limited English Speaking Households` = names_d_languageli,
@@ -157,13 +157,13 @@ build_community_report <- function(
   if (is.null(report_title)) {
     # Report TITLE if 1-site vs multisite - try to guess if it was multisite or not, if report_title not already specified, but it should always already be here via server or ejam2report()
     if (is.na(output_df$ejam_uniq_id)) {
-      report_title <- EJAM:::global_or_param("report_title_multisite")
+      report_title <- global_or_param("report_title_multisite")
     } else {
-      report_title <- EJAM:::global_or_param("report_title")
+      report_title <- global_or_param("report_title")
       }
   }
   if (is.null(analysis_title)) {
-    analysis_title <- EJAM:::global_or_param("default_standard_analysis_title")
+    analysis_title <- global_or_param("default_standard_analysis_title")
   }
   ## check that analysis was run with EJ columns; if not, don't add them
   if (isTRUE(include_ejindexes)) {
@@ -251,11 +251,7 @@ build_community_report <- function(
 
     # 5. footnote ####
 
-    generate_report_footnotes(
-      # ejscreen_versus_ejam_caveat = "Note: Some numbers as shown on the EJSCREEN report for a single location will in some cases appear very slightly different than in EJSCREEN's multisite reports. All numbers shown in both types of reports are estimates, and any differences are well within the range of uncertainty inherent in the American Community Survey data as used in EJSCREEN. Slight differences are inherent in very quickly calculating results for multiple locations.",
-      diesel_caveat = paste0("Note: Diesel particulate matter index is from the EPA's Air Toxics Data Update, which is the Agency's ongoing, comprehensive evaluation of air toxics in the United States. This effort aims to prioritize air toxics, emission sources, and locations of interest for further study. It is important to remember that the air toxics data presented here provide broad estimates of health risks over geographic areas of the country, not definitive risks to specific individuals or locations. More information on the Air Toxics Data Update can be found at: ",
-                             url_linkify("https://www.epa.gov/haps/air-toxics-data-update", "https://www.epa.gov/haps/air-toxics-data-update"))
-    ),
+    generate_report_footnotes(), # use its defaults
     collapse = ''
   )
   ############################################################# #

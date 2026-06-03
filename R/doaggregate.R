@@ -1,15 +1,18 @@
 #' Summarize environmental and residential population indicators at each location and overall
 #'
-#' @description Used by ejamit() and the shiny app to summarize blockgroups scores at each site and overall.
+#' @description Used by ejamit() and the shiny app to summarize blockgroups scores at each site and overall,
+#'   as a key intermediate step in the overall analysis provided by ejamit().
 #'
 #' @details
-#' [getblocksnearby()] and [doaggregate()] are the two key functions that run [ejamit()].
+#' [getblocksnearby()] (or related functions for fips or shapefiles) and
+#'   [doaggregate()] are the two key functions that run [ejamit()].
+#'
 #'   [doaggregate()] takes a set of sites like facilities and the
 #'   set of blocks that are near each,
 #'   combines those with indicator scores for blockgroups, and
 #'   aggregates the numbers within each place and across all overall.
 #'
-#'   For all examples, see [getblocksnearbyviaQuadTree()]
+#'   Also see [getblocksnearbyviaQuadTree()]
 #'
 #'   [doaggregate()] is the code run after [getblocksnearby()] (or a related function for
 #'   polygons or FIPS Census units) has identified which blocks are nearby.
@@ -43,7 +46,8 @@
 #'
 #' EJAM uses the same approach as EJSCREEN does to identify the count and residential population of nearby residents,
 #' so EJSCREEN technical documentation should be consulted on the approach,
-#' at [EJSCREEN Technical Info](https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads "EJSCREEN Technical Info").
+#' at [EJSCREEN Technical Info](http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html)
+#' or [as archived](https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads "EJSCREEN Technical Info").
 #' EJAM implements that approach using faster code and data formats, but it
 #' still uses the same high-resolution approach as described in EJSCREEN documentation
 #' and summarized below.
@@ -80,10 +84,18 @@
 #' the Decennial census blocks can provide, such as a dasymetric map approach.
 #'
 #'
-#' @param sites2blocks table in [data.table](https://r-datatable.com) format, of distances in miles between all sites (facilities) and
-#'   nearby Census block internal points, with columns ejam_uniq_id, blockid, distance,
-#'   created by getblocksnearby  function.
-#'   See [testoutput_getblocksnearby_10pts_1miles] dataset in package, as input to this function
+#' @param sites2blocks table in [data.table](https://r-datatable.com) format,
+#'   of distances in miles between all sites (facilities) and
+#'   nearby Census block internal points, with columns
+#'   ejam_uniq_id, blockid, distance, blockwt, bgid, and sometimes others,
+#'   created by functions that find blocks in or near specified sites,
+#'   such as these examples:
+#'   ```
+#'   s2b_latlon <- getblocksnearby(testpoints_10, radius=1) # same as [testoutput_getblocksnearby_10pts_1miles]
+#'   s2b_fips   <- getblocksnearby_from_fips(testinput_fips_counties)
+#'   s2b_shp    <- get_blockpoints_in_shape(testshapes_2)$pts # notice the $pts here
+#'   ```
+#'
 #' @param sites2states_or_latlon data.table or just data.frame,
 #'   with columns ejam_uniq_id (each unique one in sites2blocks) and
 #'   ST (2-character State abbreviation) or lat and lon
@@ -120,7 +132,7 @@
 #' @param infer_sitepoints set to TRUE to try to infer the lat,lon of each site around which the blocks in sites2blocks were found.
 #'   lat,lon of each site will be approximated as average of nearby blocks, although a more accurate slower way would
 #'   be to use reported distance of each of 3 of the furthest block points and triangulate
-#' @param called_by_ejamit Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive=F)
+#' @param called_by_ejamit Set to TRUE by ejamit() to suppress some outputs even if ejamit(silentinteractive = FALSE)
 #' @param updateProgress progress bar function used for shiny app
 #' @param silentinteractive Set to TRUE to see results in RStudio console.
 #'   Set to FALSE to prevent long output showing in console in RStudio when in interactive mode
@@ -132,6 +144,10 @@
 #'
 #' @examples
 #' EJAM:::structure.of.output.list(testoutput_doaggregate_10pts_1miles)
+#'
+#' x = testoutput_doaggregate_10pts_1miles
+#' names(x)
+#' ejam2barplot(x)
 #'
 #' @return list with named elements:
 #'
@@ -191,6 +207,84 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   # ensure sites2blocks is a data.table
   if (!data.table::is.data.table(sites2blocks)) {
     data.table::setDT(sites2blocks)
+  }
+  if (!("distance" %in% names(sites2blocks))) {
+    warning("sites2blocks should contain a column named distance; since that is missing, now will set distance to NA which may not make sense for some types of analysis")
+    sites2blocks[, distance := NA_real_]
+  }
+  if ("bgid" %in% names(sites2blocks) && "bgid" %in% names(blockgroupstats)) {
+    supported_bgids <- unique(blockgroupstats$bgid[!is.na(blockgroupstats$bgid)])
+    unsupported_rows <- which(is.na(sites2blocks$bgid) | !(sites2blocks$bgid %in% supported_bgids))
+
+    if (length(unsupported_rows) > 0) {
+      unsupported <- data.table::copy(sites2blocks[unsupported_rows])
+      unsupported_bgids <- unique(stats::na.omit(unsupported$bgid))
+      unsupported_blockids <- unique(stats::na.omit(unsupported$blockid))
+      affected_ids <- unique(stats::na.omit(unsupported$ejam_uniq_id))
+
+      bg_lookup <- NULL
+      if (!exists("bgid2fips", inherits = TRUE)) {
+        suppressWarnings(suppressMessages(
+          try(dataload_dynamic("bgid2fips", silent = TRUE), silent = TRUE)
+        ))
+      }
+      if (exists("bgid2fips", inherits = TRUE)) {
+        bg_lookup <- try(data.table::as.data.table(get("bgid2fips", inherits = TRUE)), silent = TRUE)
+        if (inherits(bg_lookup, "try-error") || !all(c("bgid", "bgfips") %in% names(bg_lookup))) {
+          bg_lookup <- NULL
+        }
+      }
+
+      if (!is.null(bg_lookup)) {
+        unsupported <- merge(
+          unsupported,
+          unique(bg_lookup[bgid %in% unsupported_bgids, .(bgid, bgfips)]),
+          by = "bgid",
+          all.x = TRUE,
+          sort = FALSE
+        )
+      } else if (!("bgfips" %in% names(unsupported))) {
+        unsupported[, bgfips := NA_character_]
+      }
+      unsupported[, state := fips2state_abbrev(substr(bgfips, 1, 2))]
+      unsupported[is.na(state), state := "unknown"]
+      state_counts <- unsupported[, .(
+        unsupported_blockgroups = collapse::fnunique(bgid[!is.na(bgid)]),
+        unsupported_blocks = collapse::fnunique(blockid[!is.na(blockid)]),
+        unsupported_block_rows = .N
+      ), by = state]
+      state_text <- paste(
+        paste0(
+          state_counts$state,
+          " (", state_counts$unsupported_blockgroups, " BGs, ",
+          state_counts$unsupported_blocks, " blocks, ",
+          state_counts$unsupported_block_rows, " rows)"
+        ),
+        collapse = "; "
+      )
+      bg_example <- paste(utils::head(stats::na.omit(unique(unsupported$bgid)), 6), collapse = ", ")
+      bgfips_example <- paste(utils::head(stats::na.omit(unique(unsupported$bgfips)), 6), collapse = ", ")
+      affected_text <- paste(utils::head(affected_ids, 20), collapse = ", ")
+
+      message(
+        "Dropping ", length(unsupported_rows), " block row",
+        if (length(unsupported_rows) == 1) "" else "s",
+        " from ", length(unsupported_bgids), " unsupported blockgroup",
+        if (length(unsupported_bgids) == 1) "" else "s",
+        " not found in blockgroupstats before aggregation. ",
+        "Unsupported blocks: ", length(unsupported_blockids), ". ",
+        "Affected ejam_uniq_id count: ", length(affected_ids), "; values: ", affected_text, ". ",
+        "States: ", state_text, ". ",
+        "Example bgid: ", bg_example,
+        if (nzchar(bgfips_example)) paste0(". Example bgfips: ", bgfips_example) else ""
+      )
+
+      sites2blocks <- sites2blocks[-unsupported_rows]
+      if (NROW(sites2blocks) == 0) {
+        message("No block rows remain after dropping unsupported blockgroups; no results will be returned.")
+        return(NULL)
+      }
+    }
   }
   ###################################################### #
   ## validate sites2states_or_latlon ####
@@ -405,7 +499,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   ## SUM OF COUNTS, vs WTD AVG, vs via FORMULA (usually ratio of sums of counts)
   # That info is sort of stored already in map_headernames$calculation_type and $denominator
-  # see notes in custom_doaggregate() and  calc_ejam() and formulas_d
+  # see notes in custom_doaggregate(), calc_ejam(), and formulas_ejscreen_acs$formula
 
   ##################################################### #
 
@@ -468,7 +562,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   if (is.null(calculatedcols)) {
     # should this be empty and let all be via "wtdmeancols" or "countcols" ? for now.
-    #  or  should this include all that could be calculated using formulas_all and calc_ejam() ?
+    #  or  should this include all that could be calculated using formulas  and calc_ejam() ?
 
     calculatedcols <- unique(c(
       'flagged'   #  "flagged" is not in names(blockgroupstats) so it gets dropped, but currently calculatedcols is not used at all anyway.
@@ -800,17 +894,30 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   calculatedcols_inbgstats <- intersect(calculatedcols, names(blockgroupstats))
   calctype_maxbg           <- intersect(calctype_maxbg, names(blockgroupstats))
   calctype_minbg           <- intersect(calctype_minbg, names(blockgroupstats))
+  denominator_cols_needed  <- unique(stats::na.omit(calcweight(wtdmeancols_inbgstats)))
+  denominator_cols_needed  <- setdiff(denominator_cols_needed, c("", "pop"))
+  denominator_cols_inbgstats <- intersect(denominator_cols_needed, names(blockgroupstats))
+  bg_join_cols_bysite <- unique(c(
+    "bgid", "ST",
+    countcols_inbgstats,
+    wtdmeancols_inbgstats,
+    denominator_cols_inbgstats,
+    calculatedcols_inbgstats,
+    calctype_maxbg,
+    calctype_minbg
+  ))
+  bg_join_cols_overall <- setdiff(bg_join_cols_bysite, "ST") # ST gets added back later, as NA values
 
   sites2bgs_plusblockgroupdata_bysite  <- merge(
     sites2bgs_bysite,  #  but has other cols like   "distance_avg" , "proximityscore"  etc.
-    blockgroupstats[ , c('bgid', 'ST', ..countcols_inbgstats, ..wtdmeancols_inbgstats, ..calculatedcols_inbgstats, ..calctype_maxbg, ..calctype_minbg)],
+    blockgroupstats[ , ..bg_join_cols_bysite],
                                                 all.x = TRUE, all.y = FALSE, by = 'bgid')
 
   # just be aware that this is not saving just unique blockgroups, but saves each bgid-ejam_uniq_id pairing???
 
   sites2bgs_plusblockgroupdata_overall <- merge(
     sites2bgs_overall,
-    blockgroupstats[ , c('bgid',       ..countcols_inbgstats, ..wtdmeancols_inbgstats, ..calculatedcols_inbgstats, ..calctype_maxbg, ..calctype_minbg)],
+    blockgroupstats[ , ..bg_join_cols_overall],
                                                 all.x = TRUE, all.y = FALSE, by = 'bgid')
 
   # rm(sites2bgs_overall, sites2bgs_bysite); rm(blockgroupstats)
@@ -878,16 +985,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   ## started to draft new calc_wtdmeans() etc. here..
   # cbind(table(EJAM::map_headernames$denominator))
   # cbind(table(calcweight(wtdmeancols)))
-  ## age25up           1
-  ## builtunits        2
-  ## disab_universe    1
-  ## hhlds             2
-  ## lan_universe     15
-  ## lingiso           4
-  ## occupiedunits     1
-  ## pop             103
-  ## povknownratio     1
-  ## unemployedbase    1
+
 
   ## mean person (or hhld etc.) at each SITE ###
   ## cant really update by reference, adding new columns, bc aggregating at the same time
@@ -916,7 +1014,20 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   #  weights = population count, which for "overall" is bgwt * pop for each bg, and for "bysite" is bgwt * pop per site.
 
-  popmeancols_inbgstats <- wtdmeancols_inbgstats[calcweight(wtdmeancols_inbgstats) == "pop"]
+  weights_for_wtdmeancols <- calcweight(wtdmeancols_inbgstats)
+  missing_weight_cols <- weights_for_wtdmeancols[!weights_for_wtdmeancols %in% names(sites2bgs_plusblockgroupdata_bysite)]
+  missing_weight_cols <- unique(setdiff(missing_weight_cols, "pop"))
+  if (length(missing_weight_cols) > 0) {
+    legacy_pop_fallback_cols <- "healthinsurance_universe"
+    warning_weight_cols <- setdiff(missing_weight_cols, legacy_pop_fallback_cols)
+    if (length(warning_weight_cols) > 0) {
+      warning("Some weighted-mean denominator columns were not found in blockgroup data, so population weights were used instead: ",
+              paste(warning_weight_cols, collapse = ", "))
+    }
+    weights_for_wtdmeancols[weights_for_wtdmeancols %in% missing_weight_cols] <- "pop"
+  }
+
+  popmeancols_inbgstats <- wtdmeancols_inbgstats[weights_for_wtdmeancols == "pop"]
 
   ##     mean PERSON, AT EACH SITE i.e., by SITE - also could see results_summarized  from batch.summarize()
   results_bysite_popmeans <- sites2bgs_plusblockgroupdata_bysite[ , lapply(.SD, function(x) {
@@ -941,12 +1052,12 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   #  weights = other types of weights than pop
 
-  weight_types <- setdiff(unique(calcweight(wtdmeancols_inbgstats)), "pop")
+  weight_types <- setdiff(unique(weights_for_wtdmeancols), "pop")
 
   for (i in seq_along(weight_types)) {
 
     #  weights = each type
-    this_weight_type_cols <- wtdmeancols_inbgstats[calcweight(wtdmeancols_inbgstats) == weight_types[i]]
+    this_weight_type_cols <- wtdmeancols_inbgstats[weights_for_wtdmeancols == weight_types[i]]
 
     ## mean by SITE
     results_bysite_wtdmeans <- sites2bgs_plusblockgroupdata_bysite[, lapply(.SD, function(x) {
@@ -1162,10 +1273,10 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   #  ##################################################### #
 
-  if (class(results_bysite$ejam_uniq_id) == "character") { # xxx
+  if (is.character(results_bysite$ejam_uniq_id)) { # xxx
     sites2states$ejam_uniq_id <- as.character(sites2states$ejam_uniq_id)
   }
-  if (class(sites2states$ejam_uniq_id) == "character") {
+  if (is.character(sites2states$ejam_uniq_id)) {
     results_bysite$ejam_uniq_id <- as.character(results_bysite$ejam_uniq_id)
   }
   results_bysite[sites2states, ST := ST, on = "ejam_uniq_id"] # check this, including when ST is NA ***
@@ -1216,11 +1327,17 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
                       both = c("names_d_subgroups_alone", "names_d_subgroups_nh"),
                       original = "names_d_subgroups")
 
-  namelists <- c('names_e','names_d',subs_list, 'names_health','names_climate')
+  namelists <- c(
+    'names_e', 'names_d', subs_list,
+    'names_health', 'names_climate', 'names_criticalservice',
+    'names_age', 'names_community', 'names_d_extra',
+    'names_d_language', 'names_d_languageli'
+  )
   varsneedpctiles <- map_headernames %>%
     ## need to pull rows in same order of name lists
     slice(unlist(sapply(namelists, function(a) which(map_headernames$varlist %in% a)))) %>%
     filter(!(.data$rname %in% c("Demog.Index.State", "Demog.Index.Supp.State"))) %>%
+    filter(!(.data$calculation_type %in% c("flag", "sum of counts"))) %>%
     distinct(rname) %>% pull(rname)
   if (is.null(subs_drop)) {
   } else {
@@ -1229,9 +1346,10 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   }
   varsneedpctiles <- intersect(varsneedpctiles, names(results_bysite))
   varsneedpctiles <- setdiff(varsneedpctiles, subs_drop)
-  varnames.us.pctile    <- paste0(      'pctile.', varsneedpctiles) # but Summary Indexes do not follow that naming scheme and are handled with separate code
-  varnames.state.pctile <- paste0('state.pctile.', varsneedpctiles) # but Summary Indexes do not follow that naming scheme and are handled with separate code
-
+  varsneedpctiles <- intersect(intersect(varsneedpctiles, names(usastats)), names(statestats)) # omits the EJ indexes since name state.EJ... in the statestats. Does not omit Demog Indexes but those are done later.
+  varnames.us.pctile    <- paste0(      'pctile.', varsneedpctiles) # but EJ Indexes do not follow that naming scheme and are handled with separate code
+  varnames.state.pctile <- paste0('state.pctile.', varsneedpctiles) # but EJ Indexes do not follow that naming scheme and are handled with separate code
+  # note EJ Indexes and Demog Indexes percentiles are special cases and done separately below.
   #Recoded version of the loops in the original doaggregate to make it more efficient.
   #Use data.table instead of data.frame for in place updates instead of creating and binding new data frames
   #Use vectorized operations instead of for loops
@@ -1261,7 +1379,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   if (length(valid_us_vars) > 0) {
     results_bysite[, (valid_us_pctl_names) := lapply(valid_us_vars, function(var) {
-      # but note newer vectorized calc_pctile_columns()
+      # but note newer vectorized calc_pctile_columns() ***
       pctile_from_raw_lookup(
         columns_bysite[[var]],
         varname.in.lookup.table = var,

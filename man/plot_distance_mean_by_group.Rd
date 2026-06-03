@@ -66,6 +66,8 @@ distance_mean_by_group() and distance_mean_by_group() are synonymous, and are li
 \code{\link[=plot_distance_mean_by_group]{plot_distance_mean_by_group()}}, but show a table not plot, by default.
 }
 \details{
+For block (not just block group) resolution analysis of distance by group, see \code{\link[=plot_distance_by_pctd]{plot_distance_by_pctd()}}.
+
 Note that the ratio shown is a ratio of distance among others to distance of a given group,
 so values below 1 mean the given group lives closer to facilities.
 A value of 0.85 would mean the group is only 85\% as far from a site as everyone else.
@@ -83,5 +85,5 @@ or exactly on top of the internal point of the block, in which case zero would n
 appropriate estimate of the distance, hence this adjustment is made in EJAM \code{\link[=getblocksnearby]{getblocksnearby()}}
 }
 \seealso{
-\code{\link[=distance_by_group]{distance_by_group()}} \code{\link[=distance_by_group_plot]{distance_by_group_plot()}}
+\code{\link[=distance_by_group]{distance_by_group()}} \code{\link[=distance_by_group_plot]{distance_by_group_plot()}}   \code{\link[=plot_distance_by_pctd]{plot_distance_by_pctd()}}.
 }

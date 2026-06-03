@@ -39,9 +39,9 @@ Use 999 to signal FIPS analysis mode without a buffer (same as 0 for buffering p
 }
 \value{
 \itemize{
-\item if return_shp=F, returns just a sites2blocks table in \href{https://r-datatable.com}{data.table} format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
+\item if return_shp = FALSE, returns just a sites2blocks table in \href{https://r-datatable.com}{data.table} format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
 This is like the \code{\link[=getblocksnearby]{getblocksnearby()}} and \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}} outputs.
-\item if return_shp=T, returns a named list where pts is the table in \href{https://r-datatable.com}{data.table} format of sites2blocks,
+\item if return_shp = TRUE, returns a named list where pts is the table in \href{https://r-datatable.com}{data.table} format of sites2blocks,
 and polys is the spatial data.frame with one row per input fips (including invalid ones).
 
 The ejam_uniq_id represents which of the input sites is being referred to, and the table
@@ -53,12 +53,14 @@ were valid and had blocks identified, then the data.table here will only include
 Allows EJAM to analyze and compare Counties, for example
 }
 \examples{
+\dontrun{
   x <- getblocksnearby_from_fips(fips_counties_from_state_abbrev("DE"))
   y <- doaggregate(x)
   z <- ejamit(fips = fips_counties_from_statename("Delaware"))
 
   # x2 <- getblocksnearby_from_fips("482011000011") # one blockgroup only
   # y2 <- doaggregate(x2)
+}
 }
 \seealso{
 \code{\link[=getblocksnearby]{getblocksnearby()}} \code{\link[=fips_bgs_in_fips]{fips_bgs_in_fips()}} \code{\link[=fips_lead_zero]{fips_lead_zero()}} \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} \code{\link[=fips_from_table]{fips_from_table()}}

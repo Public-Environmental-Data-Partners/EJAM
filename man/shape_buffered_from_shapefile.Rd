@@ -28,12 +28,13 @@ shape_buffered_from_shapefile - add buffer around shape
 Just a wrapper for \code{\link[sf:st_buffer]{sf::st_buffer()}}
 }
 \examples{
+\dontrun{
 # Within 3 miles of the county borders
 fips_counties_from_state_abbrev("DE")[1]
 x = shapes_from_fips("10001")
 xtra = shape_buffered_from_shapefile(x, radius.miles = 3)
-map_shapes_leaflet(x) \%>\%
-  EJAM:::map_shapes_leaflet_proxy(xtra, color = "black")
+EJAM:::map_shapes_leaflet_proxy(map_shapes_leaflet(x), xtra, color = "black")
+}
 
 }
 \seealso{

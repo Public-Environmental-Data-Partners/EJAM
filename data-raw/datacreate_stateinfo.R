@@ -1,13 +1,13 @@
-# datacreate_stateinfo.R makes stateinfo with a few columns 
+# datacreate_stateinfo.R makes stateinfo with a few columns
 # ?stateinfo
-# 
+#
 # datacreate_stateinfo2.R makes stateinfo2 with more columns
-# ?stateinfo2 
+# ?stateinfo2
 
-##################################################################################### # 
+##################################################################################### #
 
 stateinfo <- structure(list(
-  
+
   ST = c("AL", "AK", "AZ", "AR", "CA", "CO", "CT",
          "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY",
          "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV",
@@ -17,7 +17,7 @@ stateinfo <- structure(list(
          # "UM", #### U.S. Minor Outlying Islands
          # "US",
          "PR"),
-  
+
   statename = c("Alabama", "Alaska", "Arizona", "Arkansas",
                 "California", "Colorado", "Connecticut", "Delaware", "District of Columbia",
                 "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
@@ -32,7 +32,7 @@ stateinfo <- structure(list(
                 # "U.S. Minor Outlying Islands",
                 # "United States",
                 "Puerto Rico"),
-  
+
   ftpname = c("Alabama", "Alaska", "Arizona", "Arkansas", "California",
               "Colorado", "Connecticut", "Delaware", "DistrictOfColumbia",
               "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
@@ -47,7 +47,7 @@ stateinfo <- structure(list(
               # NA,                 ####  U.S. Minor Outlying Islands
               # "UnitedStates",
               "PuertoRico"),
-  
+
   FIPS.ST = c("01", "02", "04", "05", "06", "08", "09", "10",
               "11", "12", "13", "15", "16", "17", "18", "19", "20", "21", "22",
               "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33",
@@ -66,42 +66,43 @@ stateinfo <- structure(list(
              2)
 ), row.names = c(NA, -52L), class = "data.frame")
 
-###################################################################################### # 
+###################################################################################### #
 # metadata_add ####
-stateinfo <-  metadata_add(stateinfo)
+ # stateinfo <-  metadata_add(stateinfo)
 # use_data ####
-usethis::use_data(stateinfo, overwrite = TRUE)
+ # usethis::use_data(stateinfo, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("stateinfo")
 
 # documentation ####
 
 dataset_documenter("stateinfo",
                    title = "stateinfo (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)",
-                   description = "52 rows and a few variables: ST is the 2-letter abbreviation, 
+                   description = "52 rows and a few variables: ST is the 2-letter abbreviation,
 #'   statename is the State name, etc.",
                    seealso = "[stateinfo2] for more columns",
                    details = "
 #' Created for EJAM by datacreate_stateinfo.R script
-#' 
-#' Also see [Census details](https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html) 
-#' 
-#'   column names: 'ST'  'statename'  'ftpname'   'FIPS.ST'   'REGION' 
-#'   
-#'   
+#'
+#' Also see [Census details](https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html)
+#'
+#'   column names: 'ST'  'statename'  'ftpname'   'FIPS.ST'   'REGION'
+#'
+#'
 #'   Some datasets lack PR. (72)
-#'   
-#'   Many datasets lack these:  AS, GU, MP, VI (codes '60' '66' '69' '78') 
-#'   
+#'
+#'   Many datasets lack these:  AS, GU, MP, VI (codes '60' '66' '69' '78')
+#'
 #'   Almost all datasets lack UM. (74)
-#'   
+#'
 #'         72 PR                 Puerto Rico
-#'         
-#'         66 GU                        Guam 
-#'         
-#'         69 MP    Northern Mariana Islands  
-#'         
-#'         78 VI         U.S. Virgin Islands 
-#'         
+#'
+#'         66 GU                        Guam
+#'
+#'         69 MP    Northern Mariana Islands
+#'
+#'         78 VI         U.S. Virgin Islands
+#'
 #'         74 UM U.S. Minor Outlying Islands  "
-                   ) 
+                   )
 
-###################################################################################### # 
+###################################################################################### #

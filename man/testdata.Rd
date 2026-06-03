@@ -5,7 +5,13 @@
 \title{utility to show dir_tree of available files in testdata folders
 See list of samples of input files to try in EJAM, and output examples from EJAM functions}
 \usage{
-testdata(pattern = NULL, installed = TRUE, quiet = FALSE, folder_only = FALSE)
+testdata(
+  pattern = NULL,
+  installed = TRUE,
+  quiet = FALSE,
+  folder_only = FALSE,
+  ...
+)
 }
 \arguments{
 \item{pattern}{optional query regular expression, used as filter using when getting filenames}
@@ -19,6 +25,9 @@ rather than the locally installed version.}
 without seeing all the info in console and without browsing to the folder}
 
 \item{folder_only}{set TRUE to get only directories, no files}
+
+\item{...}{ignored; accepted for compatibility with callers that pass
+standard EJAM quiet/silentinteractive-style arguments.}
 }
 \value{
 path to local testdata folder comes with the EJAM package
@@ -29,24 +38,27 @@ See list of samples of input files to try in EJAM, and output examples from EJAM
 }
 \examples{
 testdata('shape', quiet = TRUE)
-testdata('shape', quiet = T, folder_only=T)
+testdata('shape', quiet = TRUE, folder_only=TRUE)
 
-testdata("id", quiet = T)
-testdata("id", quiet = T, folder_only=T)
+testdata("id", quiet = TRUE)
+testdata("id", quiet = TRUE, folder_only=TRUE)
 
-testdata('fips', quiet = T)
-testdata('registryid', quiet = T)
-testdata("address", quiet = T)
+testdata('fips', quiet = TRUE)
+testdata('registryid', quiet = TRUE)
+testdata("address", quiet = TRUE)
 
 # datasets as lazyloaded objects vs. files installed with package
 
 topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
 
 # datasets / R objects
-cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
+cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = TRUE)))
 
 # files
-cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+cbind(files.in.package = sort(basename(testdata(topic, quiet = TRUE))))
 
+}
+\seealso{
+\code{\link[=pkg_functions_and_data]{pkg_functions_and_data()}}
 }
 \keyword{internal}

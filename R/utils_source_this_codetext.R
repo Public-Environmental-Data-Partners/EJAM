@@ -10,7 +10,7 @@
 ######################################## #
 ## example showing how it works
 #
-# formula_varname(formulas_d)
+# calc_varname_from_formula(formulas_ejscreen_acs$formula)
 #
 ##  see calc_ejam()
 
@@ -18,7 +18,7 @@
 ###   example:
 # source_this_codetext_careful("(a+b)^c - d", list(a = 1, b = 2, c = 3, d = 4))
 # # [1] 23
-# formulas_d[1]
+# formulas_ejscreen_acs$formula[1]
 # source_this_codetext_careful(
 #   "1 * ifelse(pop == 0, 0, over64 / pop)",
 #   data_list = list(pop = blockgroupstats$pop[10001:10003], over64 = blockgroupstats$over64[10001:10003])
@@ -41,7 +41,7 @@
 #      "mystat2  = 100 * pctlowinc"))
 # cbind(Demog.Index = bgdf$Demog.Index, newdf, pctlowinc = bgdf$pctlowinc)
 #
-# newdf <- calc_ejam(bgdf, formulas = formulas_d)
+# newdf <- calc_ejam(bgdf, formulas = formulas_ejscreen_acs$formula)
 # newdf
 ######################################## #
 

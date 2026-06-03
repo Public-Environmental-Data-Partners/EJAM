@@ -368,7 +368,7 @@ Source: [National Oceanic and Atmospheric Administration](https://www.arcgis.com
 
 This dataset provides a screening level assessment of extreme heat potential by
 census block group. This dataset describes the average number of days over 90º F
-(from 2019-2023) per block group. This is calculated from PRISM Climate Group’s
+(e.g., from 2019-2023) per block group. This is calculated from PRISM Climate Group’s
 gridded daily Tmax estimates. Note this is dry-bulb temperature, and does not
 factor in humidity. 
 Source data: [PRISM Climate Group](https://prism.oregonstate.edu/data/) 

@@ -16,18 +16,18 @@
 #' @return a data.frame of whichlist, exactmatch, grepmatch, and grephits (examples)
 #'
 #' @examples
-#'    x <- EJAM:::names_whichlist("rsei", ignore.case.exact = T, ignore.case.grep = T)
+#'    x <- EJAM:::names_whichlist("rsei", ignore.case.exact = TRUE, ignore.case.grep = TRUE)
 #'
 #'    subset(x,  grepl("all", x$whichlist))
 #'    subset(x,  grepl("state_p", x$whichlist))
 #'    z=subset(namez, names(namez) != "all_r" & names(namez) %in%
 #'       subset(x, x$grepmatch == "yes")$whichlist  )
 #'    lapply(z, as.vector) # avoids showing attributes if they were set and are distracting here
-#'    grep("\\.eo$", namez$ej, value = T)
+#'    grep("\\.eo$", namez$ej, value = TRUE)
 #'
 #' @keywords internal
 #'
-names_whichlist <- function(x, exact=T, grepmatching=T, ignore.case.exact=FALSE, ignore.case.grep = FALSE, keylists=F, exactonly=FALSE) {
+names_whichlist <- function(x, exact=TRUE, grepmatching=TRUE, ignore.case.exact=FALSE, ignore.case.grep = FALSE, keylists=FALSE, exactonly=FALSE) {
 
   hits = vector()
   everylist = names(namez)

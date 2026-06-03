@@ -98,7 +98,8 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
                                 mycolorsavailable = c("gray","yellow","orange","red"),
                                 main = "Residential Populations at the Analyzed Locations Compared to US Overall",
                                 ylab = "Ratio vs. Average",
-                                caption = "NH = \"non-Hispanic\"\nNHA = \"non-Hispanic alone, aka single race\"") {
+                                caption = 'NH = "Non-Hispanic"\nNHA = "Non-Hispanic Alone" (alone = single race)'
+                                ) {
 
   if (is.null(main) || "" %in% main) {main <- "Residential Populations at the Analyzed Locations Compared to US Overall"}
   ########################################################## #
@@ -166,7 +167,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
     ratio.to.us.d.overall[, sapply(ratio.to.us.d.overall, is.infinite)] <- 0
   }
   # use yellow/orange/red for ratio >= 1x, 2x, 3x  #  work in progress
-  mycolors <- mycolorsavailable[1 + findInterval(ratio.to.us.d.overall, c(1.01, 2, 3))]
+  mycolors <- mycolorsavailable[1 + findInterval(ratio.to.us.d.overall, c(1.05, 2, 3))]
 
   # barplot(ratio.to.us.d.overall,
   #         main = 'Ratio vs. US Average for Residential Population Indicators',
@@ -246,11 +247,11 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
 
   # ggplot2::ggplot(
   #   ratio.to.us.d.overall,
-  #   aes(x = indicator, y = value)
+  #   ggplot2::aes(x = indicator, y = value)
   # ) +
-  #   geom_boxplot() +
-  #   geom_hline(aes(yintercept = 1)) +
-  #   labs(x = "",
+  #   ggplot2::geom_boxplot() +
+  #   ggplot2::geom_hline(ggplot2::aes(yintercept = 1)) +
+  #   ggplot2::labs(x = "",
   #        y = "Ratio of Indicator values for avg. person in selected locations\n vs. US average value",
   #        title = 'Ratio vs. US Average for Residential Population Indicators')
 }

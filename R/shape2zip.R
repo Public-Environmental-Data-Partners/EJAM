@@ -51,7 +51,7 @@ shape2zip <- function(shp, filename = create_filename(file_desc = "shapefile", e
     if (file.exists(zipfullpath)) {file.remove(zipfullpath)}
   })
   junk <- capture.output({
-    zip(zipfullpath, files = file.path(tds, fnames.all), extras = c('-j', '-D'))
+    zip(zipfullpath, files = file.path(tds, fnames.all), flags = "-q", extras = c('-j', '-D'))
   })
   # unzip from tempdir to folder specified by parameter.
   # -D should prevent storing Directory info,
@@ -62,4 +62,3 @@ shape2zip <- function(shp, filename = create_filename(file_desc = "shapefile", e
   return(zipfullpath)
 }
 ############################################################# #
-

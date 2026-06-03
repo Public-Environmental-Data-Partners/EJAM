@@ -1,6 +1,6 @@
 ######################## # ######################## #
 
-app_logo_HTML_global_or_param = function(app_logo_now = EJAM:::global_or_param("app_logo")) {
+app_logo_HTML_global_or_param = function(app_logo_now = global_or_param("app_logo")) {
 
   # This is a workaround/hack that should allow user to set app logo as either a
   # app_logo or app_logo_html parameter to ejamapp()
@@ -22,7 +22,7 @@ app_logo_HTML_global_or_param = function(app_logo_now = EJAM:::global_or_param("
   # and this would need to be called from server using input$xyz for that to work.
 
   # This below should be "" from global_defaults_shiny.R or could be something user passed to ejamapp()
-  app_logo_html = EJAM:::global_or_param("app_logo_html")
+  app_logo_html = global_or_param("app_logo_html")
 
   if (is.null(app_logo_html) || app_logo_html == "") {
     return(

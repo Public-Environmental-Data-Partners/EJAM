@@ -1,0 +1,324 @@
+###################################################### #
+
+#' Combine ACS and environmental inputs into blockgroupstats
+#'
+#' @details This is a reusable pipeline step. It combines an ACS-derived
+#' blockgroup table with environmental and other non-ACS indicator columns,
+#' calculates demographic indexes, and optionally saves the final
+#' [blockgroupstats] stage.
+#'
+#' The environmental input is expected to include `pctpre1960`. That indicator
+#' can be created by an upstream envirodata step from the saved ACS stage, even
+#' though EJAM treats it as an environmental indicator for EJ-index calculations.
+#' When Island Areas placeholder rows are present in `bg_acsdata`, demographic
+#' fields remain missing by default, but environmental fields supplied in
+#' `bg_envirodata` are retained for those rows. This supports dataset/export/map
+#' visibility for AS/GU/MP/VI without adding those areas to the block helper
+#' files used for radius/buffer analysis.
+#'
+#' @param bg_acsdata ACS-derived blockgroup table, or NULL if reading from a
+#'   saved pipeline stage.
+#' @param bg_envirodata environmental/non-ACS blockgroup table, or NULL if
+#'   reading from a saved pipeline stage such as `"bg_envirodata"`.
+#' @param bg_extra_indicators non-ACS, non-enviro blockgroup indicators such as
+#'   `lowlifex`, health outcome rates, site/feature counts, climate indicators,
+#'   and flag fields.
+#' @param bg_geodata Census/TIGER blockgroup geography fields, especially
+#'   `arealand` and `areawater` in square meters.
+#' @param pipeline_dir folder for reading/writing pipeline stage files.
+#' @param pipeline_storage stage storage backend: `"auto"`, `"local"`, or
+#'   `"s3"`.
+#' @param bg_acsdata_stage stage name for ACS input.
+#' @param bg_envirodata_stage stage name for environmental input.
+#' @param bg_extra_indicators_stage stage name for extra-indicator input.
+#' @param bg_geodata_stage stage name for Census/TIGER geography input.
+#' @param blockgroup_universe_source which input defines the output
+#'   blockgroup universe. The default `"acs"` uses the ACS table rows as the
+#'   authoritative tabulated universe for the requested ACS vintage. `"union"`
+#'   keeps the older draft behavior of including any blockgroup present in ACS,
+#'   environmental, or extra-indicator inputs.
+#' @param extra_indicator_vars expected extra indicator columns.
+#' @param reuse_existing_extra_if_missing logical. If TRUE, missing
+#'   `bg_extra_indicators` columns are copied from `existing_blockgroupstats`
+#'   with a warning. The default FALSE errors on missing extra inputs.
+#' @param existing_blockgroupstats optional source for reuse when
+#'   `reuse_existing_extra_if_missing` is TRUE. Defaults to current package data.
+#' @param save_stage logical, whether to save the final `blockgroupstats` stage.
+#' @param stage_format file format for saved/read stages: `"csv"`, `"rds"`,
+#'   `"rda"`, or `"arrow"`.
+#' @param yr optional ACS end year used to set metadata on saved R-native
+#'   pipeline stages.
+#' @param blockgroupstats_acs,blockgroupstats_acs_stage old names retained as
+#'   aliases for draft scripts.
+#'
+#' @return data.table like [blockgroupstats].
+#'
+#' @keywords internal
+#'
+calc_ejscreen_blockgroupstats <- function(bg_acsdata = NULL,
+                                          bg_envirodata = NULL,
+                                          bg_extra_indicators = NULL,
+                                          bg_geodata = NULL,
+                                          pipeline_dir = NULL,
+                                          bg_acsdata_stage = "bg_acsdata",
+                                          bg_envirodata_stage = "bg_envirodata",
+                                          bg_extra_indicators_stage = "bg_extra_indicators",
+                                          bg_geodata_stage = "bg_geodata",
+                                          blockgroup_universe_source = c("acs", "union"),
+                                          extra_indicator_vars = ejscreen_default_extra_indicator_vars(),
+                                          reuse_existing_extra_if_missing = FALSE,
+                                          existing_blockgroupstats = NULL,
+                                          save_stage = FALSE,
+                                          pipeline_storage = c("auto", "local", "s3"),
+                                          stage_format = c("csv", "rds", "rda", "arrow"),
+                                          yr = NULL,
+                                          blockgroupstats_acs = NULL,
+                                          blockgroupstats_acs_stage = NULL) {
+
+  stage_format <- match.arg(stage_format)
+  pipeline_storage <- match.arg(pipeline_storage)
+  blockgroup_universe_source <- match.arg(blockgroup_universe_source)
+  ###################################################### #
+  # bg_acsdata ####
+
+  if (is.null(bg_acsdata) && !is.null(blockgroupstats_acs)) {
+    bg_acsdata <- blockgroupstats_acs
+  }
+  if (!is.null(blockgroupstats_acs_stage)) {
+    bg_acsdata_stage <- blockgroupstats_acs_stage
+  }
+
+  acs <- ejscreen_pipeline_input(
+    x = bg_acsdata,
+    stage = bg_acsdata_stage,
+    pipeline_dir = pipeline_dir,
+    format = stage_format,
+    storage = pipeline_storage,
+    input_name = "bg_acsdata"
+  )
+  ###################################################### #
+  # bg_envirodata ####
+
+  enviro <- ejscreen_pipeline_input(
+    x = bg_envirodata,
+    stage = bg_envirodata_stage,
+    pipeline_dir = pipeline_dir,
+    format = stage_format,
+    storage = pipeline_storage,
+    input_name = "bg_envirodata"
+  )
+  ###################################################### #
+  # bg_extra_indicators ####
+
+  if (is.null(bg_extra_indicators) && !is.null(pipeline_dir) &&
+      !is.null(bg_extra_indicators_stage) &&
+      ejscreen_pipeline_stage_exists(
+        bg_extra_indicators_stage,
+        pipeline_dir = pipeline_dir,
+        format = stage_format,
+        storage = pipeline_storage
+      )) {
+    bg_extra_indicators <- ejscreen_pipeline_input(
+      stage = bg_extra_indicators_stage,
+      pipeline_dir = pipeline_dir,
+      format = stage_format,
+      storage = pipeline_storage,
+      input_name = "bg_extra_indicators"
+    )
+  }
+
+  acs    <- data.table::as.data.table(data.table::copy(acs))
+  enviro <- data.table::as.data.table(data.table::copy(enviro))
+  extra <- complete_bg_extra_indicators(
+    bg_extra_indicators = bg_extra_indicators,
+    extra_indicator_vars = extra_indicator_vars,
+    reuse_existing_if_missing = reuse_existing_extra_if_missing,
+    existing_blockgroupstats = existing_blockgroupstats
+  )
+  ###################################################### #
+  # use correct set of blockgroups by fips ####
+
+  if (!"bgfips" %in% names(acs)) {
+    stop("bg_acsdata must have a bgfips column")
+  }
+  if (!"bgfips" %in% names(enviro)) {
+    stop("bg_envirodata must have a bgfips column")
+  }
+  if (!"pctpre1960" %in% names(enviro)) {
+    stop("bg_envirodata must include pctpre1960, even if that column was created from the ACS stage")
+  }
+  blockgroup_universe <- if (blockgroup_universe_source == "acs") {
+    unique(as.character(acs$bgfips))
+  } else {
+    unique(c(
+      as.character(acs$bgfips),
+      as.character(enviro$bgfips),
+      as.character(extra$bgfips)
+    ))
+  }
+  blockgroup_universe <- blockgroup_universe[!is.na(blockgroup_universe) & nzchar(blockgroup_universe)]
+  if (blockgroup_universe_source == "acs") {
+    enviro_only <- setdiff(as.character(enviro$bgfips), blockgroup_universe)
+    extra_only <- setdiff(as.character(extra$bgfips), blockgroup_universe)
+    if (length(enviro_only) > 0 || length(extra_only) > 0) {
+      warning(
+        "Using ACS bg_acsdata as the blockgroup universe and ignoring ",
+        length(unique(c(enviro_only, extra_only))),
+        " blockgroups found only in bg_envirodata/bg_extra_indicators. ",
+        "This prevents same-vintage Census/TIGER geography or provisional inputs ",
+        "from expanding beyond the ACS tabulated blockgroup universe.",
+        call. = FALSE
+      )
+    }
+  }
+  ###################################################### #
+  # bg_geodata ####
+
+  if (is.null(bg_geodata) && !is.null(pipeline_dir) &&
+      !is.null(bg_geodata_stage) &&
+      ejscreen_pipeline_stage_exists(
+        bg_geodata_stage,
+        pipeline_dir = pipeline_dir,
+        format = stage_format,
+        storage = pipeline_storage
+      )) {
+    bg_geodata <- ejscreen_pipeline_input(
+      stage = bg_geodata_stage,
+      pipeline_dir = pipeline_dir,
+      format = stage_format,
+      storage = pipeline_storage,
+      input_name = "bg_geodata"
+    )
+  }
+  geo <- complete_bg_geodata(
+    bg_geodata = bg_geodata,
+    bgfips = blockgroup_universe,
+    existing_blockgroupstats = existing_blockgroupstats,
+    reuse_existing_if_missing = reuse_existing_extra_if_missing
+  )
+  ###################################################### #
+  # merge acs ####
+
+  acs <- merge(
+    data.table::data.table(bgfips = blockgroup_universe),
+    acs,
+    by = "bgfips",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  geo_cols <- setdiff(names(geo), c("bgfips", names(acs)))
+  if (length(geo_cols) > 0) {
+    acs <- merge(
+      acs,
+      geo[, c("bgfips", geo_cols), with = FALSE],
+      by = "bgfips",
+      all.x = TRUE,
+      sort = FALSE
+    )
+  }
+  ###################################################### #
+  # add geo columns ####
+  acs <- add_bg_geography_columns(acs)
+  cols_to_add <- setdiff(names(extra), c("bgfips", names(acs)))
+  if (length(cols_to_add) > 0) {
+    acs <- merge(acs, extra[, c("bgfips", cols_to_add), with = FALSE], by = "bgfips", all.x = TRUE)
+  }
+  ###################################################### #
+  # calc Demog.Index ####
+  if (any(grepl("Demog.Index", names(acs)))) {
+    stop("bg_acsdata already has Demog.Index columns; remove or replace them before this step")
+  }
+  # now calculate the demographic index columns from the ACS+extra table, which will be used in the EJ-index calculations in the next step. This ensures that any extra indicators that are part of the demographic index calculation (e.g. lowlifex) are included in the index calculation.
+  blockgroup_demog_index <- calc_blockgroup_demog_index(bgstats = acs)
+  ###################################################### #
+  # add all the new columns ####
+
+  # add demog index
+  blockgroupstats_new <- merge(acs, blockgroup_demog_index, by = "bgfips", all.x = TRUE)
+  # Add enviro columns. For columns that already exist in ACS+extra, fill only
+  # missing values so Island Areas placeholders can keep available EPA
+  # environmental fields without overwriting ACS-derived mainland values.
+  overlapping_env_cols <- setdiff(intersect(names(enviro), names(blockgroupstats_new)), "bgfips")
+  if (length(overlapping_env_cols) > 0) {
+    env_overlap <- data.table::copy(enviro[, c("bgfips", overlapping_env_cols), with = FALSE])
+    env_overlap_names <- paste0(overlapping_env_cols, ".enviro")
+    data.table::setnames(env_overlap, overlapping_env_cols, env_overlap_names)
+    blockgroupstats_new <- merge(
+      blockgroupstats_new,
+      env_overlap,
+      by = "bgfips",
+      all.x = TRUE,
+      sort = FALSE
+    )
+    for (i in seq_along(overlapping_env_cols)) {
+      col <- overlapping_env_cols[[i]]
+      env_col <- env_overlap_names[[i]]
+      fill <- is.na(blockgroupstats_new[[col]]) & !is.na(blockgroupstats_new[[env_col]])
+      if (any(fill)) {
+        data.table::set(
+          blockgroupstats_new,
+          i = which(fill),
+          j = col,
+          value = blockgroupstats_new[[env_col]][fill]
+        )
+      }
+    }
+    blockgroupstats_new[, (env_overlap_names) := NULL]
+  }
+
+  # Add enviro columns that are not already in the ACS+extra table.
+  cols_to_add <- setdiff(names(enviro), c("bgfips", names(blockgroupstats_new)))
+  blockgroupstats_new <- merge(
+    blockgroupstats_new,
+    enviro[, c("bgfips", cols_to_add), with = FALSE],
+    by = "bgfips",
+    all.x = TRUE
+  )
+  # now ensure all universe blockgroups are included, even if missing from both inputs (e.g. due to missing ACS data)
+  blockgroupstats_new <- merge(
+    data.table::data.table(bgfips = blockgroup_universe),
+    blockgroupstats_new,
+    by = "bgfips",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  # add geo columns
+  blockgroupstats_new <- add_bg_geography_columns(blockgroupstats_new)
+  ###################################################### #
+  # sort columns ####
+
+  preferred_first <- c(
+    "bgid", "bgfips", "statename", "ST", "countyname", "REGION", "pop",
+    names_d[names_d %in% names(blockgroupstats_new)]
+  )
+  preferred_first <- preferred_first[preferred_first %in% names(blockgroupstats_new)]
+  data.table::setcolorder(blockgroupstats_new, preferred_first)
+  data.table::setorder(blockgroupstats_new, bgfips)
+
+  # Store bgid as double, not integer. Island Areas (AS/GU/MP/VI) use FIPS-derived
+  # bgid values that overflow 32-bit integer, so integer cannot hold the full set and
+  # character is slow/large. bgid is only ever used as a join key (never indexed into
+  # or used in arithmetic), so double represents every value exactly and joins fast.
+  if ("bgid" %in% names(blockgroupstats_new)) {
+    blockgroupstats_new[, bgid := as.numeric(bgid)]
+  }
+  ###################################################### #
+  # save ####
+
+  if (save_stage) {
+    if (is.null(pipeline_dir)) {
+      stop("pipeline_dir must be provided when save_stage is TRUE")
+    }
+    ejscreen_pipeline_save(
+      blockgroupstats_new,
+      "blockgroupstats",
+      pipeline_dir,
+      stage_format,
+      yr = yr,
+      storage = pipeline_storage
+    )
+  }
+
+  blockgroupstats_new
+}
+###################################################### #

@@ -82,6 +82,9 @@ test_that("fips_valid() works but is slow", {
     fips_valid(NA)
     fips_valid("text")
   })
+  expect_no_warning({
+    fips_valid(testinput_fips_mix)
+  })
   expect_false(fips_valid(NA))
   expect_identical(
     fips_valid(c(NA, "01")),
@@ -329,7 +332,7 @@ test_that("fipstype() works", {
   testx[11] =  "012345678912"; casex[11] <- 'test_12_char_invalid_hasleadzero'; truex[11] <- NA
 
   n = 12
-
+  if (FALSE) { # to print interactively and see cases
   print(
     cbind(fips = testx[1:n],
           actual =  truex[1:n],
@@ -343,7 +346,7 @@ test_that("fipstype() works", {
           tractfips_ok_asis = ifelse(testx[1:n] %in% realtracts, 'tract','')
     )
   )
-
+}
   ######################################### #
 
   test_tract_missing0 =   4013116500   # 10 digits tract missing 0
@@ -682,6 +685,15 @@ test_that("fips_from_name/name2fips ok if state or county", {
 # fips_from_table()
 
 test_that("fips_from_table() works", {
+  old_options <- options()
+  withr::defer({
+    added_options <- setdiff(names(options()), names(old_options))
+    if (length(added_options) > 0) {
+      do.call(options, stats::setNames(vector("list", length(added_options)), added_options))
+    }
+    options(old_options)
+  })
+
   # fips_alias <- c('FIPS','fips','fips_code','fipscode','Fips','statefips','countyfips',
   #                 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST', 'FIPS.COUNTY', 'FIPS.TRACT')
   suppressWarnings({
@@ -1066,7 +1078,6 @@ test_that("f2p pop for 1 state = its counties", {
 
 })
 
-
 test_that("f2p pop for 1 tract = its blockgroups", {
 
   expect_equal(
@@ -1124,8 +1135,9 @@ test_that("fips2pop pop ok for some blockgroups", {
 test_that("fips2pop ok if multiple types", {
 
   # returns NA for block if this is not already loaded, but to ensure we test it....
+  suppressMessages({
   dataload_dynamic('blockid2fips')
-
+  })
   expect_no_error(
 
     x <- fips2pop(
@@ -1845,4 +1857,3 @@ options(scipen = 0)
 
 ################################################################### #
 ################################################################### #
-

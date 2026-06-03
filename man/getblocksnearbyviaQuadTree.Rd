@@ -92,7 +92,9 @@ inside the circular buffer more accurately and more quickly than
 areal apportionment of blockgroups would provide.
 }
 \examples{
-  # indexblocks() # if localtree not available yet, quadtree = localtree
+  # getblocksnearby() usually creates/reuses the quadtree index for you.
+  # To call this lower-level function directly, use:
+  # quadtree <- indexblocks()
   x = getblocksnearby(testpoints_1000, radius = 3)
 }
 \seealso{

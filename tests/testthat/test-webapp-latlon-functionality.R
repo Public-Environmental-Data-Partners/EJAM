@@ -1,1 +1,1 @@
-shinytest2_webapp_functionality("latlon")
+shinytest2_webapp_functionality_individual("latlon")

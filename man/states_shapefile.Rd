@@ -5,7 +5,7 @@
 \alias{states_shapefile}
 \title{This is used to figure out which state contains each point (facility/site).}
 \format{
-An object of class \code{sf} (inherits from \code{data.frame}) with 56 rows and 15 columns.
+An object of class \code{sf} (inherits from \code{data.frame}) with 56 rows and 16 columns.
 }
 \usage{
 states_shapefile
@@ -20,6 +20,10 @@ the form of State-specific percentiles
 (e.g., a score that is at the 80th percentile within Texas).
 It is created by the package via a script at EJAM/data-raw/datacreate_states_shapefile.R
 which downloads the data from Census Bureau.
+
+It includes 50 states, DC, PR, and 4 island areas (GU, MP, VI, AS).
+
+Source: https://www2.census.gov/geo/tiger/TIGER2024/STATE/tl_2024_us_state.zip
 }
 \seealso{
 seealso \code{\link[=state_from_latlon]{state_from_latlon()}} \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}}

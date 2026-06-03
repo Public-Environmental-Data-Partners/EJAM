@@ -1,4 +1,22 @@
 
+################################################################################
+# v2.5.0 release note:
+#
+# Do not run this script automatically from run_ejscreen_dataset_pipeline.R.
+# For the ACS 2020-2024 / EJAM v2.5.0 release, keep the current block helper
+# universe and do not treat raw Census 2020 blockgroup center-of-population
+# FIPS as authoritative for the ACS 2020-2024 blockgroupstats universe.
+#
+# Raw Census 2020 BG FIPS do not fully align with ACS 2022+ Connecticut
+# planning-region geography. Running this script without a deliberate
+# reconciliation step can create thousands of CT bgfips/bgid mismatches relative
+# to blockgroupstats and the EPA/EJScreen adjusted helper files.
+#
+# Island Areas AS/GU/MP/VI are included only at the blockgroup dataset,
+# EJSCREEN export, and map-data visibility level for v2.5.0. This helper file
+# intentionally does not enable Island Area radius/buffer use.
+################################################################################
+
 # State/state equivalent entity-based text files containing the
 # mean centers of population for each census blockgroup
 # within a state/state equivalent entity for the 2020 Census.
@@ -68,7 +86,7 @@ bg_cenpop2020 <- data.table::as.data.table(x)
 rm(x)
 
 #  look up bgid based on join on bgfips
-if (!exists("bgid2fips")) download_dynamic("bgid2fips")
+if (!exists("bgid2fips")) dataload_dynamic("bgid2fips")
 bg_cenpop2020$bgid <- bgid2fips[bg_cenpop2020,  bgid, on = "bgfips"] # bgid2fips is loaded from aws, e.g. by EJAM pkg
 data.table::setkey(bg_cenpop2020, bgid, bgfips)
 
@@ -78,10 +96,11 @@ data.table::setorder(bg_cenpop2020, bgid, bgfips, lat, lon, pop2020, ST)
 mapfast(bg_cenpop2020[ST == "LA",], radius = 0.01)
 ####################################################### #
 #### DROP MOST OF THAT INFO ACTUALLY...
-#  THIS IS 24MB and already have all this in bgpts, except for pop2020 and lat lon of pop2020wtd centroid !
+#  THIS IS 24MB and already have all this in bgpts, except for pop2020,
+# bgfips, and lat/lon of Census 2020 population-weighted centroid.
 # see datacreate_bgpts.R too
 
-bg_cenpop2020 <- bg_cenpop2020[, .(bgid, lat, lon, pop2020, ST)]
+bg_cenpop2020 <- bg_cenpop2020[, .(bgfips, bgid, lat, lon, pop2020, ST)]
 
 dim(bg_cenpop2020)
 dim(EJAM::blockgroupstats)
@@ -89,8 +108,9 @@ sum(bg_cenpop2020$pop2020)
 sum(blockgroupstats$pop, na.rm = T)
 ####################################################### #
 
-bg_cenpop2020 <-  metadata_add(bg_cenpop2020)
-usethis::use_data(bg_cenpop2020, overwrite = TRUE)
+# bg_cenpop2020 <-  metadata_add(bg_cenpop2020)
+# usethis::use_data(bg_cenpop2020, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("bg_cenpop2020")
 
 dataset_documenter('bg_cenpop2020',
   title = "bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups",

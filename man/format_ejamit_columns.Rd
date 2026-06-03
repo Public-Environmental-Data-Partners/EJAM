@@ -20,11 +20,12 @@ Applies rounding, sigfig, and percentage info to display columns of ejamit using
 \examples{
   # x <- ejamit(testpoints_10, radius = 1)
   x <- testoutput_ejamit_10pts_1miles
-  format_ejamit_columns(x$results_overall, 'Demog.Index')
-  format_ejamit_columns(x$results_overall, c('Demog.Index', 'no2'))
-  format_ejamit_columns(x$results_overall, names_d)
+  EJAM:::format_ejamit_columns(x$results_overall, 'Demog.Index')
+  EJAM:::format_ejamit_columns(x$results_overall, c('Demog.Index', 'no2'))
+  EJAM:::format_ejamit_columns(x$results_overall, names_d)
 
 }
 \seealso{
 Note: *** overlaps with/could replace with \code{\link[=table_signif_round_x100]{table_signif_round_x100()}}
 }
+\keyword{internal}

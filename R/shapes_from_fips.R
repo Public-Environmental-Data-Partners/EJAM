@@ -26,11 +26,11 @@
 #'
 #' When using tigris package ("tiger" as service-related parameter here),
 #' it uses the year that is the default in the version of the tigris package that is installed.
-#' You can use options(tigris_year = 2022) for example to specify it explicitly.
+#' You can use options(tigris_year = 2023) for example to specify it explicitly.
 #'
 #'  Blocks are not implemented yet here. For info on blocks bounds, see  [tigris::block_groups()]
-#'  Also note the [blockwts] dataset had a placeholder column block_radius_miles that as of
-#'  v2.32.5 was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
+#'  Also note the [blockwts] dataset had a placeholder column block_radius_miles that
+#'  was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
 #'  If it were used, it could be a way to quickly get the area of each block,
 #'  using the formula  area = pi * (block_radius_miles^2)
 #'
@@ -60,11 +60,14 @@
 #' @export
 #'
 shapes_from_fips <- function(fips,
-                             myservice_blockgroup = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query",
-                             myservice_tract      = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query",
+                             myservice_blockgroup = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+                                                           "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"),
+                             myservice_tract      = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+                                                           "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
                              myservice_place  = 'tiger',
                              myservice_county = 'cartographic',
-                             #  myservice_county = "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query" # an alternative
+                             #  myservice_county = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+                             # "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query"), # an alternative
                              # myservice_state is built into the package as dataset
                              allow_multiple_fips_types = TRUE,
                              year = 2024
@@ -112,10 +115,10 @@ shapes_from_fips <- function(fips,
     }
   }
   if (any(!(ftype[!is.na(ftype)] %in% oktypes))) { # probably only possible if some appear to be blocks
-  # if (any(ftype[!is.na(ftype)] %in% 'block')) {
-      if (shiny::isRunning()) {
+    # if (any(ftype[!is.na(ftype)] %in% 'block')) {
+    if (shiny::isRunning()) {
       shiny::validate("Cannot obtain boundaries of some Census units because they are not a supported type.")
-        shp_combined <- NULL # but valid types will get appended
+      shp_combined <- NULL # but valid types will get appended
     } else {
       warning("Cannot obtain boundaries of some Census units because they are not a supported type.")
       shp_combined <- NULL # but valid types will get appended
@@ -246,7 +249,7 @@ shapes_from_fips <- function(fips,
     if (length(intersect(ftype, oktypes)) == 0) {
       if (shiny::isRunning()) {
         shiny::validate(paste0("This dataset contains no FIPS codes that are an allowed type. Analysis can only be run on datasets with these types of FIPS codes:",
-                        paste0(oktypes, collapse = ",")))
+                               paste0(oktypes, collapse = ",")))
         shp_combined <- NULL
       } else {
         # maybe return an empty table
@@ -356,8 +359,10 @@ shapes_state_from_statefips <- function(fips) {
 #'
 shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c("NAME", "FIPS", "STATE_ABBR", "STATE_NAME"), # "",
                                             myservice = c(
-                                              "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query",
-                                              "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Counties_and_States_with_PR/FeatureServer/0/query",
+                                              paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+                                                     "USA_Boundaries_2022/FeatureServer/2/query"),
+                                              paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+                                                     "USA_Counties_and_States_with_PR/FeatureServer/0/query"),
                                               'cartographic', 'tiger'
                                             )[3]
 ) {
@@ -618,8 +623,10 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
 #' @keywords internal
 #'
 shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR", "SQMI"),
-                                        myservice = c("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query",
-                                                      "cartographic", "tigris")[1]) {
+                                        myservice = c(
+                                          paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+                                                 "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
+                                          "cartographic", "tigris")[1]) {
 
   if (myservice[1] %in% c("cartographic", "tiger")) {
 
@@ -711,8 +718,10 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
 #'
 shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = c("FIPS", "STATE_ABBR", "SQMI"),
                                            myservice = c(
-                                             "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query",
-                                             "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Block_Groups/FeatureServer/0/query", # token required?
+                                             paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+                                                    "USA_Boundaries_2022/FeatureServer/5/query"),
+                                             paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+                                                    "USA_Block_Groups/FeatureServer/0/query"), # token required?
                                              "cartographic", "tiger")[1]
 ) {
 
