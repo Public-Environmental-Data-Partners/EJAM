@@ -518,7 +518,7 @@ for example on the first EJAM install, it will be created at the end of
 the script.</li>
 <li>If the versions are different, downloads Arrow files from the
 matching <code>ejamdata</code> release with
-<code><a href="https://rdrr.io/pkg/piggyback/man/pb_download.html" class="external-link">piggyback::pb_download()</a></code>.</li>
+<code><a href="https://docs.ropensci.org/piggyback/reference/pb_download.html" class="external-link">piggyback::pb_download()</a></code>.</li>
 <li>When <code>dataload_dynamic("bgej")</code> loads <code>bgej</code>,
 the local <code>bgej.arrow</code> must also match the installed
 package’s <code>blockgroupstats</code>; if it does not, EJAM tries to
@@ -598,7 +598,7 @@ block-helper universe for this release path.</p>
 run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step)</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">release_number</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">new_datasets_folder</span> <span class="op">&lt;-</span> <span class="st">"~/Downloads"</span></span>
+<span><span class="va">new_datasets_folder</span> <span class="op">&lt;-</span> <span class="st">"path/to/folder/of/new/arrow/files"</span></span>
 <span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">new_datasets_folder</span>, <span class="st">"bgej.arrow"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/datasets_arrow_publish.html">datasets_arrow_publish</a></span><span class="op">(</span></span>
@@ -629,9 +629,58 @@ versions are available and cache them for the installed package.</p>
 <span><span class="fu"><a href="../reference/dataload_dynamic.html">dataload_dynamic</a></span><span class="op">(</span><span class="st">"all"</span>, return_data_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co"># or read into memory as data.table/data.frame objects:</span></span>
 <span><span class="fu"><a href="../reference/dataload_dynamic.html">dataload_dynamic</a></span><span class="op">(</span><span class="st">"all"</span>, return_data_table <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="every-release-must-contain-all-11-arrow-files">Every release must contain all 11 Arrow files<a class="anchor" aria-label="anchor" href="#every-release-must-contain-all-11-arrow-files"></a>
+</h3>
+<p>A release’s assets are self-contained:
+<code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> (via
+<code><a href="https://docs.ropensci.org/piggyback/reference/pb_download.html" class="external-link">piggyback::pb_download()</a></code>) pulls each Arrow file from the
+single release tagged in <code>ejamdata_required_tag</code>, so a
+missing asset breaks loading. Upload <strong>all 11</strong> files to
+<strong>every</strong> <code>v3.YYYY.0</code> release, even when most
+are unchanged:</p>
+<ul>
+<li>vintage-specific: <code>bgej.arrow</code>;</li>
+<li>geography (Census 2020, unchanged between ACS vintages):
+<code>blockwts.arrow</code>, <code>blockpoints.arrow</code>,
+<code>quaddata.arrow</code>, <code>bgid2fips.arrow</code>,
+<code>blockid2fips.arrow</code>;</li>
+<li>facilities (FRS): <code>frs.arrow</code>,
+<code>frs_by_programid.arrow</code>, <code>frs_by_naics.arrow</code>,
+<code>frs_by_sic.arrow</code>, <code>frs_by_mact.arrow</code>.</li>
+</ul>
+<p>FRS is intentionally <strong>not refreshed</strong> for an
+ACS-vintage release; its files carry over unchanged (only their
+<code>ejam_package_version</code> metadata is bumped) and are
+re-published under the new tag. Confirm the file names match
+<code>paste0(EJAM:::.arrow_ds_names, ".arrow")</code> before
+publishing.</p>
+<p>Three of these carry the <code>bgid</code> join key —
+<code>bgej</code>, <code>blockwts</code>, and <code>bgid2fips</code> —
+which must be stored as <code>double</code> (see <a href="dev-update-ejscreen-datasets-yearly.html">Annual EJScreen/ACS
+dataset updates</a>, “the <code>bgid</code> type must be
+<code>double</code>”); the other eight have no <code>bgid</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="keep-the-four-identifiers-in-sync">Keep the four identifiers in sync<a class="anchor" aria-label="anchor" href="#keep-the-four-identifiers-in-sync"></a>
+</h3>
+<p>After publishing, set the local version marker and confirm all four
+identifiers match (all <code>v3.YYYY.0</code>):</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="st">"v3.YYYY.0"</span>, <span class="st">"data/ejamdata_version.txt"</span><span class="op">)</span>   <span class="co"># tracked marker</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>                          <span class="co"># from DESCRIPTION; must equal the marker</span></span></code></pre></div>
+<p>git release tag = <code>ejamdata</code> release tag = DESCRIPTION
+<code>ejamdata_required_tag</code> =
+<code>data/ejamdata_version.txt</code>. A code-only
+<strong>patch</strong> release (for example <code>v3.2022.1</code>) is
+the exception: it keeps <code>ejamdata_required_tag</code> and the
+marker at the existing <code>v3.2022.0</code>, because the data did not
+change and the patch reuses the already-published <code>ejamdata</code>
+release.</p>
 <p>This previously had been handled with a GitHub Actions workflow that
 tried to use Git LFS. That automatic workflow is no longer used and
 should not be restored.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="potential-improvements">Potential Improvements<a class="anchor" aria-label="anchor" href="#potential-improvements"></a>
