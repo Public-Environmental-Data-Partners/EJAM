@@ -835,7 +835,46 @@ formula or missing-value rule.
 Pipeline stage files are review artifacts. After they are accepted, update the
 package data objects deliberately. The runner currently has an interactive
 helper path for replacing `blockgroupstats`, but it does not automatically
-replace every final package dataset.
+replace every final package dataset. Work on the vintage's branch
+(`ACS2024` / `ACS2023` / `ACS2022`) with the package version and metadata fields in
+`DESCRIPTION` already set, because the metadata helpers stamp datasets from
+`DESCRIPTION` via `desc::description$new("DESCRIPTION")` and
+`ejam_package_version_current()`.
+
+### Read first: the `bgid` type must be `double`
+
+Island Areas (AS/GU/MP/VI) get FIPS-derived `bgid` values that overflow 32-bit
+integer (they range to ~7.8e9; 416 such rows), so the pipeline stores `bgid` as
+**character**. The package geography Arrow files and the engine historically used
+**integer** `bgid`, and a character-vs-integer join fails with
+`Incompatible join types: x.bgid (character) and i.bgid (integer)`.
+
+**Store `bgid` as `double` everywhere** — in `blockgroupstats`, `bgej`, `blockwts`,
+`bgid2fips`, and the engine's `sites2blocks`. Doubles represent integers exactly up
+to 2^53 (~9.0e15), far above the largest `bgid`, and `bgid` is only ever a join key
+(never indexed or used in arithmetic), so there is no precision loss and it is far
+cheaper than character.
+
+> **Do not coerce `bgid` to integer.** That turns the 416 Island-Area `bgid`s into
+> `NA` ("NAs introduced by coercion to integer range") and silently drops those
+> block groups.
+
+### Avoid the load-time Arrow-download trap
+
+`.onAttach()` calls `download_latest_arrow_data()` for the `ejamdata_required_tag`
+in `DESCRIPTION`. If you have already bumped that tag to the new release but have
+not published the matching `ejamdata` release yet, attaching the package —
+including `devtools::load_all()` — will try to fetch a tag that does not exist and
+fail or hang.
+
+Keep `ejamdata_required_tag` at the **previously installed** tag during the data
+work (so it matches `data/ejamdata_version.txt` and the present local `.arrow`
+files, and `download_latest_arrow_data()` short-circuits with no network), and flip
+it to the new tag only after publishing (see
+[Updating and Managing the Datasets Used by EJAM](dev-update-datasets.html)).
+Always use `devtools::load_all()` rather than an installed `library(EJAM)` here, so
+`ejam_package_version_current()` reads the **source** `DESCRIPTION` (the new
+`3.YYYY.0`), not a stale installed version.
 
 A release update should explicitly replace at least:
 
@@ -848,13 +887,25 @@ Use the established EJAM metadata helpers before saving package `.rda` data.
 When reviewing CSV stages manually, a typical pattern is:
 
 ```{r, eval=FALSE}
-blockgroupstats <- fread(file.path(pipeline_dir, "blockgroupstats.csv"))
+library(arrow); library(data.table)
+
+# blockgroupstats: coerce character bgid -> double, then stamp + save data/blockgroupstats.rda
+blockgroupstats <- fread(file.path(pipeline_dir, "blockgroupstats.csv"))  # or load the .rda stage
+setDT(blockgroupstats)[, bgid := as.numeric(bgid)]
+EJAM:::metadata_add_and_use_this("blockgroupstats")
+
+# usastats / statestats: no bgid; just stamp + save
 usastats        <- fread(file.path(pipeline_dir, "usastats.csv"))
 statestats      <- fread(file.path(pipeline_dir, "statestats.csv"))
-
-EJAM:::metadata_add_and_use_this("blockgroupstats")
 EJAM:::metadata_add_and_use_this("usastats")
 EJAM:::metadata_add_and_use_this("statestats")
+
+# avg.in.us: the mean-row slice of indicator columns from the NEW usastats
+longlist  <- unique(c(names_e, names_d, names_d_subgroups_nh, names_d_subgroups_alone,
+                      names_d_language, names_d_extra))
+longlist  <- longlist[longlist %in% names(usastats)]
+avg.in.us <- usastats[usastats$PCTILE == "mean", longlist]
+EJAM:::metadata_add_and_use_this("avg.in.us")
 ```
 
 Confirm the exact metadata values before saving, especially ACS vintage,
@@ -865,9 +916,73 @@ DESCRIPTION as `ejamdata_required_tag`, such as `v3.2024.0` for the matching EJA
 local `data/bgej.arrow` copy can be useful for testing from source, but it is
 ignored for package builds and should not be treated as normal package data.
 
-After those key datasets are updated, rerun the scripts that create and save
-`testoutput_*` files and datasets, especially
-`datacreate_testpoints_testoutputs.R` and `datacreate_testoutput_ejamit_*`.
+The v3 `blockgroupstats` is the full EJScreen schema — about 404 columns and
+~242,983 rows including Island Areas — much wider than the 173-column v2.5.0
+release. Confirm this against `pipeline_validation_summary.csv` rather than treating
+it as an anomaly.
+
+### Convert `bgid` to `double` in the Arrow datasets
+
+Only three Arrow files carry `bgid`: `bgej` (string from the stage), `blockwts`
+(int32 — this feeds `sites2blocks$bgid` in `getblocksnearby()`), and `bgid2fips`
+(int32). `blockpoints`, `quaddata`, `blockid2fips`, and the `frs*` files have no
+`bgid`, so they carry over unchanged.
+
+```{r, eval=FALSE}
+# bgej from the accepted stage file, bgid -> double
+e <- new.env(); load(file.path(pipeline_dir, "bgej.rda"), envir = e)
+bgej <- e$bgej; setDT(bgej)[, bgid := as.numeric(bgid)]
+arrow::write_feather(bgej, "data/bgej.arrow")
+
+# geography Arrow files
+bw <- as.data.table(arrow::read_feather("data/blockwts.arrow")); bw[, bgid := as.numeric(bgid)]
+arrow::write_feather(bw, "data/blockwts.arrow")
+bf <- as.data.table(arrow::read_feather("data/bgid2fips.arrow")); bf[, bgid := as.numeric(bgid)]
+arrow::write_feather(bf, "data/bgid2fips.arrow")
+```
+
+`data/*.arrow` files are gitignored build artifacts (published to `ejamdata`, not
+committed). Known gap: the current `bgid2fips` and `blockwts` come from the
+integer-era geography build, so they exclude Island Areas (e.g. `bgid2fips`
+~242,355 rows vs `blockgroupstats` ~242,983). Normal queries are unaffected
+(`doaggregate()` reads `bgfips` from `blockgroupstats`), but rebuilding the
+geography Arrow files to include Island-Area `bgid`s is a clean follow-up now that
+the key is `double`.
+
+### Regenerate `testoutput_*`
+
+Regenerate the `testoutput_*` fixtures **after** the data swap and with the new
+`bgej`/`blockwts` present locally, so the engine runs on the new vintage —
+otherwise the outputs silently encode the old vintage. The driver
+`data-raw/datacreate_testpoints_testoutputs.R` defines
+`pkg_update_testpoints_testoutputs()` and then auto-calls it with heavy defaults, so
+define the function only and call it with conservative flags:
+
+```{r, eval=FALSE}
+# define the function without the script's heavy trailing auto-call
+for (ex in parse("data-raw/datacreate_testpoints_testoutputs.R"))
+  if (is.call(ex) && length(ex) >= 3 &&
+      identical(ex[[2]], as.name("pkg_update_testpoints_testoutputs"))) eval(ex, globalenv())
+
+pkg_update_testpoints_testoutputs(
+  do_load_all = TRUE, nvalues = c(10, 100, 1000),
+  recreating_getblocksnearby = TRUE, resaving_getblocksnearby_rda = TRUE,
+  recreating_doaggregate_output = TRUE, resaving_doaggregate_rda = TRUE,
+  recreating_ejamit_output = TRUE, resaving_ejamit_rda = TRUE,
+  resaving_ejam2excel = FALSE, resaving_ejam2report = FALSE, resaving_ejam2report_pdf = FALSE)
+
+# FIPS + shapes fixtures (simple ejamit() calls), then stamp each
+testoutput_ejamit_fips_counties <- ejamit(fips = testinput_fips_counties)
+testoutput_ejamit_fips_cities   <- ejamit(fips = testinput_fips_cities)
+testoutput_ejamit_shapes_2      <- ejamit(shapefile = testinput_shapes_2, radius = 0)
+EJAM:::metadata_add_and_use_this("testoutput_ejamit_fips_counties")
+EJAM:::metadata_add_and_use_this("testoutput_ejamit_fips_cities")
+EJAM:::metadata_add_and_use_this("testoutput_ejamit_shapes_2")
+```
+
+The `nvalues = 10000` case and the Excel/HTML/PDF example outputs are heavy (and the
+PDF needs pandoc/LaTeX); they are not the `testoutput_*` `.rda` fixtures, so they can
+be skipped here.
 
 Then run `EJAM:::metadata_check()` and `EJAM:::metadata_check_print()` from the
 current source package to confirm that package datasets with metadata-style
@@ -875,9 +990,43 @@ attributes have the expected EJAM version, ACS version, release dates, and save
 dates. Atomic name-vector objects such as many `names_*` datasets do not need
 metadata attributes.
 
-After package data are updated, reinstall the package and rerun release-critical
-tests. Also regenerate any Arrow-format files used outside the package build,
-if needed.
+### Restamp remaining metadata and verify
+
+Bump `ejam_package_version` on every other metadata-bearing `.rda`
+(FRS/geography/reference/`names_*`); atomic name vectors are skipped automatically.
+
+```{r, eval=FALSE}
+mc    <- as.data.frame(EJAM:::metadata_check(which = "ejam_package_version"))
+stale <- mc$item[!is.na(mc$ejam_package_version) & mc$ejam_package_version != "3.YYYY.0"]
+EJAM:::metadata_update_attr(x = stale[!grepl("^testoutput", stale)])
+EJAM:::metadata_check_print()   # expect 0 stale
+```
+
+Confirm the join key and a real run before committing, then restore
+`ejamdata_required_tag` to the new tag, reinstall the package, and rerun
+release-critical tests and `R CMD check`:
+
+```{r, eval=FALSE}
+class(blockgroupstats$bgid)                 # "numeric"
+EJAM:::ejamdata_required_tag()              # the new tag, after you restore it
+out <- ejamit(testpoints_10, radius = 1, quiet = TRUE)  # no "Incompatible join types" error
+```
+
+The regenerated `testoutput_*` fixtures should make the comparison tests pass,
+because the engine output and the fixtures came from the same vintage build.
+
+### Pipeline provisions so future builds emit `double` `bgid`
+
+So a fresh pipeline run produces `double` `bgid` without manual coercion, the
+pipeline source carries these provisions:
+
+- `R/calc_ejscreen_blockgroupstats.R` — coerce `bgid` to numeric before saving
+  `blockgroupstats`;
+- `R/calc_ejscreen_stats.R` — coerce `bgej$bgid` to double after `calc_bgej()`;
+- `R/download_bg_islandareas_raw.R` — set the Island-Areas `bgid` from `bgfips` as
+  numeric (the root cause);
+- `R/getblocksnearby_from_fips.R` — empty-result templates use `bgid = numeric(0)`;
+  the FIPS path gets `bgid` from the now-`double` `bgid2fips` join.
 
 ## Comparing Two Vintages Side by Side
 
