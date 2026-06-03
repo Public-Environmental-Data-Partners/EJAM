@@ -20,7 +20,7 @@
 #' appends Island Areas rows with no DHC-derived demographic values so it
 #' remains compatible with legacy EPA/EJScreen Island Areas rows. That supports
 #' blockgroup dataset, EJSCREEN export, and map-data visibility for AS/GU/MP/VI.
-#' Island Area blocks are not added to the block helper datasets in the v2.5.0
+#' Island Area blocks are not added to the block helper datasets in the v3
 #' release path, so point-buffer/radius analyses there should return no-data
 #' results rather than block-weighted estimates.
 #'

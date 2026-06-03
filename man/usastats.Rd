@@ -19,7 +19,7 @@ Each column is one indicator (or specifies the percentile).
 This should be similar to the lookup tables in the gdb on the FTP site of EJSCREEN,
 except it also has data for additional population subgroups.
 
-For EJAM v2.5.0, \link{blockgroupstats} may include AS/GU/MP/VI at the
+For EJAM v3, \link{blockgroupstats} may include AS/GU/MP/VI at the
 blockgroup dataset, EJSCREEN export, and map-data visibility level. Those
 Island Areas normally have \code{NA} demographic values because ACS does not
 cover them; available environmental values can still contribute to the

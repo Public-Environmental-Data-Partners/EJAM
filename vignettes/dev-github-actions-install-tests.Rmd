@@ -52,8 +52,8 @@ Automatic triggers:
 Manual trigger:
 
 - `workflow_dispatch`, with a `ref` such as `development`, `ACS2024`,
-  `v2.5.0`, or a commit SHA
-- optional `expected_version`, such as `2.5.0`
+  `v3.2024.0`, or a commit SHA
+- optional `expected_version`, such as `3.2024.0`
 - `test_scope` set to `user-style`, `full-matrix`, or `both`
 
 The `full-matrix` job tests Linux, Windows, and macOS, with `oldrel-1` and
@@ -112,6 +112,6 @@ Recommended workflow promotion:
 - For a release branch such as `ACS2024`, bring the same workflow changes into
   that branch before testing or tagging a release from that branch.
 
-If a branch says `Version: 2.5.0` in `DESCRIPTION`, the branch workflow can prove
-that the branch or commit installs as version 2.5.0. It does not prove that the
-tag `v2.5.0` installs until the tag exists and the tag-triggered workflow passes.
+If a branch says `Version: 3.2024.0` in `DESCRIPTION`, the branch workflow can prove
+that the branch or commit installs as version 3.2024.0. It does not prove that the
+tag `v3.2024.0` installs until the tag exists and the tag-triggered workflow passes.
